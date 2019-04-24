@@ -1,9 +1,0 @@
-<application>
-  <component name="FileTypeManager" version="17">
-    <extensionMap>
-      <mapping ext="klib" type="ARCHIVE" />
-      <mapping ext="vue" type="JavaScript" />
-      <removed_mapping ext="vue" type="Vue.js" />
-    </extensionMap>
-  </component>
-</application>
