@@ -1,0 +1,17 @@
+<application>
+  <component name="AppStorage">
+    <histories>
+      <item value="/** * If you specify a static constructor name, then the generated constructor will be private, and * instead a static factory method is created that other classes can use to create instances. * We suggest the name: &quot;of&quot;, like so: * * &lt;pre&gt; * public @Data(staticConstructor = &quot;of&quot;) class Point { final int x, y; } * &lt;/pre&gt; * * Default: No static constructor, instead the normal constructor is public. * * @return Name of static 'constructor' method to generate (blank = generate a normal constructor). */" />
+      <item value="/** * Only include fields and methods explicitly marked with {@code @EqualsAndHashCode.Include}. * Normally, all (non-static, non-transient) fields are included by default. * * @return If {@code true}, don't include non-static non-transient fields automatically (default: {@code false}). */" />
+      <item value="/** * If present, explicitly lists the fields that are to be used for identity. * Normally, all non-static, non-transient fields are used for identity. * &lt;p&gt; * Mutually exclusive with {@link #exclude()}. * &lt;p&gt; * Will soon be marked {@code @Deprecated}; use the {@code @EqualsAndHashCode.Include} annotation together with {@code @EqualsAndHashCode(onlyExplicitlyIncluded = true)}. * * @return A list of fields to use (&lt;em&gt;default&lt;/em&gt;: all of them). */" />
+      <item value="/** * Defaults to the method name of the annotated member. * If on a method and the name equals the name of a default-included field, this member takes its place. * * @return If present, this method serves as replacement for the named field. */" />
+      <item value="/** * Any fields listed here will not be taken into account in the generated {@code equals} and {@code hashCode} implementations. * Mutually exclusive with {@link #of()}. * &lt;p&gt; * Will soon be marked {@code @Deprecated}; use the {@code @EqualsAndHashCode.Exclude} annotation instead. * * @return A list of fields to exclude. */" />
+    </histories>
+    <option name="languageScores">
+      <map>
+        <entry key="CHINESE" value="6" />
+        <entry key="ENGLISH" value="7" />
+      </map>
+    </option>
+  </component>
+</application>
