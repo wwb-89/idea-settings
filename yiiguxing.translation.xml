@@ -1,6 +1,8 @@
 <application>
   <component name="AppStorage">
     <histories>
+      <item value="Create new {@link RedisCacheWriter} without locking behavior." />
+      <item value="Cache Manager" />
       <item value="/** * This interface represents the abstract notion of a principal, which * can be used to represent any entity, such as an individual, a * corporation, and a login id. * * @see java.security.cert.X509Certificate * * @author Li Gong */" />
       <item value="/** * Returns true if the specified subject is implied by this principal. * * &lt;p&gt;The default implementation of this method returns true if * {@code subject} is non-null and contains at least one principal that * is equal to this principal. * * &lt;p&gt;Subclasses may override this with a different implementation, if * necessary. * * @param subject the {@code Subject} * @return true if {@code subject} is non-null and is * implied by this principal, or false otherwise. * @since 1.8 */" />
       <item value="/** * Represents the token for an authentication request or for an authenticated principal * once the request has been processed by the * {@link AuthenticationManager#authenticate(Authentication)} method. * &lt;p&gt; * Once the request has been authenticated, the &lt;tt&gt;Authentication&lt;/tt&gt; will usually be * stored in a thread-local &lt;tt&gt;SecurityContext&lt;/tt&gt; managed by the * {@link SecurityContextHolder} by the authentication mechanism which is being used. An * explicit authentication can be achieved, without using one of Spring Security's * authentication mechanisms, by creating an &lt;tt&gt;Authentication&lt;/tt&gt; instance and using * the code: * * &lt;pre&gt; * SecurityContextHolder.getContext().setAuthentication(anAuthentication); * &lt;/pre&gt; * * Note that unless the &lt;tt&gt;Authentication&lt;/tt&gt; has the &lt;tt&gt;authenticated&lt;/tt&gt; property * set to &lt;tt&gt;true&lt;/tt&gt;, it will still be authenticated by any security interceptor (for * method or web invocations) which encounters it. * &lt;p&gt; * In most cases, the framework transparently takes care of managing the security context * and authentication objects for you. * * @author Ben Alex */" />
@@ -19,8 +21,8 @@
     </histories>
     <option name="languageScores">
       <map>
-        <entry key="CHINESE" value="18" />
-        <entry key="ENGLISH" value="19" />
+        <entry key="CHINESE" value="19" />
+        <entry key="ENGLISH" value="20" />
       </map>
     </option>
   </component>
