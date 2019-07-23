@@ -1,6 +1,7 @@
 <application>
   <component name="AppStorage">
     <histories>
+      <item value="/** * Interface to be implemented by @{@link org.springframework.context.annotation.Configuration * Configuration} classes annotated with @{@link EnableAsync} that wish to customize the * {@link Executor} instance used when processing async method invocations or the * {@link AsyncUncaughtExceptionHandler} instance used to process exception thrown from * async method with {@code void} return type. * * &lt;p&gt;Consider using {@link AsyncConfigurerSupport} providing default implementations for * both methods if only one element needs to be customized. Furthermore, backward compatibility * of this interface will be insured in case new customization options are introduced * in the future. * * &lt;p&gt;See @{@link EnableAsync} for usage examples. * * @author Chris Beams * @author Stephane Nicoll * @since 3.1 * @see AbstractAsyncConfiguration * @see EnableAsync * @see AsyncConfigurerSupport */" />
       <item value="Create new {@link RedisCacheWriter} without locking behavior." />
       <item value="Cache Manager" />
       <item value="/** * This interface represents the abstract notion of a principal, which * can be used to represent any entity, such as an individual, a * corporation, and a login id. * * @see java.security.cert.X509Certificate * * @author Li Gong */" />
@@ -21,8 +22,8 @@
     </histories>
     <option name="languageScores">
       <map>
-        <entry key="CHINESE" value="19" />
-        <entry key="ENGLISH" value="20" />
+        <entry key="CHINESE" value="20" />
+        <entry key="ENGLISH" value="21" />
       </map>
     </option>
   </component>
