@@ -1,6 +1,9 @@
 <application>
   <component name="AppStorage">
     <histories>
+      <item value="/** * Only include fields and methods explicitly marked with {@code @EqualsAndHashCode.Include}. * Normally, all (non-static, non-transient) fields are included by default. * * @return If {@code true}, don't include non-static non-transient fields automatically (default: {@code false}). */" />
+      <item value="Configure the behaviour of how this member is treated in the {@code equals} and {@code hashCode} implementation; if on a method, include the method's return value as part of calculating hashCode/equality." />
+      <item value="/** * Defaults to the method name of the annotated member. * If on a method and the name equals the name of a default-included field, this member takes its place. * * @return If present, this method serves as replacement for the named field. */" />
       <item value="/** * Creates the directory named by this abstract pathname, including any * necessary but nonexistent parent directories. Note that if this * operation fails it may have succeeded in creating some of the necessary * parent directories. * * @return &lt;code&gt;true&lt;/code&gt; if and only if the directory was created, * along with all necessary parent directories; &lt;code&gt;false&lt;/code&gt; * otherwise * * @throws SecurityException * If a security manager exists and its &lt;code&gt;{@link * java.lang.SecurityManager#checkRead(java.lang.String)}&lt;/code&gt; * method does not permit verification of the existence of the * named directory and all necessary parent directories; or if * the &lt;code&gt;{@link * java.lang.SecurityManager#checkWrite(java.lang.String)}&lt;/code&gt; * method does not permit the named directory and all necessary * parent directories to be created */" />
       <item value="/** * Interface to be implemented by @{@link org.springframework.context.annotation.Configuration * Configuration} classes annotated with @{@link EnableAsync} that wish to customize the * {@link Executor} instance used when processing async method invocations or the * {@link AsyncUncaughtExceptionHandler} instance used to process exception thrown from * async method with {@code void} return type. * * &lt;p&gt;Consider using {@link AsyncConfigurerSupport} providing default implementations for * both methods if only one element needs to be customized. Furthermore, backward compatibility * of this interface will be insured in case new customization options are introduced * in the future. * * &lt;p&gt;See @{@link EnableAsync} for usage examples. * * @author Chris Beams * @author Stephane Nicoll * @since 3.1 * @see AbstractAsyncConfiguration * @see EnableAsync * @see AsyncConfigurerSupport */" />
       <item value="Create new {@link RedisCacheWriter} without locking behavior." />
@@ -16,15 +19,13 @@
       <item value="/** * Set the underlying connect timeout in milliseconds. * A value of 0 specifies an infinite timeout. */" />
       <item value="/** * Equivalent to * {@link #convert(long, TimeUnit) MILLISECONDS.convert(duration, this)}. * @param duration the duration * @return the converted duration, * or {@code Long.MIN_VALUE} if conversion would negatively * overflow, or {@code Long.MAX_VALUE} if it would positively overflow. */" />
       <item value="/** * If you specify a static constructor name, then the generated constructor will be private, and * instead a static factory method is created that other classes can use to create instances. * We suggest the name: &quot;of&quot;, like so: * * &lt;pre&gt; * public @Data(staticConstructor = &quot;of&quot;) class Point { final int x, y; } * &lt;/pre&gt; * * Default: No static constructor, instead the normal constructor is public. * * @return Name of static 'constructor' method to generate (blank = generate a normal constructor). */" />
-      <item value="/** * Only include fields and methods explicitly marked with {@code @EqualsAndHashCode.Include}. * Normally, all (non-static, non-transient) fields are included by default. * * @return If {@code true}, don't include non-static non-transient fields automatically (default: {@code false}). */" />
       <item value="/** * If present, explicitly lists the fields that are to be used for identity. * Normally, all non-static, non-transient fields are used for identity. * &lt;p&gt; * Mutually exclusive with {@link #exclude()}. * &lt;p&gt; * Will soon be marked {@code @Deprecated}; use the {@code @EqualsAndHashCode.Include} annotation together with {@code @EqualsAndHashCode(onlyExplicitlyIncluded = true)}. * * @return A list of fields to use (&lt;em&gt;default&lt;/em&gt;: all of them). */" />
-      <item value="/** * Defaults to the method name of the annotated member. * If on a method and the name equals the name of a default-included field, this member takes its place. * * @return If present, this method serves as replacement for the named field. */" />
       <item value="/** * Any fields listed here will not be taken into account in the generated {@code equals} and {@code hashCode} implementations. * Mutually exclusive with {@link #of()}. * &lt;p&gt; * Will soon be marked {@code @Deprecated}; use the {@code @EqualsAndHashCode.Exclude} annotation instead. * * @return A list of fields to exclude. */" />
     </histories>
     <option name="languageScores">
       <map>
-        <entry key="CHINESE" value="21" />
-        <entry key="ENGLISH" value="22" />
+        <entry key="CHINESE" value="24" />
+        <entry key="ENGLISH" value="25" />
       </map>
     </option>
   </component>
