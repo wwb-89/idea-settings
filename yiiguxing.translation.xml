@@ -1,6 +1,11 @@
 <application>
   <component name="AppStorage">
     <histories>
+      <item value="difficult" />
+      <item value="easys" />
+      <item value="easies" />
+      <item value="Ratio" />
+      <item value="quiz Rule" />
       <item value="/** * Only include fields and methods explicitly marked with {@code @EqualsAndHashCode.Include}. * Normally, all (non-static, non-transient) fields are included by default. * * @return If {@code true}, don't include non-static non-transient fields automatically (default: {@code false}). */" />
       <item value="Configure the behaviour of how this member is treated in the {@code equals} and {@code hashCode} implementation; if on a method, include the method's return value as part of calculating hashCode/equality." />
       <item value="/** * Defaults to the method name of the annotated member. * If on a method and the name equals the name of a default-included field, this member takes its place. * * @return If present, this method serves as replacement for the named field. */" />
@@ -24,8 +29,8 @@
     </histories>
     <option name="languageScores">
       <map>
-        <entry key="CHINESE" value="24" />
-        <entry key="ENGLISH" value="25" />
+        <entry key="CHINESE" value="29" />
+        <entry key="ENGLISH" value="30" />
       </map>
     </option>
   </component>
