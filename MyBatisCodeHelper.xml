@@ -4,6 +4,7 @@
       <Profile>
         <option name="iconName" value="arrow" />
         <option name="usejava8LocalDateTimeEct" value="true" />
+        <option name="valid" value="true" />
       </Profile>
     </option>
   </component>
