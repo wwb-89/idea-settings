@@ -1,6 +1,7 @@
 <application>
   <component name="AppStorage">
     <histories>
+      <item value="Perform the internal processing required to invalidate this session, * without triggering an exception if the session has already expired." />
       <item value="Zone Offset" />
       <item value="/** * Converts this date-time to the number of seconds from the epoch * of 1970-01-01T00:00:00Z. * &lt;p&gt; * This combines this local date-time and the specified offset to calculate the * epoch-second value, which is the number of elapsed seconds from 1970-01-01T00:00:00Z. * Instants on the time-line after the epoch are positive, earlier are negative. * &lt;p&gt; * This default implementation calculates from the epoch-day of the date and the * second-of-day of the time. * * @param offset the offset to use for the conversion, not null * @return the number of seconds from the epoch of 1970-01-01T00:00:00Z */" />
       <item value="/** * The milli-of-second. * &lt;p&gt; * This counts the millisecond within the second, from 0 to 999. * This field has the same meaning for all calendar systems. * &lt;p&gt; * This field is used to represent the milli-of-second handling any fraction of the second. * Implementations of {@code TemporalAccessor} should provide a value for this field if * they can return a value for {@link #SECOND_OF_MINUTE}, {@link #SECOND_OF_DAY} or * {@link #INSTANT_SECONDS} filling unknown precision with zero. * &lt;p&gt; * When this field is used for setting a value, it should behave in the same way as * setting {@link #NANO_OF_SECOND} with the value multiplied by 1,000,000. * &lt;p&gt; * When parsing this field it behaves equivalent to the following: * The value is validated in strict and smart mode but not in lenient mode. * The field is resolved in combination with {@code MICRO_OF_SECOND} to produce * {@code NANO_OF_SECOND}. */" />
@@ -36,8 +37,8 @@
     </histories>
     <option name="languageScores">
       <map>
-        <entry key="CHINESE" value="36" />
-        <entry key="ENGLISH" value="37" />
+        <entry key="CHINESE" value="37" />
+        <entry key="ENGLISH" value="38" />
       </map>
     </option>
   </component>
