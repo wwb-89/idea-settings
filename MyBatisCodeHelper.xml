@@ -3,8 +3,8 @@
     <option name="profile">
       <Profile>
         <option name="iconName" value="arrow" />
-        <option name="tempFilePath" value="/var/folders/8j/ll6q2kfj3vn9r8bkhs3yjk1c0000gn/T/startLearnGo-darwin-10.6-amd64.dylib7331980800894284220" />
         <option name="usejava8LocalDateTimeEct" value="true" />
+        <option name="valid" value="true" />
       </Profile>
     </option>
   </component>
