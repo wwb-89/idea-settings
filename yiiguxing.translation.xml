@@ -1,6 +1,7 @@
 <application>
   <component name="AppStorage">
     <histories>
+      <item value="Interceptor" />
       <item value="milliseconds" />
       <item value="/** * Equivalent to * {@link #convert(long, TimeUnit) MILLISECONDS.convert(duration, this)}. * @param duration the duration * @return the converted duration, * or {@code Long.MIN_VALUE} if conversion would negatively * overflow, or {@code Long.MAX_VALUE} if it would positively overflow. */" />
       <item value="/** * Sets the default connect timeout for new connections. A value of 0 means no timeout, * otherwise values must be between 1 and {@link Integer#MAX_VALUE} when converted to * milliseconds. * * &lt;p&gt;The connect timeout is applied when connecting a TCP socket to the target host. * The default value is 10 seconds. */" />
@@ -39,8 +40,8 @@
     </histories>
     <option name="languageScores">
       <map>
-        <entry key="CHINESE" value="41" />
-        <entry key="ENGLISH" value="42" />
+        <entry key="CHINESE" value="42" />
+        <entry key="ENGLISH" value="43" />
       </map>
     </option>
   </component>
