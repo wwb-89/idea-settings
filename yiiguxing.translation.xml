@@ -1,6 +1,7 @@
 <application>
   <component name="AppStorage">
     <histories>
+      <item value="/** * Returns a stream consisting of the results of replacing each element of * this stream with the contents of a mapped stream produced by applying * the provided mapping function to each element. Each mapped stream is * {@link java.util.stream.BaseStream#close() closed} after its contents * have been placed into this stream. (If a mapped stream is {@code null} * an empty stream is used, instead.) * * &lt;p&gt;This is an &lt;a href=&quot;package-summary.html#StreamOps&quot;&gt;intermediate * operation&lt;/a&gt;. * * @apiNote * The {@code flatMap()} operation has the effect of applying a one-to-many * transformation to the elements of the stream, and then flattening the * resulting elements into a new stream. * * &lt;p&gt;&lt;b&gt;Examples.&lt;/b&gt; * * &lt;p&gt;If {@code orders} is a stream of purchase orders, and each purchase * order contains a collection of line items, then the following produces a * stream containing all the line items in all the orders: * &lt;pre&gt;{@code * orders.flatMap(order -&gt; order.getLineItems().stream())... * }&lt;/pre&gt; * * &lt;p&gt;If {@code path} is the path to a file, then the following produces a * stream of the {@code words} contained in that file: * &lt;pre&gt;{@code * Stream&lt;String&gt; lines = Files.lines(path, StandardCharsets.UTF_8); * Stream&lt;String&gt; words = lines.flatMap(line -&gt; Stream.of(line.split(&quot; +&quot;))); * }&lt;/pre&gt; * The {@code mapper} function passed to {@code flatMap} splits a line, * using a simple regular expression, into an array of words, and then * creates a stream of words from that array. * * @param &lt;R&gt; The element type of the new stream * @param mapper a &lt;a href=&quot;package-summary.html#NonInterference&quot;&gt;non-interfering&lt;/a&gt;, * &lt;a href=&quot;package-summary.html#Statelessness&quot;&gt;stateless&lt;/a&gt; * function to apply to each element which produces a stream * of new values * @return the new stream */" />
       <item value="Interceptor" />
       <item value="milliseconds" />
       <item value="/** * Equivalent to * {@link #convert(long, TimeUnit) MILLISECONDS.convert(duration, this)}. * @param duration the duration * @return the converted duration, * or {@code Long.MIN_VALUE} if conversion would negatively * overflow, or {@code Long.MAX_VALUE} if it would positively overflow. */" />
@@ -40,8 +41,8 @@
     </histories>
     <option name="languageScores">
       <map>
-        <entry key="CHINESE" value="42" />
-        <entry key="ENGLISH" value="43" />
+        <entry key="CHINESE" value="43" />
+        <entry key="ENGLISH" value="44" />
       </map>
     </option>
   </component>
