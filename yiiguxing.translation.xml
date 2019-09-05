@@ -1,6 +1,14 @@
 <application>
   <component name="AppStorage">
     <histories>
+      <item value="Cognitive Complexity is a measure of how hard the control flow of a method is to understand. Methods with high Cognitive Complexity will be difficult to maintain" />
+      <item value="/** * Returns the raw, underlying ooxml value for the cell * &lt;p&gt; * If the cell contains a string, then this value is an index into * the shared string table, pointing to the actual string value. Otherwise, * the value of the cell is expressed directly in this element. Cells containing formulas express * the last calculated result of the formula in this element. * &lt;/p&gt; * * @return the raw cell value as contained in the underlying CTCell bean, * &lt;code&gt;null&lt;/code&gt; for blank cells. */" />
+      <item value="/** * Returns a stream consisting of the results of replacing each element of * this stream with the contents of a mapped stream produced by applying * the provided mapping function to each element. Each mapped stream is * {@link java.util.stream.BaseStream#close() closed} after its contents * have been placed into this stream. (If a mapped stream is {@code null} * an empty stream is used, instead.) * * &lt;p&gt;This is an &lt;a href=&quot;package-summary.html#StreamOps&quot;&gt;intermediate * operation&lt;/a&gt;. * * @apiNote * The {@code flatMap()} operation has the effect of applying a one-to-many * transformation to the elements of the stream, and then flattening the * resulting elements into a new stream. * * &lt;p&gt;&lt;b&gt;Examples.&lt;/b&gt; * * &lt;p&gt;If {@code orders} is a stream of purchase orders, and each purchase * order contains a collection of line items, then the following produces a * stream containing all the line items in all the orders: * &lt;pre&gt;{@code * orders.flatMap(order -&gt; order.getLineItems().stream())... * }&lt;/pre&gt; * * &lt;p&gt;If {@code path} is the path to a file, then the following produces a * stream of the {@code words} contained in that file: * &lt;pre&gt;{@code * Stream&lt;String&gt; lines = Files.lines(path, StandardCharsets.UTF_8); * Stream&lt;String&gt; words = lines.flatMap(line -&gt; Stream.of(line.split(&quot; +&quot;))); * }&lt;/pre&gt; * The {@code mapper} function passed to {@code flatMap} splits a line, * using a simple regular expression, into an array of words, and then * creates a stream of words from that array. * * @param &lt;R&gt; The element type of the new stream * @param mapper a &lt;a href=&quot;package-summary.html#NonInterference&quot;&gt;non-interfering&lt;/a&gt;, * &lt;a href=&quot;package-summary.html#Statelessness&quot;&gt;stateless&lt;/a&gt; * function to apply to each element which produces a stream * of new values * @return the new stream */" />
+      <item value="Interceptor" />
+      <item value="milliseconds" />
+      <item value="/** * Equivalent to * {@link #convert(long, TimeUnit) MILLISECONDS.convert(duration, this)}. * @param duration the duration * @return the converted duration, * or {@code Long.MIN_VALUE} if conversion would negatively * overflow, or {@code Long.MAX_VALUE} if it would positively overflow. */" />
+      <item value="/** * Sets the default connect timeout for new connections. A value of 0 means no timeout, * otherwise values must be between 1 and {@link Integer#MAX_VALUE} when converted to * milliseconds. * * &lt;p&gt;The connect timeout is applied when connecting a TCP socket to the target host. * The default value is 10 seconds. */" />
+      <item value="allocated" />
       <item value="Perform the internal processing required to invalidate this session, * without triggering an exception if the session has already expired." />
       <item value="Zone Offset" />
       <item value="/** * Converts this date-time to the number of seconds from the epoch * of 1970-01-01T00:00:00Z. * &lt;p&gt; * This combines this local date-time and the specified offset to calculate the * epoch-second value, which is the number of elapsed seconds from 1970-01-01T00:00:00Z. * Instants on the time-line after the epoch are positive, earlier are negative. * &lt;p&gt; * This default implementation calculates from the epoch-day of the date and the * second-of-day of the time. * * @param offset the offset to use for the conversion, not null * @return the number of seconds from the epoch of 1970-01-01T00:00:00Z */" />
@@ -28,17 +36,15 @@
       <item value="simply" />
       <item value="Authenticator" />
       <item value="deprecation" />
-      <item value="milliseconds" />
       <item value="/** * Set the underlying connect timeout in milliseconds. * A value of 0 specifies an infinite timeout. */" />
-      <item value="/** * Equivalent to * {@link #convert(long, TimeUnit) MILLISECONDS.convert(duration, this)}. * @param duration the duration * @return the converted duration, * or {@code Long.MIN_VALUE} if conversion would negatively * overflow, or {@code Long.MAX_VALUE} if it would positively overflow. */" />
       <item value="/** * If you specify a static constructor name, then the generated constructor will be private, and * instead a static factory method is created that other classes can use to create instances. * We suggest the name: &quot;of&quot;, like so: * * &lt;pre&gt; * public @Data(staticConstructor = &quot;of&quot;) class Point { final int x, y; } * &lt;/pre&gt; * * Default: No static constructor, instead the normal constructor is public. * * @return Name of static 'constructor' method to generate (blank = generate a normal constructor). */" />
       <item value="/** * If present, explicitly lists the fields that are to be used for identity. * Normally, all non-static, non-transient fields are used for identity. * &lt;p&gt; * Mutually exclusive with {@link #exclude()}. * &lt;p&gt; * Will soon be marked {@code @Deprecated}; use the {@code @EqualsAndHashCode.Include} annotation together with {@code @EqualsAndHashCode(onlyExplicitlyIncluded = true)}. * * @return A list of fields to use (&lt;em&gt;default&lt;/em&gt;: all of them). */" />
       <item value="/** * Any fields listed here will not be taken into account in the generated {@code equals} and {@code hashCode} implementations. * Mutually exclusive with {@link #of()}. * &lt;p&gt; * Will soon be marked {@code @Deprecated}; use the {@code @EqualsAndHashCode.Exclude} annotation instead. * * @return A list of fields to exclude. */" />
     </histories>
     <option name="languageScores">
       <map>
-        <entry key="CHINESE" value="37" />
-        <entry key="ENGLISH" value="38" />
+        <entry key="CHINESE" value="45" />
+        <entry key="ENGLISH" value="45" />
       </map>
     </option>
   </component>
