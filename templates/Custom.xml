@@ -11,11 +11,11 @@
       <option name="JAVA_CODE" value="true" />
     </context>
   </template>
-  <template name="*" value="**$SELECT$&#10; * @Description: &#10; * @author: $user$&#10; * @Date: $date$&#10;$params$&#10; * @return: $returns$&#10; */" description="方法注释" toReformat="false" toShortenFQNames="true">
+  <template name="*" value="**$SELECT$&#10; * @Description &#10; * @author $user$&#10; * @Date $date$&#10;$params$&#10; * @return $returns$&#10; */" description="方法注释" toReformat="false" toShortenFQNames="true">
     <variable name="SELECT" expression="" defaultValue="" alwaysStopAt="true" />
     <variable name="user" expression="user()" defaultValue="" alwaysStopAt="true" />
     <variable name="date" expression="date(&quot;yyyy-MM-dd HH:mm:ss&quot;)" defaultValue="" alwaysStopAt="true" />
-    <variable name="params" expression="groovyScript(&quot;def result=''; def params=\&quot;${_1}\&quot;.replaceAll('[\\\\[|\\\\]|\\\\s]', '').split(',').toList(); for(i = 0; i &lt; params.size(); i++) {result+=' * @param: ' + params[i] + ((i &lt; params.size() - 1) ? '\\n' : '')}; return result&quot;, methodParameters())" defaultValue="" alwaysStopAt="true" />
+    <variable name="params" expression="groovyScript(&quot;def result=''; def params=\&quot;${_1}\&quot;.replaceAll('[\\\\[|\\\\]|\\\\s]', '').split(',').toList(); for(i = 0; i &lt; params.size(); i++) {result+=' * @param ' + params[i] + ((i &lt; params.size() - 1) ? '\\n' : '')}; return result&quot;, methodParameters())" defaultValue="" alwaysStopAt="true" />
     <variable name="returns" expression="methodReturnType()" defaultValue="" alwaysStopAt="true" />
     <context>
       <option name="JAVA_CODE" value="true" />
