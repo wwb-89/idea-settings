@@ -2,9 +2,7 @@
   <component name="MyBatisCodeHelper">
     <option name="profile">
       <Profile>
-        <option name="iconName" value="arrow" />
-        <option name="tempFilePath" value="/var/folders/8d/j7bsqgyd03n1x1q79jq_f5pr0000gn/T/startLearnGo-darwin-10.6-amd64.dylib4466419464528243655" />
-        <option name="usejava8LocalDateTimeEct" value="true" />
+        <option name="tempFilePath" value="/var/folders/tw/wvs4h44j4pz_h0qxj2v4dxxw0000gn/T/startLearnGo-darwin-10.6-amd64.dylib9222378516850033125" />
         <option name="valid" value="true" />
       </Profile>
     </option>
