@@ -2,6 +2,7 @@
   <component name="MyBatisCodeHelper">
     <option name="profile">
       <Profile>
+        <option name="tempFilePath" value="/var/folders/4g/12f9fjdx4pddxpgst5t8vmmh0000gn/T/startLearnGo-darwin-10.6-amd64.dylib10954702190647530964" />
         <option name="valid" value="true" />
       </Profile>
     </option>
