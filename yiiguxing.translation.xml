@@ -1,8 +1,19 @@
 <application>
   <component name="AppStorage">
     <histories>
+      <item value="exclusive" />
       <item value="durable" />
+      <item value="Simple container collecting information to describe a queue. Used in conjunction with AmqpAdmin" />
+      <item value="Abstract Declarable" />
+      <item value="information" />
+      <item value="destination" />
       <item value="inequivalent" />
     </histories>
+    <option name="languageScores">
+      <map>
+        <entry key="CHINESE" value="3" />
+        <entry key="ENGLISH" value="4" />
+      </map>
+    </option>
   </component>
 </application>
