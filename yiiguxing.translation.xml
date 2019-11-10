@@ -1,6 +1,7 @@
 <application>
   <component name="AppStorage">
     <histories>
+      <item value="This is applied internally using SpringWebMvcImportSelector" />
       <item value="Resolve" />
       <item value="Decides whether the rule implemented by the strategy matches the supplied request" />
       <item value="strategy" />
@@ -10,8 +11,8 @@
     </histories>
     <option name="languageScores">
       <map>
-        <entry key="CHINESE" value="5" />
-        <entry key="ENGLISH" value="6" />
+        <entry key="CHINESE" value="6" />
+        <entry key="ENGLISH" value="7" />
       </map>
     </option>
   </component>
