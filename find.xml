@@ -5,11 +5,13 @@
     <option name="localRegularExpressions" value="true" />
     <option name="LOCAL_REGULAR_EXPRESSIONS" value="true" />
     <option name="SEARCH_SCOPE" value="All Places" />
+    <option name="FILE_MASK" value="*mapper.xml" />
     <mask>*.css</mask>
     <mask>*.jsp</mask>
     <mask>*.properties</mask>
     <mask>*.xml</mask>
     <mask>*.html</mask>
     <mask>*.java</mask>
+    <mask>*mapper.xml</mask>
   </component>
 </application>
