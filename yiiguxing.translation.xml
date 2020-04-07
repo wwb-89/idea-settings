@@ -1,6 +1,9 @@
 <application>
   <component name="AppStorage">
     <histories>
+      <item value="agree Num Increment Map" />
+      <item value="batch Update Reply Num" />
+      <item value="score" />
       <item value="/** * Encapsulates information about a handler method consisting of a * {@linkplain #getMethod() method} and a {@linkplain #getBean() bean}. * Provides convenient access to method parameters, the method return value, * method annotations, etc. * * &lt;p&gt;The class may be created with a bean instance or with a bean name * (e.g. lazy-init bean, prototype bean). Use {@link #createWithResolvedBean()} * to obtain a {@code HandlerMethod} instance with a bean instance resolved * through the associated {@link BeanFactory}. * * @author Arjen Poutsma * @author Rossen Stoyanchev * @author Juergen Hoeller * @author Sam Brannen * @since 3.1 */" />
       <item value="Specify if the condition should match if the property is not set. Defaults to" />
       <item value="get Compilation Units" />
@@ -10,8 +13,8 @@
     </histories>
     <option name="languageScores">
       <map>
-        <entry key="CHINESE" value="3" />
-        <entry key="ENGLISH" value="4" />
+        <entry key="CHINESE" value="6" />
+        <entry key="ENGLISH" value="7" />
       </map>
     </option>
   </component>
