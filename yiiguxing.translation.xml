@@ -1,6 +1,8 @@
 <application>
   <component name="AppStorage">
     <histories>
+      <item value="exposes" />
+      <item value="Annotation for handling exceptions in specific handler classes and/or * handler methods" />
       <item value="agree Num Increment Map" />
       <item value="batch Update Reply Num" />
       <item value="score" />
@@ -17,5 +19,9 @@
         <entry key="ENGLISH" value="7" />
       </map>
     </option>
+  </component>
+  <component name="Settings">
+    <option name="ignoreRegExp" value="" />
+    <option name="translator" value="ai.youdao" />
   </component>
 </application>
