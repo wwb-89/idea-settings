@@ -1,11 +1,8 @@
 <application>
   <component name="AppStorage">
     <histories>
-      <item value="obtained" />
-      <item value="wrapped" />
-      <item value="NESTED PROPERTY SEPARATOR" />
-      <item value="/** * Stores and exposes information about data-binding and validation * errors for a specific object. * * &lt;p&gt;Field names can be properties of the target object (e.g. &quot;name&quot; * when binding to a customer object), or nested fields in case of * subobjects (e.g. &quot;address.street&quot;). Supports subtree navigation * via {@link #setNestedPath(String)}: for example, an * {@code AddressValidator} validates &quot;address&quot;, not being aware * that this is a subobject of customer. * * &lt;p&gt;Note: {@code Errors} objects are single-threaded. * * @author Rod Johnson * @author Juergen Hoeller * @see #setNestedPath * @see BindException * @see DataBinder * @see ValidationUtils */" />
-      <item value="between" />
+      <item value="/** * Simple utility methods for working with network sockets &amp;mdash; for example, * for finding available ports on {@code localhost}. * * &lt;p&gt;Within this class, a TCP port refers to a port for a {@link ServerSocket}; * whereas, a UDP port refers to a port for a {@link DatagramSocket}. * * @author Sam Brannen * @author Ben Hale * @author Arjen Poutsma * @author Gunnar Hillert * @author Gary Russell * @since 4.0 */" />
+      <item value="Source code recreated from a .class file by IntelliJ IDEA" />
       <item value="exposes" />
       <item value="Annotation for handling exceptions in specific handler classes and/or * handler methods" />
       <item value="agree Num Increment Map" />
@@ -20,8 +17,8 @@
     </histories>
     <option name="languageScores">
       <map>
-        <entry key="CHINESE" value="13" />
-        <entry key="ENGLISH" value="14" />
+        <entry key="CHINESE" value="9" />
+        <entry key="ENGLISH" value="10" />
       </map>
     </option>
   </component>
