@@ -1,6 +1,11 @@
 <application>
   <component name="AppStorage">
     <histories>
+      <item value="obtained" />
+      <item value="wrapped" />
+      <item value="NESTED PROPERTY SEPARATOR" />
+      <item value="/** * Stores and exposes information about data-binding and validation * errors for a specific object. * * &lt;p&gt;Field names can be properties of the target object (e.g. &quot;name&quot; * when binding to a customer object), or nested fields in case of * subobjects (e.g. &quot;address.street&quot;). Supports subtree navigation * via {@link #setNestedPath(String)}: for example, an * {@code AddressValidator} validates &quot;address&quot;, not being aware * that this is a subobject of customer. * * &lt;p&gt;Note: {@code Errors} objects are single-threaded. * * @author Rod Johnson * @author Juergen Hoeller * @see #setNestedPath * @see BindException * @see DataBinder * @see ValidationUtils */" />
+      <item value="between" />
       <item value="exposes" />
       <item value="Annotation for handling exceptions in specific handler classes and/or * handler methods" />
       <item value="agree Num Increment Map" />
@@ -15,8 +20,8 @@
     </histories>
     <option name="languageScores">
       <map>
-        <entry key="CHINESE" value="7" />
-        <entry key="ENGLISH" value="8" />
+        <entry key="CHINESE" value="13" />
+        <entry key="ENGLISH" value="14" />
       </map>
     </option>
   </component>
