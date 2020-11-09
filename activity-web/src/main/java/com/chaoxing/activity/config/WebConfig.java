@@ -1,4 +1,4 @@
-package com.chaoxing.activity.web.config;
+package com.chaoxing.activity.config;
 
 import org.springframework.boot.web.server.ErrorPage;
 import org.springframework.boot.web.server.ErrorPageRegistrar;

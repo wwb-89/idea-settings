@@ -98,7 +98,7 @@
 				<configuration>
 					<archive>
 						<manifest>
-							<mainClass>com.chaoxing.activity.web.ActivityWebApplication</mainClass>
+							<mainClass>com.chaoxing.activity.ActivityWebApplication</mainClass>
 							<addClasspath>true</addClasspath>
 							<classpathPrefix>conf/lib/</classpathPrefix>
 						</manifest>

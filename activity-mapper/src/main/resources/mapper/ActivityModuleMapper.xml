@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.chaoxing.activity.mapper.ActivityModuleMapper">
+    <resultMap id="BaseResultMap" type="com.chaoxing.activity.model.ActivityModule">
+        <result column="activity_id" jdbcType="INTEGER" property="activityId" />
+        <result column="type" jdbcType="VARCHAR" property="type" />
+        <result column="name" jdbcType="VARCHAR" property="name" />
+        <result column="icon_cloud_id" jdbcType="VARCHAR" property="iconCloudId" />
+        <result column="external_id" jdbcType="VARCHAR" property="externalId" />
+        <result column="pc_url" jdbcType="VARCHAR" property="pcUrl" />
+        <result column="mobile_url" jdbcType="VARCHAR" property="mobileUrl" />
+        <result column="sequence" jdbcType="INTEGER" property="sequence" />
+    </resultMap>
+    <resultMap extends="BaseResultMap" id="ResultMapWithBLOBs" type="com.chaoxing.activity.model.ActivityModule">
+        <result column="external_config" jdbcType="LONGVARCHAR" property="externalConfig" />
+    </resultMap>
+    <sql id="Blob_Column_List">
+        t.external_config
+    </sql>
+</mapper>

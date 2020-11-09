@@ -39,8 +39,8 @@
 		</javaClientGenerator>
 
 		<!-- !!!! Table Configurations !!!! -->
-		<table tableName="%" enableCountByExample="false" enableDeleteByExample="false" enableSelectByExample="false" enableUpdateByExample="false">
+		<!--<table tableName="%" enableCountByExample="false" enableDeleteByExample="false" enableSelectByExample="false" enableUpdateByExample="false">
 			<generatedKey column="id" sqlStatement="MySql"/>
-		</table>
+		</table>-->
 	</context>
 </generatorConfiguration>

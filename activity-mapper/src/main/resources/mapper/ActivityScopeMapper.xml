@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.chaoxing.activity.mapper.ActivityScopeMapper">
+    <resultMap id="BaseResultMap" type="com.chaoxing.activity.model.ActivityScope">
+        <result column="activity_id" jdbcType="INTEGER" property="activityId" />
+        <result column="hierarchy_id" jdbcType="INTEGER" property="hierarchyId" />
+        <result column="name" jdbcType="VARCHAR" property="name" />
+        <result column="hierarchy_pid" jdbcType="INTEGER" property="hierarchyPid" />
+        <result column="code" jdbcType="VARCHAR" property="code" />
+        <result column="links" jdbcType="VARCHAR" property="links" />
+        <result column="level" jdbcType="INTEGER" property="level" />
+        <result column="adjusted_level" jdbcType="VARCHAR" property="adjustedLevel" />
+        <result column="fid" jdbcType="INTEGER" property="fid" />
+        <result column="is_exist_child" jdbcType="BIT" property="isExistChild" />
+        <result column="sort" jdbcType="INTEGER" property="sort" />
+    </resultMap>
+</mapper>

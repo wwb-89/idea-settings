@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.chaoxing.activity.mapper.ActivityMapper">
+    <resultMap id="BaseResultMap" type="com.chaoxing.activity.model.Activity">
+        <id column="id" jdbcType="INTEGER" property="id" />
+        <result column="name" jdbcType="VARCHAR" property="name" />
+        <result column="start_date" jdbcType="DATE" property="startDate" />
+        <result column="end_date" jdbcType="DATE" property="endDate" />
+        <result column="cover_cloud_id" jdbcType="VARCHAR" property="coverCloudId" />
+        <result column="activity_form" jdbcType="VARCHAR" property="activityForm" />
+        <result column="address" jdbcType="VARCHAR" property="address" />
+        <result column="longitude" jdbcType="DECIMAL" property="longitude" />
+        <result column="dimension" jdbcType="VARCHAR" property="dimension" />
+        <result column="activity_classify_id" jdbcType="INTEGER" property="activityClassifyId" />
+        <result column="is_enable_sign" jdbcType="BIT" property="isEnableSign" />
+        <result column="sign_id" jdbcType="INTEGER" property="signId" />
+        <result column="web_template_id" jdbcType="INTEGER" property="webTemplateId" />
+        <result column="is_released" jdbcType="BIT" property="isReleased" />
+        <result column="release_time" jdbcType="TIMESTAMP" property="releaseTime" />
+        <result column="release_uid" jdbcType="INTEGER" property="releaseUid" />
+        <result column="status" jdbcType="INTEGER" property="status" />
+        <result column="is_open_audit" jdbcType="BIT" property="isOpenAudit" />
+        <result column="audit_status" jdbcType="INTEGER" property="auditStatus" />
+        <result column="create_uid" jdbcType="INTEGER" property="createUid" />
+        <result column="create_fid" jdbcType="INTEGER" property="createFid" />
+        <result column="province_name" jdbcType="VARCHAR" property="provinceName" />
+        <result column="city_name" jdbcType="VARCHAR" property="cityName" />
+        <result column="area_name" jdbcType="VARCHAR" property="areaName" />
+        <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
+        <result column="update_time" jdbcType="TIMESTAMP" property="updateTime" />
+    </resultMap>
+    <sql id="Base_Column_List">
+        t.id, t.name, t.start_date, t.end_date, t.cover_cloud_id, t.activity_form, t.address, 
+        t.longitude, t.dimension, t.activity_classify_id, t.is_enable_sign, t.sign_id, t.web_template_id, 
+        t.is_released, t.release_time, t.release_uid, t.status, t.is_open_audit, t.audit_status, 
+        t.create_uid, t.create_fid, t.province_name, t.city_name, t.area_name, t.create_time, 
+        t.update_time
+    </sql>
+
+    <select id="count" resultType="java.lang.Integer">
+        SELECT
+            count( 1 )
+        FROM
+            t_activity
+    </select>
+
+</mapper>

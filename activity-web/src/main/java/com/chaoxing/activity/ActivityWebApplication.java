@@ -1,4 +1,4 @@
-package com.chaoxing.activity.web;
+package com.chaoxing.activity;
 
 import com.chaoxing.activity.util.CustomAnnotationBeanNameGenerator;
 import org.springframework.boot.SpringApplication;
