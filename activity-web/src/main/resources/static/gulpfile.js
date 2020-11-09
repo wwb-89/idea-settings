@@ -24,10 +24,28 @@ gulp.task('sasslist', function () {
         }))
         .pipe(gulp.dest('./mobile/assets/css'));    //存放编译之后的目录
 });
-
 gulp.task('watchlist', function () {
     gulp.watch(['./mobile/assets/sass/**/*.scss','./mobile/assets/sass/*.scss'],  ['sasslist']);// 监听的文件
 });
 
-gulp.task('activity', ['sasslist', 'watchlist']);
+//pc
+gulp.task('sasslist1', function () {
+    return gulp.src(['./pc/assets/sass/**/*.scss','./pc/assets/sass/*.scss'])      //需要编译的文件目录
+        .pipe(sass({
+            outputStyle: 'expanded', // 输出方式
+        }))
+        .pipe(auto({//处理兼容
+            overrideBrowserslist: [
+                "Chrome > 31",
+                "ff > 20",
+                "ie >= 8",
+                'last 10 versions'// 所有主流浏览器最近10版本用
+            ]
+        }))
+        .pipe(gulp.dest('./pc/assets/css'));    //存放编译之后的目录
+});
+gulp.task('watchlist1', function () {
+    gulp.watch(['./pc/assets/sass/**/*.scss','./pc/assets/sass/*.scss'],  ['sasslist1']);// 监听的文件
+});
+gulp.task('activity', ['sasslist', 'watchlist','sasslist1', 'watchlist1']);
 
