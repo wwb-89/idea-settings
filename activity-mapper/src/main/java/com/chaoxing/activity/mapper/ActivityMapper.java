@@ -14,6 +14,4 @@ import org.apache.ibatis.annotations.Mapper;
 @Mapper
 public interface ActivityMapper extends BaseMapper<Activity> {
 
-	int count();
-
 }

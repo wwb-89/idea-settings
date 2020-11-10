@@ -1,5 +1,7 @@
 package com.chaoxing.activity.model;
 
+import com.baomidou.mybatisplus.annotation.TableField;
+import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -17,6 +19,7 @@ import lombok.NoArgsConstructor;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
+@TableName(value = "t_activity_scope")
 public class ActivityScope {
 
     /** 活动id; column: activity_id*/
@@ -38,7 +41,8 @@ public class ActivityScope {
     /** 参与机构id; column: fid*/
     private Integer fid;
     /** 是否包含子节点。0：否，1：是; column: is_exist_child*/
-    private Boolean isExistChild;
+    @TableField(value = "is_exist_child")
+    private Boolean existChild;
     /** 顺序; column: sort*/
     private Integer sort;
 

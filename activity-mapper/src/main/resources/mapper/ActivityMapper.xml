@@ -12,14 +12,14 @@
         <result column="longitude" jdbcType="DECIMAL" property="longitude" />
         <result column="dimension" jdbcType="VARCHAR" property="dimension" />
         <result column="activity_classify_id" jdbcType="INTEGER" property="activityClassifyId" />
-        <result column="is_enable_sign" jdbcType="BIT" property="isEnableSign" />
+        <result column="is_enable_sign" jdbcType="BIT" property="enableSign" />
         <result column="sign_id" jdbcType="INTEGER" property="signId" />
         <result column="web_template_id" jdbcType="INTEGER" property="webTemplateId" />
-        <result column="is_released" jdbcType="BIT" property="isReleased" />
+        <result column="is_released" jdbcType="BIT" property="released" />
         <result column="release_time" jdbcType="TIMESTAMP" property="releaseTime" />
         <result column="release_uid" jdbcType="INTEGER" property="releaseUid" />
         <result column="status" jdbcType="INTEGER" property="status" />
-        <result column="is_open_audit" jdbcType="BIT" property="isOpenAudit" />
+        <result column="is_open_audit" jdbcType="BIT" property="openAudit" />
         <result column="audit_status" jdbcType="INTEGER" property="auditStatus" />
         <result column="create_uid" jdbcType="INTEGER" property="createUid" />
         <result column="create_fid" jdbcType="INTEGER" property="createFid" />
@@ -36,12 +36,5 @@
         t.create_uid, t.create_fid, t.province_name, t.city_name, t.area_name, t.create_time, 
         t.update_time
     </sql>
-
-    <select id="count" resultType="java.lang.Integer">
-        SELECT
-            count( 1 )
-        FROM
-            t_activity
-    </select>
 
 </mapper>

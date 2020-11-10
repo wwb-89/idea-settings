@@ -1,5 +1,6 @@
 package com.chaoxing.activity.model;
 
+import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -17,6 +18,7 @@ import lombok.NoArgsConstructor;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
+@TableName(value = "t_activity_audit_personnel")
 public class ActivityAuditPersonnel {
 
     /** 活动id; column: activity_id*/
