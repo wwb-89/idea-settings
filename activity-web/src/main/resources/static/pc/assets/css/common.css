@@ -1,0 +1,43 @@
+* {
+    margin: 0;
+    padding: 0;
+}
+
+.page {
+    width: 1000px;
+    margin: 0px auto;
+}
+
+button {
+    cursor: pointer;
+}
+
+.flex {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.cancle-btn {
+    width: 80px;
+    height: 30px;
+    background: #fff;
+    border: 1px solid #82c3ff;
+    border-radius: 15px;
+    color: #0084ff;
+}
+
+.create-btn {
+    width: 80px;
+    height: 30px;
+    background: #0084ff;
+    border-radius: 15px;
+    border: none;
+    color: #fff;
+    margin-left: 10px;
+}
+
+input {
+    -webkit-appearance: button;
+}
+
