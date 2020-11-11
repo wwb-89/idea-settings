@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="../assets/css/public.css">
+    <link rel="stylesheet" href="../assets/css/common.css">
+    <link rel="stylesheet" href="../assets/css/create-active.css">
+    <title>创建活动</title>
+</head>
+
+<body>
+    <div class="page">
+        <div class="top flex box">
+            <div class="flex">
+                <img src="../assets/images/left.png" alt="" class="left">
+                <span class="create">创建活动</span>
+            </div>
+            <div>
+                <button type="button" class="cancle-btn">取消</button>
+                <button type="button" class="create-btn">创建</button>
+            </div>
+        </div>
+        <div class="info box">
+            <form action="">
+                <div class="title">基本信息</div>
+                <div class="form-item">
+                    <label class="label">名称</label>
+                    <div class="input-box">
+                        <input type="text" name="title" required  value="1" placeholder="请填写信息，简短的活动名称" class="active-name" maxlength="20">
+                        <div class="length"><span class="min">0</span>/<span class="max">20</span></div>
+                    </div>
+                </div>
+                <div class="form-item">
+                    <label class="label">时间</label>
+                    <div class="input-box">
+                        <div class="item">
+                            <input type="text" class="layui-input time" id="start-time" placeholder="开始日期" />
+                            <img src="../assets/images/calendar.png" alt="">
+                        </div>
+                        <span class="font">至</span>
+                        <div class="item"><input type="text" class="layui-input time" id="end-time"
+                                placeholder="结束日期" />
+                            <img src="../assets/images/calendar.png" alt=""></div>
+                    </div>
+                </div>
+                <div class="form-item">
+                    <label class="label">封面</label>
+                    <div class="input-box">
+                        <img src="../assets/images/example.jpg" alt="" class="cover-img">
+                        <div class="font-box">
+                            <span>建议尺寸：1080x500</span>
+                            <span>大小：小于5M</span>
+                            <span>格式：jpg、png、gif</span>
+                            <input type="file" class="upload-btn" accept="image/gif, image/jpg, image/png"
+                                onchange="showImg(this)" />
+                            <div class="cancle-btn upload">上传文件</div>
+
+                        </div>
+
+                    </div>
+                </div>
+                <div class="form-item">
+                    <label class="label">活动类型</label>
+                    <div class="input-box">
+                        <div class="radio-box"><input type="radio" name="active-type" title="线上活动"
+                                value="0" /><span>线上活动</span></div>
+                        <div class="radio-box">
+                            <input type="radio" name="active-type" title="线下活动" value="1" checked /><span>线下活动</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="form-item">
+                    <label class="label">位置</label>
+                    <div class="input-box">
+                        <input type="text" name="title" required lay-verify="required" placeholder="请输入活动地点"
+                            autocomplete="off" class="layui-input name">
+                        <img src="../assets/images/location.png" alt="" class="length icon">
+                    </div>
+                </div>
+                <div class="form-item">
+                    <label class="label">活动分类</label>
+                    <div class="input-box">
+                        <div class="type-item">活动</div>
+                        <div class="type-item">讲座</div>
+                        <div class="type-item">征文</div>
+                        <div class="type-item">自定义选项<img src="../assets/images/more.png" alt=""
+                                style="margin-left: 10px;">
+                        </div>
+                        <div class="type-item">
+                            <img src="../assets/images/add.png" alt="" style="margin-right: 10px;">新增</div>
+                    </div>
+
+                </div>
+            </form>
+        </div>
+        <div class="info box">
+            <div class="set-box">
+                    <div class="title set">参与设置</div>
+                    <input type="checkbox" name="switch" class="switch">
+                </div>
+            <form action="" class="setForm">
+                <div class="form-item">
+                    <label class="label">参与形式</label>
+                    <div class="input-box">
+                        <div class="radio-box"><input type="radio" name="method" checked value="0" /><span>报名</span>
+                        </div>
+                        <div class="radio-box">
+                            <input type="radio" name="method" value="1" /><span>签到</span>
+                        </div>
+                        <div class="radio-box">
+                            <input type="radio" name="method" value="2" /><span>报名后签到</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="form-item">
+                    <label class="label">报名时间</label>
+                    <div class="input-box">
+                        <div class="item">
+                            <input type="text" class="layui-input time" id="start-time" placeholder="开始日期" />
+                            <img src="../assets/images/calendar.png" alt="">
+                        </div>
+                        <span class="font">至</span>
+                        <div class="item"><input type="text" class="layui-input time" id="end-time"
+                                placeholder="结束日期" />
+                            <img src="../assets/images/calendar.png" alt=""></div>
+                    </div>
+                </div>
+                <div class="form-item">
+                    <label class="label">人数限制</label>
+                    <div class="input-box">
+                        <select name="" id="">
+                            <option value="" label="自定义人数" disabled selected></option>
+                            <option value="" label="1"></option>
+                        </select>
+                        <input type="text" placeholder="请输入正整数" class="person">人
+                    </div>
+                </div>
+                <div class="form-item">
+                    <label class="label">报名方式</label>
+                    <div class="input-box">
+                        <select name="" id="" class="select-method">
+                            <option value="" label="无限制" disabled selected></option>
+                            <option value="" label="1"></option>
+                        </select>
+                        <span class="tips">参与者点击签到即成功</span>
+                    </div>
+                </div>
+                <div class="form-item">
+                    <label class="label">信息填写</label>
+                    <div class="input-box column">
+                        <div class="set-box">
+                            <input type="checkbox" name="switch" class="info-switch">
+                        <span class="tips">如何创建报名信息表单？</span>
+                        </div>
+                        <select name="" id="" class="select-info">
+                            <option value="" label="万能表单" disabled selected></option>
+                            <option value="" label="1"></option>
+                        </select>
+                    </div>
+                </div>
+                <div class="form-item">
+                    <label class="label">已报名名单公开</label>
+                    <div class="input-box">
+                        <input type="checkbox" name="switch" >
+                    </div>
+                </div>
+                <div class="form-item">
+                    <label class="label">按钮名称</label>
+                    <div class="input-box btn-name">
+                        <input type="text" name="title" required class="btn-name" minlength="2" maxlength="6">
+                        <div class="length">2/6</div>
+                    </div>
+                </div>
+            </form>
+        </div>
+        <div class="info box">
+            <div class="set-box">
+                <div class="title">模块配置</div>
+                <span class="tips">按住鼠标左键调整模块的顺序</span>
+            </div>
+            <div class="item-box">
+                <div class="modle-item">
+                    <img src="../assets/images/lizi.png" alt="">
+                    <span>作品征集</span>
+                </div>
+                
+                <div class="modle-item add">
+                    <div><img src="../assets/images/add.png" alt=""></div>
+                    <span>添加模块</span>
+                </div>
+            </div>
+        </div>
+        <div class="info box" style="margin-bottom: 30px;">
+            <div class="title">网页展示</div>
+            <div class="page-show">
+                <label class="label">选择模板</label>
+                <div class="page-box">
+                    <div class="page-item">
+                        <img src="../assets/images/example.jpg" alt="" class="img">   
+                        <img src="../assets/images/selected.png" alt="" class="selected">
+                    </div>
+                    <div class="page-item">
+                        <img src="../assets/images/example.jpg" alt="" class="img">
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="dailog">
+            <div class="header">
+                <span>分类名称</span>
+                <img src="" alt="">
+            </div>
+            <div class="body">
+                <input type="text" class="fenlei-input" placeholder="请输入">
+            </div>
+            <div class="footer"></div>
+        </div>
+    </div>
+   
+    <script src="../assets/jquery.min.js"></script> 
+    <script src="../assets/js/common.js"></script>
+    <script src="../assets/js/create-active.js"></script>
+
+</body>
+
+</html>

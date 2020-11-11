@@ -2,6 +2,7 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.chaoxing.activity.mapper.ActivityModuleMapper">
     <resultMap id="BaseResultMap" type="com.chaoxing.activity.model.ActivityModule">
+        <id column="id" jdbcType="INTEGER" property="id" />
         <result column="activity_id" jdbcType="INTEGER" property="activityId" />
         <result column="type" jdbcType="VARCHAR" property="type" />
         <result column="name" jdbcType="VARCHAR" property="name" />
@@ -14,6 +15,9 @@
     <resultMap extends="BaseResultMap" id="ResultMapWithBLOBs" type="com.chaoxing.activity.model.ActivityModule">
         <result column="external_config" jdbcType="LONGVARCHAR" property="externalConfig" />
     </resultMap>
+    <sql id="Base_Column_List">
+        t.id, t.activity_id, t.type, t.name, t.icon_cloud_id, t.external_id, t.pc_url, t.mobile_url, t.sequence
+    </sql>
     <sql id="Blob_Column_List">
         t.external_config
     </sql>

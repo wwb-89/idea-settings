@@ -1,5 +1,6 @@
 package com.chaoxing.activity.model;
 
+import com.baomidou.mybatisplus.annotation.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -19,9 +20,11 @@ import java.util.Date;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
+@TableName(value = "t_activity_classify")
 public class ActivityClassify {
 
     /** column: id*/
+    @TableId(type = IdType.AUTO)
     private Integer id;
     /** 名称; column: name*/
     private String name;
@@ -30,6 +33,7 @@ public class ActivityClassify {
     /** 顺序; column: sequence*/
     private Integer sequence;
     /** 状态。0：无效，1：有效; column: status*/
+    @TableLogic
     private Integer status;
     /** 创建时间; column: create_time*/
     private Date createTime;

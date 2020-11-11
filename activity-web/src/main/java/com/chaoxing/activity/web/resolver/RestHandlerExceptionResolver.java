@@ -1,4 +1,4 @@
-package com.chaoxing.activity.resolver;
+package com.chaoxing.activity.web.resolver;
 
 import com.alibaba.fastjson.support.spring.FastJsonJsonView;
 import com.chaoxing.activity.dto.RestRespDTO;

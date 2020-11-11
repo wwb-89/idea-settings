@@ -11,7 +11,7 @@
         <result column="level" jdbcType="INTEGER" property="level" />
         <result column="adjusted_level" jdbcType="VARCHAR" property="adjustedLevel" />
         <result column="fid" jdbcType="INTEGER" property="fid" />
-        <result column="is_exist_child" jdbcType="BIT" property="isExistChild" />
+        <result column="is_exist_child" jdbcType="BIT" property="existChild" />
         <result column="sort" jdbcType="INTEGER" property="sort" />
     </resultMap>
 </mapper>
