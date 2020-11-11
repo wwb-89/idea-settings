@@ -4,13 +4,13 @@ import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import com.chaoxing.activity.util.exception.BusinessException;
+import lombok.*;
 
 import java.math.BigDecimal;
-import java.util.Date;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.util.Objects;
 
 /**
  * 活动表
@@ -33,9 +33,9 @@ public class Activity {
     /** 活动名称; column: name*/
     private String name;
     /** 开始日期; column: start_date*/
-    private Date startDate;
+    private LocalDate startDate;
     /** 结束日期; column: end_date*/
-    private Date endDate;
+    private LocalDate endDate;
     /** 封面云盘id; column: cover_cloud_id*/
     private String coverCloudId;
     /** 活动形式; column: activity_form*/
@@ -59,10 +59,10 @@ public class Activity {
     @TableField(value = "is_released")
     private Boolean released;
     /** 发布时间; column: release_time*/
-    private Date releaseTime;
+    private LocalDateTime releaseTime;
     /** 发布人id; column: release_uid*/
     private Integer releaseUid;
-    /** 状态。0：已删除，1：待发布，2：进行中，3：已结束; column: status*/
+    /** 状态。0：已删除，1：待发布，2：已发布，3：进行中，4：已结束; column: status*/
     private Integer status;
     /** 是否开启审核; column: is_open_audit*/
     @TableField(value = "is_open_audit")
@@ -80,8 +80,63 @@ public class Activity {
     /** 区县; column: area_name*/
     private String areaName;
     /** 创建时间; column: create_time*/
-    private Date createTime;
+    private LocalDateTime createTime;
     /** 修改时间; column: update_time*/
-    private Date updateTime;
+    private LocalDateTime updateTime;
+
+    @Getter
+    public enum StatusEnum {
+        /** 已删除 */
+        DELETED("已删除", 0),
+        WAIT_RELEASE("待发布", 1),
+        RELEASED("已发布", 2),
+        ONGOING("进行中", 3),
+        ENDED("已结束", 4);
+
+        private String name;
+        private Integer value;
+
+        StatusEnum(String name, Integer value) {
+            this.name = name;
+            this.value = value;
+        }
+
+        public static StatusEnum fromValue(Integer value) {
+            StatusEnum[] values = StatusEnum.values();
+            for (StatusEnum statusEnum : values) {
+                if (Objects.equals(statusEnum.getValue(), value)) {
+                    return statusEnum;
+                }
+            }
+            throw new BusinessException("未知的活动状态");
+        }
+    }
+
+    @Getter
+    public enum AuditStatusEnum {
+        /** 已删除 */
+        NOT_PASS("未通过", 0),
+        PASSED("已通过", 1),
+        WAIT_AUDIT("待审核", 2);
+
+        private String name;
+        private Integer value;
+
+        AuditStatusEnum(String name, Integer value) {
+            this.name = name;
+            this.value = value;
+        }
+
+        public static AuditStatusEnum fromValue(Integer value) {
+            AuditStatusEnum[] values = AuditStatusEnum.values();
+            for (AuditStatusEnum auditStatusEnum : values) {
+                if (Objects.equals(auditStatusEnum.getValue(), value)) {
+                    return auditStatusEnum;
+                }
+            }
+            throw new BusinessException("未知的审核状态");
+        }
+
+    }
 
 }

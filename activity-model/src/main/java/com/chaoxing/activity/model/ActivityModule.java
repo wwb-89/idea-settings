@@ -8,6 +8,8 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDateTime;
+
 /**
  * 活动模块表
  * @className: ActivityModule, table_name: t_activity_module
@@ -44,5 +46,9 @@ public class ActivityModule {
     private Integer sequence;
     /** 外部配置信息; column: external_config*/
     private String externalConfig;
+    /** 创建时间; column: create_time*/
+    private LocalDateTime createTime;
+    /** 修改时间; column: update_time*/
+    private LocalDateTime updateTime;
 
 }

@@ -1,12 +1,17 @@
 package com.chaoxing.activity.service.activity;
 
+import com.chaoxing.activity.dto.LoginUserDTO;
+import com.chaoxing.activity.mapper.ActivityMapper;
 import com.chaoxing.activity.model.Activity;
 import com.chaoxing.activity.util.exception.BusinessException;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 
-import java.util.Date;
+import javax.annotation.Resource;
+import java.time.LocalDate;
+import java.util.Objects;
+import java.util.Optional;
 
 /**活动验证服务
  * @author wwb
@@ -20,6 +25,9 @@ import java.util.Date;
 @Service
 public class ActivityValidationService {
 
+	@Resource
+	private ActivityMapper activityMapper;
+
 	/**新增活动输入验证
 	 * @Description 
 	 * @author wwb
@@ -32,15 +40,15 @@ public class ActivityValidationService {
 		if (StringUtils.isEmpty(name)) {
 			throw new BusinessException("活动名称不能为空");
 		}
-		Date startDate = activity.getStartDate();
+		LocalDate startDate = activity.getStartDate();
 		if (startDate == null) {
 			throw new BusinessException("活动开始时间不能为空");
 		}
-		Date endDate = activity.getEndDate();
+		LocalDate endDate = activity.getEndDate();
 		if (endDate == null) {
 			throw new BusinessException("活动结束时间不能为空");
 		}
-		if (startDate.after(endDate)) {
+		if (startDate.isAfter(endDate)) {
 			throw new BusinessException("活动开始时间不能晚于结束时间");
 		}
 		String coverCloudId = activity.getCoverCloudId();
@@ -55,6 +63,51 @@ public class ActivityValidationService {
 		if (activityClassifyId == null) {
 			throw new BusinessException("活动分类不能为空");
 		}
+	}
+
+	/**活动必须存在
+	 * @Description 
+	 * @author wwb
+	 * @Date 2020-11-11 16:07:46
+	 * @param activityId
+	 * @return com.chaoxing.activity.model.Activity
+	*/
+	public Activity activityExist(Integer activityId) {
+		Activity activity = activityMapper.selectById(activityId);
+		Optional.ofNullable(activity).orElseThrow(() -> new BusinessException("活动不存在"));
+		return activity;
+	}
+
+	/**能修改活动
+	 * @Description 
+	 * @author wwb
+	 * @Date 2020-11-11 16:07:52
+	 * @param activityId
+	 * @param loginUser
+	 * @return com.chaoxing.activity.model.Activity
+	*/
+	public Activity editAble(Integer activityId, LoginUserDTO loginUser) {
+		Activity activity = activityExist(activityId);
+		if (!Objects.equals(activity.getCreateUid(), loginUser.getUid())) {
+			throw new BusinessException("活动创建者才能修改活动");
+		}
+		return activity;
+	}
+
+	/**能删除活动
+	 * @Description 
+	 * @author wwb
+	 * @Date 2020-11-11 16:08:08
+	 * @param activityId
+	 * @param loginUser
+	 * @return com.chaoxing.activity.model.Activity
+	*/
+	public Activity deleteAble(Integer activityId, LoginUserDTO loginUser) {
+		Activity activity = activityExist(activityId);
+		if (!Objects.equals(activity.getCreateUid(), loginUser.getUid())) {
+			throw new BusinessException("活动创建者才能删除活动");
+		}
+		return activity;
 	}
 
 }
