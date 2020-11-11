@@ -41,3 +41,15 @@ input {
     -webkit-appearance: button;
 }
 
+.scroll {
+    height: 100%;
+    overflow: hidden;
+}
+
+select {
+    appearance: none;
+}
+
+.el-select-dropdown__item {
+    text-align: left;
+}
