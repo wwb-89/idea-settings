@@ -7,12 +7,15 @@
     <link rel="stylesheet" href="../assets/css/public.css">
     <link rel="stylesheet" href="../assets/css/common.css">
     <link rel="stylesheet" href="../assets/css/create-active.css">
+    <!-- 引入样式 -->
+    <link rel="stylesheet" href="https://unpkg.com/element-ui/lib/theme-chalk/index.css">
     <title>创建活动</title>
 </head>
 
 <body>
     <div class="page">
-        <div class="top flex box">
+        <!-- 创建活动头部 -->
+        <div class="top flex box" id="create">
             <div class="flex">
                 <img src="../assets/images/left.png" alt="" class="left">
                 <span class="create">创建活动</span>
@@ -22,27 +25,43 @@
                 <button type="button" class="create-btn">创建</button>
             </div>
         </div>
+        <!-- 编辑活动头部 -->
+        <div class="top flex box" id="edit" style="display: none;">
+            <div class="flex">
+                <img src="../assets/images/left.png" alt="" class="left">
+                <span class="create">编辑活动</span>
+            </div>
+            <div>
+                <button type="button" class="cancle-btn">预览</button>
+                <button type="button" class="create-btn">保存</button>
+            </div>
+        </div>
         <div class="info box">
             <form action="">
                 <div class="title">基本信息</div>
                 <div class="form-item">
                     <label class="label">名称</label>
                     <div class="input-box">
-                        <input type="text" name="title" required  value="1" placeholder="请填写信息，简短的活动名称" class="active-name" maxlength="20">
+                        <input type="text" name="title" required placeholder="请填写信息，简短的活动名称" class="active-name"
+                            maxlength="20">
                         <div class="length"><span class="min">0</span>/<span class="max">20</span></div>
                     </div>
                 </div>
                 <div class="form-item">
                     <label class="label">时间</label>
                     <div class="input-box">
-                        <div class="item">
+                        <!-- <div class="item">
                             <input type="text" class="layui-input time" id="start-time" placeholder="开始日期" />
                             <img src="../assets/images/calendar.png" alt="">
-                        </div>
+                        </div> -->
+                        <el-date-picker v-model="startTime1" type="datetime" placeholder="开始日期" style="width: 180px;"
+                            clear-icon>
+                        </el-date-picker>
                         <span class="font">至</span>
-                        <div class="item"><input type="text" class="layui-input time" id="end-time"
+                        <!-- <div class="item"><input type="text" class="layui-input time" id="end-time"
                                 placeholder="结束日期" />
-                            <img src="../assets/images/calendar.png" alt=""></div>
+                            <img src="../assets/images/calendar.png" alt=""></div> -->
+                        <el-date-picker v-model="endTime1" type="datetime" placeholder="结束日期" style="width: 180px;">
                     </div>
                 </div>
                 <div class="form-item">
@@ -82,14 +101,13 @@
                 <div class="form-item">
                     <label class="label">活动分类</label>
                     <div class="input-box">
-                        <div class="type-item">活动</div>
+                        <div class="type-item active">活动</div>
                         <div class="type-item">讲座</div>
                         <div class="type-item">征文</div>
-                        <div class="type-item">自定义选项<img src="../assets/images/more.png" alt=""
-                                style="margin-left: 10px;">
-                        </div>
-                        <div class="type-item">
-                            <img src="../assets/images/add.png" alt="" style="margin-right: 10px;">新增</div>
+                        <div class="type-item" id="custom">自定义选项<img src="../assets/images/more.png" alt=""
+                                style="margin-left: 10px;"></div>
+                        <div class="type-item" id="addFenlei"> <img src="../assets/images/add.png" alt=""
+                                style="margin-right: 10px;">新增</div>
                     </div>
 
                 </div>
@@ -97,10 +115,11 @@
         </div>
         <div class="info box">
             <div class="set-box">
-                    <div class="title set">参与设置</div>
-                    <input type="checkbox" name="switch" class="switch">
-                </div>
-            <form action="" class="setForm">
+                <div class="title set">参与设置</div>
+                <el-switch v-model="delivery" class="switch"></el-switch>
+            </div>
+            <!-- 点击参与设置 -->
+            <form action="" class="setForm" v-show="delivery">
                 <div class="form-item">
                     <label class="label">参与形式</label>
                     <div class="input-box">
@@ -117,53 +136,61 @@
                 <div class="form-item">
                     <label class="label">报名时间</label>
                     <div class="input-box">
-                        <div class="item">
-                            <input type="text" class="layui-input time" id="start-time" placeholder="开始日期" />
-                            <img src="../assets/images/calendar.png" alt="">
-                        </div>
+                        <el-date-picker v-model="startTime2" type="datetime" placeholder="开始日期" style="width: 180px;"
+                            clear-icon>
+                        </el-date-picker>
                         <span class="font">至</span>
-                        <div class="item"><input type="text" class="layui-input time" id="end-time"
-                                placeholder="结束日期" />
-                            <img src="../assets/images/calendar.png" alt=""></div>
+                        <el-date-picker v-model="endTime2" type="datetime" placeholder="结束日期" style="width: 180px;">
                     </div>
                 </div>
                 <div class="form-item">
                     <label class="label">人数限制</label>
                     <div class="input-box">
-                        <select name="" id="">
-                            <option value="" label="自定义人数" disabled selected></option>
-                            <option value="" label="1"></option>
-                        </select>
+                        <div class="select-person">
+                            <el-select v-model="value1" placeholder="请选择">
+                                <el-option v-for="item in options1" :key="item.value" :label="item.label"
+                                    :value="item.value">
+                                </el-option>
+                            </el-select>
+                        </div>
                         <input type="text" placeholder="请输入正整数" class="person">人
                     </div>
                 </div>
                 <div class="form-item">
                     <label class="label">报名方式</label>
                     <div class="input-box">
-                        <select name="" id="" class="select-method">
-                            <option value="" label="无限制" disabled selected></option>
-                            <option value="" label="1"></option>
-                        </select>
-                        <span class="tips">参与者点击签到即成功</span>
+                        <div class="select" style="margin-top: 0;">
+                            <el-select v-model="value2" placeholder="请选择">
+                                <el-option v-for="item in options2" :key="item.value" :label="item.label"
+                                    :value="item.value">
+                                </el-option>
+                            </el-select>
+                        </div>
+                        <span class="tips">参与者点击报名即成功</span>
                     </div>
                 </div>
                 <div class="form-item">
                     <label class="label">信息填写</label>
                     <div class="input-box column">
                         <div class="set-box">
-                            <input type="checkbox" name="switch" class="info-switch">
-                        <span class="tips">如何创建报名信息表单？</span>
+                            <el-switch v-model="delivery2"></el-switch>
+                            <span class="tips">如何创建报名信息表单？</span>
                         </div>
-                        <select name="" id="" class="select-info">
-                            <option value="" label="万能表单" disabled selected></option>
-                            <option value="" label="1"></option>
-                        </select>
+                        <div class="select">
+                            <el-select v-model="value3" placeholder="请选择">
+                                <el-option v-for="item in options3" :key="item.value" :label="item.label"
+                                    :value="item.value">
+                                </el-option>
+                            </el-select>
+
+                        </div>
+
                     </div>
                 </div>
                 <div class="form-item">
                     <label class="label">已报名名单公开</label>
                     <div class="input-box">
-                        <input type="checkbox" name="switch" >
+                        <el-switch v-model="delivery3"></el-switch>
                     </div>
                 </div>
                 <div class="form-item">
@@ -182,11 +209,18 @@
             </div>
             <div class="item-box">
                 <div class="modle-item">
-                    <img src="../assets/images/lizi.png" alt="">
+                    <img src="../assets/images/dellete-red.png" alt="" class="dellete">
+                    <img src="../assets/images/lizi.png" alt="" class="img">
                     <span>作品征集</span>
+
                 </div>
-                
-                <div class="modle-item add">
+                <div class="modle-item">
+                    <img src="../assets/images/dellete-red.png" alt="" class="dellete">
+                    <img src="../assets/images/lizi.png" alt="" class="img">
+                    <span>打卡</span>
+
+                </div>
+                <div class="modle-item add" id="addModle">
                     <div><img src="../assets/images/add.png" alt=""></div>
                     <span>添加模块</span>
                 </div>
@@ -197,32 +231,264 @@
             <div class="page-show">
                 <label class="label">选择模板</label>
                 <div class="page-box">
-                    <div class="page-item">
-                        <img src="../assets/images/example.jpg" alt="" class="img">   
+                    <div class="page-item active">
+                        <img src="../assets/images/example.jpg" alt="" class="img">
                         <img src="../assets/images/selected.png" alt="" class="selected">
                     </div>
                     <div class="page-item">
                         <img src="../assets/images/example.jpg" alt="" class="img">
+                        <img src="../assets/images/selected.png" alt="" class="selected">
                     </div>
                 </div>
             </div>
         </div>
-        <div class="dailog">
-            <div class="header">
-                <span>分类名称</span>
-                <img src="" alt="">
+        <!-- 新增活动分类和自定义选项的弹出框 -->
+        <div class="dailog-box1" style="display: none;">
+            <div class="dailog">
+                <div class="header">
+                    <span>分类名称</span>
+                    <img src="../assets/images/close.png" alt="" class="close">
+                </div>
+                <div class="body">
+                    <input type="text" class="fenlei-input" placeholder="请输入" class="fenlei-input">
+                    <div class="length"><span class="min">0</span>/<span class="max">6</span></div>
+                </div>
+                <div class="footer">
+                    <div class="normal-btn cancle">取消</div>
+                    <div class="normal-btn before-sure">确定</div>
+                </div>
             </div>
-            <div class="body">
-                <input type="text" class="fenlei-input" placeholder="请输入">
+        </div>
+        <!-- 添加模块的弹出框 -->
+        <div class="dailog-box2" style="display: none;">
+            <div class="dailog">
+                <div class="header">
+                    <span>添加模块</span>
+                    <img src="../assets/images/close.png" alt="" class="close">
+                </div>
+                <div class="body">
+                    <!-- 添加模块 -->
+                    <div class="add-modle">
+                        <div class="add-item">
+                            <img src="../assets/images/selected.png" alt="" class="selected">
+                            <div>
+                                <img src="../assets/images/lizi.png" alt="" class="img">
+                            </div>
+                            <span>作品征集</span>
+                        </div>
+                        <div class="add-item">
+                            <img src="../assets/images/selected.png" alt="" class="selected">
+                            <div>
+                                <img src="../assets/images/lizi.png" alt="" class="img">
+                            </div>
+                            <span>测评</span>
+                        </div>
+                        <div class="add-item">
+                            <img src="../assets/images/selected.png" alt="" class="selected">
+                            <div>
+                                <img src="../assets/images/lizi.png" alt="" class="img">
+                            </div>
+                            <span>打卡</span>
+                        </div>
+                        <div class="add-item">
+                            <img src="../assets/images/selected.png" alt="" class="selected">
+                            <div>
+                                <img src="../assets/images/lizi.png" alt="" class="img">
+                            </div>
+                            <span>地图闯关</span>
+                        </div>
+                        <div class="add-item">
+                            <img src="../assets/images/selected.png" alt="" class="selected">
+                            <div>
+                                <img src="../assets/images/lizi.png" alt="" class="img">
+                            </div>
+                            <span>小组</span>
+                        </div>
+                        <div class="add-item">
+                            <img src="../assets/images/selected.png" alt="" class="selected">
+                            <div>
+                                <img src="../assets/images/lizi.png" alt="" class="img">
+                            </div>
+                            <span>超链接</span>
+                        </div>
+                    </div>
+                    <!-- 添加或编辑模块详情 -->
+                    <div class="add-details" style="display: none;">
+                        <form action="">
+                            <div class="form-item">
+                                <label class="label">名称</label>
+                                <div class="input-box add-name">
+                                    <input type="text" required placeholder="请填写名称" class="active-name" maxlength="10">
+                                    <div class="length"><span class="min">0</span>/<span class="max">10</span></div>
+                                </div>
+                            </div>
+                            <div class="form-item">
+                                <label class="label">图标</label>
+                                <div class="input-box add-name">
+                                    <img src="../assets/images/example.jpg" alt="" class="add-img">
+                                    <div class="font-box">
+                                        <span>尺寸256*256，大小500kb以下图标；格式png、gif、jpg</span>
+                                        <input type="file" class="upload-btn" accept="image/gif, image/jpg, image/png"
+                                            onchange="showImg1(this)" />
+                                        <div class="upload-icon">上传</div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="form-item">
+                                <label class="label">展示终端</label>
+                                <div class="input-box add-name">
+                                    <div class="radio-box"><input type="checkbox" name="method" checked
+                                            value="0" /><span>电脑端</span>
+                                    </div>
+                                    <div class="radio-box">
+                                        <input type="checkbox" name="method" value="1" /><span>移动端</span>
+                                    </div>
+
+                                </div>
+                            </div>
+                        </form>
+
+                    </div>
+                </div>
+                <div class="footer">
+                    <div class="normal-btn cancle">取消</div>
+                    <div class="normal-btn after-sure" id="next-step">下一步</div>
+                    <div class="normal-btn after-sure" id="complete">完成</div>
+                </div>
             </div>
-            <div class="footer"></div>
+        </div>
+        <!-- 确认删除模块弹框 -->
+        <div class="dailog-box3" style="display: none;">
+            <div class="dailog delete-dailog">
+                <img src="../assets/images/warning.png" alt="" class="warn">
+                <span>删除后，可重新添加。确定删除？</span>
+                <div>
+                    <div class="normal-btn">保留</div>
+                    <div class="normal-btn after-sure">删除</div>
+                </div>
+            </div>
+        </div>
+        <!-- 确认删除分类弹框 -->
+        <div class="dailog-box3"  style="display: none;">
+            <div class="dailog delete-dailog">
+                <img src="../assets/images/warning.png" alt="" class="warn">
+                <span>确认删除此分类</span>
+                <div>
+                    <div class="normal-btn">保留</div>
+                    <div class="normal-btn after-sure">删除</div>
+                </div>
+            </div>
+        </div>
+        <!-- 活动创建成功弹框 -->
+        <div class="dailog-box3" style="display: none;">
+            <div class="dailog delete-dailog">
+                <img src="../assets/images/success.png" alt="" class="warn">
+                <span>活动创建成功</span>
+                <div>
+                    <div class="normal-btn">配置页面</div>
+                    <div class="normal-btn after-sure">完成</div>
+                </div>
+            </div>
+        </div>
+        <!-- 查看模块详情 -->
+        <div class="dailog-box4" style="display: none;">
+            <div class="dailog details-dailog" >
+                <img src="../assets/images/close.png" alt="" class="close">
+                <div class="details-item">
+                    <img src="../assets/images/lizi.png" alt="" class="details-img">
+                    <div>
+                        <div style="display: flex;">
+                            <div class="desc overHidden2">作品征集作品征集作品征集作品征集作品征集作品征集作品征集作品征集征…</div>
+                            <div class="edit-img">
+                                <img src="../assets/images/icon-edit.png" alt="" style="margin-right: 6px;">
+                                <span>编辑</span>
+                            </div>
+                        </div>
+                        <div class="img-flex">
+                            <img src="../assets/images/icon-pc.png" alt="" style="margin-right: 14px;">
+                            <img src="../assets/images/app.png" alt="">
+                        </div>
+                    </div>
+                </div>
+                <div class="visit">
+                    <span>访问</span>
+                    <div class="normal-btn">PC端</div>
+                    <div class="normal-btn">APP端</div>
+                </div>
+            </div>
+        </div>
+        <!-- 预览弹窗 -->
+        <div class="dailog-box1" style="display: none;">
+            <div class="dailog look-dailog">
+                <div class="header">
+                    <span>预览</span>
+                    <img src="../assets/images/close.png" alt="" class="close">
+                </div>
+                <div class="body">
+                    <!-- 二维码 -->
+                    <div class="code"><img src="../assets/images/example.jpg" alt=""></div>
+                    <span>使用学习通扫码查看</span>
+                    <div class="link-box">
+                        <span>链接</span>
+                        <input type="text" class="input-link" value="http://xueya.chaoxing.com/school-base/sc-sc-">
+                        <a href="#">访问</a>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
-   
-    <script src="../assets/jquery.min.js"></script> 
+
+    <script src="https://unpkg.com/vue/dist/vue.js"></script>
+    <script src="https://unpkg.com/element-ui/lib/index.js"></script>
+    <script src="../assets/jquery.min.js"></script>
     <script src="../assets/js/common.js"></script>
     <script src="../assets/js/create-active.js"></script>
+    <script>
+        // vue
+        var app = new Vue({
+            el: '.page',
+            data: {
+                value1: '',
+                value2: '',
+                value3: '',
+                delivery: false,
+                delivery2: false,
+                delivery3: false,
+                startTime1: '',
+                startTime2: '',
+                endTime1: '',
+                endTime2: '',
+                options1: [{
+                    value: "1",
+                    label: "无限制",
 
+                }, {
+                    value: "2",
+                    label: "自定义人数"
+                }],
+                options2: [{
+                    value: "1",
+                    label: "直接报名",
+
+                }, {
+                    value: "2",
+                    label: "需扫码进行报名"
+                }],
+                options3: [{
+                    value: "1",
+                    label: "万能表单",
+
+                }, {
+                    value: "2",
+                    label: "表单名称"
+                }]
+            },
+
+            methods: {
+
+            }
+        })
+    </script>
 </body>
 
 </html>
