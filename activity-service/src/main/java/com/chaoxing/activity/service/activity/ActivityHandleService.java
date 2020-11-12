@@ -7,7 +7,7 @@ import com.chaoxing.activity.mapper.ActivityMapper;
 import com.chaoxing.activity.model.Activity;
 import com.chaoxing.activity.model.ActivityModule;
 import com.chaoxing.activity.service.activity.module.ActivityModuleService;
-import com.chaoxing.activity.service.manager.SignApiService;
+import com.chaoxing.activity.service.manager.module.SignApiService;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.stereotype.Service;

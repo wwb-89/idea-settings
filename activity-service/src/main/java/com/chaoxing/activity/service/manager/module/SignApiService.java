@@ -1,4 +1,4 @@
-package com.chaoxing.activity.service.manager;
+package com.chaoxing.activity.service.manager.module;
 
 import com.chaoxing.activity.dto.module.SignFormDTO;
 import lombok.extern.slf4j.Slf4j;

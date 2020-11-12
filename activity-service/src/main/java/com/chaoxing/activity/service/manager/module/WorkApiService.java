@@ -1,10 +1,11 @@
-package com.chaoxing.activity.service.manager;
+package com.chaoxing.activity.service.manager.module;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.chaoxing.activity.dto.module.WorkFormDTO;
 import com.chaoxing.activity.util.exception.BusinessException;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.http.HttpEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
@@ -26,6 +27,8 @@ public class WorkApiService {
 
 	/** 创建作品征集地址 */
 	private static final String CREATE_URL = "http://api.reading.chaoxing.com/activity/create";
+	/** 清空活动参与范围 */
+	private static final String CLEAR_ACTIVITY_PARTICIPATE_SCOPE_URL = "http://api.reading.chaoxing.com/cache/activity/%d/participate-fid";
 
 	@Resource
 	private RestTemplate restTemplate;
@@ -57,5 +60,25 @@ public class WorkApiService {
 		}
 	}
 
+	/**清空活动参与范围缓存
+	 * @Description
+	 * @author wwb
+	 * @Date 2020-09-16 14:42:59
+	 * @param activityId
+	 * @return void
+	 */
+	public void clearActivityParticipateScopeCache(Integer activityId) {
+		String url = String.format(CLEAR_ACTIVITY_PARTICIPATE_SCOPE_URL, activityId);
+		String result = restTemplate.getForObject(url, String.class);
+		JSONObject jsonObject = JSON.parseObject(result);
+		boolean success = jsonObject.getBooleanValue("success");
+		if (!success) {
+			String errorMessage = jsonObject.getString("message");
+			if (StringUtils.isBlank(errorMessage)) {
+				errorMessage = "刷新作品征集活动参与fid缓存失败";
+			}
+			throw new BusinessException(errorMessage);
+		}
+	}
 
 }
