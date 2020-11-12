@@ -1,0 +1,298 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://unpkg.com/element-ui/lib/theme-chalk/index.css">
+    <link rel="stylesheet" href="../assets/lib/jquery.mCustomScrollbar.css">
+    <link rel="stylesheet" href="../assets/css/public.css">
+    <link rel="stylesheet" href="../assets/css/create-active.css">
+
+    <link rel="stylesheet" href="../assets/css/create-sign.css">
+
+    <title>创建报名签到</title>
+</head>
+
+<body>
+    <div class="page" id="app">
+        <!-- 创建活动头部 -->
+        <div class="top flex box" id="create">
+            <div class="flex">
+                <img src="../assets/images/left.png" alt="" class="left">
+                <span class="create">签到报名</span>
+            </div>
+            <div>
+                <button type="button" class="cancle-btn">取消</button>
+                <button type="button" class="create-btn">创建</button>
+            </div>
+        </div>
+        <div class="info box">
+            <form action="">
+                <div class="title">基本信息</div>
+                <div class="form-item">
+                    <label class="label">名称</label>
+                    <div class="input-box ">
+                        <el-input type="text" placeholder="请填写清晰简短的名称" v-model="name1" maxlength="10" show-word-limit>
+                    </div>
+                </div>
+                <div class="form-item">
+                    <label class="label">说明</label>
+                    <div class="input-box">
+                        <el-input class="textarea" type="textarea" placeholder="请输入" v-model="textarea" maxlength="500"
+                            show-word-limit>
+                        </el-input>
+                    </div>
+                </div>
+                <div class="form-item">
+                    <label class="label">封面</label>
+                    <div class="input-box">
+                        <img src="../assets/images/example.jpg" alt="" class="cover-img">
+                        <div class="font-box">
+                            <span>建议尺寸：1080x500</span>
+                            <span>大小：小于5M</span>
+                            <span>格式：jpg、png、gif</span>
+                            <input type="file" class="upload-btn" accept="image/gif, image/jpg, image/png"
+                                onchange="showImg(this)" />
+                            <div class="cancle-btn upload">上传文件</div>
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div>
+        <div class="info box">
+            <div class="set-box">
+                <div class="title set">参与设置</div>
+            </div>
+            <!-- 点击参与设置 -->
+            <form action="" class="setForm">
+                <div class="form-item">
+                    <label class="label">参与形式</label>
+                    <div class="input-box">
+                        <div class="radio-box">
+                            <input type="radio" name="method" value="1" v-model="radio" @click="handleChange"/><span>报名</span>
+                        </div>
+                        <div class="radio-box">
+                            <input type="radio" name="method" value="2" v-model="radio" @click="handleChange"/><span>签到</span>
+                        </div>
+                        <div class="radio-box">
+                            <input type="radio" name="method" value="3" v-model="radio" @click="handleChange"/><span>报名后签到</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="form-item">
+                    <label class="label">报名时间</label>
+                    <div class="input-box">
+                        <el-date-picker v-model="startTime2" type="datetime" placeholder="开始日期" style="width: 180px;"
+                            clear-icon>
+                        </el-date-picker>
+                        <span class="font">至</span>
+                        <el-date-picker v-model="endTime2" type="datetime" placeholder="结束日期" style="width: 180px;">
+                    </div>
+                </div>
+                <div class="form-item">
+                    <label class="label">人数限制</label>
+                    <div class="input-box">
+                        <div class="select-person">
+                            <el-select v-model="value1" placeholder="请选择">
+                                <el-option v-for="item in options1" :key="item.value" :label="item.label"
+                                    :value="item.value">
+                                </el-option>
+                            </el-select>
+                        </div>
+                        <input type="text" placeholder="请输入正整数" class="person" v-show="value1 == 2"><span
+                            class="person-span">人</span>
+                    </div>
+                </div>
+                <div class="form-item" v-show="radio==1">
+                    <label class="label">报名方式</label>
+                    <div class="input-box">
+                        <div class="select" style="margin-top: 0;">
+                            <el-select v-model="value2" placeholder="请选择">
+                                <el-option v-for="item in options2" :key="item.value" :label="item.label"
+                                    :value="item.value">
+                                </el-option>
+                            </el-select>
+                        </div>
+                        <span class="tips">参与者点击报名即成功</span>
+                    </div>
+                </div>
+                <div class="form-item" v-show="radio==2">
+                    <label class="label">签到方式</label>
+                    <div class="input-box">
+                        <div class="select" style="margin-top: 0;">
+                            <el-select v-model="value4" placeholder="请选择">
+                                <el-option v-for="item in options4" :key="item.value" :label="item.label"
+                                    :value="item.value">
+                                </el-option>
+                            </el-select>
+                        </div>
+                        <span class="tips">参与者点击签到即成功</span>
+                    </div>
+                </div>
+                <div class="form-item" v-show="radio==3">
+                    <label class="label">签到方式</label>
+                    <div class="input-box">
+                        <div class="select" style="margin-top: 0;">
+                            <el-select v-model="value5" placeholder="请选择">
+                                <el-option v-for="item in options5" :key="item.value" :label="item.label"
+                                    :value="item.value">
+                                </el-option>
+                            </el-select>
+                        </div>
+                        <span class="tips">参与者需要到达指定位置才能进行签到</span>
+                    </div>
+                </div>
+                <!-- 地图弹框在创建活动页 -->
+                <div class="form-item" v-show="value4 == 2 || value5 == 1">
+                    <label class="label">指定位置</label>
+                    <div class="input-box">
+                        <input type="text" name="title" required lay-verify="required" placeholder="请输入位置"
+                            autocomplete="off" class="layui-input name">
+                        <img src="../assets/images/location.png" alt="" class="length icon">
+                    </div>
+                </div>
+                <div class="form-item">
+                    <label class="label" style="line-height: 20px;">信息填写</label>
+                    <div class="input-box column">
+                        <div class="set-box">
+                            <el-switch v-model="delivery2"></el-switch>
+                            <span class="tips">如何创建报名信息表单？</span>
+                        </div>
+                        <div class="select" v-show="delivery2">
+                            <el-select v-model="value3" placeholder="请选择">
+                                <el-option v-for="item in options3" :key="item.value" :label="item.label"
+                                    :value="item.value">
+                                </el-option>
+                            </el-select>
+
+                        </div>
+
+                    </div>
+                </div>
+                <div class="form-item">
+                    <label class="label">已报名名单公开</label>
+                    <div class="input-box">
+                        <el-switch v-model="delivery3"></el-switch>
+                    </div>
+                </div>
+                <div class="form-item">
+                    <label class="label">按钮名称</label>
+                    <div class="input-box btn-name">
+                        <input type="text" name="title" required class="btn-name" minlength="2" maxlength="6"
+                            value="按钮">
+                        <div class="length">2/6</div>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+    
+    <script src="https://unpkg.com/vue/dist/vue.js"></script>
+    <script src="https://unpkg.com/element-ui/lib/index.js"></script>
+    <script src="../assets/lib/jquery.min.js"></script>
+    <script src="../assets/lib/jquery.mousewheel.min.js"></script>
+    <script src="../assets/lib/jquery.mCustomScrollbar.js"></script>
+    <script>
+        //滚动条
+        // (function ($) {
+        //     $(window).load(function () {
+        //         $(".el-textarea__inner").mCustomScrollbar();
+        //     });
+        // })(jQuery);
+    </script>
+    <script>
+        var app = new Vue({
+            el: '#app',
+            data: {
+                name1: '',
+                textarea: '',
+                radio: 1,
+                startTime1: '',
+                endTime1: '',
+                startTime2: '',
+                endTime2: '',
+                value1: '1',
+                value2: '',
+                value3: '1',
+                value4: '',
+                value5: '',
+                delivery: false,
+                delivery2: false,
+                delivery3: false,
+                options1: [{
+                    value: "1",
+                    label: "无限制",
+
+                }, {
+                    value: "2",
+                    label: "自定义人数"
+                }],
+                options2: [{
+                    value: "1",
+                    label: "直接报名",
+
+                }, {
+                    value: "2",
+                    label: "需扫码进行报名"
+                }],
+                options3: [{
+                    value: "1",
+                    label: "万能表单",
+
+                }, {
+                    value: "2",
+                    label: "表单名称"
+                }, {
+                    value: "3",
+                    label: "表单名称"
+                }, {
+                    value: "4",
+                    label: "表单名称"
+                }, {
+                    value: "5",
+                    label: "表单名称"
+                }, {
+                    value: "6",
+                    label: "表单名称"
+                }, {
+                    value: "7",
+                    label: "表单名称"
+                }],
+                options4: [{
+                    value: "1",
+                    label: "直接签到",
+
+                }, {
+                    value: "2",
+                    label: "指定位置签到"
+                }, {
+                    value: "3",
+                    label: "需扫码进行签到"
+                }],
+                options5: [{
+                    value: "1",
+                    label: "指定位置签到",
+
+                }, {
+                    value: "2",
+                    label: "需扫码进行签到"
+                }],
+
+            },
+            mounted() {
+                
+            },
+            methods: {
+                handleChange(){
+                    this.value2="";
+                    this.value4="";
+                    this.value5=""
+
+                }
+            }
+        })
+    </script>
+</body>
+
+</html>

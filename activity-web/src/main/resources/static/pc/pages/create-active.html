@@ -5,15 +5,13 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="../assets/css/public.css">
-    <link rel="stylesheet" href="../assets/css/common.css">
     <link rel="stylesheet" href="../assets/css/create-active.css">
-    <!-- 引入样式 -->
     <link rel="stylesheet" href="https://unpkg.com/element-ui/lib/theme-chalk/index.css">
     <title>创建活动</title>
 </head>
 
 <body>
-    <div class="page">
+    <div class="page" id="app">
         <!-- 创建活动头部 -->
         <div class="top flex box" id="create">
             <div class="flex">
@@ -42,30 +40,21 @@
                 <div class="form-item">
                     <label class="label">名称</label>
                     <div class="input-box">
-                        <input type="text" name="title" required placeholder="请填写信息，简短的活动名称" class="active-name"
-                            maxlength="20">
-                        <div class="length"><span class="min">0</span>/<span class="max">20</span></div>
+                        <el-input type="text" placeholder="请填写信息，简短的活动名称" v-model="name" maxlength="20" show-word-limit>
                     </div>
                 </div>
                 <div class="form-item">
                     <label class="label">时间</label>
                     <div class="input-box">
-                        <!-- <div class="item">
-                            <input type="text" class="layui-input time" id="start-time" placeholder="开始日期" />
-                            <img src="../assets/images/calendar.png" alt="">
-                        </div> -->
                         <el-date-picker v-model="startTime1" type="datetime" placeholder="开始日期" style="width: 180px;"
                             clear-icon>
                         </el-date-picker>
                         <span class="font">至</span>
-                        <!-- <div class="item"><input type="text" class="layui-input time" id="end-time"
-                                placeholder="结束日期" />
-                            <img src="../assets/images/calendar.png" alt=""></div> -->
                         <el-date-picker v-model="endTime1" type="datetime" placeholder="结束日期" style="width: 180px;">
                     </div>
                 </div>
                 <div class="form-item">
-                    <label class="label">封面</label>
+                    <label class="label" style="line-height: 100px;">封面</label>
                     <div class="input-box">
                         <img src="../assets/images/example.jpg" alt="" class="cover-img">
                         <div class="font-box">
@@ -123,13 +112,14 @@
                 <div class="form-item">
                     <label class="label">参与形式</label>
                     <div class="input-box">
-                        <div class="radio-box"><input type="radio" name="method" checked value="0" /><span>报名</span>
+                        <div class="radio-box">
+                            <input type="radio" name="method" value="1" v-model="radio" /><span>报名</span>
                         </div>
                         <div class="radio-box">
-                            <input type="radio" name="method" value="1" /><span>签到</span>
+                            <input type="radio" name="method" value="2" v-model="radio" /><span>签到</span>
                         </div>
                         <div class="radio-box">
-                            <input type="radio" name="method" value="2" /><span>报名后签到</span>
+                            <input type="radio" name="method" value="3" v-model="radio" /><span>报名后签到</span>
                         </div>
                     </div>
                 </div>
@@ -153,10 +143,11 @@
                                 </el-option>
                             </el-select>
                         </div>
-                        <input type="text" placeholder="请输入正整数" class="person">人
+                        <input type="text" placeholder="请输入正整数" class="person" v-show="value1 == 2"><span
+                            class="person-span">人</span>
                     </div>
                 </div>
-                <div class="form-item">
+                <div class="form-item" v-show="radio==1">
                     <label class="label">报名方式</label>
                     <div class="input-box">
                         <div class="select" style="margin-top: 0;">
@@ -169,14 +160,40 @@
                         <span class="tips">参与者点击报名即成功</span>
                     </div>
                 </div>
+                <div class="form-item" v-show="radio==2">
+                    <label class="label">签到方式</label>
+                    <div class="input-box">
+                        <div class="select" style="margin-top: 0;">
+                            <el-select v-model="value4" placeholder="请选择">
+                                <el-option v-for="item in options4" :key="item.value" :label="item.label"
+                                    :value="item.value">
+                                </el-option>
+                            </el-select>
+                        </div>
+                        <span class="tips">参与者点击签到即成功</span>
+                    </div>
+                </div>
+                <div class="form-item" v-show="radio==3">
+                    <label class="label">签到方式</label>
+                    <div class="input-box">
+                        <div class="select" style="margin-top: 0;">
+                            <el-select v-model="value5" placeholder="请选择">
+                                <el-option v-for="item in options5" :key="item.value" :label="item.label"
+                                    :value="item.value">
+                                </el-option>
+                            </el-select>
+                        </div>
+                        <span class="tips">参与者需要到达指定位置才能进行签到</span>
+                    </div>
+                </div>
                 <div class="form-item">
-                    <label class="label">信息填写</label>
+                    <label class="label" style="line-height: 20px;">信息填写</label>
                     <div class="input-box column">
                         <div class="set-box">
                             <el-switch v-model="delivery2"></el-switch>
                             <span class="tips">如何创建报名信息表单？</span>
                         </div>
-                        <div class="select">
+                        <div class="select" v-show="delivery2">
                             <el-select v-model="value3" placeholder="请选择">
                                 <el-option v-for="item in options3" :key="item.value" :label="item.label"
                                     :value="item.value">
@@ -196,8 +213,8 @@
                 <div class="form-item">
                     <label class="label">按钮名称</label>
                     <div class="input-box btn-name">
-                        <input type="text" name="title" required class="btn-name" minlength="2" maxlength="6">
-                        <div class="length">2/6</div>
+                        <el-input type="text" placeholder="请输入内容" v-model="btnName" maxlength="10" show-word-limit>
+
                     </div>
                 </div>
             </form>
@@ -228,6 +245,7 @@
         </div>
         <div class="info box" style="margin-bottom: 30px;">
             <div class="title">网页展示</div>
+            <!-- 创建活动时选择模板 -->
             <div class="page-show">
                 <label class="label">选择模板</label>
                 <div class="page-box">
@@ -237,7 +255,25 @@
                     </div>
                     <div class="page-item">
                         <img src="../assets/images/example.jpg" alt="" class="img">
-                        <img src="../assets/images/selected.png" alt="" class="selected">
+                        <img src="../assets/images/selected.png" alt="" class="selected" style="display: none;">
+                    </div>
+                </div>
+            </div>
+            <!-- 编辑活动时预览模板 -->
+            <div class="page-show" style="display: none;">
+                <div class="page-item">
+                    <img src="../assets/images/example.jpg" alt="" class="img">
+                    <!-- hover时出现 -->
+                    <div class="mask">
+                        <div class="normal-btn preview">预览</div>
+                        <div class="normal-btn after-sure">页面配置</div>
+                    </div>
+                </div>
+                <div class="page-item">
+                    <img src="../assets/images/example.jpg" alt="" class="img">
+                    <div class="mask">
+                        <div class="normal-btn preview">预览</div>
+                        <div class="normal-btn after-sure">页面配置</div>
                     </div>
                 </div>
             </div>
@@ -268,7 +304,7 @@
                 </div>
                 <div class="body">
                     <!-- 添加模块 -->
-                    <div class="add-modle">
+                    <div class="add-modle" style="display: none;">
                         <div class="add-item">
                             <img src="../assets/images/selected.png" alt="" class="selected">
                             <div>
@@ -312,14 +348,14 @@
                             <span>超链接</span>
                         </div>
                     </div>
-                    <!-- 添加或编辑模块详情 -->
-                    <div class="add-details" style="display: none;">
+                    <!-- 添加或编辑模块详情 点击下一步出现-->
+                    <div class="add-details">
                         <form action="">
                             <div class="form-item">
                                 <label class="label">名称</label>
                                 <div class="input-box add-name">
-                                    <input type="text" required placeholder="请填写名称" class="active-name" maxlength="10">
-                                    <div class="length"><span class="min">0</span>/<span class="max">10</span></div>
+                                    <el-input type="text" placeholder="请填写名称" v-model="name2" maxlength="10"
+                                        show-word-limit>
                                 </div>
                             </div>
                             <div class="form-item">
@@ -347,12 +383,16 @@
                                 </div>
                             </div>
                         </form>
-
                     </div>
                 </div>
+                <!-- 上一步按钮 -->
                 <div class="footer">
                     <div class="normal-btn cancle">取消</div>
                     <div class="normal-btn after-sure" id="next-step">下一步</div>
+                </div>
+                <!-- 下一步按钮 -->
+                <div class="footer" style="display: none;">
+                    <div class="normal-btn" id="last-step">上一步</div>
                     <div class="normal-btn after-sure" id="complete">完成</div>
                 </div>
             </div>
@@ -369,7 +409,7 @@
             </div>
         </div>
         <!-- 确认删除分类弹框 -->
-        <div class="dailog-box3"  style="display: none;">
+        <div class="dailog-box3" style="display: none;">
             <div class="dailog delete-dailog">
                 <img src="../assets/images/warning.png" alt="" class="warn">
                 <span>确认删除此分类</span>
@@ -392,7 +432,7 @@
         </div>
         <!-- 查看模块详情 -->
         <div class="dailog-box4" style="display: none;">
-            <div class="dailog details-dailog" >
+            <div class="dailog details-dailog">
                 <img src="../assets/images/close.png" alt="" class="close">
                 <div class="details-item">
                     <img src="../assets/images/lizi.png" alt="" class="details-img">
@@ -436,21 +476,59 @@
                 </div>
             </div>
         </div>
-    </div>
+        <!-- 地图 -->
+        <div class="dailog-box1" style="display: none;">
+            <div class="dailog map-dailog">
+                <div class="header">
+                    <span>设置地图</span>
+                    <img src="../assets/images/close.png" alt="" class="close">
+                </div>
+                <div class="body">
+                    <div class="body-head">
+                        <div class="input-addr">
+                            <el-autocomplete style="width:100%;" popper-class="autoAddressClass" v-model="address"
+                                :fetch-suggestions="querySearchAsync" :trigger-on-focus="false" placeholder="请输入地址"
+                                @select="handleSelect" clearable>
+                                <template slot-scope="{ item }"> <i class="el-icon-search fl mgr10"></i>
+                                    <div class="address-box">
+                                        <div class="title1">{{ item.title }}</div>
+                                        --
+                                        <span class="address ellipsis">{{ item.address }}</span>
+                                    </div>
+                                </template>
+                            </el-autocomplete>
+                        </div>
+                        <div class="normal-btn after-sure">确定</div>
+                    </div>
+                    <div id="map-contain">
+                    </div>
+                </div>
+            </div>
 
+        </div>
+    </div>
+    
+    <script type="text/javascript" src="https://api.map.baidu.com/api?v=3.0&ak=aG5nWGO5m5tkVhBHGuVppoIRfKbyp5H3">
+    </script>
     <script src="https://unpkg.com/vue/dist/vue.js"></script>
     <script src="https://unpkg.com/element-ui/lib/index.js"></script>
-    <script src="../assets/jquery.min.js"></script>
+    <script src="../assets/lib/jquery.min.js"></script>
     <script src="../assets/js/common.js"></script>
     <script src="../assets/js/create-active.js"></script>
     <script>
         // vue
         var app = new Vue({
-            el: '.page',
+            el: '#app',
             data: {
-                value1: '',
+                name: '',
+                btnName: '按钮',
+                name2:'',
+                radio: 1,
+                value1: '1',
                 value2: '',
-                value3: '',
+                value3: '1',
+                value4: '',
+                value5: '',
                 delivery: false,
                 delivery2: false,
                 delivery3: false,
@@ -481,11 +559,91 @@
                 }, {
                     value: "2",
                     label: "表单名称"
-                }]
+                }],
+                options4: [{
+                    value: "1",
+                    label: "直接签到",
+
+                }, {
+                    value: "2",
+                    label: "指定位置签到"
+                }, {
+                    value: "3",
+                    label: "需扫码进行签到"
+                }],
+                options5: [{
+                    value: "1",
+                    label: "指定位置签到",
+
+                }, {
+                    value: "2",
+                    label: "需扫码进行签到"
+                }],
+                address: '', //详细地址 
+                addrPoint: {
+                    lng: 0,
+                    lat: 0
+                },
+                map: '', //地图实例 
+                mk: '' //Marker实例
+
             },
-
+            mounted() {
+                this.initMap()
+            },
             methods: {
+                initMap() {
+                    var that = this;
+                    this.map = new BMap.Map("map-contain", {
+                        enableMapClick: false
+                    }) //新建地图实例，enableMapClick:false ：禁用地图默认点击弹框 
+                    var point = new BMap.Point(104.10194, 30.65984);
+                    this.map.centerAndZoom(point, 19);
+                    this.map.enableScrollWheelZoom(true) //启用滚轮放大缩小，默认禁用
+                    this.mk = new BMap.Marker(point)
+                    this.map.addOverlay(this.mk)
+                    this.map.addEventListener('click', function (e) { //给地图绑定点击事件 
+                        that.getAddrByPoint(e.point) //点击后调用逆地址解析函数 
+                    })
+                },
+                //逆地址解析
+                getAddrByPoint(point) {
+                    var that = this;
+                    var geco = new BMap.Geocoder();
+                    geco.getLocation(point, function (res) {
+                        console.log(res) //内容见下图 
+                        that.mk.setPosition(point) //重新设置标注的地理坐标 
+                        that.map.panTo(point) //将地图的中心点更改为给定的点 
+                        that.address = res.address; //记录该点的详细地址信息 
+                        that.addrPoint = point; //记录当前坐标点 
+                    })
+                },
+                querySearchAsync(str, cb) {
+                    var options = {
+                        onSearchComplete: function (res) { //检索完成后的回调函数 
+                            var s = [];
+                            if (local.getStatus() == BMAP_STATUS_SUCCESS) {
+                                for (var i = 0; i < res.getCurrentNumPois(); i++) {
+                                    s.push(res.getPoi(i));
+                                }
+                                cb(s) //获取到数据时，通过回调函数cb返回到<el-autocomplete>组件中进行显示 
+                            } else {
+                                cb(s)
+                            }
+                        }
+                    }
+                    var local = new BMap.LocalSearch(this.map, options) //创建LocalSearch构造函数 
+                    local.search(str) //调用search方法，根据检索词str发起检索 
+                },
 
+                handleSelect(item) {
+                    this.address = item.address + item.title; //记录详细地址，含建筑物名 
+                    this.addrPoint = item.point; //记录当前选中地址坐标 
+                    this.map.clearOverlays() //清除地图上所有覆盖物 
+                    this.mk = new BMap.Marker(item.point) //根据所选坐标重新创建Marker 
+                    this.map.addOverlay(this.mk) //将覆盖物重新添加到地图中 
+                    this.map.panTo(item.point) //将地图的中心点更改为选定坐标点 
+                },
             }
         })
     </script>

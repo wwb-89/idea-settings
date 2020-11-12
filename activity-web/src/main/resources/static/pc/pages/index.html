@@ -1,27 +1,36 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="../assets/lib/jquery.mCustomScrollbar.css">
     <title>Document</title>
-    <style>
-        .create,.edit{
-            cursor: pointer;
-        }
-    </style>
 </head>
+
 <body>
-    <div class="create">创建活动</div>
-    <div class="edit">编辑活动</div>
-    <script src="../assets/jquery.min.js"></script>
-    <script src="../assets/js/common.js"></script>
+    <div class="page" style="width: 100%;height: 200px;">
+        <div style="height: 500px;">
+            1223
+            42
+            4
+            2
+            43
+            253
+            45345
+        </div>
+       
+    </div>
+    <script src="../assets/lib/jquery.min.js"></script>
+    <script src="../assets/lib/jquery.mousewheel.min.js"></script>
+    <script src="../assets/lib/jquery.mCustomScrollbar.js"></script>
     <script>
-        $('.create').click(function(){
-            location.href="./create-active.html?type=create"
-        })
-        $('.edit').click(function(){
-            location.href="./create-active.html?type=edit"
-        })
+        (function ($) {
+            $(window).load(function () {
+                $(".page").mCustomScrollbar();
+            });
+        })(jQuery);
     </script>
 </body>
+
 </html>
