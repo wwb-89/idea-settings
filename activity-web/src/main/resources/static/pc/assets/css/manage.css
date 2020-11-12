@@ -1,0 +1,65 @@
+.page {
+    width: 1000px;
+    margin: 0px auto;
+    font-size: 14px;
+    color: #999999;
+}
+
+.top {
+    width: 1000px;
+    height: 68px;
+    background: #ffffff;
+    border: 1px solid #dadce0;
+    border-radius: 12px;
+    padding: 0 24px;
+    color: #666666;
+    box-sizing: border-box;
+    font-size: 20px;
+    font-weight: 600;
+    color: #333333;
+    display: flex;
+    align-items: center;
+}
+
+.box {
+    margin-top: 16px;
+}
+
+.main {
+    width: 1000px;
+    height: 980px;
+    background: #ffffff;
+    border: 1px solid #dadce0;
+    border-radius: 12px;
+    padding: 20px;
+    box-sizing: border-box;
+}
+
+.create-btn {
+    width: 80px;
+    height: 30px;
+    background: #0084ff;
+    border-radius: 15px;
+    font-size: 13px;
+    font-weight: 400;
+    color: #ffffff;
+    text-align: center;
+    line-height: 30px;
+    margin-top: 10px;
+}
+table{
+    width: 100%;
+}
+thead{
+    width: 960px;
+height: 40px;
+background: #fafafa;
+}
+tr{
+    
+}
+thead tr>td{
+    text-align: left;
+    line-height: 40px;
+    padding: 0 14px;
+}
