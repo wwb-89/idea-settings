@@ -225,17 +225,14 @@
                 <span class="tips">按住鼠标左键调整模块的顺序</span>
             </div>
             <div class="item-box">
-                <div class="modle-item">
+                <div class="modle-item" v-for="modular in modularArr" draggable="true"
+                @dragstart="handleDragStart($event, modular)"
+                @dragover.prevent="handleDragOver($event, modular)"
+                @dragenter="handleDragEnter($event, modular)"
+                @dragend="handleDragEnd($event, modular)">
                     <img src="../assets/images/dellete-red.png" alt="" class="dellete">
-                    <img src="../assets/images/lizi.png" alt="" class="img">
-                    <span>作品征集</span>
-
-                </div>
-                <div class="modle-item">
-                    <img src="../assets/images/dellete-red.png" alt="" class="dellete">
-                    <img src="../assets/images/lizi.png" alt="" class="img">
-                    <span>打卡</span>
-
+                    <img :src="modular.imgSrc" alt="" class="img">
+                    <span>{{modular.title}}</span>
                 </div>
                 <div class="modle-item add" id="addModle">
                     <div><img src="../assets/images/add.png" alt=""></div>
@@ -585,7 +582,24 @@
                     lat: 0
                 },
                 map: '', //地图实例 
-                mk: '' //Marker实例
+                mk: '' ,//Marker实例
+                // 模块数据
+                modularArr:[
+                    {
+                        imgSrc:'https://p.ananas.chaoxing.com/star3/320_150c/572280b525982f6d3c51fd3fb5ef7449.jpeg',
+                        title:"作品征集"
+                    },
+                    {
+                        imgSrc:'https://p.ananas.chaoxing.com/star3/320_150c/572280b525982f6d3c51fd3fb5ef7449.jpeg',
+                        title:"打卡"
+                    },
+                    {
+                        imgSrc:'https://p.ananas.chaoxing.com/star3/320_150c/572280b525982f6d3c51fd3fb5ef7449.jpeg',
+                        title:"打卡1"
+                    },
+                ],
+                dragging: null,
+
 
             },
             mounted() {
@@ -644,6 +658,34 @@
                     this.map.addOverlay(this.mk) //将覆盖物重新添加到地图中 
                     this.map.panTo(item.point) //将地图的中心点更改为选定坐标点 
                 },
+                //    拖拽初始化
+                handleDragStart(e,item){
+                    this.dragging = item;
+                },
+                handleDragEnd(e,item){
+                    this.dragging = null
+                },
+                handleDragOver(e) {
+                    e.dataTransfer.dropEffect = 'move'
+                },
+                handleDragEnter(e,item){
+                    var $this= this;
+                    e.dataTransfer.effectAllowed = "move"
+                    if(item === this.dragging){
+                        return
+                    }
+                    var newItems = this.modularArr;
+                    var src = newItems.indexOf(this.dragging);
+                    var dst = newItems.indexOf(item);
+                    newItems.splice(src, 1)
+                    // 替换
+                    newItems.splice(dst, 0, this.dragging);
+
+                    this.modularArr = newItems;
+
+                    console.log(this.modularArr)
+                },
+
             }
         })
     </script>
