@@ -2,12 +2,19 @@ package com.chaoxing.activity.service.activity;
 
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.chaoxing.activity.dto.LoginUserDTO;
+import com.chaoxing.activity.dto.WfwRegionalArchitectureDTO;
 import com.chaoxing.activity.dto.module.SignFormDTO;
 import com.chaoxing.activity.mapper.ActivityMapper;
 import com.chaoxing.activity.model.Activity;
 import com.chaoxing.activity.model.ActivityModule;
+import com.chaoxing.activity.model.ActivityScope;
 import com.chaoxing.activity.service.activity.module.ActivityModuleService;
+import com.chaoxing.activity.service.activity.scope.ActivityScopeService;
+import com.chaoxing.activity.service.manager.WfwRegionalArchitectureApiService;
 import com.chaoxing.activity.service.manager.module.SignApiService;
+import com.chaoxing.activity.service.manager.module.WorkApiService;
+import com.chaoxing.activity.util.enums.ModuleEnum;
+import com.chaoxing.activity.util.exception.BusinessException;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.stereotype.Service;
@@ -15,9 +22,11 @@ import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 /**数据处理服务
@@ -39,6 +48,12 @@ public class ActivityHandleService {
 	private ActivityValidationService activityValidationService;
 	@Resource
 	private ActivityModuleService activityModuleService;
+	@Resource
+	private WfwRegionalArchitectureApiService wfwRegionalArchitectureApiService;
+	@Resource
+	private ActivityScopeService activityScopeService;
+	@Resource
+	private WorkApiService workApiService;
 
 	@Resource
 	private SignApiService signApiService;
@@ -232,6 +247,106 @@ public class ActivityHandleService {
 				return Activity.StatusEnum.RELEASED.getValue();
 			default:
 				return statusEnum.getValue();
+		}
+	}
+
+	/**发布活动
+	 * @Description 
+	 * @author wwb
+	 * @Date 2020-11-12 15:41:48
+	 * @param activityId
+	 * @param selectedWfwRegionalArchitectures
+	 * @param loginUser
+	 * @return void
+	*/
+	@Transactional(rollbackFor = Exception.class)
+	public void release(Integer activityId, List<WfwRegionalArchitectureDTO> selectedWfwRegionalArchitectures, LoginUserDTO loginUser) {
+		Activity activity = activityValidationService.releaseAble(activityId, loginUser);
+		// 发布活动
+		activity.setReleased(true);
+		activity.setReleaseTime(LocalDateTime.now());
+		activity.setReleaseUid(loginUser.getUid());
+		Integer status = calActivityStatus(activity.getStartDate(), activity.getEndDate(), Activity.StatusEnum.RELEASED.getValue());
+		activityMapper.update(null, new UpdateWrapper<Activity>()
+			.lambda()
+				.eq(Activity::getId, activity)
+				.set(Activity::getReleased, true)
+				.set(Activity::getReleaseTime, LocalDateTime.now())
+				.set(Activity::getReleaseUid, loginUser.getUid())
+				.set(Activity::getStatus, status)
+		);
+		// 处理参与范围
+		handleReleaseScope(activityId, selectedWfwRegionalArchitectures, loginUser);
+		// 通知模块方刷新参与范围缓存
+		// 查询活动的作品征集模块活动id列表
+		List<String> externalIds = activityModuleService.listExternalIdsByActivityIdAndType(activityId, ModuleEnum.WORK.getValue());
+		if (CollectionUtils.isNotEmpty(externalIds)) {
+			workApiService.clearActivityParticipateScopeCache(externalIds.stream().map(v -> Integer.parseInt(v)).collect(Collectors.toList()));
+		}
+	}
+
+	private void handleReleaseScope(Integer activityId, List<WfwRegionalArchitectureDTO> selectedWfwRegionalArchitectures, LoginUserDTO loginUser) {
+		Integer fid = loginUser.getFid();
+		List<WfwRegionalArchitectureDTO> wfwRegionalArchitectures = wfwRegionalArchitectureApiService.listByFid(fid);
+		if (CollectionUtils.isNotEmpty(wfwRegionalArchitectures)) {
+			if (CollectionUtils.isEmpty(selectedWfwRegionalArchitectures)) {
+				throw new BusinessException("请指定发布范围");
+			}
+		}
+		List<ActivityScope> activityScopes = convert2(activityId, selectedWfwRegionalArchitectures);
+		// 删除以前发布的参与范围
+		activityScopeService.deleteByActivityId(activityId);
+		// 新增参与范围
+		activityScopeService.batchAdd(activityScopes);
+	}
+
+	private List<ActivityScope> convert2(Integer activityId, List<WfwRegionalArchitectureDTO> wfwRegionalArchitectures) {
+		List<ActivityScope> activityScopes = new ArrayList<>();
+		if (CollectionUtils.isNotEmpty(wfwRegionalArchitectures)) {
+			for (WfwRegionalArchitectureDTO wfwRegionalArchitecture : wfwRegionalArchitectures) {
+				ActivityScope activityScope = ActivityScope.builder()
+						.activityId(activityId)
+						.hierarchyId(wfwRegionalArchitecture.getId())
+						.name(wfwRegionalArchitecture.getName())
+						.hierarchyPid(wfwRegionalArchitecture.getPid())
+						.code(wfwRegionalArchitecture.getCode())
+						.links(wfwRegionalArchitecture.getLinks())
+						.level(wfwRegionalArchitecture.getLevel())
+						.adjustedLevel(wfwRegionalArchitecture.getLevel())
+						.fid(wfwRegionalArchitecture.getFid())
+						.existChild(Optional.ofNullable(wfwRegionalArchitecture.getExistChild()).orElse(Boolean.FALSE))
+						.sort(wfwRegionalArchitecture.getSort())
+						.build();
+				activityScopes.add(activityScope);
+			}
+		}
+		return activityScopes;
+	}
+
+	/**取消发布（下架）
+	 * @Description 
+	 * @author wwb
+	 * @Date 2020-11-12 17:23:58
+	 * @param activityId
+	 * @param loginUser
+	 * @return void
+	*/
+	public void cancelRelease(Integer activityId, LoginUserDTO loginUser) {
+		Activity activity = activityValidationService.cancelReleaseAble(activityId, loginUser);
+		Integer status = calActivityStatus(activity.getStartDate(), activity.getEndDate(), Activity.StatusEnum.WAIT_RELEASE.getValue());
+		activityMapper.update(null, new UpdateWrapper<Activity>()
+			.lambda()
+				.eq(Activity::getId, activity)
+				.set(Activity::getReleased, false)
+				.set(Activity::getStatus, status)
+		);
+		// 删除活动范围
+		activityScopeService.deleteByActivityId(activityId);
+		// 通知模块方刷新参与范围缓存
+		// 查询活动的作品征集模块活动id列表
+		List<String> externalIds = activityModuleService.listExternalIdsByActivityIdAndType(activityId, ModuleEnum.WORK.getValue());
+		if (CollectionUtils.isNotEmpty(externalIds)) {
+			workApiService.clearActivityParticipateScopeCache(externalIds.stream().map(v -> Integer.parseInt(v)).collect(Collectors.toList()));
 		}
 	}
 

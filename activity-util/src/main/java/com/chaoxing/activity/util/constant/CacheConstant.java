@@ -15,7 +15,9 @@ public class CacheConstant {
 	}
 
 	public static final String CACHE_KEY_SEPARATOR = ":";
-
-	public static final String CACHE_KEY_PREFIX = "sign" + CACHE_KEY_SEPARATOR;
+	/** 缓存key的前缀 */
+	public static final String CACHE_KEY_PREFIX = "activity_engine" + CACHE_KEY_SEPARATOR;
+	/** 锁缓存key的前缀 */
+	public static final String LOCK_CACHE_KEY_PREFIX = "activity_engine" + CACHE_KEY_SEPARATOR + "lock" + CACHE_KEY_SEPARATOR;
 
 }

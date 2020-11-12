@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.chaoxing.activity.mapper.UserMapper">
+    <resultMap id="BaseResultMap" type="com.chaoxing.activity.model.User">
+        <id column="id" jdbcType="INTEGER" property="id" />
+        <result column="uid" jdbcType="INTEGER" property="uid" />
+        <result column="real_name" jdbcType="VARCHAR" property="realName" />
+        <result column="login_name" jdbcType="VARCHAR" property="loginName" />
+        <result column="mobile" jdbcType="VARCHAR" property="mobile" />
+    </resultMap>
+    <sql id="Base_Column_List">
+        t.id, t.uid, t.real_name, t.login_name, t.mobile
+    </sql>
+</mapper>

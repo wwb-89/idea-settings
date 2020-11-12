@@ -37,7 +37,7 @@ public class ActivityScope {
     /** 层级; column: level*/
     private Integer level;
     /** 修正后的层级; column: adjusted_level*/
-    private String adjustedLevel;
+    private Integer adjustedLevel;
     /** 参与机构id; column: fid*/
     private Integer fid;
     /** 是否包含子节点。0：否，1：是; column: is_exist_child*/

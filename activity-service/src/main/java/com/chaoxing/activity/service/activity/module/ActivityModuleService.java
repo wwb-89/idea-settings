@@ -5,10 +5,13 @@ import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.chaoxing.activity.mapper.ActivityModuleMapper;
 import com.chaoxing.activity.model.ActivityModule;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**活动模块服务
  * @author wwb
@@ -92,6 +95,27 @@ public class ActivityModuleService {
 			.lambda()
 				.eq(ActivityModule::getActivityId, activityId)
 		);
+	}
+
+	/**根据活动id和作品类型查询外部模块id列表
+	 * @Description 
+	 * @author wwb
+	 * @Date 2020-11-12 17:04:50
+	 * @param activityId
+	 * @param type
+	 * @return java.util.List<java.lang.String>
+	*/
+	public List<String> listExternalIdsByActivityIdAndType(Integer activityId, String type) {
+		List<String> result = new ArrayList<>();
+		List<ActivityModule> activityModules = activityModuleMapper.selectList(new QueryWrapper<ActivityModule>()
+				.lambda()
+				.eq(ActivityModule::getActivityId, activityId)
+				.eq(ActivityModule::getType, type)
+		);
+		if (CollectionUtils.isNotEmpty(activityModules)) {
+			result = activityModules.stream().map(ActivityModule::getExternalId).collect(Collectors.toList());
+		}
+		return result;
 	}
 
 }

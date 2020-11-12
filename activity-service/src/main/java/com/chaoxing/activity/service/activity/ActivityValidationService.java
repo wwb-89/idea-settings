@@ -110,4 +110,46 @@ public class ActivityValidationService {
 		return activity;
 	}
 
+	/**可发布
+	 * @Description 
+	 * @author wwb
+	 * @Date 2020-11-12 15:43:24
+	 * @param activityId
+	 * @param loginUser
+	 * @return com.chaoxing.activity.model.Activity
+	*/
+	public Activity releaseAble(Integer activityId, LoginUserDTO loginUser) {
+		Activity activity = activityExist(activityId);
+		Boolean released = activity.getReleased();
+		if (released) {
+			throw new BusinessException("活动已发布");
+		}
+		Integer createUid = activity.getCreateUid();
+		if (!Objects.equals(createUid, loginUser.getUid())) {
+			throw new BusinessException("活动创建者才能发布活动");
+		}
+		return activity;
+	}
+	
+	/**可取消发布活动
+	 * @Description 
+	 * @author wwb
+	 * @Date 2020-11-12 15:48:44
+	 * @param activityId
+	 * @param loginUser
+	 * @return com.chaoxing.activity.model.Activity
+	*/
+	public Activity cancelReleaseAble(Integer activityId, LoginUserDTO loginUser) {
+		Activity activity = activityExist(activityId);
+		Boolean released = activity.getReleased();
+		if (released) {
+			throw new BusinessException("活动已下架");
+		}
+		Integer createUid = activity.getCreateUid();
+		if (!Objects.equals(createUid, loginUser.getUid())) {
+			throw new BusinessException("活动创建者才能下架活动");
+		}
+		return activity;
+	}
+
 }
