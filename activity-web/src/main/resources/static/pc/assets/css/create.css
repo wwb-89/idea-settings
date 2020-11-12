@@ -1,3 +1,53 @@
+
+.page {
+    width: 1000px;
+    margin: 0px auto;
+}
+
+button {
+    cursor: pointer;
+}
+.flex {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.cancle-btn {
+    width: 80px;
+    height: 30px;
+    background: #fff;
+    border: 1px solid #82c3ff;
+    border-radius: 15px;
+    color: #0084ff;
+}
+
+.create-btn {
+    width: 80px;
+    height: 30px;
+    background: #0084ff;
+    border-radius: 15px;
+    border: none;
+    color: #fff;
+    margin-left: 10px;
+}
+
+input {
+    -webkit-appearance: button;
+    height: 36px;
+}
+
+.scroll {
+    height: 100%;
+    overflow: hidden;
+}
+select {
+    appearance: none;
+}
+.el-select-dropdown__item {
+    text-align: left;
+}
+
 .top {
     width: 1000px;
     height: 68px;
@@ -223,7 +273,11 @@ select {
 .input-box>.person {
     width: 130px;
     margin-left: 30px;
-    margin-right: 10px;
+
+}
+
+.person-span {
+    margin-left: 10px;
 }
 
 .select-method {
@@ -234,6 +288,7 @@ select {
     display: flex;
     flex-direction: column;
     align-items: flex-start;
+    justify-content: center;
 }
 
 .select-info {
@@ -345,15 +400,11 @@ input.btn-name,
     position: absolute;
     right: 0;
     top: 0;
+
+}
+
+.add-item>.selected {
     display: none;
-}
-
-.page-item:hover .selected {
-    display: block;
-}
-
-.page-item:hover {
-    border: 1px solid #0099ff;
 }
 
 .add-item:hover .selected {
@@ -703,7 +754,6 @@ input.btn-name,
 }
 
 #complete {
-    display: none;
     line-height: 30px;
 }
 
@@ -781,4 +831,63 @@ input.btn-name,
     font-size: 16px;
     color: #0084ff;
     background-color: #fff;
+}
+
+.page-item:hover>.mask {
+    display: flex;
+}
+
+.mask {
+    position: absolute;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    right: 0;
+    background: rgba(0, 0, 0, 0.2);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    display: none;
+}
+
+.mask>.preview {
+    background: rgba(255, 255, 255, 0.9);
+    color: #0084ff;
+    border: none;
+}
+
+.map-dailog {
+    width: 900px;
+    height: 622px;
+}
+
+.body-head {
+    display: flex;
+    align-items: center;
+}
+
+.body-head>.input-addr {
+    width: 326px;
+    height: 36px;
+    font-size: 16px;
+}
+
+#map-contain {
+    width: 840px;
+    height: 438px;
+    margin-top: 30px;
+}
+.input-addr>.title1 { 
+    text-overflow: ellipsis; 
+    overflow: hidden; 
+} 
+.el-scrollbar li,.address-box{
+    display: flex;
+    align-items: center;
+}
+.el-icon-search{
+    margin-right: 10px;
+}
+.el-select-dropdown__list{
+    max-height: 208px;
 }
