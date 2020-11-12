@@ -11,14 +11,48 @@
         <result column="pc_url" jdbcType="VARCHAR" property="pcUrl" />
         <result column="mobile_url" jdbcType="VARCHAR" property="mobileUrl" />
         <result column="sequence" jdbcType="INTEGER" property="sequence" />
+        <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
+        <result column="update_time" jdbcType="TIMESTAMP" property="updateTime" />
     </resultMap>
     <resultMap extends="BaseResultMap" id="ResultMapWithBLOBs" type="com.chaoxing.activity.model.ActivityModule">
         <result column="external_config" jdbcType="LONGVARCHAR" property="externalConfig" />
     </resultMap>
     <sql id="Base_Column_List">
-        t.id, t.activity_id, t.type, t.name, t.icon_cloud_id, t.external_id, t.pc_url, t.mobile_url, t.sequence
+        t.id, t.activity_id, t.type, t.name, t.icon_cloud_id, t.external_id, t.pc_url, t.mobile_url, t.sequence, t.create_time, t.update_time
     </sql>
     <sql id="Blob_Column_List">
         t.external_config
     </sql>
+
+    <insert id="batchAdd">
+        INSERT INTO t_activity_module ( activity_id, type, `name`, icon_cloud_id, external_id, external_config, pc_url, mobile_url, sequence )
+        VALUES
+            <foreach collection="activityModules" index="key" item="value" open="" close="" separator=",">
+                (
+                    #{value.activityId},
+                    #{value.type},
+                    #{value.name},
+                    #{value.iconCloudId},
+                    #{value.externalId},
+                    #{value.externalConfig},
+                    #{value.pcUrl},
+                    #{value.mobileUrl},
+                    #{value.sequence}
+                )
+            </foreach>
+    </insert>
+
+    <select id="getMaxSequenceByActivityId" resultType="java.lang.Integer">
+        SELECT
+            CASE
+        WHEN
+            MAX( t.sequence ) IS NULL THEN
+                1 ELSE MAX( t.sequence ) + 1
+            END
+        FROM
+            t_activity_module t
+        WHERE
+            t.activity_id = #{activityId}
+    </select>
+
 </mapper>
