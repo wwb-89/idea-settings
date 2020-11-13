@@ -478,7 +478,6 @@ input.btn-name,
     height: 30px;
     margin-bottom: 20px;
 }
-
 .delete-dailog>span {
     font-size: 16px;
     font-weight: 400;
@@ -486,12 +485,10 @@ input.btn-name,
     color: #333333;
     line-height: 24px;
 }
-
 .delete-dailog>div {
     display: flex;
     margin-top: 30px;
 }
-
 .details-item {
     display: flex;
     height: 130px;
@@ -505,7 +502,6 @@ input.btn-name,
     border-bottom: 1px solid #e9e9e9;
     position: relative;
 }
-
 .edit-img {
     position: absolute;
     right: 0px;
@@ -515,17 +511,14 @@ input.btn-name,
     display: flex;
     align-items: center;
 }
-
 .img-flex {
     display: flex;
     margin-top: 14px;
 }
-
 .details-item img {
     width: 16px;
     height: 16px;
 }
-
 .close {
     position: absolute;
     right: 12px;

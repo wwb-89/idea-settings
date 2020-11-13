@@ -3,6 +3,7 @@
     margin: 0px auto;
     font-size: 14px;
     color: #999999;
+    margin-bottom: 80px;
 }
 
 .top {
@@ -27,7 +28,7 @@
 
 .main {
     width: 1000px;
-    height: 980px;
+    max-height: 980px;
     background: #ffffff;
     border: 1px solid #dadce0;
     border-radius: 12px;
@@ -52,44 +53,78 @@
     width: 16px;
     height: 16px;
 }
+
 table {
     width: 100%;
 }
-/* table tr{
+
+.flex {
     display: flex;
-} */
-thead>tr {
-    width: 960px;
-    height: 40px;
-    background: #fafafa;
 }
-tbody>tr {
-    height: 100px;
-    border-bottom: 1px solid #f8f8f8;
+
+.table {
+    margin-top: 20px;
+    margin-bottom: 20px;
 }
-tr>td {
-    position: relative;
-    text-align: left;
-    padding: 0 14px;
+
+.item {
+    display: flex;
 }
-.select-box {
-    position: absolute;
-    top: 40px;
-    left: -10px;
-    width: 88px;
-    height: 140px;
-    background: #ffffff;
+
+.item>img {
+    width: 126px;
+    height: 60px;
     border-radius: 2px;
-    box-shadow: 0px 12px 48px 16px rgba(0, 0, 0, 0.03), 0px 9px 28px 0px rgba(0, 0, 0, 0.05), 0px 6px 16px -8px rgba(0, 0, 0, 0.08);
+    margin-right: 10px;
 }
-.select-box>div {
-    width: 100%;
+
+.title {
+    font-size: 15px;
+    font-weight: 600;
+    color: #333333;
+}
+.desc .time {
     font-size: 14px;
     font-weight: 400;
-    color: #333333;
-    text-align: center;
-    line-height: 34px;
+    color: #999999;
+    margin-top: 13px;
+    width: auto;
 }
-.flex{
+
+.blue {
+    color: #0084FF;
+}
+
+.blue2 {
+    color: #51B9FF;
+}
+
+.green {
+    color: #24BB1D;
+}
+
+.tree {
+    width: 400px;
+    max-height: 300px;
+    background: #ffffff;
+    border: 1px solid #f0f0f0;
+    border-radius: 2px;
+    box-sizing: border-box;
+}
+
+.tree-head {
+    width: 400px;
+    height: 40px;
+    background: #f8f8f8;
+    border-radius: 2px 2px 0px 0px;
+    font-size: 14px;
+    color: #666666;
     display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 10px;
+    box-sizing: border-box;
+}
+.already{
+color: #0084ff;
 }

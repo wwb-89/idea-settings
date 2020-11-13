@@ -4,6 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="../assets/css/create.css">
     <link rel="stylesheet" href="https://unpkg.com/element-ui/lib/theme-chalk/index.css">
     <link rel="stylesheet" href="../assets/css/reset.css">
     <link rel="stylesheet" href="../assets/css/public.css">
@@ -18,63 +19,100 @@
         </div>
         <div class="main box">
             <div class="create-btn">创建活动</div>
-            <div class="el-table">
-                <!-- <table>
-                    <thead>
-                        <tr>
-                            <td>活动名称</td>
-                            <td>创建单位</td>
-                            <td>创建人</td>
-                            <td>状态
-                                <img src="../assets/images/down.png" alt="" class="icon" style="position: absolute;top: 12px;">
-                                <div class="select-box">
-                                    <div>全部</div>
-                                    <div>进行中</div>
-                                    <div>未发布</div>
-                                    <div>已结束</div>
+            <div class="table">
+                <el-table :data="tableData" style="width: 100%">
+                    <el-table-column prop="name" label="活动名称" width="386">
+                        <template slot-scope="scope">
+                            <div class="item">
+                                <img src="https://p.ananas.chaoxing.com/star3/320_150c/572280b525982f6d3c51fd3fb5ef7449.jpeg"
+                                    alt="">
+                                <div class="desc">
+                                    <div :class="scope.row.state =='进行中'?'title blue':'title'">2020年星阅读活动</div>
+                                    <div class="time"><span>2019年10月1日</span> - <span>2028年10月1日</span></div>
                                 </div>
-                            </td>
-                            <td>操作</td>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <td>1211111111</td>
-                            <td>2133</td>
-                            <td>2134234</td>
-                            <td></td>
-                            <td>
+                            </div>
+                        </template>
+                    </el-table-column>
+                    <el-table-column prop="address" label="创建单位" width="120">
+                        <template slot-scope="scope">
+                            <div class="overHidden2">{{scope.row.address}}</div>
+                        </template>
+                    </el-table-column>
+                    <el-table-column prop="person" label="创建人" width="120">
+                        <template slot-scope="scope">
+                            <div class="overHidden2">{{scope.row.person}}</div>
+                        </template>
+                    </el-table-column>
+                    <el-table-column prop="state" label="状态"
+                        :filters="[{ text: '全部', value: '全部' }, { text: '进行中', value: '进行中' }, { text: '未发布', value: '未发布' }, { text: '已结束', value: '已结束' }]"
+                        :filter-method="filterTag" filter-placement="bottom-end">
+                        <template slot-scope="scope">
+                            <span
+                                :class="scope.row.state=='进行中'?'green':scope.row.state=='未发布'?'blue2':''">{{scope.row.state}}</span>
+                        </template>
+                    </el-table-column>
+                    <el-table-column label="操作" width="213">
+                        <template slot-scope="scope">
+                            <div v-show="scope.row.state == '进行中'">
                                 <el-button type="text">报名管理</el-button>
                                 <el-button type="text">发布范围</el-button>
-                                <div class="flex">
-                                    <el-button type="text">更多</el-button>
-                                </div>
-                               
-                            </td>
-                        </tr>
-                    </tbody>
-                </table> -->
-                <el-table
-                :data="tableData"
-                style="width: 100%">
-                <el-table-column
-                  prop="date"
-                  label="日期"
-                  width="180">
-                </el-table-column>
-                <el-table-column
-                  prop="name"
-                  label="姓名"
-                  width="180">
-                </el-table-column>
-                <el-table-column
-                  prop="address"
-                  label="地址">
-                </el-table-column>
-              </el-table>
+                                <el-button type="text">更多<i class="el-icon-arrow-down"></i></el-button>
+                            </div>
+                            <div v-show="scope.row.state == '未发布'">
+                                <el-button type="text" @click="handleRelease">发布</el-button>
+                                <el-button type="text">编辑</el-button>
+                                <el-button type="text">更多<i class="el-icon-arrow-down"></i></el-button>
+                            </div>
+                            <div v-show="scope.row.state == '已结束'">
+                                <el-button type="text" @click="handleXia">下架</el-button>
+                                <el-button type="text">统计</el-button>
+                            </div>
+                        </template>
+                    </el-table-column>
+                </el-table>
+            </div>
+            <el-pagination background layout="prev, pager, next" :total="1000">
+            </el-pagination>
+            <!-- 确认下架 -->
+            <div class="dailog-box1" v-show="deleteShow">
+                <div class="dailog delete-dailog">
+                    <img src="../assets/images/warning.png" alt="" class="warn">
+                    <span>下架后，该活动将不在活动广场中显示</span>
+                    <div>
+                        <div class="normal-btn" @click="handleCancle">取消</div>
+                        <div class="normal-btn after-sure">下架</div>
+                    </div>
+                </div>
+            </div>
+            <!-- 活动发布弹窗 -->
+            <div class="dailog-box1" v-show="releaseShow">
+                <div class="dailog">
+                    <div class="header">
+                        <span>活动发布</span>
+                        <img src="../assets/images/close.png" alt="" class="close" @click="close">
+                    </div>
+                    <div class="body">
+                        <div class="tree">
+                            <div class="tree-head">
+                                <span>选择发布的范围</span>
+                                <div class="already">已选<span style="margin-left: 5px;">0</span></div>
+                            </div>
+                            <div style="padding: 10px 0;">
+                                <el-tree :data="data" show-checkbox node-key="id" :default-expanded-keys="[2, 3]"
+                                :props="defaultProps">
+                            </el-tree>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="footer">
+                        <div class="normal-btn cancle" @click="handleCancle">取消</div>
+                        <div class="normal-btn before-sure">发布</div>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
+    <script src="../assets/lib/jquery.min.js"></script>
     <script src="../assets/lib/vue.js"></script>
     <script src="https://unpkg.com/element-ui/lib/index.js"></script>
     <script>
@@ -82,25 +120,90 @@
             el: '#app',
             data: {
                 tableData: [{
-                    date: '2016-05-02',
                     name: '王小虎',
-                    address: '上海市普陀区金沙江路 1518 弄'
+                    address: '超星小学122222222223333333333333',
+                    state: '进行中',
+                    person: '邱强'
                 }, {
-                    date: '2016-05-04',
                     name: '王小虎',
-                    address: '上海市普陀区金沙江路 1517 弄'
+                    address: '超星小学',
+                    state: '进行中',
+                    person: '邱强'
                 }, {
-                    date: '2016-05-01',
+
                     name: '王小虎',
-                    address: '上海市普陀区金沙江路 1519 弄'
+                    address: '超星小学',
+                    state: '未发布',
+                    person: '邱强'
                 }, {
-                    date: '2016-05-03',
                     name: '王小虎',
-                    address: '上海市普陀区金沙江路 1516 弄'
-                }]
+                    address: '超星小学',
+                    state: '已结束',
+                    person: '邱强'
+                }],
+                data: [{
+                    id: 1,
+                    label: '一级 1',
+                    children: [{
+                        id: 4,
+                        label: '二级 1-1',
+                        children: [{
+                            id: 9,
+                            label: '三级 1-1-1'
+                        }, {
+                            id: 10,
+                            label: '三级 1-1-2'
+                        }]
+                    }]
+                }, {
+                    id: 2,
+                    label: '一级 2',
+                    children: [{
+                        id: 5,
+                        label: '二级 2-1'
+                    }, {
+                        id: 6,
+                        label: '二级 2-2'
+                    }]
+                }, {
+                    id: 3,
+                    label: '一级 3',
+                    children: [{
+                        id: 7,
+                        label: '二级 3-1'
+                    }, {
+                        id: 8,
+                        label: '二级 3-2'
+                    }]
+                }],
+                defaultProps: {
+                    children: 'children',
+                    label: 'label'
+                },
+                deleteShow: false,
+                releaseShow: false
             },
             methods: {
-
+                filterTag(value, row) {
+                    return row.state === value;
+                },
+                handleXia() {
+                    this.deleteShow = true
+                    $('body').addClass('scroll')
+                },
+                handleCancle() {
+                    this.deleteShow = false
+                    this.releaseShow = false
+                    $('body').removeClass('scroll')
+                },
+                close() {
+                    this.releaseShow = false
+                    $('body').removeClass('scroll')
+                },
+                handleRelease(){
+                    this.releaseShow = true
+                    $('body').addClass('scroll')
+                }
             }
         })
     </script>
