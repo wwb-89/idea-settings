@@ -12,6 +12,7 @@ import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.serializer.RedisSerializationContext;
 import org.springframework.data.redis.serializer.RedisSerializer;
 import org.springframework.data.redis.serializer.StringRedisSerializer;
+import org.springframework.stereotype.Component;
 
 import java.time.Duration;
 
@@ -23,6 +24,7 @@ import java.time.Duration;
  * @blame wwb
  * @date 2020-11-09 11:19:17
  */
+@Component
 public class RedisConfig {
 
 	@Bean
@@ -67,12 +69,13 @@ public class RedisConfig {
 	}
 
 	@Bean
-	public CacheManager cacheManager(RedissonConnectionFactory connectionFactory, RedisSerializer valueSerializer) {
+	public CacheManager cacheManager(RedissonConnectionFactory connectionFactory, RedisSerializer fastJson2JsonRedisSerializer) {
 		CacheKeyPrefix cacheKeyPrefix = prefix -> prefix + CacheConstant.CACHE_KEY_SEPARATOR;
 		RedisSerializer keySerializer = new StringRedisSerializer();
+
 		RedisCacheConfiguration redisCacheConfiguration = RedisCacheConfiguration.defaultCacheConfig()
 				.serializeKeysWith(RedisSerializationContext.SerializationPair.fromSerializer(keySerializer))
-				.serializeValuesWith(RedisSerializationContext.SerializationPair.fromSerializer(valueSerializer))
+				.serializeValuesWith(RedisSerializationContext.SerializationPair.fromSerializer(fastJson2JsonRedisSerializer))
 				.entryTtl(Duration.ofHours(1))
 				.disableCachingNullValues()
 				.computePrefixWith(cacheKeyPrefix);

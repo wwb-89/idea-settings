@@ -3,7 +3,6 @@ package com.chaoxing.activity.service.activity.classify;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.chaoxing.activity.mapper.ActivityClassifyMapper;
 import com.chaoxing.activity.model.ActivityClassify;
-import com.chaoxing.activity.util.constant.CommonConstant;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.stereotype.Service;
@@ -57,7 +56,7 @@ public class ActivityClassifyQueryService {
 	public List<ActivityClassify> listSystem() {
 		return activityClassifyMapper.selectList(new QueryWrapper<ActivityClassify>()
 				.lambda()
-				.eq(ActivityClassify::getAffiliationFid, CommonConstant.SYSTEM_FID)
+				.eq(ActivityClassify::getSystem, Boolean.TRUE)
 				.orderByAsc(ActivityClassify::getSequence)
 		);
 	}

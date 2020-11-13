@@ -28,6 +28,7 @@ public class PageHandlerExceptionResolver implements HandlerExceptionResolver {
 
 	@Override
 	public ModelAndView resolveException(HttpServletRequest request, HttpServletResponse response, Object handler, Exception ex) {
+		ex.printStackTrace();
 		if (isPageRequest(handler)) {
 			String message = getMessage(ex);
 			ModelAndView modelAndView = new ModelAndView();

@@ -2,6 +2,7 @@ package com.chaoxing.activity.service.activity;
 
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.chaoxing.activity.dto.LoginUserDTO;
+import com.chaoxing.activity.dto.OrgAddressDTO;
 import com.chaoxing.activity.dto.manager.WfwRegionalArchitectureDTO;
 import com.chaoxing.activity.dto.module.SignFormDTO;
 import com.chaoxing.activity.mapper.ActivityMapper;
@@ -10,6 +11,7 @@ import com.chaoxing.activity.model.ActivityModule;
 import com.chaoxing.activity.model.ActivityScope;
 import com.chaoxing.activity.service.activity.module.ActivityModuleService;
 import com.chaoxing.activity.service.activity.scope.ActivityScopeService;
+import com.chaoxing.activity.service.manager.GuanliApiService;
 import com.chaoxing.activity.service.manager.WfwRegionalArchitectureApiService;
 import com.chaoxing.activity.service.manager.module.SignApiService;
 import com.chaoxing.activity.service.manager.module.WorkApiService;
@@ -54,6 +56,8 @@ public class ActivityHandleService {
 	private ActivityScopeService activityScopeService;
 	@Resource
 	private WorkApiService workApiService;
+	@Resource
+	private GuanliApiService guanliApiService;
 
 	@Resource
 	private SignApiService signApiService;
@@ -92,12 +96,21 @@ public class ActivityHandleService {
 		}
 		activity.setCreateUid(loginUser.getUid());
 		activity.setCreateFid(loginUser.getFid());
+		// 处理活动的所属区域
+		handleActivityArea(activity, loginUser);
 		activityMapper.insert(activity);
 		Integer activityId = activity.getId();
 		// 处理模块
 		handleActivityModules(activityId, activityModules);
 	}
 
+	/**处理报名签到
+	 * @Description 
+	 * @author wwb
+	 * @Date 2020-11-13 15:46:49
+	 * @param signForm
+	 * @return java.lang.Integer
+	*/
 	private Integer handleSign(SignFormDTO signForm) {
 		Integer signId = signForm.getId();
 		if (signId == null) {
@@ -110,18 +123,39 @@ public class ActivityHandleService {
 		return signId;
 	}
 
+	/**处理活动所属范围
+	 * @Description 
+	 * @author wwb
+	 * @Date 2020-11-13 15:46:43
+	 * @param activity
+	 * @param loginUser
+	 * @return void
+	*/
+	private void handleActivityArea(Activity activity, LoginUserDTO loginUser) {
+		Integer fid = loginUser.getFid();
+		try {
+			OrgAddressDTO orgAddress = guanliApiService.getAddressByFid(fid);
+			activity.setProvinceName(orgAddress.getProvince());
+			activity.setCityName(orgAddress.getCity());
+			activity.setCountyName(orgAddress.getCounty());
+		} catch (Exception e) {
+			// 不影响活动的创建
+			log.error("根据fid:{}获取区域信息error:{}", fid, e.getMessage());
+			e.printStackTrace();
+		}
+	}
+
 	/**修改活动
 	 * @Description 
 	 * @author wwb
 	 * @Date 2020-11-11 15:41:49
 	 * @param activity
 	 * @param signForm
-	 * @param activityModules
 	 * @param loginUser
 	 * @return void
 	*/
 	@Transactional(rollbackFor = Exception.class)
-	public void edit(Activity activity, SignFormDTO signForm, List<ActivityModule> activityModules, LoginUserDTO loginUser) {
+	public void edit(Activity activity, SignFormDTO signForm, LoginUserDTO loginUser) {
 		activityValidationService.addInputValidate(activity);
 		Integer activityId = activity.getId();
 		Activity existActivity = activityValidationService.editAble(activityId, loginUser);
@@ -142,7 +176,7 @@ public class ActivityHandleService {
 		existActivity.setStartDate(startDate);
 		existActivity.setEndDate(endDate);
 		existActivity.setCoverCloudId(activity.getCoverCloudId());
-		existActivity.setActivityForm(activity.getActivityForm());
+		existActivity.setActivityType(activity.getActivityType());
 		existActivity.setAddress(activity.getAddress());
 		existActivity.setLongitude(activity.getLongitude());
 		existActivity.setDimension(activity.getDimension());
@@ -157,8 +191,6 @@ public class ActivityHandleService {
 			.lambda()
 				.eq(Activity::getId, activity)
 		);
-		// 处理模块
-		handleActivityModules(activityId, activityModules);
 	}
 
 	private void handleActivityModules(Integer activityId, List<ActivityModule> activityModules) {
@@ -348,6 +380,19 @@ public class ActivityHandleService {
 		if (CollectionUtils.isNotEmpty(externalIds)) {
 			workApiService.clearActivityParticipateScopeCache(externalIds.stream().map(v -> Integer.parseInt(v)).collect(Collectors.toList()));
 		}
+	}
+
+	/**绑定模板
+	 * @Description 
+	 * @author wwb
+	 * @Date 2020-11-13 15:36:28
+	 * @param activityId
+	 * @param webTemplateId
+	 * @param loginUser
+	 * @return java.lang.Integer 网页id
+	*/
+	public Integer bindWebTemplate(Integer activityId, Integer webTemplateId, LoginUserDTO loginUser) {
+		return 0;
 	}
 
 }

@@ -1,9 +1,6 @@
 package com.chaoxing.activity.model;
 
-import com.baomidou.mybatisplus.annotation.IdType;
-import com.baomidou.mybatisplus.annotation.TableId;
-import com.baomidou.mybatisplus.annotation.TableLogic;
-import com.baomidou.mybatisplus.annotation.TableName;
+import com.baomidou.mybatisplus.annotation.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -31,6 +28,9 @@ public class ActivityClassify {
     private Integer id;
     /** 名称; column: name*/
     private String name;
+    /** 是否是系统所有; column: is_system*/
+    @TableField(value = "is_system")
+    private Boolean system;
     /** 所属机构id; column: affiliation_fid*/
     private Integer affiliationFid;
     /** 顺序; column: sequence*/

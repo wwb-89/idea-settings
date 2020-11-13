@@ -7,7 +7,7 @@
         <result column="start_date" jdbcType="DATE" property="startDate" />
         <result column="end_date" jdbcType="DATE" property="endDate" />
         <result column="cover_cloud_id" jdbcType="VARCHAR" property="coverCloudId" />
-        <result column="activity_form" jdbcType="VARCHAR" property="activityForm" />
+        <result column="activity_type" jdbcType="VARCHAR" property="activityType" />
         <result column="address" jdbcType="VARCHAR" property="address" />
         <result column="longitude" jdbcType="DECIMAL" property="longitude" />
         <result column="dimension" jdbcType="VARCHAR" property="dimension" />
@@ -25,15 +25,15 @@
         <result column="create_fid" jdbcType="INTEGER" property="createFid" />
         <result column="province_name" jdbcType="VARCHAR" property="provinceName" />
         <result column="city_name" jdbcType="VARCHAR" property="cityName" />
-        <result column="area_name" jdbcType="VARCHAR" property="areaName" />
+        <result column="county_name" jdbcType="VARCHAR" property="countyName" />
         <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
         <result column="update_time" jdbcType="TIMESTAMP" property="updateTime" />
     </resultMap>
     <sql id="Base_Column_List">
-        t.id, t.name, t.start_date, t.end_date, t.cover_cloud_id, t.activity_form, t.address, 
+        t.id, t.name, t.start_date, t.end_date, t.cover_cloud_id, t.activity_type, t.address,
         t.longitude, t.dimension, t.activity_classify_id, t.is_enable_sign, t.sign_id, t.web_template_id, 
         t.is_released, t.release_time, t.release_uid, t.status, t.is_open_audit, t.audit_status, 
-        t.create_uid, t.create_fid, t.province_name, t.city_name, t.area_name, t.create_time, 
+        t.create_uid, t.create_fid, t.province_name, t.city_name, t.county_name, t.create_time,
         t.update_time
     </sql>
 

@@ -1,11 +1,15 @@
 package com.chaoxing.activity.web.config;
 
+import com.chaoxing.activity.web.interceptor.AutoLoginInterceptor;
 import org.springframework.boot.web.server.ErrorPage;
 import org.springframework.boot.web.server.ErrorPageRegistrar;
 import org.springframework.boot.web.server.ErrorPageRegistry;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpStatus;
+import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
+
+import javax.annotation.Resource;
 
 /**
  * @author wwb
@@ -17,6 +21,14 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
  */
 @Configuration
 public class WebConfig implements WebMvcConfigurer, ErrorPageRegistrar {
+
+	@Resource
+	private AutoLoginInterceptor autoLoginInterceptor;
+
+	@Override
+	public void addInterceptors(InterceptorRegistry registry) {
+		registry.addInterceptor(autoLoginInterceptor).addPathPatterns("/**");
+	}
 
 	@Override
 	public void registerErrorPages(ErrorPageRegistry registry) {

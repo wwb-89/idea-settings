@@ -30,6 +30,7 @@ public class AutoLoginInterceptor extends HandlerInterceptorAdapter {
 
 	@Override
 	public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
+		log.info("请求地址:{}", request.getRequestURI());
 		validateCookieLoginUser(request);
 		LoginUserDTO loginUser = LoginUtils.getLoginUser(request);
 		if (loginUser == null) {

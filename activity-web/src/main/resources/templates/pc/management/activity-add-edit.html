@@ -2,9 +2,559 @@
 <html lang="en" xmlns:th="http://www.thymeleaf.org/">
 <head>
     <meta charset="UTF-8">
-    <title>Title</title>
+    <title>创建活动</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="/static/pc/assets/lib/element-ui/lib/theme-chalk/index.css" th:href="@{/pc/assets/lib/element-ui/lib/theme-chalk/index.css}">
+    <link rel="stylesheet" href="/static/pc/assets/css/reset.css" th:href="@{/pc/assets/css/reset.css}">
+    <link rel="stylesheet" href="/static/pc/assets/css/public.css" th:href="@{/pc/assets/css/public.css}">
+    <link rel="stylesheet" href="/static/pc/assets/css/create.css" th:href="@{/pc/assets/css/create.css}">
+<!--    <link rel="stylesheet" href="/static/pc/assets/lib/webuploader/webuploader.css" th:href="@{/pc/assets/lib/webuploader/webuploader.css}">-->
+    <style type="text/css">
+        .webuploader-element-invisible {
+            display: none;
+        }
+        [v-cloak] {
+            display: none;
+        }
+    </style>
 </head>
-<body>
 
+<body>
+<div class="page" id="activity-vue" v-cloak>
+    <!-- 创建活动头部 -->
+    <div class="top flex box" id="create">
+        <div class="flex">
+            <img src="/static/pc/assets/images/left.png" th:src="@{/pc/assets/images/left.png}" class="left">
+            <span class="create">创建活动</span>
+        </div>
+        <div>
+            <button type="button" class="create-btn">下一步</button>
+        </div>
+        <div>
+            <button type="button" class="cancle-btn">上一步</button>
+        </div>
+    </div>
+    <!-- 编辑活动头部 -->
+    <div class="top flex box" id="edit" style="display: none;">
+        <div class="flex">
+            <img src="/static/pc/assets/images/left.png" th:src="@{/pc/assets/images/left.png}" class="left">
+            <span class="create">编辑活动</span>
+        </div>
+        <div>
+            <button type="button" class="cancle-btn">预览</button>
+            <button type="button" class="create-btn">保存</button>
+        </div>
+    </div>
+    <div class="info box">
+        <form action="">
+            <div class="title">基本信息</div>
+            <div class="form-item">
+                <label class="label">名称</label>
+                <div class="input-box">
+                    <el-input type="text" placeholder="请填写信息，简短的活动名称" v-model.trim="activity.name" maxlength="20" show-word-limit></el-input>
+                </div>
+            </div>
+            <div class="form-item">
+                <label class="label">时间</label>
+                <div class="input-box">
+                    <el-date-picker v-model.trim="activity.startDate" type="datetime" prefix-icon="el-icon-date" placeholder="开始日期" style="width: 180px;" clear-icon></el-date-picker>
+                    <span class="font">至</span>
+                    <el-date-picker v-model.trim="activity.endDate" type="datetime" prefix-icon="el-icon-date" placeholder="结束日期" style="width: 180px;"></el-date-picker>
+                </div>
+            </div>
+            <div class="form-item">
+                <label class="label" style="line-height: 100px;">封面</label>
+                <div class="input-box">
+                    <img src="/static/pc/assets/images/example.jpg" th:src="@{/pc/assets/images/example.jpg}" class="cover-img">
+                    <div class="font-box">
+                        <span>建议尺寸：1080x500</span>
+                        <span>大小：小于5M</span>
+                        <span>格式：jpg、png、gif</span>
+                        <div class="cancle-btn upload" id="cover-upload-btn">上传文件</div>
+                    </div>
+                </div>
+            </div>
+            <div class="form-item">
+                <label class="label">活动类型</label>
+                <div class="input-box">
+                    <div class="radio-box" v-for="(activityType, index) of activityTypes" :key="'activity-type-' + index" :value="activity.activityType">
+                        <input type="radio" name="active-type" :value="activityType.value" :checked="activityType.selected" @click="changeActivityType(index)"/>
+                        <span>{{activityType.name}}</span>
+                    </div>
+                </div>
+            </div>
+            <div class="form-item">
+                <label class="label">位置</label>
+                <div class="input-box">
+                    <input type="text" readonly required lay-verify="required" v-model.trim="activity.address" placeholder="请选择活动地点" autocomplete="off" class="layui-input name" style="cursor: pointer;" @click="showMap">
+                    <img src="/static/pc/assets/images/location.png" th:src="@{/pc/assets/images/location.png}" class="length icon">
+                </div>
+            </div>
+            <div class="form-item">
+                <label class="label">活动分类</label>
+                <div class="input-box">
+                    <div :class="{'type-item': true, 'active': false}" v-for="(activityClassify, index) of activityClassifies" :key="'activity-classify-' + index">{{activityClassify.name}}
+                        <img src="/static/pc/assets/images/more.png" th:src="@{/pc/assets/images/more.png}" style="margin-left: 10px;" v-if="!activityClassify.system">
+                        <div class="edit-box" v-if="!activityClassify.system">
+                            <div>编辑</div>
+                            <div>删除</div>
+                        </div>
+                    </div>
+                    <div class="type-item">
+                        <img src="/static/pc/assets/images/add.png" th:src="@{/pc/assets/images/add.png}" style="margin-right: 10px;" @click="toAddActivityClassify">新增
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+    <div class="info box">
+        <div class="set-box">
+            <div class="title set">参与设置</div>
+            <el-switch class="switch"></el-switch>
+        </div>
+        <!-- 点击参与设置 -->
+        <form action="" class="setForm">
+            <div class="form-item">
+                <label class="label">参与形式</label>
+                <div class="input-box">
+                    <div class="radio-box">
+                        <input type="radio" name="method" value="1" /><span>报名</span>
+                    </div>
+                    <div class="radio-box">
+                        <input type="radio" name="method" value="2" /><span>签到</span>
+                    </div>
+                    <div class="radio-box">
+                        <input type="radio" name="method" value="3" /><span>报名后签到</span>
+                    </div>
+                </div>
+            </div>
+            <div class="form-item">
+                <label class="label">报名时间</label>
+                <div class="input-box">
+                    <el-date-picker prefix-icon="el-icon-date" type="datetime" placeholder="开始日期" style="width: 180px;" clear-icon>
+                    </el-date-picker>
+                    <span class="font">至</span>
+                    <el-date-picker prefix-icon="el-icon-date" type="datetime" placeholder="结束日期" style="width: 180px;">
+                </div>
+            </div>
+            <div class="form-item">
+                <label class="label">人数限制</label>
+                <div class="input-box">
+                    <div class="select-person">
+                        <el-select placeholder="请选择" value="1">
+                            <el-option label="无限制" value="1"></el-option>
+                        </el-select>
+                    </div>
+                    <input type="text" placeholder="请输入正整数" class="person"><span class="person-span">人</span>
+                </div>
+            </div>
+            <div class="form-item">
+                <label class="label">报名方式</label>
+                <div class="input-box">
+                    <div class="select" style="margin-top: 0;">
+                        <el-select placeholder="请选择" value="1">
+                            <el-option label="直接报名" value="1"></el-option>
+                        </el-select>
+                    </div>
+                    <span class="tips">参与者点击报名即成功</span>
+                </div>
+            </div>
+            <div class="form-item">
+                <label class="label">签到方式</label>
+                <div class="input-box">
+                    <div class="select" style="margin-top: 0;">
+                        <el-select placeholder="请选择" value="1">
+                            <el-option label="" value="1"></el-option>
+                        </el-select>
+                    </div>
+                    <span class="tips">参与者点击签到即成功</span>
+                </div>
+            </div>
+            <div class="form-item">
+                <label class="label">签到方式</label>
+                <div class="input-box">
+                    <div class="select" style="margin-top: 0;">
+                        <el-select placeholder="请选择" value="1">
+                            <el-option label="" value="1"></el-option>
+                        </el-select>
+                    </div>
+                    <span class="tips">参与者需要到达指定位置才能进行签到</span>
+                </div>
+            </div>
+            <div class="form-item">
+                <label class="label" style="line-height: 20px;">信息填写</label>
+                <div class="input-box column">
+                    <div class="set-box">
+                        <el-switch></el-switch>
+                        <span class="tips">如何创建报名信息表单？</span>
+                    </div>
+                    <div class="select">
+                        <el-select placeholder="请选择" value="1">
+                            <el-option label="" value="1"></el-option>
+                        </el-select>
+                    </div>
+                </div>
+            </div>
+            <div class="form-item">
+                <label class="label">已报名名单公开</label>
+                <div class="input-box">
+                    <el-switch></el-switch>
+                </div>
+            </div>
+            <div class="form-item">
+                <label class="label">按钮名称</label>
+                <div class="input-box btn-name">
+                    <el-input type="text" placeholder="请输入内容" maxlength="10" show-word-limit></el-input>
+                </div>
+            </div>
+        </form>
+    </div>
+    <div class="info box" style="display: none;">
+        <div class="title">选择模板</div>
+        <!-- 创建活动时选择模板 -->
+        <div class="page-show">
+            <div class="page-box">
+                <div class="page-item">
+                    <div class="mask-box">
+                        <img src="/static/pc/assets/images/example.jpg" th:src="@{/pc/assets/images/example.jpg}" class="img">
+                        <div class="mask">
+                            <div class="normal-btn preview">预览</div>
+                            <div class="normal-btn after-sure">选择</div>
+                        </div>
+                    </div>
+                    <div class="desc overHidden1">征文活动</div>
+                </div>
+                <div class="page-item">
+                    <div class="mask-box">
+                        <img src="/static/pc/assets/images/example.jpg" th:src="@{/pc/assets/images/example.jpg}" class="img">
+                        <div class="mask">
+                            <div class="normal-btn preview">预览</div>
+                            <div class="normal-btn after-sure">选择</div>
+                        </div>
+                    </div>
+                    <div class="desc overHidden1">暑期教师共读活动</div>
+                </div>
+                <div class="page-item">
+                    <div class="mask-box">
+                        <img src="/static/pc/assets/images/example.jpg" th:src="@{/pc/assets/images/example.jpg}" class="img">
+                        <div class="mask">
+                            <div class="normal-btn preview">预览</div>
+                            <div class="normal-btn after-sure">选择</div>
+                        </div>
+                    </div>
+                    <div class="desc overHidden1">书海拾贝·辰星领航 - 暑期星阅读活动暑期星…</div>
+                </div>
+                <div class="page-item">
+                    <div class="mask-box">
+                        <img src="/static/pc/assets/images/example.jpg" th:src="@{/pc/assets/images/example.jpg}" class="img">
+                        <div class="mask">
+                            <div class="normal-btn preview">预览</div>
+                            <div class="normal-btn after-sure">选择</div>
+                        </div>
+                    </div>
+                    <div class="desc overHidden1">阅往昔·致未来</div>
+                </div>
+                <div class="page-item">
+                    <div class="mask-box">
+                        <img src="/static/pc/assets/images/example.jpg" th:src="@{/pc/assets/images/example.jpg}" class="img">
+                        <div class="mask">
+                            <div class="normal-btn preview">预览</div>
+                            <div class="normal-btn after-sure">选择</div>
+                        </div>
+                    </div>
+                    <div class="desc overHidden1">阅往昔·致未来</div>
+                </div>
+            </div>
+        </div>
+        <!-- 编辑活动时预览模板 -->
+        <div class="page-show" style="display: none;">
+            <div class="page-item">
+                <img src="/static/pc/assets/images/example.jpg" th:src="@{/pc/assets/images/example.jpg}" class="img">
+                <!-- hover时出现 -->
+                <div class="mask">
+                    <div class="normal-btn preview">预览</div>
+                    <div class="normal-btn after-sure">页面配置</div>
+                </div>
+            </div>
+            <div class="page-item">
+                <img src="/static/pc/assets/images/example.jpg" th:src="@{/pc/assets/images/example.jpg}" class="img">
+                <div class="mask">
+                    <div class="normal-btn preview">预览</div>
+                    <div class="normal-btn after-sure">页面配置</div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- 新增活动分类和自定义选项的弹出框 -->
+    <div class="dailog-box1" style="display: none;">
+        <div class="dailog">
+            <div class="header">
+                <span>分类名称</span>
+                <img src="/static/pc/assets/images/close.png" th:src="@{/pc/assets/images/close.png}" class="close">
+            </div>
+            <div class="body">
+                <el-input type="text" class="fenlei-input" placeholder="请输入" maxlength="6" show-word-limit></el-input>
+            </div>
+            <div class="footer">
+                <div class="normal-btn cancle">取消</div>
+                <div class="normal-btn before-sure">确定</div>
+            </div>
+        </div>
+    </div>
+    <!-- 确认删除分类弹框 -->
+    <div class="dailog-box3" style="display: none;">
+        <div class="dailog delete-dailog">
+            <img src="/static/pc/assets/images/warning.png" th:src="@{/pc/assets/images/warning.png}" class="warn">
+            <span>确认删除此分类</span>
+            <div>
+                <div class="normal-btn">保留</div>
+                <div class="normal-btn after-sure">删除</div>
+            </div>
+        </div>
+    </div>
+    <!-- 活动创建成功弹框 -->
+    <div class="dailog-box3" style="display: none;">
+        <div class="dailog delete-dailog">
+            <img src="/static/pc/assets/images/success.png" th:src="@{/pc/assets/images/success.png}" class="warn">
+            <span>活动创建成功</span>
+            <div>
+                <div class="normal-btn">配置页面</div>
+                <div class="normal-btn after-sure">完成</div>
+            </div>
+        </div>
+    </div>
+    <!-- 预览弹窗 -->
+    <div class="dailog-box1" style="display: none;">
+        <div class="dailog look-dailog">
+            <div class="header">
+                <span>预览</span>
+                <img src="/static/pc/assets/images/close.png" th:src="@{/pc/assets/images/close.png}" class="close">
+            </div>
+            <div class="body">
+                <!-- 二维码 -->
+                <div class="code"><img src="/static/pc/assets/images/example.jpg" th:src="@{/pc/assets/images/example.jpg}"></div>
+                <span>使用学习通扫码查看</span>
+                <div class="link-box">
+                    <span>链接</span>
+                    <input type="text" class="input-link">
+                    <a href="">访问</a>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- 地图弹窗 -->
+    <div class="dailog-box1" v-show="mapWindowShow">
+        <div class="dailog map-dailog">
+            <div class="header">
+                <span>设置地图</span>
+                <img src="/static/pc/assets/images/close.png" th:src="@{/pc/assets/images/close.png}" class="close" @click="mapWindowShow = false">
+            </div>
+            <div class="body">
+                <div class="body-head">
+                    <div class="input-addr">
+                        <el-autocomplete style="width:100%;" popper-class="autoAddressClass" v-model.trim="address" :fetch-suggestions="querySearchAsync" :trigger-on-focus="false" placeholder="请输入地址" @select="handleSelect" clearable>
+                            <template slot-scope="{ item }"> <i class="el-icon-search fl mgr10"></i>
+                                <div class="address-box">
+                                    <div class="title1">{{ item.title }}</div>
+                                    --
+                                    <span class="address ellipsis">{{ item.address }}</span>
+                                </div>
+                            </template>
+                        </el-autocomplete>
+                    </div>
+                    <div class="normal-btn after-sure" @click="ensureAddress">确定</div>
+                </div>
+                <div id="map-contain">
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div th:replace="pc/include/common_js :: common_js(~{::script})">
+    <script type="text/javascript" src="//api.map.baidu.com/api?v=3.0&ak=aG5nWGO5m5tkVhBHGuVppoIRfKbyp5H3"></script>
+    <script type="text/javascript" src="/static/pc/assets/lib/element-ui/lib/index.js" th:src="@{/pc/assets/lib/element-ui/lib/index.js}"></script>
+    <script type="text/javascript" src="/static/pc/assets/lib/webuploader/webuploader.js" th:src="@{/pc/assets/lib/webuploader/webuploader.js}"></script>
+    <script th:inline="javascript">
+        activityVue = new Vue({
+            el: "#activity-vue",
+            data: {
+                activity: [[${activity}]],
+                activityTypes: [[${activityTypes}]],
+                activityClassifies: [[${activityClassifies}]],
+                // 文件上传
+                uploader: null,
+                // 地址
+                address: "",
+                // 经度
+                longitude: "",
+                // 维度
+                dimension: "",
+                // 地图实例
+                map: '',
+                // Marker实例
+                mk: '',
+                // 显示隐藏
+                // 是否显示地图弹窗
+                mapWindowShow: false
+            },
+            created: function () {
+                var $this = this;
+                if (activityApp.isEmpty($this.activity)) {} {
+                    $this.activity = {
+                        id: null,
+                        name: "",
+                        startDate: "",
+                        endDate: "",
+                        coverCloudId: "",
+                        activityType: "online",
+                        address: "",
+                        longitude: "",
+                        dimension: "",
+                        activityClassifyId: "",
+                        enableSign: false
+                    };
+                }
+                $($this.activityTypes).each(function () {
+                    if ($this.activity.activityType == this.value) {
+                        this.selected = true;
+                    } else {
+                        this.selected = false;
+                    }
+                });
+            },
+            mounted: function () {
+                var $this = this;
+                $this.initMap();
+                $this.initUploader();
+            },
+            methods: {
+                // 初始化百度地图
+                initMap: function () {
+                    var $this = this;
+                    // 新建地图实例，enableMapClick:false ：禁用地图默认点击弹框
+                    this.map = new BMap.Map("map-contain", {
+                        enableMapClick: false
+                    });
+                    var point = new BMap.Point(104.10194, 30.65984);
+                    this.map.centerAndZoom(point, 19);
+                    // 启用滚轮放大缩小，默认禁用
+                    this.map.enableScrollWheelZoom(true);
+                    this.mk = new BMap.Marker(point);
+                    this.map.addOverlay(this.mk);
+                    // 给地图绑定点击事件
+                    this.map.addEventListener('click', function (e) {
+                        // 点击后调用逆地址解析函数
+                        $this.getAddrByPoint(e.point);
+                    });
+                },
+                //逆地址解析
+                getAddrByPoint: function (point) {
+                    var $this = this;
+                    var geco = new BMap.Geocoder();
+                    geco.getLocation(point, function (res) {
+                        // 重新设置标注的地理坐标
+                        $this.mk.setPosition(point);
+                        // 将地图的中心点更改为给定的点
+                        $this.map.panTo(point);
+                        // 记录该点的详细地址信息
+                        $this.address = res.address;
+                        // 记录当前坐标点
+                        $this.longitude = point.lng;
+                        $this.dimension = point.lat;
+                    })
+                },
+                querySearchAsync(str, cb) {
+                    var options = {
+                        // 检索完成后的回调函数
+                        onSearchComplete: function (res) {
+                            var s = [];
+                            if (local.getStatus() == BMAP_STATUS_SUCCESS) {
+                                for (var i = 0; i < res.getCurrentNumPois(); i++) {
+                                    s.push(res.getPoi(i));
+                                }
+                                // 获取到数据时，通过回调函数cb返回到<el-autocomplete>组件中进行显示
+                                cb(s);
+                            } else {
+                                cb(s)
+                            }
+                        }
+                    }
+                    // 创建LocalSearch构造函数
+                    var local = new BMap.LocalSearch(this.map, options);
+                    // 调用search方法，根据检索词str发起检索
+                    local.search(str);
+                },
+                handleSelect(item) {
+                    var $this = this;
+                    // 记录当前选中地址坐标
+                    // 清除地图上所有覆盖物
+                    this.map.clearOverlays();
+                    // 根据所选坐标重新创建Marker
+                    this.mk = new BMap.Marker(item.point);
+                    // 将覆盖物重新添加到地图中
+                    this.map.addOverlay(this.mk);
+                    // 将地图的中心点更改为选定坐标点
+                    this.map.panTo(item.point);
+                    // 记录详细地址，含建筑物名
+                    this.address = item.address + item.title;
+                    $this.longitude = item.point.lng;
+                    $this.dimension = item.point.lat;
+                },
+                // 初始化文件上传
+                initUploader: function () {
+                    var $this = this;
+                    $this.uploader = WebUploader.create({
+                        // swf文件路径
+                        swf: ctx + "/pc/assets/lib/webuploader/Uploader.swf",
+                        // 文件接收服务端。
+                        server: ctx + "/api/upload/img",
+                        // 选择文件的按钮。可选。
+                        // 内部根据当前运行是创建，可能是input元素，也可能是flash.
+                        pick: "#cover-upload-btn",
+                        // 不压缩image, 默认如果是jpeg，文件上传前会压缩一把再上传！
+                        resize: false,
+                        auto: true,
+                        // 只允许选择图片文件。
+                        accept: {
+                            title: 'Images',
+                            extensions: 'gif,jpg,jpeg,bmp,png',
+                            mimeTypes: 'image/*'
+                        }
+                    });
+                    $this.uploader.on("uploadComplete", function (file, data) {
+                        console.log(file);
+                    });
+                },
+                // 修改活动类型
+                changeActivityType: function (index) {
+                    var $this = this;
+                    var activityType = $this.activityTypes[index];
+                    $this.activity.activityType = activityType.value;
+                },
+                // 显示百度地图
+                showMap: function () {
+                    var $this = this;
+                    $this.mapWindowShow = true;
+                },
+                // 确定地址
+                ensureAddress: function () {
+                    var $this = this;
+                    if (activityApp.isEmpty($this.longitude) || activityApp.isEmpty($this.longitude)) {
+                        app.showMsg("请选择地址");
+                        return;
+                    }
+                    $this.activity.address = $this.address;
+                    $this.activity.longitude = $this.longitude;
+                    $this.activity.dimension = $this.dimension;
+                    $this.mapWindowShow = false;
+                },
+                toAddActivityClassify: function () {
+
+                }
+            }
+        })
+    </script>
+</div>
 </body>
+
 </html>

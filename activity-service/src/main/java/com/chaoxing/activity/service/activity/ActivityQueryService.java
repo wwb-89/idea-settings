@@ -1,16 +1,20 @@
 package com.chaoxing.activity.service.activity;
 
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.chaoxing.activity.dto.activity.ActivityTypeDTO;
 import com.chaoxing.activity.dto.query.ActivityQueryDTO;
 import com.chaoxing.activity.mapper.ActivityMapper;
 import com.chaoxing.activity.model.Activity;
 import com.chaoxing.activity.util.enums.ActivityQueryDateEnum;
+import com.chaoxing.activity.util.enums.ActivityTypeEnum;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
+import java.util.List;
 
 /**活动查询服务
  * @author wwb
@@ -83,6 +87,26 @@ public class ActivityQueryService {
 		}
 		activityQuery.setMinDateStr(minDateStr);
 		activityQuery.setMaxDateStr(maxDateStr);
+	}
+
+	/**查询活动类型列表
+	 * @Description 
+	 * @author wwb
+	 * @Date 2020-11-13 17:50:59
+	 * @param 
+	 * @return java.util.List<com.chaoxing.activity.dto.activity.ActivityTypeDTO>
+	*/
+	public List<ActivityTypeDTO> listActivityType() {
+		List<ActivityTypeDTO> result = new ArrayList<>();
+		ActivityTypeEnum[] values = ActivityTypeEnum.values();
+		for (ActivityTypeEnum value : values) {
+			ActivityTypeDTO activityType = ActivityTypeDTO.builder()
+					.name(value.getName())
+					.value(value.getValue())
+					.build();
+			result.add(activityType);
+		}
+		return result;
 	}
 
 }
