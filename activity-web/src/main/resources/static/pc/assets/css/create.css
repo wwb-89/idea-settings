@@ -623,9 +623,6 @@ input.btn-name,
     height: 16px;
     cursor: pointer;
 }
-
-
-
 .normal-btn {
     box-sizing: border-box;
     height: 30px;
@@ -660,7 +657,6 @@ input.btn-name,
     border: none;
     margin-left: 20px;
 }
-
 .select {
     position: relative;
     width: 200px;

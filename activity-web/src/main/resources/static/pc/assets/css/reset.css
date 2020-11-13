@@ -7,23 +7,9 @@
     color: #333333;
 }
 
-.el-pagination button {
-    width: 20px;
-    height: 20px;
-    border-radius: 50%;
-   
-    border: 1px solid#cccccc;
-}
-.el-pagination.is-background .btn-next, .el-pagination.is-background .btn-prev, .el-pagination.is-background .el-pager li{
-    margin: 0 10px;
-    min-width: 20px;
-    height: 20px;
-    border-radius: 50%;
-    background-color: #ffffff;
-    line-height: 20px;
-}
-.el-pager .more::before {
-    line-height: 20px;
+.el-pagination.is-background .el-pager li:not(.disabled).active {
+    background-color:#0084FF;
+    color: #FFF;
 }
 .el-input__prefix{
     right: 5px;
