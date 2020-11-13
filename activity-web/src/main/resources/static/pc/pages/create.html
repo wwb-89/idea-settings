@@ -85,7 +85,7 @@
                     <label class="label">位置</label>
                     <div class="input-box">
                         <input type="text" name="title" required lay-verify="required" placeholder="请输入活动地点"
-                            autocomplete="off" class="layui-input name">
+                            autocomplete="off" class="layui-input name" @focus="handleFocus">
                         <img src="../assets/images/location.png" alt="" class="length icon">
                     </div>
                 </div>
@@ -95,14 +95,14 @@
                         <div class="type-item active">活动</div>
                         <div class="type-item">讲座</div>
                         <div class="type-item">征文</div>
-                        <div class="type-item" id="custom">自定义选项
+                        <div class="type-item" id="custom" @click="handleCustom">自定义选项
                             <img src="../assets/images/more.png" alt="" style="margin-left: 10px;">
-                            <div class="edit-box">
-                                <div>编辑</div>
-                                <div>删除</div>
+                            <div class="edit-box" v-show="editShow">
+                                <div @click="handleEdit">编辑</div>
+                                <div @click="handleDelete">删除</div>
                             </div>
                         </div>
-                        <div class="type-item" id="addFenlei"> <img src="../assets/images/add.png" alt=""
+                        <div class="type-item" id="addFenlei" @click="handleAdd"> <img src="../assets/images/add.png" alt=""
                                 style="margin-right: 10px;">新增</div>
                     </div>
                 </div>
@@ -253,7 +253,7 @@
                         <div class="mask-box">
                             <img src="../assets/images/example.jpg" alt="" class="img">
                             <div class="mask">
-                                <div class="normal-btn preview">预览</div>
+                                <div class="normal-btn preview" @click="preview">预览</div>
                                 <div class="normal-btn after-sure">选择</div>
                             </div>
                         </div>
@@ -323,18 +323,18 @@
             </div>
         </div>
         <!-- 新增活动分类和自定义选项的弹出框 -->
-        <div class="dailog-box1" style="display: none;">
+        <div class="dailog-box1" v-show="fenleiShow">
             <div class="dailog">
                 <div class="header">
                     <span>分类名称</span>
-                    <img src="../assets/images/close.png" alt="" class="close">
+                    <img src="../assets/images/close.png" alt="" class="close" @click="close">
                 </div>
                 <div class="body">
                     <el-input type="text" class="fenlei-input" placeholder="请输入" v-model="fenlei" maxlength="6" show-word-limit></el-input>
                    
                 </div>
                 <div class="footer">
-                    <div class="normal-btn cancle">取消</div>
+                    <div class="normal-btn cancle" @click="handleCancle">取消</div>
                     <div class="normal-btn before-sure">确定</div>
                 </div>
             </div>
@@ -453,13 +453,13 @@
             </div>
         </div>
         <!-- 确认删除分类弹框 -->
-        <div class="dailog-box3" style="display: none;">
+        <div class="dailog-box3" v-show="deleteShow">
             <div class="dailog delete-dailog">
                 <img src="../assets/images/warning.png" alt="" class="warn">
                 <span>确认删除此分类</span>
                 <div>
-                    <div class="normal-btn">保留</div>
-                    <div class="normal-btn after-sure">删除</div>
+                    <div class="normal-btn" @click="handleSave">保留</div>
+                    <div class="normal-btn after-sure" @click="handleSure">删除</div>
                 </div>
             </div>
         </div>
@@ -502,11 +502,11 @@
             </div>
         </div>
         <!-- 预览弹窗 -->
-        <div class="dailog-box1" style="display: none;">
+        <div class="dailog-box1" v-show="previewShow">
             <div class="dailog look-dailog">
                 <div class="header">
                     <span>预览</span>
-                    <img src="../assets/images/close.png" alt="" class="close">
+                    <img src="../assets/images/close.png" alt="" class="close" @click="close">
                 </div>
                 <div class="body">
                     <!-- 二维码 -->
@@ -514,18 +514,18 @@
                     <span>使用学习通扫码查看</span>
                     <div class="link-box">
                         <span>链接</span>
-                        <input type="text" class="input-link" value="http://xueya.chaoxing.com/school-base/sc-sc-">
-                        <a href="#">访问</a>
+                        <input type="text" class="input-link" :value="link">
+                        <a :href="link">访问</a>
                     </div>
                 </div>
             </div>
         </div>
         <!-- 地图 -->
-        <div class="dailog-box1" style="display: none;">
+        <div class="dailog-box1" v-show="addressShow">
             <div class="dailog map-dailog">
                 <div class="header">
                     <span>设置地图</span>
-                    <img src="../assets/images/close.png" alt="" class="close">
+                    <img src="../assets/images/close.png" alt="" class="close" @click="close">
                 </div>
                 <div class="body">
                     <div class="body-head">
@@ -648,6 +648,11 @@
                 dragging: null,
                 pageShow: false,
                 editShow: false,
+                addressShow:false,
+                fenleiShow:false,
+                deleteShow:false,
+                previewShow:false,
+                link:"http://xueya.chaoxing.com/school-base/sc-sc-"
             },
             mounted() {
                 this.initMap()
@@ -736,6 +741,47 @@
                 handleNext() {
                     this.pageShow = true
                 },
+                handleFocus(){
+                    this.addressShow = true
+                },
+                close(){
+                    this.addressShow = false
+                    this.fenleiShow = false
+                    this.previewShow = false
+                    $('body').removeClass('scroll')
+                },
+                handleCustom(){
+                    this.editShow = !this.editShow
+                },
+                handleEdit(){
+                    this.fenleiShow = true
+                    this.fenlei = '自定义选项'
+                    $('body').addClass('scroll')
+                },
+                handleAdd(){
+                    this.fenleiShow = true
+                    $('body').addClass('scroll')
+                },
+                handleDelete(){
+                    this.deleteShow = true
+                    $('body').addClass('scroll')
+                },
+                handleCancle(){
+                    this.fenlei = ''
+                    this.fenleiShow = false
+                    $('body').removeClass('scroll')
+                },
+                handleSave(){
+                    this.deleteShow = false
+                    $('body').removeClass('scroll')
+                },
+                handleSure(){
+
+                },
+                preview(){
+                    this.previewShow = true
+                    $('body').addClass('scroll')
+                }
             }
         })
     </script>
