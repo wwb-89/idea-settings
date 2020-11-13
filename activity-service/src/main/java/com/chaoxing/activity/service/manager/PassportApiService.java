@@ -4,7 +4,7 @@ import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.chaoxing.activity.dto.OrgDTO;
-import com.chaoxing.activity.dto.PassportUserDTO;
+import com.chaoxing.activity.dto.manager.PassportUserDTO;
 import com.chaoxing.activity.util.constant.CacheConstant;
 import com.chaoxing.activity.util.exception.BusinessException;
 import lombok.extern.slf4j.Slf4j;

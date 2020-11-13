@@ -2,9 +2,9 @@ package com.chaoxing.activity.service;
 
 import com.chaoxing.activity.WfwClassDTO;
 import com.chaoxing.activity.dto.LoginUserDTO;
-import com.chaoxing.activity.dto.PassportUserDTO;
-import com.chaoxing.activity.dto.UserExtraInfoDTO;
-import com.chaoxing.activity.dto.WfwRoleDTO;
+import com.chaoxing.activity.dto.manager.PassportUserDTO;
+import com.chaoxing.activity.dto.manager.UserExtraInfoDTO;
+import com.chaoxing.activity.dto.manager.WfwRoleDTO;
 import com.chaoxing.activity.model.User;
 import com.chaoxing.activity.service.manager.PassportApiService;
 import com.chaoxing.activity.service.manager.UcApiService;

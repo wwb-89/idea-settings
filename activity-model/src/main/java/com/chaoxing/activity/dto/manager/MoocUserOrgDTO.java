@@ -1,4 +1,4 @@
-package com.chaoxing.activity.dto;
+package com.chaoxing.activity.dto.manager;
 
 import com.alibaba.fastjson.annotation.JSONField;
 import lombok.AllArgsConstructor;

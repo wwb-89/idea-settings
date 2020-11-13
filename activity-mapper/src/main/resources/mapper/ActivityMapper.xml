@@ -37,4 +37,53 @@
         t.update_time
     </sql>
 
+    <select id="listParticipate" resultMap="BaseResultMap">
+        SELECT
+            <include refid="Base_Column_List"></include>
+        FROM
+            t_activity t
+            INNER JOIN t_activity_scope t1 ON t.id = t1.activity_id
+            AND t1.fid = #{fid}
+        WHERE
+            <!--状态-->
+            <choose>
+                <when test="status != null">
+                    t.`status` = #{status}
+                </when>
+                <otherwise>
+                    t.`status` IN ( 2, 3, 4 )
+                </otherwise>
+            </choose>
+            <!--类型-->
+            <if test="activityClassifyId != null">
+                AND t.activity_classify_id = #{activityClassifyId}
+            </if>
+            <!--地区-->
+            <if test="area != null and area != ''">
+                AND t.city_name = #{area}
+            </if>
+            <!--时间-->
+            <if test="(minDateStr != null and minDateStr != '') or (maxDateStr != null and maxDateStr != '')">
+                <choose>
+                    <when test="minDateStr != null and minDateStr != '' and maxDateStr != null and maxDateStr != ''">
+                        <!--都不为空-->
+                        AND t.start_date BETWEEN minDateStr AND minDateStr
+                    </when>
+                    <otherwise>
+                        <choose>
+                            <when test="minDateStr != null and minDateStr != ''">
+                                AND t.start_date >= #{minDateStr}
+                            </when>
+                            <otherwise>
+                                AND t.start_date <![CDATA[<=]]> #{maxDateStr}
+                            </otherwise>
+                        </choose>
+                    </otherwise>
+                </choose>
+            </if>
+        ORDER BY
+            FIELD( t.`status`, 2, 3, 4 ),
+            t.start_date DESC
+    </select>
+
 </mapper>

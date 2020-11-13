@@ -1,14 +1,18 @@
 package com.chaoxing.activity.web.controller.api;
 
 import com.alibaba.fastjson.JSON;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.chaoxing.activity.dto.LoginUserDTO;
 import com.chaoxing.activity.dto.RestRespDTO;
 import com.chaoxing.activity.dto.module.SignFormDTO;
+import com.chaoxing.activity.dto.query.ActivityQueryDTO;
 import com.chaoxing.activity.model.Activity;
 import com.chaoxing.activity.model.ActivityModule;
 import com.chaoxing.activity.service.activity.ActivityHandleService;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import com.chaoxing.activity.service.activity.ActivityQueryService;
+import com.chaoxing.activity.web.util.HttpServletRequestUtils;
+import com.chaoxing.activity.web.util.LoginUtils;
+import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
@@ -28,16 +32,46 @@ public class ActivityApiController {
 
 	@Resource
 	private ActivityHandleService activityHandleService;
+	@Resource
+	private ActivityQueryService activityQueryService;
 
+	/**创建活动
+	 * @Description 
+	 * @author wwb
+	 * @Date 2020-11-13 09:45:31
+	 * @param request
+	 * @param activityJsonStr
+	 * @param signJsonStr
+	 * @param modulesJsonStr
+	 * @return com.chaoxing.activity.dto.RestRespDTO
+	*/
 	@PostMapping("new")
 	public RestRespDTO create(HttpServletRequest request, String activityJsonStr, String signJsonStr, String modulesJsonStr) {
+		LoginUserDTO loginUser = LoginUtils.getLoginUser(request);
 		Activity activity = JSON.parseObject(activityJsonStr, Activity.class);
 		// 本期不开启审核
 		activity.setOpenAudit(false);
 		SignFormDTO signForm = JSON.parseObject(signJsonStr, SignFormDTO.class);
 		List<ActivityModule> activityModules = JSON.parseArray(modulesJsonStr, ActivityModule.class);
-
+		activityHandleService.add(activity, signForm, activityModules, loginUser);
 		return RestRespDTO.success();
+	}
+
+	/**可参与的活动列表
+	 * @Description 
+	 * @author wwb
+	 * @Date 2020-11-13 09:58:40
+	 * @param request
+	 * @param activityQuery
+	 * @return com.chaoxing.activity.dto.RestRespDTO
+	*/
+	@RequestMapping("list/participate")
+	public RestRespDTO list(HttpServletRequest request, ActivityQueryDTO activityQuery) {
+		LoginUserDTO loginUser = LoginUtils.getLoginUser(request);
+		activityQuery.setFid(loginUser.getFid());
+		Page<Activity> page = HttpServletRequestUtils.buid(request);
+		page = activityQueryService.listParticipate(page, activityQuery);
+		return RestRespDTO.success(page);
 	}
 
 }

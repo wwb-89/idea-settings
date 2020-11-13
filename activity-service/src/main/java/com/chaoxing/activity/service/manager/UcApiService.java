@@ -2,7 +2,7 @@ package com.chaoxing.activity.service.manager;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
-import com.chaoxing.activity.dto.UserExtraInfoDTO;
+import com.chaoxing.activity.dto.manager.UserExtraInfoDTO;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;

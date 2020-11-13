@@ -51,14 +51,18 @@ public class PunchApiService {
 
 		MultiValueMap<String, Object> params = new LinkedMultiValueMap<>();
 		params.add("name", punchName);
-		params.add("needPubDynamic", punchForm.getNeedPubDynamic());
+		Boolean needPubDynamic = punchForm.getNeedPubDynamic();
+		needPubDynamic = Optional.ofNullable(needPubDynamic).orElse(Boolean.FALSE);
+		params.add("needPubDynamic", needPubDynamic);
 		params.add("uid", createUid);
 		HttpHeaders headers = new HttpHeaders();
 		headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
 		HttpEntity<MultiValueMap<String, Object>> request = new HttpEntity<>(params, headers);
 		String result = restTemplate.postForObject(PUNCH_CREATE_URL, request, String.class);
 		JSONObject jsonObject = JSON.parseObject(result);
-		if (jsonObject.getBooleanValue("success")) {
+		Boolean success = jsonObject.getBoolean("success");
+		success = Optional.ofNullable(success).orElse(Boolean.FALSE);
+		if (success) {
 			return jsonObject.getInteger("data");
 		} else {
 			throw new BusinessException(jsonObject.getString("message"));

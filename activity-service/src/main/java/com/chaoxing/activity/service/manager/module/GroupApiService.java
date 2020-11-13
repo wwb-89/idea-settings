@@ -32,8 +32,10 @@ import java.util.stream.Collectors;
 @Service
 public class GroupApiService {
 
-	private static final String GROUP_CREATE_URL = "http://group.yd.chaoxing.com/apis/school/circle_addCircle";
-	private static final String GROUP_JOIN_URL = "http://group.yd.chaoxing.com/apis/school/cmem_joinCircle";
+	/** 创建小组url */
+	private static final String CREATE_URL = "http://group.yd.chaoxing.com/apis/school/circle_addCircle";
+	/** 加入小组url */
+	private static final String JOIN_URL = "http://group.yd.chaoxing.com/apis/school/cmem_joinCircle";
 
 	@Resource(name = "restTemplateProxy")
 	private RestTemplate restTemplate;
@@ -58,7 +60,7 @@ public class GroupApiService {
 		HttpHeaders headers = new HttpHeaders();
 		headers.setContentType(MediaType.MULTIPART_FORM_DATA);
 		HttpEntity<MultiValueMap<String, String>> request = new HttpEntity<>(params, headers);
-		String result = restTemplate.postForObject(GROUP_CREATE_URL, request, String.class);
+		String result = restTemplate.postForObject(CREATE_URL, request, String.class);
 		JSONObject jsonObject = JSON.parseObject(result);
 		Integer code = jsonObject.getInteger("result");
 		if (code.equals(1)) {
@@ -101,7 +103,7 @@ public class GroupApiService {
 		HttpHeaders headers = new HttpHeaders();
 		headers.setContentType(MediaType.MULTIPART_FORM_DATA);
 		HttpEntity<MultiValueMap<String, String>> request = new HttpEntity<>(params, headers);
-		String result = restTemplate.postForObject(GROUP_JOIN_URL, request, String.class);
+		String result = restTemplate.postForObject(JOIN_URL, request, String.class);
 		JSONObject jsonObject = JSON.parseObject(result);
 		Integer code = jsonObject.getInteger("result");
 		if (!code.equals(1)) {

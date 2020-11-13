@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.RestController;
  */
 @RestController
 @RequestMapping("api/activity/module")
+@Deprecated
 public class ActivityModuleApiController {
 
 
