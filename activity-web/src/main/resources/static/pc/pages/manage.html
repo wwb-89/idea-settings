@@ -24,27 +24,36 @@
                             <td>活动名称</td>
                             <td>创建单位</td>
                             <td>创建人</td>
-                            <td>状态</td>
+                            <td>状态
+                                <img src="../assets/images/down.png" alt="" class="icon" style="position: absolute;top: 12px;">
+                                <div class="select-box">
+                                    <div>全部</div>
+                                    <div>进行中</div>
+                                    <div>未发布</div>
+                                    <div>已结束</div>
+                                </div>
+                            </td>
                             <td>操作</td>
                         </tr>
                     </thead>
                     <tbody>
                         <tr>
-                            <td>121</td>
+                            <td>1211111111</td>
                             <td>2133</td>
                             <td>2134234</td>
                             <td></td>
+                            <td>
+                                <el-button type="text">报名管理</el-button>
+                                <el-button type="text">发布范围</el-button>
+                                <div class="flex">
+                                    <el-button type="text">更多</el-button>
+                                </div>
+                               
+                            </td>
                         </tr>
                     </tbody>
                 </table>
-                <el-table :data="tableData" style="width: 100%">
-                    <el-table-column prop="date" label="日期" width="180">
-                    </el-table-column>
-                    <el-table-column prop="name" label="姓名" width="180">
-                    </el-table-column>
-                    <el-table-column prop="address" label="地址">
-                    </el-table-column>
-                </el-table>
+               
             </div>
         </div>
     </div>

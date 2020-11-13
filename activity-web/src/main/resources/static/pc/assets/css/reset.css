@@ -1,0 +1,42 @@
+.el-pagination{
+    height: 20px;
+}
+.el-pager>li {
+    font-size: 14px;
+    font-weight: 400;
+    color: #333333;
+}
+
+.el-pagination button {
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+   
+    border: 1px solid#cccccc;
+}
+.el-pagination.is-background .btn-next, .el-pagination.is-background .btn-prev, .el-pagination.is-background .el-pager li{
+    margin: 0 10px;
+    min-width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    background-color: #ffffff;
+    line-height: 20px;
+}
+.el-pager .more::before {
+    line-height: 20px;
+}
+.el-input__prefix{
+    right: 5px;
+    left: unset;
+}
+.el-input--prefix .el-input__inner {
+    padding-left: 14px;
+}
+.el-switch__core{
+    background: #d4d4d4;
+    border: 1px solid #d4d4d4;
+}
+.el-switch.is-checked .el-switch__core {
+    border-color: #0084FF;
+    background-color: #0084FF;
+}
