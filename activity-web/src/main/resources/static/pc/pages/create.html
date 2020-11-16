@@ -43,7 +43,7 @@
                 <div class="form-item">
                     <label class="label">名称</label>
                     <div class="input-box">
-                        <el-input type="text" placeholder="请填写信息，简短的活动名称" v-model="name" maxlength="20" show-word-limit>
+                        <el-input type="text" placeholder="请填写信息，简短的活动名称" v-model="name" maxlength="20" show-word-limit></el-input>
                     </div>
                 </div>
                 <div class="form-item">
@@ -219,7 +219,7 @@
                 <div class="form-item">
                     <label class="label">按钮名称</label>
                     <div class="input-box btn-name">
-                        <el-input type="text" placeholder="请输入内容" v-model="btnName1" maxlength="6" show-word-limit>
+                        <el-input type="text" placeholder="请输入内容" v-model="btnName1" maxlength="6" show-word-limit></el-input>
                     </div>
                 </div>
             </form>
@@ -292,7 +292,7 @@
                 <div class="form-item">
                     <label class="label">按钮名称</label>
                     <div class="input-box btn-name">
-                        <el-input type="text" placeholder="请输入内容" v-model="btnName1" maxlength="6" show-word-limit>
+                        <el-input type="text" placeholder="请输入内容" v-model="btnName1" maxlength="6" show-word-limit></el-input>
                     </div>
                 </div>
             </form>
@@ -756,7 +756,7 @@
                         that.address = res.address; //记录该点的详细地址信息 
                         that.addrPoint = point; //记录当前坐标点 
                     })
-                },
+                },            
                 querySearchAsync(str, cb) {
                     var options = {
                         onSearchComplete: function (res) { //检索完成后的回调函数 
@@ -772,7 +772,7 @@
                         }
                     }
                     var local = new BMap.LocalSearch(this.map, options) //创建LocalSearch构造函数 
-                    local.search(str) //调用search方法，根据检索词str发起检索 
+                    local.search(str) //调用search方法，根据检索词str发起检索
                 },
                 handleSelect(item) {
                     this.address = item.address + item.title; //记录详细地址，含建筑物名 
