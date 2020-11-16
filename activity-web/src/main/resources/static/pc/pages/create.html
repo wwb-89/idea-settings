@@ -55,7 +55,7 @@
                         <span class="font">至</span>
                         <el-date-picker v-model="endTime1" type="datetime" prefix-icon="el-icon-date" placeholder="结束日期"
                             style="width: 180px;"> -->
-                            <el-date-picker v-model="time1" type="daterange" range-separator="至" start-placeholder="开始日期"
+                        <el-date-picker v-model="time1" type="daterange" range-separator="至" start-placeholder="开始日期"
                             end-placeholder="结束日期">
                         </el-date-picker>
                     </div>
@@ -108,6 +108,7 @@
                         <div class="type-item" id="addFenlei" @click="handleAdd"> <img src="../assets/images/add.png"
                                 alt="" style="margin-right: 10px;">新增</div>
                     </div>
+
                 </div>
             </form>
         </div>
@@ -404,7 +405,6 @@
                 <div class="body">
                     <el-input type="text" class="fenlei-input" placeholder="请输入" v-model="fenlei" maxlength="6"
                         show-word-limit></el-input>
-
                 </div>
                 <div class="footer">
                     <div class="normal-btn cancle" @click="handleCancle">取消</div>
@@ -621,7 +621,6 @@
                     </div>
                 </div>
             </div>
-
         </div>
     </div>
 
@@ -652,9 +651,9 @@
                 delivery1: false,
                 delivery2: true,
                 delivery3: false,
-                time1:['2020-11-16','2020-11-17'],
-                time2:'',
-                time3:'',
+                time1: ['2020-11-16', '2020-11-17'],
+                time2: '',
+                time3: '',
                 options1: [{
                     value: "1",
                     label: "无限制",
@@ -775,7 +774,6 @@
                     var local = new BMap.LocalSearch(this.map, options) //创建LocalSearch构造函数 
                     local.search(str) //调用search方法，根据检索词str发起检索 
                 },
-
                 handleSelect(item) {
                     this.address = item.address + item.title; //记录详细地址，含建筑物名 
                     this.addrPoint = item.point; //记录当前选中地址坐标 
@@ -784,7 +782,7 @@
                     this.map.addOverlay(this.mk) //将覆盖物重新添加到地图中 
                     this.map.panTo(item.point) //将地图的中心点更改为选定坐标点 
                 },
-                //    拖拽初始化
+                //拖拽初始化
                 handleDragStart(e, item) {
                     this.dragging = item;
                 },
@@ -817,6 +815,7 @@
                 },
                 handleFocus() {
                     this.addressShow = true
+                    $('body').addClass('scroll')
                 },
                 close() {
                     this.addressShow = false

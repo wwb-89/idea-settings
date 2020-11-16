@@ -470,7 +470,6 @@ input.btn-name,
     height: 251px;
     padding: 30px;
 }
-
 .warn {
     width: 30px;
     height: 30px;
@@ -905,4 +904,7 @@ input.btn-name,
     font-size: 16px;
     line-height: 36px;
     text-align: center;
+}
+.myDialogStyle{
+    
 }

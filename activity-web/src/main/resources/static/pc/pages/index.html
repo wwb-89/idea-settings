@@ -24,7 +24,7 @@
             </div>
             <div class="type-box">
                 <div class="typeItem" v-for="item in typesList" :key="item.id">
-                    <span class="title" >{{item.title}}</span>
+                    <span class="title">{{item.title}}</span>
                     <ul>
                         <li class='active'>全选</li>
                         <li v-for="type in item.list" :key="type.id">{{type.name}}
@@ -39,62 +39,34 @@
                         <li>热门</li>
                         <li>推荐</li>
                     </ul>
-                    <div class="count">共<span>120</span>个活动</div>
+                    <div class="count">共<span>{{itemList.length}}</span>个活动</div>
                 </div>
                 <div class="c-item">
-                    <div class="item">
+                    <div class="item" v-for="item in itemList">
                         <div class="img-box">
-                            <img src="http://uestc.moonsinfo.com/upload/hallonomie/2020-10/202010120814255729.png" alt="">
-                            <div class="tag">活动预备</div>
+                            <img src="http://uestc.moonsinfo.com/upload/hallonomie/2020-10/202010120814255729.png"
+                                alt="">
+                            <div :class="item.tag == '进行中'?'tag green':item.tag=='已结束'?'tag black':'tag'">{{item.tag}}
+                            </div>
                         </div>
                         <div class="font-box">
-                            <p class="title1 active2">浙江图书馆2020年11月读者活动预告</p>
-                            <p>活动时间：2020-10-10 9:00 ～ 2028-10-1日 16:00</p>
-                            <p>主办单位：浙江图书馆</p>
-                            <p>活动地点：浙江省杭州市西湖区曙光路73号</p>
+                            <p class="title1">{{item.title}}</p>
+                            <p>{{item.time}}</p>
+                            <p>{{item.host}}</p>
+                            <p>{{item.place}}</p>
                         </div>
                     </div>
-                    <div class="item">
-                        <div class="img-box">
-                            <img src="http://uestc.moonsinfo.com/upload/hallonomie/2020-10/202010120814255729.png" alt="">
-                            <div class="tag">活动预备</div>
-                        </div>
-                        <div class="font-box">
-                            <p class="title1">浙江图书馆2020年11月读者活动预告</p>
-                            <p>活动时间：2020-10-10 9:00 ～ 2028-10-1日 16:00</p>
-                            <p>主办单位：浙江图书馆</p>
-                            <p>活动地点：浙江省杭州市西湖区曙光路73号</p>
-                        </div>
-                    </div>
-                     <div class="item">
-                        <div class="img-box">
-                            <img src="http://uestc.moonsinfo.com/upload/hallonomie/2020-10/202010120814255729.png" alt="">
-                            <div class="tag green">进行中</div>
-                        </div>
-                        <div class="font-box">
-                            <p class="title1">浙江图书馆2020年11月读者活动预告</p>
-                            <p>活动时间：2020-10-10 9:00 ～ 2028-10-1日 16:00</p>
-                            <p>主办单位：浙江图书馆</p>
-                            <p>活动地点：浙江省杭州市西湖区曙光路73号</p>
-                        </div>
-                    </div>
-                    <div class="item">
-                        <div class="img-box">
-                            <img src="http://uestc.moonsinfo.com/upload/hallonomie/2020-10/202010120814255729.png" alt="">
-                            <div class="tag black">已结束</div>
-                        </div>
-                        <div class="font-box">
-                            <p class="title1">浙江图书馆2020年11月读者活动预告</p>
-                            <p>活动时间：2020-10-10 9:00 ～ 2028-10-1日 16:00</p>
-                            <p>主办单位：浙江图书馆</p>
-                            <p>活动地点：浙江省杭州市西湖区曙光路73号</p>
-                        </div>
-                    </div>
+                </div>
+                <el-pagination v-show="itemList.length!=0" background layout="prev, pager, next" :total="10">
+                </el-pagination>
+                <!-- 当列表为空时展示 -->
+                <div class="empty-box" v-show="itemList.length==0">
+                    <img src="../assets/images/empty.png" alt="">
+                    <p>无搜索结果～</p>
                 </div>
             </div>
         </div>
-        <el-pagination background layout="prev, pager, next" :total="1000">
-        </el-pagination>
+
     </div>
     <script src="../assets/lib/vue.js"></script>
     <script src="https://unpkg.com/element-ui/lib/index.js"></script>
@@ -102,7 +74,7 @@
         var app = new Vue({
             el: '#app',
             data: {
-                nav:'',
+                nav: '',
                 typesList: [{
                     id: "type",
                     title: "类型",
@@ -121,7 +93,7 @@
                     }, {
                         name: "阅读推广",
                         id: "5"
-                    },{
+                    }, {
                         name: "其他",
                         id: "6"
                     }]
@@ -144,7 +116,7 @@
                         name: "更早",
                         id: "11"
                     }]
-                },{
+                }, {
                     id: "region",
                     title: "地区",
                     list: [{
@@ -172,7 +144,7 @@
                         name: "台州",
                         id: "19"
                     }]
-                },{
+                }, {
                     id: "status",
                     title: "状态",
                     list: [{
@@ -186,9 +158,34 @@
                         id: "22"
                     }]
                 }],
+                itemList: [{
+                    tag: "活动预备",
+                    title: "浙江图书馆2020年11月读者活动预告",
+                    time: "活动时间：2020-10-10 9:00 ～ 2028-10-1日 16:00",
+                    host: "主办单位：浙江图书馆",
+                    place: "活动地点：浙江省杭州市西湖区曙光路73号"
+                }, {
+                    tag: "活动预备",
+                    title: "浙江图书馆2020年11月读者活动预告",
+                    time: "活动时间：2020-10-10 9:00 ～ 2028-10-1日 16:00",
+                    host: "主办单位：浙江图书馆",
+                    place: "活动地点：浙江省杭州市西湖区曙光路73号"
+                }, {
+                    tag: "进行中",
+                    title: "浙江图书馆2020年11月读者活动预告",
+                    time: "活动时间：2020-10-10 9:00 ～ 2028-10-1日 16:00",
+                    host: "主办单位：浙江图书馆",
+                    place: "活动地点：浙江省杭州市西湖区曙光路73号"
+                }, {
+                    tag: "已结束",
+                    title: "浙江图书馆2020年11月读者活动预告",
+                    time: "活动时间：2020-10-10 9:00 ～ 2028-10-1日 16:00",
+                    host: "主办单位：浙江图书馆",
+                    place: "活动地点：浙江省杭州市西湖区曙光路73号"
+                }]
             },
             methods: {
-     
+
             }
         })
     </script>
