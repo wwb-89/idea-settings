@@ -12,7 +12,7 @@
     width: 1200px;
     margin: 0 auto;
     padding-top: 30px;
-    padding-bottom: 40px;
+    padding-bottom: 10px;
 }
 
 .search {
@@ -170,4 +170,7 @@ ul {
 }
 .black{
     background: #797979 !important;
+}
+.el-pagination{
+    margin-bottom: 30px;
 }

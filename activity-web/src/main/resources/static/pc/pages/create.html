@@ -49,12 +49,15 @@
                 <div class="form-item">
                     <label class="label">时间</label>
                     <div class="input-box">
-                        <el-date-picker v-model="startTime1" type="datetime" prefix-icon="el-icon-date"
+                        <!-- <el-date-picker v-model="startTime1" type="datetime" prefix-icon="el-icon-date"
                             placeholder="开始日期" style="width: 180px;" clear-icon>
                         </el-date-picker>
                         <span class="font">至</span>
                         <el-date-picker v-model="endTime1" type="datetime" prefix-icon="el-icon-date" placeholder="结束日期"
-                            style="width: 180px;">
+                            style="width: 180px;"> -->
+                            <el-date-picker v-model="time1" type="daterange" range-separator="至" start-placeholder="开始日期"
+                            end-placeholder="结束日期">
+                        </el-date-picker>
                     </div>
                 </div>
                 <div class="form-item">
@@ -102,20 +105,20 @@
                                 <div @click="handleDelete">删除</div>
                             </div>
                         </div>
-                        <div class="type-item" id="addFenlei" @click="handleAdd"> <img src="../assets/images/add.png" alt=""
-                                style="margin-right: 10px;">新增</div>
+                        <div class="type-item" id="addFenlei" @click="handleAdd"> <img src="../assets/images/add.png"
+                                alt="" style="margin-right: 10px;">新增</div>
                     </div>
                 </div>
             </form>
         </div>
         <div class="info box" v-show="!pageShow">
             <div class="set-box">
-                <div class="title set">参与设置</div>
+                <div class="title set">报名设置</div>
                 <el-switch v-model="delivery" class="switch"></el-switch>
             </div>
             <!-- 点击参与设置 -->
             <form action="" class="setForm" v-show="delivery">
-                <div class="form-item">
+                <!-- <div class="form-item">
                     <label class="label">参与形式</label>
                     <div class="input-box">
                         <div class="radio-box">
@@ -128,16 +131,13 @@
                             <input type="radio" name="method" value="3" v-model="radio" /><span>报名后签到</span>
                         </div>
                     </div>
-                </div>
+                </div> -->
                 <div class="form-item">
                     <label class="label">报名时间</label>
                     <div class="input-box">
-                        <el-date-picker v-model="startTime2" prefix-icon="el-icon-date" prefix-icon="el-icon-date"
-                            type="datetime" placeholder="开始日期" style="width: 180px;" clear-icon>
+                        <el-date-picker v-model="time2" type="daterange" range-separator="至" start-placeholder="开始日期"
+                            end-placeholder="结束日期">
                         </el-date-picker>
-                        <span class="font">至</span>
-                        <el-date-picker v-model="endTime2" prefix-icon="el-icon-date" type="datetime" placeholder="结束日期"
-                            style="width: 180px;">
                     </div>
                 </div>
                 <div class="form-item">
@@ -154,7 +154,7 @@
                             class="person-span">人</span>
                     </div>
                 </div>
-                <div class="form-item" v-show="radio==1">
+                <!-- <div class="form-item" v-show="radio==1">
                     <label class="label">报名方式</label>
                     <div class="input-box">
                         <div class="select" style="margin-top: 0;">
@@ -192,6 +192,79 @@
                         </div>
                         <span class="tips">参与者需要到达指定位置才能进行签到</span>
                     </div>
+                </div> -->
+                <div class="form-item">
+                    <label class="label" style="line-height: 20px;">信息填写</label>
+                    <div class="input-box column">
+                        <div class="set-box">
+                            <el-switch v-model="delivery2"></el-switch>
+                            <span class="tips">如何创建报名信息表单？</span>
+                        </div>
+                        <div class="select" v-show="delivery2">
+                            <el-select v-model="value3" placeholder="请选择">
+                                <el-option v-for="item in options3" :key="item.value" :label="item.label"
+                                    :value="item.value">
+                                </el-option>
+                            </el-select>
+                        </div>
+                    </div>
+                </div>
+                <div class="form-item">
+                    <label class="label">报名名单公开</label>
+                    <div class="input-box">
+                        <el-switch v-model="delivery3"></el-switch>
+                    </div>
+                </div>
+                <div class="form-item">
+                    <label class="label">按钮名称</label>
+                    <div class="input-box btn-name">
+                        <el-input type="text" placeholder="请输入内容" v-model="btnName1" maxlength="6" show-word-limit>
+                    </div>
+                </div>
+            </form>
+        </div>
+        <div class="info box" v-show="!pageShow">
+            <div class="set-box">
+                <div class="title set">签到设置</div>
+                <el-switch v-model="delivery1" class="switch"></el-switch>
+            </div>
+            <!-- 点击参与设置 -->
+            <form action="" class="setForm" v-show="delivery1">
+                <div class="form-item">
+                    <label class="label">签到方式</label>
+                    <div class="input-box">
+                        <div class="radio-box">
+                            <input type="radio" name="method" value="1" v-model="radio" /><span>报名</span>
+                        </div>
+                        <div class="radio-box">
+                            <input type="radio" name="method" value="2" v-model="radio" /><span>签到</span>
+                        </div>
+                        <div class="radio-box">
+                            <input type="radio" name="method" value="3" v-model="radio" /><span>报名后签到</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="form-item">
+                    <label class="label">签到时间</label>
+                    <div class="input-box">
+                        <el-date-picker v-model="time3" type="daterange" range-separator="至" start-placeholder="开始日期"
+                            end-placeholder="结束日期">
+                        </el-date-picker>
+                    </div>
+                </div>
+                <div class="form-item">
+                    <label class="label">人数限制</label>
+                    <div class="input-box">
+                        <div class="select-person">
+                            <el-select v-model="value1" placeholder="请选择">
+                                <el-option v-for="item in options1" :key="item.value" :label="item.label"
+                                    :value="item.value">
+                                </el-option>
+                            </el-select>
+                        </div>
+                        <input type="text" placeholder="请输入正整数" class="person" v-show="value1 == 2"><span
+                            class="person-span">人</span>
+                    </div>
                 </div>
                 <div class="form-item">
                     <label class="label" style="line-height: 20px;">信息填写</label>
@@ -210,7 +283,7 @@
                     </div>
                 </div>
                 <div class="form-item">
-                    <label class="label">已报名名单公开</label>
+                    <label class="label">报名名单公开</label>
                     <div class="input-box">
                         <el-switch v-model="delivery3"></el-switch>
                     </div>
@@ -218,8 +291,7 @@
                 <div class="form-item">
                     <label class="label">按钮名称</label>
                     <div class="input-box btn-name">
-                        <el-input type="text" placeholder="请输入内容" v-model="btnName" maxlength="10" show-word-limit>
-
+                        <el-input type="text" placeholder="请输入内容" v-model="btnName1" maxlength="6" show-word-limit>
                     </div>
                 </div>
             </form>
@@ -303,7 +375,7 @@
                 <el-pagination background layout="prev, pager, next" :total="1000">
                 </el-pagination>
             </div>
-            <!-- 编辑活动时预览模板 -->
+            <!-- 编辑活动时预览模板 已取消-->
             <div class="page-show" style="display: none;">
                 <div class="page-item">
                     <img src="../assets/images/example.jpg" alt="" class="img">
@@ -330,8 +402,9 @@
                     <img src="../assets/images/close.png" alt="" class="close" @click="close">
                 </div>
                 <div class="body">
-                    <el-input type="text" class="fenlei-input" placeholder="请输入" v-model="fenlei" maxlength="6" show-word-limit></el-input>
-                   
+                    <el-input type="text" class="fenlei-input" placeholder="请输入" v-model="fenlei" maxlength="6"
+                        show-word-limit></el-input>
+
                 </div>
                 <div class="footer">
                     <div class="normal-btn cancle" @click="handleCancle">取消</div>
@@ -565,22 +638,23 @@
             el: '#app',
             data: {
                 name: '',
-                btnName: '按钮',
+                btnName1: '按钮',
+                btnName2: '签到',
                 name2: '',
-                radio: 1,
+                radio: 3,
                 value1: '1',
                 value2: '',
                 value3: '1',
                 value4: '',
                 value5: '',
-                fenlei:'',
-                delivery: false,
-                delivery2: false,
+                fenlei: '',
+                delivery: true,
+                delivery1: false,
+                delivery2: true,
                 delivery3: false,
-                startTime1: '',
-                startTime2: '',
-                endTime1: '',
-                endTime2: '',
+                time1:['2020-11-16','2020-11-17'],
+                time2:'',
+                time3:'',
                 options1: [{
                     value: "1",
                     label: "无限制",
@@ -648,11 +722,11 @@
                 dragging: null,
                 pageShow: false,
                 editShow: false,
-                addressShow:false,
-                fenleiShow:false,
-                deleteShow:false,
-                previewShow:false,
-                link:"http://xueya.chaoxing.com/school-base/sc-sc-"
+                addressShow: false,
+                fenleiShow: false,
+                deleteShow: false,
+                previewShow: false,
+                link: "http://xueya.chaoxing.com/school-base/sc-sc-"
             },
             mounted() {
                 this.initMap()
@@ -741,44 +815,44 @@
                 handleNext() {
                     this.pageShow = true
                 },
-                handleFocus(){
+                handleFocus() {
                     this.addressShow = true
                 },
-                close(){
+                close() {
                     this.addressShow = false
                     this.fenleiShow = false
                     this.previewShow = false
                     $('body').removeClass('scroll')
                 },
-                handleCustom(){
+                handleCustom() {
                     this.editShow = !this.editShow
                 },
-                handleEdit(){
+                handleEdit() {
                     this.fenleiShow = true
                     this.fenlei = '自定义选项'
                     $('body').addClass('scroll')
                 },
-                handleAdd(){
+                handleAdd() {
                     this.fenleiShow = true
                     $('body').addClass('scroll')
                 },
-                handleDelete(){
+                handleDelete() {
                     this.deleteShow = true
                     $('body').addClass('scroll')
                 },
-                handleCancle(){
+                handleCancle() {
                     this.fenlei = ''
                     this.fenleiShow = false
                     $('body').removeClass('scroll')
                 },
-                handleSave(){
+                handleSave() {
                     this.deleteShow = false
                     $('body').removeClass('scroll')
                 },
-                handleSure(){
+                handleSure() {
 
                 },
-                preview(){
+                preview() {
                     this.previewShow = true
                     $('body').addClass('scroll')
                 }
