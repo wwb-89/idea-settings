@@ -85,7 +85,7 @@
             <div class="form-item">
                 <label class="label">位置</label>
                 <div class="input-box">
-                    <input type="text" readonly required lay-verify="required" v-model.trim="activity.address" placeholder="请选择活动地点" autocomplete="off" class="layui-input name" style="cursor: pointer;" @click="showMap">
+                    <input type="text" readonly required lay-verify="required" v-model.trim="activity.address" placeholder="请选择活动地点" autocomplete="off" class="layui-input name" style="cursor: pointer;" @click="showActivityMap">
                     <img src="/static/pc/assets/images/location.png" th:src="@{/pc/assets/images/location.png}" class="length icon">
                 </div>
             </div>
@@ -95,8 +95,8 @@
                     <div :class="{'type-item': true, 'active': activityClassify.selected}" v-for="(activityClassify, index) of activityClassifies" :key="'activity-classify-' + index" @click="selectActivityClassify(index)">{{activityClassify.name}}
                         <img src="/static/pc/assets/images/more.png" th:src="@{/pc/assets/images/more.png}" style="margin-left: 10px;" v-if="!activityClassify.system">
                         <div class="edit-box" v-if="!activityClassify.system">
-                            <div>编辑</div>
-                            <div>删除</div>
+                            <div @click="toEditActivityClassify(index, $event)">编辑</div>
+                            <div @click="toDeleteActivityClassify(index, $event)">删除</div>
                         </div>
                     </div>
                     <div class="type-item" @click="toAddActivityClassify">
@@ -123,9 +123,9 @@
                 <label class="label">人数限制</label>
                 <div class="input-box">
                     <div class="select-person">
-                        <el-select v-model="personLimitValue" placeholder="请选择">
-                            <el-option label="无限制" value="0"></el-option>
-                            <el-option label="自定义人数" value="1"></el-option>
+                        <el-select v-model="personLimitValue" value-key="id" placeholder="请选择">
+                            <el-option label="无限制" :value="0"></el-option>
+                            <el-option label="自定义人数" :value="1"></el-option>
                         </el-select>
                     </div>
                     <input v-show="sign.limitPerson" v-model="sign.personLimit" type="number" min="1" step="1" maxlength="10" placeholder="请输入正整数" class="person"><span class="person-span">人</span>
@@ -183,7 +183,7 @@
             <div class="form-item" v-show="sign.signInForm == 2">
                 <label class="label">位置</label>
                 <div class="input-box">
-                    <input type="text" readonly required lay-verify="required" v-model.trim="sign.address" placeholder="请选择签到地点" autocomplete="off" class="layui-input name" style="cursor: pointer;">
+                    <input type="text" readonly required lay-verify="required" v-model.trim="sign.address" placeholder="请选择签到地点" autocomplete="off" class="layui-input name" style="cursor: pointer;" @click="showSignInMap">
                     <img src="/static/pc/assets/images/location.png" th:src="@{/pc/assets/images/location.png}" class="length icon">
                 </div>
             </div>
@@ -314,13 +314,13 @@
         </div>
     </div>
     <!-- 确认删除分类弹框 -->
-    <div class="dailog-box3" style="display: none;">
+    <div class="dailog-box3" v-show="deleteActivityClassifyWindowShow">
         <div class="dailog delete-dailog">
             <img src="/static/pc/assets/images/warning.png" th:src="@{/pc/assets/images/warning.png}" class="warn">
             <span>确认删除此分类</span>
             <div>
-                <div class="normal-btn">保留</div>
-                <div class="normal-btn after-sure">删除</div>
+                <div class="normal-btn" @click="deleteActivityClassifyWindowShow = false">保留</div>
+                <div class="normal-btn after-sure" @click="deleteActivityClassifySubmit">删除</div>
             </div>
         </div>
     </div>
@@ -355,38 +355,14 @@
         </div>
     </div>
     <!-- 地图弹窗 -->
-    <div class="dailog-box1" v-show="mapWindowShow">
-        <div class="dailog map-dailog">
-            <div class="header">
-                <span>设置地图</span>
-                <img src="/static/pc/assets/images/close.png" th:src="@{/pc/assets/images/close.png}" class="close" @click="mapWindowShow = false">
-            </div>
-            <div class="body">
-                <div class="body-head">
-                    <div class="input-addr">
-                        <el-autocomplete style="width:100%;" popper-class="autoAddressClass" v-model.trim="address" :fetch-suggestions="querySearchAsync" :trigger-on-focus="false" placeholder="请输入地址" @select="handleSelect" clearable>
-                            <template slot-scope="{ item }"> <i class="el-icon-search fl mgr10"></i>
-                                <div class="address-box">
-                                    <div class="title1">{{ item.title }}</div>
-                                    --
-                                    <span class="address ellipsis">{{ item.address }}</span>
-                                </div>
-                            </template>
-                        </el-autocomplete>
-                    </div>
-                    <div class="normal-btn after-sure" @click="ensureAddress">确定</div>
-                </div>
-                <div id="map-contain">
-                </div>
-            </div>
-        </div>
-    </div>
+    <vue-map ref="activityMap" :map-dom-id="'activity-map'" @callback="activityAddressSure"></vue-map>
+    <vue-map ref="signInMap" :map-dom-id="'sign-in-map'" @callback="signInAddressSure"></vue-map>
 </div>
 <div th:replace="pc/include/common_js :: common_js(~{::script})">
     <script type="text/javascript" src="//api.map.baidu.com/api?v=3.0&ak=aG5nWGO5m5tkVhBHGuVppoIRfKbyp5H3"></script>
     <script type="text/javascript" src="/static/pc/assets/lib/element-ui/lib/index.js" th:src="@{/pc/assets/lib/element-ui/lib/index.js}"></script>
     <script type="text/javascript" src="/static/pc/assets/lib/webuploader/webuploader.js" th:src="@{/pc/assets/lib/webuploader/webuploader.js}"></script>
-    <script type="text/javascript" src="/static/pc/assets/js/map.util.js" th:src="@{/pc/assets/js/map.util.js}"></script>
+    <script type="text/javascript" src="/static/pc/assets/component/map.js" th:src="@{/pc/assets/component/map.js}"></script>
     <script th:inline="javascript">
         activityVue = new Vue({
             el: "#activity-vue",
@@ -396,25 +372,17 @@
                 activityClassifies: [[${activityClassifies}]],
                 // 文件上传
                 uploader: null,
-                // 地址
-                address: "",
-                // 经度
-                longitude: "",
-                // 维度
-                dimension: "",
-                // 地图实例
-                map: '',
-                // Marker实例
-                mk: '',
                 // 显示隐藏
                 // 是否显示地图弹窗
                 mapWindowShow: false,
                 // 新增修改活动分类弹窗的显示
                 addEditActivityClassifyWindowShow: false,
+                deleteActivityClassifyWindowShow: false,
                 addEditActivityClassify: {
                     id: null,
                     name: ""
                 },
+                deleteActivityClassifyId: null,
                 // 签到报名
                 sign: [[${sign}]],
                 // 是否开启报名
@@ -470,7 +438,6 @@
             },
             mounted: function () {
                 var $this = this;
-                $this.initMap();
                 $this.initUploader();
             },
             watch: {
@@ -506,78 +473,6 @@
                 }
             },
             methods: {
-                // 初始化百度地图
-                initMap: function () {
-                    var $this = this;
-                    // 新建地图实例，enableMapClick:false ：禁用地图默认点击弹框
-                    this.map = new BMap.Map("map-contain", {
-                        enableMapClick: false
-                    });
-                    var point = new BMap.Point(104.10194, 30.65984);
-                    this.map.centerAndZoom(point, 19);
-                    // 启用滚轮放大缩小，默认禁用
-                    this.map.enableScrollWheelZoom(true);
-                    this.mk = new BMap.Marker(point);
-                    this.map.addOverlay(this.mk);
-                    // 给地图绑定点击事件
-                    this.map.addEventListener('click', function (e) {
-                        // 点击后调用逆地址解析函数
-                        $this.getAddrByPoint(e.point);
-                    });
-                },
-                //逆地址解析
-                getAddrByPoint: function (point) {
-                    var $this = this;
-                    var geco = new BMap.Geocoder();
-                    geco.getLocation(point, function (res) {
-                        // 重新设置标注的地理坐标
-                        $this.mk.setPosition(point);
-                        // 将地图的中心点更改为给定的点
-                        $this.map.panTo(point);
-                        // 记录该点的详细地址信息
-                        $this.address = res.address;
-                        // 记录当前坐标点
-                        $this.longitude = point.lng;
-                        $this.dimension = point.lat;
-                    })
-                },
-                querySearchAsync(str, cb) {
-                    var options = {
-                        // 检索完成后的回调函数
-                        onSearchComplete: function (res) {
-                            var s = [];
-                            if (local.getStatus() == BMAP_STATUS_SUCCESS) {
-                                for (var i = 0; i < res.getCurrentNumPois(); i++) {
-                                    s.push(res.getPoi(i));
-                                }
-                                // 获取到数据时，通过回调函数cb返回到<el-autocomplete>组件中进行显示
-                                cb(s);
-                            } else {
-                                cb(s)
-                            }
-                        }
-                    }
-                    // 创建LocalSearch构造函数
-                    var local = new BMap.LocalSearch(this.map, options);
-                    // 调用search方法，根据检索词str发起检索
-                    local.search(str);
-                },
-                handleSelect(item) {
-                    var $this = this;
-                    // 记录当前选中地址坐标
-                    // 清除地图上所有覆盖物
-                    this.map.clearOverlays();
-                    // 根据所选坐标重新创建Marker
-                    this.mk = new BMap.Marker(item.point);
-                    // 将覆盖物重新添加到地图中
-                    this.map.addOverlay(this.mk);
-                    // 将地图的中心点更改为选定坐标点
-                    this.map.panTo(item.point);
-                    // 记录详细地址，含建筑物名
-                    this.address = item.address + item.title;
-                    $this.longitude = item.point.lng;
-                    $this.dimension = item.point.lat;
-                },
                 // 初始化文件上传
                 initUploader: function () {
                     var $this = this;
@@ -629,21 +524,35 @@
                     $this.activity.activityType = activityType.value;
                 },
                 // 显示百度地图
-                showMap: function () {
+                showActivityMap: function () {
                     var $this = this;
-                    $this.mapWindowShow = true;
+                    $this.$refs.activityMap.show = true;
                 },
-                // 确定地址
-                ensureAddress: function () {
+                showSignInMap: function () {
                     var $this = this;
-                    if (activityApp.isEmpty($this.longitude) || activityApp.isEmpty($this.longitude)) {
+                    $this.$refs.signInMap.show = true;
+                },
+                // 确定活动地址
+                activityAddressSure: function () {
+                    var $this = this;
+                    if (activityApp.isEmpty($this.$refs.activityMap.longitude) || activityApp.isEmpty($this.$refs.activityMap.dimension)) {
                         app.showMsg("请选择地址");
                         return;
                     }
-                    $this.activity.address = $this.address;
-                    $this.activity.longitude = $this.longitude;
-                    $this.activity.dimension = $this.dimension;
-                    $this.mapWindowShow = false;
+                    $this.activity.address = $this.$refs.activityMap.address;
+                    $this.activity.longitude = $this.$refs.activityMap.longitude;
+                    $this.activity.dimension = $this.$refs.activityMap.dimension;
+                },
+                // 确定签到地址
+                signInAddressSure: function () {
+                    var $this = this;
+                    if (activityApp.isEmpty($this.$refs.signInMap.longitude) || activityApp.isEmpty($this.$refs.signInMap.dimension)) {
+                        app.showMsg("请选择地址");
+                        return;
+                    }
+                    $this.sign.address = $this.$refs.signInMap.address;
+                    $this.sign.longitude = $this.$refs.signInMap.longitude;
+                    $this.sign.dimension = $this.$refs.signInMap.dimension;
                 },
                 selectActivityClassify: function (index) {
                     var $this = this;
@@ -657,6 +566,20 @@
                 },
                 toAddActivityClassify: function () {
                     var $this = this;
+                    $this.addEditActivityClassify = {
+                        id: null,
+                        name: ""
+                    };
+                    $this.addEditActivityClassifyWindowShow = true;
+                },
+                toEditActivityClassify: function (index, e) {
+                    e.stopPropagation();
+                    var $this = this;
+                    var activityClassify = $this.activityClassifies[index];
+                    $this.addEditActivityClassify = {
+                        id: activityClassify.id,
+                        name: activityClassify.name
+                    };
                     $this.addEditActivityClassifyWindowShow = true;
                 },
                 addEditActivityClassifySubmit: function () {
@@ -664,22 +587,76 @@
                     if (activityApp.isEmpty($this.addEditActivityClassify.name)) {
                         return;
                     }
+                    var isAdd = activityApp.isEmpty($this.addEditActivityClassify.id);
+                    var tips = "新增";
                     var url = ctx + "/api/activity/classify/add";
+                    if (!isAdd) {
+                        url = ctx + "/api/activity/classify/edit";
+                        tips = "修改";
+                    }
                     var params = {
+                        id: $this.addEditActivityClassify.id,
                         name: $this.addEditActivityClassify.name
                     };
                     app.ajaxPostWithLoading(url, params, function (data) {
                         if (data.success) {
-                            $this.activityClassifies.push(data.data);
+                            var data = data.data;
+                            if (isAdd) {
+                                data.selected = false;
+                                $this.activityClassifies.push(data);
+                            } else {
+                                $($this.activityClassifies).each(function (i) {
+                                    if (this.id == data.id) {
+                                        data.selected = this.selected;
+                                        $this.activityClassifies.splice(i, 1, data);
+                                        return false;
+                                    }
+                                });
+                            }
+                            $this.addEditActivityClassifyWindowShow = false;
                         } else {
                             var errorMessage = data.message;
                             if (activityApp.isEmpty(errorMessage)) {
-                                errorMessage = "新增分类失败";
+                                errorMessage = tips + "分类失败";
                             }
                             app.showMsg(errorMessage);
                         }
                     }, function () {
-                        app.showMsg("新增分类失败");
+                        app.showMsg(tips + "分类失败");
+                    });
+                },
+                toDeleteActivityClassify: function (index, e) {
+                    e.stopPropagation();
+                    var $this = this;
+                    var activityClassify = $this.activityClassifies[index];
+                    $this.deleteActivityClassifyId = activityClassify.id;
+                    $this.deleteActivityClassifyWindowShow = true;
+                },
+                deleteActivityClassifySubmit: function () {
+                    var $this = this;
+                    var url = ctx + "/api/activity/classify/"+ $this.deleteActivityClassifyId +"/delete";
+                    app.ajaxPostWithLoading(url, {}, function (data) {
+                        $this.deleteActivityClassifyWindowShow = false;
+                        if (data.success) {
+                            $($this.activityClassifies).each(function (i) {
+                                if (this.id == $this.deleteActivityClassifyId) {
+                                    if (this.selected) {
+                                        $this.activity.activityClassifyId = null;
+                                    }
+                                    $this.activityClassifies.splice(i, 1);
+                                    return false;
+                                }
+                            });
+                        } else {
+                            var errorMessage = data.errorMessage;
+                            if (activityApp.isEmpty(errorMessage)) {
+                                errorMessage = "删除分类失败";
+                            }
+                            app.showMsg(errorMessage);
+                        }
+                    }, function () {
+                        $this.deleteActivityClassifyWindowShow = false;
+                        app.showMsg("删除分类失败");
                     });
                 },
                 // 计算报名签到的开启标识
