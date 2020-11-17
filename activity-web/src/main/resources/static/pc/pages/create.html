@@ -151,8 +151,8 @@
                                 </el-option>
                             </el-select>
                         </div>
-                        <input type="number" placeholder="请输入正整数" class="person" v-show="value1 == 2"><span
-                            class="person-span">人</span>
+                        <input type="number" placeholder="请输入正整数" class="person" v-show="value1 == 2">
+                        <span class="person-span" v-show="value1 == 2">人</span>
                     </div>
                 </div>
                 <!-- <div class="form-item" v-show="radio==1">
@@ -618,7 +618,7 @@
                         </div>
                         <div class="normal-btn after-sure">确定</div>
                     </div>
-                    <div id="map-contain">
+                    <div id="map-contain" class="map">
                     </div>
                 </div>
             </div>
@@ -820,7 +820,7 @@
                 },
                 close() {
                     this.addressShow = false
-                    this.fenleiShow = false
+                    this.fenleiShow = false 
                     this.previewShow = false
                     $('body').removeClass('scroll')
                 },
