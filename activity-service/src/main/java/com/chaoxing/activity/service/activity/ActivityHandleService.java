@@ -68,12 +68,11 @@ public class ActivityHandleService {
 	 * @Date 2020-11-10 15:54:16
 	 * @param activity
 	 * @param signForm
-	 * @param activityModules
 	 * @param loginUser
 	 * @return void
 	*/
 	@Transactional(rollbackFor = Exception.class)
-	public void add(Activity activity, SignFormDTO signForm, List<ActivityModule> activityModules, LoginUserDTO loginUser) {
+	public void add(Activity activity, SignFormDTO signForm, LoginUserDTO loginUser) {
 		// 新增活动输入验证
 		activityValidationService.addInputValidate(activity);
 		// 是否开启参与设置
@@ -101,7 +100,7 @@ public class ActivityHandleService {
 		activityMapper.insert(activity);
 		Integer activityId = activity.getId();
 		// 处理模块
-		handleActivityModules(activityId, activityModules);
+//		handleActivityModules(activityId, activityModules);
 	}
 
 	/**处理报名签到
