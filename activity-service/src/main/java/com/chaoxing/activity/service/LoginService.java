@@ -1,6 +1,6 @@
 package com.chaoxing.activity.service;
 
-import com.chaoxing.activity.WfwClassDTO;
+import com.chaoxing.activity.dto.manager.WfwClassDTO;
 import com.chaoxing.activity.dto.LoginUserDTO;
 import com.chaoxing.activity.dto.manager.PassportUserDTO;
 import com.chaoxing.activity.dto.manager.UserExtraInfoDTO;

@@ -46,6 +46,8 @@ public class ActivityManagementController {
 		// 活动分类列表
 		List<ActivityClassify> activityClassifies = activityClassifyQueryService.listOrgOptional(loginUser.getFid());
 		model.addAttribute("activityClassifies", activityClassifies);
+		// 报名签到
+		model.addAttribute("sign", null);
 		return "pc/management/activity-add-edit";
 	}
 

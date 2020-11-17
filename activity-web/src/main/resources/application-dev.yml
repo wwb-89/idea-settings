@@ -1,9 +1,9 @@
 spring:
   redis:
-    host: 192.168.1.10
+    host: 127.0.0.1
     port: 6379
     database: 11
-    password: be_api
+    password: redis_pass
   datasource:
     druid:
       url: jdbc:mysql://127.0.0.1/activity_engine?serverTimezone=UTC&useUnicode=true&characterEncoding=utf-8

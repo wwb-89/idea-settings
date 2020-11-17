@@ -152,6 +152,73 @@
         content = content.replace(regSpace, " ");
         return content;
     };
+    /**
+     * 获取云盘图片的url
+     * @param cloudId
+     * @returns {string}
+     */
+    activityApp.prototype.getCloudImgUrl = function (cloudId) {
+        return "http://d0.ananas.chaoxing.com/download/" + cloudId;
+    };
+    /**
+     * 生成新的签到报名
+     * @returns {{signUpEndTime: string, limitPerson: boolean, signUpFormId: string, createUserName: string, signInStartTime: string, createFid: string, signInFormId: string, signUpStartTime: string, signInEndTime: string, id: null, dimension: string, createUid: string, longitude: string, createOrgName: string, address: string, signUpBtnName: string, publicSignUpList: boolean, partakeForm: null, signInInfoWrite: string, signUpForm: string, signInForm: string, signInBtnName: string, signUpInfoWrite: boolean, personLimit: number, name: string}}
+     */
+    activityApp.prototype.newSign = function () {
+        return {
+            id: null,
+            name: "",
+            // 1：报名。2：签到，3：报名后签到
+            partakeForm: null,
+            // 报名开始时间
+            signUpStartTime: "",
+            //报名结束时间
+            signUpEndTime: "",
+            // 签到开始时间
+            signInStartTime: "",
+            // 签到结束时间
+            signInEndTime: "",
+            // 是否限制报名人数
+            limitPerson: false,
+            // 限制的人数
+            personLimit: 1,
+            // 报名方式
+            signUpForm: "",
+            // 签到方式
+            signInForm: 1,
+            // 地址
+            address: "",
+            // 经度
+            longitude: "",
+            // 维度
+            dimension: "",
+            // 是否开启报名信息填写
+            signUpInfoWrite: false,
+            // 报名信息填写的表单id
+            signUpFormId: "",
+            // 是否开启签到信息填写
+            signInInfoWrite: false,
+            // 签到信息填写的表单id
+            signInFormId: "",
+            // 是否公开报名名单
+            publicSignUpList: false,
+            // 是否公开签到名单
+            publicSignInList: false,
+            // 报名按钮名称
+            signUpBtnName: "",
+            // 签到按钮名称
+            signInBtnName: "",
+            // 创建人uid
+            createUid: "",
+            // 创建人姓名
+            createUserName: "",
+            // 创建人fid
+            createFid: "",
+            // 创建人机构名称
+            createOrgName: ""
+
+        };
+    };
     W['activityApp'] = new activityApp();
 })(window, jQuery, JSON);
 Array.prototype.remove = function (val) {
@@ -166,3 +233,6 @@ Array.prototype.pushArray = function (array) {
         that.push(this);
     });
 };
+Vue.filter("getCloudImgUrl", function (cloudId) {
+    return activityApp.getCloudImgUrl(cloudId);
+});

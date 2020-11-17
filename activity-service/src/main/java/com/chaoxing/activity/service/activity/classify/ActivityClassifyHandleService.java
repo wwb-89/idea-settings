@@ -35,9 +35,9 @@ public class ActivityClassifyHandleService {
 	 * @Date 2020-11-10 18:11:26
 	 * @param activityClassify
 	 * @param loginUser
-	 * @return void
+	 * @return com.chaoxing.activity.model.ActivityClassify
 	*/
-	public void add(ActivityClassify activityClassify, LoginUserDTO loginUser) {
+	public ActivityClassify add(ActivityClassify activityClassify, LoginUserDTO loginUser) {
 		String name = activityClassify.getName();
 		if (StringUtils.isEmpty(name)) {
 			throw new BusinessException("分类名称不能为空");
@@ -47,7 +47,7 @@ public class ActivityClassifyHandleService {
 		activityClassify.setAffiliationFid(fid);
 		activityClassify.setSequence(activityClassifyMapper.getMaxSequence(fid));
 		activityClassifyMapper.insert(activityClassify);
-		System.out.println("分类id:" + activityClassify.getId());
+		return activityClassify;
 	}
 
 	/**修改
