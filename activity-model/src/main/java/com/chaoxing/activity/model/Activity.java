@@ -38,8 +38,8 @@ public class Activity {
     private LocalDate endDate;
     /** 封面云盘id; column: cover_cloud_id*/
     private String coverCloudId;
-    /** 活动形式; column: activity_form*/
-    private String activityForm;
+    /** 活动形式; column: activity_type*/
+    private String activityType;
     /** 活动地址; column: address*/
     private String address;
     /** 经度; column: longitude*/
@@ -77,8 +77,8 @@ public class Activity {
     private String provinceName;
     /** 市; column: city_name*/
     private String cityName;
-    /** 区县; column: area_name*/
-    private String areaName;
+    /** 区县; column: county_name*/
+    private String countyName;
     /** 创建时间; column: create_time*/
     private LocalDateTime createTime;
     /** 修改时间; column: update_time*/

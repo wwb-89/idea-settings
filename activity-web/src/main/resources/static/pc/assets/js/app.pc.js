@@ -26,7 +26,7 @@
      * @param error
      * @param loading
      */
-    app.prototype.ajaxGet = function (url, success, error, loading) {
+    app.prototype.ajaxGetWithLoading = function (url, success, error) {
         var $this = this;
         $this.ajax(url, "get", {}, true, error, true);
     };
@@ -49,7 +49,7 @@
      * @param error
      * @param loading
      */
-    app.prototype.ajaxPost = function (url, params, success, error, loading) {
+    app.prototype.ajaxPostWithLoading = function (url, params, success, error) {
         var $this = this;
         $this.ajax(url, "post", params, success, error, true);
     };
@@ -226,7 +226,7 @@ $.ajax = function (url, options) {
     options.success = function (data, textStatus, jqXHR) {
         var contentType = jqXHR.getResponseHeader("content-type") || "";
         if (contentType.indexOf("application/json") > -1 || contentType.indexOf("text/plain") > -1) {
-            if (!app.isEmpty(data)) {
+            if (!activityApp.isEmpty(data)) {
                 if ("530" == data.code) {//未登录
                     app.showLoginPop();
                     return true;

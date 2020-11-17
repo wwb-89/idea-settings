@@ -1,4 +1,4 @@
-package com.chaoxing.activity;
+package com.chaoxing.activity.dto.manager;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;

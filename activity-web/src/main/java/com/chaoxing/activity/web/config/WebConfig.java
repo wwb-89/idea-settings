@@ -10,6 +10,8 @@ import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 import javax.annotation.Resource;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * @author wwb
@@ -25,9 +27,18 @@ public class WebConfig implements WebMvcConfigurer, ErrorPageRegistrar {
 	@Resource
 	private AutoLoginInterceptor autoLoginInterceptor;
 
+	private List<String> listStaticResourcePathPatterns() {
+		return new ArrayList(){{
+			add("/assets/**");
+			add("/pc/**");
+			add("/mobile/**");
+		}};
+	}
+
 	@Override
 	public void addInterceptors(InterceptorRegistry registry) {
-		registry.addInterceptor(autoLoginInterceptor).addPathPatterns("/**");
+		List<String> staticResourcePathPatterns = listStaticResourcePathPatterns();
+		registry.addInterceptor(autoLoginInterceptor).addPathPatterns("/**").excludePathPatterns(staticResourcePathPatterns);
 	}
 
 	@Override
