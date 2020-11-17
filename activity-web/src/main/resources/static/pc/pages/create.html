@@ -43,7 +43,8 @@
                 <div class="form-item">
                     <label class="label">名称</label>
                     <div class="input-box">
-                        <el-input type="text" placeholder="请填写信息，简短的活动名称" v-model="name" maxlength="20" show-word-limit></el-input>
+                        <el-input type="text" placeholder="请填写信息，简短的活动名称" v-model="name" maxlength="20" show-word-limit>
+                        </el-input>
                     </div>
                 </div>
                 <div class="form-item">
@@ -98,17 +99,16 @@
                         <div class="type-item active">活动</div>
                         <div class="type-item">讲座</div>
                         <div class="type-item">征文</div>
-                        <div class="type-item" id="custom" @click="handleCustom">自定义选项
+                        <div class="type-item">自定义选项
                             <img src="../assets/images/more.png" alt="" style="margin-left: 10px;">
-                            <div class="edit-box" v-show="editShow">
+                            <div class="edit-box">
                                 <div @click="handleEdit">编辑</div>
                                 <div @click="handleDelete">删除</div>
                             </div>
                         </div>
-                        <div class="type-item" id="addFenlei" @click="handleAdd"> <img src="../assets/images/add.png"
-                                alt="" style="margin-right: 10px;">新增</div>
+                        <div class="type-item" @click="handleAdd"> <img src="../assets/images/add.png" alt=""
+                                style="margin-right: 10px;">新增</div>
                     </div>
-
                 </div>
             </form>
         </div>
@@ -219,7 +219,8 @@
                 <div class="form-item">
                     <label class="label">按钮名称</label>
                     <div class="input-box btn-name">
-                        <el-input type="text" placeholder="请输入内容" v-model="btnName1" maxlength="6" show-word-limit></el-input>
+                        <el-input type="text" placeholder="请输入内容" v-model="btnName1" maxlength="6" show-word-limit>
+                        </el-input>
                     </div>
                 </div>
             </form>
@@ -292,7 +293,8 @@
                 <div class="form-item">
                     <label class="label">按钮名称</label>
                     <div class="input-box btn-name">
-                        <el-input type="text" placeholder="请输入内容" v-model="btnName1" maxlength="6" show-word-limit></el-input>
+                        <el-input type="text" placeholder="请输入内容" v-model="btnName1" maxlength="6" show-word-limit>
+                        </el-input>
                     </div>
                 </div>
             </form>
@@ -496,7 +498,6 @@
                                     <div class="radio-box">
                                         <input type="checkbox" name="method" value="1" /><span>移动端</span>
                                     </div>
-
                                 </div>
                             </div>
                         </form>
@@ -626,11 +627,12 @@
 
     <script type="text/javascript" src="https://api.map.baidu.com/api?v=3.0&ak=aG5nWGO5m5tkVhBHGuVppoIRfKbyp5H3">
     </script>
+    <script src="../assets/lib/jquery.min.js"></script>
     <script src="https://unpkg.com/vue/dist/vue.js"></script>
     <script src="../assets/lib/element-ui/lib/index.js"></script>
-    <script src="../assets/lib/jquery.min.js"></script>
     <script src="../assets/js/common.js"></script>
     <script src="../assets/js/create-active.js"></script>
+
     <script>
         // vue
         var app = new Vue({
@@ -720,7 +722,6 @@
                 ],
                 dragging: null,
                 pageShow: false,
-                editShow: false,
                 addressShow: false,
                 fenleiShow: false,
                 deleteShow: false,
@@ -756,7 +757,7 @@
                         that.address = res.address; //记录该点的详细地址信息 
                         that.addrPoint = point; //记录当前坐标点 
                     })
-                },            
+                },
                 querySearchAsync(str, cb) {
                     var options = {
                         onSearchComplete: function (res) { //检索完成后的回调函数 
@@ -822,9 +823,6 @@
                     this.fenleiShow = false
                     this.previewShow = false
                     $('body').removeClass('scroll')
-                },
-                handleCustom() {
-                    this.editShow = !this.editShow
                 },
                 handleEdit() {
                     this.fenleiShow = true
