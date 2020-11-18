@@ -1,6 +1,7 @@
 package com.chaoxing.activity.web.interceptor;
 
 import com.chaoxing.activity.dto.LoginUserDTO;
+import com.chaoxing.activity.service.CookieValidationService;
 import com.chaoxing.activity.service.LoginService;
 import com.chaoxing.activity.web.util.CookieUtils;
 import com.chaoxing.activity.web.util.LoginUtils;
@@ -27,6 +28,8 @@ public class AutoLoginInterceptor extends HandlerInterceptorAdapter {
 
 	@Resource
 	private LoginService loginService;
+	@Resource
+	private CookieValidationService cookieValidationService;
 
 	@Override
 	public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
@@ -38,8 +41,12 @@ public class AutoLoginInterceptor extends HandlerInterceptorAdapter {
 			String uid = CookieUtils.getUid(request);
 			String fid = CookieUtils.getFid(request);
 			if (StringUtils.isNotBlank(uid)) {
-				loginUser = loginService.login(Integer.parseInt(uid), Integer.parseInt(fid));
-				LoginUtils.login(request, loginUser);
+				long validateTime = CookieUtils.getValidateTime(request);
+				String signature = CookieUtils.getSignature(request);
+				if (cookieValidationService.isEffective(Integer.parseInt(uid), validateTime, signature)) {
+					loginUser = loginService.login(Integer.parseInt(uid), Integer.parseInt(fid));
+					LoginUtils.login(request, loginUser);
+				}
 			}
 		}
 		return super.preHandle(request, response, handler);
