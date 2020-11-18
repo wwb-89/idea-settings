@@ -40,6 +40,34 @@ public class CookieUtils {
         return fid;
     }
 
+    public static long getValidateTime(HttpServletRequest request) {
+        String time = getValue(request, CookieConstant.TIME);
+        if (StringUtils.isNotEmpty(time)) {
+            return Long.parseLong(time);
+        }
+        return 0L;
+    }
+
+    /**获取签名
+     * @Description
+     * @author wwb
+     * @Date 2019-06-24 19:04:30
+     * @param request
+     * @return java.lang.String
+     */
+    public static String getSignature(HttpServletRequest request) {
+        Cookie[] cookies = request.getCookies();
+        if (cookies != null) {
+            for (Cookie cookie : cookies) {
+                String name = cookie.getName();
+                if (CookieConstant.SIGNATURE.equalsIgnoreCase(name)) {
+                    return cookie.getValue();
+                }
+            }
+        }
+        return "";
+    }
+
     private static String getValue(HttpServletRequest request, String key) {
         Cookie[] cookies = request.getCookies();
         if (cookies != null && cookies.length > 0) {
