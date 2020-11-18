@@ -3,7 +3,6 @@ package com.chaoxing.activity.service.activity.classify;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.chaoxing.activity.mapper.ActivityClassifyMapper;
 import com.chaoxing.activity.model.ActivityClassify;
-import com.chaoxing.activity.util.constant.CommonConstant;
 import com.chaoxing.activity.util.exception.BusinessException;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
@@ -77,7 +76,7 @@ public class ActivityClassifyValidationService {
 		List<ActivityClassify> activityClassifies = new ArrayList<>();
 		List<ActivityClassify> systemActivityClassifies = activityClassifyMapper.selectList(
 				new LambdaQueryWrapper<ActivityClassify>()
-						.eq(ActivityClassify::getAffiliationFid, CommonConstant.SYSTEM_FID)
+						.eq(ActivityClassify::getSystem, Boolean.TRUE)
 						.eq(ActivityClassify::getName, name)
 		);
 		if (CollectionUtils.isNotEmpty(systemActivityClassifies)) {

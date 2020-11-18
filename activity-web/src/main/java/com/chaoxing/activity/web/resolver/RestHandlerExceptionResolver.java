@@ -41,7 +41,9 @@ public class RestHandlerExceptionResolver implements HandlerExceptionResolver {
 				errorMessage = ExceptionConstant.DEFAULT_ERROR_MESSAGE;
 			}
 			RestRespDTO<Void> restResp = RestRespDTO.error(errorMessage);
-			ModelAndView modelAndView = new ModelAndView(new FastJsonJsonView());
+			FastJsonJsonView fastJsonJsonView = new FastJsonJsonView();
+			fastJsonJsonView.setExtractValueFromSingleKeyModel(true);
+			ModelAndView modelAndView = new ModelAndView(fastJsonJsonView);
 			modelAndView.addObject(restResp);
 			return modelAndView;
 		}

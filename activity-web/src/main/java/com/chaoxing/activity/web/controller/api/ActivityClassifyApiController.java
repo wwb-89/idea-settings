@@ -54,8 +54,8 @@ public class ActivityClassifyApiController {
 	@PostMapping("edit")
 	public RestRespDTO edit(HttpServletRequest request, ActivityClassify activityClassify) {
 		LoginUserDTO loginUser = LoginUtils.getLoginUser(request);
-		activityClassifyHandleService.edit(activityClassify, loginUser);
-		return RestRespDTO.success();
+		ActivityClassify edit = activityClassifyHandleService.edit(activityClassify, loginUser);
+		return RestRespDTO.success(edit);
 	}
 
 	/**删除活动分类

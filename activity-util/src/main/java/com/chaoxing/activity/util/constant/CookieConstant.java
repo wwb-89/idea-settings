@@ -18,6 +18,10 @@ public class CookieConstant {
 	public static final String UID = "_uid";
 	/** fid */
 	public static final String FID = "fid";
+	/** 时间 */
+	public static final String TIME = "_d";
+	/** 签名 */
+	public static final String SIGNATURE = "vc3";
 	/** 微服务fid */
 	public static final String WFWFID = "wfwfid";
 	/** 空间fid */

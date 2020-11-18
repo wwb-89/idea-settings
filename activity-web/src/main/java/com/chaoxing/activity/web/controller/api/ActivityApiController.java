@@ -42,18 +42,37 @@ public class ActivityApiController {
 	 * @param request
 	 * @param activityJsonStr
 	 * @param signJsonStr
-	 * @param modulesJsonStr
 	 * @return com.chaoxing.activity.dto.RestRespDTO
 	*/
 	@PostMapping("new")
-	public RestRespDTO create(HttpServletRequest request, String activityJsonStr, String signJsonStr, String modulesJsonStr) {
+	public RestRespDTO create(HttpServletRequest request, String activityJsonStr, String signJsonStr) {
 		LoginUserDTO loginUser = LoginUtils.getLoginUser(request);
 		Activity activity = JSON.parseObject(activityJsonStr, Activity.class);
 		// 本期不开启审核
 		activity.setOpenAudit(false);
 		SignFormDTO signForm = JSON.parseObject(signJsonStr, SignFormDTO.class);
+		activityHandleService.add(activity, signForm, loginUser);
+		return RestRespDTO.success();
+	}
+
+	/**修改活动
+	 * @Description 
+	 * @author wwb
+	 * @Date 2020-11-17 20:18:16
+	 * @param request
+	 * @param activityJsonStr
+	 * @param signJsonStr
+	 * @param modulesJsonStr
+	 * @return com.chaoxing.activity.dto.RestRespDTO
+	*/
+	@PostMapping("edit")
+	public RestRespDTO edit(HttpServletRequest request, String activityJsonStr, String signJsonStr, String modulesJsonStr) {
+		LoginUserDTO loginUser = LoginUtils.getLoginUser(request);
+		Activity activity = JSON.parseObject(activityJsonStr, Activity.class);
+		// 本期不开启审核
+		SignFormDTO signForm = JSON.parseObject(signJsonStr, SignFormDTO.class);
 		List<ActivityModule> activityModules = JSON.parseArray(modulesJsonStr, ActivityModule.class);
-		activityHandleService.add(activity, signForm, activityModules, loginUser);
+		activityHandleService.edit(activity, signForm, loginUser);
 		return RestRespDTO.success();
 	}
 

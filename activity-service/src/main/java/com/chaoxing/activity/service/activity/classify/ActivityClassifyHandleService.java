@@ -56,9 +56,9 @@ public class ActivityClassifyHandleService {
 	 * @Date 2020-11-10 19:31:07
 	 * @param activityClassify
 	 * @param loginUser
-	 * @return void
+	 * @return com.chaoxing.activity.model.ActivityClassify
 	*/
-	public void edit(ActivityClassify activityClassify, LoginUserDTO loginUser) {
+	public ActivityClassify edit(ActivityClassify activityClassify, LoginUserDTO loginUser) {
 		String name = activityClassify.getName();
 		if (StringUtils.isEmpty(name)) {
 			throw new BusinessException("分类名称不能为空");
@@ -72,6 +72,7 @@ public class ActivityClassifyHandleService {
 				.eq(ActivityClassify::getId, id)
 				.set(ActivityClassify::getName, name)
 		);
+		return activityClassify;
 	}
 
 	/**删除
