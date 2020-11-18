@@ -70,11 +70,9 @@
                 </el-table-column>
             </el-table>
         </div>
+        <!--状态筛选-->
         <div class="filters">
-            <p>全部</p>
-            <p>进行中</p>
-            <p>未发布</p>
-            <p>已结束</p>
+            <p :class="{'blue': status.selected}" v-for="(status, index) of filterStatus" :key="'status-' + index" @click="changeStatus(index)">{{status.name}}</p>
         </div>
         <el-pagination v-show="total > 0" background layout="prev, pager, next" :total="total" :page-size="queryParams.pageSize"></el-pagination>
         <!-- 确认下架 -->
@@ -98,6 +96,7 @@
             el: "#activity-vue",
             data: {
                 activities: [],
+                filterStatus: [],
                 queryParams: {
                     pageNum: 1,
                     pageSize: 10,
@@ -106,7 +105,14 @@
                 total: 0
             },
             created: function () {
-
+                var $this = this;
+                $this.filterStatus = [
+                    {name: "全部", value: "", selected: true},
+                    {name: "待发布", value: "1", selected: false},
+                    {name: "已发布", value: "2", selected: false},
+                    {name: "进行中", value: "3", selected: false},
+                    {name: "已结束", value: "4", selected: false}
+                ];
             },
             mounted: function () {
                 var $this = this;
@@ -115,12 +121,8 @@
             },
             methods: {
                 bindEvents: function () {
-                    $('.status').click(function () {
-                        $('.filters').toggle()
-                    });
-                    $('.filters p').click(function () {
-                        $(this).addClass('blue').siblings().removeClass('blue');
-                        $('.filters').hide();
+                    $(document).on("click", ".status", function () {
+                        $('.filters').toggle();
                     });
                     $('.more-btn').mouseover(function () {
                         $(this).children('.more').show();
@@ -132,6 +134,22 @@
                         $(this).addClass('blue').siblings().removeClass('blue');
                         $(this).parent('.more').hide();
                     });
+                },
+                // 修改状态
+                changeStatus: function (index) {
+                    var $this = this;
+                    var status = $this.filterStatus[index];
+                    $($this.filterStatus).each(function (i) {
+                        if (i == index) {
+                            $this.$set($this.filterStatus[i], "selected", true);
+                        } else {
+                            $this.$set($this.filterStatus[i], "selected", false);
+                        }
+                    });
+                    $('.filters').toggle();
+                    $this.queryParams.status = status.value;
+                    $this.queryParams.pageNum = 1;
+                    $this.loadData();
                 },
                 loadData: function () {
                     var $this = this;
