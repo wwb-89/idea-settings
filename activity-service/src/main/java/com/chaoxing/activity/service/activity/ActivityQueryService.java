@@ -2,12 +2,15 @@ package com.chaoxing.activity.service.activity;
 
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.chaoxing.activity.dto.activity.ActivityTypeDTO;
+import com.chaoxing.activity.dto.query.ActivityManageQueryDTO;
 import com.chaoxing.activity.dto.query.ActivityQueryDTO;
 import com.chaoxing.activity.mapper.ActivityMapper;
 import com.chaoxing.activity.model.Activity;
+import com.chaoxing.activity.service.manager.PassportApiService;
 import com.chaoxing.activity.util.enums.ActivityQueryDateEnum;
 import com.chaoxing.activity.util.enums.ActivityTypeEnum;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
@@ -30,6 +33,9 @@ public class ActivityQueryService {
 
 	@Resource
 	private ActivityMapper activityMapper;
+
+	@Resource
+	private PassportApiService passportApiService;
 	
 	/**查询参与的活动
 	 * @Description 
@@ -107,6 +113,28 @@ public class ActivityQueryService {
 			result.add(activityType);
 		}
 		return result;
+	}
+
+	/**查询管理的活动列表
+	 * @Description 
+	 * @author wwb
+	 * @Date 2020-11-18 14:31:38
+	 * @param page
+	 * @param activityManageQuery
+	 * @return com.baomidou.mybatisplus.extension.plugins.pagination.Page<com.chaoxing.activity.model.Activity>
+	*/
+	public Page<Activity> listManaging(Page<Activity> page, ActivityManageQueryDTO activityManageQuery) {
+		page = activityMapper.listManaging(page, activityManageQuery);
+		// 填充机构名称
+		List<Activity> records = page.getRecords();
+		if (CollectionUtils.isNotEmpty(records)) {
+			for (Activity record : records) {
+				Integer createFid = record.getCreateFid();
+				String orgName = passportApiService.getOrgName(createFid);
+				record.setCreateOrgName(orgName);
+			}
+		}
+		return page;
 	}
 
 }

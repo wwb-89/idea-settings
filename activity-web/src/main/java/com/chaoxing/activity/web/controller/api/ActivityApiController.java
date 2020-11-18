@@ -5,18 +5,20 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.chaoxing.activity.dto.LoginUserDTO;
 import com.chaoxing.activity.dto.RestRespDTO;
 import com.chaoxing.activity.dto.module.SignFormDTO;
+import com.chaoxing.activity.dto.query.ActivityManageQueryDTO;
 import com.chaoxing.activity.dto.query.ActivityQueryDTO;
 import com.chaoxing.activity.model.Activity;
-import com.chaoxing.activity.model.ActivityModule;
 import com.chaoxing.activity.service.activity.ActivityHandleService;
 import com.chaoxing.activity.service.activity.ActivityQueryService;
 import com.chaoxing.activity.web.util.HttpServletRequestUtils;
 import com.chaoxing.activity.web.util.LoginUtils;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
-import java.util.List;
 
 /**活动api服务
  * @author wwb
@@ -62,16 +64,14 @@ public class ActivityApiController {
 	 * @param request
 	 * @param activityJsonStr
 	 * @param signJsonStr
-	 * @param modulesJsonStr
 	 * @return com.chaoxing.activity.dto.RestRespDTO
 	*/
 	@PostMapping("edit")
-	public RestRespDTO edit(HttpServletRequest request, String activityJsonStr, String signJsonStr, String modulesJsonStr) {
+	public RestRespDTO edit(HttpServletRequest request, String activityJsonStr, String signJsonStr) {
 		LoginUserDTO loginUser = LoginUtils.getLoginUser(request);
 		Activity activity = JSON.parseObject(activityJsonStr, Activity.class);
 		// 本期不开启审核
 		SignFormDTO signForm = JSON.parseObject(signJsonStr, SignFormDTO.class);
-		List<ActivityModule> activityModules = JSON.parseArray(modulesJsonStr, ActivityModule.class);
 		activityHandleService.edit(activity, signForm, loginUser);
 		return RestRespDTO.success();
 	}
@@ -106,6 +106,24 @@ public class ActivityApiController {
 		activityQuery.setFid(loginUser.getFid());
 		Page<Activity> page = HttpServletRequestUtils.buid(request);
 		page = activityQueryService.listParticipate(page, activityQuery);
+		return RestRespDTO.success(page);
+	}
+
+	/**查询管理的活动列表
+	 * @Description 
+	 * @author wwb
+	 * @Date 2020-11-18 14:00:13
+	 * @param request
+	 * @param activityManageQuery
+	 * @return com.chaoxing.activity.dto.RestRespDTO
+	*/
+	@RequestMapping("list/managing")
+	public RestRespDTO listManaging(HttpServletRequest request, ActivityManageQueryDTO activityManageQuery) {
+		LoginUserDTO loginUser = LoginUtils.getLoginUser(request);
+		activityManageQuery.setCreateUid(loginUser.getUid());
+		activityManageQuery.setCreateFid(loginUser.getFid());
+		Page<Activity> page = HttpServletRequestUtils.buid(request);
+		page = activityQueryService.listManaging(page, activityManageQuery);
 		return RestRespDTO.success(page);
 	}
 

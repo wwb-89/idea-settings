@@ -219,6 +219,29 @@
 
         };
     };
+    /**
+     * 获取活动状态说明
+     * @param status
+     * @returns {string|*}
+     */
+    activityApp.prototype.getActivityStatusInstructions = function (status) {
+        var $this = this;
+        if ($this.isEmpty(status)) {
+            return status;
+        }
+        switch (status) {
+            case 0:
+                return "已删除";
+            case 1:
+                return "待发布";
+            case 2:
+                return "已发布";
+            case 3:
+                return "进行中";
+            default:
+                return "已结束";
+        }
+    };
     W['activityApp'] = new activityApp();
 })(window, jQuery, JSON);
 Array.prototype.remove = function (val) {
@@ -235,4 +258,7 @@ Array.prototype.pushArray = function (array) {
 };
 Vue.filter("getCloudImgUrl", function (cloudId) {
     return activityApp.getCloudImgUrl(cloudId);
+});
+Vue.filter("activityStatusInstructions", function (status) {
+    return activityApp.getActivityStatusInstructions(status);
 });

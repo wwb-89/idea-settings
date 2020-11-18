@@ -22,7 +22,9 @@
         <result column="is_open_audit" jdbcType="BIT" property="openAudit" />
         <result column="audit_status" jdbcType="INTEGER" property="auditStatus" />
         <result column="create_uid" jdbcType="INTEGER" property="createUid" />
+        <result column="create_user_name" jdbcType="INTEGER" property="createUserName" />
         <result column="create_fid" jdbcType="INTEGER" property="createFid" />
+        <result column="create_org_name" jdbcType="INTEGER" property="createOrgName" />
         <result column="province_name" jdbcType="VARCHAR" property="provinceName" />
         <result column="city_name" jdbcType="VARCHAR" property="cityName" />
         <result column="county_name" jdbcType="VARCHAR" property="countyName" />
@@ -33,7 +35,7 @@
         t.id, t.name, t.start_date, t.end_date, t.cover_cloud_id, t.activity_type, t.address,
         t.longitude, t.dimension, t.activity_classify_id, t.is_enable_sign, t.sign_id, t.web_template_id, 
         t.is_released, t.release_time, t.release_uid, t.status, t.is_open_audit, t.audit_status, 
-        t.create_uid, t.create_fid, t.province_name, t.city_name, t.county_name, t.create_time,
+        t.create_uid, t.create_user_name, t.create_fid, t.create_org_name, t.province_name, t.city_name, t.county_name, t.create_time,
         t.update_time
     </sql>
 
@@ -43,39 +45,39 @@
         FROM
             t_activity t
             INNER JOIN t_activity_scope t1 ON t.id = t1.activity_id
-            AND t1.fid = #{fid}
+            AND t1.fid = #{params.fid}
         WHERE
             <!--状态-->
             <choose>
-                <when test="status != null">
-                    t.`status` = #{status}
+                <when test="params.status != null">
+                    t.`status` = #{params.status}
                 </when>
                 <otherwise>
                     t.`status` IN ( 2, 3, 4 )
                 </otherwise>
             </choose>
             <!--类型-->
-            <if test="activityClassifyId != null">
-                AND t.activity_classify_id = #{activityClassifyId}
+            <if test="params.activityClassifyId != null">
+                AND t.activity_classify_id = #{params.activityClassifyId}
             </if>
             <!--地区-->
-            <if test="area != null and area != ''">
-                AND t.city_name = #{area}
+            <if test="params.area != null and params.area != ''">
+                AND t.city_name = #{params.area}
             </if>
             <!--时间-->
-            <if test="(minDateStr != null and minDateStr != '') or (maxDateStr != null and maxDateStr != '')">
+            <if test="(params.minDateStr != null and params.minDateStr != '') or (params.maxDateStr != null and params.maxDateStr != '')">
                 <choose>
-                    <when test="minDateStr != null and minDateStr != '' and maxDateStr != null and maxDateStr != ''">
+                    <when test="params.minDateStr != null and params.minDateStr != '' and params.maxDateStr != null and params.maxDateStr != ''">
                         <!--都不为空-->
                         AND t.start_date BETWEEN minDateStr AND minDateStr
                     </when>
                     <otherwise>
                         <choose>
-                            <when test="minDateStr != null and minDateStr != ''">
-                                AND t.start_date >= #{minDateStr}
+                            <when test="params.minDateStr != null and params.minDateStr != ''">
+                                AND t.start_date >= #{params.minDateStr}
                             </when>
                             <otherwise>
-                                AND t.start_date <![CDATA[<=]]> #{maxDateStr}
+                                AND t.start_date <![CDATA[<=]]> #{params.maxDateStr}
                             </otherwise>
                         </choose>
                     </otherwise>
@@ -84,6 +86,22 @@
         ORDER BY
             FIELD( t.`status`, 2, 3, 4 ),
             t.start_date DESC
+    </select>
+
+    <!--查询管理的活动-->
+    <select id="listManaging" resultMap="BaseResultMap">
+        SELECT
+            <include refid="Base_Column_List"></include>
+        FROM
+            t_activity t
+        WHERE
+            t.create_uid = #{params.createUid}
+            AND t.create_fid = #{params.createFid}
+            <if test="params.status != null">
+                AND t.`status` = #{params.status}
+            </if>
+        ORDER BY
+            t.create_time DESC
     </select>
 
 </mapper>

@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org/">
+<head>
+    <meta charset="UTF-8">
+    <title>活动管理</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="/static/pc/assets/css/create.css" th:href="@{/pc/assets/css/create.css}">
+    <link rel="stylesheet" href="//unpkg.com/element-ui/lib/theme-chalk/index.css">
+    <link rel="stylesheet" href="/static/pc/assets/css/reset.css" th:href="@{/pc/assets/css/reset.css}">
+    <link rel="stylesheet" href="/static/pc/assets/css/public.css" th:href="@{/pc/assets/css/public.css}">
+    <link rel="stylesheet" href="/static/pc/assets/css/manage.css" th:href="@{/pc/assets/css/manage.css}">
+    <style type="text/css">
+        [v-cloak] {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+<div class="page" id="activity-vue" v-cloak>
+    <div class="top box">
+        活动管理
+    </div>
+    <div class="main box">
+        <div class="create-btn">创建活动</div>
+        <div class="table">
+            <el-table :data="activities" style="width: 100%">
+                <el-table-column label="活动名称" width="386">
+                    <template slot-scope="scope">
+                        <div class="item">
+                            <img :src="scope.row.coverCloudId | getCloudImgUrl">
+                            <div class="desc">
+                                <div class="title">{{scope.row.name}}</div>
+                                <div class="time"><span>2019年10月1日</span> - <span>2028年10月1日</span></div>
+                            </div>
+                        </div>
+                    </template>
+                </el-table-column>
+                <el-table-column label="创建单位" width="130">
+                    <template slot-scope="scope">
+                        <div class="overHidden2">{{scope.row.createOrgName}}</div>
+                    </template>
+                </el-table-column>
+                <el-table-column label="创建人" width="130">
+                    <template slot-scope="scope">
+                        <div class="overHidden2">{{scope.row.createUserName}}</div>
+                    </template>
+                </el-table-column>
+                <el-table-column label="状态">
+                    <template slot="header" slot-scope="scope">
+                        <div class="status">状态<i class="el-icon-arrow-down"></i></div>
+                    </template>
+                    <template slot-scope="scope">
+                        <span class="green">{{scope.row.status | activityStatusInstructions}}</span>
+                    </template>
+                </el-table-column>
+                <el-table-column label="操作" width="213">
+                    <template slot-scope="scope">
+                        <div>
+                            <el-button type="text">发布</el-button>
+                            <el-button type="text">下架</el-button>
+                            <div class="more-btn">
+                                <el-button type="text">更多<i class="el-icon-arrow-down"></i></el-button>
+                                <div class="more">
+                                    <p>修改</p>
+                                    <p>删除</p>
+                                </div>
+                            </div>
+                        </div>
+                    </template>
+                </el-table-column>
+            </el-table>
+        </div>
+        <div class="filters">
+            <p>全部</p>
+            <p>进行中</p>
+            <p>未发布</p>
+            <p>已结束</p>
+        </div>
+        <el-pagination v-show="total > 0" background layout="prev, pager, next" :total="total" :page-size="queryParams.pageSize"></el-pagination>
+        <!-- 确认下架 -->
+        <div class="dailog-box1" style="display: none;">
+            <div class="dailog delete-dailog">
+                <img src="/static/pc/assets/images/warning.png" th:src="@{/pc/assets/images/warning.png}" class="warn">
+                <span>下架后，该活动将不在活动广场中显示</span>
+                <div>
+                    <div class="normal-btn">取消</div>
+                    <div class="normal-btn after-sure">下架</div>
+                </div>
+            </div>
+        </div>
+        <!-- 活动发布弹窗 -->
+    </div>
+</div>
+<div th:replace="pc/include/common_js :: common_js(~{::script})">
+    <script src="//unpkg.com/element-ui/lib/index.js"></script>
+    <script th:inline="javascript">
+        activityVue = new Vue({
+            el: "#activity-vue",
+            data: {
+                activities: [],
+                queryParams: {
+                    pageNum: 1,
+                    pageSize: 10,
+                    status: 1
+                },
+                total: 0
+            },
+            created: function () {
+
+            },
+            mounted: function () {
+                var $this = this;
+                $this.bindEvents();
+                $this.loadData();
+            },
+            methods: {
+                bindEvents: function () {
+                    $('.status').click(function () {
+                        $('.filters').toggle()
+                    });
+                    $('.filters p').click(function () {
+                        $(this).addClass('blue').siblings().removeClass('blue');
+                        $('.filters').hide();
+                    });
+                    $('.more-btn').mouseover(function () {
+                        $(this).children('.more').show();
+                    });
+                    $('.more-btn').mouseout(function () {
+                        $(this).children('.more').hide();
+                    });
+                    $('.more p').click(function () {
+                        $(this).addClass('blue').siblings().removeClass('blue');
+                        $(this).parent('.more').hide();
+                    });
+                },
+                loadData: function () {
+                    var $this = this;
+                    var url = ctx + "/api/activity/list/managing";
+                    app.ajaxPost(url, $this.queryParams, function (data) {
+                        if (data.success) {
+                            $this.activities = data.data.records;
+                            $this.total = data.data.total;
+                        } else {
+                            var errorMessage = data.message;
+                            if (activityApp.isEmpty(errorMessage)) {
+                                errorMessage = "加载活动失败";
+                            }
+                            app.showMsg(errorMessage);
+                        }
+                    }, function () {
+                        app.showMsg("加载活动失败");
+                    });
+                }
+            }
+        });
+    </script>
+</div>
+</body>
+
+</html>

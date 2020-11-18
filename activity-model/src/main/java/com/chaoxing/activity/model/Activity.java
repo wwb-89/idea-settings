@@ -71,8 +71,12 @@ public class Activity {
     private Integer auditStatus;
     /** 创建人id; column: create_uid*/
     private Integer createUid;
+    /** 创建人姓名; column: create_user_name*/
+    private String createUserName;
     /** 创建单位id; column: create_fid*/
     private Integer createFid;
+    /** 创建机构名; column: create_org_name*/
+    private String createOrgName;
     /** 省; column: province_name*/
     private String provinceName;
     /** 市; column: city_name*/
