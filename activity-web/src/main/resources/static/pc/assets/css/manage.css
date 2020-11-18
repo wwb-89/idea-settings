@@ -27,6 +27,7 @@
 }
 
 .main {
+    position: relative;
     width: 1000px;
     max-height: 980px;
     background: #ffffff;
@@ -82,7 +83,13 @@ table {
     font-size: 15px;
     font-weight: 600;
     color: #333333;
+    cursor: pointer;
 }
+
+.title:hover {
+    color: #0084FF;
+}
+
 .desc .time {
     font-size: 14px;
     font-weight: 400;
@@ -92,7 +99,7 @@ table {
 }
 
 .blue {
-    color: #0084FF;
+    color: #0084FF !important;
 }
 
 .blue2 {
@@ -125,6 +132,50 @@ table {
     padding: 0 10px;
     box-sizing: border-box;
 }
-.already{
-color: #0084ff;
+
+.already {
+    color: #0084ff;
+}
+
+.filters,
+.more {
+    position: absolute;
+    z-index: 2;
+    top: 120px;
+    right: 253px;
+    display: none;
+    width: 88px;
+    background: #ffffff;
+    border-radius: 2px;
+    box-shadow: 0px 12px 48px 16px rgba(0, 0, 0, 0.03), 0px 9px 28px 0px rgba(0, 0, 0, 0.05), 0px 6px 16px -8px rgba(0, 0, 0, 0.08);
+    cursor: pointer;
+}
+
+.filters p,
+.more p {
+    margin: 0 15px;
+    color: #333333;
+    font-weight: 400;
+    line-height: 34px;
+    font-size: 14px;
+}
+
+.more {
+    position: absolute;
+    top: 35px;
+    right: -18px;
+    width: 74px;
+}
+
+.more-btn {
+    position: relative;
+    display: inline-block;
+    margin-left: 10px;
+}
+
+/* .more-btn:hover .more{
+    display: block;
+} */
+.el-table .cell {
+    overflow: unset;
 }

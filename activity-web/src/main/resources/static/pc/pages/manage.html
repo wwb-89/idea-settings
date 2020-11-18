@@ -27,25 +27,26 @@
                                 <img src="https://p.ananas.chaoxing.com/star3/320_150c/572280b525982f6d3c51fd3fb5ef7449.jpeg"
                                     alt="">
                                 <div class="desc">
-                                    <div :class="scope.row.state =='进行中'?'title blue':'title'">2020年星阅读活动</div>
+                                    <div class="title">2020年星阅读活动</div>
                                     <div class="time"><span>2019年10月1日</span> - <span>2028年10月1日</span></div>
                                 </div>
                             </div>
                         </template>
                     </el-table-column>
-                    <el-table-column prop="address" label="创建单位" width="120">
+                    <el-table-column prop="address" label="创建单位" width="130">
                         <template slot-scope="scope">
                             <div class="overHidden2">{{scope.row.address}}</div>
                         </template>
                     </el-table-column>
-                    <el-table-column prop="person" label="创建人" width="120">
+                    <el-table-column prop="person" label="创建人" width="130">
                         <template slot-scope="scope">
                             <div class="overHidden2">{{scope.row.person}}</div>
                         </template>
                     </el-table-column>
-                    <el-table-column prop="state" label="状态"
-                        :filters="[{ text: '全部', value: '全部' }, { text: '进行中', value: '进行中' }, { text: '未发布', value: '未发布' }, { text: '已结束', value: '已结束' }]"
-                        :filter-method="filterTag" filter-placement="bottom-end">
+                    <el-table-column prop="state" label="状态">
+                        <template slot="header" slot-scope="scope">
+                            <div class="status">状态<i class="el-icon-arrow-down"></i></div>
+                        </template>
                         <template slot-scope="scope">
                             <span
                                 :class="scope.row.state=='进行中'?'green':scope.row.state=='未发布'?'blue2':''">{{scope.row.state}}</span>
@@ -56,12 +57,27 @@
                             <div v-show="scope.row.state == '进行中'">
                                 <el-button type="text">报名管理</el-button>
                                 <el-button type="text">发布范围</el-button>
-                                <el-button type="text">更多<i class="el-icon-arrow-down"></i></el-button>
+                                <div class="more-btn">
+                                    <el-button type="text">更多<i class="el-icon-arrow-down"></i></el-button>
+                                    <div class="more">
+                                        <p>全部</p>
+                                        <p>进行中</p>
+                                        <p>未发布</p>
+                                    </div>
+                                </div>
+
                             </div>
                             <div v-show="scope.row.state == '未发布'">
                                 <el-button type="text" @click="handleRelease">发布</el-button>
                                 <el-button type="text">编辑</el-button>
-                                <el-button type="text">更多<i class="el-icon-arrow-down"></i></el-button>
+                                <div class="more-btn">
+                                    <el-button type="text">更多<i class="el-icon-arrow-down"></i></el-button>
+                                    <div class="more">
+                                        <p>全部</p>
+                                        <p>进行中</p>
+                                        <p>未发布</p>
+                                    </div>
+                                </div>
                             </div>
                             <div v-show="scope.row.state == '已结束'">
                                 <el-button type="text" @click="handleXia">下架</el-button>
@@ -70,6 +86,12 @@
                         </template>
                     </el-table-column>
                 </el-table>
+            </div>
+            <div class="filters">
+                <p>全部</p>
+                <p>进行中</p>
+                <p>未发布</p>
+                <p>已结束</p>
             </div>
             <el-pagination background layout="prev, pager, next" :total="10">
             </el-pagination>
@@ -99,8 +121,8 @@
                             </div>
                             <div style="padding: 10px 0;">
                                 <el-tree :data="data" show-checkbox node-key="id" :default-expanded-keys="[2, 3]"
-                                :props="defaultProps">
-                            </el-tree>
+                                    :props="defaultProps">
+                                </el-tree>
                             </div>
                         </div>
                     </div>
@@ -115,6 +137,7 @@
     <script src="../assets/lib/jquery.min.js"></script>
     <script src="../assets/lib/vue.js"></script>
     <script src="https://unpkg.com/element-ui/lib/index.js"></script>
+
     <script>
         var app = new Vue({
             el: '#app',
@@ -200,11 +223,30 @@
                     this.releaseShow = false
                     $('body').removeClass('scroll')
                 },
-                handleRelease(){
+                handleRelease() {
                     this.releaseShow = true
                     $('body').addClass('scroll')
                 }
             }
+        })
+    </script>
+    <script>
+        $('.status').click(function () {
+            $('.filters').toggle()
+        })
+        $('.filters p').click(function () {
+            $(this).addClass('blue').siblings().removeClass('blue')
+            $('.filters').hide()
+        })
+        $('.more-btn').mouseover(function () {
+            $(this).children('.more').show();
+        })
+        $('.more-btn').mouseout(function () {
+            $(this).children('.more').hide();
+        })
+        $('.more p').click(function () {
+            $(this).addClass('blue').siblings().removeClass('blue')
+            $(this).parent('.more').hide()
         })
     </script>
 </body>
