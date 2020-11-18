@@ -6,9 +6,12 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="../assets/css/create.css">
     <link rel="stylesheet" href="https://unpkg.com/element-ui/lib/theme-chalk/index.css">
+    <link rel="stylesheet" href="../assets/lib/zTree_v3/css/zTreeStyle/zTreeStyle.css" type="text/css">
     <link rel="stylesheet" href="../assets/css/reset.css">
     <link rel="stylesheet" href="../assets/css/public.css">
     <link rel="stylesheet" href="../assets/css/manage.css">
+    <link rel="stylesheet" href="../assets/lib/jquery.mCustomScrollbar.css">
+    <link rel="stylesheet" href="../assets/css/list.css">
     <title>活动管理</title>
 </head>
 
@@ -119,10 +122,11 @@
                                 <span>选择发布的范围</span>
                                 <div class="already">已选<span style="margin-left: 5px;">0</span></div>
                             </div>
-                            <div style="padding: 10px 0;">
-                                <el-tree :data="data" show-checkbox node-key="id" :default-expanded-keys="[2, 3]"
+                            <div class="tree-box">
+                                <!-- <el-tree :data="data" show-checkbox node-key="id" :default-expanded-keys="[2, 3]"
                                     :props="defaultProps">
-                                </el-tree>
+                                </el-tree> -->
+                                <ul id="organizationTree" class="ztree"></ul>
                             </div>
                         </div>
                     </div>
@@ -134,9 +138,15 @@
             </div>
         </div>
     </div>
+
     <script src="../assets/lib/jquery.min.js"></script>
+    <script src="../assets/lib/zTree_v3/js/jquery.ztree.core.js"></script>
+    <script src="../assets/lib/zTree_v3/js/jquery.ztree.excheck.min.js"></script>
+    <script type="text/javascript" src="../assets/lib/zTree_v3/js/jquery.ztree.exedit.js"></script>
     <script src="../assets/lib/vue.js"></script>
     <script src="https://unpkg.com/element-ui/lib/index.js"></script>
+    <script src="../assets/lib/jquery.mousewheel.min.js"></script>
+    <script src="../assets/lib/jquery.mCustomScrollbar.js"></script>
 
     <script>
         var app = new Vue({
@@ -248,6 +258,55 @@
             $(this).addClass('blue').siblings().removeClass('blue')
             $(this).parent('.more').hide()
         })
+        this.organizationTree()
+        function organizationTree() {
+        var setting = {
+            check: {
+                enable: true
+            },
+            data: {
+                simpleData: {
+                    enable: true
+                }
+            },
+            callback: {
+                onCheck: zTreeOnCheck
+            },
+            view: {
+                selectedMulti: false,
+                showIcon:false,
+            }
+        };
+        setting.check.chkboxType = { "Y" : "s", "N" : "s" };
+        var zNodes =[
+            { id:1, pId:0, name:"一级", open:true},
+            { id:2, pId:0, name:"一级",  open:true},
+            { id:3, pId:0, name:"一级",  open:false},
+            { id:4, pId:2, name:"二级",  open:true},
+            { id:5, pId:2, name:"二级",  open:true},
+            { id:6, pId:2, name:"二级",  open:true},
+            { id:7, pId:3, name:"二级",  open:true},
+            { id:8, pId:3, name:"二级",  open:true},
+            { id:9, pId:3, name:"二级",  open:true},
+            { id:10, pId:1, name:"二级",  open:true},
+            { id:11, pId:1, name:"二级",  open:true},
+            { id:12, pId:1, name:"二级",  open:true},
+        ];
+    
+        function zTreeOnCheck(event, treeId, treeNode) {
+            clearCheckedOldNodes();
+        };
+         //清理善后工作
+         function clearCheckedOldNodes() {
+            var zTree = $.fn.zTree.getZTreeObj("organizationTree"),
+                nodes = zTree.getChangeCheckedNodes();
+            for (var i=0, l=nodes.length; i<l; i++) {
+                nodes[i].checkedOld = nodes[i].checked;
+            }
+        };
+        $.fn.zTree.init($("#organizationTree"), setting, zNodes);
+    }
+
     </script>
 </body>
 

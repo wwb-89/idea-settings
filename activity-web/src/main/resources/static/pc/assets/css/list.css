@@ -1,0 +1,2138 @@
+@charset "UTF-8";
+textarea::-webkit-input-placeholder, input::-webkit-input-placeholder {
+  font-size: 14px;
+  color: #aaaaaa;
+  font-weight: 400;
+}
+
+textarea:-moz-placeholder, input:-moz-placeholder {
+  font-size: 14px;
+  color: #aaaaaa;
+  font-weight: 400;
+}
+
+textarea::-moz-placeholder, input::-moz-placeholder {
+  font-size: 14px;
+  color: #aaaaaa;
+  font-weight: 400;
+}
+
+textarea:-ms-input-placeholder, input:-ms-input-placeholder {
+  font-size: 14px;
+  color: #aaaaaa;
+  font-weight: 400;
+}
+
+body {
+  white-space: normal;
+  word-break: break-all;
+  word-wrap: break-word;
+}
+
+.btn {
+  line-height: 20px;
+  font-size: 14px;
+  padding: 6px 19px;
+  box-sizing: border-box;
+  border-radius: 4px;
+}
+
+.btnDefault {
+  color: #0492F5;
+  background: #FFFFFF;
+  border: 1px solid #0681FF;
+}
+
+.btnDefault:hover {
+  color: #0492F5;
+}
+
+.btnDefaultBg {
+  color: #FFFFFF;
+  border: 1px solid #0681FF;
+  background: #499EFD;
+  box-sizing: border-box;
+}
+
+.btnDefaultBg:hover {
+  color: #FFFFFF;
+}
+
+.XKBMContainer {
+  padding-top: 10px;
+  padding-bottom: 30px;
+  position: relative;
+  width: 1361px;
+  margin: 0 auto;
+}
+
+.XKBMContainer .leftContent {
+  font-size: 12px;
+  width: 78px;
+  padding: 0 16px;
+  background: #FFFFFF;
+  box-shadow: 0px 0px 4px 0px rgba(188, 198, 207, 0.5);
+  border-radius: 3px;
+  float: left;
+}
+
+.XKBMContainer .leftContent ul li {
+  height: 43px;
+  padding: 20px 0;
+  border-bottom: 1px solid #EAEDF3;
+  text-align: center;
+  position: relative;
+  cursor: pointer;
+}
+
+.XKBMContainer .leftContent ul li i {
+  display: inline-block;
+  width: 16px;
+  height: 16px;
+}
+
+.XKBMContainer .leftContent ul li i.titleIcon1 {
+  background: url("../images/plan1_.png") center center no-repeat;
+  background-size: 100%;
+}
+
+.XKBMContainer .leftContent ul li i.titleIcon2 {
+  background: url("../images/keck1_.png") center center no-repeat;
+  background-size: 100%;
+}
+
+.XKBMContainer .leftContent ul li i.titleIcon3 {
+  background: url("../images/xsbm1_.png") center center no-repeat;
+  background-size: 100%;
+}
+
+.XKBMContainer .leftContent ul li .line {
+  position: absolute;
+  left: -16px;
+  height: 39px;
+  border-left: 2px solid #FFFFFF;
+}
+
+.XKBMContainer .leftContent ul li p {
+  color: #666666;
+  line-height: 17px;
+  margin-top: 8px;
+}
+
+.XKBMContainer .leftContent ul li.active .line {
+  border-left: 2px solid #499EFD;
+}
+
+.XKBMContainer .leftContent ul li.active i.titleIcon1 {
+  background: url("../images/plan1.png") center center no-repeat;
+  background-size: 100%;
+}
+
+.XKBMContainer .leftContent ul li.active i.titleIcon2 {
+  background: url("../images/keck1.png") center center no-repeat;
+  background-size: 100%;
+}
+
+.XKBMContainer .leftContent ul li.active i.titleIcon3 {
+  background: url("../images/xsbm1.png") center center no-repeat;
+  background-size: 100%;
+}
+
+.XKBMContainer .leftContent ul li:last-child {
+  border-bottom: none;
+}
+
+.XKBMContainer .rightContent {
+  width: 1221px;
+  float: right;
+}
+
+.XKBMContainer .rightContent .operation {
+  background: #FFFFFF;
+  box-shadow: 0px -3px 4px 0px rgba(222, 224, 225, 0.5);
+  border-radius: 5px;
+  padding: 0 27px;
+  position: relative;
+}
+
+.XKBMContainer .rightContent .operation .leftDiv {
+  color: #999999;
+}
+
+.XKBMContainer .rightContent .operation .leftDiv .navTab ul li {
+  font-size: 16px;
+  font-weight: 400;
+  color: #333333;
+  line-height: 22px;
+  float: left;
+  padding: 19px 0;
+  margin-right: 36px;
+  cursor: pointer;
+  border-bottom: 2px solid #FFFFFF;
+}
+
+.XKBMContainer .rightContent .operation .leftDiv .navTab ul li.active {
+  color: #0492f5;
+  border-bottom: 2px solid #459afd;
+}
+
+.XKBMContainer .rightContent .operation .step {
+  text-align: center;
+}
+
+.XKBMContainer .rightContent .operation .step a {
+  display: inline-block;
+  line-height: 28px;
+  margin: 11px 0;
+  width: 140px;
+  height: 28px;
+}
+
+.XKBMContainer .rightContent .operation .step a.step1 {
+  background: url("../images/stepIcon1.png") no-repeat;
+  background-size: 100%;
+}
+
+.XKBMContainer .rightContent .operation .step a.step2 {
+  background: url("../images/stepIcon2.png") no-repeat;
+  background-size: 100%;
+  position: relative;
+  left: -13px;
+}
+
+.XKBMContainer .rightContent .operation .step a.active {
+  color: #FFFFFF;
+}
+
+.XKBMContainer .rightContent .operation .step a.active.step1 {
+  background: url("../images/stepIcon1_.png") no-repeat;
+  background-size: 100%;
+}
+
+.XKBMContainer .rightContent .operation .step a.active.step2 {
+  background: url("../images/stepIcon2_.png") no-repeat;
+  background-size: 100%;
+}
+
+.XKBMContainer .rightContent .operation .positionFixed {
+  position: absolute;
+  right: 27px;
+  top: 9px;
+  font-size: 0;
+}
+
+.XKBMContainer .rightContent .operation .positionFixed a {
+  display: inline-block;
+  text-align: center;
+  margin-left: 12px;
+}
+
+.XKBMContainer .rightContent .operation .rightDiv .layui-form .layui-form-item {
+  margin: 13px 0;
+}
+
+.XKBMContainer .rightContent .operation .rightDiv .layui-form .layui-form-label {
+  font-size: 14px;
+  color: #333333;
+  line-height: 34px;
+  padding: 0;
+}
+
+.XKBMContainer .rightContent .operation .rightDiv .layui-form .layui-input-block {
+  position: relative;
+  margin-left: 90px;
+}
+
+.XKBMContainer .rightContent .operation .rightDiv .layui-form .layui-form-select {
+  width: 240px;
+}
+
+.XKBMContainer .rightContent .operation .rightDiv .layui-form .layui-form-select .layui-select-tips {
+  color: #333333;
+}
+
+.XKBMContainer .rightContent .operation .rightDiv .layui-form .layui-form-select dl dd {
+  font-size: 14px;
+  color: #666666;
+}
+
+.XKBMContainer .rightContent .operation .rightDiv .layui-form .layui-form-select dl dd.layui-this {
+  background: none;
+  color: #0492F5;
+}
+
+.XKBMContainer .rightContent .operation .rightDiv .layui-form .layui-form-select dl dd:hover {
+  background: none;
+  color: #0492F5;
+}
+
+.XKBMContainer .rightContent .operation .rightDiv .layui-form .layui-input {
+  height: 32px;
+  border-radius: 4px;
+  font-size: 14px;
+  color: #999999;
+}
+
+.XKBMContainer .rightContent .planList {
+  margin-top: 20px;
+}
+
+.XKBMContainer .rightContent .operation1 {
+  background: #FFFFFF;
+  box-shadow: 0px -3px 4px 0px rgba(222, 224, 225, 0.5);
+  border-radius: 5px;
+  padding: 9px 27px;
+}
+
+.XKBMContainer .rightContent .operation1 a {
+  color: #2D84FF;
+  font-size: 14px;
+  margin-left: 20px;
+  padding: 0 20px;
+}
+
+.XKBMContainer .rightContent .operation1 a.btnColor {
+  display: inline-block;
+  background: #459AFD;
+  color: #ffffff;
+  font-size: 14px;
+  line-height: 34px;
+  text-align: center;
+  border-radius: 4px;
+}
+
+.XKBMContainer .rightContent .XKInfo {
+  background: #FFFFFF;
+  margin-top: 20px;
+  position: relative;
+  padding: 24px;
+}
+
+.XKBMContainer .rightContent .XKInfo img {
+  float: left;
+  width: 203px;
+  height: 203px;
+  margin-right: 24px;
+}
+
+.XKBMContainer .rightContent .XKInfo .infoDec {
+  float: left;
+  width: 790px;
+}
+
+.XKBMContainer .rightContent .XKInfo .infoDec h2 {
+  font-size: 18px;
+  font-weight: 500;
+  line-height: 27px;
+  margin-bottom: 10px;
+}
+
+.XKBMContainer .rightContent .XKInfo .infoDec .text {
+  font-size: 14px;
+  position: relative;
+  margin-top: 8px;
+  line-height: 20px;
+}
+
+.XKBMContainer .rightContent .XKInfo .infoDec .text span {
+  position: absolute;
+  width: 100px;
+  color: #333333;
+}
+
+.XKBMContainer .rightContent .XKInfo .infoDec .text .rCon {
+  padding-left: 100px;
+  color: #666666;
+}
+
+.XKBMContainer .rightContent .XKInfo.layForm .layui-form-item .layui-form-label {
+  font-size: 14px;
+  color: #333333;
+  width: 100px;
+}
+
+.XKBMContainer .rightContent .XKInfo.layForm .layui-form-item .layui-input-block {
+  margin-left: 130px;
+}
+
+.XKBMContainer .rightContent .XKInfo.layForm .layui-form-item .layui-input-block.marginTop14 {
+  margin-top: 14px;
+}
+
+.XKBMContainer .rightContent .XKInfo.layForm .layui-form-item .layui-input-block .textareaDiv {
+  position: relative;
+  width: 600px;
+}
+
+.XKBMContainer .rightContent .XKInfo.layForm .layui-form-item .layui-input-block .textareaDiv .layui-textarea {
+  resize: none;
+  min-height: 150px;
+}
+
+.XKBMContainer .rightContent .XKInfo.layForm .layui-form-item .layui-input-block .textareaDiv .numberLimit {
+  position: absolute;
+  right: 10px;
+  bottom: 10px;
+  color: #909399;
+}
+
+.XKBMContainer .rightContent .XKInfo.layForm .layui-form-item .layui-input-block .width1 {
+  width: 343px;
+}
+
+.XKBMContainer .rightContent .XKInfo.layForm .layui-form-item .layui-input-block .width2 {
+  width: 240px;
+}
+
+.XKBMContainer .rightContent .XKInfo.layForm .layui-form-item .layui-input-block .width3 {
+  width: 100px;
+}
+
+.XKBMContainer .rightContent .XKInfo.layForm .layui-form-item .layui-input-block .loadBtn {
+  border: 1px solid #499EFD;
+  background: #ffffff;
+  color: #499EFD;
+  height: 38px;
+  line-height: 38px;
+  margin-left: 20px;
+  padding: 0 20px;
+  border-radius: 20px;
+}
+
+.XKBMContainer .rightContent .XKInfo.layForm .layui-form-item .layui-input-block .loadBtn i {
+  display: inline-block;
+  width: 14px;
+  height: 38px;
+  background: url("../images/addIconNormal.png") center center no-repeat;
+  background-size: 100%;
+  float: left;
+  margin-right: 6px;
+}
+
+.XKBMContainer .rightContent .XKInfo.layForm .layui-form-item .layui-input-block .layui-form-select dl dd.layui-this {
+  background: none;
+  color: #459AFD;
+}
+
+.XKBMContainer .rightContent .XKInfo.layForm .layui-form-item .layui-input-block .layui-form-select dl dd:hover {
+  background: none;
+  color: #459AFD;
+}
+
+.XKBMContainer .rightContent .XKInfo.layForm .layui-form-item .layui-input-block.uploadDiv {
+  position: relative;
+  height: 112px;
+}
+
+.XKBMContainer .rightContent .XKInfo.layForm .layui-form-item .layui-input-block.uploadDiv .layui-btn {
+  width: 112px;
+  height: 112px;
+  background: none;
+  opacity: 0;
+  position: relative;
+  z-index: 1;
+}
+
+.XKBMContainer .rightContent .XKInfo.layForm .layui-form-item .layui-input-block.uploadDiv .layui-upload-list {
+  position: absolute;
+  z-index: 0;
+  left: 0;
+  top: 0;
+  margin: 0;
+  border: none;
+}
+
+.XKBMContainer .rightContent .XKInfo.layForm .layui-form-item .layui-input-block.uploadDiv .layui-upload-list .layui-upload-img {
+  width: 112px;
+  height: 112px;
+  border: none;
+  margin: 0;
+}
+
+.XKBMContainer .rightContent .XKInfo.layForm .layui-form-item .layui-input-block.uploadDiv .webuploader-container {
+  display: inline-block;
+  width: 112px;
+  height: 112px;
+  z-index: 4;
+  opacity: 0;
+}
+
+.XKBMContainer .rightContent .XKInfo.layForm .layui-form-item .layui-input-block.uploadDiv .webuploader-container .webuploader-pick {
+  width: 112px;
+  height: 112px;
+  padding: 0;
+}
+
+.XKBMContainer .rightContent .XKInfo.layForm .layui-form-item .layui-input-block .layui-btn {
+  background: #459AFD;
+}
+
+.XKBMContainer .rightContent .XKInfo.layForm .onlineTime .weekDiv {
+  float: left;
+  width: 150px;
+}
+
+.XKBMContainer .rightContent .XKInfo.layForm .onlineTime .weekDiv .layui-form-select dl dd.layui-this {
+  background: none;
+  color: #459AFD;
+}
+
+.XKBMContainer .rightContent .XKInfo.layForm .onlineTime .weekDiv .layui-form-select dl dd:hover {
+  background: none;
+  color: #459AFD;
+}
+
+.XKBMContainer .rightContent .XKInfo.layForm .onlineTime .sectionDiv {
+  float: left;
+  margin-left: 16px;
+}
+
+.XKBMContainer .rightContent .XKInfo.layForm .onlineTime .sectionDiv span {
+  line-height: 38px;
+}
+
+.XKBMContainer .rightContent .XKInfo.layForm .onlineTime .sectionDiv .layui-form-select {
+  float: left;
+  width: 100px;
+  margin: 0 10px;
+}
+
+.XKBMContainer .rightContent .XKInfo.layForm .onlineTime .sectionDiv .layui-form-select dl dd.layui-this {
+  background: none;
+  color: #459AFD;
+}
+
+.XKBMContainer .rightContent .XKInfo.layForm .onlineTime .sectionDiv .layui-form-select dl dd:hover {
+  background: none;
+  color: #459AFD;
+}
+
+.XKBMContainer .rightContent .XKInfo.layForm .onlineTime .addTime {
+  float: left;
+  margin-left: 25px;
+  cursor: pointer;
+}
+
+.XKBMContainer .rightContent .XKInfo.layForm .onlineTime .addTime .add {
+  display: inline-block;
+  width: 20px;
+  height: 38px;
+  background: url("../images/addTimeIcon.png") center center no-repeat;
+  background-size: 100%;
+}
+
+.XKBMContainer .rightContent .XKInfo.layForm .onlineTime .addTime .delete {
+  display: inline-block;
+  width: 20px;
+  height: 38px;
+  background: url("../images/deleteTimeIcon.png") center center no-repeat;
+  background-size: 100%;
+}
+
+.XKBMContainer .rightContent .title {
+  padding: 18px 20px;
+  background: #ffffff;
+}
+
+.XKBMContainer .rightContent .title .font14 {
+  font-size: 14px;
+}
+
+.XKBMContainer .rightContent .title a {
+  color: #2D84FF;
+  font-size: 14px;
+  margin-left: 20px;
+  padding: 0 20px;
+}
+
+.XKBMContainer .rightContent .title a.btnColor {
+  display: inline-block;
+  background: #459AFD;
+  color: #ffffff;
+  font-size: 14px;
+  line-height: 34px;
+  text-align: center;
+  border-radius: 4px;
+}
+
+.XKBMContainer .rightContent .title a i {
+  display: inline-block;
+  width: 13px;
+  height: 12px;
+  background: url(../images/addIcon1.png) no-repeat;
+  background-size: 100%;
+  margin-right: 5px;
+  position: relative;
+  top: 1px;
+}
+
+.XKBMContainer .rightContent .title a .addIcon {
+  display: inline-block;
+  width: 14px;
+  height: 14px;
+  background: url(../images/addIcon.png) no-repeat;
+  background-size: 100%;
+  margin-right: 8px;
+  position: relative;
+  top: 2px;
+}
+
+.XKBMContainer .rightContent .title a .uploadIcon {
+  display: inline-block;
+  margin-right: 6px;
+  width: 14px;
+  height: 14px;
+  background: url("../images/downLoad.png") no-repeat;
+  background-size: 100%;
+}
+
+.XKBMContainer .rightContent .title .searchDiv {
+  position: relative;
+}
+
+.XKBMContainer .rightContent .title .searchDiv input {
+  background: #FFFFFF;
+  line-height: 20px;
+  padding: 6px 35px 6px 37px;
+  border-radius: 4px;
+  border: 1px solid #CCD2DE;
+}
+
+.XKBMContainer .rightContent .title .searchDiv i {
+  position: absolute;
+  left: 10px;
+  top: 8px;
+  display: inline-block;
+  width: 16px;
+  height: 16px;
+  background: url("../images/searchIcon.png") no-repeat;
+  background-size: 100%;
+}
+
+.XKBMContainer .rightContent .title .searchDiv.searchDiv1 input {
+  padding: 6px 37px 6px 10px;
+}
+
+.XKBMContainer .rightContent .title .searchDiv.searchDiv1 i {
+  position: absolute;
+  left: auto;
+  right: 10px;
+  top: 8px;
+}
+
+.XKBMContainer .rightContent .title .searchBtn {
+  height: 34px;
+  line-height: 34px;
+  padding: 0 19px;
+  color: #2D84FF;
+  border: 1px solid #2D84FF;
+  border-radius: 4px;
+  margin-left: 20px;
+  background: #FFFFFF;
+}
+
+.XKBMContainer .rightContent .title .uploadBtn {
+  position: relative;
+  display: inline-block;
+  height: 34px;
+  background: #FFFFFF;
+  line-height: 34px;
+  color: #2D84FF;
+  border: 1px solid #2D84FF;
+  box-sizing: border-box;
+  padding: 0 19px;
+  border-radius: 4px;
+}
+
+.XKBMContainer .rightContent .title .uploadBtn i {
+  display: inline-block;
+  margin-right: 6px;
+  position: relative;
+  top: 2px;
+  width: 14px;
+  height: 14px;
+  background: url("../images/upLoadIcon.png") no-repeat;
+  background-size: 100%;
+}
+
+.XKBMContainer .rightContent .hotFilter {
+  padding: 20px 30px;
+  background: #FFFFFF;
+  border-bottom: 1px solid #EAEDF3;
+}
+
+.XKBMContainer .rightContent .hotFilter a {
+  font-size: 16px;
+  color: #666666;
+  line-height: 22px;
+}
+
+.XKBMContainer .rightContent .hotFilter a.active {
+  color: #2d84ff;
+}
+
+.XKBMContainer .rightContent .hotFilter span {
+  margin: 0 16px;
+  color: #666666;
+}
+
+.XKBMContainer .rightContent .hotFilter p {
+  font-size: 22px;
+}
+
+.XKBMContainer .rightContent .hotFilter p span {
+  font-size: 14px;
+}
+
+.XKBMContainer .rightContent .filter {
+  padding: 0px 30px 20px;
+}
+
+.XKBMContainer .rightContent .filter a {
+  color: #2D84FF;
+  font-size: 14px;
+  margin-left: 20px;
+  padding: 0 20px;
+}
+
+.XKBMContainer .rightContent .filter a.btnColor {
+  display: inline-block;
+  background: #459AFD;
+  color: #ffffff;
+  font-size: 14px;
+  line-height: 34px;
+  text-align: center;
+  border-radius: 4px;
+}
+
+.XKBMContainer .rightContent .filter a i {
+  display: inline-block;
+  width: 13px;
+  height: 12px;
+  background: url(../images/addIcon1.png) no-repeat;
+  background-size: 100%;
+  margin-right: 5px;
+  position: relative;
+  top: 1px;
+}
+
+.XKBMContainer .rightContent .table {
+  background: #ffffff;
+}
+
+.XKBMContainer .rightContent .table.table1 table thead tr th > div {
+  padding-left: 20px;
+}
+
+.XKBMContainer .rightContent .table.table1 table tbody tr td > div {
+  padding-left: 20px;
+}
+
+.XKBMContainer .rightContent .table table {
+  width: 100%;
+  font-size: 14px;
+}
+
+.XKBMContainer .rightContent .table table thead tr th {
+  line-height: 20px;
+  background: #ecf1fc;
+  text-align: left;
+  margin: 0;
+  padding: 14px 0;
+  color: #333333;
+  font-weight: 400;
+}
+
+.XKBMContainer .rightContent .table table tbody tr {
+  border-bottom: 1px solid #EAEDF3;
+}
+
+.XKBMContainer .rightContent .table table tbody tr td {
+  padding: 25px 0;
+  margin: 0;
+  text-align: left;
+  vertical-align: middle;
+  font-weight: 400;
+  color: #333333;
+  word-break: break-all !important;
+  word-wrap: break-word !important;
+}
+
+.XKBMContainer .rightContent .table table tbody tr td a {
+  font-size: 14px;
+  line-height: 20px;
+  color: #2d84ff;
+  margin-right: 16px;
+  cursor: pointer;
+}
+
+.XKBMContainer .rightContent .table table tbody tr td a:last-child {
+  margin-right: 0;
+}
+
+.XKBMContainer .rightContent .table table tbody tr td a.delete {
+  color: #F84943;
+}
+
+.XKBMContainer .rightContent .table table tbody tr td:first-child {
+  font-weight: 500;
+}
+
+.XKBMContainer .rightContent .table table tbody tr td .sortableIcon {
+  display: inline-block;
+  width: 14px;
+  height: 20px;
+  background: url("../images/sortable.png") center center no-repeat;
+  background-size: 100%;
+  margin-left: 28px;
+  cursor: pointer;
+}
+
+.XKBMContainer .rightContent .table table tbody tr td .status0 {
+  color: #2d84ff;
+}
+
+.XKBMContainer .rightContent .table table tbody tr td .status1 {
+  color: #999999;
+}
+
+.XKBMContainer .rightContent .table table thead tr th .width1, .XKBMContainer .rightContent .table table tbody tr td .width1 {
+  width: 140px;
+  padding: 0 30px;
+}
+
+.XKBMContainer .rightContent .table table thead tr th .width2, .XKBMContainer .rightContent .table table tbody tr td .width2 {
+  width: 80px;
+  padding-right: 20px;
+}
+
+.XKBMContainer .rightContent .table table thead tr th .width3, .XKBMContainer .rightContent .table table tbody tr td .width3 {
+  width: 74px;
+  padding-right: 20px;
+}
+
+.XKBMContainer .rightContent .table table thead tr th .width4, .XKBMContainer .rightContent .table table tbody tr td .width4 {
+  width: 123px;
+  padding-right: 20px;
+}
+
+.XKBMContainer .rightContent .table table thead tr th .width5, .XKBMContainer .rightContent .table table tbody tr td .width5 {
+  width: 147px;
+  padding-right: 20px;
+}
+
+.XKBMContainer .rightContent .table table thead tr th .width6, .XKBMContainer .rightContent .table table tbody tr td .width6 {
+  width: 152px;
+  padding-right: 20px;
+}
+
+.XKBMContainer .rightContent .table table thead tr th .width7, .XKBMContainer .rightContent .table table tbody tr td .width7 {
+  width: 169px;
+  padding-right: 20px;
+}
+
+.XKBMContainer .rightContent .table table thead tr th .width8, .XKBMContainer .rightContent .table table tbody tr td .width8 {
+  width: 493px;
+  padding: 0 30px;
+}
+
+.XKBMContainer .rightContent .table table thead tr th .width9, .XKBMContainer .rightContent .table table tbody tr td .width9 {
+  width: 455px;
+  padding-right: 20px;
+}
+
+.XKBMContainer .rightContent .table table thead tr th:last-child > div, .XKBMContainer .rightContent .table table tbody tr td:last-child > div {
+  min-width: 145px;
+}
+
+.XKBMContainer .rightContent .table .selectDiv {
+  position: relative;
+}
+
+.XKBMContainer .rightContent .table .selectDiv .selectTitle {
+  cursor: pointer;
+}
+
+.XKBMContainer .rightContent .table .selectDiv .selectTitle i {
+  position: relative;
+  top: -2px;
+  margin-left: 6px;
+  display: inline-block;
+  width: 12px;
+  height: 7px;
+  background: url("../images/arrow.png") no-repeat;
+  background-size: 100%;
+  transform: rotate(180deg);
+  -ms-transform: rotate(180deg);
+  -moz-transform: rotate(180deg);
+  -webkit-transform: rotate(180deg);
+  -o-transform: rotate(180deg);
+}
+
+.XKBMContainer .rightContent .table .selectDiv.active .selectTitle i {
+  transform: rotate(0deg);
+  -ms-transform: rotate(0deg);
+  -moz-transform: rotate(0deg);
+  -webkit-transform: rotate(0deg);
+  -o-transform: rotate(0deg);
+}
+
+.XKBMContainer .rightContent .table .selectDiv .selectList {
+  position: absolute;
+  left: -24px;
+  top: 40px;
+  max-height: 300px;
+  overflow-y: auto;
+  padding: 10px 30px;
+  background: #ffffff;
+  border-radius: 2px;
+  box-shadow: 0px 0px 4px 0px rgba(188, 198, 207, 0.5);
+}
+
+.XKBMContainer .rightContent .table .selectDiv .selectList ul li {
+  color: #666666;
+  font-size: 15px;
+  line-height: 21px;
+  margin-bottom: 10px;
+  cursor: pointer;
+}
+
+.XKBMContainer .rightContent .table .selectDiv .selectList ul li:last-child {
+  margin-bottom: 0;
+}
+
+.XKBMContainer .rightContent .table .selectDiv .selectList ul li:hover {
+  color: #2d84ff;
+}
+
+.XKBMContainer .rightContent .table .selectDiv .selectList ul li:active {
+  color: #2d84ff;
+}
+
+.XKBMContainer .rightContent .minHeight {
+  min-height: 578px;
+}
+
+.XKBMContainer .rightContent .minHeight1 {
+  min-height: 700px;
+}
+
+.XKBMContainer .rightContent .layuiPage {
+  text-align: center;
+}
+
+.XKBMContainer .rightContent .layuiPage .layui-laypage .layui-laypage-curr .layui-laypage-em {
+  background: #459AFD;
+}
+
+.XKBMContainer .rightContent .layuiPage .layui-laypage a, .XKBMContainer .rightContent .layuiPage .layui-laypage span {
+  margin-bottom: 0;
+}
+
+.XKBMContainer .rightContent .layuiPage .layui-laypage a:hover {
+  color: #459AFD;
+}
+
+.XKBMContainer .rightContent .tableDiv {
+  background: #FFFFFF;
+  padding: 0 20px;
+}
+
+.XKBMContainer .rightContent .tableDiv table {
+  width: 100%;
+}
+
+.XKBMContainer .rightContent .tableDiv table tr th {
+  background: #ECF1FC;
+  color: #333333;
+  padding-left: 20px;
+  height: 48px;
+  line-height: 48px;
+  text-align: left;
+}
+
+.XKBMContainer .rightContent .tableDiv table tr td {
+  background: #FFFFFF;
+  font-size: 14px;
+  vertical-align: middle;
+  height: 94px;
+  padding: 0 24px;
+  border-bottom: 1px solid #EAEDF3;
+  position: relative;
+  color: #333333;
+}
+
+.XKBMContainer .rightContent .tableDiv table tr td .time {
+  padding-left: 20px;
+}
+
+.XKBMContainer .rightContent .tableDiv table tr td .time1 {
+  margin-top: 27px;
+}
+
+.XKBMContainer .rightContent .tableDiv table tr td.font24 {
+  font-size: 24px;
+}
+
+.XKBMContainer .rightContent .tableDiv table tr td .tableBg {
+  position: absolute;
+  width: 16px;
+  height: 33px;
+  background: url("../images/tableBg.png") no-repeat;
+  background-size: 100%;
+  top: 24px;
+  padding-top: 12px;
+}
+
+.XKBMContainer .rightContent .tableDiv table tr td .tableBg span {
+  position: absolute;
+  left: -6px;
+}
+
+.XKBMContainer .rightContent .tableDiv table tr td.status1 {
+  color: #33BC00;
+}
+
+.XKBMContainer .rightContent .tableDiv table tr td.status0 {
+  color: #6D7278;
+}
+
+.XKBMContainer .rightContent .tableDiv table tr td a {
+  color: #2d84ff;
+  margin-right: 20px;
+}
+
+.XKBMContainer .rightContent .tableDiv table tr td a:last-child {
+  margin-right: 0;
+}
+
+.XKBMContainer .rightContent form input:-moz-placeholder, .XKBMContainer .rightContent form textarea:-moz-placeholder {
+  color: #909399;
+  font-weight: 100;
+}
+
+.XKBMContainer .rightContent form .tips {
+  font-size: 12px;
+  color: #000000;
+  padding-left: 116px;
+}
+
+.XKBMContainer .rightContent form .fontRed {
+  color: #F84943;
+}
+
+.XKBMContainer .rightContent form .form-block {
+  margin-bottom: 20px;
+  font-size: 14px;
+  color: #333333;
+}
+
+.XKBMContainer .rightContent form .form-block label {
+  width: 100px;
+  float: left;
+  font-size: 14px;
+  line-height: 40px;
+  color: #333333;
+  margin-right: 16px;
+  text-align: right;
+}
+
+.XKBMContainer .rightContent form .form-block .form-input {
+  padding: 9px 15px;
+  height: 20px;
+  line-height: 20px;
+  border: 1px solid #EAEDF3;
+  width: 313px;
+  border-radius: 4px;
+}
+
+.XKBMContainer .rightContent form .form-block .from {
+  line-height: 40px;
+  margin: 0 16px;
+  color: #333333;
+  font-size: 16px;
+}
+
+.XKBMContainer .rightContent form .form-block .inputDiv {
+  position: relative;
+  padding: 9px 15px;
+  height: 20px;
+  line-height: 20px;
+  border: 1px solid #EAEDF3;
+  border-radius: 4px;
+}
+
+.XKBMContainer .rightContent form .form-block .inputDiv input {
+  padding-left: 25px;
+}
+
+.XKBMContainer .rightContent form .form-block .inputDiv .calendar {
+  display: inline-block;
+  position: absolute;
+  width: 18px;
+  height: 16px;
+  background: url("../images/calendar.png") center center no-repeat;
+  background-size: 100%;
+  top: 10px;
+}
+
+.XKBMContainer .rightContent form .form-block .radioDiv {
+  margin-bottom: 20px;
+}
+
+.XKBMContainer .rightContent form .form-block .radioDiv .label-radio {
+  text-align: left;
+}
+
+.XKBMContainer .rightContent form .form-block .radioDiv .label-radio input {
+  margin-right: 8px;
+  border-radius: 4px;
+}
+
+.XKBMContainer .rightContent form .form-block .number {
+  padding: 9px 10px;
+  text-align: center;
+  height: 20px;
+  line-height: 20px;
+  border: 1px solid #EAEDF3;
+  width: 44px;
+  margin-left: 8px;
+  margin-right: 32px;
+  border-radius: 4px;
+}
+
+.XKBMContainer .rightContent form .form-block .paddingleft116 {
+  padding-left: 116px;
+}
+
+.XKBMContainer .rightContent form .form-block .textarea {
+  position: relative;
+  width: 535px;
+  float: left;
+}
+
+.XKBMContainer .rightContent form .form-block .textarea textarea {
+  padding: 9px 12px;
+  width: 511px;
+  height: 150px;
+  resize: none;
+  border: 1px solid #EAEDF3;
+  padding-bottom: 30px;
+}
+
+.XKBMContainer .rightContent form .form-block .textarea .numberLimit {
+  position: absolute;
+  right: 12px;
+  bottom: 14px;
+  color: #999999;
+}
+
+.XKBMContainer .rightContent .widthLimit .layui-form .layui-form-item {
+  clear: none;
+  margin-right: 10px;
+  margin-bottom: 0;
+}
+
+.XKBMContainer .rightContent .widthLimit .layui-form .layui-form-label {
+  font-size: 14px;
+  color: #333333;
+  padding: 9px 10px 9px 0;
+  width: 40px;
+  text-align: left;
+  line-height: 16px;
+}
+
+.XKBMContainer .rightContent .widthLimit .layui-form .layui-input-block {
+  margin-left: 50px;
+  width: 140px;
+  border-radius: 4px;
+  height: 34px;
+  position: relative;
+}
+
+.XKBMContainer .rightContent .widthLimit .layui-form .layui-input-block.search-input input {
+  width: 200px;
+  padding-right: 30px;
+}
+
+.XKBMContainer .rightContent .widthLimit .layui-form .layui-input-block.search-input .search {
+  cursor: pointer;
+  position: absolute;
+  right: 10px;
+  top: 9px;
+  width: 16px;
+  height: 16px;
+  background: url("../images/searchIcon.png") no-repeat;
+  background-size: 100%;
+}
+
+.XKBMContainer .rightContent .widthLimit .layui-form .layui-input, .XKBMContainer .rightContent .widthLimit .layui-form .layui-select, .XKBMContainer .rightContent .widthLimit .layui-form .layui-textarea {
+  height: 34px;
+  border-radius: 4px;
+  font-size: 14px;
+  color: #333333;
+}
+
+.XKBMContainer .rightContent .widthLimit .layui-form .layui-form-select .layui-select-tips {
+  color: #333333;
+}
+
+.XKBMContainer .rightContent .widthLimit .layui-form .layui-form-select dl dd {
+  font-size: 14px;
+  color: #666666;
+}
+
+.XKBMContainer .rightContent .widthLimit .layui-form .layui-form-select dl dd.layui-this {
+  background: none;
+  color: #0492F5;
+}
+
+.XKBMContainer .rightContent .widthLimit .layui-form .layui-form-select dl dd:hover {
+  background: none;
+  color: #0492F5;
+}
+
+.XKBMContainer .allUploadLay.layui-layer {
+  border-radius: 3px;
+}
+
+.XKBMContainer .allUploadLay .ImportDiv {
+  text-align: center;
+}
+
+.XKBMContainer .allUploadLay img {
+  width: 68px;
+  height: 70px;
+  margin-top: 60px;
+  margin-bottom: 20px;
+  display: inline-block;
+}
+
+.XKBMContainer .allUploadLay a {
+  display: inline-block;
+}
+
+.XKBMContainer .allUploadLay a.downLoad {
+  font-size: 14px;
+  color: #2D84FF;
+  margin-bottom: 30px;
+}
+
+.XKBMContainer .allUploadLay .importBtn {
+  width: 180px;
+  height: 40px;
+  line-height: 40px;
+  background: #499EFD;
+  font-size: 14px;
+  color: #ffffff;
+  border: none;
+  border-radius: 8px;
+}
+
+.XKBMContainer .allUploadLay .ImportDiv .webuploader-container {
+  width: 180px;
+  height: 40px;
+  margin: 0 auto;
+  position: relative;
+}
+
+.XKBMContainer .allUploadLay .ImportDiv .webuploader-container .webuploader-pick {
+  padding: 0;
+  width: 180px;
+  height: 40px;
+  position: relative;
+}
+
+.XKBMContainer .addCourse {
+  position: relative;
+  display: none;
+  padding: 16px 0;
+}
+
+.XKBMContainer .addCourse .title {
+  font-weight: 500;
+  font-size: 20px;
+  color: #333333;
+  padding: 0 20px;
+}
+
+.XKBMContainer .addCourse .title .inputDiv {
+  position: relative;
+}
+
+.XKBMContainer .addCourse .title .inputDiv input {
+  padding: 5px 30px 5px 15px;
+  height: 20px;
+  font-size: 14px;
+  background: #F5F5F7;
+  border: 1px solid #C7C7C7;
+  border-radius: 4px;
+}
+
+.XKBMContainer .addCourse .title .inputDiv .search {
+  display: inline-block;
+  position: absolute;
+  right: 10px;
+  top: 8px;
+  width: 16px;
+  height: 16px;
+  background: url("../images/searchIcon.png") no-repeat;
+  background-size: 100%;
+}
+
+.XKBMContainer .addCourse .layuiTable {
+  margin-top: 12px;
+  background: #ffffff;
+}
+
+.XKBMContainer .addCourse .layuiTable .role_list {
+  height: 390px;
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+
+.XKBMContainer .addCourse .layuiTable .role_list table tr th {
+  background: #ecf1fc;
+  color: #333333;
+  border: none;
+  line-height: 20px;
+  padding: 14px 15px;
+}
+
+.XKBMContainer .addCourse .layuiTable .role_list table tr th.selectDiv {
+  position: relative;
+}
+
+.XKBMContainer .addCourse .layuiTable .role_list table tr th.selectDiv .selectTitle {
+  cursor: pointer;
+}
+
+.XKBMContainer .addCourse .layuiTable .role_list table tr th.selectDiv .selectTitle i {
+  position: relative;
+  top: -2px;
+  margin-left: 6px;
+  display: inline-block;
+  width: 12px;
+  height: 7px;
+  background: url("../images/arrow.png") no-repeat;
+  background-size: 100%;
+  transform: rotate(180deg);
+  -ms-transform: rotate(180deg);
+  -moz-transform: rotate(180deg);
+  -webkit-transform: rotate(180deg);
+  -o-transform: rotate(180deg);
+}
+
+.XKBMContainer .addCourse .layuiTable .role_list table tr th.selectDiv.active .selectTitle i {
+  transform: rotate(0deg);
+  -ms-transform: rotate(0deg);
+  -moz-transform: rotate(0deg);
+  -webkit-transform: rotate(0deg);
+  -o-transform: rotate(0deg);
+}
+
+.XKBMContainer .addCourse .layuiTable .role_list table tr th.selectDiv .selectList {
+  position: absolute;
+  z-index: 3;
+  left: -24px;
+  top: 40px;
+  max-height: 300px;
+  overflow-y: auto;
+  padding: 10px 30px;
+  background: #ffffff;
+  border-radius: 2px;
+  box-shadow: 0px 0px 4px 0px rgba(188, 198, 207, 0.5);
+}
+
+.XKBMContainer .addCourse .layuiTable .role_list table tr th.selectDiv .selectList ul li {
+  color: #666666;
+  font-size: 15px;
+  line-height: 21px;
+  margin-bottom: 10px;
+  cursor: pointer;
+}
+
+.XKBMContainer .addCourse .layuiTable .role_list table tr th.selectDiv .selectList ul li:last-child {
+  margin-bottom: 0;
+}
+
+.XKBMContainer .addCourse .layuiTable .role_list table tr th.selectDiv .selectList ul li:hover {
+  color: #2d84ff;
+}
+
+.XKBMContainer .addCourse .layuiTable .role_list table tr th.selectDiv .selectList ul li:active {
+  color: #2d84ff;
+}
+
+.XKBMContainer .addCourse .layuiTable .role_list table tr td {
+  border: none;
+  color: #333333;
+  font-size: 14px;
+  line-height: 20px;
+  padding: 18px 15px;
+  border-bottom: 1px solid #EAEDF3;
+}
+
+.XKBMContainer .addCourse .layuiTable .role_list table tr td:first-child {
+  font-weight: 500;
+}
+
+.XKBMContainer .addCourse .layuiTable .layui-form-checked[lay-skin=primary] i {
+  border-color: #0091FF;
+  background-color: #0091FF;
+  color: #fff;
+}
+
+.XKBMContainer .addCourse .layuiTable .gradeGroup {
+  padding: 14px 20px;
+  border-top: 1px solid #E9E9E9;
+}
+
+.XKBMContainer .addCourse .layuiTable .gradeGroup label {
+  width: 112px;
+  float: left;
+  line-height: 28px;
+}
+
+.XKBMContainer .addCourse .layuiTable .gradeGroup .item-block {
+  padding-left: 112px;
+}
+
+.XKBMContainer .addCourse .layuiTable .gradeGroup .item-block ul li {
+  float: left;
+  line-height: 27px;
+  padding: 0 16px;
+  color: #2d84ff;
+  border: 1px solid #2d84ff;
+  border-radius: 4px;
+  box-sizing: border-box;
+  margin-right: 16px;
+  position: relative;
+  margin-bottom: 12px;
+  cursor: pointer;
+}
+
+.XKBMContainer .addCourse .layuiTable .gradeGroup .item-block ul li i {
+  cursor: pointer;
+  position: absolute;
+  right: -10px;
+  top: -10px;
+  width: 15px;
+  height: 15px;
+  background: url("../images/deleteIcon1.png") no-repeat;
+  background-size: 100%;
+  display: none;
+}
+
+.XKBMContainer .addCourse .layuiTable .gradeGroup .item-block ul li:hover i {
+  display: block;
+}
+
+.XKBMContainer .addCourse .layuiTable .gradeGroup .item-block ul li.addLi {
+  display: inline-block;
+  float: left;
+  line-height: 27px;
+  padding: 0 16px;
+  color: #2d84ff;
+  border: 1px solid #2d84ff;
+  border-radius: 4px;
+  box-sizing: border-box;
+  cursor: pointer;
+}
+
+.XKBMContainer .addCourse .layuiTable .gradeGroup .item-block ul li.addLi em {
+  display: inline-block;
+  width: 12px;
+  height: 12px;
+  background: url("../images/addLIIcon.png") no-repeat;
+  background-size: 100%;
+  position: relative;
+  top: 1px;
+  margin-right: 4px;
+}
+
+.XKBMContainer .addCourseSkin.layui-layer {
+  border-radius: 9px;
+}
+
+.XKBMContainer .addCourseSkin.layui-layer .layui-layer-btn {
+  text-align: center;
+  font-size: 0;
+}
+
+.XKBMContainer .addCourseSkin.layui-layer .layui-layer-btn a {
+  font-size: 14px;
+}
+
+.XKBMContainer .addCourseSkin.layui-layer .layui-layer-btn a.layui-layer-btn0 {
+  background: #FFFFFF;
+  padding: 0 30px;
+  color: #2D84FF;
+  border: 1px solid #2d84ff;
+  border-radius: 4px;
+  margin-right: 16px;
+}
+
+.XKBMContainer .addCourseSkin.layui-layer .layui-layer-btn a.layui-layer-btn1 {
+  background: #459AFD;
+  padding: 0 30px;
+  color: #FFFFFF;
+  border: 1px solid #2d84ff;
+  border-radius: 4px;
+}
+
+.XKBMContainer .addGrade.layui-layer {
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.XKBMContainer .addGrade.layui-layer .layui-layer-title {
+  background-color: #FFFFFF;
+}
+
+.XKBMContainer .addGrade.layui-layer .layui-layer-btn {
+  text-align: center;
+}
+
+.XKBMContainer .addGrade.layui-layer .layui-layer-btn a {
+  border-radius: 4px;
+  font-size: 14px;
+  padding: 0 30px;
+}
+
+.XKBMContainer .addGrade.layui-layer .layui-layer-btn a.layui-layer-btn0 {
+  background: #FFFFFF;
+  height: 28px;
+  line-height: 28px;
+  color: #2D84FF;
+  border: 1px solid #2D84FF;
+}
+
+.XKBMContainer .addGrade.layui-layer .layui-layer-btn a.layui-layer-btn1 {
+  background: #459AFD;
+  color: #FFFFFF;
+}
+
+.XKBMContainer .addGrade .gradeList {
+  border-bottom: 1px solid #EAEDF3;
+}
+
+.XKBMContainer .addGrade .gradeList .leftCon {
+  width: 287px;
+  float: left;
+  border-right: 1px solid #EAEDF3;
+}
+
+.XKBMContainer .addGrade .gradeList .rightCon {
+  float: left;
+  width: 220px;
+}
+
+.XKBMContainer .addGrade .gradeList .rightCon .title {
+  font-size: 14px;
+  line-height: 50px;
+  color: #666666;
+  padding: 0 10px;
+}
+
+.XKBMContainer .addGrade .gradeList .rightCon .selectedList {
+  height: 319px;
+  overflow: auto;
+}
+
+.XKBMContainer .addGrade .gradeList .rightCon .selectedList ul li {
+  padding: 10px 0;
+  line-height: 20px;
+  font-size: 13px;
+  position: relative;
+  color: #333333;
+  cursor: pointer;
+}
+
+.XKBMContainer .addGrade .gradeList .rightCon .selectedList ul li .circle {
+  display: inline-block;
+  position: absolute;
+  width: 6px;
+  height: 6px;
+  border-radius: 3px;
+  background: #0099FF;
+  left: 7px;
+  top: 16px;
+}
+
+.XKBMContainer .addGrade .gradeList .rightCon .selectedList ul li .name {
+  padding-right: 44px;
+  padding-left: 24px;
+}
+
+.XKBMContainer .addGrade .gradeList .rightCon .selectedList ul li:hover {
+  background: #F8F8F8;
+}
+
+.XKBMContainer .addGrade .gradeList .rightCon .selectedList ul li:hover .deleteIcon i {
+  background: url("../images/deletecircle.png") center no-repeat;
+  background-size: 100%;
+}
+
+.XKBMContainer .addGrade .gradeList .rightCon .selectedList ul li .deleteIcon {
+  position: absolute;
+  cursor: pointer;
+  text-align: center;
+  top: 0;
+  right: 0;
+  width: 34px;
+  height: 40px;
+}
+
+.XKBMContainer .addGrade .gradeList .rightCon .selectedList ul li .deleteIcon i {
+  display: inline-block;
+  width: 15px;
+  height: 40px;
+  background: url("../images/deletecirclegrey.png") center no-repeat;
+  background-size: 100%;
+}
+
+.XKBMContainer .addGrade .gradeList .rightCon .selectedList1 ul li {
+  line-height: 25px;
+}
+
+.XKBMContainer .addGrade .gradeList .rightCon .selectedList1 ul li .name {
+  padding-left: 45px;
+  padding-right: 10px;
+}
+
+.XKBMContainer .addGrade .gradeList .rightCon .selectedList1 ul li img {
+  position: absolute;
+  left: 10px;
+  width: 25px;
+  height: 25px;
+  border-radius: 14px;
+}
+
+.XKBMContainer .ztreeDiv {
+  border: none;
+  width: 287px;
+  padding-top: 0;
+  margin-top: 10px;
+}
+
+.XKBMContainer .ztreeDiv .ztree {
+  height: 364px;
+  padding-bottom: 10px;
+  overflow: auto;
+}
+
+.XKBMContainer .ztreeDiv .ztree .node_name {
+  display: inline-block;
+  max-width: 198px !important;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  position: relative;
+  top: 4px;
+  color: #333333;
+  font-size: 14px;
+}
+
+.XKBMContainer .ztreeDiv .ztree li {
+  position: relative;
+  line-height: 40px;
+}
+
+.XKBMContainer .ztreeDiv .ztree li span.button.root_open {
+  width: 18px;
+  height: 40px;
+  background: url("../images/triangle.png") center center no-repeat;
+  transform: rotate(90deg);
+  -ms-transform: rotate(90deg);
+  /* IE 9 */
+  -moz-transform: rotate(90deg);
+  /* Firefox */
+  -webkit-transform: rotate(90deg);
+  /* Safari 和 Chrome */
+  -o-transform: rotate(90deg);
+  /* Opera */
+  position: relative;
+  z-index: 2;
+}
+
+.XKBMContainer .ztreeDiv .ztree li span.button.root_close {
+  width: 18px;
+  height: 40px;
+  background: url("../images/triangle.png") center center no-repeat;
+}
+
+.XKBMContainer .ztreeDiv .ztree li span.button.chk.checkbox_false_full, .XKBMContainer .ztreeDiv .ztree li span.button.chk.checkbox_false_full_focus, .XKBMContainer .ztreeDiv .ztree li span.button.chk.checkbox_false_part, .XKBMContainer .ztreeDiv .ztree li span.button.chk.checkbox_false_part_focus {
+  width: 15px;
+  height: 15px;
+  background: url("../images/treeCheck.png") no-repeat;
+  position: relative;
+  top: -2px;
+  z-index: 2;
+}
+
+.XKBMContainer .ztreeDiv .ztree li span.button.center_docu, .XKBMContainer .ztreeDiv .ztree li span.button.bottom_docu, .XKBMContainer .ztreeDiv .ztree li ul.line {
+  background: none;
+}
+
+.XKBMContainer .ztreeDiv .ztree li span.button.chk.checkbox_true_full,
+.XKBMContainer .ztreeDiv .ztree li span.button.chk.checkbox_true_full_focus {
+  width: 15px;
+  height: 15px;
+  background: url("../images/treeCheck_.png") no-repeat;
+  position: relative;
+  top: -2px;
+  z-index: 2;
+}
+
+.XKBMContainer .ztreeDiv .ztree li span.button.chk.checkbox_true_part,
+.XKBMContainer .ztreeDiv .ztree li span.button.chk.checkbox_true_part_focus {
+  width: 15px;
+  height: 15px;
+  background: url("../images/treeRadio.png") no-repeat;
+  position: relative;
+  top: -2px;
+  z-index: 2;
+}
+
+.XKBMContainer .ztreeDiv .ztree li span.button.chk.checkbox_false_full {
+  position: relative;
+  z-index: 2;
+}
+
+.XKBMContainer .ztreeDiv .ztree li span.button.roots_open {
+  position: relative;
+  z-index: 2;
+}
+
+.XKBMContainer .ztreeDiv .ztree li span.button.ico_open {
+  display: none;
+}
+
+.XKBMContainer .ztreeDiv .ztree li span.button.ico_docu {
+  display: none;
+}
+
+.XKBMContainer .ztreeDiv .ztree li span.button.ico_close {
+  display: none;
+}
+
+.XKBMContainer .ztreeDiv .ztree li span.button.roots_open,
+.XKBMContainer .ztreeDiv .ztree li span.button.bottom_open,
+.XKBMContainer .ztreeDiv .ztree li span.button.center_open {
+  display: inline-block;
+  width: 18px;
+  height: 40px;
+  background: url("../images/triangle.png") center center no-repeat;
+  position: relative;
+  z-index: 2;
+  transform: rotate(90deg);
+  -ms-transform: rotate(90deg);
+  /* IE 9 */
+  -moz-transform: rotate(90deg);
+  /* Firefox */
+  -webkit-transform: rotate(90deg);
+  /* Safari 和 Chrome */
+  -o-transform: rotate(90deg);
+  /* Opera */
+}
+
+.XKBMContainer .ztreeDiv .ztree li span.button.roots_close,
+.XKBMContainer .ztreeDiv .ztree li span.button.bottom_close,
+.XKBMContainer .ztreeDiv .ztree li span.button.center_close {
+  width: 18px;
+  height: 40px;
+  background: url("../images/triangle.png") center center no-repeat;
+}
+
+.XKBMContainer .ztreeDiv .ztree li a {
+  height: 40px;
+  padding: 0;
+}
+
+.XKBMContainer .ztreeDiv .ztree li a:hover {
+  text-decoration: none !important;
+  background: none;
+}
+
+.XKBMContainer .ztreeDiv .ztree li a.curSelectedNode {
+  background: none;
+  border: none;
+  opacity: 1;
+}
+
+.XKBMContainer .ztreeDiv .ztree li .stuImg {
+  width: 25px;
+  height: 25px;
+  border-radius: 18px;
+  position: relative;
+  top: 5px;
+  margin-right: 6px;
+}
+
+.XKBMContainer .ztreeDiv .ztree span.button.chk {
+  float: right;
+  position: relative;
+  top: 14px !important;
+}
+
+.XKBMContainer .ztreeDiv .ztree .piaochecked {
+  width: 15px;
+  height: 15px;
+  cursor: pointer;
+  margin-right: 4px;
+  text-align: center;
+  background: url("../images/PCtreeCheck.png") no-repeat;
+  background-size: 100%;
+}
+
+.XKBMContainer .ztreeDiv .ztree .on_check {
+  background: url("../images/PCtreeCheck_.png") no-repeat;
+  background-size: 100%;
+}
+
+.XKBMContainer .ztreeDiv .ztree .checkboxBtn {
+  opacity: 0;
+  cursor: pointer;
+  -ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=0)";
+  filter: alpha(opacity=0);
+}
+
+.XKBMContainer .ztreeDiv .ztree.fileShow .node_name {
+  max-width: 178px !important;
+}
+
+.XKBMContainer .ztreeDiv .ztree.fileShow li span.button.ico_open {
+  display: inline-block;
+  position: relative;
+  top: 12px;
+}
+
+.XKBMContainer .ztreeDiv .ztree.fileShow li span.button.ico_docu {
+  display: inline-block;
+  position: relative;
+  top: 12px;
+}
+
+.XKBMContainer .ztreeDiv .ztree.fileShow li span.button.ico_close {
+  display: inline-block;
+  position: relative;
+  top: 12px;
+}
+
+.XKBMContainer .courseSet {
+  padding: 14px 20px;
+  border-bottom: 1px solid #E9E9E9;
+}
+
+.XKBMContainer .courseSet label {
+  width: 112px;
+  float: left;
+  line-height: 28px;
+}
+
+.XKBMContainer .courseSet .item-block {
+  padding-left: 112px;
+}
+
+.XKBMContainer .courseSet .item-block ul li {
+  float: left;
+  line-height: 27px;
+  padding: 0 16px;
+  color: #2d84ff;
+  border: 1px solid #2d84ff;
+  border-radius: 4px;
+  box-sizing: border-box;
+  margin-right: 16px;
+  position: relative;
+  margin-bottom: 12px;
+  cursor: pointer;
+}
+
+.XKBMContainer .courseSet .item-block ul li i {
+  cursor: pointer;
+  position: absolute;
+  right: -10px;
+  top: -10px;
+  width: 15px;
+  height: 15px;
+  background: url("../images/deleteIcon1.png") no-repeat;
+  background-size: 100%;
+  display: none;
+}
+
+.XKBMContainer .courseSet .item-block ul li:hover i {
+  display: block;
+}
+
+.XKBMContainer .courseSet .item-block ul li.addLi {
+  display: inline-block;
+  float: left;
+  line-height: 27px;
+  padding: 0 16px;
+  color: #2d84ff;
+  border: 1px solid #2d84ff;
+  border-radius: 4px;
+  box-sizing: border-box;
+  cursor: pointer;
+}
+
+.XKBMContainer .courseSet .item-block ul li.addLi em {
+  display: inline-block;
+  width: 12px;
+  height: 12px;
+  background: url("../images/addLIIcon.png") no-repeat;
+  background-size: 100%;
+  position: relative;
+  top: 1px;
+  margin-right: 4px;
+}
+
+.XKBMContainer .courseSetSkin.layui-layer .layui-layer-btn {
+  text-align: center;
+}
+
+.msgDiv.layui-layer-msg {
+  line-height: 25px;
+  border: none;
+  min-width: 130px;
+}
+
+.msgDiv.layui-layer-msg .layui-layer-content {
+  font-size: 16px;
+  padding: 16px;
+  color: #333333;
+}
+
+.msgDiv.layui-layer-msg .layui-layer-content i.success {
+  display: inline-block;
+  float: left;
+  width: 22px;
+  height: 22px;
+  margin-right: 10px;
+  background: url("../images/rightIcon.png") no-repeat;
+  background-size: 100%;
+}
+
+.msgDiv.layui-layer-msg .layui-layer-content i.tipIcon {
+  display: inline-block;
+  float: left;
+  width: 22px;
+  height: 22px;
+  margin-right: 10px;
+  background: url("../images/tips.png") no-repeat;
+  background-size: 100%;
+}
+
+.tipsDiv1 {
+  width: 350px;
+  height: 212px;
+  position: relative;
+}
+
+.tipsDiv1.layui-layer {
+  border-radius: 4px;
+}
+
+.tipsDiv1 .layui-layer-title {
+  height: 50px;
+  line-height: 50px;
+  border-radius: 12px 12px 0 0;
+}
+
+.tipsDiv1 .layui-layer-setwin {
+  top: 17px;
+}
+
+.tipsDiv1 .close {
+  display: inline-block;
+  position: absolute;
+  right: 12px;
+  top: 12px;
+  width: 15px;
+  height: 15px;
+  background: url("../images/closeBtn.png") no-repeat;
+  background-size: 100%;
+}
+
+.tipsDiv1 .title {
+  text-align: center;
+  margin-top: 25px;
+  line-height: 29px;
+  color: #333333;
+  font-size: 18px;
+}
+
+.tipsDiv1 .title .tips {
+  display: inline-block;
+  margin-right: 14px;
+  width: 29px;
+  height: 29px;
+  background: url("../images/tips.png") no-repeat;
+  background-size: 100%;
+  position: relative;
+  top: 6px;
+}
+
+.tipsDiv1 .con {
+  font-size: 16px;
+  color: #333333;
+  margin-top: 22px;
+  padding: 0 43px;
+  text-align: center;
+}
+
+.tipsDiv1 .con .input {
+  width: 244px;
+  height: 22px;
+  line-height: 22px;
+  color: #333333;
+  font-size: 13px;
+  padding: 9px 10px;
+  border: 1px solid #EAEDF3;
+}
+
+.tipsDiv1 .layui-layer-btn {
+  margin-left: 45px;
+  padding: 0;
+  margin-top: 20px;
+}
+
+.tipsDiv1 .layui-layer-btn button {
+  width: 120px;
+  height: 36px;
+  line-height: 36px;
+  border-radius: 18px;
+  text-align: center;
+  padding: 0;
+  margin: 0;
+  float: left;
+  border: solid 1px;
+}
+
+.tipsDiv1 .layui-layer-btn a {
+  width: 120px;
+  height: 36px;
+  line-height: 36px;
+  border-radius: 18px;
+  text-align: center;
+  padding: 0;
+  margin: 0;
+  float: left;
+}
+
+.tipsDiv1 .layui-layer-btn .layui-layer-btn0 {
+  margin-right: 20px;
+  border-color: #459AFD;
+  background: #ffffff;
+  color: #2D84FF;
+}
+
+.tipsDiv1 .layui-layer-btn .layui-layer-btn1 {
+  background: #459AFD;
+  border-color: #459AFD;
+  color: #ffffff;
+}
+
+.tipsDiv1 .layui-layer-btn .layui-layer-btn1:disabled {
+  background: #2c68ab;
+  border-color: #2c68ab;
+  color: #a8a8a8;
+}
+
+.noContent {
+  text-align: center;
+}
+
+.noContent img {
+  margin-top: 133px;
+  width: 162px;
+  height: 158px;
+}
+
+.noContent p {
+  font-size: 14px;
+  margin-top: 23px;
+  color: #333333;
+}
+
+.noContent a {
+  color: #2D84FF;
+}
+
+.noContent button {
+  background: #459AFD;
+  color: #ffffff;
+  font-size: 14px;
+  width: 102px;
+  height: 40px;
+  line-height: 40px;
+  border: none;
+  margin-top: 14px;
+  border-radius: 4px;
+}
+
+.uploadResult {
+  width: 350px;
+  height: 212px;
+  position: relative;
+}
+
+.uploadResult.layui-layer {
+  border-radius: 12px;
+}
+
+.uploadResult .close {
+  display: inline-block;
+  position: absolute;
+  right: 12px;
+  top: 12px;
+  width: 15px;
+  height: 15px;
+  background: url("../images/PC/closeBtn.png") no-repeat;
+  background-size: 100%;
+}
+
+.uploadResult .content {
+  padding-top: 60px;
+}
+
+.uploadResult .content .moudle {
+  padding-left: 80px;
+  line-height: 23px;
+  margin-bottom: 20px;
+}
+
+.uploadResult .content .moudle .ARight {
+  color: #459AFD;
+}
+
+.uploadResult .content .moudle .error {
+  color: #E02020;
+}
+
+.uploadResult .content .moudle i {
+  display: inline-block;
+  float: left;
+  margin-right: 8px;
+  width: 23px;
+  height: 23px;
+}
+
+.uploadResult .content .moudle i.RightIcon {
+  background: url("../images/PC/rightIcon.png") no-repeat;
+  background-size: 100%;
+}
+
+.uploadResult .content .moudle i.errorIcon {
+  background: url("../images/PC/errorIcon.png") no-repeat;
+  background-size: 100%;
+}
+
+.uploadResult .layui-layer-btn {
+  text-align: center;
+}
+
+.uploadResult .layui-layer-btn a {
+  border-radius: 20px;
+}

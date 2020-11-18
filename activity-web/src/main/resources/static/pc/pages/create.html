@@ -13,6 +13,7 @@
 
 <body>
     <div class="page" id="app">
+
         <!-- 创建活动头部 -->
         <div class="top flex box" id="create">
             <div class="flex">
@@ -65,7 +66,7 @@
                     <label class="label" style="line-height: 100px;">封面</label>
                     <div class="input-box">
                         <img src="../assets/images/example.jpg" alt="" class="cover-img">
-                        <div class="font-box">
+                        <div class="font-box">   
                             <span>建议尺寸：1080x500</span>
                             <span>大小：小于5M</span>
                             <span>格式：jpg、png、gif</span>
@@ -73,6 +74,7 @@
                                 onchange="showImg(this)" />
                             <div class="cancle-btn upload">上传文件</div>
                         </div>
+                        
                     </div>
                 </div>
                 <div class="form-item">
@@ -820,7 +822,7 @@
                 },
                 close() {
                     this.addressShow = false
-                    this.fenleiShow = false 
+                    this.fenleiShow = false
                     this.previewShow = false
                     $('body').removeClass('scroll')
                 },

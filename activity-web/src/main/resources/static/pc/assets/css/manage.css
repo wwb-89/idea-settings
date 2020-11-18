@@ -112,7 +112,7 @@ table {
 
 .tree {
     width: 400px;
-    max-height: 300px;
+    height: 300px;
     background: #ffffff;
     border: 1px solid #f0f0f0;
     border-radius: 2px;
@@ -173,9 +173,60 @@ table {
     margin-left: 10px;
 }
 
-/* .more-btn:hover .more{
-    display: block;
-} */
 .el-table .cell {
     overflow: unset;
+}
+/* z-tree */
+.tree-box{
+    height: 259px;
+    padding: 10px 0px;
+    box-sizing: border-box;
+    overflow-y: auto;
+    font-size: 13px;
+}
+.ztree li span.button.root_open ,.ztree li span.button.roots_open,.ztree li span.button.bottom_open,.ztree li span.button.center_open {
+    width: 8px;
+    height: 4px;
+    background: url(../images/triangle2.png) center center no-repeat;
+    margin-right: 8px;
+}
+.ztree li span.button.root_close,.ztree li span.button.roots_close, .ztree li span.button.bottom_close, .ztree li span.button.center_close {
+    width: 4px;
+    height: 8px;
+    background: url(../images/triangle1.png) center center no-repeat;
+    margin-right: 8px;
+}
+.ztree li span.button.chk.checkbox_false_full, .ztree li span.button.chk.checkbox_false_full_focus, .ztree li span.button.chk.checkbox_false_part,.ztree li span.button.chk.checkbox_false_part_focus {
+    width: 15px;
+    height: 15px;
+    background: url(../images/radio_normal1.png) no-repeat;
+}
+.ztree li span.button.chk.checkbox_true_full,.ztree li span.button.chk.checkbox_true_full_focus{
+    width: 15px;
+    height: 15px;
+    background: url(../images/radio_normal3.png) no-repeat;
+}
+.ztree li {
+    position: relative;
+    line-height: 30px;
+}
+.ztree li a {
+    height: 30px;
+    border: none;
+    padding: 0;
+    background-color: transparent;
+    text-decoration: none;
+}
+.ztree .node_name{
+    font-size: 13px;
+    color: #333333;
+    margin-left: 10px;
+}
+.ztree li a.curSelectedNode {
+    background: none;
+    border: none;
+    opacity: 1;
+}
+.ztree li span.button,.ztree li ul.line{
+    background: none;
 }

@@ -39,10 +39,12 @@ input {
     font-size: 16px;
     color: #333333;
 }
+
 .scroll {
     height: 100%;
     overflow: hidden;
 }
+
 select {
     appearance: none;
     font-size: 16px;
@@ -104,6 +106,7 @@ select {
     display: flex;
     margin: 30px 0;
 }
+
 .input-box {
     display: flex;
     align-items: center;
@@ -113,6 +116,7 @@ select {
     color: #999999;
     font-size: 16px;
 }
+
 .input-box>.item {
     display: flex;
     width: 180px;
@@ -147,7 +151,8 @@ input::placeholder {
     color: #cccccc;
 }
 
-input[type="text"],input[type="number"] {
+input[type="text"],
+input[type="number"] {
     width: 100%;
     height: 100%;
     background: #ffffff;
@@ -238,13 +243,16 @@ input[type="text"],input[type="number"] {
     width: 16px;
     height: 16px;
 }
+
 .type-item:hover {
     border: 1px solid #0084FF;
     color: #0084FF;
 }
-.type-item:hover>.edit-box{
+
+.type-item:hover>.edit-box {
     display: block;
 }
+
 .set-box {
     display: flex;
     align-items: center;
@@ -253,6 +261,7 @@ input[type="text"],input[type="number"] {
 .title.set {
     width: 80px;
 }
+
 .tips {
     font-size: 14px;
     font-weight: 400;
@@ -388,13 +397,15 @@ input.btn-name,
     text-align: left;
     color: #333333;
 }
-.mask-box{
+
+.mask-box {
     width: 292px;
     height: 176px;
     position: relative;
     border: 1px solid #dddddd;
     margin-bottom: 10px;
 }
+
 .page-item:nth-of-type(3n) {
     margin-right: 0;
 }
@@ -469,11 +480,13 @@ input.btn-name,
     height: 251px;
     padding: 30px;
 }
+
 .warn {
     width: 30px;
     height: 30px;
     margin-bottom: 20px;
 }
+
 .delete-dailog>span {
     font-size: 16px;
     font-weight: 400;
@@ -481,10 +494,12 @@ input.btn-name,
     color: #333333;
     line-height: 24px;
 }
+
 .delete-dailog>div {
     display: flex;
     margin-top: 30px;
 }
+
 .details-item {
     display: flex;
     height: 130px;
@@ -498,6 +513,7 @@ input.btn-name,
     border-bottom: 1px solid #e9e9e9;
     position: relative;
 }
+
 .edit-img {
     position: absolute;
     right: 0px;
@@ -507,14 +523,17 @@ input.btn-name,
     display: flex;
     align-items: center;
 }
+
 .img-flex {
     display: flex;
     margin-top: 14px;
 }
+
 .details-item img {
     width: 16px;
     height: 16px;
 }
+
 .close {
     position: absolute;
     right: 12px;
@@ -612,6 +631,7 @@ input.btn-name,
     height: 16px;
     cursor: pointer;
 }
+
 .normal-btn {
     box-sizing: border-box;
     height: 30px;
@@ -646,6 +666,7 @@ input.btn-name,
     border: none;
     margin-left: 20px;
 }
+
 .select {
     position: relative;
     width: 200px;
@@ -905,3 +926,4 @@ input.btn-name,
     text-align: center;
     display: none;
 }
+
