@@ -122,8 +122,7 @@
                                 <div class="already">已选<span style="margin-left: 5px;">0</span></div>
                             </div>
                             <div class="tree-box">
-                               
-                                <ul id="organizationTree" class="ztree"></ul>
+                                <div id="organizationTree" class="ztree"></div>
                             </div>
                         </div>
                     </div>
@@ -172,7 +171,10 @@
                     person: '邱强'
                 }],
                 deleteShow: false,
-                releaseShow: false
+                releaseShow: false,
+            },
+            mounted: function () {
+                this.organizationTreeFun();
             },
             methods: {
                 filterTag(value, row) {
@@ -194,6 +196,54 @@
                 handleRelease() {
                     this.releaseShow = true
                     $('body').addClass('scroll')
+                },
+                organizationTreeFun() {
+                    var setting = {
+                        check: {
+                            enable: true
+                        },
+                        data: {
+                            simpleData: {
+                                enable: true
+                            }
+                        },
+                        callback: {
+                            onCheck: zTreeOnCheck
+                        },
+                        view: {
+                            showIcon:false,
+                        }
+                    };
+                    var zNodes =[
+                        { id:1, pId:0, name:"一级", open:true},
+                        { id:2, pId:0, name:"一级",  open:true},
+                        { id:3, pId:0, name:"一级",  open:false},
+                        { id:10, pId:1, name:"二级"},
+                        { id:11, pId:1, name:"二级"},
+                        { id:12, pId:1, name:"二级"},
+                        { id:4, pId:2, name:"二级"},
+                        { id:5, pId:2, name:"二级"},
+                        { id:6, pId:2, name:"二级"},
+                        { id:7, pId:3, name:"二级"},
+                        { id:8, pId:3, name:"二级"},
+                        { id:9, pId:3, name:"二级"},
+
+                    ];
+
+                    function zTreeOnCheck(event, treeId, treeNode) {
+                        clearCheckedOldNodes();
+                    };
+                    //  清理善后工作
+                    function clearCheckedOldNodes() {
+                        var zTree = $.fn.zTree.getZTreeObj("organizationTree"),
+                            nodes = zTree.getChangeCheckedNodes();
+                        console.log(nodes)
+                        for (var i=0, l=nodes.length; i<l; i++) {
+                            nodes[i].checkedOld = nodes[i].checked;
+                            console.log(nodes)
+                        }
+                    };
+                    $.fn.zTree.init($("#organizationTree"), setting, zNodes);
                 }
             }
         })
@@ -216,55 +266,6 @@
             $(this).addClass('blue').siblings().removeClass('blue')
             $(this).parent('.more').hide()
         })
-        this.organizationTree()
-        function organizationTree() {
-        var setting = {
-            check: {
-                enable: true
-            },
-            data: {
-                simpleData: {
-                    enable: true
-                }
-            },
-            callback: {
-                onCheck: zTreeOnCheck
-            },
-            view: {
-                showIcon:false,
-            }
-        };
-        setting.check.chkboxType = { "Y" : "s", "N" : "s" };
-        var zNodes =[
-            { id:1, pId:0, name:"一级", open:true},
-            { id:2, pId:0, name:"一级",  open:true},
-            { id:3, pId:0, name:"一级",  open:false},
-            { id:10, pId:1, name:"二级"},
-            { id:11, pId:1, name:"二级"},
-            { id:12, pId:1, name:"二级"},
-            { id:4, pId:2, name:"二级"},
-            { id:5, pId:2, name:"二级"},
-            { id:6, pId:2, name:"二级"},
-            { id:7, pId:3, name:"二级"},
-            { id:8, pId:3, name:"二级"},
-            { id:9, pId:3, name:"二级"},
-           
-        ];
-    
-        function zTreeOnCheck(event, treeId, treeNode) {
-            clearCheckedOldNodes();
-        };
-        //  清理善后工作
-         function clearCheckedOldNodes() {
-            var zTree = $.fn.zTree.getZTreeObj("organizationTree"),
-                nodes = zTree.getChangeCheckedNodes();
-            for (var i=0, l=nodes.length; i<l; i++) {
-                nodes[i].checkedOld = nodes[i].checked;
-            }
-        };
-        $.fn.zTree.init($("#organizationTree"), setting, zNodes);
-    }
-
     </script>
 </body>
 
