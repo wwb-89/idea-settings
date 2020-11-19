@@ -21,7 +21,7 @@
         活动管理
     </div>
     <div class="main box">
-        <div class="create-btn" @click="toAddActivity" style="cursor: pointer;">创建活动</div>
+        <div class="create-btn" @click="toAdd" style="cursor: pointer;">创建活动</div>
         <div class="table">
             <el-table :data="activities" style="width: 100%">
                 <el-table-column label="活动名称" width="386">
@@ -56,7 +56,7 @@
                 <el-table-column label="操作" width="213">
                     <template slot-scope="scope">
                         <div>
-                            <el-button type="text">修改</el-button>
+                            <el-button type="text" @click="toEdit(scope.row.id)">修改</el-button>
                             <el-button type="text" @click="toDelete(scope.row.id)">删除</el-button>
                             <div class="more-btn">
                                 <el-button type="text">更多<i class="el-icon-arrow-down"></i></el-button>
@@ -129,8 +129,12 @@
                         $(this).children('.more').hide();
                     });
                 },
-                toAddActivity: function () {
+                toAdd: function () {
                     var url = ctx + "/manage/activity/add";
+                    window.open(url);
+                },
+                toEdit: function (id) {
+                    var url = ctx + "/manage/activity/"+ id +"/edit";
                     window.open(url);
                 },
                 // 修改状态
@@ -178,7 +182,9 @@
                     var url = ctx + "/api/activity/" + $this.processedActivityId + "/delete"
                     app.ajaxPostWithLoading(url, {}, function (data) {
                         if (data.success) {
-
+                            $this.$refs.deleteWindow.show = false;
+                            // 重新查询
+                            $this.loadData();
                         } else {
                             var errorMessage = data.message;
                             if (activityApp.isEmpty(errorMessage)) {

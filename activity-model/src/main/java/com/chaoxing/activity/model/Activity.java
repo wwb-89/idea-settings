@@ -96,7 +96,6 @@ public class Activity {
     private LocalDateTime createTime;
     /** 修改时间; column: update_time*/
     @JSONField(serializeUsing = LocalDateTimeSerializer.class, deserializeUsing = LocalDateTimeDeserializer.class)
-
     private LocalDateTime updateTime;
 
     @Getter

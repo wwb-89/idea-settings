@@ -36,6 +36,8 @@ public class ActivityQueryService {
 
 	@Resource
 	private PassportApiService passportApiService;
+	@Resource
+	private ActivityValidationService activityValidationService;
 	
 	/**查询参与的活动
 	 * @Description 
@@ -135,6 +137,18 @@ public class ActivityQueryService {
 			}
 		}
 		return page;
+	}
+
+	/**根据活动id查询活动
+	 * @Description 
+	 * @author wwb
+	 * @Date 2020-11-19 18:59:35
+	 * @param activityId
+	 * @return com.chaoxing.activity.model.Activity
+	*/
+	public Activity getById(Integer activityId) {
+		Activity activity = activityValidationService.activityExist(activityId);
+		return activity;
 	}
 
 }
