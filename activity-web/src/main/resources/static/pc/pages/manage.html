@@ -11,7 +11,6 @@
     <link rel="stylesheet" href="../assets/css/public.css">
     <link rel="stylesheet" href="../assets/css/manage.css">
     <link rel="stylesheet" href="../assets/lib/jquery.mCustomScrollbar.css">
-    <link rel="stylesheet" href="../assets/css/list.css">
     <title>活动管理</title>
 </head>
 
@@ -48,7 +47,7 @@
                     </el-table-column>
                     <el-table-column prop="state" label="状态">
                         <template slot="header" slot-scope="scope">
-                            <div class="status">状态<i class="el-icon-arrow-down"></i></div>
+                           <div class="status">状态<i class="el-icon-arrow-down"></i></div>
                         </template>
                         <template slot-scope="scope">
                             <span
@@ -110,7 +109,7 @@
                 </div>
             </div>
             <!-- 活动发布弹窗 -->
-            <div class="dailog-box1" v-show="releaseShow">
+            <div class="dailog-box1">
                 <div class="dailog">
                     <div class="header">
                         <span>活动发布</span>
@@ -123,9 +122,7 @@
                                 <div class="already">已选<span style="margin-left: 5px;">0</span></div>
                             </div>
                             <div class="tree-box">
-                                <!-- <el-tree :data="data" show-checkbox node-key="id" :default-expanded-keys="[2, 3]"
-                                    :props="defaultProps">
-                                </el-tree> -->
+                               
                                 <ul id="organizationTree" class="ztree"></ul>
                             </div>
                         </div>
@@ -140,13 +137,13 @@
     </div>
 
     <script src="../assets/lib/jquery.min.js"></script>
-    <script src="../assets/lib/zTree_v3/js/jquery.ztree.core.js"></script>
-    <script src="../assets/lib/zTree_v3/js/jquery.ztree.excheck.min.js"></script>
-    <script type="text/javascript" src="../assets/lib/zTree_v3/js/jquery.ztree.exedit.js"></script>
     <script src="../assets/lib/vue.js"></script>
     <script src="https://unpkg.com/element-ui/lib/index.js"></script>
     <script src="../assets/lib/jquery.mousewheel.min.js"></script>
     <script src="../assets/lib/jquery.mCustomScrollbar.js"></script>
+    <script src="../assets/lib/zTree_v3/js/jquery.ztree.core.js"></script>
+    <script src="../assets/lib/zTree_v3/js/jquery.ztree.excheck.min.js"></script>
+    <script type="text/javascript" src="../assets/lib/zTree_v3/js/jquery.ztree.exedit.js"></script>
 
     <script>
         var app = new Vue({
@@ -174,45 +171,6 @@
                     state: '已结束',
                     person: '邱强'
                 }],
-                data: [{
-                    id: 1,
-                    label: '一级 1',
-                    children: [{
-                        id: 4,
-                        label: '二级 1-1',
-                        children: [{
-                            id: 9,
-                            label: '三级 1-1-1'
-                        }, {
-                            id: 10,
-                            label: '三级 1-1-2'
-                        }]
-                    }]
-                }, {
-                    id: 2,
-                    label: '一级 2',
-                    children: [{
-                        id: 5,
-                        label: '二级 2-1'
-                    }, {
-                        id: 6,
-                        label: '二级 2-2'
-                    }]
-                }, {
-                    id: 3,
-                    label: '一级 3',
-                    children: [{
-                        id: 7,
-                        label: '二级 3-1'
-                    }, {
-                        id: 8,
-                        label: '二级 3-2'
-                    }]
-                }],
-                defaultProps: {
-                    children: 'children',
-                    label: 'label'
-                },
                 deleteShow: false,
                 releaseShow: false
             },
@@ -269,11 +227,10 @@
                     enable: true
                 }
             },
-            callback: {
-                onCheck: zTreeOnCheck
-            },
+            // callback: {
+            //     onCheck: zTreeOnCheck
+            // },
             view: {
-                selectedMulti: false,
                 showIcon:false,
             }
         };
@@ -282,28 +239,29 @@
             { id:1, pId:0, name:"一级", open:true},
             { id:2, pId:0, name:"一级",  open:true},
             { id:3, pId:0, name:"一级",  open:false},
+            { id:10, pId:1, name:"二级",  open:true},
+            { id:11, pId:1, name:"二级",  open:true},
+            { id:12, pId:1, name:"二级",  open:true},
             { id:4, pId:2, name:"二级",  open:true},
             { id:5, pId:2, name:"二级",  open:true},
             { id:6, pId:2, name:"二级",  open:true},
             { id:7, pId:3, name:"二级",  open:true},
             { id:8, pId:3, name:"二级",  open:true},
             { id:9, pId:3, name:"二级",  open:true},
-            { id:10, pId:1, name:"二级",  open:true},
-            { id:11, pId:1, name:"二级",  open:true},
-            { id:12, pId:1, name:"二级",  open:true},
+           
         ];
     
-        function zTreeOnCheck(event, treeId, treeNode) {
-            clearCheckedOldNodes();
-        };
+        // function zTreeOnCheck(event, treeId, treeNode) {
+        //     clearCheckedOldNodes();
+        // };
          //清理善后工作
-         function clearCheckedOldNodes() {
-            var zTree = $.fn.zTree.getZTreeObj("organizationTree"),
-                nodes = zTree.getChangeCheckedNodes();
-            for (var i=0, l=nodes.length; i<l; i++) {
-                nodes[i].checkedOld = nodes[i].checked;
-            }
-        };
+        //  function clearCheckedOldNodes() {
+        //     var zTree = $.fn.zTree.getZTreeObj("organizationTree"),
+        //         nodes = zTree.getChangeCheckedNodes();
+        //     for (var i=0, l=nodes.length; i<l; i++) {
+        //         nodes[i].checkedOld = nodes[i].checked;
+        //     }
+        // };
         $.fn.zTree.init($("#organizationTree"), setting, zNodes);
     }
 

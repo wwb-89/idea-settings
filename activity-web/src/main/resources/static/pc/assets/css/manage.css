@@ -136,7 +136,9 @@ table {
 .already {
     color: #0084ff;
 }
-
+.status{
+    cursor: pointer;
+}
 .filters,
 .more {
     position: absolute;
@@ -184,27 +186,53 @@ table {
     overflow-y: auto;
     font-size: 13px;
 }
-.ztree li span.button.root_open ,.ztree li span.button.roots_open,.ztree li span.button.bottom_open,.ztree li span.button.center_open {
+.ztree li span.button.root_open ,
+.ztree li span.button.roots_open,
+.ztree li span.button.bottom_open,
+.ztree li span.button.center_open {
     width: 8px;
     height: 4px;
     background: url(../images/triangle2.png) center center no-repeat;
     margin-right: 8px;
 }
-.ztree li span.button.root_close,.ztree li span.button.roots_close, .ztree li span.button.bottom_close, .ztree li span.button.center_close {
+.ztree li span.button.root_close,
+.ztree li span.button.roots_close, 
+.ztree li span.button.bottom_close, 
+.ztree li span.button.center_close {
     width: 4px;
     height: 8px;
     background: url(../images/triangle1.png) center center no-repeat;
     margin-right: 8px;
 }
-.ztree li span.button.chk.checkbox_false_full, .ztree li span.button.chk.checkbox_false_full_focus, .ztree li span.button.chk.checkbox_false_part,.ztree li span.button.chk.checkbox_false_part_focus {
+.ztree li span.button.chk.checkbox_false_full, 
+.ztree li span.button.chk.checkbox_false_full_focus{
     width: 15px;
     height: 15px;
     background: url(../images/radio_normal1.png) no-repeat;
+    position: relative;
+    z-index: 2;
 }
-.ztree li span.button.chk.checkbox_true_full,.ztree li span.button.chk.checkbox_true_full_focus{
+.ztree li span.button.chk.checkbox_false_part,
+.ztree li span.button.chk.checkbox_false_part_focus {
+    width: 15px;
+    height: 15px;
+    background: url(../images/radio_normal2.png) no-repeat;
+    position: relative;
+    z-index: 2;
+}
+.ztree li span.button.chk.checkbox_true_full,
+.ztree li span.button.chk.checkbox_true_full_focus{
     width: 15px;
     height: 15px;
     background: url(../images/radio_normal3.png) no-repeat;
+}
+.ztree li span.button.chk.checkbox_true_part,
+.ztree li span.button.chk.checkbox_true_part_focus{
+    width: 15px;
+    height: 15px;
+    background: url(../images/radio_normal2.png) no-repeat;
+    position: relative;
+    z-index: 2;
 }
 .ztree li {
     position: relative;
@@ -230,3 +258,8 @@ table {
 .ztree li span.button,.ztree li ul.line{
     background: none;
 }
+.ztree li span.button.center_docu, 
+.ztree li span.button.bottom_docu, 
+.ztree li ul.line {
+    background: none;
+  }
