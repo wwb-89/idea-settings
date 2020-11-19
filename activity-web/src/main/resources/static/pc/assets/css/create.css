@@ -21,6 +21,7 @@ button {
     border: 1px solid #82c3ff;
     border-radius: 15px;
     color: #0084ff;
+    cursor: pointer;
 }
 
 .create-btn {
@@ -31,6 +32,7 @@ button {
     border: none;
     color: #fff;
     margin-left: 10px;
+    cursor: pointer;
 }
 
 input {
