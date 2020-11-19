@@ -227,9 +227,9 @@
                     enable: true
                 }
             },
-            // callback: {
-            //     onCheck: zTreeOnCheck
-            // },
+            callback: {
+                onCheck: zTreeOnCheck
+            },
             view: {
                 showIcon:false,
             }
@@ -239,29 +239,29 @@
             { id:1, pId:0, name:"一级", open:true},
             { id:2, pId:0, name:"一级",  open:true},
             { id:3, pId:0, name:"一级",  open:false},
-            { id:10, pId:1, name:"二级",  open:true},
-            { id:11, pId:1, name:"二级",  open:true},
-            { id:12, pId:1, name:"二级",  open:true},
-            { id:4, pId:2, name:"二级",  open:true},
-            { id:5, pId:2, name:"二级",  open:true},
-            { id:6, pId:2, name:"二级",  open:true},
-            { id:7, pId:3, name:"二级",  open:true},
-            { id:8, pId:3, name:"二级",  open:true},
-            { id:9, pId:3, name:"二级",  open:true},
+            { id:10, pId:1, name:"二级"},
+            { id:11, pId:1, name:"二级"},
+            { id:12, pId:1, name:"二级"},
+            { id:4, pId:2, name:"二级"},
+            { id:5, pId:2, name:"二级"},
+            { id:6, pId:2, name:"二级"},
+            { id:7, pId:3, name:"二级"},
+            { id:8, pId:3, name:"二级"},
+            { id:9, pId:3, name:"二级"},
            
         ];
     
-        // function zTreeOnCheck(event, treeId, treeNode) {
-        //     clearCheckedOldNodes();
-        // };
-         //清理善后工作
-        //  function clearCheckedOldNodes() {
-        //     var zTree = $.fn.zTree.getZTreeObj("organizationTree"),
-        //         nodes = zTree.getChangeCheckedNodes();
-        //     for (var i=0, l=nodes.length; i<l; i++) {
-        //         nodes[i].checkedOld = nodes[i].checked;
-        //     }
-        // };
+        function zTreeOnCheck(event, treeId, treeNode) {
+            clearCheckedOldNodes();
+        };
+        //  清理善后工作
+         function clearCheckedOldNodes() {
+            var zTree = $.fn.zTree.getZTreeObj("organizationTree"),
+                nodes = zTree.getChangeCheckedNodes();
+            for (var i=0, l=nodes.length; i<l; i++) {
+                nodes[i].checkedOld = nodes[i].checked;
+            }
+        };
         $.fn.zTree.init($("#organizationTree"), setting, zNodes);
     }
 
