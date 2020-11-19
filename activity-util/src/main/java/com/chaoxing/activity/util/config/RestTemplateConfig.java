@@ -42,7 +42,7 @@ public class RestTemplateConfig {
 	@Bean(name = "restTemplateProxy")
 	public RestTemplate restTemplateProxy(){
 		if (PROFILE_DEV.equals(active)) {
-			Proxy proxy = new Proxy(Proxy.Type.SOCKS, new InetSocketAddress("127.0.0.1", 1090));
+			Proxy proxy = new Proxy(Proxy.Type.SOCKS, new InetSocketAddress("192.168.3.2", 1090));
 			OkHttpClient okHttpClient = new OkHttpClient().newBuilder().connectTimeout(CONNECT_TIMEOUT, TimeUnit.SECONDS).build().newBuilder().proxy(proxy).build();
 			OkHttp3ClientHttpRequestFactory okHttp3ClientHttpRequestFactory = new OkHttp3ClientHttpRequestFactory(okHttpClient);
 			// 连接超时时间60s

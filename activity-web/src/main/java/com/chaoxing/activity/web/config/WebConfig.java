@@ -1,10 +1,12 @@
 package com.chaoxing.activity.web.config;
 
+import com.baomidou.mybatisplus.extension.plugins.PaginationInterceptor;
 import com.chaoxing.activity.web.interceptor.AutoLoginInterceptor;
 import com.chaoxing.activity.web.interceptor.LoginUserValidateInterceptor;
 import org.springframework.boot.web.server.ErrorPage;
 import org.springframework.boot.web.server.ErrorPageRegistrar;
 import org.springframework.boot.web.server.ErrorPageRegistry;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
@@ -51,5 +53,11 @@ public class WebConfig implements WebMvcConfigurer, ErrorPageRegistrar {
 		registry.addErrorPages(new ErrorPage(HttpStatus.NOT_FOUND, "/error/custom/404"));
 		registry.addErrorPages(new ErrorPage(HttpStatus.INTERNAL_SERVER_ERROR, "/error/custom"));
 	}
+
+//	@Bean
+//	public PaginationInterceptor paginationInterceptor(){
+//		return  new PaginationInterceptor();
+//	}
+
 
 }

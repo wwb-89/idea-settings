@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" xmlns:th="http://www.thymeleaf.org/">
 
 <head>
     <title>活动</title>
@@ -10,6 +10,20 @@
     <meta http-equiv="cache-control" content="no-cache" />
     <link rel="stylesheet" href="../assets/css/public.css" />
     <link rel="stylesheet" href="../assets/css/index.css" />
+<!--    <link rel="stylesheet" href="/static/pc/assets/lib/element-ui/lib/theme-chalk/index.css" th:href="@{/pc/assets/lib/element-ui/lib/theme-chalk/index.css}">-->
+<!--    <link rel="stylesheet" href="/static/pc/assets/css/reset.css" th:href="@{/pc/assets/css/reset.css}">-->
+<!--    <link rel="stylesheet" href="/static/pc/assets/css/public.css" th:href="@{/pc/assets/css/public.css}">-->
+<!--    <link rel="stylesheet" href="/static/pc/assets/css/create.css" th:href="@{/pc/assets/css/create.css}">-->
+
+
+    <style type="text/css">
+        .webuploader-element-invisible {
+            display: none;
+        }
+        [v-cloak] {
+            display: none;
+        }
+    </style>
 </head>
 
 <body>
@@ -27,6 +41,27 @@
         </div>
         <div class="activity-list">
             <ul>
+
+                <div v-for="item in list">
+
+                    <li>
+                        <img src="https://p.ananas.chaoxing.com/star3/270_160c/57170cd1e4b0578413d7f5f6.jpg">
+                        <div class="info">
+                            <h2 class="title">{{item.name}}</h2>
+                            <div class="time">
+                                <span class="status status1" >进行中</span>
+                                <!-- <span class="status status2">活动预告</span> -->
+                                <!-- <span class="status status3">已结束</span> -->
+                                <span>2020-10-10 9:00 ～ 2028-10-1日 16:00</span>
+                                <div class="clear"></div>
+                            </div>
+                            <p class="dec" >浙江图书馆</p>
+                            <p class="address" ></p>
+                        </div>
+                    </li>
+                </div>
+
+
                 <li>
                     <img src="https://p.ananas.chaoxing.com/star3/270_160c/57170cd1e4b0578413d7f5f6.jpg">
                     <div class="info">
@@ -42,6 +77,7 @@
                         <p class="address">浙江省杭州市西湖区曙光路73号</p>
                     </div>
                 </li>
+
                 <li>
                     <img src="https://p.ananas.chaoxing.com/star3/270_160c/57170cd1e4b0578413d7f5f6.jpg">
                     <div class="info">
@@ -126,6 +162,7 @@
 </html>
 <script src="../assets/lib/jquery.1.8.2.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+<script src="https://unpkg.com/axios/dist/axios.min.js"></script>
 <script>
     var vm = new Vue({
         el: '#vue',
@@ -135,10 +172,11 @@
                 inputShow:false,
                 searchstatus:false,
                 popStatus:false,
+                list:[],
             }
         },
         created: function () {
-
+            this.getAllShowMsg();
         },
         mounted: function () {
             
@@ -165,6 +203,23 @@
             inputFun(e){
                 this.inputValue = e.target.value;
             },
+            //获取到所有活动展示页面的信息，分页展示
+            getAllShowMsg(){
+                axios({
+                    method: 'get',
+                    url: 'http://127.0.0.1:8080/pageshow/msg/1/10',
+                    params:{
+                        current:1,
+                        limit:10,
+                    },
+                    responseType: 'json'
+                }).then(response =>{
+                   this.list = response.list
+                    }
+                ).catch( error =>{
+                    console.log(error)
+                });
+            }
         }
     });
 </script>

@@ -2,10 +2,17 @@ package com.chaoxing.activity.service.activity.module;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.chaoxing.activity.dto.pageShowModel;
+import com.chaoxing.activity.mapper.ActivityMapper;
 import com.chaoxing.activity.mapper.ActivityModuleMapper;
+import com.chaoxing.activity.mapper.PageShowMsgMapper;
+import com.chaoxing.activity.model.Activity;
 import com.chaoxing.activity.model.ActivityModule;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.ibatis.annotations.Mapper;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
@@ -27,6 +34,11 @@ public class ActivityModuleService {
 
 	@Resource
 	private ActivityModuleMapper activityModuleMapper;
+
+
+
+	@Autowired
+	private ActivityMapper activityMapper;
 
 	/**批量新增
 	 * @Description 
@@ -118,4 +130,29 @@ public class ActivityModuleService {
 		return result;
 	}
 
+
+	/**
+	 * @Description 活动展示模块，展示所有的活动模块分页
+	 * @author dkm
+	 * @Date 2020-11-19 14：50：30
+	 * @param
+	 * @param
+	 * @return java.util.List<pageShowModel>
+	 */
+	public List<pageShowModel> getModelMsgPage(Integer current, Integer limit) {
+		Page<Activity> page = new Page<>(current,limit);
+		Page<Activity> activityPage = activityMapper.selectPage(page, null);
+		List<Activity> activityList = activityPage.getRecords();
+		List<pageShowModel> list = new ArrayList<>();
+		pageShowModel pageShowModel = null;
+		for (Activity ac: activityList) {
+			pageShowModel = new pageShowModel();
+			pageShowModel.setCoverCloudId(ac.getCoverCloudId());
+			pageShowModel.setName(ac.getName());
+			pageShowModel.setStatus(ac.getStatus());
+			pageShowModel.setAddress(ac.getAddress());
+			list.add(pageShowModel);
+		}
+		return list;
+	}
 }
