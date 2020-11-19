@@ -61,28 +61,40 @@
         }
         return null;
     }
-    /**
-     * 毫秒转换为日期字符串
-     * @param millisecond
-     */
-    activityApp.prototype.millisecond2DateStr = function (millisecond) {
-        var that = this;
-        if (that.isEmpty(millisecond)) {
+    activityApp.prototype.millisecond2DateObj = function (millisecond) {
+        var $this = this;
+        if ($this.isEmpty(millisecond)) {
             return "";
         }
         var date = new Date(millisecond);
         var year = date.getFullYear();
         var month = date.getMonth() + 1;
-        month = that.fillSpecifiedDigits(month, 2, "0");
+        month = $this.fillSpecifiedDigits(month, 2, "0");
         var day = date.getDate();
-        day = that.fillSpecifiedDigits(day, 2, "0");
+        day = $this.fillSpecifiedDigits(day, 2, "0");
         var hour = date.getHours();
-        hour = that.fillSpecifiedDigits(hour, 2, "0");
+        hour = $this.fillSpecifiedDigits(hour, 2, "0");
         var minute = date.getMinutes();
-        minute = that.fillSpecifiedDigits(minute, 2, "0");
+        minute = $this.fillSpecifiedDigits(minute, 2, "0");
         var second = date.getSeconds();
-        second = that.fillSpecifiedDigits(second, 2, "0");
-        return year + "-" + month + "-" + day + " " + hour + ":" + minute + ":" + second;
+        second = $this.fillSpecifiedDigits(second, 2, "0");
+        return {
+            year: year,
+            month: month,
+            day: day,
+            hour: hour,
+            minute: minute,
+            second: second
+        };
+    };
+    /**
+     * 毫秒转换为日期字符串
+     * @param millisecond
+     */
+    activityApp.prototype.millisecond2DateStr = function (millisecond) {
+        var $this = this;
+        var dateObj = $this.millisecond2DateObj(millisecond);
+        return dateObj.year + "-" + dateObj.month + "-" + dateObj.day + " " + dateObj.hour + ":" + dateObj.minute + ":" + dateObj.second;
     };
     /**
      * 填充到指定位数
@@ -261,4 +273,8 @@ Vue.filter("getCloudImgUrl", function (cloudId) {
 });
 Vue.filter("activityStatusInstructions", function (status) {
     return activityApp.getActivityStatusInstructions(status);
+});
+Vue.filter("timestamp2ChineseYMD", function (timestamp) {
+    var dateObj = activityApp.millisecond2DateObj(timestamp);
+    return dateObj.year + "年" + dateObj.month + "月" + dateObj.day + "日";
 });
