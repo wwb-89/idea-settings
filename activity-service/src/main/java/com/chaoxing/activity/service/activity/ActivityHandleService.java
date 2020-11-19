@@ -380,6 +380,24 @@ public class ActivityHandleService {
 			workApiService.clearActivityParticipateScopeCache(externalIds.stream().map(v -> Integer.parseInt(v)).collect(Collectors.toList()));
 		}
 	}
+	
+	/**删除活动
+	 * @Description 
+	 * @author wwb
+	 * @Date 2020-11-19 12:27:35
+	 * @param activityId
+	 * @param loginUser
+	 * @return void
+	*/
+	public void delete(Integer activityId, LoginUserDTO loginUser) {
+		// 验证是否能删除
+		activityValidationService.deleteAble(activityId, loginUser);
+		activityMapper.update(null, new UpdateWrapper<Activity>()
+			.lambda()
+				.eq(Activity::getId, activityId)
+				.set(Activity::getStatus, Activity.StatusEnum.DELETED.getValue())
+		);
+	}
 
 	/**绑定模板
 	 * @Description 

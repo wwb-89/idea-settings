@@ -1,9 +1,14 @@
 package com.chaoxing.activity.model;
 
+import com.alibaba.fastjson.annotation.JSONField;
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
+import com.chaoxing.activity.util.LocalDateDeserializer;
+import com.chaoxing.activity.util.LocalDateSerializer;
+import com.chaoxing.activity.util.LocalDateTimeDeserializer;
+import com.chaoxing.activity.util.LocalDateTimeSerializer;
 import com.chaoxing.activity.util.exception.BusinessException;
 import lombok.*;
 
@@ -33,8 +38,10 @@ public class Activity {
     /** 活动名称; column: name*/
     private String name;
     /** 开始日期; column: start_date*/
+    @JSONField(serializeUsing = LocalDateSerializer.class, deserializeUsing = LocalDateDeserializer.class)
     private LocalDate startDate;
     /** 结束日期; column: end_date*/
+    @JSONField(serializeUsing = LocalDateSerializer.class, deserializeUsing = LocalDateDeserializer.class)
     private LocalDate endDate;
     /** 封面云盘id; column: cover_cloud_id*/
     private String coverCloudId;
@@ -59,6 +66,7 @@ public class Activity {
     @TableField(value = "is_released")
     private Boolean released;
     /** 发布时间; column: release_time*/
+    @JSONField(serializeUsing = LocalDateTimeSerializer.class, deserializeUsing = LocalDateTimeDeserializer.class)
     private LocalDateTime releaseTime;
     /** 发布人id; column: release_uid*/
     private Integer releaseUid;
@@ -71,8 +79,12 @@ public class Activity {
     private Integer auditStatus;
     /** 创建人id; column: create_uid*/
     private Integer createUid;
+    /** 创建人姓名; column: create_user_name*/
+    private String createUserName;
     /** 创建单位id; column: create_fid*/
     private Integer createFid;
+    /** 创建机构名; column: create_org_name*/
+    private String createOrgName;
     /** 省; column: province_name*/
     private String provinceName;
     /** 市; column: city_name*/
@@ -80,8 +92,11 @@ public class Activity {
     /** 区县; column: county_name*/
     private String countyName;
     /** 创建时间; column: create_time*/
+    @JSONField(serializeUsing = LocalDateTimeSerializer.class, deserializeUsing = LocalDateTimeDeserializer.class)
     private LocalDateTime createTime;
     /** 修改时间; column: update_time*/
+    @JSONField(serializeUsing = LocalDateTimeSerializer.class, deserializeUsing = LocalDateTimeDeserializer.class)
+
     private LocalDateTime updateTime;
 
     @Getter

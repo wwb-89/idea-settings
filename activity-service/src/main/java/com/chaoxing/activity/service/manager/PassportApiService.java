@@ -47,16 +47,20 @@ public class PassportApiService {
 	 * @param fid
 	 * @return java.lang.String
 	 */
-	@Cacheable(cacheNames = CacheConstant.CACHE_KEY_PREFIX + "org")
+	@Cacheable(cacheNames = CacheConstant.CACHE_KEY_PREFIX + "org", unless = "#result == null")
 	public String getOrgName(Integer fid) {
-		StringBuilder url = new StringBuilder();
-		url.append(ORG_NAME_URL);
-		url.append(fid);
-		String result = restTemplate.getForObject(url.toString(), String.class);
-		JSONObject jsonObject = JSON.parseObject(result);
-		Integer schoolid = jsonObject.getInteger("schoolid");
-		if (fid.equals(schoolid)) {
-			return jsonObject.getString("name");
+		try {
+			StringBuilder url = new StringBuilder();
+			url.append(ORG_NAME_URL);
+			url.append(fid);
+			String result = restTemplate.getForObject(url.toString(), String.class);
+			JSONObject jsonObject = JSON.parseObject(result);
+			Integer schoolid = jsonObject.getInteger("schoolid");
+			if (fid.equals(schoolid)) {
+				return jsonObject.getString("name");
+			}
+		} catch (Exception e) {
+			log.error("根据fid:{}查询机构名称失败:{}", fid, e.getMessage());
 		}
 		return null;
 	}

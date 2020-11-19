@@ -33,8 +33,16 @@ public class ActivityManagementController {
 	@Resource
 	private ActivityClassifyQueryService activityClassifyQueryService;
 
+	/**活动管理主页
+	 * @Description 
+	 * @author wwb
+	 * @Date 2020-11-18 11:34:30
+	 * @param 
+	 * @return java.lang.String
+	*/
+	@RequestMapping
 	public String index() {
-		return "";
+		return "pc/management/activity-index";
 	}
 
 	@GetMapping("add")

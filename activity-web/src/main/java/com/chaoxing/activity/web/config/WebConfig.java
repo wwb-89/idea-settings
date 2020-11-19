@@ -32,6 +32,7 @@ public class WebConfig implements WebMvcConfigurer, ErrorPageRegistrar {
 
 	private List<String> listStaticResourcePathPatterns() {
 		return new ArrayList(){{
+			add("/favicon.ico");
 			add("/assets/**");
 			add("/pc/**");
 			add("/mobile/**");

@@ -139,8 +139,8 @@
                         <span class="tips">如何创建报名信息表单？</span>
                     </div>
                     <div class="select" v-show="sign.signUpInfoWrite">
-                        <el-select value="1" placeholder="请选择">
-                            <el-option label="1" value="1"></el-option>
+                        <el-select v-model="sign.signUpFormId" placeholder="请选择">
+                            <el-option v-for="(form, index) of forms" :key="'form-' + index" :label="form.name" :value="form.id"></el-option>
                         </el-select>
                     </div>
                 </div>
@@ -190,7 +190,7 @@
             <div class="form-item">
                 <label class="label">签到时间</label>
                 <div class="input-box">
-                    <el-date-picker v-model="signInTimeScope" type="daterange" format="yyyy-MM-dd HH:mm" value-format="yyyy-MM-dd HH:mm:ss" :editable=false range-separator="至" start-placeholder="开始日期" end-placeholder="结束日期"></el-date-picker>
+                    <el-date-picker v-model="signInTimeScope" type="datetimerange" format="yyyy-MM-dd HH:mm" value-format="yyyy-MM-dd HH:mm:ss" :editable=false range-separator="至" start-placeholder="开始日期" end-placeholder="结束日期"></el-date-picker>
                 </div>
             </div>
             <div class="form-item">
@@ -202,7 +202,7 @@
                     </div>
                     <div class="select" v-show="sign.signInInfoWrite">
                         <el-select v-model="sign.signInFormId" placeholder="请选择">
-                            <el-option label="1" value="1"></el-option>
+                            <el-option v-for="(form, index) of forms" :key="'form-' + index" :label="form.name" :value="form.id"></el-option>
                         </el-select>
                     </div>
                 </div>
@@ -370,6 +370,8 @@
                 activity: [[${activity}]],
                 activityTypes: [[${activityTypes}]],
                 activityClassifies: [[${activityClassifies}]],
+                // 机构下的表单列表
+                forms: [],
                 // 文件上传
                 uploader: null,
                 // 显示隐藏
@@ -435,6 +437,7 @@
                 }
                 $this.calSignEnable();
                 $this.calPersonLimitValue();
+                $this.loadForms();
             },
             mounted: function () {
                 var $this = this;
@@ -515,6 +518,24 @@
                     });
                     $this.uploader.on("uploadError", function (file, reason) {
                         app.showMsg(reason);
+                    });
+                },
+                // 加载表单列表
+                loadForms: function () {
+                    var $this = this;
+                    var url = ctx + "/api/form/list";
+                    app.ajaxPost(url, {}, function (data) {
+                        if (data.success) {
+                            $this.forms = data.data;
+                        } else {
+                            var errorMessage = data.message;
+                            if (activityApp.isEmpty(errorMessage)) {
+                                errorMessage = "加载表单失败";
+                            }
+                            app.showMsg(errorMessage);
+                        }
+                    }, function () {
+                        app.showMsg("加载表单失败");
                     });
                 },
                 // 修改活动类型
