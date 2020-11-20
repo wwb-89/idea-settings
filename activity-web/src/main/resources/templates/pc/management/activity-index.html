@@ -83,7 +83,7 @@
         <!--下架弹窗-->
         <vue-confirm ref="canReleaseWindow" :message="'下架后，该活动将不在活动广场中显示'" :cancel="'取消'" :sure="'下架'" @callback="cancelRelease"></vue-confirm>
         <!-- 活动发布弹窗 -->
-
+        <vue-activity-scope ref="activityScopeWindow" @callback="release"></vue-activity-scope>
     </div>
 </div>
 <div th:replace="pc/include/common_js :: common_js(~{::script})">
@@ -92,6 +92,7 @@
     <script src="/static/pc/assets/lib/zTree_v3/js/jquery.ztree.excheck.min.js" th:src="@{/pc/assets/lib/zTree_v3/js/jquery.ztree.excheck.min.js}"></script>
     <script src="/static/pc/assets/lib/zTree_v3/js/jquery.ztree.exedit.js" th:src="@{/pc/assets/lib/zTree_v3/js/jquery.ztree.exedit.js}"></script>
     <script src="/static/pc/assets/component/confirm.js" th:src="@{/pc/assets/component/confirm.js}"></script>
+    <script src="/static/pc/assets/component/activity-scope.js" th:src="@{/pc/assets/component/activity-scope.js}"></script>
     <script th:inline="javascript">
         activityVue = new Vue({
             el: "#activity-vue",
@@ -204,10 +205,12 @@
                 // 发布
                 toRelease: function () {
                     var $this = this;
-
+                    $this.$refs.activityScopeWindow.show = true;
                 },
                 release: function () {
-
+                    var $this = this;
+                    var selectedFids = $this.$refs.activityScopeWindow.selectedFids;
+                    var url = ctx + "/api/activity/";
                 },
                 toCancelRelease: function (id) {
                     var $this = this;

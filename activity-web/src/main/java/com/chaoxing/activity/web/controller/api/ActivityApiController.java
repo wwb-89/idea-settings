@@ -12,13 +12,11 @@ import com.chaoxing.activity.service.activity.ActivityHandleService;
 import com.chaoxing.activity.service.activity.ActivityQueryService;
 import com.chaoxing.activity.web.util.HttpServletRequestUtils;
 import com.chaoxing.activity.web.util.LoginUtils;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
+import java.util.List;
 
 /**活动api服务
  * @author wwb
@@ -140,6 +138,11 @@ public class ActivityApiController {
 		Page<Activity> page = HttpServletRequestUtils.buid(request);
 		page = activityQueryService.listManaging(page, activityManageQuery);
 		return RestRespDTO.success(page);
+	}
+
+	@PostMapping("{activityId}/release")
+	public RestRespDTO release(HttpServletRequest request, @PathVariable Integer activityId, @RequestParam("fids[]") List<Integer> fids) {
+		return RestRespDTO.success();
 	}
 
 }
