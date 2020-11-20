@@ -327,10 +327,9 @@ public class ActivityHandleService {
 	private void handleReleaseScope(Integer activityId, List<WfwRegionalArchitectureDTO> selectedWfwRegionalArchitectures, LoginUserDTO loginUser) {
 		Integer fid = loginUser.getFid();
 		List<WfwRegionalArchitectureDTO> wfwRegionalArchitectures = wfwRegionalArchitectureApiService.listByFid(fid);
-		if (CollectionUtils.isNotEmpty(wfwRegionalArchitectures)) {
-			if (CollectionUtils.isEmpty(selectedWfwRegionalArchitectures)) {
-				throw new BusinessException("请指定发布范围");
-			}
+		if (CollectionUtils.isNotEmpty(wfwRegionalArchitectures) && CollectionUtils.isEmpty(selectedWfwRegionalArchitectures)) {
+			// 有范围但是没有指定范围
+			throw new BusinessException("请指定发布范围");
 		}
 		List<ActivityScope> activityScopes = convert2(activityId, selectedWfwRegionalArchitectures);
 		// 删除以前发布的参与范围
