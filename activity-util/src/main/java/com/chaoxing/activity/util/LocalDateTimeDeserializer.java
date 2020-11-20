@@ -22,12 +22,12 @@ public class LocalDateTimeDeserializer implements ObjectDeserializer {
 
 	@Override
 	public LocalDateTime deserialze(DefaultJSONParser parser, Type type, Object fieldName) {
-		String dateTimeStr = parser.getLexer().numberString();
+		String dateTimeStr = parser.getLexer().stringVal();
 		if (StringUtils.isEmpty(dateTimeStr)) {
 			return null;
 		}
 		dateTimeStr = dateTimeStr.replaceAll("\"", "");
-        return (LocalDateTime)DATE_TIME_FORMATTER.parse(dateTimeStr);
+		return LocalDateTime.parse(dateTimeStr, DATE_TIME_FORMATTER);
 	}
 
 	@Override

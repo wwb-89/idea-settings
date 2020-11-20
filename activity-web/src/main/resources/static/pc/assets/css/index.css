@@ -95,6 +95,7 @@ ul {
 
 .item-box .head li {
     margin-right: 20px;
+    cursor: pointer;
 }
 
 .active1 {
@@ -169,6 +170,7 @@ ul {
     margin-top: 0 !important;
     line-height: 30px;
     margin-bottom: 10px;
+    cursor: pointer;
 }
 .title1:hover{
     color: #415285;

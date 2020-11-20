@@ -38,7 +38,7 @@ public class ActivityApiController {
 	private ActivityQueryService activityQueryService;
 
 	/**创建活动
-	 * @Description 
+	 * @Description 需要活动对象
 	 * @author wwb
 	 * @Date 2020-11-13 09:45:31
 	 * @param request
@@ -53,8 +53,8 @@ public class ActivityApiController {
 		// 本期不开启审核
 		activity.setOpenAudit(false);
 		SignFormDTO signForm = JSON.parseObject(signJsonStr, SignFormDTO.class);
-		activityHandleService.add(activity, signForm, loginUser);
-		return RestRespDTO.success();
+		activityHandleService.add(activity, signForm, loginUser, request);
+		return RestRespDTO.success(activity);
 	}
 
 	/**修改活动
@@ -72,8 +72,8 @@ public class ActivityApiController {
 		Activity activity = JSON.parseObject(activityJsonStr, Activity.class);
 		// 本期不开启审核
 		SignFormDTO signForm = JSON.parseObject(signJsonStr, SignFormDTO.class);
-		activityHandleService.edit(activity, signForm, loginUser);
-		return RestRespDTO.success();
+		activityHandleService.edit(activity, signForm, loginUser, request);
+		return RestRespDTO.success(activity);
 	}
 
 	/**删除活动

@@ -23,6 +23,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
+import javax.servlet.http.HttpServletRequest;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -72,14 +73,14 @@ public class ActivityHandleService {
 	 * @return void
 	*/
 	@Transactional(rollbackFor = Exception.class)
-	public void add(Activity activity, SignFormDTO signForm, LoginUserDTO loginUser) {
+	public void add(Activity activity, SignFormDTO signForm, LoginUserDTO loginUser, HttpServletRequest request) {
 		// 新增活动输入验证
 		activityValidationService.addInputValidate(activity);
 		// 是否开启参与设置
 		Boolean enableSign = activity.getEnableSign();
 		if (enableSign) {
 			// 添加报名签到
-			Integer signId = handleSign(signForm);
+			Integer signId = handleSign(signForm, loginUser, request);
 			activity.setSignId(signId);
 		}
 		// 保存活动
@@ -94,11 +95,13 @@ public class ActivityHandleService {
 			activity.setAuditStatus(Activity.AuditStatusEnum.PASSED.getValue());
 		}
 		activity.setCreateUid(loginUser.getUid());
+		activity.setCreateUserName(loginUser.getRealName());
 		activity.setCreateFid(loginUser.getFid());
+		activity.setCreateOrgName(loginUser.getOrgName());
 		// 处理活动的所属区域
 		handleActivityArea(activity, loginUser);
 		activityMapper.insert(activity);
-		Integer activityId = activity.getId();
+//		Integer activityId = activity.getId();
 		// 处理模块
 //		handleActivityModules(activityId, activityModules);
 	}
@@ -108,16 +111,22 @@ public class ActivityHandleService {
 	 * @author wwb
 	 * @Date 2020-11-13 15:46:49
 	 * @param signForm
+	 * @param loginUser
+	 * @param request
 	 * @return java.lang.Integer
 	*/
-	private Integer handleSign(SignFormDTO signForm) {
+	private Integer handleSign(SignFormDTO signForm, LoginUserDTO loginUser, HttpServletRequest request) {
 		Integer signId = signForm.getId();
 		if (signId == null) {
 			// 新增报名签到
-			signId = signApiService.create(signForm);
+			signForm.setCreateUid(loginUser.getUid());
+			signForm.setCreateUserName(loginUser.getRealName());
+			signForm.setCreateFid(loginUser.getFid());
+			signForm.setCreateOrgName(loginUser.getOrgName());
+			signId = signApiService.create(signForm, request);
 		} else {
 			// 修改报名签到
-			signApiService.update(signForm);
+			signApiService.update(signForm, request);
 		}
 		return signId;
 	}
@@ -154,7 +163,7 @@ public class ActivityHandleService {
 	 * @return void
 	*/
 	@Transactional(rollbackFor = Exception.class)
-	public void edit(Activity activity, SignFormDTO signForm, LoginUserDTO loginUser) {
+	public void edit(Activity activity, SignFormDTO signForm, LoginUserDTO loginUser, HttpServletRequest request) {
 		activityValidationService.addInputValidate(activity);
 		Integer activityId = activity.getId();
 		Activity existActivity = activityValidationService.editAble(activityId, loginUser);
@@ -162,10 +171,9 @@ public class ActivityHandleService {
 		Boolean enableSign = activity.getEnableSign();
 		if (enableSign) {
 			// 修改或更新
-			Integer signId = activity.getSignId();
+			Integer signId = existActivity.getSignId();
 			signForm.setId(signId);
-			handleSign(signForm);
-			activity.setSignId(signId);
+			handleSign(signForm, loginUser, request);
 		}
 		// 处理活动相关
 		LocalDate startDate = activity.getStartDate();
@@ -188,7 +196,7 @@ public class ActivityHandleService {
 		existActivity.setStatus(status);
 		activityMapper.update(existActivity, new UpdateWrapper<Activity>()
 			.lambda()
-				.eq(Activity::getId, activity)
+				.eq(Activity::getId, activity.getId())
 		);
 	}
 
