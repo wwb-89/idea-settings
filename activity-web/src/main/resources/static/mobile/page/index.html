@@ -39,60 +39,33 @@
             </div>
             <span class="Scancel" @click="ScancelFun" v-show="inputShow">取消</span>
         </div>
-        <div class="activity-list">
+        <div class="activity-list" >
             <ul>
 
-                <div v-for="item in list">
+                <div v-for="(item,index) in list" :key="index">
 
                     <li>
-                        <img src="https://p.ananas.chaoxing.com/star3/270_160c/57170cd1e4b0578413d7f5f6.jpg">
-                        <div class="info">
+
+                        <img :src="item.coverCloudId">
+                            <div class="info">
                             <h2 class="title">{{item.name}}</h2>
                             <div class="time">
-                                <span class="status status1" >进行中</span>
-                                <!-- <span class="status status2">活动预告</span> -->
-                                <!-- <span class="status status3">已结束</span> -->
-                                <span>2020-10-10 9:00 ～ 2028-10-1日 16:00</span>
+                                <span class="status status1" v-if="item.status==0">已删除</span>
+                                 <span class="status status2" v-if="item.status==1">待发布</span>
+                                 <span class="status status3" v-if="item.status==2">已发布</span>
+                                <span class="status status3" v-if="item.status==3">进行中</span>
+                                <span class="status status3" v-if="item.status==4">已结束</span>
+<!--                                <span>2020-10-10 9:00 ～ 2028-10-1日 16:00</span>-->
+                                <span>{{item.time}}</span>
                                 <div class="clear"></div>
                             </div>
-                            <p class="dec" >浙江图书馆</p>
-                            <p class="address" ></p>
+                            <p class="dec" >{{item.createOrgName}}</p>
+                            <p class="address" >{{item.address}}</p>
                         </div>
                     </li>
                 </div>
+<!--                </div>-->
 
-
-                <li>
-                    <img src="https://p.ananas.chaoxing.com/star3/270_160c/57170cd1e4b0578413d7f5f6.jpg">
-                    <div class="info">
-                        <h2 class="title">2019年10月读书月主题活动</h2>
-                        <div class="time">
-                            <span class="status status1">进行中</span>
-                            <!-- <span class="status status2">活动预告</span> -->
-                            <!-- <span class="status status3">已结束</span> -->
-                            <span>2020-10-10 9:00 ～ 2028-10-1日 16:00</span>
-                            <div class="clear"></div>
-                        </div>
-                        <p class="dec">浙江图书馆</p>
-                        <p class="address">浙江省杭州市西湖区曙光路73号</p>
-                    </div>
-                </li>
-
-                <li>
-                    <img src="https://p.ananas.chaoxing.com/star3/270_160c/57170cd1e4b0578413d7f5f6.jpg">
-                    <div class="info">
-                        <h2 class="title">2019年10月读书月主题活动</h2>
-                        <div class="time">
-                            <span class="status status1">进行中</span>
-                            <!-- <span class="status status2">活动预告</span> -->
-                            <!-- <span class="status status3">已结束</span> -->
-                            <span>2020-10-10 9:00 ～ 2028-10-1日 16:00</span>
-                            <div class="clear"></div>
-                        </div>
-                        <p class="dec">浙江图书馆</p>
-                        <p class="address">浙江省杭州市西湖区曙光路73号</p>
-                    </div>
-                </li>
             </ul>
         </div>
 <!--        加载中-->
@@ -172,6 +145,12 @@
                 inputShow:false,
                 searchstatus:false,
                 popStatus:false,
+                // coverCloudId: "",
+                // name:"",
+                // status:1,
+                // createOrgName: "北京大华有限公司",
+                // address:"四川农业大学雅安校区",
+
                 list:[],
             }
         },
@@ -208,13 +187,12 @@
                 axios({
                     method: 'get',
                     url: 'http://127.0.0.1:8080/pageshow/msg/1/10',
-                    params:{
-                        current:1,
-                        limit:10,
-                    },
                     responseType: 'json'
-                }).then(response =>{
-                   this.list = response.list
+                })
+                    .then(response =>{
+
+                   this.list = response.data
+                    console.log(this.list)
                     }
                 ).catch( error =>{
                     console.log(error)

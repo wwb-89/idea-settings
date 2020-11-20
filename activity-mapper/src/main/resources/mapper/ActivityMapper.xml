@@ -47,7 +47,7 @@
             INNER JOIN t_activity_scope t1 ON t.id = t1.activity_id
             AND t1.fid = #{params.fid}
         WHERE
-            <!--状态-->
+            状态
             <choose>
                 <when test="params.status != null">
                     t.`status` = #{params.status}

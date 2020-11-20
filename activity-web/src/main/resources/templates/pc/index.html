@@ -4,8 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="https://unpkg.com/element-ui/lib/theme-chalk/index.css">
-    <link rel="stylesheet" href="../assets/css/public.css">
-    <link rel="stylesheet" href="../assets/css/index.css">
+    <link rel="stylesheet" href="../../static/pc/assets/css/public.css" th:href="@{/pc/assets/css/public.css}">
+    <link rel="stylesheet" href="../../static/pc/assets/css/index.css" th:href="@{pc/assets/css/reset.css}">
     <title>活动首页</title>
 </head>
 
@@ -18,9 +18,11 @@
         <div class="search">
             <input type="text" placeholder="搜索标题">
             <div class="search-foot">
-                <img src="../assets/images/search.png" alt="">
+                <img src="../../static/pc/assets/images/search.png" alt="">
             </div>
         </div>
+
+
         <div class="type-box">
             <div class="typeItem" v-for="item in typesList" :key="item.id">
                 <span class="title">{{item.title}}</span>
@@ -31,6 +33,8 @@
                 </ul>
             </div>
         </div>
+
+
         <div class="item-box">
             <div class="head">
                 <ul>
@@ -38,168 +42,173 @@
                     <li>热门</li>
                     <li>推荐</li>
                 </ul>
-                <div class="count">共<span>4</span>个活动</div>
+                <div class="count">共<span>{{total}}</span>个活动</div>
             </div>
-            <div class="c-item">
-                <div class="item">
+            <div class="c-item" >
+
+                <div class="item" v-for="it in list">
                     <div class="img-box">
                         <img src="http://uestc.moonsinfo.com/upload/hallonomie/2020-10/202010120814255729.png"
                              alt="">
                         <div class="tag">活动预备</div>
                     </div>
                     <div class="font-box">
-                        <p class="title1">浙江图书馆2020年11月读者活动预告</p>
-                        <p>活动时间：2020-10-10 9:00 ～ 2028-10-1日 16:00</p>
-                        <p>主办单位：浙江图书馆</p>
-                        <p>活动地点：浙江省杭州市西湖区曙光路73号</p>
-                    </div>
-                </div>
-                <div class="item">
-                    <div class="img-box">
-                        <img src="http://uestc.moonsinfo.com/upload/hallonomie/2020-10/202010120814255729.png"
-                             alt="">
-                        <div class="tag">活动预备</div>
-                    </div>
-                    <div class="font-box">
-                        <p class="title1">浙江图书馆2020年11月读者活动预告</p>
-                        <p>活动时间：2020-10-10 9:00 ～ 2028-10-1日 16:00</p>
-                        <p>主办单位：浙江图书馆</p>
-                        <p>活动地点：浙江省杭州市西湖区曙光路73号</p>
-                    </div>
-                </div>
-                <div class="item">
-                    <div class="img-box">
-                        <img src="http://uestc.moonsinfo.com/upload/hallonomie/2020-10/202010120814255729.png"
-                             alt="">
-                        <div class="tag green">进行中</div>
-                    </div>
-                    <div class="font-box">
-                        <p class="title1">浙江图书馆2020年11月读者活动预告</p>
-                        <p>活动时间：2020-10-10 9:00 ～ 2028-10-1日 16:00</p>
-                        <p>主办单位：浙江图书馆</p>
-                        <p>活动地点：浙江省杭州市西湖区曙光路73号</p>
-                    </div>
-                </div>
-                <div class="item">
-                    <div class="img-box">
-                        <img src="http://uestc.moonsinfo.com/upload/hallonomie/2020-10/202010120814255729.png"
-                             alt="">
-                        <div class="tag black">已结束</div>
-                    </div>
-                    <div class="font-box">
-                        <p class="title1">浙江图书馆2020年11月读者活动预告</p>
-                        <p>活动时间：2020-10-10 9:00 ～ 2028-10-1日 16:00</p>
-                        <p>主办单位：浙江图书馆</p>
-                        <p>活动地点：浙江省杭州市西湖区曙光路73号</p>
+                        <p class="title1">{{it.name}}</p>
+                        <p>活动时间：{{it.time}}</p>
+                        <p>主办单位：{{it.createOrgName}}</p>
+                        <p>活动地点：{{it.address}}</p>
                     </div>
                 </div>
             </div>
+
             <el-pagination background layout="prev, pager, next" :total="10">
             </el-pagination>
             <!-- 当列表为空时展示 -->
             <div class="empty-box" style="display: none;">
-                <img src="../assets/images/empty.png" alt="">
+                <img src="../../static/pc/assets/images/empty.png" alt="">
                 <p>无搜索结果～</p>
             </div>
-        </div>
     </div>
 </div>
-<script src="../assets/lib/vue.js"></script>
-<script src="https://unpkg.com/element-ui/lib/index.js"></script>
-<script>
-    var app = new Vue({
-        el: '#app',
-        data: {
-            nav: '',
-            typesList: [{
-                id: "type",
-                title: "类型",
-                list: [{
-                    name: "展览",
-                    id: "1"
-                }, {
-                    name: "演出",
-                    id: "2"
-                }, {
-                    name: "讲座",
-                    id: "3"
-                }, {
-                    name: "培训",
-                    id: "4"
-                }, {
-                    name: "阅读推广",
-                    id: "5"
-                }, {
-                    name: "其他",
-                    id: "6"
-                }]
-            }, {
-                id: "time",
-                title: "时间",
-                list: [{
-                    name: "近一个月",
-                    id: "7"
-                }, {
-                    name: "近三个月",
-                    id: "8"
-                }, {
-                    name: "近半年",
-                    id: "9"
-                }, {
-                    name: "近一年",
-                    id: "10"
-                }, {
-                    name: "更早",
-                    id: "11"
-                }]
-            }, {
-                id: "region",
-                title: "地区",
-                list: [{
-                    name: "杭州",
-                    id: "12"
-                }, {
-                    name: "宁波",
-                    id: "13"
-                }, {
-                    name: "温州",
-                    id: "14"
-                }, {
-                    name: "绍兴",
-                    id: "15"
-                }, {
-                    name: "湖州",
-                    id: "16"
-                }, {
-                    name: "嘉兴",
-                    id: "17"
-                }, {
-                    name: "金华",
-                    id: "18"
-                }, {
-                    name: "台州",
-                    id: "19"
-                }]
-            }, {
-                id: "status",
-                title: "状态",
-                list: [{
-                    name: "活动预告",
-                    id: "20"
-                }, {
-                    name: "进行中",
-                    id: "21"
-                }, {
-                    name: "已结束",
-                    id: "22"
-                }]
-            }],
-        },
-        methods: {
+</div>
 
-        }
-    })
-</script>
+<div th:replace="pc/include/common_js :: common_js(~{::script})">
+    <script type="text/javascript" src="../../static/pc/assets/lib/vue.js" th:href="@{/pc/assets/lib/vue.js}"></script>
+    <script src="https://unpkg.com/element-ui/lib/index.js"></script>
+    <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+
+    <script th:inline="javascript">
+        var app = new Vue({
+            el: '#app',
+            data: {
+                list:[],
+                total:"",
+                nav: '',
+                typesList: [{
+                    id: "type",
+                    title: "类型",
+                    list: [{
+                        name: "展览",
+                        id: "1"
+                    }, {
+                        name: "演出",
+                        id: "2"
+                    }, {
+                        name: "讲座",
+                        id: "3"
+                    }, {
+                        name: "培训",
+                        id: "4"
+                    }, {
+                        name: "阅读推广",
+                        id: "5"
+                    }, {
+                        name: "其他",
+                        id: "6"
+                    }]
+                }, {
+                    id: "time",
+                    title: "时间",
+                    list: [{
+                        name: "近一个月",
+                        id: "7"
+                    }, {
+                        name: "近三个月",
+                        id: "8"
+                    }, {
+                        name: "近半年",
+                        id: "9"
+                    }, {
+                        name: "近一年",
+                        id: "10"
+                    }, {
+                        name: "更早",
+                        id: "11"
+                    }]
+                }, {
+                    id: "region",
+                    title: "地区",
+                    list: [{
+                        name: "杭州",
+                        id: "12"
+                    }, {
+                        name: "宁波",
+                        id: "13"
+                    }, {
+                        name: "温州",
+                        id: "14"
+                    }, {
+                        name: "绍兴",
+                        id: "15"
+                    }, {
+                        name: "湖州",
+                        id: "16"
+                    }, {
+                        name: "嘉兴",
+                        id: "17"
+                    }, {
+                        name: "金华",
+                        id: "18"
+                    }, {
+                        name: "台州",
+                        id: "19"
+                    }]
+                }, {
+                    id: "status",
+                    title: "状态",
+                    list: [{
+                        name: "活动预告",
+                        id: "20"
+                    }, {
+                        name: "进行中",
+                        id: "21"
+                    }, {
+                        name: "已结束",
+                        id: "22"
+                    }]
+                }],
+            },
+            created: function () {
+                this.getAllShowMsg();
+                this.getMsgTotal();
+            },
+            methods: {
+                getAllShowMsg(){
+                    axios({
+                        method: 'get',
+                        url: 'http://127.0.0.1:8080/pageshow/msg/1/10',
+                        responseType: 'json'
+                    })
+                        .then(response =>{
+
+                                this.list = response.data
+
+                            }
+                        ).catch( error =>{
+                        console.log(error)
+                    });
+                },
+                getMsgTotal(){
+                    axios({
+                        method: 'get',
+                        url: 'http://127.0.0.1:8080/activity/getTotal/1/10',
+                        responseType: 'json'
+                    })
+                        .then(response =>{
+                                this.total = response.data
+                                console.log(this.total)
+                            }
+                        ).catch( error =>{
+                        console.log(error)
+                    });
+                },
+            }
+        })
+
+    </script>
+</div>
+
+
 </body>
 
 </html>

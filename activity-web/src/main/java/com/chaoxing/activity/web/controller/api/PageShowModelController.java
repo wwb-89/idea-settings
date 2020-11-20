@@ -37,8 +37,6 @@ public class PageShowModelController {
     @GetMapping("/msg/{current}/{limit}")
     @ResponseBody
     public List<pageShowModel> showPageMsg( Model model, HttpServletRequest request,@PathVariable("current") Integer current,@PathVariable("limit") Integer limit){
-        System.out.println("到了");
-        Page<pageShowModel> msgPage = new Page<>(current, limit);
         List<pageShowModel> list  = service.getModelMsgPage(current,limit);
         model.addAttribute("list",list);
 

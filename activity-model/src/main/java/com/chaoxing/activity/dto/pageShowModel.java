@@ -21,11 +21,18 @@ public class pageShowModel {
     /** 状态。0：已删除，1：待发布，2：已发布，3：进行中，4：已结束; column: status*/
     private Integer status;
 
+    /**
+     * 活动的时间段
+     */
+    private String time;
+
     /** 创建机构名; column: create_org_name*/
     private String createOrgName;
 
     /*活动地址*/
     private String address;
+
+
 
 
 }

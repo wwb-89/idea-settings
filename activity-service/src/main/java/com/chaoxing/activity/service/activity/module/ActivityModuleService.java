@@ -142,7 +142,9 @@ public class ActivityModuleService {
 	public List<pageShowModel> getModelMsgPage(Integer current, Integer limit) {
 		Page<Activity> page = new Page<>(current,limit);
 		Page<Activity> activityPage = activityMapper.selectPage(page, null);
+
 		List<Activity> activityList = activityPage.getRecords();
+		long total = activityPage.getTotal();
 		List<pageShowModel> list = new ArrayList<>();
 		pageShowModel pageShowModel = null;
 		for (Activity ac: activityList) {
@@ -150,9 +152,18 @@ public class ActivityModuleService {
 			pageShowModel.setCoverCloudId(ac.getCoverCloudId());
 			pageShowModel.setName(ac.getName());
 			pageShowModel.setStatus(ac.getStatus());
+			pageShowModel.setTime(ac.getStartDate()+"~"+ac.getEndDate());
+			pageShowModel.setCreateOrgName(ac.getCreateOrgName());
 			pageShowModel.setAddress(ac.getAddress());
 			list.add(pageShowModel);
 		}
 		return list;
+	}
+
+	public Long getTotal(Integer current,Integer limit) {
+		Page<Activity> page = new Page<>(current,limit);
+		Page<Activity> activityPage = activityMapper.selectPage(page, null);
+		long total = activityPage.getTotal();
+		return total;
 	}
 }
