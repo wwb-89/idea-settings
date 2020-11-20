@@ -130,6 +130,27 @@ public class ActivityValidationService {
 		}
 		return activity;
 	}
+
+	/**可更新发布范围
+	 * @Description 
+	 * @author wwb
+	 * @Date 2020-11-20 11:10:56
+	 * @param activityId
+	 * @param loginUser
+	 * @return com.chaoxing.activity.model.Activity
+	*/
+	public Activity updateReleaseAble(Integer activityId, LoginUserDTO loginUser) {
+		Activity activity = activityExist(activityId);
+		Boolean released = activity.getReleased();
+		if (!released) {
+			throw new BusinessException("活动未发布");
+		}
+		Integer createUid = activity.getCreateUid();
+		if (!Objects.equals(createUid, loginUser.getUid())) {
+			throw new BusinessException("活动创建者才能修改发布范围");
+		}
+		return activity;
+	}
 	
 	/**可取消发布活动
 	 * @Description 
@@ -142,7 +163,7 @@ public class ActivityValidationService {
 	public Activity cancelReleaseAble(Integer activityId, LoginUserDTO loginUser) {
 		Activity activity = activityExist(activityId);
 		Boolean released = activity.getReleased();
-		if (released) {
+		if (!released) {
 			throw new BusinessException("活动已下架");
 		}
 		Integer createUid = activity.getCreateUid();
