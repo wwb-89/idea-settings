@@ -5,10 +5,12 @@
     <title>活动管理</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="/static/pc/assets/css/create.css" th:href="@{/pc/assets/css/create.css}">
-    <link rel="stylesheet" href="//unpkg.com/element-ui/lib/theme-chalk/index.css">
+    <link rel="stylesheet" href="/static/pc/assets/lib/element-ui/lib/theme-chalk/index.css" th:href="@{/pc/assets/lib/element-ui/lib/theme-chalk/index.css}">
+    <link rel="stylesheet" href="/static/pc/assets/lib/zTree_v3/css/zTreeStyle/zTreeStyle.css" th:href="@{/pc/assets/lib/zTree_v3/css/zTreeStyle/zTreeStyle.css}">
     <link rel="stylesheet" href="/static/pc/assets/css/reset.css" th:href="@{/pc/assets/css/reset.css}">
     <link rel="stylesheet" href="/static/pc/assets/css/public.css" th:href="@{/pc/assets/css/public.css}">
     <link rel="stylesheet" href="/static/pc/assets/css/manage.css" th:href="@{/pc/assets/css/manage.css}">
+    <link rel="stylesheet" href="/static/pc/assets/lib/jquery.mCustomScrollbar.css" th:href="@{/pc/assets/lib/jquery.mCustomScrollbar.css}">
     <style type="text/css">
         [v-cloak] {
             display: none;
@@ -21,7 +23,7 @@
         活动管理
     </div>
     <div class="main box">
-        <div class="create-btn" @click="toAddActivity" style="cursor: pointer;">创建活动</div>
+        <div class="create-btn" @click="toAdd" style="cursor: pointer;">创建活动</div>
         <div class="table">
             <el-table :data="activities" style="width: 100%">
                 <el-table-column label="活动名称" width="386">
@@ -56,14 +58,14 @@
                 <el-table-column label="操作" width="213">
                     <template slot-scope="scope">
                         <div>
-                            <el-button type="text">修改</el-button>
+                            <el-button type="text" @click="toEdit(scope.row.id)">修改</el-button>
                             <el-button type="text" @click="toDelete(scope.row.id)">删除</el-button>
                             <div class="more-btn">
                                 <el-button type="text">更多<i class="el-icon-arrow-down"></i></el-button>
                                 <div class="more">
                                     <p v-show="scope.row.status == 1" @click="toRelease(scope.row.id)">发布</p>
                                     <p v-show="scope.row.status == 2 || scope.row.status == 3" @click="toCancelRelease(scope.row.id)">下架</p>
-                                    <p v-show="scope.row.status == 2 || scope.row.status == 3" @click="toReleaseScope(scope.row.id)">发布范围</p>
+                                    <p v-show="scope.row.status == 2 || scope.row.status == 3" @click="toUpdateReleaseScope(scope.row.id)">发布范围</p>
                                 </div>
                             </div>
                         </div>
@@ -81,26 +83,33 @@
         <!--下架弹窗-->
         <vue-confirm ref="canReleaseWindow" :message="'下架后，该活动将不在活动广场中显示'" :cancel="'取消'" :sure="'下架'" @callback="cancelRelease"></vue-confirm>
         <!-- 活动发布弹窗 -->
-
+        <vue-activity-scope ref="activityScopeWindow" @callback="release"></vue-activity-scope>
     </div>
 </div>
 <div th:replace="pc/include/common_js :: common_js(~{::script})">
-    <script src="//unpkg.com/element-ui/lib/index.js"></script>
+    <script src="/static/pc/assets/lib/element-ui/lib/index.js" th:src="@{/pc/assets/lib/element-ui/lib/index.js}"></script>
+    <script src="/static/pc/assets/lib/zTree_v3/js/jquery.ztree.core.js" th:src="@{/pc/assets/lib/zTree_v3/js/jquery.ztree.core.js}"></script>
+    <script src="/static/pc/assets/lib/zTree_v3/js/jquery.ztree.excheck.min.js" th:src="@{/pc/assets/lib/zTree_v3/js/jquery.ztree.excheck.min.js}"></script>
+    <script src="/static/pc/assets/lib/zTree_v3/js/jquery.ztree.exedit.js" th:src="@{/pc/assets/lib/zTree_v3/js/jquery.ztree.exedit.js}"></script>
     <script src="/static/pc/assets/component/confirm.js" th:src="@{/pc/assets/component/confirm.js}"></script>
+    <script src="/static/pc/assets/component/activity-scope.js" th:src="@{/pc/assets/component/activity-scope.js}"></script>
     <script th:inline="javascript">
         activityVue = new Vue({
             el: "#activity-vue",
             data: {
                 activities: [],
+                fid: [[${session._login_user_.fid}]],
                 filterStatus: [],
                 queryParams: {
                     pageNum: 1,
                     pageSize: 10,
-                    status: 1
+                    status: ""
                 },
                 total: 0,
                 // 正在处理的活动id
-                processedActivityId: null
+                processedActivityId: null,
+                // 发布还是更新发布范围
+                isRelease: true
             },
             created: function () {
                 var $this = this;
@@ -129,8 +138,12 @@
                         $(this).children('.more').hide();
                     });
                 },
-                toAddActivity: function () {
+                toAdd: function () {
                     var url = ctx + "/manage/activity/add";
+                    window.open(url);
+                },
+                toEdit: function (id) {
+                    var url = ctx + "/manage/activity/"+ id +"/edit";
                     window.open(url);
                 },
                 // 修改状态
@@ -178,7 +191,9 @@
                     var url = ctx + "/api/activity/" + $this.processedActivityId + "/delete"
                     app.ajaxPostWithLoading(url, {}, function (data) {
                         if (data.success) {
-
+                            $this.$refs.deleteWindow.show = false;
+                            // 重新查询
+                            $this.loadData();
                         } else {
                             var errorMessage = data.message;
                             if (activityApp.isEmpty(errorMessage)) {
@@ -191,12 +206,41 @@
                     });
                 },
                 // 发布
-                toRelease: function () {
+                toRelease: function (id) {
                     var $this = this;
-
+                    $this.processedActivityId = id;
+                    $this.isRelease = true;
+                    $this.$refs.activityScopeWindow.show = true;
                 },
                 release: function () {
-
+                    var $this = this;
+                    if (!$this.isRelease) {
+                        $this.updateReleaseScope();
+                        return;
+                    }
+                    var selectedFids = $this.$refs.activityScopeWindow.selectedFids;
+                    if (selectedFids.length < 1) {
+                        selectedFids.push($this.fid);
+                    }
+                    var url = ctx + "/api/activity/" + $this.processedActivityId + "/release";
+                    var params = {
+                        fids: selectedFids
+                    };
+                    app.ajaxPostWithLoading(url, params, function (data) {
+                        if (data.success) {
+                            app.showMsg("发布成功", function () {
+                                $this.loadData();
+                            });
+                        } else {
+                            var errorMessage = data.message;
+                            if (activityApp.isEmpty(errorMessage)) {
+                                errorMessage = "发布失败";
+                            }
+                            app.showMsg(errorMessage);
+                        }
+                    }, function () {
+                        app.showMsg("发布失败");
+                    });
                 },
                 toCancelRelease: function (id) {
                     var $this = this;
@@ -205,10 +249,55 @@
                 },
                 cancelRelease: function () {
                     var $this = this;
-                    alert("下架");
+                    $this.$refs.canReleaseWindow.show = false;
+                    var url = ctx + "/api/activity/" + $this.processedActivityId + "/release/cancel";
+                    app.ajaxPostWithLoading(url, {}, function (data) {
+                        if (data.success) {
+                            app.showMsg("下架成功", function () {
+                                $this.loadData();
+                            });
+                        } else {
+                            var errorMessage = data.message;
+                            if (activityApp.isEmpty(errorMessage)) {
+                                errorMessage = "下架失败";
+                            }
+                            app.showMsg(errorMessage);
+                        }
+                    }, function () {
+                        app.showMsg("下架失败");
+                    });
                 },
-                toReleaseScope: function () {
-
+                toUpdateReleaseScope: function (id) {
+                    var $this = this;
+                    $this.processedActivityId = id;
+                    $this.isRelease = false;
+                    $this.$refs.activityScopeWindow.show = true;
+                },
+                updateReleaseScope: function () {
+                    var $this = this;
+                    var selectedFids = $this.$refs.activityScopeWindow.selectedFids;
+                    if (selectedFids.length < 1) {
+                        selectedFids.push($this.fid);
+                    }
+                    var url = ctx + "/api/activity/" + $this.processedActivityId + "/release/update";
+                    var params = {
+                        fids: selectedFids
+                    };
+                    app.ajaxPostWithLoading(url, params, function (data) {
+                        if (data.success) {
+                            app.showMsg("修改发布范围成功", function () {
+                                $this.loadData();
+                            });
+                        } else {
+                            var errorMessage = data.message;
+                            if (activityApp.isEmpty(errorMessage)) {
+                                errorMessage = "修改发布范围失败";
+                            }
+                            app.showMsg(errorMessage);
+                        }
+                    }, function () {
+                        app.showMsg("修改发布范围失败");
+                    });
                 }
             }
         });

@@ -97,9 +97,14 @@
         WHERE
             t.create_uid = #{params.createUid}
             AND t.create_fid = #{params.createFid}
-            <if test="params.status != null">
-                AND t.`status` = #{params.status}
-            </if>
+            <choose>
+                <when test="params.status != null">
+                    AND t.`status` = #{params.status}
+                </when>
+                <otherwise>
+                    AND t.`status` > 0
+                </otherwise>
+            </choose>
         ORDER BY
             t.create_time DESC
     </select>

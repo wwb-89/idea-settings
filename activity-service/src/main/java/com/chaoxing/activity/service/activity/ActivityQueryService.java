@@ -10,7 +10,6 @@ import com.chaoxing.activity.service.manager.PassportApiService;
 import com.chaoxing.activity.util.enums.ActivityQueryDateEnum;
 import com.chaoxing.activity.util.enums.ActivityTypeEnum;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
@@ -36,6 +35,8 @@ public class ActivityQueryService {
 
 	@Resource
 	private PassportApiService passportApiService;
+	@Resource
+	private ActivityValidationService activityValidationService;
 	
 	/**查询参与的活动
 	 * @Description 
@@ -125,16 +126,19 @@ public class ActivityQueryService {
 	*/
 	public Page<Activity> listManaging(Page<Activity> page, ActivityManageQueryDTO activityManageQuery) {
 		page = activityMapper.listManaging(page, activityManageQuery);
-		// 填充机构名称
-		List<Activity> records = page.getRecords();
-		if (CollectionUtils.isNotEmpty(records)) {
-			for (Activity record : records) {
-				Integer createFid = record.getCreateFid();
-				String orgName = passportApiService.getOrgName(createFid);
-				record.setCreateOrgName(orgName);
-			}
-		}
 		return page;
+	}
+
+	/**根据活动id查询活动
+	 * @Description 
+	 * @author wwb
+	 * @Date 2020-11-19 18:59:35
+	 * @param activityId
+	 * @return com.chaoxing.activity.model.Activity
+	*/
+	public Activity getById(Integer activityId) {
+		Activity activity = activityValidationService.activityExist(activityId);
+		return activity;
 	}
 
 }

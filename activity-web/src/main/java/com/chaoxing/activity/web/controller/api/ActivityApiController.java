@@ -12,13 +12,11 @@ import com.chaoxing.activity.service.activity.ActivityHandleService;
 import com.chaoxing.activity.service.activity.ActivityQueryService;
 import com.chaoxing.activity.web.util.HttpServletRequestUtils;
 import com.chaoxing.activity.web.util.LoginUtils;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
+import java.util.List;
 
 /**活动api服务
  * @author wwb
@@ -38,7 +36,7 @@ public class ActivityApiController {
 	private ActivityQueryService activityQueryService;
 
 	/**创建活动
-	 * @Description 
+	 * @Description 需要活动对象
 	 * @author wwb
 	 * @Date 2020-11-13 09:45:31
 	 * @param request
@@ -53,8 +51,8 @@ public class ActivityApiController {
 		// 本期不开启审核
 		activity.setOpenAudit(false);
 		SignFormDTO signForm = JSON.parseObject(signJsonStr, SignFormDTO.class);
-		activityHandleService.add(activity, signForm, loginUser);
-		return RestRespDTO.success();
+		activityHandleService.add(activity, signForm, loginUser, request);
+		return RestRespDTO.success(activity);
 	}
 
 	/**修改活动
@@ -72,8 +70,8 @@ public class ActivityApiController {
 		Activity activity = JSON.parseObject(activityJsonStr, Activity.class);
 		// 本期不开启审核
 		SignFormDTO signForm = JSON.parseObject(signJsonStr, SignFormDTO.class);
-		activityHandleService.edit(activity, signForm, loginUser);
-		return RestRespDTO.success();
+		activityHandleService.edit(activity, signForm, loginUser, request);
+		return RestRespDTO.success(activity);
 	}
 
 	/**删除活动
@@ -140,6 +138,53 @@ public class ActivityApiController {
 		Page<Activity> page = HttpServletRequestUtils.buid(request);
 		page = activityQueryService.listManaging(page, activityManageQuery);
 		return RestRespDTO.success(page);
+	}
+
+	/**发布活动
+	 * @Description 
+	 * @author wwb
+	 * @Date 2020-11-20 11:04:53
+	 * @param request
+	 * @param activityId
+	 * @param fids
+	 * @return com.chaoxing.activity.dto.RestRespDTO
+	*/
+	@PostMapping("{activityId}/release")
+	public RestRespDTO release(HttpServletRequest request, @PathVariable Integer activityId, @RequestParam("fids[]") List<Integer> fids) {
+		LoginUserDTO loginUser = LoginUtils.getLoginUser(request);
+		activityHandleService.release(activityId, fids, loginUser);
+		return RestRespDTO.success();
+	}
+
+	/**取消发布
+	 * @Description 
+	 * @author wwb
+	 * @Date 2020-11-20 11:06:19
+	 * @param request
+	 * @param activityId
+	 * @return com.chaoxing.activity.dto.RestRespDTO
+	*/
+	@PostMapping("{activityId}/release/cancel")
+	public RestRespDTO cancelRelease(HttpServletRequest request, @PathVariable Integer activityId) {
+		LoginUserDTO loginUser = LoginUtils.getLoginUser(request);
+		activityHandleService.cancelRelease(activityId, loginUser);
+		return RestRespDTO.success();
+	}
+
+	/**更新发布范围
+	 * @Description 
+	 * @author wwb
+	 * @Date 2020-11-20 11:07:07
+	 * @param request
+	 * @param activityId
+	 * @param fids
+	 * @return com.chaoxing.activity.dto.RestRespDTO
+	*/
+	@PostMapping("{activityId}/release/update")
+	public RestRespDTO updateReleaseScope(HttpServletRequest request, @PathVariable Integer activityId, @RequestParam("fids[]") List<Integer> fids) {
+		LoginUserDTO loginUser = LoginUtils.getLoginUser(request);
+		activityHandleService.updateReleaseScope(activityId, fids, loginUser);
+		return RestRespDTO.success();
 	}
 
 }

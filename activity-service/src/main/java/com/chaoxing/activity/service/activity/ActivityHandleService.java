@@ -23,6 +23,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
+import javax.servlet.http.HttpServletRequest;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -72,14 +73,14 @@ public class ActivityHandleService {
 	 * @return void
 	*/
 	@Transactional(rollbackFor = Exception.class)
-	public void add(Activity activity, SignFormDTO signForm, LoginUserDTO loginUser) {
+	public void add(Activity activity, SignFormDTO signForm, LoginUserDTO loginUser, HttpServletRequest request) {
 		// 新增活动输入验证
 		activityValidationService.addInputValidate(activity);
 		// 是否开启参与设置
 		Boolean enableSign = activity.getEnableSign();
 		if (enableSign) {
 			// 添加报名签到
-			Integer signId = handleSign(signForm);
+			Integer signId = handleSign(signForm, loginUser, request);
 			activity.setSignId(signId);
 		}
 		// 保存活动
@@ -94,11 +95,13 @@ public class ActivityHandleService {
 			activity.setAuditStatus(Activity.AuditStatusEnum.PASSED.getValue());
 		}
 		activity.setCreateUid(loginUser.getUid());
+		activity.setCreateUserName(loginUser.getRealName());
 		activity.setCreateFid(loginUser.getFid());
+		activity.setCreateOrgName(loginUser.getOrgName());
 		// 处理活动的所属区域
 		handleActivityArea(activity, loginUser);
 		activityMapper.insert(activity);
-		Integer activityId = activity.getId();
+//		Integer activityId = activity.getId();
 		// 处理模块
 //		handleActivityModules(activityId, activityModules);
 	}
@@ -108,16 +111,22 @@ public class ActivityHandleService {
 	 * @author wwb
 	 * @Date 2020-11-13 15:46:49
 	 * @param signForm
+	 * @param loginUser
+	 * @param request
 	 * @return java.lang.Integer
 	*/
-	private Integer handleSign(SignFormDTO signForm) {
+	private Integer handleSign(SignFormDTO signForm, LoginUserDTO loginUser, HttpServletRequest request) {
 		Integer signId = signForm.getId();
 		if (signId == null) {
 			// 新增报名签到
-			signId = signApiService.create(signForm);
+			signForm.setCreateUid(loginUser.getUid());
+			signForm.setCreateUserName(loginUser.getRealName());
+			signForm.setCreateFid(loginUser.getFid());
+			signForm.setCreateOrgName(loginUser.getOrgName());
+			signId = signApiService.create(signForm, request);
 		} else {
 			// 修改报名签到
-			signApiService.update(signForm);
+			signApiService.update(signForm, request);
 		}
 		return signId;
 	}
@@ -154,7 +163,7 @@ public class ActivityHandleService {
 	 * @return void
 	*/
 	@Transactional(rollbackFor = Exception.class)
-	public void edit(Activity activity, SignFormDTO signForm, LoginUserDTO loginUser) {
+	public void edit(Activity activity, SignFormDTO signForm, LoginUserDTO loginUser, HttpServletRequest request) {
 		activityValidationService.addInputValidate(activity);
 		Integer activityId = activity.getId();
 		Activity existActivity = activityValidationService.editAble(activityId, loginUser);
@@ -162,10 +171,9 @@ public class ActivityHandleService {
 		Boolean enableSign = activity.getEnableSign();
 		if (enableSign) {
 			// 修改或更新
-			Integer signId = activity.getSignId();
+			Integer signId = existActivity.getSignId();
 			signForm.setId(signId);
-			handleSign(signForm);
-			activity.setSignId(signId);
+			handleSign(signForm, loginUser, request);
 		}
 		// 处理活动相关
 		LocalDate startDate = activity.getStartDate();
@@ -188,7 +196,7 @@ public class ActivityHandleService {
 		existActivity.setStatus(status);
 		activityMapper.update(existActivity, new UpdateWrapper<Activity>()
 			.lambda()
-				.eq(Activity::getId, activity)
+				.eq(Activity::getId, activity.getId())
 		);
 	}
 
@@ -286,12 +294,12 @@ public class ActivityHandleService {
 	 * @author wwb
 	 * @Date 2020-11-12 15:41:48
 	 * @param activityId
-	 * @param selectedWfwRegionalArchitectures
+	 * @param selectedFids
 	 * @param loginUser
 	 * @return void
 	*/
 	@Transactional(rollbackFor = Exception.class)
-	public void release(Integer activityId, List<WfwRegionalArchitectureDTO> selectedWfwRegionalArchitectures, LoginUserDTO loginUser) {
+	public void release(Integer activityId, List<Integer> selectedFids, LoginUserDTO loginUser) {
 		Activity activity = activityValidationService.releaseAble(activityId, loginUser);
 		// 发布活动
 		activity.setReleased(true);
@@ -300,14 +308,14 @@ public class ActivityHandleService {
 		Integer status = calActivityStatus(activity.getStartDate(), activity.getEndDate(), Activity.StatusEnum.RELEASED.getValue());
 		activityMapper.update(null, new UpdateWrapper<Activity>()
 			.lambda()
-				.eq(Activity::getId, activity)
+				.eq(Activity::getId, activity.getId())
 				.set(Activity::getReleased, true)
 				.set(Activity::getReleaseTime, LocalDateTime.now())
 				.set(Activity::getReleaseUid, loginUser.getUid())
 				.set(Activity::getStatus, status)
 		);
 		// 处理参与范围
-		handleReleaseScope(activityId, selectedWfwRegionalArchitectures, loginUser);
+		handleReleaseScope(activityId, selectedFids, loginUser);
 		// 通知模块方刷新参与范围缓存
 		// 查询活动的作品征集模块活动id列表
 		List<String> externalIds = activityModuleService.listExternalIdsByActivityIdAndType(activityId, ModuleEnum.WORK.getValue());
@@ -316,15 +324,25 @@ public class ActivityHandleService {
 		}
 	}
 
-	private void handleReleaseScope(Integer activityId, List<WfwRegionalArchitectureDTO> selectedWfwRegionalArchitectures, LoginUserDTO loginUser) {
+	private void handleReleaseScope(Integer activityId, List<Integer> selectedFids, LoginUserDTO loginUser) {
 		Integer fid = loginUser.getFid();
 		List<WfwRegionalArchitectureDTO> wfwRegionalArchitectures = wfwRegionalArchitectureApiService.listByFid(fid);
+		List<WfwRegionalArchitectureDTO> selectedWfwRegionalArchitectures = new ArrayList<>();
+		List<ActivityScope> activityScopes = new ArrayList<>();
 		if (CollectionUtils.isNotEmpty(wfwRegionalArchitectures)) {
-			if (CollectionUtils.isEmpty(selectedWfwRegionalArchitectures)) {
+			if (CollectionUtils.isEmpty(selectedFids)) {
+				// 有范围但是没有指定范围
 				throw new BusinessException("请指定发布范围");
 			}
+			for (WfwRegionalArchitectureDTO wfwRegionalArchitecture : wfwRegionalArchitectures) {
+				if (selectedFids.contains(wfwRegionalArchitecture.getFid())) {
+					selectedWfwRegionalArchitectures.add(wfwRegionalArchitecture);
+				}
+			}
+			activityScopes = convert2(activityId, selectedWfwRegionalArchitectures);
+		} else {
+			activityScopes.add(ActivityScope.structure(activityId, loginUser.getFid(), loginUser.getOrgName()));
 		}
-		List<ActivityScope> activityScopes = convert2(activityId, selectedWfwRegionalArchitectures);
 		// 删除以前发布的参与范围
 		activityScopeService.deleteByActivityId(activityId);
 		// 新增参与范围
@@ -367,12 +385,33 @@ public class ActivityHandleService {
 		Integer status = calActivityStatus(activity.getStartDate(), activity.getEndDate(), Activity.StatusEnum.WAIT_RELEASE.getValue());
 		activityMapper.update(null, new UpdateWrapper<Activity>()
 			.lambda()
-				.eq(Activity::getId, activity)
+				.eq(Activity::getId, activity.getId())
 				.set(Activity::getReleased, false)
 				.set(Activity::getStatus, status)
 		);
 		// 删除活动范围
 		activityScopeService.deleteByActivityId(activityId);
+		// 通知模块方刷新参与范围缓存
+		// 查询活动的作品征集模块活动id列表
+		List<String> externalIds = activityModuleService.listExternalIdsByActivityIdAndType(activityId, ModuleEnum.WORK.getValue());
+		if (CollectionUtils.isNotEmpty(externalIds)) {
+			workApiService.clearActivityParticipateScopeCache(externalIds.stream().map(v -> Integer.parseInt(v)).collect(Collectors.toList()));
+		}
+	}
+	
+	/**更新发布范围
+	 * @Description 
+	 * @author wwb
+	 * @Date 2020-11-20 11:09:31
+	 * @param activityId
+	 * @param selectedFids
+	 * @param loginUser
+	 * @return void
+	*/
+	public void updateReleaseScope(Integer activityId, List<Integer> selectedFids, LoginUserDTO loginUser) {
+		activityValidationService.updateReleaseAble(activityId, loginUser);
+		// 处理参与范围
+		handleReleaseScope(activityId, selectedFids, loginUser);
 		// 通知模块方刷新参与范围缓存
 		// 查询活动的作品征集模块活动id列表
 		List<String> externalIds = activityModuleService.listExternalIdsByActivityIdAndType(activityId, ModuleEnum.WORK.getValue());
