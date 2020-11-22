@@ -19,14 +19,14 @@
 <div class="index" id="activity-vue" v-cloak>
     <!-- 搜索 -->
     <div class="topFixed">
-        <div :class="['searchDiv',inputShow?'searchDivFocus':'']">
+        <div class="searchDiv searchDivFocus">
             <i class="searchIcon"></i>
-            <input type="text" placeholder="搜索"  @focus="getFocus"  v-model="inputValue" @input="inputFun">
+            <input type="text" placeholder="搜索" @focus="searchShow = true">
         </div>
-        <div class="filter active" @click="popShow" v-show="!inputShow">
+        <div class="filter active" v-show="!searchShow" @click="toFilter">
             <i class="filterIcon"></i>筛选
         </div>
-        <span class="Scancel" @click="ScancelFun" v-show="inputShow">取消</span>
+        <span class="Scancel" v-show="searchShow" @click="searchShow = false">取消</span>
     </div>
     <div class="activity-list">
         <ul>
@@ -71,49 +71,42 @@
         <p>无搜索结果</p>
     </div>
     <!-- 遮盖层 -->
-    <div class="fixedBg"  v-show="inputShow"></div>
+    <div class="fixedBg" v-show="searchShadeShow"></div>
     <!-- 弹出层 -->
-    <div class="pop" v-show="popStatus">
+    <div class="pop" v-show="filterWindowShow">
         <div class="popInner">
             <div class="popList">
                 <div class="list-item">
                     <div class="title">类型</div>
                     <ul>
-                        <li class="active">全部</li>
-                        <li>展览</li>
-                        <li>演出</li>
-                        <li>讲座</li>
-                        <li>培训</li>
-                        <li>阅读推广</li>
-                        <li>其它</li>
+                        <li :class="{'active': activityClassify.selected}" v-for="(activityClassify, index) of activityClassify" :key="'activity-classify' + index">{{activityClassify.name}}</li>
                     </ul>
                     <div class="clear"></div>
                 </div>
                 <div class="list-item">
                     <div class="title">时间</div>
                     <ul>
-                        <li class="active">全部</li>
-                        <li>近一个月</li>
-                        <li>近三个月</li>
-                        <li>近半年</li>
-                        <li>近一年</li>
-                        <li>更早</li>
+                        <li :class="{'active': time.selected}" v-for="(time, index) of times" :key="'time-' + index">{{time.name}}</li>
+                    </ul>
+                    <div class="clear"></div>
+                </div>
+                <div class="list-item" v-show="regions.length > 0">
+                    <div class="title">地区</div>
+                    <ul>
+                        <li :class="{'active': region.selected}" v-for="(region, index) of regions" :key="'region-' + index">{{region.name}}</li>
                     </ul>
                     <div class="clear"></div>
                 </div>
                 <div class="list-item">
-                    <div class="title">地区</div>
+                    <div class="title">状态</div>
                     <ul>
-                        <li class="active">全部</li>
-                        <li>杭州</li>
-                        <li>宁波</li>
-                        <li>温州</li>
+                        <li :class="{'active': status.selected}" v-for="(status, index) of statuses" :key="'status-' + index">{{status.name}}</li>
                     </ul>
                     <div class="clear"></div>
                 </div>
             </div>
             <div class="btn">
-                <a href="#" class="btn-a btn-0" @click="popCancel">取消</a>
+                <a href="#" class="btn-a btn-0" @click="hideFilterWindow">取消</a>
                 <a href="#" class="btn-a btn-1">确定</a>
                 <div class="clear"></div>
             </div>
@@ -127,33 +120,201 @@
             activityVue = new Vue({
                 el: "#activity-vue",
                 data: {
-                    inputValue:"",
-                    inputShow:false,
-                    searchstatus:false,
-                    popStatus:false,
+                    fids: [[${fids}]],
+                    activityClassifyNames: [[${activityClassifyNames}]],
+                    activityClassify: [],
+                    // 时间
+                    times: [],
+                    regions: [[${regions}]],
+                    // 状态
+                    statuses: [],
+                    queryParams: {},
+
+                    filterWindowShow: false,
+                    searchShadeShow: false,
+                    searchShow: false
+                },
+                created: function () {
+                    var $this = this;
+                    // 活动分类列表
+                    $($this.activityClassifyNames).each(function () {
+                        $this.activityClassify.push({name: this, value: this, selected: false});
+                    });
+                    $this.activityClassify.splice(0, 1, {
+                        name: "全部",
+                        value: "",
+                        selected: true
+                    });
+                    // 时间
+                    $this.times = [
+                        {name: "全部", value: "all", selected: true},
+                        {name: "近一个月", value: "nearly_a_month", selected: false},
+                        {name: "近三个月", value: "nearly_three_month", selected: false},
+                        {name: "近半年", value: "nearly_six_month", selected: false},
+                        {name: "近一年", value: "nearly_a_year", selected: false},
+                        {name: "更早", value: "earlier", selected: false}
+                    ];
+                    // 地区
+                    if ($this.regions.length > 0) {
+                        $($this.regions).each(function () {
+                            this.selected = false;
+                        });
+                        $this.regions.splice(0, 1, {
+                            name: "全部",
+                            selected: true
+                        });
+                    }
+                    // 状态
+                    $this.statuses = [
+                        {name: "全部", value: "", selected: true},
+                        {name: "活动预告", value: "2", selected: false},
+                        {name: "进行中", value: "3", selected: false},
+                        {name: "已结束", value: "4", selected: false}
+                    ];
+                    $this.restQueryParams();
+                },
+                mounted: function () {
+                    var $this = this;
+
                 },
                 methods: {
-                    getFocus(){
-                        this.inputShow = true;
+                    // 重置查询条件
+                    restQueryParams: function () {
+                        var $this = this;
+                        $this.queryParams = {
+                            activityClassifyName: "",
+                            date: "all",
+                            area: "",
+                            status: ""
+                        };
+                        $this.loadData();
+                    },
+                    loadData: function () {
+                        var $this = this;
+                        var url = ctx + "/api/activity/list/participate";
+                        var params = {};
+                        if ($this.fids.length > 0) {
+                            params.fids = $this.fids;
+                        }
+                        app.ajaxPostLoading(url, params, function (data) {
+                            if (data.success) {
+                                console.log("加载成功");
+                            } else {
+                                var errorMessage = data.message;
+                                if (activityApp.isEmpty(errorMessage)) {
+                                    errorMessage = "加载活动列表失败";
+                                }
+                                app.showMsg(errorMessage);
+                            }
+                        }, function () {
+                            app.showMsg("加载活动列表失败");
+                        });
+                    },
+                    showFilterWindow: function () {
+                        var $this = this;
+                        $this.filterWindowShow = true;
                         $("body").addClass("overhidden");
                     },
-                    ScancelFun() {
-                        this.inputShow = false;
-                        this.inputValue = '';
+                    hideFilterWindow: function () {
+                        var $this = this;
+                        $this.filterWindowShow = false;
                         $("body").removeClass("overhidden");
                     },
-                    popShow(){
-                        this.popStatus = true;
-                        $("body").addClass("overhidden");
+                    toFilter: function () {
+                        var $this = this;
+                        $this.showFilterWindow();
                     },
-                    popCancel(){
-                        this.popStatus = false;
-                        $("body").removeClass("overhidden");
+                    changeActivityClassify: function (index) {
+                        var $this = this;
+                        $($this.activityClassifies).each(function (i) {
+                            if (i == index) {
+                                $this.$set($this.activityClassifies[i], "selected", true);
+                            } else {
+                                $this.$set($this.activityClassifies[i], "selected", false);
+                            }
+                        });
+
                     },
-                    // 搜索输入方法
-                    inputFun(e){
-                        this.inputValue = e.target.value;
-                    }
+                    changeTime: function (index) {
+
+                    },
+                    changeRegion: function (index) {
+
+                    },
+                    changeStatus: function (index) {
+
+                    },
+                    condition2QueryParams: function () {
+                        var $this = this;
+                        $($this.activityClassifies).each(function () {
+                            if (this.selected) {
+                                $this.queryParams.activityClassifyName = this.value;
+                                return false;
+                            }
+                        });
+                        $($this.times).each(function () {
+                            if (this.selected) {
+                                $this.queryParams.date = this.value;
+                                return false;
+                            }
+                        });
+                        $($this.regions).each(function () {
+                            if (this.selected) {
+                                $this.queryParams.area = this.value;
+                                return false;
+                            }
+                        });
+                        $($this.statuses).each(function () {
+                            if (this.selected) {
+                                $this.queryParams.status = this.value;
+                                return false;
+                            }
+                        });
+                    },
+                    queryParams2Condition: function () {
+                        var $this = this;
+                        $($this.activityClassifies).each(function (i) {
+                            if (this.value == $this.queryParams.activityClassifyName) {
+                                $this.$set($this.activityClassifies[i], "selected", true);
+                            } else {
+                                $this.$set($this.activityClassifies[i], "selected", false);
+                            }
+                        });
+                        $($this.times).each(function () {
+                            if (this.value == $this.queryParams.date) {
+                                $this.$set($this.times[i], "selected", true);
+                            } else {
+                                $this.$set($this.times[i], "selected", false);
+                            }
+                        });
+                        $($this.regions).each(function () {
+                            if (this.value == $this.queryParams.area) {
+                                $this.$set($this.regions[i], "selected", true);
+                            } else {
+                                $this.$set($this.regions[i], "selected", false);
+                            }
+                        });
+                        $($this.statuses).each(function () {
+                            if (this.value == $this.queryParams.status) {
+                                $this.$set($this.statuses[i], "selected", true);
+                            } else {
+                                $this.$set($this.statuses[i], "selected", false);
+                            }
+                        });
+                    },
+                    filterCancel: function () {
+                        var $this = this;
+                        // 还原选择
+                        $this.queryParams2Condition();
+                        $this.hideFilterWindow();
+                    },
+                    filterSure: function () {
+                        var $this = this;
+                        // 还原选择
+                        $this.condition2QueryParams();
+                        $this.hideFilterWindow();
+                        // 查询
+                    },
                 }
             });
         }

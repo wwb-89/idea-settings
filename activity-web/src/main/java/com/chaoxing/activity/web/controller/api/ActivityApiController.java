@@ -8,10 +8,12 @@ import com.chaoxing.activity.dto.module.SignFormDTO;
 import com.chaoxing.activity.dto.query.ActivityManageQueryDTO;
 import com.chaoxing.activity.dto.query.ActivityQueryDTO;
 import com.chaoxing.activity.model.Activity;
+import com.chaoxing.activity.service.GroupService;
 import com.chaoxing.activity.service.activity.ActivityHandleService;
 import com.chaoxing.activity.service.activity.ActivityQueryService;
 import com.chaoxing.activity.web.util.HttpServletRequestUtils;
 import com.chaoxing.activity.web.util.LoginUtils;
+import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
@@ -34,6 +36,8 @@ public class ActivityApiController {
 	private ActivityHandleService activityHandleService;
 	@Resource
 	private ActivityQueryService activityQueryService;
+	@Resource
+	private GroupService groupService;
 
 	/**创建活动
 	 * @Description 需要活动对象
@@ -115,8 +119,13 @@ public class ActivityApiController {
 	*/
 	@RequestMapping("list/participate")
 	public RestRespDTO list(HttpServletRequest request, ActivityQueryDTO activityQuery) {
-		LoginUserDTO loginUser = LoginUtils.getLoginUser(request);
-		activityQuery.setFid(loginUser.getFid());
+		List<Integer> fids = activityQuery.getFids();
+		if (CollectionUtils.isNotEmpty(fids)) {
+			activityQuery.setFids(fids);
+		} else {
+			LoginUserDTO loginUser = LoginUtils.getLoginUser(request);
+			activityQuery.setFid(loginUser.getFid());
+		}
 		Page<Activity> page = HttpServletRequestUtils.buid(request);
 		page = activityQueryService.listParticipate(page, activityQuery);
 		return RestRespDTO.success(page);

@@ -46,6 +46,38 @@ public class ActivityClassifyQueryService {
 		return activityClassifies;
 	}
 
+	/**查询机构列表所能筛选的活动分类名称列表
+	 * @Description 
+	 * @author wwb
+	 * @Date 2020-11-22 13:55:20
+	 * @param fids
+	 * @return java.util.List<java.lang.String>
+	*/
+	public List<String> listOrgsOptionalName(List<Integer> fids) {
+		List<String> result = new ArrayList<>();
+		// 系统分类
+		List<ActivityClassify> systemActivityClassifies = listSystem();
+		if (CollectionUtils.isNotEmpty(systemActivityClassifies)) {
+			for (ActivityClassify systemActivityClassify : systemActivityClassifies) {
+				String name = systemActivityClassify.getName();
+				if (!result.contains(name)) {
+					result.add(name);
+				}
+			}
+		}
+		// 机构列表所有的活动分类列表
+		List<ActivityClassify> activityClassifies = listOrgsAffiliation(fids);
+		if (CollectionUtils.isNotEmpty(activityClassifies)) {
+			for (ActivityClassify activityClassify : activityClassifies) {
+				String name = activityClassify.getName();
+				if (!result.contains(name)) {
+					result.add(name);
+				}
+			}
+		}
+		return result;
+	}
+
 	/**查询系统的活动分类
 	 * @Description 
 	 * @author wwb
@@ -76,4 +108,18 @@ public class ActivityClassifyQueryService {
 		);
 	}
 
+	/**查询机构列表所属的活动分类
+	 * @Description 
+	 * @author wwb
+	 * @Date 2020-11-22 13:50:23
+	 * @param fids
+	 * @return java.util.List<com.chaoxing.activity.model.ActivityClassify>
+	*/
+	public List<ActivityClassify> listOrgsAffiliation(List<Integer> fids) {
+		return activityClassifyMapper.selectList(new QueryWrapper<ActivityClassify>()
+				.lambda()
+				.in(ActivityClassify::getAffiliationFid, fids)
+				.orderByAsc(ActivityClassify::getSequence)
+		);
+	}
 }

@@ -45,7 +45,16 @@
         FROM
             t_activity t
             INNER JOIN t_activity_scope t1 ON t.id = t1.activity_id
-            AND t1.fid = #{params.fid}
+            <choose>
+                <when test="params.fids != null and params.fids.size() != 0">
+                    <foreach collection="params.fids" index="key" item="value" open="(" close=")" separator=",">
+                        #{value}
+                    </foreach>
+                </when>
+                <otherwise>
+                    AND t1.fid = #{params.fid}
+                </otherwise>
+            </choose>
         WHERE
             <!--状态-->
             <choose>
