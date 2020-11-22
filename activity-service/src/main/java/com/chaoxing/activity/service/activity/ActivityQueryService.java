@@ -10,7 +10,6 @@ import com.chaoxing.activity.service.manager.PassportApiService;
 import com.chaoxing.activity.util.enums.ActivityQueryDateEnum;
 import com.chaoxing.activity.util.enums.ActivityTypeEnum;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
@@ -127,15 +126,6 @@ public class ActivityQueryService {
 	*/
 	public Page<Activity> listManaging(Page<Activity> page, ActivityManageQueryDTO activityManageQuery) {
 		page = activityMapper.listManaging(page, activityManageQuery);
-		// 填充机构名称
-		List<Activity> records = page.getRecords();
-		if (CollectionUtils.isNotEmpty(records)) {
-			for (Activity record : records) {
-				Integer createFid = record.getCreateFid();
-				String orgName = passportApiService.getOrgName(createFid);
-				record.setCreateOrgName(orgName);
-			}
-		}
 		return page;
 	}
 

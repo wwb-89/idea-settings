@@ -10,7 +10,7 @@ Vue.component('vue-activity-scope', {
                     <div class="tree">
                         <div class="tree-head">
                             <span>选择发布的范围</span>
-                            <div class="already">已选<span style="margin-left: 5px;">{{selectedFids.length}}</span></div>
+                            <div class="already">已选<span style="margin-left: 5px;">{{selectedFidNum}}</span></div>
                         </div>
                         <div class="tree-box">
                             <div id="organizationTree" class="ztree"></div>
@@ -31,7 +31,8 @@ Vue.component('vue-activity-scope', {
             orgs: [],
             loaded: false,
             zTree: null,
-            selectedFids: []
+            selectedFids: [],
+            selectedFidNum: 0
         }
     },
     mounted: function () {
@@ -41,6 +42,7 @@ Vue.component('vue-activity-scope', {
     watch: {
         show: function () {
             var $this = this;
+            $this.clearSelect();
             if ($this.show && $this.loaded && $this.orgs.length < 1) {
                 $this.sureCallback();
             }
@@ -76,7 +78,10 @@ Vue.component('vue-activity-scope', {
                 },
                 data: {
                     simpleData: {
-                        enable: true
+                        enable: true,
+                        idKey: "id",
+                        pIdKey: "pid",
+                        rootPId: 0
                     }
                 },
                 callback: {
@@ -93,7 +98,16 @@ Vue.component('vue-activity-scope', {
         },
         onOrgHierachyCheck: function () {
             var $this = this;
-            console.log("选中了");
+            var nodes = $this.zTree.getCheckedNodes(true);
+            $this.selectedFidNum = nodes.length;
+        },
+        // 清空选择
+        clearSelect: function () {
+            var $this = this;
+            $this.zTree.checkAllNodes(false);
+            $this.zTree.expandAll(false);
+            $this.selectedFids = [];
+            $this.selectedFidNum = 0;
         },
         sureCallback: function () {
             var $this = this;
@@ -101,11 +115,10 @@ Vue.component('vue-activity-scope', {
             $this.selectedFids = [];
             if ($this.orgs && $this.orgs.length > 0) {
                 // 获取选中
-                var checkedNodes = $this.zTree.getCheckedNodes();
-                for (var i in checkedNodes) {
-                    var node = checkedNodes[i];
-                    $this.selectedFids.push(node);
-                }
+                var checkedNodes = $this.zTree.getCheckedNodes(true);
+                $(checkedNodes).each(function () {
+                    $this.selectedFids.push(this.fid);
+                });
                 if ($this.selectedFids.length < 1) {
                     app.showMsg("请选择发布范围");
                     $this.show = true;

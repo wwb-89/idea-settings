@@ -140,8 +140,50 @@ public class ActivityApiController {
 		return RestRespDTO.success(page);
 	}
 
+	/**发布活动
+	 * @Description 
+	 * @author wwb
+	 * @Date 2020-11-20 11:04:53
+	 * @param request
+	 * @param activityId
+	 * @param fids
+	 * @return com.chaoxing.activity.dto.RestRespDTO
+	*/
 	@PostMapping("{activityId}/release")
 	public RestRespDTO release(HttpServletRequest request, @PathVariable Integer activityId, @RequestParam("fids[]") List<Integer> fids) {
+		LoginUserDTO loginUser = LoginUtils.getLoginUser(request);
+		activityHandleService.release(activityId, fids, loginUser);
+		return RestRespDTO.success();
+	}
+
+	/**取消发布
+	 * @Description 
+	 * @author wwb
+	 * @Date 2020-11-20 11:06:19
+	 * @param request
+	 * @param activityId
+	 * @return com.chaoxing.activity.dto.RestRespDTO
+	*/
+	@PostMapping("{activityId}/release/cancel")
+	public RestRespDTO cancelRelease(HttpServletRequest request, @PathVariable Integer activityId) {
+		LoginUserDTO loginUser = LoginUtils.getLoginUser(request);
+		activityHandleService.cancelRelease(activityId, loginUser);
+		return RestRespDTO.success();
+	}
+
+	/**更新发布范围
+	 * @Description 
+	 * @author wwb
+	 * @Date 2020-11-20 11:07:07
+	 * @param request
+	 * @param activityId
+	 * @param fids
+	 * @return com.chaoxing.activity.dto.RestRespDTO
+	*/
+	@PostMapping("{activityId}/release/update")
+	public RestRespDTO updateReleaseScope(HttpServletRequest request, @PathVariable Integer activityId, @RequestParam("fids[]") List<Integer> fids) {
+		LoginUserDTO loginUser = LoginUtils.getLoginUser(request);
+		activityHandleService.updateReleaseScope(activityId, fids, loginUser);
 		return RestRespDTO.success();
 	}
 

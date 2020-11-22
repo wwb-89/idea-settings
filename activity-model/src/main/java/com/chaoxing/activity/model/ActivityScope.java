@@ -46,4 +46,20 @@ public class ActivityScope {
     /** 顺序; column: sort*/
     private Integer sort;
 
+    public static ActivityScope structure(Integer activityId, Integer fid, String orgName) {
+        return ActivityScope.builder()
+                .activityId(activityId)
+                .hierarchyId(0)
+                .name(orgName)
+                .hierarchyPid(0)
+                .code("")
+                .links(orgName)
+                .level(1)
+                .adjustedLevel(1)
+                .fid(fid)
+                .existChild(false)
+                .sort(1)
+                .build();
+    }
+
 }

@@ -78,7 +78,7 @@
                     $this.closeLayerPop(ajaxLoadingIndex);
                 }
                 if (activityApp.isFunction(error)) {
-                    error(data);
+                    error();
                 }
             }
         });

@@ -5,11 +5,11 @@
     <title>活动管理</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="/static/pc/assets/css/create.css" th:href="@{/pc/assets/css/create.css}">
-    <link rel="stylesheet" href="//unpkg.com/element-ui/lib/theme-chalk/index.css">
+    <link rel="stylesheet" href="/static/pc/assets/lib/element-ui/lib/theme-chalk/index.css" th:href="@{/pc/assets/lib/element-ui/lib/theme-chalk/index.css}">
+    <link rel="stylesheet" href="/static/pc/assets/lib/zTree_v3/css/zTreeStyle/zTreeStyle.css" th:href="@{/pc/assets/lib/zTree_v3/css/zTreeStyle/zTreeStyle.css}">
     <link rel="stylesheet" href="/static/pc/assets/css/reset.css" th:href="@{/pc/assets/css/reset.css}">
     <link rel="stylesheet" href="/static/pc/assets/css/public.css" th:href="@{/pc/assets/css/public.css}">
     <link rel="stylesheet" href="/static/pc/assets/css/manage.css" th:href="@{/pc/assets/css/manage.css}">
-    <link rel="stylesheet" href="/static/pc/assets/lib/zTree_v3/css/zTreeStyle/zTreeStyle.css" th:href="@{/pc/assets/lib/zTree_v3/css/zTreeStyle/zTreeStyle.css}">
     <link rel="stylesheet" href="/static/pc/assets/lib/jquery.mCustomScrollbar.css" th:href="@{/pc/assets/lib/jquery.mCustomScrollbar.css}">
     <style type="text/css">
         [v-cloak] {
@@ -65,7 +65,7 @@
                                 <div class="more">
                                     <p v-show="scope.row.status == 1" @click="toRelease(scope.row.id)">发布</p>
                                     <p v-show="scope.row.status == 2 || scope.row.status == 3" @click="toCancelRelease(scope.row.id)">下架</p>
-                                    <p v-show="scope.row.status == 2 || scope.row.status == 3" @click="toReleaseScope(scope.row.id)">发布范围</p>
+                                    <p v-show="scope.row.status == 2 || scope.row.status == 3" @click="toUpdateReleaseScope(scope.row.id)">发布范围</p>
                                 </div>
                             </div>
                         </div>
@@ -87,7 +87,7 @@
     </div>
 </div>
 <div th:replace="pc/include/common_js :: common_js(~{::script})">
-    <script src="//unpkg.com/element-ui/lib/index.js"></script>
+    <script src="/static/pc/assets/lib/element-ui/lib/index.js" th:src="@{/pc/assets/lib/element-ui/lib/index.js}"></script>
     <script src="/static/pc/assets/lib/zTree_v3/js/jquery.ztree.core.js" th:src="@{/pc/assets/lib/zTree_v3/js/jquery.ztree.core.js}"></script>
     <script src="/static/pc/assets/lib/zTree_v3/js/jquery.ztree.excheck.min.js" th:src="@{/pc/assets/lib/zTree_v3/js/jquery.ztree.excheck.min.js}"></script>
     <script src="/static/pc/assets/lib/zTree_v3/js/jquery.ztree.exedit.js" th:src="@{/pc/assets/lib/zTree_v3/js/jquery.ztree.exedit.js}"></script>
@@ -98,15 +98,18 @@
             el: "#activity-vue",
             data: {
                 activities: [],
+                fid: [[${session._login_user_.fid}]],
                 filterStatus: [],
                 queryParams: {
                     pageNum: 1,
                     pageSize: 10,
-                    status: 1
+                    status: ""
                 },
                 total: 0,
                 // 正在处理的活动id
-                processedActivityId: null
+                processedActivityId: null,
+                // 发布还是更新发布范围
+                isRelease: true
             },
             created: function () {
                 var $this = this;
@@ -203,14 +206,41 @@
                     });
                 },
                 // 发布
-                toRelease: function () {
+                toRelease: function (id) {
                     var $this = this;
+                    $this.processedActivityId = id;
+                    $this.isRelease = true;
                     $this.$refs.activityScopeWindow.show = true;
                 },
                 release: function () {
                     var $this = this;
+                    if (!$this.isRelease) {
+                        $this.updateReleaseScope();
+                        return;
+                    }
                     var selectedFids = $this.$refs.activityScopeWindow.selectedFids;
-                    var url = ctx + "/api/activity/";
+                    if (selectedFids.length < 1) {
+                        selectedFids.push($this.fid);
+                    }
+                    var url = ctx + "/api/activity/" + $this.processedActivityId + "/release";
+                    var params = {
+                        fids: selectedFids
+                    };
+                    app.ajaxPostWithLoading(url, params, function (data) {
+                        if (data.success) {
+                            app.showMsg("发布成功", function () {
+                                $this.loadData();
+                            });
+                        } else {
+                            var errorMessage = data.message;
+                            if (activityApp.isEmpty(errorMessage)) {
+                                errorMessage = "发布失败";
+                            }
+                            app.showMsg(errorMessage);
+                        }
+                    }, function () {
+                        app.showMsg("发布失败");
+                    });
                 },
                 toCancelRelease: function (id) {
                     var $this = this;
@@ -219,10 +249,55 @@
                 },
                 cancelRelease: function () {
                     var $this = this;
-                    alert("下架");
+                    $this.$refs.canReleaseWindow.show = false;
+                    var url = ctx + "/api/activity/" + $this.processedActivityId + "/release/cancel";
+                    app.ajaxPostWithLoading(url, {}, function (data) {
+                        if (data.success) {
+                            app.showMsg("下架成功", function () {
+                                $this.loadData();
+                            });
+                        } else {
+                            var errorMessage = data.message;
+                            if (activityApp.isEmpty(errorMessage)) {
+                                errorMessage = "下架失败";
+                            }
+                            app.showMsg(errorMessage);
+                        }
+                    }, function () {
+                        app.showMsg("下架失败");
+                    });
                 },
-                toReleaseScope: function () {
-
+                toUpdateReleaseScope: function (id) {
+                    var $this = this;
+                    $this.processedActivityId = id;
+                    $this.isRelease = false;
+                    $this.$refs.activityScopeWindow.show = true;
+                },
+                updateReleaseScope: function () {
+                    var $this = this;
+                    var selectedFids = $this.$refs.activityScopeWindow.selectedFids;
+                    if (selectedFids.length < 1) {
+                        selectedFids.push($this.fid);
+                    }
+                    var url = ctx + "/api/activity/" + $this.processedActivityId + "/release/update";
+                    var params = {
+                        fids: selectedFids
+                    };
+                    app.ajaxPostWithLoading(url, params, function (data) {
+                        if (data.success) {
+                            app.showMsg("修改发布范围成功", function () {
+                                $this.loadData();
+                            });
+                        } else {
+                            var errorMessage = data.message;
+                            if (activityApp.isEmpty(errorMessage)) {
+                                errorMessage = "修改发布范围失败";
+                            }
+                            app.showMsg(errorMessage);
+                        }
+                    }, function () {
+                        app.showMsg("修改发布范围失败");
+                    });
                 }
             }
         });
