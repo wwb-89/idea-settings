@@ -120,9 +120,7 @@ public class ActivityApiController {
 	@RequestMapping("list/participate")
 	public RestRespDTO list(HttpServletRequest request, ActivityQueryDTO activityQuery) {
 		List<Integer> fids = activityQuery.getFids();
-		if (CollectionUtils.isNotEmpty(fids)) {
-			activityQuery.setFids(fids);
-		} else {
+		if (CollectionUtils.isEmpty(fids)) {
 			LoginUserDTO loginUser = LoginUtils.getLoginUser(request);
 			activityQuery.setFid(loginUser.getFid());
 		}

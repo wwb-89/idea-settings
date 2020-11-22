@@ -5,8 +5,10 @@ import com.chaoxing.activity.dto.LoginUserDTO;
 import com.chaoxing.activity.dto.OrgAddressDTO;
 import com.chaoxing.activity.dto.manager.WfwRegionalArchitectureDTO;
 import com.chaoxing.activity.dto.module.SignFormDTO;
+import com.chaoxing.activity.mapper.ActivityAreaFlagMapper;
 import com.chaoxing.activity.mapper.ActivityMapper;
 import com.chaoxing.activity.model.Activity;
+import com.chaoxing.activity.model.ActivityAreaFlag;
 import com.chaoxing.activity.model.ActivityModule;
 import com.chaoxing.activity.model.ActivityScope;
 import com.chaoxing.activity.service.activity.module.ActivityModuleService;
@@ -19,6 +21,7 @@ import com.chaoxing.activity.util.enums.ModuleEnum;
 import com.chaoxing.activity.util.exception.BusinessException;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -46,6 +49,8 @@ public class ActivityHandleService {
 
 	@Resource
 	private ActivityMapper activityMapper;
+	@Resource
+	private ActivityAreaFlagMapper activityAreaFlagMapper;
 
 	@Resource
 	private ActivityValidationService activityValidationService;
@@ -98,9 +103,9 @@ public class ActivityHandleService {
 		activity.setCreateUserName(loginUser.getRealName());
 		activity.setCreateFid(loginUser.getFid());
 		activity.setCreateOrgName(loginUser.getOrgName());
+		activityMapper.insert(activity);
 		// 处理活动的所属区域
 		handleActivityArea(activity, loginUser);
-		activityMapper.insert(activity);
 //		Integer activityId = activity.getId();
 		// 处理模块
 //		handleActivityModules(activityId, activityModules);
@@ -143,14 +148,40 @@ public class ActivityHandleService {
 		Integer fid = loginUser.getFid();
 		try {
 			OrgAddressDTO orgAddress = guanliApiService.getAddressByFid(fid);
-			activity.setProvinceName(orgAddress.getProvince());
-			activity.setCityName(orgAddress.getCity());
-			activity.setCountyName(orgAddress.getCounty());
+			String province = orgAddress.getProvince();
+			String city = orgAddress.getCity();
+			String county = orgAddress.getCounty();
+			// 删除活动下的区域标签
+			Integer activityId = activity.getId();
+			activityAreaFlagMapper.delete(new UpdateWrapper<ActivityAreaFlag>()
+				.lambda()
+					.eq(ActivityAreaFlag::getActivityId, activityId)
+			);
+			if (StringUtils.isNotEmpty(province)) {
+				ActivityAreaFlag activityAreaFlag = generateActivityAreaFlag(activityId, province);
+				activityAreaFlagMapper.insert(activityAreaFlag);
+			}
+			if (StringUtils.isNotEmpty(city)) {
+				ActivityAreaFlag activityAreaFlag = generateActivityAreaFlag(activityId, city);
+				activityAreaFlagMapper.insert(activityAreaFlag);
+			}
+			if (StringUtils.isNotEmpty(county)) {
+				ActivityAreaFlag activityAreaFlag = generateActivityAreaFlag(activityId, county);
+				activityAreaFlagMapper.insert(activityAreaFlag);
+			}
 		} catch (Exception e) {
 			// 不影响活动的创建
 			log.error("根据fid:{}获取区域信息error:{}", fid, e.getMessage());
 			e.printStackTrace();
 		}
+	}
+
+	private ActivityAreaFlag generateActivityAreaFlag(Integer activityId, String name) {
+		ActivityAreaFlag activityAreaFlag = ActivityAreaFlag.builder()
+				.activityId(activityId)
+				.area(name)
+				.build();
+		return activityAreaFlag;
 	}
 
 	/**修改活动
