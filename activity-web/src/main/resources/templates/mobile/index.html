@@ -23,12 +23,12 @@
     <div class="topFixed">
         <div class="searchDiv searchDivFocus">
             <i class="searchIcon"></i>
-            <input type="text" placeholder="搜索" @focus="searchShow = true">
+            <input id="search-input" type="text" placeholder="搜索" v-model.trim="sw" @focus="searchShow = true" @keyup.enter="search">
         </div>
         <div class="filter active" v-show="!searchShow" @click="toFilter">
             <i class="filterIcon"></i>筛选
         </div>
-        <span class="Scancel" v-show="searchShow" @click="searchShow = false">取消</span>
+        <span class="Scancel" v-show="searchShow" @click="searchCancel">取消</span>
     </div>
     <div class="activity-list" id="mescroll">
         <ul>
@@ -110,6 +110,7 @@
                     regions: [[${regions}]],
                     // 状态
                     statuses: [],
+                    sw: "",
                     queryParams: {},
                     activities: [],
                     loaded: false,
@@ -171,6 +172,7 @@
                         $this.queryParams = {
                             pageNum: 1,
                             pageSize: 10,
+                            sw: "",
                             activityClassifyName: "",
                             date: "all",
                             area: "",
@@ -205,6 +207,7 @@
                             });
                         }
                         $this.loaded = false;
+                        $this.searchShow = false;
                         app.ajaxPost(url, params, function (data) {
                             if (data.success) {
                                 $this.loaded = true;
@@ -351,6 +354,18 @@
                         // 查询
                         $this.loadData();
                     },
+                    searchCancel: function () {
+                        var $this = this;
+                        $this.searchShow = false;
+                        $this.sw = $this.queryParams.sw;
+                    },
+                    search: function () {
+                        var $this = this;
+                        $this.condition2QueryParams();
+                        $this.queryParams.sw = $this.sw;
+                        $("#search-input").blur();
+                        $this.loadData();
+                    }
                 }
             });
         }
