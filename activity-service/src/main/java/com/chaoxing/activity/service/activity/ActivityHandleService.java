@@ -14,6 +14,7 @@ import com.chaoxing.activity.model.ActivityScope;
 import com.chaoxing.activity.service.activity.module.ActivityModuleService;
 import com.chaoxing.activity.service.activity.scope.ActivityScopeService;
 import com.chaoxing.activity.service.manager.GuanliApiService;
+import com.chaoxing.activity.service.manager.MhApiService;
 import com.chaoxing.activity.service.manager.WfwRegionalArchitectureApiService;
 import com.chaoxing.activity.service.manager.module.SignApiService;
 import com.chaoxing.activity.service.manager.module.WorkApiService;
@@ -68,6 +69,8 @@ public class ActivityHandleService {
 
 	@Resource
 	private SignApiService signApiService;
+	@Resource
+	private MhApiService mhApiService;
 
 	/**新增活动
 	 * @Description 
@@ -149,6 +152,9 @@ public class ActivityHandleService {
 		Integer fid = loginUser.getFid();
 		try {
 			OrgAddressDTO orgAddress = guanliApiService.getAddressByFid(fid);
+			if (orgAddress == null) {
+				return;
+			}
 			String province = orgAddress.getProvince();
 			String city = orgAddress.getCity();
 			String county = orgAddress.getCounty();
@@ -472,16 +478,38 @@ public class ActivityHandleService {
 	}
 
 	/**绑定模板
-	 * @Description 
+	 * @Description
+	 * 1、根据模板信息创建相应的模块
+	 * 2、传递模板id、wfwfid和活动id给门户克隆
+	 * 3、门户克隆完成后调用活动引擎的接口来获取每个应用的数据来更新模板对应的应用的数据
+	 * 4、完成后给活动引擎返回克隆后的应用的数据
 	 * @author wwb
 	 * @Date 2020-11-13 15:36:28
 	 * @param activityId
 	 * @param webTemplateId
 	 * @param loginUser
-	 * @return java.lang.Integer 网页id
+	 * @return void
 	*/
-	public Integer bindWebTemplate(Integer activityId, Integer webTemplateId, LoginUserDTO loginUser) {
-		return 0;
+	@Transactional
+	public void bindWebTemplate(Integer activityId, Integer webTemplateId, LoginUserDTO loginUser) {
+
+		// 创建模块
+		createModuleByWebTemplateId(activityId, webTemplateId, loginUser);
+		// 克隆
+//		mhApiService.cloneTemplate(activityId, )
+	}
+
+	/**创建模块
+	 * @Description 
+	 * @author wwb
+	 * @Date 2020-11-23 20:36:17
+	 * @param activityId
+	 * @param webTemplateId
+	 * @param loginUser
+	 * @return void
+	*/
+	private void createModuleByWebTemplateId(Integer activityId, Integer webTemplateId, LoginUserDTO loginUser) {
+
 	}
 
 }

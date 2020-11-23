@@ -31,7 +31,7 @@ import java.util.Optional;
 @Service
 public class SignApiService {
 
-	private static final String DOMAIN = "http://sign.chaoxing.com";
+	private static final String DOMAIN = "http://api.qd.reading.chaoxing.com";
 	/** 创建签到报名的地址 */
 	private static final String CREATE_URL = DOMAIN + "/activity/create";
 	/** 修改签到报名的地址 */
