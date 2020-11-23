@@ -175,7 +175,12 @@ table {
     display: inline-block;
     margin-left: 10px;
 }
-
+.el-table{
+    overflow: unset;
+}
+.el-table__body-wrapper{
+    overflow: unset;
+}
 .el-table .cell {
     overflow: unset;
 }
