@@ -42,11 +42,6 @@
         FROM
             t_activity t
             INNER JOIN t_activity_scope t1 ON t.id = t1.activity_id
-            <!--地区-->
-            <if test="params.area != null and params.area != ''">
-                INNER JOIN t_activity_area_flag t2 ON t.id = t2.activity_id
-                AND t2.area = #{params.area}
-            </if>
             <choose>
                 <when test="params.fids != null and params.fids.size() != 0">
                     AND t1.fid IN
@@ -58,6 +53,16 @@
                     AND t1.fid = #{params.fid}
                 </otherwise>
             </choose>
+            <!--地区-->
+            <if test="params.area != null and params.area != ''">
+                INNER JOIN t_activity_area_flag t2 ON t.id = t2.activity_id
+                AND t2.area = #{params.area}
+            </if>
+            <!--类型-->
+            <if test="params.activityClassifyName != null and params.activityClassifyName != ''">
+                INNER JOIN t_activity_classify t3 ON t.activity_classify_id = t3.id
+                AND t3.name = #{params.activityClassifyName}
+            </if>
         WHERE
             <!--状态-->
             <choose>
@@ -68,10 +73,6 @@
                     t.`status` IN ( 2, 3, 4 )
                 </otherwise>
             </choose>
-            <!--类型-->
-            <if test="params.activityClassifyId != null">
-                AND t.activity_classify_id = #{params.activityClassifyId}
-            </if>
             <!--时间-->
             <if test="(params.minDateStr != null and params.minDateStr != '') or (params.maxDateStr != null and params.maxDateStr != '')">
                 <choose>
@@ -91,6 +92,8 @@
                     </otherwise>
                 </choose>
             </if>
+        GROUP BY
+            t.id
         ORDER BY
             FIELD( t.`status`, 2, 3, 4 ),
             t.start_date DESC
