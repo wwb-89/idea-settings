@@ -25,9 +25,6 @@
         <result column="create_user_name" jdbcType="INTEGER" property="createUserName" />
         <result column="create_fid" jdbcType="INTEGER" property="createFid" />
         <result column="create_org_name" jdbcType="INTEGER" property="createOrgName" />
-        <result column="province_name" jdbcType="VARCHAR" property="provinceName" />
-        <result column="city_name" jdbcType="VARCHAR" property="cityName" />
-        <result column="county_name" jdbcType="VARCHAR" property="countyName" />
         <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
         <result column="update_time" jdbcType="TIMESTAMP" property="updateTime" />
     </resultMap>
@@ -35,7 +32,7 @@
         t.id, t.name, t.start_date, t.end_date, t.cover_cloud_id, t.activity_type, t.address,
         t.longitude, t.dimension, t.activity_classify_id, t.is_enable_sign, t.sign_id, t.web_template_id, 
         t.is_released, t.release_time, t.release_uid, t.status, t.is_open_audit, t.audit_status, 
-        t.create_uid, t.create_user_name, t.create_fid, t.create_org_name, t.province_name, t.city_name, t.county_name, t.create_time,
+        t.create_uid, t.create_user_name, t.create_fid, t.create_org_name, t.create_time,
         t.update_time
     </sql>
 
@@ -45,7 +42,22 @@
         FROM
             t_activity t
             INNER JOIN t_activity_scope t1 ON t.id = t1.activity_id
-            AND t1.fid = #{params.fid}
+            <if test="params.fids != null and params.fids.size() != 0">
+                AND t1.fid IN
+                <foreach collection="params.fids" index="key" item="value" open="(" close=")" separator=",">
+                    #{value}
+                </foreach>
+            </if>
+            <!--地区-->
+            <if test="params.area != null and params.area != ''">
+                INNER JOIN t_activity_area_flag t2 ON t.id = t2.activity_id
+                AND t2.area = #{params.area}
+            </if>
+            <!--类型-->
+            <if test="params.activityClassifyName != null and params.activityClassifyName != ''">
+                INNER JOIN t_activity_classify t3 ON t.activity_classify_id = t3.id
+                AND t3.name = #{params.activityClassifyName}
+            </if>
         WHERE
             <!--状态-->
             <choose>
@@ -56,14 +68,6 @@
                     t.`status` IN ( 2, 3, 4 )
                 </otherwise>
             </choose>
-            <!--类型-->
-            <if test="params.activityClassifyId != null">
-                AND t.activity_classify_id = #{params.activityClassifyId}
-            </if>
-            <!--地区-->
-            <if test="params.area != null and params.area != ''">
-                AND t.city_name = #{params.area}
-            </if>
             <!--时间-->
             <if test="(params.minDateStr != null and params.minDateStr != '') or (params.maxDateStr != null and params.maxDateStr != '')">
                 <choose>
@@ -83,6 +87,11 @@
                     </otherwise>
                 </choose>
             </if>
+            <if test="params.sw != null and params.sw != ''">
+                AND t.name LIKE CONCAT('%', #{params.sw}, '%')
+            </if>
+        GROUP BY
+            t.id
         ORDER BY
             FIELD( t.`status`, 2, 3, 4 ),
             t.start_date DESC

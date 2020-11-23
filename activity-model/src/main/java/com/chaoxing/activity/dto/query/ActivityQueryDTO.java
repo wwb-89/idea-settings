@@ -5,6 +5,8 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.List;
+
 /**活动查询对象
  * @author wwb
  * @version ver 1.0
@@ -19,10 +21,12 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class ActivityQueryDTO {
 
-	/** 参与用户fid */
-	private Integer fid;
-	/** 分类id */
-	private Integer activityClassifyId;
+	/** 查询关键字 */
+	private String sw;
+	/** 参与的fid列表 */
+	private List<Integer> fids;
+	/** 分类名称 */
+	private String activityClassifyName;
 	/** 时间 */
 	private String date;
 	/** 区域 */
