@@ -141,17 +141,21 @@
                         {name: "更早", value: "earlier", selected: false}
                     ];
                     // 地区
+                    var regions = [];
                     if ($this.regions.length > 0) {
                         $($this.regions).each(function () {
-                            this.value = this.name;
-                            this.selected = false;
+                            var region = this;
+                            region.value = this.name;
+                            region.selected = false;
+                            regions.push(region);
                         });
-                        $this.regions.splice(0, 1, {
+                        regions.splice(0, 1, {
                             name: "全部",
                             value: "",
                             selected: true
                         });
                     }
+                    $this.regions = regions;
                     // 状态
                     $this.statuses = [
                         {name: "全部", value: "", selected: true},
@@ -273,6 +277,7 @@
                                 $this.$set($this.regions[i], "selected", false);
                             }
                         });
+                        $this.$forceUpdate();
                     },
                     changeStatus: function (index) {
                         var $this = this;
