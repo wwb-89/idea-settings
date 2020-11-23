@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
+import java.util.ArrayList;
 import java.util.List;
 
 /**活动api服务
@@ -122,7 +123,7 @@ public class ActivityApiController {
 		List<Integer> fids = activityQuery.getFids();
 		if (CollectionUtils.isEmpty(fids)) {
 			LoginUserDTO loginUser = LoginUtils.getLoginUser(request);
-			activityQuery.setFid(loginUser.getFid());
+			activityQuery.setFids(new ArrayList(){{add(loginUser.getFid());}});
 		}
 		Page<Activity> page = HttpServletRequestUtils.buid(request);
 		page = activityQueryService.listParticipate(page, activityQuery);

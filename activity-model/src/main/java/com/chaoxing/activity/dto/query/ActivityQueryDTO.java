@@ -21,12 +21,8 @@ import java.util.List;
 @AllArgsConstructor
 public class ActivityQueryDTO {
 
-	/** 参与用户fid */
-	private Integer fid;
 	/** 参与的fid列表 */
 	private List<Integer> fids;
-	/** 分类id */
-	private Integer activityClassifyId;
 	/** 分类名称 */
 	private String activityClassifyName;
 	/** 时间 */
