@@ -17,6 +17,7 @@ import com.chaoxing.activity.service.manager.GuanliApiService;
 import com.chaoxing.activity.service.manager.WfwRegionalArchitectureApiService;
 import com.chaoxing.activity.service.manager.module.SignApiService;
 import com.chaoxing.activity.service.manager.module.WorkApiService;
+import com.chaoxing.activity.util.enums.ActivityAreaLevelEnum;
 import com.chaoxing.activity.util.enums.ModuleEnum;
 import com.chaoxing.activity.util.exception.BusinessException;
 import lombok.extern.slf4j.Slf4j;
@@ -158,15 +159,15 @@ public class ActivityHandleService {
 					.eq(ActivityAreaFlag::getActivityId, activityId)
 			);
 			if (StringUtils.isNotEmpty(province)) {
-				ActivityAreaFlag activityAreaFlag = generateActivityAreaFlag(activityId, province);
+				ActivityAreaFlag activityAreaFlag = generateActivityAreaFlag(activityId, province, ActivityAreaLevelEnum.PROVINCE);
 				activityAreaFlagMapper.insert(activityAreaFlag);
 			}
 			if (StringUtils.isNotEmpty(city)) {
-				ActivityAreaFlag activityAreaFlag = generateActivityAreaFlag(activityId, city);
+				ActivityAreaFlag activityAreaFlag = generateActivityAreaFlag(activityId, city, ActivityAreaLevelEnum.CITY);
 				activityAreaFlagMapper.insert(activityAreaFlag);
 			}
 			if (StringUtils.isNotEmpty(county)) {
-				ActivityAreaFlag activityAreaFlag = generateActivityAreaFlag(activityId, county);
+				ActivityAreaFlag activityAreaFlag = generateActivityAreaFlag(activityId, county, ActivityAreaLevelEnum.COUNTRY);
 				activityAreaFlagMapper.insert(activityAreaFlag);
 			}
 		} catch (Exception e) {
@@ -176,10 +177,11 @@ public class ActivityHandleService {
 		}
 	}
 
-	private ActivityAreaFlag generateActivityAreaFlag(Integer activityId, String name) {
+	private ActivityAreaFlag generateActivityAreaFlag(Integer activityId, String name, ActivityAreaLevelEnum activityAreaLevel) {
 		ActivityAreaFlag activityAreaFlag = ActivityAreaFlag.builder()
 				.activityId(activityId)
 				.area(name)
+				.areaLevel(activityAreaLevel.getValue())
 				.build();
 		return activityAreaFlag;
 	}

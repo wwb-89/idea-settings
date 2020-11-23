@@ -1,21 +1,15 @@
 package com.chaoxing.activity.model;
 
 import com.alibaba.fastjson.annotation.JSONField;
-import com.baomidou.mybatisplus.annotation.IdType;
-import com.baomidou.mybatisplus.annotation.TableField;
-import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
-import com.chaoxing.activity.util.LocalDateDeserializer;
-import com.chaoxing.activity.util.LocalDateSerializer;
 import com.chaoxing.activity.util.LocalDateTimeDeserializer;
 import com.chaoxing.activity.util.LocalDateTimeSerializer;
-import com.chaoxing.activity.util.exception.BusinessException;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
-import java.math.BigDecimal;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.Objects;
 
 /**
  * 活动区域标签表
@@ -36,6 +30,8 @@ public class ActivityAreaFlag {
     private Integer activityId;
     /** 区域名称; column: area*/
     private String area;
+    /** 区域层级; column: area_level*/
+    private String areaLevel;
     /** 创建时间; column: create_time*/
     @JSONField(serializeUsing = LocalDateTimeSerializer.class, deserializeUsing = LocalDateTimeDeserializer.class)
     private LocalDateTime createTime;

@@ -4,11 +4,12 @@
     <resultMap id="BaseResultMap" type="com.chaoxing.activity.model.ActivityAreaFlag">
         <result column="activity_id" jdbcType="INTEGER" property="activityId" />
         <result column="area" jdbcType="VARCHAR" property="area" />
+        <result column="area_level" jdbcType="VARCHAR" property="areaLevel" />
         <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
         <result column="update_time" jdbcType="TIMESTAMP" property="updateTime" />
     </resultMap>
     <sql id="Base_Column_List">
-        t.activity_id, t.area, t.create_time, t.update_time
+        t.activity_id, t.area, t.area_level, t.create_time, t.update_time
     </sql>
 
 </mapper>
