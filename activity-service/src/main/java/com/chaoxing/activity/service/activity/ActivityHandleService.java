@@ -7,10 +7,8 @@ import com.chaoxing.activity.dto.manager.WfwRegionalArchitectureDTO;
 import com.chaoxing.activity.dto.module.SignFormDTO;
 import com.chaoxing.activity.mapper.ActivityAreaFlagMapper;
 import com.chaoxing.activity.mapper.ActivityMapper;
-import com.chaoxing.activity.model.Activity;
-import com.chaoxing.activity.model.ActivityAreaFlag;
-import com.chaoxing.activity.model.ActivityModule;
-import com.chaoxing.activity.model.ActivityScope;
+import com.chaoxing.activity.model.*;
+import com.chaoxing.activity.service.WebTemplateService;
 import com.chaoxing.activity.service.activity.module.ActivityModuleService;
 import com.chaoxing.activity.service.activity.scope.ActivityScopeService;
 import com.chaoxing.activity.service.manager.GuanliApiService;
@@ -66,6 +64,8 @@ public class ActivityHandleService {
 	private WorkApiService workApiService;
 	@Resource
 	private GuanliApiService guanliApiService;
+	@Resource
+	private WebTemplateService webTemplateService;
 
 	@Resource
 	private SignApiService signApiService;
@@ -492,15 +492,16 @@ public class ActivityHandleService {
 	*/
 	@Transactional
 	public void bindWebTemplate(Integer activityId, Integer webTemplateId, LoginUserDTO loginUser) {
-
 		// 创建模块
 		createModuleByWebTemplateId(activityId, webTemplateId, loginUser);
+		WebTemplate webTemplate = webTemplateService.webTemplateExist(webTemplateId);
 		// 克隆
-//		mhApiService.cloneTemplate(activityId, )
+		String result = mhApiService.cloneTemplate(activityId, webTemplate.getTemplateId(), loginUser);
 	}
 
 	/**创建模块
-	 * @Description 
+	 * @Description
+	 * 找到是本地数据源的图标应用
 	 * @author wwb
 	 * @Date 2020-11-23 20:36:17
 	 * @param activityId
@@ -509,6 +510,7 @@ public class ActivityHandleService {
 	 * @return void
 	*/
 	private void createModuleByWebTemplateId(Integer activityId, Integer webTemplateId, LoginUserDTO loginUser) {
+		// 根据网页模板找到需要创建的模块id
 
 	}
 

@@ -8,6 +8,8 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.List;
+
 /**
  * 网页模板应用数据
  * @className: TWebTemplateAppData, table_name: t_web_template_app_data
@@ -34,5 +36,9 @@ public class WebTemplateAppData {
     private String type;
     /** 顺序; column: sequence*/
     private Integer sequence;
+
+    // 附加
+    /** 模板应用数据列表 */
+    private List<WebTemplateAppData> webTemplateAppDataList;
 
 }
