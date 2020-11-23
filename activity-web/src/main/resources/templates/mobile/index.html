@@ -142,10 +142,12 @@
                     // 地区
                     if ($this.regions.length > 0) {
                         $($this.regions).each(function () {
+                            this.value = this.name;
                             this.selected = false;
                         });
                         $this.regions.splice(0, 1, {
                             name: "全部",
+                            value: "",
                             selected: true
                         });
                     }
