@@ -23,12 +23,12 @@
     <div class="topFixed">
         <div class="searchDiv searchDivFocus">
             <i class="searchIcon"></i>
-            <input type="text" placeholder="搜索" @focus="searchShow = true">
+            <input id="search-input" type="text" placeholder="搜索" v-model.trim="sw" @focus="searchShow = true" @keyup.enter="search">
         </div>
         <div class="filter active" v-show="!searchShow" @click="toFilter">
             <i class="filterIcon"></i>筛选
         </div>
-        <span class="Scancel" v-show="searchShow" @click="searchShow = false">取消</span>
+        <span class="Scancel" v-show="searchShow" @click="searchCancel">取消</span>
     </div>
     <div class="activity-list" id="mescroll">
         <ul>
@@ -110,6 +110,7 @@
                     regions: [[${regions}]],
                     // 状态
                     statuses: [],
+                    sw: "",
                     queryParams: {},
                     activities: [],
                     loaded: false,
@@ -140,17 +141,21 @@
                         {name: "更早", value: "earlier", selected: false}
                     ];
                     // 地区
+                    var regions = [];
                     if ($this.regions.length > 0) {
                         $($this.regions).each(function () {
-                            this.value = this.name;
-                            this.selected = false;
+                            var region = this;
+                            region.value = this.name;
+                            region.selected = false;
+                            regions.push(region);
                         });
-                        $this.regions.splice(0, 1, {
+                        regions.splice(0, 1, {
                             name: "全部",
                             value: "",
                             selected: true
                         });
                     }
+                    $this.regions = regions;
                     // 状态
                     $this.statuses = [
                         {name: "全部", value: "", selected: true},
@@ -171,6 +176,7 @@
                         $this.queryParams = {
                             pageNum: 1,
                             pageSize: 10,
+                            sw: "",
                             activityClassifyName: "",
                             date: "all",
                             area: "",
@@ -184,6 +190,9 @@
                                 //第一个参数"mescroll"对应上面布局结构div的id (1.3.5版本支持传入dom对象)
                                 //如果您的下拉刷新是重置列表数据,那么down完全可以不用配置,具体用法参考第一个基础案例
                                 //解析: down.callback默认调用mescroll.resetUpScroll(),而resetUpScroll会将page.num=1,再触发up.callback
+                                down: {
+                                    use: false
+                                },
                                 up: {
                                     callback: function () {
                                         $this.loadData();
@@ -205,6 +214,7 @@
                             });
                         }
                         $this.loaded = false;
+                        $this.searchShow = false;
                         app.ajaxPost(url, params, function (data) {
                             if (data.success) {
                                 $this.loaded = true;
@@ -267,6 +277,7 @@
                                 $this.$set($this.regions[i], "selected", false);
                             }
                         });
+                        $this.$forceUpdate();
                     },
                     changeStatus: function (index) {
                         var $this = this;
@@ -351,6 +362,18 @@
                         // 查询
                         $this.loadData();
                     },
+                    searchCancel: function () {
+                        var $this = this;
+                        $this.searchShow = false;
+                        $this.sw = $this.queryParams.sw;
+                    },
+                    search: function () {
+                        var $this = this;
+                        $this.condition2QueryParams();
+                        $this.queryParams.sw = $this.sw;
+                        $("#search-input").blur();
+                        $this.loadData();
+                    }
                 }
             });
         }
