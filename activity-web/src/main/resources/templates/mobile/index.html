@@ -9,6 +9,8 @@
     <meta http-equiv="cache-control" content="no-cache" />
     <link rel="stylesheet" href="/static/mobile/assets/css/public.css" th:href="@{/mobile/assets/css/public.css}" />
     <link rel="stylesheet" href="/static/mobile/assets/css/index.css" th:href="@{/mobile/assets/css/index.css}" />
+    <link rel="stylesheet" href="/static/mobile/assets/css/dialog.css" th:href="@{/mobile/assets/css/dialog.css}" />
+    <link rel="stylesheet" href="/static/mobile/assets/lib/mescroll/mescroll.css" th:href="@{/mobile/assets/lib/mescroll/mescroll.css}" />
     <style type="text/css">
         [v-cloak] {
             display: none;
@@ -19,102 +21,74 @@
 <div class="index" id="activity-vue" v-cloak>
     <!-- 搜索 -->
     <div class="topFixed">
-        <div :class="['searchDiv',inputShow?'searchDivFocus':'']">
+        <div class="searchDiv searchDivFocus">
             <i class="searchIcon"></i>
-            <input type="text" placeholder="搜索"  @focus="getFocus"  v-model="inputValue" @input="inputFun">
+            <input type="text" placeholder="搜索" @focus="searchShow = true">
         </div>
-        <div class="filter active" @click="popShow" v-show="!inputShow">
+        <div class="filter active" v-show="!searchShow" @click="toFilter">
             <i class="filterIcon"></i>筛选
         </div>
-        <span class="Scancel" @click="ScancelFun" v-show="inputShow">取消</span>
+        <span class="Scancel" v-show="searchShow" @click="searchShow = false">取消</span>
     </div>
-    <div class="activity-list">
+    <div class="activity-list" id="mescroll">
         <ul>
-            <li>
-                <img src="https://p.ananas.chaoxing.com/star3/270_160c/57170cd1e4b0578413d7f5f6.jpg">
+            <li v-for="(activity, index) of activities" :key="'activity-' + index">
+                <img :src="activity.coverCloudId | getCloudImgUrl">
                 <div class="info">
-                    <h2 class="title">2019年10月读书月主题活动</h2>
+                    <h2 class="title">{{activity.name}}</h2>
                     <div class="time">
-                        <span class="status status1">进行中</span>
-                        <!-- <span class="status status2">活动预告</span> -->
-                        <!-- <span class="status status3">已结束</span> -->
-                        <span>2020-10-10 9:00 ～ 2028-10-1日 16:00</span>
+                        <span :class="{'status': true, 'status1': (activity.status == 3), 'status2': (activity.status == 2), 'status3': (activity.status == 4)}">{{activity.status | activityStatusInstructions}}</span>
+                        <span>{{activity.startDate | timestamp2YMD}} ～ {{activity.endDate | timestamp2YMD}}</span>
                         <div class="clear"></div>
                     </div>
-                    <p class="dec">浙江图书馆</p>
-                    <p class="address">浙江省杭州市西湖区曙光路73号</p>
-                </div>
-            </li>
-            <li>
-                <img src="https://p.ananas.chaoxing.com/star3/270_160c/57170cd1e4b0578413d7f5f6.jpg">
-                <div class="info">
-                    <h2 class="title">2019年10月读书月主题活动</h2>
-                    <div class="time">
-                        <span class="status status1">进行中</span>
-                        <!-- <span class="status status2">活动预告</span> -->
-                        <!-- <span class="status status3">已结束</span> -->
-                        <span>2020-10-10 9:00 ～ 2028-10-1日 16:00</span>
-                        <div class="clear"></div>
-                    </div>
-                    <p class="dec">浙江图书馆</p>
-                    <p class="address">浙江省杭州市西湖区曙光路73号</p>
+                    <p class="dec">{{activity.createOrgName}}</p>
+                    <p class="address">{{activity.address}}</p>
                 </div>
             </li>
         </ul>
     </div>
-    <!--        加载中-->
-<!--    <div class="loading"><i class="loading-icon"></i>加载中…</div>-->
-    <!--        没有更多-->
-<!--    <div class="noMore"><span class="line"></span><span>没有更多了</span><span class="line"></span></div>-->
     <!-- 无结果 -->
-    <div class="noContent" style="display: none;">
+    <div class="noContent" v-show="loaded && activities.length < 1">
         <p>无搜索结果</p>
     </div>
     <!-- 遮盖层 -->
-    <div class="fixedBg"  v-show="inputShow"></div>
+    <div class="fixedBg" v-show="searchShadeShow"></div>
     <!-- 弹出层 -->
-    <div class="pop" v-show="popStatus">
+    <div class="pop" v-show="filterWindowShow">
         <div class="popInner">
             <div class="popList">
                 <div class="list-item">
                     <div class="title">类型</div>
                     <ul>
-                        <li class="active">全部</li>
-                        <li>展览</li>
-                        <li>演出</li>
-                        <li>讲座</li>
-                        <li>培训</li>
-                        <li>阅读推广</li>
-                        <li>其它</li>
+                        <li :class="{'active': activityClassify.selected}" v-for="(activityClassify, index) of activityClassifies" :key="'activity-classify' + index" @click="changeActivityClassify(index)">{{activityClassify.name}}</li>
                     </ul>
                     <div class="clear"></div>
                 </div>
                 <div class="list-item">
                     <div class="title">时间</div>
                     <ul>
-                        <li class="active">全部</li>
-                        <li>近一个月</li>
-                        <li>近三个月</li>
-                        <li>近半年</li>
-                        <li>近一年</li>
-                        <li>更早</li>
+                        <li :class="{'active': time.selected}" v-for="(time, index) of times" :key="'time-' + index" @click="changeTime(index)">{{time.name}}</li>
+                    </ul>
+                    <div class="clear"></div>
+                </div>
+                <div class="list-item" v-show="regions.length > 0">
+                    <div class="title">地区</div>
+                    <ul>
+                        <li :class="{'active': region.selected}" v-for="(region, index) of regions" :key="'region-' + index" @click="changeRegion(index)">{{region.name}}</li>
                     </ul>
                     <div class="clear"></div>
                 </div>
                 <div class="list-item">
-                    <div class="title">地区</div>
+                    <div class="title">状态</div>
                     <ul>
-                        <li class="active">全部</li>
-                        <li>杭州</li>
-                        <li>宁波</li>
-                        <li>温州</li>
+                        <li :class="{'active': status.selected}" v-for="(status, index) of statuses" :key="'status-' + index" @click="changeStatus(index)">{{status.name}}</li>
                     </ul>
                     <div class="clear"></div>
                 </div>
             </div>
             <div class="btn">
-                <a href="#" class="btn-a btn-0" @click="popCancel">取消</a>
-                <a href="#" class="btn-a btn-1">确定</a>
+                <a href="#" class="btn-a btn-0" @click="filterCancel">取消</a>
+                <a href="#" class="btn-a btn-1" @click="filterSure">确定</a>
                 <div class="clear"></div>
             </div>
         </div>
@@ -122,38 +96,259 @@
 </div>
 </body>
 <div th:replace="mobile/include/common_js :: common_js(~{::script})">
+    <script src="/static/mobile/assets/lib/mescroll/mescroll.js" th:src="@{/mobile/assets/lib/mescroll/mescroll.js}"></script>
     <script th:inline="javascript">
         function ready() {
             activityVue = new Vue({
                 el: "#activity-vue",
                 data: {
-                    inputValue:"",
-                    inputShow:false,
-                    searchstatus:false,
-                    popStatus:false,
+                    fids: [[${fids}]],
+                    activityClassifyNames: [[${activityClassifyNames}]],
+                    activityClassifies: [],
+                    // 时间
+                    times: [],
+                    regions: [[${regions}]],
+                    // 状态
+                    statuses: [],
+                    queryParams: {},
+                    activities: [],
+                    loaded: false,
+                    mescroll: null,
+
+                    filterWindowShow: false,
+                    searchShadeShow: false,
+                    searchShow: false
+                },
+                created: function () {
+                    var $this = this;
+                    // 活动分类列表
+                    $($this.activityClassifyNames).each(function () {
+                        $this.activityClassifies.push({name: this, value: this, selected: false});
+                    });
+                    $this.activityClassifies.splice(0, 1, {
+                        name: "全部",
+                        value: "",
+                        selected: true
+                    });
+                    // 时间
+                    $this.times = [
+                        {name: "全部", value: "all", selected: true},
+                        {name: "近一个月", value: "nearly_a_month", selected: false},
+                        {name: "近三个月", value: "nearly_three_month", selected: false},
+                        {name: "近半年", value: "nearly_six_month", selected: false},
+                        {name: "近一年", value: "nearly_a_year", selected: false},
+                        {name: "更早", value: "earlier", selected: false}
+                    ];
+                    // 地区
+                    if ($this.regions.length > 0) {
+                        $($this.regions).each(function () {
+                            this.selected = false;
+                        });
+                        $this.regions.splice(0, 1, {
+                            name: "全部",
+                            selected: true
+                        });
+                    }
+                    // 状态
+                    $this.statuses = [
+                        {name: "全部", value: "", selected: true},
+                        {name: "活动预告", value: "2", selected: false},
+                        {name: "进行中", value: "3", selected: false},
+                        {name: "已结束", value: "4", selected: false}
+                    ];
+                    $this.restQueryParams();
+                },
+                mounted: function () {
+                    var $this = this;
+                    $this.initMescroll();
                 },
                 methods: {
-                    getFocus(){
-                        this.inputShow = true;
+                    // 重置查询条件
+                    restQueryParams: function () {
+                        var $this = this;
+                        $this.queryParams = {
+                            pageNum: 1,
+                            pageSize: 10,
+                            activityClassifyName: "",
+                            date: "all",
+                            area: "",
+                            status: null
+                        };
+                    },
+                    initMescroll: function () {
+                        var $this = this;
+                        if ($this.mescroll == null) {
+                            $this.mescroll = new MeScroll("mescroll", {
+                                //第一个参数"mescroll"对应上面布局结构div的id (1.3.5版本支持传入dom对象)
+                                //如果您的下拉刷新是重置列表数据,那么down完全可以不用配置,具体用法参考第一个基础案例
+                                //解析: down.callback默认调用mescroll.resetUpScroll(),而resetUpScroll会将page.num=1,再触发up.callback
+                                up: {
+                                    callback: function () {
+                                        $this.loadData();
+                                    }, //上拉加载的回调
+                                    htmlNodata: '<p class="upwarp-nodata">-- 没有更多了 --</p>',
+                                    noMoreSize: 5, //如果列表已无数据,可设置列表的总数量要大于5才显示无更多数据; 避免列表数据过少(比如只有一条数据),显示无更多数据会不好看 这就是为什么无更多数据有时候不显示的原因.
+                                }
+                            });
+                        }
+                    },
+                    loadData: function () {
+                        var $this = this;
+                        var url = ctx + "/api/activity/list/participate";
+                        var params = $this.queryParams;
+                        if ($this.fids.length > 0) {
+                            params.fids = [];
+                            $($this.fids).each(function () {
+                                params.fids.push(parseInt(this));
+                            });
+                        }
+                        $this.loaded = false;
+                        app.ajaxPost(url, params, function (data) {
+                            if (data.success) {
+                                $this.loaded = true;
+                                $this.mescroll.endByPage(data.data.records.length, data.data.pages);
+                                $this.activities = data.data.records;
+                                $this.queryParams.pageNum++;
+                            } else {
+                                var errorMessage = data.message;
+                                if (activityApp.isEmpty(errorMessage)) {
+                                    errorMessage = "加载活动列表失败";
+                                }
+                                $this.mescroll.endErr();
+                                app.showMsg(errorMessage);
+                            }
+                        }, function () {
+                            $this.mescroll.endErr();
+                            app.showMsg("加载活动列表失败");
+                        });
+                    },
+                    showFilterWindow: function () {
+                        var $this = this;
+                        $this.filterWindowShow = true;
                         $("body").addClass("overhidden");
                     },
-                    ScancelFun() {
-                        this.inputShow = false;
-                        this.inputValue = '';
+                    hideFilterWindow: function () {
+                        var $this = this;
+                        $this.filterWindowShow = false;
                         $("body").removeClass("overhidden");
                     },
-                    popShow(){
-                        this.popStatus = true;
-                        $("body").addClass("overhidden");
+                    toFilter: function () {
+                        var $this = this;
+                        $this.showFilterWindow();
                     },
-                    popCancel(){
-                        this.popStatus = false;
-                        $("body").removeClass("overhidden");
+                    changeActivityClassify: function (index) {
+                        var $this = this;
+                        $($this.activityClassifies).each(function (i) {
+                            if (i == index) {
+                                $this.$set($this.activityClassifies[i], "selected", true);
+                            } else {
+                                $this.$set($this.activityClassifies[i], "selected", false);
+                            }
+                        });
                     },
-                    // 搜索输入方法
-                    inputFun(e){
-                        this.inputValue = e.target.value;
-                    }
+                    changeTime: function (index) {
+                        var $this = this;
+                        $($this.times).each(function (i) {
+                            if (i == index) {
+                                $this.$set($this.times[i], "selected", true);
+                            } else {
+                                $this.$set($this.times[i], "selected", false);
+                            }
+                        });
+                    },
+                    changeRegion: function (index) {
+                        var $this = this;
+                        $($this.regions).each(function (i) {
+                            if (i == index) {
+                                $this.$set($this.regions[i], "selected", true);
+                            } else {
+                                $this.$set($this.regions[i], "selected", false);
+                            }
+                        });
+                    },
+                    changeStatus: function (index) {
+                        var $this = this;
+                        $($this.statuses).each(function (i) {
+                            if (i == index) {
+                                $this.$set($this.statuses[i], "selected", true);
+                            } else {
+                                $this.$set($this.statuses[i], "selected", false);
+                            }
+                        });
+                    },
+                    condition2QueryParams: function () {
+                        var $this = this;
+                        $($this.activityClassifies).each(function () {
+                            if (this.selected) {
+                                $this.queryParams.activityClassifyName = this.value;
+                                return false;
+                            }
+                        });
+                        $($this.times).each(function () {
+                            if (this.selected) {
+                                $this.queryParams.date = this.value;
+                                return false;
+                            }
+                        });
+                        $($this.regions).each(function () {
+                            if (this.selected) {
+                                $this.queryParams.area = this.value;
+                                return false;
+                            }
+                        });
+                        $($this.statuses).each(function () {
+                            if (this.selected) {
+                                $this.queryParams.status = this.value;
+                                return false;
+                            }
+                        });
+                        $this.queryParams.pageNum = 1;
+                    },
+                    queryParams2Condition: function () {
+                        var $this = this;
+                        $($this.activityClassifies).each(function (i) {
+                            if (this.value == $this.queryParams.activityClassifyName) {
+                                $this.$set($this.activityClassifies[i], "selected", true);
+                            } else {
+                                $this.$set($this.activityClassifies[i], "selected", false);
+                            }
+                        });
+                        $($this.times).each(function (i) {
+                            if (this.value == $this.queryParams.date) {
+                                $this.$set($this.times[i], "selected", true);
+                            } else {
+                                $this.$set($this.times[i], "selected", false);
+                            }
+                        });
+                        $($this.regions).each(function (i) {
+                            if (this.value == $this.queryParams.area) {
+                                $this.$set($this.regions[i], "selected", true);
+                            } else {
+                                $this.$set($this.regions[i], "selected", false);
+                            }
+                        });
+                        $($this.statuses).each(function (i) {
+                            if (this.value == $this.queryParams.status) {
+                                $this.$set($this.statuses[i], "selected", true);
+                            } else {
+                                $this.$set($this.statuses[i], "selected", false);
+                            }
+                        });
+                    },
+                    filterCancel: function () {
+                        var $this = this;
+                        // 还原选择
+                        $this.queryParams2Condition();
+                        $this.hideFilterWindow();
+                    },
+                    filterSure: function () {
+                        var $this = this;
+                        // 还原选择
+                        $this.condition2QueryParams();
+                        $this.hideFilterWindow();
+                        // 查询
+                        $this.loadData();
+                    },
                 }
             });
         }

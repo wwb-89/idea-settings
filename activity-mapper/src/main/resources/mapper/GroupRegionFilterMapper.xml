@@ -12,4 +12,16 @@
     <sql id="Base_Column_List">
         t.id, t.group_id, t.name, t.sequence, t.create_time, t.update_time
     </sql>
+
+    <select id="listByGroupCode" resultMap="BaseResultMap">
+        SELECT
+            <include refid="Base_Column_List"></include>
+        FROM
+            t_group_region_filter t
+            INNER JOIN t_group t1 ON t.group_id = t1.id
+            AND t1.`code` = #{groupCode}
+        ORDER BY
+            t.sequence
+    </select>
+
 </mapper>

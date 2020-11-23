@@ -1,6 +1,5 @@
 package com.chaoxing.activity.service;
 
-import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.chaoxing.activity.mapper.GroupRegionFilterMapper;
 import com.chaoxing.activity.model.GroupRegionFilter;
 import lombok.extern.slf4j.Slf4j;
@@ -31,12 +30,8 @@ public class GroupRegionFilterService {
 	 * @param groupCode
 	 * @return java.util.List<com.chaoxing.activity.model.GroupRegionFilter>
 	*/
-	public List<GroupRegionFilter> listByGroup(String groupCode) {
-		return groupRegionFilterMapper.selectList(new QueryWrapper<GroupRegionFilter>()
-			.lambda()
-				.eq(GroupRegionFilter::getGroupId, groupCode)
-				.orderByAsc(GroupRegionFilter::getSequence)
-		);
+	public List<GroupRegionFilter> listByGroupCode(String groupCode) {
+		return groupRegionFilterMapper.listByGroupCode(groupCode);
 	}
 
 }

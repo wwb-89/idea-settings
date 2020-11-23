@@ -85,12 +85,6 @@ public class Activity {//对接数据库表
     private Integer createFid;
     /** 创建机构名; column: create_org_name*/
     private String createOrgName;
-    /** 省; column: province_name*/
-    private String provinceName;
-    /** 市; column: city_name*/
-    private String cityName;
-    /** 区县; column: county_name*/
-    private String countyName;
     /** 创建时间; column: create_time*/
     @JSONField(serializeUsing = LocalDateTimeSerializer.class, deserializeUsing = LocalDateTimeDeserializer.class)
     private LocalDateTime createTime;
