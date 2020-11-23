@@ -21,6 +21,8 @@ import java.util.List;
 @AllArgsConstructor
 public class ActivityQueryDTO {
 
+	/** 查询关键字 */
+	private String sw;
 	/** 参与的fid列表 */
 	private List<Integer> fids;
 	/** 分类名称 */
