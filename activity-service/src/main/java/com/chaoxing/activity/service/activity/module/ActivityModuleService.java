@@ -4,16 +4,21 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.chaoxing.activity.dto.pageShowModel;
+
+import com.chaoxing.activity.dto.query.ActivityQueryDTO;
+import com.chaoxing.activity.mapper.ActivityClassifyMapper;
 import com.chaoxing.activity.mapper.ActivityMapper;
 import com.chaoxing.activity.mapper.ActivityModuleMapper;
-import com.chaoxing.activity.mapper.PageShowMsgMapper;
+
 import com.chaoxing.activity.model.Activity;
+import com.chaoxing.activity.model.ActivityClassify;
 import com.chaoxing.activity.model.ActivityModule;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
-import org.apache.ibatis.annotations.Mapper;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
 
 import javax.annotation.Resource;
 import java.util.ArrayList;
@@ -35,7 +40,8 @@ public class ActivityModuleService {
 	@Resource
 	private ActivityModuleMapper activityModuleMapper;
 
-
+	@Autowired
+	private ActivityClassifyMapper classifyMapper;
 
 	@Autowired
 	private ActivityMapper activityMapper;
@@ -165,5 +171,66 @@ public class ActivityModuleService {
 		Page<Activity> activityPage = activityMapper.selectPage(page, null);
 		long total = activityPage.getTotal();
 		return total;
+	}
+
+
+
+	/*
+	* 多条件查询的 根据查询条件 分页来查询，封装再返回*/
+	public List<pageShowModel> getpageCondition(Integer current, Integer limit, ActivityQueryDTO query) {
+		//创建page对象
+		Page<Activity> page = new Page<>(current,limit);
+		//创建构造器
+		QueryWrapper<Activity> wrapper = new QueryWrapper<>();
+		//多条件组合查询
+		if(!StringUtils.isEmpty(query)){
+			String activityClassifyName = query.getActivityClassifyName();//活动分类的的id
+			if(!StringUtils.isEmpty(activityClassifyName)){
+				ActivityClassify classify = classifyMapper.selectOne(new QueryWrapper<ActivityClassify>().eq("name", activityClassifyName));
+				System.out.println(activityClassifyName);
+				Integer classifyId = classify.getId();
+				System.out.println(classifyId);
+				if(!StringUtils.isEmpty(classifyId)){
+					wrapper.eq("activity_classify_id",classifyId);
+				}
+			}
+//			ActivityClassify classify = classifyMapper.selectOne(new QueryWrapper<ActivityClassify>().eq("name", activityClassifyName));
+//			Integer classifyId = classify.getId();
+			String area = query.getArea();//活动地点
+			Integer status = query.getStatus();//活动状态
+			System.out.println(status);
+			String date = query.getDate();//时间
+			//构建条件
+//			if(!StringUtils.isEmpty(classifyId)){
+//				wrapper.like("activity_classify_id",classifyId);
+//			}
+			if(!StringUtils.isEmpty(area)){
+				wrapper.like("address",area);
+			}
+			if(!StringUtils.isEmpty(status)){
+				wrapper.eq("status",status);
+			}
+			if(!StringUtils.isEmpty(date)){
+				wrapper.like("start_date",date);
+			}
+		}
+		//调用mapper来查询
+		Page<Activity> ConditionActivityPage = activityMapper.selectPage(page, wrapper);
+		List<Activity> recordList = ConditionActivityPage.getRecords();
+		long total = ConditionActivityPage.getTotal();//查询总数
+		List<pageShowModel> list = new ArrayList<>();
+		pageShowModel pageShowModel = null;
+		for (Activity ac: recordList) {
+			pageShowModel = new pageShowModel();
+			pageShowModel.setCoverCloudId(ac.getCoverCloudId());
+			pageShowModel.setName(ac.getName());
+			pageShowModel.setStatus(ac.getStatus());
+			pageShowModel.setTime(ac.getStartDate()+"~"+ac.getEndDate());
+			pageShowModel.setCreateOrgName(ac.getCreateOrgName());
+			pageShowModel.setAddress(ac.getAddress());
+			list.add(pageShowModel);
+		}
+		return list;
+
 	}
 }

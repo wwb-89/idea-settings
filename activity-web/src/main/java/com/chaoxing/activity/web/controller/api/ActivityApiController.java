@@ -116,7 +116,7 @@ public class ActivityApiController {
 	 * @return com.chaoxing.activity.dto.RestRespDTO
 	*/
 	@RequestMapping("list/participate")
-	public RestRespDTO list(HttpServletRequest request, ActivityQueryDTO activityQuery) {
+	public RestRespDTO list(HttpServletRequest request,ActivityQueryDTO activityQuery) {
 		List<Integer> fids = activityQuery.getFids();
 		if (CollectionUtils.isEmpty(fids)) {
 			LoginUserDTO loginUser = LoginUtils.getLoginUser(request);
@@ -124,6 +124,7 @@ public class ActivityApiController {
 		}
 		Page<Activity> page = HttpServletRequestUtils.buid(request);
 		page = activityQueryService.listParticipate(page, activityQuery);
+		System.out.println(activityQuery);
 		return RestRespDTO.success(page);
 	}
 

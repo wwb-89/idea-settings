@@ -28,7 +28,7 @@
                 <div class="typeItem" v-for="item in typesList" :key="item.id">
                     <span class="title">{{item.title}}</span>
                     <ul>
-                        <li class='active'>全选</li>
+                        <li class='active' >全选</li>
                         <li v-for="type in item.list" :key="type.id">{{type.name}}
                         </li>
                     </ul>
