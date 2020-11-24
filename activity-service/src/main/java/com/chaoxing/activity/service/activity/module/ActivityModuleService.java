@@ -2,23 +2,19 @@ package com.chaoxing.activity.service.activity.module;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
-import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
-import com.chaoxing.activity.dto.pageShowModel;
-
-import com.chaoxing.activity.dto.query.ActivityQueryDTO;
-import com.chaoxing.activity.mapper.ActivityClassifyMapper;
-import com.chaoxing.activity.mapper.ActivityMapper;
+import com.chaoxing.activity.dto.LoginUserDTO;
+import com.chaoxing.activity.dto.module.PunchFormDTO;
+import com.chaoxing.activity.dto.module.WorkFormDTO;
 import com.chaoxing.activity.mapper.ActivityModuleMapper;
-
-import com.chaoxing.activity.model.Activity;
-import com.chaoxing.activity.model.ActivityClassify;
 import com.chaoxing.activity.model.ActivityModule;
+import com.chaoxing.activity.service.manager.module.PunchApiService;
+import com.chaoxing.activity.service.manager.module.StarApiService;
+import com.chaoxing.activity.service.manager.module.TpkApiService;
+import com.chaoxing.activity.service.manager.module.WorkApiService;
+import com.chaoxing.activity.util.enums.ModuleTypeEnum;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
-
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.util.StringUtils;
 
 import javax.annotation.Resource;
 import java.util.ArrayList;
@@ -40,11 +36,14 @@ public class ActivityModuleService {
 	@Resource
 	private ActivityModuleMapper activityModuleMapper;
 
-	@Autowired
-	private ActivityClassifyMapper classifyMapper;
-
-	@Autowired
-	private ActivityMapper activityMapper;
+	@Resource
+	private TpkApiService tpkApiService;
+	@Resource
+	private StarApiService starApiService;
+	@Resource
+	private WorkApiService workApiService;
+	@Resource
+	private PunchApiService punchApiService;
 
 	/**批量新增
 	 * @Description 
@@ -136,101 +135,102 @@ public class ActivityModuleService {
 		return result;
 	}
 
-
-	/**
-	 * @Description 活动展示模块，展示所有的活动模块分页
-	 * @author dkm
-	 * @Date 2020-11-19 14：50：30
-	 * @param
-	 * @param
-	 * @return java.util.List<pageShowModel>
-	 */
-	public List<pageShowModel> getModelMsgPage(Integer current, Integer limit) {
-		Page<Activity> page = new Page<>(current,limit);
-		Page<Activity> activityPage = activityMapper.selectPage(page, null);
-
-		List<Activity> activityList = activityPage.getRecords();
-		long total = activityPage.getTotal();
-		List<pageShowModel> list = new ArrayList<>();
-		pageShowModel pageShowModel = null;
-		for (Activity ac: activityList) {
-			pageShowModel = new pageShowModel();
-			pageShowModel.setCoverCloudId(ac.getCoverCloudId());
-			pageShowModel.setName(ac.getName());
-			pageShowModel.setStatus(ac.getStatus());
-			pageShowModel.setTime(ac.getStartDate()+"~"+ac.getEndDate());
-			pageShowModel.setCreateOrgName(ac.getCreateOrgName());
-			pageShowModel.setAddress(ac.getAddress());
-			list.add(pageShowModel);
-		}
-		return list;
+	/**生成听评课的模块
+	 * @Description 
+	 * @author wwb
+	 * @Date 2020-11-24 10:24:35
+	 * @param activityId
+	 * @param templateId
+	 * @param name
+	 * @param loginUser
+	 * @return com.chaoxing.activity.model.ActivityModule
+	*/
+	public ActivityModule generateTpkModule(Integer activityId, Integer templateId, String name, LoginUserDTO loginUser) {
+		Integer tpkId = tpkApiService.create(name, loginUser);
+		ActivityModule activityModule = ActivityModule.builder()
+				.activityId(activityId)
+				.templateAppId(templateId)
+				.externalId(String.valueOf(tpkId))
+				.name(name)
+				.type(ModuleTypeEnum.TPK.getValue())
+				.build();
+		return activityModule;
+	}
+	
+	/**生成星阅读模块
+	 * @Description 
+	 * @author wwb
+	 * @Date 2020-11-24 10:26:30
+	 * @param activityId
+	 * @param templateId
+	 * @param name
+	 * @param loginUser
+	 * @return com.chaoxing.activity.model.ActivityModule
+	*/
+	public ActivityModule generateStarModule(Integer activityId, Integer templateId, String name, LoginUserDTO loginUser) {
+		Integer starId = starApiService.create(loginUser.getUid(), loginUser.getFid());
+		ActivityModule activityModule = ActivityModule.builder()
+				.activityId(activityId)
+				.templateAppId(templateId)
+				.externalId(String.valueOf(starId))
+				.name(name)
+				.type(ModuleTypeEnum.STAR.getValue())
+				.build();
+		return activityModule;
+	}
+	
+	/**生成作品征集模块
+	 * @Description 
+	 * @author wwb
+	 * @Date 2020-11-24 10:27:11
+	 * @param activityId
+	 * @param templateId
+	 * @param name
+	 * @param loginUser
+	 * @return com.chaoxing.activity.model.ActivityModule
+	*/
+	public ActivityModule generateWorkModule(Integer activityId, Integer templateId, String name, LoginUserDTO loginUser) {
+		WorkFormDTO workForm = WorkFormDTO.builder()
+				.name(name)
+				.uid(loginUser.getUid())
+				.wfwfid(loginUser.getFid())
+				.build();
+		Integer workId = workApiService.create(workForm);
+		ActivityModule activityModule = ActivityModule.builder()
+				.activityId(activityId)
+				.templateAppId(templateId)
+				.externalId(String.valueOf(workId))
+				.name(name)
+				.type(ModuleTypeEnum.WORK.getValue())
+				.build();
+		return activityModule;
 	}
 
-	public Long getTotal(Integer current,Integer limit) {
-		Page<Activity> page = new Page<>(current,limit);
-		Page<Activity> activityPage = activityMapper.selectPage(page, null);
-		long total = activityPage.getTotal();
-		return total;
+	/**生成打卡模块
+	 * @Description 
+	 * @author wwb
+	 * @Date 2020-11-24 10:29:29
+	 * @param activityId
+	 * @param templateId
+	 * @param name
+	 * @param loginUser
+	 * @return com.chaoxing.activity.model.ActivityModule
+	*/
+	public ActivityModule generatePunchModule(Integer activityId, Integer templateId, String name, LoginUserDTO loginUser) {
+		PunchFormDTO punchForm = PunchFormDTO.builder()
+				.name(name)
+				.needPubDynamic(false)
+				.createUid(loginUser.getUid())
+				.build();
+		Integer punchId = punchApiService.create(punchForm);
+		ActivityModule activityModule = ActivityModule.builder()
+				.activityId(activityId)
+				.templateAppId(templateId)
+				.externalId(String.valueOf(punchId))
+				.name(name)
+				.type(ModuleTypeEnum.PUNCH.getValue())
+				.build();
+		return activityModule;
 	}
 
-
-
-	/*
-	* 多条件查询的 根据查询条件 分页来查询，封装再返回*/
-	public List<pageShowModel> getpageCondition(Integer current, Integer limit, ActivityQueryDTO query) {
-		//创建page对象
-		Page<Activity> page = new Page<>(current,limit);
-		//创建构造器
-		QueryWrapper<Activity> wrapper = new QueryWrapper<>();
-		//多条件组合查询
-		if(!StringUtils.isEmpty(query)){
-			String activityClassifyName = query.getActivityClassifyName();//活动分类的的id
-			if(!StringUtils.isEmpty(activityClassifyName)){
-				ActivityClassify classify = classifyMapper.selectOne(new QueryWrapper<ActivityClassify>().eq("name", activityClassifyName));
-				System.out.println(activityClassifyName);
-				Integer classifyId = classify.getId();
-				System.out.println(classifyId);
-				if(!StringUtils.isEmpty(classifyId)){
-					wrapper.eq("activity_classify_id",classifyId);
-				}
-			}
-//			ActivityClassify classify = classifyMapper.selectOne(new QueryWrapper<ActivityClassify>().eq("name", activityClassifyName));
-//			Integer classifyId = classify.getId();
-			String area = query.getArea();//活动地点
-			Integer status = query.getStatus();//活动状态
-			System.out.println(status);
-			String date = query.getDate();//时间
-			//构建条件
-//			if(!StringUtils.isEmpty(classifyId)){
-//				wrapper.like("activity_classify_id",classifyId);
-//			}
-			if(!StringUtils.isEmpty(area)){
-				wrapper.like("address",area);
-			}
-			if(!StringUtils.isEmpty(status)){
-				wrapper.eq("status",status);
-			}
-			if(!StringUtils.isEmpty(date)){
-				wrapper.like("start_date",date);
-			}
-		}
-		//调用mapper来查询
-		Page<Activity> ConditionActivityPage = activityMapper.selectPage(page, wrapper);
-		List<Activity> recordList = ConditionActivityPage.getRecords();
-		long total = ConditionActivityPage.getTotal();//查询总数
-		List<pageShowModel> list = new ArrayList<>();
-		pageShowModel pageShowModel = null;
-		for (Activity ac: recordList) {
-			pageShowModel = new pageShowModel();
-			pageShowModel.setCoverCloudId(ac.getCoverCloudId());
-			pageShowModel.setName(ac.getName());
-			pageShowModel.setStatus(ac.getStatus());
-			pageShowModel.setTime(ac.getStartDate()+"~"+ac.getEndDate());
-			pageShowModel.setCreateOrgName(ac.getCreateOrgName());
-			pageShowModel.setAddress(ac.getAddress());
-			list.add(pageShowModel);
-		}
-		return list;
-
-	}
 }

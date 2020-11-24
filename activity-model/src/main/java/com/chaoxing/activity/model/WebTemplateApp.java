@@ -8,6 +8,8 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.List;
+
 /**
  * 网页模板app关联表
  * @className: TWebTemplateApp, table_name: t_web_template_app
@@ -32,7 +34,13 @@ public class WebTemplateApp {
     private Integer appId;
     /** 应用类型; column: app_type*/
     private String appType;
+    /** 数据类型，封面、签到报名、地图、活动列表等; column: data_type*/
+    private String dataType;
     /** 数据源类型; column: data_source_type*/
     private Integer dataSourceType;
+
+    // 附加
+    /** 模板应用数据列表 */
+    private List<WebTemplateAppData> webTemplateAppDataList;
 
 }

@@ -251,42 +251,26 @@
                     changeActivityClassify: function (index) {
                         var $this = this;
                         $($this.activityClassifies).each(function (i) {
-                            if (i == index) {
-                                $this.$set($this.activityClassifies[i], "selected", true);
-                            } else {
-                                $this.$set($this.activityClassifies[i], "selected", false);
-                            }
+                            $this.$set($this.activityClassifies[i], "selected", i == index);
                         });
                     },
                     changeTime: function (index) {
                         var $this = this;
                         $($this.times).each(function (i) {
-                            if (i == index) {
-                                $this.$set($this.times[i], "selected", true);
-                            } else {
-                                $this.$set($this.times[i], "selected", false);
-                            }
+                            $this.$set($this.times[i], "selected", i == index);
                         });
                     },
                     changeRegion: function (index) {
                         var $this = this;
                         $($this.regions).each(function (i) {
-                            if (i == index) {
-                                $this.$set($this.regions[i], "selected", true);
-                            } else {
-                                $this.$set($this.regions[i], "selected", false);
-                            }
+                            $this.$set($this.regions[i], "selected", i == index);
                         });
                         $this.$forceUpdate();
                     },
                     changeStatus: function (index) {
                         var $this = this;
                         $($this.statuses).each(function (i) {
-                            if (i == index) {
-                                $this.$set($this.statuses[i], "selected", true);
-                            } else {
-                                $this.$set($this.statuses[i], "selected", false);
-                            }
+                            $this.$set($this.statuses[i], "selected", i == index);
                         });
                     },
                     condition2QueryParams: function () {
@@ -320,32 +304,16 @@
                     queryParams2Condition: function () {
                         var $this = this;
                         $($this.activityClassifies).each(function (i) {
-                            if (this.value == $this.queryParams.activityClassifyName) {
-                                $this.$set($this.activityClassifies[i], "selected", true);
-                            } else {
-                                $this.$set($this.activityClassifies[i], "selected", false);
-                            }
+                            $this.$set($this.activityClassifies[i], "selected", this.value == $this.queryParams.activityClassifyName);
                         });
                         $($this.times).each(function (i) {
-                            if (this.value == $this.queryParams.date) {
-                                $this.$set($this.times[i], "selected", true);
-                            } else {
-                                $this.$set($this.times[i], "selected", false);
-                            }
+                            $this.$set($this.times[i], "selected", this.value == $this.queryParams.date);
                         });
                         $($this.regions).each(function (i) {
-                            if (this.value == $this.queryParams.area) {
-                                $this.$set($this.regions[i], "selected", true);
-                            } else {
-                                $this.$set($this.regions[i], "selected", false);
-                            }
+                            $this.$set($this.regions[i], "selected", this.value == $this.queryParams.area);
                         });
                         $($this.statuses).each(function (i) {
-                            if (this.value == $this.queryParams.status) {
-                                $this.$set($this.statuses[i], "selected", true);
-                            } else {
-                                $this.$set($this.statuses[i], "selected", false);
-                            }
+                            $this.$set($this.statuses[i], "selected", this.value == $this.queryParams.status);
                         });
                     },
                     filterCancel: function () {

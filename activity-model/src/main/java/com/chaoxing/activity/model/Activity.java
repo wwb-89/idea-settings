@@ -62,6 +62,8 @@ public class Activity {//对接数据库表
     private Integer signId;
     /** 网页模板id; column: web_template_id*/
     private Integer webTemplateId;
+    /** 门户网页id; column: page_id*/
+    private Integer pageId;
     /** 是否已发布; column: is_released*/
     @TableField(value = "is_released")
     private Boolean released;

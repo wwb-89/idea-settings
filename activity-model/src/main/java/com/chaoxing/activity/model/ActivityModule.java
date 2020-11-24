@@ -42,6 +42,10 @@ public class ActivityModule {
     private String pcUrl;
     /** 移动端地址; column: mobile_url*/
     private String mobileUrl;
+    /** 门户模板应用id; column: template_app_id*/
+    private Integer templateAppId;
+    /** 门户应用id; column: app_id*/
+    private Integer appId;
     /** 顺序; column: sequence*/
     private Integer sequence;
     /** 外部配置信息; column: external_config*/
