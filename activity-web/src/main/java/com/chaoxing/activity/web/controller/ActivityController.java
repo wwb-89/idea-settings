@@ -49,20 +49,7 @@ public class ActivityController {
 		return "pc/index";
 	}
 
-	@GetMapping("/getTotal/{current}/{limit}")
-	@ResponseBody
-	public Long total(@PathVariable Integer current,@PathVariable Integer limit){
-		return activityModuleService.getTotal(current, limit);
-	}
 
-
-	@ResponseBody
-	@PostMapping("/getpageCondition/{current}/{limit}")
-	public List<pageShowModel> pageCondition(@PathVariable Integer current, @PathVariable Integer limit, @RequestBody(required = false) ActivityQueryDTO query){
-		System.out.println(query);
-		List<pageShowModel> conditionList = activityModuleService.getpageCondition(current,limit,query);
-		return  conditionList;
-	}
 
 
 

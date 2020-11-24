@@ -34,12 +34,5 @@ public class PageShowModelController {
     * description 展示所有的活动页面信息,按分页展示
     *
     * */
-    @GetMapping("/msg/{current}/{limit}")
-    @ResponseBody
-    public List<pageShowModel> showPageMsg( Model model, HttpServletRequest request,@PathVariable("current") Integer current,@PathVariable("limit") Integer limit){
-        List<pageShowModel> list  = service.getModelMsgPage(current,limit);
-        model.addAttribute("list",list);
 
-        return list;
-    }
 }
