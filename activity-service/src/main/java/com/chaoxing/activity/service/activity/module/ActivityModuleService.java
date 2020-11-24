@@ -233,4 +233,46 @@ public class ActivityModuleService {
 		return activityModule;
 	}
 
+	/**根据活动id和门户模板appId查询活动模块列表
+	 * @Description 
+	 * @author wwb
+	 * @Date 2020-11-25 00:05:42
+	 * @param activityId
+	 * @param templateAppId
+	 * @return java.util.List<com.chaoxing.activity.model.ActivityModule>
+	*/
+	public List<ActivityModule> listByActivityIdAndTemplateId(Integer activityId, Integer templateAppId) {
+		List<ActivityModule> activityModules = activityModuleMapper.selectList(new QueryWrapper<ActivityModule>()
+				.lambda()
+				.eq(ActivityModule::getActivityId, activityId)
+				.eq(ActivityModule::getTemplateAppId, templateAppId)
+		);
+		return activityModules;
+	}
+
+	/**获取模块的访问地址
+	 * @Description 
+	 * @author wwb
+	 * @Date 2020-11-25 00:20:00
+	 * @param activityModule
+	 * @return java.lang.String
+	*/
+	public String getModuleAccessUrl(ActivityModule activityModule) {
+		String type = activityModule.getType();
+		ModuleTypeEnum moduleType = ModuleTypeEnum.fromValue(type);
+		switch (moduleType) {
+			case WORK:
+				break;
+			case STAR:
+				break;
+			case PUNCH:
+				break;
+			case TPK:
+				break;
+			default:
+
+		}
+		return "";
+	}
+
 }

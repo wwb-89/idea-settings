@@ -130,7 +130,7 @@ public class ActivityMhAppApiController {
 		return RestRespDTO.success(jsonObject);
 	}
 
-	/**推荐过冬
+	/**推荐活动
 	 * @Description 
 	 * @author wwb
 	 * @Date 2020-11-24 21:42:19

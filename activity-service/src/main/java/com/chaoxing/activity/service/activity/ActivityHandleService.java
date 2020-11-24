@@ -8,10 +8,12 @@ import com.chaoxing.activity.dto.mh.MhCloneParamDTO;
 import com.chaoxing.activity.dto.module.SignFormDTO;
 import com.chaoxing.activity.mapper.ActivityAreaFlagMapper;
 import com.chaoxing.activity.mapper.ActivityMapper;
+import com.chaoxing.activity.mapper.WebTemplateAppDataMapper;
 import com.chaoxing.activity.model.*;
 import com.chaoxing.activity.service.WebTemplateService;
 import com.chaoxing.activity.service.activity.module.ActivityModuleService;
 import com.chaoxing.activity.service.activity.scope.ActivityScopeService;
+import com.chaoxing.activity.service.manager.CloudApiService;
 import com.chaoxing.activity.service.manager.GuanliApiService;
 import com.chaoxing.activity.service.manager.MhApiService;
 import com.chaoxing.activity.service.manager.WfwRegionalArchitectureApiService;
@@ -66,9 +68,9 @@ public class ActivityHandleService {
 	@Resource
 	private GuanliApiService guanliApiService;
 	@Resource
-	private TpkApiService tpkApiService;
-	@Resource
 	private WebTemplateService webTemplateService;
+	@Resource
+	private CloudApiService cloudApiService;
 
 	@Resource
 	private SignApiService signApiService;
@@ -592,7 +594,7 @@ public class ActivityHandleService {
 
 	private List<MhCloneParamDTO.MhAppDTO> packageTemplateApps(Integer activityId, Integer webTemplateId) {
 		List<MhCloneParamDTO.MhAppDTO> result = new ArrayList<>();
-		List<WebTemplateApp> webTemplateApps = webTemplateService.listByWebTemplateId(webTemplateId);
+		List<WebTemplateApp> webTemplateApps = webTemplateService.listAppByWebTemplateId(webTemplateId);
 		if (CollectionUtils.isEmpty(webTemplateApps)) {
 			return result;
 		}
@@ -620,11 +622,40 @@ public class ActivityHandleService {
 		return mhApp;
 	}
 
+	/** 封装本地数据源数据
+	 * @Description
+	 * @author wwb
+	 * @Date 2020-11-24 23:42:47
+	 * @param webTemplateApp
+	 * @param activityId
+	 * @return java.util.List<com.chaoxing.activity.dto.mh.MhCloneParamDTO.MhAppDataDTO>
+	*/
 	private List<MhCloneParamDTO.MhAppDataDTO> packageMhAppData(WebTemplateApp webTemplateApp, Integer activityId) {
+		List<MhCloneParamDTO.MhAppDataDTO> result = new ArrayList<>();
 		// 目前只处理图标
-		return null;
+		Integer appId = webTemplateApp.getAppId();
+		List<ActivityModule> activityModules = activityModuleService.listByActivityIdAndTemplateId(activityId, appId);
+		if (CollectionUtils.isNotEmpty(activityModules)) {
+			for (ActivityModule activityModule : activityModules) {
+				MhCloneParamDTO.MhAppDataDTO mhAppData = MhCloneParamDTO.MhAppDataDTO.builder()
+						.title(activityModule.getName())
+						// 访问的url
+						.url("")
+						.coverUrl(cloudApiService.getCloudImgUrl(activityModule.getIconCloudId()))
+						.build();
+				result.add(mhAppData);
+			}
+		}
+		return result;
 	}
 
+	/**封装外部数据源数据
+	 * @Description 
+	 * @author wwb
+	 * @Date 2020-11-24 23:44:52
+	 * @param webTemplateApp
+	 * @return java.lang.String
+	*/
 	private String packageMhAppDataUrl(WebTemplateApp webTemplateApp) {
 		String dataType = webTemplateApp.getDataType();
 		MhAppDataTypeEnum mhAppDataType = MhAppDataTypeEnum.fromValue(dataType);

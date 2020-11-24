@@ -93,7 +93,7 @@ public class WebTemplateService {
 		return webTemplateApps;
 	}
 
-	public List<WebTemplateApp> listByWebTemplateId(Integer webTemplateId) {
+	public List<WebTemplateApp> listAppByWebTemplateId(Integer webTemplateId) {
 		return webTemplateAppMapper.selectList(new QueryWrapper<WebTemplateApp>()
 			.lambda()
 				.eq(WebTemplateApp::getWebTemplateId, webTemplateId)
