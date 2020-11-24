@@ -16,7 +16,7 @@
     </div>
     <div class="content">
         <div class="search">
-            <input type="text" placeholder="搜索标题">
+            <input type="text" id="search-input" v-model.trim="sw"  placeholder="搜索标题" @keyup.enter="search">
             <div class="search-foot">
                 <img src="/static/pc/assets/images/search.png" th:src="@{/pc/assets/images/search.png}">
             </div>
@@ -83,8 +83,11 @@
                 </div>
             </div>
 
-            <el-pagination background layout="prev, pager, next" :total="10">
+            <el-pagination background layout="prev, pager, next" :total="100"
+                           @current-change="currenClick"
+                           :current-page="currentPage">
             </el-pagination>
+
             <!-- 当列表为空时展示 -->
             <div class="empty-box" style="display: none;">
                 <img src="/static/pc/assets/images/empty.png" th:src="@{/pc/assets/images/empty.png}">
@@ -116,8 +119,8 @@
                 loaded: false,
                 searchShow: false,
                 total: "",
-
-
+                //分页
+                currentPage: 1,
                 filterWindowShow: false,
                 searchShadeShow: false,
 
@@ -170,10 +173,12 @@
             mounted:function() {
               var $this = this;
               $this.resetQueryParams();
+              console.log($this.queryParams);
               $this.loadData();
             },
 
             methods: {
+
                 //改变选中状态
                 changeActivityClassifySelected(index){
                     var $this = this;
@@ -257,10 +262,19 @@
                     },function () {
                         app.showMsg("加载活动列表失败");
                     })
-
-
                 },
-
+                search: function () {
+                    var $this = this;
+                    $this.queryParams.sw = $this.sw;
+                    $("#search-input").blur();
+                    $this.loadData();
+                },
+                currenClick:function (currentPage) {
+                    var $this = this;
+                    $this.queryParams.pageNum = currentPage;
+                    $this.loadData();
+                    console.log(currentPage)
+                }
 
 
 
