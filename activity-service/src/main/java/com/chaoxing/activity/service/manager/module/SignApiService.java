@@ -2,6 +2,7 @@ package com.chaoxing.activity.service.manager.module;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
+import com.chaoxing.activity.dto.manager.SignParticipationDTO;
 import com.chaoxing.activity.dto.module.SignFormDTO;
 import com.chaoxing.activity.util.RestTemplateUtils;
 import com.chaoxing.activity.util.constant.DateTimeFormatterConstant;
@@ -38,6 +39,8 @@ public class SignApiService {
 	private static final String UPDATE_URL = DOMAIN + "/activity/update";
 	/** 获取签到报名信息的地址 */
 	private static final String DETAIL_URL = DOMAIN + "/activity/%d/detail";
+	/** 参与情况 */
+	private static final String PARTICIPATION_URL = "/activity/%d/participation";
 
 	@Resource
 	private RestTemplate restTemplate;
@@ -123,6 +126,34 @@ public class SignApiService {
 			log.error("根据签到报名id:{}查询签到报名失败:{}", signId, errorMessage);
 			throw new BusinessException(errorMessage);
 		}
+	}
+
+	/**查询签到活动的参与情况
+	 * @Description 
+	 * @author wwb
+	 * @Date 2020-11-24 20:15:35
+	 * @param signActivityId
+	 * @return com.chaoxing.activity.dto.manager.SignParticipationDTO
+	*/
+	public SignParticipationDTO getSignParticipation(Integer signActivityId) {
+		Integer limitNum = 0;
+		Integer signedNum = 0;
+		if (signActivityId != null) {
+			String url = String.format(PARTICIPATION_URL, signActivityId);
+			String result = restTemplate.getForObject(url, String.class);
+			JSONObject jsonObject = JSON.parseObject(result);
+			Boolean success = jsonObject.getBoolean("success");
+			success = Optional.ofNullable(success).orElse(Boolean.FALSE);
+			if (success) {
+				JSONObject data = jsonObject.getJSONObject("data");
+				limitNum = data.getInteger("limitNum");
+				signedNum = data.getInteger("signedNum");
+			}
+		}
+		return SignParticipationDTO.builder()
+				.limitNum(limitNum)
+				.signedNum(signedNum)
+				.build();
 	}
 
 }

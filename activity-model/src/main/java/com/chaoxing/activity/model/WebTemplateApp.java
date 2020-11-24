@@ -32,6 +32,8 @@ public class WebTemplateApp {
     private Integer webTemplateId;
     /** 应用id; column: app_id*/
     private Integer appId;
+    /** 应用名称; column: app_name*/
+    private Integer appName;
     /** 应用类型; column: app_type*/
     private String appType;
     /** 数据类型，封面、签到报名、地图、活动列表等; column: data_type*/

@@ -1,11 +1,15 @@
 package com.chaoxing.activity.service.manager;
 
-import com.chaoxing.activity.dto.LoginUserDTO;
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONObject;
+import com.chaoxing.activity.dto.mh.MhCloneParamDTO;
+import com.chaoxing.activity.util.exception.BusinessException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
 import javax.annotation.Resource;
+import java.util.Objects;
 
 /**门户api
  * @author wwb
@@ -20,7 +24,7 @@ import javax.annotation.Resource;
 public class MhApiService {
 
 	/** 克隆模板的url http://portal.chaoxing.com/web-others/{templateId}/cloneActivity?wfwfid=&activityId=&uid= */
-	private static final String CLONE_TEMPLATE_URL = "http://portal.chaoxing.com/web-others/%d/cloneActivity?wfwfid=%d&activityId=%d&uid=%d";
+	private static final String CLONE_TEMPLATE_URL = "http://portal.chaoxing.com/web-others/%d/cloneActivity?wfwfid=%d&uid=%d";
 
 	@Resource
 	private RestTemplate restTemplate;
@@ -29,17 +33,23 @@ public class MhApiService {
 	 * @Description 
 	 * @author wwb
 	 * @Date 2020-11-23 20:44:46
-	 * @param activityId
-	 * @param templateId
-	 * @param loginUser
-	 * @return java.lang.String
+	 * @param mhCloneParam
+	 * @return java.lang.Integer
 	*/
-	public String cloneTemplate(Integer activityId, Integer templateId, LoginUserDTO loginUser) {
-		Integer fid = loginUser.getFid();
-		Integer uid = loginUser.getUid();
-		String url = String.format(CLONE_TEMPLATE_URL, templateId, fid, activityId, uid);
+	public Integer cloneTemplate(MhCloneParamDTO mhCloneParam) {
+		Integer fid = mhCloneParam.getWfwfid();
+		Integer uid = mhCloneParam.getUid();
+		String url = String.format(CLONE_TEMPLATE_URL, mhCloneParam.getTemplateId(), fid, uid);
 		String result = restTemplate.postForObject(url, null, String.class);
-		return null;
+		JSONObject jsonObject = JSON.parseObject(result);
+		Integer code = jsonObject.getInteger("code");
+		if (Objects.equals(code, 1)) {
+			Integer pageId = jsonObject.getInteger("pageId");
+			return pageId;
+		} else {
+			String errorMessage = jsonObject.getString("message");
+			throw new BusinessException(errorMessage);
+		}
 	}
 
 }

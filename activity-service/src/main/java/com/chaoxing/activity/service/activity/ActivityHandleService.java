@@ -1,11 +1,10 @@
 package com.chaoxing.activity.service.activity;
 
-import com.alibaba.fastjson.JSON;
-import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.chaoxing.activity.dto.LoginUserDTO;
 import com.chaoxing.activity.dto.OrgAddressDTO;
 import com.chaoxing.activity.dto.manager.WfwRegionalArchitectureDTO;
+import com.chaoxing.activity.dto.mh.MhCloneParamDTO;
 import com.chaoxing.activity.dto.module.SignFormDTO;
 import com.chaoxing.activity.mapper.ActivityAreaFlagMapper;
 import com.chaoxing.activity.mapper.ActivityMapper;
@@ -19,9 +18,7 @@ import com.chaoxing.activity.service.manager.WfwRegionalArchitectureApiService;
 import com.chaoxing.activity.service.manager.module.SignApiService;
 import com.chaoxing.activity.service.manager.module.TpkApiService;
 import com.chaoxing.activity.service.manager.module.WorkApiService;
-import com.chaoxing.activity.util.enums.ActivityAreaLevelEnum;
-import com.chaoxing.activity.util.enums.MhAppTypeEnum;
-import com.chaoxing.activity.util.enums.ModuleTypeEnum;
+import com.chaoxing.activity.util.enums.*;
 import com.chaoxing.activity.util.exception.BusinessException;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
@@ -33,7 +30,10 @@ import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 /**数据处理服务
@@ -497,23 +497,15 @@ public class ActivityHandleService {
 	public void bindWebTemplate(Integer activityId, Integer webTemplateId, LoginUserDTO loginUser) {
 		// 创建模块
 		createModuleByWebTemplateId(activityId, webTemplateId, loginUser);
-		WebTemplate webTemplate = webTemplateService.webTemplateExist(webTemplateId);
 		// 克隆
-		String result = mhApiService.cloneTemplate(activityId, webTemplate.getTemplateId(), loginUser);
-		JSONObject jsonObject = JSON.parseObject(result);
-		Integer code = jsonObject.getInteger("code");
-		if (Objects.equals(code, 1)) {
-			Integer pageId = jsonObject.getInteger("pageId");
-			activityMapper.update(null, new UpdateWrapper<Activity>()
+		MhCloneParamDTO mhCloneParam = packageMhCloneParam(activityId, webTemplateId, loginUser);
+		Integer pageId = mhApiService.cloneTemplate(mhCloneParam);
+		activityMapper.update(null, new UpdateWrapper<Activity>()
 				.lambda()
-					.eq(Activity::getId, activityId)
-					.set(Activity::getWebTemplateId, webTemplateId)
-					.set(Activity::getPageId, pageId)
-			);
-		} else {
-			String errorMessage = jsonObject.getString("message");
-			throw new BusinessException(errorMessage);
-		}
+				.eq(Activity::getId, activityId)
+				.set(Activity::getWebTemplateId, webTemplateId)
+				.set(Activity::getPageId, pageId)
+		);
 	}
 
 	/**创建模块
@@ -585,6 +577,74 @@ public class ActivityHandleService {
 
 		}
 		return activityModule;
+	}
+
+	private MhCloneParamDTO packageMhCloneParam(Integer activityId, Integer webTemplateId, LoginUserDTO loginUser) {
+		WebTemplate webTemplate = webTemplateService.webTemplateExist(webTemplateId);
+		MhCloneParamDTO mhCloneParam = new MhCloneParamDTO();
+		mhCloneParam.setTemplateId(webTemplate.getTemplateId());
+		mhCloneParam.setUid(loginUser.getUid());
+		mhCloneParam.setWfwfid(loginUser.getFid());
+		List<MhCloneParamDTO.MhAppDTO> appList = packageTemplateApps(activityId, webTemplateId);
+		mhCloneParam.setAppList(appList);
+		return mhCloneParam;
+	}
+
+	private List<MhCloneParamDTO.MhAppDTO> packageTemplateApps(Integer activityId, Integer webTemplateId) {
+		List<MhCloneParamDTO.MhAppDTO> result = new ArrayList<>();
+		List<WebTemplateApp> webTemplateApps = webTemplateService.listByWebTemplateId(webTemplateId);
+		if (CollectionUtils.isEmpty(webTemplateApps)) {
+			return result;
+		}
+		for (WebTemplateApp webTemplateApp : webTemplateApps) {
+			MhCloneParamDTO.MhAppDTO mhApp = packageMhAppDTO(webTemplateApp, activityId);
+			result.add(mhApp);
+		}
+		return result;
+	}
+
+	private MhCloneParamDTO.MhAppDTO packageMhAppDTO(WebTemplateApp webTemplateApp, Integer activityId) {
+		MhCloneParamDTO.MhAppDTO mhApp = new MhCloneParamDTO.MhAppDTO();
+		mhApp.setAppName(webTemplateApp.getAppName());
+		Integer dataSourceType = webTemplateApp.getDataSourceType();
+		MhAppDataSourceEnum mhAppDataSource = MhAppDataSourceEnum.fromValue(dataSourceType);
+		mhApp.setDataType(mhAppDataSource.getValue());
+		if (mhAppDataSource.equals(MhAppDataSourceEnum.LOCAL)) {
+			// 本地数据源
+			List<MhCloneParamDTO.MhAppDataDTO> mhAppDatas = packageMhAppData(webTemplateApp, activityId);
+			mhApp.setDataList(mhAppDatas);
+		} else {
+			String dataUrl = packageMhAppDataUrl(webTemplateApp);
+			mhApp.setDataUrl(dataUrl);
+		}
+		return mhApp;
+	}
+
+	private List<MhCloneParamDTO.MhAppDataDTO> packageMhAppData(WebTemplateApp webTemplateApp, Integer activityId) {
+		// 目前只处理图标
+		return null;
+	}
+
+	private String packageMhAppDataUrl(WebTemplateApp webTemplateApp) {
+		String dataType = webTemplateApp.getDataType();
+		MhAppDataTypeEnum mhAppDataType = MhAppDataTypeEnum.fromValue(dataType);
+		switch (mhAppDataType) {
+			case ACTIVITY_COVER:
+				break;
+			case ACTIVITY_INFO:
+				break;
+			case SIGN_IN_UP:
+				break;
+			case ACTIVITY_MODULE:
+				break;
+			case ACTIVITY_MAP:
+				break;
+			case ACTIVITY_LIST:
+				break;
+			default:
+
+		}
+		return "";
 	}
 
 }

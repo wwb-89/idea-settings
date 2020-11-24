@@ -5,11 +5,12 @@
         <id column="id" jdbcType="INTEGER" property="id" />
         <result column="web_template_id" jdbcType="INTEGER" property="webTemplateId" />
         <result column="app_id" jdbcType="INTEGER" property="appId" />
+        <result column="app_name" jdbcType="INTEGER" property="appName" />
         <result column="app_type" jdbcType="VARCHAR" property="appType" />
         <result column="data_type" jdbcType="VARCHAR" property="dataType" />
         <result column="data_source_type" jdbcType="INTEGER" property="dataSourceType" />
     </resultMap>
     <sql id="Base_Column_List">
-        t.id, t.web_template_id, t.app_id, t.app_type, t.data_type, t.data_source_type
+        t.id, t.web_template_id, t.app_id, t.app_name, t.app_type, t.data_type, t.data_source_type
     </sql>
 </mapper>

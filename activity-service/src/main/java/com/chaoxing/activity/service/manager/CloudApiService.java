@@ -31,6 +31,8 @@ public class CloudApiService {
 	private static final String UPLOAD_URL = "http://cs.ananas.chaoxing.com/upload?uid=-1&prdid=40";
 	/** 资源状态url */
 	private static final String GET_CLOUD_RESOURCE_STATUS_URL = "http://cs.ananas.chaoxing.com/status/";
+	/** 云盘图片url */
+	private static final String IMG_URL = "http://d0.ananas.chaoxing.com/download/";
 
 	@Resource(name = "restTemplateProxy")
 	private RestTemplate restTemplate;
@@ -88,6 +90,20 @@ public class CloudApiService {
 		urlStringBuilder.append(GET_CLOUD_RESOURCE_STATUS_URL);
 		urlStringBuilder.append(cloudId);
 		return restTemplate.getForObject(urlStringBuilder.toString(), String.class);
+	}
+
+	/**获取云盘图片url
+	 * @Description 
+	 * @author wwb
+	 * @Date 2020-11-24 17:50:20
+	 * @param cloudId
+	 * @return java.lang.String
+	*/
+	public String getCloudImgUrl(String cloudId) {
+		StringBuilder urlStringBuilder = new StringBuilder();
+		urlStringBuilder.append(IMG_URL);
+		urlStringBuilder.append(cloudId);
+		return urlStringBuilder.toString();
 	}
 
 }

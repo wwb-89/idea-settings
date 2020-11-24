@@ -1,6 +1,9 @@
 package com.chaoxing.activity.util.enums;
 
+import com.chaoxing.activity.util.exception.BusinessException;
 import lombok.Getter;
+
+import java.util.Objects;
 
 /**门户应用数据源枚举
  * @author wwb
@@ -22,6 +25,16 @@ public enum MhAppDataSourceEnum {
 	MhAppDataSourceEnum(String name, Integer value) {
 		this.name = name;
 		this.value = value;
+	}
+
+	public static MhAppDataSourceEnum fromValue(Integer value) {
+		MhAppDataSourceEnum[] values = MhAppDataSourceEnum.values();
+		for (MhAppDataSourceEnum mhAppDataSourceEnum : values) {
+			if (Objects.equals(mhAppDataSourceEnum.getValue(), value)) {
+				return mhAppDataSourceEnum;
+			}
+		}
+		throw new BusinessException("未知的门户数据源类型");
 	}
 
 }

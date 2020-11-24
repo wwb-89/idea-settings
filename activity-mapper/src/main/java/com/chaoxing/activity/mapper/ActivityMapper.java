@@ -42,4 +42,13 @@ public interface ActivityMapper extends BaseMapper<Activity> {
 	 */
 	Page<Activity> listManaging(@Param("page") Page<?> page, @Param("params") ActivityManageQueryDTO activityManageQuery);
 
+	/**查询创建的
+	 * @Description 
+	 * @author wwb
+	 * @Date 2020-11-24 21:49:48
+	 * @param fid
+	 * @return com.baomidou.mybatisplus.extension.plugins.pagination.Page<com.chaoxing.activity.model.Activity>
+	*/
+	Page<Activity> listCreated(@Param("fid") Integer fid);
+
 }
