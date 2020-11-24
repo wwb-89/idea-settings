@@ -62,22 +62,23 @@
                     <li>热门</li>
                     <li>推荐</li>
                 </ul>
-                <div class="count">共<span></span>个活动</div>
+                <div class="count">共<span>{{total}}</span>个活动</div>
             </div>
 
             <div class="c-item" >
-
-                <div class="item" >
+                <div class="item" v-for="(item, index) of activities" :key="'item-' + index">
                     <div class="img-box">
-                        <img src="http://uestc.moonsinfo.com/upload/hallonomie/2020-10/202010120814255729.png"
+                        <img :src=item.coverCloudId
                              alt="">
-                        <div class="tag">活动预备</div>
+                        <div class="tag" v-if="item.status == 2">活动预告</div>
+                        <div class="tag" v-if="item.status == 3">进行中</div>
+                        <div class="tag" v-if="item.status == 4">已结束</div>
                     </div>
                     <div class="font-box">
                         <p class="title1" ></p>
-                        <p>活动时间：</p>
-                        <p>主办单位：</p>
-                        <p>活动地点：</p>
+                        <p>活动时间：{{item.startDate | timestamp2YMD}} ～ {{item.endDate | timestamp2YMD}}</p>
+                        <p>主办单位：{{item.createOrgName}}</p>
+                        <p>活动地点：{{item.address}}</p>
                     </div>
                 </div>
             </div>
@@ -114,6 +115,7 @@
                 activities: [],
                 loaded: false,
                 searchShow: false,
+                total: "",
 
 
                 filterWindowShow: false,
@@ -167,6 +169,7 @@
             },
             mounted:function() {
               var $this = this;
+              $this.resetQueryParams();
               $this.loadData();
             },
 
@@ -241,7 +244,8 @@
                         if(data.success){
                             $this.loaded = true;
                             $this.activities = data.data.records;
-                            $this.queryParams.pageNum++;
+                            $this.total = $this.activities.length;
+                            console.log($this.activities);
                         }else{
                             var errorMessage = data.message;
                             if (activityApp.isEmpty(errorMessage)) {
@@ -253,8 +257,8 @@
                     },function () {
                         app.showMsg("加载活动列表失败");
                     })
-                    console.log($this.queryParams);
-                    console.log(this.activities);
+
+
                 },
 
 
