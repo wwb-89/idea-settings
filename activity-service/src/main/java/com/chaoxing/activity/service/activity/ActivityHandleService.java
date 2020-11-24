@@ -1,5 +1,7 @@
 package com.chaoxing.activity.service.activity;
 
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.chaoxing.activity.dto.LoginUserDTO;
 import com.chaoxing.activity.dto.OrgAddressDTO;
@@ -15,9 +17,11 @@ import com.chaoxing.activity.service.manager.GuanliApiService;
 import com.chaoxing.activity.service.manager.MhApiService;
 import com.chaoxing.activity.service.manager.WfwRegionalArchitectureApiService;
 import com.chaoxing.activity.service.manager.module.SignApiService;
+import com.chaoxing.activity.service.manager.module.TpkApiService;
 import com.chaoxing.activity.service.manager.module.WorkApiService;
 import com.chaoxing.activity.util.enums.ActivityAreaLevelEnum;
-import com.chaoxing.activity.util.enums.ModuleEnum;
+import com.chaoxing.activity.util.enums.MhAppTypeEnum;
+import com.chaoxing.activity.util.enums.ModuleTypeEnum;
 import com.chaoxing.activity.util.exception.BusinessException;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
@@ -29,10 +33,7 @@ import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**数据处理服务
@@ -65,6 +66,8 @@ public class ActivityHandleService {
 	@Resource
 	private GuanliApiService guanliApiService;
 	@Resource
+	private TpkApiService tpkApiService;
+	@Resource
 	private WebTemplateService webTemplateService;
 
 	@Resource
@@ -73,7 +76,7 @@ public class ActivityHandleService {
 	private MhApiService mhApiService;
 
 	/**新增活动
-	 * @Description 
+	 * @Description
 	 * @author wwb
 	 * @Date 2020-11-10 15:54:16
 	 * @param activity
@@ -116,7 +119,7 @@ public class ActivityHandleService {
 	}
 
 	/**处理报名签到
-	 * @Description 
+	 * @Description
 	 * @author wwb
 	 * @Date 2020-11-13 15:46:49
 	 * @param signForm
@@ -141,7 +144,7 @@ public class ActivityHandleService {
 	}
 
 	/**处理活动所属范围
-	 * @Description 
+	 * @Description
 	 * @author wwb
 	 * @Date 2020-11-13 15:46:43
 	 * @param activity
@@ -193,7 +196,7 @@ public class ActivityHandleService {
 	}
 
 	/**修改活动
-	 * @Description 
+	 * @Description
 	 * @author wwb
 	 * @Date 2020-11-11 15:41:49
 	 * @param activity
@@ -295,7 +298,7 @@ public class ActivityHandleService {
 	}
 
 	/**计算活动状态
-	 * @Description 
+	 * @Description
 	 * @author wwb
 	 * @Date 2020-11-11 16:57:27
 	 * @param startDate
@@ -329,7 +332,7 @@ public class ActivityHandleService {
 	}
 
 	/**发布活动
-	 * @Description 
+	 * @Description
 	 * @author wwb
 	 * @Date 2020-11-12 15:41:48
 	 * @param activityId
@@ -357,7 +360,7 @@ public class ActivityHandleService {
 		handleReleaseScope(activityId, selectedFids, loginUser);
 		// 通知模块方刷新参与范围缓存
 		// 查询活动的作品征集模块活动id列表
-		List<String> externalIds = activityModuleService.listExternalIdsByActivityIdAndType(activityId, ModuleEnum.WORK.getValue());
+		List<String> externalIds = activityModuleService.listExternalIdsByActivityIdAndType(activityId, ModuleTypeEnum.WORK.getValue());
 		if (CollectionUtils.isNotEmpty(externalIds)) {
 			workApiService.clearActivityParticipateScopeCache(externalIds.stream().map(v -> Integer.parseInt(v)).collect(Collectors.toList()));
 		}
@@ -412,7 +415,7 @@ public class ActivityHandleService {
 	}
 
 	/**取消发布（下架）
-	 * @Description 
+	 * @Description
 	 * @author wwb
 	 * @Date 2020-11-12 17:23:58
 	 * @param activityId
@@ -432,14 +435,14 @@ public class ActivityHandleService {
 		activityScopeService.deleteByActivityId(activityId);
 		// 通知模块方刷新参与范围缓存
 		// 查询活动的作品征集模块活动id列表
-		List<String> externalIds = activityModuleService.listExternalIdsByActivityIdAndType(activityId, ModuleEnum.WORK.getValue());
+		List<String> externalIds = activityModuleService.listExternalIdsByActivityIdAndType(activityId, ModuleTypeEnum.WORK.getValue());
 		if (CollectionUtils.isNotEmpty(externalIds)) {
 			workApiService.clearActivityParticipateScopeCache(externalIds.stream().map(v -> Integer.parseInt(v)).collect(Collectors.toList()));
 		}
 	}
-	
+
 	/**更新发布范围
-	 * @Description 
+	 * @Description
 	 * @author wwb
 	 * @Date 2020-11-20 11:09:31
 	 * @param activityId
@@ -453,14 +456,14 @@ public class ActivityHandleService {
 		handleReleaseScope(activityId, selectedFids, loginUser);
 		// 通知模块方刷新参与范围缓存
 		// 查询活动的作品征集模块活动id列表
-		List<String> externalIds = activityModuleService.listExternalIdsByActivityIdAndType(activityId, ModuleEnum.WORK.getValue());
+		List<String> externalIds = activityModuleService.listExternalIdsByActivityIdAndType(activityId, ModuleTypeEnum.WORK.getValue());
 		if (CollectionUtils.isNotEmpty(externalIds)) {
 			workApiService.clearActivityParticipateScopeCache(externalIds.stream().map(v -> Integer.parseInt(v)).collect(Collectors.toList()));
 		}
 	}
-	
+
 	/**删除活动
-	 * @Description 
+	 * @Description
 	 * @author wwb
 	 * @Date 2020-11-19 12:27:35
 	 * @param activityId
@@ -497,6 +500,20 @@ public class ActivityHandleService {
 		WebTemplate webTemplate = webTemplateService.webTemplateExist(webTemplateId);
 		// 克隆
 		String result = mhApiService.cloneTemplate(activityId, webTemplate.getTemplateId(), loginUser);
+		JSONObject jsonObject = JSON.parseObject(result);
+		Integer code = jsonObject.getInteger("code");
+		if (Objects.equals(code, 1)) {
+			Integer pageId = jsonObject.getInteger("pageId");
+			activityMapper.update(null, new UpdateWrapper<Activity>()
+				.lambda()
+					.eq(Activity::getId, activityId)
+					.set(Activity::getWebTemplateId, webTemplateId)
+					.set(Activity::getPageId, pageId)
+			);
+		} else {
+			String errorMessage = jsonObject.getString("message");
+			throw new BusinessException(errorMessage);
+		}
 	}
 
 	/**创建模块
@@ -511,7 +528,63 @@ public class ActivityHandleService {
 	*/
 	private void createModuleByWebTemplateId(Integer activityId, Integer webTemplateId, LoginUserDTO loginUser) {
 		// 根据网页模板找到需要创建的模块id
+		List<WebTemplateApp> webTemplateApps = webTemplateService.listLocalDataSourceAppByWebTemplateIdAppType(webTemplateId, MhAppTypeEnum.ICON);
+		if (CollectionUtils.isEmpty(webTemplateApps)) {
+			return;
+		}
+		List<ActivityModule> activityModules = new ArrayList<>();
+		for (WebTemplateApp webTemplateApp : webTemplateApps) {
+			// 模板的应用id，克隆后会生成一个新的应用
+			Integer appId = webTemplateApp.getAppId();
+			List<WebTemplateAppData> webTemplateAppDataList = webTemplateApp.getWebTemplateAppDataList();
+			if (CollectionUtils.isNotEmpty(webTemplateAppDataList)) {
+				// 调用相应的接口创建模块，并将模块与活动关联保存起来
+				Integer sequence = 1;
+				for (WebTemplateAppData webTemplateAppData : webTemplateAppDataList) {
+					ActivityModule activityModule = createModule(activityId, appId, webTemplateAppData, loginUser);
+					activityModule.setSequence(sequence++);
+					activityModules.add(activityModule);
+				}
+			}
+		}
+		if (CollectionUtils.isNotEmpty(activityModules)) {
+			activityModuleService.batchAdd(activityModules);
+		}
+	}
 
+	/**创建模块
+	 * @Description
+	 * @author wwb
+	 * @Date 2020-11-24 10:33:47
+	 * @param activityId
+	 * @param templateAppId
+	 * @param webTemplateAppData
+	 * @param loginUser
+	 * @return com.chaoxing.activity.model.ActivityModule
+	*/
+	private ActivityModule createModule(Integer activityId, Integer templateAppId, WebTemplateAppData webTemplateAppData, LoginUserDTO loginUser) {
+		ActivityModule activityModule = null;
+		// 模块类型
+		String type = webTemplateAppData.getType();
+		ModuleTypeEnum moduleType = ModuleTypeEnum.fromValue(type);
+		String appName = webTemplateAppData.getName();
+		switch (moduleType) {
+			case TPK:
+				activityModule = activityModuleService.generateTpkModule(activityId, templateAppId, appName, loginUser);
+				break;
+			case STAR:
+				activityModule = activityModuleService.generateStarModule(activityId, templateAppId, appName, loginUser);
+				break;
+			case WORK:
+				activityModule = activityModuleService.generateWorkModule(activityId, templateAppId, appName, loginUser);
+				break;
+			case PUNCH:
+				activityModule = activityModuleService.generatePunchModule(activityId, templateAppId, appName, loginUser);
+				break;
+			default:
+
+		}
+		return activityModule;
 	}
 
 }

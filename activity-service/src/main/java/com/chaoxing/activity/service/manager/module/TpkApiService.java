@@ -44,7 +44,7 @@ public class TpkApiService {
 	 * @return java.lang.Integer
 	*/
 	@PostMapping("tpk")
-	public Integer createTpkModule(String name, LoginUserDTO loginUser) {
+	public Integer create(String name, LoginUserDTO loginUser) {
 		Integer uid = loginUser.getUid();
 		Integer fid = loginUser.getFid();
 		String url = String.format(CREATE_URL, name, uid, fid);
