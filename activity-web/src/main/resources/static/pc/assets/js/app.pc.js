@@ -65,6 +65,7 @@
             type: type,
             data: params,
             dataType: "json",
+            traditional:true,
             success: function (data) {
                 if (loading) {
                     $this.closeLayerPop(ajaxLoadingIndex);
