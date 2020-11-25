@@ -32,7 +32,7 @@ public class MhCloneParamDTO {
 	@AllArgsConstructor
 	public static class MhAppDTO {
 
-		private Integer appName;
+		private String appName;
 		private Integer dataType;
 		private String dataUrl;
 		private List<MhAppDataDTO> dataList;

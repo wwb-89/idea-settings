@@ -9,6 +9,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
@@ -32,7 +34,7 @@ import java.util.stream.Collectors;
 public class WorkApiService {
 
 	/** 创建作品征集地址 */
-	private static final String CREATE_URL = "http://api.reading.chaoxing.com/activity/create";
+	private static final String CREATE_URL = "http://api.reading.chaoxing.com/activity/engine/create";
 	/** 清空活动参与范围 */
 	private static final String CLEAR_ACTIVITY_PARTICIPATE_SCOPE_URL = "http://api.reading.chaoxing.com/cache/activity/clear/participate-fid";
 
@@ -47,11 +49,13 @@ public class WorkApiService {
 	 * @return java.lang.Integer
 	*/
 	public Integer create(WorkFormDTO workForm) {
-		JSONObject data = new JSONObject();
-		data.put("activityName", workForm.getName());
-		data.put("wfwfid", workForm.getWfwfid());
-		data.put("uid", workForm.getUid());
-		HttpEntity<String> httpEntity = new HttpEntity<>(data.toJSONString());
+		MultiValueMap<String, Object> map= new LinkedMultiValueMap();
+		map.add("activityName", workForm.getName());
+		map.add("wfwfid", workForm.getWfwfid());
+		map.add("uid", workForm.getUid());
+		HttpHeaders httpHeaders = new HttpHeaders();
+		httpHeaders.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
+		HttpEntity<MultiValueMap<String, Object>> httpEntity = new HttpEntity<>(map, httpHeaders);
 		String result = restTemplate.postForObject(CREATE_URL, httpEntity, String.class);
 		JSONObject jsonObject = JSON.parseObject(result);
 		Boolean success = jsonObject.getBoolean("success");

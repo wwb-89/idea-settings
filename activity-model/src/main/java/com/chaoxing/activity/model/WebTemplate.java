@@ -34,6 +34,8 @@ public class WebTemplate {
     private String name;
     /** 封面地址; column: cover_url*/
     private String coverUrl;
+    /** 预览地址; column: preview_url*/
+    private String previewUrl;
     /** 创建时间; column: create_time*/
     private Date createTime;
 

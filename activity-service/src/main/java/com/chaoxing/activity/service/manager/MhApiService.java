@@ -6,6 +6,9 @@ import com.chaoxing.activity.dto.mh.MhCloneParamDTO;
 import com.chaoxing.activity.util.constant.ActivityMhUrlConstant;
 import com.chaoxing.activity.util.exception.BusinessException;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
@@ -25,7 +28,7 @@ import java.util.Objects;
 public class MhApiService {
 
 	/** 克隆模板的url http://portal.chaoxing.com/web-others/{templateId}/cloneActivity?wfwfid=&activityId=&uid= */
-	private static final String CLONE_TEMPLATE_URL = "http://portal.chaoxing.com/web-others/%d/cloneActivity?wfwfid=%d&uid=%d";
+	private static final String CLONE_TEMPLATE_URL = ActivityMhUrlConstant.MH_DOMAIN + "/web-others/%d/cloneActivity?wfwfid=%d&uid=%d";
 
 	@Resource
 	private RestTemplate restTemplate;
@@ -41,11 +44,14 @@ public class MhApiService {
 		Integer fid = mhCloneParam.getWfwfid();
 		Integer uid = mhCloneParam.getUid();
 		String url = String.format(CLONE_TEMPLATE_URL, mhCloneParam.getTemplateId(), fid, uid);
-		String result = restTemplate.postForObject(url, null, String.class);
+		HttpHeaders httpHeaders = new HttpHeaders();
+		httpHeaders.setContentType(MediaType.APPLICATION_JSON);
+		HttpEntity<String> httpEntity = new HttpEntity(JSON.toJSONString(mhCloneParam), httpHeaders);
+		String result = restTemplate.postForObject(url, httpEntity, String.class);
 		JSONObject jsonObject = JSON.parseObject(result);
 		Integer code = jsonObject.getInteger("code");
 		if (Objects.equals(code, 1)) {
-			Integer pageId = jsonObject.getInteger("pageId");
+			Integer pageId = jsonObject.getJSONObject("data").getInteger("pageId");
 			return pageId;
 		} else {
 			String errorMessage = jsonObject.getString("message");

@@ -91,7 +91,7 @@ public class ActivityApiController {
 		return RestRespDTO.success();
 	}
 
-	/**绑定模板
+	/**绑定/选择模板
 	 * @Description 
 	 * @author wwb
 	 * @Date 2020-11-13 15:38:14
