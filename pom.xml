@@ -24,6 +24,7 @@
 		<module>activity-model</module>
 		<module>activity-mapper</module>
 		<module>activity-service</module>
+		<module>activity-api</module>
 		<module>activity-web</module>
 	</modules>
 
@@ -47,6 +48,11 @@
 			<dependency>
 				<groupId>com.chaoxing</groupId>
 				<artifactId>activity-service</artifactId>
+				<version>${project.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>com.chaoxing</groupId>
+				<artifactId>activity-api</artifactId>
 				<version>${project.version}</version>
 			</dependency>
 			<dependency>

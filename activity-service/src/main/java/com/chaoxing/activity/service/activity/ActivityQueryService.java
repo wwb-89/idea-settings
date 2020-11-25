@@ -6,7 +6,6 @@ import com.chaoxing.activity.dto.query.ActivityManageQueryDTO;
 import com.chaoxing.activity.dto.query.ActivityQueryDTO;
 import com.chaoxing.activity.mapper.ActivityMapper;
 import com.chaoxing.activity.model.Activity;
-import com.chaoxing.activity.service.manager.PassportApiService;
 import com.chaoxing.activity.util.enums.ActivityQueryDateEnum;
 import com.chaoxing.activity.util.enums.ActivityTypeEnum;
 import lombok.extern.slf4j.Slf4j;
@@ -34,8 +33,6 @@ public class ActivityQueryService {
 	private ActivityMapper activityMapper;
 
 	@Resource
-	private PassportApiService passportApiService;
-	@Resource
 	private ActivityValidationService activityValidationService;
 	
 	/**查询参与的活动
@@ -49,6 +46,19 @@ public class ActivityQueryService {
 	public Page<Activity> listParticipate(Page<Activity> page, ActivityQueryDTO activityQuery) {
 		calDateScope(activityQuery);
 		page = activityMapper.listParticipate(page, activityQuery);
+		return page;
+	}
+	
+	/**查询机构创建的
+	 * @Description 
+	 * @author wwb
+	 * @Date 2020-11-24 21:48:23
+	 * @param page
+	 * @param fid
+	 * @return com.baomidou.mybatisplus.extension.plugins.pagination.Page<com.chaoxing.activity.model.Activity>
+	*/
+	public Page<Activity> listCreated(Page<Activity> page, Integer fid) {
+		page = activityMapper.listCreated(fid);
 		return page;
 	}
 

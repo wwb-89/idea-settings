@@ -15,6 +15,7 @@
         <div class="banner">
             <img src="http://uestc.moonsinfo.com/upload/hallonomie/2020-10/202010120814255729.png" alt="">
         </div>
+
         <div class="content">
             <div class="search">
                 <input type="text" placeholder="搜索标题">
@@ -22,16 +23,19 @@
                     <img src="../assets/images/search.png" alt="">
                 </div>
             </div>
+
             <div class="type-box">
                 <div class="typeItem" v-for="item in typesList" :key="item.id">
                     <span class="title">{{item.title}}</span>
                     <ul>
-                        <li class='active'>全选</li>
+                        <li class='active' >全选</li>
                         <li v-for="type in item.list" :key="type.id">{{type.name}}
                         </li>
                     </ul>
                 </div>
             </div>
+
+
             <div class="item-box">
                 <div class="head">
                     <ul>
@@ -42,6 +46,7 @@
                     <div class="count">共<span>4</span>个活动</div>
                 </div>
                 <div class="c-item">
+
                     <div class="item">
                         <div class="img-box">
                             <img src="http://uestc.moonsinfo.com/upload/hallonomie/2020-10/202010120814255729.png"
@@ -55,6 +60,7 @@
                             <p>活动地点：浙江省杭州市西湖区曙光路73号</p>
                         </div>
                     </div>
+
                     <div class="item">
                         <div class="img-box">
                             <img src="http://uestc.moonsinfo.com/upload/hallonomie/2020-10/202010120814255729.png"
@@ -68,6 +74,7 @@
                             <p>活动地点：浙江省杭州市西湖区曙光路73号</p>
                         </div>
                     </div>
+
                     <div class="item">
                         <div class="img-box">
                             <img src="http://uestc.moonsinfo.com/upload/hallonomie/2020-10/202010120814255729.png"
@@ -81,6 +88,7 @@
                             <p>活动地点：浙江省杭州市西湖区曙光路73号</p>
                         </div>
                     </div>
+
                     <div class="item">
                         <div class="img-box">
                             <img src="http://uestc.moonsinfo.com/upload/hallonomie/2020-10/202010120814255729.png"
@@ -95,6 +103,7 @@
                         </div>
                     </div>
                 </div>
+
                 <el-pagination background layout="prev, pager, next" :total="10">
                 </el-pagination>
                 <!-- 当列表为空时展示 -->
@@ -112,7 +121,8 @@
             el: '#app',
             data: {
                 nav: '',
-                typesList: [{
+                typesList: [
+                    {
                     id: "type",
                     title: "类型",
                     list: [{
@@ -134,7 +144,8 @@
                         name: "其他",
                         id: "6"
                     }]
-                }, {
+                },
+                    {
                     id: "time",
                     title: "时间",
                     list: [{
@@ -196,9 +207,10 @@
                     }]
                 }],
             },
+            create:{},
             methods: {
+            },
 
-            }
         })
     </script>
 </body>

@@ -17,7 +17,7 @@ import java.util.List;
 @Mapper
 public interface GroupAffiliateOrgMapper extends BaseMapper<GroupAffiliateOrg> {
 
-	/**根据group code查询fid列表
+	/**根据group code查询fid列表 根据t_group的code来查询附属机构的列表的id
 	 * @Description 
 	 * @author wwb
 	 * @Date 2020-11-22 13:39:23

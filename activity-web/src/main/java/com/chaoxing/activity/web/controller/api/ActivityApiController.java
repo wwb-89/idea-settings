@@ -8,7 +8,6 @@ import com.chaoxing.activity.dto.module.SignFormDTO;
 import com.chaoxing.activity.dto.query.ActivityManageQueryDTO;
 import com.chaoxing.activity.dto.query.ActivityQueryDTO;
 import com.chaoxing.activity.model.Activity;
-import com.chaoxing.activity.service.GroupService;
 import com.chaoxing.activity.service.activity.ActivityHandleService;
 import com.chaoxing.activity.service.activity.ActivityQueryService;
 import com.chaoxing.activity.web.util.HttpServletRequestUtils;
@@ -37,8 +36,6 @@ public class ActivityApiController {
 	private ActivityHandleService activityHandleService;
 	@Resource
 	private ActivityQueryService activityQueryService;
-	@Resource
-	private GroupService groupService;
 
 	/**创建活动
 	 * @Description 需要活动对象
@@ -106,8 +103,8 @@ public class ActivityApiController {
 	@PostMapping("{activityId}/bind/template/{webTemplateId}")
 	public RestRespDTO bindWebTemplate(HttpServletRequest request, @PathVariable Integer activityId, @PathVariable Integer webTemplateId) {
 		LoginUserDTO loginUser = LoginUtils.getLoginUser(request);
-		Integer pageId = activityHandleService.bindWebTemplate(activityId, webTemplateId, loginUser);
-		return RestRespDTO.success(pageId);
+		activityHandleService.bindWebTemplate(activityId, webTemplateId, loginUser);
+		return RestRespDTO.success();
 	}
 
 	/**可参与的活动列表
@@ -119,7 +116,7 @@ public class ActivityApiController {
 	 * @return com.chaoxing.activity.dto.RestRespDTO
 	*/
 	@RequestMapping("list/participate")
-	public RestRespDTO list(HttpServletRequest request, ActivityQueryDTO activityQuery) {
+	public RestRespDTO list(HttpServletRequest request,ActivityQueryDTO activityQuery) {
 		List<Integer> fids = activityQuery.getFids();
 		if (CollectionUtils.isEmpty(fids)) {
 			LoginUserDTO loginUser = LoginUtils.getLoginUser(request);
@@ -127,6 +124,7 @@ public class ActivityApiController {
 		}
 		Page<Activity> page = HttpServletRequestUtils.buid(request);
 		page = activityQueryService.listParticipate(page, activityQuery);
+		System.out.println(activityQuery);
 		return RestRespDTO.success(page);
 	}
 

@@ -30,7 +30,7 @@ import java.util.Objects;
 @NoArgsConstructor
 @AllArgsConstructor
 @TableName(value = "t_activity")
-public class Activity {
+public class Activity {//对接数据库表
 
     /** 活动id; column: id*/
     @TableId(type = IdType.AUTO)
@@ -62,6 +62,8 @@ public class Activity {
     private Integer signId;
     /** 网页模板id; column: web_template_id*/
     private Integer webTemplateId;
+    /** 门户网页id; column: page_id*/
+    private Integer pageId;
     /** 是否已发布; column: is_released*/
     @TableField(value = "is_released")
     private Boolean released;

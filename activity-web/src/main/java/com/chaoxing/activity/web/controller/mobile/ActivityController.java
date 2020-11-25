@@ -56,8 +56,8 @@ public class ActivityController {
 		model.addAttribute("fids", new ArrayList<>());
 		return "mobile/index";
 	}
-
 	/**移动端组别首页
+
 	 * @Description 
 	 * @author wwb
 	 * @Date 2020-11-22 14:33:02
@@ -81,5 +81,6 @@ public class ActivityController {
 		model.addAttribute("fids", fids);
 		return "mobile/index";
 	}
+
 
 }

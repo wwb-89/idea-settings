@@ -1,17 +1,20 @@
 package com.chaoxing.activity.util.enums;
 
+import com.chaoxing.activity.util.exception.BusinessException;
 import lombok.Getter;
 
-/**模块
+import java.util.Objects;
+
+/**模块类型枚举
  * @author wwb
  * @version ver 1.0
- * @className ActivityModuleEnum
+ * @className ModuleTypeEnum
  * @description
  * @blame wwb
  * @date 2020-11-11 10:38:38
  */
 @Getter
-public enum ModuleEnum {
+public enum ModuleTypeEnum {
 
 	/** 作品征集 */
 	WORK("作品征集", "work"),
@@ -31,11 +34,19 @@ public enum ModuleEnum {
 	private String name;
 	private String value;
 
-	ModuleEnum(String name, String value) {
+	ModuleTypeEnum(String name, String value) {
 		this.name = name;
 		this.value = value;
 	}
 
-
+	public static ModuleTypeEnum fromValue(String value) {
+		ModuleTypeEnum[] values = ModuleTypeEnum.values();
+		for (ModuleTypeEnum moduleTypeEnum : values) {
+			if (Objects.equals(moduleTypeEnum.getValue(), value)) {
+				return moduleTypeEnum;
+			}
+		}
+		throw new BusinessException("未知的模块类型");
+	}
 
 }
