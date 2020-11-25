@@ -173,7 +173,6 @@
             mounted:function() {
               var $this = this;
               $this.resetQueryParams();
-              console.log($this.queryParams);
               $this.loadData();
             },
 
@@ -250,7 +249,6 @@
                             $this.loaded = true;
                             $this.activities = data.data.records;
                             $this.total = $this.activities.length;
-                            console.log($this.activities);
                         }else{
                             var errorMessage = data.message;
                             if (activityApp.isEmpty(errorMessage)) {
@@ -273,7 +271,6 @@
                     var $this = this;
                     $this.queryParams.pageNum = currentPage;
                     $this.loadData();
-                    console.log(currentPage)
                 }
 
 
