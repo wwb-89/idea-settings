@@ -59,6 +59,7 @@ public class ActivityController {
 		return "pc/index";
 	}
 
+
 	@GetMapping("group/{groupCode}/{fid}")
 	public String index(Model model, @PathVariable String groupCode, @PathVariable Integer fid) {
 		// 活动分类列表

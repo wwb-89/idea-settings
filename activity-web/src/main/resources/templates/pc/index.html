@@ -75,7 +75,7 @@
                         <div class="tag" v-if="item.status == 4">已结束</div>
                     </div>
                     <div class="font-box">
-                        <p class="title1" ></p>
+                        <p class="title1" >{{item.name}}</p>
                         <p>活动时间：{{item.startDate | timestamp2YMD}} ～ {{item.endDate | timestamp2YMD}}</p>
                         <p>主办单位：{{item.createOrgName}}</p>
                         <p>活动地点：{{item.address}}</p>
@@ -173,7 +173,6 @@
             mounted:function() {
               var $this = this;
               $this.resetQueryParams();
-              console.log($this.queryParams);
               $this.loadData();
             },
 
@@ -250,7 +249,6 @@
                             $this.loaded = true;
                             $this.activities = data.data.records;
                             $this.total = $this.activities.length;
-                            console.log($this.activities);
                         }else{
                             var errorMessage = data.message;
                             if (activityApp.isEmpty(errorMessage)) {
@@ -273,7 +271,6 @@
                     var $this = this;
                     $this.queryParams.pageNum = currentPage;
                     $this.loadData();
-                    console.log(currentPage)
                 }
 
 
