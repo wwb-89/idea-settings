@@ -22,5 +22,7 @@ public class ActivityMhUrlConstant {
 	public static final String ACTIVITY_RECOMMEND_URL = CommonConstant.API_DOMAIN + "/activity/%d/recommend";
 	/** 报名签到外部数据源url */
 	public static final String ACTIVITY_SIGN_URL = "http://api.qd.reading.chaoxing.com/activity/%d/btn";
+	/** 活动访问地址 */
+	public static final String ACTIVITY_ACCESS_URL = "http://mh.chaoxing.com/page/%s/show";
 
 }

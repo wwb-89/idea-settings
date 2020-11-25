@@ -9,6 +9,7 @@ import com.chaoxing.activity.dto.mh.MhGeneralAppResultDataDTO;
 import com.chaoxing.activity.model.Activity;
 import com.chaoxing.activity.service.activity.ActivityQueryService;
 import com.chaoxing.activity.service.manager.CloudApiService;
+import com.chaoxing.activity.service.manager.MhApiService;
 import com.chaoxing.activity.service.manager.module.SignApiService;
 import com.chaoxing.activity.util.constant.DateTimeFormatterConstant;
 import org.apache.commons.collections4.CollectionUtils;
@@ -40,6 +41,8 @@ public class ActivityMhAppApiController {
 	private CloudApiService cloudApiService;
 	@Resource
 	private SignApiService signApiService;
+	@Resource
+	private MhApiService mhApiService;
 
 	/**活动封面
 	 * @Description 
@@ -95,12 +98,12 @@ public class ActivityMhAppApiController {
 				.build());
 		// 开始时间
 		mhGeneralAppResultDataFields.add(MhGeneralAppResultDataDTO.MhGeneralAppResultDataFieldDTO.builder()
-				.value(DateTimeFormatterConstant.YYYY_MM_DD_HH_MM.format(activity.getStartDate()))
+				.value(DateTimeFormatterConstant.YYYY_MM_DD.format(activity.getStartDate()))
 				.flag("100")
 				.build());
 		// 结束时间
 		mhGeneralAppResultDataFields.add(MhGeneralAppResultDataDTO.MhGeneralAppResultDataFieldDTO.builder()
-				.value(DateTimeFormatterConstant.YYYY_MM_DD_HH_MM.format(activity.getEndDate()))
+				.value(DateTimeFormatterConstant.YYYY_MM_DD.format(activity.getEndDate()))
 				.flag("101")
 				.build());
 		// 主办单位
@@ -161,7 +164,8 @@ public class ActivityMhAppApiController {
 			for (Activity record : records) {
 				MhGeneralAppResultDataDTO mhGeneralAppResultData = new MhGeneralAppResultDataDTO();
 				mhGeneralAppResultData.setType(3);
-				mhGeneralAppResultData.setOrsUrl("");
+				Integer pageId = record.getPageId();
+				mhGeneralAppResultData.setOrsUrl(mhApiService.packageActivityAccessUrl(pageId));
 				mhGeneralAppResultData.setPop(0);
 				mhGeneralAppResultData.setPopUrl("");
 				List<MhGeneralAppResultDataDTO.MhGeneralAppResultDataFieldDTO> mhGeneralAppResultDataFields = new ArrayList<>();

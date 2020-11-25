@@ -15,7 +15,6 @@ import javax.servlet.http.HttpServletRequest;
  * @blame wwb
  * @date 2020-11-25 00:23:56
  */
-@RestController
 @RequestMapping("activity/module")
 public class ActivityModuleApiController {
 

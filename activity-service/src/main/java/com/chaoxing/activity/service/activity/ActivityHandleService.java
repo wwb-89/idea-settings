@@ -495,7 +495,7 @@ public class ActivityHandleService {
 	 * @param loginUser
 	 * @return void
 	*/
-	@Transactional
+	@Transactional(rollbackFor = Exception.class)
 	public void bindWebTemplate(Integer activityId, Integer webTemplateId, LoginUserDTO loginUser) {
 		// 创建模块
 		createModuleByWebTemplateId(activityId, webTemplateId, loginUser);
@@ -522,6 +522,8 @@ public class ActivityHandleService {
 	 * @return void
 	*/
 	private void createModuleByWebTemplateId(Integer activityId, Integer webTemplateId, LoginUserDTO loginUser) {
+		// 先删除活动的模块
+		activityModuleService.deleteByActivityId(activityId);
 		// 根据网页模板找到需要创建的模块id
 		List<WebTemplateApp> webTemplateApps = webTemplateService.listLocalDataSourceAppByWebTemplateIdAppType(webTemplateId, MhAppTypeEnum.ICON);
 		if (CollectionUtils.isEmpty(webTemplateApps)) {

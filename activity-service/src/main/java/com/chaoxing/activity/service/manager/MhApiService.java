@@ -3,6 +3,7 @@ package com.chaoxing.activity.service.manager;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.chaoxing.activity.dto.mh.MhCloneParamDTO;
+import com.chaoxing.activity.util.constant.ActivityMhUrlConstant;
 import com.chaoxing.activity.util.exception.BusinessException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -50,6 +51,19 @@ public class MhApiService {
 			String errorMessage = jsonObject.getString("message");
 			throw new BusinessException(errorMessage);
 		}
+	}
+
+	/**封装活动访问的地址
+	 * @Description 
+	 * @author wwb
+	 * @Date 2020-11-25 14:04:35
+	 * @param pageId
+	 * @return java.lang.String
+	*/
+	public String packageActivityAccessUrl(Integer pageId) {
+		StringBuilder accessUrlStringBuilder = new StringBuilder();
+		accessUrlStringBuilder.append(String.format(ActivityMhUrlConstant.ACTIVITY_ACCESS_URL, pageId));
+		return accessUrlStringBuilder.toString();
 	}
 
 }
