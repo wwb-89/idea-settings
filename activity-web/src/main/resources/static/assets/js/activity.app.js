@@ -282,3 +282,7 @@ Vue.filter("timestamp2YMD", function (timestamp) {
     var dateObj = activityApp.millisecond2DateObj(timestamp);
     return dateObj.year + "-" + dateObj.month + "-" + dateObj.day;
 });
+Vue.filter("timestamp2YMDH", function (timestamp) {
+    var dateObj = activityApp.millisecond2DateObj(timestamp);
+    return dateObj.year + "-" + dateObj.month + "-" + dateObj.day +" "+dateObj.hour;
+});
