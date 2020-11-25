@@ -48,7 +48,7 @@ public class ActivityMhAppApiController {
 	 * @param activityId
 	 * @return com.chaoxing.activity.dto.RestRespDTO
 	*/
-	@RequestMapping("activity/{activityId}/cover/")
+	@RequestMapping("activity/{activityId}/cover")
 	public RestRespDTO activityCover(@PathVariable Integer activityId) {
 		Activity activity = activityQueryService.getById(activityId);
 		String coverCloudId = activity.getCoverCloudId();
@@ -76,7 +76,7 @@ public class ActivityMhAppApiController {
 	 * @param activityId
 	 * @return com.chaoxing.activity.dto.RestRespDTO
 	*/
-	@RequestMapping("activity/{activityId}/info/")
+	@RequestMapping("activity/{activityId}/info")
 	public RestRespDTO activityInfo(@PathVariable Integer activityId) {
 		Activity activity = activityQueryService.getById(activityId);
 		JSONObject jsonObject = new JSONObject();

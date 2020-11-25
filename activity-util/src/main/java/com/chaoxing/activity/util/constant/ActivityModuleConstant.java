@@ -23,9 +23,8 @@ public class ActivityModuleConstant {
 	/** 听评课图标云盘id */
 	public static final String TPK_ICON_CLOUD_ID = "";
 
-	public static final String WORK_ACCESS_URL = "";
-	public static final String STAR_ACCESS_URL = "";
-	public static final String PUNCH_ACCESS_URL = "";
-	public static final String TPK_ACCESS_URL = "";
+	/** 模块访问地址 */
+	/* http://api.new.reading.chaoxing.com/activity/module/forward/{moduleType}/{moduleId} */
+	public static final String MODULE_ACCESS_URL = CommonConstant.API_DOMAIN + "/activity/module/forward/%s/%s";
 
 }

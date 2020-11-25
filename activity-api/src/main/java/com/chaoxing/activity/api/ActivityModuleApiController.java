@@ -19,6 +19,15 @@ import javax.servlet.http.HttpServletRequest;
 @RequestMapping("activity/module")
 public class ActivityModuleApiController {
 
+	/**重定向到模块的地址
+	 * @Description 
+	 * @author wwb
+	 * @Date 2020-11-25 10:08:18
+	 * @param request
+	 * @param moduleType
+	 * @param moduleId
+	 * @return org.springframework.web.servlet.view.RedirectView
+	*/
 	@GetMapping("forward/{moduleType}/{moduleId}")
 	public RedirectView urlForward(HttpServletRequest request, @PathVariable String moduleType, @PathVariable Integer moduleId) {
 		ModuleTypeEnum moduleTypeEnum = ModuleTypeEnum.fromValue(moduleType);
@@ -43,13 +52,13 @@ public class ActivityModuleApiController {
 		return redirectView;
 	}
 
-	private String getWorkAccessUrl(Integer workId, HttpServletRequest request) {
+	private String getWorkAccessUrl(Integer activityId, HttpServletRequest request) {
 		boolean mobileAccess = UserAgentUtils.isMobileAccess(request);
 		String accessUrl;
 		if (mobileAccess) {
-			accessUrl = "";
+			accessUrl = "https://reading.chaoxing.com/m/activity/" + activityId;
 		} else {
-			accessUrl = "";
+			accessUrl = "http://reading.chaoxing.com/activity/" + activityId;
 		}
 		return accessUrl;
 	}
@@ -58,9 +67,9 @@ public class ActivityModuleApiController {
 		boolean mobileAccess = UserAgentUtils.isMobileAccess(request);
 		String accessUrl;
 		if (mobileAccess) {
-			accessUrl = "";
+			accessUrl = "https://star.chaoxing.com/app/map/" + starId + "/index";
 		} else {
-			accessUrl = "";
+			accessUrl = "http://star.chaoxing.com/pc/map/" + starId + "/index";
 		}
 		return accessUrl;
 	}
@@ -69,9 +78,9 @@ public class ActivityModuleApiController {
 		boolean mobileAccess = UserAgentUtils.isMobileAccess(request);
 		String accessUrl;
 		if (mobileAccess) {
-			accessUrl = "";
+			accessUrl = "https://appcd.chaoxing.com/punch/" + punchId + "/handleable-detail";
 		} else {
-			accessUrl = "";
+			accessUrl = "http://new.ydhd.chaoxing.com/punch-qr/" + punchId;
 		}
 		return accessUrl;
 	}
@@ -80,9 +89,9 @@ public class ActivityModuleApiController {
 		boolean mobileAccess = UserAgentUtils.isMobileAccess(request);
 		String accessUrl;
 		if (mobileAccess) {
-			accessUrl = "";
+			accessUrl = "https://teacher2.chaoxing.com/tpk3-activity/?activityId=" + tpkId;
 		} else {
-			accessUrl = "";
+			accessUrl = "https://teacher2.chaoxing.com/tpk3-activity/admin/statistics/activity/" + tpkId;
 		}
 		return accessUrl;
 	}

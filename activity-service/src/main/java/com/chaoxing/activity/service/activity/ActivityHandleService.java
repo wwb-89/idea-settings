@@ -8,7 +8,6 @@ import com.chaoxing.activity.dto.mh.MhCloneParamDTO;
 import com.chaoxing.activity.dto.module.SignFormDTO;
 import com.chaoxing.activity.mapper.ActivityAreaFlagMapper;
 import com.chaoxing.activity.mapper.ActivityMapper;
-import com.chaoxing.activity.mapper.WebTemplateAppDataMapper;
 import com.chaoxing.activity.model.*;
 import com.chaoxing.activity.service.WebTemplateService;
 import com.chaoxing.activity.service.activity.module.ActivityModuleService;
@@ -18,8 +17,9 @@ import com.chaoxing.activity.service.manager.GuanliApiService;
 import com.chaoxing.activity.service.manager.MhApiService;
 import com.chaoxing.activity.service.manager.WfwRegionalArchitectureApiService;
 import com.chaoxing.activity.service.manager.module.SignApiService;
-import com.chaoxing.activity.service.manager.module.TpkApiService;
 import com.chaoxing.activity.service.manager.module.WorkApiService;
+import com.chaoxing.activity.util.constant.ActivityMhUrlConstant;
+import com.chaoxing.activity.util.constant.ActivityModuleConstant;
 import com.chaoxing.activity.util.enums.*;
 import com.chaoxing.activity.util.exception.BusinessException;
 import lombok.extern.slf4j.Slf4j;
@@ -499,8 +499,9 @@ public class ActivityHandleService {
 	public void bindWebTemplate(Integer activityId, Integer webTemplateId, LoginUserDTO loginUser) {
 		// 创建模块
 		createModuleByWebTemplateId(activityId, webTemplateId, loginUser);
+		Activity activity = activityValidationService.activityExist(activityId);
 		// 克隆
-		MhCloneParamDTO mhCloneParam = packageMhCloneParam(activityId, webTemplateId, loginUser);
+		MhCloneParamDTO mhCloneParam = packageMhCloneParam(activity, webTemplateId, loginUser);
 		Integer pageId = mhApiService.cloneTemplate(mhCloneParam);
 		activityMapper.update(null, new UpdateWrapper<Activity>()
 				.lambda()
@@ -581,31 +582,31 @@ public class ActivityHandleService {
 		return activityModule;
 	}
 
-	private MhCloneParamDTO packageMhCloneParam(Integer activityId, Integer webTemplateId, LoginUserDTO loginUser) {
+	private MhCloneParamDTO packageMhCloneParam(Activity activity, Integer webTemplateId, LoginUserDTO loginUser) {
 		WebTemplate webTemplate = webTemplateService.webTemplateExist(webTemplateId);
 		MhCloneParamDTO mhCloneParam = new MhCloneParamDTO();
 		mhCloneParam.setTemplateId(webTemplate.getTemplateId());
 		mhCloneParam.setUid(loginUser.getUid());
 		mhCloneParam.setWfwfid(loginUser.getFid());
-		List<MhCloneParamDTO.MhAppDTO> appList = packageTemplateApps(activityId, webTemplateId);
+		List<MhCloneParamDTO.MhAppDTO> appList = packageTemplateApps(activity, webTemplateId);
 		mhCloneParam.setAppList(appList);
 		return mhCloneParam;
 	}
 
-	private List<MhCloneParamDTO.MhAppDTO> packageTemplateApps(Integer activityId, Integer webTemplateId) {
+	private List<MhCloneParamDTO.MhAppDTO> packageTemplateApps(Activity activity, Integer webTemplateId) {
 		List<MhCloneParamDTO.MhAppDTO> result = new ArrayList<>();
 		List<WebTemplateApp> webTemplateApps = webTemplateService.listAppByWebTemplateId(webTemplateId);
 		if (CollectionUtils.isEmpty(webTemplateApps)) {
 			return result;
 		}
 		for (WebTemplateApp webTemplateApp : webTemplateApps) {
-			MhCloneParamDTO.MhAppDTO mhApp = packageMhAppDTO(webTemplateApp, activityId);
+			MhCloneParamDTO.MhAppDTO mhApp = packageMhAppDTO(activity, webTemplateApp);
 			result.add(mhApp);
 		}
 		return result;
 	}
 
-	private MhCloneParamDTO.MhAppDTO packageMhAppDTO(WebTemplateApp webTemplateApp, Integer activityId) {
+	private MhCloneParamDTO.MhAppDTO packageMhAppDTO(Activity activity, WebTemplateApp webTemplateApp) {
 		MhCloneParamDTO.MhAppDTO mhApp = new MhCloneParamDTO.MhAppDTO();
 		mhApp.setAppName(webTemplateApp.getAppName());
 		Integer dataSourceType = webTemplateApp.getDataSourceType();
@@ -613,10 +614,10 @@ public class ActivityHandleService {
 		mhApp.setDataType(mhAppDataSource.getValue());
 		if (mhAppDataSource.equals(MhAppDataSourceEnum.LOCAL)) {
 			// 本地数据源
-			List<MhCloneParamDTO.MhAppDataDTO> mhAppDatas = packageMhAppData(webTemplateApp, activityId);
+			List<MhCloneParamDTO.MhAppDataDTO> mhAppDatas = packageMhAppData(webTemplateApp, activity);
 			mhApp.setDataList(mhAppDatas);
 		} else {
-			String dataUrl = packageMhAppDataUrl(webTemplateApp);
+			String dataUrl = packageMhAppDataUrl(activity, webTemplateApp);
 			mhApp.setDataUrl(dataUrl);
 		}
 		return mhApp;
@@ -627,20 +628,22 @@ public class ActivityHandleService {
 	 * @author wwb
 	 * @Date 2020-11-24 23:42:47
 	 * @param webTemplateApp
-	 * @param activityId
+	 * @param activity
 	 * @return java.util.List<com.chaoxing.activity.dto.mh.MhCloneParamDTO.MhAppDataDTO>
 	*/
-	private List<MhCloneParamDTO.MhAppDataDTO> packageMhAppData(WebTemplateApp webTemplateApp, Integer activityId) {
+	private List<MhCloneParamDTO.MhAppDataDTO> packageMhAppData(WebTemplateApp webTemplateApp, Activity activity) {
+		Integer activityId = activity.getId();
 		List<MhCloneParamDTO.MhAppDataDTO> result = new ArrayList<>();
 		// 目前只处理图标
 		Integer appId = webTemplateApp.getAppId();
 		List<ActivityModule> activityModules = activityModuleService.listByActivityIdAndTemplateId(activityId, appId);
 		if (CollectionUtils.isNotEmpty(activityModules)) {
 			for (ActivityModule activityModule : activityModules) {
+				String accessUrl = String.format(ActivityModuleConstant.MODULE_ACCESS_URL, activityModule.getType(), activityModule.getExternalId());
 				MhCloneParamDTO.MhAppDataDTO mhAppData = MhCloneParamDTO.MhAppDataDTO.builder()
 						.title(activityModule.getName())
 						// 访问的url
-						.url("")
+						.url(accessUrl)
 						.coverUrl(cloudApiService.getCloudImgUrl(activityModule.getIconCloudId()))
 						.build();
 				result.add(mhAppData);
@@ -653,25 +656,24 @@ public class ActivityHandleService {
 	 * @Description 
 	 * @author wwb
 	 * @Date 2020-11-24 23:44:52
+	 * @param activity
 	 * @param webTemplateApp
 	 * @return java.lang.String
 	*/
-	private String packageMhAppDataUrl(WebTemplateApp webTemplateApp) {
+	private String packageMhAppDataUrl(Activity activity, WebTemplateApp webTemplateApp) {
+		Integer activityId = activity.getId();
 		String dataType = webTemplateApp.getDataType();
 		MhAppDataTypeEnum mhAppDataType = MhAppDataTypeEnum.fromValue(dataType);
 		switch (mhAppDataType) {
 			case ACTIVITY_COVER:
-				break;
+				return String.format(ActivityMhUrlConstant.ACTIVITY_COVER_URL, activityId);
 			case ACTIVITY_INFO:
-				break;
+				return String.format(ActivityMhUrlConstant.ACTIVITY_INFO_URL, activityId);
 			case SIGN_IN_UP:
-				break;
-			case ACTIVITY_MODULE:
-				break;
-			case ACTIVITY_MAP:
-				break;
+				Integer signId = activity.getSignId();
+				return String.format(ActivityMhUrlConstant.ACTIVITY_SIGN_URL, signId == null ? "" : signId);
 			case ACTIVITY_LIST:
-				break;
+				return String.format(ActivityMhUrlConstant.ACTIVITY_RECOMMEND_URL, activityId);
 			default:
 
 		}
