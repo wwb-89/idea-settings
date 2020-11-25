@@ -2,6 +2,7 @@ package com.chaoxing.activity.api;
 
 import com.chaoxing.activity.util.UserAgentUtils;
 import com.chaoxing.activity.util.enums.ModuleTypeEnum;
+import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.view.RedirectView;
 
@@ -15,6 +16,7 @@ import javax.servlet.http.HttpServletRequest;
  * @blame wwb
  * @date 2020-11-25 00:23:56
  */
+@Controller
 @RequestMapping("activity/module")
 public class ActivityModuleApiController {
 

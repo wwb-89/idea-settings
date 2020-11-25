@@ -93,26 +93,31 @@ public class ActivityMhAppApiController {
 		mhGeneralAppResultDataDTO.setFields(mhGeneralAppResultDataFields);
 		// 活动名称
 		mhGeneralAppResultDataFields.add(MhGeneralAppResultDataDTO.MhGeneralAppResultDataFieldDTO.builder()
+				.key("活动名称")
 				.value(activity.getName())
 				.flag("1")
 				.build());
 		// 开始时间
 		mhGeneralAppResultDataFields.add(MhGeneralAppResultDataDTO.MhGeneralAppResultDataFieldDTO.builder()
+				.key("时间")
 				.value(DateTimeFormatterConstant.YYYY_MM_DD.format(activity.getStartDate()))
 				.flag("100")
 				.build());
 		// 结束时间
 		mhGeneralAppResultDataFields.add(MhGeneralAppResultDataDTO.MhGeneralAppResultDataFieldDTO.builder()
+				.key("时间")
 				.value(DateTimeFormatterConstant.YYYY_MM_DD.format(activity.getEndDate()))
 				.flag("101")
 				.build());
 		// 主办单位
 		mhGeneralAppResultDataFields.add(MhGeneralAppResultDataDTO.MhGeneralAppResultDataFieldDTO.builder()
+				.key("主办单位")
 				.value(activity.getCreateOrgName())
 				.flag("102")
 				.build());
 		// 主办地点
 		mhGeneralAppResultDataFields.add(MhGeneralAppResultDataDTO.MhGeneralAppResultDataFieldDTO.builder()
+				.key("活动地点")
 				.value(activity.getAddress())
 				.flag("103")
 				.build());
