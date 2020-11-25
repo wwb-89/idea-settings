@@ -21,8 +21,6 @@
                 <img src="/static/pc/assets/images/search.png" th:src="@{/pc/assets/images/search.png}">
             </div>
         </div>
-
-
         <div class="type-box">
             <div class="typeItem" >
                 <span class="title">类型</span>
@@ -31,21 +29,18 @@
 
                 </ul>
             </div>
-
             <div class="typeItem" >
                 <span class="title">时间</span>
                 <ul>
                     <li :class="{'active': item.selected}" v-for="(item, index) of times" @click="changeActivityTimeSelected(index)">{{item.name}}</li>
                 </ul>
             </div>
-
             <div class="typeItem" v-show="regions.length > 0">
                 <span class="title">地区</span>
                 <ul>
                     <li :class="{'active': item.selected}" v-for="(item, index) of regions" @click="changeActivityRegionsSelected(index)">{{item.name}}</li>
                 </ul>
             </div>
-
             <div class="typeItem" >
                 <span class="title">状态</span>
                 <ul>
@@ -53,23 +48,19 @@
                 </ul>
             </div>
         </div>
-
-
         <div class="item-box">
             <div class="head">
-                <ul>
+                <!--<ul>
                     <li class="active1">最新</li>
                     <li>热门</li>
                     <li>推荐</li>
-                </ul>
+                </ul>-->
                 <div class="count">共<span>{{total}}</span>个活动</div>
             </div>
-
             <div class="c-item" >
                 <div class="item" v-for="(item, index) of activities" :key="'item-' + index">
                     <div class="img-box">
-                        <img :src=item.coverCloudId
-                             alt="">
+                        <img :src=item.coverCloudId>
                         <div class="tag" v-if="item.status == 2">活动预告</div>
                         <div class="tag" v-if="item.status == 3">进行中</div>
                         <div class="tag" v-if="item.status == 4">已结束</div>
@@ -82,12 +73,10 @@
                     </div>
                 </div>
             </div>
-
             <el-pagination background layout="prev, pager, next" :total="100"
                            @current-change="currenClick"
                            :current-page="currentPage">
             </el-pagination>
-
             <!-- 当列表为空时展示 -->
             <div class="empty-box" style="display: none;">
                 <img src="/static/pc/assets/images/empty.png" th:src="@{/pc/assets/images/empty.png}">
@@ -96,11 +85,9 @@
     </div>
 </div>
 </div>
-
 <div th:replace="pc/include/common_js :: common_js(~{::script})">
-    <script src="https://unpkg.com/element-ui/lib/index.js"></script>
+    <script src="//unpkg.com/element-ui/lib/index.js"></script>
     <script th:inline="javascript">
-
         activityVue = new Vue({
             el: '#activity-vue',
             data: {
@@ -122,10 +109,8 @@
                 //分页
                 currentPage: 1,
                 filterWindowShow: false,
-                searchShadeShow: false,
-
+                searchShadeShow: false
             },
-
             created: function () {
                 var $this = this;
                 //type
@@ -133,7 +118,6 @@
                 $($this.activityClassifyNames).each(function () {
                     $this.activityClassifies.push({name: this,value: this,selected: false});
                 });
-
                 //time
                 $this.times = [
                     {name: "全部", value: "all", selected: true},
@@ -143,7 +127,6 @@
                     {name: "近一年", value: "nearly_a_year", selected: false},
                     {name: "更早", value: "earlier", selected: false}
                 ];
-
                 //地区
                 var regions = [];
                 if($this.regions.length >0){
@@ -160,7 +143,6 @@
                     });
                     $this.regions = regions;
                 }
-
                 //状态
                 $this.statuses = [
                     {name: "全部", value: "", selected: true},
@@ -175,15 +157,13 @@
               $this.resetQueryParams();
               $this.loadData();
             },
-
             methods: {
-
                 //改变选中状态
                 changeActivityClassifySelected(index){
                     var $this = this;
                     $($this.activityClassifies).each(function (i) {
-                        $this.$set($this.activityClassifies[i], "selected",i == index);
-                    })
+                        $this.$set($this.activityClassifies[i], "selected", i == index);
+                    });
                     $this.queryParams.activityClassifyName = $this.activityClassifies[index].value;
                     $this.pageNum = 1;
                     $this.loadData();
@@ -191,19 +171,17 @@
                 changeActivityTimeSelected(index){
                     var $this = this;
                     $($this.times).each(function (i) {
-                        $this.$set($this.times[i],"selected",i==index );
-                    })
+                        $this.$set($this.times[i], "selected", i == index);
+                    });
                     $this.queryParams.date = $this.times[index].value;
                     $this.pageNum = 1;
                     $this.loadData();
-
-
                 },
                 changeActivityRegionsSelected(index){
                     var $this = this;
                     $($this.regions).each(function (i) {
-                        $this.$set($this.regions[i],"selected",i==index);
-                    })
+                        $this.$set($this.regions[i], "selected", i == index);
+                    });
                     $this.queryParams.area = $this.regions[index].value;
                     $this.pageNum = 1;
                     $this.loadData();
@@ -211,12 +189,11 @@
                 changeActivityStatusSelected(index){
                     var $this = this;
                     $($this.statuses).each(function (i) {
-                        $this.$set($this.statuses[i],"selected",i==index);
-                    })
+                        $this.$set($this.statuses[i], "selected", i == index);
+                    });
                     $this.queryParams.status = $this.statuses[index].value;
                     $this.pageNum = 1;
                     $this.loadData();
-
                 },
                 //重置查询条件
                 resetQueryParams: function (){
@@ -244,22 +221,21 @@
                     }
                     $this.loaded = false;
                     $this.searchShow = false;
-                    app.ajaxPost(url,params,function (data) {
-                        if(data.success){
+                    app.ajaxPost(url, params, function (data) {
+                        if (data.success) {
                             $this.loaded = true;
                             $this.activities = data.data.records;
                             $this.total = $this.activities.length;
-                        }else{
+                        } else {
                             var errorMessage = data.message;
                             if (activityApp.isEmpty(errorMessage)) {
                                 errorMessage = "加载活动列表失败";
                             }
-
                             app.showMsg(errorMessage);
                         }
-                    },function () {
+                    }, function () {
                         app.showMsg("加载活动列表失败");
-                    })
+                    });
                 },
                 search: function () {
                     var $this = this;
@@ -272,16 +248,9 @@
                     $this.queryParams.pageNum = currentPage;
                     $this.loadData();
                 }
-
-
-
             }
         })
-
     </script>
 </div>
-
-
 </body>
-
 </html>

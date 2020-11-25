@@ -24,6 +24,6 @@ public class CommonConstant {
 	public static final Integer SYSTEM_FID = -1;
 
 	/** api域名 */
-	public static final String API_DOMAIN = "http://api.new.reading.chaoxing.com";
+	public static final String API_DOMAIN = "http://api.hd.reading.chaoxing.com";
 
 }

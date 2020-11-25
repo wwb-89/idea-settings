@@ -26,7 +26,7 @@ public class ActivityModuleConstant {
 	public static final String EVALUATION_ICON_CLOUD_ID = "4b08c5e26dc89e7de9a72172ab179e2b";
 
 	/** 模块访问地址 */
-	/* http://api.new.reading.chaoxing.com/activity/module/forward/{moduleType}/{moduleId} */
+	/* http://api.hd.reading.chaoxing.com/activity/module/forward/{moduleType}/{moduleId} */
 	public static final String MODULE_ACCESS_URL = CommonConstant.API_DOMAIN + "/activity/module/forward/%s/%s";
 
 }

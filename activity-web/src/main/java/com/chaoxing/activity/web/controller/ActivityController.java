@@ -1,20 +1,17 @@
 package com.chaoxing.activity.web.controller;
 
 import com.chaoxing.activity.dto.LoginUserDTO;
-import com.chaoxing.activity.dto.pageShowModel;
-import com.chaoxing.activity.dto.query.ActivityQueryDTO;
-import com.chaoxing.activity.model.Activity;
 import com.chaoxing.activity.model.GroupRegionFilter;
 import com.chaoxing.activity.service.GroupRegionFilterService;
 import com.chaoxing.activity.service.GroupService;
-import com.chaoxing.activity.service.activity.ActivityQueryService;
 import com.chaoxing.activity.service.activity.classify.ActivityClassifyQueryService;
-import com.chaoxing.activity.service.activity.module.ActivityModuleService;
 import com.chaoxing.activity.web.util.LoginUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestMapping;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
@@ -35,20 +32,12 @@ public class ActivityController {
 
 	@Resource
 	private GroupRegionFilterService groupRegionFilterService;
-
 	@Resource
 	private GroupService groupService;
-
-	@Autowired
-	private ActivityModuleService activityModuleService;
-
 	@Autowired
 	private ActivityClassifyQueryService activityClassifyQueryService;
 
-	@Autowired
-	private ActivityQueryService queryService;
-
-	@GetMapping("/index")
+	@GetMapping("")
 	public String index(Model model, HttpServletRequest  request) {
 		LoginUserDTO loginUser = LoginUtils.getLoginUser(request);
 		Integer fid = loginUser.getFid();
@@ -75,19 +64,5 @@ public class ActivityController {
 		model.addAttribute("fids", fids);
 		return "pc/index";
 	}
-
-
-
-
-
-
-	@ResponseBody
-	@GetMapping("/get/{id}")
-	public Activity getActivityById( @PathVariable Integer id){
-		Activity byId = queryService.getById(id);
-		return byId;
-	}
-
-
 
 }
