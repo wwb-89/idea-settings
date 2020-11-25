@@ -15,11 +15,11 @@ public class ActivityMhUrlConstant {
 	}
 
 	/** 活动封面外部数据源url */
-	public static final String ACTIVITY_COVER_URL = CommonConstant.API_DOMAIN + "/activity/%d/cover/";
+	public static final String ACTIVITY_COVER_URL = CommonConstant.API_DOMAIN + "/mh/activity/%d/cover/";
 	/** 活动信息外部数据源url */
-	public static final String ACTIVITY_INFO_URL = CommonConstant.API_DOMAIN + "/activity/%d/info";
+	public static final String ACTIVITY_INFO_URL = CommonConstant.API_DOMAIN + "/mh/activity/%d/info";
 	/** 推荐活动外部数据源url */
-	public static final String ACTIVITY_RECOMMEND_URL = CommonConstant.API_DOMAIN + "/activity/%d/recommend";
+	public static final String ACTIVITY_RECOMMEND_URL = CommonConstant.API_DOMAIN + "/mh/activity/%d/recommend";
 	/** 报名签到外部数据源url */
 	public static final String ACTIVITY_SIGN_URL = "http://api.qd.reading.chaoxing.com/activity/%d/btn";
 	/** 门户域名 */

@@ -34,7 +34,7 @@ import java.util.stream.Collectors;
 public class WorkApiService {
 
 	/** 创建作品征集地址 */
-	private static final String CREATE_URL = "http://api.reading.chaoxing.com/activity/engine/create";
+	private static final String CREATE_URL = "http://api.reading.chaoxing.com/activity/create";
 	/** 清空活动参与范围 */
 	private static final String CLEAR_ACTIVITY_PARTICIPATE_SCOPE_URL = "http://api.reading.chaoxing.com/cache/activity/clear/participate-fid";
 

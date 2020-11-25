@@ -646,6 +646,7 @@ public class ActivityHandleService {
 						.title(activityModule.getName())
 						// 访问的url
 						.url(accessUrl)
+						.pageType(3)
 						.coverUrl(cloudApiService.getCloudImgUrl(activityModule.getIconCloudId()))
 						.build();
 				result.add(mhAppData);

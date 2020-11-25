@@ -48,6 +48,7 @@ public class MhCloneParamDTO {
 		private String title;
 		private String url;
 		private String coverUrl;
+		private Integer pageType;
 
 	}
 
