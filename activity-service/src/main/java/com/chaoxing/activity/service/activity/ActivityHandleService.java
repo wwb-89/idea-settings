@@ -493,13 +493,18 @@ public class ActivityHandleService {
 	 * @param activityId
 	 * @param webTemplateId
 	 * @param loginUser
-	 * @return void
+	 * @return java.lang.Integer
 	*/
 	@Transactional(rollbackFor = Exception.class)
-	public void bindWebTemplate(Integer activityId, Integer webTemplateId, LoginUserDTO loginUser) {
+	public Integer bindWebTemplate(Integer activityId, Integer webTemplateId, LoginUserDTO loginUser) {
+		Activity activity = activityValidationService.activityExist(activityId);
+		// 如果已经选择了模板就不能再选择
+		Integer webTemplateId1 = activity.getWebTemplateId();
+		if (webTemplateId1 != null) {
+			throw new BusinessException("活动已经选择了模板");
+		}
 		// 创建模块
 		createModuleByWebTemplateId(activityId, webTemplateId, loginUser);
-		Activity activity = activityValidationService.activityExist(activityId);
 		// 克隆
 		MhCloneParamDTO mhCloneParam = packageMhCloneParam(activity, webTemplateId, loginUser);
 		Integer pageId = mhApiService.cloneTemplate(mhCloneParam);
@@ -509,6 +514,7 @@ public class ActivityHandleService {
 				.set(Activity::getWebTemplateId, webTemplateId)
 				.set(Activity::getPageId, pageId)
 		);
+		return pageId;
 	}
 
 	/**创建模块

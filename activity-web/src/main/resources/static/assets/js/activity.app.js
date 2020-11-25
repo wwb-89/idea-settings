@@ -254,6 +254,20 @@
                 return "已结束";
         }
     };
+    /**
+     * 获取门户编辑yrl
+     * @param pageId
+     */
+    activityApp.prototype.getMhEditorUrl = function (pageId) {
+        return "http://mh.chaoxing.com/page/" + pageId + "/edit";
+    };
+    /**
+     * 获取页面预览url
+     * @param pageId
+     */
+    activityApp.prototype.getMhPreviewUrl = function (pageId) {
+        return "http://mh.chaoxing.com/page/" + pageId + "/show";
+    };
     W['activityApp'] = new activityApp();
 })(window, jQuery, JSON);
 Array.prototype.remove = function (val) {

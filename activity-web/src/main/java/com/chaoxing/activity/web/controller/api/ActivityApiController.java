@@ -103,8 +103,8 @@ public class ActivityApiController {
 	@PostMapping("{activityId}/bind/template/{webTemplateId}")
 	public RestRespDTO bindWebTemplate(HttpServletRequest request, @PathVariable Integer activityId, @PathVariable Integer webTemplateId) {
 		LoginUserDTO loginUser = LoginUtils.getLoginUser(request);
-		activityHandleService.bindWebTemplate(activityId, webTemplateId, loginUser);
-		return RestRespDTO.success();
+		Integer pageId = activityHandleService.bindWebTemplate(activityId, webTemplateId, loginUser);
+		return RestRespDTO.success(pageId);
 	}
 
 	/**可参与的活动列表
