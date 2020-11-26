@@ -3,7 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="https://unpkg.com/element-ui/lib/theme-chalk/index.css">
+    <link rel="stylesheet" href="/static/pc/assets/lib/element-ui/lib/theme-chalk/index.css" th:href="@{/pc/assets/lib/element-ui/lib/theme-chalk/index.css}">
+
     <link rel="stylesheet" href="/static/pc/assets/css/public.css" th:href="@{/pc/assets/css/public.css}">
     <link rel="stylesheet" href="/static/pc/assets/css/index.css" th:href="@{/pc/assets/css/index.css}">
     <title>活动首页</title>
@@ -73,12 +74,12 @@
                     </div>
                 </div>
             </div>
-            <el-pagination background layout="prev, pager, next" :total="100"
+            <el-pagination background layout="prev, pager, next" :total="pages*10"
                            @current-change="currenClick"
-                           :current-page="currentPage">
+                           >
             </el-pagination>
             <!-- 当列表为空时展示 -->
-            <div class="empty-box" style="display: none;">
+            <div class="empty-box" style="display: none;" v-show="total == 0">
                 <img src="/static/pc/assets/images/empty.png" th:src="@{/pc/assets/images/empty.png}">
                 <p>无搜索结果～</p>
             </div>
@@ -86,7 +87,8 @@
 </div>
 </div>
 <div th:replace="pc/include/common_js :: common_js(~{::script})">
-    <script src="//unpkg.com/element-ui/lib/index.js"></script>
+    <script type="text/javascript" src="/static/pc/assets/lib/element-ui/lib/index.js" th:src="@{/pc/assets/lib/element-ui/lib/index.js}"></script>
+
     <script th:inline="javascript">
         activityVue = new Vue({
             el: '#activity-vue',
@@ -98,6 +100,7 @@
                 fids: [[${fids}]],
                 times: [],
                 statuses: [],
+                pages: 0,
                 //搜索条件searchWrapper
                 sw: "",
                 //筛选查询参数对象
@@ -118,7 +121,12 @@
                 $($this.activityClassifyNames).each(function () {
                     $this.activityClassifies.push({name: this,value: this,selected: false});
                 });
+// <<<<<<< Updated upstream
                 //time
+// =======
+
+                //time name 是前端展示  value是后端的对接数据 selected是表示选中状态
+// >>>>>>> Stashed changes
                 $this.times = [
                     {name: "全部", value: "all", selected: true},
                     {name: "近一个月", value: "nearly_a_month", selected: false},
@@ -224,7 +232,8 @@
                     app.ajaxPost(url, params, function (data) {
                         if (data.success) {
                             $this.loaded = true;
-                            $this.activities = data.data.records;
+                            $this.activities = data.data.records
+                            $this.pages = Math.ceil(data.data.total/12);
                             $this.total = $this.activities.length;
                         } else {
                             var errorMessage = data.message;
@@ -241,6 +250,7 @@
                     var $this = this;
                     $this.queryParams.sw = $this.sw;
                     $("#search-input").blur();
+                    $this.pageNum = 1;
                     $this.loadData();
                 },
                 currenClick:function (currentPage) {

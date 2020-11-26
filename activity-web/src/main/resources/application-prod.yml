@@ -2,12 +2,12 @@ spring:
   redis:
     host: 10.0.23.238
     port: 6379
-    database: 11
+    database: 15
     password: be
   datasource:
     druid:
-      url: jdbc:mysql://10.0.17.34/sign_activity?serverTimezone=UTC&useUnicode=true&characterEncoding=utf-8
+      url: jdbc:mysql://10.0.17.34/activity_engine?serverTimezone=UTC&useUnicode=true&characterEncoding=utf-8
       username: master
       password: master
 server:
-  port: 8104
+  port: 9100
