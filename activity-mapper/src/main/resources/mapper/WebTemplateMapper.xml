@@ -5,9 +5,10 @@
         <id column="id" jdbcType="INTEGER" property="id" />
         <result column="name" jdbcType="VARCHAR" property="name" />
         <result column="cover_url" jdbcType="VARCHAR" property="coverUrl" />
+        <result column="preview_url" jdbcType="VARCHAR" property="previewUrl" />
         <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
     </resultMap>
     <sql id="Base_Column_List">
-        t.id, t.name, t.cover_url, t.create_time
+        t.id, t.name, t.cover_url, t.preview_url, t.create_time
     </sql>
 </mapper>

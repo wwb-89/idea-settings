@@ -1,6 +1,7 @@
 package com.chaoxing.activity.model;
 
 import com.baomidou.mybatisplus.annotation.IdType;
+import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.AllArgsConstructor;
@@ -33,7 +34,7 @@ public class WebTemplateApp {
     /** 应用id; column: app_id*/
     private Integer appId;
     /** 应用名称; column: app_name*/
-    private Integer appName;
+    private String appName;
     /** 应用类型; column: app_type*/
     private String appType;
     /** 数据类型，封面、签到报名、地图、活动列表等; column: data_type*/
@@ -43,6 +44,7 @@ public class WebTemplateApp {
 
     // 附加
     /** 模板应用数据列表 */
+    @TableField(exist = false)
     private List<WebTemplateAppData> webTemplateAppDataList;
 
 }

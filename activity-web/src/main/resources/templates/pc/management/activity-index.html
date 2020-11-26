@@ -31,7 +31,7 @@
                         <div class="item">
                             <img :src="scope.row.coverCloudId | getCloudImgUrl">
                             <div class="desc">
-                                <div class="title">{{scope.row.name}}</div>
+                                <div class="title" @click="configPage(scope.row)">{{scope.row.name}}</div>
                                 <div class="time"><span>{{scope.row.startDate | timestamp2ChineseYMD}}</span> - <span>{{scope.row.endDate | timestamp2ChineseYMD}}</span></div>
                             </div>
                         </div>
@@ -298,6 +298,13 @@
                     }, function () {
                         app.showMsg("修改发布范围失败");
                     });
+                },
+                // 配置页面
+                configPage: function (activity) {
+                    var pageId = activity.pageId;
+                    if (!activityApp.isEmpty(pageId)) {
+                        window.open(activityApp.getMhEditorUrl(pageId));
+                    }
                 }
             }
         });

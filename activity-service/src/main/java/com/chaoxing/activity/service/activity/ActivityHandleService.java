@@ -493,13 +493,18 @@ public class ActivityHandleService {
 	 * @param activityId
 	 * @param webTemplateId
 	 * @param loginUser
-	 * @return void
+	 * @return java.lang.Integer
 	*/
-	@Transactional
-	public void bindWebTemplate(Integer activityId, Integer webTemplateId, LoginUserDTO loginUser) {
+	@Transactional(rollbackFor = Exception.class)
+	public Integer bindWebTemplate(Integer activityId, Integer webTemplateId, LoginUserDTO loginUser) {
+		Activity activity = activityValidationService.activityExist(activityId);
+		// 如果已经选择了模板就不能再选择
+		Integer webTemplateId1 = activity.getWebTemplateId();
+		if (webTemplateId1 != null) {
+			throw new BusinessException("活动已经选择了模板");
+		}
 		// 创建模块
 		createModuleByWebTemplateId(activityId, webTemplateId, loginUser);
-		Activity activity = activityValidationService.activityExist(activityId);
 		// 克隆
 		MhCloneParamDTO mhCloneParam = packageMhCloneParam(activity, webTemplateId, loginUser);
 		Integer pageId = mhApiService.cloneTemplate(mhCloneParam);
@@ -509,6 +514,7 @@ public class ActivityHandleService {
 				.set(Activity::getWebTemplateId, webTemplateId)
 				.set(Activity::getPageId, pageId)
 		);
+		return pageId;
 	}
 
 	/**创建模块
@@ -522,6 +528,8 @@ public class ActivityHandleService {
 	 * @return void
 	*/
 	private void createModuleByWebTemplateId(Integer activityId, Integer webTemplateId, LoginUserDTO loginUser) {
+		// 先删除活动的模块
+		activityModuleService.deleteByActivityId(activityId);
 		// 根据网页模板找到需要创建的模块id
 		List<WebTemplateApp> webTemplateApps = webTemplateService.listLocalDataSourceAppByWebTemplateIdAppType(webTemplateId, MhAppTypeEnum.ICON);
 		if (CollectionUtils.isEmpty(webTemplateApps)) {
@@ -644,6 +652,7 @@ public class ActivityHandleService {
 						.title(activityModule.getName())
 						// 访问的url
 						.url(accessUrl)
+						.pageType(3)
 						.coverUrl(cloudApiService.getCloudImgUrl(activityModule.getIconCloudId()))
 						.build();
 				result.add(mhAppData);

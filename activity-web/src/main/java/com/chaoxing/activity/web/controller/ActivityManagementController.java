@@ -5,6 +5,8 @@ import com.chaoxing.activity.dto.activity.ActivityTypeDTO;
 import com.chaoxing.activity.dto.module.SignFormDTO;
 import com.chaoxing.activity.model.Activity;
 import com.chaoxing.activity.model.ActivityClassify;
+import com.chaoxing.activity.model.WebTemplate;
+import com.chaoxing.activity.service.WebTemplateService;
 import com.chaoxing.activity.service.activity.ActivityQueryService;
 import com.chaoxing.activity.service.activity.classify.ActivityClassifyQueryService;
 import com.chaoxing.activity.service.manager.module.SignApiService;
@@ -37,6 +39,8 @@ public class ActivityManagementController {
 	private ActivityClassifyQueryService activityClassifyQueryService;
 	@Resource
 	private SignApiService signApiService;
+	@Resource
+	private WebTemplateService webTemplateService;
 
 	/**活动管理主页
 	 * @Description 
@@ -50,6 +54,14 @@ public class ActivityManagementController {
 		return "pc/management/activity-index";
 	}
 
+	/**活动新增页面
+	 * @Description 
+	 * @author wwb
+	 * @Date 2020-11-25 15:26:18
+	 * @param model
+	 * @param request
+	 * @return java.lang.String
+	*/
 	@GetMapping("add")
 	public String add(Model model, HttpServletRequest request) {
 		LoginUserDTO loginUser = LoginUtils.getLoginUser(request);
@@ -60,9 +72,21 @@ public class ActivityManagementController {
 		model.addAttribute("activityClassifies", activityClassifyQueryService.listOrgOptional(loginUser.getFid()));
 		// 报名签到
 		model.addAttribute("sign", null);
+		// 模板列表
+		List<WebTemplate> webTemplates = webTemplateService.list();
+		model.addAttribute("webTemplates", webTemplates);
 		return "pc/management/activity-add-edit";
 	}
 
+	/**活动修改页面
+	 * @Description 
+	 * @author wwb
+	 * @Date 2020-11-25 15:26:28
+	 * @param model
+	 * @param activityId
+	 * @param request
+	 * @return java.lang.String
+	*/
 	@GetMapping("{activityId}/edit")
 	public String add(Model model, @PathVariable Integer activityId, HttpServletRequest request) {
 		LoginUserDTO loginUser = LoginUtils.getLoginUser(request);
@@ -80,6 +104,9 @@ public class ActivityManagementController {
 			signForm = signApiService.getById(signId);
 		}
 		model.addAttribute("sign", signForm);
+		// 模板列表
+		List<WebTemplate> webTemplates = webTemplateService.list();
+		model.addAttribute("webTemplates", webTemplates);
 		return "pc/management/activity-add-edit";
 	}
 

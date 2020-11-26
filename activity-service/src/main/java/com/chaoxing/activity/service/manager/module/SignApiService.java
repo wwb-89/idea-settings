@@ -40,7 +40,7 @@ public class SignApiService {
 	/** 获取签到报名信息的地址 */
 	private static final String DETAIL_URL = DOMAIN + "/activity/%d/detail";
 	/** 参与情况 */
-	private static final String PARTICIPATION_URL = "/activity/%d/participation";
+	private static final String PARTICIPATION_URL = DOMAIN + "/activity/%d/participation";
 
 	@Resource
 	private RestTemplate restTemplate;

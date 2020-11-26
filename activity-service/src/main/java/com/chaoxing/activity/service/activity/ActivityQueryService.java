@@ -58,7 +58,7 @@ public class ActivityQueryService {
 	 * @return com.baomidou.mybatisplus.extension.plugins.pagination.Page<com.chaoxing.activity.model.Activity>
 	*/
 	public Page<Activity> listCreated(Page<Activity> page, Integer fid) {
-		page = activityMapper.listCreated(fid);
+		page = activityMapper.listCreated(page, fid);
 		return page;
 	}
 

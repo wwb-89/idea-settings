@@ -11,6 +11,7 @@ import com.chaoxing.activity.service.manager.module.PunchApiService;
 import com.chaoxing.activity.service.manager.module.StarApiService;
 import com.chaoxing.activity.service.manager.module.TpkApiService;
 import com.chaoxing.activity.service.manager.module.WorkApiService;
+import com.chaoxing.activity.util.constant.ActivityModuleConstant;
 import com.chaoxing.activity.util.enums.ModuleTypeEnum;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
@@ -153,6 +154,7 @@ public class ActivityModuleService {
 				.externalId(String.valueOf(tpkId))
 				.name(name)
 				.type(ModuleTypeEnum.TPK.getValue())
+				.iconCloudId(ActivityModuleConstant.TPK_ICON_CLOUD_ID)
 				.build();
 		return activityModule;
 	}
@@ -175,6 +177,7 @@ public class ActivityModuleService {
 				.externalId(String.valueOf(starId))
 				.name(name)
 				.type(ModuleTypeEnum.STAR.getValue())
+				.iconCloudId(ActivityModuleConstant.STAR_ICON_CLOUD_ID)
 				.build();
 		return activityModule;
 	}
@@ -202,6 +205,7 @@ public class ActivityModuleService {
 				.externalId(String.valueOf(workId))
 				.name(name)
 				.type(ModuleTypeEnum.WORK.getValue())
+				.iconCloudId(ActivityModuleConstant.WORK_ICON_CLOUD_ID)
 				.build();
 		return activityModule;
 	}
@@ -229,6 +233,7 @@ public class ActivityModuleService {
 				.externalId(String.valueOf(punchId))
 				.name(name)
 				.type(ModuleTypeEnum.PUNCH.getValue())
+				.iconCloudId(ActivityModuleConstant.PUNCH_ICON_CLOUD_ID)
 				.build();
 		return activityModule;
 	}
@@ -248,31 +253,6 @@ public class ActivityModuleService {
 				.eq(ActivityModule::getTemplateAppId, templateAppId)
 		);
 		return activityModules;
-	}
-
-	/**获取模块的访问地址
-	 * @Description 
-	 * @author wwb
-	 * @Date 2020-11-25 00:20:00
-	 * @param activityModule
-	 * @return java.lang.String
-	*/
-	public String getModuleAccessUrl(ActivityModule activityModule) {
-		String type = activityModule.getType();
-		ModuleTypeEnum moduleType = ModuleTypeEnum.fromValue(type);
-		switch (moduleType) {
-			case WORK:
-				break;
-			case STAR:
-				break;
-			case PUNCH:
-				break;
-			case TPK:
-				break;
-			default:
-
-		}
-		return "";
 	}
 
 }

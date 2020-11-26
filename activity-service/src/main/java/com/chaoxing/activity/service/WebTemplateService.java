@@ -48,6 +48,13 @@ public class WebTemplateService {
 		return webTemplateMapper.selectById(webTemplateId);
 	}
 
+	/**活动模板一定存在
+	 * @Description 
+	 * @author wwb
+	 * @Date 2020-11-25 15:28:53
+	 * @param webTemplateId
+	 * @return com.chaoxing.activity.model.WebTemplate
+	*/
 	public WebTemplate webTemplateExist(Integer webTemplateId) {
 		WebTemplate webTemplate = getById(webTemplateId);
 		Optional.ofNullable(webTemplate).orElseThrow(() -> new BusinessException("网页模板不存在"));
@@ -80,6 +87,7 @@ public class WebTemplateService {
 				Integer id = webTemplateApp.getId();
 				List<WebTemplateAppData> itemDataList = webTemplateApp.getWebTemplateAppDataList();
 				itemDataList = Optional.ofNullable(itemDataList).orElse(new ArrayList<>());
+				webTemplateApp.setWebTemplateAppDataList(itemDataList);
 				Iterator<WebTemplateAppData> iterator = webTemplateAppDataList.iterator();
 				while (iterator.hasNext()) {
 					WebTemplateAppData next = iterator.next();
@@ -93,11 +101,29 @@ public class WebTemplateService {
 		return webTemplateApps;
 	}
 
+	/**根据网页模板id查询关联的应用列表
+	 * @Description 
+	 * @author wwb
+	 * @Date 2020-11-25 15:29:12
+	 * @param webTemplateId
+	 * @return java.util.List<com.chaoxing.activity.model.WebTemplateApp>
+	*/
 	public List<WebTemplateApp> listAppByWebTemplateId(Integer webTemplateId) {
 		return webTemplateAppMapper.selectList(new QueryWrapper<WebTemplateApp>()
 			.lambda()
 				.eq(WebTemplateApp::getWebTemplateId, webTemplateId)
 		);
+	}
+
+	/**查询所有的网页模板列表
+	 * @Description 
+	 * @author wwb
+	 * @Date 2020-11-25 15:30:44
+	 * @param 
+	 * @return java.util.List<com.chaoxing.activity.model.WebTemplate>
+	*/
+	public List<WebTemplate> list() {
+		return webTemplateMapper.selectList(new QueryWrapper<>());
 	}
 
 }

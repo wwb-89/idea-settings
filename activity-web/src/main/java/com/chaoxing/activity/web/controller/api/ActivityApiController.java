@@ -91,7 +91,7 @@ public class ActivityApiController {
 		return RestRespDTO.success();
 	}
 
-	/**绑定模板
+	/**绑定/选择模板
 	 * @Description 
 	 * @author wwb
 	 * @Date 2020-11-13 15:38:14
@@ -103,8 +103,8 @@ public class ActivityApiController {
 	@PostMapping("{activityId}/bind/template/{webTemplateId}")
 	public RestRespDTO bindWebTemplate(HttpServletRequest request, @PathVariable Integer activityId, @PathVariable Integer webTemplateId) {
 		LoginUserDTO loginUser = LoginUtils.getLoginUser(request);
-		activityHandleService.bindWebTemplate(activityId, webTemplateId, loginUser);
-		return RestRespDTO.success();
+		Integer pageId = activityHandleService.bindWebTemplate(activityId, webTemplateId, loginUser);
+		return RestRespDTO.success(pageId);
 	}
 
 	/**可参与的活动列表

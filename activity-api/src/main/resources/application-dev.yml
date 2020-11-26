@@ -6,6 +6,6 @@ spring:
     password: redis_pass
   datasource:
     druid:
-      url: jdbc:mysql://127.0.0.1/activity_engine?serverTimezone=UTC&useUnicode=true&characterEncoding=utf-8
-      username: root
-      password: admin
+      url: jdbc:mysql://127.0.0.1:3308/activity_engine?serverTimezone=UTC&useUnicode=true&characterEncoding=utf-8
+      username: master
+      password: master

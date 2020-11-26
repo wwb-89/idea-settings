@@ -37,8 +37,8 @@
             <span class="create">编辑活动</span>
         </div>
         <div>
-            <button type="button" class="cancle-btn" v-show="activity.webTemplateId">预览</button>
-            <button type="button" class="create-btn" v-show="step == 1" @click="nextStep">保存</button>
+            <!--<button type="button" class="cancle-btn" v-show="activity.webTemplateId">预览</button>-->
+            <button type="button" class="create-btn" v-show="step == 1" @click="nextStep">下一步</button>
         </div>
     </div>
     <div v-show="step == 1">
@@ -222,75 +222,32 @@
     <!--选择门户模板-->
     <div class="info box" v-show="step > 1">
         <div class="title">选择模板</div>
-        <div class="page-show">
+        <div class="page-show" v-show="!activity.pageId">
             <div class="page-box">
-                <div class="page-item">
+                <div class="page-item" v-for="(webTemplate, index) of webTemplates" :key="'web-templates' + index">
                     <div class="mask-box">
-                        <img src="/static/pc/assets/images/example.jpg" th:src="@{/pc/assets/images/example.jpg}" class="img">
+                        <img class="img" :src="webTemplate.coverUrl">
                         <div class="mask">
-                            <div class="normal-btn preview">预览</div>
-                            <div class="normal-btn after-sure">选择</div>
+                            <div class="normal-btn preview" @click="previewTemplate(index)">预览</div>
+                            <div class="normal-btn after-sure" @click="selectTemplate(index)">选择</div>
                         </div>
                     </div>
-                    <div class="desc overHidden1">征文活动</div>
-                </div>
-                <div class="page-item">
-                    <div class="mask-box">
-                        <img src="/static/pc/assets/images/example.jpg" th:src="@{/pc/assets/images/example.jpg}" class="img">
-                        <div class="mask">
-                            <div class="normal-btn preview">预览</div>
-                            <div class="normal-btn after-sure">选择</div>
-                        </div>
-                    </div>
-                    <div class="desc overHidden1">暑期教师共读活动</div>
-                </div>
-                <div class="page-item">
-                    <div class="mask-box">
-                        <img src="/static/pc/assets/images/example.jpg" th:src="@{/pc/assets/images/example.jpg}" class="img">
-                        <div class="mask">
-                            <div class="normal-btn preview">预览</div>
-                            <div class="normal-btn after-sure">选择</div>
-                        </div>
-                    </div>
-                    <div class="desc overHidden1">书海拾贝·辰星领航 - 暑期星阅读活动暑期星…</div>
-                </div>
-                <div class="page-item">
-                    <div class="mask-box">
-                        <img src="/static/pc/assets/images/example.jpg" th:src="@{/pc/assets/images/example.jpg}" class="img">
-                        <div class="mask">
-                            <div class="normal-btn preview">预览</div>
-                            <div class="normal-btn after-sure">选择</div>
-                        </div>
-                    </div>
-                    <div class="desc overHidden1">阅往昔·致未来</div>
-                </div>
-                <div class="page-item">
-                    <div class="mask-box">
-                        <img src="/static/pc/assets/images/example.jpg" th:src="@{/pc/assets/images/example.jpg}" class="img">
-                        <div class="mask">
-                            <div class="normal-btn preview">预览</div>
-                            <div class="normal-btn after-sure">选择</div>
-                        </div>
-                    </div>
-                    <div class="desc overHidden1">阅往昔·致未来</div>
+                    <div class="desc overHidden1">{{webTemplate.name}}</div>
                 </div>
             </div>
         </div>
         <!-- 编辑活动时预览模板 -->
-        <div class="page-show" style="display: none;">
-            <div class="page-item">
-                <img src="/static/pc/assets/images/example.jpg" th:src="@{/pc/assets/images/example.jpg}" class="img">
-                <!-- hover时出现 -->
-                <div class="mask">
-                    <div class="normal-btn preview">预览</div>
-                    <div class="normal-btn after-sure">页面配置</div>
-                </div>
-            </div>
-            <div class="page-item">
-                <img src="/static/pc/assets/images/example.jpg" th:src="@{/pc/assets/images/example.jpg}" class="img">
-                <div class="mask">
-                    <div class="normal-btn preview">预览</div>
-                    <div class="normal-btn after-sure">页面配置</div>
+        <div class="page-show" v-show="activity.pageId">
+            <div class="page-box">
+                <div class="page-item" v-for="(webTemplate, index) of webTemplates" :key="'web-templates' + index" v-if="webTemplate.id == activity.webTemplateId">
+                    <div class="mask-box">
+                        <img class="img" :src="webTemplate.coverUrl">
+                        <!-- hover时出现 -->
+                        <div class="mask">
+                            <div class="normal-btn preview" @click="previePage">预览</div>
+                            <div class="normal-btn after-sure" @click="configPage">页面配置</div>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -367,6 +324,8 @@
             data: {
                 step: 1,
                 activity: [[${activity}]],
+                // 模板列表
+                webTemplates: [[${webTemplates}]],
                 // 活动日期的范围
                 activityDateScope: "",
                 activityTypes: [[${activityTypes}]],
@@ -397,8 +356,7 @@
                 // 签到时间范围
                 signInTimeScope: "",
                 // 人数限制值
-                personLimitValue: 0,
-
+                personLimitValue: 0
             },
             created: function () {
                 var $this = this;
@@ -869,6 +827,46 @@
                     $this.sign.signInStartTime = obj[0];
                     $this.sign.signInEndTime = obj[1];
                 },
+                // 预览模板
+                previewTemplate: function (index) {
+                    var $this = this;
+                    var webTemplate = $this.webTemplates[index];
+                    window.open(webTemplate.previewUrl);
+                },
+                // 选择模板
+                selectTemplate: function (index) {
+                    var $this = this;
+                    var webTemplate = $this.webTemplates[index];
+                    var url = ctx + "/api/activity/"+ $this.activity.id +"/bind/template/" + webTemplate.id;
+                    app.ajaxPostWithLoading(url, {}, function (data) {
+                        if (data.success) {
+                            var pageId = data.data;
+                            $this.activity.pageId = pageId;
+                            app.showMsg("选择模板成功", function () {
+                                // 到编辑门户页面
+                                window.location.href = activityApp.getMhEditorUrl(pageId);
+                            });
+                        } else {
+                            var errorMessage = data.message;
+                            if (activityApp.isEmpty(errorMessage)) {
+                                errorMessage = "选择模板失败";
+                            }
+                            app.showMsg(errorMessage);
+                        }
+                    }, function () {
+                        app.showMsg("选择模板失败");
+                    });
+                },
+                // 预览页面
+                previePage: function () {
+                    var $this = this;
+                    window.open(activityApp.getMhPreviewUrl($this.activity.pageId));
+                },
+                // 配置页面
+                configPage: function () {
+                    var $this = this;
+                    window.location.href = activityApp.getMhEditorUrl($this.activity.pageId);
+                }
             }
         })
     </script>

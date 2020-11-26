@@ -46,9 +46,10 @@ public interface ActivityMapper extends BaseMapper<Activity> {
 	 * @Description 
 	 * @author wwb
 	 * @Date 2020-11-24 21:49:48
+	 * @param page
 	 * @param fid
 	 * @return com.baomidou.mybatisplus.extension.plugins.pagination.Page<com.chaoxing.activity.model.Activity>
 	*/
-	Page<Activity> listCreated(@Param("fid") Integer fid);
+	Page<Activity> listCreated(@Param("page") Page<?> page, @Param("fid") Integer fid);
 
 }
