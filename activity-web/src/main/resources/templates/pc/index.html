@@ -229,7 +229,7 @@
                     }
                     $this.loaded = false;
                     $this.searchShow = false;
-                    app.ajaxPost(url, params, function (data) {
+                    app.ajaxPost(url, {data: activityApp.getJsonStr(params)}, function (data) {
                         if (data.success) {
                             $this.loaded = true;
                             $this.activities = data.data.records
