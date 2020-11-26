@@ -234,7 +234,7 @@
                             $this.loaded = true;
                             $this.activities = data.data.records
                             $this.pages = Math.ceil(data.data.total/12);
-                            $this.total = $this.activities.length;
+                            $this.total = data.data.total;
                         } else {
                             var errorMessage = data.message;
                             if (activityApp.isEmpty(errorMessage)) {
@@ -257,7 +257,7 @@
                     var $this = this;
                     $this.queryParams.pageNum = currentPage;
                     $this.loadData();
-                }
+                },
             }
         })
     </script>
