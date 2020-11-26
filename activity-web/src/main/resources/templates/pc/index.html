@@ -27,7 +27,6 @@
                 <span class="title">类型</span>
                 <ul>
                     <li :class="{'active': item.selected}" v-for="(item, index) of activityClassifies" @click="changeActivityClassifySelected(index)">{{item.name}}</li>
-
                 </ul>
             </div>
             <div class="typeItem" >
@@ -97,7 +96,7 @@
                 activityClassifyNames: [[${activityClassifyNames}]],
                 activityClassifies: [],
                 regions: [[${regions}]],
-                fids: [[${fids}]],
+                // fids: [[${fids}]],
                 times: [],
                 statuses: [],
                 pages: 0,
@@ -116,6 +115,7 @@
             },
             created: function () {
                 var $this = this;
+                console.log($this.activityClassifies);
                 //type
                 $this.activityClassifies.push({name: "全部",value: "", selected: true});
                 $($this.activityClassifyNames).each(function () {
@@ -250,7 +250,7 @@
                     var $this = this;
                     $this.queryParams.sw = $this.sw;
                     $("#search-input").blur();
-                    $this.pageNum = 1;
+                    $this.queryParams.pageNum = 1;
                     $this.loadData();
                 },
                 currenClick:function (currentPage) {
