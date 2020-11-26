@@ -217,7 +217,8 @@ public class ActivityHandleService {
 			// 修改或更新
 			Integer signId = existActivity.getSignId();
 			signForm.setId(signId);
-			handleSign(signForm, loginUser, request);
+			signId = handleSign(signForm, loginUser, request);
+			activity.setSignId(signId);
 		}
 		// 处理活动相关
 		LocalDate startDate = activity.getStartDate();

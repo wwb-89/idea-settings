@@ -137,11 +137,12 @@ public class ActivityMhAppApiController {
 		Integer limitNum = signParticipation.getLimitNum();
 		Integer signedNum = signParticipation.getSignedNum();
 		signPepleNumDescribe.append(signedNum);
-		if (limitNum != null) {
+		if (limitNum != null && limitNum.intValue() > 0) {
 			signPepleNumDescribe.append("/");
 			signPepleNumDescribe.append(limitNum);
 		}
 		mhGeneralAppResultDataFields.add(MhGeneralAppResultDataDTO.MhGeneralAppResultDataFieldDTO.builder()
+				.key("参与人数")
 				.value(signPepleNumDescribe.toString())
 				.flag("104")
 				.build());
