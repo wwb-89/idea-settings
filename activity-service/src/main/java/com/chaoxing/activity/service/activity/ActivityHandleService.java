@@ -679,8 +679,7 @@ public class ActivityHandleService {
 			case ACTIVITY_INFO:
 				return String.format(ActivityMhUrlConstant.ACTIVITY_INFO_URL, activityId);
 			case SIGN_IN_UP:
-				Integer signId = activity.getSignId();
-				return String.format(ActivityMhUrlConstant.ACTIVITY_SIGN_URL, signId == null ? "" : signId);
+				return String.format(ActivityMhUrlConstant.ACTIVITY_SIGN_URL, activityId);
 			case ACTIVITY_LIST:
 				return String.format(ActivityMhUrlConstant.ACTIVITY_RECOMMEND_URL, activityId);
 			default:
