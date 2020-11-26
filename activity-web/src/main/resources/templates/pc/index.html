@@ -167,40 +167,40 @@
             },
             methods: {
                 //改变选中状态
-                changeActivityClassifySelected(index){
+                changeActivityClassifySelected: function(index){
                     var $this = this;
                     $($this.activityClassifies).each(function (i) {
                         $this.$set($this.activityClassifies[i], "selected", i == index);
                     });
                     $this.queryParams.activityClassifyName = $this.activityClassifies[index].value;
-                    $this.pageNum = 1;
+                    $this.queryParams.pageNum = 1;
                     $this.loadData();
                 },
-                changeActivityTimeSelected(index){
+                changeActivityTimeSelected: function(index){
                     var $this = this;
                     $($this.times).each(function (i) {
                         $this.$set($this.times[i], "selected", i == index);
                     });
                     $this.queryParams.date = $this.times[index].value;
-                    $this.pageNum = 1;
+                    $this.queryParams.pageNum = 1;
                     $this.loadData();
                 },
-                changeActivityRegionsSelected(index){
+                changeActivityRegionsSelected: function(index){
                     var $this = this;
                     $($this.regions).each(function (i) {
                         $this.$set($this.regions[i], "selected", i == index);
                     });
                     $this.queryParams.area = $this.regions[index].value;
-                    $this.pageNum = 1;
+                    $this.queryParams.pageNum = 1;
                     $this.loadData();
                 },
-                changeActivityStatusSelected(index){
+                changeActivityStatusSelected: function(index){
                     var $this = this;
                     $($this.statuses).each(function (i) {
                         $this.$set($this.statuses[i], "selected", i == index);
                     });
                     $this.queryParams.status = $this.statuses[index].value;
-                    $this.pageNum = 1;
+                    $this.queryParams.pageNum = 1;
                     $this.loadData();
                 },
                 //重置查询条件
