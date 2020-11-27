@@ -24,7 +24,7 @@
     <div class="top flex box" v-if="!activity.id">
         <div class="flex">
             <div class="left">
-                <img src="/static/pc/assets/images/left.png" th:src="@{/pc/assets/images/left.png}" class="left" style="cursor: pointer;" v-show="step > 1" @click="preStep">
+                <img src="/static/pc/assets/images/left.png" th:src="@{/pc/assets/images/left.png}" style="cursor: pointer;" v-show="step > 1" @click="preStep">
             </div>
             <span class="create">创建活动</span>
         </div>
@@ -35,7 +35,9 @@
     <!-- 编辑活动头部 -->
     <div class="top flex box" v-if="activity.id">
         <div class="flex">
-            <img src="/static/pc/assets/images/left.png" th:src="@{/pc/assets/images/left.png}" class="left" style="cursor: pointer;" v-show="step > 1" @click="preStep">
+            <div class="left">
+                <img src="/static/pc/assets/images/left.png" th:src="@{/pc/assets/images/left.png}" style="cursor: pointer;" v-show="step > 1" @click="preStep">
+            </div>
             <span class="create">编辑活动</span>
         </div>
         <div>
