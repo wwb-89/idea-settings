@@ -64,7 +64,7 @@
                 <div class="count">共<span>{{total}}</span>个活动</div>
             </div>
             <div class="c-item" >
-                <div class="item" v-for="(item, index) of activities" :key="'item-' + index">
+                <div class="item" v-for="(item, index) of activities" :key="'item-' + index" @click="detail(index)">
                     <div class="img-box">
                         <img :src="item.coverCloudId | getCloudImgUrl">
                         <div class="tag" v-if="item.status == 2">活动预告</div>
@@ -261,6 +261,14 @@
                     $this.queryParams.pageNum = currentPage;
                     $this.loadData();
                 },
+                detail: function (index) {
+                    var $this = this;
+                    var activity = $this.activities[index];
+                    var pageId = activity.pageId;
+                    if (!activityApp.isEmpty(pageId)) {
+                        window.open(activityApp.getMhPreviewUrl(pageId));
+                    }
+                }
             }
         })
     </script>
