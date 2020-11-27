@@ -57,7 +57,7 @@ public class LoginRequiredInterceptor extends HandlerInterceptorAdapter {
 				writer.write(JSON.toJSONString(restResDTO));
 			} else {
 				// 页面
-				response.sendRedirect("https://passport2.chaoxing.com/login?newversion=true&refer=" + request.getRequestURL().toString());
+				response.sendRedirect("http://v1.chaoxing.com/backSchool/toLogin?refer=" + request.getRequestURL().toString());
 			}
 		}
 	}
