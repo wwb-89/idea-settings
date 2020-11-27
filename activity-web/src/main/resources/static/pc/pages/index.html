@@ -4,7 +4,6 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="https://unpkg.com/element-ui/lib/theme-chalk/index.css">
     <link rel="stylesheet" href="../assets/css/public.css">
     <link rel="stylesheet" href="../assets/css/index.css">
     <title>活动首页</title>
@@ -13,14 +12,16 @@
 <body>
     <div class="page" id="app">
         <div class="banner">
-            <img src="http://uestc.moonsinfo.com/upload/hallonomie/2020-10/202010120814255729.png" alt="">
+            <img src="../assets/images/example.jpg" alt="">
         </div>
 
         <div class="content">
             <div class="search">
                 <input type="text" placeholder="搜索标题">
                 <div class="search-foot">
-                    <img src="../assets/images/search.png" alt="">
+                    <div class="img">
+                        <img src="../assets/images/search.png" alt="">
+                    </div>
                 </div>
             </div>
 
@@ -28,7 +29,7 @@
                 <div class="typeItem" v-for="item in typesList" :key="item.id">
                     <span class="title">{{item.title}}</span>
                     <ul>
-                        <li class='active' >全选</li>
+                        <li class='active'>全选</li>
                         <li v-for="type in item.list" :key="type.id">{{type.name}}
                         </li>
                     </ul>
@@ -49,7 +50,7 @@
 
                     <div class="item">
                         <div class="img-box">
-                            <img src="http://uestc.moonsinfo.com/upload/hallonomie/2020-10/202010120814255729.png"
+                            <img src="../assets/images/example.jpg"
                                 alt="">
                             <div class="tag">活动预备</div>
                         </div>
@@ -63,7 +64,7 @@
 
                     <div class="item">
                         <div class="img-box">
-                            <img src="http://uestc.moonsinfo.com/upload/hallonomie/2020-10/202010120814255729.png"
+                            <img src="../assets/images/example.jpg"
                                 alt="">
                             <div class="tag">活动预备</div>
                         </div>
@@ -77,7 +78,7 @@
 
                     <div class="item">
                         <div class="img-box">
-                            <img src="http://uestc.moonsinfo.com/upload/hallonomie/2020-10/202010120814255729.png"
+                            <img src="../assets/images/example.jpg"
                                 alt="">
                             <div class="tag green">进行中</div>
                         </div>
@@ -91,7 +92,7 @@
 
                     <div class="item">
                         <div class="img-box">
-                            <img src="http://uestc.moonsinfo.com/upload/hallonomie/2020-10/202010120814255729.png"
+                            <img src="../assets/images/example.jpg"
                                 alt="">
                             <div class="tag black">已结束</div>
                         </div>
@@ -115,103 +116,111 @@
         </div>
     </div>
     <script src="../assets/lib/vue.js"></script>
-    <script src="https://unpkg.com/element-ui/lib/index.js"></script>
+    <script src="../assets/lib/jquery.min.js"></script>
+    <script src="../assets/lib/jqthumb.min.js"></script>
     <script>
         var app = new Vue({
             el: '#app',
             data: {
                 nav: '',
-                typesList: [
+                typesList: [{
+                        id: "type",
+                        title: "类型",
+                        list: [{
+                            name: "展览",
+                            id: "1"
+                        }, {
+                            name: "演出",
+                            id: "2"
+                        }, {
+                            name: "讲座",
+                            id: "3"
+                        }, {
+                            name: "培训",
+                            id: "4"
+                        }, {
+                            name: "阅读推广",
+                            id: "5"
+                        }, {
+                            name: "其他",
+                            id: "6"
+                        }]
+                    },
                     {
-                    id: "type",
-                    title: "类型",
-                    list: [{
-                        name: "展览",
-                        id: "1"
+                        id: "time",
+                        title: "时间",
+                        list: [{
+                            name: "近一个月",
+                            id: "7"
+                        }, {
+                            name: "近三个月",
+                            id: "8"
+                        }, {
+                            name: "近半年",
+                            id: "9"
+                        }, {
+                            name: "近一年",
+                            id: "10"
+                        }, {
+                            name: "更早",
+                            id: "11"
+                        }]
                     }, {
-                        name: "演出",
-                        id: "2"
+                        id: "region",
+                        title: "地区",
+                        list: [{
+                            name: "杭州",
+                            id: "12"
+                        }, {
+                            name: "宁波",
+                            id: "13"
+                        }, {
+                            name: "温州",
+                            id: "14"
+                        }, {
+                            name: "绍兴",
+                            id: "15"
+                        }, {
+                            name: "湖州",
+                            id: "16"
+                        }, {
+                            name: "嘉兴",
+                            id: "17"
+                        }, {
+                            name: "金华",
+                            id: "18"
+                        }, {
+                            name: "台州",
+                            id: "19"
+                        }]
                     }, {
-                        name: "讲座",
-                        id: "3"
-                    }, {
-                        name: "培训",
-                        id: "4"
-                    }, {
-                        name: "阅读推广",
-                        id: "5"
-                    }, {
-                        name: "其他",
-                        id: "6"
-                    }]
-                },
-                    {
-                    id: "time",
-                    title: "时间",
-                    list: [{
-                        name: "近一个月",
-                        id: "7"
-                    }, {
-                        name: "近三个月",
-                        id: "8"
-                    }, {
-                        name: "近半年",
-                        id: "9"
-                    }, {
-                        name: "近一年",
-                        id: "10"
-                    }, {
-                        name: "更早",
-                        id: "11"
-                    }]
-                }, {
-                    id: "region",
-                    title: "地区",
-                    list: [{
-                        name: "杭州",
-                        id: "12"
-                    }, {
-                        name: "宁波",
-                        id: "13"
-                    }, {
-                        name: "温州",
-                        id: "14"
-                    }, {
-                        name: "绍兴",
-                        id: "15"
-                    }, {
-                        name: "湖州",
-                        id: "16"
-                    }, {
-                        name: "嘉兴",
-                        id: "17"
-                    }, {
-                        name: "金华",
-                        id: "18"
-                    }, {
-                        name: "台州",
-                        id: "19"
-                    }]
-                }, {
-                    id: "status",
-                    title: "状态",
-                    list: [{
-                        name: "活动预告",
-                        id: "20"
-                    }, {
-                        name: "进行中",
-                        id: "21"
-                    }, {
-                        name: "已结束",
-                        id: "22"
-                    }]
-                }],
+                        id: "status",
+                        title: "状态",
+                        list: [{
+                            name: "活动预告",
+                            id: "20"
+                        }, {
+                            name: "进行中",
+                            id: "21"
+                        }, {
+                            name: "已结束",
+                            id: "22"
+                        }]
+                    }
+                ],
             },
-            create:{},
-            methods: {
-            },
+            create: {},
+            methods: {},
 
         })
+    </script>
+    <script>
+        $(function () {
+            $('img').jqthumb({
+                width:'100%',
+                height:'100%'
+            });
+        });
     </script>
 </body>
 
