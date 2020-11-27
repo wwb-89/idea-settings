@@ -4,7 +4,9 @@ Vue.component('vue-activity-scope', {
             <div class="dailog">
                 <div class="header">
                     <span>活动范围</span>
-                    <img :src="ctx + '/pc/assets/images/close.png'" class="close" @click="show = false">
+                    <div class="close" @click="show = false">
+                        <img :src="ctx + '/pc/assets/images/close.png'">
+                    </div>
                 </div>
                 <div class="body">
                     <div class="tree">
