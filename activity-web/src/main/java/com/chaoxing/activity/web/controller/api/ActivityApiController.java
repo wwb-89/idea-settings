@@ -112,11 +112,12 @@ public class ActivityApiController {
 	 * @author wwb
 	 * @Date 2020-11-13 09:58:40
 	 * @param request
-	 * @param activityQuery
+	 * @param data
 	 * @return com.chaoxing.activity.dto.RestRespDTO
 	*/
 	@RequestMapping("list/participate")
-	public RestRespDTO list(HttpServletRequest request,ActivityQueryDTO activityQuery) {
+	public RestRespDTO list(HttpServletRequest request, String data) {
+		ActivityQueryDTO activityQuery = JSON.parseObject(data, ActivityQueryDTO.class);
 		List<Integer> fids = activityQuery.getFids();
 		if (CollectionUtils.isEmpty(fids)) {
 			LoginUserDTO loginUser = LoginUtils.getLoginUser(request);

@@ -217,7 +217,8 @@ public class ActivityHandleService {
 			// 修改或更新
 			Integer signId = existActivity.getSignId();
 			signForm.setId(signId);
-			handleSign(signForm, loginUser, request);
+			signId = handleSign(signForm, loginUser, request);
+			activity.setSignId(signId);
 		}
 		// 处理活动相关
 		LocalDate startDate = activity.getStartDate();
@@ -679,8 +680,7 @@ public class ActivityHandleService {
 			case ACTIVITY_INFO:
 				return String.format(ActivityMhUrlConstant.ACTIVITY_INFO_URL, activityId);
 			case SIGN_IN_UP:
-				Integer signId = activity.getSignId();
-				return String.format(ActivityMhUrlConstant.ACTIVITY_SIGN_URL, signId == null ? "" : signId);
+				return String.format(ActivityMhUrlConstant.ACTIVITY_SIGN_URL, activityId);
 			case ACTIVITY_LIST:
 				return String.format(ActivityMhUrlConstant.ACTIVITY_RECOMMEND_URL, activityId);
 			default:

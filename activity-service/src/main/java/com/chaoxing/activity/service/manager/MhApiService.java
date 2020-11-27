@@ -27,10 +27,10 @@ import java.util.Objects;
 @Service
 public class MhApiService {
 
-	/** 克隆模板的url http://portal.chaoxing.com/web-others/{templateId}/cloneActivity?wfwfid=&activityId=&uid= */
+	/** 克隆模板的url http://mh.chaoxing.com/web-others/{templateId}/cloneActivity?wfwfid=&activityId=&uid= */
 	private static final String CLONE_TEMPLATE_URL = ActivityMhUrlConstant.MH_DOMAIN + "/web-others/%d/cloneActivity?wfwfid=%d&uid=%d";
 
-	@Resource
+	@Resource(name = "restTemplateProxy")
 	private RestTemplate restTemplate;
 
 	/**克隆模板
