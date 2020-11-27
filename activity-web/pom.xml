@@ -13,7 +13,6 @@
 	<description>activity-web</description>
 
 	<dependencies>
-
 		<dependency>
 			<groupId>com.chaoxing</groupId>
 			<artifactId>activity-model</artifactId>
