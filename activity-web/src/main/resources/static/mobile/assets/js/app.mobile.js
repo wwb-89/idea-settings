@@ -891,7 +891,6 @@
             type: "post",
             data: params,
             dataType: "json",
-            traditional:true,
             xhrFields: {
                 withCredentials: true
             },
@@ -928,7 +927,6 @@
             type: "post",
             data: params,
             dataType: "json",
-            traditional:true,
             xhrFields: {
                 withCredentials: true
             },

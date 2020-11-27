@@ -19,7 +19,7 @@ Vue.component('vue-activity-scope', {
                 </div>
                 <div class="footer">
                     <div class="normal-btn cancle" @click="show = false">取消</div>
-                    <div class="normal-btn before-sure" @click="sureCallback">发布</div>
+                    <div class="normal-btn after-sure" @click="sureCallback">发布</div>
                 </div>
             </div>
         </div>

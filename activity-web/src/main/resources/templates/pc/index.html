@@ -2,23 +2,27 @@
 <html lang="en" xmlns:th="http://www.thymeleaf.org/">
 <head>
     <meta charset="UTF-8">
+    <title>活动首页</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="/static/pc/assets/lib/element-ui/lib/theme-chalk/index.css" th:href="@{/pc/assets/lib/element-ui/lib/theme-chalk/index.css}">
-
     <link rel="stylesheet" href="/static/pc/assets/css/public.css" th:href="@{/pc/assets/css/public.css}">
     <link rel="stylesheet" href="/static/pc/assets/css/index.css" th:href="@{/pc/assets/css/index.css}">
-    <title>活动首页</title>
+    <style type="text/css">
+        [v-cloak] {
+            display: none;
+        }
+    </style>
 </head>
 
 <body>
-<div class="page" id="activity-vue">
+<div class="page" id="activity-vue" v-cloak>
     <div class="banner">
         <img src="http://uestc.moonsinfo.com/upload/hallonomie/2020-10/202010120814255729.png" alt="">
     </div>
     <div class="content">
         <div class="search">
-            <input type="text" id="search-input" v-model.trim="sw"  placeholder="搜索标题" @keyup.enter="search">
-            <div class="search-foot">
+            <input type="text" id="search-input" v-model.trim="sw" placeholder="搜索标题">
+            <div class="search-foot" @click="search">
                 <img src="/static/pc/assets/images/search.png" th:src="@{/pc/assets/images/search.png}">
             </div>
         </div>
@@ -60,7 +64,7 @@
             <div class="c-item" >
                 <div class="item" v-for="(item, index) of activities" :key="'item-' + index">
                     <div class="img-box">
-                        <img :src=item.coverCloudId>
+                        <img :src="item.coverCloudId | getCloudImgUrl">
                         <div class="tag" v-if="item.status == 2">活动预告</div>
                         <div class="tag" v-if="item.status == 3">进行中</div>
                         <div class="tag" v-if="item.status == 4">已结束</div>
@@ -73,13 +77,9 @@
                     </div>
                 </div>
             </div>
-            <el-pagination background layout="prev, pager, next" :total="pages*10"
-                           @current-change="currenClick"
-                           v-show="total > 0"
-                           >
-            </el-pagination>
+            <el-pagination v-show="total > 0" background layout="prev, pager, next" :total="total" @current-change="currenClick"></el-pagination>
             <!-- 当列表为空时展示 -->
-            <div class="empty-box" style="display: none;" v-show="total == 0">
+            <div class="empty-box" v-show="total < 1 && loaded">
                 <img src="/static/pc/assets/images/empty.png" th:src="@{/pc/assets/images/empty.png}">
                 <p>无搜索结果～</p>
             </div>
@@ -108,7 +108,7 @@
                 activities: [],
                 loaded: false,
                 searchShow: false,
-                total: "",
+                total: 0,
                 //分页
                 currentPage: 1,
                 filterWindowShow: false,
@@ -122,12 +122,6 @@
                 $($this.activityClassifyNames).each(function () {
                     $this.activityClassifies.push({name: this,value: this,selected: false});
                 });
-// <<<<<<< Updated upstream
-                //time
-// =======
-
-                //time name 是前端展示  value是后端的对接数据 selected是表示选中状态
-// >>>>>>> Stashed changes
                 $this.times = [
                     {name: "全部", value: "all", selected: true},
                     {name: "近一个月", value: "nearly_a_month", selected: false},
@@ -230,7 +224,8 @@
                     }
                     $this.loaded = false;
                     $this.searchShow = false;
-                    app.ajaxPost(url, params, function (data) {
+                    app.ajaxPost(url, {data: activityApp.getJsonStr(params)}, function (data) {
+                        $this.loaded = true;
                         if (data.success) {
                             $this.loaded = true;
                             $this.activities = data.data.records
@@ -244,6 +239,7 @@
                             app.showMsg(errorMessage);
                         }
                     }, function () {
+                        $this.loaded = true;
                         app.showMsg("加载活动列表失败");
                     });
                 },

@@ -13,10 +13,14 @@ import com.chaoxing.activity.service.manager.MhApiService;
 import com.chaoxing.activity.service.manager.module.SignApiService;
 import com.chaoxing.activity.util.constant.DateTimeFormatterConstant;
 import org.apache.commons.collections4.CollectionUtils;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.client.RestTemplate;
 
 import javax.annotation.Resource;
 import java.util.ArrayList;
@@ -35,6 +39,9 @@ import java.util.Optional;
 @RequestMapping("mh")
 public class ActivityMhAppApiController {
 
+	/** 签到按钮地址 */
+	private static final String QD_BTN_URL = "http://api.qd.reading.chaoxing.com/activity/%d/btn";
+
 	@Resource
 	private ActivityQueryService activityQueryService;
 	@Resource
@@ -43,6 +50,9 @@ public class ActivityMhAppApiController {
 	private SignApiService signApiService;
 	@Resource
 	private MhApiService mhApiService;
+
+	@Resource
+	private RestTemplate restTemplate;
 
 	/**活动封面
 	 * @Description 
@@ -127,15 +137,51 @@ public class ActivityMhAppApiController {
 		Integer limitNum = signParticipation.getLimitNum();
 		Integer signedNum = signParticipation.getSignedNum();
 		signPepleNumDescribe.append(signedNum);
-		if (limitNum != null) {
+		if (limitNum != null && limitNum.intValue() > 0) {
 			signPepleNumDescribe.append("/");
 			signPepleNumDescribe.append(limitNum);
 		}
 		mhGeneralAppResultDataFields.add(MhGeneralAppResultDataDTO.MhGeneralAppResultDataFieldDTO.builder()
+				.key("参与人数")
 				.value(signPepleNumDescribe.toString())
 				.flag("104")
 				.build());
 		return RestRespDTO.success(jsonObject);
+	}
+
+	/**报名签到按钮
+	 * @Description 
+	 * @author wwb
+	 * @Date 2020-11-26 17:43:41
+	 * @param activityId
+	 * @param data
+	 * @return com.chaoxing.activity.dto.RestRespDTO
+	*/
+	@RequestMapping("activity/{activityId}/sign/btn")
+	public RestRespDTO signInUp(@PathVariable Integer activityId, @RequestBody String data) {
+		Activity activity = activityQueryService.getById(activityId);
+		Boolean enableSign = activity.getEnableSign();
+		if (enableSign) {
+			// 请求签到报名
+			String url = String.format(QD_BTN_URL, activity.getSignId());
+			HttpHeaders httpHeaders = new HttpHeaders();
+			httpHeaders.setContentType(MediaType.APPLICATION_JSON);
+			HttpEntity<String> httpEntity = new HttpEntity<>(data, httpHeaders);
+			String result = restTemplate.postForObject(url, httpEntity, String.class);
+			JSONObject jsonObject = JSON.parseObject(result);
+			Boolean success = jsonObject.getBoolean("success");
+			success = Optional.ofNullable(success).orElse(false);
+			if (success) {
+				return RestRespDTO.success(jsonObject.getJSONObject("data"));
+			} else {
+				return RestRespDTO.error(jsonObject.getString("message"));
+			}
+		} else {
+			// 直接返回信息给门户，返回空数据
+			JSONObject jsonObject = new JSONObject();
+			jsonObject.put("results", new ArrayList<>());
+			return RestRespDTO.success(jsonObject);
+		}
 	}
 
 	/**推荐活动

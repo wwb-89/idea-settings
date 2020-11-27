@@ -8,6 +8,7 @@
     <link rel="stylesheet" href="../assets/css/reset.css">
     <link rel="stylesheet" href="../assets/css/public.css">
     <link rel="stylesheet" href="../assets/css/create.css">
+    
     <title>创建活动</title>
 </head>
 
@@ -282,7 +283,7 @@
                     </div>
                 </div>
                 <div class="form-item">
-                    <label class="label">报名名单公开</label>
+                    <label class="label">签到名单公开</label>
                     <div class="input-box">
                         <el-switch v-model="delivery3"></el-switch>
                     </div>
@@ -595,7 +596,7 @@
         <div class="dailog-box1" v-show="addressShow">
             <div class="dailog map-dailog">
                 <div class="header">
-                    <span>设置地图</span>
+                    <span>设置地址</span>
                     <img src="../assets/images/close.png" alt="" class="close" @click="close">
                 </div>
                 <div class="body">
@@ -613,7 +614,7 @@
                                 </template>
                             </el-autocomplete>
                         </div>
-                        <div class="normal-btn after-sure">确定</div>
+                        <div class="sure-btn">确定</div>
                     </div>
                     <div id="map-contain" class="map">
                     </div>
