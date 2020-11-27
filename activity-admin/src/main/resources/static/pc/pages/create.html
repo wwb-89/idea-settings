@@ -8,7 +8,7 @@
     <link rel="stylesheet" href="../assets/css/reset.css">
     <link rel="stylesheet" href="../assets/css/public.css">
     <link rel="stylesheet" href="../assets/css/create.css">
-    
+
     <title>创建活动</title>
 </head>
 
@@ -18,7 +18,9 @@
         <!-- 创建活动头部 -->
         <div class="top flex box" id="create">
             <div class="flex">
-                <img src="../assets/images/left.png" alt="" class="left">
+                <div class="left">
+                    <img src="../assets/images/left.png" alt="">
+                </div>
                 <span class="create">创建活动</span>
             </div>
             <div v-show="!pageShow">
@@ -63,14 +65,14 @@
                         <div class="img-box">
                             <img src="../assets/images/img.png" alt="" class="cover-img">
                         </div>
-                        <div class="font-box">   
+                        <div class="font-box">
                             <span>建议尺寸：1080x500</span>
                             <span>大小：小于5M</span>
                             <span>格式：jpg、png、gif</span>
                             <input type="file" class="upload-btn" accept="image/gif, image/jpg, image/png"
                                 onchange="showImg(this)" />
                             <div class="cancle-btn upload">上传文件</div>
-                        </div>                       
+                        </div>
                     </div>
                 </div>
                 <div class="form-item">
@@ -88,7 +90,9 @@
                     <div class="input-box">
                         <input type="text" name="title" required lay-verify="required" placeholder="请输入活动地点"
                             autocomplete="off" class="layui-input name" @focus="handleFocus">
-                        <img src="../assets/images/location.png" alt="" class="length icon">
+                        <div class="length icon">
+                            <img src="../assets/images/location.png" alt="">
+                        </div>
                     </div>
                 </div>
                 <div class="form-item">
@@ -98,14 +102,20 @@
                         <div class="type-item">讲座</div>
                         <div class="type-item">征文</div>
                         <div class="type-item">自定义选项
-                            <img src="../assets/images/more.png" alt="" style="margin-left: 10px;">
+                            <div class="img">
+                                <img src="../assets/images/more.png" alt="" style="margin-left: 10px;">
+                            </div>
                             <div class="edit-box">
                                 <div @click="handleEdit">编辑</div>
                                 <div @click="handleDelete">删除</div>
                             </div>
                         </div>
-                        <div class="type-item" @click="handleAdd"> <img src="../assets/images/add.png" alt=""
-                                style="margin-right: 10px;">新增</div>
+                        <div class="type-item" @click="handleAdd">
+                            <div class="img">
+                                <img src="../assets/images/add.png" alt="" style="margin-right: 10px;">
+                            </div>
+                            新增
+                        </div>
                     </div>
                 </div>
             </form>
@@ -400,7 +410,7 @@
             <div class="dailog">
                 <div class="header">
                     <span>分类名称</span>
-                    <img src="../assets/images/close.png" alt="" class="close" @click="close">
+                    <div class="close"><img src="../assets/images/close.png" alt="" @click="close"></div>
                 </div>
                 <div class="body">
                     <el-input type="text" class="fenlei-input" placeholder="请输入" v-model="fenlei" maxlength="6"
@@ -516,7 +526,7 @@
         <!-- 确认删除模块弹框 -->
         <div class="dailog-box3" style="display: none;">
             <div class="dailog delete-dailog">
-                <img src="../assets/images/warning.png" alt="" class="warn">
+                <div class="warn"><img src="../assets/images/warning.png" alt=""></div>
                 <span>删除后，可重新添加。确定删除？</span>
                 <div>
                     <div class="normal-btn">保留</div>
@@ -527,7 +537,7 @@
         <!-- 确认删除分类弹框 -->
         <div class="dailog-box3" v-show="deleteShow">
             <div class="dailog delete-dailog">
-                <img src="../assets/images/warning.png" alt="" class="warn">
+                <div class="warn"><img src="../assets/images/warning.png" alt="" ></div>
                 <span>确认删除此分类</span>
                 <div>
                     <div class="normal-btn" @click="handleSave">保留</div>
@@ -538,7 +548,7 @@
         <!-- 活动创建成功弹框 -->
         <div class="dailog-box3" style="display: none;">
             <div class="dailog delete-dailog">
-                <img src="../assets/images/success.png" alt="" class="warn">
+                <div class="warn"><img src="../assets/images/success.png" alt="" ></div>
                 <span>活动创建成功</span>
                 <div>
                     <div class="normal-btn">配置页面</div>
@@ -549,7 +559,7 @@
         <!-- 查看模块详情 -->
         <div class="dailog-box4" style="display: none;">
             <div class="dailog details-dailog">
-                <img src="../assets/images/close.png" alt="" class="close">
+                <div class="close"><img src="../assets/images/close.png" alt="" class="close"></div>
                 <div class="details-item">
                     <img src="../assets/images/lizi.png" alt="" class="details-img">
                     <div>
@@ -578,7 +588,9 @@
             <div class="dailog look-dailog">
                 <div class="header">
                     <span>预览</span>
-                    <img src="../assets/images/close.png" alt="" class="close" @click="close">
+                    <div class="close">
+                        <img src="../assets/images/close.png" alt="" @click="close">
+                    </div>
                 </div>
                 <div class="body">
                     <!-- 二维码 -->
@@ -597,7 +609,9 @@
             <div class="dailog map-dailog">
                 <div class="header">
                     <span>设置地址</span>
-                    <img src="../assets/images/close.png" alt="" class="close" @click="close">
+                    <div class="close">
+                        <img src="../assets/images/close.png" alt=""  @click="close">
+                    </div>
                 </div>
                 <div class="body">
                     <div class="body-head">
@@ -630,6 +644,7 @@
     <script src="../assets/lib/element-ui/lib/index.js"></script>
     <script src="../assets/js/common.js"></script>
     <script src="../assets/js/create-active.js"></script>
+    <script src="../assets/lib/jqthumb.min.js"></script>
 
     <script>
         // vue
@@ -853,6 +868,14 @@
                 }
             }
         })
+    </script>
+    <script>
+        $(function () {
+            $('img').jqthumb({
+                width: '100%',
+                height: '100%'
+            });
+        });
     </script>
 </body>
 

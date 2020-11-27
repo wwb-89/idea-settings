@@ -5,7 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="../assets/css/create.css">
-    <link rel="stylesheet" href="https://unpkg.com/element-ui/lib/theme-chalk/index.css">
+    <link rel="stylesheet" href="../assets/lib/element-ui/lib/theme-chalk/index.css">
     <link rel="stylesheet" href="../assets/lib/zTree_v3/css/zTreeStyle/zTreeStyle.css" type="text/css">
     <link rel="stylesheet" href="../assets/css/reset.css">
     <link rel="stylesheet" href="../assets/css/public.css">
@@ -23,11 +23,13 @@
             <div class="create-btn">创建活动</div>
             <div class="table">
                 <el-table :data="tableData" style="width: 100%">
-                    <el-table-column prop="name" label="活动名称" width="386">
+                    <el-table-column prop="name" label="活动名称" min-width="40%">
                         <template slot-scope="scope">
                             <div class="item">
-                                <img src="https://p.ananas.chaoxing.com/star3/320_150c/572280b525982f6d3c51fd3fb5ef7449.jpeg"
+                                <div class="img">
+                                    <img src="https://p.ananas.chaoxing.com/star3/320_150c/572280b525982f6d3c51fd3fb5ef7449.jpeg"
                                     alt="">
+                                </div>
                                 <div class="desc">
                                     <div class="title">2020年星阅读活动</div>
                                     <div class="time"><span>2019年10月1日</span> - <span>2028年10月1日</span></div>
@@ -35,17 +37,17 @@
                             </div>
                         </template>
                     </el-table-column>
-                    <el-table-column prop="address" label="创建单位" width="130">
+                    <el-table-column prop="address" label="创建单位" min-width="15%">
                         <template slot-scope="scope">
                             <div class="overHidden2">{{scope.row.address}}</div>
                         </template>
                     </el-table-column>
-                    <el-table-column prop="person" label="创建人" width="130">
+                    <el-table-column prop="person" label="创建人" min-width="10%">
                         <template slot-scope="scope">
                             <div class="overHidden2">{{scope.row.person}}</div>
                         </template>
                     </el-table-column>
-                    <el-table-column prop="state" label="状态">
+                    <el-table-column prop="state" label="状态" min-width="10%">
                         <template slot="header" slot-scope="scope">
                             <div class="status">状态<i class="el-icon-arrow-down"></i></div>
                         </template>
@@ -54,7 +56,7 @@
                                 :class="scope.row.state=='进行中'?'green':scope.row.state=='未发布'?'blue2':''">{{scope.row.state}}</span>
                         </template>
                     </el-table-column>
-                    <el-table-column label="操作" width="213">
+                    <el-table-column label="操作" min-width="25%">
                         <template slot-scope="scope">
                             <div v-show="scope.row.state == '进行中'">
                                 <el-button type="text">报名管理</el-button>
@@ -113,7 +115,9 @@
                 <div class="dailog">
                     <div class="header">
                         <span>活动发布</span>
-                        <img src="../assets/images/close.png" alt="" class="close" @click="close">
+                        <div class="close">
+                            <img src="../assets/images/close.png" alt="" @click="close">
+                        </div>
                     </div>
                     <div class="body">
                         <div class="tree">
@@ -137,13 +141,13 @@
 
     <script src="../assets/lib/jquery.min.js"></script>
     <script src="../assets/lib/vue.js"></script>
-    <script src="https://unpkg.com/element-ui/lib/index.js"></script>
+    <script src="../assets/lib/element-ui/lib/index.js"></script>
     <script src="../assets/lib/jquery.mousewheel.min.js"></script>
     <script src="../assets/lib/jquery.mCustomScrollbar.js"></script>
     <script src="../assets/lib/zTree_v3/js/jquery.ztree.core.js"></script>
     <script src="../assets/lib/zTree_v3/js/jquery.ztree.excheck.min.js"></script>
     <script type="text/javascript" src="../assets/lib/zTree_v3/js/jquery.ztree.exedit.js"></script>
-
+    <script src="../assets/lib/jqthumb.min.js"></script>
     <script>
         var app = new Vue({
             el: '#app',
@@ -287,6 +291,12 @@
         })
     </script>
     <script>
+        $(function () {
+            $('img').jqthumb({
+                width:'100%',
+                height:'100%'
+            });
+        });
         $('.status').click(function () {
             $('.filters').toggle()
         })
