@@ -1,0 +1,255 @@
+@charset "UTF-8";
+* {
+  margin: 0;
+  padding: 0;
+}
+
+table {
+  border-collapse: collapse;
+  border-spacing: 0;
+}
+
+fieldset,
+img {
+  border: 0 !important;
+}
+
+address,
+caption,
+cite,
+code,
+dfn,
+em,
+strong,
+th,
+var {
+  font-style: normal;
+}
+
+li {
+  list-style: none;
+}
+
+caption,
+th {
+  text-align: left;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  font-size: 100%;
+}
+
+q:after,
+q:before {
+  content: '';
+}
+
+abbr,
+acronym {
+  border: 0;
+  font-variant: normal;
+}
+
+sup {
+  vertical-align: text-top;
+}
+
+sub {
+  vertical-align: text-bottom;
+}
+
+input,
+select,
+textarea {
+  font-family: inherit;
+  font-size: inherit;
+  font-weight: inherit;
+}
+
+button,
+input,
+select {
+  outline: medium none;
+  vertical-align: middle;
+}
+
+input {
+  -webkit-appearance: none;
+}
+
+legend {
+  color: #000;
+}
+
+article,
+aside,
+dialog,
+figure,
+footer,
+header,
+hgroup,
+menu,
+nav,
+section {
+  display: block;
+}
+
+body,
+html {
+  width: 100%;
+  text-align: center;
+  font-family: "Microsoft YaHei", Helvetica;
+  -webkit-text-size-adjust: 100%;
+  -ms-text-size-adjust: 100%;
+  -webkit-tap-highlight-color: transparent;
+}
+
+a,
+a:hover,
+a:link,
+a:visited {
+  text-decoration: none;
+}
+
+.clear {
+  clear: both;
+}
+
+.tc {
+  text-align: center;
+}
+
+.fl {
+  float: left;
+}
+
+.fr {
+  float: right;
+}
+
+.mui-ellipsis-5 {
+  display: -webkit-box;
+  overflow: hidden;
+  white-space: normal !important;
+  text-overflow: ellipsis;
+  word-wrap: break-word;
+  -webkit-line-clamp: 5;
+  -webkit-box-orient: vertical;
+}
+
+/*媒体查询*/
+@media screen and (min-width: 212px) {
+  html {
+    font-size: 9.088px;
+  }
+}
+
+@media screen and (min-width: 319px) {
+  html {
+    font-size: 13.6533px;
+  }
+}
+
+@media screen and (min-width: 359px) {
+  html {
+    font-size: 15.36px;
+  }
+}
+
+@media screen and (min-width: 374px) {
+  html {
+    font-size: 16px;
+  }
+}
+
+@media screen and (min-width: 383px) {
+  html {
+    font-size: 16.384px;
+  }
+}
+
+@media screen and (min-width: 399px) {
+  html {
+    font-size: 17.0667px;
+  }
+}
+
+@media screen and (min-width: 414px) {
+  html {
+    font-size: 17.7067px;
+  }
+}
+
+@media screen and (min-width: 423px) {
+  html {
+    font-size: 18.0907px;
+  }
+}
+
+@media screen and (min-width: 479px) {
+  html {
+    font-size: 20.48px;
+  }
+}
+
+@media screen and (min-width: 539px) {
+  html {
+    font-size: 23.04px;
+  }
+}
+
+@media screen and (min-width: 639px) {
+  html {
+    font-size: 27.3067px;
+  }
+}
+
+.msgDialog.layui-layer-msg {
+  background: rgba(0, 0, 0, 0.6);
+  color: #fff;
+  border: none;
+}
+
+.msgDialog.layui-layer-msg .layui-layer-content {
+  line-height: 1.40625rem;
+  padding: .5rem 1rem;
+}
+
+.msgDialog.layui-layer {
+  border-radius: 1.0625rem;
+}
+input::-webkit-input-placeholder, textarea::-webkit-input-placeholder {
+  color: #CCCCCC;
+  font-weight: 100; }
+
+input:-moz-placeholder, textarea:-moz-placeholder {
+  color: #CCCCCC;
+  font-weight: 100; }
+
+input::-moz-placeholder, textarea::-moz-placeholder {
+  color: #CCCCCC;
+  font-weight: 100; }
+
+input:-ms-input-placeholder, textarea:-ms-input-placeholder {
+  color: #CCCCCC;
+  font-weight: 100; }
+  .overHidden1 {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+.overHidden2 {
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  overflow: hidden;
+}
+
+[v-cloak] {
+  display: none;
+}

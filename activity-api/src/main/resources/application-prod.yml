@@ -10,4 +10,4 @@ spring:
       username: master
       password: master
 server:
-  port: 9102
+  port: 9101
