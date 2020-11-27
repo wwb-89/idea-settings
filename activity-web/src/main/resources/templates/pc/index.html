@@ -75,6 +75,7 @@
             </div>
             <el-pagination background layout="prev, pager, next" :total="pages*10"
                            @current-change="currenClick"
+                           v-show="total > 0"
                            >
             </el-pagination>
             <!-- 当列表为空时展示 -->
