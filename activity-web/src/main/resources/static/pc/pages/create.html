@@ -52,8 +52,8 @@
                 <div class="form-item">
                     <label class="label">时间</label>
                     <div class="input-box">
-                        <el-date-picker v-model="time1" type="daterange" range-separator="至" start-placeholder="开始日期"
-                            end-placeholder="结束日期">
+                        <el-date-picker v-model="time1" type="daterange" range-separator="至" start-placeholder="开始时间"
+                            end-placeholder="结束时间">
                         </el-date-picker>
                     </div>
                 </div>
@@ -134,8 +134,8 @@
                 <div class="form-item">
                     <label class="label">报名时间</label>
                     <div class="input-box">
-                        <el-date-picker v-model="time2" type="daterange" range-separator="至" start-placeholder="开始日期"
-                            end-placeholder="结束日期">
+                        <el-date-picker v-model="time2" type="daterange" range-separator="至" start-placeholder="开始时间"
+                            end-placeholder="结束时间">
                         </el-date-picker>
                     </div>
                 </div>
@@ -247,8 +247,8 @@
                 <div class="form-item">
                     <label class="label">签到时间</label>
                     <div class="input-box">
-                        <el-date-picker v-model="time3" type="daterange" range-separator="至" start-placeholder="开始日期"
-                            end-placeholder="结束日期">
+                        <el-date-picker v-model="time3" type="daterange" range-separator="至" start-placeholder="开始时间"
+                            end-placeholder="结束时间">
                         </el-date-picker>
                     </div>
                 </div>
@@ -291,7 +291,7 @@
                 <div class="form-item">
                     <label class="label">按钮名称</label>
                     <div class="input-box btn-name">
-                        <el-input type="text" placeholder="请输入内容" v-model="btnName1" maxlength="6" show-word-limit>
+                        <el-input type="text" placeholder="请输入内容" v-model="btnName2" maxlength="6" show-word-limit>
                         </el-input>
                     </div>
                 </div>
@@ -637,7 +637,7 @@
             el: '#app',
             data: {
                 name: '',
-                btnName1: '按钮',
+                btnName1: '报名',
                 btnName2: '签到',
                 name2: '',
                 radio: 3,
