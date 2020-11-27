@@ -31,7 +31,7 @@
                         <div class="item">
                             <img :src="scope.row.coverCloudId | getCloudImgUrl">
                             <div class="desc">
-                                <div class="title" @click="configPage(scope.row)">{{scope.row.name}}</div>
+                                <div class="title" @click="previewPage(scope.row)">{{scope.row.name}}</div>
                                 <div class="time"><span>{{scope.row.startDate | timestamp2ChineseYMD}}</span> - <span>{{scope.row.endDate | timestamp2ChineseYMD}}</span></div>
                             </div>
                         </div>
@@ -139,11 +139,11 @@
                     });
                 },
                 toAdd: function () {
-                    var url = ctx + "/manage/activity/add";
+                    var url = ctx + "/activity/add";
                     window.open(url);
                 },
                 toEdit: function (id) {
-                    var url = ctx + "/manage/activity/"+ id +"/edit";
+                    var url = ctx + "/activity/"+ id +"/edit";
                     window.open(url);
                 },
                 // 修改状态
@@ -305,6 +305,13 @@
                     var pageId = activity.pageId;
                     if (!activityApp.isEmpty(pageId)) {
                         window.open(activityApp.getMhEditorUrl(pageId));
+                    }
+                },
+                // 预览页面
+                previewPage: function (activity) {
+                    var pageId = activity.pageId;
+                    if (!activityApp.isEmpty(pageId)) {
+                        window.open(activityApp.getMhPreviewUrl(pageId));
                     }
                 }
             }
