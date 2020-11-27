@@ -181,7 +181,7 @@
             id: null,
             name: "",
             // 1：报名。2：签到，3：报名后签到
-            partakeForm: null,
+            partakeForm: 1,
             // 报名开始时间
             signUpStartTime: "",
             //报名结束时间

@@ -128,7 +128,7 @@
                         <input v-show="sign.limitPerson" v-model="sign.personLimit" type="number" min="1" step="1" maxlength="10" placeholder="请输入正整数" class="person"><span class="person-span">人</span>
                     </div>
                 </div>
-                <div class="form-item">
+                <div class="form-item" v-if="false">
                     <label class="label" style="line-height: 20px;">信息填写</label>
                     <div class="input-box column">
                         <div class="set-box">
@@ -190,7 +190,7 @@
                         <el-date-picker v-model="signInTimeScope" type="datetimerange" format="yyyy-MM-dd HH:mm" value-format="yyyy-MM-dd HH:mm:ss" :editable=false range-separator="至" start-placeholder="开始日期" end-placeholder="结束日期"  @change="selectSignInTime($event)"></el-date-picker>
                     </div>
                 </div>
-                <div class="form-item">
+                <div class="form-item" v-if="false">
                     <label class="label" style="line-height: 20px;">信息填写</label>
                     <div class="input-box column">
                         <div class="set-box">
@@ -372,7 +372,7 @@
                         longitude: "",
                         dimension: "",
                         activityClassifyId: "",
-                        enableSign: false
+                        enableSign: true
                     };
                 }else {
                     $this.activity.createTime = "";
@@ -677,8 +677,8 @@
                 // 计算报名签到的开启标识
                 calSignEnable: function () {
                     var $this = this;
-                    $this.enableSignUp = $this.sign.partakeForm == 1 || $this.sign.partakeForm == 3;
-                    $this.enableSignIn = $this.sign.partakeForm == 2 || $this.sign.partakeForm == 3;
+                    $this.enableSignUp = $this.activity.enableSign && ($this.sign.partakeForm == 1 || $this.sign.partakeForm == 3);
+                    $this.enableSignIn = $this.activity.enableSign && ($this.sign.partakeForm == 2 || $this.sign.partakeForm == 3);
                 },
                 // 计算限制人数value
                 calPersonLimitValue: function () {
@@ -694,7 +694,7 @@
                             $this.sign.name = "报名签到";
                         }else if ($this.enableSignUp) {
                             $this.sign.name = "报名";
-                        }else if ($this.enableSignIn) {
+                        }else {
                             $this.sign.name = "签到";
                         }
                     }
