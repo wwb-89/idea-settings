@@ -241,7 +241,7 @@ input[type="number"] {
     color: #333333;
 }
 
-.type-item img {
+.type-item .img {
     width: 16px;
     height: 16px;
 }
