@@ -268,6 +268,13 @@
     activityApp.prototype.getMhPreviewUrl = function (pageId) {
         return "http://mh.chaoxing.com/page/" + pageId + "/show";
     };
+    /**
+     * 获取活动默认封面云盘id
+     * @returns {string}
+     */
+    activityApp.prototype.getDefaultCoverCloudId = function () {
+        return "68065603fbcb805725f7ef5e21cef03c";
+    };
     W['activityApp'] = new activityApp();
 })(window, jQuery, JSON);
 Array.prototype.remove = function (val) {
