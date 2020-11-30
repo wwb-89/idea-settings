@@ -952,3 +952,9 @@ input.btn-name,
     text-align: center;
     display: none;
 }
+.required-img{
+    width: 6px;
+    height: 6px;
+    vertical-align: top;
+    margin-top: 12px;
+}

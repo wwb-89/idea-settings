@@ -49,7 +49,7 @@
                     </el-table-column>
                     <el-table-column prop="state" label="状态" min-width="12.5%">
                         <template slot="header" slot-scope="scope">
-                            <div class="status">状态<i class="el-icon-arrow-down"></i></div>
+                            <div class="status">状态<i class="el-icon-arrow-down el-down"></i></div>
                             <div class="filters">
                                 <p>全部</p>
                                 <p>进行中</p>
@@ -298,10 +298,12 @@
         });
         $('.status').click(function () {
             $('.filters').toggle()
+            $('.el-down').toggleClass('rotate')
         })
         $('.filters p').click(function () {
             $(this).addClass('blue').siblings().removeClass('blue')
             $('.filters').hide()
+            $('.el-down').removeClass('rotate')
         })
         $('.more-btn').mouseover(function () {
             $(this).children('.more').show();

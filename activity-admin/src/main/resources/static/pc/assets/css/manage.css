@@ -143,6 +143,9 @@ table {
 .status{
     cursor: pointer;
 }
+.el-down.rotate{
+    transform: rotate(180deg);
+}
 .filters {
     position: absolute;
     z-index: 2;
