@@ -33,7 +33,7 @@
             <a href="#" class="flex" @click="handleLast">
                 <img src="../assets/images/left.png" alt="" class="left">
                 <span class="create">编辑活动</span>
-            </a>   
+            </a>
             <div>
                 <button type="button" class="cancle-btn">预览</button>
                 <button type="button" class="create-btn">保存</button>
@@ -43,9 +43,10 @@
             <form action="">
                 <div class="title">基本信息</div>
                 <div class="form-item">
-                    <label class="label">
                     <img src="../assets/images/required.png" alt="" class="required-img">
-                    名称</label>
+                    <label class="label">
+
+                        名称</label>
                     <div class="input-box">
                         <el-input type="text" placeholder="请填写信息，简短的活动名称" v-model="name" maxlength="20" show-word-limit>
                         </el-input>
@@ -752,7 +753,7 @@
                     this.map.addEventListener('click', function (e) { //给地图绑定点击事件 
                         that.getAddrByPoint(e.point) //点击后调用逆地址解析函数 
                     })
-                   
+
                 },
                 //逆地址解析
                 getAddrByPoint(point) {
