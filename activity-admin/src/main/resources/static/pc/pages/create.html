@@ -17,17 +17,15 @@
 
         <!-- 创建活动头部 -->
         <div class="top flex box" id="create">
-            <div class="flex">
-                <div class="left">
-                    <img src="../assets/images/left.png" alt="">
-                </div>
+            <a href="#" class="flex">
+                <img src="../assets/images/left.png" alt="" class="left">
                 <span class="create">创建活动</span>
-            </div>
+            </a>
             <div v-show="!pageShow">
-                <button type="button" class="cancle-btn" @click="handleNext">下一步</button>
+                <button type="button" class="create-btn" @click="handleNext">下一步</button>
             </div>
             <div v-show="pageShow">
-                <button type="button" class="cancle-btn" @click="handleLast">上一步</button>
+                <button type="button" class="create-btn" @click="handleLast">上一步</button>
             </div>
         </div>
         <!-- 编辑活动头部 -->
@@ -90,9 +88,8 @@
                     <div class="input-box">
                         <input type="text" name="title" required lay-verify="required" placeholder="请输入活动地点"
                             autocomplete="off" class="layui-input name" @focus="handleFocus">
-                        <div class="length icon">
-                            <img src="../assets/images/location.png" alt="">
-                        </div>
+                        <img src="../assets/images/location.png" alt="" class="length icon">
+
                     </div>
                 </div>
                 <div class="form-item">
@@ -102,30 +99,26 @@
                         <div class="type-item">讲座</div>
                         <div class="type-item">征文</div>
                         <div class="type-item">自定义选项
-                            <div class="img">
-                                <img src="../assets/images/more.png" alt="" style="margin-left: 10px;">
-                            </div>
+                            <img src="../assets/images/more.png" alt="" style="margin-left: 10px;">
                             <div class="edit-box">
                                 <div @click="handleEdit">编辑</div>
                                 <div @click="handleDelete">删除</div>
                             </div>
                         </div>
-                        <div class="type-item" @click="handleAdd">
-                            <div class="img">
-                                <img src="../assets/images/add.png" alt="" style="margin-right: 10px;">
-                            </div>
+                        <div class="type-item add" @click="handleAdd">
+                            <img src="../assets/images/add.png" alt="" style="margin-right: 10px;">
                             新增
                         </div>
                     </div>
                 </div>
             </form>
         </div>
+        <!-- 报名设置 -->
         <div class="info box" v-show="!pageShow">
             <div class="set-box">
                 <div class="title set">报名设置</div>
                 <el-switch v-model="delivery" class="switch"></el-switch>
             </div>
-            <!-- 点击参与设置 -->
             <form action="" class="setForm" v-show="delivery">
                 <!-- <div class="form-item">
                     <label class="label">参与形式</label>
@@ -233,12 +226,12 @@
                 </div>
             </form>
         </div>
+        <!-- 签到设置 -->
         <div class="info box" v-show="!pageShow">
             <div class="set-box">
                 <div class="title set">签到设置</div>
                 <el-switch v-model="delivery1" class="switch"></el-switch>
             </div>
-            <!-- 点击参与设置 -->
             <form action="" class="setForm" v-show="delivery1">
                 <div class="form-item">
                     <label class="label">签到方式</label>
@@ -272,8 +265,8 @@
                                 </el-option>
                             </el-select>
                         </div>
-                        <input type="text" placeholder="请输入正整数" class="person" v-show="value1 == 2"><span
-                            class="person-span">人</span>
+                        <input type="text" placeholder="请输入正整数" class="person" v-show="value1 == 2">
+                        <span class="person-span" v-show="value1 == 2">人</span>
                     </div>
                 </div>
                 <div class="form-item">
@@ -410,7 +403,7 @@
             <div class="dailog">
                 <div class="header">
                     <span>分类名称</span>
-                    <div class="close"><img src="../assets/images/close.png" alt="" @click="close"></div>
+                    <img src="../assets/images/close.png" alt="" @click="close" class="close">
                 </div>
                 <div class="body">
                     <el-input type="text" class="fenlei-input" placeholder="请输入" v-model="fenlei" maxlength="6"
@@ -537,7 +530,7 @@
         <!-- 确认删除分类弹框 -->
         <div class="dailog-box3" v-show="deleteShow">
             <div class="dailog delete-dailog">
-                <div class="warn"><img src="../assets/images/warning.png" alt="" ></div>
+                <div class="warn"><img src="../assets/images/warning.png" alt=""></div>
                 <span>确认删除此分类</span>
                 <div>
                     <div class="normal-btn" @click="handleSave">保留</div>
@@ -548,7 +541,7 @@
         <!-- 活动创建成功弹框 -->
         <div class="dailog-box3" style="display: none;">
             <div class="dailog delete-dailog">
-                <div class="warn"><img src="../assets/images/success.png" alt="" ></div>
+                <div class="warn"><img src="../assets/images/success.png" alt=""></div>
                 <span>活动创建成功</span>
                 <div>
                     <div class="normal-btn">配置页面</div>
@@ -559,7 +552,7 @@
         <!-- 查看模块详情 -->
         <div class="dailog-box4" style="display: none;">
             <div class="dailog details-dailog">
-                <div class="close"><img src="../assets/images/close.png" alt="" class="close"></div>
+                <img src="../assets/images/close.png" alt="" class="close">
                 <div class="details-item">
                     <img src="../assets/images/lizi.png" alt="" class="details-img">
                     <div>
@@ -588,9 +581,7 @@
             <div class="dailog look-dailog">
                 <div class="header">
                     <span>预览</span>
-                    <div class="close">
-                        <img src="../assets/images/close.png" alt="" @click="close">
-                    </div>
+                    <img src="../assets/images/close.png" alt="" @click="close" class="close">
                 </div>
                 <div class="body">
                     <!-- 二维码 -->
@@ -609,9 +600,7 @@
             <div class="dailog map-dailog">
                 <div class="header">
                     <span>设置地址</span>
-                    <div class="close">
-                        <img src="../assets/images/close.png" alt=""  @click="close">
-                    </div>
+                    <img src="../assets/images/close.png" alt="" @click="close" class="close">
                 </div>
                 <div class="body">
                     <div class="body-head">
@@ -751,6 +740,9 @@
                         enableMapClick: false
                     }) //新建地图实例，enableMapClick:false ：禁用地图默认点击弹框 
                     var point = new BMap.Point(104.10194, 30.65984);
+                    // this.map.addEventListener("mousemove", function (e) {
+                    //     point = new BMap.Point(e.point.lng,e.point.lat)
+                    // })
                     this.map.centerAndZoom(point, 19);
                     this.map.enableScrollWheelZoom(true) //启用滚轮放大缩小，默认禁用
                     this.mk = new BMap.Marker(point)
@@ -758,6 +750,7 @@
                     this.map.addEventListener('click', function (e) { //给地图绑定点击事件 
                         that.getAddrByPoint(e.point) //点击后调用逆地址解析函数 
                     })
+                   
                 },
                 //逆地址解析
                 getAddrByPoint(point) {
@@ -830,6 +823,7 @@
                 handleFocus() {
                     this.addressShow = true
                     $('body').addClass('scroll')
+                    $(window).scrollTop(0);
                 },
                 close() {
                     this.addressShow = false
@@ -871,7 +865,7 @@
     </script>
     <script>
         $(function () {
-            $('img').jqthumb({
+            $('.img-box img').jqthumb({
                 width: '100%',
                 height: '100%'
             });

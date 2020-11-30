@@ -69,3 +69,9 @@
     font-size: 16px;
     color: #333333;
 }
+.el-table__header-wrapper {
+    overflow: unset;
+}
+.el-table th {
+    overflow: unset;
+}

@@ -23,7 +23,7 @@
             <div class="create-btn">创建活动</div>
             <div class="table">
                 <el-table :data="tableData" style="width: 100%">
-                    <el-table-column prop="name" label="活动名称" min-width="40%">
+                    <el-table-column prop="name" label="活动名称" min-width="35%">
                         <template slot-scope="scope">
                             <div class="item">
                                 <div class="img">
@@ -37,19 +37,25 @@
                             </div>
                         </template>
                     </el-table-column>
-                    <el-table-column prop="address" label="创建单位" min-width="15%">
+                    <el-table-column prop="address" label="创建单位" min-width="20%">
                         <template slot-scope="scope">
                             <div class="overHidden2">{{scope.row.address}}</div>
                         </template>
                     </el-table-column>
-                    <el-table-column prop="person" label="创建人" min-width="10%">
+                    <el-table-column prop="person" label="创建人" min-width="12.5%">
                         <template slot-scope="scope">
                             <div class="overHidden2">{{scope.row.person}}</div>
                         </template>
                     </el-table-column>
-                    <el-table-column prop="state" label="状态" min-width="10%">
+                    <el-table-column prop="state" label="状态" min-width="12.5%">
                         <template slot="header" slot-scope="scope">
                             <div class="status">状态<i class="el-icon-arrow-down"></i></div>
+                            <div class="filters">
+                                <p>全部</p>
+                                <p>进行中</p>
+                                <p>未发布</p>
+                                <p>已结束</p>
+                            </div>
                         </template>
                         <template slot-scope="scope">
                             <span
@@ -91,12 +97,7 @@
                     </el-table-column>
                 </el-table>
             </div>
-            <div class="filters">
-                <p>全部</p>
-                <p>进行中</p>
-                <p>未发布</p>
-                <p>已结束</p>
-            </div>
+           
             <el-pagination background layout="prev, pager, next" :total="10">
             </el-pagination>
             <!-- 确认下架 -->
@@ -115,9 +116,7 @@
                 <div class="dailog">
                     <div class="header">
                         <span>活动发布</span>
-                        <div class="close">
-                            <img src="../assets/images/close.png" alt="" @click="close">
-                        </div>
+                        <img src="../assets/images/close.png" alt="" @click="close" class="close"> 
                     </div>
                     <div class="body">
                         <div class="tree">
@@ -292,7 +291,7 @@
     </script>
     <script>
         $(function () {
-            $('img').jqthumb({
+            $('.img img').jqthumb({
                 width:'100%',
                 height:'100%'
             });
