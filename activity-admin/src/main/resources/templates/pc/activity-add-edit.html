@@ -64,8 +64,7 @@
                     <label class="label" style="line-height: 100px;">封面</label>
                     <div class="input-box">
                         <div class="img-box">
-                            <img v-if="activity.coverCloudId" :src="activity.coverCloudId | getCloudImgUrl" class="cover-img jqthumbImg">
-                            <img v-if="!activity.coverCloudId" src="/static/pc/assets/images/img.png" th:src="@{/pc/assets/images/img.png}" class="cover-img jqthumbImg">
+                            <img :src="activity.coverCloudId | getCloudImgUrl" class="cover-img jqthumbImg">
                         </div>
                         <div class="font-box">
                             <span>建议尺寸：1080x500</span>
@@ -436,12 +435,15 @@
             mounted: function () {
                 var $this = this;
                 $this.initUploader();
-                $('.jqthumbImg').jqthumb({
-                    width: '100%',
-                    height: '100%'
-                });
+                $this.handleImg();
             },
             watch: {
+                handleImg: function () {
+                    $('.jqthumbImg').jqthumb({
+                        width: '100%',
+                        height: '100%'
+                    });
+                },
                 enableSignUp: function () {
                     var $this = this;
                     if ($this.enableSignUp && $this.enableSignIn) {
@@ -519,6 +521,7 @@
                             if (result == 1) {
                                 var cloudId = data.objectid;
                                 $this.$set($this.activity, "coverCloudId", cloudId);
+                                $this.handleImg();
                             } else {
                                 app.showMsg("上传失败");
                             }
