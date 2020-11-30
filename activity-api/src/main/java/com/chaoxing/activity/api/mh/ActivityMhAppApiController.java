@@ -13,6 +13,7 @@ import com.chaoxing.activity.service.manager.MhApiService;
 import com.chaoxing.activity.service.manager.module.SignApiService;
 import com.chaoxing.activity.util.constant.DateTimeFormatterConstant;
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
@@ -126,11 +127,14 @@ public class ActivityMhAppApiController {
 				.flag("102")
 				.build());
 		// 主办地点
-		mhGeneralAppResultDataFields.add(MhGeneralAppResultDataDTO.MhGeneralAppResultDataFieldDTO.builder()
-				.key("活动地点")
-				.value(activity.getAddress())
-				.flag("103")
-				.build());
+		String address = activity.getAddress();
+		if (StringUtils.isNotBlank(address)) {
+			mhGeneralAppResultDataFields.add(MhGeneralAppResultDataDTO.MhGeneralAppResultDataFieldDTO.builder()
+					.key("活动地点")
+					.value(address)
+					.flag("103")
+					.build());
+		}
 		// 报名、签到人数
 		SignParticipationDTO signParticipation = signApiService.getSignParticipation(activity.getSignId());
 		StringBuilder signPepleNumDescribe = new StringBuilder();
