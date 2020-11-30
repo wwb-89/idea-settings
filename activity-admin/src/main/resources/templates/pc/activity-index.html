@@ -30,7 +30,7 @@
                     <template slot-scope="scope">
                         <div class="item">
                             <div class="img">
-                                <img :src="scope.row.coverCloudId | getCloudImgUrl">
+                                <img :src="scope.row.coverCloudId | getCloudImgUrl" class="jqthumbImg">
                             </div>
                             <div class="desc">
                                 <div class="title" @click="previewPage(scope.row)">{{scope.row.name}}</div>
@@ -51,7 +51,11 @@
                 </el-table-column>
                 <el-table-column label="状态" min-width="10%">
                     <template slot="header" slot-scope="scope">
-                        <div class="status">状态<i class="el-icon-arrow-down"></i></div>
+                        <div class="status">状态<i class="el-icon-arrow-down el-down"></i></div>
+                        <!--状态筛选-->
+                        <div class="filters">
+                            <p :class="{'blue': status.selected}" v-for="(status, index) of filterStatus" :key="'status-' + index" @click="changeStatus(index)">{{status.name}}</p>
+                        </div>
                     </template>
                     <template slot-scope="scope">
                         <span class="green">{{scope.row.status | activityStatusInstructions}}</span>
@@ -74,10 +78,6 @@
                     </template>
                 </el-table-column>
             </el-table>
-        </div>
-        <!--状态筛选-->
-        <div class="filters">
-            <p :class="{'blue': status.selected}" v-for="(status, index) of filterStatus" :key="'status-' + index" @click="changeStatus(index)">{{status.name}}</p>
         </div>
         <el-pagination v-show="pages > 0 && total > queryParams.pageSize" background layout="prev, pager, next" :total="total" :page-size="queryParams.pageSize"></el-pagination>
         <!-- 删除弹窗 -->
@@ -132,9 +132,18 @@
                 var $this = this;
                 $this.bindEvents();
                 $this.loadData();
+                // 监听活动的创建，当创建或者修改活动后重新加载数据
+                document.addEventListener('visibilitychange',function(){
+                    if ("visible" === document.visibilityState) {
+                        // 判断storage的变化
+                        if (app.isActivityChanged()) {
+                            $this.loadData();
+                        }
+                    }
+                });
             },
             updated: function () {
-                $('img').jqthumb({
+                $('.jqthumbImg').jqthumb({
                     width: '100%',
                     height: '100%'
                 });
@@ -143,6 +152,7 @@
                 bindEvents: function () {
                     $(document).on("click", ".status", function () {
                         $('.filters').toggle();
+                        $('.el-down').toggleClass('rotate')
                     });
                     $(document).on("mouseover", ".more-btn", function () {
                         $(this).children('.more').show();
@@ -171,6 +181,7 @@
                         }
                     });
                     $('.filters').toggle();
+                    $('.el-down').removeClass('rotate')
                     $this.queryParams.status = status.value;
                     $this.queryParams.pageNum = 1;
                     $this.loadData();
@@ -179,6 +190,7 @@
                     var $this = this;
                     var url = ctx + "/api/activity/list/managing";
                     app.ajaxPost(url, $this.queryParams, function (data) {
+                        $this.loaded = true;
                         if (data.success) {
                             $this.activities = data.data.records;
                             $this.total = data.data.total;
@@ -191,6 +203,7 @@
                             app.showMsg(errorMessage);
                         }
                     }, function () {
+                        $this.loaded = true;
                         app.showMsg("加载活动失败");
                     });
                 },

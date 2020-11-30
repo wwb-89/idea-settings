@@ -23,9 +23,7 @@
     <!-- 创建活动头部 -->
     <div class="top flex box" v-if="!activity.id">
         <div class="flex">
-            <div class="left">
-                <img src="/static/pc/assets/images/left.png" th:src="@{/pc/assets/images/left.png}" style="cursor: pointer;" v-show="step > 1" @click="preStep">
-            </div>
+            <img src="/static/pc/assets/images/left.png" th:src="@{/pc/assets/images/left.png}" class="left" v-show="step > 1" @click="preStep">
             <span class="create">创建活动</span>
         </div>
         <div>
@@ -35,9 +33,7 @@
     <!-- 编辑活动头部 -->
     <div class="top flex box" v-if="activity.id">
         <div class="flex">
-            <div class="left">
-                <img src="/static/pc/assets/images/left.png" th:src="@{/pc/assets/images/left.png}" style="cursor: pointer;" v-show="step > 1" @click="preStep">
-            </div>
+            <img src="/static/pc/assets/images/left.png" th:src="@{/pc/assets/images/left.png}" class="left" v-show="step > 1" @click="preStep">
             <span class="create">编辑活动</span>
         </div>
         <div>
@@ -50,23 +46,26 @@
             <form action="">
                 <div class="title">基本信息</div>
                 <div class="form-item">
+                    <img src="/static/pc/assets/images/required.png" th:src="@{/pc/assets/images/required.png}" class="required-img">
                     <label class="label">名称</label>
                     <div class="input-box">
                         <el-input type="text" placeholder="请填写信息，简短的活动名称" v-model.trim="activity.name" maxlength="20" show-word-limit></el-input>
                     </div>
                 </div>
                 <div class="form-item">
+                    <img src="/static/pc/assets/images/required.png" th:src="@{/pc/assets/images/required.png}" class="required-img">
                     <label class="label">时间</label>
                     <div class="input-box">
                         <el-date-picker v-model="activityDateScope" type="daterange" format="yyyy-MM-dd" value-format="yyyy-MM-dd" :editable=false range-separator="至" start-placeholder="开始日期" end-placeholder="结束日期" @change="selectActivityDate($event)"></el-date-picker>
                     </div>
                 </div>
                 <div class="form-item">
+                    <img src="/static/pc/assets/images/required.png" th:src="@{/pc/assets/images/required.png}" class="required-img">
                     <label class="label" style="line-height: 100px;">封面</label>
                     <div class="input-box">
                         <div class="img-box">
-                            <img v-if="activity.coverCloudId" :src="activity.coverCloudId | getCloudImgUrl" class="cover-img">
-                            <img v-if="!activity.coverCloudId" src="/static/pc/assets/images/img.png" th:src="@{/pc/assets/images/img.png}" class="cover-img">
+                            <img v-if="activity.coverCloudId" :src="activity.coverCloudId | getCloudImgUrl" class="cover-img jqthumbImg">
+                            <img v-if="!activity.coverCloudId" src="/static/pc/assets/images/img.png" th:src="@{/pc/assets/images/img.png}" class="cover-img jqthumbImg">
                         </div>
                         <div class="font-box">
                             <span>建议尺寸：1080x500</span>
@@ -89,27 +88,21 @@
                     <label class="label">位置</label>
                     <div class="input-box">
                         <input type="text" readonly required lay-verify="required" v-model.trim="activity.address" placeholder="请选择活动地点" autocomplete="off" class="layui-input name" style="cursor: pointer;" @click="showActivityMap">
-                        <div class="length icon">
-                            <img src="/static/pc/assets/images/location.png" th:src="@{/pc/assets/images/location.png}">
-                        </div>
+                        <img src="/static/pc/assets/images/location.png" th:src="@{/pc/assets/images/location.png}" class="length icon">
                     </div>
                 </div>
                 <div class="form-item">
                     <label class="label">活动分类</label>
                     <div class="input-box">
                         <div :class="{'type-item': true, 'active': activityClassify.selected}" v-for="(activityClassify, index) of activityClassifies" :key="'activity-classify-' + index" @click="selectActivityClassify(index)">{{activityClassify.name}}
-                            <div class="img">
                                 <img src="/static/pc/assets/images/more.png" th:src="@{/pc/assets/images/more.png}" style="margin-left: 10px;" v-if="!activityClassify.system">
-                            </div>
                             <div class="edit-box" v-if="!activityClassify.system">
                                 <div @click="toEditActivityClassify(index, $event)">编辑</div>
                                 <div @click="toDeleteActivityClassify(index, $event)">删除</div>
                             </div>
                         </div>
                         <div class="type-item" @click="toAddActivityClassify">
-                            <div class="img">
-                                <img src="/static/pc/assets/images/add.png" th:src="@{/pc/assets/images/add.png}" style="margin-right: 10px;">
-                            </div>
+                            <img src="/static/pc/assets/images/add.png" th:src="@{/pc/assets/images/add.png}" style="margin-right: 10px;">
                             新增
                         </div>
                     </div>
@@ -124,6 +117,7 @@
             <!-- 点击参与设置 -->
             <form action="" class="setForm" v-show="enableSignUp">
                 <div class="form-item">
+                    <img src="/static/pc/assets/images/required.png" th:src="@{/pc/assets/images/required.png}" class="required-img">
                     <label class="label">报名时间</label>
                     <div class="input-box">
                         <el-date-picker v-model="signUpTimeScope" type="datetimerange" format="yyyy-MM-dd HH:mm" value-format="yyyy-MM-dd HH:mm:ss" :editable=false range-separator="至" start-placeholder="开始日期" end-placeholder="结束日期" @change="selectSignUpTime($event)"></el-date-picker>
@@ -162,6 +156,7 @@
                     </div>
                 </div>
                 <div class="form-item">
+                    <img src="/static/pc/assets/images/required.png" th:src="@{/pc/assets/images/required.png}" class="required-img">
                     <label class="label">按钮名称</label>
                     <div class="input-box btn-name">
                         <el-input type="text" v-model.trim="sign.signUpBtnName" placeholder="请输入内容" maxlength="6" show-word-limit></el-input>
@@ -198,6 +193,7 @@
                     </div>
                 </div>
                 <div class="form-item">
+                    <img src="/static/pc/assets/images/required.png" th:src="@{/pc/assets/images/required.png}" class="required-img">
                     <label class="label">签到时间</label>
                     <div class="input-box">
                         <el-date-picker v-model="signInTimeScope" type="datetimerange" format="yyyy-MM-dd HH:mm" value-format="yyyy-MM-dd HH:mm:ss" :editable=false range-separator="至" start-placeholder="开始日期" end-placeholder="结束日期"  @change="selectSignInTime($event)"></el-date-picker>
@@ -224,6 +220,7 @@
                     </div>
                 </div>
                 <div class="form-item">
+                    <img src="/static/pc/assets/images/required.png" th:src="@{/pc/assets/images/required.png}" class="required-img">
                     <label class="label">按钮名称</label>
                     <div class="input-box btn-name">
                         <el-input type="text" v-model.trim="sign.signInBtnName" placeholder="请输入内容" maxlength="6" show-word-limit></el-input>
@@ -270,8 +267,8 @@
         <div class="dailog">
             <div class="header">
                 <span>分类名称</span>
-                <div class="close" @click="addEditActivityClassifyWindowShow = false">
-                    <img src="/static/pc/assets/images/close.png" th:src="@{/pc/assets/images/close.png}">
+                <div @click="addEditActivityClassifyWindowShow = false">
+                    <img src="/static/pc/assets/images/close.png" th:src="@{/pc/assets/images/close.png}" class="close">
                 </div>
             </div>
             <div class="body">
@@ -286,9 +283,7 @@
     <!-- 确认删除分类弹框 -->
     <div class="dailog-box3" v-show="deleteActivityClassifyWindowShow">
         <div class="dailog delete-dailog">
-            <div class="warn">
-                <img src="/static/pc/assets/images/warning.png" th:src="@{/pc/assets/images/warning.png}">
-            </div>
+                <img src="/static/pc/assets/images/warning.png" th:src="@{/pc/assets/images/warning.png}" class="warn">
             <span>确认删除此分类</span>
             <div>
                 <div class="normal-btn" @click="deleteActivityClassifyWindowShow = false">保留</div>
@@ -314,9 +309,7 @@
         <div class="dailog look-dailog">
             <div class="header">
                 <span>预览</span>
-                <div class="close">
-                    <img src="/static/pc/assets/images/close.png" th:src="@{/pc/assets/images/close.png}">
-                </div>
+                <img src="/static/pc/assets/images/close.png" th:src="@{/pc/assets/images/close.png}" class="close">
             </div>
             <div class="body">
                 <!-- 二维码 -->
@@ -443,7 +436,7 @@
             mounted: function () {
                 var $this = this;
                 $this.initUploader();
-                $('img').jqthumb({
+                $('.jqthumbImg').jqthumb({
                     width: '100%',
                     height: '100%'
                 });
@@ -830,6 +823,7 @@
                     };
                     app.ajaxPostWithLoading(url, params, function (data) {
                         if (data.success) {
+                            app.activityChanged();
                             var activityData = data.data;
                             $this.activity.id = activityData.id;
                             $this.sign.id = activityData.signId;
