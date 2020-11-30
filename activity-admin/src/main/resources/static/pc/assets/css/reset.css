@@ -75,3 +75,6 @@
 .el-table th {
     overflow: unset;
 }
+.el-input__icon {
+    line-height: 36px;
+}
