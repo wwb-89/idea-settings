@@ -81,7 +81,7 @@ shutdownHook：指定在jvm关闭时是否自动关闭log4j，默认开启。
 	</Appenders>
 	<Loggers>
 		<!-- 日志的记录级别 -->
-		<Root level="debug">
+		<Root level="info">
 			<AppenderRef ref="console" />
 			<AppenderRef ref="debug" />
 			<AppenderRef ref="info" />
