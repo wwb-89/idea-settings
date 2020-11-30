@@ -230,7 +230,7 @@
                     }
                     $this.loaded = false;
                     $this.searchShow = false;
-                    app.ajaxPost(url, {data: activityApp.getJsonStr(params)}, function (data) {
+                    app.ajaxPost(url, {data: activityApp.getJsonStr(params), pageNum: params.pageNum, pageSize: params.pageSize}, function (data) {
                         $this.loaded = true;
                         if (data.success) {
                             $this.loaded = true;
