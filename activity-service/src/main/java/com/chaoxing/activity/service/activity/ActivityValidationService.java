@@ -55,10 +55,6 @@ public class ActivityValidationService {
 		if (StringUtils.isEmpty(coverCloudId)) {
 			throw new BusinessException("活动封面不能为空");
 		}
-		String address = activity.getAddress();
-		if (StringUtils.isEmpty(address)) {
-			throw new BusinessException("活动位置不能为空");
-		}
 		Integer activityClassifyId = activity.getActivityClassifyId();
 		if (activityClassifyId == null) {
 			throw new BusinessException("活动分类不能为空");

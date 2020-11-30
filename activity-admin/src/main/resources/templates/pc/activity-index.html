@@ -1,0 +1,331 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org/">
+<head>
+    <meta charset="UTF-8">
+    <title>活动管理</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="/static/pc/assets/css/create.css" th:href="@{/pc/assets/css/create.css}">
+    <link rel="stylesheet" href="/static/pc/assets/lib/element-ui/lib/theme-chalk/index.css" th:href="@{/pc/assets/lib/element-ui/lib/theme-chalk/index.css}">
+    <link rel="stylesheet" href="/static/pc/assets/lib/zTree_v3/css/zTreeStyle/zTreeStyle.css" th:href="@{/pc/assets/lib/zTree_v3/css/zTreeStyle/zTreeStyle.css}">
+    <link rel="stylesheet" href="/static/pc/assets/css/reset.css" th:href="@{/pc/assets/css/reset.css}">
+    <link rel="stylesheet" href="/static/pc/assets/css/public.css" th:href="@{/pc/assets/css/public.css}">
+    <link rel="stylesheet" href="/static/pc/assets/css/manage.css" th:href="@{/pc/assets/css/manage.css}">
+    <link rel="stylesheet" href="/static/pc/assets/lib/jquery.mCustomScrollbar.css" th:href="@{/pc/assets/lib/jquery.mCustomScrollbar.css}">
+    <style type="text/css">
+        [v-cloak] {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+<div class="page" id="activity-vue" v-cloak>
+    <div class="top box">
+        活动管理
+    </div>
+    <div class="main box">
+        <div class="create-btn" @click="toAdd" style="cursor: pointer;">创建活动</div>
+        <div class="table">
+            <el-table :data="activities" style="width: 100%">
+                <el-table-column label="活动名称" min-width="40%">
+                    <template slot-scope="scope">
+                        <div class="item">
+                            <div class="img">
+                                <img :src="scope.row.coverCloudId | getCloudImgUrl">
+                            </div>
+                            <div class="desc">
+                                <div class="title" @click="previewPage(scope.row)">{{scope.row.name}}</div>
+                                <div class="time"><span>{{scope.row.startDate | timestamp2ChineseYMD}}</span> - <span>{{scope.row.endDate | timestamp2ChineseYMD}}</span></div>
+                            </div>
+                        </div>
+                    </template>
+                </el-table-column>
+                <el-table-column label="创建单位" min-width="15%">
+                    <template slot-scope="scope">
+                        <div class="overHidden2">{{scope.row.createOrgName}}</div>
+                    </template>
+                </el-table-column>
+                <el-table-column label="创建人" min-width="10%">
+                    <template slot-scope="scope">
+                        <div class="overHidden2">{{scope.row.createUserName}}</div>
+                    </template>
+                </el-table-column>
+                <el-table-column label="状态" min-width="10%">
+                    <template slot="header" slot-scope="scope">
+                        <div class="status">状态<i class="el-icon-arrow-down"></i></div>
+                    </template>
+                    <template slot-scope="scope">
+                        <span class="green">{{scope.row.status | activityStatusInstructions}}</span>
+                    </template>
+                </el-table-column>
+                <el-table-column label="操作" min-width="25%">
+                    <template slot-scope="scope">
+                        <div>
+                            <el-button type="text" @click="toEdit(scope.row.id)">修改</el-button>
+                            <el-button type="text" @click="toDelete(scope.row.id)">删除</el-button>
+                            <div class="more-btn">
+                                <el-button type="text">更多<i class="el-icon-arrow-down"></i></el-button>
+                                <div class="more">
+                                    <p v-show="scope.row.status == 1" @click="toRelease(scope.row.id)">发布</p>
+                                    <p v-show="scope.row.status == 2 || scope.row.status == 3" @click="toCancelRelease(scope.row.id)">下架</p>
+                                    <p v-show="scope.row.status == 2 || scope.row.status == 3" @click="toUpdateReleaseScope(scope.row.id)">发布范围</p>
+                                </div>
+                            </div>
+                        </div>
+                    </template>
+                </el-table-column>
+            </el-table>
+        </div>
+        <!--状态筛选-->
+        <div class="filters">
+            <p :class="{'blue': status.selected}" v-for="(status, index) of filterStatus" :key="'status-' + index" @click="changeStatus(index)">{{status.name}}</p>
+        </div>
+        <el-pagination v-show="total > 0" background layout="prev, pager, next" :total="total" :page-size="queryParams.pageSize"></el-pagination>
+        <!-- 删除弹窗 -->
+        <vue-confirm ref="deleteWindow" :message="'确认删除？'" :cancel="'取消'" :sure="'确定'" @callback="deleteSubmit"></vue-confirm>
+        <!--下架弹窗-->
+        <vue-confirm ref="canReleaseWindow" :message="'下架后，该活动将不在活动广场中显示'" :cancel="'取消'" :sure="'下架'" @callback="cancelRelease"></vue-confirm>
+        <!-- 活动发布弹窗 -->
+        <vue-activity-scope ref="activityScopeWindow" @callback="release"></vue-activity-scope>
+    </div>
+</div>
+<div th:replace="pc/include/common_js :: common_js(~{::script})">
+    <script src="/static/pc/assets/lib/element-ui/lib/index.js" th:src="@{/pc/assets/lib/element-ui/lib/index.js}"></script>
+    <script src="/static/pc/assets/lib/zTree_v3/js/jquery.ztree.core.js" th:src="@{/pc/assets/lib/zTree_v3/js/jquery.ztree.core.js}"></script>
+    <script src="/static/pc/assets/lib/zTree_v3/js/jquery.ztree.excheck.min.js" th:src="@{/pc/assets/lib/zTree_v3/js/jquery.ztree.excheck.min.js}"></script>
+    <script src="/static/pc/assets/lib/zTree_v3/js/jquery.ztree.exedit.js" th:src="@{/pc/assets/lib/zTree_v3/js/jquery.ztree.exedit.js}"></script>
+    <script src="/static/pc/assets/component/confirm.js" th:src="@{/pc/assets/component/confirm.js}"></script>
+    <script src="/static/pc/assets/component/activity-scope.js" th:src="@{/pc/assets/component/activity-scope.js}"></script>
+    <script src="/static/pc/assets/lib/jqthumb.min.js" th:src="@{/pc/assets/lib/jqthumb.min.js}"></script>
+    <script th:inline="javascript">
+        activityVue = new Vue({
+            el: "#activity-vue",
+            data: {
+                activities: [],
+                fid: [[${session._login_user_.fid}]],
+                filterStatus: [],
+                queryParams: {
+                    pageNum: 1,
+                    pageSize: 10,
+                    status: ""
+                },
+                total: 0,
+                // 正在处理的活动id
+                processedActivityId: null,
+                // 发布还是更新发布范围
+                isRelease: true
+            },
+            created: function () {
+                var $this = this;
+                $this.filterStatus = [
+                    {name: "全部", value: "", selected: true},
+                    {name: "待发布", value: "1", selected: false},
+                    {name: "已发布", value: "2", selected: false},
+                    {name: "进行中", value: "3", selected: false},
+                    {name: "已结束", value: "4", selected: false}
+                ];
+            },
+            mounted: function () {
+                var $this = this;
+                $this.bindEvents();
+                $this.loadData();
+            },
+            updated: function () {
+                $('img').jqthumb({
+                    width: '100%',
+                    height: '100%'
+                });
+            },
+            methods: {
+                bindEvents: function () {
+                    $(document).on("click", ".status", function () {
+                        $('.filters').toggle();
+                    });
+                    $(document).on("mouseover", ".more-btn", function () {
+                        $(this).children('.more').show();
+                    });
+                    $(document).on("mouseout", ".more-btn", function () {
+                        $(this).children('.more').hide();
+                    });
+                },
+                toAdd: function () {
+                    var url = ctx + "/activity/add";
+                    window.open(url);
+                },
+                toEdit: function (id) {
+                    var url = ctx + "/activity/"+ id +"/edit";
+                    window.open(url);
+                },
+                // 修改状态
+                changeStatus: function (index) {
+                    var $this = this;
+                    var status = $this.filterStatus[index];
+                    $($this.filterStatus).each(function (i) {
+                        if (i == index) {
+                            $this.$set($this.filterStatus[i], "selected", true);
+                        } else {
+                            $this.$set($this.filterStatus[i], "selected", false);
+                        }
+                    });
+                    $('.filters').toggle();
+                    $this.queryParams.status = status.value;
+                    $this.queryParams.pageNum = 1;
+                    $this.loadData();
+                },
+                loadData: function () {
+                    var $this = this;
+                    var url = ctx + "/api/activity/list/managing";
+                    app.ajaxPost(url, $this.queryParams, function (data) {
+                        if (data.success) {
+                            $this.activities = data.data.records;
+                            $this.total = data.data.total;
+                        } else {
+                            var errorMessage = data.message;
+                            if (activityApp.isEmpty(errorMessage)) {
+                                errorMessage = "加载活动失败";
+                            }
+                            app.showMsg(errorMessage);
+                        }
+                    }, function () {
+                        app.showMsg("加载活动失败");
+                    });
+                },
+                // 删除
+                toDelete: function (id) {
+                    var $this = this;
+                    $this.processedActivityId = id;
+                    $this.$refs.deleteWindow.show = true;
+                },
+                deleteSubmit: function () {
+                    var $this = this;
+                    var url = ctx + "/api/activity/" + $this.processedActivityId + "/delete"
+                    app.ajaxPostWithLoading(url, {}, function (data) {
+                        if (data.success) {
+                            $this.$refs.deleteWindow.show = false;
+                            // 重新查询
+                            $this.loadData();
+                        } else {
+                            var errorMessage = data.message;
+                            if (activityApp.isEmpty(errorMessage)) {
+                                errorMessage = "删除活动失败";
+                            }
+                            app.showMsg(errorMessage);
+                        }
+                    }, function () {
+                        app.showMsg("删除活动失败");
+                    });
+                },
+                // 发布
+                toRelease: function (id) {
+                    var $this = this;
+                    $this.processedActivityId = id;
+                    $this.isRelease = true;
+                    $this.$refs.activityScopeWindow.show = true;
+                },
+                release: function () {
+                    var $this = this;
+                    if (!$this.isRelease) {
+                        $this.updateReleaseScope();
+                        return;
+                    }
+                    var selectedFids = $this.$refs.activityScopeWindow.selectedFids;
+                    if (selectedFids.length < 1) {
+                        selectedFids.push($this.fid);
+                    }
+                    var url = ctx + "/api/activity/" + $this.processedActivityId + "/release";
+                    var params = {
+                        fids: selectedFids
+                    };
+                    app.ajaxPostWithLoading(url, params, function (data) {
+                        if (data.success) {
+                            app.showMsg("发布成功", function () {
+                                $this.loadData();
+                            });
+                        } else {
+                            var errorMessage = data.message;
+                            if (activityApp.isEmpty(errorMessage)) {
+                                errorMessage = "发布失败";
+                            }
+                            app.showMsg(errorMessage);
+                        }
+                    }, function () {
+                        app.showMsg("发布失败");
+                    });
+                },
+                toCancelRelease: function (id) {
+                    var $this = this;
+                    $this.processedActivityId = id;
+                    $this.$refs.canReleaseWindow.show = true;
+                },
+                cancelRelease: function () {
+                    var $this = this;
+                    $this.$refs.canReleaseWindow.show = false;
+                    var url = ctx + "/api/activity/" + $this.processedActivityId + "/release/cancel";
+                    app.ajaxPostWithLoading(url, {}, function (data) {
+                        if (data.success) {
+                            app.showMsg("下架成功", function () {
+                                $this.loadData();
+                            });
+                        } else {
+                            var errorMessage = data.message;
+                            if (activityApp.isEmpty(errorMessage)) {
+                                errorMessage = "下架失败";
+                            }
+                            app.showMsg(errorMessage);
+                        }
+                    }, function () {
+                        app.showMsg("下架失败");
+                    });
+                },
+                toUpdateReleaseScope: function (id) {
+                    var $this = this;
+                    $this.processedActivityId = id;
+                    $this.isRelease = false;
+                    $this.$refs.activityScopeWindow.show = true;
+                },
+                updateReleaseScope: function () {
+                    var $this = this;
+                    var selectedFids = $this.$refs.activityScopeWindow.selectedFids;
+                    if (selectedFids.length < 1) {
+                        selectedFids.push($this.fid);
+                    }
+                    var url = ctx + "/api/activity/" + $this.processedActivityId + "/release/update";
+                    var params = {
+                        fids: selectedFids
+                    };
+                    app.ajaxPostWithLoading(url, params, function (data) {
+                        if (data.success) {
+                            app.showMsg("修改发布范围成功", function () {
+                                $this.loadData();
+                            });
+                        } else {
+                            var errorMessage = data.message;
+                            if (activityApp.isEmpty(errorMessage)) {
+                                errorMessage = "修改发布范围失败";
+                            }
+                            app.showMsg(errorMessage);
+                        }
+                    }, function () {
+                        app.showMsg("修改发布范围失败");
+                    });
+                },
+                // 配置页面
+                configPage: function (activity) {
+                    var pageId = activity.pageId;
+                    if (!activityApp.isEmpty(pageId)) {
+                        window.open(activityApp.getMhEditorUrl(pageId));
+                    }
+                },
+                // 预览页面
+                previewPage: function (activity) {
+                    var pageId = activity.pageId;
+                    if (!activityApp.isEmpty(pageId)) {
+                        window.open(activityApp.getMhPreviewUrl(pageId));
+                    }
+                }
+            }
+        });
+    </script>
+</div>
+</body>
+
+</html>

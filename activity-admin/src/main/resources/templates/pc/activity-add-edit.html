@@ -1,0 +1,902 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org/">
+<head>
+    <meta charset="UTF-8">
+    <title th:text="${activity == null ? '创建活动' : '编辑活动'}">创建活动</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="/static/pc/assets/lib/element-ui/lib/theme-chalk/index.css" th:href="@{/pc/assets/lib/element-ui/lib/theme-chalk/index.css}">
+    <link rel="stylesheet" href="/static/pc/assets/css/reset.css" th:href="@{/pc/assets/css/reset.css}">
+    <link rel="stylesheet" href="/static/pc/assets/css/public.css" th:href="@{/pc/assets/css/public.css}">
+    <link rel="stylesheet" href="/static/pc/assets/css/create.css" th:href="@{/pc/assets/css/create.css}">
+    <style type="text/css">
+        .webuploader-element-invisible {
+            display: none;
+        }
+        [v-cloak] {
+            display: none;
+        }
+    </style>
+</head>
+
+<body>
+<div class="page" id="activity-vue" v-cloak>
+    <!-- 创建活动头部 -->
+    <div class="top flex box" v-if="!activity.id">
+        <div class="flex">
+            <div class="left">
+                <img src="/static/pc/assets/images/left.png" th:src="@{/pc/assets/images/left.png}" style="cursor: pointer;" v-show="step > 1" @click="preStep">
+            </div>
+            <span class="create">创建活动</span>
+        </div>
+        <div>
+            <button type="button" class="cancle-btn" v-show="step == 1" @click="nextStep">下一步</button>
+        </div>
+    </div>
+    <!-- 编辑活动头部 -->
+    <div class="top flex box" v-if="activity.id">
+        <div class="flex">
+            <div class="left">
+                <img src="/static/pc/assets/images/left.png" th:src="@{/pc/assets/images/left.png}" style="cursor: pointer;" v-show="step > 1" @click="preStep">
+            </div>
+            <span class="create">编辑活动</span>
+        </div>
+        <div>
+            <!--<button type="button" class="cancle-btn" v-show="activity.webTemplateId">预览</button>-->
+            <button type="button" class="create-btn" v-show="step == 1" @click="nextStep">下一步</button>
+        </div>
+    </div>
+    <div v-show="step == 1">
+        <div class="info box">
+            <form action="">
+                <div class="title">基本信息</div>
+                <div class="form-item">
+                    <label class="label">名称</label>
+                    <div class="input-box">
+                        <el-input type="text" placeholder="请填写信息，简短的活动名称" v-model.trim="activity.name" maxlength="20" show-word-limit></el-input>
+                    </div>
+                </div>
+                <div class="form-item">
+                    <label class="label">时间</label>
+                    <div class="input-box">
+                        <el-date-picker v-model="activityDateScope" type="daterange" format="yyyy-MM-dd" value-format="yyyy-MM-dd" :editable=false range-separator="至" start-placeholder="开始日期" end-placeholder="结束日期" @change="selectActivityDate($event)"></el-date-picker>
+                    </div>
+                </div>
+                <div class="form-item">
+                    <label class="label" style="line-height: 100px;">封面</label>
+                    <div class="input-box">
+                        <div class="img-box">
+                            <img v-if="activity.coverCloudId" :src="activity.coverCloudId | getCloudImgUrl" class="cover-img">
+                            <img v-if="!activity.coverCloudId" src="/static/pc/assets/images/img.png" th:src="@{/pc/assets/images/img.png}" class="cover-img">
+                        </div>
+                        <div class="font-box">
+                            <span>建议尺寸：1080x500</span>
+                            <span>大小：小于5M</span>
+                            <span>格式：jpg、png、gif</span>
+                            <div class="cancle-btn upload" id="cover-upload-btn">上传文件</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="form-item">
+                    <label class="label">活动类型</label>
+                    <div class="input-box">
+                        <div class="radio-box" v-for="(activityType, index) of activityTypes" :key="'activity-type-' + index" :value="activity.activityType">
+                            <input type="radio" name="active-type" :value="activityType.value" :checked="activityType.selected" @click="changeActivityType(index)"/>
+                            <span>{{activityType.name}}</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="form-item">
+                    <label class="label">位置</label>
+                    <div class="input-box">
+                        <input type="text" readonly required lay-verify="required" v-model.trim="activity.address" placeholder="请选择活动地点" autocomplete="off" class="layui-input name" style="cursor: pointer;" @click="showActivityMap">
+                        <div class="length icon">
+                            <img src="/static/pc/assets/images/location.png" th:src="@{/pc/assets/images/location.png}">
+                        </div>
+                    </div>
+                </div>
+                <div class="form-item">
+                    <label class="label">活动分类</label>
+                    <div class="input-box">
+                        <div :class="{'type-item': true, 'active': activityClassify.selected}" v-for="(activityClassify, index) of activityClassifies" :key="'activity-classify-' + index" @click="selectActivityClassify(index)">{{activityClassify.name}}
+                            <div class="img">
+                                <img src="/static/pc/assets/images/more.png" th:src="@{/pc/assets/images/more.png}" style="margin-left: 10px;" v-if="!activityClassify.system">
+                            </div>
+                            <div class="edit-box" v-if="!activityClassify.system">
+                                <div @click="toEditActivityClassify(index, $event)">编辑</div>
+                                <div @click="toDeleteActivityClassify(index, $event)">删除</div>
+                            </div>
+                        </div>
+                        <div class="type-item" @click="toAddActivityClassify">
+                            <div class="img">
+                                <img src="/static/pc/assets/images/add.png" th:src="@{/pc/assets/images/add.png}" style="margin-right: 10px;">
+                            </div>
+                            新增
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div>
+        <div class="info box">
+            <div class="set-box">
+                <div class="title set">报名设置</div>
+                <el-switch v-model="enableSignUp" class="switch"></el-switch>
+            </div>
+            <!-- 点击参与设置 -->
+            <form action="" class="setForm" v-show="enableSignUp">
+                <div class="form-item">
+                    <label class="label">报名时间</label>
+                    <div class="input-box">
+                        <el-date-picker v-model="signUpTimeScope" type="datetimerange" format="yyyy-MM-dd HH:mm" value-format="yyyy-MM-dd HH:mm:ss" :editable=false range-separator="至" start-placeholder="开始日期" end-placeholder="结束日期" @change="selectSignUpTime($event)"></el-date-picker>
+                    </div>
+                </div>
+                <div class="form-item">
+                    <label class="label">人数限制</label>
+                    <div class="input-box">
+                        <div class="select-person">
+                            <el-select v-model="personLimitValue" value-key="id" placeholder="请选择">
+                                <el-option label="无限制" :value="0"></el-option>
+                                <el-option label="自定义人数" :value="1"></el-option>
+                            </el-select>
+                        </div>
+                        <input v-show="sign.limitPerson" v-model="sign.personLimit" type="number" min="1" step="1" maxlength="10" placeholder="请输入正整数" class="person"><span class="person-span">人</span>
+                    </div>
+                </div>
+                <div class="form-item" v-if="false">
+                    <label class="label" style="line-height: 20px;">信息填写</label>
+                    <div class="input-box column">
+                        <div class="set-box">
+                            <el-switch v-model="sign.signUpInfoWrite"></el-switch>
+                            <span class="tips">如何创建报名信息表单？</span>
+                        </div>
+                        <div class="select" v-show="sign.signUpInfoWrite">
+                            <el-select v-model="sign.signUpFormId" placeholder="请选择">
+                                <el-option v-for="(form, index) of forms" :key="'form-' + index" :label="form.name" :value="form.id"></el-option>
+                            </el-select>
+                        </div>
+                    </div>
+                </div>
+                <div class="form-item">
+                    <label class="label">报名名单公开</label>
+                    <div class="input-box">
+                        <el-switch v-model="sign.publicSignUpList"></el-switch>
+                    </div>
+                </div>
+                <div class="form-item">
+                    <label class="label">按钮名称</label>
+                    <div class="input-box btn-name">
+                        <el-input type="text" v-model.trim="sign.signUpBtnName" placeholder="请输入内容" maxlength="6" show-word-limit></el-input>
+                    </div>
+                </div>
+            </form>
+        </div>
+        <div class="info box">
+            <div class="set-box">
+                <div class="title set">签到设置</div>
+                <el-switch v-model="enableSignIn" class="switch"></el-switch>
+            </div>
+            <!-- 点击参与设置 -->
+            <form action="" class="setForm" v-show="enableSignIn">
+                <div class="form-item">
+                    <label class="label">签到方式</label>
+                    <div class="input-box">
+                        <div class="radio-box">
+                            <input type="radio" name="signInForm" v-model="sign.signInForm" value="1" /><span>直接签到</span>
+                        </div>
+                        <div class="radio-box">
+                            <input type="radio" name="signInForm" v-model="sign.signInForm" value="2" /><span>指定位置签到</span>
+                        </div>
+                        <div class="radio-box">
+                            <input type="radio" name="signInForm" v-model="sign.signInForm" value="3" /><span>扫码签到</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="form-item" v-show="sign.signInForm == 2">
+                    <label class="label">位置</label>
+                    <div class="input-box">
+                        <input type="text" readonly required lay-verify="required" v-model.trim="sign.address" placeholder="请选择签到地点" autocomplete="off" class="layui-input name" style="cursor: pointer;" @click="showSignInMap">
+                        <img src="/static/pc/assets/images/location.png" th:src="@{/pc/assets/images/location.png}" class="length icon">
+                    </div>
+                </div>
+                <div class="form-item">
+                    <label class="label">签到时间</label>
+                    <div class="input-box">
+                        <el-date-picker v-model="signInTimeScope" type="datetimerange" format="yyyy-MM-dd HH:mm" value-format="yyyy-MM-dd HH:mm:ss" :editable=false range-separator="至" start-placeholder="开始日期" end-placeholder="结束日期"  @change="selectSignInTime($event)"></el-date-picker>
+                    </div>
+                </div>
+                <div class="form-item" v-if="false">
+                    <label class="label" style="line-height: 20px;">信息填写</label>
+                    <div class="input-box column">
+                        <div class="set-box">
+                            <el-switch v-model="sign.signInInfoWrite"></el-switch>
+                            <span class="tips">如何创建报名信息表单？</span>
+                        </div>
+                        <div class="select" v-show="sign.signInInfoWrite">
+                            <el-select v-model="sign.signInFormId" placeholder="请选择">
+                                <el-option v-for="(form, index) of forms" :key="'form-' + index" :label="form.name" :value="form.id"></el-option>
+                            </el-select>
+                        </div>
+                    </div>
+                </div>
+                <div class="form-item">
+                    <label class="label">签到名单公开</label>
+                    <div class="input-box">
+                        <el-switch v-model="sign.publicSignInList"></el-switch>
+                    </div>
+                </div>
+                <div class="form-item">
+                    <label class="label">按钮名称</label>
+                    <div class="input-box btn-name">
+                        <el-input type="text" v-model.trim="sign.signInBtnName" placeholder="请输入内容" maxlength="6" show-word-limit></el-input>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+    <!--选择门户模板-->
+    <div class="info box" v-show="step > 1">
+        <div class="title">选择模板</div>
+        <div class="page-show" v-show="!activity.pageId">
+            <div class="page-box">
+                <div class="page-item" v-for="(webTemplate, index) of webTemplates" :key="'web-templates' + index">
+                    <div class="mask-box">
+                        <img class="img" :src="webTemplate.coverUrl">
+                        <div class="mask">
+                            <div class="normal-btn preview" @click="previewTemplate(index)">预览</div>
+                            <div class="normal-btn after-sure" @click="selectTemplate(index)">选择</div>
+                        </div>
+                    </div>
+                    <div class="desc overHidden1">{{webTemplate.name}}</div>
+                </div>
+            </div>
+        </div>
+        <!-- 编辑活动时预览模板 -->
+        <div class="page-show" v-show="activity.pageId">
+            <div class="page-box">
+                <div class="page-item" v-for="(webTemplate, index) of webTemplates" :key="'web-templates' + index" v-if="webTemplate.id == activity.webTemplateId">
+                    <div class="mask-box">
+                        <img class="img" :src="webTemplate.coverUrl">
+                        <!-- hover时出现 -->
+                        <div class="mask">
+                            <div class="normal-btn preview" @click="previePage">预览</div>
+                            <div class="normal-btn after-sure" @click="configPage">页面配置</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- 新增活动分类和自定义选项的弹出框 -->
+    <div class="dailog-box1" v-show="addEditActivityClassifyWindowShow">
+        <div class="dailog">
+            <div class="header">
+                <span>分类名称</span>
+                <div class="close" @click="addEditActivityClassifyWindowShow = false">
+                    <img src="/static/pc/assets/images/close.png" th:src="@{/pc/assets/images/close.png}">
+                </div>
+            </div>
+            <div class="body">
+                <el-input type="text" class="fenlei-input" v-model="addEditActivityClassify.name" placeholder="请输入" maxlength="6" show-word-limit></el-input>
+            </div>
+            <div class="footer">
+                <div class="normal-btn cancle" @click="addEditActivityClassifyWindowShow = false">取消</div>
+                <div :class="{'normal-btn': true, 'before-sure': !addEditActivityClassify.name, 'after-sure': addEditActivityClassify.name}" @click="addEditActivityClassifySubmit">确定</div>
+            </div>
+        </div>
+    </div>
+    <!-- 确认删除分类弹框 -->
+    <div class="dailog-box3" v-show="deleteActivityClassifyWindowShow">
+        <div class="dailog delete-dailog">
+            <div class="warn">
+                <img src="/static/pc/assets/images/warning.png" th:src="@{/pc/assets/images/warning.png}">
+            </div>
+            <span>确认删除此分类</span>
+            <div>
+                <div class="normal-btn" @click="deleteActivityClassifyWindowShow = false">保留</div>
+                <div class="normal-btn after-sure" @click="deleteActivityClassifySubmit">删除</div>
+            </div>
+        </div>
+    </div>
+    <!-- 活动创建成功弹框 -->
+    <div class="dailog-box3" style="display: none;">
+        <div class="dailog delete-dailog">
+            <div class="warn">
+                <img src="/static/pc/assets/images/success.png" th:src="@{/pc/assets/images/success.png}">
+            </div>
+            <span>活动创建成功</span>
+            <div>
+                <div class="normal-btn">配置页面</div>
+                <div class="normal-btn after-sure">完成</div>
+            </div>
+        </div>
+    </div>
+    <!-- 预览弹窗 -->
+    <div class="dailog-box1" style="display: none;">
+        <div class="dailog look-dailog">
+            <div class="header">
+                <span>预览</span>
+                <div class="close">
+                    <img src="/static/pc/assets/images/close.png" th:src="@{/pc/assets/images/close.png}">
+                </div>
+            </div>
+            <div class="body">
+                <!-- 二维码 -->
+                <div class="code"><img src="/static/pc/assets/images/example.jpg" th:src="@{/pc/assets/images/example.jpg}"></div>
+                <span>使用学习通扫码查看</span>
+                <div class="link-box">
+                    <span>链接</span>
+                    <input type="text" class="input-link">
+                    <a href="">访问</a>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- 地图弹窗 -->
+    <vue-map ref="activityMap" :map-dom-id="'activity-map'" @callback="activityAddressSure"></vue-map>
+    <vue-map ref="signInMap" :map-dom-id="'sign-in-map'" @callback="signInAddressSure"></vue-map>
+</div>
+<div th:replace="pc/include/common_js :: common_js(~{::script})">
+    <script src="//api.map.baidu.com/api?v=3.0&ak=aG5nWGO5m5tkVhBHGuVppoIRfKbyp5H3"></script>
+    <script src="/static/pc/assets/lib/element-ui/lib/index.js" th:src="@{/pc/assets/lib/element-ui/lib/index.js}"></script>
+    <script src="/static/pc/assets/lib/webuploader/webuploader.js" th:src="@{/pc/assets/lib/webuploader/webuploader.js}"></script>
+    <script src="/static/pc/assets/component/map.js" th:src="@{/pc/assets/component/map.js}"></script>
+    <script src="/static/pc/assets/lib/jqthumb.min.js" th:src="@{/pc/assets/lib/jqthumb.min.js}"></script>
+    <script th:inline="javascript">
+        activityVue = new Vue({
+            el: "#activity-vue",
+            data: {
+                step: 1,
+                activity: [[${activity}]],
+                // 模板列表
+                webTemplates: [[${webTemplates}]],
+                // 活动日期的范围
+                activityDateScope: "",
+                activityTypes: [[${activityTypes}]],
+                activityClassifies: [[${activityClassifies}]],
+                // 机构下的表单列表
+                forms: [],
+                // 文件上传
+                uploader: null,
+                // 显示隐藏
+                // 是否显示地图弹窗
+                mapWindowShow: false,
+                // 新增修改活动分类弹窗的显示
+                addEditActivityClassifyWindowShow: false,
+                deleteActivityClassifyWindowShow: false,
+                addEditActivityClassify: {
+                    id: null,
+                    name: ""
+                },
+                deleteActivityClassifyId: null,
+                // 签到报名
+                sign: [[${sign}]],
+                // 是否开启报名
+                enableSignUp: false,
+                // 是否开启签到
+                enableSignIn: false,
+                // 报名时间范围
+                signUpTimeScope: "",
+                // 签到时间范围
+                signInTimeScope: "",
+                // 人数限制值
+                personLimitValue: 0
+            },
+            created: function () {
+                var $this = this;
+                if (activityApp.isEmpty($this.activity)) {
+                    $this.activity = {
+                        id: null,
+                        name: "",
+                        startDate: "",
+                        endDate: "",
+                        coverCloudId: activityApp.getDefaultCoverCloudId(),
+                        activityType: "online",
+                        address: "",
+                        longitude: "",
+                        dimension: "",
+                        activityClassifyId: "",
+                        enableSign: true
+                    };
+                }else {
+                    $this.activity.createTime = "";
+                    $this.activity.updateTime = "";
+                    $this.activity.releaseTime = "";
+                    $this.activityDateScope = [$this.activity.startDate, $this.activity.endDate];
+                }
+                $($this.activityTypes).each(function (i) {
+                    if ($this.activity.activityType == this.value) {
+                        $this.$set($this.activityTypes[i], "selected", true);
+                    } else {
+                        $this.$set($this.activityTypes[i], "selected", false);
+                    }
+                });
+                var selectedActivityClassifyId = $this.activity.activityClassifyId;
+                $($this.activityClassifies).each(function (i) {
+                    if (this.id == selectedActivityClassifyId) {
+                        $this.$set($this.activityClassifies[i], "selected", true);
+                    } else {
+                        $this.$set($this.activityClassifies[i], "selected", false);
+                    }
+                });
+                if (activityApp.isEmpty($this.sign)) {
+                    // 生成新的签到报名
+                    $this.sign = activityApp.newSign();
+                } else {
+                    $this.sign.createTime = "";
+                    $this.sign.updateTime = "";
+                    var signUpStartTimeStr = $this.sign.signUpStartTimeStr;
+                    var signUpEndTimeStr = $this.sign.signUpEndTimeStr;
+                    if (!activityApp.isEmpty(signUpStartTimeStr) && !activityApp.isEmpty(signUpEndTimeStr)) {
+                        $this.signUpTimeScope = [signUpStartTimeStr, signUpEndTimeStr];
+                    }
+                    var signInStartTimeStr = $this.sign.signInStartTimeStr;
+                    var signInEndTimeStr = $this.sign.signInEndTimeStr;
+                    if (!activityApp.isEmpty(signInStartTimeStr) && !activityApp.isEmpty(signInEndTimeStr)) {
+                        $this.signInTimeScope = [signInStartTimeStr, signInEndTimeStr];
+                    }
+                }
+                $this.calSignEnable();
+                $this.calPersonLimitValue();
+                $this.loadForms();
+            },
+            mounted: function () {
+                var $this = this;
+                $this.initUploader();
+                $('img').jqthumb({
+                    width: '100%',
+                    height: '100%'
+                });
+            },
+            watch: {
+                enableSignUp: function () {
+                    var $this = this;
+                    if ($this.enableSignUp && $this.enableSignIn) {
+                        $this.sign.partakeForm = 3;
+                    }else if ($this.enableSignUp) {
+                        $this.sign.partakeForm = 1;
+                    }else if ($this.enableSignIn) {
+                        $this.sign.partakeForm = 2;
+                    }else {
+                        $this.sign.partakeForm = null;
+                    }
+                    if ($this.enableSignUp || $this.enableSignIn) {
+                        $this.activity.enableSign = true;
+                    } else {
+                        $this.activity.enableSign = false;
+                    }
+                },
+                enableSignIn: function () {
+                    var $this = this;
+                    $this.$nextTick(function () {
+                        if ($this.enableSignUp && $this.enableSignIn) {
+                            $this.sign.partakeForm = 3;
+                        }else if ($this.enableSignUp) {
+                            $this.sign.partakeForm = 1;
+                        }else if ($this.enableSignIn) {
+                            $this.sign.partakeForm = 2;
+                        }else {
+                            $this.sign.partakeForm = null;
+                        }
+                        if ($this.enableSignUp || $this.enableSignIn) {
+                            $this.activity.enableSign = true;
+                        } else {
+                            $this.activity.enableSign = false;
+                        }
+                    });
+                },
+                // 报名的人数限制
+                personLimitValue: function () {
+                    var $this = this;
+                    if ($this.personLimitValue == 0) {
+                        // 不限制
+                        $this.$set($this.sign, "limitPerson", false);
+                    } else {
+                        $this.$set($this.sign, "limitPerson", true);
+                    }
+                }
+            },
+            methods: {
+                // 初始化文件上传
+                initUploader: function () {
+                    var $this = this;
+                    $this.uploader = WebUploader.create({
+                        // swf文件路径
+                        swf: ctx + "/pc/assets/lib/webuploader/Uploader.swf",
+                        // 文件接收服务端。
+                        server: ctx + "/api/upload/img",
+                        // 选择文件的按钮。可选。
+                        // 内部根据当前运行是创建，可能是input元素，也可能是flash.
+                        pick: "#cover-upload-btn",
+                        // 不压缩image, 默认如果是jpeg，文件上传前会压缩一把再上传！
+                        resize: false,
+                        auto: true,
+                        // 只允许选择图片文件。
+                        accept: {
+                            title: 'Images',
+                            extensions: 'gif,jpg,jpeg,bmp,png',
+                            mimeTypes: 'image/*'
+                        }
+                    });
+                    $this.uploader.on("uploadSuccess", function (file, response) {
+                        if (response.success) {
+                            var data = response.data;
+                            data = activityApp.getJsonObject(data);
+                            var result = data.result;
+                            if (result == 1) {
+                                var cloudId = data.objectid;
+                                $this.$set($this.activity, "coverCloudId", cloudId);
+                            } else {
+                                app.showMsg("上传失败");
+                            }
+                        } else {
+                            var errorMessage = response.message;
+                            if (activityApp.isEmpty(errorMessage)) {
+                                errorMessage = "上传失败";
+                            }
+                            app.showMsg(errorMessage);
+                        }
+                    });
+                    $this.uploader.on("uploadError", function (file, reason) {
+                        app.showMsg(reason);
+                    });
+                },
+                // 加载表单列表
+                loadForms: function () {
+                    var $this = this;
+                    var url = ctx + "/api/form/list";
+                    app.ajaxPost(url, {}, function (data) {
+                        if (data.success) {
+                            $this.forms = data.data;
+                        } else {
+                            var errorMessage = data.message;
+                            if (activityApp.isEmpty(errorMessage)) {
+                                errorMessage = "加载表单失败";
+                            }
+                            app.showMsg(errorMessage);
+                        }
+                    }, function () {
+                        app.showMsg("加载表单失败");
+                    });
+                },
+                // 修改活动类型
+                changeActivityType: function (index) {
+                    var $this = this;
+                    var activityType = $this.activityTypes[index];
+                    $this.activity.activityType = activityType.value;
+                },
+                // 显示百度地图
+                showActivityMap: function () {
+                    var $this = this;
+                    $this.$refs.activityMap.show = true;
+                },
+                showSignInMap: function () {
+                    var $this = this;
+                    $this.$refs.signInMap.show = true;
+                },
+                // 确定活动地址
+                activityAddressSure: function () {
+                    var $this = this;
+                    if (activityApp.isEmpty($this.$refs.activityMap.longitude) || activityApp.isEmpty($this.$refs.activityMap.dimension)) {
+                        app.showMsg("请选择地址");
+                        return;
+                    }
+                    $this.activity.address = $this.$refs.activityMap.address;
+                    $this.activity.longitude = $this.$refs.activityMap.longitude;
+                    $this.activity.dimension = $this.$refs.activityMap.dimension;
+                },
+                // 确定签到地址
+                signInAddressSure: function () {
+                    var $this = this;
+                    if (activityApp.isEmpty($this.$refs.signInMap.longitude) || activityApp.isEmpty($this.$refs.signInMap.dimension)) {
+                        app.showMsg("请选择地址");
+                        return;
+                    }
+                    $this.sign.address = $this.$refs.signInMap.address;
+                    $this.sign.longitude = $this.$refs.signInMap.longitude;
+                    $this.sign.dimension = $this.$refs.signInMap.dimension;
+                },
+                selectActivityClassify: function (index) {
+                    var $this = this;
+                    $($this.activityClassifies).each(function (i) {
+                        if (i == index) {
+                            $this.$set($this.activityClassifies[i], "selected", true);
+                            $this.activity.activityClassifyId = this.id;
+                        } else {
+                            $this.$set($this.activityClassifies[i], "selected", false);
+                        }
+                    });
+                },
+                toAddActivityClassify: function () {
+                    var $this = this;
+                    $this.addEditActivityClassify = {
+                        id: null,
+                        name: ""
+                    };
+                    $this.addEditActivityClassifyWindowShow = true;
+                },
+                toEditActivityClassify: function (index, e) {
+                    e.stopPropagation();
+                    var $this = this;
+                    var activityClassify = $this.activityClassifies[index];
+                    $this.addEditActivityClassify = {
+                        id: activityClassify.id,
+                        name: activityClassify.name
+                    };
+                    $this.addEditActivityClassifyWindowShow = true;
+                },
+                addEditActivityClassifySubmit: function () {
+                    var $this = this;
+                    if (activityApp.isEmpty($this.addEditActivityClassify.name)) {
+                        return;
+                    }
+                    var isAdd = activityApp.isEmpty($this.addEditActivityClassify.id);
+                    var tips = "新增";
+                    var url = ctx + "/api/activity/classify/add";
+                    if (!isAdd) {
+                        url = ctx + "/api/activity/classify/edit";
+                        tips = "修改";
+                    }
+                    var params = {
+                        id: $this.addEditActivityClassify.id,
+                        name: $this.addEditActivityClassify.name
+                    };
+                    app.ajaxPostWithLoading(url, params, function (data) {
+                        if (data.success) {
+                            var data = data.data;
+                            if (isAdd) {
+                                data.selected = false;
+                                $this.activityClassifies.push(data);
+                            } else {
+                                $($this.activityClassifies).each(function (i) {
+                                    if (this.id == data.id) {
+                                        data.selected = this.selected;
+                                        $this.activityClassifies.splice(i, 1, data);
+                                        return false;
+                                    }
+                                });
+                            }
+                            $this.addEditActivityClassifyWindowShow = false;
+                        } else {
+                            var errorMessage = data.message;
+                            if (activityApp.isEmpty(errorMessage)) {
+                                errorMessage = tips + "分类失败";
+                            }
+                            app.showMsg(errorMessage);
+                        }
+                    }, function () {
+                        app.showMsg(tips + "分类失败");
+                    });
+                },
+                toDeleteActivityClassify: function (index, e) {
+                    e.stopPropagation();
+                    var $this = this;
+                    var activityClassify = $this.activityClassifies[index];
+                    $this.deleteActivityClassifyId = activityClassify.id;
+                    $this.deleteActivityClassifyWindowShow = true;
+                },
+                deleteActivityClassifySubmit: function () {
+                    var $this = this;
+                    var url = ctx + "/api/activity/classify/"+ $this.deleteActivityClassifyId +"/delete";
+                    app.ajaxPostWithLoading(url, {}, function (data) {
+                        $this.deleteActivityClassifyWindowShow = false;
+                        if (data.success) {
+                            $($this.activityClassifies).each(function (i) {
+                                if (this.id == $this.deleteActivityClassifyId) {
+                                    if (this.selected) {
+                                        $this.activity.activityClassifyId = null;
+                                    }
+                                    $this.activityClassifies.splice(i, 1);
+                                    return false;
+                                }
+                            });
+                        } else {
+                            var errorMessage = data.errorMessage;
+                            if (activityApp.isEmpty(errorMessage)) {
+                                errorMessage = "删除分类失败";
+                            }
+                            app.showMsg(errorMessage);
+                        }
+                    }, function () {
+                        $this.deleteActivityClassifyWindowShow = false;
+                        app.showMsg("删除分类失败");
+                    });
+                },
+                // 计算报名签到的开启标识
+                calSignEnable: function () {
+                    var $this = this;
+                    $this.enableSignUp = $this.activity.enableSign && ($this.sign.partakeForm == 1 || $this.sign.partakeForm == 3);
+                    $this.enableSignIn = $this.activity.enableSign && ($this.sign.partakeForm == 2 || $this.sign.partakeForm == 3);
+                },
+                // 计算限制人数value
+                calPersonLimitValue: function () {
+                    var $this = this;
+                    $this.personLimitValue = $this.sign.limitPerson ? 1 : 0;
+                },
+                // 验证输入
+                validateForm: function () {
+                    var $this = this;
+                    if (activityApp.isEmpty($this.sign.name)) {
+                        // 设置签到报名的名称
+                        if ($this.enableSignUp && $this.enableSignIn) {
+                            $this.sign.name = "报名签到";
+                        }else if ($this.enableSignUp) {
+                            $this.sign.name = "报名";
+                        }else {
+                            $this.sign.name = "签到";
+                        }
+                    }
+                    if (activityApp.isEmpty($this.activity.name)) {
+                        app.showMsg("活动名称不能为空");
+                        return false;
+                    }
+                    if (activityApp.isEmpty($this.activity.startDate)) {
+                        app.showMsg("活动开始日期不能为空");
+                        return false;
+                    }
+                    if (activityApp.isEmpty($this.activity.endDate)) {
+                        app.showMsg("活动结束日期不能为空");
+                        return false;
+                    }
+                    if (activityApp.isEmpty($this.activity.coverCloudId)) {
+                        app.showMsg("活动封面不能为空");
+                        return false;
+                    }
+                    if (activityApp.isEmpty($this.activity.activityClassifyId)) {
+                        app.showMsg("活动分类不能为空");
+                        return false;
+                    }
+                    // 报名设置
+                    if ($this.enableSignUp) {
+                        if (activityApp.isEmpty($this.sign.signUpStartTime)) {
+                            app.showMsg("报名开始时间不能为空");
+                            return false;
+                        }
+                        if (activityApp.isEmpty($this.sign.signUpEndTime)) {
+                            app.showMsg("报名结束时间不能为空");
+                            return false;
+                        }
+                        if ($this.sign.limitPerson) {
+                            // 启用人数限制
+                            if ($this.sign.personLimit < 1) {
+                                app.showMsg("报名限制的人数不能小于1");
+                                return false;
+                            }
+                        }
+                        if ($this.sign.signUpInfoWrite) {
+                            if (activityApp.isEmpty($this.sign.signUpFormId)) {
+                                app.showMsg("请选择报名需要填写的表单");
+                                return false;
+                            }
+                        }
+                    }
+                    // 签到设置
+                    if ($this.enableSignIn) {
+                        // 签到方式
+                        if ($this.sign.signInForm == 2) {
+                            // 位置签到
+                            if (activityApp.isEmpty($this.sign.address)) {
+                                app.showMsg("签到位置不能为空");
+                                return false;
+                            }
+                        }
+                        if (activityApp.isEmpty($this.sign.signInStartTime)) {
+                            app.showMsg("签到开始时间不能为空");
+                            return false;
+                        }
+                        if (activityApp.isEmpty($this.sign.signInEndTime)) {
+                            app.showMsg("签到结束时间不能为空");
+                            return false;
+                        }
+                        if ($this.sign.signInInfoWrite) {
+                            if (activityApp.isEmpty($this.sign.signInFormId)) {
+                                app.showMsg("请选择签到需要填写的表单");
+                                return false;
+                            }
+                        }
+                    }
+                    return true;
+                },
+                preStep: function () {
+                    var $this = this;
+                    if ($this.step > 1) {
+                        $this.step--;
+                    }
+                },
+                // 下一步（创建活动）
+                nextStep: function () {
+                    var $this = this;
+                    if (!$this.validateForm()) {
+                        return;
+                    }
+                    // 创建活动
+                    var tips = "创建";
+                    var url = ctx + "/api/activity/new";
+                    if (!activityApp.isEmpty($this.activity.id)) {
+                        tips = "修改";
+                        url = ctx + "/api/activity/edit";
+                    }
+                    var params = {
+                        activityJsonStr: activityApp.getJsonStr($this.activity),
+                        signJsonStr: activityApp.getJsonStr($this.sign)
+                    };
+                    app.ajaxPostWithLoading(url, params, function (data) {
+                        if (data.success) {
+                            var activityData = data.data;
+                            $this.activity.id = activityData.id;
+                            $this.sign.id = activityData.signId;
+                            $this.step = 2;
+                        } else {
+                            var errorMessage = data.message;
+                            if (activityApp.isEmpty(errorMessage)) {
+                                errorMessage = tips + "活动失败";
+                            }
+                            app.showMsg(errorMessage);
+                        }
+                    }, function () {
+                        app.showMsg(tips + "活动失败");
+                    });
+                },
+                // 选中活动的日期范围
+                selectActivityDate: function (obj) {
+                    var $this = this;
+                    $this.activity.startDate = obj[0];
+                    $this.activity.endDate = obj[1];
+                },
+                // 选中报名的时间范围
+                selectSignUpTime: function (obj) {
+                    var $this = this;
+                    $this.sign.signUpStartTime = obj[0];
+                    $this.sign.signUpEndTime = obj[1];
+                },
+                // 选中签到的时间范围
+                selectSignInTime: function (obj) {
+                    var $this = this;
+                    $this.sign.signInStartTime = obj[0];
+                    $this.sign.signInEndTime = obj[1];
+                },
+                // 预览模板
+                previewTemplate: function (index) {
+                    var $this = this;
+                    var webTemplate = $this.webTemplates[index];
+                    window.open(webTemplate.previewUrl);
+                },
+                // 选择模板
+                selectTemplate: function (index) {
+                    var $this = this;
+                    var webTemplate = $this.webTemplates[index];
+                    var url = ctx + "/api/activity/"+ $this.activity.id +"/bind/template/" + webTemplate.id;
+                    app.ajaxPostWithLoading(url, {}, function (data) {
+                        if (data.success) {
+                            var pageId = data.data;
+                            $this.activity.pageId = pageId;
+                            app.showMsg("选择模板成功", function () {
+                                // 到编辑门户页面
+                                window.location.href = activityApp.getMhEditorUrl(pageId);
+                            });
+                        } else {
+                            var errorMessage = data.message;
+                            if (activityApp.isEmpty(errorMessage)) {
+                                errorMessage = "选择模板失败";
+                            }
+                            app.showMsg(errorMessage);
+                        }
+                    }, function () {
+                        app.showMsg("选择模板失败");
+                    });
+                },
+                // 预览页面
+                previePage: function () {
+                    var $this = this;
+                    window.open(activityApp.getMhPreviewUrl($this.activity.pageId));
+                },
+                // 配置页面
+                configPage: function () {
+                    var $this = this;
+                    window.location.href = activityApp.getMhEditorUrl($this.activity.pageId);
+                }
+            }
+        })
+    </script>
+</div>
+</body>
+
+</html>

@@ -49,31 +49,30 @@ public class WfwRegionalArchitectureApiService {
 		if (CollectionUtils.isEmpty(codes)) {
 			return new ArrayList<>();
 		}
-		for (String code : codes) {
-			String url = String.format(GET_REGIONAL_ARCHITECTURE_BY_CODE_URL, code, DEFAULT_PAGE_SIZE);
-			String result = restTemplate.getForObject(url, String.class);
-			JSONObject jsonObject = JSON.parseObject(result);
-			boolean status = jsonObject.getBooleanValue("status");
-			if (!status) {
-				log.error("根据code:{}查询所属层级架构列表失败", code);
-				throw new BusinessException("未查询到层级架构");
-			}
-			// 获取条数
-			Integer count = jsonObject.getInteger("count");
-			// pageSize置为count一次查询完所有数据
-			url = String.format(GET_REGIONAL_ARCHITECTURE_BY_CODE_URL, code, count);
-			result = restTemplate.getForObject(url, String.class);
-			jsonObject = JSON.parseObject(result);
-			status = jsonObject.getBooleanValue("status");
-			if (!status) {
-				log.error("根据code:{}查询所属层级架构列表失败", code);
-				throw new BusinessException("未查询到层级架构");
-			}
-			String jsonlistStr = jsonObject.getString("list");
-			List<WfwRegionalArchitectureDTO> items = JSON.parseArray(jsonlistStr, WfwRegionalArchitectureDTO.class);
-			if (CollectionUtils.isNotEmpty(items)) {
-				regionalArchitectures.addAll(items);
-			}
+		String code = codes.get(0);
+		String url = String.format(GET_REGIONAL_ARCHITECTURE_BY_CODE_URL, code, DEFAULT_PAGE_SIZE);
+		String result = restTemplate.getForObject(url, String.class);
+		JSONObject jsonObject = JSON.parseObject(result);
+		boolean status = jsonObject.getBooleanValue("status");
+		if (!status) {
+			log.error("根据code:{}查询所属层级架构列表失败", code);
+			throw new BusinessException("未查询到层级架构");
+		}
+		// 获取条数
+		Integer count = jsonObject.getInteger("count");
+		// pageSize置为count一次查询完所有数据
+		url = String.format(GET_REGIONAL_ARCHITECTURE_BY_CODE_URL, code, count);
+		result = restTemplate.getForObject(url, String.class);
+		jsonObject = JSON.parseObject(result);
+		status = jsonObject.getBooleanValue("status");
+		if (!status) {
+			log.error("根据code:{}查询所属层级架构列表失败", code);
+			throw new BusinessException("未查询到层级架构");
+		}
+		String jsonlistStr = jsonObject.getString("list");
+		List<WfwRegionalArchitectureDTO> items = JSON.parseArray(jsonlistStr, WfwRegionalArchitectureDTO.class);
+		if (CollectionUtils.isNotEmpty(items)) {
+			regionalArchitectures.addAll(items);
 		}
 		return regionalArchitectures;
 	}
