@@ -230,13 +230,14 @@
                     }
                     $this.loaded = false;
                     $this.searchShow = false;
-                    app.ajaxPost(url, {data: activityApp.getJsonStr(params)}, function (data) {
+                    app.ajaxPost(url, {data: activityApp.getJsonStr(params), pageNum: params.pageNum, pageSize: params.pageSize}, function (data) {
                         $this.loaded = true;
                         if (data.success) {
                             $this.loaded = true;
                             $this.activities = data.data.records
                             $this.pages = Math.ceil(data.data.total/12);
                             $this.total = data.data.total;
+                            console.log($this.activities);
                         } else {
                             var errorMessage = data.message;
                             if (activityApp.isEmpty(errorMessage)) {
