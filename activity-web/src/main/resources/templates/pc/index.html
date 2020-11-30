@@ -21,7 +21,7 @@
     </div>
     <div class="content">
         <div class="search">
-            <input type="text" id="search-input" v-model.trim="sw" placeholder="搜索标题">
+            <input type="text" id="search-input" v-model.trim="sw" placeholder="搜索标题" @keyup.enter="search">
             <div class="search-foot" @click="search">
                 <div class="img">
                     <img src="/static/pc/assets/images/search.png" th:src="@{/pc/assets/images/search.png}">
@@ -66,7 +66,7 @@
             <div class="c-item" >
                 <div class="item" v-for="(item, index) of activities" :key="'item-' + index" @click="detail(index)">
                     <div class="img-box">
-                        <img :src="item.coverCloudId | getCloudImgUrl">
+                        <img :src="item.coverCloudId| getCloudImgUrl">
                         <div class="tag" v-if="item.status == 2">活动预告</div>
                         <div class="tag" v-if="item.status == 3">进行中</div>
                         <div class="tag" v-if="item.status == 4">已结束</div>
@@ -230,7 +230,7 @@
                     }
                     $this.loaded = false;
                     $this.searchShow = false;
-                    app.ajaxPost(url, {data: activityApp.getJsonStr(params)}, function (data) {
+                    app.ajaxPost(url, {data: activityApp.getJsonStr(params), pageNum: params.pageNum, pageSize: params.pageSize}, function (data) {
                         $this.loaded = true;
                         if (data.success) {
                             $this.loaded = true;

@@ -36,6 +36,7 @@ public class HttpServletRequestUtils {
 		Integer pageNum = DEFAULT_PAGE_NUM;
 		Integer pageSize = DEFAULT_PAGE_SIZE;
 
+
 		String pageNumStr = request.getParameter(PAGENUM_PARAM_KEY);
 		String pageSizeStr = request.getParameter(PAGESIZE_PARAM_KEY);
 

@@ -125,7 +125,6 @@ public class ActivityApiController {
 		}
 		Page<Activity> page = HttpServletRequestUtils.buid(request);
 		page = activityQueryService.listParticipate(page, activityQuery);
-		System.out.println(activityQuery);
 		return RestRespDTO.success(page);
 	}
 
