@@ -17,7 +17,7 @@
 
         <!-- 创建活动头部 -->
         <div class="top flex box" id="create">
-            <a href="#" class="flex">
+            <a href="#" class="flex" @click="handleLast">
                 <img src="../assets/images/left.png" alt="" class="left">
                 <span class="create">创建活动</span>
             </a>
@@ -30,10 +30,10 @@
         </div>
         <!-- 编辑活动头部 -->
         <div class="top flex box" id="edit" style="display: none;">
-            <div class="flex">
+            <a href="#" class="flex" @click="handleLast">
                 <img src="../assets/images/left.png" alt="" class="left">
                 <span class="create">编辑活动</span>
-            </div>
+            </a>   
             <div>
                 <button type="button" class="cancle-btn">预览</button>
                 <button type="button" class="create-btn">保存</button>
