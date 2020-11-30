@@ -1,4 +1,4 @@
-package com.chaoxing.activity.dmin.controller;
+package com.chaoxing.activity.admin.controller;
 
 import com.chaoxing.activity.dto.LoginUserDTO;
 import com.chaoxing.activity.dto.activity.ActivityTypeDTO;
@@ -10,7 +10,7 @@ import com.chaoxing.activity.service.WebTemplateService;
 import com.chaoxing.activity.service.activity.ActivityQueryService;
 import com.chaoxing.activity.service.activity.classify.ActivityClassifyQueryService;
 import com.chaoxing.activity.service.manager.module.SignApiService;
-import com.chaoxing.activity.dmin.util.LoginUtils;
+import com.chaoxing.activity.admin.util.LoginUtils;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;

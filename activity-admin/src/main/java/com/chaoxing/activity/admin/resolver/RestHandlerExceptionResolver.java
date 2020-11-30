@@ -1,4 +1,4 @@
-package com.chaoxing.activity.dmin.resolver;
+package com.chaoxing.activity.admin.resolver;
 
 import com.alibaba.fastjson.support.spring.FastJsonJsonView;
 import com.chaoxing.activity.dto.RestRespDTO;

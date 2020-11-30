@@ -1,10 +1,10 @@
-package com.chaoxing.activity.dmin.controller.api;
+package com.chaoxing.activity.admin.controller.api;
 
 import com.chaoxing.activity.dto.LoginUserDTO;
 import com.chaoxing.activity.dto.RestRespDTO;
 import com.chaoxing.activity.dto.manager.WfwRegionalArchitectureDTO;
 import com.chaoxing.activity.service.manager.WfwRegionalArchitectureApiService;
-import com.chaoxing.activity.dmin.util.LoginUtils;
+import com.chaoxing.activity.admin.util.LoginUtils;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 

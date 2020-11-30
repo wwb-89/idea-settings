@@ -1,4 +1,4 @@
-package com.chaoxing.activity.dmin.util;
+package com.chaoxing.activity.admin.util;
 
 import com.chaoxing.activity.util.constant.CookieConstant;
 import org.apache.commons.lang3.StringUtils;

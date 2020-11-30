@@ -1,4 +1,4 @@
-package com.chaoxing.activity.dmin.controller.api;
+package com.chaoxing.activity.admin.controller.api;
 
 
 import com.chaoxing.activity.service.activity.module.ActivityModuleService;

@@ -1,4 +1,4 @@
-package com.chaoxing.activity.dmin.controller.api;
+package com.chaoxing.activity.admin.controller.api;
 
 import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
@@ -10,8 +10,8 @@ import com.chaoxing.activity.dto.query.ActivityQueryDTO;
 import com.chaoxing.activity.model.Activity;
 import com.chaoxing.activity.service.activity.ActivityHandleService;
 import com.chaoxing.activity.service.activity.ActivityQueryService;
-import com.chaoxing.activity.dmin.util.HttpServletRequestUtils;
-import com.chaoxing.activity.dmin.util.LoginUtils;
+import com.chaoxing.activity.admin.util.HttpServletRequestUtils;
+import com.chaoxing.activity.admin.util.LoginUtils;
 import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.web.bind.annotation.*;
 

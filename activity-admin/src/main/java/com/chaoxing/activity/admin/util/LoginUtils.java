@@ -1,5 +1,5 @@
 
-package com.chaoxing.activity.dmin.util;
+package com.chaoxing.activity.admin.util;
 
 import com.chaoxing.activity.dto.LoginUserDTO;
 

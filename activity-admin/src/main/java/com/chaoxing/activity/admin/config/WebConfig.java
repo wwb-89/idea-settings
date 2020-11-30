@@ -1,8 +1,8 @@
-package com.chaoxing.activity.dmin.config;
+package com.chaoxing.activity.admin.config;
 
-import com.chaoxing.activity.dmin.interceptor.AutoLoginInterceptor;
-import com.chaoxing.activity.dmin.interceptor.LoginRequiredInterceptor;
-import com.chaoxing.activity.dmin.interceptor.LoginUserValidateInterceptor;
+import com.chaoxing.activity.admin.interceptor.AutoLoginInterceptor;
+import com.chaoxing.activity.admin.interceptor.LoginRequiredInterceptor;
+import com.chaoxing.activity.admin.interceptor.LoginUserValidateInterceptor;
 import org.springframework.boot.web.server.ErrorPage;
 import org.springframework.boot.web.server.ErrorPageRegistrar;
 import org.springframework.boot.web.server.ErrorPageRegistry;

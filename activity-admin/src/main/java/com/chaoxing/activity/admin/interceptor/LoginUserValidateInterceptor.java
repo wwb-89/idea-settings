@@ -1,9 +1,9 @@
-package com.chaoxing.activity.dmin.interceptor;
+package com.chaoxing.activity.admin.interceptor;
 
 import com.chaoxing.activity.dto.LoginUserDTO;
 import com.chaoxing.activity.service.CookieValidationService;
-import com.chaoxing.activity.dmin.util.CookieUtils;
-import com.chaoxing.activity.dmin.util.LoginUtils;
+import com.chaoxing.activity.admin.util.CookieUtils;
+import com.chaoxing.activity.admin.util.LoginUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.handler.HandlerInterceptorAdapter;
