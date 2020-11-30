@@ -25,7 +25,7 @@
     <div class="main box">
         <div class="create-btn" @click="toAdd" style="cursor: pointer;">创建活动</div>
         <div class="table">
-            <el-table :data="activities" style="width: 100%">
+            <el-table :data="activities" style="width: 100%" v-show="loaded">
                 <el-table-column label="活动名称" min-width="40%">
                     <template slot-scope="scope">
                         <div class="item">
@@ -79,7 +79,7 @@
         <div class="filters">
             <p :class="{'blue': status.selected}" v-for="(status, index) of filterStatus" :key="'status-' + index" @click="changeStatus(index)">{{status.name}}</p>
         </div>
-        <el-pagination v-show="total > 0" background layout="prev, pager, next" :total="total" :page-size="queryParams.pageSize"></el-pagination>
+        <el-pagination v-show="pages > 0 && total > queryParams.pageSize" background layout="prev, pager, next" :total="total" :page-size="queryParams.pageSize"></el-pagination>
         <!-- 删除弹窗 -->
         <vue-confirm ref="deleteWindow" :message="'确认删除？'" :cancel="'取消'" :sure="'确定'" @callback="deleteSubmit"></vue-confirm>
         <!--下架弹窗-->
@@ -108,7 +108,11 @@
                     pageSize: 10,
                     status: ""
                 },
+                loaded: false,
+                // 总记录数
                 total: 0,
+                // 总页数
+                pages: 0,
                 // 正在处理的活动id
                 processedActivityId: null,
                 // 发布还是更新发布范围
@@ -178,6 +182,7 @@
                         if (data.success) {
                             $this.activities = data.data.records;
                             $this.total = data.data.total;
+                            $this.pages = data.data.pages;
                         } else {
                             var errorMessage = data.message;
                             if (activityApp.isEmpty(errorMessage)) {

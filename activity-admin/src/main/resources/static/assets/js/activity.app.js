@@ -217,9 +217,9 @@
             // 是否公开签到名单
             publicSignInList: false,
             // 报名按钮名称
-            signUpBtnName: "",
+            signUpBtnName: "报名",
             // 签到按钮名称
-            signInBtnName: "",
+            signInBtnName: "签到",
             // 创建人uid
             createUid: "",
             // 创建人姓名

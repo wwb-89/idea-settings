@@ -383,17 +383,19 @@
             created: function () {
                 var $this = this;
                 if (activityApp.isEmpty($this.activity)) {
+                    // 第一个分类的id
+                    var firstActivityClassifyId = $this.activityClassifies[0].id;
                     $this.activity = {
                         id: null,
                         name: "",
                         startDate: "",
                         endDate: "",
                         coverCloudId: activityApp.getDefaultCoverCloudId(),
-                        activityType: "online",
+                        activityType: "offline",
                         address: "",
                         longitude: "",
                         dimension: "",
-                        activityClassifyId: "",
+                        activityClassifyId: firstActivityClassifyId,
                         enableSign: true
                     };
                 }else {
@@ -767,6 +769,10 @@
                                 return false;
                             }
                         }
+                        if (activityApp.isEmpty($this.sign.signUpBtnName)) {
+                            app.showMsg("报名按钮名称不能为空");
+                            return false;
+                        }
                     }
                     // 签到设置
                     if ($this.enableSignIn) {
@@ -791,6 +797,10 @@
                                 app.showMsg("请选择签到需要填写的表单");
                                 return false;
                             }
+                        }
+                        if (activityApp.isEmpty($this.sign.signInBtnName)) {
+                            app.showMsg("签到按钮名称不能为空");
+                            return false;
                         }
                     }
                     return true;

@@ -215,6 +215,11 @@
                         }
                         $this.loaded = false;
                         $this.searchShow = false;
+                        var params = {
+                            data: activityApp.getJsonStr(params),
+                            pageNum: $this.queryParams.pageNum,
+                            pageSize: $this.queryParams.pageSize,
+                        };
                         app.ajaxPost(url, {data: activityApp.getJsonStr(params)}, function (data) {
                             if (data.success) {
                                 $this.loaded = true;
