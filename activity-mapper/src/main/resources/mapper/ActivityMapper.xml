@@ -106,7 +106,6 @@
             t_activity t
         WHERE
             t.create_uid = #{params.createUid}
-            AND t.create_fid = #{params.createFid}
             <choose>
                 <when test="params.status != null">
                     AND t.`status` = #{params.status}

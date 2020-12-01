@@ -296,7 +296,7 @@
                     var $this = this;
                     $this.processedActivityId = id;
                     $this.isRelease = true;
-                    $this.$refs.activityScopeWindow.show = true;
+                    $this.$refs.activityScopeWindow.showWindow(id);
                 },
                 release: function () {
                     var $this = this;
@@ -357,7 +357,7 @@
                     var $this = this;
                     $this.processedActivityId = id;
                     $this.isRelease = false;
-                    $this.$refs.activityScopeWindow.show = true;
+                    $this.$refs.activityScopeWindow.showWindow(id);
                 },
                 updateReleaseScope: function () {
                     var $this = this;

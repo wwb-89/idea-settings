@@ -74,6 +74,21 @@ public class ActivityValidationService {
 		return activity;
 	}
 
+	/**是不是活动创建者
+	 * @Description 
+	 * @author wwb
+	 * @Date 2020-12-01 16:17:22
+	 * @param activity
+	 * @param loginUser
+	 * @return boolean
+	*/
+	public boolean isCreator(Activity activity, LoginUserDTO loginUser) {
+		if (Objects.equals(activity.getCreateUid(), loginUser.getUid())) {
+			return true;
+		}
+		return false;
+	}
+
 	/**能修改活动
 	 * @Description 
 	 * @author wwb
@@ -84,7 +99,7 @@ public class ActivityValidationService {
 	*/
 	public Activity editAble(Integer activityId, LoginUserDTO loginUser) {
 		Activity activity = activityExist(activityId);
-		if (!Objects.equals(activity.getCreateUid(), loginUser.getUid())) {
+		if (!isCreator(activity, loginUser)) {
 			throw new BusinessException("活动创建者才能修改活动");
 		}
 		return activity;
@@ -100,7 +115,7 @@ public class ActivityValidationService {
 	*/
 	public Activity deleteAble(Integer activityId, LoginUserDTO loginUser) {
 		Activity activity = activityExist(activityId);
-		if (!Objects.equals(activity.getCreateUid(), loginUser.getUid())) {
+		if (!isCreator(activity, loginUser)) {
 			throw new BusinessException("活动创建者才能删除活动");
 		}
 		return activity;
@@ -120,8 +135,7 @@ public class ActivityValidationService {
 		if (released) {
 			throw new BusinessException("活动已发布");
 		}
-		Integer createUid = activity.getCreateUid();
-		if (!Objects.equals(createUid, loginUser.getUid())) {
+		if (!isCreator(activity, loginUser)) {
 			throw new BusinessException("活动创建者才能发布活动");
 		}
 		return activity;
@@ -141,8 +155,7 @@ public class ActivityValidationService {
 		if (!released) {
 			throw new BusinessException("活动未发布");
 		}
-		Integer createUid = activity.getCreateUid();
-		if (!Objects.equals(createUid, loginUser.getUid())) {
+		if (!isCreator(activity, loginUser)) {
 			throw new BusinessException("活动创建者才能修改发布范围");
 		}
 		return activity;
@@ -162,8 +175,7 @@ public class ActivityValidationService {
 		if (!released) {
 			throw new BusinessException("活动已下架");
 		}
-		Integer createUid = activity.getCreateUid();
-		if (!Objects.equals(createUid, loginUser.getUid())) {
+		if (!isCreator(activity, loginUser)) {
 			throw new BusinessException("活动创建者才能下架活动");
 		}
 		return activity;

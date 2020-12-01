@@ -425,6 +425,7 @@ public class ActivityHandleService {
 	 * @param loginUser
 	 * @return void
 	*/
+	@Transactional(rollbackFor = Exception.class)
 	public void cancelRelease(Integer activityId, LoginUserDTO loginUser) {
 		Activity activity = activityValidationService.cancelReleaseAble(activityId, loginUser);
 		Integer status = calActivityStatus(activity.getStartDate(), activity.getEndDate(), Activity.StatusEnum.WAIT_RELEASE.getValue());
@@ -453,6 +454,7 @@ public class ActivityHandleService {
 	 * @param loginUser
 	 * @return void
 	*/
+	@Transactional(rollbackFor = Exception.class)
 	public void updateReleaseScope(Integer activityId, List<Integer> selectedFids, LoginUserDTO loginUser) {
 		activityValidationService.updateReleaseAble(activityId, loginUser);
 		// 处理参与范围
