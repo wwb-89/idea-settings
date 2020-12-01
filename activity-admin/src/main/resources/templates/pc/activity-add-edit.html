@@ -46,21 +46,21 @@
             <form action="">
                 <div class="title">基本信息</div>
                 <div class="form-item">
-                    <img src="/static/pc/assets/images/required.png" th:src="@{/pc/assets/images/required.png}" class="required-img">
+                    <label class="label position"><img src="/static/pc/assets/images/required.png" th:src="@{/pc/assets/images/required.png}" class="required-img"></label>
                     <label class="label">名称</label>
                     <div class="input-box">
                         <el-input type="text" placeholder="请填写信息，简短的活动名称" v-model.trim="activity.name" maxlength="20" show-word-limit></el-input>
                     </div>
                 </div>
                 <div class="form-item">
-                    <img src="/static/pc/assets/images/required.png" th:src="@{/pc/assets/images/required.png}" class="required-img">
+                    <label class="label position"><img src="/static/pc/assets/images/required.png" th:src="@{/pc/assets/images/required.png}" class="required-img"></label>
                     <label class="label">时间</label>
                     <div class="input-box">
                         <el-date-picker v-model="activityDateScope" type="daterange" format="yyyy-MM-dd" value-format="yyyy-MM-dd" :editable=false range-separator="至" start-placeholder="开始日期" end-placeholder="结束日期" @change="selectActivityDate($event)"></el-date-picker>
                     </div>
                 </div>
                 <div class="form-item">
-                    <img src="/static/pc/assets/images/required.png" th:src="@{/pc/assets/images/required.png}" class="required-img">
+                    <label class="label position"><img style="line-height: 100px;" src="/static/pc/assets/images/required.png" th:src="@{/pc/assets/images/required.png}" class="required-img"></label>
                     <label class="label" style="line-height: 100px;">封面</label>
                     <div class="input-box">
                         <div class="img-box">
@@ -116,7 +116,7 @@
             <!-- 点击参与设置 -->
             <form action="" class="setForm" v-show="enableSignUp">
                 <div class="form-item">
-                    <img src="/static/pc/assets/images/required.png" th:src="@{/pc/assets/images/required.png}" class="required-img">
+                    <label class="label position"><img src="/static/pc/assets/images/required.png" th:src="@{/pc/assets/images/required.png}" class="required-img"></label>
                     <label class="label">报名时间</label>
                     <div class="input-box">
                         <el-date-picker v-model="signUpTimeScope" type="datetimerange" format="yyyy-MM-dd HH:mm" value-format="yyyy-MM-dd HH:mm:ss" :editable=false range-separator="至" start-placeholder="开始日期" end-placeholder="结束日期" @change="selectSignUpTime($event)"></el-date-picker>
@@ -155,7 +155,7 @@
                     </div>
                 </div>
                 <div class="form-item">
-                    <img src="/static/pc/assets/images/required.png" th:src="@{/pc/assets/images/required.png}" class="required-img">
+                    <label class="label position"><img src="/static/pc/assets/images/required.png" th:src="@{/pc/assets/images/required.png}" class="required-img"></label>
                     <label class="label">按钮名称</label>
                     <div class="input-box btn-name">
                         <el-input type="text" v-model.trim="sign.signUpBtnName" placeholder="请输入内容" maxlength="6" show-word-limit></el-input>
@@ -192,7 +192,7 @@
                     </div>
                 </div>
                 <div class="form-item">
-                    <img src="/static/pc/assets/images/required.png" th:src="@{/pc/assets/images/required.png}" class="required-img">
+                    <label class="label position"><img src="/static/pc/assets/images/required.png" th:src="@{/pc/assets/images/required.png}" class="required-img"></label>
                     <label class="label">签到时间</label>
                     <div class="input-box">
                         <el-date-picker v-model="signInTimeScope" type="datetimerange" format="yyyy-MM-dd HH:mm" value-format="yyyy-MM-dd HH:mm:ss" :editable=false range-separator="至" start-placeholder="开始日期" end-placeholder="结束日期"  @change="selectSignInTime($event)"></el-date-picker>
@@ -219,7 +219,7 @@
                     </div>
                 </div>
                 <div class="form-item">
-                    <img src="/static/pc/assets/images/required.png" th:src="@{/pc/assets/images/required.png}" class="required-img">
+                    <label class="label position"><img src="/static/pc/assets/images/required.png" th:src="@{/pc/assets/images/required.png}" class="required-img"></label>
                     <label class="label">按钮名称</label>
                     <div class="input-box btn-name">
                         <el-input type="text" v-model.trim="sign.signInBtnName" placeholder="请输入内容" maxlength="6" show-word-limit></el-input>
