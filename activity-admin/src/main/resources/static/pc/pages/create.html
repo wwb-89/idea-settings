@@ -42,9 +42,8 @@
         <div class="info box" v-show="!pageShow">
             <form action="">
                 <div class="title">基本信息</div>
-                <div class="form-item position">
-                    <img src="../assets/images/required.png" alt="" class="required-img">
-                    <label class="label">名称</label>
+                <div class="form-item">
+                    <label class="label position"><img src="../assets/images/required.png" alt="" class="required-img">名称</label>
                     <div class="input-box">
                         <el-input type="text" placeholder="请填写信息，简短的活动名称" v-model="name" maxlength="20" show-word-limit >
                         </el-input>
@@ -58,9 +57,9 @@
                         </el-date-picker>
                     </div>
                 </div>
-                <div class="form-item position">
-                    <img src="../assets/images/required.png" alt="" class="required-img">
-                    <label class="label" style="line-height: 100px;">封面</label>
+                <div class="form-item">
+                    
+                    <label class="label position" style="line-height: 100px;"><img src="../assets/images/required.png" alt="" class="required-img">封面</label>
                     <div class="input-box">
                         <div class="img-box">
                             <img src="../assets/images/img.png" alt="" class="cover-img jqthumbImg">
