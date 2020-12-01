@@ -74,10 +74,7 @@
                 <div class="form-item">
                     <label class="label">活动类型</label>
                     <div class="input-box">
-                        <div class="radio-box" v-for="(activityType, index) of activityTypes" :key="'activity-type-' + index" :value="activity.activityType">
-                            <input type="radio" name="active-type" :value="activityType.value" :checked="activityType.selected" @click="changeActivityType(index)"/>
-                            <span>{{activityType.name}}</span>
-                        </div>
+                        <el-radio v-for="(activityType, index) of activityTypes" :key="'activity-type-' + index" v-model="activity.activityType" :label="activityType.value" name="active-type">{{activityType.name}}</el-radio>
                     </div>
                 </div>
                 <div class="form-item">
@@ -168,15 +165,9 @@
                 <div class="form-item">
                     <label class="label">签到方式</label>
                     <div class="input-box">
-                        <div class="radio-box">
-                            <input type="radio" name="signInForm" v-model="sign.signInForm" value="1" /><span>直接签到</span>
-                        </div>
-                        <div class="radio-box">
-                            <input type="radio" name="signInForm" v-model="sign.signInForm" value="2" /><span>指定位置签到</span>
-                        </div>
-                        <div class="radio-box">
-                            <input type="radio" name="signInForm" v-model="sign.signInForm" value="3" /><span>扫码签到</span>
-                        </div>
+                        <el-radio v-model="sign.signInForm" label="1" name="signInForm">直接签到</el-radio>
+                        <el-radio v-model="sign.signInForm" label="2" name="signInForm">指定位置签到</el-radio>
+                        <el-radio v-model="sign.signInForm" label="3" name="signInForm">扫码签到</el-radio>
                     </div>
                 </div>
                 <div class="form-item" v-show="sign.signInForm == 2">
