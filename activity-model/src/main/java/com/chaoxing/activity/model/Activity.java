@@ -30,7 +30,7 @@ import java.util.Objects;
 @NoArgsConstructor
 @AllArgsConstructor
 @TableName(value = "t_activity")
-public class Activity {//对接数据库表
+public class Activity {
 
     /** 活动id; column: id*/
     @TableId(type = IdType.AUTO)

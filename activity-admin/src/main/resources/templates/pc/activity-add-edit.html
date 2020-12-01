@@ -354,7 +354,9 @@
                 // 签到时间范围
                 signInTimeScope: "",
                 // 人数限制值
-                personLimitValue: 0
+                personLimitValue: 0,
+                // 处理的模板id
+                handleWebTemplateId: ""
             },
             created: function () {
                 var $this = this;
@@ -854,11 +856,13 @@
                 selectTemplate: function (index) {
                     var $this = this;
                     var webTemplate = $this.webTemplates[index];
+                    $this.handleWebTemplateId = webTemplate.id;
                     var url = ctx + "/api/activity/"+ $this.activity.id +"/bind/template/" + webTemplate.id;
                     app.ajaxPostWithLoading(url, {}, function (data) {
                         if (data.success) {
                             var pageId = data.data;
                             $this.$set($this.activity, "pageId", pageId);
+                            $this.$set($this.activity, "webTemplateId", $this.handleWebTemplateId);
                             app.showMsg("选择模板成功", function () {
                                 // 到编辑门户页面
                                 window.location.href = activityApp.getMhEditorUrl(pageId);
