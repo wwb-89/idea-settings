@@ -2,22 +2,19 @@ package com.chaoxing.activity.admin.controller.api;
 
 import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.chaoxing.activity.admin.util.HttpServletRequestUtils;
+import com.chaoxing.activity.admin.util.LoginUtils;
 import com.chaoxing.activity.dto.LoginUserDTO;
 import com.chaoxing.activity.dto.RestRespDTO;
 import com.chaoxing.activity.dto.module.SignFormDTO;
 import com.chaoxing.activity.dto.query.ActivityManageQueryDTO;
-import com.chaoxing.activity.dto.query.ActivityQueryDTO;
 import com.chaoxing.activity.model.Activity;
 import com.chaoxing.activity.service.activity.ActivityHandleService;
 import com.chaoxing.activity.service.activity.ActivityQueryService;
-import com.chaoxing.activity.admin.util.HttpServletRequestUtils;
-import com.chaoxing.activity.admin.util.LoginUtils;
-import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
-import java.util.ArrayList;
 import java.util.List;
 
 /**活动api服务
@@ -105,28 +102,6 @@ public class ActivityApiController {
 		LoginUserDTO loginUser = LoginUtils.getLoginUser(request);
 		Integer pageId = activityHandleService.bindWebTemplate(activityId, webTemplateId, loginUser);
 		return RestRespDTO.success(pageId);
-	}
-
-	/**可参与的活动列表
-	 * @Description 
-	 * @author wwb
-	 * @Date 2020-11-13 09:58:40
-	 * @param request
-	 * @param data
-	 * @return com.chaoxing.activity.dto.RestRespDTO
-	*/
-	@RequestMapping("list/participate")
-	public RestRespDTO list(HttpServletRequest request, String data) {
-		ActivityQueryDTO activityQuery = JSON.parseObject(data, ActivityQueryDTO.class);
-		List<Integer> fids = activityQuery.getFids();
-		if (CollectionUtils.isEmpty(fids)) {
-			LoginUserDTO loginUser = LoginUtils.getLoginUser(request);
-			activityQuery.setFids(new ArrayList(){{add(loginUser.getFid());}});
-		}
-		Page<Activity> page = HttpServletRequestUtils.buid(request);
-		page = activityQueryService.listParticipate(page, activityQuery);
-		System.out.println(activityQuery);
-		return RestRespDTO.success(page);
 	}
 
 	/**查询管理的活动列表

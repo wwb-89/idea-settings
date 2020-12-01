@@ -220,7 +220,7 @@
                             pageNum: $this.queryParams.pageNum,
                             pageSize: $this.queryParams.pageSize,
                         };
-                        app.ajaxPost(url, {data: activityApp.getJsonStr(params)}, function (data) {
+                        app.ajaxPost(url, params, function (data) {
                             if (data.success) {
                                 $this.loaded = true;
                                 $this.mescroll.endByPage(data.data.records.length, data.data.pages);
