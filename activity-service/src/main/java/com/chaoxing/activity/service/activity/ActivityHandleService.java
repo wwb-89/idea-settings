@@ -597,6 +597,7 @@ public class ActivityHandleService {
 		WebTemplate webTemplate = webTemplateService.webTemplateExist(webTemplateId);
 		MhCloneParamDTO mhCloneParam = new MhCloneParamDTO();
 		mhCloneParam.setTemplateId(webTemplate.getTemplateId());
+		mhCloneParam.setWebsiteName(activity.getName());
 		mhCloneParam.setUid(loginUser.getUid());
 		mhCloneParam.setWfwfid(loginUser.getFid());
 		List<MhCloneParamDTO.MhAppDTO> appList = packageTemplateApps(activity, webTemplateId);

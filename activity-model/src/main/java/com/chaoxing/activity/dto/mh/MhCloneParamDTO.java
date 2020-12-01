@@ -22,6 +22,8 @@ import java.util.List;
 public class MhCloneParamDTO {
 
 	private Integer templateId;
+	/** 网站名称 */
+	private String websiteName;
 	private Integer wfwfid;
 	private Integer uid;
 	private List<MhAppDTO> appList;
