@@ -23,7 +23,5 @@ public class ActivityManageQueryDTO {
 	private Integer status;
 	/** 创建人id */
 	private Integer createUid;
-	/** 创建人机构id */
-	private Integer createFid;
 
 }

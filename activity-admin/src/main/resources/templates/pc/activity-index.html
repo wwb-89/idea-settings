@@ -30,7 +30,7 @@
                     <template slot-scope="scope">
                         <div class="item">
                             <div class="img">
-                                <img :src="scope.row.coverCloudId | getCloudImgUrl">
+                                <img :src="scope.row.coverCloudId | getCloudImgUrl" class="jqthumbImg">
                             </div>
                             <div class="desc">
                                 <div class="title" @click="previewPage(scope.row)">{{scope.row.name}}</div>
@@ -51,7 +51,11 @@
                 </el-table-column>
                 <el-table-column label="状态" min-width="10%">
                     <template slot="header" slot-scope="scope">
-                        <div class="status">状态<i class="el-icon-arrow-down"></i></div>
+                        <div class="status">状态<i class="el-icon-arrow-down el-down"></i></div>
+                        <!--状态筛选-->
+                        <div class="filters">
+                            <p :class="{'blue': status.selected}" v-for="(status, index) of filterStatus" :key="'status-' + index" @click="changeStatus(index)">{{status.name}}</p>
+                        </div>
                     </template>
                     <template slot-scope="scope">
                         <span class="green">{{scope.row.status | activityStatusInstructions}}</span>
@@ -60,24 +64,17 @@
                 <el-table-column label="操作" min-width="25%">
                     <template slot-scope="scope">
                         <div>
-                            <el-button type="text" @click="toEdit(scope.row.id)">修改</el-button>
-                            <el-button type="text" @click="toDelete(scope.row.id)">删除</el-button>
-                            <div class="more-btn">
+                            <el-button type="text" v-if="index < 2" v-for="(operation, index) of scope.row.operations" @click="operateProxy(scope.row.id, operation.value)">{{operation.name}}</el-button>
+                            <div class="more-btn" v-if="scope.row.operations.length > 2">
                                 <el-button type="text">更多<i class="el-icon-arrow-down"></i></el-button>
                                 <div class="more">
-                                    <p v-show="scope.row.status == 1" @click="toRelease(scope.row.id)">发布</p>
-                                    <p v-show="scope.row.status == 2 || scope.row.status == 3" @click="toCancelRelease(scope.row.id)">下架</p>
-                                    <p v-show="scope.row.status == 2 || scope.row.status == 3" @click="toUpdateReleaseScope(scope.row.id)">发布范围</p>
+                                    <p v-if="index > 1" v-for="(operation, index) of scope.row.operations" @click="operateProxy(scope.row.id, operation.value)">{{operation.name}}</p>
                                 </div>
                             </div>
                         </div>
                     </template>
                 </el-table-column>
             </el-table>
-        </div>
-        <!--状态筛选-->
-        <div class="filters">
-            <p :class="{'blue': status.selected}" v-for="(status, index) of filterStatus" :key="'status-' + index" @click="changeStatus(index)">{{status.name}}</p>
         </div>
         <el-pagination v-show="pages > 0 && total > queryParams.pageSize" background layout="prev, pager, next" :total="total" :page-size="queryParams.pageSize"></el-pagination>
         <!-- 删除弹窗 -->
@@ -116,7 +113,14 @@
                 // 正在处理的活动id
                 processedActivityId: null,
                 // 发布还是更新发布范围
-                isRelease: true
+                isRelease: true,
+                operations: {
+                    edit: {name: "修改", value: "edit"},
+                    delete: {name: "删除", value: "delete"},
+                    release: {name: "发布", value: "release"},
+                    cancelRelease: {name: "取消发布", value: "cancelRelease"},
+                    releaseScope: {name: "发布范围", value: "releaseScope"}
+                }
             },
             created: function () {
                 var $this = this;
@@ -132,9 +136,18 @@
                 var $this = this;
                 $this.bindEvents();
                 $this.loadData();
+                // 监听活动的创建，当创建或者修改活动后重新加载数据
+                document.addEventListener('visibilitychange',function(){
+                    if ("visible" === document.visibilityState) {
+                        // 判断storage的变化
+                        if (app.isActivityChanged()) {
+                            $this.loadData();
+                        }
+                    }
+                });
             },
             updated: function () {
-                $('img').jqthumb({
+                $('.jqthumbImg').jqthumb({
                     width: '100%',
                     height: '100%'
                 });
@@ -143,6 +156,7 @@
                 bindEvents: function () {
                     $(document).on("click", ".status", function () {
                         $('.filters').toggle();
+                        $('.el-down').toggleClass('rotate')
                     });
                     $(document).on("mouseover", ".more-btn", function () {
                         $(this).children('.more').show();
@@ -150,6 +164,40 @@
                     $(document).on("mouseout", ".more-btn", function () {
                         $(this).children('.more').hide();
                     });
+                },
+                // 处理操作顺序
+                handleOperationSequence: function (activities) {
+                    var $this = this;
+                    if (activities && activities.length > 0) {
+                        $(activities).each(function () {
+                            var activity = this;
+                            var status = activity.status;
+                            switch (status) {
+                                case 1:
+                                    activity.operations = [
+                                        $this.operations.release,
+                                        $this.operations.edit,
+                                        $this.operations.delete
+                                    ];
+                                    break;
+                                case 2:
+                                case 3:
+                                    activity.operations = [
+                                        $this.operations.cancelRelease,
+                                        $this.operations.edit,
+                                        $this.operations.releaseScope,
+                                        $this.operations.delete
+                                    ];
+                                    break;
+                                case 4:
+                                    activity.operations = [
+                                        $this.operations.delete
+                                    ];
+                                    break;
+                                default:
+                            }
+                        });
+                    }
                 },
                 toAdd: function () {
                     var url = ctx + "/activity/add";
@@ -171,6 +219,7 @@
                         }
                     });
                     $('.filters').toggle();
+                    $('.el-down').removeClass('rotate')
                     $this.queryParams.status = status.value;
                     $this.queryParams.pageNum = 1;
                     $this.loadData();
@@ -179,7 +228,9 @@
                     var $this = this;
                     var url = ctx + "/api/activity/list/managing";
                     app.ajaxPost(url, $this.queryParams, function (data) {
+                        $this.loaded = true;
                         if (data.success) {
+                            $this.handleOperationSequence(data.data.records);
                             $this.activities = data.data.records;
                             $this.total = data.data.total;
                             $this.pages = data.data.pages;
@@ -191,8 +242,29 @@
                             app.showMsg(errorMessage);
                         }
                     }, function () {
+                        $this.loaded = true;
                         app.showMsg("加载活动失败");
                     });
+                },
+                // 操作代理
+                operateProxy: function (id, operation) {
+                    var $this = this;
+                    switch (operation) {
+                        case "edit":
+                            $this.toEdit(id);
+                            break;
+                        case "delete":
+                            $this.toDelete(id);
+                            break;
+                        case "release":
+                            $this.toRelease(id);
+                            break;
+                        case "cancelRelease":
+                            $this.toCancelRelease(id);
+                            break;
+                        case "releaseScope":
+                            $this.toUpdateReleaseScope(id);
+                    }
                 },
                 // 删除
                 toDelete: function (id) {
@@ -224,7 +296,7 @@
                     var $this = this;
                     $this.processedActivityId = id;
                     $this.isRelease = true;
-                    $this.$refs.activityScopeWindow.show = true;
+                    $this.$refs.activityScopeWindow.showWindow(id);
                 },
                 release: function () {
                     var $this = this;
@@ -285,7 +357,7 @@
                     var $this = this;
                     $this.processedActivityId = id;
                     $this.isRelease = false;
-                    $this.$refs.activityScopeWindow.show = true;
+                    $this.$refs.activityScopeWindow.showWindow(id);
                 },
                 updateReleaseScope: function () {
                     var $this = this;

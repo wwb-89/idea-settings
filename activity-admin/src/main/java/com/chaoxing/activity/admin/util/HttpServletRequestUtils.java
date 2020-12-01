@@ -1,4 +1,4 @@
-package com.chaoxing.activity.dmin.util;
+package com.chaoxing.activity.admin.util;
 
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import org.apache.commons.lang3.StringUtils;

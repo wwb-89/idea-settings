@@ -193,7 +193,7 @@
             // 是否限制报名人数
             limitPerson: false,
             // 限制的人数
-            personLimit: 1,
+            personLimit: 100,
             // 报名方式
             signUpForm: "",
             // 签到方式

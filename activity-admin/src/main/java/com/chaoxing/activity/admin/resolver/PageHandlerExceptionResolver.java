@@ -1,4 +1,4 @@
-package com.chaoxing.activity.dmin.resolver;
+package com.chaoxing.activity.admin.resolver;
 
 import com.chaoxing.activity.util.constant.ExceptionConstant;
 import com.chaoxing.activity.util.exception.BusinessException;

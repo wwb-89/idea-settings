@@ -1,15 +1,14 @@
-package com.chaoxing.activity.dmin.controller.api;
+package com.chaoxing.activity.admin.controller.api;
 
-import com.chaoxing.activity.dto.LoginUserDTO;
 import com.chaoxing.activity.dto.RestRespDTO;
 import com.chaoxing.activity.dto.manager.WfwRegionalArchitectureDTO;
+import com.chaoxing.activity.model.Activity;
+import com.chaoxing.activity.service.activity.ActivityQueryService;
 import com.chaoxing.activity.service.manager.WfwRegionalArchitectureApiService;
-import com.chaoxing.activity.dmin.util.LoginUtils;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.annotation.Resource;
-import javax.servlet.http.HttpServletRequest;
 import java.util.List;
 
 /**
@@ -26,11 +25,20 @@ public class RegionalArchitectureApiController {
 
 	@Resource
 	private WfwRegionalArchitectureApiService wfwRegionalArchitectureApiService;
+	@Resource
+	private ActivityQueryService activityQueryService;
 
+	/**获取架构
+	 * @Description 
+	 * @author wwb
+	 * @Date 2020-12-01 16:34:18
+	 * @param activityId
+	 * @return com.chaoxing.activity.dto.RestRespDTO
+	*/
 	@RequestMapping("")
-	public RestRespDTO listByFid(HttpServletRequest request) {
-		LoginUserDTO loginUser = LoginUtils.getLoginUser(request);
-		List<WfwRegionalArchitectureDTO> regionalArchitectures = wfwRegionalArchitectureApiService.listByFid(loginUser.getFid());
+	public RestRespDTO listByFid(Integer activityId) {
+		Activity activity = activityQueryService.getById(activityId);
+		List<WfwRegionalArchitectureDTO> regionalArchitectures = wfwRegionalArchitectureApiService.listByFid(activity.getCreateFid());
 		return RestRespDTO.success(regionalArchitectures);
 	}
 

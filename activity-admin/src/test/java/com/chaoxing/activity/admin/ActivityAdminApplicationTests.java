@@ -1,4 +1,4 @@
-package com.chaoxing.activity.dmin;
+package com.chaoxing.activity.admin;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;

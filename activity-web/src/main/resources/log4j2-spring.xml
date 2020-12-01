@@ -80,11 +80,9 @@ shutdownHook：指定在jvm关闭时是否自动关闭log4j，默认开启。
 		</RollingFile>
 	</Appenders>
 	<Loggers>
-		<!-- 为具体的包单独指定日志记录级别 -->
-		<Logger name="com.chaoxing" level="debug"/>
 		<!-- 日志的记录级别 -->
 		<Root level="info">
-			<AppenderRef level="debug" ref="console" />
+			<AppenderRef ref="console" />
 			<AppenderRef ref="debug" />
 			<AppenderRef ref="info" />
 			<AppenderRef ref="error" />

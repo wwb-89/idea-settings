@@ -4,8 +4,8 @@ Vue.component('vue-activity-scope', {
             <div class="dailog">
                 <div class="header">
                     <span>活动范围</span>
-                    <div class="close" @click="show = false">
-                        <img :src="ctx + '/pc/assets/images/close.png'">
+                    <div @click="show = false">
+                        <img :src="ctx + '/pc/assets/images/close.png'" class="close">
                     </div>
                 </div>
                 <div class="body">
@@ -34,32 +34,53 @@ Vue.component('vue-activity-scope', {
             loaded: false,
             zTree: null,
             selectedFids: [],
-            selectedFidNum: 0
+            selectedFidNum: 0,
+            activityId: ""
         }
     },
     mounted: function () {
         var $this = this;
-        $this.loadOrgs();
     },
     watch: {
-        show: function () {
+        /*show: function () {
             var $this = this;
             $this.clearSelect();
             if ($this.show && $this.loaded && $this.orgs.length < 1) {
                 $this.sureCallback();
             }
+        },*/
+        activityId: function () {
+            var $this = this;
+            if (!activityApp.isEmpty($this.activityId)) {
+                $this.loaded = false;
+                $this.clearSelect();
+                $this.loadOrgs();
+            }
         }
     },
     methods: {
+        showWindow: function (activityId) {
+            var $this = this;
+            $this.activityId = activityId;
+            // 没有加载完不显示
+            if ($this.loaded && $this.orgs.length > 0) {
+                $this.show = true;
+            }
+        },
         // 加载机构列表
         loadOrgs: function () {
             var $this = this;
             var url = ctx + "/api/regional-architecture";
-            app.ajaxPost(url, {}, function (data) {
+            app.ajaxPostWithLoading(url, {activityId: $this.activityId}, function (data) {
                 $this.loaded = true;
                 if (data.success) {
                     $this.orgs = data.data;
                     $this.initTree();
+                    if ($this.orgs.length < 1) {
+                        $this.sureCallback();
+                    } else {
+                        $this.show = true;
+                    }
                 } else {
                     var errorMessage = data.message;
                     if (activityApp.isEmpty(errorMessage)) {
@@ -106,10 +127,12 @@ Vue.component('vue-activity-scope', {
         // 清空选择
         clearSelect: function () {
             var $this = this;
-            $this.zTree.checkAllNodes(false);
-            $this.zTree.expandAll(false);
-            $this.selectedFids = [];
-            $this.selectedFidNum = 0;
+            if ($this.zTree) {
+                $this.zTree.checkAllNodes(false);
+                $this.zTree.expandAll(false);
+                $this.selectedFids = [];
+                $this.selectedFidNum = 0;
+            }
         },
         sureCallback: function () {
             var $this = this;

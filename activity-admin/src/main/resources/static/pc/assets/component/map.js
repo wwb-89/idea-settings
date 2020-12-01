@@ -5,8 +5,8 @@ Vue.component('vue-map', {
             <div class="dailog map-dailog">
                 <div class="header">
                     <span>设置地图</span>
-                    <div class="close" @click="show = false">
-                        <img :src="ctx + '/pc/assets/images/close.png'">
+                    <div @click="show = false">
+                        <img :src="ctx + '/pc/assets/images/close.png'" class="close">
                     </div>
                 </div>
                 <div class="body">

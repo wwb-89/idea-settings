@@ -9,6 +9,8 @@
     function app() {
     }
 
+    app.prototype.activityChangeKey = "activity_changed";
+
     /**
      * get请求
      * @param url
@@ -203,6 +205,26 @@
                 $("" + dom).html(response);
             }
         });
+    };
+    /**
+     * 活动改变了
+     */
+    app.prototype.activityChanged = function () {
+        var $this = this;
+        window.localStorage.setItem($this.activityChangeKey, "1");
+    };
+    /**
+     * 活动是否改变了
+     * @returns {boolean}
+     */
+    app.prototype.isActivityChanged = function () {
+        var $this = this;
+        var value = window.localStorage.getItem($this.activityChangeKey);
+        if (1 == value) {
+            window.localStorage.removeItem($this.activityChangeKey);
+            return true;
+        }
+        return false;
     };
     W['app'] = new app();
 })(window, jQuery, JSON);

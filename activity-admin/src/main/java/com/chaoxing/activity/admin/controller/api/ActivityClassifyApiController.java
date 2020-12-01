@@ -1,10 +1,10 @@
-package com.chaoxing.activity.web.controller.api;
+package com.chaoxing.activity.admin.controller.api;
 
 import com.chaoxing.activity.dto.LoginUserDTO;
 import com.chaoxing.activity.dto.RestRespDTO;
 import com.chaoxing.activity.model.ActivityClassify;
 import com.chaoxing.activity.service.activity.classify.ActivityClassifyHandleService;
-import com.chaoxing.activity.web.util.LoginUtils;
+import com.chaoxing.activity.admin.util.LoginUtils;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
