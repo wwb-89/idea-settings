@@ -24,6 +24,8 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.client.RestTemplate;
 
 import javax.annotation.Resource;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -42,6 +44,7 @@ public class ActivityMhAppApiController {
 
 	/** 签到按钮地址 */
 	private static final String QD_BTN_URL = "http://api.qd.reading.chaoxing.com/activity/%d/btn";
+	private static final DateTimeFormatter ACTIVITY_DATE_TIME_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd");
 
 	@Resource
 	private ActivityQueryService activityQueryService;
@@ -214,7 +217,7 @@ public class ActivityMhAppApiController {
 		result.put("totalRecords", page.getTotal());
 		List<Activity> records = page.getRecords();
 		List<MhGeneralAppResultDataDTO> mhGeneralAppResultDatas = new ArrayList<>();
-		jsonObject.put("results", mhGeneralAppResultDatas);
+		result.put("results", mhGeneralAppResultDatas);
 		if (CollectionUtils.isNotEmpty(records)) {
 			for (Activity record : records) {
 				MhGeneralAppResultDataDTO mhGeneralAppResultData = new MhGeneralAppResultDataDTO();
@@ -234,6 +237,17 @@ public class ActivityMhAppApiController {
 				mhGeneralAppResultDataFields.add(MhGeneralAppResultDataDTO.MhGeneralAppResultDataFieldDTO.builder()
 						.value(record.getName())
 						.flag("1")
+						.build());
+				// 活动时间
+				LocalDate startDate = activity.getStartDate();
+				LocalDate endDate = activity.getEndDate();
+				StringBuilder timeStringBuilder = new StringBuilder();
+				timeStringBuilder.append(ACTIVITY_DATE_TIME_FORMATTER.format(startDate));
+				timeStringBuilder.append(" ～ ");
+				timeStringBuilder.append(ACTIVITY_DATE_TIME_FORMATTER.format(endDate));
+				mhGeneralAppResultDataFields.add(MhGeneralAppResultDataDTO.MhGeneralAppResultDataFieldDTO.builder()
+						.value(timeStringBuilder.toString())
+						.flag("6")
 						.build());
 				mhGeneralAppResultDatas.add(mhGeneralAppResultData);
 			}
