@@ -955,7 +955,14 @@ input.btn-name,
 .required-img{
     width: 6px;
     height: 6px;
-    vertical-align: top;
+    /* vertical-align: top;
     margin-top: 12px;
-    margin-left: -10px;
+    margin-left: -10px; */
+    margin-right: 3px;
+    margin-bottom: 8px;
+}
+.position{
+    position: relative;
+    margin-right: 10px;
+    margin-left: 0;
 }
