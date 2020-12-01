@@ -46,22 +46,19 @@
             <form action="">
                 <div class="title">基本信息</div>
                 <div class="form-item">
-                    <label class="label position"><img src="/static/pc/assets/images/required.png" th:src="@{/pc/assets/images/required.png}" class="required-img"></label>
-                    <label class="label">名称</label>
+                    <label class="label position"><img src="/static/pc/assets/images/required.png" th:src="@{/pc/assets/images/required.png}" class="required-img">名称</label>
                     <div class="input-box">
                         <el-input type="text" placeholder="请填写信息，简短的活动名称" v-model.trim="activity.name" maxlength="20" show-word-limit></el-input>
                     </div>
                 </div>
                 <div class="form-item">
-                    <label class="label position"><img src="/static/pc/assets/images/required.png" th:src="@{/pc/assets/images/required.png}" class="required-img"></label>
-                    <label class="label">时间</label>
+                    <label class="label position"><img src="/static/pc/assets/images/required.png" th:src="@{/pc/assets/images/required.png}" class="required-img">时间</label>
                     <div class="input-box">
                         <el-date-picker v-model="activityDateScope" type="daterange" format="yyyy-MM-dd" value-format="yyyy-MM-dd" :editable=false range-separator="至" start-placeholder="开始日期" end-placeholder="结束日期" @change="selectActivityDate($event)"></el-date-picker>
                     </div>
                 </div>
                 <div class="form-item">
-                    <label class="label position"><img style="line-height: 100px;" src="/static/pc/assets/images/required.png" th:src="@{/pc/assets/images/required.png}" class="required-img"></label>
-                    <label class="label" style="line-height: 100px;">封面</label>
+                    <label class="label position" style="line-height: 100px;"><img src="/static/pc/assets/images/required.png" th:src="@{/pc/assets/images/required.png}" class="required-img">封面</label>
                     <div class="input-box">
                         <div class="img-box">
                             <img :src="activity.coverCloudId | getCloudImgUrl" class="cover-img jqthumbImg">
@@ -116,8 +113,7 @@
             <!-- 点击参与设置 -->
             <form action="" class="setForm" v-show="enableSignUp">
                 <div class="form-item">
-                    <label class="label position"><img src="/static/pc/assets/images/required.png" th:src="@{/pc/assets/images/required.png}" class="required-img"></label>
-                    <label class="label">报名时间</label>
+                    <label class="label position"><img src="/static/pc/assets/images/required.png" th:src="@{/pc/assets/images/required.png}" class="required-img">报名时间</label>
                     <div class="input-box">
                         <el-date-picker v-model="signUpTimeScope" type="datetimerange" format="yyyy-MM-dd HH:mm" value-format="yyyy-MM-dd HH:mm:ss" :editable=false range-separator="至" start-placeholder="开始日期" end-placeholder="结束日期" @change="selectSignUpTime($event)"></el-date-picker>
                     </div>
@@ -155,8 +151,7 @@
                     </div>
                 </div>
                 <div class="form-item">
-                    <label class="label position"><img src="/static/pc/assets/images/required.png" th:src="@{/pc/assets/images/required.png}" class="required-img"></label>
-                    <label class="label">按钮名称</label>
+                    <label class="label position"><img src="/static/pc/assets/images/required.png" th:src="@{/pc/assets/images/required.png}" class="required-img">按钮名称</label>
                     <div class="input-box btn-name">
                         <el-input type="text" v-model.trim="sign.signUpBtnName" placeholder="请输入内容" maxlength="6" show-word-limit></el-input>
                     </div>
@@ -192,8 +187,7 @@
                     </div>
                 </div>
                 <div class="form-item">
-                    <label class="label position"><img src="/static/pc/assets/images/required.png" th:src="@{/pc/assets/images/required.png}" class="required-img"></label>
-                    <label class="label">签到时间</label>
+                    <label class="label position"><img src="/static/pc/assets/images/required.png" th:src="@{/pc/assets/images/required.png}" class="required-img">签到时间</label>
                     <div class="input-box">
                         <el-date-picker v-model="signInTimeScope" type="datetimerange" format="yyyy-MM-dd HH:mm" value-format="yyyy-MM-dd HH:mm:ss" :editable=false range-separator="至" start-placeholder="开始日期" end-placeholder="结束日期"  @change="selectSignInTime($event)"></el-date-picker>
                     </div>
@@ -219,8 +213,7 @@
                     </div>
                 </div>
                 <div class="form-item">
-                    <label class="label position"><img src="/static/pc/assets/images/required.png" th:src="@{/pc/assets/images/required.png}" class="required-img"></label>
-                    <label class="label">按钮名称</label>
+                    <label class="label position"><img src="/static/pc/assets/images/required.png" th:src="@{/pc/assets/images/required.png}" class="required-img">按钮名称</label>
                     <div class="input-box btn-name">
                         <el-input type="text" v-model.trim="sign.signInBtnName" placeholder="请输入内容" maxlength="6" show-word-limit></el-input>
                     </div>
@@ -438,12 +431,6 @@
                 $this.handleImg();
             },
             watch: {
-                handleImg: function () {
-                    $('.jqthumbImg').jqthumb({
-                        width: '100%',
-                        height: '100%'
-                    });
-                },
                 enableSignUp: function () {
                     var $this = this;
                     if ($this.enableSignUp && $this.enableSignIn) {
@@ -492,6 +479,12 @@
                 }
             },
             methods: {
+                handleImg: function () {
+                    $('.jqthumbImg').jqthumb({
+                        width: '100%',
+                        height: '100%'
+                    });
+                },
                 // 初始化文件上传
                 initUploader: function () {
                     var $this = this;
@@ -828,8 +821,8 @@
                         if (data.success) {
                             app.activityChanged();
                             var activityData = data.data;
-                            $this.activity.id = activityData.id;
-                            $this.sign.id = activityData.signId;
+                            $this.$set($this.activity, "id", activityData.id);
+                            $this.$set($this.sign, "id", activityData.signId);
                             $this.step = 2;
                         } else {
                             var errorMessage = data.message;
@@ -874,7 +867,7 @@
                     app.ajaxPostWithLoading(url, {}, function (data) {
                         if (data.success) {
                             var pageId = data.data;
-                            $this.activity.pageId = pageId;
+                            $this.$set($this.activity, "pageId", pageId);
                             app.showMsg("选择模板成功", function () {
                                 // 到编辑门户页面
                                 window.location.href = activityApp.getMhEditorUrl(pageId);
