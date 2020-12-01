@@ -105,6 +105,7 @@ select {
 }
 
 .form-item {
+    position: relative;
     display: flex;
     margin: 30px 0;
 }
@@ -955,7 +956,12 @@ input.btn-name,
 .required-img{
     width: 6px;
     height: 6px;
-    vertical-align: top;
+    /* vertical-align: top;
     margin-top: 12px;
-    margin-left: -10px;
+    margin-left: -10px; */
+    position: absolute;
+    top: 35%;
+}
+.position{
+    position: relative;
 }

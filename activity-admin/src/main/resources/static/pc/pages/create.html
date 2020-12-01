@@ -42,13 +42,11 @@
         <div class="info box" v-show="!pageShow">
             <form action="">
                 <div class="title">基本信息</div>
-                <div class="form-item">
+                <div class="form-item position">
                     <img src="../assets/images/required.png" alt="" class="required-img">
-                    <label class="label">
-
-                        名称</label>
+                    <label class="label">名称</label>
                     <div class="input-box">
-                        <el-input type="text" placeholder="请填写信息，简短的活动名称" v-model="name" maxlength="20" show-word-limit>
+                        <el-input type="text" placeholder="请填写信息，简短的活动名称" v-model="name" maxlength="20" show-word-limit >
                         </el-input>
                     </div>
                 </div>
@@ -60,7 +58,8 @@
                         </el-date-picker>
                     </div>
                 </div>
-                <div class="form-item">
+                <div class="form-item position">
+                    <img src="../assets/images/required.png" alt="" class="required-img">
                     <label class="label" style="line-height: 100px;">封面</label>
                     <div class="input-box">
                         <div class="img-box">
@@ -90,7 +89,7 @@
                     <label class="label">位置</label>
                     <div class="input-box">
                         <input type="text" name="title" required lay-verify="required" placeholder="请输入活动地点"
-                            autocomplete="off" class="layui-input name" @focus="handleFocus">
+                            autocomplete="off" class="layui-input name" @focus="handleFocus" >
                         <img src="../assets/images/location.png" alt="" class="length icon">
 
                     </div>
