@@ -1,17 +1,23 @@
 package com.chaoxing.activity.service.activity;
 
 import com.chaoxing.activity.dto.LoginUserDTO;
+import com.chaoxing.activity.dto.manager.WfwRegionalArchitectureDTO;
 import com.chaoxing.activity.mapper.ActivityMapper;
 import com.chaoxing.activity.model.Activity;
+import com.chaoxing.activity.service.manager.WfwRegionalArchitectureApiService;
 import com.chaoxing.activity.util.exception.BusinessException;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 /**活动验证服务
  * @author wwb
@@ -27,6 +33,8 @@ public class ActivityValidationService {
 
 	@Resource
 	private ActivityMapper activityMapper;
+	@Resource
+	private WfwRegionalArchitectureApiService wfwRegionalArchitectureApiService;
 
 	/**新增活动输入验证
 	 * @Description 
@@ -89,6 +97,27 @@ public class ActivityValidationService {
 		return false;
 	}
 
+	/**机构是否在管理范围内
+	 * @Description 
+	 * @author wwb
+	 * @Date 2020-12-02 16:11:36
+	 * @param fid
+	 * @param loginUser
+	 * @return boolean
+	*/
+	public boolean isOrgInManageScope(Integer fid, LoginUserDTO loginUser) {
+		Integer loginUserFid = loginUser.getFid();
+		List<Integer> manageFids = new ArrayList<>();
+		List<WfwRegionalArchitectureDTO> wfwRegionalArchitectures = wfwRegionalArchitectureApiService.listByFid(loginUserFid);
+		if (CollectionUtils.isNotEmpty(wfwRegionalArchitectures)) {
+			List<Integer> subFids = wfwRegionalArchitectures.stream().map(WfwRegionalArchitectureDTO::getFid).collect(Collectors.toList());
+			manageFids.addAll(subFids);
+		} else {
+			manageFids.add(loginUserFid);
+		}
+		return manageFids.contains(fid);
+	}
+
 	/**能修改活动
 	 * @Description 
 	 * @author wwb
@@ -99,8 +128,16 @@ public class ActivityValidationService {
 	*/
 	public Activity editAble(Integer activityId, LoginUserDTO loginUser) {
 		Activity activity = activityExist(activityId);
-		if (!isCreator(activity, loginUser)) {
-			throw new BusinessException("活动创建者才能修改活动");
+		Integer createFid = activity.getCreateFid();
+		// 是不是创建者
+		boolean creator = isCreator(activity, loginUser);
+		// 是不是本单位创建的活动
+		boolean isOurUnitCreated = false;
+		if (Objects.equals(createFid, loginUser.getFid())) {
+			isOurUnitCreated = true;
+		}
+		if (!creator && !isOurUnitCreated) {
+			throw new BusinessException("只能修改自己或本单位创建的活动");
 		}
 		return activity;
 	}
@@ -115,14 +152,22 @@ public class ActivityValidationService {
 	*/
 	public Activity deleteAble(Integer activityId, LoginUserDTO loginUser) {
 		Activity activity = activityExist(activityId);
-		if (!isCreator(activity, loginUser)) {
-			throw new BusinessException("活动创建者才能删除活动");
+		Integer createFid = activity.getCreateFid();
+		// 是不是创建者
+		boolean creator = isCreator(activity, loginUser);
+		// 是不是本单位创建的活动
+		boolean isOurUnitCreated = false;
+		if (Objects.equals(createFid, loginUser.getFid())) {
+			isOurUnitCreated = true;
+		}
+		if (!creator && !isOurUnitCreated) {
+			throw new BusinessException("只能删除自己或本单位创建的活动");
 		}
 		return activity;
 	}
 
 	/**可发布
-	 * @Description 
+	 * @Description 只能发布本单位的活动，自己创建的或者本单位创建的
 	 * @author wwb
 	 * @Date 2020-11-12 15:43:24
 	 * @param activityId
@@ -135,8 +180,16 @@ public class ActivityValidationService {
 		if (released) {
 			throw new BusinessException("活动已发布");
 		}
-		if (!isCreator(activity, loginUser)) {
-			throw new BusinessException("活动创建者才能发布活动");
+		Integer createFid = activity.getCreateFid();
+		// 是不是创建者
+		boolean creator = isCreator(activity, loginUser);
+		// 是不是本单位创建的活动
+		boolean isOurUnitCreated = false;
+		if (Objects.equals(createFid, loginUser.getFid())) {
+			isOurUnitCreated = true;
+		}
+		if (!creator && !isOurUnitCreated) {
+			throw new BusinessException("只能发布自己或本单位创建的活动");
 		}
 		return activity;
 	}
@@ -155,14 +208,22 @@ public class ActivityValidationService {
 		if (!released) {
 			throw new BusinessException("活动未发布");
 		}
-		if (!isCreator(activity, loginUser)) {
-			throw new BusinessException("活动创建者才能修改发布范围");
+		Integer createFid = activity.getCreateFid();
+		// 是不是创建者
+		boolean creator = isCreator(activity, loginUser);
+		// 是不是本单位创建的活动
+		boolean isOurUnitCreated = false;
+		if (Objects.equals(createFid, loginUser.getFid())) {
+			isOurUnitCreated = true;
+		}
+		if (!creator && !isOurUnitCreated) {
+			throw new BusinessException("只能修改自己或本单位创建的活动的发布范围");
 		}
 		return activity;
 	}
 	
 	/**可取消发布活动
-	 * @Description 
+	 * @Description
 	 * @author wwb
 	 * @Date 2020-11-12 15:48:44
 	 * @param activityId
@@ -175,8 +236,17 @@ public class ActivityValidationService {
 		if (!released) {
 			throw new BusinessException("活动已下架");
 		}
-		if (!isCreator(activity, loginUser)) {
-			throw new BusinessException("活动创建者才能下架活动");
+		Integer createFid = activity.getCreateFid();
+		// 是不是创建者
+		boolean creator = isCreator(activity, loginUser);
+		// 是不是本单位创建的活动
+		boolean isOurUnitCreated = false;
+		if (Objects.equals(createFid, loginUser.getFid())) {
+			isOurUnitCreated = true;
+		}
+		boolean orgInManageScope = isOrgInManageScope(createFid, loginUser);
+		if (!creator && !isOurUnitCreated && !orgInManageScope) {
+			throw new BusinessException("只能下架自己、本单位或下级创建的活动");
 		}
 		return activity;
 	}
