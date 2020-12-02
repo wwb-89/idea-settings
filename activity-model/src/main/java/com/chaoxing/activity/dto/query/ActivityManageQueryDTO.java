@@ -23,8 +23,6 @@ public class ActivityManageQueryDTO {
 
 	/** 活动状态 */
 	private Integer status;
-	/** 创建者uid */
-	private Integer createUid;
 	/** 创建活动的fid列表 */
 	private List<Integer> fids;
 	/** 置顶fid */

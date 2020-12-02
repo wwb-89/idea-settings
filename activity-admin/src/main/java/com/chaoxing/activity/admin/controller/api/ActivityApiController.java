@@ -115,7 +115,6 @@ public class ActivityApiController {
 	@RequestMapping("list/managing")
 	public RestRespDTO listManaging(HttpServletRequest request, ActivityManageQueryDTO activityManageQuery) {
 		LoginUserDTO loginUser = LoginUtils.getLoginUser(request);
-		activityManageQuery.setCreateUid(loginUser.getUid());
 		activityManageQuery.setTopFid(loginUser.getFid());
 		Page<Activity> page = HttpServletRequestUtils.buid(request);
 		page = activityQueryService.listManaging(page, activityManageQuery, loginUser);

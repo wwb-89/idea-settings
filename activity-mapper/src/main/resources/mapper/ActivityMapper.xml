@@ -108,13 +108,10 @@
         FROM
             t_activity t
         WHERE
-            (
-                t.create_fid IN
-                    <foreach collection="params.fids" index="key" item="value" open="(" close=")" separator=",">
-                        #{value}
-                    </foreach>
-                OR t.create_uid = #{params.createUid}
-            )
+            t.create_fid IN
+                <foreach collection="params.fids" index="key" item="value" open="(" close=")" separator=",">
+                    #{value}
+                </foreach>
             <choose>
                 <when test="params.status != null">
                     AND t.`status` = #{params.status}
@@ -127,7 +124,6 @@
             t.id
         ORDER BY
             t.create_time DESC,
-            t.create_uid <![CDATA[<>]]> #{params.createUid},
             t.create_fid <![CDATA[<>]]> #{params.topFid}
     </select>
 
