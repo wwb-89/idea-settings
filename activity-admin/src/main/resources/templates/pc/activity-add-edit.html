@@ -80,13 +80,13 @@
                 <div class="form-item">
                     <label class="label">位置</label>
                     <div class="input-box">
-                        <input type="text" readonly required lay-verify="required" v-model.trim="activity.address" placeholder="请选择活动地点" autocomplete="off" class="layui-input name" style="cursor: pointer;" @click="showActivityMap">
+                        <input type="text" readonly required lay-verify="required" v-model.trim="activity.address" placeholder="请选择活动地点" autocomplete="off" class="layui-input name show-addr" style="cursor: pointer;" @click="showActivityMap">
                         <img src="/static/pc/assets/images/location.png" th:src="@{/pc/assets/images/location.png}" class="length icon">
                     </div>
                 </div>
                 <div class="form-item">
                     <label class="label">活动分类</label>
-                    <div class="input-box">
+                    <div class="input-box wrap">
                         <div :class="{'type-item': true, 'active': activityClassify.selected}" v-for="(activityClassify, index) of activityClassifies" :key="'activity-classify-' + index" @click="selectActivityClassify(index)">{{activityClassify.name}}
                                 <img src="/static/pc/assets/images/more.png" th:src="@{/pc/assets/images/more.png}" style="margin-left: 10px;" v-if="!activityClassify.system">
                             <div class="edit-box" v-if="!activityClassify.system">
