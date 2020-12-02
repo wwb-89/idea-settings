@@ -118,7 +118,9 @@ select {
     color: #999999;
     font-size: 16px;
 }
-
+.wrap{
+    flex-wrap: wrap;
+}
 .input-box>.item {
     display: flex;
     width: 180px;
@@ -237,6 +239,7 @@ input[type="number"] {
     box-sizing: border-box;
     cursor: pointer;
     margin-right: 20px;
+    margin-bottom: 10px;
     font-size: 16px;
     color: #333333;
 }
@@ -453,7 +456,6 @@ input.btn-name,
     bottom: 0;
     background: rgba(0, 0, 0, 0.3);
 }
-
 .dailog-box2>.dailog {
     width: 550px;
 }
