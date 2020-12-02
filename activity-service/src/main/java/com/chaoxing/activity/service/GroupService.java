@@ -1,6 +1,9 @@
 package com.chaoxing.activity.service;
 
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.chaoxing.activity.mapper.GroupAffiliateOrgMapper;
+import com.chaoxing.activity.mapper.GroupMapper;
+import com.chaoxing.activity.model.Group;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
@@ -21,6 +24,8 @@ public class GroupService {
 
 	@Resource
 	private GroupAffiliateOrgMapper groupAffiliateOrgMapper;
+	@Resource
+	private GroupMapper groupMapper;
 
 	/**根据组code查询机构fid列表
 	 * @Description 
@@ -32,6 +37,20 @@ public class GroupService {
 	public List<Integer> listGroupFid(String groupCode) {
 		List<Integer> fids = groupAffiliateOrgMapper.listFidByGroupCode(groupCode);
 		return fids;
+	}
+
+	/**根据code查询组别
+	 * @Description 
+	 * @author wwb
+	 * @Date 2020-12-02 12:42:55
+	 * @param code
+	 * @return com.chaoxing.activity.model.Group
+	*/
+	public Group getByCode(String code) {
+		return groupMapper.selectOne(new QueryWrapper<Group>()
+			.lambda()
+				.eq(Group::getCode, code)
+		);
 	}
 
 }

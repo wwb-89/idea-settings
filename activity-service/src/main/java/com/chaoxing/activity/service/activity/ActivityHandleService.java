@@ -360,7 +360,7 @@ public class ActivityHandleService {
 				.set(Activity::getStatus, status)
 		);
 		// 处理参与范围
-		handleReleaseScope(activityId, selectedFids, loginUser);
+		handleReleaseScope(activity, selectedFids);
 		// 通知模块方刷新参与范围缓存
 		// 查询活动的作品征集模块活动id列表
 		List<String> externalIds = activityModuleService.listExternalIdsByActivityIdAndType(activityId, ModuleTypeEnum.WORK.getValue());
@@ -369,9 +369,10 @@ public class ActivityHandleService {
 		}
 	}
 
-	private void handleReleaseScope(Integer activityId, List<Integer> selectedFids, LoginUserDTO loginUser) {
-		Integer fid = loginUser.getFid();
-		List<WfwRegionalArchitectureDTO> wfwRegionalArchitectures = wfwRegionalArchitectureApiService.listByFid(fid);
+	private void handleReleaseScope(Activity activity, List<Integer> selectedFids) {
+		Integer activityId = activity.getId();
+		Integer createFid = activity.getCreateFid();
+		List<WfwRegionalArchitectureDTO> wfwRegionalArchitectures = wfwRegionalArchitectureApiService.listByFid(createFid);
 		List<WfwRegionalArchitectureDTO> selectedWfwRegionalArchitectures = new ArrayList<>();
 		List<ActivityScope> activityScopes = new ArrayList<>();
 		if (CollectionUtils.isNotEmpty(wfwRegionalArchitectures)) {
@@ -386,7 +387,7 @@ public class ActivityHandleService {
 			}
 			activityScopes = convert2(activityId, selectedWfwRegionalArchitectures);
 		} else {
-			activityScopes.add(ActivityScope.structure(activityId, loginUser.getFid(), loginUser.getOrgName()));
+			activityScopes.add(ActivityScope.structure(activityId, createFid, activity.getCreateOrgName()));
 		}
 		// 删除以前发布的参与范围
 		activityScopeService.deleteByActivityId(activityId);
@@ -456,9 +457,9 @@ public class ActivityHandleService {
 	*/
 	@Transactional(rollbackFor = Exception.class)
 	public void updateReleaseScope(Integer activityId, List<Integer> selectedFids, LoginUserDTO loginUser) {
-		activityValidationService.updateReleaseAble(activityId, loginUser);
+		Activity activity = activityValidationService.updateReleaseAble(activityId, loginUser);
 		// 处理参与范围
-		handleReleaseScope(activityId, selectedFids, loginUser);
+		handleReleaseScope(activity, selectedFids);
 		// 通知模块方刷新参与范围缓存
 		// 查询活动的作品征集模块活动id列表
 		List<String> externalIds = activityModuleService.listExternalIdsByActivityIdAndType(activityId, ModuleTypeEnum.WORK.getValue());

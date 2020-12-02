@@ -1,6 +1,7 @@
 package com.chaoxing.activity.web.controller;
 
 import com.chaoxing.activity.dto.LoginUserDTO;
+import com.chaoxing.activity.model.Group;
 import com.chaoxing.activity.model.GroupRegionFilter;
 import com.chaoxing.activity.service.GroupRegionFilterService;
 import com.chaoxing.activity.service.GroupService;
@@ -32,36 +33,42 @@ public class ActivityController {
 
 	@Resource
 	private GroupRegionFilterService groupRegionFilterService;
-	@Resource
-	private GroupService groupService;
 	@Autowired
 	private ActivityClassifyQueryService activityClassifyQueryService;
+	@Resource
+	private GroupService groupService;
 
 	@GetMapping("")
 	public String index(Model model, HttpServletRequest  request) {
 		LoginUserDTO loginUser = LoginUtils.getLoginUser(request);
 		Integer fid = loginUser.getFid();
-		List<String> activityClassifyNames = activityClassifyQueryService.listOrgsOptionalName(new ArrayList(){{add(fid);}});
-		model.addAttribute("activityClassifyNames",activityClassifyNames);
-		model.addAttribute("regions",new ArrayList<>());
-		model.addAttribute("fids",new ArrayList<>());
+		List<String> activityClassifyNames = activityClassifyQueryService.listOrgsOptionalName(new ArrayList() {{
+			add(fid);
+		}});
+		model.addAttribute("activityClassifyNames", activityClassifyNames);
+		model.addAttribute("regions", new ArrayList<>());
+		model.addAttribute("areaCode", "");
+		model.addAttribute("topFid", fid);
 		return "pc/index";
 	}
 
 
 	@GetMapping("group/{groupCode}/{fid}")
 	public String index(Model model, @PathVariable String groupCode, @PathVariable Integer fid) {
-		// 活动分类列表
-		List<Integer> fids = groupService.listGroupFid(groupCode);
-		if (!fids.contains(fid)) {
-			fids.add(fid);
-		}
-		List<String> activityClassifyNames = activityClassifyQueryService.listOrgsOptionalName(fids);
+		List<String> activityClassifyNames = activityClassifyQueryService.listOrgsOptionalName(new ArrayList() {{
+			add(fid);
+		}});
 		model.addAttribute("activityClassifyNames", activityClassifyNames);
 		// 查询地区列表
 		List<GroupRegionFilter> groupRegionFilters = groupRegionFilterService.listByGroupCode(groupCode);
 		model.addAttribute("regions", groupRegionFilters);
-		model.addAttribute("fids", fids);
+		Group group = groupService.getByCode(groupCode);
+		String areaCode = "";
+		if (group != null) {
+			areaCode = group.getAreaCode();
+		}
+		model.addAttribute("areaCode", areaCode);
+		model.addAttribute("topFid", fid);
 		return "pc/index";
 	}
 

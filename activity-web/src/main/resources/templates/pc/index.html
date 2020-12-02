@@ -99,11 +99,10 @@
                 activityClassifyNames: [[${activityClassifyNames}]],
                 activityClassifies: [],
                 regions: [[${regions}]],
-                // fids: [[${fids}]],
+                areaCode: [[${areaCode}]],
                 times: [],
                 statuses: [],
                 pages: 0,
-                //搜索条件searchWrapper
                 sw: "",
                 //筛选查询参数对象
                 queryParams: {},
@@ -118,8 +117,6 @@
             },
             created: function () {
                 var $this = this;
-                console.log($this.activityClassifies);
-                //type
                 $this.activityClassifies.push({name: "全部",value: "", selected: true});
                 $($this.activityClassifyNames).each(function () {
                     $this.activityClassifies.push({name: this,value: this,selected: false});
@@ -214,7 +211,9 @@
                         activityClassifyName: "",
                         date: "all",
                         area: "",
-                        status: ""
+                        status: "",
+                        areaCode: $this.areaCode,
+                        topFid: [[${topFid}]]
                     };
                 },
                 //数据加载渲染
@@ -222,12 +221,6 @@
                     var $this = this;
                     var url = ctx + "/api/activity/list/participate";
                     var params = $this.queryParams;
-                    if ($this.fids.length > 0) {
-                        params.fids = [];
-                        $($this.fids).each( function () {
-                            params.fids.push(parseInt(this));
-                        });
-                    }
                     $this.loaded = false;
                     $this.searchShow = false;
                     app.ajaxPost(url, {data: activityApp.getJsonStr(params), pageNum: params.pageNum, pageSize: params.pageSize}, function (data) {
