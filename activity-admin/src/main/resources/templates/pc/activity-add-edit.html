@@ -698,16 +698,6 @@
                 // 验证输入
                 validateForm: function () {
                     var $this = this;
-                    if (activityApp.isEmpty($this.sign.name)) {
-                        // 设置签到报名的名称
-                        if ($this.enableSignUp && $this.enableSignIn) {
-                            $this.sign.name = "报名签到";
-                        }else if ($this.enableSignUp) {
-                            $this.sign.name = "报名";
-                        }else {
-                            $this.sign.name = "签到";
-                        }
-                    }
                     if (activityApp.isEmpty($this.activity.name)) {
                         app.showMsg("活动名称不能为空");
                         return false;

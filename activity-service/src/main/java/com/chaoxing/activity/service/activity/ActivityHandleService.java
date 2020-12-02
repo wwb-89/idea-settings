@@ -94,7 +94,7 @@ public class ActivityHandleService {
 		Boolean enableSign = activity.getEnableSign();
 		if (enableSign) {
 			// 添加报名签到
-			Integer signId = handleSign(signForm, loginUser, request);
+			Integer signId = handleSign(activity, signForm, loginUser, request);
 			activity.setSignId(signId);
 		}
 		// 保存活动
@@ -124,14 +124,17 @@ public class ActivityHandleService {
 	 * @Description
 	 * @author wwb
 	 * @Date 2020-11-13 15:46:49
+	 * @param activity
 	 * @param signForm
 	 * @param loginUser
 	 * @param request
 	 * @return java.lang.Integer
 	*/
-	private Integer handleSign(SignFormDTO signForm, LoginUserDTO loginUser, HttpServletRequest request) {
+	private Integer handleSign(Activity activity, SignFormDTO signForm, LoginUserDTO loginUser, HttpServletRequest request) {
 		Integer signId = signForm.getId();
 		if (signId == null) {
+			// 签到的名称为活动引擎活动的名称
+			signForm.setName(activity.getName());
 			// 新增报名签到
 			signForm.setCreateUid(loginUser.getUid());
 			signForm.setCreateUserName(loginUser.getRealName());
@@ -217,7 +220,7 @@ public class ActivityHandleService {
 			// 修改或更新
 			Integer signId = existActivity.getSignId();
 			signForm.setId(signId);
-			signId = handleSign(signForm, loginUser, request);
+			signId = handleSign(activity, signForm, loginUser, request);
 			activity.setSignId(signId);
 		}
 		// 处理活动相关
