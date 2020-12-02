@@ -1,37 +1,36 @@
 Vue.component('vue-map', {
     props:["mapDomId"],
-    template: `
-        <div class="dailog-box1" v-show="show">
-            <div class="dailog map-dailog">
-                <div class="header">
-                    <span>设置地图</span>
-                    <div @click="show = false">
-                        <img :src="ctx + '/pc/assets/images/close.png'" class="close">
-                    </div>
-                </div>
-                <div class="body">
-                    <div class="body-head">
-                        <div class="input-addr">
-                            <el-autocomplete style="width:100%;" popper-class="autoAddressClass" v-model.trim="address" :fetch-suggestions="querySearchAsync" :trigger-on-focus="false" placeholder="请输入地址" @select="handleSelect" clearable>
-                                <template slot-scope="{ item }"> <i class="el-icon-search fl mgr10"></i>
-                                    <div class="address-box">
-                                        <div class="title1">{{ item.title }}</div>
-                                        --
-                                        <span class="address ellipsis">{{ item.address }}</span>
-                                    </div>
-                                </template>
-                            </el-autocomplete>
-                        </div>
-                        <div class="normal-btn after-sure" @click="sure">确定</div>
-                    </div>
-                    <div :id="mapDomId" class="map"></div>
-                </div>
-            </div>
-        </div>
-    `,
+    template: "<div class='dailog-box1' v-show='show'>\n" +
+        "    <div class='dailog map-dailog'>\n" +
+        "        <div class='header'>\n" +
+        "            <span>设置地图</span>\n" +
+        "            <div @click='show = false'>\n" +
+        "                <img :src='closeImgUrl' class='close'>\n" +
+        "            </div>\n" +
+        "        </div>\n" +
+        "        <div class='body'>\n" +
+        "            <div class='body-head'>\n" +
+        "                <div class='input-addr'>\n" +
+        "                    <el-autocomplete style='width:100%;' popper-class='autoAddressClass' v-model.trim='address' :fetch-suggestions='querySearchAsync' :trigger-on-focus='false' placeholder='请输入地址' @select='handleSelect' clearable>\n" +
+        "                        <template slot-scope='{ item }'> <i class='el-icon-search fl mgr10'></i>\n" +
+        "                            <div class='address-box'>\n" +
+        "                                <div class='title1'>{{ item.title }}</div>\n" +
+        "                                --\n" +
+        "                                <span class='address ellipsis'>{{ item.address }}</span>\n" +
+        "                            </div>\n" +
+        "                        </template>\n" +
+        "                    </el-autocomplete>\n" +
+        "                </div>\n" +
+        "                <div class='normal-btn after-sure' @click='sure'>确定</div>\n" +
+        "            </div>\n" +
+        "            <div :id='mapDomId' class='map'></div>\n" +
+        "        </div>\n" +
+        "    </div>\n" +
+        "</div>",
     data: function () {
         return {
             ctx: ctx,
+            closeImgUrl: ctx + "/pc/assets/images/close.png",
             show: false,
             // 地址
             address: "",
@@ -85,7 +84,7 @@ Vue.component('vue-map', {
                 $this.dimension = point.lat;
             })
         },
-        querySearchAsync(str, cb) {
+        querySearchAsync: function (str, cb) {
             var options = {
                 // 检索完成后的回调函数
                 onSearchComplete: function (res) {
@@ -97,7 +96,7 @@ Vue.component('vue-map', {
                         // 获取到数据时，通过回调函数cb返回到<el-autocomplete>组件中进行显示
                         cb(s);
                     } else {
-                        cb(s)
+                        cb(s);
                     }
                 }
             }
@@ -106,7 +105,7 @@ Vue.component('vue-map', {
             // 调用search方法，根据检索词str发起检索
             local.search(str);
         },
-        handleSelect(item) {
+        handleSelect: function (item) {
             var $this = this;
             // 记录当前选中地址坐标
             // 清除地图上所有覆盖物

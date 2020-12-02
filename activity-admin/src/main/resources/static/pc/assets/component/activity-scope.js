@@ -1,34 +1,33 @@
 Vue.component('vue-activity-scope', {
-    template: `
-        <div class="dailog-box1" v-show="show">
-            <div class="dailog">
-                <div class="header">
-                    <span>活动范围</span>
-                    <div @click="show = false">
-                        <img :src="ctx + '/pc/assets/images/close.png'" class="close">
-                    </div>
-                </div>
-                <div class="body">
-                    <div class="tree">
-                        <div class="tree-head">
-                            <span>选择发布的范围</span>
-                            <div class="already">已选<span style="margin-left: 5px;">{{selectedFidNum}}</span></div>
-                        </div>
-                        <div class="tree-box">
-                            <div id="organizationTree" class="ztree"></div>
-                        </div>
-                    </div>
-                </div>
-                <div class="footer">
-                    <div class="normal-btn cancle" @click="show = false">取消</div>
-                    <div class="normal-btn after-sure" @click="sureCallback">发布</div>
-                </div>
-            </div>
-        </div>
-    `,
+    template: "<div class='dailog-box1' v-show='show'>\n" +
+        "    <div class='dailog'>\n" +
+        "        <div class='header'>\n" +
+        "            <span>活动范围</span>\n" +
+        "            <div @click='show = false'>\n" +
+        "                <img :src='closeImgUrl' class='close'>\n" +
+        "            </div>\n" +
+        "        </div>\n" +
+        "        <div class='body'>\n" +
+        "            <div class='tree'>\n" +
+        "                <div class='tree-head'>\n" +
+        "                    <span>选择发布的范围</span>\n" +
+        "                    <div class='already'>已选<span style='margin-left: 5px;'>{{selectedFidNum}}</span></div>\n" +
+        "                </div>\n" +
+        "                <div class='tree-box'>\n" +
+        "                    <div id='organizationTree' class='ztree'></div>\n" +
+        "                </div>\n" +
+        "            </div>\n" +
+        "        </div>\n" +
+        "        <div class='footer'>\n" +
+        "            <div class='normal-btn cancle' @click='show = false'>取消</div>\n" +
+        "            <div class='normal-btn after-sure' @click='sureCallback'>发布</div>\n" +
+        "        </div>\n" +
+        "    </div>\n" +
+        "</div>",
     data: function () {
         return {
             ctx: ctx,
+            closeImgUrl: ctx + "/pc/assets/images/close.png",
             show: false,
             orgs: [],
             loaded: false,
@@ -42,13 +41,6 @@ Vue.component('vue-activity-scope', {
         var $this = this;
     },
     watch: {
-        /*show: function () {
-            var $this = this;
-            $this.clearSelect();
-            if ($this.show && $this.loaded && $this.orgs.length < 1) {
-                $this.sureCallback();
-            }
-        },*/
         activityId: function () {
             var $this = this;
             if (!activityApp.isEmpty($this.activityId)) {

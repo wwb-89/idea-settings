@@ -16,6 +16,7 @@
             display: none;
         }
     </style>
+    <script src="//api.map.baidu.com/api?v=3.0&ak=aG5nWGO5m5tkVhBHGuVppoIRfKbyp5H3"></script>
 </head>
 
 <body>
@@ -311,7 +312,6 @@
     <vue-map ref="signInMap" :map-dom-id="'sign-in-map'" @callback="signInAddressSure"></vue-map>
 </div>
 <div th:replace="pc/include/common_js :: common_js(~{::script})">
-    <script src="//api.map.baidu.com/api?v=3.0&ak=aG5nWGO5m5tkVhBHGuVppoIRfKbyp5H3"></script>
     <script src="/static/pc/assets/lib/element-ui/lib/index.js" th:src="@{/pc/assets/lib/element-ui/lib/index.js}"></script>
     <script src="/static/pc/assets/lib/webuploader/webuploader.js" th:src="@{/pc/assets/lib/webuploader/webuploader.js}"></script>
     <script src="/static/pc/assets/component/map.js" th:src="@{/pc/assets/component/map.js}"></script>
