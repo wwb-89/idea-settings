@@ -1,14 +1,18 @@
 package com.chaoxing.activity.service.activity;
 
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.chaoxing.activity.dto.LoginUserDTO;
 import com.chaoxing.activity.dto.activity.ActivityTypeDTO;
+import com.chaoxing.activity.dto.manager.WfwRegionalArchitectureDTO;
 import com.chaoxing.activity.dto.query.ActivityManageQueryDTO;
 import com.chaoxing.activity.dto.query.ActivityQueryDTO;
 import com.chaoxing.activity.mapper.ActivityMapper;
 import com.chaoxing.activity.model.Activity;
+import com.chaoxing.activity.service.manager.WfwRegionalArchitectureApiService;
 import com.chaoxing.activity.util.enums.ActivityQueryDateEnum;
 import com.chaoxing.activity.util.enums.ActivityTypeEnum;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
@@ -16,6 +20,7 @@ import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**活动查询服务
  * @author wwb
@@ -34,6 +39,8 @@ public class ActivityQueryService {
 
 	@Resource
 	private ActivityValidationService activityValidationService;
+	@Resource
+	private WfwRegionalArchitectureApiService wfwRegionalArchitectureApiService;
 	
 	/**查询参与的活动
 	 * @Description 
@@ -132,9 +139,20 @@ public class ActivityQueryService {
 	 * @Date 2020-11-18 14:31:38
 	 * @param page
 	 * @param activityManageQuery
+	 * @param loginUser
 	 * @return com.baomidou.mybatisplus.extension.plugins.pagination.Page<com.chaoxing.activity.model.Activity>
 	*/
-	public Page<Activity> listManaging(Page<Activity> page, ActivityManageQueryDTO activityManageQuery) {
+	public Page<Activity> listManaging(Page<Activity> page, ActivityManageQueryDTO activityManageQuery, LoginUserDTO loginUser) {
+		List<Integer> fids = new ArrayList<>();
+		Integer fid = loginUser.getFid();
+		List<WfwRegionalArchitectureDTO> wfwRegionalArchitectures = wfwRegionalArchitectureApiService.listByFid(fid);
+		if (CollectionUtils.isNotEmpty(wfwRegionalArchitectures)) {
+			List<Integer> subFids = wfwRegionalArchitectures.stream().map(WfwRegionalArchitectureDTO::getFid).collect(Collectors.toList());
+			fids.addAll(subFids);
+		} else {
+			fids.add(fid);
+		}
+		activityManageQuery.setFids(fids);
 		page = activityMapper.listManaging(page, activityManageQuery);
 		return page;
 	}

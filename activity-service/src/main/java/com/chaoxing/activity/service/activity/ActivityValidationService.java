@@ -132,11 +132,11 @@ public class ActivityValidationService {
 		// 是不是创建者
 		boolean creator = isCreator(activity, loginUser);
 		// 是不是本单位创建的活动
-		boolean isOurUnitCreated = false;
+		boolean isCurrentOrgCreated = false;
 		if (Objects.equals(createFid, loginUser.getFid())) {
-			isOurUnitCreated = true;
+			isCurrentOrgCreated = true;
 		}
-		if (!creator && !isOurUnitCreated) {
+		if (!creator && !isCurrentOrgCreated) {
 			throw new BusinessException("只能修改自己或本单位创建的活动");
 		}
 		return activity;
@@ -156,11 +156,11 @@ public class ActivityValidationService {
 		// 是不是创建者
 		boolean creator = isCreator(activity, loginUser);
 		// 是不是本单位创建的活动
-		boolean isOurUnitCreated = false;
+		boolean isCurrentOrgCreated = false;
 		if (Objects.equals(createFid, loginUser.getFid())) {
-			isOurUnitCreated = true;
+			isCurrentOrgCreated = true;
 		}
-		if (!creator && !isOurUnitCreated) {
+		if (!creator && !isCurrentOrgCreated) {
 			throw new BusinessException("只能删除自己或本单位创建的活动");
 		}
 		return activity;
@@ -184,11 +184,11 @@ public class ActivityValidationService {
 		// 是不是创建者
 		boolean creator = isCreator(activity, loginUser);
 		// 是不是本单位创建的活动
-		boolean isOurUnitCreated = false;
+		boolean isCurrentOrgCreated = false;
 		if (Objects.equals(createFid, loginUser.getFid())) {
-			isOurUnitCreated = true;
+			isCurrentOrgCreated = true;
 		}
-		if (!creator && !isOurUnitCreated) {
+		if (!creator && !isCurrentOrgCreated) {
 			throw new BusinessException("只能发布自己或本单位创建的活动");
 		}
 		return activity;
@@ -212,11 +212,11 @@ public class ActivityValidationService {
 		// 是不是创建者
 		boolean creator = isCreator(activity, loginUser);
 		// 是不是本单位创建的活动
-		boolean isOurUnitCreated = false;
+		boolean isCurrentOrgCreated = false;
 		if (Objects.equals(createFid, loginUser.getFid())) {
-			isOurUnitCreated = true;
+			isCurrentOrgCreated = true;
 		}
-		if (!creator && !isOurUnitCreated) {
+		if (!creator && !isCurrentOrgCreated) {
 			throw new BusinessException("只能修改自己或本单位创建的活动的发布范围");
 		}
 		return activity;
@@ -240,12 +240,12 @@ public class ActivityValidationService {
 		// 是不是创建者
 		boolean creator = isCreator(activity, loginUser);
 		// 是不是本单位创建的活动
-		boolean isOurUnitCreated = false;
+		boolean isCurrentOrgCreated = false;
 		if (Objects.equals(createFid, loginUser.getFid())) {
-			isOurUnitCreated = true;
+			isCurrentOrgCreated = true;
 		}
 		boolean orgInManageScope = isOrgInManageScope(createFid, loginUser);
-		if (!creator && !isOurUnitCreated && !orgInManageScope) {
+		if (!creator && !isCurrentOrgCreated && !orgInManageScope) {
 			throw new BusinessException("只能下架自己、本单位或下级创建的活动");
 		}
 		return activity;

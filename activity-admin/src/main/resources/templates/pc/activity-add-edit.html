@@ -166,9 +166,7 @@
                 <div class="form-item">
                     <label class="label">签到方式</label>
                     <div class="input-box">
-                        <el-radio v-model="sign.signInForm" label="1" name="signInForm">直接签到</el-radio>
-                        <el-radio v-model="sign.signInForm" label="2" name="signInForm">指定位置签到</el-radio>
-                        <el-radio v-model="sign.signInForm" label="3" name="signInForm">扫码签到</el-radio>
+                        <el-radio v-for="(signInForm, index) of signInForms" v-model="sign.signInForm" :label="signInForm.value" name="signInForm">{{signInForm.name}}</el-radio>
                     </div>
                 </div>
                 <div class="form-item" v-show="sign.signInForm == 2">
@@ -345,6 +343,7 @@
                 deleteActivityClassifyId: null,
                 // 签到报名
                 sign: [[${sign}]],
+                signInForms: [],
                 // 是否开启报名
                 enableSignUp: false,
                 // 是否开启签到
@@ -397,6 +396,11 @@
                         $this.$set($this.activityClassifies[i], "selected", false);
                     }
                 });
+                $this.signInForms = [
+                    {name: "直接签到", value: "1"},
+                    {name: "指定位置签到", value: "2"},
+                    {name: "扫码签到", value: "3"}
+                ];
                 if (activityApp.isEmpty($this.sign)) {
                     // 生成新的签到报名
                     $this.sign = activityApp.newSign();

@@ -5,6 +5,8 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.List;
+
 /**活动管理查询对象
  * @author wwb
  * @version ver 1.0
@@ -21,7 +23,11 @@ public class ActivityManageQueryDTO {
 
 	/** 活动状态 */
 	private Integer status;
-	/** 创建人id */
+	/** 创建者uid */
 	private Integer createUid;
+	/** 创建活动的fid列表 */
+	private List<Integer> fids;
+	/** 置顶fid */
+	private Integer topFid;
 
 }

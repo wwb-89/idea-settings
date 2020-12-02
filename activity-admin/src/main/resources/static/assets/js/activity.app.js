@@ -197,7 +197,7 @@
             // 报名方式
             signUpForm: "",
             // 签到方式
-            signInForm: 1,
+            signInForm: "1",
             // 地址
             address: "",
             // 经度

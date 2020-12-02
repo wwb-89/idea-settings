@@ -98,6 +98,7 @@
             el: "#activity-vue",
             data: {
                 activities: [],
+                uid: [[${session._login_user_.uid}]],
                 fid: [[${session._login_user_.fid}]],
                 filterStatus: [],
                 queryParams: {
@@ -171,28 +172,31 @@
                     if (activities && activities.length > 0) {
                         $(activities).each(function () {
                             var activity = this;
+                            var isCreator = activity.createUid == $this.uid;
+                            var isCurrentOrgCreated = activity.createFid == $this.fid;
                             var status = activity.status;
+                            activity.operations = [];
                             switch (status) {
                                 case 1:
-                                    activity.operations = [
-                                        $this.operations.release,
-                                        $this.operations.edit,
-                                        $this.operations.delete
-                                    ];
+                                    if (isCreator || isCurrentOrgCreated) {
+                                        activity.operations.push($this.operations.release);
+                                        activity.operations.push($this.operations.edit);
+                                        activity.operations.push($this.operations.delete);
+                                    }
                                     break;
                                 case 2:
                                 case 3:
-                                    activity.operations = [
-                                        $this.operations.cancelRelease,
-                                        $this.operations.edit,
-                                        $this.operations.releaseScope,
-                                        $this.operations.delete
-                                    ];
+                                    activity.operations.push($this.operations.cancelRelease);
+                                    if (isCreator || isCurrentOrgCreated) {
+                                        activity.operations.push($this.operations.edit);
+                                        activity.operations.push($this.operations.releaseScope);
+                                        activity.operations.push($this.operations.delete);
+                                    }
                                     break;
                                 case 4:
-                                    activity.operations = [
-                                        $this.operations.delete
-                                    ];
+                                    if (isCreator || isCurrentOrgCreated) {
+                                        activity.operations.push($this.operations.delete);
+                                    }
                                     break;
                                 default:
                             }
