@@ -102,7 +102,6 @@
             activityVue = new Vue({
                 el: "#activity-vue",
                 data: {
-                    fids: [[${fids}]],
                     activityClassifyNames: [[${activityClassifyNames}]],
                     activityClassifies: [],
                     // 时间
@@ -180,7 +179,9 @@
                             activityClassifyName: "",
                             date: "all",
                             area: "",
-                            status: ""
+                            status: "",
+                            areaCode: $this.areaCode,
+                            topFid: [[${topFid}]]
                         };
                     },
                     initMescroll: function () {
@@ -207,12 +208,6 @@
                         var $this = this;
                         var url = ctx + "/api/activity/list/participate";
                         var params = $this.queryParams;
-                        if ($this.fids.length > 0) {
-                            params.fids = [];
-                            $($this.fids).each(function () {
-                                params.fids.push(parseInt(this));
-                            });
-                        }
                         $this.loaded = false;
                         $this.searchShow = false;
                         var params = {

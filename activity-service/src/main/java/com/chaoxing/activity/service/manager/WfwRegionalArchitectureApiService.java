@@ -12,6 +12,7 @@ import org.springframework.web.client.RestTemplate;
 import javax.annotation.Resource;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 /**微服务组织架构服务
  * @author wwb
@@ -30,8 +31,6 @@ public class WfwRegionalArchitectureApiService {
 	/** 根据code获取架构 */
 	private static final String GET_REGIONAL_ARCHITECTURE_BY_CODE_URL = "http://guanli.chaoxing.com/siteInter/siteHierarchy?code=%s&pageSize=%s";
 
-	private static final Integer DEFAULT_PAGE_SIZE = 1;
-
 	@Resource
 	private RestTemplate restTemplate;
 
@@ -44,27 +43,28 @@ public class WfwRegionalArchitectureApiService {
 	 * @return java.util.List<com.chaoxing.activity.common.manager.dto.RegionalArchitectureDTO>
 	 */
 	public List<WfwRegionalArchitectureDTO> listByFid(Integer fid) {
-		List<WfwRegionalArchitectureDTO> regionalArchitectures = new ArrayList<>();
 		List<String> codes = listCodeByFid(fid);
 		if (CollectionUtils.isEmpty(codes)) {
 			return new ArrayList<>();
 		}
 		String code = codes.get(0);
-		String url = String.format(GET_REGIONAL_ARCHITECTURE_BY_CODE_URL, code, DEFAULT_PAGE_SIZE);
+		return listByCode(code);
+	}
+
+	/**根据层级区域编码查询层级架构
+	 * @Description 
+	 * @author wwb
+	 * @Date 2020-12-02 11:18:23
+	 * @param code
+	 * @return java.util.List<com.chaoxing.activity.dto.manager.WfwRegionalArchitectureDTO>
+	*/
+	public List<WfwRegionalArchitectureDTO> listByCode(String code) {
+		List<WfwRegionalArchitectureDTO> regionalArchitectures = new ArrayList<>();
+		String url = String.format(GET_REGIONAL_ARCHITECTURE_BY_CODE_URL, code, Integer.MAX_VALUE);
 		String result = restTemplate.getForObject(url, String.class);
 		JSONObject jsonObject = JSON.parseObject(result);
-		boolean status = jsonObject.getBooleanValue("status");
-		if (!status) {
-			log.error("根据code:{}查询所属层级架构列表失败", code);
-			throw new BusinessException("未查询到层级架构");
-		}
-		// 获取条数
-		Integer count = jsonObject.getInteger("count");
-		// pageSize置为count一次查询完所有数据
-		url = String.format(GET_REGIONAL_ARCHITECTURE_BY_CODE_URL, code, count);
-		result = restTemplate.getForObject(url, String.class);
-		jsonObject = JSON.parseObject(result);
-		status = jsonObject.getBooleanValue("status");
+		Boolean status = jsonObject.getBooleanValue("status");
+		status = Optional.ofNullable(status).orElse(Boolean.FALSE);
 		if (!status) {
 			log.error("根据code:{}查询所属层级架构列表失败", code);
 			throw new BusinessException("未查询到层级架构");
@@ -76,6 +76,7 @@ public class WfwRegionalArchitectureApiService {
 		}
 		return regionalArchitectures;
 	}
+
 	/**根据fid查询所在层级架构code列表
 	 * @Description
 	 * @author wwb

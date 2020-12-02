@@ -1,6 +1,7 @@
 package com.chaoxing.activity.web.controller.mobile;
 
 import com.chaoxing.activity.dto.LoginUserDTO;
+import com.chaoxing.activity.model.Group;
 import com.chaoxing.activity.model.GroupRegionFilter;
 import com.chaoxing.activity.service.GroupRegionFilterService;
 import com.chaoxing.activity.service.GroupService;
@@ -53,7 +54,8 @@ public class ActivityController {
 		model.addAttribute("activityClassifyNames", activityClassifyNames);
 		// 查询地区列表
 		model.addAttribute("regions", new ArrayList<>());
-		model.addAttribute("fids", new ArrayList<>());
+		model.addAttribute("areaCode", "");
+		model.addAttribute("topFid", fid);
 		return "mobile/index";
 	}
 	/**移动端组别首页
@@ -68,17 +70,20 @@ public class ActivityController {
 	*/
 	@GetMapping("group/{groupCode}/{fid}")
 	public String index(Model model, @PathVariable String groupCode, @PathVariable Integer fid) {
-		// 活动分类列表
-		List<Integer> fids = groupService.listGroupFid(groupCode);
-		if (!fids.contains(fid)) {
-			fids.add(fid);
-		}
-		List<String> activityClassifyNames = activityClassifyQueryService.listOrgsOptionalName(fids);
+		List<String> activityClassifyNames = activityClassifyQueryService.listOrgsOptionalName(new ArrayList(){{
+			add(fid);
+		}});
 		model.addAttribute("activityClassifyNames", activityClassifyNames);
 		// 查询地区列表
 		List<GroupRegionFilter> groupRegionFilters = groupRegionFilterService.listByGroupCode(groupCode);
 		model.addAttribute("regions", groupRegionFilters);
-		model.addAttribute("fids", fids);
+		Group group = groupService.getByCode(groupCode);
+		String areaCode = "";
+		if (group != null) {
+			areaCode = group.getAreaCode();
+		}
+		model.addAttribute("areaCode", areaCode);
+		model.addAttribute("topFid", fid);
 		return "mobile/index";
 	}
 

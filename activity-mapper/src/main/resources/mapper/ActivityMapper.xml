@@ -96,6 +96,9 @@
         ORDER BY
             FIELD( t.`status`, 2, 3, 4 ),
             t.start_date DESC
+            <if test="params.topFid != null">
+                , t1.fid <![CDATA[<>]]> #{params.topFid}
+            </if>
     </select>
 
     <!--查询管理的活动-->

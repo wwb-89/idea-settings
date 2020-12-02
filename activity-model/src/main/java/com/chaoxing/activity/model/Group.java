@@ -32,6 +32,8 @@ public class Group {
     private String name;
     /** 编码; column: code*/
     private String code;
+    /** 层级架构区域编码; column: area_code*/
+    private String areaCode;
     /** 创建时间; column: create_time*/
     private Date createTime;
     /** 更新时间; column: update_time*/

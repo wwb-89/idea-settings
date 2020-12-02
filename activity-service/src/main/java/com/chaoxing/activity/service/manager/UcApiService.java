@@ -47,7 +47,7 @@ public class UcApiService {
 		if (status) {
 			return JSON.parseObject(result, UserExtraInfoDTO.class);
 		} else {
-			log.error("根据fid:{}, uid:{}查询用户额外信息error:{}", fid, uid, jsonObject.getString("msg"));
+			log.warn("根据fid:{}, uid:{}查询用户额外信息error:{}", fid, uid, jsonObject.getString("msg"));
 			return null;
 		}
 	}
@@ -69,7 +69,7 @@ public class UcApiService {
 			return true;
 		} else {
 			String msg = jsonObject.getString("msg");
-			log.error("根据fid:{}, uid:{}查询用户是否管理员:{}", fid, uid, msg);
+			log.warn("根据fid:{}, uid:{}查询用户是否管理员:{}", fid, uid, msg);
 			return false;
 		}
 	}

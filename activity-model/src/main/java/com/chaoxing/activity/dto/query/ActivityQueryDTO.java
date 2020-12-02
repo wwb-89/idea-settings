@@ -25,6 +25,8 @@ public class ActivityQueryDTO {
 	private String sw;
 	/** 参与的fid列表 */
 	private List<Integer> fids;
+	/** 置顶的fid（查询的结果该机构的数据靠前） */
+	private Integer topFid;
 	/** 分类名称 */
 	private String activityClassifyName;
 	/** 时间 */
@@ -38,5 +40,9 @@ public class ActivityQueryDTO {
 	private String minDateStr;
 	/** 最大日期 */
 	private String maxDateStr;
+
+	// 定制
+	/** 区域码 */
+	private String areaCode;
 
 }
