@@ -13,8 +13,7 @@
 </head>
 
 <body>
-    <div class="page" id="app">
-
+    <div class="page" id="app" v-cloak>
         <!-- 创建活动头部 -->
         <div class="top flex box" id="create">
             <a href="#" class="flex" @click="handleLast">
@@ -78,20 +77,20 @@
                     <div class="input-box">
                         <el-radio v-model="radio" label="1" name="active-type">线上活动</el-radio>
                         <el-radio v-model="radio" label="2" name="active-type">线下活动</el-radio>
-                        <!-- 
+                        <!--
                             <div class="radio-box"><input type="radio" name="active-type" title="线上活动"
                                 value="0" /><span>线上活动</span>
                             </div>
                             <div class="radio-box">
                                 <input type="radio" name="active-type" title="线下活动" value="1" checked /><span>线下活动</span>
-                            </div> 
+                            </div>
                         -->
                     </div>
                 </div>
                 <div class="form-item">
                     <label class="label">位置</label>
                     <div class="input-box">
-                        <input type="text" name="title" required lay-verify="required" placeholder="请输入活动地点" autocomplete="off" 
+                        <input type="text" name="title" required lay-verify="required" placeholder="请输入活动地点" autocomplete="off"
                         class="layui-input name show-addr" @click="handleFocus">
                         <img src="../assets/images/location.png" alt="" class="length icon">
                     </div>
@@ -603,39 +602,38 @@
             </div>
         </div>
         <!-- 地图 -->
-        <div class="dailog-box1" v-show="addressShow">
-            <div class="dailog map-dailog">
-                <div class="header">
-                    <span>设置地址</span>
-                    <img src="../assets/images/close.png" alt="" @click="close" class="close">
-                </div>
-                <div class="body">
-                    <div class="body-head">
-                        <div class="input-addr">
-                            <el-autocomplete style="width:100%;" popper-class="autoAddressClass" v-model="address"
-                                :fetch-suggestions="querySearchAsync" :trigger-on-focus="false" placeholder="请输入地址"
-                                @select="handleSelect" clearable>
-                                <template slot-scope="{ item }"> <i class="el-icon-search fl mgr10"></i>
-                                    <div class="address-box">
-                                        <div class="title1">{{ item.title }}</div>
-                                        --
-                                        <span class="address ellipsis">{{ item.address }}</span>
-                                    </div>
-                                </template>
-                            </el-autocomplete>
-                        </div>
-                        <div class="sure-btn">确定</div>
-                    </div>
-                    <div id="map-contain" class="map">
-                    </div>
-                </div>
-            </div>
-        </div>
+<!--        <div class="dailog-box1" v-show="addressShow">-->
+<!--            <div class="dailog map-dailog">-->
+<!--                <div class="header">-->
+<!--                    <span>设置地址</span>-->
+<!--                    <img src="../assets/images/close.png" alt="" @click="close" class="close">-->
+<!--                </div>-->
+<!--                <div class="body">-->
+<!--                    <div class="body-head">-->
+<!--                        <div class="input-addr">-->
+<!--                            <el-autocomplete style="width:100%;" popper-class="autoAddressClass" v-model="address"-->
+<!--                                :fetch-suggestions="querySearchAsync" :trigger-on-focus="false" placeholder="请输入地址"-->
+<!--                                @select="handleSelect" clearable>-->
+<!--                                <template slot-scope="{ item }"> <i class="el-icon-search fl mgr10"></i>-->
+<!--                                    <div class="address-box">-->
+<!--                                        <div class="title1">{{ item.title }}</div>-->
+<!--                                        &#45;&#45;-->
+<!--                                        <span class="address ellipsis">{{ item.address }}</span>-->
+<!--                                    </div>-->
+<!--                                </template>-->
+<!--                            </el-autocomplete>-->
+<!--                        </div>-->
+<!--                        <div class="sure-btn">确定</div>-->
+<!--                    </div>-->
+<!--                    <div id="map-contain" class="map">-->
+<!--                    </div>-->
+<!--                </div>-->
+<!--            </div>-->
+<!--        </div>-->
     </div>
 
-    <script type="text/javascript" src="https://api.map.baidu.com/api?v=3.0&ak=aG5nWGO5m5tkVhBHGuVppoIRfKbyp5H3">
-    </script>
     <script src="../assets/lib/jquery.min.js"></script>
+<!--    <script type="text/javascript" src="https://api.map.baidu.com/api?v=3.0&ak=aG5nWGO5m5tkVhBHGuVppoIRfKbyp5H3"></script>-->
     <script src="https://unpkg.com/vue/dist/vue.js"></script>
     <script src="../assets/lib/element-ui/lib/index.js"></script>
     <script src="../assets/js/common.js"></script>
@@ -737,11 +735,11 @@
                 previewShow: false,
                 link: "http://xueya.chaoxing.com/school-base/sc-sc-"
             },
-            mounted() {
+            mounted:function () {
                 this.initMap()
             },
             methods: {
-                initMap() {
+                initMap:function () {
                     var that = this;
                     this.map = new BMap.Map("map-contain", {
                         enableMapClick: false
@@ -760,7 +758,7 @@
 
                 },
                 //逆地址解析
-                getAddrByPoint(point) {
+                getAddrByPoint:function(point) {
                     var that = this;
                     var geco = new BMap.Geocoder();
                     geco.getLocation(point, function (res) {
@@ -771,7 +769,7 @@
                         that.addrPoint = point; //记录当前坐标点 
                     })
                 },
-                querySearchAsync(str, cb) {
+                querySearchAsync:function(str, cb) {
                     var options = {
                         onSearchComplete: function (res) { //检索完成后的回调函数 
                             var s = [];
@@ -788,7 +786,7 @@
                     var local = new BMap.LocalSearch(this.map, options) //创建LocalSearch构造函数 
                     local.search(str) //调用search方法，根据检索词str发起检索
                 },
-                handleSelect(item) {
+                handleSelect:function(item) {
                     this.address = item.address + item.title; //记录详细地址，含建筑物名 
                     this.addrPoint = item.point; //记录当前选中地址坐标 
                     this.map.clearOverlays() //清除地图上所有覆盖物 
@@ -797,16 +795,16 @@
                     this.map.panTo(item.point) //将地图的中心点更改为选定坐标点 
                 },
                 //拖拽初始化
-                handleDragStart(e, item) {
+                handleDragStart:function(e, item) {
                     this.dragging = item;
                 },
-                handleDragEnd(e, item) {
+                handleDragEnd:function(e, item) {
                     this.dragging = null
                 },
-                handleDragOver(e) {
+                handleDragOver:function(e) {
                     e.dataTransfer.dropEffect = 'move'
                 },
-                handleDragEnter(e, item) {
+                handleDragEnter:function(e, item) {
                     var $this = this;
                     e.dataTransfer.effectAllowed = "move"
                     if (item === this.dragging) {
@@ -821,49 +819,49 @@
                     this.modularArr = newItems;
                     console.log(this.modularArr)
                 },
-                handleLast() {
+                handleLast:function() {
                     this.pageShow = false
                 },
-                handleNext() {
+                handleNext:function() {
                     this.pageShow = true
                 },
-                handleFocus() {
+                handleFocus:function() {
                     this.addressShow = true
                     $('body').addClass('scroll')
                     $(window).scrollTop(0);
                 },
-                close() {
+                close:function() {
                     this.addressShow = false
                     this.fenleiShow = false
                     this.previewShow = false
                     $('body').removeClass('scroll')
                 },
-                handleEdit() {
+                handleEdit:function() {
                     this.fenleiShow = true
                     this.fenlei = '自定义选项'
                     $('body').addClass('scroll')
                 },
-                handleAdd() {
+                handleAdd:function() {
                     this.fenleiShow = true
                     $('body').addClass('scroll')
                 },
-                handleDelete() {
+                handleDelete:function() {
                     this.deleteShow = true
                     $('body').addClass('scroll')
                 },
-                handleCancle() {
+                handleCancle:function() {
                     this.fenlei = ''
                     this.fenleiShow = false
                     $('body').removeClass('scroll')
                 },
-                handleSave() {
+                handleSave:function() {
                     this.deleteShow = false
                     $('body').removeClass('scroll')
                 },
-                handleSure() {
+                handleSure:function() {
 
                 },
-                preview() {
+                preview:function() {
                     this.previewShow = true
                     $('body').addClass('scroll')
                 }
