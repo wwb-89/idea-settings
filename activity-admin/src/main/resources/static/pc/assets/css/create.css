@@ -10,7 +10,6 @@ button {
 
 .flex {
     display: flex;
-    display: -webkit-box; 
     justify-content: space-between;
     align-items: center;
 }
@@ -106,13 +105,11 @@ select {
 }
 
 .form-item {
-    display: -webkit-box; 
     display: flex;
     margin: 30px 0;
 }
 
 .input-box {
-    display: -webkit-box; 
     display: flex;
     align-items: center;
     width: 700px;
@@ -125,7 +122,6 @@ select {
     flex-wrap: wrap;
 }
 .input-box>.item {
-    display: -webkit-box; 
     display: flex;
     width: 180px;
     height: 100%;
@@ -207,7 +203,6 @@ input[type="number"] {
 .font-box {
     position: relative;
     display: flex;
-    display: -webkit-box; 
     flex-direction: column;
     align-items: flex-start;
     font-size: 14px;
@@ -234,7 +229,6 @@ input[type="number"] {
 .type-item {
     position: relative;
     display: flex;
-    display: -webkit-box; 
     align-items: center;
     padding: 0 10px;
     height: 36px;
@@ -268,7 +262,6 @@ input[type="number"] {
 
 .set-box {
     display: flex;
-    display: -webkit-box; 
     align-items: center;
 }
 
@@ -309,7 +302,6 @@ select {
 
 .column {
     display: flex;
-    display: -webkit-box; 
     flex-direction: column;
     align-items: flex-start;
     justify-content: center;
@@ -338,7 +330,6 @@ input.btn-name,
     border: 1px solid #e9e9e9;
     border-radius: 4px;
     display: flex;
-    display: -webkit-box; 
     align-items: center;
     justify-content: center;
     font-size: 16px;
@@ -381,7 +372,6 @@ input.btn-name,
     border: 1px solid #dddddd;
     border-radius: 4px;
     display: flex;
-    display: -webkit-box; 
     align-items: center;
     justify-content: center;
     margin-right: 16px;
@@ -399,7 +389,6 @@ input.btn-name,
 
 .page-box {
     display: flex;
-    display: -webkit-box; 
     flex-wrap: wrap;
 }
 
