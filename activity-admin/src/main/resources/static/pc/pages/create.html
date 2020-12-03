@@ -1,14 +1,12 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
     <link rel="stylesheet" href="../assets/lib/element-ui/lib/theme-chalk/index.css">
     <link rel="stylesheet" href="../assets/css/reset.css">
     <link rel="stylesheet" href="../assets/css/public.css">
     <link rel="stylesheet" href="../assets/css/create.css">
-
     <title>创建活动</title>
 </head>
 
@@ -482,7 +480,7 @@
                                 <label class="label">名称</label>
                                 <div class="input-box add-name">
                                     <el-input type="text" placeholder="请填写名称" v-model="name2" maxlength="10"
-                                        show-word-limit>
+                                        show-word-limit></el-input>
                                 </div>
                             </div>
                             <div class="form-item">
@@ -737,11 +735,11 @@
                 previewShow: false,
                 link: "http://xueya.chaoxing.com/school-base/sc-sc-"
             },
-            mounted() {
+            mounted:function() {
                 this.initMap()
             },
             methods: {
-                initMap() {
+                initMap:function() {
                     var that = this;
                     this.map = new BMap.Map("map-contain", {
                         enableMapClick: false
@@ -760,7 +758,7 @@
 
                 },
                 //逆地址解析
-                getAddrByPoint(point) {
+                getAddrByPoint:function(point) {
                     var that = this;
                     var geco = new BMap.Geocoder();
                     geco.getLocation(point, function (res) {
@@ -771,7 +769,7 @@
                         that.addrPoint = point; //记录当前坐标点 
                     })
                 },
-                querySearchAsync(str, cb) {
+                querySearchAsync:function(str, cb) {
                     var options = {
                         onSearchComplete: function (res) { //检索完成后的回调函数 
                             var s = [];
@@ -788,7 +786,7 @@
                     var local = new BMap.LocalSearch(this.map, options) //创建LocalSearch构造函数 
                     local.search(str) //调用search方法，根据检索词str发起检索
                 },
-                handleSelect(item) {
+                handleSelect:function(item) {
                     this.address = item.address + item.title; //记录详细地址，含建筑物名 
                     this.addrPoint = item.point; //记录当前选中地址坐标 
                     this.map.clearOverlays() //清除地图上所有覆盖物 
@@ -797,16 +795,16 @@
                     this.map.panTo(item.point) //将地图的中心点更改为选定坐标点 
                 },
                 //拖拽初始化
-                handleDragStart(e, item) {
+                handleDragStart:function(e, item) {
                     this.dragging = item;
                 },
-                handleDragEnd(e, item) {
+                handleDragEnd:function(e, item) {
                     this.dragging = null
                 },
-                handleDragOver(e) {
+                handleDragOver:function(e) {
                     e.dataTransfer.dropEffect = 'move'
                 },
-                handleDragEnter(e, item) {
+                handleDragEnter:function(e, item) {
                     var $this = this;
                     e.dataTransfer.effectAllowed = "move"
                     if (item === this.dragging) {
@@ -821,49 +819,49 @@
                     this.modularArr = newItems;
                     console.log(this.modularArr)
                 },
-                handleLast() {
+                handleLast:function() {
                     this.pageShow = false
                 },
-                handleNext() {
+                handleNext:function() {
                     this.pageShow = true
                 },
-                handleFocus() {
+                handleFocus:function() {
                     this.addressShow = true
                     $('body').addClass('scroll')
                     $(window).scrollTop(0);
                 },
-                close() {
+                close:function() {
                     this.addressShow = false
                     this.fenleiShow = false
                     this.previewShow = false
                     $('body').removeClass('scroll')
                 },
-                handleEdit() {
+                handleEdit:function() {
                     this.fenleiShow = true
                     this.fenlei = '自定义选项'
                     $('body').addClass('scroll')
                 },
-                handleAdd() {
+                handleAdd:function() {
                     this.fenleiShow = true
                     $('body').addClass('scroll')
                 },
-                handleDelete() {
+                handleDelete:function() {
                     this.deleteShow = true
                     $('body').addClass('scroll')
                 },
-                handleCancle() {
+                handleCancle:function() {
                     this.fenlei = ''
                     this.fenleiShow = false
                     $('body').removeClass('scroll')
                 },
-                handleSave() {
+                handleSave:function() {
                     this.deleteShow = false
                     $('body').removeClass('scroll')
                 },
-                handleSure() {
+                handleSure:function() {
 
                 },
-                preview() {
+                preview:function() {
                     this.previewShow = true
                     $('body').addClass('scroll')
                 }
@@ -876,9 +874,6 @@
                 width: '100%',
                 height: '100%'
             });
-            $('.show-addr').focus(function(){
-                $('.dailog-box1').css('dispaly')
-            })
         });
     </script>
 </body>
