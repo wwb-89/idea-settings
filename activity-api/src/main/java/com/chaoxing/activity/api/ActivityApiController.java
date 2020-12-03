@@ -1,18 +1,19 @@
-package com.chaoxing.activity.web.controller.api;
+package com.chaoxing.activity.api;
 
-import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
-import com.chaoxing.activity.dto.LoginUserDTO;
+import com.chaoxing.activity.api.service.Model2DtoService;
 import com.chaoxing.activity.dto.RestRespDTO;
+import com.chaoxing.activity.dto.activity.ActivityExternalDTO;
 import com.chaoxing.activity.dto.manager.WfwRegionalArchitectureDTO;
 import com.chaoxing.activity.dto.query.ActivityQueryDTO;
 import com.chaoxing.activity.model.Activity;
+import com.chaoxing.activity.model.Group;
+import com.chaoxing.activity.service.GroupService;
 import com.chaoxing.activity.service.activity.ActivityQueryService;
 import com.chaoxing.activity.service.manager.WfwRegionalArchitectureApiService;
 import com.chaoxing.activity.util.HttpServletRequestUtils;
-import com.chaoxing.activity.web.util.LoginUtils;
 import org.apache.commons.collections4.CollectionUtils;
-import org.apache.commons.lang3.StringUtils;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -22,54 +23,58 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
-/**活动api服务
+/**
  * @author wwb
  * @version ver 1.0
  * @className ActivityApiController
  * @description
  * @blame wwb
- * @date 2020-11-11 10:54:37
+ * @date 2020-12-02 21:48:13
  */
 @RestController
-@RequestMapping("api/activity")
+@RequestMapping("activity")
 public class ActivityApiController {
 
 	@Resource
 	private ActivityQueryService activityQueryService;
 	@Resource
 	private WfwRegionalArchitectureApiService wfwRegionalArchitectureApiService;
+	@Resource
+	private GroupService groupService;
+	@Resource
+	private Model2DtoService model2DtoService;
 
-	/**可参与的活动列表
+	/**组作品推荐
 	 * @Description 
 	 * @author wwb
-	 * @Date 2020-11-13 09:58:40
+	 * @Date 2020-12-02 21:49:48
 	 * @param request
-	 * @param data
+	 * @param groupCode
+	 * @param fid
 	 * @return com.chaoxing.activity.dto.RestRespDTO
 	*/
-	@RequestMapping("list/participate")
-	public RestRespDTO list(HttpServletRequest request, String data) {
-		ActivityQueryDTO activityQuery = JSON.parseObject(data, ActivityQueryDTO.class);
-		String areaCode = activityQuery.getAreaCode();
+	@RequestMapping("group/{groupCode}/{fid}")
+	public RestRespDTO groupRecommend(HttpServletRequest request, @PathVariable String groupCode, @PathVariable Integer fid) {
+		Group group = groupService.getByCode(groupCode);
 		List<Integer> fids = new ArrayList<>();
-		List<WfwRegionalArchitectureDTO> wfwRegionalArchitectures;
-		if (StringUtils.isNotBlank(areaCode)) {
-			wfwRegionalArchitectures = wfwRegionalArchitectureApiService.listByCode(areaCode);
-		} else {
-			LoginUserDTO loginUser = LoginUtils.getLoginUser(request);
-			Integer fid = loginUser.getFid();
-			wfwRegionalArchitectures = wfwRegionalArchitectureApiService.listByFid(fid);
-		}
+		List<WfwRegionalArchitectureDTO> wfwRegionalArchitectures = wfwRegionalArchitectureApiService.listByCode(group.getAreaCode());
 		if (CollectionUtils.isNotEmpty(wfwRegionalArchitectures)) {
 			List<Integer> subFids = wfwRegionalArchitectures.stream().map(WfwRegionalArchitectureDTO::getFid).collect(Collectors.toList());
 			fids.addAll(subFids);
 		} else {
-			Integer topFid = activityQuery.getTopFid();
-			fids.add(topFid);
+			fids.add(fid);
 		}
+		ActivityQueryDTO activityQuery = ActivityQueryDTO.builder()
+				.topFid(fid)
+				.build();
 		activityQuery.setFids(fids);
-		Page<Activity> page = HttpServletRequestUtils.buid(request);
+		Page page = HttpServletRequestUtils.buid(request);
 		page = activityQueryService.listParticipate(page, activityQuery);
+		List<Activity> records = page.getRecords();
+		if (CollectionUtils.isNotEmpty(records)) {
+			List<ActivityExternalDTO> activityExternals = model2DtoService.activity2Dto(records);
+			page.setRecords(activityExternals);
+		}
 		return RestRespDTO.success(page);
 	}
 

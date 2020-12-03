@@ -122,4 +122,18 @@ public class ActivityClassifyQueryService {
 				.orderByAsc(ActivityClassify::getSequence)
 		);
 	}
+
+	/**根据id列表查询
+	 * @Description 
+	 * @author wwb
+	 * @Date 2020-12-02 22:57:41
+	 * @param ids
+	 * @return java.util.List<com.chaoxing.activity.model.ActivityClassify>
+	*/
+	public List<ActivityClassify> listByIds(List<Integer> ids) {
+		return activityClassifyMapper.selectList(new QueryWrapper<ActivityClassify>()
+			.lambda()
+				.in(ActivityClassify::getId, ids)
+		);
+	}
 }

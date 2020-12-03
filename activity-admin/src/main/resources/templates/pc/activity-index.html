@@ -76,7 +76,7 @@
                 </el-table-column>
             </el-table>
         </div>
-        <el-pagination v-show="pages > 0 && total > queryParams.pageSize" background layout="prev, pager, next" :total="total" :page-size="queryParams.pageSize"></el-pagination>
+        <el-pagination v-show="pages > 0 && total > queryParams.pageSize" background layout="prev, pager, next" :total="total" :page-size="queryParams.pageSize" :current-page="queryParams.pageNum" @current-change="changePage"></el-pagination>
         <!-- 删除弹窗 -->
         <vue-confirm ref="deleteWindow" :message="'确认删除？'" :cancel="'取消'" :sure="'确定'" @callback="deleteSubmit"></vue-confirm>
         <!--下架弹窗-->
@@ -98,6 +98,7 @@
             el: "#activity-vue",
             data: {
                 activities: [],
+                uid: [[${session._login_user_.uid}]],
                 fid: [[${session._login_user_.fid}]],
                 filterStatus: [],
                 queryParams: {
@@ -171,28 +172,31 @@
                     if (activities && activities.length > 0) {
                         $(activities).each(function () {
                             var activity = this;
+                            var isCreator = activity.createUid == $this.uid;
+                            var isCurrentOrgCreated = activity.createFid == $this.fid;
                             var status = activity.status;
+                            activity.operations = [];
                             switch (status) {
                                 case 1:
-                                    activity.operations = [
-                                        $this.operations.release,
-                                        $this.operations.edit,
-                                        $this.operations.delete
-                                    ];
+                                    if (isCreator || isCurrentOrgCreated) {
+                                        activity.operations.push($this.operations.release);
+                                        activity.operations.push($this.operations.edit);
+                                        activity.operations.push($this.operations.delete);
+                                    }
                                     break;
                                 case 2:
                                 case 3:
-                                    activity.operations = [
-                                        $this.operations.cancelRelease,
-                                        $this.operations.edit,
-                                        $this.operations.releaseScope,
-                                        $this.operations.delete
-                                    ];
+                                    activity.operations.push($this.operations.cancelRelease);
+                                    if (isCreator || isCurrentOrgCreated) {
+                                        activity.operations.push($this.operations.edit);
+                                        activity.operations.push($this.operations.releaseScope);
+                                        activity.operations.push($this.operations.delete);
+                                    }
                                     break;
                                 case 4:
-                                    activity.operations = [
-                                        $this.operations.delete
-                                    ];
+                                    if (isCreator || isCurrentOrgCreated) {
+                                        activity.operations.push($this.operations.delete);
+                                    }
                                     break;
                                 default:
                             }
@@ -222,6 +226,11 @@
                     $('.el-down').removeClass('rotate')
                     $this.queryParams.status = status.value;
                     $this.queryParams.pageNum = 1;
+                    $this.loadData();
+                },
+                changePage: function (pageNum) {
+                    var $this = this;
+                    $this.queryParams.pageNum = pageNum;
                     $this.loadData();
                 },
                 loadData: function () {

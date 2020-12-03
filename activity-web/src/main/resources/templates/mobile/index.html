@@ -37,7 +37,7 @@
                 <div class="info">
                     <h2 class="title">{{activity.name}}</h2>
                     <div class="time">
-                        <span :class="{'status': true, 'status1': (activity.status == 3), 'status2': (activity.status == 2), 'status3': (activity.status == 4)}">{{activity.status | activityStatusInstructions}}</span>
+                        <span :class="{'status': true, 'released': (activity.status == 2), 'ongoing': (activity.status == 3), 'ended': (activity.status == 4)}">{{activity.status | activityStatusInstructions}}</span>
                         <span>{{activity.startDate | timestamp2YMD}} ～ {{activity.endDate | timestamp2YMD}}</span>
                         <div class="clear"></div>
                     </div>
@@ -67,7 +67,7 @@
                 <div class="list-item">
                     <div class="title">时间</div>
                     <ul>
-                        <li :class="{'active': time.selected}" v-for="(time, index) of times" :key="'time-' + index" @click="changeTime(index)">{{time.name}}</li>
+                        <li :class="{'active': time.selected}" v-for="(time, index) of activityQueryDates" :key="'time-' + index" @click="changeTime(index)">{{time.name}}</li>
                     </ul>
                     <div class="clear"></div>
                 </div>
@@ -103,9 +103,8 @@
                 el: "#activity-vue",
                 data: {
                     activityClassifyNames: [[${activityClassifyNames}]],
+                    activityQueryDates: [[${activityQueryDates}]],
                     activityClassifies: [],
-                    // 时间
-                    times: [],
                     regions: [[${regions}]],
                     // 状态
                     statuses: [],
@@ -125,20 +124,14 @@
                     $($this.activityClassifyNames).each(function () {
                         $this.activityClassifies.push({name: this, value: this, selected: false});
                     });
-                    $this.activityClassifies.splice(0, 1, {
+                    $this.activityClassifies.splice(0, 0, {
                         name: "全部",
                         value: "",
                         selected: true
                     });
-                    // 时间
-                    $this.times = [
-                        {name: "全部", value: "all", selected: true},
-                        {name: "近一个月", value: "nearly_a_month", selected: false},
-                        {name: "近三个月", value: "nearly_three_month", selected: false},
-                        {name: "近半年", value: "nearly_six_month", selected: false},
-                        {name: "近一年", value: "nearly_a_year", selected: false},
-                        {name: "更早", value: "earlier", selected: false}
-                    ];
+                    $($this.activityQueryDates).each(function (i) {
+                        $this.$set($this.activityQueryDates[i], "selected", i == 0);
+                    });
                     // 地区
                     var regions = [];
                     if ($this.regions.length > 0) {
@@ -177,7 +170,7 @@
                             pageSize: 10,
                             sw: "",
                             activityClassifyName: "",
-                            date: "all",
+                            date: "",
                             area: "",
                             status: "",
                             areaCode: $this.areaCode,
@@ -256,8 +249,8 @@
                     },
                     changeTime: function (index) {
                         var $this = this;
-                        $($this.times).each(function (i) {
-                            $this.$set($this.times[i], "selected", i == index);
+                        $($this.activityQueryDates).each(function (i) {
+                            $this.$set($this.activityQueryDates[i], "selected", i == index);
                         });
                     },
                     changeRegion: function (index) {
@@ -281,7 +274,7 @@
                                 return false;
                             }
                         });
-                        $($this.times).each(function () {
+                        $($this.activityQueryDates).each(function () {
                             if (this.selected) {
                                 $this.queryParams.date = this.value;
                                 return false;
@@ -306,8 +299,8 @@
                         $($this.activityClassifies).each(function (i) {
                             $this.$set($this.activityClassifies[i], "selected", this.value == $this.queryParams.activityClassifyName);
                         });
-                        $($this.times).each(function (i) {
-                            $this.$set($this.times[i], "selected", this.value == $this.queryParams.date);
+                        $($this.activityQueryDates).each(function (i) {
+                            $this.$set($this.activityQueryDates[i], "selected", this.value == $this.queryParams.date);
                         });
                         $($this.regions).each(function (i) {
                             $this.$set($this.regions[i], "selected", this.value == $this.queryParams.area);

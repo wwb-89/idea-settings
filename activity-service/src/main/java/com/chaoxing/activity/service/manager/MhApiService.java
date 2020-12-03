@@ -67,6 +67,9 @@ public class MhApiService {
 	 * @return java.lang.String
 	*/
 	public String packageActivityAccessUrl(Integer pageId) {
+		if (pageId == null) {
+			return "";
+		}
 		StringBuilder accessUrlStringBuilder = new StringBuilder();
 		accessUrlStringBuilder.append(String.format(ActivityMhUrlConstant.ACTIVITY_ACCESS_URL, pageId));
 		return accessUrlStringBuilder.toString();
