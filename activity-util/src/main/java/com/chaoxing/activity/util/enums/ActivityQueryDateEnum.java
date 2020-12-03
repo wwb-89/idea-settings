@@ -17,7 +17,7 @@ import java.util.Objects;
 public enum ActivityQueryDateEnum {
 
 	/** 全部 */
-	ALL("全部", "all"),
+	ALL("全部", ""),
 	NEARLY_A_MONTH("近一个月", "nearly_a_month"),
 	NEARLY_THREE_MONTH("近三个月", "nearly_three_month"),
 	NEARLY_SIX_MONTH("近半年", "nearly_six_month"),

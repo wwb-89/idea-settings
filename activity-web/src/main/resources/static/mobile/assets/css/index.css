@@ -155,6 +155,14 @@ body.overhidden {
   box-sizing: border-box;
 }
 
+.index .activity-list ul li .info .time .status.released {
+  color: #24BB1D;
+  border: 1px solid #b4f0b1;
+  -webkit-box-sizing: border-box;
+  -moz-box-sizing: border-box;
+  box-sizing: border-box;
+}
+
 .index .activity-list ul li .info .time .status.status2 {
   color: #FF7A00;
   border: 1px solid #FFD1A7;
@@ -163,7 +171,23 @@ body.overhidden {
   box-sizing: border-box;
 }
 
+.index .activity-list ul li .info .time .status.ongoing {
+  color: #FF7A00;
+  border: 1px solid #FFD1A7;
+  -webkit-box-sizing: border-box;
+  -moz-box-sizing: border-box;
+  box-sizing: border-box;
+}
+
 .index .activity-list ul li .info .time .status.status3 {
+  color: #666666;
+  border: 1px solid #D5D5D5;
+  -webkit-box-sizing: border-box;
+  -moz-box-sizing: border-box;
+  box-sizing: border-box;
+}
+
+.index .activity-list ul li .info .time .status.ended {
   color: #666666;
   border: 1px solid #D5D5D5;
   -webkit-box-sizing: border-box;

@@ -20,6 +20,7 @@ import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 /**活动查询服务
@@ -79,6 +80,7 @@ public class ActivityQueryService {
 	private void calDateScope(ActivityQueryDTO activityQuery) {
 		DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
 		String date = activityQuery.getDate();
+		date = Optional.ofNullable(date).orElse("");
 		ActivityQueryDateEnum activityQueryDateEnum = ActivityQueryDateEnum.fromValue(date);
 		LocalDate now = LocalDate.now();
 		String minDateStr;

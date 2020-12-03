@@ -1,6 +1,7 @@
 package com.chaoxing.activity.service.manager;
 
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
@@ -100,6 +101,9 @@ public class CloudApiService {
 	 * @return java.lang.String
 	*/
 	public String getCloudImgUrl(String cloudId) {
+		if (StringUtils.isBlank(cloudId)) {
+			return "";
+		}
 		StringBuilder urlStringBuilder = new StringBuilder();
 		urlStringBuilder.append(IMG_URL);
 		urlStringBuilder.append(cloudId);

@@ -1,4 +1,4 @@
-package com.chaoxing.activity.web.util;
+package com.chaoxing.activity.util;
 
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import org.apache.commons.lang3.StringUtils;
@@ -35,7 +35,6 @@ public class HttpServletRequestUtils {
 	public static <T> Page<T> buid(HttpServletRequest request) {
 		Integer pageNum = DEFAULT_PAGE_NUM;
 		Integer pageSize = DEFAULT_PAGE_SIZE;
-
 
 		String pageNumStr = request.getParameter(PAGENUM_PARAM_KEY);
 		String pageSizeStr = request.getParameter(PAGESIZE_PARAM_KEY);

@@ -2,6 +2,8 @@ package com.chaoxing.activity.util.enums;
 
 import lombok.Getter;
 
+import java.util.Objects;
+
 /**
  * @author wwb
  * @version ver 1.0
@@ -23,6 +25,16 @@ public enum ActivityTypeEnum {
 	ActivityTypeEnum(String name, String value) {
 		this.name = name;
 		this.value = value;
+	}
+
+	public static ActivityTypeEnum fromValue(String value) {
+		ActivityTypeEnum[] values = ActivityTypeEnum.values();
+		for (ActivityTypeEnum activityTypeEnum : values) {
+			if (Objects.equals(activityTypeEnum.getValue(), value)) {
+				return activityTypeEnum;
+			}
+		}
+		return null;
 	}
 
 }

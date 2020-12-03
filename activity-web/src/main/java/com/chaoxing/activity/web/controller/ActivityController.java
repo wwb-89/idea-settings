@@ -1,8 +1,10 @@
 package com.chaoxing.activity.web.controller;
 
+import com.chaoxing.activity.dto.ActivityQueryDateDTO;
 import com.chaoxing.activity.dto.LoginUserDTO;
 import com.chaoxing.activity.model.Group;
 import com.chaoxing.activity.model.GroupRegionFilter;
+import com.chaoxing.activity.service.ActivityQueryDateService;
 import com.chaoxing.activity.service.GroupRegionFilterService;
 import com.chaoxing.activity.service.GroupService;
 import com.chaoxing.activity.service.activity.classify.ActivityClassifyQueryService;
@@ -37,6 +39,8 @@ public class ActivityController {
 	private ActivityClassifyQueryService activityClassifyQueryService;
 	@Resource
 	private GroupService groupService;
+	@Resource
+	private ActivityQueryDateService activityQueryDateService;
 
 	@GetMapping("")
 	public String index(Model model, HttpServletRequest  request) {
@@ -46,6 +50,8 @@ public class ActivityController {
 			add(fid);
 		}});
 		model.addAttribute("activityClassifyNames", activityClassifyNames);
+		List<ActivityQueryDateDTO> activityQueryDates = activityQueryDateService.listAll();
+		model.addAttribute("activityQueryDates", activityQueryDates);
 		model.addAttribute("regions", new ArrayList<>());
 		model.addAttribute("areaCode", "");
 		model.addAttribute("topFid", fid);
@@ -67,6 +73,8 @@ public class ActivityController {
 		if (group != null) {
 			areaCode = group.getAreaCode();
 		}
+		List<ActivityQueryDateDTO> activityQueryDates = activityQueryDateService.listAll();
+		model.addAttribute("activityQueryDates", activityQueryDates);
 		model.addAttribute("areaCode", areaCode);
 		model.addAttribute("topFid", fid);
 		return "pc/index";

@@ -1,8 +1,10 @@
 package com.chaoxing.activity.web.controller.mobile;
 
+import com.chaoxing.activity.dto.ActivityQueryDateDTO;
 import com.chaoxing.activity.dto.LoginUserDTO;
 import com.chaoxing.activity.model.Group;
 import com.chaoxing.activity.model.GroupRegionFilter;
+import com.chaoxing.activity.service.ActivityQueryDateService;
 import com.chaoxing.activity.service.GroupRegionFilterService;
 import com.chaoxing.activity.service.GroupService;
 import com.chaoxing.activity.service.activity.classify.ActivityClassifyQueryService;
@@ -36,6 +38,8 @@ public class ActivityController {
 	private ActivityClassifyQueryService activityClassifyQueryService;
 	@Resource
 	private GroupService groupService;
+	@Resource
+	private ActivityQueryDateService activityQueryDateService;
 
 	/**移动端活动首页
 	 * @Description 
@@ -52,6 +56,8 @@ public class ActivityController {
 		// 活动分类列表
 		List<String> activityClassifyNames = activityClassifyQueryService.listOrgsOptionalName(new ArrayList(){{add(fid);}});
 		model.addAttribute("activityClassifyNames", activityClassifyNames);
+		List<ActivityQueryDateDTO> activityQueryDates = activityQueryDateService.listAll();
+		model.addAttribute("activityQueryDates", activityQueryDates);
 		// 查询地区列表
 		model.addAttribute("regions", new ArrayList<>());
 		model.addAttribute("areaCode", "");
@@ -74,6 +80,8 @@ public class ActivityController {
 			add(fid);
 		}});
 		model.addAttribute("activityClassifyNames", activityClassifyNames);
+		List<ActivityQueryDateDTO> activityQueryDates = activityQueryDateService.listAll();
+		model.addAttribute("activityQueryDates", activityQueryDates);
 		// 查询地区列表
 		List<GroupRegionFilter> groupRegionFilters = groupRegionFilterService.listByGroupCode(groupCode);
 		model.addAttribute("regions", groupRegionFilters);
