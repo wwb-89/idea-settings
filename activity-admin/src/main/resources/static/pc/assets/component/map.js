@@ -12,7 +12,7 @@ Vue.component('vue-map', {
         "            <div class='body-head'>\n" +
         "                <div class='input-addr'>\n" +
         "                    <el-autocomplete style='width:100%;' popper-class='autoAddressClass' v-model.trim='address' :fetch-suggestions='querySearchAsync' :trigger-on-focus='false' placeholder='请输入地址' @select='handleSelect' clearable>\n" +
-        "                        <template slot-scope='{ item }'> <i class='el-icon-search fl mgr10'></i>\n" +
+        "                        <template slot-scope='item'> <i class='el-icon-search fl mgr10'></i>\n" +
         "                            <div class='address-box'>\n" +
         "                                <div class='title1'>{{ item.title }}</div>\n" +
         "                                --\n" +
