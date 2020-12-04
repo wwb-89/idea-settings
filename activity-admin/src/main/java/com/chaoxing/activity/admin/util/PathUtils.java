@@ -1,8 +1,8 @@
 package com.chaoxing.activity.admin.util;
 
+import com.chaoxing.activity.ActivityAdminApplication;
 import com.chaoxing.activity.util.FileUtils;
 import com.chaoxing.activity.util.constant.CommonConstant;
-import com.chaoxing.activity.ActivityAdminApplication;
 
 /**
  * @className PathUtils
