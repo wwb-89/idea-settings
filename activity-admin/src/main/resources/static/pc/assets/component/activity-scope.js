@@ -40,20 +40,19 @@ Vue.component('vue-activity-scope', {
     mounted: function () {
         var $this = this;
     },
-    watch: {
-        activityId: function () {
+    methods: {
+        reload: function () {
             var $this = this;
             if (!activityApp.isEmpty($this.activityId)) {
                 $this.loaded = false;
                 $this.clearSelect();
                 $this.loadOrgs();
             }
-        }
-    },
-    methods: {
+        },
         showWindow: function (activityId) {
             var $this = this;
             $this.activityId = activityId;
+            $this.reload();
             // 没有加载完不显示
             if ($this.loaded && $this.orgs.length > 0) {
                 $this.show = true;
@@ -64,9 +63,10 @@ Vue.component('vue-activity-scope', {
             var $this = this;
             var url = ctx + "/api/regional-architecture";
             app.ajaxPostWithLoading(url, {activityId: $this.activityId}, function (data) {
-                $this.loaded = true;
                 if (data.success) {
-                    $this.orgs = data.data;
+                    $this.loaded = true;
+                    $this.orgs = $this.supportOnlySelectParentNodeHandle(data.data);
+                    // 处理下数
                     $this.initTree();
                     if ($this.orgs.length < 1) {
                         $this.sureCallback();
@@ -76,14 +76,36 @@ Vue.component('vue-activity-scope', {
                 } else {
                     var errorMessage = data.message;
                     if (activityApp.isEmpty(errorMessage)) {
-                        errorMessage = "加载微服务层级架构失败";
+                        errorMessage = "加载发布架构失败";
                     }
+                    app.showMsg("加载发布架构失败");
                     console.log(errorMessage);
                 }
             }, function () {
-                $this.loaded = true;
-                console.log("加载微服务层级架构失败");
+                app.showMsg("加载发布架构失败");
+                console.log("加载发布架构失败");
             });
+        },
+        // 支持只选择父节点处理
+        supportOnlySelectParentNodeHandle: function (orgs) {
+            var result = [];
+            var pids = [];
+            $(orgs).each(function () {
+                pids.push(this.pid);
+                this.virtualId = this.id;
+            });
+            $(orgs).each(function () {
+                var org = this;
+                result.push(this);
+                if (pids.indexOf(org.id) > -1) {
+                    // 有下级
+                    var newOrg = $.extend({}, org);
+                    newOrg.virtualId = null;
+                    newOrg.pid = org.id;
+                    result.push(newOrg);
+                }
+            });
+            return result;
         },
         initTree: function () {
             var $this = this;
@@ -94,7 +116,7 @@ Vue.component('vue-activity-scope', {
                 data: {
                     simpleData: {
                         enable: true,
-                        idKey: "id",
+                        idKey: "virtualId",
                         pIdKey: "pid",
                         rootPId: 0
                     }
@@ -105,7 +127,7 @@ Vue.component('vue-activity-scope', {
                     }
                 },
                 view: {
-                    showIcon: false,
+                    showIcon: true,
                 }
             };
             $.fn.zTree.init($("#organizationTree"), setting, $this.orgs);
@@ -114,7 +136,12 @@ Vue.component('vue-activity-scope', {
         onOrgHierachyCheck: function () {
             var $this = this;
             var nodes = $this.zTree.getCheckedNodes(true);
-            $this.selectedFidNum = nodes.length;
+            $this.selectedFidNum = 0;
+            $(nodes).each(function () {
+                if (!activityApp.isEmpty(this.virtualId)) {
+                    $this.selectedFidNum++;
+                }
+            });
         },
         // 清空选择
         clearSelect: function () {
@@ -134,7 +161,9 @@ Vue.component('vue-activity-scope', {
                 // 获取选中
                 var checkedNodes = $this.zTree.getCheckedNodes(true);
                 $(checkedNodes).each(function () {
-                    $this.selectedFids.push(this.fid);
+                    if (!activityApp.isEmpty(this.virtualId)) {
+                        $this.selectedFids.push(this.fid);
+                    }
                 });
                 if ($this.selectedFids.length < 1) {
                     app.showMsg("请选择发布范围");
