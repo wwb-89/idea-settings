@@ -76,7 +76,7 @@
                 </el-table-column>
             </el-table>
         </div>
-        <el-pagination v-show="pages > 0 && total > queryParams.pageSize" background layout="prev, pager, next" :total="total" :page-size="queryParams.pageSize" :current-page="queryParams.pageNum" @current-change="changePage"></el-pagination>
+        <el-pagination v-show="pages > 1" background layout="prev, pager, next" :total="total" :page-size="queryParams.pageSize" :current-page="queryParams.pageNum" @current-change="changePage"></el-pagination>
         <!-- 删除弹窗 -->
         <vue-confirm ref="deleteWindow" :message="'确认删除？'" :cancel="'取消'" :sure="'确定'" @callback="deleteSubmit"></vue-confirm>
         <!--下架弹窗-->

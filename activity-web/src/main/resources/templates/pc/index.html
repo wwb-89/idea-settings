@@ -79,7 +79,7 @@
                     </div>
                 </div>
             </div>
-            <el-pagination v-show="total > 12" background layout="prev, pager, next" :total="total" @current-change="currenClick"></el-pagination>
+            <el-pagination v-show="pages > 1" background layout="prev, pager, next" :total="total" :page-size="queryParams.pageSize" :current-page="queryParams.pageNum" @current-change="currenClick"></el-pagination>
             <!-- 当列表为空时展示 -->
             <div class="empty-box" v-show="total < 1 && loaded">
                 <img src="/static/pc/assets/images/empty.png" th:src="@{/pc/assets/images/empty.png}">
@@ -201,7 +201,7 @@
                     var $this = this;
                     $this.queryParams = {
                         pageNum: 1,
-                        pageSize: 12,
+                        pageSize: 9,
                         sw: "",
                         activityClassifyName: "",
                         date: "",
@@ -223,7 +223,7 @@
                         if (data.success) {
                             $this.loaded = true;
                             $this.activities = data.data.records
-                            $this.pages = Math.ceil(data.data.total/12);
+                            $this.pages = data.data.pages;
                             $this.total = data.data.total;
                         } else {
                             var errorMessage = data.message;
