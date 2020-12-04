@@ -212,19 +212,17 @@ table {
 .ztree li span.button.roots_open,
 .ztree li span.button.bottom_open,
 .ztree li span.button.center_open {
-    width: 8px;
-    height: 4px;
+    /* width: 8px;
+    height: 4px; */
     background: url(../images/triangle2.png) center center no-repeat;
-    margin-right: 8px;
+    /* margin-right: 8px; */
 }
 .ztree li span.button.root_close,
 .ztree li span.button.roots_close, 
 .ztree li span.button.bottom_close, 
 .ztree li span.button.center_close {
-    width: 4px;
-    height: 8px;
     background: url(../images/triangle1.png) center center no-repeat;
-    margin-right: 8px;
+    /* margin-right: 8px; */
 }
 .ztree li span.button.chk.checkbox_false_full, 
 .ztree li span.button.chk.checkbox_false_full_focus{
