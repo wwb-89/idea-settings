@@ -202,3 +202,10 @@
 .empty-box p{
     margin-top: 15px;
 }
+.overHidden2 {
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 2;
+    overflow: hidden;
+    word-break: break-all;
+  }
