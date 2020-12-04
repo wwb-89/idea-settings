@@ -58,7 +58,7 @@
                         </div>
                     </template>
                     <template slot-scope="scope">
-                        <span class="green">{{scope.row.status | activityStatusInstructions}}</span>
+                        <span :class="{'blue2': (scope.row.status == '1'), 'blue': (scope.row.status == '2'), 'green': (scope.row.status == '3')}">{{scope.row.status | activityStatusInstructions}}</span>
                     </template>
                 </el-table-column>
                 <el-table-column label="操作" min-width="25%">
@@ -128,7 +128,7 @@
                 $this.filterStatus = [
                     {name: "全部", value: "", selected: true},
                     {name: "待发布", value: "1", selected: false},
-                    {name: "已发布", value: "2", selected: false},
+                    {name: "活动预告", value: "2", selected: false},
                     {name: "进行中", value: "3", selected: false},
                     {name: "已结束", value: "4", selected: false}
                 ];
