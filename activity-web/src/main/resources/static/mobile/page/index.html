@@ -41,11 +41,8 @@
         </div>
         <div class="activity-list" >
             <ul>
-
                 <div v-for="(item,index) in list" :key="index">
-
                     <li>
-
                         <img :src="item.coverCloudId">
                             <div class="info">
                             <h2 class="title">{{item.name}}</h2>
@@ -65,7 +62,6 @@
                     </li>
                 </div>
 <!--                </div>-->
-
             </ul>
         </div>
 <!--        加载中-->
@@ -151,7 +147,31 @@
                 // createOrgName: "北京大华有限公司",
                 // address:"四川农业大学雅安校区",
 
-                list:[],
+                list:[{
+                    name:"浙江图书馆2020年11月读者活动预告",
+                    time:"2020-10-10 9:00 ～ 2028-10-1日 16:00",
+                    status:1,
+                    createOrgName:"浙江图书馆 浙江省杭州市西湖区曙光路73号",
+                    address:"四川农业大学雅安校区",
+                },{
+                    name:"浙江图书馆2020年11月读者活动预告",
+                    time:"2020-10-10 9:00 ～ 2028-10-1日 16:00",
+                    status:1,
+                    createOrgName:"浙江图书馆 浙江省杭州市西湖区曙光路73号",
+                    address:"四川农业大学雅安校区",
+                },{
+                    name:"浙江图书馆2020年11月读者活动预告",
+                    time:"2020-10-10 9:00 ～ 2028-10-1日 16:00",
+                    status:1,
+                    createOrgName:"浙江图书馆 浙江省杭州市西湖区曙光路73号",
+                    address:"四川农业大学雅安校区",
+                },{
+                    name:"浙江图书馆2020年11月读者活动预告",
+                    time:"2020-10-10 9:00 ～ 2028-10-1日 16:00",
+                    status:1,
+                    createOrgName:"浙江图书馆 浙江省杭州市西湖区曙光路73号",
+                    address:"四川农业大学雅安校区",
+                }],
             }
         },
         created: function () {
