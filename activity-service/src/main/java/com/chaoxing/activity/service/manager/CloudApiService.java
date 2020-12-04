@@ -29,7 +29,7 @@ import java.io.File;
 public class CloudApiService {
 
 	/** 上传url */
-	private static final String UPLOAD_URL = "http://cs.ananas.chaoxing.com/upload?uid=-1&prdid=40";
+	private static final String UPLOAD_URL = "http://cs.ananas.chaoxing.com/upload?uid=-1&clientip=&prdid=40";
 	/** 资源状态url */
 	private static final String GET_CLOUD_RESOURCE_STATUS_URL = "http://cs.ananas.chaoxing.com/status/";
 	/** 云盘图片url */
@@ -43,9 +43,10 @@ public class CloudApiService {
 	 * @author wwb
 	 * @Date 2020-11-10 20:15:52
 	 * @param file
+	 * @param ip
 	 * @return java.lang.String
 	*/
-	public String upload(MultipartFile file) {
+	public String upload(MultipartFile file, String ip) {
 		HttpHeaders headers = new HttpHeaders();
 		headers.setContentType(MediaType.MULTIPART_FORM_DATA);
 		headers.setConnection("Keep-Alive");
@@ -53,7 +54,8 @@ public class CloudApiService {
 		MultiValueMap<String, Object> parts = new LinkedMultiValueMap<>();
 		parts.add("file", file.getResource());
 		HttpEntity<MultiValueMap<String, Object>> httpEntity = new HttpEntity<>(parts, headers);
-		ResponseEntity<String> stringResponseEntity = restTemplate.postForEntity(UPLOAD_URL, httpEntity, String.class);
+		String url = String.format(UPLOAD_URL, ip);
+		ResponseEntity<String> stringResponseEntity = restTemplate.postForEntity(url, httpEntity, String.class);
 		String result = stringResponseEntity.getBody();
 		return result;
 	}
@@ -63,9 +65,10 @@ public class CloudApiService {
 	 * @author wwb
 	 * @Date 2020-11-10 20:18:34
 	 * @param file
+	 * @param ip
 	 * @return java.lang.String
 	*/
-	public String upload(File file) {
+	public String upload(File file, String ip) {
 		HttpHeaders headers = new HttpHeaders();
 		headers.setContentType(MediaType.MULTIPART_FORM_DATA);
 		headers.setConnection("Keep-Alive");
@@ -74,7 +77,8 @@ public class CloudApiService {
 		MultiValueMap<String, FileSystemResource> data = new LinkedMultiValueMap<>();
 		data.add("file", resource);
 		HttpEntity<MultiValueMap<String, FileSystemResource>> httpEntity = new HttpEntity<>(data);
-		ResponseEntity<String> stringResponseEntity = restTemplate.postForEntity(UPLOAD_URL, httpEntity, String.class);
+		String url = String.format(UPLOAD_URL, ip);
+		ResponseEntity<String> stringResponseEntity = restTemplate.postForEntity(url, httpEntity, String.class);
 		String result = stringResponseEntity.getBody();
 		return result;
 	}

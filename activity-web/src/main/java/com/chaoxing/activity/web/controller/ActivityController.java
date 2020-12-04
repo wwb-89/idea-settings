@@ -10,6 +10,7 @@ import com.chaoxing.activity.service.GroupService;
 import com.chaoxing.activity.service.activity.classify.ActivityClassifyQueryService;
 import com.chaoxing.activity.util.UserAgentUtils;
 import com.chaoxing.activity.web.util.LoginUtils;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -31,6 +32,7 @@ import java.util.List;
  * @blame wwb
  * @date 2020-11-20 10:49:54
  */
+@Slf4j
 @Controller
 @RequestMapping("activity")
 public class ActivityController {
