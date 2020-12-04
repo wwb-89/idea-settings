@@ -26,4 +26,9 @@ public class CommonConstant {
 	/** api域名 */
 	public static final String API_DOMAIN = "http://api.hd.reading.chaoxing.com";
 
+	/** 默认页码 */
+	public static final Integer DEFAULT_PAGE_NUM = 1;
+	/** 默认每页条数 */
+	public static final Integer DEFAULT_PAGE_SIZE = 10;
+
 }

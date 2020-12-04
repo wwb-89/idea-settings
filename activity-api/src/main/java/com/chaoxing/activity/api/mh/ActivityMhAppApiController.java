@@ -5,14 +5,20 @@ import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.chaoxing.activity.dto.RestRespDTO;
 import com.chaoxing.activity.dto.manager.SignParticipationDTO;
+import com.chaoxing.activity.dto.manager.WfwRegionalArchitectureDTO;
 import com.chaoxing.activity.dto.mh.MhGeneralAppResultDataDTO;
+import com.chaoxing.activity.dto.query.MhActivityCalendarQueryDTO;
 import com.chaoxing.activity.model.Activity;
 import com.chaoxing.activity.service.activity.ActivityQueryService;
 import com.chaoxing.activity.service.manager.CloudApiService;
 import com.chaoxing.activity.service.manager.MhApiService;
+import com.chaoxing.activity.service.manager.WfwRegionalArchitectureApiService;
 import com.chaoxing.activity.service.manager.module.SignApiService;
+import com.chaoxing.activity.util.constant.CommonConstant;
 import com.chaoxing.activity.util.constant.DateTimeFormatterConstant;
+import com.chaoxing.activity.util.exception.BusinessException;
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
@@ -28,6 +34,8 @@ import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 /**门户应用api接口
  * @author wwb
@@ -53,12 +61,14 @@ public class ActivityMhAppApiController {
 	private SignApiService signApiService;
 	@Resource
 	private MhApiService mhApiService;
+	@Resource
+	private WfwRegionalArchitectureApiService wfwRegionalArchitectureApiService;
 
 	@Resource
 	private RestTemplate restTemplate;
 
 	/**活动封面
-	 * @Description 
+	 * @Description
 	 * @author wwb
 	 * @Date 2020-11-24 19:02:11
 	 * @param activityId
@@ -86,7 +96,7 @@ public class ActivityMhAppApiController {
 		return RestRespDTO.success(jsonObject);
 	}
 	/**活动信息
-	 * @Description 
+	 * @Description
 	 * @author wwb
 	 * @Date 2020-11-24 19:02:58
 	 * @param activityId
@@ -153,7 +163,7 @@ public class ActivityMhAppApiController {
 	}
 
 	/**报名签到按钮
-	 * @Description 
+	 * @Description
 	 * @author wwb
 	 * @Date 2020-11-26 17:43:41
 	 * @param activityId
@@ -188,7 +198,7 @@ public class ActivityMhAppApiController {
 	}
 
 	/**推荐活动
-	 * @Description 
+	 * @Description
 	 * @author wwb
 	 * @Date 2020-11-24 21:42:19
 	 * @param activityId
@@ -198,10 +208,8 @@ public class ActivityMhAppApiController {
 	@RequestMapping("activity/{activityId}/recommend")
 	public RestRespDTO recommendActivity(@PathVariable Integer activityId, @RequestBody String data) {
 		JSONObject jsonObject = JSON.parseObject(data);
-		Integer pageNum = jsonObject.getInteger("page");
-		pageNum = Optional.ofNullable(pageNum).orElse(1);
-		Integer pageSize = jsonObject.getInteger("pageSize");
-		pageSize = Optional.ofNullable(pageSize).orElse(10);
+		Integer pageNum = Optional.ofNullable(jsonObject.getInteger("page")).orElse(CommonConstant.DEFAULT_PAGE_NUM);
+		Integer pageSize = Optional.ofNullable(jsonObject.getInteger("pageSize")).orElse(CommonConstant.DEFAULT_PAGE_SIZE);
 		Activity activity = activityQueryService.getById(activityId);
 		Integer createFid = activity.getCreateFid();
 		// 查询机构下的活动列表
@@ -211,9 +219,38 @@ public class ActivityMhAppApiController {
 		result.put("curPage", pageNum);
 		result.put("totalPages", page.getPages());
 		result.put("totalRecords", page.getTotal());
-		List<Activity> records = page.getRecords();
-		List<MhGeneralAppResultDataDTO> mhGeneralAppResultDatas = new ArrayList<>();
+		List<MhGeneralAppResultDataDTO> mhGeneralAppResultDatas = page2MhGeneralAppResultData(page, (record) -> {
+			List<MhGeneralAppResultDataDTO.MhGeneralAppResultDataFieldDTO> mhGeneralAppResultDataFields = new ArrayList<>();
+			// 封面
+			mhGeneralAppResultDataFields.add(MhGeneralAppResultDataDTO.MhGeneralAppResultDataFieldDTO.builder()
+					.value(cloudApiService.getCloudImgUrl(record.getCoverCloudId()))
+					.flag("0")
+					.build());
+			// 活动名称
+			mhGeneralAppResultDataFields.add(MhGeneralAppResultDataDTO.MhGeneralAppResultDataFieldDTO.builder()
+					.value(record.getName())
+					.flag("1")
+					.build());
+			// 活动时间
+			LocalDate startDate = record.getStartDate();
+			LocalDate endDate = record.getEndDate();
+			StringBuilder timeStringBuilder = new StringBuilder();
+			timeStringBuilder.append(ACTIVITY_DATE_TIME_FORMATTER.format(startDate));
+			timeStringBuilder.append(" ～ ");
+			timeStringBuilder.append(ACTIVITY_DATE_TIME_FORMATTER.format(endDate));
+			mhGeneralAppResultDataFields.add(MhGeneralAppResultDataDTO.MhGeneralAppResultDataFieldDTO.builder()
+					.value(timeStringBuilder.toString())
+					.flag("6")
+					.build());
+			return mhGeneralAppResultDataFields;
+		});
 		result.put("results", mhGeneralAppResultDatas);
+		return RestRespDTO.success(result);
+	}
+
+	private List<MhGeneralAppResultDataDTO> page2MhGeneralAppResultData(Page<Activity> page, Function<Activity, List<MhGeneralAppResultDataDTO.MhGeneralAppResultDataFieldDTO>> function) {
+		List<MhGeneralAppResultDataDTO> mhGeneralAppResultDatas = new ArrayList<>();
+		List<Activity> records = page.getRecords();
 		if (CollectionUtils.isNotEmpty(records)) {
 			for (Activity record : records) {
 				MhGeneralAppResultDataDTO mhGeneralAppResultData = new MhGeneralAppResultDataDTO();
@@ -222,32 +259,82 @@ public class ActivityMhAppApiController {
 				mhGeneralAppResultData.setOrsUrl(mhApiService.packageActivityAccessUrl(pageId));
 				mhGeneralAppResultData.setPop(0);
 				mhGeneralAppResultData.setPopUrl("");
-				List<MhGeneralAppResultDataDTO.MhGeneralAppResultDataFieldDTO> mhGeneralAppResultDataFields = new ArrayList<>();
-				mhGeneralAppResultData.setFields(mhGeneralAppResultDataFields);
-				// 封面
-				mhGeneralAppResultDataFields.add(MhGeneralAppResultDataDTO.MhGeneralAppResultDataFieldDTO.builder()
-						.value(cloudApiService.getCloudImgUrl(record.getCoverCloudId()))
-						.flag("0")
-						.build());
-				// 活动名称
-				mhGeneralAppResultDataFields.add(MhGeneralAppResultDataDTO.MhGeneralAppResultDataFieldDTO.builder()
-						.value(record.getName())
-						.flag("1")
-						.build());
-				// 活动时间
-				LocalDate startDate = activity.getStartDate();
-				LocalDate endDate = activity.getEndDate();
-				StringBuilder timeStringBuilder = new StringBuilder();
-				timeStringBuilder.append(ACTIVITY_DATE_TIME_FORMATTER.format(startDate));
-				timeStringBuilder.append(" ～ ");
-				timeStringBuilder.append(ACTIVITY_DATE_TIME_FORMATTER.format(endDate));
-				mhGeneralAppResultDataFields.add(MhGeneralAppResultDataDTO.MhGeneralAppResultDataFieldDTO.builder()
-						.value(timeStringBuilder.toString())
-						.flag("6")
-						.build());
+				mhGeneralAppResultData.setFields(function.apply(record));
 				mhGeneralAppResultDatas.add(mhGeneralAppResultData);
 			}
 		}
+		return mhGeneralAppResultDatas;
+	}
+
+	/**活动日历
+	 * @Description areaCode为空走通用流程，不为空走定制流程
+	 * @author wwb
+	 * @Date 2020-12-03 15:40:03
+	 * @param areaCode
+	 * @param data
+	 * @return com.chaoxing.activity.dto.RestRespDTO
+	*/
+	@RequestMapping("activity/calendar")
+	public RestRespDTO activityCalendar(String areaCode, @RequestBody String data) {
+		JSONObject jsonObject = JSON.parseObject(data);
+		// 获取参数
+		Integer wfwfid = jsonObject.getInteger("wfwfid");
+		Optional.ofNullable(wfwfid).orElseThrow(() -> new BusinessException("wfwfid不能为空"));
+		List<Integer> fids = new ArrayList<>();
+		List<WfwRegionalArchitectureDTO> wfwRegionalArchitectures;
+		if (StringUtils.isNotBlank(areaCode)) {
+			wfwRegionalArchitectures = wfwRegionalArchitectureApiService.listByCode(areaCode);
+		} else {
+			wfwRegionalArchitectures = wfwRegionalArchitectureApiService.listByFid(wfwfid);
+		}
+		if (CollectionUtils.isNotEmpty(wfwRegionalArchitectures)) {
+			List<Integer> subFids = wfwRegionalArchitectures.stream().map(WfwRegionalArchitectureDTO::getFid).collect(Collectors.toList());
+			fids.addAll(subFids);
+		} else {
+			fids.add(wfwfid);
+		}
+		Integer pageNum = Optional.ofNullable(jsonObject.getInteger("page")).orElse(CommonConstant.DEFAULT_PAGE_NUM);
+		Integer pageSize = Optional.ofNullable(jsonObject.getInteger("pageSize")).orElse(CommonConstant.DEFAULT_PAGE_SIZE);
+		Page page = new Page(pageNum, pageSize);
+		MhActivityCalendarQueryDTO mhActivityCalendarQuery = MhActivityCalendarQueryDTO.builder()
+				.fids(fids)
+				.topFid(wfwfid)
+				.build();
+		page = activityQueryService.listActivityCalendarParticipate(page, mhActivityCalendarQuery);
+		JSONObject result = new JSONObject();
+		result.put("curPage", pageNum);
+		result.put("totalPages", page.getPages());
+		result.put("totalRecords", page.getTotal());
+		List<MhGeneralAppResultDataDTO> mhGeneralAppResultDatas = page2MhGeneralAppResultData(page, (record) -> {
+			List<MhGeneralAppResultDataDTO.MhGeneralAppResultDataFieldDTO> mhGeneralAppResultDataFields = new ArrayList<>();
+			// 封面
+			mhGeneralAppResultDataFields.add(MhGeneralAppResultDataDTO.MhGeneralAppResultDataFieldDTO.builder()
+					.value(cloudApiService.getCloudImgUrl(record.getCoverCloudId()))
+					.flag("0")
+					.build());
+			// 活动名称
+			mhGeneralAppResultDataFields.add(MhGeneralAppResultDataDTO.MhGeneralAppResultDataFieldDTO.builder()
+					.value(record.getName())
+					.flag("1")
+					.build());
+			// 作者
+			mhGeneralAppResultDataFields.add(MhGeneralAppResultDataDTO.MhGeneralAppResultDataFieldDTO.builder()
+					.value(record.getCreateOrgName())
+					.flag("3")
+					.build());
+			// 地点
+			mhGeneralAppResultDataFields.add(MhGeneralAppResultDataDTO.MhGeneralAppResultDataFieldDTO.builder()
+					.value(record.getAddress())
+					.flag("100")
+					.build());
+			// 活动时间
+			mhGeneralAppResultDataFields.add(MhGeneralAppResultDataDTO.MhGeneralAppResultDataFieldDTO.builder()
+					.value(ACTIVITY_DATE_TIME_FORMATTER.format(record.getStartDate()))
+					.flag("6")
+					.build());
+			return mhGeneralAppResultDataFields;
+		});
+		result.put("results", mhGeneralAppResultDatas);
 		return RestRespDTO.success(result);
 	}
 

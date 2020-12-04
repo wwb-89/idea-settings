@@ -6,6 +6,7 @@ import com.chaoxing.activity.dto.activity.ActivityTypeDTO;
 import com.chaoxing.activity.dto.manager.WfwRegionalArchitectureDTO;
 import com.chaoxing.activity.dto.query.ActivityManageQueryDTO;
 import com.chaoxing.activity.dto.query.ActivityQueryDTO;
+import com.chaoxing.activity.dto.query.MhActivityCalendarQueryDTO;
 import com.chaoxing.activity.mapper.ActivityMapper;
 import com.chaoxing.activity.model.Activity;
 import com.chaoxing.activity.service.manager.WfwRegionalArchitectureApiService;
@@ -54,6 +55,19 @@ public class ActivityQueryService {
 	public Page<Activity> listParticipate(Page<Activity> page, ActivityQueryDTO activityQuery) {
 		calDateScope(activityQuery);
 		page = activityMapper.listParticipate(page, activityQuery);
+		return page;
+	}
+
+	/**活动日历查询
+	 * @Description 
+	 * @author wwb
+	 * @Date 2020-12-03 16:07:47
+	 * @param page
+	 * @param mhActivityCalendarQuery
+	 * @return com.baomidou.mybatisplus.extension.plugins.pagination.Page<com.chaoxing.activity.model.Activity>
+	*/
+	public Page<Activity> listActivityCalendarParticipate(Page<Activity> page, MhActivityCalendarQueryDTO mhActivityCalendarQuery) {
+		page = activityMapper.listActivityCalendarParticipate(page, mhActivityCalendarQuery);
 		return page;
 	}
 	

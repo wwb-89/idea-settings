@@ -28,7 +28,7 @@
             <span class="create">创建活动</span>
         </div>
         <div>
-            <button type="button" class="cancle-btn" v-show="step == 1" @click="nextStep">下一步</button>
+            <button type="button" class="create-btn" v-show="step == 1" @click="nextStep">下一步</button>
         </div>
     </div>
     <!-- 编辑活动头部 -->
@@ -95,7 +95,7 @@
                                 <div @click="toDeleteActivityClassify(index, $event)">删除</div>
                             </div>
                         </div>
-                        <div class="type-item" @click="toAddActivityClassify">
+                        <div class="type-item add" @click="toAddActivityClassify">
                             <img src="/static/pc/assets/images/add.png" th:src="@{/pc/assets/images/add.png}" style="margin-right: 10px;">
                             新增
                         </div>
@@ -125,7 +125,7 @@
                                 <el-option label="自定义人数" :value="1"></el-option>
                             </el-select>
                         </div>
-                        <input v-show="sign.limitPerson" v-model="sign.personLimit" type="number" min="1" step="1" maxlength="10" placeholder="请输入正整数" class="person"><span class="person-span">人</span>
+                        <input v-show="sign.limitPerson" v-model="sign.personLimit" type="number" min="1" step="1" maxlength="10" placeholder="请输入正整数" class="person"><span class="person-span" v-show="sign.limitPerson">人</span>
                     </div>
                 </div>
                 <div class="form-item" v-if="false">
