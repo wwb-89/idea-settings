@@ -7,6 +7,7 @@
     <link rel="stylesheet" href="/static/pc/assets/lib/element-ui/lib/theme-chalk/index.css" th:href="@{/pc/assets/lib/element-ui/lib/theme-chalk/index.css}">
     <link rel="stylesheet" href="/static/pc/assets/css/public.css" th:href="@{/pc/assets/css/public.css}">
     <link rel="stylesheet" href="/static/pc/assets/css/index.css" th:href="@{/pc/assets/css/index.css}">
+    <script th:if="${pageId != null}" th:src="|http://portal.chaoxing.com/outer/${pageId}/header|"></script>
     <style type="text/css">
         [v-cloak] {
             display: none;
@@ -91,6 +92,7 @@
 <div th:replace="pc/include/common_js :: common_js(~{::script})">
     <script type="text/javascript" src="/static/pc/assets/lib/element-ui/lib/index.js" th:src="@{/pc/assets/lib/element-ui/lib/index.js}"></script>
     <script src="/static/pc/assets/lib/jqthumb.min.js" th:src="@{/pc/assets/lib/jqthumb.min.js}"></script>
+    <script th:if="${pageId != null}" th:src="|//portal.chaoxing.com/outer/${pageId}/footer|"></script>
     <script th:inline="javascript">
         activityVue = new Vue({
             el: '#activity-vue',

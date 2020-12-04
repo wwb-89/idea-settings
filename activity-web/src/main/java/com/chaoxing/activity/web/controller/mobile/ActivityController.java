@@ -14,6 +14,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
@@ -74,8 +75,8 @@ public class ActivityController {
 	 * @param fid
 	 * @return java.lang.String
 	*/
-	@GetMapping("group/{groupCode}/{fid}")
-	public String index(Model model, @PathVariable String groupCode, @PathVariable Integer fid) {
+	@GetMapping("group/{groupCode}")
+	public String index(Model model, @PathVariable String groupCode, @RequestParam("unitId") Integer fid, Integer pageId) {
 		List<String> activityClassifyNames = activityClassifyQueryService.listOrgsOptionalName(new ArrayList(){{
 			add(fid);
 		}});
@@ -92,6 +93,7 @@ public class ActivityController {
 		}
 		model.addAttribute("areaCode", areaCode);
 		model.addAttribute("topFid", fid);
+		model.addAttribute("pageId", pageId);
 		return "mobile/index";
 	}
 
