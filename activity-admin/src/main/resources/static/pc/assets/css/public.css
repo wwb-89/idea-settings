@@ -103,7 +103,8 @@ body,
 html {
   width: 100%;
   text-align: center;
-  font-family: "Microsoft YaHei", Helvetica;
+  /* font-family: "Microsoft YaHei", Helvetica; */
+  font-family: "SF Pro Display","Helvetica Neue",Helvetica,Tahoma,Arial,"PingFang SC","Hiragino Sans GB","Microsoft YaHei",sans-serif,'Apple Color Emoji','Segoe UI Emoji','Segoe UI Symbol','Noto Color Emoji';
   -webkit-text-size-adjust: 100%;
   -ms-text-size-adjust: 100%;
   -webkit-tap-highlight-color: transparent;
@@ -242,12 +243,14 @@ input:-ms-input-placeholder, textarea:-ms-input-placeholder {
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
+    word-break: break-all;
 }
 .overHidden2 {
   display: -webkit-box;
   -webkit-box-orient: vertical;
   -webkit-line-clamp: 2;
   overflow: hidden;
+  word-break: break-all;
 }
 
 [v-cloak] {

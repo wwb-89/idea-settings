@@ -1,3 +1,4 @@
+
 .page {
     min-width: 1000px;
     max-width: 1900px;
@@ -278,10 +279,25 @@ table {
     opacity: 1;
 }
 .ztree li span.button,.ztree li ul.line{
-    background: none;
+    /* background: none; */
 }
 .ztree li span.button.center_docu, 
 .ztree li span.button.bottom_docu, 
 .ztree li ul.line {
     background: none;
+  }
+  .ztree li span.button.ico_open {
+      vertical-align: middle;
+      background-image: url(../images/icon-file.png);
+      background-position: unset;
+  }
+  .ztree li span.button.ico_docu {
+    vertical-align: middle;
+    background-image: url(../images/icon-shcool.png);
+      background-position: unset;
+  }
+  .ztree li span.button.ico_close {
+    vertical-align: middle;
+    background-image: url(../images/icon-file.png);
+    background-position: unset;
   }
