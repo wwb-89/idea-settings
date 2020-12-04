@@ -7,6 +7,7 @@
     <link rel="stylesheet" href="/static/pc/assets/lib/element-ui/lib/theme-chalk/index.css" th:href="@{/pc/assets/lib/element-ui/lib/theme-chalk/index.css}">
     <link rel="stylesheet" href="/static/pc/assets/css/public.css" th:href="@{/pc/assets/css/public.css}">
     <link rel="stylesheet" href="/static/pc/assets/css/index.css" th:href="@{/pc/assets/css/index.css}">
+    <script th:if="${pageId != null}" th:src="|http://portal.chaoxing.com/outer/${pageId}/header|"></script>
     <style type="text/css">
         [v-cloak] {
             display: none;
@@ -79,7 +80,7 @@
                     </div>
                 </div>
             </div>
-            <el-pagination v-show="total > 12" background layout="prev, pager, next" :total="total" @current-change="currenClick"></el-pagination>
+            <el-pagination v-show="pages > 1" background layout="prev, pager, next" :total="total" :page-size="queryParams.pageSize" :current-page="queryParams.pageNum" @current-change="currenClick"></el-pagination>
             <!-- 当列表为空时展示 -->
             <div class="empty-box" v-show="total < 1 && loaded">
                 <img src="/static/pc/assets/images/empty.png" th:src="@{/pc/assets/images/empty.png}">
@@ -91,6 +92,7 @@
 <div th:replace="pc/include/common_js :: common_js(~{::script})">
     <script type="text/javascript" src="/static/pc/assets/lib/element-ui/lib/index.js" th:src="@{/pc/assets/lib/element-ui/lib/index.js}"></script>
     <script src="/static/pc/assets/lib/jqthumb.min.js" th:src="@{/pc/assets/lib/jqthumb.min.js}"></script>
+    <script th:if="${pageId != null}" th:src="|//portal.chaoxing.com/outer/${pageId}/footer|"></script>
     <script th:inline="javascript">
         activityVue = new Vue({
             el: '#activity-vue',
@@ -133,7 +135,7 @@
                         region.selected = false;
                         regions.push(region);
                     });
-                    regions.splice(0, 1, {
+                    regions.splice(0, 0, {
                         name: "全部",
                         value: "",
                         selected: true
@@ -201,7 +203,7 @@
                     var $this = this;
                     $this.queryParams = {
                         pageNum: 1,
-                        pageSize: 12,
+                        pageSize: 9,
                         sw: "",
                         activityClassifyName: "",
                         date: "",
@@ -223,7 +225,7 @@
                         if (data.success) {
                             $this.loaded = true;
                             $this.activities = data.data.records
-                            $this.pages = Math.ceil(data.data.total/12);
+                            $this.pages = data.data.pages;
                             $this.total = data.data.total;
                         } else {
                             var errorMessage = data.message;

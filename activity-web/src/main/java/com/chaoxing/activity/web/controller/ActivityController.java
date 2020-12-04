@@ -8,13 +8,16 @@ import com.chaoxing.activity.service.ActivityQueryDateService;
 import com.chaoxing.activity.service.GroupRegionFilterService;
 import com.chaoxing.activity.service.GroupService;
 import com.chaoxing.activity.service.activity.classify.ActivityClassifyQueryService;
+import com.chaoxing.activity.util.UserAgentUtils;
 import com.chaoxing.activity.web.util.LoginUtils;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
@@ -29,6 +32,7 @@ import java.util.List;
  * @blame wwb
  * @date 2020-11-20 10:49:54
  */
+@Slf4j
 @Controller
 @RequestMapping("activity")
 public class ActivityController {
@@ -43,7 +47,7 @@ public class ActivityController {
 	private ActivityQueryDateService activityQueryDateService;
 
 	@GetMapping("")
-	public String index(Model model, HttpServletRequest  request) {
+	public String index(HttpServletRequest request, Model model) {
 		LoginUserDTO loginUser = LoginUtils.getLoginUser(request);
 		Integer fid = loginUser.getFid();
 		List<String> activityClassifyNames = activityClassifyQueryService.listOrgsOptionalName(new ArrayList() {{
@@ -55,12 +59,15 @@ public class ActivityController {
 		model.addAttribute("regions", new ArrayList<>());
 		model.addAttribute("areaCode", "");
 		model.addAttribute("topFid", fid);
+		if (UserAgentUtils.isMobileAccess(request)) {
+			return "mobile/index";
+		}
 		return "pc/index";
 	}
 
 
-	@GetMapping("group/{groupCode}/{fid}")
-	public String index(Model model, @PathVariable String groupCode, @PathVariable Integer fid) {
+	@GetMapping("group/{groupCode}")
+	public String index(HttpServletRequest request, Model model, @PathVariable String groupCode, @RequestParam("unitId") Integer fid, Integer pageId) {
 		List<String> activityClassifyNames = activityClassifyQueryService.listOrgsOptionalName(new ArrayList() {{
 			add(fid);
 		}});
@@ -77,6 +84,10 @@ public class ActivityController {
 		model.addAttribute("activityQueryDates", activityQueryDates);
 		model.addAttribute("areaCode", areaCode);
 		model.addAttribute("topFid", fid);
+		model.addAttribute("pageId", pageId);
+		if (UserAgentUtils.isMobileAccess(request)) {
+			return "mobile/index";
+		}
 		return "pc/index";
 	}
 

@@ -1,8 +1,10 @@
 package com.chaoxing.activity.web.interceptor;
 
+import com.alibaba.fastjson.JSON;
 import com.chaoxing.activity.dto.LoginUserDTO;
 import com.chaoxing.activity.service.CookieValidationService;
 import com.chaoxing.activity.service.LoginService;
+import com.chaoxing.activity.util.HttpServletRequestUtils;
 import com.chaoxing.activity.web.util.CookieUtils;
 import com.chaoxing.activity.web.util.LoginUtils;
 import lombok.extern.slf4j.Slf4j;
@@ -33,7 +35,7 @@ public class AutoLoginInterceptor extends HandlerInterceptorAdapter {
 
 	@Override
 	public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
-		log.info("请求地址:{}", request.getRequestURI());
+		log.info("ip:{},请求的url为:{},参数:{}", HttpServletRequestUtils.getClientIp(request), request.getRequestURL().toString(), JSON.toJSONString(request.getParameterMap()));
 		validateCookieLoginUser(request);
 		LoginUserDTO loginUser = LoginUtils.getLoginUser(request);
 		if (loginUser == null) {

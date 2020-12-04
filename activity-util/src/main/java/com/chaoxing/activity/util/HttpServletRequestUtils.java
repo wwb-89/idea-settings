@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import org.apache.commons.lang3.StringUtils;
 
 import javax.servlet.http.HttpServletRequest;
+import java.util.Objects;
 
 /**http请求工具类
  * @author wwb
@@ -20,6 +21,8 @@ public class HttpServletRequestUtils {
 
 	private static final Integer DEFAULT_PAGE_NUM = 1;
 	private static final Integer DEFAULT_PAGE_SIZE = 10;
+
+	private static final String IP_UNKNOWN = "unknown";
 
 	private HttpServletRequestUtils() {
 
@@ -55,6 +58,27 @@ public class HttpServletRequestUtils {
 		}
 		Page<T> page = new Page(pageNum, pageSize);
 		return page;
+	}
+
+	/**获取客户端请求的ip
+	 * @Description
+	 * @author wwb
+	 * @Date 2020-11-26 10:06:01
+	 * @param request
+	 * @return java.lang.String
+	 */
+	public static String getClientIp(HttpServletRequest request) {
+		String ip = request.getHeader("X-Real-IP");
+		if (StringUtils.isBlank(ip) || Objects.equals(IP_UNKNOWN, ip)) {
+			ip = request.getHeader("X-Forwarded-For");
+		}
+		if (StringUtils.isBlank(ip) || Objects.equals(IP_UNKNOWN, ip)) {
+			ip = request.getHeader("Proxy-Client-IP");
+		}
+		if (StringUtils.isBlank(ip) || Objects.equals(IP_UNKNOWN, ip)) {
+			ip = request.getRemoteAddr();
+		}
+		return ip;
 	}
 
 }

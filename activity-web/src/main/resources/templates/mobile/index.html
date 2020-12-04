@@ -30,7 +30,7 @@
         </div>
         <span class="Scancel" v-show="searchShow" @click="searchCancel">取消</span>
     </div>
-    <div class="activity-list" id="mescroll">
+    <div class="activity-list">
         <ul>
             <li v-for="(activity, index) of activities" :key="'activity-' + index" @click="detail(index)">
                 <img :src="activity.coverCloudId | getCloudImgUrl">
@@ -141,7 +141,7 @@
                             region.selected = false;
                             regions.push(region);
                         });
-                        regions.splice(0, 1, {
+                        regions.splice(0, 0, {
                             name: "全部",
                             value: "",
                             selected: true
@@ -180,7 +180,7 @@
                     initMescroll: function () {
                         var $this = this;
                         if ($this.mescroll == null) {
-                            $this.mescroll = new MeScroll("mescroll", {
+                            $this.mescroll = new MeScroll("body", {
                                 //第一个参数"mescroll"对应上面布局结构div的id (1.3.5版本支持传入dom对象)
                                 //如果您的下拉刷新是重置列表数据,那么down完全可以不用配置,具体用法参考第一个基础案例
                                 //解析: down.callback默认调用mescroll.resetUpScroll(),而resetUpScroll会将page.num=1,再触发up.callback

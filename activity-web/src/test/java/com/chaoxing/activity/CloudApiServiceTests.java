@@ -24,7 +24,8 @@ public class CloudApiServiceTests {
 	@Test
 	public void upload() {
 		File file = new File("/Users/wwb/Downloads/6015.jpg_wh300.jpg");
-		String upload = cloudApiService.upload(file);
+		String ip = "171.212.208.156";
+		String upload = cloudApiService.upload(file, ip);
 		System.out.println(upload);
 	}
 
