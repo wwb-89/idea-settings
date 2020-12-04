@@ -242,12 +242,14 @@ input:-ms-input-placeholder, textarea:-ms-input-placeholder {
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
+    word-break: break-all;
 }
 .overHidden2 {
   display: -webkit-box;
   -webkit-box-orient: vertical;
   -webkit-line-clamp: 2;
   overflow: hidden;
+  word-break: break-all;
 }
 
 [v-cloak] {

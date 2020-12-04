@@ -19,7 +19,7 @@
             <div class="search">
                 <input type="text" placeholder="搜索标题">
                 <div class="search-foot">
-                   <img src="../assets/images/search.png" alt="">
+                    <img src="../assets/images/search.png" alt="">
                 </div>
             </div>
 
@@ -48,8 +48,20 @@
 
                     <div class="item">
                         <div class="img-box">
-                            <img src="../assets/images/example.jpg"
-                                alt="">
+                            <img src="../assets/images/example.jpg" alt="">
+                            <div class="tag">活动预备</div>
+                        </div>
+                        <div class="font-box">
+                            <p class="title1">浙江图书馆2020年11月读者活动预告</p>
+                            <p>活动时间：2020-10-10 9:00 ～ 2028-10-1日 16:00</p>
+                            <p>主办单位：浙江图书馆</p>
+                            <p class="overHidden2">活动地点：浙江省杭州市西湖区曙光路73号浙1111111111111111111111111111111111111111111111111111111111111111</p>
+                        </div>
+                    </div>
+
+                    <div class="item">
+                        <div class="img-box">
+                            <img src="../assets/images/example.jpg" alt="">
                             <div class="tag">活动预备</div>
                         </div>
                         <div class="font-box">
@@ -62,22 +74,7 @@
 
                     <div class="item">
                         <div class="img-box">
-                            <img src="../assets/images/example.jpg"
-                                alt="">
-                            <div class="tag">活动预备</div>
-                        </div>
-                        <div class="font-box">
-                            <p class="title1">浙江图书馆2020年11月读者活动预告</p>
-                            <p>活动时间：2020-10-10 9:00 ～ 2028-10-1日 16:00</p>
-                            <p>主办单位：浙江图书馆</p>
-                            <p>活动地点：浙江省杭州市西湖区曙光路73号</p>
-                        </div>
-                    </div>
-
-                    <div class="item">
-                        <div class="img-box">
-                            <img src="../assets/images/example.jpg"
-                                alt="">
+                            <img src="../assets/images/example.jpg" alt="">
                             <div class="tag green">进行中</div>
                         </div>
                         <div class="font-box">
@@ -90,8 +87,7 @@
 
                     <div class="item">
                         <div class="img-box">
-                            <img src="../assets/images/example.jpg"
-                                alt="">
+                            <img src="../assets/images/example.jpg" alt="">
                             <div class="tag black">已结束</div>
                         </div>
                         <div class="font-box">
@@ -105,6 +101,7 @@
 
                 <el-pagination background layout="prev, pager, next" :total="10">
                 </el-pagination>
+
                 <!-- 当列表为空时展示 -->
                 <div class="empty-box" style="display: none;">
                     <img src="../assets/images/empty.png" alt="">
@@ -215,8 +212,8 @@
     <script>
         $(function () {
             $('.jqthumbImg').jqthumb({
-                width:'100%',
-                height:'100%'
+                width: '100%',
+                height: '100%'
             });
         });
     </script>
