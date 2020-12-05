@@ -5,6 +5,7 @@
     <title>活动首页</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="/static/pc/assets/lib/element-ui/lib/theme-chalk/index.css" th:href="@{/pc/assets/lib/element-ui/lib/theme-chalk/index.css}">
+    <link rel="stylesheet" href="/static/pc/assets/css/public.css" th:href="@{/pc/assets/css/public.css}">
     <link rel="stylesheet" href="/static/pc/assets/css/index.css" th:href="@{/pc/assets/css/index.css}">
     <script th:if="${pageId != null}" th:src="|http://portal.chaoxing.com/outer/${pageId}/header|"></script>
     <style type="text/css">
@@ -75,11 +76,11 @@
                         <p class="title1" >{{item.name}}</p>
                         <p>活动时间：{{item.startDate | timestamp2YMD}} ～ {{item.endDate | timestamp2YMD}}</p>
                         <p>主办单位：{{item.createOrgName}}</p>
-                        <p class="overHidden2">活动地点：{{item.address}}</p>
+                        <p class="overHidden2" v-show="item.address">活动地点：{{item.address}}</p>
                     </div>
                 </div>
             </div>
-            <el-pagination v-show="pages > 1" background layout="prev, pager, next" :total="total" :page-size="queryParams.pageSize" :current-page="queryParams.pageNum" @current-change="currenClick"></el-pagination>
+            <el-pagination style="text-align: center;" v-show="pages > 1" background layout="prev, pager, next" :total="total" :page-size="queryParams.pageSize" :current-page="queryParams.pageNum" @current-change="currenClick"></el-pagination>
             <!-- 当列表为空时展示 -->
             <div class="empty-box" v-show="total < 1 && loaded">
                 <img src="/static/pc/assets/images/empty.png" th:src="@{/pc/assets/images/empty.png}">

@@ -1,5 +1,6 @@
 package com.chaoxing.activity.service.activity;
 
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.chaoxing.activity.dto.LoginUserDTO;
 import com.chaoxing.activity.dto.OrgAddressDTO;
@@ -694,6 +695,61 @@ public class ActivityHandleService {
 
 		}
 		return "";
+	}
+
+	/**同步活动状态
+	 * @Description 
+	 * @author wwb
+	 * @Date 2020-12-05 15:30:30
+	 * @param 
+	 * @return void
+	*/
+	public void syncStatus() {
+		// 查询所有的待发布、未进行和进行中的任务
+		List<Integer> statuses = new ArrayList(){{
+			add(Activity.StatusEnum.WAIT_RELEASE.getValue());
+			add(Activity.StatusEnum.RELEASED.getValue());
+			add(Activity.StatusEnum.ONGOING.getValue());
+		}};
+		List<Activity> activities = activityMapper.selectList(new QueryWrapper<Activity>()
+				.lambda()
+				.in(Activity::getStatus, statuses)
+		);
+		if (CollectionUtils.isEmpty(activities)) {
+			return;
+		}
+		List<Integer> needOngoingActivityIds = new ArrayList<>();
+		List<Integer> needEndedActivityIds = new ArrayList<>();
+		LocalDate now = LocalDate.now();
+		// 计算状态
+		for (Activity activity : activities) {
+			Integer status = activity.getStatus();
+			LocalDate startDate = activity.getStartDate();
+			LocalDate endDate = activity.getEndDate();
+			if (endDate.isBefore(now)) {
+				// 已结束
+				needEndedActivityIds.add(activity.getId());
+				continue;
+			}
+			Activity.StatusEnum statusEnum = Activity.StatusEnum.fromValue(status);
+			if (Activity.StatusEnum.RELEASED.equals(statusEnum) && startDate.isBefore(now)) {
+				needOngoingActivityIds.add(activity.getId());
+			}
+		}
+		if (CollectionUtils.isNotEmpty(needOngoingActivityIds)) {
+			activityMapper.update(null, new UpdateWrapper<Activity>()
+					.lambda()
+					.in(Activity::getId, needOngoingActivityIds)
+					.set(Activity::getStatus, Activity.StatusEnum.ONGOING.getValue())
+			);
+		}
+		if (CollectionUtils.isNotEmpty(needEndedActivityIds)) {
+			activityMapper.update(null, new UpdateWrapper<Activity>()
+					.lambda()
+					.in(Activity::getId, needEndedActivityIds)
+					.set(Activity::getStatus, Activity.StatusEnum.ENDED.getValue())
+			);
+		}
 	}
 
 }
