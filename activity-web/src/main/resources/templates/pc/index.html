@@ -73,7 +73,7 @@
                         <div class="tag black" v-if="item.status == 4">已结束</div>
                     </div>
                     <div class="font-box">
-                        <p class="title1" >{{item.name}}</p>
+                        <p class="title1 overHidden2" >{{item.name}}</p>
                         <p>活动时间：{{item.startDate | timestamp2YMD}} ～ {{item.endDate | timestamp2YMD}}</p>
                         <p>主办单位：{{item.createOrgName}}</p>
                         <p class="overHidden2" v-show="item.address">活动地点：{{item.address}}</p>
