@@ -5,12 +5,14 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="../assets/css/public.css">
+    <link rel="stylesheet" href="../assets/lib/element-ui/lib/theme-chalk/index.css">
+    <link rel="stylesheet" href="../assets/css/reset.css">
     <link rel="stylesheet" href="../assets/css/index.css">
     <title>活动首页</title>
 </head>
 
 <body>
-    <div class="page" id="app">
+    <div class="page" id="app"> 
         <div class="banner">
             <img src="../assets/images/banner.png" alt="" class="jqthumbImg">
         </div>
@@ -28,8 +30,7 @@
                     <span class="title">{{item.title}}</span>
                     <ul>
                         <li class='active'>全选</li>
-                        <li v-for="type in item.list" :key="type.id">{{type.name}}
-                        </li>
+                        <li v-for="type in item.list" :key="type.id">{{type.name}}</li>
                     </ul>
                 </div>
             </div>
@@ -69,34 +70,7 @@
                             <p>活动地点：浙江省杭州市西湖区曙光路73号</p>
                         </div>
                     </div>
-
-                    <div class="item">
-                        <div class="img-box">
-                            <img src="../assets/images/example.jpg" alt="">
-                            <div class="tag green">进行中</div>
-                        </div>
-                        <div class="font-box">
-                            <p class="title1">浙江图书馆2020年11月读者活动预告</p>
-                            <p>活动时间：2020-10-10 9:00 ～ 2028-10-1日 16:00</p>
-                            <p>主办单位：浙江图书馆</p>
-                            <p>活动地点：浙江省杭州市西湖区曙光路73号</p>
-                        </div>
-                    </div>
-
-                    <div class="item">
-                        <div class="img-box">
-                            <img src="../assets/images/example.jpg" alt="">
-                            <div class="tag black">已结束</div>
-                        </div>
-                        <div class="font-box">
-                            <p class="title1">浙江图书馆2020年11月读者活动预告</p>
-                            <p>活动时间：2020-10-10 9:00 ～ 2028-10-1日 16:00</p>
-                            <p>主办单位：浙江图书馆</p>
-                            <p>活动地点：浙江省杭州市西湖区曙光路73号</p>
-                        </div>
-                    </div>
                 </div>
-
                 <el-pagination background layout="prev, pager, next" :total="10">
                 </el-pagination>
 
@@ -109,6 +83,7 @@
         </div>
     </div>
     <script src="../assets/lib/vue.js"></script>
+    <script src="../assets/lib/element-ui/lib/index.js"></script>
     <script src="../assets/lib/jquery.min.js"></script>
     <script src="../assets/lib/jqthumb.min.js"></script>
     <script>
