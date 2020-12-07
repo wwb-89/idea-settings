@@ -96,6 +96,7 @@
 .item-box .head li {
     margin-right: 20px;
     cursor: pointer;
+    display: inline-block;
 }
 
 .active1 {
@@ -111,7 +112,7 @@
 .c-item .item {
     width: 380px;
     /* height: 318px; */
-    height: 342px;
+    height: 360px;
     background: #ffffff;
     border-radius: 6px;
     box-shadow: 0px 12px 48px 16px rgba(0, 0, 0, 0.03), 0px 9px 28px 0px rgba(0, 0, 0, 0.05), 0px 6px 16px -8px rgba(0, 0, 0, 0.08);
@@ -150,6 +151,7 @@
     border-radius: 4px;
     font-size: 13px;
     color: #ffffff;
+    text-align: center;
 }
 .font-box{
     color: #666666;
@@ -208,4 +210,4 @@
     -webkit-line-clamp: 2;
     overflow: hidden;
     word-break: break-all;
-  }
+}
