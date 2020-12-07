@@ -103,7 +103,7 @@
                 filterStatus: [],
                 queryParams: {
                     pageNum: 1,
-                    pageSize: 10,
+                    pageSize: 8,
                     status: ""
                 },
                 loaded: false,
@@ -116,7 +116,7 @@
                 // 发布还是更新发布范围
                 isRelease: true,
                 operations: {
-                    edit: {name: "修改", value: "edit"},
+                    edit: {name: "编辑", value: "edit"},
                     delete: {name: "删除", value: "delete"},
                     release: {name: "发布", value: "release"},
                     cancelRelease: {name: "下架", value: "cancelRelease"},
@@ -137,7 +137,7 @@
                 var $this = this;
                 $this.bindEvents();
                 $this.loadData();
-                // 监听活动的创建，当创建或者修改活动后重新加载数据
+                // 监听活动的创建，当创建或者编辑活动后重新加载数据
                 document.addEventListener('visibilitychange',function(){
                     if ("visible" === document.visibilityState) {
                         // 判断storage的变化
