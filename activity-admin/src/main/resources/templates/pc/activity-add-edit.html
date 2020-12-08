@@ -39,7 +39,7 @@
         </div>
         <div>
             <!--<button type="button" class="cancle-btn" v-show="activity.webTemplateId">预览</button>-->
-            <button type="button" class="create-btn" v-show="step == 1" @click="nextStep">下一步</button>
+            <button type="button" class="create-btn" v-show="step == 1" @click="save">保存</button>
         </div>
     </div>
     <div v-show="step == 1">
@@ -214,7 +214,7 @@
     <!--选择门户模板-->
     <div class="info box" v-show="step > 1">
         <div class="title">选择模板</div>
-        <div class="page-show" v-show="!activity.pageId">
+        <div class="page-show">
             <div class="page-box">
                 <div class="page-item" v-for="(webTemplate, index) of webTemplates" :key="'web-templates' + index">
                     <div class="mask-box">
@@ -225,21 +225,6 @@
                         </div>
                     </div>
                     <div class="desc overHidden1">{{webTemplate.name}}</div>
-                </div>
-            </div>
-        </div>
-        <!-- 编辑活动时预览模板 -->
-        <div class="page-show" v-show="activity.pageId">
-            <div class="page-box">
-                <div class="page-item" v-for="(webTemplate, index) of webTemplates" :key="'web-templates' + index" v-if="webTemplate.id == activity.webTemplateId">
-                    <div class="mask-box">
-                        <img class="img" :src="webTemplate.coverUrl">
-                        <!-- hover时出现 -->
-                        <div class="mask">
-                            <div class="normal-btn preview" @click="previePage">预览</div>
-                            <div class="normal-btn after-sure" @click="configPage">页面配置</div>
-                        </div>
-                    </div>
                 </div>
             </div>
         </div>
@@ -305,6 +290,25 @@
             </div>
         </div>
     </div>
+    <!--编辑页面就不到下一步了-->
+    <div class="info box" v-if="activity.pageId">
+        <div class="set-box">
+            <div class="title">页面设置</div>
+        </div>
+        <div class="item-box" v-if="activity.webTemplateId == webTemplate.id" v-for="(webTemplate, index) of webTemplates" :key="'web-templates' + index">
+            <div class="page-demo">
+                <img :src="webTemplate.coverUrl" class="jqthumbImg">
+            </div>
+            <div class="pageset-right">
+                <div class="copy-box">
+                    <el-input readonly type="text" class="copy-link" v-model.trim="webTemplate.previewUrl"></el-input>
+                    <el-input v-show="false" id="template-preview-url-input" readonly type="text" class="copy-link" v-model.trim="webTemplate.previewUrl"></el-input>
+                    <a href="javascript:" class="copy" @click="copyTemplatePreviewUrl">复制</a>
+                </div>
+                <button type="button" class="cancle-btn" @click="configPage">页面配置</button>
+            </div>
+        </div>
+    </div>
     <!-- 地图弹窗 -->
     <vue-map ref="activityMap" :map-dom-id="'activity-map'" @callback="activityAddressSure"></vue-map>
     <vue-map ref="signInMap" :map-dom-id="'sign-in-map'" @callback="signInAddressSure"></vue-map>
@@ -359,6 +363,10 @@
             },
             created: function () {
                 var $this = this;
+                var step = [[${step}]];
+                if (!activityApp.isEmpty(step)) {
+                    $this.step = step > 2 ? 2 : step;
+                }
                 if (activityApp.isEmpty($this.activity)) {
                     // 第一个分类的id
                     var firstActivityClassifyId = $this.activityClassifies[0].id;
@@ -794,12 +802,7 @@
                         return;
                     }
                     // 创建活动
-                    var tips = "创建";
                     var url = ctx + "/api/activity/new";
-                    if (!activityApp.isEmpty($this.activity.id)) {
-                        tips = "修改";
-                        url = ctx + "/api/activity/edit";
-                    }
                     var params = {
                         activityJsonStr: activityApp.getJsonStr($this.activity),
                         signJsonStr: activityApp.getJsonStr($this.sign)
@@ -814,12 +817,46 @@
                         } else {
                             var errorMessage = data.message;
                             if (activityApp.isEmpty(errorMessage)) {
-                                errorMessage = tips + "活动失败";
+                                errorMessage = "创建活动失败";
                             }
                             app.showMsg(errorMessage);
                         }
                     }, function () {
-                        app.showMsg(tips + "活动失败");
+                        app.showMsg("创建活动失败");
+                    });
+                },
+                // 编辑活动提交
+                save: function () {
+                    var $this = this;
+                    if (!$this.validateForm()) {
+                        return;
+                    }
+                    var url = ctx + "/api/activity/edit";
+                    var params = {
+                        activityJsonStr: activityApp.getJsonStr($this.activity),
+                        signJsonStr: activityApp.getJsonStr($this.sign)
+                    };
+                    app.ajaxPostWithLoading(url, params, function (data) {
+                        if (data.success) {
+                            app.activityChanged();
+                            var activityData = data.data;
+                            $this.$set($this.sign, "id", activityData.signId);
+                            if (activityApp.isEmpty($this.activity.pageId)) {
+                                $this.step = 2;
+                            } else {
+                                app.showMsg("修改活动成功", function () {
+                                    window.close();
+                                });
+                            }
+                        } else {
+                            var errorMessage = data.message;
+                            if (activityApp.isEmpty(errorMessage)) {
+                                errorMessage = "修改活动失败";
+                            }
+                            app.showMsg(errorMessage);
+                        }
+                    }, function () {
+                        app.showMsg("修改活动失败");
                     });
                 },
                 // 选中活动的日期范围
@@ -854,12 +891,14 @@
                     var url = ctx + "/api/activity/"+ $this.activity.id +"/bind/template/" + webTemplate.id;
                     app.ajaxPostWithLoading(url, {}, function (data) {
                         if (data.success) {
+                            app.activityChanged();
                             var pageId = data.data;
-                            $this.$set($this.activity, "pageId", pageId);
                             $this.$set($this.activity, "webTemplateId", $this.handleWebTemplateId);
                             app.showMsg("选择模板成功", function () {
                                 // 到编辑门户页面
-                                window.location.href = activityApp.getMhEditorUrl(pageId);
+                                window.location.replace(activityApp.getMhEditorUrl(pageId));
+                                // 禁止返回当前页面
+                                window.history.back(-1);
                             });
                         } else {
                             var errorMessage = data.message;
@@ -881,11 +920,17 @@
                 configPage: function () {
                     var $this = this;
                     window.location.href = activityApp.getMhEditorUrl($this.activity.pageId);
+                },
+                // 复制预览地址
+                copyTemplatePreviewUrl: function () {
+                    var $this = this;
+                    $("#template-preview-url-input")[0].select();
+                    document.execCommand("copy");
+                    app.showMsg("复制成功");
                 }
             }
         })
     </script>
 </div>
 </body>
-
 </html>

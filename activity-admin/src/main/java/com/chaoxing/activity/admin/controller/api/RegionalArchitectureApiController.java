@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.RestController;
 import javax.annotation.Resource;
 import java.util.List;
 
-/**
+/**层级架构api服务
  * @author wwb
  * @version ver 1.0
  * @className RegionalArchitectureApiController

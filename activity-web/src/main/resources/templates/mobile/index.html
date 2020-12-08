@@ -212,7 +212,7 @@
                             if (data.success) {
                                 $this.loaded = true;
                                 $this.mescroll.endByPage(data.data.records.length, data.data.pages);
-                                $this.activities = data.data.records;
+                                $this.activities.pushArray(data.data.records);
                                 $this.queryParams.pageNum++;
                             } else {
                                 var errorMessage = data.message;
@@ -292,6 +292,7 @@
                                 return false;
                             }
                         });
+                        $this.activities = [];
                         $this.queryParams.pageNum = 1;
                     },
                     queryParams2Condition: function () {
