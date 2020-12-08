@@ -34,7 +34,7 @@ import java.util.Optional;
  */
 @Slf4j
 @Controller
-@RequestMapping("lib")
+@RequestMapping("")
 public class ActivityController {
 
 	@Resource
@@ -46,8 +46,17 @@ public class ActivityController {
 	@Resource
 	private ActivityQueryDateService activityQueryDateService;
 
-	@GetMapping
+	@GetMapping("")
 	public String index(HttpServletRequest request, Model model, String code, @RequestParam(value = "unitId", required = false) Integer fid, Integer pageId) {
+		return handleData(request, model, code, fid, pageId);
+	}
+
+	@GetMapping("lib")
+	public String libIndex(HttpServletRequest request, Model model, String code, @RequestParam(value = "unitId", required = false) Integer fid, Integer pageId) {
+		return handleData(request, model, code, fid, pageId);
+	}
+
+	private String handleData(HttpServletRequest request, Model model, String code, @RequestParam(value = "unitId", required = false) Integer fid, Integer pageId) {
 		fid = Optional.ofNullable(fid).orElse(LoginUtils.getLoginUser(request).getFid());
 		List<String> activityClassifyNames = activityClassifyQueryService.listOrgsOptionalName(Lists.newArrayList(fid));
 		model.addAttribute("activityClassifyNames", activityClassifyNames);

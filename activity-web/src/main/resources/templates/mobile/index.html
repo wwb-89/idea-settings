@@ -211,6 +211,7 @@
                         app.ajaxPost(url, params, function (data) {
                             if (data.success) {
                                 $this.loaded = true;
+                                console.log(data.data.records.length + "-" + data.data.pages);
                                 $this.mescroll.endByPage(data.data.records.length, data.data.pages);
                                 $this.activities.pushArray(data.data.records);
                                 $this.queryParams.pageNum++;
@@ -294,6 +295,7 @@
                         });
                         $this.activities = [];
                         $this.queryParams.pageNum = 1;
+                        $this.mescroll.setPageNum($this.queryParams.pageNum);
                     },
                     queryParams2Condition: function () {
                         var $this = this;
