@@ -617,9 +617,9 @@
                                 @select="handleSelect" clearable>
                                 <template slot-scope="scope"> <i class="el-icon-search fl mgr10"></i>
                                     <div class="address-box">
-                                        <div class="title1">{{ scope.title }}</div>
+                                        <div class="title1">{{ scope.item.title }}</div>
                                         &#45;&#45;
-                                        <span class="address ellipsis">{{ scope.address }}</span>
+                                        <span class="address ellipsis">{{ scope.item.address }}</span>
                                     </div>
                                 </template>
                             </el-autocomplete>
@@ -753,7 +753,7 @@
                 link: "http://xueya.chaoxing.com/school-base/sc-sc-school-base/sc-sc-"
             },
             mounted: function () {
-                this.initMap()
+                // this.initMap()
             },
             methods: {
                 initMap: function () {
@@ -843,6 +843,7 @@
                 },
                 handleFocus: function () {
                     this.addressShow = true
+                    this.initMap()
                     $('body').addClass('scroll')
                     $(window).scrollTop(0);
                 },
@@ -895,7 +896,6 @@
                 url.select();
                 document.execCommand("Copy");
             })
-
         });
     </script>
 </body>
