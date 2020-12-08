@@ -118,9 +118,11 @@ select {
     color: #999999;
     font-size: 16px;
 }
-.wrap{
+
+.wrap {
     flex-wrap: wrap;
 }
+
 .input-box>.item {
     display: flex;
     width: 180px;
@@ -243,9 +245,11 @@ input[type="number"] {
     font-size: 16px;
     color: #333333;
 }
-.type-item.add{
+
+.type-item.add {
     border: 1px dashed #e9e9e9;
 }
+
 .type-item img {
     width: 16px;
     height: 16px;
@@ -456,6 +460,7 @@ input.btn-name,
     bottom: 0;
     background: rgba(0, 0, 0, 0.3);
 }
+
 .dailog-box2>.dailog {
     width: 550px;
 }
@@ -492,10 +497,12 @@ input.btn-name,
     height: 30px;
     margin-bottom: 20px;
 }
-.warn img{
+
+.warn img {
     width: 100%;
     height: 100%;
 }
+
 .delete-dailog>span {
     font-size: 16px;
     font-weight: 400;
@@ -957,7 +964,8 @@ input.btn-name,
     text-align: center;
     display: none;
 }
-.required-img{
+
+.required-img {
     width: 6px;
     height: 6px;
     /* vertical-align: top;
@@ -966,11 +974,44 @@ input.btn-name,
     margin-right: 3px;
     margin-bottom: 8px;
 }
-.position{
+
+.position {
     position: relative;
     margin-right: 10px;
     margin-left: 0;
 }
-.line-h{
+
+.line-h {
     line-height: unset;
+}
+
+.page-demo {
+    width: 250px;
+    height: 150px;
+    border: 1px solid #e9e9e9;
+    border-radius: 6px;
+}
+.pageset-right{
+    position: relative;
+    margin-left: 30px;
+    padding: 20px 0;
+}
+.pageset-right input{
+    width: 415px;
+}
+.pageset-right .cancle-btn{
+    margin-top: 40px;
+}
+.copy-box{
+    position: relative;
+}
+.pageset-right a{
+    position: absolute;
+    right: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+    z-index: 2;
+    font-size: 14px;
+    color: #0084ff;
+    background-color: #fff;
 }
