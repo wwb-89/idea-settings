@@ -64,6 +64,10 @@ public class Activity {
     private Integer webTemplateId;
     /** 门户网页id; column: page_id*/
     private Integer pageId;
+    /** 门户预览地址; column: preview_url*/
+    private String previewUrl;
+    /** 门户编辑地址; column: edit_url*/
+    private String editUrl;
     /** 是否已发布; column: is_released*/
     @TableField(value = "is_released")
     private Boolean released;

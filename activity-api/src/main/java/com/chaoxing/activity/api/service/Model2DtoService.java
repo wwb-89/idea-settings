@@ -73,7 +73,7 @@ public class Model2DtoService {
 				// 封面地址
 				activityExternal.setCoverUrl(cloudApiService.getCloudImgUrl(activityExternal.getCoverCloudId()));
 				// 访问地址
-				activityExternal.setUrl(mhApiService.packageActivityAccessUrl(activityExternal.getPageId()));
+				activityExternal.setUrl(activity.getPreviewUrl());
 			}
 		}
 		return activityExternals;

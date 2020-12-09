@@ -258,8 +258,7 @@ public class ActivityMhAppApiController {
 			for (Activity record : records) {
 				MhGeneralAppResultDataDTO mhGeneralAppResultData = new MhGeneralAppResultDataDTO();
 				mhGeneralAppResultData.setType(3);
-				Integer pageId = record.getPageId();
-				mhGeneralAppResultData.setOrsUrl(mhApiService.packageActivityAccessUrl(pageId));
+				mhGeneralAppResultData.setOrsUrl(record.getPreviewUrl());
 				mhGeneralAppResultData.setPop(0);
 				mhGeneralAppResultData.setPopUrl("");
 				mhGeneralAppResultData.setFields(function.apply(record));

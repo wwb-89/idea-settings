@@ -6,6 +6,7 @@ import com.chaoxing.activity.dto.LoginUserDTO;
 import com.chaoxing.activity.dto.OrgAddressDTO;
 import com.chaoxing.activity.dto.manager.WfwRegionalArchitectureDTO;
 import com.chaoxing.activity.dto.mh.MhCloneParamDTO;
+import com.chaoxing.activity.dto.mh.MhCloneResultDTO;
 import com.chaoxing.activity.dto.module.SignFormDTO;
 import com.chaoxing.activity.mapper.ActivityAreaFlagMapper;
 import com.chaoxing.activity.mapper.ActivityMapper;
@@ -501,10 +502,10 @@ public class ActivityHandleService {
 	 * @param activityId
 	 * @param webTemplateId
 	 * @param loginUser
-	 * @return java.lang.Integer
+	 * @return com.chaoxing.activity.dto.mh.MhCloneResultDTO
 	*/
 	@Transactional(rollbackFor = Exception.class)
-	public Integer bindWebTemplate(Integer activityId, Integer webTemplateId, LoginUserDTO loginUser) {
+	public MhCloneResultDTO bindWebTemplate(Integer activityId, Integer webTemplateId, LoginUserDTO loginUser) {
 		Activity activity = activityValidationService.activityExist(activityId);
 		// 如果已经选择了模板就不能再选择
 		Integer webTemplateId1 = activity.getWebTemplateId();
@@ -515,14 +516,16 @@ public class ActivityHandleService {
 		createModuleByWebTemplateId(activityId, webTemplateId, loginUser);
 		// 克隆
 		MhCloneParamDTO mhCloneParam = packageMhCloneParam(activity, webTemplateId, loginUser);
-		Integer pageId = mhApiService.cloneTemplate(mhCloneParam);
+		MhCloneResultDTO mhCloneResult = mhApiService.cloneTemplate(mhCloneParam);
 		activityMapper.update(null, new UpdateWrapper<Activity>()
 				.lambda()
 				.eq(Activity::getId, activityId)
 				.set(Activity::getWebTemplateId, webTemplateId)
-				.set(Activity::getPageId, pageId)
+				.set(Activity::getPageId, mhCloneResult.getPageId())
+				.set(Activity::getPreviewUrl, mhCloneResult.getPreviewUrl())
+				.set(Activity::getEditUrl, mhCloneResult.getEditUrl())
 		);
-		return pageId;
+		return mhCloneResult;
 	}
 
 	/**创建模块

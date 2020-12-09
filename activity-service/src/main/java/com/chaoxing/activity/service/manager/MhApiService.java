@@ -3,6 +3,7 @@ package com.chaoxing.activity.service.manager;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.chaoxing.activity.dto.mh.MhCloneParamDTO;
+import com.chaoxing.activity.dto.mh.MhCloneResultDTO;
 import com.chaoxing.activity.util.constant.ActivityMhUrlConstant;
 import com.chaoxing.activity.util.exception.BusinessException;
 import lombok.extern.slf4j.Slf4j;
@@ -38,9 +39,9 @@ public class MhApiService {
 	 * @author wwb
 	 * @Date 2020-11-23 20:44:46
 	 * @param mhCloneParam
-	 * @return java.lang.Integer
+	 * @return com.chaoxing.activity.dto.mh.MhCloneResultDTO
 	*/
-	public Integer cloneTemplate(MhCloneParamDTO mhCloneParam) {
+	public MhCloneResultDTO cloneTemplate(MhCloneParamDTO mhCloneParam) {
 		Integer fid = mhCloneParam.getWfwfid();
 		Integer uid = mhCloneParam.getUid();
 		String url = String.format(CLONE_TEMPLATE_URL, mhCloneParam.getTemplateId(), fid, uid, mhCloneParam.getWebsiteName());
@@ -51,28 +52,16 @@ public class MhApiService {
 		JSONObject jsonObject = JSON.parseObject(result);
 		Integer code = jsonObject.getInteger("code");
 		if (Objects.equals(code, 1)) {
-			Integer pageId = jsonObject.getJSONObject("data").getInteger("pageId");
-			return pageId;
+			JSONObject data = jsonObject.getJSONObject("data");
+			return MhCloneResultDTO.builder()
+					.pageId(data.getInteger("pageId"))
+					.previewUrl(data.getString("preview"))
+					.editUrl(data.getString("edit"))
+					.build();
 		} else {
 			String errorMessage = jsonObject.getString("message");
 			throw new BusinessException(errorMessage);
 		}
-	}
-
-	/**封装活动访问的地址
-	 * @Description 
-	 * @author wwb
-	 * @Date 2020-11-25 14:04:35
-	 * @param pageId
-	 * @return java.lang.String
-	*/
-	public String packageActivityAccessUrl(Integer pageId) {
-		if (pageId == null) {
-			return "";
-		}
-		StringBuilder accessUrlStringBuilder = new StringBuilder();
-		accessUrlStringBuilder.append(String.format(ActivityMhUrlConstant.ACTIVITY_ACCESS_URL, pageId));
-		return accessUrlStringBuilder.toString();
 	}
 
 }

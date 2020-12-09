@@ -255,20 +255,6 @@
         }
     };
     /**
-     * 获取门户编辑yrl
-     * @param pageId
-     */
-    activityApp.prototype.getMhEditorUrl = function (pageId) {
-        return "http://mh.chaoxing.com/page/" + pageId + "/edit";
-    };
-    /**
-     * 获取页面预览url
-     * @param pageId
-     */
-    activityApp.prototype.getMhPreviewUrl = function (pageId) {
-        return "http://mh.chaoxing.com/page/" + pageId + "/show";
-    };
-    /**
      * 获取活动默认封面云盘id
      * @returns {string}
      */

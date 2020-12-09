@@ -254,10 +254,9 @@
                 detail: function (index) {
                     var $this = this;
                     var activity = $this.activities[index];
-                    console.log(activity);
-                    var pageId = activity.pageId;
-                    if (!activityApp.isEmpty(pageId)) {
-                        window.open(activityApp.getMhPreviewUrl(pageId));
+                    var previewUrl = activity.previewUrl;
+                    if (!activityApp.isEmpty(previewUrl)) {
+                        window.open(previewUrl);
                     }
                 }
             }

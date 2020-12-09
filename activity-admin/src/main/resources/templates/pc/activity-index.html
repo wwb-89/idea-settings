@@ -410,16 +410,16 @@
                 },
                 // 配置页面
                 configPage: function (activity) {
-                    var pageId = activity.pageId;
-                    if (!activityApp.isEmpty(pageId)) {
-                        window.open(activityApp.getMhEditorUrl(pageId));
+                    var editUrl = activity.editUrl;
+                    if (!activityApp.isEmpty(editUrl)) {
+                        window.open(editUrl);
                     }
                 },
                 // 预览页面
                 previewPage: function (activity) {
-                    var pageId = activity.pageId;
-                    if (!activityApp.isEmpty(pageId)) {
-                        window.open(activityApp.getMhPreviewUrl(pageId));
+                    var previewUrl = activity.previewUrl;
+                    if (!activityApp.isEmpty(previewUrl)) {
+                        window.open(previewUrl);
                     }
                 }
             }

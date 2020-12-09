@@ -16,6 +16,8 @@
         <result column="sign_id" jdbcType="INTEGER" property="signId" />
         <result column="web_template_id" jdbcType="INTEGER" property="webTemplateId" />
         <result column="page_id" jdbcType="INTEGER" property="pageId" />
+        <result column="preview_url" jdbcType="VARCHAR" property="previewUrl" />
+        <result column="edit_url" jdbcType="VARCHAR" property="editUrl" />
         <result column="is_released" jdbcType="BIT" property="released" />
         <result column="release_time" jdbcType="TIMESTAMP" property="releaseTime" />
         <result column="release_uid" jdbcType="INTEGER" property="releaseUid" />
@@ -31,7 +33,7 @@
     </resultMap>
     <sql id="Base_Column_List">
         t.id, t.name, t.start_date, t.end_date, t.cover_cloud_id, t.activity_type, t.address,
-        t.longitude, t.dimension, t.activity_classify_id, t.is_enable_sign, t.sign_id, t.web_template_id, t.page_id,
+        t.longitude, t.dimension, t.activity_classify_id, t.is_enable_sign, t.sign_id, t.web_template_id, t.page_id, t.preview_url, t.edit_url,
         t.is_released, t.release_time, t.release_uid, t.status, t.is_open_audit, t.audit_status, 
         t.create_uid, t.create_user_name, t.create_fid, t.create_org_name, t.create_time,
         t.update_time
