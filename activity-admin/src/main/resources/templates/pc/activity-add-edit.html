@@ -301,8 +301,7 @@
             </div>
             <div class="pageset-right">
                 <div class="copy-box">
-                    <el-input readonly type="text" class="copy-link" v-model.trim="webTemplate.previewUrl"></el-input>
-                    <el-input v-show="false" id="template-preview-url-input" readonly type="text" class="copy-link" v-model.trim="webTemplate.previewUrl"></el-input>
+                    <el-input readonly type="text" class="copy-link" v-model.trim="getPreviePageUrl()"></el-input>
                     <a href="javascript:" class="copy" @click="copyTemplatePreviewUrl">复制</a>
                 </div>
                 <button type="button" class="cancle-btn" @click="configPage">页面配置</button>
@@ -312,6 +311,8 @@
     <!-- 地图弹窗 -->
     <vue-map ref="activityMap" :map-dom-id="'activity-map'" @callback="activityAddressSure"></vue-map>
     <vue-map ref="signInMap" :map-dom-id="'sign-in-map'" @callback="signInAddressSure"></vue-map>
+    <!--预览url复制容器-->
+    <input type="text" id="template-preview-url-input" v-model.trim="getPreviePageUrl()" style="position: absolute; top: -100px; height: 1px;">
 </div>
 <div th:replace="pc/include/common_js :: common_js(~{::script})">
     <script src="/static/pc/assets/lib/element-ui/lib/index.js" th:src="@{/pc/assets/lib/element-ui/lib/index.js}"></script>
@@ -910,6 +911,10 @@
                     }, function () {
                         app.showMsg("选择模板失败");
                     });
+                },
+                getPreviePageUrl: function () {
+                    var $this = this;
+                    return activityApp.getMhPreviewUrl($this.activity.pageId);
                 },
                 // 预览页面
                 previePage: function () {
