@@ -86,7 +86,9 @@
     border-radius: 3px;
     color: white;
 }
-
+.item-box{
+    min-height: 429px;
+}
 .item-box .head {
     display: flex;
     justify-content: space-between;
