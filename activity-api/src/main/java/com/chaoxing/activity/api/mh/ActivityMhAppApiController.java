@@ -149,10 +149,13 @@ public class ActivityMhAppApiController {
 		StringBuilder signPepleNumDescribe = new StringBuilder();
 		Integer limitNum = signParticipation.getLimitNum();
 		Integer signedNum = signParticipation.getSignedNum();
-		signPepleNumDescribe.append(signedNum);
-		if (limitNum != null && limitNum.intValue() > 0) {
-			signPepleNumDescribe.append("/");
-			signPepleNumDescribe.append(limitNum);
+		signedNum = Optional.ofNullable(signedNum).orElse(0);
+		if (signedNum.compareTo(0) > 0) {
+			signPepleNumDescribe.append(signedNum);
+			if (limitNum != null && limitNum.intValue() > 0) {
+				signPepleNumDescribe.append("/");
+				signPepleNumDescribe.append(limitNum);
+			}
 		}
 		mhGeneralAppResultDataFields.add(MhGeneralAppResultDataDTO.MhGeneralAppResultDataFieldDTO.builder()
 				.key("参与人数")
