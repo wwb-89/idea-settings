@@ -40,7 +40,7 @@ public class AutoLoginInterceptor extends HandlerInterceptorAdapter {
 			// 试着登录
 			String uid = CookieUtils.getUid(request);
 			String fid = CookieUtils.getFid(request);
-			if (StringUtils.isNotBlank(uid)) {
+			if (StringUtils.isNotBlank(uid) && StringUtils.isNotBlank(fid)) {
 				long validateTime = CookieUtils.getValidateTime(request);
 				String signature = CookieUtils.getSignature(request);
 				if (cookieValidationService.isEffective(Integer.parseInt(uid), validateTime, signature)) {
