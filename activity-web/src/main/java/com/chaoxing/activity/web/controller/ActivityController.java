@@ -8,6 +8,7 @@ import com.chaoxing.activity.service.GroupRegionFilterService;
 import com.chaoxing.activity.service.GroupService;
 import com.chaoxing.activity.service.activity.classify.ActivityClassifyQueryService;
 import com.chaoxing.activity.util.UserAgentUtils;
+import com.chaoxing.activity.util.annotation.LoginRequired;
 import com.chaoxing.activity.web.util.LoginUtils;
 import com.google.common.collect.Lists;
 import lombok.extern.slf4j.Slf4j;
@@ -88,6 +89,7 @@ public class ActivityController {
 	 * @param pageId
 	 * @return java.lang.String
 	*/
+	@LoginRequired
 	@GetMapping("bas")
 	public String basIndex(HttpServletRequest request, Model model, String code, @RequestParam(value = "unitId", required = false) Integer fid, Integer pageId) {
 		return handleData(request, model, code, fid, pageId);
@@ -104,6 +106,7 @@ public class ActivityController {
 	 * @param pageId
 	 * @return java.lang.String
 	*/
+	@LoginRequired
 	@GetMapping("edu")
 	public String eduIndex(HttpServletRequest request, Model model, String code, @RequestParam(value = "unitId", required = false) Integer fid, Integer pageId) {
 		return handleData(request, model, code, fid, pageId);

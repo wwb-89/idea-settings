@@ -1,6 +1,7 @@
 package com.chaoxing.activity.web.config;
 
 import com.chaoxing.activity.web.interceptor.AutoLoginInterceptor;
+import com.chaoxing.activity.web.interceptor.LoginRequiredInterceptor;
 import com.chaoxing.activity.web.interceptor.LoginUserValidateInterceptor;
 import org.springframework.boot.web.server.ErrorPage;
 import org.springframework.boot.web.server.ErrorPageRegistrar;
@@ -29,6 +30,8 @@ public class WebConfig implements WebMvcConfigurer, ErrorPageRegistrar {
 	private LoginUserValidateInterceptor loginUserValidateInterceptor;
 	@Resource
 	private AutoLoginInterceptor autoLoginInterceptor;
+	@Resource
+	private LoginRequiredInterceptor loginRequiredInterceptor;
 
 	private List<String> listStaticResourcePathPatterns() {
 		return new ArrayList(){{
@@ -44,6 +47,7 @@ public class WebConfig implements WebMvcConfigurer, ErrorPageRegistrar {
 		List<String> staticResourcePathPatterns = listStaticResourcePathPatterns();
 		registry.addInterceptor(loginUserValidateInterceptor).addPathPatterns("/**").excludePathPatterns(staticResourcePathPatterns);
 		registry.addInterceptor(autoLoginInterceptor).addPathPatterns("/**").excludePathPatterns(staticResourcePathPatterns);
+		registry.addInterceptor(loginRequiredInterceptor).addPathPatterns("/**").excludePathPatterns(staticResourcePathPatterns);
 	}
 
 	@Override
