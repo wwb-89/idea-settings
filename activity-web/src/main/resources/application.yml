@@ -79,7 +79,6 @@ server:
       tracking-modes: cookie
     encoding:
       force: true
-    context-path: /hd
   tomcat:
     ## 不限制post的大小
     max-http-form-post-size: -1

@@ -14,9 +14,9 @@ Vue.component('vue-map', {
         "                    <el-autocomplete style='width:100%;' popper-class='autoAddressClass' v-model.trim='address' :fetch-suggestions='querySearchAsync' :trigger-on-focus='false' placeholder='请输入地址' @select='handleSelect' clearable>\n" +
         "                        <template slot-scope='item'> <i class='el-icon-search fl mgr10'></i>\n" +
         "                            <div class='address-box'>\n" +
-        "                                <div class='title1'>{{ item.title }}</div>\n" +
+        "                                <div class='title1'>{{ scope.item.title }}</div>\n" +
         "                                --\n" +
-        "                                <span class='address ellipsis'>{{ item.address }}</span>\n" +
+        "                                <span class='address ellipsis'>{{ scope.item.address }}</span>\n" +
         "                            </div>\n" +
         "                        </template>\n" +
         "                    </el-autocomplete>\n" +
