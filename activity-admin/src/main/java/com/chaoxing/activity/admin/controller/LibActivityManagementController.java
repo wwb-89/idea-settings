@@ -30,7 +30,7 @@ import java.util.List;
  * @date 2020-11-10 14:58:50
  */
 @Controller
-@RequestMapping("lib")
+@RequestMapping({"lib", "bas", "edu"})
 public class LibActivityManagementController {
 
 	@Resource

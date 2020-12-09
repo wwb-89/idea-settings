@@ -22,7 +22,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import java.util.List;
-import java.util.Optional;
 
 /**活动
  * @author wwb
@@ -46,18 +45,74 @@ public class ActivityController {
 	@Resource
 	private ActivityQueryDateService activityQueryDateService;
 
+	/**通用
+	 * @Description 
+	 * @author wwb
+	 * @Date 2020-12-09 10:22:16
+	 * @param request
+	 * @param model
+	 * @param code
+	 * @param fid
+	 * @param pageId
+	 * @return java.lang.String
+	*/
 	@GetMapping("")
 	public String index(HttpServletRequest request, Model model, String code, @RequestParam(value = "unitId", required = false) Integer fid, Integer pageId) {
 		return handleData(request, model, code, fid, pageId);
 	}
 
+	/**图书馆
+	 * @Description 
+	 * @author wwb
+	 * @Date 2020-12-09 10:22:27
+	 * @param request
+	 * @param model
+	 * @param code
+	 * @param fid
+	 * @param pageId
+	 * @return java.lang.String
+	*/
 	@GetMapping("lib")
 	public String libIndex(HttpServletRequest request, Model model, String code, @RequestParam(value = "unitId", required = false) Integer fid, Integer pageId) {
 		return handleData(request, model, code, fid, pageId);
 	}
+	
+	/**基础教育
+	 * @Description 
+	 * @author wwb
+	 * @Date 2020-12-09 10:22:36
+	 * @param request
+	 * @param model
+	 * @param code
+	 * @param fid
+	 * @param pageId
+	 * @return java.lang.String
+	*/
+	@GetMapping("bas")
+	public String basIndex(HttpServletRequest request, Model model, String code, @RequestParam(value = "unitId", required = false) Integer fid, Integer pageId) {
+		return handleData(request, model, code, fid, pageId);
+	}
+	
+	/**高校
+	 * @Description 
+	 * @author wwb
+	 * @Date 2020-12-09 10:22:44
+	 * @param request
+	 * @param model
+	 * @param code
+	 * @param fid
+	 * @param pageId
+	 * @return java.lang.String
+	*/
+	@GetMapping("edu")
+	public String eduIndex(HttpServletRequest request, Model model, String code, @RequestParam(value = "unitId", required = false) Integer fid, Integer pageId) {
+		return handleData(request, model, code, fid, pageId);
+	}
 
-	private String handleData(HttpServletRequest request, Model model, String code, @RequestParam(value = "unitId", required = false) Integer fid, Integer pageId) {
-		fid = Optional.ofNullable(fid).orElse(LoginUtils.getLoginUser(request).getFid());
+	private String handleData(HttpServletRequest request, Model model, String code, Integer fid, Integer pageId) {
+		if (fid == null) {
+			fid = LoginUtils.getLoginUser(request).getFid();
+		}
 		List<String> activityClassifyNames = activityClassifyQueryService.listOrgsOptionalName(Lists.newArrayList(fid));
 		model.addAttribute("activityClassifyNames", activityClassifyNames);
 		// 查询地区列表
