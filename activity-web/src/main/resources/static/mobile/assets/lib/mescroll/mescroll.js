@@ -416,7 +416,7 @@
   /* 阻止浏览器默认滚动事件 */
   MeScroll.prototype.preventDefault = function (e) {
     // cancelable:是否可以被禁用; defaultPrevented:是否已经被禁用
-    if (e && e.cancelable && !e.defaultPrevented) e.preventDefault()
+    // if (e && e.cancelable && !e.defaultPrevented) e.preventDefault()
   }
 
   /* 根据点击滑动事件获取第一个手指的坐标 */
