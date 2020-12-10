@@ -92,6 +92,8 @@ public class ActivityHandleService {
 	public void add(Activity activity, SignFormDTO signForm, LoginUserDTO loginUser, HttpServletRequest request) {
 		// 新增活动输入验证
 		activityValidationService.addInputValidate(activity);
+		// 处理活动类型
+		handleActivityType(activity);
 		// 是否开启参与设置
 		Boolean enableSign = activity.getEnableSign();
 		if (enableSign) {
@@ -117,11 +119,24 @@ public class ActivityHandleService {
 		activityMapper.insert(activity);
 		// 处理活动的所属区域
 		handleActivityArea(activity, loginUser);
-//		Integer activityId = activity.getId();
-		// 处理模块
-//		handleActivityModules(activityId, activityModules);
 	}
 
+	/**处理活动类型
+	 * @Description 
+	 * @author wwb
+	 * @Date 2020-12-10 14:35:41
+	 * @param activity
+	 * @return void
+	*/
+	private void handleActivityType(Activity activity) {
+		String activityType = activity.getActivityType();
+		ActivityTypeEnum activityTypeEnum = ActivityTypeEnum.fromValue(activityType);
+		if (ActivityTypeEnum.ONLINE.equals(activityTypeEnum)) {
+			activity.setAddress(null);
+			activity.setLongitude(null);
+			activity.setDimension(null);
+		}
+	}
 	/**处理报名签到
 	 * @Description
 	 * @author wwb
@@ -214,6 +229,8 @@ public class ActivityHandleService {
 	@Transactional(rollbackFor = Exception.class)
 	public void edit(Activity activity, SignFormDTO signForm, LoginUserDTO loginUser, HttpServletRequest request) {
 		activityValidationService.addInputValidate(activity);
+		// 处理活动类型
+		handleActivityType(activity);
 		Integer activityId = activity.getId();
 		Activity existActivity = activityValidationService.editAble(activityId, loginUser);
 		// 更新报名签到
