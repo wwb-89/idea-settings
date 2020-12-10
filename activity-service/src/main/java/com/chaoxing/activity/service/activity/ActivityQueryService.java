@@ -1,5 +1,6 @@
 package com.chaoxing.activity.service.activity;
 
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.chaoxing.activity.dto.LoginUserDTO;
 import com.chaoxing.activity.dto.activity.ActivityTypeDTO;
@@ -183,6 +184,20 @@ public class ActivityQueryService {
 	public Activity getById(Integer activityId) {
 		Activity activity = activityValidationService.activityExist(activityId);
 		return activity;
+	}
+
+	/**根据门户pageId查询活动
+	 * @Description 
+	 * @author wwb
+	 * @Date 2020-12-10 18:14:27
+	 * @param pageId
+	 * @return com.chaoxing.activity.model.Activity
+	*/
+	public Activity getByPageId(Integer pageId) {
+		return activityMapper.selectOne(new QueryWrapper<Activity>()
+			.lambda()
+				.eq(Activity::getPageId, pageId)
+		);
 	}
 
 }

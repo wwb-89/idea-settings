@@ -11,7 +11,6 @@ import com.chaoxing.activity.dto.query.MhActivityCalendarQueryDTO;
 import com.chaoxing.activity.model.Activity;
 import com.chaoxing.activity.service.activity.ActivityQueryService;
 import com.chaoxing.activity.service.manager.CloudApiService;
-import com.chaoxing.activity.service.manager.MhApiService;
 import com.chaoxing.activity.service.manager.WfwRegionalArchitectureApiService;
 import com.chaoxing.activity.service.manager.module.SignApiService;
 import com.chaoxing.activity.util.constant.CommonConstant;
@@ -59,8 +58,6 @@ public class ActivityMhAppApiController {
 	private CloudApiService cloudApiService;
 	@Resource
 	private SignApiService signApiService;
-	@Resource
-	private MhApiService mhApiService;
 	@Resource
 	private WfwRegionalArchitectureApiService wfwRegionalArchitectureApiService;
 
@@ -338,6 +335,19 @@ public class ActivityMhAppApiController {
 		});
 		result.put("results", mhGeneralAppResultDatas);
 		return RestRespDTO.success(result);
+	}
+
+	/**活动地址
+	 * @Description 
+	 * @author wwb
+	 * @Date 2020-12-10 18:12:51
+	 * @param pageId
+	 * @return com.chaoxing.activity.dto.RestRespDTO
+	*/
+	@RequestMapping("activity/address")
+	public RestRespDTO activityAddress(Integer pageId) {
+		Activity activity = activityQueryService.getByPageId(pageId);
+		return RestRespDTO.success(activity);
 	}
 
 }
