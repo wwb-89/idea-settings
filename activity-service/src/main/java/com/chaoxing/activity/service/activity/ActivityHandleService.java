@@ -334,7 +334,7 @@ public class ActivityHandleService {
 	private Integer calActivityStatus(LocalDate startDate, LocalDate endDate, Integer status) {
 		LocalDate now = LocalDate.now();
 		boolean guessEnded = now.isAfter(endDate);
-		boolean guessOnGoing = now.isAfter(startDate) && now.isBefore(endDate);
+		boolean guessOnGoing = (now.isAfter(startDate) || now.isEqual(startDate)) && (now.isBefore(endDate) || now.isEqual(endDate));
 		Activity.StatusEnum statusEnum = Activity.StatusEnum.fromValue(status);
 		switch (statusEnum) {
 			case RELEASED:
