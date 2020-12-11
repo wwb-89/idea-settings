@@ -52,14 +52,7 @@ public class WebConfig implements WebMvcConfigurer, ErrorPageRegistrar {
 
 	@Override
 	public void registerErrorPages(ErrorPageRegistry registry) {
-		registry.addErrorPages(new ErrorPage(HttpStatus.NOT_FOUND, "/error/custom/404"));
-		registry.addErrorPages(new ErrorPage(HttpStatus.INTERNAL_SERVER_ERROR, "/error/custom"));
+		registry.addErrorPages(new ErrorPage(HttpStatus.NOT_FOUND, "/error/404"));
 	}
-
-//	@Bean
-//	public PaginationInterceptor paginationInterceptor(){
-//		return  new PaginationInterceptor();
-//	}
-
 
 }
