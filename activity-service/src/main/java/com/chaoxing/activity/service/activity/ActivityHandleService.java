@@ -162,6 +162,8 @@ public class ActivityHandleService {
 			signId = signApiService.create(signForm, request);
 		} else {
 			// 修改报名签到
+			String signName = Optional.ofNullable(signForm.getName()).filter(StringUtils::isNotBlank).orElse(activity.getName());
+			signForm.setName(signName);
 			signApiService.update(signForm, request);
 		}
 		return signId;
