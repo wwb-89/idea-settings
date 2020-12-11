@@ -6,7 +6,6 @@ import com.chaoxing.activity.dto.LoginUserDTO;
 import com.chaoxing.activity.util.exception.BusinessException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.client.RestTemplate;
 
 import javax.annotation.Resource;
@@ -43,7 +42,6 @@ public class TpkApiService {
 	 * @param loginUser
 	 * @return java.lang.Integer
 	*/
-	@PostMapping("tpk")
 	public Integer create(String name, LoginUserDTO loginUser) {
 		Integer uid = loginUser.getUid();
 		Integer fid = loginUser.getFid();

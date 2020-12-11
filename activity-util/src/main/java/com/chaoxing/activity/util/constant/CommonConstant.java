@@ -1,5 +1,7 @@
 package com.chaoxing.activity.util.constant;
 
+import java.time.ZoneOffset;
+
 /**
  * @author wwb
  * @version ver 1.0
@@ -30,5 +32,7 @@ public class CommonConstant {
 	public static final Integer DEFAULT_PAGE_NUM = 1;
 	/** 默认每页条数 */
 	public static final Integer DEFAULT_PAGE_SIZE = 10;
+	/** 默认时区 */
+	public static final ZoneOffset DEFAULT_ZONEOFFSET = ZoneOffset.of("+8");
 
 }

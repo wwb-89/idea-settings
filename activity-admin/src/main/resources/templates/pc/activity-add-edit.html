@@ -55,7 +55,7 @@
                 <div class="form-item">
                     <label class="label position"><img src="/static/pc/assets/images/required.png" th:src="@{/pc/assets/images/required.png}" class="required-img">时间</label>
                     <div class="input-box">
-                        <el-date-picker v-model="activityDateScope" type="daterange" format="yyyy-MM-dd" value-format="yyyy-MM-dd" :editable=false range-separator="至" start-placeholder="开始日期" end-placeholder="结束日期" @change="selectActivityDate($event)"></el-date-picker>
+                        <el-date-picker v-model="activityDateTimeScope" type="datetimerange" format="yyyy-MM-dd HH:mm" value-format="yyyy-MM-dd HH:mm:ss" :editable=false range-separator="至" start-placeholder="开始时间" end-placeholder="结束时间" @change="selectActivityDate($event)"></el-date-picker>
                     </div>
                 </div>
                 <div class="form-item">
@@ -113,7 +113,7 @@
                 <div class="form-item">
                     <label class="label position"><img src="/static/pc/assets/images/required.png" th:src="@{/pc/assets/images/required.png}" class="required-img">报名时间</label>
                     <div class="input-box">
-                        <el-date-picker v-model="signUpTimeScope" type="datetimerange" format="yyyy-MM-dd HH:mm" value-format="yyyy-MM-dd HH:mm:ss" :editable=false range-separator="至" start-placeholder="开始日期" end-placeholder="结束日期" @change="selectSignUpTime($event)"></el-date-picker>
+                        <el-date-picker v-model="signUpTimeScope" type="datetimerange" format="yyyy-MM-dd HH:mm" value-format="yyyy-MM-dd HH:mm:ss" :editable=false range-separator="至" start-placeholder="开始时间" end-placeholder="结束时间" @change="selectSignUpTime($event)"></el-date-picker>
                     </div>
                 </div>
                 <div class="form-item">
@@ -179,7 +179,7 @@
                 <div class="form-item">
                     <label class="label position"><img src="/static/pc/assets/images/required.png" th:src="@{/pc/assets/images/required.png}" class="required-img">签到时间</label>
                     <div class="input-box">
-                        <el-date-picker v-model="signInTimeScope" type="datetimerange" format="yyyy-MM-dd HH:mm" value-format="yyyy-MM-dd HH:mm:ss" :editable=false range-separator="至" start-placeholder="开始日期" end-placeholder="结束日期"  @change="selectSignInTime($event)"></el-date-picker>
+                        <el-date-picker v-model="signInTimeScope" type="datetimerange" format="yyyy-MM-dd HH:mm" value-format="yyyy-MM-dd HH:mm:ss" :editable=false range-separator="至" start-placeholder="开始时间" end-placeholder="结束时间"  @change="selectSignInTime($event)"></el-date-picker>
                     </div>
                 </div>
                 <div class="form-item" v-if="false">
@@ -328,7 +328,7 @@
                 // 模板列表
                 webTemplates: [[${webTemplates}]],
                 // 活动日期的范围
-                activityDateScope: "",
+                activityDateTimeScope: "",
                 activityTypes: [[${activityTypes}]],
                 activityClassifies: [[${activityClassifies}]],
                 // 机构下的表单列表
@@ -374,8 +374,8 @@
                     $this.activity = {
                         id: null,
                         name: "",
-                        startDate: "",
-                        endDate: "",
+                        startTime: "",
+                        endTime: "",
                         coverCloudId: activityApp.getDefaultCoverCloudId(),
                         activityType: "offline",
                         address: "",
@@ -385,10 +385,12 @@
                         enableSign: true
                     };
                 }else {
-                    $this.activity.createTime = "";
-                    $this.activity.updateTime = "";
-                    $this.activity.releaseTime = "";
-                    $this.activityDateScope = [$this.activity.startDate, $this.activity.endDate];
+                    $this.activity.createTime = null;
+                    $this.activity.updateTime = null;
+                    $this.activity.releaseTime = null;
+                    $this.activityDateTimeScope = [$this.activity.startTimeStr, $this.activity.endTimeStr];
+                    $this.activity.startTime = $this.activity.startTimeStr;
+                    $this.activity.endTime = $this.activity.endTimeStr;
                 }
                 $($this.activityTypes).each(function (i) {
                     if ($this.activity.activityType == this.value) {
@@ -715,12 +717,12 @@
                         app.showMsg("活动名称不能为空");
                         return false;
                     }
-                    if (activityApp.isEmpty($this.activity.startDate)) {
-                        app.showMsg("活动开始日期不能为空");
+                    if (activityApp.isEmpty($this.activity.startTime)) {
+                        app.showMsg("活动开始时间不能为空");
                         return false;
                     }
-                    if (activityApp.isEmpty($this.activity.endDate)) {
-                        app.showMsg("活动结束日期不能为空");
+                    if (activityApp.isEmpty($this.activity.endTime)) {
+                        app.showMsg("活动结束时间不能为空");
                         return false;
                     }
                     if (activityApp.isEmpty($this.activity.coverCloudId)) {
@@ -863,8 +865,8 @@
                 // 选中活动的日期范围
                 selectActivityDate: function (obj) {
                     var $this = this;
-                    $this.activity.startDate = obj[0];
-                    $this.activity.endDate = obj[1];
+                    $this.activity.startTime = obj[0];
+                    $this.activity.endTime = obj[1];
                 },
                 // 选中报名的时间范围
                 selectSignUpTime: function (obj) {

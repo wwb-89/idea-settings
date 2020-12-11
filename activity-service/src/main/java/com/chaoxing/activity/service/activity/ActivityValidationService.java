@@ -12,7 +12,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -48,15 +48,15 @@ public class ActivityValidationService {
 		if (StringUtils.isEmpty(name)) {
 			throw new BusinessException("活动名称不能为空");
 		}
-		LocalDate startDate = activity.getStartDate();
-		if (startDate == null) {
+		LocalDateTime startTime = activity.getStartTime();
+		if (startTime == null) {
 			throw new BusinessException("活动开始时间不能为空");
 		}
-		LocalDate endDate = activity.getEndDate();
-		if (endDate == null) {
+		LocalDateTime endTime = activity.getEndTime();
+		if (endTime == null) {
 			throw new BusinessException("活动结束时间不能为空");
 		}
-		if (startDate.isAfter(endDate)) {
+		if (startTime.isAfter(endTime)) {
 			throw new BusinessException("活动开始时间不能晚于结束时间");
 		}
 		String coverCloudId = activity.getCoverCloudId();

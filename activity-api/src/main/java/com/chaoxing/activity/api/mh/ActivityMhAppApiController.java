@@ -25,7 +25,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.RestTemplate;
 
 import javax.annotation.Resource;
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
@@ -118,13 +118,13 @@ public class ActivityMhAppApiController {
 		// 开始时间
 		mhGeneralAppResultDataFields.add(MhGeneralAppResultDataDTO.MhGeneralAppResultDataFieldDTO.builder()
 				.key("时间")
-				.value(DateTimeFormatterConstant.YYYY_MM_DD.format(activity.getStartDate()))
+				.value(DateTimeFormatterConstant.YYYY_MM_DD.format(activity.getStartTime()))
 				.flag("100")
 				.build());
 		// 结束时间
 		mhGeneralAppResultDataFields.add(MhGeneralAppResultDataDTO.MhGeneralAppResultDataFieldDTO.builder()
 				.key("时间")
-				.value(DateTimeFormatterConstant.YYYY_MM_DD.format(activity.getEndDate()))
+				.value(DateTimeFormatterConstant.YYYY_MM_DD.format(activity.getEndTime()))
 				.flag("101")
 				.build());
 		// 主办单位
@@ -230,12 +230,12 @@ public class ActivityMhAppApiController {
 					.flag("1")
 					.build());
 			// 活动时间
-			LocalDate startDate = record.getStartDate();
-			LocalDate endDate = record.getEndDate();
+			LocalDateTime startTime = record.getStartTime();
+			LocalDateTime endTime = record.getEndTime();
 			StringBuilder timeStringBuilder = new StringBuilder();
-			timeStringBuilder.append(ACTIVITY_DATE_TIME_FORMATTER.format(startDate));
+			timeStringBuilder.append(ACTIVITY_DATE_TIME_FORMATTER.format(startTime));
 			timeStringBuilder.append(" ～ ");
-			timeStringBuilder.append(ACTIVITY_DATE_TIME_FORMATTER.format(endDate));
+			timeStringBuilder.append(ACTIVITY_DATE_TIME_FORMATTER.format(endTime));
 			mhGeneralAppResultDataFields.add(MhGeneralAppResultDataDTO.MhGeneralAppResultDataFieldDTO.builder()
 					.value(timeStringBuilder.toString())
 					.flag("6")
@@ -326,7 +326,7 @@ public class ActivityMhAppApiController {
 					.build());
 			// 活动时间
 			mhGeneralAppResultDataFields.add(MhGeneralAppResultDataDTO.MhGeneralAppResultDataFieldDTO.builder()
-					.value(ACTIVITY_DATE_TIME_FORMATTER.format(record.getStartDate()))
+					.value(ACTIVITY_DATE_TIME_FORMATTER.format(record.getStartTime()))
 					.flag("6")
 					.build());
 			return mhGeneralAppResultDataFields;

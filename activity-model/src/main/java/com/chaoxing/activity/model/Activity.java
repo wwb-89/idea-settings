@@ -5,15 +5,12 @@ import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
-import com.chaoxing.activity.util.LocalDateDeserializer;
-import com.chaoxing.activity.util.LocalDateSerializer;
 import com.chaoxing.activity.util.LocalDateTimeDeserializer;
 import com.chaoxing.activity.util.LocalDateTimeSerializer;
 import com.chaoxing.activity.util.exception.BusinessException;
 import lombok.*;
 
 import java.math.BigDecimal;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Objects;
 
@@ -37,12 +34,12 @@ public class Activity {
     private Integer id;
     /** 活动名称; column: name*/
     private String name;
-    /** 开始日期; column: start_date*/
-    @JSONField(serializeUsing = LocalDateSerializer.class, deserializeUsing = LocalDateDeserializer.class)
-    private LocalDate startDate;
-    /** 结束日期; column: end_date*/
-    @JSONField(serializeUsing = LocalDateSerializer.class, deserializeUsing = LocalDateDeserializer.class)
-    private LocalDate endDate;
+    /** 开始时间; column: start_time*/
+    @JSONField(serializeUsing = LocalDateTimeSerializer.class, deserializeUsing = LocalDateTimeDeserializer.class)
+    private LocalDateTime startTime;
+    /** 结束时间; column: end_time*/
+    @JSONField(serializeUsing = LocalDateTimeSerializer.class, deserializeUsing = LocalDateTimeDeserializer.class)
+    private LocalDateTime endTime;
     /** 封面云盘id; column: cover_cloud_id*/
     private String coverCloudId;
     /** 活动形式; column: activity_type*/
@@ -52,7 +49,7 @@ public class Activity {
     /** 经度; column: longitude*/
     private BigDecimal longitude;
     /** 维度; column: dimension*/
-    private String dimension;
+    private BigDecimal dimension;
     /** 活动分类id; column: activity_classify_id*/
     private Integer activityClassifyId;
     /** 是否启用签到报名; column: is_enable_sign*/
@@ -97,6 +94,14 @@ public class Activity {
     /** 修改时间; column: update_time*/
     @JSONField(serializeUsing = LocalDateTimeSerializer.class, deserializeUsing = LocalDateTimeDeserializer.class)
     private LocalDateTime updateTime;
+
+    // 附加
+    /** 开始时间字符串 */
+    @TableField(exist = false)
+    private String startTimeStr;
+    /** 结束时间字符串 */
+    @TableField(exist = false)
+    private String endTimeStr;
 
     @Getter
     public enum StatusEnum {

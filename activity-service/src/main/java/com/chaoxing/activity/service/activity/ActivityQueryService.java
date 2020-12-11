@@ -11,6 +11,7 @@ import com.chaoxing.activity.dto.query.MhActivityCalendarQueryDTO;
 import com.chaoxing.activity.mapper.ActivityMapper;
 import com.chaoxing.activity.model.Activity;
 import com.chaoxing.activity.service.manager.WfwRegionalArchitectureApiService;
+import com.chaoxing.activity.util.constant.DateTimeFormatterConstant;
 import com.chaoxing.activity.util.enums.ActivityQueryDateEnum;
 import com.chaoxing.activity.util.enums.ActivityTypeEnum;
 import lombok.extern.slf4j.Slf4j;
@@ -183,6 +184,8 @@ public class ActivityQueryService {
 	*/
 	public Activity getById(Integer activityId) {
 		Activity activity = activityValidationService.activityExist(activityId);
+		Optional.ofNullable(activity).map(Activity::getStartTime).ifPresent(v -> activity.setStartTimeStr(v.format(DateTimeFormatterConstant.YYYY_MM_DD_HH_MM_SS)));
+		Optional.ofNullable(activity).map(Activity::getEndTime).ifPresent(v -> activity.setEndTimeStr(v.format(DateTimeFormatterConstant.YYYY_MM_DD_HH_MM_SS)));
 		return activity;
 	}
 
