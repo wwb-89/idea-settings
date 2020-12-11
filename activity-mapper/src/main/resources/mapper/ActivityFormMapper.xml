@@ -4,7 +4,7 @@
     <resultMap id="BaseResultMap" type="com.chaoxing.activity.model.ActivityForm">
         <id column="id" jdbcType="INTEGER" property="id" />
         <result column="activity_id" jdbcType="INTEGER" property="activityId" />
-        <result column="form_item_id" jdbcType="INTEGER" property="formItemId" />
+        <result column="form_field_id" jdbcType="INTEGER" property="formFieldId" />
         <result column="sequence" jdbcType="INTEGER" property="sequence" />
         <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
         <result column="create_uid" jdbcType="INTEGER" property="createUid" />
@@ -12,7 +12,7 @@
         <result column="update_uid" jdbcType="INTEGER" property="updateUid" />
     </resultMap>
     <sql id="Base_Column_List">
-        t.id, t.activity_id, t.form_item_id, t.sequence, t.create_time, t.create_uid, t.update_time, 
+        t.id, t.activity_id, t.form_field_id, t.sequence, t.create_time, t.create_uid, t.update_time,
         t.update_uid
     </sql>
 </mapper>

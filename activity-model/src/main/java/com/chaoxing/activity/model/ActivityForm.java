@@ -30,8 +30,8 @@ public class ActivityForm {
     private Integer id;
     /** 活动id; column: activity_id*/
     private Integer activityId;
-    /** 表单选项id; column: form_item_id*/
-    private Integer formItemId;
+    /** 表单选项id; column: form_field_id*/
+    private Integer formFieldId;
     /** 顺序; column: sequence*/
     private Integer sequence;
     /** 创建时间; column: create_time*/
