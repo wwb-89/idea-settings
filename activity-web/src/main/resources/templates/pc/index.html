@@ -74,7 +74,7 @@
                     </div>
                     <div class="font-box">
                         <p class="title1 overHidden2" >{{item.name}}</p>
-                        <p>活动时间：{{item.startDate | timestamp2YMD}} ～ {{item.endDate | timestamp2YMD}}</p>
+                        <p>活动时间：{{item.startTime | timestamp2YMDHM}} ～ {{item.endTime | timestamp2YMDHM}}</p>
                         <p>主办单位：{{item.createOrgName}}</p>
                         <p class="overHidden2" v-show="item.address">活动地点：{{item.address}}</p>
                     </div>
