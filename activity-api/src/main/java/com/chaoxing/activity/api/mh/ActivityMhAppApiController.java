@@ -26,7 +26,6 @@ import org.springframework.web.client.RestTemplate;
 
 import javax.annotation.Resource;
 import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -48,7 +47,6 @@ public class ActivityMhAppApiController {
 
 	/** 签到按钮地址 */
 	private static final String QD_BTN_URL = "http://api.qd.reading.chaoxing.com/activity/%d/btn";
-	private static final DateTimeFormatter ACTIVITY_DATE_TIME_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd");
 
 	@Resource
 	private ActivityQueryService activityQueryService;
@@ -118,13 +116,13 @@ public class ActivityMhAppApiController {
 		// 开始时间
 		mhGeneralAppResultDataFields.add(MhGeneralAppResultDataDTO.MhGeneralAppResultDataFieldDTO.builder()
 				.key("时间")
-				.value(DateTimeFormatterConstant.YYYY_MM_DD.format(activity.getStartTime()))
+				.value(DateTimeFormatterConstant.YYYY_MM_DD_HH_MM.format(activity.getStartTime()))
 				.flag("100")
 				.build());
 		// 结束时间
 		mhGeneralAppResultDataFields.add(MhGeneralAppResultDataDTO.MhGeneralAppResultDataFieldDTO.builder()
 				.key("时间")
-				.value(DateTimeFormatterConstant.YYYY_MM_DD.format(activity.getEndTime()))
+				.value(DateTimeFormatterConstant.YYYY_MM_DD_HH_MM.format(activity.getEndTime()))
 				.flag("101")
 				.build());
 		// 主办单位
@@ -233,9 +231,9 @@ public class ActivityMhAppApiController {
 			LocalDateTime startTime = record.getStartTime();
 			LocalDateTime endTime = record.getEndTime();
 			StringBuilder timeStringBuilder = new StringBuilder();
-			timeStringBuilder.append(ACTIVITY_DATE_TIME_FORMATTER.format(startTime));
+			timeStringBuilder.append(DateTimeFormatterConstant.YYYY_MM_DD_HH_MM.format(startTime));
 			timeStringBuilder.append(" ～ ");
-			timeStringBuilder.append(ACTIVITY_DATE_TIME_FORMATTER.format(endTime));
+			timeStringBuilder.append(DateTimeFormatterConstant.YYYY_MM_DD_HH_MM.format(endTime));
 			mhGeneralAppResultDataFields.add(MhGeneralAppResultDataDTO.MhGeneralAppResultDataFieldDTO.builder()
 					.value(timeStringBuilder.toString())
 					.flag("6")
@@ -326,7 +324,7 @@ public class ActivityMhAppApiController {
 					.build());
 			// 活动时间
 			mhGeneralAppResultDataFields.add(MhGeneralAppResultDataDTO.MhGeneralAppResultDataFieldDTO.builder()
-					.value(ACTIVITY_DATE_TIME_FORMATTER.format(record.getStartTime()))
+					.value(DateTimeFormatterConstant.YYYY_MM_DD_HH_MM.format(record.getStartTime()))
 					.flag("6")
 					.build());
 			return mhGeneralAppResultDataFields;
