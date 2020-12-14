@@ -23,7 +23,7 @@
             <div class="create-btn">创建活动</div>
             <div class="table">
                 <el-table :data="tableData" style="width: 100%">
-                    <el-table-column prop="name" label="活动名称" min-width="35%">
+                    <el-table-column prop="name" label="活动名称" min-width="32.5%">
                         <template slot-scope="scope">
                             <div class="item">
                                 <div class="img">
@@ -32,7 +32,7 @@
                                 </div>
                                 <div class="desc">
                                     <div class="title">2020年星阅读活动</div>
-                                    <div class="time"><span>2019年10月1日</span> - <span>2028年10月1日</span></div>
+                                    <div class="time"><span>2019年10月1日 16:00</span> - <span>2019年10月1日 16:00</span></div>
                                 </div>
                             </div>
                         </template>
@@ -42,12 +42,12 @@
                             <div class="overHidden2">{{scope.row.address}}</div>
                         </template>
                     </el-table-column>
-                    <el-table-column prop="person" label="创建人" min-width="12.5%">
+                    <el-table-column prop="person" label="创建人" min-width="10%">
                         <template slot-scope="scope">
                             <div class="overHidden2">{{scope.row.person}}</div>
                         </template>
                     </el-table-column>
-                    <el-table-column prop="state" label="状态" min-width="12.5%">
+                    <el-table-column prop="state" label="状态" min-width="10%">
                         <template slot="header" slot-scope="scope">
                             <div class="status">状态<i class="el-icon-arrow-down el-down"></i></div>
                             <div class="filters">
@@ -62,7 +62,7 @@
                                 :class="scope.row.state=='进行中'?'green':scope.row.state=='未发布'?'blue2':''">{{scope.row.state}}</span>
                         </template>
                     </el-table-column>
-                    <el-table-column label="操作" min-width="25%">
+                    <el-table-column label="操作" min-width="20%">
                         <template slot-scope="scope">
                             <div v-show="scope.row.state == '进行中'">
                                 <el-button type="text">报名管理</el-button>
@@ -163,7 +163,7 @@
                     person: '邱强'
                 }],
                 deleteShow: false,
-                releaseShow: true,
+                releaseShow: false,
             },
             mounted: function () {
                 this.organizationTreeFun();

@@ -4,6 +4,9 @@
     font-weight: 400;
     color: #333333;
 }
+.el-pagination{
+    text-align: center;
+}
 .el-pagination.is-background .el-pager li:not(.disabled).active {
     background-color:#0084FF;
     color: #FFF;
