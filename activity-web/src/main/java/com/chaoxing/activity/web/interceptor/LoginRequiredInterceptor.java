@@ -16,6 +16,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 
 /**
  * @author wwb
@@ -57,7 +59,7 @@ public class LoginRequiredInterceptor extends HandlerInterceptorAdapter {
 			writer.write(JSON.toJSONString(restResDTO));
 		} else {
 			// 页面
-			response.sendRedirect("https://passport2.chaoxing.com/login?newversion=true&refer=" + request.getRequestURL().toString());
+			response.sendRedirect("https://passport2.chaoxing.com/login?loginType=4&newversion=true&refer=" + URLEncoder.encode(request.getRequestURL().toString(), StandardCharsets.UTF_8.name()));
 		}
 	}
 

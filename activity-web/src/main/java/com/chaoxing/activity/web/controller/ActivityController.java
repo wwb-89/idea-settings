@@ -52,14 +52,12 @@ public class ActivityController {
 	 * @Date 2020-12-09 10:22:16
 	 * @param request
 	 * @param model
-	 * @param code
-	 * @param fid
-	 * @param pageId
 	 * @return java.lang.String
 	*/
+	@LoginRequired
 	@GetMapping("")
-	public String index(HttpServletRequest request, Model model, String code, @RequestParam(value = "unitId", required = false) Integer fid, Integer pageId) {
-		return handleData(request, model, code, fid, pageId);
+	public String index(HttpServletRequest request, Model model) {
+		return handleData(request, model, null, null, null);
 	}
 
 	/**图书馆
