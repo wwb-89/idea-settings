@@ -94,7 +94,9 @@ table {
 .title:hover {
     color: #0084FF;
 }
-
+.desc{
+    max-width: unset;
+}
 .desc .time {
     font-size: 14px;
     font-weight: 400;

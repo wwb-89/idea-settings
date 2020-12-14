@@ -454,6 +454,7 @@ input.btn-name,
 .dailog-box4 {
     height: 100%;
     position: fixed;
+    z-index: 3;
     top: 0;
     left: 0;
     right: 0;
@@ -1015,3 +1016,121 @@ input.btn-name,
     color: #0084ff;
     background-color: #fff;
 }
+.del-img{
+    margin-left: 5px;
+}
+.tree {
+    width: 400px;
+    height: 300px;
+    background: #ffffff;
+    border: 1px solid #f0f0f0;
+    border-radius: 2px;
+    box-sizing: border-box;
+}
+
+.tree-head {
+    width: 400px;
+    height: 40px;
+    background: #f8f8f8;
+    border-radius: 2px 2px 0px 0px;
+    font-size: 14px;
+    color: #666666;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 10px;
+    box-sizing: border-box;
+}
+/* z-tree */
+.tree-box{
+    height: 259px;
+    padding: 10px 0px;
+    box-sizing: border-box;
+    overflow-y: auto;
+    font-size: 13px;
+}
+.ztree li span.button.root_open ,
+.ztree li span.button.roots_open,
+.ztree li span.button.bottom_open,
+.ztree li span.button.center_open {
+
+    background: url(../images/triangle2.png) center center no-repeat;
+}
+.ztree li span.button.root_close,
+.ztree li span.button.roots_close, 
+.ztree li span.button.bottom_close, 
+.ztree li span.button.center_close {
+    background: url(../images/triangle1.png) center center no-repeat;
+}
+.ztree li span.button.chk.checkbox_false_full, 
+.ztree li span.button.chk.checkbox_false_full_focus{
+    width: 15px;
+    height: 15px;
+    background: url(../images/radio_normal1.png) no-repeat;
+    position: relative;
+    z-index: 2;
+}
+.ztree li span.button.chk.checkbox_true_full,
+.ztree li span.button.chk.checkbox_true_full_focus{
+    width: 15px;
+    height: 15px;
+    background: url(../images/radio_normal3.png) no-repeat;
+}
+
+.ztree li span.button.chk.checkbox_false_part,
+.ztree li span.button.chk.checkbox_false_part_focus {
+    width: 15px;
+    height: 15px;
+    background: url(../images/radio_normal2.png) no-repeat;
+    position: relative;
+    z-index: 2;
+}
+.ztree li span.button.chk.checkbox_true_part,
+.ztree li span.button.chk.checkbox_true_part_focus{
+    width: 15px;
+    height: 15px;
+    background: url(../images/radio_normal2.png) no-repeat;
+    position: relative;
+    z-index: 2;
+}
+.ztree li {
+    position: relative;
+    line-height: 30px;
+}
+.ztree li a {
+    height: 30px;
+    border: none;
+    padding: 0;
+    background-color: transparent;
+    text-decoration: none;
+}
+.ztree .node_name{
+    font-size: 13px;
+    color: #333333;
+    margin-left: 10px;
+}
+.ztree li a.curSelectedNode {
+    background: none;
+    border: none;
+    opacity: 1;
+}
+.ztree li span.button.center_docu, 
+.ztree li span.button.bottom_docu, 
+.ztree li ul.line {
+    background: none;
+  }
+  .ztree li span.button.ico_open {
+      vertical-align: middle;
+      background-image: url(../images/icon-file.png);
+      background-position: unset;
+  }
+  .ztree li span.button.ico_docu {
+    vertical-align: middle;
+    background-image: url(../images/icon-shcool.png);
+      background-position: unset;
+  }
+  .ztree li span.button.ico_close {
+    vertical-align: middle;
+    background-image: url(../images/icon-file.png);
+    background-position: unset;
+  }
