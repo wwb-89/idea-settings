@@ -1,11 +1,11 @@
 package com.chaoxing.activity.service.activity;
 
-import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.chaoxing.activity.dto.LoginUserDTO;
 import com.chaoxing.activity.dto.OrgAddressDTO;
 import com.chaoxing.activity.dto.manager.WfwRegionalArchitectureDTO;
 import com.chaoxing.activity.dto.mh.MhCloneParamDTO;
+import com.chaoxing.activity.dto.mh.MhCloneResultDTO;
 import com.chaoxing.activity.dto.module.SignFormDTO;
 import com.chaoxing.activity.mapper.ActivityAreaFlagMapper;
 import com.chaoxing.activity.mapper.ActivityMapper;
@@ -31,7 +31,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -72,6 +71,8 @@ public class ActivityHandleService {
 	private WebTemplateService webTemplateService;
 	@Resource
 	private CloudApiService cloudApiService;
+	@Resource
+	private ActivityStatusHandleService activityStatusHandleService;
 
 	@Resource
 	private SignApiService signApiService;
@@ -91,6 +92,8 @@ public class ActivityHandleService {
 	public void add(Activity activity, SignFormDTO signForm, LoginUserDTO loginUser, HttpServletRequest request) {
 		// 新增活动输入验证
 		activityValidationService.addInputValidate(activity);
+		// 处理活动类型
+		handleActivityType(activity);
 		// 是否开启参与设置
 		Boolean enableSign = activity.getEnableSign();
 		if (enableSign) {
@@ -116,11 +119,26 @@ public class ActivityHandleService {
 		activityMapper.insert(activity);
 		// 处理活动的所属区域
 		handleActivityArea(activity, loginUser);
-//		Integer activityId = activity.getId();
-		// 处理模块
-//		handleActivityModules(activityId, activityModules);
+		// 订阅活动状态处理
+		activityStatusHandleService.subscibeStatusUpdate(activity.getId(), activity.getStartTime(), activity.getEndTime());
 	}
 
+	/**处理活动类型
+	 * @Description 
+	 * @author wwb
+	 * @Date 2020-12-10 14:35:41
+	 * @param activity
+	 * @return void
+	*/
+	private void handleActivityType(Activity activity) {
+		String activityType = activity.getActivityType();
+		ActivityTypeEnum activityTypeEnum = ActivityTypeEnum.fromValue(activityType);
+		if (ActivityTypeEnum.ONLINE.equals(activityTypeEnum)) {
+			activity.setAddress(null);
+			activity.setLongitude(null);
+			activity.setDimension(null);
+		}
+	}
 	/**处理报名签到
 	 * @Description
 	 * @author wwb
@@ -144,6 +162,8 @@ public class ActivityHandleService {
 			signId = signApiService.create(signForm, request);
 		} else {
 			// 修改报名签到
+			String signName = Optional.ofNullable(signForm.getName()).filter(StringUtils::isNotBlank).orElse(activity.getName());
+			signForm.setName(signName);
 			signApiService.update(signForm, request);
 		}
 		return signId;
@@ -213,6 +233,8 @@ public class ActivityHandleService {
 	@Transactional(rollbackFor = Exception.class)
 	public void edit(Activity activity, SignFormDTO signForm, LoginUserDTO loginUser, HttpServletRequest request) {
 		activityValidationService.addInputValidate(activity);
+		// 处理活动类型
+		handleActivityType(activity);
 		Integer activityId = activity.getId();
 		Activity existActivity = activityValidationService.editAble(activityId, loginUser);
 		// 更新报名签到
@@ -225,12 +247,12 @@ public class ActivityHandleService {
 			activity.setSignId(signId);
 		}
 		// 处理活动相关
-		LocalDate startDate = activity.getStartDate();
-		LocalDate endDate = activity.getEndDate();
+		LocalDateTime startTime = activity.getStartTime();
+		LocalDateTime endTime = activity.getEndTime();
 
 		existActivity.setName(activity.getName());
-		existActivity.setStartDate(startDate);
-		existActivity.setEndDate(endDate);
+		existActivity.setStartTime(startTime);
+		existActivity.setEndTime(endTime);
 		existActivity.setCoverCloudId(activity.getCoverCloudId());
 		existActivity.setActivityType(activity.getActivityType());
 		existActivity.setAddress(activity.getAddress());
@@ -241,12 +263,14 @@ public class ActivityHandleService {
 		existActivity.setSignId(activity.getSignId());
 		existActivity.setWebTemplateId(activity.getWebTemplateId());
 		// 根据活动时间判断状态
-		Integer status = calActivityStatus(startDate, endDate, existActivity.getStatus());
+		Integer status = activityStatusHandleService.calActivityStatus(startTime, endTime, existActivity.getStatus());
 		existActivity.setStatus(status);
 		activityMapper.update(existActivity, new UpdateWrapper<Activity>()
 			.lambda()
 				.eq(Activity::getId, activity.getId())
 		);
+		// 订阅活动状态处理
+		activityStatusHandleService.subscibeStatusUpdate(activity.getId(), activity.getStartTime(), activity.getEndTime());
 	}
 
 	private void handleActivityModules(Integer activityId, List<ActivityModule> activityModules) {
@@ -304,40 +328,6 @@ public class ActivityHandleService {
 		}
 	}
 
-	/**计算活动状态
-	 * @Description
-	 * @author wwb
-	 * @Date 2020-11-11 16:57:27
-	 * @param startDate
-	 * @param endDate
-	 * @param status
-	 * @return java.lang.Integer
-	*/
-	private Integer calActivityStatus(LocalDate startDate, LocalDate endDate, Integer status) {
-		LocalDate now = LocalDate.now();
-		boolean guessEnded = now.isAfter(endDate);
-		boolean guessOnGoing = now.isAfter(startDate) && now.isBefore(endDate);
-		Activity.StatusEnum statusEnum = Activity.StatusEnum.fromValue(status);
-		switch (statusEnum) {
-			case RELEASED:
-				// 已发布、进行中、已结束
-			case ONGOING:
-				// 已发布、进行中、已结束
-			case ENDED:
-				// 已发布、进行中、已结束
-				if (guessEnded) {
-					// 已结束
-					return Activity.StatusEnum.ENDED.getValue();
-				}
-				if (guessOnGoing) {
-					return Activity.StatusEnum.ONGOING.getValue();
-				}
-				return Activity.StatusEnum.RELEASED.getValue();
-			default:
-				return statusEnum.getValue();
-		}
-	}
-
 	/**发布活动
 	 * @Description
 	 * @author wwb
@@ -354,7 +344,7 @@ public class ActivityHandleService {
 		activity.setReleased(true);
 		activity.setReleaseTime(LocalDateTime.now());
 		activity.setReleaseUid(loginUser.getUid());
-		Integer status = calActivityStatus(activity.getStartDate(), activity.getEndDate(), Activity.StatusEnum.RELEASED.getValue());
+		Integer status = activityStatusHandleService.calActivityStatus(activity.getStartTime(), activity.getEndTime(), Activity.StatusEnum.RELEASED.getValue());
 		activityMapper.update(null, new UpdateWrapper<Activity>()
 			.lambda()
 				.eq(Activity::getId, activity.getId())
@@ -433,7 +423,7 @@ public class ActivityHandleService {
 	@Transactional(rollbackFor = Exception.class)
 	public void cancelRelease(Integer activityId, LoginUserDTO loginUser) {
 		Activity activity = activityValidationService.cancelReleaseAble(activityId, loginUser);
-		Integer status = calActivityStatus(activity.getStartDate(), activity.getEndDate(), Activity.StatusEnum.WAIT_RELEASE.getValue());
+		Integer status = activityStatusHandleService.calActivityStatus(activity.getStartTime(), activity.getEndTime(), Activity.StatusEnum.WAIT_RELEASE.getValue());
 		activityMapper.update(null, new UpdateWrapper<Activity>()
 			.lambda()
 				.eq(Activity::getId, activity.getId())
@@ -501,10 +491,10 @@ public class ActivityHandleService {
 	 * @param activityId
 	 * @param webTemplateId
 	 * @param loginUser
-	 * @return java.lang.Integer
+	 * @return com.chaoxing.activity.dto.mh.MhCloneResultDTO
 	*/
 	@Transactional(rollbackFor = Exception.class)
-	public Integer bindWebTemplate(Integer activityId, Integer webTemplateId, LoginUserDTO loginUser) {
+	public MhCloneResultDTO bindWebTemplate(Integer activityId, Integer webTemplateId, LoginUserDTO loginUser) {
 		Activity activity = activityValidationService.activityExist(activityId);
 		// 如果已经选择了模板就不能再选择
 		Integer webTemplateId1 = activity.getWebTemplateId();
@@ -515,14 +505,16 @@ public class ActivityHandleService {
 		createModuleByWebTemplateId(activityId, webTemplateId, loginUser);
 		// 克隆
 		MhCloneParamDTO mhCloneParam = packageMhCloneParam(activity, webTemplateId, loginUser);
-		Integer pageId = mhApiService.cloneTemplate(mhCloneParam);
+		MhCloneResultDTO mhCloneResult = mhApiService.cloneTemplate(mhCloneParam);
 		activityMapper.update(null, new UpdateWrapper<Activity>()
 				.lambda()
 				.eq(Activity::getId, activityId)
 				.set(Activity::getWebTemplateId, webTemplateId)
-				.set(Activity::getPageId, pageId)
+				.set(Activity::getPageId, mhCloneResult.getPageId())
+				.set(Activity::getPreviewUrl, mhCloneResult.getPreviewUrl())
+				.set(Activity::getEditUrl, mhCloneResult.getEditUrl())
 		);
-		return pageId;
+		return mhCloneResult;
 	}
 
 	/**创建模块
@@ -697,59 +689,20 @@ public class ActivityHandleService {
 		return "";
 	}
 
-	/**同步活动状态
+	/**更新活动状态
 	 * @Description 
 	 * @author wwb
-	 * @Date 2020-12-05 15:30:30
-	 * @param 
+	 * @Date 2020-12-11 14:55:01
+	 * @param activityId
+	 * @param status
 	 * @return void
 	*/
-	public void syncStatus() {
-		// 查询所有的待发布、未进行和进行中的任务
-		List<Integer> statuses = new ArrayList(){{
-			add(Activity.StatusEnum.WAIT_RELEASE.getValue());
-			add(Activity.StatusEnum.RELEASED.getValue());
-			add(Activity.StatusEnum.ONGOING.getValue());
-		}};
-		List<Activity> activities = activityMapper.selectList(new QueryWrapper<Activity>()
-				.lambda()
-				.in(Activity::getStatus, statuses)
+	public void updateActivityStatus(Integer activityId, Integer status) {
+		activityMapper.update(null, new UpdateWrapper<Activity>()
+			.lambda()
+				.eq(Activity::getId, activityId)
+				.set(Activity::getStatus, status)
 		);
-		if (CollectionUtils.isEmpty(activities)) {
-			return;
-		}
-		List<Integer> needOngoingActivityIds = new ArrayList<>();
-		List<Integer> needEndedActivityIds = new ArrayList<>();
-		LocalDate now = LocalDate.now();
-		// 计算状态
-		for (Activity activity : activities) {
-			Integer status = activity.getStatus();
-			LocalDate startDate = activity.getStartDate();
-			LocalDate endDate = activity.getEndDate();
-			if (endDate.isBefore(now)) {
-				// 已结束
-				needEndedActivityIds.add(activity.getId());
-				continue;
-			}
-			Activity.StatusEnum statusEnum = Activity.StatusEnum.fromValue(status);
-			if (Activity.StatusEnum.RELEASED.equals(statusEnum) && startDate.isBefore(now)) {
-				needOngoingActivityIds.add(activity.getId());
-			}
-		}
-		if (CollectionUtils.isNotEmpty(needOngoingActivityIds)) {
-			activityMapper.update(null, new UpdateWrapper<Activity>()
-					.lambda()
-					.in(Activity::getId, needOngoingActivityIds)
-					.set(Activity::getStatus, Activity.StatusEnum.ONGOING.getValue())
-			);
-		}
-		if (CollectionUtils.isNotEmpty(needEndedActivityIds)) {
-			activityMapper.update(null, new UpdateWrapper<Activity>()
-					.lambda()
-					.in(Activity::getId, needEndedActivityIds)
-					.set(Activity::getStatus, Activity.StatusEnum.ENDED.getValue())
-			);
-		}
 	}
 
 }

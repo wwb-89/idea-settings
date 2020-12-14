@@ -11,7 +11,6 @@ import com.chaoxing.activity.dto.query.MhActivityCalendarQueryDTO;
 import com.chaoxing.activity.model.Activity;
 import com.chaoxing.activity.service.activity.ActivityQueryService;
 import com.chaoxing.activity.service.manager.CloudApiService;
-import com.chaoxing.activity.service.manager.MhApiService;
 import com.chaoxing.activity.service.manager.WfwRegionalArchitectureApiService;
 import com.chaoxing.activity.service.manager.module.SignApiService;
 import com.chaoxing.activity.util.constant.CommonConstant;
@@ -22,15 +21,11 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.RestTemplate;
 
 import javax.annotation.Resource;
-import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -47,11 +42,11 @@ import java.util.stream.Collectors;
  */
 @RestController
 @RequestMapping("mh")
+@CrossOrigin
 public class ActivityMhAppApiController {
 
 	/** 签到按钮地址 */
 	private static final String QD_BTN_URL = "http://api.qd.reading.chaoxing.com/activity/%d/btn";
-	private static final DateTimeFormatter ACTIVITY_DATE_TIME_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd");
 
 	@Resource
 	private ActivityQueryService activityQueryService;
@@ -59,8 +54,6 @@ public class ActivityMhAppApiController {
 	private CloudApiService cloudApiService;
 	@Resource
 	private SignApiService signApiService;
-	@Resource
-	private MhApiService mhApiService;
 	@Resource
 	private WfwRegionalArchitectureApiService wfwRegionalArchitectureApiService;
 
@@ -123,13 +116,13 @@ public class ActivityMhAppApiController {
 		// 开始时间
 		mhGeneralAppResultDataFields.add(MhGeneralAppResultDataDTO.MhGeneralAppResultDataFieldDTO.builder()
 				.key("时间")
-				.value(DateTimeFormatterConstant.YYYY_MM_DD.format(activity.getStartDate()))
+				.value(DateTimeFormatterConstant.YYYY_MM_DD_HH_MM.format(activity.getStartTime()))
 				.flag("100")
 				.build());
 		// 结束时间
 		mhGeneralAppResultDataFields.add(MhGeneralAppResultDataDTO.MhGeneralAppResultDataFieldDTO.builder()
 				.key("时间")
-				.value(DateTimeFormatterConstant.YYYY_MM_DD.format(activity.getEndDate()))
+				.value(DateTimeFormatterConstant.YYYY_MM_DD_HH_MM.format(activity.getEndTime()))
 				.flag("101")
 				.build());
 		// 主办单位
@@ -149,10 +142,13 @@ public class ActivityMhAppApiController {
 		StringBuilder signPepleNumDescribe = new StringBuilder();
 		Integer limitNum = signParticipation.getLimitNum();
 		Integer signedNum = signParticipation.getSignedNum();
-		signPepleNumDescribe.append(signedNum);
-		if (limitNum != null && limitNum.intValue() > 0) {
-			signPepleNumDescribe.append("/");
-			signPepleNumDescribe.append(limitNum);
+		signedNum = Optional.ofNullable(signedNum).orElse(0);
+		if (signedNum.compareTo(0) > 0) {
+			signPepleNumDescribe.append(signedNum);
+			if (limitNum != null && limitNum.intValue() > 0) {
+				signPepleNumDescribe.append("/");
+				signPepleNumDescribe.append(limitNum);
+			}
 		}
 		mhGeneralAppResultDataFields.add(MhGeneralAppResultDataDTO.MhGeneralAppResultDataFieldDTO.builder()
 				.key("参与人数")
@@ -232,12 +228,12 @@ public class ActivityMhAppApiController {
 					.flag("1")
 					.build());
 			// 活动时间
-			LocalDate startDate = record.getStartDate();
-			LocalDate endDate = record.getEndDate();
+			LocalDateTime startTime = record.getStartTime();
+			LocalDateTime endTime = record.getEndTime();
 			StringBuilder timeStringBuilder = new StringBuilder();
-			timeStringBuilder.append(ACTIVITY_DATE_TIME_FORMATTER.format(startDate));
+			timeStringBuilder.append(DateTimeFormatterConstant.YYYY_MM_DD_HH_MM.format(startTime));
 			timeStringBuilder.append(" ～ ");
-			timeStringBuilder.append(ACTIVITY_DATE_TIME_FORMATTER.format(endDate));
+			timeStringBuilder.append(DateTimeFormatterConstant.YYYY_MM_DD_HH_MM.format(endTime));
 			mhGeneralAppResultDataFields.add(MhGeneralAppResultDataDTO.MhGeneralAppResultDataFieldDTO.builder()
 					.value(timeStringBuilder.toString())
 					.flag("6")
@@ -255,8 +251,7 @@ public class ActivityMhAppApiController {
 			for (Activity record : records) {
 				MhGeneralAppResultDataDTO mhGeneralAppResultData = new MhGeneralAppResultDataDTO();
 				mhGeneralAppResultData.setType(3);
-				Integer pageId = record.getPageId();
-				mhGeneralAppResultData.setOrsUrl(mhApiService.packageActivityAccessUrl(pageId));
+				mhGeneralAppResultData.setOrsUrl(record.getPreviewUrl());
 				mhGeneralAppResultData.setPop(0);
 				mhGeneralAppResultData.setPopUrl("");
 				mhGeneralAppResultData.setFields(function.apply(record));
@@ -329,13 +324,26 @@ public class ActivityMhAppApiController {
 					.build());
 			// 活动时间
 			mhGeneralAppResultDataFields.add(MhGeneralAppResultDataDTO.MhGeneralAppResultDataFieldDTO.builder()
-					.value(ACTIVITY_DATE_TIME_FORMATTER.format(record.getStartDate()))
+					.value(DateTimeFormatterConstant.YYYY_MM_DD_HH_MM.format(record.getStartTime()))
 					.flag("6")
 					.build());
 			return mhGeneralAppResultDataFields;
 		});
 		result.put("results", mhGeneralAppResultDatas);
 		return RestRespDTO.success(result);
+	}
+
+	/**活动地址
+	 * @Description 
+	 * @author wwb
+	 * @Date 2020-12-10 18:12:51
+	 * @param pageId
+	 * @return com.chaoxing.activity.dto.RestRespDTO
+	*/
+	@RequestMapping("activity/address")
+	public RestRespDTO activityAddress(Integer pageId) {
+		Activity activity = activityQueryService.getByPageId(pageId);
+		return RestRespDTO.success(activity);
 	}
 
 }

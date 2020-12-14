@@ -1,5 +1,6 @@
 package com.chaoxing.activity.service.activity;
 
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.chaoxing.activity.dto.LoginUserDTO;
 import com.chaoxing.activity.dto.activity.ActivityTypeDTO;
@@ -10,6 +11,7 @@ import com.chaoxing.activity.dto.query.MhActivityCalendarQueryDTO;
 import com.chaoxing.activity.mapper.ActivityMapper;
 import com.chaoxing.activity.model.Activity;
 import com.chaoxing.activity.service.manager.WfwRegionalArchitectureApiService;
+import com.chaoxing.activity.util.constant.DateTimeFormatterConstant;
 import com.chaoxing.activity.util.enums.ActivityQueryDateEnum;
 import com.chaoxing.activity.util.enums.ActivityTypeEnum;
 import lombok.extern.slf4j.Slf4j;
@@ -182,7 +184,23 @@ public class ActivityQueryService {
 	*/
 	public Activity getById(Integer activityId) {
 		Activity activity = activityValidationService.activityExist(activityId);
+		Optional.ofNullable(activity).map(Activity::getStartTime).ifPresent(v -> activity.setStartTimeStr(v.format(DateTimeFormatterConstant.YYYY_MM_DD_HH_MM_SS)));
+		Optional.ofNullable(activity).map(Activity::getEndTime).ifPresent(v -> activity.setEndTimeStr(v.format(DateTimeFormatterConstant.YYYY_MM_DD_HH_MM_SS)));
 		return activity;
+	}
+
+	/**根据门户pageId查询活动
+	 * @Description 
+	 * @author wwb
+	 * @Date 2020-12-10 18:14:27
+	 * @param pageId
+	 * @return com.chaoxing.activity.model.Activity
+	*/
+	public Activity getByPageId(Integer pageId) {
+		return activityMapper.selectOne(new QueryWrapper<Activity>()
+			.lambda()
+				.eq(Activity::getPageId, pageId)
+		);
 	}
 
 }

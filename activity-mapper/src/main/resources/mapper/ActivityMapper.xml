@@ -4,18 +4,20 @@
     <resultMap id="BaseResultMap" type="com.chaoxing.activity.model.Activity">
         <id column="id" jdbcType="INTEGER" property="id" />
         <result column="name" jdbcType="VARCHAR" property="name" />
-        <result column="start_date" jdbcType="DATE" property="startDate" />
-        <result column="end_date" jdbcType="DATE" property="endDate" />
+        <result column="start_time" jdbcType="TIMESTAMP" property="startTime" />
+        <result column="end_time" jdbcType="TIMESTAMP" property="endTime" />
         <result column="cover_cloud_id" jdbcType="VARCHAR" property="coverCloudId" />
         <result column="activity_type" jdbcType="VARCHAR" property="activityType" />
         <result column="address" jdbcType="VARCHAR" property="address" />
         <result column="longitude" jdbcType="DECIMAL" property="longitude" />
-        <result column="dimension" jdbcType="VARCHAR" property="dimension" />
+        <result column="dimension" jdbcType="DECIMAL" property="dimension" />
         <result column="activity_classify_id" jdbcType="INTEGER" property="activityClassifyId" />
         <result column="is_enable_sign" jdbcType="BIT" property="enableSign" />
         <result column="sign_id" jdbcType="INTEGER" property="signId" />
         <result column="web_template_id" jdbcType="INTEGER" property="webTemplateId" />
         <result column="page_id" jdbcType="INTEGER" property="pageId" />
+        <result column="preview_url" jdbcType="VARCHAR" property="previewUrl" />
+        <result column="edit_url" jdbcType="VARCHAR" property="editUrl" />
         <result column="is_released" jdbcType="BIT" property="released" />
         <result column="release_time" jdbcType="TIMESTAMP" property="releaseTime" />
         <result column="release_uid" jdbcType="INTEGER" property="releaseUid" />
@@ -30,8 +32,8 @@
         <result column="update_time" jdbcType="TIMESTAMP" property="updateTime" />
     </resultMap>
     <sql id="Base_Column_List">
-        t.id, t.name, t.start_date, t.end_date, t.cover_cloud_id, t.activity_type, t.address,
-        t.longitude, t.dimension, t.activity_classify_id, t.is_enable_sign, t.sign_id, t.web_template_id, t.page_id,
+        t.id, t.name, t.start_time, t.end_time, t.cover_cloud_id, t.activity_type, t.address,
+        t.longitude, t.dimension, t.activity_classify_id, t.is_enable_sign, t.sign_id, t.web_template_id, t.page_id, t.preview_url, t.edit_url,
         t.is_released, t.release_time, t.release_uid, t.status, t.is_open_audit, t.audit_status, 
         t.create_uid, t.create_user_name, t.create_fid, t.create_org_name, t.create_time,
         t.update_time
@@ -74,15 +76,15 @@
                 <choose>
                     <when test="params.minDateStr != null and params.minDateStr != '' and params.maxDateStr != null and params.maxDateStr != ''">
                         <!--都不为空-->
-                        AND t.start_date BETWEEN minDateStr AND minDateStr
+                        AND t.start_time BETWEEN minDateStr AND minDateStr
                     </when>
                     <otherwise>
                         <choose>
                             <when test="params.minDateStr != null and params.minDateStr != ''">
-                                AND t.start_date >= #{params.minDateStr}
+                                AND t.start_time >= #{params.minDateStr}
                             </when>
                             <otherwise>
-                                AND t.start_date <![CDATA[<=]]> #{params.maxDateStr}
+                                AND t.start_time <![CDATA[<=]]> #{params.maxDateStr}
                             </otherwise>
                         </choose>
                     </otherwise>
@@ -95,7 +97,7 @@
             t.id
         ORDER BY
             FIELD( t.`status`, 2, 3, 4 ),
-            t.start_date DESC
+            t.start_time DESC
             <if test="params.topFid != null">
                 , t1.fid <![CDATA[<>]]> #{params.topFid}
             </if>
@@ -108,10 +110,16 @@
         FROM
             t_activity t
         WHERE
-            t.create_fid IN
-                <foreach collection="params.fids" index="key" item="value" open="(" close=")" separator=",">
-                    #{value}
-                </foreach>
+            (
+            t.create_fid = #{params.topFid}
+            OR(
+                    t.create_fid IN
+                    <foreach collection="params.fids" index="key" item="value" open="(" close=")" separator=",">
+                        #{value}
+                    </foreach>
+                    AND t.is_released = 1
+                )
+            )
             <choose>
                 <when test="params.status != null">
                     AND t.`status` = #{params.status}
@@ -139,7 +147,7 @@
             AND t.page_id IS NOT NULL
         ORDER BY
             FIELD( t.`status`, 2, 3, 4 ),
-            t.start_date DESC
+            t.start_time DESC
     </select>
 
     <select id="listActivityCalendarParticipate" resultMap="BaseResultMap">
@@ -156,13 +164,13 @@
             <!--状态-->
             t.`status` IN ( 2, 3, 4 )
             <if test="params.date != null ">
-                AND #{params.date} BETWEEN t.start_date AND t.end_date
+                AND #{params.date} BETWEEN t.start_time AND t.end_time
             </if>
         GROUP BY
             t.id
         ORDER BY
             FIELD( t.`status`, 2, 3, 4 ),
-            t.start_date DESC
+            t.start_time DESC
             <if test="params.topFid != null">
                 , t1.fid <![CDATA[<>]]> #{params.topFid}
             </if>

@@ -255,20 +255,6 @@
         }
     };
     /**
-     * 获取门户编辑yrl
-     * @param pageId
-     */
-    activityApp.prototype.getMhEditorUrl = function (pageId) {
-        return "http://mh.chaoxing.com/page/" + pageId + "/edit";
-    };
-    /**
-     * 获取页面预览url
-     * @param pageId
-     */
-    activityApp.prototype.getMhPreviewUrl = function (pageId) {
-        return "http://mh.chaoxing.com/page/" + pageId + "/show";
-    };
-    /**
      * 获取活动默认封面云盘id
      * @returns {string}
      */
@@ -298,6 +284,14 @@ Vue.filter("activityStatusInstructions", function (status) {
 Vue.filter("timestamp2ChineseYMD", function (timestamp) {
     var dateObj = activityApp.millisecond2DateObj(timestamp);
     return dateObj.year + "年" + dateObj.month + "月" + dateObj.day + "日";
+});
+Vue.filter("timestamp2ChineseYMDHM", function (timestamp) {
+    var dateObj = activityApp.millisecond2DateObj(timestamp);
+    return dateObj.year + "年" + dateObj.month + "月" + dateObj.day + "日" + " " + dateObj.hour + ":" + dateObj.minute;
+});
+Vue.filter("timestamp2ChineseYMDHMS", function (timestamp) {
+    var dateObj = activityApp.millisecond2DateObj(timestamp);
+    return dateObj.year + "年" + dateObj.month + "月" + dateObj.day + "日" + " " + dateObj.hour + ":" + dateObj.minute + ":" + dateObj.second;
 });
 Vue.filter("timestamp2YMD", function (timestamp) {
     var dateObj = activityApp.millisecond2DateObj(timestamp);

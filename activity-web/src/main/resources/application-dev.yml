@@ -4,7 +4,6 @@ spring:
     port: 6379
     database: 11
     password: be_api
-
   datasource:
     druid:
       url: jdbc:mysql://192.168.1.3/activity_engine?serverTimezone=UTC&useUnicode=true&characterEncoding=utf-8

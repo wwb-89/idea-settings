@@ -55,7 +55,7 @@
                 <div class="form-item">
                     <label class="label position"><img src="/static/pc/assets/images/required.png" th:src="@{/pc/assets/images/required.png}" class="required-img">时间</label>
                     <div class="input-box">
-                        <el-date-picker v-model="activityDateScope" type="daterange" format="yyyy-MM-dd" value-format="yyyy-MM-dd" :editable=false range-separator="至" start-placeholder="开始日期" end-placeholder="结束日期" @change="selectActivityDate($event)"></el-date-picker>
+                        <el-date-picker v-model="activityDateTimeScope" type="datetimerange" format="yyyy-MM-dd HH:mm" value-format="yyyy-MM-dd HH:mm:ss" :editable=false range-separator="至" start-placeholder="开始时间" end-placeholder="结束时间" @change="selectActivityDate($event)"></el-date-picker>
                     </div>
                 </div>
                 <div class="form-item">
@@ -78,7 +78,7 @@
                         <el-radio v-for="(activityType, index) of activityTypes" :key="'activity-type-' + index" v-model="activity.activityType" :label="activityType.value" name="active-type">{{activityType.name}}</el-radio>
                     </div>
                 </div>
-                <div class="form-item">
+                <div class="form-item" v-show="activity.activityType == 'offline'">
                     <label class="label">位置</label>
                     <div class="input-box">
                         <input type="text" readonly required lay-verify="required" v-model.trim="activity.address" placeholder="请选择活动地点" autocomplete="off" class="layui-input name show-addr" style="cursor: pointer;" @click="showActivityMap">
@@ -113,7 +113,7 @@
                 <div class="form-item">
                     <label class="label position"><img src="/static/pc/assets/images/required.png" th:src="@{/pc/assets/images/required.png}" class="required-img">报名时间</label>
                     <div class="input-box">
-                        <el-date-picker v-model="signUpTimeScope" type="datetimerange" format="yyyy-MM-dd HH:mm" value-format="yyyy-MM-dd HH:mm:ss" :editable=false range-separator="至" start-placeholder="开始日期" end-placeholder="结束日期" @change="selectSignUpTime($event)"></el-date-picker>
+                        <el-date-picker v-model="signUpTimeScope" type="datetimerange" format="yyyy-MM-dd HH:mm" value-format="yyyy-MM-dd HH:mm:ss" :editable=false range-separator="至" start-placeholder="开始时间" end-placeholder="结束时间" @change="selectSignUpTime($event)"></el-date-picker>
                     </div>
                 </div>
                 <div class="form-item">
@@ -179,7 +179,7 @@
                 <div class="form-item">
                     <label class="label position"><img src="/static/pc/assets/images/required.png" th:src="@{/pc/assets/images/required.png}" class="required-img">签到时间</label>
                     <div class="input-box">
-                        <el-date-picker v-model="signInTimeScope" type="datetimerange" format="yyyy-MM-dd HH:mm" value-format="yyyy-MM-dd HH:mm:ss" :editable=false range-separator="至" start-placeholder="开始日期" end-placeholder="结束日期"  @change="selectSignInTime($event)"></el-date-picker>
+                        <el-date-picker v-model="signInTimeScope" type="datetimerange" format="yyyy-MM-dd HH:mm" value-format="yyyy-MM-dd HH:mm:ss" :editable=false range-separator="至" start-placeholder="开始时间" end-placeholder="结束时间"  @change="selectSignInTime($event)"></el-date-picker>
                     </div>
                 </div>
                 <div class="form-item" v-if="false">
@@ -301,8 +301,7 @@
             </div>
             <div class="pageset-right">
                 <div class="copy-box">
-                    <el-input readonly type="text" class="copy-link" v-model.trim="webTemplate.previewUrl"></el-input>
-                    <el-input v-show="false" id="template-preview-url-input" readonly type="text" class="copy-link" v-model.trim="webTemplate.previewUrl"></el-input>
+                    <el-input readonly type="text" class="copy-link" v-model.trim="activity.previewUrl"></el-input>
                     <a href="javascript:" class="copy" @click="copyTemplatePreviewUrl">复制</a>
                 </div>
                 <button type="button" class="cancle-btn" @click="configPage">页面配置</button>
@@ -312,6 +311,8 @@
     <!-- 地图弹窗 -->
     <vue-map ref="activityMap" :map-dom-id="'activity-map'" @callback="activityAddressSure"></vue-map>
     <vue-map ref="signInMap" :map-dom-id="'sign-in-map'" @callback="signInAddressSure"></vue-map>
+    <!--预览url复制容器-->
+    <input type="text" id="template-preview-url-input" v-model.trim="activity.previewUrl" style="position: absolute; top: -100px; height: 1px;">
 </div>
 <div th:replace="pc/include/common_js :: common_js(~{::script})">
     <script src="/static/pc/assets/lib/element-ui/lib/index.js" th:src="@{/pc/assets/lib/element-ui/lib/index.js}"></script>
@@ -327,7 +328,7 @@
                 // 模板列表
                 webTemplates: [[${webTemplates}]],
                 // 活动日期的范围
-                activityDateScope: "",
+                activityDateTimeScope: "",
                 activityTypes: [[${activityTypes}]],
                 activityClassifies: [[${activityClassifies}]],
                 // 机构下的表单列表
@@ -373,8 +374,8 @@
                     $this.activity = {
                         id: null,
                         name: "",
-                        startDate: "",
-                        endDate: "",
+                        startTime: "",
+                        endTime: "",
                         coverCloudId: activityApp.getDefaultCoverCloudId(),
                         activityType: "offline",
                         address: "",
@@ -384,10 +385,12 @@
                         enableSign: true
                     };
                 }else {
-                    $this.activity.createTime = "";
-                    $this.activity.updateTime = "";
-                    $this.activity.releaseTime = "";
-                    $this.activityDateScope = [$this.activity.startDate, $this.activity.endDate];
+                    $this.activity.createTime = null;
+                    $this.activity.updateTime = null;
+                    $this.activity.releaseTime = null;
+                    $this.activityDateTimeScope = [$this.activity.startTimeStr, $this.activity.endTimeStr];
+                    $this.activity.startTime = $this.activity.startTimeStr;
+                    $this.activity.endTime = $this.activity.endTimeStr;
                 }
                 $($this.activityTypes).each(function (i) {
                     if ($this.activity.activityType == this.value) {
@@ -714,12 +717,12 @@
                         app.showMsg("活动名称不能为空");
                         return false;
                     }
-                    if (activityApp.isEmpty($this.activity.startDate)) {
-                        app.showMsg("活动开始日期不能为空");
+                    if (activityApp.isEmpty($this.activity.startTime)) {
+                        app.showMsg("活动开始时间不能为空");
                         return false;
                     }
-                    if (activityApp.isEmpty($this.activity.endDate)) {
-                        app.showMsg("活动结束日期不能为空");
+                    if (activityApp.isEmpty($this.activity.endTime)) {
+                        app.showMsg("活动结束时间不能为空");
                         return false;
                     }
                     if (activityApp.isEmpty($this.activity.coverCloudId)) {
@@ -862,8 +865,8 @@
                 // 选中活动的日期范围
                 selectActivityDate: function (obj) {
                     var $this = this;
-                    $this.activity.startDate = obj[0];
-                    $this.activity.endDate = obj[1];
+                    $this.activity.startTime = obj[0];
+                    $this.activity.endTime = obj[1];
                 },
                 // 选中报名的时间范围
                 selectSignUpTime: function (obj) {
@@ -892,13 +895,11 @@
                     app.ajaxPostWithLoading(url, {}, function (data) {
                         if (data.success) {
                             app.activityChanged();
-                            var pageId = data.data;
+                            var editUrl = data.data.editUrl;
                             $this.$set($this.activity, "webTemplateId", $this.handleWebTemplateId);
                             app.showMsg("选择模板成功", function () {
                                 // 到编辑门户页面
-                                window.location.replace(activityApp.getMhEditorUrl(pageId));
-                                // 禁止返回当前页面
-                                window.history.back(-1);
+                                window.location.replace(editUrl);
                             });
                         } else {
                             var errorMessage = data.message;
@@ -914,12 +915,12 @@
                 // 预览页面
                 previePage: function () {
                     var $this = this;
-                    window.open(activityApp.getMhPreviewUrl($this.activity.pageId));
+                    window.open($this.activity.previewUrl);
                 },
                 // 配置页面
                 configPage: function () {
                     var $this = this;
-                    window.location.href = activityApp.getMhEditorUrl($this.activity.pageId);
+                    window.location.href = $this.activity.editUrl;
                 },
                 // 复制预览地址
                 copyTemplatePreviewUrl: function () {

@@ -6,6 +6,8 @@ spring:
   thymeleaf:
     cache: false
     mode: HTML
+  main:
+    web-application-type: none
   ## 静态资源处理方式
   resources:
     chain:

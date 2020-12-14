@@ -1,6 +1,6 @@
 package com.chaoxing.activity.task;
 
-import com.chaoxing.activity.service.activity.ActivityHandleService;
+import com.chaoxing.activity.service.activity.ActivityStatusHandleService;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
@@ -18,11 +18,30 @@ import javax.annotation.Resource;
 public class ActivityStatusSyncTask {
 
 	@Resource
-	private ActivityHandleService activityHandleService;
+	private ActivityStatusHandleService activityStatusHandleService;
 
-	@Scheduled(cron = "1 0 0 * * ?")
-	public void syncStatus() {
-		activityHandleService.syncStatus();
+	/**每秒执行一次
+	 * @Description 
+	 * @author wwb
+	 * @Date 2020-12-11 14:34:40
+	 * @param 
+	 * @return void
+	*/
+	@Scheduled(fixedDelay = 1000)
+	public void syncStartTimeStatus() {
+		activityStatusHandleService.startStatusSync();
+	}
+
+	/**每秒执行一次
+	 * @Description
+	 * @author wwb
+	 * @Date 2020-12-11 14:34:40
+	 * @param
+	 * @return void
+	 */
+	@Scheduled(fixedDelay = 1000)
+	public void syncEndTimeStatus() {
+		activityStatusHandleService.endStatusSync();
 	}
 
 }

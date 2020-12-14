@@ -72,6 +72,12 @@ public class ActivityExternalDTO {
 	/** 门户网页id */
 	@JSONField(serialize = false)
 	private Integer pageId;
+	/** 门户预览url */
+	@JSONField(serialize = false)
+	private String previewUrl;
+	/** 门户编辑url */
+	@JSONField(serialize = false)
+	private Integer editUrl;
 	/** 是否已发布 */
 	@JSONField(serialize = false)
 	@TableField(value = "is_released")

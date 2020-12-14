@@ -5,6 +5,7 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.chaoxing.activity.admin.util.LoginUtils;
 import com.chaoxing.activity.dto.LoginUserDTO;
 import com.chaoxing.activity.dto.RestRespDTO;
+import com.chaoxing.activity.dto.mh.MhCloneResultDTO;
 import com.chaoxing.activity.dto.module.SignFormDTO;
 import com.chaoxing.activity.dto.query.ActivityManageQueryDTO;
 import com.chaoxing.activity.model.Activity;
@@ -100,8 +101,8 @@ public class ActivityApiController {
 	@PostMapping("{activityId}/bind/template/{webTemplateId}")
 	public RestRespDTO bindWebTemplate(HttpServletRequest request, @PathVariable Integer activityId, @PathVariable Integer webTemplateId) {
 		LoginUserDTO loginUser = LoginUtils.getLoginUser(request);
-		Integer pageId = activityHandleService.bindWebTemplate(activityId, webTemplateId, loginUser);
-		return RestRespDTO.success(pageId);
+		MhCloneResultDTO mhCloneResult = activityHandleService.bindWebTemplate(activityId, webTemplateId, loginUser);
+		return RestRespDTO.success(mhCloneResult);
 	}
 
 	/**查询管理的活动列表
