@@ -7,6 +7,14 @@ import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.EnableAspectJAutoProxy;
 import org.springframework.scheduling.annotation.EnableScheduling;
 
+/**
+ * @author wwb
+ * @version ver 1.0
+ * @className ActivityTaskApplication
+ * @description
+ * @blame wwb
+ * @date 2020-12-04 13:53:23
+ */
 @SpringBootApplication
 @ComponentScan(nameGenerator = CustomAnnotationBeanNameGenerator.class)
 @EnableAspectJAutoProxy(proxyTargetClass = true, exposeProxy = true)

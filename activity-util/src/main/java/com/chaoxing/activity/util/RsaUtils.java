@@ -19,11 +19,12 @@ import java.util.Base64;
  * @date 2019-06-24 18:54:58
  * @version ver 1.0
  */
-public class RSAUtils {
+public class RsaUtils {
 
-	private static final Logger LOGGER = LoggerFactory.getLogger(RSAUtils.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(RsaUtils.class);
+	private static final int MIN_SIGN_LENGTH = 32;
 
-	private RSAUtils() {}
+	private RsaUtils() {}
 
 	/**验签
 	 * @Description 
@@ -35,12 +36,12 @@ public class RSAUtils {
 	 * @return boolean
 	*/
 	public static boolean verifySign(String content, String sign, String publicKey) {
-		if (sign.length()<32) {
+		if (sign.length() < MIN_SIGN_LENGTH) {
 			return false;
 		}
 		String vc3key = "Mq~am!PoYhu";
-		String vc3Final = sign.substring(0, sign.length() - 32);
-		String vc3md5 = sign.substring(sign.length() - 32);
+		String vc3Final = sign.substring(0, sign.length() - MIN_SIGN_LENGTH);
+		String vc3md5 = sign.substring(sign.length() - MIN_SIGN_LENGTH);
 		String checkMd5 = DigestUtils.md5Hex(vc3Final + vc3key);
 		if (vc3md5.equals(checkMd5)) {
 			try {

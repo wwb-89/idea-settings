@@ -16,6 +16,7 @@ import java.util.Objects;
 @Getter
 public enum ActivityAreaLevelEnum {
 
+	/** 省 */
 	PROVINCE("省", "province"),
 	CITY("市", "city"),
 	COUNTRY("区县", "country");

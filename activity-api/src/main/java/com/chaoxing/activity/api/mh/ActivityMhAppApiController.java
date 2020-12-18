@@ -16,6 +16,7 @@ import com.chaoxing.activity.service.manager.module.SignApiService;
 import com.chaoxing.activity.util.constant.CommonConstant;
 import com.chaoxing.activity.util.constant.DateTimeFormatterConstant;
 import com.chaoxing.activity.util.exception.BusinessException;
+import com.google.common.collect.Lists;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.http.HttpEntity;
@@ -78,7 +79,7 @@ public class ActivityMhAppApiController {
 		mhGeneralAppResultDataDTO.setOrsUrl("");
 		mhGeneralAppResultDataDTO.setPop(0);
 		mhGeneralAppResultDataDTO.setPopUrl("");
-		jsonObject.put("results", new ArrayList(){{add(mhGeneralAppResultDataDTO);}});
+		jsonObject.put("results", Lists.newArrayList(mhGeneralAppResultDataDTO));
 		List<MhGeneralAppResultDataDTO.MhGeneralAppResultDataFieldDTO> mhGeneralAppResultDataFields = new ArrayList<>();
 		mhGeneralAppResultDataDTO.setFields(mhGeneralAppResultDataFields);
 		MhGeneralAppResultDataDTO.MhGeneralAppResultDataFieldDTO mhGeneralAppResultDataField = MhGeneralAppResultDataDTO.MhGeneralAppResultDataFieldDTO.builder()
@@ -104,7 +105,7 @@ public class ActivityMhAppApiController {
 		mhGeneralAppResultDataDTO.setOrsUrl("");
 		mhGeneralAppResultDataDTO.setPop(0);
 		mhGeneralAppResultDataDTO.setPopUrl("");
-		jsonObject.put("results", new ArrayList(){{add(mhGeneralAppResultDataDTO);}});
+		jsonObject.put("results", Lists.newArrayList(mhGeneralAppResultDataDTO));
 		List<MhGeneralAppResultDataDTO.MhGeneralAppResultDataFieldDTO> mhGeneralAppResultDataFields = new ArrayList<>();
 		mhGeneralAppResultDataDTO.setFields(mhGeneralAppResultDataFields);
 		// 活动名称

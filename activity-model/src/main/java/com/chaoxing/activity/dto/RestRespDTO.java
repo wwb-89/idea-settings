@@ -17,13 +17,13 @@ import java.util.List;
  */
 @Data
 @Builder
-public class RestRespDTO<T> {
+public class RestRespDTO {
 
 	private Boolean success;
 	private Integer code;
 	private String message;
 
-	private T data;
+	private Object data;
 
 	private String timestamp;
 
@@ -36,7 +36,7 @@ public class RestRespDTO<T> {
 				.build();
 	}
 
-	public static <T> RestRespDTO success(T data) {
+	public static RestRespDTO success(Object data) {
 		return RestRespDTO.builder()
 				.success(StatusCodeEnum.SUCCESS.isSuccess())
 				.code(StatusCodeEnum.SUCCESS.getCode())
@@ -46,7 +46,7 @@ public class RestRespDTO<T> {
 				.build();
 	}
 
-	public static <T> RestRespDTO success(List<T> datas) {
+	public static RestRespDTO success(List<Object> datas) {
 		return RestRespDTO.builder()
 				.success(StatusCodeEnum.SUCCESS.isSuccess())
 				.code(StatusCodeEnum.SUCCESS.getCode())

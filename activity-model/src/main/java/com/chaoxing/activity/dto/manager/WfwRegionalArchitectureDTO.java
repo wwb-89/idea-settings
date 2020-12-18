@@ -39,6 +39,6 @@ public class WfwRegionalArchitectureDTO {
 	private Integer fid;
 	private Boolean existChild;
 	private Integer sort;
-	private boolean checked;
+	private Boolean checked;
 
 }

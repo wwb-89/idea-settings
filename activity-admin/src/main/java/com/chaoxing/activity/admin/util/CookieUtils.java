@@ -33,8 +33,7 @@ public class CookieUtils {
     }
 
     public static String getFid(HttpServletRequest request) {
-        String fid = getWfwfid(request);
-        return fid;
+        return getWfwfid(request);
     }
 
     public static long getValidateTime(HttpServletRequest request) {

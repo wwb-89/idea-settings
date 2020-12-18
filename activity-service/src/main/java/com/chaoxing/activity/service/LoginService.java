@@ -10,6 +10,7 @@ import com.chaoxing.activity.service.manager.PassportApiService;
 import com.chaoxing.activity.service.manager.UcApiService;
 import com.chaoxing.activity.util.constant.CacheConstant;
 import com.chaoxing.activity.util.enums.WfwRoleEnum;
+import com.google.common.collect.Lists;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
 import org.redisson.api.RLock;
@@ -76,12 +77,10 @@ public class LoginService {
 			WfwClassDTO clazz = null;
 			UserExtraInfoDTO userExtraInfo = ucApiService.getUserExtraInfoByFidAndUid(fid, uid);
 			if (userExtraInfo == null) {
-				roles = new ArrayList(){{
-					add(WfwRoleDTO.builder()
-							.id(WfwRoleEnum.STUDENT.getValue())
-							.name(WfwRoleEnum.STUDENT.getName())
-							.build());
-				}};
+				roles = Lists.newArrayList(WfwRoleDTO.builder()
+						.id(WfwRoleEnum.STUDENT.getValue())
+						.name(WfwRoleEnum.STUDENT.getName())
+						.build());
 				manageClasses = new ArrayList<>();
 			} else {
 				roles = userExtraInfo.getRoles();
@@ -157,30 +156,25 @@ public class LoginService {
 
 	private LoginUserDTO getLoginUser(Integer uid, Integer fid) {
 		ValueOperations<String, LoginUserDTO> valueOperations = redisTemplate.opsForValue();
-		LoginUserDTO loginUser = valueOperations.get(getLoginUserCacheKey(uid, fid));
-		return loginUser;
+		return valueOperations.get(getLoginUserCacheKey(uid, fid));
 	}
 
 	private String getLockKey(Integer uid, Integer fid) {
-		StringBuilder lockKeyStringBuilder = new StringBuilder();
-		lockKeyStringBuilder.append(CacheConstant.LOCK_CACHE_KEY_PREFIX);
-		lockKeyStringBuilder.append("login");
-		lockKeyStringBuilder.append(CacheConstant.LOCK_CACHE_KEY_PREFIX);
-		lockKeyStringBuilder.append(uid);
-		lockKeyStringBuilder.append(CacheConstant.LOCK_CACHE_KEY_PREFIX);
-		lockKeyStringBuilder.append(fid);
-		return lockKeyStringBuilder.toString();
+		return CacheConstant.LOCK_CACHE_KEY_PREFIX +
+				"login" +
+				CacheConstant.LOCK_CACHE_KEY_PREFIX +
+				uid +
+				CacheConstant.LOCK_CACHE_KEY_PREFIX +
+				fid;
 	}
 
 	private String getLoginUserCacheKey(Integer uid, Integer fid) {
-		StringBuilder loginUserCacheKey = new StringBuilder();
-		loginUserCacheKey.append(CacheConstant.CACHE_KEY_PREFIX);
-		loginUserCacheKey.append("login");
-		loginUserCacheKey.append(CacheConstant.CACHE_KEY_PREFIX);
-		loginUserCacheKey.append(uid);
-		loginUserCacheKey.append(CacheConstant.CACHE_KEY_PREFIX);
-		loginUserCacheKey.append(fid);
-		return loginUserCacheKey.toString();
+		return CacheConstant.CACHE_KEY_PREFIX +
+				"login" +
+				CacheConstant.CACHE_KEY_PREFIX +
+				uid +
+				CacheConstant.CACHE_KEY_PREFIX +
+				fid;
 	}
 
 }

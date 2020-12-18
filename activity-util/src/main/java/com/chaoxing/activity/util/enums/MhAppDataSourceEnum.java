@@ -16,6 +16,7 @@ import java.util.Objects;
 @Getter
 public enum MhAppDataSourceEnum {
 
+	/** 本地数据 */
 	LOCAL("本地数据", 1),
 	EXTERNAL("外部数据", 2);
 

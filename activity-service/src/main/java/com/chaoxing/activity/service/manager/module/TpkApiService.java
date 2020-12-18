@@ -30,6 +30,7 @@ public class TpkApiService {
 	 *  identify：活动标识，允许不传
 	 */
 	private static final String CREATE_URL = "https://teacher2.chaoxing.com/tpk3-activity/admin/create/activity?name=%s&uid=%s&fid=%s";
+	private static final String RESPONSE_CODE_SUCCESS = "1";
 
 	@Resource
 	private RestTemplate restTemplate;
@@ -49,7 +50,7 @@ public class TpkApiService {
 		String result = restTemplate.postForObject(url, null, String.class);
 		JSONObject jsonObject = JSON.parseObject(result);
 		String code = jsonObject.getString("code");
-		if (Objects.equals(code, "1")) {
+		if (Objects.equals(code, RESPONSE_CODE_SUCCESS)) {
 			// 成功
 			JSONObject data = jsonObject.getJSONObject("data");
 			return data.getInteger("id");

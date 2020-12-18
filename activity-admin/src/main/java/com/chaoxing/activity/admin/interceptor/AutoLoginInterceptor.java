@@ -62,7 +62,6 @@ public class AutoLoginInterceptor extends HandlerInterceptorAdapter {
 			if (!String.valueOf(loginUid).equals(cookieUid) || !String.valueOf(loginFid).equals(cookieFid)) {
 				// uid不匹配或者切换了fid
 				LoginUtils.logout(request);
-				return;
 			}
 		}
 	}

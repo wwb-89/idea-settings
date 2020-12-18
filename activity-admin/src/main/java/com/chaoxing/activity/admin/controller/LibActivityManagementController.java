@@ -60,11 +60,10 @@ public class LibActivityManagementController {
 	 * @Date 2020-11-25 15:26:18
 	 * @param model
 	 * @param request
-	 * @param code
 	 * @return java.lang.String
 	*/
 	@GetMapping("add")
-	public String add(Model model, HttpServletRequest request, String code) {
+	public String add(Model model, HttpServletRequest request) {
 		LoginUserDTO loginUser = LoginUtils.getLoginUser(request);
 		// 活动类型列表
 		List<ActivityTypeDTO> activityTypes = activityQueryService.listActivityType();

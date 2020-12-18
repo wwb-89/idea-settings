@@ -29,7 +29,7 @@ import java.io.File;
 public class CloudApiService {
 
 	/** 上传url */
-	private static final String UPLOAD_URL = "http://cs.ananas.chaoxing.com/upload?uid=-1&clientip=&prdid=40";
+	private static final String UPLOAD_URL = "http://cs.ananas.chaoxing.com/upload?uid=-1&clientip=%s&prdid=40";
 	/** 资源状态url */
 	private static final String GET_CLOUD_RESOURCE_STATUS_URL = "http://cs.ananas.chaoxing.com/status/";
 	/** 云盘图片url */
@@ -56,8 +56,7 @@ public class CloudApiService {
 		HttpEntity<MultiValueMap<String, Object>> httpEntity = new HttpEntity<>(parts, headers);
 		String url = String.format(UPLOAD_URL, ip);
 		ResponseEntity<String> stringResponseEntity = restTemplate.postForEntity(url, httpEntity, String.class);
-		String result = stringResponseEntity.getBody();
-		return result;
+		return stringResponseEntity.getBody();
 	}
 
 	/**上传文件
@@ -76,11 +75,10 @@ public class CloudApiService {
 		FileSystemResource resource = new FileSystemResource(file);
 		MultiValueMap<String, FileSystemResource> data = new LinkedMultiValueMap<>();
 		data.add("file", resource);
-		HttpEntity<MultiValueMap<String, FileSystemResource>> httpEntity = new HttpEntity<>(data);
+		HttpEntity<MultiValueMap<String, FileSystemResource>> httpEntity = new HttpEntity<>(data, headers);
 		String url = String.format(UPLOAD_URL, ip);
 		ResponseEntity<String> stringResponseEntity = restTemplate.postForEntity(url, httpEntity, String.class);
-		String result = stringResponseEntity.getBody();
-		return result;
+		return stringResponseEntity.getBody();
 	}
 
 	/**获取云盘资源状态
@@ -91,10 +89,8 @@ public class CloudApiService {
 	 * @return java.lang.String
 	*/
 	public String getStatus(String cloudId) {
-		StringBuilder urlStringBuilder = new StringBuilder();
-		urlStringBuilder.append(GET_CLOUD_RESOURCE_STATUS_URL);
-		urlStringBuilder.append(cloudId);
-		return restTemplate.getForObject(urlStringBuilder.toString(), String.class);
+		String urlStringBuilder = GET_CLOUD_RESOURCE_STATUS_URL + cloudId;
+		return restTemplate.getForObject(urlStringBuilder, String.class);
 	}
 
 	/**获取云盘图片url
@@ -108,10 +104,8 @@ public class CloudApiService {
 		if (StringUtils.isBlank(cloudId)) {
 			return "";
 		}
-		StringBuilder urlStringBuilder = new StringBuilder();
-		urlStringBuilder.append(IMG_URL);
-		urlStringBuilder.append(cloudId);
-		return urlStringBuilder.toString();
+		String urlStringBuilder = IMG_URL + cloudId;
+		return urlStringBuilder;
 	}
 
 }

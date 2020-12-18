@@ -48,7 +48,7 @@ public class PageHandlerExceptionResolver implements HandlerExceptionResolver {
 	}
 
 	private String getMessage(Exception ex) {
-		if (ex == null || !(ex instanceof BusinessException)) {
+		if (!(ex instanceof BusinessException)) {
 			return ExceptionConstant.DEFAULT_ERROR_MESSAGE;
 		}
 		return ex.getMessage();

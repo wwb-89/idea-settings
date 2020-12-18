@@ -21,17 +21,17 @@ import java.util.List;
 @AllArgsConstructor
 public class MhGeneralAppResultDataDTO {
 
-	// 资源ID
+	/** 资源ID */
 	private Integer id;
-	// 跳转方式，1使用门户详情页, 2搜索列表，3使用外部地址,4搜索详情",
+	/** 跳转方式，1使用门户详情页, 2搜索列表，3使用外部地址,4搜索详情" */
 	private Integer type;
-	// 当前记录的跳转地址。
+	/** 当前记录的跳转地址 */
 	private String orsUrl;
-	// 资源的字段属性
+	/** 资源的字段属性 */
 	private List<MhGeneralAppResultDataFieldDTO> fields;
-	// 0否，1是【是否需要弹窗】",
+	/** 0否，1是【是否需要弹窗】 */
 	private Integer pop;
-	// 弹窗详情内容地址
+	/** 弹窗详情内容地址 */
 	private String popUrl;
 
 	@Data
