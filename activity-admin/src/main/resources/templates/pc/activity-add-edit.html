@@ -113,7 +113,7 @@
                 <div class="form-item">
                     <label class="label position"><img src="/static/pc/assets/images/required.png" th:src="@{/pc/assets/images/required.png}" class="required-img">报名时间</label>
                     <div class="input-box">
-                        <el-date-picker v-model="signUpTimeScope" type="datetimerange" format="yyyy-MM-dd HH:mm" value-format="yyyy-MM-dd HH:mm:ss" :editable=false range-separator="至" start-placeholder="开始时间" end-placeholder="结束时间" @change="selectSignUpTime($event)"></el-date-picker>
+                        <el-date-picker v-model="signUpTimeScope" type="datetimerange" format="yyyy-MM-dd HH:mm" value-format="yyyy-MM-dd HH:mm:ss" :editable=false range-separator="至" start-placeholder="开始日期" end-placeholder="结束日期" @change="selectSignUpTime($event)"></el-date-picker>
                     </div>
                 </div>
                 <div class="form-item">
@@ -125,18 +125,18 @@
                                 <el-option label="自定义人数" :value="1"></el-option>
                             </el-select>
                         </div>
-                        <input v-show="sign.limitPerson" v-model="sign.personLimit" type="number" min="1" step="1" maxlength="10" placeholder="请输入正整数" class="person"><span class="person-span" v-show="sign.limitPerson">人</span>
+                        <input v-show="sign.signUp.limitPerson" v-model="sign.signUp.personLimit" type="number" min="1" step="1" maxlength="10" placeholder="请输入正整数" class="person"><span class="person-span" v-show="sign.signUp.limitPerson">人</span>
                     </div>
                 </div>
                 <div class="form-item" v-if="false">
                     <label class="label" style="line-height: 20px;">信息填写</label>
                     <div class="input-box column">
                         <div class="set-box">
-                            <el-switch v-model="sign.signUpInfoWrite"></el-switch>
+                            <el-switch v-model="sign.signUp.fillInfo"></el-switch>
                             <span class="tips">如何创建报名信息表单？</span>
                         </div>
-                        <div class="select" v-show="sign.signUpInfoWrite">
-                            <el-select v-model="sign.signUpFormId" placeholder="请选择">
+                        <div class="select" v-show="sign.signUp.fillInfo">
+                            <el-select v-model="sign.signUp.fillInfoFormId" placeholder="请选择">
                                 <el-option v-for="(form, index) of forms" :key="'form-' + index" :label="form.name" :value="form.id"></el-option>
                             </el-select>
                         </div>
@@ -145,13 +145,13 @@
                 <div class="form-item">
                     <label class="label">报名名单公开</label>
                     <div class="input-box">
-                        <el-switch v-model="sign.publicSignUpList"></el-switch>
+                        <el-switch v-model="sign.signUp.publicList"></el-switch>
                     </div>
                 </div>
                 <div class="form-item">
                     <label class="label position"><img src="/static/pc/assets/images/required.png" th:src="@{/pc/assets/images/required.png}" class="required-img">按钮名称</label>
                     <div class="input-box btn-name">
-                        <el-input type="text" v-model.trim="sign.signUpBtnName" placeholder="请输入内容" maxlength="6" show-word-limit></el-input>
+                        <el-input type="text" v-model.trim="sign.signUp.btnName" placeholder="请输入内容" maxlength="6" show-word-limit></el-input>
                     </div>
                 </div>
             </form>
@@ -166,31 +166,31 @@
                 <div class="form-item">
                     <label class="label">签到方式</label>
                     <div class="input-box">
-                        <el-radio v-for="(signInForm, index) of signInForms" v-model="sign.signInForm" :label="signInForm.value" name="signInForm">{{signInForm.name}}</el-radio>
+                        <el-radio v-for="(signInWay, index) of signInWays" v-model="sign.signIn.way" :label="signInWay.value" name="signInWay">{{signInWay.name}}</el-radio>
                     </div>
                 </div>
-                <div class="form-item" v-show="sign.signInForm == 2">
-                    <label class="label">位置</label>
+                <div class="form-item" v-show="sign.signIn.way == 2">
+                    <label class="label position"><img src="/static/pc/assets/images/required.png" th:src="@{/pc/assets/images/required.png}" class="required-img">位置</label>
                     <div class="input-box">
-                        <input type="text" readonly required lay-verify="required" v-model.trim="sign.address" placeholder="请选择签到地点" autocomplete="off" class="layui-input name" style="cursor: pointer;" @click="showSignInMap">
+                        <input type="text" readonly required lay-verify="required" v-model.trim="sign.signIn.address" placeholder="请选择签到地点" autocomplete="off" class="layui-input name" style="cursor: pointer;" @click="showSignInMap">
                         <img src="/static/pc/assets/images/location.png" th:src="@{/pc/assets/images/location.png}" class="length icon">
                     </div>
                 </div>
                 <div class="form-item">
                     <label class="label position"><img src="/static/pc/assets/images/required.png" th:src="@{/pc/assets/images/required.png}" class="required-img">签到时间</label>
                     <div class="input-box">
-                        <el-date-picker v-model="signInTimeScope" type="datetimerange" format="yyyy-MM-dd HH:mm" value-format="yyyy-MM-dd HH:mm:ss" :editable=false range-separator="至" start-placeholder="开始时间" end-placeholder="结束时间"  @change="selectSignInTime($event)"></el-date-picker>
+                        <el-date-picker v-model="signInTimeScope" type="datetimerange" format="yyyy-MM-dd HH:mm" value-format="yyyy-MM-dd HH:mm:ss" :editable=false range-separator="至" start-placeholder="开始日期" end-placeholder="结束日期"  @change="selectSignInTime($event)"></el-date-picker>
                     </div>
                 </div>
                 <div class="form-item" v-if="false">
                     <label class="label" style="line-height: 20px;">信息填写</label>
                     <div class="input-box column">
                         <div class="set-box">
-                            <el-switch v-model="sign.signInInfoWrite"></el-switch>
+                            <el-switch v-model="sign.signIn.fillInfo"></el-switch>
                             <span class="tips">如何创建报名信息表单？</span>
                         </div>
-                        <div class="select" v-show="sign.signInInfoWrite">
-                            <el-select v-model="sign.signInFormId" placeholder="请选择">
+                        <div class="select" v-show="sign.signIn.fillInfo">
+                            <el-select v-model="sign.signIn.fillInfoFormId" placeholder="请选择">
                                 <el-option v-for="(form, index) of forms" :key="'form-' + index" :label="form.name" :value="form.id"></el-option>
                             </el-select>
                         </div>
@@ -199,13 +199,67 @@
                 <div class="form-item">
                     <label class="label">签到名单公开</label>
                     <div class="input-box">
-                        <el-switch v-model="sign.publicSignInList"></el-switch>
+                        <el-switch v-model="sign.signIn.publicList"></el-switch>
                     </div>
                 </div>
                 <div class="form-item">
                     <label class="label position"><img src="/static/pc/assets/images/required.png" th:src="@{/pc/assets/images/required.png}" class="required-img">按钮名称</label>
                     <div class="input-box btn-name">
-                        <el-input type="text" v-model.trim="sign.signInBtnName" placeholder="请输入内容" maxlength="6" show-word-limit></el-input>
+                        <el-input type="text" v-model.trim="sign.signIn.btnName" placeholder="请输入内容" maxlength="6" show-word-limit></el-input>
+                    </div>
+                </div>
+            </form>
+        </div>
+        <div class="info box">
+            <div class="set-box">
+                <div class="title set">签退设置</div>
+                <el-switch v-model="enableSignOut" class="switch"></el-switch>
+            </div>
+            <!-- 点击参与设置 -->
+            <form action="" class="setForm" v-show="enableSignOut">
+                <div class="form-item">
+                    <label class="label">签到方式</label>
+                    <div class="input-box">
+                        <el-radio v-for="(signInWay, index) of signInWays" v-model="sign.signOut.way" :label="signInWay.value" name="signInWay">{{signInWay.name}}</el-radio>
+                    </div>
+                </div>
+                <div class="form-item" v-show="sign.signOut.way == 2">
+                    <label class="label position"><img src="/static/pc/assets/images/required.png" th:src="@{/pc/assets/images/required.png}" class="required-img">位置</label>
+                    <div class="input-box">
+                        <input type="text" readonly required lay-verify="required" v-model.trim="sign.signOut.address" placeholder="请选择签到地点" autocomplete="off" class="layui-input name" style="cursor: pointer;" @click="showSignOutMap">
+                        <img src="/static/pc/assets/images/location.png" th:src="@{/pc/assets/images/location.png}" class="length icon">
+                    </div>
+                </div>
+                <div class="form-item">
+                    <label class="label position"><img src="/static/pc/assets/images/required.png" th:src="@{/pc/assets/images/required.png}" class="required-img">签到时间</label>
+                    <div class="input-box">
+                        <el-date-picker v-model="signOutTimeScope" type="datetimerange" format="yyyy-MM-dd HH:mm" value-format="yyyy-MM-dd HH:mm:ss" :editable=false range-separator="至" start-placeholder="开始日期" end-placeholder="结束日期"  @change="selectSignOutTime($event)"></el-date-picker>
+                    </div>
+                </div>
+                <div class="form-item" v-if="false">
+                    <label class="label" style="line-height: 20px;">信息填写</label>
+                    <div class="input-box column">
+                        <div class="set-box">
+                            <el-switch v-model="sign.signOut.fillInfo"></el-switch>
+                            <span class="tips">如何创建报名信息表单？</span>
+                        </div>
+                        <div class="select" v-show="sign.signOut.fillInfo">
+                            <el-select v-model="sign.signOut.fillInfoFormId" placeholder="请选择">
+                                <el-option v-for="(form, index) of forms" :key="'form-' + index" :label="form.name" :value="form.id"></el-option>
+                            </el-select>
+                        </div>
+                    </div>
+                </div>
+                <div class="form-item">
+                    <label class="label">签到名单公开</label>
+                    <div class="input-box">
+                        <el-switch v-model="sign.signOut.publicList"></el-switch>
+                    </div>
+                </div>
+                <div class="form-item">
+                    <label class="label position"><img src="/static/pc/assets/images/required.png" th:src="@{/pc/assets/images/required.png}" class="required-img">按钮名称</label>
+                    <div class="input-box btn-name">
+                        <el-input type="text" v-model.trim="sign.signOut.btnName" placeholder="请输入内容" maxlength="6" show-word-limit></el-input>
                     </div>
                 </div>
             </form>
@@ -311,6 +365,7 @@
     <!-- 地图弹窗 -->
     <vue-map ref="activityMap" :map-dom-id="'activity-map'" @callback="activityAddressSure"></vue-map>
     <vue-map ref="signInMap" :map-dom-id="'sign-in-map'" @callback="signInAddressSure"></vue-map>
+    <vue-map ref="signOutMap" :map-dom-id="'sign-out-map'" @callback="signOutAddressSure"></vue-map>
     <!--预览url复制容器-->
     <input type="text" id="template-preview-url-input" v-model.trim="activity.previewUrl" style="position: absolute; top: -100px; height: 1px;">
 </div>
@@ -348,15 +403,19 @@
                 deleteActivityClassifyId: null,
                 // 签到报名
                 sign: [[${sign}]],
-                signInForms: [],
+                signInWays: [],
                 // 是否开启报名
                 enableSignUp: false,
                 // 是否开启签到
                 enableSignIn: false,
+                // 是否开启签退
+                enableSignOut: false,
                 // 报名时间范围
                 signUpTimeScope: "",
                 // 签到时间范围
                 signInTimeScope: "",
+                // 签退时间范围
+                signOutTimeScope: "",
                 // 人数限制值
                 personLimitValue: 0,
                 // 处理的模板id
@@ -407,31 +466,66 @@
                         $this.$set($this.activityClassifies[i], "selected", false);
                     }
                 });
-                $this.signInForms = [
-                    {name: "直接签到", value: "1"},
-                    {name: "指定位置签到", value: "2"},
-                    {name: "扫码签到", value: "3"}
+                $this.signInWays = [
+                    {name: "直接签到", value: 1},
+                    {name: "指定位置签到", value: 2},
+                    {name: "扫码签到", value: 3}
                 ];
-                if (activityApp.isEmpty($this.sign)) {
-                    // 生成新的签到报名
-                    $this.sign = activityApp.newSign();
+                if (activityApp.isEmpty($this.sign.id)) {
+                    // 生成新的签到报名活动
+                    $this.sign = signApp.newSign();
+                    $this.enableSignUp = true;
+                    $this.enableSignIn = false;
+                    $this.enableSignOut = false;
                 } else {
                     $this.sign.createTime = "";
                     $this.sign.updateTime = "";
-                    var signUpStartTimeStr = $this.sign.signUpStartTimeStr;
-                    var signUpEndTimeStr = $this.sign.signUpEndTimeStr;
+                    // 报名
+                    if (!activityApp.isEmpty($this.sign.signUp)) {
+                        $this.enableSignUp = true;
+                    }else {
+                        $this.enableSignUp = false;
+                        $this.sign.signUp = signApp.newSignUp();
+                    }
+                    var signUpStartTimeStr = $this.sign.signUp.startTimeStr;
+                    var signUpEndTimeStr = $this.sign.signUp.endTimeStr;
                     if (!activityApp.isEmpty(signUpStartTimeStr) && !activityApp.isEmpty(signUpEndTimeStr)) {
                         $this.signUpTimeScope = [signUpStartTimeStr, signUpEndTimeStr];
+                        $this.sign.signUp.startTime = signUpStartTimeStr;
+                        $this.sign.signUp.endTime = signUpEndTimeStr;
                     }
-                    var signInStartTimeStr = $this.sign.signInStartTimeStr;
-                    var signInEndTimeStr = $this.sign.signInEndTimeStr;
+                    // 签到
+                    if (!activityApp.isEmpty($this.sign.signIn)) {
+                        $this.enableSignIn = true;
+                    } else {
+                        $this.enableSignIn = false;
+                        $this.sign.signIn = signApp.newSignIn();
+                    }
+                    var signInStartTimeStr = $this.sign.signIn.startTimeStr;
+                    var signInEndTimeStr = $this.sign.signIn.endTimeStr;
                     if (!activityApp.isEmpty(signInStartTimeStr) && !activityApp.isEmpty(signInEndTimeStr)) {
                         $this.signInTimeScope = [signInStartTimeStr, signInEndTimeStr];
+                        $this.sign.signIn.startTime = signInStartTimeStr;
+                        $this.sign.signIn.endTime = signInEndTimeStr;
                     }
+                    $this.sign.notes = signApp.htmlToTextarea($this.sign.notes);
+                    // 签退
+                    if (!activityApp.isEmpty($this.sign.signOut)) {
+                        $this.enableSignIn = true;
+                    } else {
+                        $this.enableSignOut = false;
+                        $this.sign.signOut = signApp.newSignOut();
+                    }
+                    var signOutStartTimeStr = $this.sign.signOut.startTimeStr;
+                    var signOutEndTimeStr = $this.sign.signOut.endTimeStr;
+                    if (!activityApp.isEmpty(signOutStartTimeStr) && !activityApp.isEmpty(signOutEndTimeStr)) {
+                        $this.signOutTimeScope = [signOutStartTimeStr, signOutEndTimeStr];
+                        $this.sign.signOut.startTime = signOutStartTimeStr;
+                        $this.sign.signOut.endTime = signOutEndTimeStr;
+                    }
+                    $this.sign.notes = signApp.htmlToTextarea($this.sign.notes);
                 }
-                $this.calSignEnable();
                 $this.calPersonLimitValue();
-                $this.loadForms();
             },
             mounted: function () {
                 var $this = this;
@@ -571,6 +665,10 @@
                     var $this = this;
                     $this.$refs.signInMap.show = true;
                 },
+                showSignOutMap: function () {
+                    var $this = this;
+                    $this.$refs.signOutMap.show = true;
+                },
                 // 确定活动地址
                 activityAddressSure: function () {
                     var $this = this;
@@ -586,12 +684,23 @@
                 signInAddressSure: function () {
                     var $this = this;
                     if (activityApp.isEmpty($this.$refs.signInMap.longitude) || activityApp.isEmpty($this.$refs.signInMap.dimension)) {
-                        app.showMsg("请选择地址");
+                        app.showMsg("签到请选择地址");
                         return;
                     }
-                    $this.sign.address = $this.$refs.signInMap.address;
-                    $this.sign.longitude = $this.$refs.signInMap.longitude;
-                    $this.sign.dimension = $this.$refs.signInMap.dimension;
+                    $this.sign.signIn.address = $this.$refs.signInMap.address;
+                    $this.sign.signIn.longitude = $this.$refs.signInMap.longitude;
+                    $this.sign.signIn.dimension = $this.$refs.signInMap.dimension;
+                },
+                // 确定签退地址
+                signOutAddressSure: function () {
+                    var $this = this;
+                    if (activityApp.isEmpty($this.$refs.signOutMap.longitude) || activityApp.isEmpty($this.$refs.signOutMap.dimension)) {
+                        app.showMsg("请选择签退地址");
+                        return;
+                    }
+                    $this.sign.signOut.address = $this.$refs.signOutMap.address;
+                    $this.sign.signOut.longitude = $this.$refs.signOutMap.longitude;
+                    $this.sign.signOut.dimension = $this.$refs.signOutMap.dimension;
                 },
                 selectActivityClassify: function (index) {
                     var $this = this;
@@ -699,12 +808,6 @@
                         app.showMsg("删除分类失败");
                     });
                 },
-                // 计算报名签到的开启标识
-                calSignEnable: function () {
-                    var $this = this;
-                    $this.enableSignUp = $this.activity.enableSign && ($this.sign.partakeForm == 1 || $this.sign.partakeForm == 3);
-                    $this.enableSignIn = $this.activity.enableSign && ($this.sign.partakeForm == 2 || $this.sign.partakeForm == 3);
-                },
                 // 计算限制人数value
                 calPersonLimitValue: function () {
                     var $this = this;
@@ -733,30 +836,35 @@
                         app.showMsg("活动分类不能为空");
                         return false;
                     }
+                    // 报名和签到至少应该开启一个
+                    if (!$this.enableSignUp && !$this.enableSignIn) {
+                        app.showMsg("报名或签到功能请至少开启一项");
+                        return false;
+                    }
                     // 报名设置
                     if ($this.enableSignUp) {
-                        if (activityApp.isEmpty($this.sign.signUpStartTime)) {
+                        if (activityApp.isEmpty($this.sign.signUp.startTime)) {
                             app.showMsg("报名开始时间不能为空");
                             return false;
                         }
-                        if (activityApp.isEmpty($this.sign.signUpEndTime)) {
+                        if (activityApp.isEmpty($this.sign.signUp.endTime)) {
                             app.showMsg("报名结束时间不能为空");
                             return false;
                         }
-                        if ($this.sign.limitPerson) {
+                        if ($this.sign.signUp.limitPerson) {
                             // 启用人数限制
-                            if ($this.sign.personLimit < 1) {
+                            if ($this.sign.signUp.personLimit < 1) {
                                 app.showMsg("报名限制的人数不能小于1");
                                 return false;
                             }
                         }
-                        if ($this.sign.signUpInfoWrite) {
-                            if (activityApp.isEmpty($this.sign.signUpFormId)) {
+                        if ($this.sign.signUp.fillInfo) {
+                            if (activityApp.isEmpty($this.sign.signUp.fillInfoFormId)) {
                                 app.showMsg("请选择报名需要填写的表单");
                                 return false;
                             }
                         }
-                        if (activityApp.isEmpty($this.sign.signUpBtnName)) {
+                        if (activityApp.isEmpty($this.sign.signUp.btnName)) {
                             app.showMsg("报名按钮名称不能为空");
                             return false;
                         }
@@ -764,29 +872,58 @@
                     // 签到设置
                     if ($this.enableSignIn) {
                         // 签到方式
-                        if ($this.sign.signInForm == 2) {
+                        if ($this.sign.signIn.way == 2) {
                             // 位置签到
-                            if (activityApp.isEmpty($this.sign.address)) {
+                            if (activityApp.isEmpty($this.sign.signIn.address)) {
                                 app.showMsg("签到位置不能为空");
                                 return false;
                             }
                         }
-                        if (activityApp.isEmpty($this.sign.signInStartTime)) {
+                        if (activityApp.isEmpty($this.sign.signIn.startTime)) {
                             app.showMsg("签到开始时间不能为空");
                             return false;
                         }
-                        if (activityApp.isEmpty($this.sign.signInEndTime)) {
+                        if (activityApp.isEmpty($this.sign.signIn.endTime)) {
                             app.showMsg("签到结束时间不能为空");
                             return false;
                         }
-                        if ($this.sign.signInInfoWrite) {
-                            if (activityApp.isEmpty($this.sign.signInFormId)) {
+                        if ($this.sign.signIn.fillInfo) {
+                            if (activityApp.isEmpty($this.sign.signIn.fillInfoFormId)) {
                                 app.showMsg("请选择签到需要填写的表单");
                                 return false;
                             }
                         }
-                        if (activityApp.isEmpty($this.sign.signInBtnName)) {
+                        if (activityApp.isEmpty($this.sign.signIn.btnName)) {
                             app.showMsg("签到按钮名称不能为空");
+                            return false;
+                        }
+                    }
+                    // 签退设置
+                    if ($this.enableSignOut) {
+                        // 签到方式
+                        if ($this.sign.signOut.way == 2) {
+                            // 位置签到
+                            if (activityApp.isEmpty($this.sign.signOut.address)) {
+                                app.showMsg("签退位置不能为空");
+                                return false;
+                            }
+                        }
+                        if (activityApp.isEmpty($this.sign.signOut.startTime)) {
+                            app.showMsg("签退开始时间不能为空");
+                            return false;
+                        }
+                        if (activityApp.isEmpty($this.sign.signOut.endTime)) {
+                            app.showMsg("签退结束时间不能为空");
+                            return false;
+                        }
+                        if ($this.sign.signOut.fillInfo) {
+                            if (activityApp.isEmpty($this.sign.signOut.fillInfoFormId)) {
+                                app.showMsg("请选择签退需要填写的表单");
+                                return false;
+                            }
+                        }
+                        if (activityApp.isEmpty($this.sign.signOut.btnName)) {
+                            app.showMsg("签退按钮名称不能为空");
                             return false;
                         }
                     }
@@ -806,9 +943,19 @@
                     }
                     // 创建活动
                     var url = ctx + "/api/activity/new";
+                    var sign = $.extend({}, $this.sign);
+                    if (!$this.enableSignUp) {
+                        sign.signUp = null;
+                    }
+                    if (!$this.enableSignIn) {
+                        sign.signIn = null;
+                    }
+                    if (!$this.enableSignOut) {
+                        sign.signOut = null;
+                    }
                     var params = {
                         activityJsonStr: activityApp.getJsonStr($this.activity),
-                        signJsonStr: activityApp.getJsonStr($this.sign)
+                        signJsonStr: activityApp.getJsonStr(sign)
                     };
                     app.ajaxPostWithLoading(url, params, function (data) {
                         if (data.success) {
@@ -835,9 +982,19 @@
                         return;
                     }
                     var url = ctx + "/api/activity/edit";
+                    var sign = $.extend({}, $this.sign);
+                    if (!$this.enableSignUp) {
+                        sign.signUp = null;
+                    }
+                    if (!$this.enableSignIn) {
+                        sign.signIn = null;
+                    }
+                    if (!$this.enableSignOut) {
+                        sign.signOut = null;
+                    }
                     var params = {
                         activityJsonStr: activityApp.getJsonStr($this.activity),
-                        signJsonStr: activityApp.getJsonStr($this.sign)
+                        signJsonStr: activityApp.getJsonStr(sign)
                     };
                     app.ajaxPostWithLoading(url, params, function (data) {
                         if (data.success) {

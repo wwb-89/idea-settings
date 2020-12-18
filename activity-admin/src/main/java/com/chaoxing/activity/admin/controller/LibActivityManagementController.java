@@ -2,6 +2,7 @@ package com.chaoxing.activity.admin.controller;
 
 import com.chaoxing.activity.dto.LoginUserDTO;
 import com.chaoxing.activity.dto.activity.ActivityTypeDTO;
+import com.chaoxing.activity.dto.manager.sign.SignAddEditDTO;
 import com.chaoxing.activity.dto.module.SignFormDTO;
 import com.chaoxing.activity.model.Activity;
 import com.chaoxing.activity.model.ActivityClassify;
@@ -71,7 +72,7 @@ public class LibActivityManagementController {
 		// 活动分类列表
 		model.addAttribute("activityClassifies", activityClassifyQueryService.listOrgOptional(loginUser.getFid()));
 		// 报名签到
-		model.addAttribute("sign", null);
+		model.addAttribute("sign", SignAddEditDTO.builder().build());
 		// 模板列表
 		List<WebTemplate> webTemplates = webTemplateService.list();
 		model.addAttribute("webTemplates", webTemplates);

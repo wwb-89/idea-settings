@@ -28,6 +28,7 @@
     activityApp.prototype.isMobile = function (phone) {
         return (/^1(3|4|5|7|8|9)\d{9}$/.test(phone));
     };
+
     /**
      * 获取json对象
      * @param jsonStr
@@ -38,6 +39,7 @@
         }
         return J.parse(jsonStr);
     };
+
     /**
      * 获取json字符串
      * @param jsonObject
@@ -48,6 +50,7 @@
         }
         return J.stringify(jsonObject);
     };
+
     /**
      * 获取请求参数
      * @param name
@@ -61,6 +64,7 @@
         }
         return null;
     }
+
     activityApp.prototype.millisecond2DateObj = function (millisecond) {
         var $this = this;
         if ($this.isEmpty(millisecond)) {
@@ -87,6 +91,7 @@
             second: second
         };
     };
+
     /**
      * 毫秒转换为日期字符串
      * @param millisecond
@@ -96,6 +101,7 @@
         var dateObj = $this.millisecond2DateObj(millisecond);
         return dateObj.year + "-" + dateObj.month + "-" + dateObj.day + " " + dateObj.hour + ":" + dateObj.minute + ":" + dateObj.second;
     };
+
     /**
      * 填充到指定位数
      * @param origin
@@ -111,9 +117,11 @@
         }
         return origin;
     };
+
     activityApp.prototype.isFunction = function (callback) {
         return typeof (callback) === "function";
     };
+
     /**
      * 获取cookie的值
      * @param key
@@ -124,6 +132,7 @@
         if (arr != null) return unescape(arr[2]);
         return null;
     };
+
     /**
      * 从cookie中获取uid
      * @returns {*}
@@ -132,6 +141,7 @@
         var that = this;
         return that.getCookie("_uid")
     };
+
     /**
      * 将textarea的内容转换为html显示的内容（保留空格回车）
      * @param content
@@ -148,6 +158,7 @@
         content = content.replace(regSpace, "&nbsp;");
         return content;
     };
+
     /**
      * 将html显示的内容转换为textarea的内容（保留空格回车）
      * @param content
@@ -164,6 +175,7 @@
         content = content.replace(regSpace, " ");
         return content;
     };
+
     /**
      * 获取云盘图片的url
      * @param cloudId
@@ -172,65 +184,7 @@
     activityApp.prototype.getCloudImgUrl = function (cloudId) {
         return "http://d0.ananas.chaoxing.com/download/" + cloudId;
     };
-    /**
-     * 生成新的签到报名
-     * @returns {{signUpEndTime: string, limitPerson: boolean, signUpFormId: string, createUserName: string, signInStartTime: string, createFid: string, signInFormId: string, signUpStartTime: string, signInEndTime: string, id: null, dimension: string, createUid: string, longitude: string, createOrgName: string, address: string, signUpBtnName: string, publicSignUpList: boolean, partakeForm: null, signInInfoWrite: string, signUpForm: string, signInForm: string, signInBtnName: string, signUpInfoWrite: boolean, personLimit: number, name: string}}
-     */
-    activityApp.prototype.newSign = function () {
-        return {
-            id: null,
-            name: "",
-            // 1：报名。2：签到，3：报名后签到
-            partakeForm: 1,
-            // 报名开始时间
-            signUpStartTime: "",
-            //报名结束时间
-            signUpEndTime: "",
-            // 签到开始时间
-            signInStartTime: "",
-            // 签到结束时间
-            signInEndTime: "",
-            // 是否限制报名人数
-            limitPerson: false,
-            // 限制的人数
-            personLimit: 100,
-            // 报名方式
-            signUpForm: "",
-            // 签到方式
-            signInForm: "1",
-            // 地址
-            address: "",
-            // 经度
-            longitude: "",
-            // 维度
-            dimension: "",
-            // 是否开启报名信息填写
-            signUpInfoWrite: false,
-            // 报名信息填写的表单id
-            signUpFormId: "",
-            // 是否开启签到信息填写
-            signInInfoWrite: false,
-            // 签到信息填写的表单id
-            signInFormId: "",
-            // 是否公开报名名单
-            publicSignUpList: false,
-            // 是否公开签到名单
-            publicSignInList: false,
-            // 报名按钮名称
-            signUpBtnName: "报名",
-            // 签到按钮名称
-            signInBtnName: "签到",
-            // 创建人uid
-            createUid: "",
-            // 创建人姓名
-            createUserName: "",
-            // 创建人fid
-            createFid: "",
-            // 创建人机构名称
-            createOrgName: ""
 
-        };
-    };
     /**
      * 获取活动状态说明
      * @param status
@@ -254,6 +208,7 @@
                 return "已结束";
         }
     };
+
     /**
      * 获取活动默认封面云盘id
      * @returns {string}
@@ -261,6 +216,7 @@
     activityApp.prototype.getDefaultCoverCloudId = function () {
         return "68065603fbcb805725f7ef5e21cef03c";
     };
+
     W['activityApp'] = new activityApp();
 })(window, jQuery, JSON);
 Array.prototype.remove = function (val) {
