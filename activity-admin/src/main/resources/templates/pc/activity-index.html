@@ -78,7 +78,9 @@
         </div>
         <el-pagination v-show="pages > 1" background layout="prev, pager, next" :total="total" :page-size="queryParams.pageSize" :current-page="queryParams.pageNum" @current-change="changePage" style="text-align: center;"></el-pagination>
         <!-- 删除弹窗 -->
-        <vue-confirm ref="deleteWindow" :message="'确认删除？'" :cancel="'取消'" :sure="'确定'" @callback="deleteSubmit"></vue-confirm>
+        <vue-confirm ref="deleteWindow" :message="'删除后，将清空该活动的相关信息和记录'" :cancel="'取消'" :sure="'删除'" @callback="deleteSubmit"></vue-confirm>
+        <!--下架弹窗-->
+        <vue-confirm ref="releaseWindow" :message="'发布后，该活动将展示在活动市场中'" :cancel="'取消'" :sure="'发布'" @callback="release"></vue-confirm>
         <!--下架弹窗-->
         <vue-confirm ref="canReleaseWindow" :message="'下架后，该活动将不在活动广场中显示'" :cancel="'取消'" :sure="'下架'" @callback="cancelRelease"></vue-confirm>
     </div>
@@ -260,13 +262,12 @@
                             $this.toDelete(id);
                             break;
                         case "release":
-                            $this.release(id);
+                            $this.toRelease(id);
                             break;
                         case "cancelRelease":
                             $this.toCancelRelease(id);
                             break;
                         default:
-
                     }
                 },
                 // 删除
@@ -294,25 +295,30 @@
                         app.showMsg("删除活动失败");
                     });
                 },
-                // 发布
-                release: function (id) {
+                toRelease: function (id) {
                     var $this = this;
                     $this.processedActivityId = id;
+                    $this.$refs.releaseWindow.show = true;
+                },
+                // 发布
+                release: function () {
+                    var $this = this;
                     var activity = null;
                     $($this.activities).each(function () {
-                        if (this.id == id) {
+                        if (this.id == $this.processedActivityId) {
                             activity = this;
                             return false;
                         }
                     });
                     if (activityApp.isEmpty(activity.pageId)) {
                         app.showMsg("活动未创建完成，请选择活动模板", function () {
-                            var url = ctx + "/lib/" + id + "/edit?step=2";
+                            var url = ctx + "/lib/" + $this.processedActivityId + "/edit?step=2";
                             window.open(url);
                         });
                         return;
                     }
-                    var url = ctx + "/api/activity/" + id + "/release";
+                    $this.$refs.releaseWindow.show = false;
+                    var url = ctx + "/api/activity/" + $this.processedActivityId + "/release";
                     app.ajaxPostWithLoading(url, {}, function (data) {
                         if (data.success) {
                             app.showMsg("发布成功", function () {
