@@ -1,9 +1,15 @@
 package com.chaoxing.activity.dto.manager;
 
+import com.chaoxing.activity.model.ActivityScope;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.apache.commons.collections4.CollectionUtils;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
 
 /**微服务层级架构对象
  * @author wwb
@@ -39,6 +45,28 @@ public class WfwRegionalArchitectureDTO {
 	private Integer fid;
 	private Boolean existChild;
 	private Integer sort;
-	private Boolean checked;
+
+	public static List<ActivityScope> convert2ActivityScopes(Integer activityId, List<WfwRegionalArchitectureDTO> wfwRegionalArchitectures) {
+		List<ActivityScope> activityScopes = new ArrayList<>();
+		if (CollectionUtils.isNotEmpty(wfwRegionalArchitectures)) {
+			for (WfwRegionalArchitectureDTO wfwRegionalArchitecture : wfwRegionalArchitectures) {
+				ActivityScope activityScope = ActivityScope.builder()
+						.activityId(activityId)
+						.hierarchyId(wfwRegionalArchitecture.getId())
+						.name(wfwRegionalArchitecture.getName())
+						.hierarchyPid(wfwRegionalArchitecture.getPid())
+						.code(wfwRegionalArchitecture.getCode())
+						.links(wfwRegionalArchitecture.getLinks())
+						.level(wfwRegionalArchitecture.getLevel())
+						.adjustedLevel(wfwRegionalArchitecture.getLevel())
+						.fid(wfwRegionalArchitecture.getFid())
+						.existChild(Optional.ofNullable(wfwRegionalArchitecture.getExistChild()).orElse(Boolean.FALSE))
+						.sort(wfwRegionalArchitecture.getSort())
+						.build();
+				activityScopes.add(activityScope);
+			}
+		}
+		return activityScopes;
+	}
 
 }

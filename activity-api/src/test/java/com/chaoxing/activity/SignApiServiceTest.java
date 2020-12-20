@@ -1,7 +1,7 @@
 package com.chaoxing.activity;
 
 import com.alibaba.fastjson.JSON;
-import com.chaoxing.activity.dto.manager.SignParticipationDTO;
+import com.chaoxing.activity.dto.manager.sign.SignParticipationDTO;
 import com.chaoxing.activity.service.manager.module.SignApiService;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;

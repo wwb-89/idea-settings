@@ -2,10 +2,9 @@ package com.chaoxing.activity.service.manager.module;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
-import com.chaoxing.activity.dto.manager.SignParticipationDTO;
-import com.chaoxing.activity.dto.module.SignFormDTO;
+import com.chaoxing.activity.dto.manager.sign.SignParticipationDTO;
+import com.chaoxing.activity.dto.module.SignAddEditDTO;
 import com.chaoxing.activity.util.RestTemplateUtils;
-import com.chaoxing.activity.util.constant.DateTimeFormatterConstant;
 import com.chaoxing.activity.util.exception.BusinessException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpEntity;
@@ -16,7 +15,6 @@ import org.springframework.web.client.RestTemplate;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
-import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -34,13 +32,13 @@ public class SignApiService {
 
 	private static final String DOMAIN = "http://api.qd.reading.chaoxing.com";
 	/** 创建签到报名的地址 */
-	private static final String CREATE_URL = DOMAIN + "/activity/create";
+	private static final String CREATE_URL = DOMAIN + "/sign/new";
 	/** 修改签到报名的地址 */
-	private static final String UPDATE_URL = DOMAIN + "/activity/update";
+	private static final String UPDATE_URL = DOMAIN + "/sign/update";
 	/** 获取签到报名信息的地址 */
-	private static final String DETAIL_URL = DOMAIN + "/activity/%d/detail";
+	private static final String DETAIL_URL = DOMAIN + "/sign/%d/detail";
 	/** 参与情况 */
-	private static final String PARTICIPATION_URL = DOMAIN + "/activity/%d/participation";
+	private static final String PARTICIPATION_URL = DOMAIN + "/sign/%d/participation";
 
 	@Resource
 	private RestTemplate restTemplate;
@@ -49,16 +47,16 @@ public class SignApiService {
 	 * @Description 
 	 * @author wwb
 	 * @Date 2020-11-11 14:26:33
-	 * @param signForm
+	 * @param signAddEdit
 	 * @param request
 	 * @return java.lang.Integer 签到报名id
 	*/
-	public Integer create(SignFormDTO signForm, HttpServletRequest request) {
+	public Integer create(SignAddEditDTO signAddEdit, HttpServletRequest request) {
 		HttpHeaders httpHeaders = new HttpHeaders();
 		httpHeaders.setContentType(MediaType.APPLICATION_JSON);
 		List<String> cookies = RestTemplateUtils.getCookies(request);
 		httpHeaders.put("Cookie", cookies);
-		HttpEntity<String> httpEntity = new HttpEntity<>(JSON.toJSONString(signForm), httpHeaders);
+		HttpEntity<String> httpEntity = new HttpEntity<>(JSON.toJSONString(signAddEdit), httpHeaders);
 		String result = restTemplate.postForObject(CREATE_URL, httpEntity, String.class);
 		JSONObject jsonObject = JSON.parseObject(result);
 		Boolean success = jsonObject.getBoolean("success");
@@ -67,7 +65,7 @@ public class SignApiService {
 			return jsonObject.getInteger("data");
 		} else {
 			String errorMessage = jsonObject.getString("message");
-			log.error("创建报名报名:{}失败:{}", JSON.toJSONString(signForm), errorMessage);
+			log.error("创建报名报名:{}失败:{}", JSON.toJSONString(signAddEdit), errorMessage);
 			throw new BusinessException(errorMessage);
 		}
 	}
@@ -76,22 +74,22 @@ public class SignApiService {
 	 * @Description 
 	 * @author wwb
 	 * @Date 2020-11-11 17:58:39
-	 * @param signForm
+	 * @param signAddEdit
 	 * @return void
 	*/
-	public void update(SignFormDTO signForm, HttpServletRequest request) {
+	public void update(SignAddEditDTO signAddEdit, HttpServletRequest request) {
 		HttpHeaders httpHeaders = new HttpHeaders();
 		httpHeaders.setContentType(MediaType.APPLICATION_JSON);
 		List<String> cookies = RestTemplateUtils.getCookies(request);
 		httpHeaders.put("Cookie", cookies);
-		HttpEntity<String> httpEntity = new HttpEntity<>(JSON.toJSONString(signForm), httpHeaders);
+		HttpEntity<String> httpEntity = new HttpEntity<>(JSON.toJSONString(signAddEdit), httpHeaders);
 		String result = restTemplate.postForObject(UPDATE_URL, httpEntity, String.class);
 		JSONObject jsonObject = JSON.parseObject(result);
 		Boolean success = jsonObject.getBoolean("success");
 		success = Optional.ofNullable(success).orElse(Boolean.FALSE);
 		if (!success) {
 			String errorMessage = jsonObject.getString("message");
-			log.error("修改签到报名:{}失败:{}", JSON.toJSONString(signForm), errorMessage);
+			log.error("修改签到报名:{}失败:{}", JSON.toJSONString(signAddEdit), errorMessage);
 			throw new BusinessException(errorMessage);
 		}
 	}
@@ -101,9 +99,9 @@ public class SignApiService {
 	 * @author wwb
 	 * @Date 2020-11-19 13:15:47
 	 * @param signId
-	 * @return com.chaoxing.activity.dto.module.SignFormDTO
+	 * @return com.chaoxing.activity.dto.module.SignAddEditDTO
 	*/
-	public SignFormDTO getById(Integer signId) {
+	public SignAddEditDTO getById(Integer signId) {
 		String url = String.format(DETAIL_URL, signId);
 		String result = restTemplate.getForObject(url, String.class);
 		JSONObject jsonObject = JSON.parseObject(result);
@@ -111,16 +109,8 @@ public class SignApiService {
 		success = Optional.ofNullable(success).orElse(Boolean.FALSE);
 		if (success) {
 			String data = jsonObject.getString("data");
-			SignFormDTO signForm = JSON.parseObject(data, SignFormDTO.class);
-			LocalDateTime signUpStartTime = signForm.getSignUpStartTime();
-			LocalDateTime signUpEndTime = signForm.getSignUpEndTime();
-			LocalDateTime signInStartTime = signForm.getSignInStartTime();
-			LocalDateTime signInEndTime = signForm.getSignInEndTime();
-			signForm.setSignUpStartTimeStr(signUpStartTime == null ? "" : DateTimeFormatterConstant.YYYY_MM_DD_HH_MM_SS.format(signUpStartTime));
-			signForm.setSignUpEndTimeStr(signUpEndTime == null ? "" : DateTimeFormatterConstant.YYYY_MM_DD_HH_MM_SS.format(signUpEndTime));
-			signForm.setSignInStartTimeStr(signInStartTime == null ? "" : DateTimeFormatterConstant.YYYY_MM_DD_HH_MM_SS.format(signInStartTime));
-			signForm.setSignInEndTimeStr(signInEndTime == null ? "" : DateTimeFormatterConstant.YYYY_MM_DD_HH_MM_SS.format(signInEndTime));
-			return signForm;
+			SignAddEditDTO signAddEdit = JSON.parseObject(data, SignAddEditDTO.class);
+			return signAddEdit;
 		} else {
 			String errorMessage = jsonObject.getString("message");
 			log.error("根据签到报名id:{}查询签到报名失败:{}", signId, errorMessage);

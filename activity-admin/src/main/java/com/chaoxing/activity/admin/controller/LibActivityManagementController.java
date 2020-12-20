@@ -1,17 +1,18 @@
 package com.chaoxing.activity.admin.controller;
 
+import com.chaoxing.activity.admin.util.LoginUtils;
 import com.chaoxing.activity.dto.LoginUserDTO;
 import com.chaoxing.activity.dto.activity.ActivityTypeDTO;
-import com.chaoxing.activity.dto.manager.sign.SignAddEditDTO;
-import com.chaoxing.activity.dto.module.SignFormDTO;
+import com.chaoxing.activity.dto.manager.WfwRegionalArchitectureDTO;
+import com.chaoxing.activity.dto.module.SignAddEditDTO;
 import com.chaoxing.activity.model.Activity;
 import com.chaoxing.activity.model.ActivityClassify;
 import com.chaoxing.activity.model.WebTemplate;
 import com.chaoxing.activity.service.WebTemplateService;
 import com.chaoxing.activity.service.activity.ActivityQueryService;
 import com.chaoxing.activity.service.activity.classify.ActivityClassifyQueryService;
+import com.chaoxing.activity.service.activity.scope.ActivityScopeQueryService;
 import com.chaoxing.activity.service.manager.module.SignApiService;
-import com.chaoxing.activity.admin.util.LoginUtils;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -42,6 +43,8 @@ public class LibActivityManagementController {
 	private SignApiService signApiService;
 	@Resource
 	private WebTemplateService webTemplateService;
+	@Resource
+	private ActivityScopeQueryService activityScopeQueryService;
 
 	/**活动管理主页
 	 * @Description 
@@ -101,15 +104,18 @@ public class LibActivityManagementController {
 		model.addAttribute("activityClassifies", activityClassifies);
 		// 报名签到
 		Integer signId = activity.getSignId();
-		SignFormDTO signForm = null;
+		SignAddEditDTO signAddEdit = null;
 		if (signId != null) {
-			signForm = signApiService.getById(signId);
+			signAddEdit = signApiService.getById(signId);
 		}
-		model.addAttribute("sign", signForm);
+		model.addAttribute("sign", signAddEdit);
 		// 模板列表
 		List<WebTemplate> webTemplates = webTemplateService.list();
 		model.addAttribute("webTemplates", webTemplates);
 		model.addAttribute("step", step);
+		// 活动参与范围
+		List<WfwRegionalArchitectureDTO> wfwRegionalArchitectures = activityScopeQueryService.listByActivityId(activityId);
+		model.addAttribute("participatedOrgs", wfwRegionalArchitectures);
 		return "pc/activity-add-edit";
 	}
 

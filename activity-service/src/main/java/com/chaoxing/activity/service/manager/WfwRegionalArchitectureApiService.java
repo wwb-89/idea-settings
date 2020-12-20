@@ -4,6 +4,7 @@ import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.chaoxing.activity.dto.manager.WfwRegionalArchitectureDTO;
 import com.chaoxing.activity.util.exception.BusinessException;
+import com.google.common.collect.Lists;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.stereotype.Service;
@@ -33,6 +34,8 @@ public class WfwRegionalArchitectureApiService {
 
 	@Resource
 	private RestTemplate restTemplate;
+	@Resource
+	private PassportApiService passportApiService;
 
 	/**根据fid查询该机构下的层级机构
 	 * @Description
@@ -43,12 +46,41 @@ public class WfwRegionalArchitectureApiService {
 	 * @return java.util.List<com.chaoxing.activity.common.manager.dto.RegionalArchitectureDTO>
 	 */
 	public List<WfwRegionalArchitectureDTO> listByFid(Integer fid) {
+		List<WfwRegionalArchitectureDTO> result;
 		List<String> codes = listCodeByFid(fid);
 		if (CollectionUtils.isEmpty(codes)) {
-			return new ArrayList<>();
+			result = Lists.newArrayList();
+		} else {
+			String code = codes.get(0);
+			result = listByCode(code);
 		}
-		String code = codes.get(0);
-		return listByCode(code);
+		if (CollectionUtils.isEmpty(result)) {
+			// 构建一个当前单位的范围
+			result.add(buildWfwRegionalArchitecture(fid));
+		}
+		return result;
+	}
+
+	/**构建一个层级架构
+	 * @Description 
+	 * @author wwb
+	 * @Date 2020-12-20 13:00:08
+	 * @param fid
+	 * @return com.chaoxing.activity.dto.manager.WfwRegionalArchitectureDTO
+	*/
+	private WfwRegionalArchitectureDTO buildWfwRegionalArchitecture(Integer fid) {
+		String orgName = passportApiService.getOrgName(fid);
+		return WfwRegionalArchitectureDTO.builder()
+				.id(0)
+				.name(orgName)
+				.pid(0)
+				.code("")
+				.links(orgName)
+				.level(1)
+				.fid(fid)
+				.existChild(Boolean.FALSE)
+				.sort(1)
+				.build();
 	}
 
 	/**根据层级区域编码查询层级架构
@@ -59,7 +91,7 @@ public class WfwRegionalArchitectureApiService {
 	 * @return java.util.List<com.chaoxing.activity.dto.manager.WfwRegionalArchitectureDTO>
 	*/
 	public List<WfwRegionalArchitectureDTO> listByCode(String code) {
-		List<WfwRegionalArchitectureDTO> regionalArchitectures = new ArrayList<>();
+		List<WfwRegionalArchitectureDTO> regionalArchitectures = Lists.newArrayList();
 		String url = String.format(GET_REGIONAL_ARCHITECTURE_BY_CODE_URL, code, Integer.MAX_VALUE);
 		String result = restTemplate.getForObject(url, String.class);
 		JSONObject jsonObject = JSON.parseObject(result);

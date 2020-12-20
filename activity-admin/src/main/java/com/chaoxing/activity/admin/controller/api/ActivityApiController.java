@@ -5,8 +5,9 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.chaoxing.activity.admin.util.LoginUtils;
 import com.chaoxing.activity.dto.LoginUserDTO;
 import com.chaoxing.activity.dto.RestRespDTO;
+import com.chaoxing.activity.dto.manager.WfwRegionalArchitectureDTO;
 import com.chaoxing.activity.dto.mh.MhCloneResultDTO;
-import com.chaoxing.activity.dto.module.SignFormDTO;
+import com.chaoxing.activity.dto.module.SignAddEditDTO;
 import com.chaoxing.activity.dto.query.ActivityManageQueryDTO;
 import com.chaoxing.activity.model.Activity;
 import com.chaoxing.activity.service.activity.ActivityHandleService;
@@ -41,17 +42,19 @@ public class ActivityApiController {
 	 * @Date 2020-11-13 09:45:31
 	 * @param request
 	 * @param activityJsonStr
+	 * @param participateScopeJsonStr
 	 * @param signJsonStr
 	 * @return com.chaoxing.activity.dto.RestRespDTO
 	*/
 	@PostMapping("new")
-	public RestRespDTO create(HttpServletRequest request, String activityJsonStr, String signJsonStr) {
+	public RestRespDTO create(HttpServletRequest request, String activityJsonStr, String participateScopeJsonStr, String signJsonStr) {
 		LoginUserDTO loginUser = LoginUtils.getLoginUser(request);
 		Activity activity = JSON.parseObject(activityJsonStr, Activity.class);
+		List<WfwRegionalArchitectureDTO> wfwRegionalArchitectures = JSON.parseArray(participateScopeJsonStr, WfwRegionalArchitectureDTO.class);
 		// 本期不开启审核
 		activity.setOpenAudit(false);
-		SignFormDTO signForm = JSON.parseObject(signJsonStr, SignFormDTO.class);
-		activityHandleService.add(activity, signForm, loginUser, request);
+		SignAddEditDTO signAddEdit = JSON.parseObject(signJsonStr, SignAddEditDTO.class);
+		activityHandleService.add(activity, signAddEdit, wfwRegionalArchitectures, loginUser, request);
 		return RestRespDTO.success(activity);
 	}
 
@@ -61,16 +64,18 @@ public class ActivityApiController {
 	 * @Date 2020-11-17 20:18:16
 	 * @param request
 	 * @param activityJsonStr
+	 * @param participateScopeJsonStr
 	 * @param signJsonStr
 	 * @return com.chaoxing.activity.dto.RestRespDTO
 	*/
 	@PostMapping("edit")
-	public RestRespDTO edit(HttpServletRequest request, String activityJsonStr, String signJsonStr) {
+	public RestRespDTO edit(HttpServletRequest request, String activityJsonStr, String participateScopeJsonStr, String signJsonStr) {
 		LoginUserDTO loginUser = LoginUtils.getLoginUser(request);
 		Activity activity = JSON.parseObject(activityJsonStr, Activity.class);
+		List<WfwRegionalArchitectureDTO> wfwRegionalArchitectures = JSON.parseArray(participateScopeJsonStr, WfwRegionalArchitectureDTO.class);
 		// 本期不开启审核
-		SignFormDTO signForm = JSON.parseObject(signJsonStr, SignFormDTO.class);
-		activityHandleService.edit(activity, signForm, loginUser, request);
+		SignAddEditDTO signAddEdit = JSON.parseObject(signJsonStr, SignAddEditDTO.class);
+		activityHandleService.edit(activity, signAddEdit, wfwRegionalArchitectures, loginUser, request);
 		return RestRespDTO.success(activity);
 	}
 
@@ -128,13 +133,12 @@ public class ActivityApiController {
 	 * @Date 2020-11-20 11:04:53
 	 * @param request
 	 * @param activityId
-	 * @param fids
 	 * @return com.chaoxing.activity.dto.RestRespDTO
 	*/
 	@PostMapping("{activityId}/release")
-	public RestRespDTO release(HttpServletRequest request, @PathVariable Integer activityId, @RequestParam("fids[]") List<Integer> fids) {
+	public RestRespDTO release(HttpServletRequest request, @PathVariable Integer activityId) {
 		LoginUserDTO loginUser = LoginUtils.getLoginUser(request);
-		activityHandleService.release(activityId, fids, loginUser);
+		activityHandleService.release(activityId, loginUser);
 		return RestRespDTO.success();
 	}
 
@@ -150,22 +154,6 @@ public class ActivityApiController {
 	public RestRespDTO cancelRelease(HttpServletRequest request, @PathVariable Integer activityId) {
 		LoginUserDTO loginUser = LoginUtils.getLoginUser(request);
 		activityHandleService.cancelRelease(activityId, loginUser);
-		return RestRespDTO.success();
-	}
-
-	/**更新发布范围
-	 * @Description 
-	 * @author wwb
-	 * @Date 2020-11-20 11:07:07
-	 * @param request
-	 * @param activityId
-	 * @param fids
-	 * @return com.chaoxing.activity.dto.RestRespDTO
-	*/
-	@PostMapping("{activityId}/release/update")
-	public RestRespDTO updateReleaseScope(HttpServletRequest request, @PathVariable Integer activityId, @RequestParam("fids[]") List<Integer> fids) {
-		LoginUserDTO loginUser = LoginUtils.getLoginUser(request);
-		activityHandleService.updateReleaseScope(activityId, fids, loginUser);
 		return RestRespDTO.success();
 	}
 

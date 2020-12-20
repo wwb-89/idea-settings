@@ -81,8 +81,6 @@
         <vue-confirm ref="deleteWindow" :message="'确认删除？'" :cancel="'取消'" :sure="'确定'" @callback="deleteSubmit"></vue-confirm>
         <!--下架弹窗-->
         <vue-confirm ref="canReleaseWindow" :message="'下架后，该活动将不在活动广场中显示'" :cancel="'取消'" :sure="'下架'" @callback="cancelRelease"></vue-confirm>
-        <!-- 活动发布弹窗 -->
-        <vue-activity-scope ref="activityScopeWindow" @callback="release"></vue-activity-scope>
     </div>
 </div>
 <div th:replace="pc/include/common_js :: common_js(~{::script})">
@@ -113,14 +111,11 @@
                 pages: 0,
                 // 正在处理的活动id
                 processedActivityId: null,
-                // 发布还是更新发布范围
-                isRelease: true,
                 operations: {
                     edit: {name: "编辑", value: "edit"},
                     delete: {name: "删除", value: "delete"},
                     release: {name: "发布", value: "release"},
-                    cancelRelease: {name: "下架", value: "cancelRelease"},
-                    releaseScope: {name: "发布范围", value: "releaseScope"}
+                    cancelRelease: {name: "下架", value: "cancelRelease"}
                 }
             },
             created: function () {
@@ -189,7 +184,6 @@
                                     activity.operations.push($this.operations.cancelRelease);
                                     if (isCreator || isCurrentOrgCreated) {
                                         activity.operations.push($this.operations.edit);
-                                        activity.operations.push($this.operations.releaseScope);
                                         activity.operations.push($this.operations.delete);
                                     }
                                     break;
@@ -266,13 +260,13 @@
                             $this.toDelete(id);
                             break;
                         case "release":
-                            $this.toRelease(id);
+                            $this.release(id);
                             break;
                         case "cancelRelease":
                             $this.toCancelRelease(id);
                             break;
-                        case "releaseScope":
-                            $this.toUpdateReleaseScope(id);
+                        default:
+
                     }
                 },
                 // 删除
@@ -301,7 +295,7 @@
                     });
                 },
                 // 发布
-                toRelease: function (id) {
+                release: function (id) {
                     var $this = this;
                     $this.processedActivityId = id;
                     var activity = null;
@@ -318,24 +312,8 @@
                         });
                         return;
                     }
-                    $this.isRelease = true;
-                    $this.$refs.activityScopeWindow.showWindow(id);
-                },
-                release: function () {
-                    var $this = this;
-                    if (!$this.isRelease) {
-                        $this.updateReleaseScope();
-                        return;
-                    }
-                    var selectedFids = $this.$refs.activityScopeWindow.selectedFids;
-                    if (selectedFids.length < 1) {
-                        selectedFids.push($this.fid);
-                    }
-                    var url = ctx + "/api/activity/" + $this.processedActivityId + "/release";
-                    var params = {
-                        fids: selectedFids
-                    };
-                    app.ajaxPostWithLoading(url, params, function (data) {
+                    var url = ctx + "/api/activity/" + id + "/release";
+                    app.ajaxPostWithLoading(url, {}, function (data) {
                         if (data.success) {
                             app.showMsg("发布成功", function () {
                                 $this.loadData();
@@ -374,38 +352,6 @@
                         }
                     }, function () {
                         app.showMsg("下架失败");
-                    });
-                },
-                toUpdateReleaseScope: function (id) {
-                    var $this = this;
-                    $this.processedActivityId = id;
-                    $this.isRelease = false;
-                    $this.$refs.activityScopeWindow.showWindow(id);
-                },
-                updateReleaseScope: function () {
-                    var $this = this;
-                    var selectedFids = $this.$refs.activityScopeWindow.selectedFids;
-                    if (selectedFids.length < 1) {
-                        selectedFids.push($this.fid);
-                    }
-                    var url = ctx + "/api/activity/" + $this.processedActivityId + "/release/update";
-                    var params = {
-                        fids: selectedFids
-                    };
-                    app.ajaxPostWithLoading(url, params, function (data) {
-                        if (data.success) {
-                            app.showMsg("修改发布范围成功", function () {
-                                $this.loadData();
-                            });
-                        } else {
-                            var errorMessage = data.message;
-                            if (activityApp.isEmpty(errorMessage)) {
-                                errorMessage = "修改发布范围失败";
-                            }
-                            app.showMsg(errorMessage);
-                        }
-                    }, function () {
-                        app.showMsg("修改发布范围失败");
                     });
                 },
                 // 配置页面
