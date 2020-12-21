@@ -2,7 +2,7 @@ package com.chaoxing.activity.web.interceptor;
 
 import com.chaoxing.activity.dto.LoginUserDTO;
 import com.chaoxing.activity.service.CookieValidationService;
-import com.chaoxing.activity.web.util.CookieUtils;
+import com.chaoxing.activity.util.CookieUtils;
 import com.chaoxing.activity.web.util.LoginUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Component;

@@ -1,12 +1,18 @@
 package com.chaoxing.activity.api;
 
+import com.chaoxing.activity.util.CookieUtils;
 import com.chaoxing.activity.util.UserAgentUtils;
+import com.chaoxing.activity.util.constant.UrlConstant;
 import com.chaoxing.activity.util.enums.ModuleTypeEnum;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.view.RedirectView;
 
 import javax.servlet.http.HttpServletRequest;
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 
 /**
  * @author wwb
@@ -30,7 +36,14 @@ public class ActivityModuleApiController {
 	 * @return org.springframework.web.servlet.view.RedirectView
 	*/
 	@GetMapping("forward/{moduleType}/{moduleId}")
-	public RedirectView urlForward(HttpServletRequest request, @PathVariable String moduleType, @PathVariable Integer moduleId) {
+	public RedirectView urlForward(HttpServletRequest request, @PathVariable String moduleType, @PathVariable Integer moduleId) throws UnsupportedEncodingException {
+		// 必须要登录
+		String uid = CookieUtils.getUid(request);
+		if (StringUtils.isBlank(uid)) {
+			// 重定向到登录页面
+			String refer = request.getRequestURL().toString();
+			return new RedirectView(UrlConstant.LOGIN_URL + URLEncoder.encode(refer, StandardCharsets.UTF_8.name()));
+		}
 		ModuleTypeEnum moduleTypeEnum = ModuleTypeEnum.fromValue(moduleType);
 		String url = "";
 		switch (moduleTypeEnum) {

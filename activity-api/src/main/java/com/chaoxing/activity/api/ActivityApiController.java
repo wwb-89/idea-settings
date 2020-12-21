@@ -44,7 +44,7 @@ public class ActivityApiController {
 	@Resource
 	private Model2DtoService model2DtoService;
 
-	/**组作品推荐
+	/**组活动推荐
 	 * @Description 
 	 * @author wwb
 	 * @Date 2020-12-02 21:49:48

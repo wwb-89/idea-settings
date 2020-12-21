@@ -25,8 +25,8 @@ public class ActivityModuleConstant {
 	/** 测评图标云盘id */
 	public static final String EVALUATION_ICON_CLOUD_ID = "4b08c5e26dc89e7de9a72172ab179e2b";
 
-	/** 模块访问地址 */
 	/* http://api.hd.chaoxing.com/activity/module/forward/{moduleType}/{moduleId} */
-	public static final String MODULE_ACCESS_URL = CommonConstant.API_DOMAIN + "/activity/module/forward/%s/%s";
+	/** 模块访问地址 */
+	public static final String MODULE_ACCESS_URL = UrlConstant.API_DOMAIN + "/activity/module/forward/%s/%s";
 
 }

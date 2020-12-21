@@ -25,9 +25,6 @@ public class CommonConstant {
 	/** 系统fid */
 	public static final Integer SYSTEM_FID = -1;
 
-	/** api域名 */
-	public static final String API_DOMAIN = "http://api.hd.chaoxing.com";
-
 	/** 默认页码 */
 	public static final Integer DEFAULT_PAGE_NUM = 1;
 	/** 默认每页条数 */
