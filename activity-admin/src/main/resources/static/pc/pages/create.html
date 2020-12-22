@@ -10,6 +10,25 @@
     <link rel="stylesheet" href="../assets/css/public.css">
     <link rel="stylesheet" href="../assets/css/create.css">
     <title>创建活动</title>
+    <style>
+        body .create-class .layui-layer-btn0{
+            width: 30px;
+            height: 30px;
+            border: 1px solid #82c3ff;
+            border-radius: 15px;
+            font-size: 13px;
+            margin: 5px 10px 0 5px;
+        }
+        body .create-class .layui-layer-btn1{
+            width: 30px !important;
+            height: 30px !important;
+            border: 1px solid #82c3ff !important;
+            border-radius: 15px !important;
+            font-size: 13px;
+            margin: 5px 5px 0 10px;
+        }
+
+    </style>
 </head>
 
 <body>
@@ -221,12 +240,16 @@
                             <el-switch v-model="delivery2"></el-switch>
                             <span class="tips">如何创建报名信息表单？</span>
                         </div>
-                        <div class="select" v-show="delivery2">
-                            <el-select v-model="value3" placeholder="请选择">
-                                <el-option v-for="item in options3" :key="item.value" :label="item.label"
-                                    :value="item.value">
-                                </el-option>
-                            </el-select>
+                        <!--<div class="select" v-show="delivery2">-->
+                            <!--<el-select v-model="value3" placeholder="请选择">-->
+                                <!--<el-option v-for="item in options3" :key="item.value" :label="item.label"-->
+                                    <!--:value="item.value">-->
+                                <!--</el-option>-->
+                            <!--</el-select>-->
+                        <!--</div>-->
+                        <div class="set-box" @click="openModal">
+                            <img src="../assets/images/setting.png">
+                            <span class="tips">配置表单</span>
                         </div>
                     </div>
                 </div>
@@ -698,6 +721,7 @@
     <script src="../assets/lib/zTree_v3/js/jquery.ztree.core.js"></script>
     <script src="../assets/lib/zTree_v3/js/jquery.ztree.excheck.min.js"></script>
     <script type="text/javascript" src="../assets/lib/zTree_v3/js/jquery.ztree.exedit.js"></script>
+    <script src="../assets/lib/layer/layer.js"></script>
     <script>
         // vue
         var app = new Vue({
@@ -1025,7 +1049,23 @@
                         }
                     };
                     $.fn.zTree.init($("#organizationTree"), setting, zNodes);
-                }
+                },
+                openModal:function() {
+                    layer.open({
+                        skin: 'create-class',
+                        type: 2,
+                        content: ['http://baidu.com', 'no'],
+                        area: ['600px','520px'],
+                        btn: ['确认', '取消'],
+                        btnAlign: 'c',
+                        yes: function (index, layero) {
+                            layer.close(index);
+                        },
+                        cancel: function () {
+
+                        }
+                    })
+                },
             }
         })
     </script>
