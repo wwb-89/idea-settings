@@ -1134,3 +1134,10 @@ input.btn-name,
     background-image: url(../images/icon-file.png);
     background-position: unset;
   }
+.configurationForm {
+    margin-top: 20px;
+    cursor: pointer;
+}
+.configurationForm .tips {
+    margin-left: 5px !important;
+}

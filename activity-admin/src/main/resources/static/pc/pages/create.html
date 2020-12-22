@@ -18,6 +18,9 @@
             border-radius: 15px;
             font-size: 13px;
             margin: 5px 10px 0 5px;
+            color: #0084ff;
+            background: #ffffff;
+            line-height: 30px;
         }
         body .create-class .layui-layer-btn1{
             width: 30px !important;
@@ -26,8 +29,10 @@
             border-radius: 15px !important;
             font-size: 13px;
             margin: 5px 5px 0 10px;
+            color: #ffffff;
+            background: #0084ff;
+            line-height: 30px;
         }
-
     </style>
 </head>
 
@@ -247,7 +252,7 @@
                                 <!--</el-option>-->
                             <!--</el-select>-->
                         <!--</div>-->
-                        <div class="set-box" @click="openModal">
+                        <div class="set-box configurationForm" @click="openModal">
                             <img src="../assets/images/setting.png">
                             <span class="tips">配置表单</span>
                         </div>
@@ -1056,13 +1061,12 @@
                         type: 2,
                         content: ['http://baidu.com', 'no'],
                         area: ['600px','520px'],
-                        btn: ['确认', '取消'],
+                        btn: ['取消', '完成'],
                         btnAlign: 'c',
                         yes: function (index, layero) {
                             layer.close(index);
                         },
                         cancel: function () {
-
                         }
                     })
                 },
