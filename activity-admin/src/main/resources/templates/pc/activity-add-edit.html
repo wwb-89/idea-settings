@@ -5,6 +5,7 @@
     <title th:text="${activity == null ? '创建活动' : '编辑活动'}">创建活动</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="/static/pc/assets/lib/element-ui/lib/theme-chalk/index.css" th:href="@{/pc/assets/lib/element-ui/lib/theme-chalk/index.css}">
+    <link rel="stylesheet" href="/static/pc/assets/lib/zTree_v3/css/zTreeStyle/zTreeStyle.css" th:href="@{/pc/assets/lib/zTree_v3/css/zTreeStyle/zTreeStyle.css}">
     <link rel="stylesheet" href="/static/pc/assets/css/reset.css" th:href="@{/pc/assets/css/reset.css}">
     <link rel="stylesheet" href="/static/pc/assets/css/public.css" th:href="@{/pc/assets/css/public.css}">
     <link rel="stylesheet" href="/static/pc/assets/css/create.css" th:href="@{/pc/assets/css/create.css}">
@@ -101,6 +102,16 @@
                         </div>
                     </div>
                 </div>
+                <div class="form-item">
+                    <label class="label">参与范围</label>
+                    <div class="input-box wrap">
+                        <span class="label"><span>{{participatedOrgs.length}}</span>个单位</span>
+                        <div class="type-item add" @click="toAddParticipateScope">
+                            <img src="/static/pc/assets/images/add.png" th:src="@{/pc/assets/images/add.png}" style="margin-right: 10px;">
+                            添加
+                        </div>
+                    </div>
+                </div>
             </form>
         </div>
         <div class="info box">
@@ -143,6 +154,12 @@
                     </div>
                 </div>
                 <div class="form-item">
+                    <label class="label">报名需审核</label>
+                    <div class="input-box">
+                        <el-switch v-model="sign.signUp.openAudit"></el-switch>
+                    </div>
+                </div>
+                <div class="form-item">
                     <label class="label">报名名单公开</label>
                     <div class="input-box">
                         <el-switch v-model="sign.signUp.publicList"></el-switch>
@@ -166,7 +183,7 @@
                 <div class="form-item">
                     <label class="label">签到方式</label>
                     <div class="input-box">
-                        <el-radio v-for="(signInWay, index) of signInWays" v-model="sign.signIn.way" :label="signInWay.value" name="signInWay">{{signInWay.name}}</el-radio>
+                        <el-radio v-for="(signInWay, index) of signInWays" :key="'sign-in-way-' + index" v-model="sign.signIn.way" :label="signInWay.value" name="signInWay">{{signInWay.name}}</el-radio>
                     </div>
                 </div>
                 <div class="form-item" v-show="sign.signIn.way == 2">
@@ -174,6 +191,16 @@
                     <div class="input-box">
                         <input type="text" readonly required lay-verify="required" v-model.trim="sign.signIn.address" placeholder="请选择签到地点" autocomplete="off" class="layui-input name" style="cursor: pointer;" @click="showSignInMap">
                         <img src="/static/pc/assets/images/location.png" th:src="@{/pc/assets/images/location.png}" class="length icon">
+                    </div>
+                </div>
+                <div class="form-item" v-show="sign.signIn.way == 3">
+                    <label class="label">扫码方式</label>
+                    <div class="input-box">
+                        <div>
+                            <el-select v-model="sign.signIn.scanCodeWay" placeholder="请选择">
+                                <el-option v-for="(scanCodeWay, index) of scanCodeWays" :key="'scan-code-way-' + index" :label="scanCodeWay.name" :value="scanCodeWay.value"></el-option>
+                            </el-select>
+                        </div>
                     </div>
                 </div>
                 <div class="form-item">
@@ -220,7 +247,7 @@
                 <div class="form-item">
                     <label class="label">签到方式</label>
                     <div class="input-box">
-                        <el-radio v-for="(signInWay, index) of signInWays" v-model="sign.signOut.way" :label="signInWay.value" name="signInWay">{{signInWay.name}}</el-radio>
+                        <el-radio v-for="(signInWay, index) of signInWays" :key="'sign-out-way-' + index" v-model="sign.signOut.way" :label="signInWay.value" name="signInWay">{{signInWay.name}}</el-radio>
                     </div>
                 </div>
                 <div class="form-item" v-show="sign.signOut.way == 2">
@@ -228,6 +255,16 @@
                     <div class="input-box">
                         <input type="text" readonly required lay-verify="required" v-model.trim="sign.signOut.address" placeholder="请选择签到地点" autocomplete="off" class="layui-input name" style="cursor: pointer;" @click="showSignOutMap">
                         <img src="/static/pc/assets/images/location.png" th:src="@{/pc/assets/images/location.png}" class="length icon">
+                    </div>
+                </div>
+                <div class="form-item" v-show="sign.signOut.way == 3">
+                    <label class="label">扫码方式</label>
+                    <div class="input-box">
+                        <div>
+                            <el-select v-model="sign.signOut.scanCodeWay" placeholder="请选择">
+                                <el-option v-for="(scanCodeWay, index) of scanCodeWays" :key="'scan-code-way-' + index" :label="scanCodeWay.name" :value="scanCodeWay.value"></el-option>
+                            </el-select>
+                        </div>
                     </div>
                 </div>
                 <div class="form-item">
@@ -366,19 +403,26 @@
     <vue-map ref="activityMap" :map-dom-id="'activity-map'" @callback="activityAddressSure"></vue-map>
     <vue-map ref="signInMap" :map-dom-id="'sign-in-map'" @callback="signInAddressSure"></vue-map>
     <vue-map ref="signOutMap" :map-dom-id="'sign-out-map'" @callback="signOutAddressSure"></vue-map>
+    <!-- 活动参与范围弹窗 -->
+    <vue-activity-participate-scope :fid="fid" ref="activityParticipateScopeWindow" @callback="updateParticipatedOrgs"></vue-activity-participate-scope>
     <!--预览url复制容器-->
     <input type="text" id="template-preview-url-input" v-model.trim="activity.previewUrl" style="position: absolute; top: -100px; height: 1px;">
 </div>
 <div th:replace="pc/include/common_js :: common_js(~{::script})">
+    <script src="/static/pc/assets/lib/zTree_v3/js/jquery.ztree.core.js" th:src="@{/pc/assets/lib/zTree_v3/js/jquery.ztree.core.js}"></script>
+    <script src="/static/pc/assets/lib/zTree_v3/js/jquery.ztree.excheck.min.js" th:src="@{/pc/assets/lib/zTree_v3/js/jquery.ztree.excheck.min.js}"></script>
+    <script src="/static/pc/assets/lib/zTree_v3/js/jquery.ztree.exedit.js" th:src="@{/pc/assets/lib/zTree_v3/js/jquery.ztree.exedit.js}"></script>
     <script src="/static/pc/assets/lib/element-ui/lib/index.js" th:src="@{/pc/assets/lib/element-ui/lib/index.js}"></script>
     <script src="/static/pc/assets/lib/webuploader/webuploader.js" th:src="@{/pc/assets/lib/webuploader/webuploader.js}"></script>
     <script src="/static/pc/assets/component/map.js" th:src="@{/pc/assets/component/map.js}"></script>
+    <script src="/static/pc/assets/component/activity-participate-scope.js" th:src="@{/pc/assets/component/activity-participate-scope.js}"></script>
     <script src="/static/pc/assets/lib/jqthumb.min.js" th:src="@{/pc/assets/lib/jqthumb.min.js}"></script>
     <script th:inline="javascript">
         activityVue = new Vue({
             el: "#activity-vue",
             data: {
                 step: 1,
+                fid: [[${session._login_user_.fid}]],
                 activity: [[${activity}]],
                 // 模板列表
                 webTemplates: [[${webTemplates}]],
@@ -386,8 +430,6 @@
                 activityDateTimeScope: "",
                 activityTypes: [[${activityTypes}]],
                 activityClassifies: [[${activityClassifies}]],
-                // 机构下的表单列表
-                forms: [],
                 // 文件上传
                 uploader: null,
                 // 显示隐藏
@@ -401,9 +443,19 @@
                     name: ""
                 },
                 deleteActivityClassifyId: null,
-                // 签到报名
+                // 参与机构列表
+                participatedOrgs: [[${participatedOrgs}]],
+                // 处理的模板id
+                handleWebTemplateId: "",
+
+                // 签到报名相关
                 sign: [[${sign}]],
+                // 机构下的表单列表
+                forms: [],
+                // 签到方式
                 signInWays: [],
+                // 扫码方式
+                scanCodeWays: [],
                 // 是否开启报名
                 enableSignUp: false,
                 // 是否开启签到
@@ -417,9 +469,7 @@
                 // 签退时间范围
                 signOutTimeScope: "",
                 // 人数限制值
-                personLimitValue: 0,
-                // 处理的模板id
-                handleWebTemplateId: ""
+                personLimitValue: 0
             },
             created: function () {
                 var $this = this;
@@ -471,6 +521,10 @@
                     {name: "指定位置签到", value: 2},
                     {name: "扫码签到", value: 3}
                 ];
+                $this.scanCodeWays = [
+                    {name: "用户扫码", value: 1},
+                    {name: "管理员扫码", value: 2}
+                ];
                 if (activityApp.isEmpty($this.sign.id)) {
                     // 生成新的签到报名活动
                     $this.sign = signApp.newSign();
@@ -508,10 +562,9 @@
                         $this.sign.signIn.startTime = signInStartTimeStr;
                         $this.sign.signIn.endTime = signInEndTimeStr;
                     }
-                    $this.sign.notes = signApp.htmlToTextarea($this.sign.notes);
                     // 签退
                     if (!activityApp.isEmpty($this.sign.signOut)) {
-                        $this.enableSignIn = true;
+                        $this.enableSignOut = true;
                     } else {
                         $this.enableSignOut = false;
                         $this.sign.signOut = signApp.newSignOut();
@@ -523,9 +576,11 @@
                         $this.sign.signOut.startTime = signOutStartTimeStr;
                         $this.sign.signOut.endTime = signOutEndTimeStr;
                     }
-                    $this.sign.notes = signApp.htmlToTextarea($this.sign.notes);
                 }
                 $this.calPersonLimitValue();
+                if (activityApp.isEmpty($this.participatedOrgs)) {
+                    $this.participatedOrgs = [];
+                }
             },
             mounted: function () {
                 var $this = this;
@@ -533,50 +588,14 @@
                 $this.handleImg();
             },
             watch: {
-                enableSignUp: function () {
-                    var $this = this;
-                    if ($this.enableSignUp && $this.enableSignIn) {
-                        $this.sign.partakeForm = 3;
-                    }else if ($this.enableSignUp) {
-                        $this.sign.partakeForm = 1;
-                    }else if ($this.enableSignIn) {
-                        $this.sign.partakeForm = 2;
-                    }else {
-                        $this.sign.partakeForm = null;
-                    }
-                    if ($this.enableSignUp || $this.enableSignIn) {
-                        $this.activity.enableSign = true;
-                    } else {
-                        $this.activity.enableSign = false;
-                    }
-                },
-                enableSignIn: function () {
-                    var $this = this;
-                    $this.$nextTick(function () {
-                        if ($this.enableSignUp && $this.enableSignIn) {
-                            $this.sign.partakeForm = 3;
-                        }else if ($this.enableSignUp) {
-                            $this.sign.partakeForm = 1;
-                        }else if ($this.enableSignIn) {
-                            $this.sign.partakeForm = 2;
-                        }else {
-                            $this.sign.partakeForm = null;
-                        }
-                        if ($this.enableSignUp || $this.enableSignIn) {
-                            $this.activity.enableSign = true;
-                        } else {
-                            $this.activity.enableSign = false;
-                        }
-                    });
-                },
                 // 报名的人数限制
                 personLimitValue: function () {
                     var $this = this;
                     if ($this.personLimitValue == 0) {
                         // 不限制
-                        $this.$set($this.sign, "limitPerson", false);
+                        $this.$set($this.sign.signUp, "limitPerson", false);
                     } else {
-                        $this.$set($this.sign, "limitPerson", true);
+                        $this.$set($this.sign.signUp, "limitPerson", true);
                     }
                 }
             },
@@ -655,6 +674,16 @@
                     var $this = this;
                     var activityType = $this.activityTypes[index];
                     $this.activity.activityType = activityType.value;
+                },
+                // 显示参与范围弹窗
+                toAddParticipateScope: function () {
+                    var $this = this;
+                    $this.$refs.activityParticipateScopeWindow.showWindow($this.participatedOrgs);
+                },
+                // 更新参与范围的机构
+                updateParticipatedOrgs: function () {
+                    var $this = this;
+                    $this.participatedOrgs = $this.$refs.activityParticipateScopeWindow.selectedOrgs;
                 },
                 // 显示百度地图
                 showActivityMap: function () {
@@ -811,7 +840,7 @@
                 // 计算限制人数value
                 calPersonLimitValue: function () {
                     var $this = this;
-                    $this.personLimitValue = $this.sign.limitPerson ? 1 : 0;
+                    $this.personLimitValue = $this.sign.signUp.limitPerson ? 1 : 0;
                 },
                 // 验证输入
                 validateForm: function () {
@@ -829,11 +858,16 @@
                         return false;
                     }
                     if (activityApp.isEmpty($this.activity.coverCloudId)) {
-                        app.showMsg("活动封面不能为空");
+                        app.showMsg("请上传活动封面");
                         return false;
                     }
                     if (activityApp.isEmpty($this.activity.activityClassifyId)) {
                         app.showMsg("活动分类不能为空");
+                        return false;
+                    }
+                    // 参与范围
+                    if (activityApp.isEmpty($this.participatedOrgs) || $this.participatedOrgs.length < 1) {
+                        app.showMsg("请选择参与范围");
                         return false;
                     }
                     // 报名和签到至少应该开启一个
@@ -949,12 +983,35 @@
                     }
                     if (!$this.enableSignIn) {
                         sign.signIn = null;
+                    }else {
+                        var way = sign.signIn.way;
+                        switch (way) {
+                            case 1:
+                            case 3:
+                                sign.signIn.address = "";
+                                sign.signIn.longitude = null;
+                                sign.signIn.dimension = null;
+                                break;
+                            default:
+                        }
                     }
                     if (!$this.enableSignOut) {
                         sign.signOut = null;
+                    }else {
+                        var way = sign.signIn.way;
+                        switch (way) {
+                            case 1:
+                            case 3:
+                                sign.signOut.address = "";
+                                sign.signOut.longitude = null;
+                                sign.signOut.dimension = null;
+                                break;
+                            default:
+                        }
                     }
                     var params = {
                         activityJsonStr: activityApp.getJsonStr($this.activity),
+                        participateScopeJsonStr: activityApp.getJsonStr($this.participatedOrgs),
                         signJsonStr: activityApp.getJsonStr(sign)
                     };
                     app.ajaxPostWithLoading(url, params, function (data) {
@@ -994,6 +1051,7 @@
                     }
                     var params = {
                         activityJsonStr: activityApp.getJsonStr($this.activity),
+                        participateScopeJsonStr: activityApp.getJsonStr($this.participatedOrgs),
                         signJsonStr: activityApp.getJsonStr(sign)
                     };
                     app.ajaxPostWithLoading(url, params, function (data) {
@@ -1028,14 +1086,20 @@
                 // 选中报名的时间范围
                 selectSignUpTime: function (obj) {
                     var $this = this;
-                    $this.sign.signUpStartTime = obj[0];
-                    $this.sign.signUpEndTime = obj[1];
+                    $this.sign.signUp.startTime = obj[0];
+                    $this.sign.signUp.endTime = obj[1];
                 },
                 // 选中签到的时间范围
                 selectSignInTime: function (obj) {
                     var $this = this;
-                    $this.sign.signInStartTime = obj[0];
-                    $this.sign.signInEndTime = obj[1];
+                    $this.sign.signIn.startTime = obj[0];
+                    $this.sign.signIn.endTime = obj[1];
+                },
+                // 选中签退的时间范围
+                selectSignOutTime: function (obj) {
+                    var $this = this;
+                    $this.sign.signOut.startTime = obj[0];
+                    $this.sign.signOut.endTime = obj[1];
                 },
                 // 预览模板
                 previewTemplate: function (index) {

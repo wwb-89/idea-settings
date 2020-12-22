@@ -1,5 +1,7 @@
-package com.chaoxing.activity.dto.manager.sign;
+package com.chaoxing.activity.dto.module;
 
+import com.chaoxing.activity.dto.manager.sign.SignIn;
+import com.chaoxing.activity.dto.manager.sign.SignUp;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;

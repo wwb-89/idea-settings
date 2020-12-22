@@ -6,7 +6,7 @@ import com.chaoxing.activity.dto.OrgAddressDTO;
 import com.chaoxing.activity.dto.manager.WfwRegionalArchitectureDTO;
 import com.chaoxing.activity.dto.mh.MhCloneParamDTO;
 import com.chaoxing.activity.dto.mh.MhCloneResultDTO;
-import com.chaoxing.activity.dto.module.SignFormDTO;
+import com.chaoxing.activity.dto.module.SignAddEditDTO;
 import com.chaoxing.activity.mapper.ActivityAreaFlagMapper;
 import com.chaoxing.activity.mapper.ActivityMapper;
 import com.chaoxing.activity.model.*;
@@ -34,7 +34,6 @@ import javax.servlet.http.HttpServletRequest;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -84,12 +83,13 @@ public class ActivityHandleService {
 	 * @author wwb
 	 * @Date 2020-11-10 15:54:16
 	 * @param activity
-	 * @param signForm
+	 * @param signAddEdit
+	 * @param wfwRegionalArchitectures
 	 * @param loginUser
 	 * @return void
 	*/
 	@Transactional(rollbackFor = Exception.class)
-	public void add(Activity activity, SignFormDTO signForm, LoginUserDTO loginUser, HttpServletRequest request) {
+	public void add(Activity activity, SignAddEditDTO signAddEdit, List<WfwRegionalArchitectureDTO> wfwRegionalArchitectures, LoginUserDTO loginUser, HttpServletRequest request) {
 		// 新增活动输入验证
 		activityValidationService.addInputValidate(activity);
 		// 处理活动类型
@@ -98,7 +98,7 @@ public class ActivityHandleService {
 		Boolean enableSign = activity.getEnableSign();
 		if (enableSign) {
 			// 添加报名签到
-			Integer signId = handleSign(activity, signForm, loginUser, request);
+			Integer signId = handleSign(activity, signAddEdit, loginUser, request);
 			activity.setSignId(signId);
 		}
 		// 保存活动
@@ -117,6 +117,15 @@ public class ActivityHandleService {
 		activity.setCreateFid(loginUser.getFid());
 		activity.setCreateOrgName(loginUser.getOrgName());
 		activityMapper.insert(activity);
+		// 活动参与范围
+		Integer activityId = activity.getId();
+		if (CollectionUtils.isEmpty(wfwRegionalArchitectures)) {
+			throw new BusinessException("请选择参与范围");
+		}
+		List<ActivityScope> activityScopes = WfwRegionalArchitectureDTO.convert2ActivityScopes(activityId, wfwRegionalArchitectures);
+		// 新增参与范围
+		activityScopeService.batchAdd(activityScopes);
+
 		// 处理活动的所属区域
 		handleActivityArea(activity, loginUser);
 		// 订阅活动状态处理
@@ -144,27 +153,28 @@ public class ActivityHandleService {
 	 * @author wwb
 	 * @Date 2020-11-13 15:46:49
 	 * @param activity
-	 * @param signForm
+	 * @param signAddEdit
 	 * @param loginUser
 	 * @param request
 	 * @return java.lang.Integer
 	*/
-	private Integer handleSign(Activity activity, SignFormDTO signForm, LoginUserDTO loginUser, HttpServletRequest request) {
-		Integer signId = signForm.getId();
+	private Integer handleSign(Activity activity, SignAddEditDTO signAddEdit, LoginUserDTO loginUser, HttpServletRequest request) {
+		Integer signId = signAddEdit.getId();
 		if (signId == null) {
 			// 签到的名称为活动引擎活动的名称
-			signForm.setName(activity.getName());
+			signAddEdit.setName(activity.getName());
 			// 新增报名签到
-			signForm.setCreateUid(loginUser.getUid());
-			signForm.setCreateUserName(loginUser.getRealName());
-			signForm.setCreateFid(loginUser.getFid());
-			signForm.setCreateOrgName(loginUser.getOrgName());
-			signId = signApiService.create(signForm, request);
+			signAddEdit.setCreateUid(loginUser.getUid());
+			signAddEdit.setCreateUserName(loginUser.getRealName());
+			signAddEdit.setCreateFid(loginUser.getFid());
+			signAddEdit.setCreateOrgName(loginUser.getOrgName());
+			signAddEdit.setUpdateUid(loginUser.getUid());
+			signId = signApiService.create(signAddEdit, request);
 		} else {
 			// 修改报名签到
-			String signName = Optional.ofNullable(signForm.getName()).filter(StringUtils::isNotBlank).orElse(activity.getName());
-			signForm.setName(signName);
-			signApiService.update(signForm, request);
+			String signName = Optional.ofNullable(signAddEdit.getName()).filter(StringUtils::isNotBlank).orElse(activity.getName());
+			signAddEdit.setName(signName);
+			signApiService.update(signAddEdit, request);
 		}
 		return signId;
 	}
@@ -226,12 +236,13 @@ public class ActivityHandleService {
 	 * @author wwb
 	 * @Date 2020-11-11 15:41:49
 	 * @param activity
-	 * @param signForm
+	 * @param wfwRegionalArchitectures
+	 * @param signAddEdit
 	 * @param loginUser
 	 * @return void
 	*/
 	@Transactional(rollbackFor = Exception.class)
-	public void edit(Activity activity, SignFormDTO signForm, LoginUserDTO loginUser, HttpServletRequest request) {
+	public void edit(Activity activity, SignAddEditDTO signAddEdit, List<WfwRegionalArchitectureDTO> wfwRegionalArchitectures, LoginUserDTO loginUser, HttpServletRequest request) {
 		activityValidationService.addInputValidate(activity);
 		// 处理活动类型
 		handleActivityType(activity);
@@ -242,8 +253,8 @@ public class ActivityHandleService {
 		if (enableSign) {
 			// 修改或更新
 			Integer signId = existActivity.getSignId();
-			signForm.setId(signId);
-			signId = handleSign(activity, signForm, loginUser, request);
+			signAddEdit.setId(signId);
+			signId = handleSign(activity, signAddEdit, loginUser, request);
 			activity.setSignId(signId);
 		}
 		// 处理活动相关
@@ -269,63 +280,17 @@ public class ActivityHandleService {
 			.lambda()
 				.eq(Activity::getId, activity.getId())
 		);
+		// 活动参与范围
+		if (CollectionUtils.isEmpty(wfwRegionalArchitectures)) {
+			throw new BusinessException("请选择参与范围");
+		}
+		List<ActivityScope> activityScopes = WfwRegionalArchitectureDTO.convert2ActivityScopes(activityId, wfwRegionalArchitectures);
+		// 删除以前发布的参与范围
+		activityScopeService.deleteByActivityId(activityId);
+		// 新增参与范围
+		activityScopeService.batchAdd(activityScopes);
 		// 订阅活动状态处理
 		activityStatusHandleService.subscibeStatusUpdate(activity.getId(), activity.getStartTime(), activity.getEndTime());
-	}
-
-	private void handleActivityModules(Integer activityId, List<ActivityModule> activityModules) {
-		if (CollectionUtils.isNotEmpty(activityModules)) {
-			for (ActivityModule activityModule : activityModules) {
-				Integer id = activityModule.getId();
-				if (id == null) {
-					activityModule.setActivityId(activityId);
-				}
-			}
-			List<ActivityModule> adds = new ArrayList<>();
-			List<ActivityModule> updates = new ArrayList<>();
-			List<Integer> deletes = new ArrayList<>();
-			// 查询活动已有的活动模块
-			List<ActivityModule> existActivityModules = activityModuleService.listByActivityId(activityId);
-			Map<Integer, ActivityModule> activityModuleIdValueMap = existActivityModules.stream().collect(Collectors.toMap(ActivityModule::getId, v -> v, (v1, v2) -> v2));
-			if (CollectionUtils.isNotEmpty(existActivityModules)) {
-				for (ActivityModule activityModule : activityModules) {
-					Integer activityModuleId = activityModule.getId();
-					if (activityModuleId == null) {
-						// 新增
-						adds.add(activityModule);
-					} else {
-						ActivityModule existActivityModule = activityModuleIdValueMap.get(activityModuleId);
-						if (existActivityModule != null) {
-							updates.add(activityModule);
-						}
-					}
-				}
-				List<Integer> activityModuleIds = activityModules.stream().map(ActivityModule::getId).collect(Collectors.toList());
-				for (ActivityModule existActivityModule : existActivityModules) {
-					Integer existActivityModuleId = existActivityModule.getId();
-					if (!activityModuleIds.contains(existActivityModuleId)) {
-						deletes.add(existActivityModuleId);
-					}
-				}
-			} else {
-				// 全部新增
-				adds.addAll(existActivityModules);
-			}
-			if (CollectionUtils.isNotEmpty(adds)) {
-				activityModuleService.batchAdd(activityModules);
-			}
-			if (CollectionUtils.isNotEmpty(updates)) {
-				for (ActivityModule update : updates) {
-					activityModuleService.update(update);
-				}
-			}
-			if (CollectionUtils.isNotEmpty(deletes)) {
-				activityModuleService.batchDelete(deletes);
-			}
-		} else {
-			// 删除活动下的所有模块
-			activityModuleService.deleteByActivityId(activityId);
-		}
 	}
 
 	/**发布活动
@@ -333,12 +298,11 @@ public class ActivityHandleService {
 	 * @author wwb
 	 * @Date 2020-11-12 15:41:48
 	 * @param activityId
-	 * @param selectedFids
 	 * @param loginUser
 	 * @return void
 	*/
 	@Transactional(rollbackFor = Exception.class)
-	public void release(Integer activityId, List<Integer> selectedFids, LoginUserDTO loginUser) {
+	public void release(Integer activityId, LoginUserDTO loginUser) {
 		Activity activity = activityValidationService.releaseAble(activityId, loginUser);
 		// 发布活动
 		activity.setReleased(true);
@@ -353,63 +317,12 @@ public class ActivityHandleService {
 				.set(Activity::getReleaseUid, loginUser.getUid())
 				.set(Activity::getStatus, status)
 		);
-		// 处理参与范围
-		handleReleaseScope(activity, selectedFids);
 		// 通知模块方刷新参与范围缓存
 		// 查询活动的作品征集模块活动id列表
 		List<String> externalIds = activityModuleService.listExternalIdsByActivityIdAndType(activityId, ModuleTypeEnum.WORK.getValue());
 		if (CollectionUtils.isNotEmpty(externalIds)) {
 			workApiService.clearActivityParticipateScopeCache(externalIds.stream().map(v -> Integer.parseInt(v)).collect(Collectors.toList()));
 		}
-	}
-
-	private void handleReleaseScope(Activity activity, List<Integer> selectedFids) {
-		Integer activityId = activity.getId();
-		Integer createFid = activity.getCreateFid();
-		List<WfwRegionalArchitectureDTO> wfwRegionalArchitectures = wfwRegionalArchitectureApiService.listByFid(createFid);
-		List<WfwRegionalArchitectureDTO> selectedWfwRegionalArchitectures = new ArrayList<>();
-		List<ActivityScope> activityScopes = new ArrayList<>();
-		if (CollectionUtils.isNotEmpty(wfwRegionalArchitectures)) {
-			if (CollectionUtils.isEmpty(selectedFids)) {
-				// 有范围但是没有指定范围
-				throw new BusinessException("请指定发布范围");
-			}
-			for (WfwRegionalArchitectureDTO wfwRegionalArchitecture : wfwRegionalArchitectures) {
-				if (selectedFids.contains(wfwRegionalArchitecture.getFid())) {
-					selectedWfwRegionalArchitectures.add(wfwRegionalArchitecture);
-				}
-			}
-			activityScopes = convert2(activityId, selectedWfwRegionalArchitectures);
-		} else {
-			activityScopes.add(ActivityScope.structure(activityId, createFid, activity.getCreateOrgName()));
-		}
-		// 删除以前发布的参与范围
-		activityScopeService.deleteByActivityId(activityId);
-		// 新增参与范围
-		activityScopeService.batchAdd(activityScopes);
-	}
-
-	private List<ActivityScope> convert2(Integer activityId, List<WfwRegionalArchitectureDTO> wfwRegionalArchitectures) {
-		List<ActivityScope> activityScopes = new ArrayList<>();
-		if (CollectionUtils.isNotEmpty(wfwRegionalArchitectures)) {
-			for (WfwRegionalArchitectureDTO wfwRegionalArchitecture : wfwRegionalArchitectures) {
-				ActivityScope activityScope = ActivityScope.builder()
-						.activityId(activityId)
-						.hierarchyId(wfwRegionalArchitecture.getId())
-						.name(wfwRegionalArchitecture.getName())
-						.hierarchyPid(wfwRegionalArchitecture.getPid())
-						.code(wfwRegionalArchitecture.getCode())
-						.links(wfwRegionalArchitecture.getLinks())
-						.level(wfwRegionalArchitecture.getLevel())
-						.adjustedLevel(wfwRegionalArchitecture.getLevel())
-						.fid(wfwRegionalArchitecture.getFid())
-						.existChild(Optional.ofNullable(wfwRegionalArchitecture.getExistChild()).orElse(Boolean.FALSE))
-						.sort(wfwRegionalArchitecture.getSort())
-						.build();
-				activityScopes.add(activityScope);
-			}
-		}
-		return activityScopes;
 	}
 
 	/**取消发布（下架）
@@ -432,28 +345,6 @@ public class ActivityHandleService {
 		);
 		// 删除活动范围
 		activityScopeService.deleteByActivityId(activityId);
-		// 通知模块方刷新参与范围缓存
-		// 查询活动的作品征集模块活动id列表
-		List<String> externalIds = activityModuleService.listExternalIdsByActivityIdAndType(activityId, ModuleTypeEnum.WORK.getValue());
-		if (CollectionUtils.isNotEmpty(externalIds)) {
-			workApiService.clearActivityParticipateScopeCache(externalIds.stream().map(v -> Integer.parseInt(v)).collect(Collectors.toList()));
-		}
-	}
-
-	/**更新发布范围
-	 * @Description
-	 * @author wwb
-	 * @Date 2020-11-20 11:09:31
-	 * @param activityId
-	 * @param selectedFids
-	 * @param loginUser
-	 * @return void
-	*/
-	@Transactional(rollbackFor = Exception.class)
-	public void updateReleaseScope(Integer activityId, List<Integer> selectedFids, LoginUserDTO loginUser) {
-		Activity activity = activityValidationService.updateReleaseAble(activityId, loginUser);
-		// 处理参与范围
-		handleReleaseScope(activity, selectedFids);
 		// 通知模块方刷新参与范围缓存
 		// 查询活动的作品征集模块活动id列表
 		List<String> externalIds = activityModuleService.listExternalIdsByActivityIdAndType(activityId, ModuleTypeEnum.WORK.getValue());

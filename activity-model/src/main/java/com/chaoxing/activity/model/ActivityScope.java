@@ -2,10 +2,15 @@ package com.chaoxing.activity.model;
 
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableName;
+import com.chaoxing.activity.dto.manager.WfwRegionalArchitectureDTO;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.apache.commons.collections4.CollectionUtils;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * 活动参与范围
@@ -46,20 +51,25 @@ public class ActivityScope {
     /** 顺序; column: sort*/
     private Integer sort;
 
-    public static ActivityScope structure(Integer activityId, Integer fid, String orgName) {
-        return ActivityScope.builder()
-                .activityId(activityId)
-                .hierarchyId(0)
-                .name(orgName)
-                .hierarchyPid(0)
-                .code("")
-                .links(orgName)
-                .level(1)
-                .adjustedLevel(1)
-                .fid(fid)
-                .existChild(false)
-                .sort(1)
-                .build();
+    public static List<WfwRegionalArchitectureDTO> convert2WfwRegionalArchitectures(List<ActivityScope> activityScopes) {
+        List<WfwRegionalArchitectureDTO> wfwRegionalArchitectures = new ArrayList<>();
+        if (CollectionUtils.isNotEmpty(activityScopes)) {
+            for (ActivityScope activityScope : activityScopes) {
+                WfwRegionalArchitectureDTO wfwRegionalArchitecture = WfwRegionalArchitectureDTO.builder()
+                        .id(activityScope.getHierarchyId())
+                        .name(activityScope.getName())
+                        .pid(activityScope.getHierarchyPid())
+                        .code(activityScope.getCode())
+                        .links(activityScope.getLinks())
+                        .level(activityScope.getLevel())
+                        .fid(activityScope.getFid())
+                        .existChild(activityScope.getExistChild())
+                        .sort(activityScope.getSort())
+                        .build();
+                wfwRegionalArchitectures.add(wfwRegionalArchitecture);
+            }
+        }
+        return wfwRegionalArchitectures;
     }
 
 }
