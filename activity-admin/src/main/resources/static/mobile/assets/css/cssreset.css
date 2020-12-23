@@ -1,0 +1,138 @@
+input::-webkit-input-placeholder, textarea::-webkit-input-placeholder {
+  /* WebKit, Blink, Edge */
+  color: #CCCCCC;
+  font-weight: 100; }
+
+input:-moz-placeholder, textarea:-moz-placeholder {
+  /* Mozilla Firefox 4 to 18 */
+  color: #CCCCCC;
+  font-weight: 100; }
+
+input::-moz-placeholder, textarea::-moz-placeholder {
+  /* Mozilla Firefox 19+ */
+  color: #CCCCCC;
+  font-weight: 100; }
+
+input:-ms-input-placeholder, textarea:-ms-input-placeholder {
+  /* Internet Explorer 10-11 */
+  color: #CCCCCC;
+  font-weight: 100; }
+  
+
+html, body, div, span, applet, object, iframe,
+h1, h2, h3, h4, h5, h6, p, blockquote, pre,
+a, abbr, acronym, address, big, cite, code,
+del, dfn, em, img, ins, kbd, q, s, samp,
+small, strike, strong, sub, sup, tt, var,
+b, u, i, center,
+dl, dt, dd, ol, ul, li,
+fieldset, form, label, legend,
+table, caption, tbody, tfoot, thead, tr, th, td,
+article, aside, canvas, details, embed,
+figure, figcaption, footer, header, hgroup,
+menu, nav, output, ruby, section, summary,
+time, mark, audio, video, input, textarea {
+  margin: 0;
+  padding: 0;
+  border: 0;
+  font-size: 100%;
+  font: inherit;
+  vertical-align: baseline; }
+
+/* HTML5 display-role reset for older browsers */
+article, aside, details, figcaption, figure,
+footer, header, hgroup, menu, nav, section {
+  display: block; }
+
+ol, ul {
+  list-style: none; }
+
+blockquote, q {
+  quotes: none; }
+
+blockquote:before, blockquote:after,
+q:before, q:after {
+  content: '';
+  content: none; }
+
+a, a:link, a:hover, a:visited {
+  text-decoration: none; }
+
+table {
+  border-collapse: collapse;
+  border-spacing: 0; }
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, Helvetica Neue, PingFang SC, Microsoft YaHei, Source Han Sans SC, Noto Sans CJK SC, WenQuanYi Micro Hei, sans-serif, "Microsoft YaHei", Helvetica; }
+
+.clear {
+  clear: both; }
+
+.floatLeft {
+  float: left; }
+
+.floatRight {
+  float: right; }
+
+.textLeft {
+  text-align: left; }
+
+.textCenter {
+  text-align: center; }
+
+.textRight {
+  text-align: right; }
+
+input, textarea, button {
+  outline: none; }
+
+.overHidden {
+  overflow: hidden;
+  padding-right: 15px; }
+body {
+  background: #F8F8F8;
+}
+.color2D84FF {
+  color: #2D84FF;
+}
+.color499EFD {
+  color: #499EFD;
+}
+.color459AFD {
+  color:#459AFD;
+}
+.color33D774 {
+  color: #33D774;
+}
+.color1181FF {
+  color: #1181FF;
+}
+.color999 {
+  color: #999999;
+}
+.color333 {
+  color: #333333;
+}
+.font-bold {
+  font-weight: bold;
+}
+.font24 {
+  font-size: 24px;
+}
+button{
+  cursor: pointer ;
+}
+.overHidden1 {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+.overHidden2 {
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  overflow: hidden;
+}
+.overflowHidden {
+  overflow: hidden;
+}
