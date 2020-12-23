@@ -10,6 +10,28 @@
     <link rel="stylesheet" href="/static/pc/assets/css/public.css" th:href="@{/pc/assets/css/public.css}">
     <link rel="stylesheet" href="/static/pc/assets/css/create.css" th:href="@{/pc/assets/css/create.css}">
     <style type="text/css">
+        body .create-class .layui-layer-btn0{
+            width: 30px;
+            height: 30px;
+            border: 1px solid #82c3ff;
+            border-radius: 15px;
+            font-size: 13px;
+            margin: 5px 10px 0 5px;
+            color: #0084ff;
+            background: #ffffff;
+            line-height: 30px;
+        }
+        body .create-class .layui-layer-btn1{
+            width: 30px !important;
+            height: 30px !important;
+            border: 1px solid #82c3ff !important;
+            border-radius: 15px !important;
+            font-size: 13px;
+            margin: 5px 5px 0 10px;
+            color: #ffffff;
+            background: #0084ff;
+            line-height: 30px;
+        }
         .webuploader-element-invisible {
             display: none;
         }
@@ -139,17 +161,16 @@
                         <input v-show="sign.signUp.limitPerson" v-model="sign.signUp.personLimit" type="number" min="1" step="1" maxlength="10" placeholder="请输入正整数" class="person"><span class="person-span" v-show="sign.signUp.limitPerson">人</span>
                     </div>
                 </div>
-                <div class="form-item" v-if="false">
+                <div class="form-item">
                     <label class="label" style="line-height: 20px;">信息填写</label>
                     <div class="input-box column">
                         <div class="set-box">
                             <el-switch v-model="sign.signUp.fillInfo"></el-switch>
                             <span class="tips">如何创建报名信息表单？</span>
                         </div>
-                        <div class="select" v-show="sign.signUp.fillInfo">
-                            <el-select v-model="sign.signUp.fillInfoFormId" placeholder="请选择">
-                                <el-option v-for="(form, index) of forms" :key="'form-' + index" :label="form.name" :value="form.id"></el-option>
-                            </el-select>
+                        <div class="set-box configurationForm" v-show="sign.signUp.fillInfo" @click="toConfigForm">
+                            <img src="/static/pc/assets/images/setting.png" th:src="@{/pc/assets/images/setting.png}">
+                            <span class="tips">配置表单</span>
                         </div>
                     </div>
                 </div>
@@ -469,10 +490,15 @@
                 // 签退时间范围
                 signOutTimeScope: "",
                 // 人数限制值
-                personLimitValue: 0
+                personLimitValue: 0,
+
+                // 表单
+                formConfigLayerIndex: ""
             },
             created: function () {
                 var $this = this;
+                // 解决跨域
+                document.domain = "chaoxing.com";
                 var step = [[${step}]];
                 if (!activityApp.isEmpty(step)) {
                     $this.step = step > 2 ? 2 : step;
@@ -493,7 +519,7 @@
                         activityClassifyId: firstActivityClassifyId,
                         enableSign: true
                     };
-                }else {
+                } else {
                     $this.activity.createTime = null;
                     $this.activity.updateTime = null;
                     $this.activity.releaseTime = null;
@@ -537,7 +563,7 @@
                     // 报名
                     if (!activityApp.isEmpty($this.sign.signUp)) {
                         $this.enableSignUp = true;
-                    }else {
+                    } else {
                         $this.enableSignUp = false;
                         $this.sign.signUp = signApp.newSignUp();
                     }
@@ -812,7 +838,7 @@
                 },
                 deleteActivityClassifySubmit: function () {
                     var $this = this;
-                    var url = ctx + "/api/activity/classify/"+ $this.deleteActivityClassifyId +"/delete";
+                    var url = ctx + "/api/activity/classify/" + $this.deleteActivityClassifyId + "/delete";
                     app.ajaxPostWithLoading(url, {}, function (data) {
                         $this.deleteActivityClassifyWindowShow = false;
                         if (data.success) {
@@ -983,7 +1009,7 @@
                     }
                     if (!$this.enableSignIn) {
                         sign.signIn = null;
-                    }else {
+                    } else {
                         var way = sign.signIn.way;
                         switch (way) {
                             case 1:
@@ -997,7 +1023,7 @@
                     }
                     if (!$this.enableSignOut) {
                         sign.signOut = null;
-                    }else {
+                    } else {
                         var way = sign.signIn.way;
                         switch (way) {
                             case 1:
@@ -1112,7 +1138,7 @@
                     var $this = this;
                     var webTemplate = $this.webTemplates[index];
                     $this.handleWebTemplateId = webTemplate.id;
-                    var url = ctx + "/api/activity/"+ $this.activity.id +"/bind/template/" + webTemplate.id;
+                    var url = ctx + "/api/activity/" + $this.activity.id + "/bind/template/" + webTemplate.id;
                     app.ajaxPostWithLoading(url, {}, function (data) {
                         if (data.success) {
                             app.activityChanged();
@@ -1149,9 +1175,46 @@
                     $("#template-preview-url-input")[0].select();
                     document.execCommand("copy");
                     app.showMsg("复制成功");
+                },
+                // 表单
+                toConfigForm: function () {
+                    var $this = this;
+                    var formId = "";
+                    if (!activityApp.isEmpty($this.sign.signUp.fillInfoFormId)) {
+                        formId = $this.sign.signUp.fillInfoFormId;
+                    }
+                    var url = "http://reading.chaoxing.com/qd/form/config?formId=" + formId;
+                    $this.formConfigLayerIndex = layer.open({
+                        title: "表单配置",
+                        skin: "create-class",
+                        type: 2,
+                        content: [url, "no"],
+                        area: ["600px", "680px"],
+                        btn: ["取消", "完成"],
+                        btnAlign: "c",
+                        yes: function (index) {
+                            app.closeLayerPop(index);
+                        },
+                        btn2: function (index, layero) {
+                            $("#layui-layer-iframe" + $this.formConfigLayerIndex)[0].contentWindow.submit();
+                            return false;
+                        }
+                    })
+                },
+                closeFormConfigLayer: function (formId) {
+                    var $this = this;
+                    app.closeLayerPop($this.formConfigLayerIndex);
+                    $this.$set($this.sign.signUp, "fillInfoFormId", formId);
                 }
             }
-        })
+        });
+
+        /**
+         * 关闭表单配置页面
+         */
+        function closeFormConfigLayer(formId) {
+            activityVue.closeFormConfigLayer(formId);
+        }
     </script>
 </div>
 </body>
