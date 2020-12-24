@@ -12,6 +12,7 @@ import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 
 import javax.annotation.Resource;
@@ -157,7 +158,31 @@ public class SignApiService {
 	 * @return com.chaoxing.activity.dto.sign.SignActivityManageIndexDTO
 	*/
 	public SignActivityManageIndexDTO statSignActivityManageIndex(Integer signId) {
-		return null;
+		if (signId != null) {
+			String url = String.format(STAT_SIGN_ACTIVITY_MANAGE_INDEX_URL, signId);
+			try {
+				String result = restTemplate.getForObject(url, String.class);
+				JSONObject jsonObject = JSON.parseObject(result);
+				Boolean success = jsonObject.getBoolean("success");
+				success = Optional.ofNullable(success).orElse(Boolean.FALSE);
+				if (success) {
+					return JSON.parseObject(jsonObject.getString("data"), SignActivityManageIndexDTO.class);
+				} else {
+					String errorMessage = jsonObject.getString("message");
+					log.error("根据报名签到id:{}统计报名签到在活动管理首页需要的信息error:{}", signId, errorMessage);
+				}
+			} catch (RestClientException e) {
+				e.printStackTrace();
+				log.error("根据报名签到id:{}统计报名签到在活动管理首页需要的信息error:{}", signId, e.getMessage());
+			}
+		}
+		return SignActivityManageIndexDTO.builder()
+				.signId(signId)
+				.signUpExist(Boolean.FALSE)
+				.signUpId(null)
+				.signInExist(Boolean.FALSE)
+				.signUpNum(0)
+				.build();
 	}
 
 }

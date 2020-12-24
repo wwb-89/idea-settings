@@ -2,6 +2,7 @@ package com.chaoxing.activity.admin.controller.mobile;
 
 import com.chaoxing.activity.admin.util.LoginUtils;
 import com.chaoxing.activity.dto.LoginUserDTO;
+import com.chaoxing.activity.dto.sign.SignActivityManageIndexDTO;
 import com.chaoxing.activity.model.Activity;
 import com.chaoxing.activity.service.activity.ActivityValidationService;
 import com.chaoxing.activity.service.manager.module.SignApiService;
@@ -44,12 +45,9 @@ public class ActivityManagerController {
 		LoginUserDTO loginUser = LoginUtils.getLoginUser(request);
 		Activity activity = activityValidationService.manageAble(activityId, loginUser, null);
 		model.addAttribute("activity", activity);
-		// 是否开启了报名
 		Integer signId = activity.getSignId();
-		// 报名的人数
-
-		// 是否存在签到
-
+		SignActivityManageIndexDTO signActivityManageIndex = signApiService.statSignActivityManageIndex(signId);
+		model.addAttribute("signActivityManageIndex", signActivityManageIndex);
 		return "mobile/activity-index";
 	}
 
