@@ -55,7 +55,7 @@ public class LibActivityManagementController {
 	*/
 	@RequestMapping("")
 	public String index(String code) {
-		return "pc/activity-index";
+		return "pc/activity-list";
 	}
 
 	/**活动新增页面
