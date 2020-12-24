@@ -3,13 +3,13 @@ html {
     margin:0;
 }
 body {
-    height:100%;
+    height: calc(100% - 40px);
     background: #DFDFDF;
     margin: 0;
-    padding: 0;
+    padding: 20px;
 }
 .container {
-    height: calc(100% - 40px);
+    height: 100%;
     border-radius: 8px;
 }
 .slider {
@@ -76,7 +76,7 @@ body {
 }
 .content {
     float: left;
-    min-width: 772px;
+    /*min-width: 772px;*/
     height: calc(100% - 16px);
     min-height: 836px;
     width: calc(100% - 269px);
