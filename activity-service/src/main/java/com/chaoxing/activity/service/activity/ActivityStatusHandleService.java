@@ -1,15 +1,14 @@
 package com.chaoxing.activity.service.activity;
 
 import com.chaoxing.activity.model.Activity;
+import com.chaoxing.activity.util.DateUtils;
 import com.chaoxing.activity.util.constant.CacheConstant;
-import com.chaoxing.activity.util.constant.CommonConstant;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.ZSetOperations;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
-import java.time.Instant;
 import java.time.LocalDateTime;
 import java.util.Iterator;
 import java.util.Set;
@@ -80,8 +79,8 @@ public class ActivityStatusHandleService {
 		String startKey = getStartSubscibeStatusUpdateCacheKey();
 		String endKey = getEndSubscibeStatusUpdateCacheKey();
 		ZSetOperations zSetOperations = redisTemplate.opsForZSet();
-		zSetOperations.add(startKey, activityId, startTime.toInstant(CommonConstant.DEFAULT_ZONEOFFSET).toEpochMilli());
-		zSetOperations.add(endKey, activityId, endTime.toInstant(CommonConstant.DEFAULT_ZONEOFFSET).toEpochMilli());
+		zSetOperations.add(startKey, activityId, DateUtils.date2Timestamp(startTime));
+		zSetOperations.add(endKey, activityId, DateUtils.date2Timestamp(endTime));
 	}
 
 	public void deleteStartValue(Integer activityId) {
@@ -138,7 +137,7 @@ public class ActivityStatusHandleService {
 		Double score = typedTuple.getScore();
 		// 判断时间是不是小于等于当前时间
 		long l = score.longValue();
-		LocalDateTime time = LocalDateTime.ofInstant(Instant.ofEpochMilli(l), CommonConstant.DEFAULT_ZONEOFFSET);
+		LocalDateTime time = DateUtils.timestamp2Date(l);
 		LocalDateTime now = LocalDateTime.now();
 		if (now.compareTo(time) > -1) {
 			Integer activityId = typedTuple.getValue();
