@@ -481,6 +481,15 @@ public class ActivityHandleService {
 		return activityModule;
 	}
 
+	/**封装门户克隆模板使用的请求参数
+	 * @Description 
+	 * @author wwb
+	 * @Date 2020-12-21 16:12:23
+	 * @param activity
+	 * @param webTemplateId
+	 * @param loginUser
+	 * @return com.chaoxing.activity.dto.mh.MhCloneParamDTO
+	*/
 	private MhCloneParamDTO packageMhCloneParam(Activity activity, Integer webTemplateId, LoginUserDTO loginUser) {
 		WebTemplate webTemplate = webTemplateService.webTemplateExist(webTemplateId);
 		MhCloneParamDTO mhCloneParam = new MhCloneParamDTO();
@@ -493,6 +502,14 @@ public class ActivityHandleService {
 		return mhCloneParam;
 	}
 
+	/**封装应用模块列表
+	 * @Description 
+	 * @author wwb
+	 * @Date 2020-12-21 16:12:57
+	 * @param activity
+	 * @param webTemplateId
+	 * @return java.util.List<com.chaoxing.activity.dto.mh.MhCloneParamDTO.MhAppDTO>
+	*/
 	private List<MhCloneParamDTO.MhAppDTO> packageTemplateApps(Activity activity, Integer webTemplateId) {
 		List<MhCloneParamDTO.MhAppDTO> result = new ArrayList<>();
 		List<WebTemplateApp> webTemplateApps = webTemplateService.listAppByWebTemplateId(webTemplateId);
@@ -506,6 +523,14 @@ public class ActivityHandleService {
 		return result;
 	}
 
+	/**封装应用模块
+	 * @Description 
+	 * @author wwb
+	 * @Date 2020-12-21 16:13:14
+	 * @param activity
+	 * @param webTemplateApp
+	 * @return com.chaoxing.activity.dto.mh.MhCloneParamDTO.MhAppDTO
+	*/
 	private MhCloneParamDTO.MhAppDTO packageMhAppDTO(Activity activity, WebTemplateApp webTemplateApp) {
 		MhCloneParamDTO.MhAppDTO mhApp = new MhCloneParamDTO.MhAppDTO();
 		mhApp.setAppName(webTemplateApp.getAppName());

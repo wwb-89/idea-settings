@@ -4,6 +4,7 @@ import com.alibaba.fastjson.JSON;
 import com.chaoxing.activity.dto.LoginUserDTO;
 import com.chaoxing.activity.dto.RestRespDTO;
 import com.chaoxing.activity.util.annotation.LoginRequired;
+import com.chaoxing.activity.util.constant.UrlConstant;
 import com.chaoxing.activity.web.util.LoginUtils;
 import org.springframework.core.annotation.AnnotationUtils;
 import org.springframework.stereotype.Component;
@@ -59,7 +60,7 @@ public class LoginRequiredInterceptor extends HandlerInterceptorAdapter {
 			writer.write(JSON.toJSONString(restResDTO));
 		} else {
 			// 页面
-			response.sendRedirect("https://passport2.chaoxing.com/login?loginType=4&newversion=true&refer=" + URLEncoder.encode(request.getRequestURL().toString(), StandardCharsets.UTF_8.name()));
+			response.sendRedirect(UrlConstant.LOGIN_URL + URLEncoder.encode(request.getRequestURL().toString(), StandardCharsets.UTF_8.name()));
 		}
 	}
 
