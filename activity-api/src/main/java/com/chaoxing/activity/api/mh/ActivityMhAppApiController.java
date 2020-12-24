@@ -137,6 +137,12 @@ public class ActivityMhAppApiController {
 				.value(activity.getAddress())
 				.flag("103")
 				.build());
+		// 报名时间
+		mhGeneralAppResultDataFields.add(MhGeneralAppResultDataDTO.MhGeneralAppResultDataFieldDTO.builder()
+				.key("报名时间")
+				.value("")
+				.flag("105")
+				.build());
 		// 报名、签到人数
 		SignParticipationDTO signParticipation = signApiService.getSignParticipation(activity.getSignId());
 		StringBuilder signPepleNumDescribe = new StringBuilder();
