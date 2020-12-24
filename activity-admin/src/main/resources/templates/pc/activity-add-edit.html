@@ -73,6 +73,12 @@
                     </div>
                 </div>
                 <div class="form-item">
+                    <label class="label">主办方</label>
+                    <div class="input-box" style="width: 400px;">
+                        <el-input type="text" placeholder="请填写主办方" v-model.trim="activity.organisers" maxlength="20"></el-input>
+                    </div>
+                </div>
+                <div class="form-item">
                     <label class="label">活动类型</label>
                     <div class="input-box">
                         <el-radio v-for="(activityType, index) of activityTypes" :key="'activity-type-' + index" v-model="activity.activityType" :label="activityType.value" name="active-type">{{activityType.name}}</el-radio>
@@ -377,6 +383,7 @@
                         startTime: "",
                         endTime: "",
                         coverCloudId: activityApp.getDefaultCoverCloudId(),
+                        organisers: [[${session._login_user_.orgName}]],
                         activityType: "offline",
                         address: "",
                         longitude: "",

@@ -128,7 +128,7 @@ public class ActivityMhAppApiController {
 		// 主办单位
 		mhGeneralAppResultDataFields.add(MhGeneralAppResultDataDTO.MhGeneralAppResultDataFieldDTO.builder()
 				.key("主办单位")
-				.value(activity.getCreateOrgName())
+				.value(activity.getOrganisers())
 				.flag("102")
 				.build());
 		// 主办地点

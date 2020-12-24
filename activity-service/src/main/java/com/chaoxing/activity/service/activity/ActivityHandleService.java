@@ -254,6 +254,7 @@ public class ActivityHandleService {
 		existActivity.setStartTime(startTime);
 		existActivity.setEndTime(endTime);
 		existActivity.setCoverCloudId(activity.getCoverCloudId());
+		existActivity.setOrganisers(activity.getOrganisers());
 		existActivity.setActivityType(activity.getActivityType());
 		existActivity.setAddress(activity.getAddress());
 		existActivity.setLongitude(activity.getLongitude());
