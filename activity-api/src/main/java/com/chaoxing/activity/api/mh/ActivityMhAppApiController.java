@@ -129,7 +129,7 @@ public class ActivityMhAppApiController {
 		// 主办单位
 		mhGeneralAppResultDataFields.add(MhGeneralAppResultDataDTO.MhGeneralAppResultDataFieldDTO.builder()
 				.key("主办单位")
-				.value(activity.getCreateOrgName())
+				.value(activity.getOrganisers())
 				.flag("102")
 				.build());
 		// 主办地点
@@ -137,6 +137,12 @@ public class ActivityMhAppApiController {
 				.key("活动地点")
 				.value(activity.getAddress())
 				.flag("103")
+				.build());
+		// 报名时间
+		mhGeneralAppResultDataFields.add(MhGeneralAppResultDataDTO.MhGeneralAppResultDataFieldDTO.builder()
+				.key("报名时间")
+				.value("")
+				.flag("105")
 				.build());
 		// 报名、签到人数
 		SignParticipationDTO signParticipation = signApiService.getSignParticipation(activity.getSignId());
