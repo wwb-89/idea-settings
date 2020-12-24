@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org/">
+<head>
+    <title th:text="${activity.name}">活动</title>
+    <meta http-equiv="Content-type" content="text/html; charset=utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, minimal-ui" />
+    <meta name="format-detection" content="telephone=no, email=no">
+    <meta http-equiv="Pragma" content="no-cache" />
+    <meta http-equiv="cache-control" content="no-cache" />
+    <link rel="stylesheet" href="/static/mobile/assets/lib/layui/css/layui.mobile.css" th:href="@{/mobile/assets/lib/layui/css/layui.mobile.css}">
+    <link rel="stylesheet" href="/static/mobile/assets/css/cssreset.css" th:href="@{/mobile/assets/css/cssreset.css}" />
+    <link rel="stylesheet" href="/static/mobile/assets/css/public.css" th:href="@{/mobile/assets/css/public.css}" />
+    <link rel="stylesheet" href="/static/mobile/assets/css/administrators.css" th:href="@{/mobile/assets/css/administrators.css}" />
+    <style type="text/css">
+        [v-cloak] {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+<div class="administrators" id="form-vue" v-cloak>
+    <div class="title">
+        <p class="txt overHidden1">{{activity.name}}</p>
+        <div :class="{'status': true, 'color0': (activity.status == 2), 'color1': (activity.status == 3), 'color2': (activity.status == 4)}">{{activity.status | activityStatusDescribe}}</div>
+    </div>
+    <div class="index-list">
+        <div class="item" v-if="signActivityManageIndex.signUpExist">
+            <img src="/static/mobile/assets/images/admin/allWorks.png" th:src="@{/mobile/assets/images/admin/allWorks.png}">
+            <p class="flTxt">报名名单</p>
+            <p class="frTxt">已报名 {{signActivityManageIndex.signUpNum}}</p>
+            <i class="icon-arrow-r"></i>
+        </div>
+        <div class="item" v-if="signActivityManageIndex.signInExist">
+            <img src="/static/mobile/assets/images/admin/sign-in.png" th:src="@{/mobile/assets/images/admin/sign-in.png}">
+            <p class="flTxt">签到管理</p>
+            <i class="icon-arrow-r marginAuto"></i>
+        </div>
+        <div class="item" v-if="signActivityManageIndex.signUpExist">
+            <img src="/static/mobile/assets/images/admin/notice.png" th:src="@{/mobile/assets/images/admin/notice.png}">
+            <p class="flTxt">发通知</p>
+            <i class="icon-arrow-r marginAuto"></i>
+        </div>
+    </div>
+</div>
+<div th:replace="mobile/include/common_js :: common_js(~{::script})">
+    <script src="/static/mobile/assets/lib/layui/layui.all.js" th:src="@{/mobile/assets/lib/layui/layui.all.js}"></script>
+    <script th:inline="javascript">
+        function ready() {
+            formVue = new Vue({
+                el: "#form-vue",
+                data: {
+                    activity: [[${activity}]],
+                    signActivityManageIndex: [[${signActivityManageIndex}]]
+                },
+                created: function () {
+
+                },
+                mounted: function () {
+
+                },
+                methods: {
+
+                }
+            });
+        }
+    </script>
+</div>
+</body>
+
+</html>

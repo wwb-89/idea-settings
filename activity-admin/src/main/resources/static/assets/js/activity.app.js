@@ -257,3 +257,22 @@ Vue.filter("timestamp2YMDH", function (timestamp) {
     var dateObj = activityApp.millisecond2DateObj(timestamp);
     return dateObj.year + "-" + dateObj.month + "-" + dateObj.day +" "+dateObj.hour;
 });
+Vue.filter("activityStatusDescribe", function (status) {
+    if (activityApp.isEmpty(status)) {
+        return "";
+    }
+    switch (status) {
+        case 0:
+            return "已删除";
+        case 1:
+            return "未发布";
+        case 2:
+            return "已发布";
+        case 3:
+            return "进行中";
+        case 4:
+            return "已结束";
+        default:
+            return "";
+    }
+});
