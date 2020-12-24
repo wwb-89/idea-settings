@@ -10,12 +10,12 @@ body {
 }
 .container {
     height: calc(100% - 40px);
-    /*padding: 20px;*/
     border-radius: 8px;
 }
 .slider {
     float: left;
     height: 100%;
+    max-width: 220px;
     min-height: 860px;
     background: #ffffff;
     border-radius: 8px 0px 0px 8px;
@@ -23,12 +23,15 @@ body {
 }
 .title {
     height: 79px;
-    font-size: 20px;
-    font-weight: 600;
     color: #333333;
     text-align: left;
-    line-height: 79px;
     padding: 0 24px;
+    display: table-cell;
+    vertical-align: middle;
+}
+.title span {
+    font-size: 20px;
+    font-weight: 600;
 }
 .menu {
     width: 220px;
@@ -49,6 +52,7 @@ body {
     height: 24px;
     padding: 14px 0 14px 24px;
     text-align: left;
+    cursor: pointer;
 }
 .message .item {
     padding: 26px 0 26px 24px;
