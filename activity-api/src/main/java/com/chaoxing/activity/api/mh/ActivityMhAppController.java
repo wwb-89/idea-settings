@@ -36,7 +36,7 @@ import java.util.stream.Collectors;
 /**门户应用api接口
  * @author wwb
  * @version ver 1.0
- * @className ActivityMhAppApiController
+ * @className ActivityMhAppController
  * @description
  * @blame wwb
  * @date 2020-11-24 17:35:03
@@ -44,7 +44,7 @@ import java.util.stream.Collectors;
 @RestController
 @RequestMapping("mh")
 @CrossOrigin
-public class ActivityMhAppApiController {
+public class ActivityMhAppController {
 
 	/** 签到按钮地址 */
 	private static final String QD_BTN_URL = "http://api.qd.reading.chaoxing.com/activity/%d/btn";

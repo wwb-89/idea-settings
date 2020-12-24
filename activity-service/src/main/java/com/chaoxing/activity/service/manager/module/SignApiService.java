@@ -4,6 +4,7 @@ import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.chaoxing.activity.dto.manager.sign.SignParticipationDTO;
 import com.chaoxing.activity.dto.module.SignAddEditDTO;
+import com.chaoxing.activity.dto.sign.SignActivityManageIndexDTO;
 import com.chaoxing.activity.util.RestTemplateUtils;
 import com.chaoxing.activity.util.exception.BusinessException;
 import lombok.extern.slf4j.Slf4j;
@@ -39,6 +40,8 @@ public class SignApiService {
 	private static final String DETAIL_URL = DOMAIN + "/sign/%d/detail";
 	/** 参与情况 */
 	private static final String PARTICIPATION_URL = DOMAIN + "/sign/%d/participation";
+	/** 统计报名签到在活动管理首页需要的信息 */
+	private static final String STAT_SIGN_ACTIVITY_MANAGE_INDEX_URL = DOMAIN + "/sign/%d/stat/activity-index";
 
 	@Resource
 	private RestTemplate restTemplate;
@@ -144,6 +147,17 @@ public class SignApiService {
 				.limitNum(limitNum)
 				.signedNum(signedNum)
 				.build();
+	}
+
+	/**统计报名签到在活动管理首页需要的信息
+	 * @Description 
+	 * @author wwb
+	 * @Date 2020-12-24 11:25:45
+	 * @param signId
+	 * @return com.chaoxing.activity.dto.sign.SignActivityManageIndexDTO
+	*/
+	public SignActivityManageIndexDTO statSignActivityManageIndex(Integer signId) {
+		return null;
 	}
 
 }

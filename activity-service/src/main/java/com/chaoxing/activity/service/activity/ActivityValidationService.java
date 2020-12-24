@@ -118,6 +118,24 @@ public class ActivityValidationService {
 		return manageFids.contains(fid);
 	}
 
+	/**活动可管理
+	 * @Description 
+	 * @author wwb
+	 * @Date 2020-12-24 10:28:29
+	 * @param activityId
+	 * @param loginUser
+	 * @param errorMessage
+	 * @return com.chaoxing.activity.model.Activity
+	*/
+	public Activity manageAble(Integer activityId, LoginUserDTO loginUser, String errorMessage) {
+		errorMessage = Optional.ofNullable(errorMessage).filter(StringUtils::isNotBlank).orElse("没有管理权限");
+		Activity activity = activityExist(activityId);
+		if (!isCreator(activity, loginUser)) {
+			throw new BusinessException(errorMessage);
+		}
+		return activity;
+	}
+
 	/**能修改活动
 	 * @Description 
 	 * @author wwb
