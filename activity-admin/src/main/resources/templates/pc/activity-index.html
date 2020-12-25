@@ -1,16 +1,10 @@
 <!DOCTYPE html>
 <html lang="en" xmlns:th="http://www.thymeleaf.org/">
 <head>
+    <title th:text="${activity.name}">活动主页</title>
     <meta charset="UTF-8">
-    <title>活动管理</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="/static/pc/assets/css/create.css" th:href="@{/pc/assets/css/create.css}">
-    <link rel="stylesheet" href="/static/pc/assets/lib/element-ui/lib/theme-chalk/index.css" th:href="@{/pc/assets/lib/element-ui/lib/theme-chalk/index.css}">
-    <link rel="stylesheet" href="/static/pc/assets/lib/zTree_v3/css/zTreeStyle/zTreeStyle.css" th:href="@{/pc/assets/lib/zTree_v3/css/zTreeStyle/zTreeStyle.css}">
-    <link rel="stylesheet" href="/static/pc/assets/css/reset.css" th:href="@{/pc/assets/css/reset.css}">
-    <link rel="stylesheet" href="/static/pc/assets/css/public.css" th:href="@{/pc/assets/css/public.css}">
-    <link rel="stylesheet" href="/static/pc/assets/css/manage.css" th:href="@{/pc/assets/css/manage.css}">
-    <link rel="stylesheet" href="/static/pc/assets/lib/jquery.mCustomScrollbar.css" th:href="@{/pc/assets/lib/jquery.mCustomScrollbar.css}">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="/static/pc/assets/css/activityHomePage.css" th:href="@{/pc/assets/css/activityHomePage.css}">
     <style type="text/css">
         [v-cloak] {
             display: none;
@@ -18,366 +12,105 @@
     </style>
 </head>
 <body>
-<div class="page" id="activity-vue" v-cloak>
-    <div class="top box">
-        活动管理
-    </div>
-    <div class="main box">
-        <div class="create-btn" @click="toAdd" style="cursor: pointer;">创建活动</div>
-        <div class="table">
-            <el-table :data="activities" style="width: 100%" v-show="loaded">
-                <el-table-column label="活动名称" min-width="40%">
-                    <template slot-scope="scope">
-                        <div class="item">
-                            <div class="img">
-                                <img :src="scope.row.coverCloudId | getCloudImgUrl" class="jqthumbImg">
-                            </div>
-                            <div class="desc">
-                                <div class="title" @click="previewPage(scope.row)">{{scope.row.name}}</div>
-                                <div class="time"><span>{{scope.row.startTime | timestamp2ChineseYMD}}</span> - <span>{{scope.row.endTime | timestamp2ChineseYMD}}</span></div>
-                            </div>
-                        </div>
-                    </template>
-                </el-table-column>
-                <el-table-column label="创建单位" min-width="15%">
-                    <template slot-scope="scope">
-                        <div class="overHidden2">{{scope.row.createOrgName}}</div>
-                    </template>
-                </el-table-column>
-                <el-table-column label="创建人" min-width="10%">
-                    <template slot-scope="scope">
-                        <div class="overHidden2">{{scope.row.createUserName}}</div>
-                    </template>
-                </el-table-column>
-                <el-table-column label="状态" min-width="10%">
-                    <template slot="header" slot-scope="scope">
-                        <div class="status">状态<i class="el-icon-arrow-down el-down"></i></div>
-                        <!--状态筛选-->
-                        <div class="filters">
-                            <p :class="{'blue': status.selected}" v-for="(status, index) of filterStatus" :key="'status-' + index" @click="changeStatus(index)">{{status.name}}</p>
-                        </div>
-                    </template>
-                    <template slot-scope="scope">
-                        <span :class="{'blue2': (scope.row.status == '1'), 'blue': (scope.row.status == '2'), 'green': (scope.row.status == '3')}">{{scope.row.status | activityStatusInstructions}}</span>
-                    </template>
-                </el-table-column>
-                <el-table-column label="操作" min-width="25%">
-                    <template slot-scope="scope">
-                        <div>
-                            <el-button type="text" v-if="index < 2" v-for="(operation, index) of scope.row.operations" @click="operateProxy(scope.row.id, operation.value)">{{operation.name}}</el-button>
-                            <div class="more-btn" v-if="scope.row.operations.length > 2">
-                                <el-button type="text">更多<i class="el-icon-arrow-down"></i></el-button>
-                                <div class="more">
-                                    <p v-if="index > 1" v-for="(operation, index) of scope.row.operations" @click="operateProxy(scope.row.id, operation.value)">{{operation.name}}</p>
-                                </div>
-                            </div>
-                        </div>
-                    </template>
-                </el-table-column>
-            </el-table>
+<div class="container" id="activity-vue" v-cloak>
+    <div class="slider">
+        <div class="title">
+            <span th:text="${activity.name}">成都少儿阅读活动</span>
         </div>
-        <el-pagination v-show="pages > 1" background layout="prev, pager, next" :total="total" :page-size="queryParams.pageSize" :current-page="queryParams.pageNum" @current-change="changePage" style="text-align: center;"></el-pagination>
-        <!-- 删除弹窗 -->
-        <vue-confirm ref="deleteWindow" :message="'删除后，将清空该活动的相关信息和记录'" :cancel="'取消'" :sure="'删除'" @callback="deleteSubmit"></vue-confirm>
-        <!--下架弹窗-->
-        <vue-confirm ref="releaseWindow" :message="'发布后，该活动将展示在活动市场中'" :cancel="'取消'" :sure="'发布'" @callback="release"></vue-confirm>
-        <!--下架弹窗-->
-        <vue-confirm ref="canReleaseWindow" :message="'下架后，该活动将不在活动广场中显示'" :cancel="'取消'" :sure="'下架'" @callback="cancelRelease"></vue-confirm>
+        <div class="menu">
+            <div class="entry">
+                <div :class="{'item': true, 'active': menus.signUpList.selected}" v-if="signActivityManageIndex.signUpExist">
+                    <img :src="menus.signUpList.iconUrl">
+                    <span>{{menus.signUpList.name}}</span>
+                </div>
+                <div :class="{'item': true, 'active': menus.signInManage.selected}" v-if="signActivityManageIndex.signInExist">
+                    <img :src="menus.signInManage.iconUrl">
+                    <span>{{menus.signInManage.name}}</span>
+                </div>
+            </div>
+            <div class="message" v-if="signActivityManageIndex.signUpExist">
+                <div :class="{'item': true, 'active': menus.notice.selected}" @click="toAddNotice">
+                    <img :src="menus.notice.iconUrl">
+                    <span>{{menus.notice.name}}</span>
+                </div>
+            </div>
+            <div class="statistics">
+                <div :class="{'item': true, 'active': menus.stat.selected}">
+                    <img :src="menus.stat.iconUrl">
+                    <span>{{menus.stat.name}}</span>
+                </div>
+            </div>
+        </div>
+        <div class="edit">
+            <div class="item" @click="toEdit">
+                <img src="/static/pc/assets/images/icon-edit-default.png" th:src="@{/pc/assets/images/icon-edit-default.png}">
+                <span>编辑活动</span>
+            </div>
+        </div>
+    </div>
+    <div class="content">
+        <iframe id="content" src=""></iframe>
     </div>
 </div>
 <div th:replace="pc/include/common_js :: common_js(~{::script})">
-    <script src="/static/pc/assets/lib/element-ui/lib/index.js" th:src="@{/pc/assets/lib/element-ui/lib/index.js}"></script>
-    <script src="/static/pc/assets/lib/zTree_v3/js/jquery.ztree.core.js" th:src="@{/pc/assets/lib/zTree_v3/js/jquery.ztree.core.js}"></script>
-    <script src="/static/pc/assets/lib/zTree_v3/js/jquery.ztree.excheck.min.js" th:src="@{/pc/assets/lib/zTree_v3/js/jquery.ztree.excheck.min.js}"></script>
-    <script src="/static/pc/assets/lib/zTree_v3/js/jquery.ztree.exedit.js" th:src="@{/pc/assets/lib/zTree_v3/js/jquery.ztree.exedit.js}"></script>
-    <script src="/static/pc/assets/component/confirm.js" th:src="@{/pc/assets/component/confirm.js}"></script>
-    <script src="/static/pc/assets/component/activity-scope.js" th:src="@{/pc/assets/component/activity-scope.js}"></script>
-    <script src="/static/pc/assets/lib/jqthumb.min.js" th:src="@{/pc/assets/lib/jqthumb.min.js}"></script>
     <script th:inline="javascript">
         activityVue = new Vue({
             el: "#activity-vue",
             data: {
-                activities: [],
-                uid: [[${session._login_user_.uid}]],
-                fid: [[${session._login_user_.fid}]],
-                filterStatus: [],
-                queryParams: {
-                    pageNum: 1,
-                    pageSize: 8,
-                    status: ""
+                activity: [[${activity}]],
+                signActivityManageIndex: [[${signActivityManageIndex}]],
+                menus: {
+                    // 报名签到
+                    signUpList: {name: "报名名单", iconUrl: ctx + "/pc/assets/images/icon-name-list-active.png", url: "http://reading.chaoxing.com/qd/manage/sign-up/" + [[${signActivityManageIndex.signUpId}]], selected: false},
+                    signInManage: {name: "签到管理", iconUrl: ctx + "/pc/assets/images/icon-name-list-default.png", url: "", selected: false},
+                    // 通知
+                    notice: {name: "发通知", iconUrl: ctx + "/pc/assets/images/icon-notice-default.png", url: "http://reading.chaoxing.com/qd/manage/notice/add?signId=" + [[${signActivityManageIndex.signId}]], selected: false},
+                    // 统计
+                    stat: {name: "统计", iconUrl: ctx + "/pc/assets/images/icon-statistics-default.png", url: "", selected: false}
                 },
-                loaded: false,
-                // 总记录数
-                total: 0,
-                // 总页数
-                pages: 0,
-                // 正在处理的活动id
-                processedActivityId: null,
-                operations: {
-                    edit: {name: "编辑", value: "edit"},
-                    delete: {name: "删除", value: "delete"},
-                    release: {name: "发布", value: "release"},
-                    cancelRelease: {name: "下架", value: "cancelRelease"}
-                }
+                iframeUrl: ""
             },
             created: function () {
                 var $this = this;
-                $this.filterStatus = [
-                    {name: "全部", value: "", selected: true},
-                    {name: "待发布", value: "1", selected: false},
-                    {name: "活动预告", value: "2", selected: false},
-                    {name: "进行中", value: "3", selected: false},
-                    {name: "已结束", value: "4", selected: false}
-                ];
+                if ($this.signActivityManageIndex.signUpExist) {
+                    $this.menus.signUpList.selected = true;
+                    $this.loadUrl($this.menus.signUpList.url);
+                }else {
+                    $this.menus.signInManage.selected = true;
+                    $this.loadUrl($this.menus.signInManage.url);
+                }
             },
             mounted: function () {
-                var $this = this;
-                $this.bindEvents();
-                $this.loadData();
-                // 监听活动的创建，当创建或者编辑活动后重新加载数据
-                document.addEventListener('visibilitychange',function(){
-                    if ("visible" === document.visibilityState) {
-                        // 判断storage的变化
-                        if (app.isActivityChanged()) {
-                            $this.loadData();
-                        }
-                    }
-                });
-            },
-            updated: function () {
-                $('.jqthumbImg').jqthumb({
-                    width: '100%',
-                    height: '100%'
-                });
+
             },
             methods: {
-                bindEvents: function () {
-                    $(document).on("click", ".status", function () {
-                        $('.filters').toggle();
-                        $('.el-down').toggleClass('rotate')
-                    });
-                    $(document).on("mouseover", ".more-btn", function () {
-                        $(this).children('.more').show();
-                    });
-                    $(document).on("mouseout", ".more-btn", function () {
-                        $(this).children('.more').hide();
-                    });
+                loadUrl: function (url) {
+                    $("#content")[0].src = url;
                 },
-                // 处理操作顺序
-                handleOperationSequence: function (activities) {
+                // 报名名单
+                toSignUpList: function () {
                     var $this = this;
-                    if (activities && activities.length > 0) {
-                        $(activities).each(function () {
-                            var activity = this;
-                            var isCreator = activity.createUid == $this.uid;
-                            var isCurrentOrgCreated = activity.createFid == $this.fid;
-                            var status = activity.status;
-                            activity.operations = [];
-                            switch (status) {
-                                case 1:
-                                    if (isCreator || isCurrentOrgCreated) {
-                                        activity.operations.push($this.operations.release);
-                                        activity.operations.push($this.operations.edit);
-                                        activity.operations.push($this.operations.delete);
-                                    }
-                                    break;
-                                case 2:
-                                case 3:
-                                    activity.operations.push($this.operations.cancelRelease);
-                                    if (isCreator || isCurrentOrgCreated) {
-                                        activity.operations.push($this.operations.edit);
-                                        activity.operations.push($this.operations.delete);
-                                    }
-                                    break;
-                                case 4:
-                                    if (isCreator || isCurrentOrgCreated) {
-                                        activity.operations.push($this.operations.delete);
-                                    }
-                                    break;
-                                default:
-                            }
-                        });
-                    }
                 },
-                toAdd: function () {
-                    var url = ctx + "/lib/add";
+                // 签到管理
+                toSignInManage: function () {
+                    var $this = this;
+                },
+                // 发通知
+                toAddNotice: function () {
+                    var $this = this;
+                    $this.loadUrl($this.menus.notice.url);
+                    // 选中
+
+                },
+                // 去编辑活动
+                toEdit: function () {
+                    var $this = this;
+                    var url = ctx + $this.activity.id + "/edit";
                     window.open(url);
-                },
-                toEdit: function (id) {
-                    var url = ctx + "/lib/"+ id +"/edit";
-                    window.open(url);
-                },
-                // 修改状态
-                changeStatus: function (index) {
-                    var $this = this;
-                    var status = $this.filterStatus[index];
-                    $($this.filterStatus).each(function (i) {
-                        if (i == index) {
-                            $this.$set($this.filterStatus[i], "selected", true);
-                        } else {
-                            $this.$set($this.filterStatus[i], "selected", false);
-                        }
-                    });
-                    $('.filters').toggle();
-                    $('.el-down').removeClass('rotate')
-                    $this.queryParams.status = status.value;
-                    $this.queryParams.pageNum = 1;
-                    $this.loadData();
-                },
-                changePage: function (pageNum) {
-                    var $this = this;
-                    $this.queryParams.pageNum = pageNum;
-                    $this.loadData();
-                },
-                loadData: function () {
-                    var $this = this;
-                    var url = ctx + "/api/activity/list/managing";
-                    app.ajaxPost(url, $this.queryParams, function (data) {
-                        $this.loaded = true;
-                        if (data.success) {
-                            $this.handleOperationSequence(data.data.records);
-                            $this.activities = data.data.records;
-                            $this.total = data.data.total;
-                            $this.pages = data.data.pages;
-                        } else {
-                            var errorMessage = data.message;
-                            if (activityApp.isEmpty(errorMessage)) {
-                                errorMessage = "加载活动失败";
-                            }
-                            app.showMsg(errorMessage);
-                        }
-                    }, function () {
-                        $this.loaded = true;
-                        app.showMsg("加载活动失败");
-                    });
-                },
-                // 操作代理
-                operateProxy: function (id, operation) {
-                    var $this = this;
-                    switch (operation) {
-                        case "edit":
-                            $this.toEdit(id);
-                            break;
-                        case "delete":
-                            $this.toDelete(id);
-                            break;
-                        case "release":
-                            $this.toRelease(id);
-                            break;
-                        case "cancelRelease":
-                            $this.toCancelRelease(id);
-                            break;
-                        default:
-                    }
-                },
-                // 删除
-                toDelete: function (id) {
-                    var $this = this;
-                    $this.processedActivityId = id;
-                    $this.$refs.deleteWindow.show = true;
-                },
-                deleteSubmit: function () {
-                    var $this = this;
-                    var url = ctx + "/api/activity/" + $this.processedActivityId + "/delete"
-                    app.ajaxPostWithLoading(url, {}, function (data) {
-                        if (data.success) {
-                            $this.$refs.deleteWindow.show = false;
-                            // 重新查询
-                            $this.loadData();
-                        } else {
-                            var errorMessage = data.message;
-                            if (activityApp.isEmpty(errorMessage)) {
-                                errorMessage = "删除活动失败";
-                            }
-                            app.showMsg(errorMessage);
-                        }
-                    }, function () {
-                        app.showMsg("删除活动失败");
-                    });
-                },
-                toRelease: function (id) {
-                    var $this = this;
-                    $this.processedActivityId = id;
-                    $this.$refs.releaseWindow.show = true;
-                },
-                // 发布
-                release: function () {
-                    var $this = this;
-                    var activity = null;
-                    $($this.activities).each(function () {
-                        if (this.id == $this.processedActivityId) {
-                            activity = this;
-                            return false;
-                        }
-                    });
-                    if (activityApp.isEmpty(activity.pageId)) {
-                        app.showMsg("活动未创建完成，请选择活动模板", function () {
-                            var url = ctx + "/lib/" + $this.processedActivityId + "/edit?step=2";
-                            window.open(url);
-                        });
-                        return;
-                    }
-                    $this.$refs.releaseWindow.show = false;
-                    var url = ctx + "/api/activity/" + $this.processedActivityId + "/release";
-                    app.ajaxPostWithLoading(url, {}, function (data) {
-                        if (data.success) {
-                            app.showMsg("发布成功", function () {
-                                $this.loadData();
-                            });
-                        } else {
-                            var errorMessage = data.message;
-                            if (activityApp.isEmpty(errorMessage)) {
-                                errorMessage = "发布失败";
-                            }
-                            app.showMsg(errorMessage);
-                        }
-                    }, function () {
-                        app.showMsg("发布失败");
-                    });
-                },
-                toCancelRelease: function (id) {
-                    var $this = this;
-                    $this.processedActivityId = id;
-                    $this.$refs.canReleaseWindow.show = true;
-                },
-                cancelRelease: function () {
-                    var $this = this;
-                    $this.$refs.canReleaseWindow.show = false;
-                    var url = ctx + "/api/activity/" + $this.processedActivityId + "/release/cancel";
-                    app.ajaxPostWithLoading(url, {}, function (data) {
-                        if (data.success) {
-                            app.showMsg("下架成功", function () {
-                                $this.loadData();
-                            });
-                        } else {
-                            var errorMessage = data.message;
-                            if (activityApp.isEmpty(errorMessage)) {
-                                errorMessage = "下架失败";
-                            }
-                            app.showMsg(errorMessage);
-                        }
-                    }, function () {
-                        app.showMsg("下架失败");
-                    });
-                },
-                // 配置页面
-                configPage: function (activity) {
-                    var editUrl = activity.editUrl;
-                    if (!activityApp.isEmpty(editUrl)) {
-                        window.open(editUrl);
-                    }
-                },
-                // 预览页面
-                previewPage: function (activity) {
-                    var previewUrl = activity.previewUrl;
-                    if (!activityApp.isEmpty(previewUrl)) {
-                        window.open(previewUrl);
-                    }
                 }
             }
         });
     </script>
 </div>
 </body>
-
 </html>

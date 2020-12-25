@@ -5,7 +5,6 @@ import com.chaoxing.activity.model.Activity;
 import com.chaoxing.activity.model.ActivityClassify;
 import com.chaoxing.activity.service.activity.classify.ActivityClassifyQueryService;
 import com.chaoxing.activity.service.manager.CloudApiService;
-import com.chaoxing.activity.service.manager.MhApiService;
 import com.chaoxing.activity.util.enums.ActivityTypeEnum;
 import com.google.common.collect.Maps;
 import lombok.extern.slf4j.Slf4j;
@@ -36,8 +35,6 @@ public class Model2DtoService {
 	private ActivityClassifyQueryService activityClassifyQueryService;
 	@Resource
 	private CloudApiService cloudApiService;
-	@Resource
-	private MhApiService mhApiService;
 
 	/**活动对象转换成dto
 	 * @Description 
