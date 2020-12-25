@@ -344,6 +344,8 @@
                         var activity = $this.activities[index];
                         var previewUrl = activity.previewUrl;
                         if (!activityApp.isEmpty(previewUrl)) {
+                            // 回收积分
+                            activityApp.integralPush(activity.id, activity.name);
                             app.openUrl(previewUrl);
                         }
                     }

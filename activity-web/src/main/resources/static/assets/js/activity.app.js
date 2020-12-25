@@ -261,6 +261,18 @@
     activityApp.prototype.getDefaultCoverCloudId = function () {
         return "68065603fbcb805725f7ef5e21cef03c";
     };
+    /**
+     * 积分推送
+     * @param activityId
+     * @param activityName
+     */
+    activityApp.prototype.integralPush = function (activityId, activityName) {
+        var url = ctx + "/api/integral/push/activity/" + activityId + "/view";
+        var params = {
+            activityName: activityName
+        };
+        $.post(url, params, function (data) {}).fail(function () {});
+    };
     W['activityApp'] = new activityApp();
 })(window, jQuery, JSON);
 Array.prototype.remove = function (val) {
