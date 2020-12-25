@@ -78,12 +78,12 @@ select {
 }
 
 .info {
-    width: 1000px;
+    width: 1002px;
     /* height: 531px; */
     background: #ffffff;
     border: 1px solid #dadce0;
     border-radius: 12px;
-    padding: 30px;
+    padding: 24px 0 24px 30px;
     box-sizing: border-box;
 }
 
@@ -107,6 +107,10 @@ select {
 .form-item {
     display: flex;
     margin: 30px 0;
+}
+
+.form-item .cover img {
+    top: 44px;
 }
 
 .input-box {
@@ -144,12 +148,13 @@ select {
 }
 
 .label {
-    width: 80px;
+    width: 90px;
     line-height: 36px;
-    font-size: 16px;
+    font-size: 14px;
     color: #666666;
     margin-left: 9px;
     text-align: left;
+    position: relative;
 }
 
 input::placeholder {
@@ -172,7 +177,7 @@ input[type="number"] {
 
 .length {
     position: absolute;
-    right: 10px;
+    right: 282px;
     top: 25%;
     color: #999999;
     font-size: 16px;
@@ -398,8 +403,7 @@ input.btn-name,
 
 .page-item {
     position: relative;
-    width: 292px;
-    border-radius: 6px;
+    width: 455px;
     box-sizing: border-box;
     margin-right: 30px;
     margin-bottom: 30px;
@@ -410,20 +414,17 @@ input.btn-name,
 }
 
 .mask-box {
-    width: 292px;
-    height: 176px;
+    width: 455px;
+    height: 300px;
     position: relative;
-    border: 1px solid #dddddd;
+    border: 1px solid rgba(0, 0, 0, 0.2);
     margin-bottom: 10px;
-}
-
-.page-item:nth-of-type(3n) {
-    margin-right: 0;
+    border-radius: 8px;
 }
 
 .mask-box>.img {
     width: 100%;
-    height: 176px;
+    border-radius: 8px;
 }
 
 .page-item>.selected,
@@ -765,6 +766,13 @@ input.btn-name,
     border-radius: 2px;
     box-sizing: border-box;
 }
+.show-addr {
+    width: 428px !important;
+}
+.show-addr-detailed {
+    width: 256px !important;
+    margin-left: 16px;
+}
 
 .upload-icon {
     width: 50px;
@@ -972,8 +980,11 @@ input.btn-name,
     /* vertical-align: top;
     margin-top: 12px;
     margin-left: -10px; */
-    margin-right: 3px;
-    margin-bottom: 8px;
+    /*margin-right: 3px;*/
+    /*margin-bottom: 8px;*/
+    position: absolute;
+    top: 12px;
+    left: -6px;
 }
 
 .position {
@@ -1057,12 +1068,12 @@ input.btn-name,
     background: url(../images/triangle2.png) center center no-repeat;
 }
 .ztree li span.button.root_close,
-.ztree li span.button.roots_close, 
-.ztree li span.button.bottom_close, 
+.ztree li span.button.roots_close,
+.ztree li span.button.bottom_close,
 .ztree li span.button.center_close {
     background: url(../images/triangle1.png) center center no-repeat;
 }
-.ztree li span.button.chk.checkbox_false_full, 
+.ztree li span.button.chk.checkbox_false_full,
 .ztree li span.button.chk.checkbox_false_full_focus{
     width: 15px;
     height: 15px;
@@ -1114,30 +1125,62 @@ input.btn-name,
     border: none;
     opacity: 1;
 }
-.ztree li span.button.center_docu, 
-.ztree li span.button.bottom_docu, 
+.ztree li span.button.center_docu,
+.ztree li span.button.bottom_docu,
 .ztree li ul.line {
     background: none;
-  }
-  .ztree li span.button.ico_open {
-      vertical-align: middle;
-      background-image: url(../images/icon-file.png);
-      background-position: unset;
-  }
-  .ztree li span.button.ico_docu {
-    vertical-align: middle;
-    background-image: url(../images/icon-shcool.png);
-      background-position: unset;
-  }
-  .ztree li span.button.ico_close {
+}
+.ztree li span.button.ico_open {
     vertical-align: middle;
     background-image: url(../images/icon-file.png);
     background-position: unset;
-  }
+}
+.ztree li span.button.ico_docu {
+    vertical-align: middle;
+    background-image: url(../images/icon-shcool.png);
+    background-position: unset;
+}
+.ztree li span.button.ico_close {
+    vertical-align: middle;
+    background-image: url(../images/icon-file.png);
+    background-position: unset;
+}
 .configurationForm {
     margin-top: 20px;
     cursor: pointer;
 }
+.configurationForm img {
+    width: 16px;
+    height: 16px;
+}
 .configurationForm .tips {
     margin-left: 5px !important;
+}
+.copy-link {
+    width: 542px;
+}
+.copy-link input{
+    width: 498px;
+    font-size: 16px;
+    color: #0084FF;
+    border: none;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    overflow: hidden;
+}
+.copy {
+    font-size: 14px !important;
+    color: #999999 !important;
+}
+.add_template {
+    background: url("../images/icon_add_template.png") no-repeat;
+    background-position:center center;
+    cursor: pointer;
+}
+.create_tips {
+    font-weight: normal;
+    font-size: 14px;
+    line-height: 20px;
+    color: #999999;
+    margin-left: 16px;
 }
