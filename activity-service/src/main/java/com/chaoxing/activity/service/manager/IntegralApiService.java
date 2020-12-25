@@ -1,7 +1,6 @@
 package com.chaoxing.activity.service.manager;
 
 import com.alibaba.fastjson.JSON;
-import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.chaoxing.activity.dto.manager.IntegralPushDTO;
 import com.chaoxing.activity.mapper.IntegralPushScopeMapper;
@@ -117,7 +116,7 @@ public class IntegralApiService {
 		String resourceName = Optional.ofNullable(integralPush.getResourceName()).filter(StringUtils::isNotBlank).orElse("");
 		String url = String.format(INTEGRAL_PUSH_URL, fid, uid, type, resourceId, resourceName);
 		String result = restTemplate.getForObject(url, String.class);
-		JSONObject jsonObject = JSON.parseObject(result);
+		log.info("推送积分:{}, 结果:{}", JSON.toJSONString(integralPush), result);
 	}
 
 }

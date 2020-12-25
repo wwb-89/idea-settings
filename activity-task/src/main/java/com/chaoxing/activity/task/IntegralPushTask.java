@@ -27,7 +27,7 @@ public class IntegralPushTask {
 	 * @param 
 	 * @return void
 	*/
-	@Scheduled(fixedDelay = 1 * 1000)
+	@Scheduled(fixedDelay = 60 * 1000)
 	public void pushData() {
 		integralApiService.handleTask();
 	}
