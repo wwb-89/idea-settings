@@ -1,4 +1,4 @@
-package com.chaoxing.activity.admin.controller;
+package com.chaoxing.activity.admin.controller.pc;
 
 import com.chaoxing.activity.admin.util.LoginUtils;
 import com.chaoxing.activity.dto.LoginUserDTO;

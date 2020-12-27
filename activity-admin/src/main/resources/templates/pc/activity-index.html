@@ -19,22 +19,26 @@
         </div>
         <div class="menu">
             <div class="entry">
-                <div :class="{'item': true, 'active': menus.signUpList.selected}" v-if="signActivityManageIndex.signUpExist">
+                <!--报名名单-->
+                <div :class="{'item': true, 'active': menus.signUpList.selected}" v-if="signActivityManageIndex.signUpExist" @click="toSignUpList">
                     <img :src="menus.signUpList.iconUrl">
                     <span>{{menus.signUpList.name}}</span>
                 </div>
-                <div :class="{'item': true, 'active': menus.signInManage.selected}" v-if="signActivityManageIndex.signInExist">
+                <!--签到管理-->
+                <div :class="{'item': true, 'active': menus.signInManage.selected}" v-if="signActivityManageIndex.signInExist" @click="toSignInManage">
                     <img :src="menus.signInManage.iconUrl">
                     <span>{{menus.signInManage.name}}</span>
                 </div>
             </div>
             <div class="message" v-if="signActivityManageIndex.signUpExist">
+                <!--发通知-->
                 <div :class="{'item': true, 'active': menus.notice.selected}" @click="toAddNotice">
                     <img :src="menus.notice.iconUrl">
                     <span>{{menus.notice.name}}</span>
                 </div>
             </div>
             <div class="statistics">
+                <!--统计-->
                 <div :class="{'item': true, 'active': menus.stat.selected}">
                     <img :src="menus.stat.iconUrl">
                     <span>{{menus.stat.name}}</span>
@@ -62,7 +66,7 @@
                 menus: {
                     // 报名签到
                     signUpList: {name: "报名名单", iconUrl: ctx + "/pc/assets/images/icon-name-list-active.png", url: "http://reading.chaoxing.com/qd/manage/sign-up/" + [[${signActivityManageIndex.signUpId}]], selected: false},
-                    signInManage: {name: "签到管理", iconUrl: ctx + "/pc/assets/images/icon-name-list-default.png", url: "", selected: false},
+                    signInManage: {name: "签到管理", iconUrl: ctx + "/pc/assets/images/icon-name-list-default.png", url: "http://reading.chaoxing.com/qd/manage/sign-in/list?signId=" + [[${signActivityManageIndex.signId}]], selected: false},
                     // 通知
                     notice: {name: "发通知", iconUrl: ctx + "/pc/assets/images/icon-notice-default.png", url: "http://reading.chaoxing.com/qd/manage/notice/add?signId=" + [[${signActivityManageIndex.signId}]], selected: false},
                     // 统计
@@ -73,11 +77,9 @@
             created: function () {
                 var $this = this;
                 if ($this.signActivityManageIndex.signUpExist) {
-                    $this.menus.signUpList.selected = true;
-                    $this.loadUrl($this.menus.signUpList.url);
+                    $this.selectMenu("signUpList");
                 }else {
-                    $this.menus.signInManage.selected = true;
-                    $this.loadUrl($this.menus.signInManage.url);
+                    $this.selectMenu("signInManage");
                 }
             },
             mounted: function () {
@@ -87,20 +89,28 @@
                 loadUrl: function (url) {
                     $("#content")[0].src = url;
                 },
+                selectMenu: function (menuKey) {
+                    var $this = this;
+                    for (var key in $this.menus) {
+                        $this.$set($this.menus[key], "selected", false);
+                    }
+                    $this.$set($this.menus[menuKey], "selected", true);
+                    $this.loadUrl($this.menus[menuKey].url);
+                },
                 // 报名名单
                 toSignUpList: function () {
                     var $this = this;
+                    $this.selectMenu("signUpList");
                 },
                 // 签到管理
                 toSignInManage: function () {
                     var $this = this;
+                    $this.selectMenu("signInManage");
                 },
                 // 发通知
                 toAddNotice: function () {
                     var $this = this;
-                    $this.loadUrl($this.menus.notice.url);
-                    // 选中
-
+                    $this.selectMenu("notice");
                 },
                 // 去编辑活动
                 toEdit: function () {
