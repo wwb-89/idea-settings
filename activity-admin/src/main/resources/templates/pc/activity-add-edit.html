@@ -336,7 +336,7 @@
             <div class="page-box">
                 <div class="page-item" v-for="(webTemplate, index) of webTemplates" :key="'web-templates' + index">
                     <div class="mask-box">
-                        <img class="img" :src="webTemplate.coverUrl">
+                        <img :src="webTemplate.coverUrl" class="img">
                         <div class="mask">
                             <div class="normal-btn preview" @click="previewTemplate(index)">预览</div>
                             <div class="normal-btn after-sure" @click="selectTemplate(index)">选择</div>

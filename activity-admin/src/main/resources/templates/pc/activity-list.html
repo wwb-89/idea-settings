@@ -200,12 +200,10 @@
                     }
                 },
                 toAdd: function () {
-                    var url = ctx + "/lib/add";
-                    window.open(url);
+                    window.open(activityApp.getRelativeUrl("/activity/add"));
                 },
                 toEdit: function (id) {
-                    var url = ctx + "/lib/"+ id +"/edit";
-                    window.open(url);
+                    window.open(activityApp.getRelativeUrl("/activity/" + id + "/edit"));
                 },
                 // 修改状态
                 changeStatus: function (index) {

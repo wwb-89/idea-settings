@@ -216,7 +216,14 @@
     activityApp.prototype.getDefaultCoverCloudId = function () {
         return "68065603fbcb805725f7ef5e21cef03c";
     };
-
+    /**
+     * 获取相对路径
+     * @param url
+     * @returns {string}
+     */
+    activityApp.prototype.getRelativeUrl = function (url) {
+        return document.location.pathname + url;
+    };
     W['activityApp'] = new activityApp();
 })(window, jQuery, JSON);
 Array.prototype.remove = function (val) {
