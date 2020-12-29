@@ -6,10 +6,9 @@ import com.chaoxing.activity.dto.sign.SignActivityManageIndexDTO;
 import com.chaoxing.activity.model.Activity;
 import com.chaoxing.activity.service.activity.ActivityValidationService;
 import com.chaoxing.activity.service.manager.module.SignApiService;
-import org.springframework.stereotype.Controller;
+import org.springframework.stereotype.Component;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
@@ -22,8 +21,7 @@ import javax.servlet.http.HttpServletRequest;
  * @blame wwb
  * @date 2020-12-24 10:03:49
  */
-@Controller
-@RequestMapping("m/activity")
+@Component
 public class ActivityManagerController {
 
 	@Resource
@@ -31,16 +29,6 @@ public class ActivityManagerController {
 	@Resource
 	private SignApiService signApiService;
 
-	/**移动端活动主页
-	 * @Description 
-	 * @author wwb
-	 * @Date 2020-12-24 10:25:45
-	 * @param model
-	 * @param activityId
-	 * @param request
-	 * @return java.lang.String
-	*/
-	@RequestMapping("{activityId}")
 	public String activityIndex(Model model, @PathVariable Integer activityId, HttpServletRequest request) {
 		LoginUserDTO loginUser = LoginUtils.getLoginUser(request);
 		Activity activity = activityValidationService.manageAble(activityId, loginUser, null);
