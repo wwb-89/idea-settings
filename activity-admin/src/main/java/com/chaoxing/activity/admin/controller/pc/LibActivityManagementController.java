@@ -49,20 +49,6 @@ public class LibActivityManagementController {
 		return activityManageController.add(model, request);
 	}
 
-	/**活动主页
-	 * @Description 
-	 * @author wwb
-	 * @Date 2020-12-25 10:18:28
-	 * @param model
-	 * @param activityId
-	 * @param request
-	 * @return java.lang.String
-	*/
-	@RequestMapping("activity/{activityId}")
-	public String activityIndex(Model model, @PathVariable Integer activityId, HttpServletRequest request) {
-		return activityManageController.activityIndex(model, activityId, request);
-	}
-
 	/**活动修改页面
 	 * @Description 
 	 * @author wwb

@@ -1,4 +1,4 @@
-package com.chaoxing.activity.admin.controller.mobile;
+package com.chaoxing.activity.admin.controller.general;
 
 import com.chaoxing.activity.admin.util.LoginUtils;
 import com.chaoxing.activity.dto.LoginUserDTO;
@@ -6,9 +6,11 @@ import com.chaoxing.activity.dto.sign.SignActivityManageIndexDTO;
 import com.chaoxing.activity.model.Activity;
 import com.chaoxing.activity.service.activity.ActivityValidationService;
 import com.chaoxing.activity.service.manager.module.SignApiService;
-import org.springframework.stereotype.Component;
+import com.chaoxing.activity.util.UserAgentUtils;
+import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestMapping;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
@@ -16,19 +18,30 @@ import javax.servlet.http.HttpServletRequest;
 /**
  * @author wwb
  * @version ver 1.0
- * @className ActivityManagerController
+ * @className ActivityManageController
  * @description
  * @blame wwb
- * @date 2020-12-24 10:03:49
+ * @date 2020-12-29 17:08:04
  */
-@Component
-public class ActivityManagerController {
+@Controller
+@RequestMapping("activity")
+public class ActivityManageController {
 
 	@Resource
 	private ActivityValidationService activityValidationService;
 	@Resource
 	private SignApiService signApiService;
 
+	/**活动管理主页
+	 * @Description 
+	 * @author wwb
+	 * @Date 2020-12-29 17:13:59
+	 * @param model
+	 * @param activityId
+	 * @param request
+	 * @return java.lang.String
+	*/
+	@RequestMapping("{activityId}")
 	public String activityIndex(Model model, @PathVariable Integer activityId, HttpServletRequest request) {
 		LoginUserDTO loginUser = LoginUtils.getLoginUser(request);
 		Activity activity = activityValidationService.manageAble(activityId, loginUser, null);
@@ -36,7 +49,11 @@ public class ActivityManagerController {
 		Integer signId = activity.getSignId();
 		SignActivityManageIndexDTO signActivityManageIndex = signApiService.statSignActivityManageIndex(signId);
 		model.addAttribute("signActivityManageIndex", signActivityManageIndex);
-		return "mobile/activity-index";
+		if (UserAgentUtils.isMobileAccess(request)) {
+			return "mobile/activity-index";
+		} else {
+			return "pc/activity-index";
+		}
 	}
 
 }

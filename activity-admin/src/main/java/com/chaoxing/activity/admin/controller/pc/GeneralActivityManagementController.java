@@ -38,20 +38,6 @@ public class GeneralActivityManagementController {
 		return activityManageController.index(code);
 	}
 
-	/**活动管理主页
-	 * @Description 
-	 * @author wwb
-	 * @Date 2020-12-24 19:27:03
-	 * @param model
-	 * @param activityId
-	 * @param request
-	 * @return java.lang.String
-	*/
-	@RequestMapping("activity/{activityId}")
-	public String activityIndex(Model model, @PathVariable Integer activityId, HttpServletRequest request) {
-		return activityManageController.activityIndex(model, activityId, request);
-	}
-
 	/**活动新增页面
 	 * @Description 
 	 * @author wwb

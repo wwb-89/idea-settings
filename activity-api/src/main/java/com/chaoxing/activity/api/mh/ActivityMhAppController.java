@@ -47,7 +47,7 @@ import java.util.stream.Collectors;
 public class ActivityMhAppController {
 
 	/** 签到按钮地址 */
-	private static final String QD_BTN_URL = "http://api.qd.reading.chaoxing.com/activity/%d/btn";
+	private static final String QD_BTN_URL = "http://api.qd.reading.chaoxing.com/sign/%d/btn?activityId=%s";
 
 	@Resource
 	private ActivityQueryService activityQueryService;
@@ -80,7 +80,7 @@ public class ActivityMhAppController {
 		mhGeneralAppResultDataDTO.setPop(0);
 		mhGeneralAppResultDataDTO.setPopUrl("");
 		jsonObject.put("results", Lists.newArrayList(mhGeneralAppResultDataDTO));
-		List<MhGeneralAppResultDataDTO.MhGeneralAppResultDataFieldDTO> mhGeneralAppResultDataFields = new ArrayList<>();
+		List<MhGeneralAppResultDataDTO.MhGeneralAppResultDataFieldDTO> mhGeneralAppResultDataFields = Lists.newArrayList();
 		mhGeneralAppResultDataDTO.setFields(mhGeneralAppResultDataFields);
 		MhGeneralAppResultDataDTO.MhGeneralAppResultDataFieldDTO mhGeneralAppResultDataField = MhGeneralAppResultDataDTO.MhGeneralAppResultDataFieldDTO.builder()
 				.value(coverUrl)
@@ -184,7 +184,7 @@ public class ActivityMhAppController {
 		Boolean enableSign = activity.getEnableSign();
 		if (enableSign) {
 			// 请求签到报名
-			String url = String.format(QD_BTN_URL, activity.getSignId());
+			String url = String.format(QD_BTN_URL, activity.getSignId(), activityId);
 			HttpHeaders httpHeaders = new HttpHeaders();
 			httpHeaders.setContentType(MediaType.APPLICATION_JSON);
 			HttpEntity<String> httpEntity = new HttpEntity<>(data, httpHeaders);
