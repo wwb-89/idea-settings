@@ -4,7 +4,7 @@ import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.chaoxing.activity.dto.RestRespDTO;
-import com.chaoxing.activity.dto.manager.sign.SignParticipationDTO;
+import com.chaoxing.activity.dto.manager.sign.SignParticipantStatDTO;
 import com.chaoxing.activity.dto.manager.WfwRegionalArchitectureDTO;
 import com.chaoxing.activity.dto.mh.MhGeneralAppResultDataDTO;
 import com.chaoxing.activity.dto.query.MhActivityCalendarQueryDTO;
@@ -138,21 +138,26 @@ public class ActivityMhAppController {
 				.value(activity.getAddress())
 				.flag("103")
 				.build());
-		// 报名时间
-		mhGeneralAppResultDataFields.add(MhGeneralAppResultDataDTO.MhGeneralAppResultDataFieldDTO.builder()
-				.key("报名时间")
-				.value("")
-				.flag("105")
-				.build());
 		// 报名、签到人数
-		SignParticipationDTO signParticipation = signApiService.getSignParticipation(activity.getSignId());
+		SignParticipantStatDTO signParticipantStat = signApiService.getSignParticipation(activity.getSignId());
+		if (signParticipantStat.getSignUpId() != null) {
+			StringBuilder signUpTimeStringBuilder = new StringBuilder();
+			signUpTimeStringBuilder.append(DateTimeFormatterConstant.YYYY_MM_DD_HH_MM.format(signParticipantStat.getSignUpStartTime()));
+			signUpTimeStringBuilder.append(" ~ ");
+			signUpTimeStringBuilder.append(DateTimeFormatterConstant.YYYY_MM_DD_HH_MM.format(signParticipantStat.getSignUpEndTime()));
+			// 报名时间
+			mhGeneralAppResultDataFields.add(MhGeneralAppResultDataDTO.MhGeneralAppResultDataFieldDTO.builder()
+					.key("报名时间")
+					.value(signUpTimeStringBuilder.toString())
+					.flag("105")
+					.build());
+		}
 		StringBuilder signPepleNumDescribe = new StringBuilder();
-		Integer limitNum = signParticipation.getLimitNum();
-		Integer signedNum = signParticipation.getSignedNum();
-		signedNum = Optional.ofNullable(signedNum).orElse(0);
-		if (signedNum.compareTo(0) > 0) {
-			signPepleNumDescribe.append(signedNum);
-			if (limitNum != null && limitNum.intValue() > 0) {
+		Integer limitNum = signParticipantStat.getLimitNum();
+		Integer participateNum = signParticipantStat.getParticipateNum();
+		if (participateNum.compareTo(0) > 0) {
+			signPepleNumDescribe.append(participateNum);
+			if (limitNum.intValue() > 0) {
 				signPepleNumDescribe.append("/");
 				signPepleNumDescribe.append(limitNum);
 			}

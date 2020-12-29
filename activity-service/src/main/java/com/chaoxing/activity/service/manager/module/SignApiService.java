@@ -2,7 +2,7 @@ package com.chaoxing.activity.service.manager.module;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
-import com.chaoxing.activity.dto.manager.sign.SignParticipationDTO;
+import com.chaoxing.activity.dto.manager.sign.SignParticipantStatDTO;
 import com.chaoxing.activity.dto.module.SignAddEditDTO;
 import com.chaoxing.activity.dto.sign.SignActivityManageIndexDTO;
 import com.chaoxing.activity.util.RestTemplateUtils;
@@ -129,9 +129,8 @@ public class SignApiService {
 	 * @param signActivityId
 	 * @return com.chaoxing.activity.dto.manager.SignParticipationDTO
 	*/
-	public SignParticipationDTO getSignParticipation(Integer signActivityId) {
-		Integer limitNum = 0;
-		Integer signedNum = 0;
+	public SignParticipantStatDTO getSignParticipation(Integer signActivityId) {
+		SignParticipantStatDTO signParticipantStat = null;
 		if (signActivityId != null) {
 			String url = String.format(PARTICIPATION_URL, signActivityId);
 			String result = restTemplate.getForObject(url, String.class);
@@ -139,15 +138,16 @@ public class SignApiService {
 			Boolean success = jsonObject.getBoolean("success");
 			success = Optional.ofNullable(success).orElse(Boolean.FALSE);
 			if (success) {
-				JSONObject data = jsonObject.getJSONObject("data");
-				limitNum = data.getInteger("limitNum");
-				signedNum = data.getInteger("signedNum");
+				signParticipantStat = JSON.parseObject(jsonObject.getString("data"), SignParticipantStatDTO.class);
 			}
 		}
-		return SignParticipationDTO.builder()
-				.limitNum(limitNum)
-				.signedNum(signedNum)
-				.build();
+		if (signParticipantStat == null) {
+			signParticipantStat = SignParticipantStatDTO.builder()
+					.limitNum(0)
+					.participateNum(0)
+					.build();
+		}
+		return signParticipantStat;
 	}
 
 	/**统计报名签到在活动管理首页需要的信息
