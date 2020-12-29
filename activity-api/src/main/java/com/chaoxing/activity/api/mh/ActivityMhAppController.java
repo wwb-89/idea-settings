@@ -287,7 +287,7 @@ public class ActivityMhAppController {
 		// 获取参数
 		Integer wfwfid = jsonObject.getInteger("wfwfid");
 		Optional.ofNullable(wfwfid).orElseThrow(() -> new BusinessException("wfwfid不能为空"));
-		List<Integer> fids = new ArrayList<>();
+		List<Integer> fids = Lists.newArrayList();
 		List<WfwRegionalArchitectureDTO> wfwRegionalArchitectures;
 		if (StringUtils.isNotBlank(areaCode)) {
 			wfwRegionalArchitectures = wfwRegionalArchitectureApiService.listByCode(areaCode);
@@ -302,6 +302,9 @@ public class ActivityMhAppController {
 		}
 		Integer pageNum = Optional.ofNullable(jsonObject.getInteger("page")).orElse(CommonConstant.DEFAULT_PAGE_NUM);
 		Integer pageSize = Optional.ofNullable(jsonObject.getInteger("pageSize")).orElse(CommonConstant.DEFAULT_PAGE_SIZE);
+		String year = jsonObject.getString("year");
+		String month = jsonObject.getString("month");
+		String date = jsonObject.getString("date");
 		Page page = new Page(pageNum, pageSize);
 		MhActivityCalendarQueryDTO mhActivityCalendarQuery = MhActivityCalendarQueryDTO.builder()
 				.fids(fids)
@@ -313,7 +316,7 @@ public class ActivityMhAppController {
 		result.put("totalPages", page.getPages());
 		result.put("totalRecords", page.getTotal());
 		List<MhGeneralAppResultDataDTO> mhGeneralAppResultDatas = page2MhGeneralAppResultData(page, (record) -> {
-			List<MhGeneralAppResultDataDTO.MhGeneralAppResultDataFieldDTO> mhGeneralAppResultDataFields = new ArrayList<>();
+			List<MhGeneralAppResultDataDTO.MhGeneralAppResultDataFieldDTO> mhGeneralAppResultDataFields = Lists.newArrayList();
 			// 封面
 			mhGeneralAppResultDataFields.add(MhGeneralAppResultDataDTO.MhGeneralAppResultDataFieldDTO.builder()
 					.value(cloudApiService.getCloudImgUrl(record.getCoverCloudId()))
