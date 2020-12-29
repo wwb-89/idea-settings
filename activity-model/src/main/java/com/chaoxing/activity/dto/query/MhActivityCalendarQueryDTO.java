@@ -25,9 +25,10 @@ public class MhActivityCalendarQueryDTO {
 	private Integer topFid;
 	/** 参与范围 */
 	private List<Integer> fids;
-	/** 起止时间 */
-	private String startTime;
-	private String endTime;
+	/** 时间范围开始时间 */
+	private String startDate;
+	/** 时间范围结束时间 */
+	private String endDate;
 	/** 具体日期的数据 */
 	private String date;
 

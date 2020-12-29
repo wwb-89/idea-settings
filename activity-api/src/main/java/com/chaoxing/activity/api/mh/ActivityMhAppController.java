@@ -26,10 +26,9 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.RestTemplate;
 
 import javax.annotation.Resource;
+import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -48,6 +47,7 @@ public class ActivityMhAppController {
 
 	/** 签到按钮地址 */
 	private static final String QD_BTN_URL = "http://api.qd.reading.chaoxing.com/sign/%d/btn?activityId=%s";
+	private static final SimpleDateFormat YYYYMMDD = new SimpleDateFormat("yyyy-MM-dd");
 
 	@Resource
 	private ActivityQueryService activityQueryService;
@@ -302,14 +302,24 @@ public class ActivityMhAppController {
 		}
 		Integer pageNum = Optional.ofNullable(jsonObject.getInteger("page")).orElse(CommonConstant.DEFAULT_PAGE_NUM);
 		Integer pageSize = Optional.ofNullable(jsonObject.getInteger("pageSize")).orElse(CommonConstant.DEFAULT_PAGE_SIZE);
-		String year = jsonObject.getString("year");
-		String month = jsonObject.getString("month");
-		String date = jsonObject.getString("date");
 		Page page = new Page(pageNum, pageSize);
 		MhActivityCalendarQueryDTO mhActivityCalendarQuery = MhActivityCalendarQueryDTO.builder()
 				.fids(fids)
 				.topFid(wfwfid)
 				.build();
+		String year = jsonObject.getString("year");
+		String month = jsonObject.getString("month");
+		String date = jsonObject.getString("date");
+		if (StringUtils.isNotBlank(year)) {
+			Calendar calendar = Calendar.getInstance();
+			calendar.set(Calendar.YEAR, Integer.parseInt(year));
+			calendar.set(Calendar.MONTH, Integer.parseInt(month));
+			mhActivityCalendarQuery.setStartDate(calMonthStartTime(calendar));
+			mhActivityCalendarQuery.setEndDate(calMonthEndTime(calendar));
+		}
+		if (StringUtils.isNotBlank(date)) {
+			mhActivityCalendarQuery.setDate(date);
+		}
 		page = activityQueryService.listActivityCalendarParticipate(page, mhActivityCalendarQuery);
 		JSONObject result = new JSONObject();
 		result.put("curPage", pageNum);
@@ -346,6 +356,20 @@ public class ActivityMhAppController {
 		});
 		result.put("results", mhGeneralAppResultDatas);
 		return RestRespDTO.success(result);
+	}
+
+	private String calMonthStartTime(Calendar calendar) {
+		calendar.set(Calendar.DAY_OF_MONTH, 1);
+		Date time = calendar.getTime();
+		return YYYYMMDD.format(time);
+	}
+
+	private String calMonthEndTime(Calendar calendar) {
+		calendar.set(Calendar.DAY_OF_MONTH, 1);
+		calendar.add(Calendar.MONTH, 1);
+		calendar.add(Calendar.DAY_OF_MONTH, -1);
+		Date time = calendar.getTime();
+		return YYYYMMDD.format(time);
 	}
 
 	/**活动地址
