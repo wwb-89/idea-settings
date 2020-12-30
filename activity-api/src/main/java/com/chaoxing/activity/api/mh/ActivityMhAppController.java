@@ -286,6 +286,9 @@ public class ActivityMhAppController {
 		JSONObject jsonObject = JSON.parseObject(data);
 		// 获取参数
 		Integer wfwfid = jsonObject.getInteger("wfwfid");
+		if (StringUtils.isBlank(areaCode)) {
+			areaCode = jsonObject.getString("areaCode");
+		}
 		Optional.ofNullable(wfwfid).orElseThrow(() -> new BusinessException("wfwfid不能为空"));
 		List<Integer> fids = Lists.newArrayList();
 		List<WfwRegionalArchitectureDTO> wfwRegionalArchitectures;
