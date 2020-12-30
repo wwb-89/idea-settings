@@ -902,11 +902,6 @@
                         app.showMsg("请选择参与范围");
                         return false;
                     }
-                    // 报名和签到至少应该开启一个
-                    if (!$this.enableSignUp && !$this.enableSignIn) {
-                        app.showMsg("报名或签到功能请至少开启一项");
-                        return false;
-                    }
                     // 报名设置
                     if ($this.enableSignUp) {
                         if (activityApp.isEmpty($this.sign.signUp.startTime)) {
