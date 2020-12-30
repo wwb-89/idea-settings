@@ -68,7 +68,7 @@
                             <div class="more-btn" v-if="scope.row.operations.length > 3">
                                 <el-button type="text">更多<i class="el-icon-arrow-down"></i></el-button>
                                 <div class="more">
-                                    <p v-if="index > 1" v-for="(operation, index) of scope.row.operations" @click="operateProxy(scope.row.id, operation.value)">{{operation.name}}</p>
+                                    <p v-if="index > 2" v-for="(operation, index) of scope.row.operations" @click="operateProxy(scope.row.id, operation.value)">{{operation.name}}</p>
                                 </div>
                             </div>
                         </div>

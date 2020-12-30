@@ -3,6 +3,7 @@ package com.chaoxing.activity.service.activity;
 import com.chaoxing.activity.model.Activity;
 import com.chaoxing.activity.util.DateUtils;
 import com.chaoxing.activity.util.constant.CacheConstant;
+import com.chaoxing.activity.util.exception.BusinessException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.ZSetOperations;
@@ -37,34 +38,25 @@ public class ActivityStatusHandleService {
 	 * @author wwb
 	 * @Date 2020-12-10 19:36:50
 	 * @param activity
-	 * @param status
 	 * @return java.lang.Integer
 	*/
-	public Integer calActivityStatus(Activity activity, Integer status) {
+	public Integer calActivityStatus(Activity activity) {
 		LocalDateTime startTime = activity.getStartTime();
 		LocalDateTime endTime = activity.getEndTime();
 		LocalDateTime now = LocalDateTime.now();
 		boolean guessEnded = now.isAfter(endTime);
-		boolean guessOnGoing = (now.isAfter(startTime) || now.isEqual(startTime)) && (now.isBefore(endTime) || now.isEqual(endTime)) && activity.getReleased();
-		Activity.StatusEnum statusEnum = Activity.StatusEnum.fromValue(status);
-		switch (statusEnum) {
-			case RELEASED:
-				// 已发布、进行中、已结束
-			case ONGOING:
-				// 已发布、进行中、已结束
-			case ENDED:
-				// 已发布、进行中、已结束
-				if (guessEnded) {
-					// 已结束
-					return Activity.StatusEnum.ENDED.getValue();
-				}
-				if (guessOnGoing) {
-					return Activity.StatusEnum.ONGOING.getValue();
-				}
-				return Activity.StatusEnum.RELEASED.getValue();
-			default:
-				return statusEnum.getValue();
+		boolean guessOnGoing = (now.isAfter(startTime) || now.isEqual(startTime)) && (now.isBefore(endTime) || now.isEqual(endTime));
+		if (guessEnded) {
+			// 已结束
+			return Activity.StatusEnum.ENDED.getValue();
 		}
+		if (activity.getReleased()) {
+			// 已发布的活动才处理状态
+			if (guessOnGoing) {
+				return Activity.StatusEnum.ONGOING.getValue();
+			}
+		}
+		return activity.getStatus();
 	}
 
 	/**订阅状态同步
@@ -143,11 +135,17 @@ public class ActivityStatusHandleService {
 		if (now.compareTo(time) > -1) {
 			Integer activityId = typedTuple.getValue();
 			// 更新活动状态
-			Activity activity = activityQueryService.getById(activityId);
-			Integer status = calActivityStatus(activity, Activity.StatusEnum.ENDED.getValue());
-			activityHandleService.updateActivityStatus(activityId, status);
-			ZSetOperations<String, Integer> zSetOperations = redisTemplate.opsForZSet();
-			zSetOperations.remove(cacheKey, activityId);
+			try {
+				Activity activity = activityQueryService.getById(activityId);
+				Integer status = calActivityStatus(activity);
+				activityHandleService.updateActivityStatus(activityId, status);
+			} catch (BusinessException e) {
+				e.printStackTrace();
+			} finally {
+				ZSetOperations<String, Integer> zSetOperations = redisTemplate.opsForZSet();
+				zSetOperations.remove(cacheKey, activityId);
+			}
+
 		}
 	}
 
