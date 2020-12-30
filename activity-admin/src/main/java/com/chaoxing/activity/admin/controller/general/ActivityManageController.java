@@ -96,11 +96,11 @@ public class ActivityManageController {
 		model.addAttribute("activityClassifies", activityClassifies);
 		// 报名签到
 		Integer signId = activity.getSignId();
-		SignAddEditDTO signAddEdit = null;
+		SignAddEditDTO sign = SignAddEditDTO.builder().build();
 		if (signId != null) {
-			signAddEdit = signApiService.getById(signId);
+			sign = signApiService.getById(signId);
 		}
-		model.addAttribute("sign", signAddEdit);
+		model.addAttribute("sign", sign);
 		// 模板列表
 		List<WebTemplate> webTemplates = webTemplateService.listAvailable(loginUser.getFid());
 		model.addAttribute("webTemplates", webTemplates);

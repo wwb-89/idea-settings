@@ -323,7 +323,7 @@
                     });
                     if (activityApp.isEmpty(activity.pageId)) {
                         app.showMsg("活动未创建完成，请选择活动模板", function () {
-                            var url = ctx + "/lib/" + $this.processedActivityId + "/edit?step=2";
+                            var url = ctx + "/activity/" + $this.processedActivityId + "/edit?step=2";
                             window.open(url);
                         });
                         return;

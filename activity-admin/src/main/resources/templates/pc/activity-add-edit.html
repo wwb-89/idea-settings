@@ -523,7 +523,7 @@
                         longitude: "",
                         dimension: "",
                         activityClassifyId: firstActivityClassifyId,
-                        enableSign: true
+                        enableSign: false
                     };
                 } else {
                     $this.activity.createTime = null;
@@ -560,7 +560,7 @@
                 if (activityApp.isEmpty($this.sign.id)) {
                     // 生成新的签到报名活动
                     $this.sign = signApp.newSign();
-                    $this.enableSignUp = true;
+                    $this.enableSignUp = false;
                     $this.enableSignIn = false;
                     $this.enableSignOut = false;
                 } else {
@@ -632,15 +632,15 @@
                 },
                 "enableSignUp": function () {
                     var $this = this;
-                    $this.enableSign = $this.enableSignUp && $this.enableSignIn && $this.enableSignOut;
+                    $this.activity.enableSign = $this.enableSignUp && $this.enableSignIn && $this.enableSignOut;
                 },
                 "enableSignIn": function () {
                     var $this = this;
-                    $this.enableSign = $this.enableSignUp && $this.enableSignIn && $this.enableSignOut;
+                    $this.activity.enableSign = $this.enableSignUp && $this.enableSignIn && $this.enableSignOut;
                 },
                 "enableSignOut": function () {
                     var $this = this;
-                    $this.enableSign = $this.enableSignUp && $this.enableSignIn && $this.enableSignOut;
+                    $this.activity.enableSign = $this.enableSignUp && $this.enableSignIn && $this.enableSignOut;
                 }
             },
             methods: {
