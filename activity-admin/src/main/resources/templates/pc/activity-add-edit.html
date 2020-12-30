@@ -629,6 +629,18 @@
                     } else {
                         $this.$set($this.sign.signUp, "limitPerson", true);
                     }
+                },
+                "enableSignUp": function () {
+                    var $this = this;
+                    $this.enableSign = $this.enableSignUp && $this.enableSignIn && $this.enableSignOut;
+                },
+                "enableSignIn": function () {
+                    var $this = this;
+                    $this.enableSign = $this.enableSignUp && $this.enableSignIn && $this.enableSignOut;
+                },
+                "enableSignOut": function () {
+                    var $this = this;
+                    $this.enableSign = $this.enableSignUp && $this.enableSignIn && $this.enableSignOut;
                 }
             },
             methods: {

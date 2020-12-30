@@ -350,10 +350,15 @@ public class ActivityMhAppController {
 					.value(record.getAddress())
 					.flag("100")
 					.build());
-			// 活动时间
+			// 活动开始时间
 			mhGeneralAppResultDataFields.add(MhGeneralAppResultDataDTO.MhGeneralAppResultDataFieldDTO.builder()
 					.value(DateTimeFormatterConstant.YYYY_MM_DD_HH_MM.format(record.getStartTime()))
 					.flag("6")
+					.build());
+			// 活动结束时间
+			mhGeneralAppResultDataFields.add(MhGeneralAppResultDataDTO.MhGeneralAppResultDataFieldDTO.builder()
+					.value(DateTimeFormatterConstant.YYYY_MM_DD_HH_MM.format(record.getEndTime()))
+					.flag("101")
 					.build());
 			return mhGeneralAppResultDataFields;
 		});

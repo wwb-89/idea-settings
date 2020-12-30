@@ -78,7 +78,7 @@ public class ActivityQueryService {
 		page = activityMapper.listActivityCalendarParticipate(page, mhActivityCalendarQuery);
 		List<Activity> records = page.getRecords();
 		String startDate = mhActivityCalendarQuery.getStartDate();
-		if (CollectionUtils.isNotEmpty(records) && StringUtils.isNotBlank(startDate)) {
+		if (CollectionUtils.isNotEmpty(records) && StringUtils.isBlank(startDate)) {
 			// 每个活动的开始时间到结束时间
 			List<Activity> activities = Lists.newArrayList();
 			page.setRecords(activities);
