@@ -36,15 +36,16 @@ public class ActivityStatusHandleService {
 	 * @Description 
 	 * @author wwb
 	 * @Date 2020-12-10 19:36:50
-	 * @param startTime
-	 * @param endTime
+	 * @param activity
 	 * @param status
 	 * @return java.lang.Integer
 	*/
-	public Integer calActivityStatus(LocalDateTime startTime, LocalDateTime endTime, Integer status) {
+	public Integer calActivityStatus(Activity activity, Integer status) {
+		LocalDateTime startTime = activity.getStartTime();
+		LocalDateTime endTime = activity.getEndTime();
 		LocalDateTime now = LocalDateTime.now();
 		boolean guessEnded = now.isAfter(endTime);
-		boolean guessOnGoing = (now.isAfter(startTime) || now.isEqual(startTime)) && (now.isBefore(endTime) || now.isEqual(endTime));
+		boolean guessOnGoing = (now.isAfter(startTime) || now.isEqual(startTime)) && (now.isBefore(endTime) || now.isEqual(endTime)) && activity.getReleased();
 		Activity.StatusEnum statusEnum = Activity.StatusEnum.fromValue(status);
 		switch (statusEnum) {
 			case RELEASED:
@@ -143,7 +144,7 @@ public class ActivityStatusHandleService {
 			Integer activityId = typedTuple.getValue();
 			// 更新活动状态
 			Activity activity = activityQueryService.getById(activityId);
-			Integer status = calActivityStatus(activity.getStartTime(), activity.getEndTime(), Activity.StatusEnum.ENDED.getValue());
+			Integer status = calActivityStatus(activity, Activity.StatusEnum.ENDED.getValue());
 			activityHandleService.updateActivityStatus(activityId, status);
 			ZSetOperations<String, Integer> zSetOperations = redisTemplate.opsForZSet();
 			zSetOperations.remove(cacheKey, activityId);

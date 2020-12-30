@@ -275,7 +275,7 @@ public class ActivityHandleService {
 		existActivity.setSignId(activity.getSignId());
 		existActivity.setWebTemplateId(activity.getWebTemplateId());
 		// 根据活动时间判断状态
-		Integer status = activityStatusHandleService.calActivityStatus(startTime, endTime, existActivity.getStatus());
+		Integer status = activityStatusHandleService.calActivityStatus(existActivity, existActivity.getStatus());
 		existActivity.setStatus(status);
 		activityMapper.update(existActivity, new UpdateWrapper<Activity>()
 			.lambda()
@@ -309,7 +309,7 @@ public class ActivityHandleService {
 		activity.setReleased(true);
 		activity.setReleaseTime(LocalDateTime.now());
 		activity.setReleaseUid(loginUser.getUid());
-		Integer status = activityStatusHandleService.calActivityStatus(activity.getStartTime(), activity.getEndTime(), Activity.StatusEnum.RELEASED.getValue());
+		Integer status = activityStatusHandleService.calActivityStatus(activity, Activity.StatusEnum.RELEASED.getValue());
 		activityMapper.update(null, new UpdateWrapper<Activity>()
 			.lambda()
 				.eq(Activity::getId, activity.getId())
@@ -337,7 +337,7 @@ public class ActivityHandleService {
 	@Transactional(rollbackFor = Exception.class)
 	public void cancelRelease(Integer activityId, LoginUserDTO loginUser) {
 		Activity activity = activityValidationService.cancelReleaseAble(activityId, loginUser);
-		Integer status = activityStatusHandleService.calActivityStatus(activity.getStartTime(), activity.getEndTime(), Activity.StatusEnum.WAIT_RELEASE.getValue());
+		Integer status = activityStatusHandleService.calActivityStatus(activity, Activity.StatusEnum.WAIT_RELEASE.getValue());
 		activityMapper.update(null, new UpdateWrapper<Activity>()
 			.lambda()
 				.eq(Activity::getId, activity.getId())
