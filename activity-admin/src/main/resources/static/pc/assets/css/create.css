@@ -267,6 +267,7 @@ input[type="number"] {
 
 .type-item:hover>.edit-box {
     display: block;
+    z-index: 10;
 }
 
 .set-box {

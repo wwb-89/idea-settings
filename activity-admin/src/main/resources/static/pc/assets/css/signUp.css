@@ -1,0 +1,87 @@
+html ,
+body {
+    padding: 0;
+    margin: 0;
+    background: #DFDFDF;
+    height: 100%;
+    position:relative;
+}
+.success {
+    display: none;
+}
+.error {
+    display: none;
+}
+.review {
+    display: none;
+}
+.review_fail {
+    display: block;
+}
+
+.container {
+    width: 360px;
+    padding: 50px 60px;
+    background: #FFFFFF;
+    box-shadow: 0px 8px 16px rgba(0, 0, 0, 0.02);
+    border-radius: 16px;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translateX(-50%)translateY(-50%);
+    text-align: center;
+}
+.container p {
+    font-size: 22px;
+    line-height: 26px;
+    text-align: center;
+    color: #333333;
+    margin-top: 16px;
+}
+.container .content {
+    margin-top: 40px;
+    padding: 12px 24px 32px 24px;
+    width: 312px;
+    background: #FAFAFA;
+    border: 1px solid #F0F0F0;
+    border-radius: 8px;
+}
+.container .content .item {
+    margin-top: 20px;
+    text-align: left;
+}
+.container .content .item span {
+    font-size: 16px;
+    line-height: 19px;
+    color: #999999;
+}
+.container .content .item .title {
+    display: inline-block;
+    width: 88px;
+    margin-right: 16px;
+}
+.container .content .item .value {
+    font-size: 16px;
+    line-height: 19px;
+    color: #333333;
+}
+.container .content .item .click_btn {
+    font-size: 16px;
+    line-height: 19px;
+    color: #0084FF;
+    cursor: pointer;
+}
+.container .footer {
+    margin-top: 30px;
+    margin-left: 30px;
+    width: 300px;
+    height: 44px;
+    background: #FFFFFF;
+    border: 1px solid #0084FF;
+    box-sizing: border-box;
+    border-radius: 22px;
+    font-size: 14px;
+    line-height: 44px;
+    color: #0084FF;
+    cursor: pointer;
+}
