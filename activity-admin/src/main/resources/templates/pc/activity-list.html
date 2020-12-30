@@ -64,8 +64,8 @@
                 <el-table-column label="操作" min-width="25%">
                     <template slot-scope="scope">
                         <div>
-                            <el-button type="text" v-if="index < 2" v-for="(operation, index) of scope.row.operations" @click="operateProxy(scope.row.id, operation.value)">{{operation.name}}</el-button>
-                            <div class="more-btn" v-if="scope.row.operations.length > 2">
+                            <el-button type="text" v-if="index < 3" v-for="(operation, index) of scope.row.operations" @click="operateProxy(scope.row.id, operation.value)">{{operation.name}}</el-button>
+                            <div class="more-btn" v-if="scope.row.operations.length > 3">
                                 <el-button type="text">更多<i class="el-icon-arrow-down"></i></el-button>
                                 <div class="more">
                                     <p v-if="index > 1" v-for="(operation, index) of scope.row.operations" @click="operateProxy(scope.row.id, operation.value)">{{operation.name}}</p>
@@ -116,6 +116,7 @@
                 operations: {
                     edit: {name: "编辑", value: "edit"},
                     delete: {name: "删除", value: "delete"},
+                    manage: {name: "管理", value: "manage"},
                     release: {name: "发布", value: "release"},
                     cancelRelease: {name: "下架", value: "cancelRelease"}
                 }
@@ -178,6 +179,9 @@
                                     if (isCreator || isCurrentOrgCreated) {
                                         activity.operations.push($this.operations.release);
                                         activity.operations.push($this.operations.edit);
+                                        if (isCreator) {
+                                            activity.operations.push($this.operations.manage);
+                                        }
                                         activity.operations.push($this.operations.delete);
                                     }
                                     break;
@@ -186,11 +190,17 @@
                                     activity.operations.push($this.operations.cancelRelease);
                                     if (isCreator || isCurrentOrgCreated) {
                                         activity.operations.push($this.operations.edit);
+                                        if (isCreator) {
+                                            activity.operations.push($this.operations.manage);
+                                        }
                                         activity.operations.push($this.operations.delete);
                                     }
                                     break;
                                 case 4:
                                     if (isCreator || isCurrentOrgCreated) {
+                                        if (isCreator) {
+                                            activity.operations.push($this.operations.manage);
+                                        }
                                         activity.operations.push($this.operations.delete);
                                     }
                                     break;
@@ -258,6 +268,9 @@
                             break;
                         case "delete":
                             $this.toDelete(id);
+                            break;
+                        case "manage":
+                            $this.toManage(id);
                             break;
                         case "release":
                             $this.toRelease(id);
@@ -371,6 +384,11 @@
                     if (!activityApp.isEmpty(previewUrl)) {
                         window.open(previewUrl);
                     }
+                },
+                // 管理页面
+                toManage: function (activityId) {
+                    var url = ctx + "/activity/" + activityId;
+                    window.open(url);
                 }
             }
         });

@@ -19,7 +19,7 @@ import javax.servlet.http.HttpServletRequest;
  */
 @Slf4j
 @Controller
-@RequestMapping("general")
+@RequestMapping({"general", ""})
 public class GeneralActivityManagementController {
 
 	@Resource
