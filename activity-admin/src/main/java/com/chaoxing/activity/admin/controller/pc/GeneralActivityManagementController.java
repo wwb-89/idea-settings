@@ -4,7 +4,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 import javax.annotation.Resource;
@@ -49,21 +48,6 @@ public class GeneralActivityManagementController {
 	@GetMapping("activity/add")
 	public String add(Model model, HttpServletRequest request) {
 		return activityManageController.add(model, request);
-	}
-
-	/**活动修改页面
-	 * @Description
-	 * @author wwb
-	 * @Date 2020-11-25 15:26:28
-	 * @param model
-	 * @param activityId
-	 * @param request
-	 * @param code
-	 * @return java.lang.String
-	 */
-	@GetMapping("activity/{activityId}/edit")
-	public String add(Model model, @PathVariable Integer activityId, HttpServletRequest request, String code, Integer step) {
-		return activityManageController.edit(model, activityId, request, code, step);
 	}
 
 }
