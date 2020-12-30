@@ -230,4 +230,18 @@ public class ActivityQueryService {
 		);
 	}
 
+	/**根据报名签到id查询活动
+	 * @Description 
+	 * @author wwb
+	 * @Date 2020-12-30 20:38:23
+	 * @param signId
+	 * @return com.chaoxing.activity.model.Activity
+	*/
+	public Activity getBySignId(Integer signId) {
+		return activityMapper.selectOne(new QueryWrapper<Activity>()
+				.lambda()
+				.eq(Activity::getSignId, signId)
+		);
+	}
+
 }

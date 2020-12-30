@@ -78,16 +78,16 @@ public class ActivityApiController {
 		return RestRespDTO.success(page);
 	}
 
-	/**获取活动的名称
+	/**根据报名签到id查询活动名称
 	 * @Description 
 	 * @author wwb
 	 * @Date 2020-12-30 20:23:24
-	 * @param activityId
+	 * @param signId
 	 * @return com.chaoxing.activity.dto.RestRespDTO
 	*/
-	@RequestMapping("{activityId}/name")
-	public RestRespDTO getActivityName(@PathVariable Integer activityId) {
-		Activity activity = activityQueryService.getById(activityId);
+	@RequestMapping("name")
+	public RestRespDTO getActivityName(@PathVariable Integer signId) {
+		Activity activity = activityQueryService.getBySignId(signId);
 		return RestRespDTO.success(activity.getName());
 	}
 
