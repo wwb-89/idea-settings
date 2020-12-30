@@ -86,7 +86,7 @@ public class ActivityApiController {
 	 * @return com.chaoxing.activity.dto.RestRespDTO
 	*/
 	@RequestMapping("name")
-	public RestRespDTO getActivityName(@PathVariable Integer signId) {
+	public RestRespDTO getActivityName(Integer signId) {
 		Activity activity = activityQueryService.getBySignId(signId);
 		return RestRespDTO.success(activity.getName());
 	}
