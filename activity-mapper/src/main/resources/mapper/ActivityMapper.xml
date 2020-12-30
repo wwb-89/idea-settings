@@ -170,14 +170,14 @@
             <choose>
                 <when test="params.startDate != null and params.startDate != ''">
                     AND (
-                    ( CONCAT( #{params.startDate}, '23:59:59' ) BETWEEN t.start_time AND t.end_time )
-                    OR ( CONCAT( #{params.endDate}, '00:00:00' ) BETWEEN t.start_time AND t.end_time )
-                    OR ( CONCAT( #{params.startDate}, '00:00:00' ) <![CDATA[<=]]> t.start_time AND CONCAT( #{params.endDate}, '23:59:59' ) >= t.end_time )
+                    ( CONCAT( #{params.startDate}, ' ', '23:59:59' ) BETWEEN t.start_time AND t.end_time )
+                    OR ( CONCAT( #{params.endDate}, ' ', '00:00:00' ) BETWEEN t.start_time AND t.end_time )
+                    OR ( CONCAT( #{params.startDate}, ' ', '00:00:00' ) <![CDATA[<=]]> t.start_time AND CONCAT( #{params.endDate}, ' ', '23:59:59' ) >= t.end_time )
                     )
                 </when>
                 <otherwise>
                     <if test="params.date != null and params.date != ''">
-                        AND CONCAT( #{params.date}, '23:59:59' ) BETWEEN t.start_time AND t.end_time
+                        AND CONCAT( #{params.date}, ' ', '23:59:59' ) BETWEEN t.start_time AND t.end_time
                     </if>
                 </otherwise>
             </choose>
