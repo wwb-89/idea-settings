@@ -192,7 +192,7 @@
                         <el-switch v-model="sign.signUp.publicList"></el-switch>
                     </div>
                 </div>
-                <div class="form-item">
+                <div class="form-item" v-show="false">
                     <label class="label position"><img src="/static/pc/assets/images/required.png" th:src="@{/pc/assets/images/required.png}" class="required-img">按钮名称</label>
                     <div class="input-box btn-name">
                         <el-input type="text" v-model.trim="sign.signUp.btnName" placeholder="请输入内容" maxlength="6" show-word-limit></el-input>
@@ -220,7 +220,7 @@
                         <img src="/static/pc/assets/images/location.png" th:src="@{/pc/assets/images/location.png}" class="length icon">
                     </div>
                 </div>
-                <div class="form-item" v-show="sign.signIn.way == 3">
+                <!--<div class="form-item" v-show="sign.signIn.way == 3">
                     <label class="label">扫码方式</label>
                     <div class="input-box">
                         <div>
@@ -229,7 +229,7 @@
                             </el-select>
                         </div>
                     </div>
-                </div>
+                </div>-->
                 <div class="form-item">
                     <label class="label position"><img src="/static/pc/assets/images/required.png" th:src="@{/pc/assets/images/required.png}" class="required-img">签到时间</label>
                     <div class="input-box">
@@ -256,7 +256,7 @@
                         <el-switch v-model="sign.signIn.publicList"></el-switch>
                     </div>
                 </div>
-                <div class="form-item">
+                <div class="form-item" v-show="false">
                     <label class="label position"><img src="/static/pc/assets/images/required.png" th:src="@{/pc/assets/images/required.png}" class="required-img">按钮名称</label>
                     <div class="input-box btn-name">
                         <el-input type="text" v-model.trim="sign.signIn.btnName" placeholder="请输入内容" maxlength="6" show-word-limit></el-input>
@@ -284,7 +284,7 @@
                         <img src="/static/pc/assets/images/location.png" th:src="@{/pc/assets/images/location.png}" class="length icon">
                     </div>
                 </div>
-                <div class="form-item" v-show="sign.signOut.way == 3">
+                <!--<div class="form-item" v-show="sign.signOut.way == 3">
                     <label class="label">扫码方式</label>
                     <div class="input-box">
                         <div>
@@ -293,7 +293,7 @@
                             </el-select>
                         </div>
                     </div>
-                </div>
+                </div>-->
                 <div class="form-item">
                     <label class="label position"><img src="/static/pc/assets/images/required.png" th:src="@{/pc/assets/images/required.png}" class="required-img">签到时间</label>
                     <div class="input-box">
@@ -320,7 +320,7 @@
                         <el-switch v-model="sign.signOut.publicList"></el-switch>
                     </div>
                 </div>
-                <div class="form-item">
+                <div class="form-item" v-show="false">
                     <label class="label position"><img src="/static/pc/assets/images/required.png" th:src="@{/pc/assets/images/required.png}" class="required-img">按钮名称</label>
                     <div class="input-box btn-name">
                         <el-input type="text" v-model.trim="sign.signOut.btnName" placeholder="请输入内容" maxlength="6" show-word-limit></el-input>
