@@ -1,6 +1,7 @@
 package com.chaoxing.activity.model;
 
 import com.baomidou.mybatisplus.annotation.IdType;
+import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.AllArgsConstructor;
@@ -36,6 +37,17 @@ public class WebTemplate {
     private String coverUrl;
     /** 预览地址; column: preview_url*/
     private String previewUrl;
+    /** 引用头部的pageId; column: origin_page_id*/
+    private Integer originPageId;
+    /** 是否系统模板; column: is_system*/
+    @TableField(value = "is_system")
+    private Boolean system;
+    /** 所属区域编码; column: affiliation_area_code*/
+    private String affiliationAreaCode;
+    /** 所属机构; column: affiliation_fid*/
+    private String affiliationFid;
+    /** 顺序; column: sequence*/
+    private Integer sequence;
     /** 创建时间; column: create_time*/
     private Date createTime;
 

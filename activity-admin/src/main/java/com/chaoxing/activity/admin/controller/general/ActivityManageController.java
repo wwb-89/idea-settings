@@ -102,7 +102,7 @@ public class ActivityManageController {
 		}
 		model.addAttribute("sign", signAddEdit);
 		// 模板列表
-		List<WebTemplate> webTemplates = webTemplateService.list();
+		List<WebTemplate> webTemplates = webTemplateService.listAvailable(loginUser.getFid());
 		model.addAttribute("webTemplates", webTemplates);
 		model.addAttribute("step", step);
 		// 活动参与范围

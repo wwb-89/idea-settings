@@ -1,5 +1,6 @@
 package com.chaoxing.activity.service;
 
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.chaoxing.activity.mapper.WebTemplateAppDataMapper;
 import com.chaoxing.activity.mapper.WebTemplateAppMapper;
@@ -7,9 +8,11 @@ import com.chaoxing.activity.mapper.WebTemplateMapper;
 import com.chaoxing.activity.model.WebTemplate;
 import com.chaoxing.activity.model.WebTemplateApp;
 import com.chaoxing.activity.model.WebTemplateAppData;
+import com.chaoxing.activity.service.manager.WfwRegionalArchitectureApiService;
 import com.chaoxing.activity.util.enums.MhAppDataSourceEnum;
 import com.chaoxing.activity.util.enums.MhAppTypeEnum;
 import com.chaoxing.activity.util.exception.BusinessException;
+import com.google.common.collect.Lists;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.stereotype.Service;
@@ -36,6 +39,8 @@ public class WebTemplateService {
 	private WebTemplateAppMapper webTemplateAppMapper;
 	@Resource
 	private WebTemplateAppDataMapper webTemplateAppDataMapper;
+	@Resource
+	private WfwRegionalArchitectureApiService wfwRegionalArchitectureApiService;
 
 	/**根据id查询网站模版
 	 * @Description 
@@ -115,15 +120,37 @@ public class WebTemplateService {
 		);
 	}
 
-	/**查询所有的网页模板列表
+	/**查询可用的模板
 	 * @Description 
 	 * @author wwb
-	 * @Date 2020-11-25 15:30:44
-	 * @param 
+	 * @Date 2020-12-30 17:47:00
+	 * @param fid
 	 * @return java.util.List<com.chaoxing.activity.model.WebTemplate>
 	*/
-	public List<WebTemplate> list() {
-		return webTemplateMapper.selectList(new QueryWrapper<>());
+	public List<WebTemplate> listAvailable(Integer fid) {
+		List<WebTemplate> webTemplates = Lists.newArrayList();
+		// 查询系统的
+		List<WebTemplate> systems = webTemplateMapper.selectList(new QueryWrapper<WebTemplate>()
+				.lambda()
+				.eq(WebTemplate::getSystem, Boolean.TRUE)
+				.orderByAsc(WebTemplate::getSequence)
+		);
+		if (CollectionUtils.isNotEmpty(systems)) {
+			webTemplates.addAll(systems);
+		}
+		// 查询机构所属的code
+		List<String> codes = wfwRegionalArchitectureApiService.listCodeByFid(fid);
+		LambdaQueryWrapper<WebTemplate> queryWrapper = new QueryWrapper<WebTemplate>().lambda();
+		queryWrapper.eq(WebTemplate::getAffiliationFid, fid);
+		if (CollectionUtils.isNotEmpty(codes)) {
+			queryWrapper.in(WebTemplate::getAffiliationAreaCode, codes);
+		}
+		queryWrapper.orderByAsc(WebTemplate::getSequence);
+		List<WebTemplate> orgAffiliations = webTemplateMapper.selectList(queryWrapper);
+		if (CollectionUtils.isNotEmpty(orgAffiliations)) {
+			webTemplates.addAll(orgAffiliations);
+		}
+		return webTemplates;
 	}
 
 }

@@ -27,12 +27,13 @@ public class LibActivityManagementController {
 	 * @Description 
 	 * @author wwb
 	 * @Date 2020-11-18 11:34:30
+	 * @param model
 	 * @param code 图书馆编码
 	 * @return java.lang.String
 	*/
 	@RequestMapping("")
-	public String index(String code) {
-		return activityManageController.index(code);
+	public String index(Model model, String code) {
+		return activityManageController.index(model, code);
 	}
 
 	/**活动新增页面
@@ -41,11 +42,12 @@ public class LibActivityManagementController {
 	 * @Date 2020-11-25 15:26:18
 	 * @param model
 	 * @param request
+	 * @param code
 	 * @return java.lang.String
 	*/
 	@GetMapping("activity/add")
-	public String add(Model model, HttpServletRequest request) {
-		return activityManageController.add(model, request);
+	public String add(Model model, HttpServletRequest request, String code) {
+		return activityManageController.add(model, request, code);
 	}
 
 }
