@@ -176,7 +176,7 @@
                         </div>
                         <div class="set-box configurationForm" v-show="sign.signUp.fillInfo" @click="toConfigForm">
                             <img src="/static/pc/assets/images/setting.png" th:src="@{/pc/assets/images/setting.png}">
-                            <span class="tips">配置表单</span>
+                            <span class="tips">配置填报信息</span>
                         </div>
                     </div>
                 </div>
@@ -331,7 +331,6 @@
     </div>
     <!--选择门户模板-->
     <div class="info box" v-show="step > 1">
-        <div class="title">选择模板</div>
         <div class="page-show">
             <div class="page-box">
                 <div class="page-item" v-for="(webTemplate, index) of webTemplates" :key="'web-templates' + index">
@@ -927,7 +926,7 @@
                         }
                         if ($this.sign.signUp.fillInfo) {
                             if (activityApp.isEmpty($this.sign.signUp.fillInfoFormId)) {
-                                app.showMsg("请选择报名需要填写的表单");
+                                app.showMsg("请配置填报信息");
                                 return false;
                             }
                         }
