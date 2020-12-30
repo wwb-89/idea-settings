@@ -4,7 +4,7 @@ import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.chaoxing.activity.dto.RestRespDTO;
-import com.chaoxing.activity.dto.manager.sign.SignParticipationDTO;
+import com.chaoxing.activity.dto.manager.sign.SignParticipantStatDTO;
 import com.chaoxing.activity.dto.manager.WfwRegionalArchitectureDTO;
 import com.chaoxing.activity.dto.mh.MhGeneralAppResultDataDTO;
 import com.chaoxing.activity.dto.query.MhActivityCalendarQueryDTO;
@@ -26,10 +26,9 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.RestTemplate;
 
 import javax.annotation.Resource;
+import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -47,7 +46,8 @@ import java.util.stream.Collectors;
 public class ActivityMhAppController {
 
 	/** 签到按钮地址 */
-	private static final String QD_BTN_URL = "http://api.qd.reading.chaoxing.com/activity/%d/btn";
+	private static final String QD_BTN_URL = "http://api.qd.reading.chaoxing.com/sign/%d/btn?activityId=%s";
+	private static final SimpleDateFormat YYYYMMDD = new SimpleDateFormat("yyyy-MM-dd");
 
 	@Resource
 	private ActivityQueryService activityQueryService;
@@ -80,7 +80,7 @@ public class ActivityMhAppController {
 		mhGeneralAppResultDataDTO.setPop(0);
 		mhGeneralAppResultDataDTO.setPopUrl("");
 		jsonObject.put("results", Lists.newArrayList(mhGeneralAppResultDataDTO));
-		List<MhGeneralAppResultDataDTO.MhGeneralAppResultDataFieldDTO> mhGeneralAppResultDataFields = new ArrayList<>();
+		List<MhGeneralAppResultDataDTO.MhGeneralAppResultDataFieldDTO> mhGeneralAppResultDataFields = Lists.newArrayList();
 		mhGeneralAppResultDataDTO.setFields(mhGeneralAppResultDataFields);
 		MhGeneralAppResultDataDTO.MhGeneralAppResultDataFieldDTO mhGeneralAppResultDataField = MhGeneralAppResultDataDTO.MhGeneralAppResultDataFieldDTO.builder()
 				.value(coverUrl)
@@ -138,21 +138,26 @@ public class ActivityMhAppController {
 				.value(activity.getAddress())
 				.flag("103")
 				.build());
-		// 报名时间
-		mhGeneralAppResultDataFields.add(MhGeneralAppResultDataDTO.MhGeneralAppResultDataFieldDTO.builder()
-				.key("报名时间")
-				.value("")
-				.flag("105")
-				.build());
 		// 报名、签到人数
-		SignParticipationDTO signParticipation = signApiService.getSignParticipation(activity.getSignId());
+		SignParticipantStatDTO signParticipantStat = signApiService.getSignParticipation(activity.getSignId());
+		if (signParticipantStat.getSignUpId() != null) {
+			StringBuilder signUpTimeStringBuilder = new StringBuilder();
+			signUpTimeStringBuilder.append(DateTimeFormatterConstant.YYYY_MM_DD_HH_MM.format(signParticipantStat.getSignUpStartTime()));
+			signUpTimeStringBuilder.append(" ~ ");
+			signUpTimeStringBuilder.append(DateTimeFormatterConstant.YYYY_MM_DD_HH_MM.format(signParticipantStat.getSignUpEndTime()));
+			// 报名时间
+			mhGeneralAppResultDataFields.add(MhGeneralAppResultDataDTO.MhGeneralAppResultDataFieldDTO.builder()
+					.key("报名时间")
+					.value(signUpTimeStringBuilder.toString())
+					.flag("105")
+					.build());
+		}
 		StringBuilder signPepleNumDescribe = new StringBuilder();
-		Integer limitNum = signParticipation.getLimitNum();
-		Integer signedNum = signParticipation.getSignedNum();
-		signedNum = Optional.ofNullable(signedNum).orElse(0);
-		if (signedNum.compareTo(0) > 0) {
-			signPepleNumDescribe.append(signedNum);
-			if (limitNum != null && limitNum.intValue() > 0) {
+		Integer limitNum = signParticipantStat.getLimitNum();
+		Integer participateNum = signParticipantStat.getParticipateNum();
+		if (participateNum.compareTo(0) > 0) {
+			signPepleNumDescribe.append(participateNum);
+			if (limitNum.intValue() > 0) {
 				signPepleNumDescribe.append("/");
 				signPepleNumDescribe.append(limitNum);
 			}
@@ -179,7 +184,7 @@ public class ActivityMhAppController {
 		Boolean enableSign = activity.getEnableSign();
 		if (enableSign) {
 			// 请求签到报名
-			String url = String.format(QD_BTN_URL, activity.getSignId());
+			String url = String.format(QD_BTN_URL, activity.getSignId(), activityId);
 			HttpHeaders httpHeaders = new HttpHeaders();
 			httpHeaders.setContentType(MediaType.APPLICATION_JSON);
 			HttpEntity<String> httpEntity = new HttpEntity<>(data, httpHeaders);
@@ -282,7 +287,7 @@ public class ActivityMhAppController {
 		// 获取参数
 		Integer wfwfid = jsonObject.getInteger("wfwfid");
 		Optional.ofNullable(wfwfid).orElseThrow(() -> new BusinessException("wfwfid不能为空"));
-		List<Integer> fids = new ArrayList<>();
+		List<Integer> fids = Lists.newArrayList();
 		List<WfwRegionalArchitectureDTO> wfwRegionalArchitectures;
 		if (StringUtils.isNotBlank(areaCode)) {
 			wfwRegionalArchitectures = wfwRegionalArchitectureApiService.listByCode(areaCode);
@@ -302,13 +307,26 @@ public class ActivityMhAppController {
 				.fids(fids)
 				.topFid(wfwfid)
 				.build();
+		String year = jsonObject.getString("year");
+		String month = jsonObject.getString("month");
+		String date = jsonObject.getString("date");
+		if (StringUtils.isNotBlank(year)) {
+			Calendar calendar = Calendar.getInstance();
+			calendar.set(Calendar.YEAR, Integer.parseInt(year));
+			calendar.set(Calendar.MONTH, Integer.parseInt(month));
+			mhActivityCalendarQuery.setStartDate(calMonthStartTime(calendar));
+			mhActivityCalendarQuery.setEndDate(calMonthEndTime(calendar));
+		}
+		if (StringUtils.isNotBlank(date)) {
+			mhActivityCalendarQuery.setDate(date);
+		}
 		page = activityQueryService.listActivityCalendarParticipate(page, mhActivityCalendarQuery);
 		JSONObject result = new JSONObject();
 		result.put("curPage", pageNum);
 		result.put("totalPages", page.getPages());
 		result.put("totalRecords", page.getTotal());
 		List<MhGeneralAppResultDataDTO> mhGeneralAppResultDatas = page2MhGeneralAppResultData(page, (record) -> {
-			List<MhGeneralAppResultDataDTO.MhGeneralAppResultDataFieldDTO> mhGeneralAppResultDataFields = new ArrayList<>();
+			List<MhGeneralAppResultDataDTO.MhGeneralAppResultDataFieldDTO> mhGeneralAppResultDataFields = Lists.newArrayList();
 			// 封面
 			mhGeneralAppResultDataFields.add(MhGeneralAppResultDataDTO.MhGeneralAppResultDataFieldDTO.builder()
 					.value(cloudApiService.getCloudImgUrl(record.getCoverCloudId()))
@@ -338,6 +356,20 @@ public class ActivityMhAppController {
 		});
 		result.put("results", mhGeneralAppResultDatas);
 		return RestRespDTO.success(result);
+	}
+
+	private String calMonthStartTime(Calendar calendar) {
+		calendar.set(Calendar.DAY_OF_MONTH, 1);
+		Date time = calendar.getTime();
+		return YYYYMMDD.format(time);
+	}
+
+	private String calMonthEndTime(Calendar calendar) {
+		calendar.set(Calendar.DAY_OF_MONTH, 1);
+		calendar.add(Calendar.MONTH, 1);
+		calendar.add(Calendar.DAY_OF_MONTH, -1);
+		Date time = calendar.getTime();
+		return YYYYMMDD.format(time);
 	}
 
 	/**活动地址

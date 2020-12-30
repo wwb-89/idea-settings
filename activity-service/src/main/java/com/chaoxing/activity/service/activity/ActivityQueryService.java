@@ -11,17 +11,23 @@ import com.chaoxing.activity.dto.query.MhActivityCalendarQueryDTO;
 import com.chaoxing.activity.mapper.ActivityMapper;
 import com.chaoxing.activity.model.Activity;
 import com.chaoxing.activity.service.manager.WfwRegionalArchitectureApiService;
+import com.chaoxing.activity.util.DateUtils;
 import com.chaoxing.activity.util.constant.DateTimeFormatterConstant;
 import com.chaoxing.activity.util.enums.ActivityQueryDateEnum;
 import com.chaoxing.activity.util.enums.ActivityTypeEnum;
+import com.google.common.collect.Lists;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -70,6 +76,27 @@ public class ActivityQueryService {
 	*/
 	public Page<Activity> listActivityCalendarParticipate(Page<Activity> page, MhActivityCalendarQueryDTO mhActivityCalendarQuery) {
 		page = activityMapper.listActivityCalendarParticipate(page, mhActivityCalendarQuery);
+		List<Activity> records = page.getRecords();
+		String startDate = mhActivityCalendarQuery.getStartDate();
+		if (CollectionUtils.isNotEmpty(records) && StringUtils.isNotBlank(startDate)) {
+			// 每个活动的开始时间到结束时间
+			List<Activity> activities = Lists.newArrayList();
+			page.setRecords(activities);
+			for (Activity record : records) {
+				LocalDateTime startTime = record.getStartTime();
+				LocalDateTime endTime = record.getEndTime();
+				Calendar startCalendar = Calendar.getInstance();
+				startCalendar.set(startTime.getYear(), startTime.getMonthValue(), startTime.getDayOfMonth(), 0, 0, 0);
+				while (startTime.isBefore(endTime)) {
+					Activity activity = new Activity();
+					BeanUtils.copyProperties(record, activity);
+					activity.setStartTime(DateUtils.timestamp2Date(startCalendar.getTime().getTime()));
+					activities.add(activity);
+					startCalendar.add(Calendar.DAY_OF_MONTH, 1);
+					startTime = DateUtils.timestamp2Date(startCalendar.getTime().getTime());
+				}
+			}
+		}
 		return page;
 	}
 	

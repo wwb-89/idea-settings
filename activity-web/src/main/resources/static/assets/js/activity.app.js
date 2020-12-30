@@ -273,6 +273,14 @@
         };
         $.post(url, params, function (data) {}).fail(function () {});
     };
+    /**
+     * 获取相对路径
+     * @param url
+     * @returns {string}
+     */
+    activityApp.prototype.getRelativeUrl = function (url) {
+        return document.location.pathname + url;
+    };
     W['activityApp'] = new activityApp();
 })(window, jQuery, JSON);
 Array.prototype.remove = function (val) {

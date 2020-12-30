@@ -1,7 +1,7 @@
 package com.chaoxing.activity;
 
 import com.alibaba.fastjson.JSON;
-import com.chaoxing.activity.dto.manager.sign.SignParticipationDTO;
+import com.chaoxing.activity.dto.manager.sign.SignParticipantStatDTO;
 import com.chaoxing.activity.service.manager.module.SignApiService;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -24,7 +24,7 @@ public class SignApiServiceTest {
 
 	@Test
 	public void getSignParticipation() {
-		SignParticipationDTO signParticipation = signApiService.getSignParticipation(22);
+		SignParticipantStatDTO signParticipation = signApiService.getSignParticipation(22);
 		System.out.println(JSON.toJSON(signParticipation));
 	}
 

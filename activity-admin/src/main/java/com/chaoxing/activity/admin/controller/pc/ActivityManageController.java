@@ -1,17 +1,15 @@
-package com.chaoxing.activity.admin.controller;
+package com.chaoxing.activity.admin.controller.pc;
 
 import com.chaoxing.activity.admin.util.LoginUtils;
 import com.chaoxing.activity.dto.LoginUserDTO;
 import com.chaoxing.activity.dto.activity.ActivityTypeDTO;
 import com.chaoxing.activity.dto.manager.WfwRegionalArchitectureDTO;
 import com.chaoxing.activity.dto.module.SignAddEditDTO;
-import com.chaoxing.activity.dto.sign.SignActivityManageIndexDTO;
 import com.chaoxing.activity.model.Activity;
 import com.chaoxing.activity.model.ActivityClassify;
 import com.chaoxing.activity.model.WebTemplate;
 import com.chaoxing.activity.service.WebTemplateService;
 import com.chaoxing.activity.service.activity.ActivityQueryService;
-import com.chaoxing.activity.service.activity.ActivityValidationService;
 import com.chaoxing.activity.service.activity.classify.ActivityClassifyQueryService;
 import com.chaoxing.activity.service.activity.scope.ActivityScopeQueryService;
 import com.chaoxing.activity.service.manager.module.SignApiService;
@@ -44,20 +42,9 @@ public class ActivityManageController {
 	private WebTemplateService webTemplateService;
 	@Resource
 	private ActivityScopeQueryService activityScopeQueryService;
-	@Resource
-	private ActivityValidationService activityValidationService;
 
 	public String index(String code) {
 		return "pc/activity-list";
-	}
-
-	public String activityIndex(Model model, @PathVariable Integer activityId, HttpServletRequest request) {
-		LoginUserDTO loginUser = LoginUtils.getLoginUser(request);
-		Activity activity = activityValidationService.manageAble(activityId, loginUser, null);
-		model.addAttribute("activity", activity);
-		SignActivityManageIndexDTO signActivityManageIndex = signApiService.statSignActivityManageIndex(activity.getSignId());
-		model.addAttribute("signActivityManageIndex", signActivityManageIndex);
-		return "pc/activity-index";
 	}
 
 	public String add(Model model, HttpServletRequest request) {

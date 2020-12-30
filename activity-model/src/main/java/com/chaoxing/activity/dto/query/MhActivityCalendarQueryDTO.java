@@ -5,7 +5,6 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.time.LocalDate;
 import java.util.List;
 
 /**门户活动日历查询对象
@@ -22,11 +21,15 @@ import java.util.List;
 @AllArgsConstructor
 public class MhActivityCalendarQueryDTO {
 
-	/** 置顶的fid（查询的结果该机构的数据靠前） */
+	/** 置顶的fid（查询的结果该机构的数据靠前 */
 	private Integer topFid;
 	/** 参与范围 */
 	private List<Integer> fids;
-	/** 时间 */
-	private LocalDate date;
+	/** 时间范围开始时间 */
+	private String startDate;
+	/** 时间范围结束时间 */
+	private String endDate;
+	/** 具体日期的数据 */
+	private String date;
 
 }

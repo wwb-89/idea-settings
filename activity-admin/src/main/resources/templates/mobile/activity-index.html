@@ -35,7 +35,7 @@
             <p class="flTxt">签到管理</p>
             <i class="icon-arrow-r marginAuto"></i>
         </div>
-        <div class="item" v-if="signActivityManageIndex.signUpExist">
+        <div class="item" v-if="signActivityManageIndex.signUpExist" @click="sendNotice">
             <img src="/static/mobile/assets/images/admin/notice.png" th:src="@{/mobile/assets/images/admin/notice.png}">
             <p class="flTxt">发通知</p>
             <i class="icon-arrow-r marginAuto"></i>
@@ -59,7 +59,12 @@
 
                 },
                 methods: {
-
+                    // 发通知
+                    sendNotice: function () {
+                        var $this = this;
+                        var url = "http://reading.chaoxing.com/qd/manage/notice/add?signId=" + $this.signActivityManageIndex.signId;
+                        app.openUrl(url);
+                    }
                 }
             });
         }
