@@ -1,6 +1,5 @@
 package com.chaoxing.activity.service;
 
-import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.chaoxing.activity.mapper.WebTemplateAppDataMapper;
 import com.chaoxing.activity.mapper.WebTemplateAppMapper;
@@ -131,13 +130,7 @@ public class WebTemplateService {
 		List<WebTemplate> webTemplates = Lists.newArrayList();
 		// 查询机构所属的code
 		List<String> codes = wfwRegionalArchitectureApiService.listCodeByFid(fid);
-		LambdaQueryWrapper<WebTemplate> queryWrapper = new QueryWrapper<WebTemplate>().lambda();
-		queryWrapper.eq(WebTemplate::getAffiliationFid, fid);
-		if (CollectionUtils.isNotEmpty(codes)) {
-			queryWrapper.in(WebTemplate::getAffiliationAreaCode, codes);
-		}
-		queryWrapper.orderByAsc(WebTemplate::getSequence);
-		List<WebTemplate> orgAffiliations = webTemplateMapper.selectList(queryWrapper);
+		List<WebTemplate> orgAffiliations = webTemplateMapper.listAffiliation(codes, fid);
 		if (CollectionUtils.isNotEmpty(orgAffiliations)) {
 			webTemplates.addAll(orgAffiliations);
 		}
