@@ -47,22 +47,26 @@
     <!-- 创建活动头部 -->
     <div class="top flex box" v-if="!activity.id">
         <div class="flex">
-            <img src="/static/pc/assets/images/left.png" th:src="@{/pc/assets/images/left.png}" class="left" v-show="step > 1" @click="preStep">
-            <span class="create">创建活动</span>
+            <span class="create" v-show="step == 1">创建活动</span>
+            <span class="create" v-show="step == 2">活动展示页</span>
+            <span class="create_tips" v-show="step == 2">请选择你的活动呈现模版</span>
         </div>
         <div>
+            <button type="button" class="create-btn" v-show="step == 2" @click="preStep">上一步</button>
             <button type="button" class="create-btn" v-show="step == 1" @click="nextStep">下一步</button>
         </div>
     </div>
     <!-- 编辑活动头部 -->
     <div class="top flex box" v-if="activity.id">
         <div class="flex">
-            <img src="/static/pc/assets/images/left.png" th:src="@{/pc/assets/images/left.png}" class="left" v-show="step > 1" @click="preStep">
-            <span class="create">编辑活动</span>
+            <span class="create" v-show="step == 1">编辑活动</span>
+            <span class="create" v-show="step == 2">活动展示页</span>
+            <span class="create_tips" v-show="step == 2">请选择你的活动呈现模版</span>
         </div>
         <div>
-            <!--<button type="button" class="cancle-btn" v-show="activity.webTemplateId">预览</button>-->
-            <button type="button" class="create-btn" v-show="step == 1" @click="save">保存</button>
+            <button type="button" class="create-btn" v-show="step == 2" @click="preStep">上一步</button>
+            <button type="button" class="create-btn" v-show="step == 1 && !activity.webTemplateId" @click="save">下一步</button>
+            <button type="button" class="create-btn" v-show="step == 1 && activity.webTemplateId" @click="save">保存</button>
         </div>
     </div>
     <div v-show="step == 1">
@@ -1004,9 +1008,8 @@
                 },
                 preStep: function () {
                     var $this = this;
-                    if ($this.step > 1) {
-                        $this.step--;
-                    }
+                    var url = ctx + "/activity/" + $this.activity.id + "/edit";
+                    window.location.replace(url);
                 },
                 // 下一步（创建活动）
                 nextStep: function () {
