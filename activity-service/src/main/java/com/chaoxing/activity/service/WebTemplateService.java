@@ -129,15 +129,6 @@ public class WebTemplateService {
 	*/
 	public List<WebTemplate> listAvailable(Integer fid) {
 		List<WebTemplate> webTemplates = Lists.newArrayList();
-		// 查询系统的
-		List<WebTemplate> systems = webTemplateMapper.selectList(new QueryWrapper<WebTemplate>()
-				.lambda()
-				.eq(WebTemplate::getSystem, Boolean.TRUE)
-				.orderByAsc(WebTemplate::getSequence)
-		);
-		if (CollectionUtils.isNotEmpty(systems)) {
-			webTemplates.addAll(systems);
-		}
 		// 查询机构所属的code
 		List<String> codes = wfwRegionalArchitectureApiService.listCodeByFid(fid);
 		LambdaQueryWrapper<WebTemplate> queryWrapper = new QueryWrapper<WebTemplate>().lambda();
@@ -149,6 +140,15 @@ public class WebTemplateService {
 		List<WebTemplate> orgAffiliations = webTemplateMapper.selectList(queryWrapper);
 		if (CollectionUtils.isNotEmpty(orgAffiliations)) {
 			webTemplates.addAll(orgAffiliations);
+		}
+		// 查询系统的
+		List<WebTemplate> systems = webTemplateMapper.selectList(new QueryWrapper<WebTemplate>()
+				.lambda()
+				.eq(WebTemplate::getSystem, Boolean.TRUE)
+				.orderByAsc(WebTemplate::getSequence)
+		);
+		if (CollectionUtils.isNotEmpty(systems)) {
+			webTemplates.addAll(systems);
 		}
 		return webTemplates;
 	}
