@@ -179,7 +179,7 @@
                                     if (isCreator || isCurrentOrgCreated) {
                                         activity.operations.push($this.operations.release);
                                         activity.operations.push($this.operations.edit);
-                                        if (isCreator) {
+                                        if (isCreator && activity.enableSign) {
                                             activity.operations.push($this.operations.manage);
                                         }
                                         activity.operations.push($this.operations.delete);
@@ -190,7 +190,7 @@
                                     activity.operations.push($this.operations.cancelRelease);
                                     if (isCreator || isCurrentOrgCreated) {
                                         activity.operations.push($this.operations.edit);
-                                        if (isCreator) {
+                                        if (isCreator && activity.enableSign) {
                                             activity.operations.push($this.operations.manage);
                                         }
                                         activity.operations.push($this.operations.delete);
@@ -198,7 +198,7 @@
                                     break;
                                 case 4:
                                     if (isCreator || isCurrentOrgCreated) {
-                                        if (isCreator) {
+                                        if (isCreator && activity.enableSign) {
                                             activity.operations.push($this.operations.manage);
                                         }
                                         activity.operations.push($this.operations.delete);
