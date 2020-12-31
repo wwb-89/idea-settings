@@ -163,7 +163,7 @@ public class ActivityMhAppController {
 			}
 		}
 		mhGeneralAppResultDataFields.add(MhGeneralAppResultDataDTO.MhGeneralAppResultDataFieldDTO.builder()
-				.key("参与人数")
+				.key("报名人数")
 				.value(signPepleNumDescribe.toString())
 				.flag("104")
 				.build());
