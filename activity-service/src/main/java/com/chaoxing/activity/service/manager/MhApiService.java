@@ -29,7 +29,7 @@ import java.util.Objects;
 public class MhApiService {
 
 	/** 克隆模板的url http://mh.chaoxing.com/web-others/{templateId}/cloneActivity?wfwfid=&activityId=&uid= */
-	private static final String CLONE_TEMPLATE_URL = ActivityMhUrlConstant.MH_DOMAIN + "/web-others/%d/cloneActivity?wfwfid=%d&uid=%d&websiteName=%s";
+	private static final String CLONE_TEMPLATE_URL = ActivityMhUrlConstant.MH_DOMAIN + "/web-others/%d/cloneActivity?wfwfid=%d&uid=%d&websiteName=%s&originPageId=%s";
 
 	@Resource(name = "restTemplateProxy")
 	private RestTemplate restTemplate;
@@ -44,7 +44,7 @@ public class MhApiService {
 	public MhCloneResultDTO cloneTemplate(MhCloneParamDTO mhCloneParam) {
 		Integer fid = mhCloneParam.getWfwfid();
 		Integer uid = mhCloneParam.getUid();
-		String url = String.format(CLONE_TEMPLATE_URL, mhCloneParam.getTemplateId(), fid, uid, mhCloneParam.getWebsiteName());
+		String url = String.format(CLONE_TEMPLATE_URL, mhCloneParam.getTemplateId(), fid, uid, mhCloneParam.getWebsiteName(), mhCloneParam.getOriginPageId());
 		HttpHeaders httpHeaders = new HttpHeaders();
 		httpHeaders.setContentType(MediaType.APPLICATION_JSON);
 		HttpEntity<String> httpEntity = new HttpEntity(JSON.toJSONString(mhCloneParam), httpHeaders);
