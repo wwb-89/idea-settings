@@ -82,7 +82,7 @@
                 <div class="form-item">
                     <label class="label"><img src="/static/pc/assets/images/required.png" th:src="@{/pc/assets/images/required.png}" class="required-img">时间</label>
                     <div class="input-box">
-                        <el-date-picker v-model="activityDateTimeScope" type="datetimerange" format="yyyy-MM-dd HH:mm" value-format="yyyy-MM-dd HH:mm:ss" :editable=false range-separator="至" start-placeholder="开始时间" end-placeholder="结束时间" @change="selectActivityDate($event)"></el-date-picker>
+                        <el-date-picker v-model="activityDateTimeScope" type="datetimerange" format="yyyy-MM-dd HH:mm" value-format="yyyy-MM-dd HH:mm:ss" :editable=false range-separator="至" start-placeholder="开始时间" end-placeholder="结束时间" :default-time="['00:00:00', '23:59:59']" @change="selectActivityDate($event)"></el-date-picker>
                     </div>
                 </div>
                 <div class="form-item">
@@ -156,7 +156,7 @@
                 <div class="form-item">
                     <label class="label"><img src="/static/pc/assets/images/required.png" th:src="@{/pc/assets/images/required.png}" class="required-img">报名时间</label>
                     <div class="input-box">
-                        <el-date-picker v-model="signUpTimeScope" type="datetimerange" format="yyyy-MM-dd HH:mm" value-format="yyyy-MM-dd HH:mm:ss" :editable=false range-separator="至" start-placeholder="开始日期" end-placeholder="结束日期" @change="selectSignUpTime($event)"></el-date-picker>
+                        <el-date-picker v-model="signUpTimeScope" type="datetimerange" format="yyyy-MM-dd HH:mm" value-format="yyyy-MM-dd HH:mm:ss" :editable=false range-separator="至" start-placeholder="开始日期" end-placeholder="结束日期" :default-time="['00:00:00', '23:59:59']" @change="selectSignUpTime($event)"></el-date-picker>
                     </div>
                 </div>
                 <div class="form-item">
@@ -236,7 +236,7 @@
                 <div class="form-item">
                     <label class="label"><img src="/static/pc/assets/images/required.png" th:src="@{/pc/assets/images/required.png}" class="required-img">签到时间</label>
                     <div class="input-box">
-                        <el-date-picker v-model="signInTimeScope" type="datetimerange" format="yyyy-MM-dd HH:mm" value-format="yyyy-MM-dd HH:mm:ss" :editable=false range-separator="至" start-placeholder="开始日期" end-placeholder="结束日期"  @change="selectSignInTime($event)"></el-date-picker>
+                        <el-date-picker v-model="signInTimeScope" type="datetimerange" format="yyyy-MM-dd HH:mm" value-format="yyyy-MM-dd HH:mm:ss" :editable=false range-separator="至" start-placeholder="开始日期" end-placeholder="结束日期" :default-time="['00:00:00', '23:59:59']" @change="selectSignInTime($event)"></el-date-picker>
                     </div>
                 </div>
                 <div class="form-item" v-if="false">
@@ -300,7 +300,7 @@
                 <div class="form-item">
                     <label class="label"><img src="/static/pc/assets/images/required.png" th:src="@{/pc/assets/images/required.png}" class="required-img">签到时间</label>
                     <div class="input-box">
-                        <el-date-picker v-model="signOutTimeScope" type="datetimerange" format="yyyy-MM-dd HH:mm" value-format="yyyy-MM-dd HH:mm:ss" :editable=false range-separator="至" start-placeholder="开始日期" end-placeholder="结束日期"  @change="selectSignOutTime($event)"></el-date-picker>
+                        <el-date-picker v-model="signOutTimeScope" type="datetimerange" format="yyyy-MM-dd HH:mm" value-format="yyyy-MM-dd HH:mm:ss" :editable=false range-separator="至" start-placeholder="开始日期" end-placeholder="结束日期" :default-time="['00:00:00', '23:59:59']" @change="selectSignOutTime($event)"></el-date-picker>
                     </div>
                 </div>
                 <div class="form-item" v-if="false">
@@ -517,8 +517,8 @@
                     $this.activity = {
                         id: null,
                         name: "",
-                        startTime: "",
-                        endTime: "",
+                        startTime: activityApp.generateActivityDefaultStartTime(),
+                        endTime: activityApp.generateActivityDefaultEndTime(),
                         coverCloudId: activityApp.getDefaultCoverCloudId(),
                         organisers: [[${session._login_user_.orgName}]],
                         activityType: "offline",
@@ -532,10 +532,10 @@
                     $this.activity.createTime = null;
                     $this.activity.updateTime = null;
                     $this.activity.releaseTime = null;
-                    $this.activityDateTimeScope = [$this.activity.startTimeStr, $this.activity.endTimeStr];
                     $this.activity.startTime = $this.activity.startTimeStr;
                     $this.activity.endTime = $this.activity.endTimeStr;
                 }
+                $this.activityDateTimeScope = [$this.activity.startTime, $this.activity.endTime];
                 $($this.activityTypes).each(function (i) {
                     if ($this.activity.activityType == this.value) {
                         $this.$set($this.activityTypes[i], "selected", true);
