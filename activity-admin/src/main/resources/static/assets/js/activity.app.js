@@ -222,7 +222,14 @@
      * @returns {string}
      */
     activityApp.prototype.getRelativeUrl = function (url) {
-        return document.location.pathname + url;
+        var pathname = document.location.pathname;
+        if (pathname == "/") {
+            pathname = "";
+        }
+        if (!url.startsWith("/")) {
+            url = "/" + url;
+        }
+        return pathname + url;
     };
     W['activityApp'] = new activityApp();
 })(window, jQuery, JSON);
