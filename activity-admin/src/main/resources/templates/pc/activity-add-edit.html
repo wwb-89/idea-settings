@@ -635,15 +635,21 @@
                 },
                 "enableSignUp": function () {
                     var $this = this;
-                    $this.activity.enableSign = $this.enableSignUp && $this.enableSignIn && $this.enableSignOut;
+                    $this.$nextTick(function () {
+                        $this.activity.enableSign = $this.enableSignUp || $this.enableSignIn || $this.enableSignOut;
+                    });
                 },
                 "enableSignIn": function () {
                     var $this = this;
-                    $this.activity.enableSign = $this.enableSignUp && $this.enableSignIn && $this.enableSignOut;
+                    $this.$nextTick(function () {
+                        $this.activity.enableSign = $this.enableSignUp || $this.enableSignIn || $this.enableSignOut;
+                    });
                 },
                 "enableSignOut": function () {
                     var $this = this;
-                    $this.activity.enableSign = $this.enableSignUp && $this.enableSignIn && $this.enableSignOut;
+                    $this.$nextTick(function () {
+                        $this.activity.enableSign = $this.enableSignUp || $this.enableSignIn || $this.enableSignOut;
+                    });
                 }
             },
             methods: {
