@@ -201,7 +201,7 @@
             case 1:
                 return "待发布";
             case 2:
-                return "活动预告";
+                return "待开始";
             case 3:
                 return "进行中";
             default:
