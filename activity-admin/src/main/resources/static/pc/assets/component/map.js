@@ -123,6 +123,9 @@ Vue.component('vue-map', {
         },
         sure: function () {
             var $this = this;
+            if (activityApp.isEmpty($this.address)) {
+                return;
+            }
             $this.$emit("callback");
             $this.show = false;
         }

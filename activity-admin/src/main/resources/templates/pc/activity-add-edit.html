@@ -74,19 +74,19 @@
             <form action="">
                 <div class="title">基本信息</div>
                 <div class="form-item">
-                    <label class="label position"><img src="/static/pc/assets/images/required.png" th:src="@{/pc/assets/images/required.png}" class="required-img">名称</label>
+                    <label class="label"><img src="/static/pc/assets/images/required.png" th:src="@{/pc/assets/images/required.png}" class="required-img">名称</label>
                     <div class="input-box">
                         <el-input type="text" placeholder="请填写信息，简短的活动名称" v-model.trim="activity.name" maxlength="50" show-word-limit></el-input>
                     </div>
                 </div>
                 <div class="form-item">
-                    <label class="label position"><img src="/static/pc/assets/images/required.png" th:src="@{/pc/assets/images/required.png}" class="required-img">时间</label>
+                    <label class="label"><img src="/static/pc/assets/images/required.png" th:src="@{/pc/assets/images/required.png}" class="required-img">时间</label>
                     <div class="input-box">
                         <el-date-picker v-model="activityDateTimeScope" type="datetimerange" format="yyyy-MM-dd HH:mm" value-format="yyyy-MM-dd HH:mm:ss" :editable=false range-separator="至" start-placeholder="开始时间" end-placeholder="结束时间" @change="selectActivityDate($event)"></el-date-picker>
                     </div>
                 </div>
                 <div class="form-item">
-                    <label class="label position" style="line-height: 100px;"><img src="/static/pc/assets/images/required.png" th:src="@{/pc/assets/images/required.png}" class="required-img">封面</label>
+                    <label class="label cover" style="line-height: 100px;"><img src="/static/pc/assets/images/required.png" th:src="@{/pc/assets/images/required.png}" class="required-img">封面</label>
                     <div class="input-box">
                         <div class="img-box">
                             <img :src="activity.coverCloudId | getCloudImgUrl" class="cover-img jqthumbImg">
@@ -135,7 +135,7 @@
                     </div>
                 </div>
                 <div class="form-item">
-                    <label class="label">参与范围</label>
+                    <label class="label"><img src="/static/pc/assets/images/required.png" th:src="@{/pc/assets/images/required.png}" class="required-img">参与范围</label>
                     <div class="input-box wrap">
                         <span class="label"><span>{{participatedOrgs.length}}</span>个单位</span>
                         <div class="type-item add" @click="toAddParticipateScope">
@@ -154,7 +154,7 @@
             <!-- 点击参与设置 -->
             <form action="" class="setForm" v-show="enableSignUp">
                 <div class="form-item">
-                    <label class="label position"><img src="/static/pc/assets/images/required.png" th:src="@{/pc/assets/images/required.png}" class="required-img">报名时间</label>
+                    <label class="label"><img src="/static/pc/assets/images/required.png" th:src="@{/pc/assets/images/required.png}" class="required-img">报名时间</label>
                     <div class="input-box">
                         <el-date-picker v-model="signUpTimeScope" type="datetimerange" format="yyyy-MM-dd HH:mm" value-format="yyyy-MM-dd HH:mm:ss" :editable=false range-separator="至" start-placeholder="开始日期" end-placeholder="结束日期" @change="selectSignUpTime($event)"></el-date-picker>
                     </div>
@@ -218,9 +218,9 @@
                     </div>
                 </div>
                 <div class="form-item" v-show="sign.signIn.way == 2">
-                    <label class="label position"><img src="/static/pc/assets/images/required.png" th:src="@{/pc/assets/images/required.png}" class="required-img">位置</label>
+                    <label class="label"><img src="/static/pc/assets/images/required.png" th:src="@{/pc/assets/images/required.png}" class="required-img">位置</label>
                     <div class="input-box">
-                        <input type="text" readonly required lay-verify="required" v-model.trim="sign.signIn.address" placeholder="请选择签到地点" autocomplete="off" class="layui-input name" style="cursor: pointer;" @click="showSignInMap">
+                        <input type="text" readonly required lay-verify="required" v-model.trim="sign.signIn.address" placeholder="请选择签到地点" autocomplete="off" class="layui-input name show-addr" style="cursor: pointer;" @click="showSignInMap">
                         <img src="/static/pc/assets/images/location.png" th:src="@{/pc/assets/images/location.png}" class="length icon">
                     </div>
                 </div>
@@ -235,7 +235,7 @@
                     </div>
                 </div>-->
                 <div class="form-item">
-                    <label class="label position"><img src="/static/pc/assets/images/required.png" th:src="@{/pc/assets/images/required.png}" class="required-img">签到时间</label>
+                    <label class="label"><img src="/static/pc/assets/images/required.png" th:src="@{/pc/assets/images/required.png}" class="required-img">签到时间</label>
                     <div class="input-box">
                         <el-date-picker v-model="signInTimeScope" type="datetimerange" format="yyyy-MM-dd HH:mm" value-format="yyyy-MM-dd HH:mm:ss" :editable=false range-separator="至" start-placeholder="开始日期" end-placeholder="结束日期"  @change="selectSignInTime($event)"></el-date-picker>
                     </div>
@@ -261,7 +261,7 @@
                     </div>
                 </div>
                 <div class="form-item" v-show="false">
-                    <label class="label position"><img src="/static/pc/assets/images/required.png" th:src="@{/pc/assets/images/required.png}" class="required-img">按钮名称</label>
+                    <label class="label"><img src="/static/pc/assets/images/required.png" th:src="@{/pc/assets/images/required.png}" class="required-img">按钮名称</label>
                     <div class="input-box btn-name">
                         <el-input type="text" v-model.trim="sign.signIn.btnName" placeholder="请输入内容" maxlength="6" show-word-limit></el-input>
                     </div>
@@ -282,9 +282,9 @@
                     </div>
                 </div>
                 <div class="form-item" v-show="sign.signOut.way == 2">
-                    <label class="label position"><img src="/static/pc/assets/images/required.png" th:src="@{/pc/assets/images/required.png}" class="required-img">位置</label>
+                    <label class="label"><img src="/static/pc/assets/images/required.png" th:src="@{/pc/assets/images/required.png}" class="required-img">位置</label>
                     <div class="input-box">
-                        <input type="text" readonly required lay-verify="required" v-model.trim="sign.signOut.address" placeholder="请选择签到地点" autocomplete="off" class="layui-input name" style="cursor: pointer;" @click="showSignOutMap">
+                        <input type="text" readonly required lay-verify="required" v-model.trim="sign.signOut.address" placeholder="请选择签到地点" autocomplete="off" class="layui-input name show-addr" style="cursor: pointer;" @click="showSignOutMap">
                         <img src="/static/pc/assets/images/location.png" th:src="@{/pc/assets/images/location.png}" class="length icon">
                     </div>
                 </div>
@@ -299,7 +299,7 @@
                     </div>
                 </div>-->
                 <div class="form-item">
-                    <label class="label position"><img src="/static/pc/assets/images/required.png" th:src="@{/pc/assets/images/required.png}" class="required-img">签到时间</label>
+                    <label class="label"><img src="/static/pc/assets/images/required.png" th:src="@{/pc/assets/images/required.png}" class="required-img">签到时间</label>
                     <div class="input-box">
                         <el-date-picker v-model="signOutTimeScope" type="datetimerange" format="yyyy-MM-dd HH:mm" value-format="yyyy-MM-dd HH:mm:ss" :editable=false range-separator="至" start-placeholder="开始日期" end-placeholder="结束日期"  @change="selectSignOutTime($event)"></el-date-picker>
                     </div>
@@ -325,7 +325,7 @@
                     </div>
                 </div>
                 <div class="form-item" v-show="false">
-                    <label class="label position"><img src="/static/pc/assets/images/required.png" th:src="@{/pc/assets/images/required.png}" class="required-img">按钮名称</label>
+                    <label class="label"><img src="/static/pc/assets/images/required.png" th:src="@{/pc/assets/images/required.png}" class="required-img">按钮名称</label>
                     <div class="input-box btn-name">
                         <el-input type="text" v-model.trim="sign.signOut.btnName" placeholder="请输入内容" maxlength="6" show-word-limit></el-input>
                     </div>
@@ -761,7 +761,7 @@
                 signInAddressSure: function () {
                     var $this = this;
                     if (activityApp.isEmpty($this.$refs.signInMap.longitude) || activityApp.isEmpty($this.$refs.signInMap.dimension)) {
-                        app.showMsg("签到请选择地址");
+                        app.showMsg("请选择签到地址");
                         return;
                     }
                     $this.sign.signIn.address = $this.$refs.signInMap.address;
