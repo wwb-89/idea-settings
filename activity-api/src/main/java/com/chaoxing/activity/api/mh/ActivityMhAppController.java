@@ -4,8 +4,8 @@ import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.chaoxing.activity.dto.RestRespDTO;
-import com.chaoxing.activity.dto.manager.sign.SignParticipantStatDTO;
 import com.chaoxing.activity.dto.manager.WfwRegionalArchitectureDTO;
+import com.chaoxing.activity.dto.manager.sign.SignParticipantStatDTO;
 import com.chaoxing.activity.dto.mh.MhGeneralAppResultDataDTO;
 import com.chaoxing.activity.dto.query.MhActivityCalendarQueryDTO;
 import com.chaoxing.activity.model.Activity;
@@ -14,6 +14,7 @@ import com.chaoxing.activity.service.manager.CloudApiService;
 import com.chaoxing.activity.service.manager.WfwRegionalArchitectureApiService;
 import com.chaoxing.activity.service.manager.module.SignApiService;
 import com.chaoxing.activity.util.constant.CommonConstant;
+import com.chaoxing.activity.util.constant.DateFormatConstant;
 import com.chaoxing.activity.util.constant.DateTimeFormatterConstant;
 import com.chaoxing.activity.util.exception.BusinessException;
 import com.google.common.collect.Lists;
@@ -26,7 +27,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.RestTemplate;
 
 import javax.annotation.Resource;
-import java.text.SimpleDateFormat;
+import java.text.ParseException;
 import java.time.LocalDateTime;
 import java.util.*;
 import java.util.function.Function;
@@ -47,7 +48,6 @@ public class ActivityMhAppController {
 
 	/** 签到按钮地址 */
 	private static final String QD_BTN_URL = "http://api.qd.reading.chaoxing.com/sign/%d/btn?activityId=%s";
-	private static final SimpleDateFormat YYYYMMDD = new SimpleDateFormat("yyyy-MM-dd");
 
 	@Resource
 	private ActivityQueryService activityQueryService;
@@ -282,7 +282,7 @@ public class ActivityMhAppController {
 	 * @return com.chaoxing.activity.dto.RestRespDTO
 	*/
 	@RequestMapping("activity/calendar")
-	public RestRespDTO activityCalendar(String areaCode, @RequestBody String data) {
+	public RestRespDTO activityCalendar(String areaCode, @RequestBody String data) throws ParseException {
 		JSONObject jsonObject = JSON.parseObject(data);
 		// 获取参数
 		Integer wfwfid = jsonObject.getInteger("wfwfid");
@@ -313,10 +313,10 @@ public class ActivityMhAppController {
 		String year = jsonObject.getString("year");
 		String month = jsonObject.getString("month");
 		String date = jsonObject.getString("date");
-		if (StringUtils.isNotBlank(year)) {
+		if (StringUtils.isNotBlank(year) && StringUtils.isBlank(date)) {
 			Calendar calendar = Calendar.getInstance();
 			calendar.set(Calendar.YEAR, Integer.parseInt(year));
-			calendar.set(Calendar.MONTH, Integer.parseInt(month));
+			calendar.set(Calendar.MONTH, Integer.parseInt(month) - 1);
 			mhActivityCalendarQuery.setStartDate(calMonthStartTime(calendar));
 			mhActivityCalendarQuery.setEndDate(calMonthEndTime(calendar));
 		}
@@ -369,7 +369,7 @@ public class ActivityMhAppController {
 	private String calMonthStartTime(Calendar calendar) {
 		calendar.set(Calendar.DAY_OF_MONTH, 1);
 		Date time = calendar.getTime();
-		return YYYYMMDD.format(time);
+		return DateFormatConstant.YYYYMMDD.format(time);
 	}
 
 	private String calMonthEndTime(Calendar calendar) {
@@ -377,7 +377,7 @@ public class ActivityMhAppController {
 		calendar.add(Calendar.MONTH, 1);
 		calendar.add(Calendar.DAY_OF_MONTH, -1);
 		Date time = calendar.getTime();
-		return YYYYMMDD.format(time);
+		return DateFormatConstant.YYYYMMDD.format(time);
 	}
 
 	/**活动地址
