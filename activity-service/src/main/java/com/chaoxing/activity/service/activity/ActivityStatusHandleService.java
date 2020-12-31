@@ -55,6 +55,8 @@ public class ActivityStatusHandleService {
 			if (guessOnGoing) {
 				return Activity.StatusEnum.ONGOING.getValue();
 			}
+		} else {
+			return Activity.StatusEnum.WAIT_RELEASE.getValue();
 		}
 		return activity.getStatus();
 	}
