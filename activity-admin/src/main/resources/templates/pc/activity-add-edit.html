@@ -563,9 +563,6 @@
                 if (activityApp.isEmpty($this.sign.id)) {
                     // 生成新的签到报名活动
                     $this.sign = signApp.newSign();
-                    $this.enableSignUp = false;
-                    $this.enableSignIn = false;
-                    $this.enableSignOut = false;
                 } else {
                     $this.sign.createTime = "";
                     $this.sign.updateTime = "";
@@ -611,6 +608,11 @@
                         $this.sign.signOut.startTime = signOutStartTimeStr;
                         $this.sign.signOut.endTime = signOutEndTimeStr;
                     }
+                }
+                if (!$this.activity.enableSign) {
+                    $this.enableSignUp = false;
+                    $this.enableSignIn = false;
+                    $this.enableSignOut = false;
                 }
                 $this.calPersonLimitValue();
                 if (activityApp.isEmpty($this.participatedOrgs)) {
