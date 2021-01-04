@@ -54,11 +54,12 @@ public class ActivityStatusHandleService {
 			// 已发布的活动才处理状态
 			if (guessOnGoing) {
 				return Activity.StatusEnum.ONGOING.getValue();
+			} else {
+				return Activity.StatusEnum.RELEASED.getValue();
 			}
 		} else {
 			return Activity.StatusEnum.WAIT_RELEASE.getValue();
 		}
-		return activity.getStatus();
 	}
 
 	/**订阅状态同步
