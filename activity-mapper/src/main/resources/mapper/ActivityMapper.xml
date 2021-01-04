@@ -53,9 +53,9 @@
                 </foreach>
             </if>
             <!--地区-->
-            <if test="params.area != null and params.area != ''">
-                INNER JOIN t_activity_area_flag t2 ON t.id = t2.activity_id
-                AND t2.area = #{params.area}
+            <if test="params.areaManageFid != null">
+                INNER JOIN t_activity_scope t2 ON t.id = t2.activity_id
+                AND t2.fid = #{params.areaManageFid}
             </if>
             <!--类型-->
             <if test="params.activityClassifyName != null and params.activityClassifyName != ''">
