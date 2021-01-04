@@ -116,6 +116,8 @@ public class ActivityHandleService {
 		activity.setCreateUserName(loginUser.getRealName());
 		activity.setCreateFid(loginUser.getFid());
 		activity.setCreateOrgName(loginUser.getOrgName());
+		activity.setStartDate(activity.getStartTime().toLocalDate());
+		activity.setEndDate(activity.getEndTime().toLocalDate());
 		activityMapper.insert(activity);
 		// 活动参与范围
 		Integer activityId = activity.getId();
@@ -264,6 +266,8 @@ public class ActivityHandleService {
 		existActivity.setName(activity.getName());
 		existActivity.setStartTime(startTime);
 		existActivity.setEndTime(endTime);
+		existActivity.setStartDate(startTime.toLocalDate());
+		existActivity.setEndDate(endTime.toLocalDate());
 		existActivity.setCoverCloudId(activity.getCoverCloudId());
 		existActivity.setOrganisers(activity.getOrganisers());
 		existActivity.setActivityType(activity.getActivityType());
