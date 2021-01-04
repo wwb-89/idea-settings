@@ -171,15 +171,15 @@
             </if>
             <if test="params.startDate != null and params.startDate != ''">
                 AND (
-                ( #{params.startDate} BETWEEN t.start_date AND t.end_date )
-                OR #{params.endDate} BETWEEN t.start_date AND t.end_date )
-                OR ( #{params.startDate} <![CDATA[<=]]> t.start_date AND #{params.endDate} >= t.end_date )
+                    ( #{params.startDate} BETWEEN t.start_date AND t.end_date )
+                    OR (#{params.endDate} BETWEEN t.start_date AND t.end_date )
+                    OR ( #{params.startDate} <![CDATA[<=]]> t.start_date AND #{params.endDate} >= t.end_date )
                 )
             </if>
         GROUP BY
             t.id
         ORDER BY
-            FIELD( t.`status`, 2, 3, 4 ),
+            FIELD( t.`status`, 3, 2, 4 ),
             t.start_time DESC
             <if test="params.topFid != null">
                 , t1.fid <![CDATA[<>]]> #{params.topFid}
