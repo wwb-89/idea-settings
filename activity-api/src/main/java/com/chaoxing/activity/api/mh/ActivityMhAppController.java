@@ -27,6 +27,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.RestTemplate;
 
 import javax.annotation.Resource;
+import java.math.BigDecimal;
 import java.text.ParseException;
 import java.time.LocalDateTime;
 import java.util.*;
@@ -116,7 +117,7 @@ public class ActivityMhAppController {
 				.build());
 		// 开始时间
 		mhGeneralAppResultDataFields.add(MhGeneralAppResultDataDTO.MhGeneralAppResultDataFieldDTO.builder()
-				.key("时间")
+				.key("活动时间")
 				.value(DateTimeFormatterConstant.YYYY_MM_DD_HH_MM.format(activity.getStartTime()))
 				.flag("100")
 				.build());
@@ -135,7 +136,7 @@ public class ActivityMhAppController {
 		// 主办地点
 		mhGeneralAppResultDataFields.add(MhGeneralAppResultDataDTO.MhGeneralAppResultDataFieldDTO.builder()
 				.key("活动地点")
-				.value(activity.getAddress() + Optional.ofNullable(activity.getDetailAddress()).orElse(""))
+				.value(Optional.ofNullable(activity.getAddress()).orElse("") + Optional.ofNullable(activity.getDetailAddress()).orElse(""))
 				.flag("103")
 				.build());
 		// 报名、签到人数
@@ -347,7 +348,7 @@ public class ActivityMhAppController {
 					.build());
 			// 地点
 			mhGeneralAppResultDataFields.add(MhGeneralAppResultDataDTO.MhGeneralAppResultDataFieldDTO.builder()
-					.value(record.getAddress() + Optional.ofNullable(record.getDetailAddress()).orElse(""))
+					.value(Optional.ofNullable(record.getAddress()).orElse("") + Optional.ofNullable(record.getDetailAddress()).orElse(""))
 					.flag("100")
 					.build());
 			// 活动开始时间
@@ -380,7 +381,7 @@ public class ActivityMhAppController {
 		return DateFormatConstant.YYYYMMDD.format(time);
 	}
 
-	/**活动地址
+	/**活动地址(门户地图使用)
 	 * @Description 
 	 * @author wwb
 	 * @Date 2020-12-10 18:12:51
@@ -390,6 +391,11 @@ public class ActivityMhAppController {
 	@RequestMapping("activity/address")
 	public RestRespDTO activityAddress(Integer pageId) {
 		Activity activity = activityQueryService.getByPageId(pageId);
+		// 没有经纬度则设置一个默认的
+		BigDecimal longitude = Optional.ofNullable(activity.getLongitude()).orElse(CommonConstant.DEFAULT_LONGITUDE);
+		BigDecimal dimension = Optional.ofNullable(activity.getDimension()).orElse(CommonConstant.DEFAULT_DIMENSION);
+		activity.setLongitude(longitude);
+		activity.setDimension(dimension);
 		return RestRespDTO.success(activity);
 	}
 

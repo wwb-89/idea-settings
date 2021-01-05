@@ -74,7 +74,7 @@
                     </div>
                     <div class="font-box">
                         <p class="title1 overHidden2" >{{item.name}}</p>
-                        <p>活动时间：{{item.startTime | timestamp2YMDHM}} ～ {{item.endTime | timestamp2YMDHM}}</p>
+                        <p>活动时间：{{item.startTime | timestamp2YMD}} ～ {{item.endTime | timestamp2YMD}}</p>
                         <p>主办单位：{{item.organisers}}</p>
                         <p class="overHidden2" v-show="item.address">活动地点：{{item.address}}{{item.detailAddress ? item.detailAddress : ''}}</p>
                     </div>
@@ -94,6 +94,10 @@
     <script src="/static/pc/assets/lib/jqthumb.min.js" th:src="@{/pc/assets/lib/jqthumb.min.js}"></script>
     <script th:if="${pageId != null}" th:src="|//portal.chaoxing.com/outer/${pageId}/footer|"></script>
     <script th:inline="javascript">
+        Vue.filter("timestamp2YMD", function (timestamp) {
+            var dateObj = activityApp.millisecond2DateObj(timestamp);
+            return dateObj.year + "-" + dateObj.month + "-" + dateObj.day;
+        });
         activityVue = new Vue({
             el: '#activity-vue',
             data: {

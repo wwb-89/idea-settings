@@ -48,8 +48,8 @@
     <div class="top flex box" v-if="!activity.id">
         <div class="flex">
             <span class="create" v-show="step == 1">创建活动</span>
-            <span class="create" v-show="step == 2">活动展示页</span>
-            <span class="create_tips" v-show="step == 2">请选择你的活动呈现页面</span>
+            <span class="create" v-show="step == 2">选择活动展示页面</span>
+            <span class="create_tips" v-show="step == 2">请选择你的活动呈现样式</span>
         </div>
         <div>
             <button type="button" class="create-btn" v-show="step == 2" @click="preStep">上一步</button>
@@ -157,7 +157,7 @@
                 <div class="form-item">
                     <label class="label"><img src="/static/pc/assets/images/required.png" th:src="@{/pc/assets/images/required.png}" class="required-img">报名时间</label>
                     <div class="input-box">
-                        <el-date-picker v-model="signUpTimeScope" type="datetimerange" format="yyyy-MM-dd HH:mm" value-format="yyyy-MM-dd HH:mm:ss" :editable=false range-separator="至" start-placeholder="开始日期" end-placeholder="结束日期" :default-time="['00:00:00', '23:59:59']" @change="selectSignUpTime($event)"></el-date-picker>
+                        <el-date-picker v-model="signUpTimeScope" type="datetimerange" format="yyyy-MM-dd HH:mm" value-format="yyyy-MM-dd HH:mm:ss" :editable=false range-separator="至" start-placeholder="开始时间" end-placeholder="结束时间" :default-time="['00:00:00', '23:59:59']" @change="selectSignUpTime($event)"></el-date-picker>
                     </div>
                 </div>
                 <div class="form-item">
@@ -238,7 +238,7 @@
                 <div class="form-item">
                     <label class="label"><img src="/static/pc/assets/images/required.png" th:src="@{/pc/assets/images/required.png}" class="required-img">签到时间</label>
                     <div class="input-box">
-                        <el-date-picker v-model="signInTimeScope" type="datetimerange" format="yyyy-MM-dd HH:mm" value-format="yyyy-MM-dd HH:mm:ss" :editable=false range-separator="至" start-placeholder="开始日期" end-placeholder="结束日期" :default-time="['00:00:00', '23:59:59']" @change="selectSignInTime($event)"></el-date-picker>
+                        <el-date-picker v-model="signInTimeScope" type="datetimerange" format="yyyy-MM-dd HH:mm" value-format="yyyy-MM-dd HH:mm:ss" :editable=false range-separator="至" start-placeholder="开始时间" end-placeholder="结束时间" :default-time="['00:00:00', '23:59:59']" @change="selectSignInTime($event)"></el-date-picker>
                     </div>
                 </div>
                 <div class="form-item" v-if="false">
@@ -303,7 +303,7 @@
                 <div class="form-item">
                     <label class="label"><img src="/static/pc/assets/images/required.png" th:src="@{/pc/assets/images/required.png}" class="required-img">签到时间</label>
                     <div class="input-box">
-                        <el-date-picker v-model="signOutTimeScope" type="datetimerange" format="yyyy-MM-dd HH:mm" value-format="yyyy-MM-dd HH:mm:ss" :editable=false range-separator="至" start-placeholder="开始日期" end-placeholder="结束日期" :default-time="['00:00:00', '23:59:59']" @change="selectSignOutTime($event)"></el-date-picker>
+                        <el-date-picker v-model="signOutTimeScope" type="datetimerange" format="yyyy-MM-dd HH:mm" value-format="yyyy-MM-dd HH:mm:ss" :editable=false range-separator="至" start-placeholder="开始时间" end-placeholder="结束时间" :default-time="['00:00:00', '23:59:59']" @change="selectSignOutTime($event)"></el-date-picker>
                     </div>
                 </div>
                 <div class="form-item" v-if="false">
@@ -391,25 +391,6 @@
             <div>
                 <div class="normal-btn">配置页面</div>
                 <div class="normal-btn after-sure">完成</div>
-            </div>
-        </div>
-    </div>
-    <!-- 预览弹窗 -->
-    <div class="dailog-box1" style="display: none;">
-        <div class="dailog look-dailog">
-            <div class="header">
-                <span>预览</span>
-                <img src="/static/pc/assets/images/close.png" th:src="@{/pc/assets/images/close.png}" class="close">
-            </div>
-            <div class="body">
-                <!-- 二维码 -->
-                <div class="code"><img src="/static/pc/assets/images/example.jpg" th:src="@{/pc/assets/images/example.jpg}"></div>
-                <span>使用学习通扫码查看</span>
-                <div class="link-box">
-                    <span>链接</span>
-                    <input type="text" class="input-link">
-                    <a href="">访问</a>
-                </div>
             </div>
         </div>
     </div>
