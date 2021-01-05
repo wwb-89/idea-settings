@@ -132,6 +132,13 @@
                 <div class="input-box wrap">
                     <div class="type-item active">活动</div>
                     <div class="type-item">讲座</div>
+                    <div class="type-item">讲座</div>
+                    <div class="type-item">讲座</div>
+                    <div class="type-item">讲座</div>
+                    <div class="type-item">讲座</div>
+                    <div class="type-item">讲座</div>
+                    <div class="type-item">讲座</div>
+                    <div class="type-item">讲座</div>
                     <div class="type-item">征文</div>
                     <div class="type-item">自定义选项
                         <img src="../assets/images/more.png" alt="" style="margin-left: 10px;">
@@ -891,13 +898,27 @@
             deleteShow: false,
             previewShow: false,
             releaseShow: false,
-            link: "http://xueya.chaoxing.com/school-base/sc-sc-school-base/sc-sc-"
+            link: "http://xueya.chaox"
         },
         mounted: function () {
             // this.initMap()
+            this.initInputWidth();
             this.organizationTreeFun();
         },
         methods: {
+            // 根据文本长度初始化input框的长度
+            initInputWidth: function() {
+                var text_length = $('.copy-box input').val().length;
+                var current_width = parseInt(text_length) *8;
+                $('.copy-box input').css("width",current_width+"px");
+
+                $('.copy-box input').bind('input propertychange', function() {
+                    var $this = $(this);
+                    var text_length = $('.copy-box input').val().length;
+                    var current_width = parseInt(text_length) *8;
+                    $this.css("width",current_width+"px");
+                });
+            },
             initMap: function () {
                 var that = this;
                 this.map = new BMap.Map("map-contain", {

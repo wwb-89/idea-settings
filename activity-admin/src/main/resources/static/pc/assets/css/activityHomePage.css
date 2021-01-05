@@ -42,9 +42,11 @@ body {
 }
 .message {
     margin: 12px 0 0 0;
+    padding: 12px 0;
     border-top: 1px solid #f0f0f0;
 }
 .statistics {
+    padding: 12px 0;
     border-top: 1px solid #f0f0f0;
 }
 .item {
@@ -55,13 +57,13 @@ body {
     cursor: pointer;
 }
 .message .item {
-    padding: 26px 0 26px 24px;
+    padding: 14px 0 14px 24px;
 }
 .statistics .item {
-    padding: 26px 0 26px 24px;
+    padding: 14px 0 14px 24px;
 }
 .item img {
-    width: 25px;
+    width: 24px;
     height: 24px;
     display: block;
     float: left;
@@ -80,7 +82,7 @@ body {
     height: calc(100% - 16px);
     min-height: 836px;
     width: calc(100% - 269px);
-    padding: 16px 24px 0 24px;
+    /*padding: 16px 24px 0 24px;*/
     border-radius: 0px 8px 8px 0px;
     background: #ffffff;
     border-left: 1px solid #f0f0f0;;

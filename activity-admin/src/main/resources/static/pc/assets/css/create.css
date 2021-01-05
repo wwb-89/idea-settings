@@ -169,10 +169,13 @@ input[type="number"] {
     background: #ffffff;
     border: 1px solid #e9e9e9;
     border-radius: 2px;
-    padding-left: 14px;
     box-sizing: border-box;
     font-size: 16px;
     color: #333333;
+}
+
+.el-input__inner {
+    padding: 0;
 }
 
 .length {
@@ -246,7 +249,7 @@ input[type="number"] {
     box-sizing: border-box;
     cursor: pointer;
     margin-right: 20px;
-    /*margin-bottom: 10px;*/
+    margin-bottom: 10px;
     font-size: 16px;
     color: #333333;
 }
@@ -1009,9 +1012,6 @@ input.btn-name,
     margin-left: 30px;
     padding: 20px 0;
 }
-.pageset-right input{
-    width: 415px;
-}
 .pageset-right .cancle-btn{
     margin-top: 40px;
 }
@@ -1019,14 +1019,10 @@ input.btn-name,
     position: relative;
 }
 .pageset-right a{
-    position: absolute;
-    right: 10px;
-    top: 50%;
-    transform: translateY(-50%);
+    transform: translateY(-155%);
     z-index: 2;
-    font-size: 14px;
-    color: #0084ff;
-    background-color: #fff;
+    float: right;
+    margin-left: 4px;
 }
 .del-img{
     margin-left: 5px;
@@ -1157,11 +1153,8 @@ input.btn-name,
 .configurationForm .tips {
     margin-left: 5px !important;
 }
-.copy-link {
-    width: 542px;
-}
 .copy-link input{
-    width: 498px;
+    max-width: 496px;
     font-size: 16px;
     color: #0084FF;
     border: none;
@@ -1184,4 +1177,7 @@ input.btn-name,
     line-height: 20px;
     color: #999999;
     margin-left: 16px;
+}
+.ztree * {
+    font-family: PingFangSC;
 }
