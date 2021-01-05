@@ -405,7 +405,7 @@
             </div>
             <div class="pageset-right">
                 <div class="copy-box">
-                    <el-input readonly type="text" class="copy-link" v-model.trim="activity.previewUrl"></el-input>
+                    <a type="text" class="copy-link" :href="activity.previewUrl" target="_blank">{{activity.previewUrl}}</a>
                     <a href="javascript:" class="copy" @click="copyTemplatePreviewUrl">复制</a>
                 </div>
                 <button type="button" class="cancle-btn" @click="configPage">页面配置</button>
