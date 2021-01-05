@@ -57,7 +57,6 @@
 }
 
 .typeItem {
-    display: flex;
     color: #333333;
     font-size: 14px;
     margin-top: 24px;
@@ -67,9 +66,11 @@
 .title {
     line-height: 28px;
     margin-right: 20px;
+    float: left;
 }
 .typeItem ul {
     display: flex;
+    flex-flow: row wrap;
 }
 
 .typeItem ul li {
