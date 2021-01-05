@@ -91,4 +91,17 @@ public class ActivityApiController {
 		return RestRespDTO.success(activity.getName());
 	}
 
+	/**根据报名签到id查询活动
+	 * @Description 
+	 * @author wwb
+	 * @Date 2021-01-05 19:11:56
+	 * @param signId
+	 * @return com.chaoxing.activity.dto.RestRespDTO
+	*/
+	@RequestMapping("")
+	public RestRespDTO getActivityBySignId(Integer signId) {
+		Activity activity = activityQueryService.getBySignId(signId);
+		return RestRespDTO.success(activity);
+	}
+
 }

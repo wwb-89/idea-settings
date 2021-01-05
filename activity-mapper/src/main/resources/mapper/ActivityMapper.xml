@@ -100,11 +100,11 @@
         GROUP BY
             t.id
         ORDER BY
-            FIELD( t.`status`, 2, 3, 4 ),
-            t.start_time DESC
+            FIELD( t.`status`, 2, 3, 4 )
             <if test="params.topFid != null">
                 , t1.fid <![CDATA[<>]]> #{params.topFid}
             </if>
+            ,t.start_time DESC
     </select>
 
     <!--查询管理的活动-->
@@ -180,10 +180,10 @@
         GROUP BY
             t.id
         ORDER BY
-            FIELD( t.`status`, 3, 2, 4 ),
-            t.start_time DESC
+            FIELD( t.`status`, 3, 2, 4 )
             <if test="params.topFid != null">
                 , t1.fid <![CDATA[<>]]> #{params.topFid}
             </if>
+            ,t.start_time DESC
     </select>
 </mapper>
