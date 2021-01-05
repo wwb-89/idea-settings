@@ -1019,9 +1019,7 @@ input.btn-name,
     position: relative;
 }
 .pageset-right a{
-    transform: translateY(-155%);
     z-index: 2;
-    float: right;
     margin-left: 4px;
 }
 .del-img{
@@ -1153,7 +1151,7 @@ input.btn-name,
 .configurationForm .tips {
     margin-left: 5px !important;
 }
-.copy-link input{
+.copy-link {
     max-width: 496px;
     font-size: 16px;
     color: #0084FF;

@@ -775,7 +775,7 @@
             <div class="page-demo"><img src="../assets/images/example.jpg" alt="" class="jqthumbImg"></div>
             <div class="pageset-right">
                 <div class="copy-box">
-                    <el-input type="text" class="copy-link" placeholder="请输入" v-model="link"></el-input>
+                    <a type="text" class="copy-link">{{link}}</a>
                     <a href="javascript:;" class="copy">复制</a>
                 </div>
                 <button type="button" class="cancle-btn">页面配置</button>
@@ -906,19 +906,6 @@
             this.organizationTreeFun();
         },
         methods: {
-            // 根据文本长度初始化input框的长度
-            initInputWidth: function() {
-                var text_length = $('.copy-box input').val().length;
-                var current_width = parseInt(text_length) *8;
-                $('.copy-box input').css("width",current_width+"px");
-
-                $('.copy-box input').bind('input propertychange', function() {
-                    var $this = $(this);
-                    var text_length = $('.copy-box input').val().length;
-                    var current_width = parseInt(text_length) *8;
-                    $this.css("width",current_width+"px");
-                });
-            },
             initMap: function () {
                 var that = this;
                 this.map = new BMap.Map("map-contain", {
