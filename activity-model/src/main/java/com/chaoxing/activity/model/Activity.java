@@ -53,6 +53,8 @@ public class Activity {
     private String activityType;
     /** 活动地址; column: address*/
     private String address;
+    /** 详细地址; column: detail_address*/
+    private String detailAddress;
     /** 经度; column: longitude*/
     private BigDecimal longitude;
     /** 维度; column: dimension*/

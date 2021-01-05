@@ -116,6 +116,7 @@
                     <div class="input-box">
                         <input type="text" readonly required lay-verify="required" v-model.trim="activity.address" placeholder="请选择活动地点" autocomplete="off" class="layui-input name show-addr" style="cursor: pointer;" @click="showActivityMap">
                         <img src="/static/pc/assets/images/location.png" th:src="@{/pc/assets/images/location.png}" class="length icon">
+                        <input type="text" required v-model.trim="activity.detailAddress" lay-verify="required" placeholder="详细地址，例：E5栋1308室" autocomplete="off" class="layui-input name show-addr-detailed">
                     </div>
                 </div>
                 <div class="form-item">
@@ -221,6 +222,7 @@
                     <div class="input-box">
                         <input type="text" readonly required lay-verify="required" v-model.trim="sign.signIn.address" placeholder="请选择签到地点" autocomplete="off" class="layui-input name show-addr" style="cursor: pointer;" @click="showSignInMap">
                         <img src="/static/pc/assets/images/location.png" th:src="@{/pc/assets/images/location.png}" class="length icon">
+                        <input type="text" required lay-verify="required" v-model.trim="sign.signIn.detailAddress" placeholder="详细地址，例：E5栋1308室" autocomplete="off" class="layui-input name show-addr-detailed">
                     </div>
                 </div>
                 <!--<div class="form-item" v-show="sign.signIn.way == 3">
@@ -285,6 +287,7 @@
                     <div class="input-box">
                         <input type="text" readonly required lay-verify="required" v-model.trim="sign.signOut.address" placeholder="请选择签到地点" autocomplete="off" class="layui-input name show-addr" style="cursor: pointer;" @click="showSignOutMap">
                         <img src="/static/pc/assets/images/location.png" th:src="@{/pc/assets/images/location.png}" class="length icon">
+                        <input type="text" required lay-verify="required" v-model.trim="sign.signOut.detailAddress" placeholder="详细地址，例：E5栋1308室" autocomplete="off" class="layui-input name show-addr-detailed">
                     </div>
                 </div>
                 <!--<div class="form-item" v-show="sign.signOut.way == 3">
@@ -523,6 +526,7 @@
                         organisers: [[${session._login_user_.orgName}]],
                         activityType: "offline",
                         address: "",
+                        detailAddress: "",
                         longitude: "",
                         dimension: "",
                         activityClassifyId: firstActivityClassifyId,

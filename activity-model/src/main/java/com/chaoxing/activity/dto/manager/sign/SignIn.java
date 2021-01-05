@@ -37,6 +37,8 @@ public class SignIn {
     private Integer way;
     /** 签到地址 */
     private String address;
+    /** 详细地址 */
+    private String detailAddress;
     /** 签到经度 */
     private BigDecimal longitude;
     /** 签到维度 */

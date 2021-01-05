@@ -42,7 +42,7 @@
                         <div class="clear"></div>
                     </div>
                     <p class="dec">{{activity.organisers}}</p>
-                    <p class="address">{{activity.address}}</p>
+                    <p class="address">{{activity.address}}{{activity.detailAddress ? activity.detailAddress : ''}}</p>
                 </div>
             </li>
         </ul>

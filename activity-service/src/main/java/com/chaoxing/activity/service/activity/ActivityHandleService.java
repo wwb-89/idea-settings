@@ -272,6 +272,7 @@ public class ActivityHandleService {
 		existActivity.setOrganisers(activity.getOrganisers());
 		existActivity.setActivityType(activity.getActivityType());
 		existActivity.setAddress(activity.getAddress());
+		existActivity.setDetailAddress(activity.getDetailAddress());
 		existActivity.setLongitude(activity.getLongitude());
 		existActivity.setDimension(activity.getDimension());
 		existActivity.setActivityClassifyId(activity.getActivityClassifyId());

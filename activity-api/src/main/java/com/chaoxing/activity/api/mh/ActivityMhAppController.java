@@ -135,7 +135,7 @@ public class ActivityMhAppController {
 		// 主办地点
 		mhGeneralAppResultDataFields.add(MhGeneralAppResultDataDTO.MhGeneralAppResultDataFieldDTO.builder()
 				.key("活动地点")
-				.value(activity.getAddress())
+				.value(activity.getAddress() + Optional.ofNullable(activity.getDetailAddress()).orElse(""))
 				.flag("103")
 				.build());
 		// 报名、签到人数
@@ -347,7 +347,7 @@ public class ActivityMhAppController {
 					.build());
 			// 地点
 			mhGeneralAppResultDataFields.add(MhGeneralAppResultDataDTO.MhGeneralAppResultDataFieldDTO.builder()
-					.value(record.getAddress())
+					.value(record.getAddress() + Optional.ofNullable(record.getDetailAddress()).orElse(""))
 					.flag("100")
 					.build());
 			// 活动开始时间
