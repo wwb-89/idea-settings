@@ -75,15 +75,15 @@
                 iframeUrl: ""
             },
             created: function () {
-                var $this = this;
-                if ($this.signActivityManageIndex.signUpExist) {
-                    $this.selectMenu("signUpList");
-                }else {
-                    $this.selectMenu("signInManage");
-                }
+
             },
             mounted: function () {
-
+                var $this = this;
+                if ($this.signActivityManageIndex.signUpExist) {
+                    $this.toSignUpList();
+                }else {
+                    $this.toSignInManage();
+                }
             },
             methods: {
                 loadUrl: function (url) {
