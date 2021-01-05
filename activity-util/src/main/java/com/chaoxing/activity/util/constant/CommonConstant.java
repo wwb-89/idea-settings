@@ -1,5 +1,6 @@
 package com.chaoxing.activity.util.constant;
 
+import java.math.BigDecimal;
 import java.time.ZoneOffset;
 
 /**
@@ -31,5 +32,10 @@ public class CommonConstant {
 	public static final Integer DEFAULT_PAGE_SIZE = 10;
 	/** 默认时区 */
 	public static final ZoneOffset DEFAULT_ZONEOFFSET = ZoneOffset.of("+8");
+
+	/** 默认经度 */
+	public static final BigDecimal DEFAULT_LONGITUDE = BigDecimal.valueOf(104.07073444090588000);
+	/** 默认维度 */
+	public static final BigDecimal DEFAULT_DIMENSION = BigDecimal.valueOf(30.57504123492308400);
 
 }

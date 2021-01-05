@@ -33,11 +33,12 @@ public class ActivityManageController {
 	@Resource
 	private WebTemplateService webTemplateService;
 
-	public String index(String code) {
+	public String index(Model model, String code) {
+		model.addAttribute("code", code);
 		return "pc/activity-list";
 	}
 
-	public String add(Model model, HttpServletRequest request) {
+	public String add(Model model, HttpServletRequest request, String code) {
 		LoginUserDTO loginUser = LoginUtils.getLoginUser(request);
 		// 活动类型列表
 		List<ActivityTypeDTO> activityTypes = activityQueryService.listActivityType();
@@ -47,8 +48,9 @@ public class ActivityManageController {
 		// 报名签到
 		model.addAttribute("sign", SignAddEditDTO.builder().build());
 		// 模板列表
-		List<WebTemplate> webTemplates = webTemplateService.list();
+		List<WebTemplate> webTemplates = webTemplateService.listAvailable(loginUser.getFid());
 		model.addAttribute("webTemplates", webTemplates);
+		model.addAttribute("code", code);
 		return "pc/activity-add-edit";
 	}
 

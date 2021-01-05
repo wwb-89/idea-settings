@@ -4,6 +4,7 @@ import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.chaoxing.activity.dto.OrgAddressDTO;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
@@ -38,24 +39,26 @@ public class GuanliApiService {
 		status = Optional.ofNullable(status).orElse(Boolean.FALSE);
 		if (status) {
 			String links = jsonObject.getString("links");
-			String[] split = links.split(ADDRESS_SEPARATOR);
-			int length = split.length;
-			String country = length > 0 ? split[0] : "";
-			String province = length > 1 ? split[1] : "";
-			String city = length > 2 ? split[2] : "";
-			String county = length > 3 ? split[3] : "";
-			return OrgAddressDTO.builder()
-					.fid(fid)
-					.orgName(jsonObject.getString("name"))
-					.country(country.trim())
-					.province(province.trim())
-					.city(city.trim())
-					.county(county.trim())
-					.build();
+			if (!StringUtils.isBlank(links)) {
+				String[] split = links.split(ADDRESS_SEPARATOR);
+				int length = split.length;
+				String country = length > 0 ? split[0] : "";
+				String province = length > 1 ? split[1] : "";
+				String city = length > 2 ? split[2] : "";
+				String county = length > 3 ? split[3] : "";
+				return OrgAddressDTO.builder()
+						.fid(fid)
+						.orgName(jsonObject.getString("name"))
+						.country(country.trim())
+						.province(province.trim())
+						.city(city.trim())
+						.county(county.trim())
+						.build();
+			}
 		} else {
 			log.error("根据fid:{} 查询地址信息失败", fid);
-			return null;
 		}
+		return null;
 	}
 
 }

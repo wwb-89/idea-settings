@@ -42,7 +42,7 @@
                         <div class="clear"></div>
                     </div>
                     <p class="dec">{{activity.organisers}}</p>
-                    <p class="address">{{activity.address}}</p>
+                    <p class="address">{{activity.address}}{{activity.detailAddress ? activity.detailAddress : ''}}</p>
                 </div>
             </li>
         </ul>
@@ -98,6 +98,10 @@
 <div th:replace="mobile/include/common_js :: common_js(~{::script})">
     <script src="/static/mobile/assets/lib/mescroll/mescroll.js" th:src="@{/mobile/assets/lib/mescroll/mescroll.js}"></script>
     <script th:inline="javascript">
+        Vue.filter("timestamp2YMD", function (timestamp) {
+            var dateObj = activityApp.millisecond2DateObj(timestamp);
+            return dateObj.year + "-" + dateObj.month + "-" + dateObj.day;
+        });
         function ready() {
             activityVue = new Vue({
                 el: "#activity-vue",
@@ -138,7 +142,7 @@
                     if ($this.regions.length > 0) {
                         $($this.regions).each(function () {
                             var region = this;
-                            region.value = this.name;
+                            region.value = this.manageFid;
                             region.selected = false;
                             regions.push(region);
                         });
@@ -172,7 +176,7 @@
                             sw: "",
                             activityClassifyName: "",
                             date: "",
-                            area: "",
+                            areaManageFid: "",
                             status: "",
                             areaCode: $this.areaCode,
                             topFid: [[${topFid}]]
@@ -284,7 +288,7 @@
                         });
                         $($this.regions).each(function () {
                             if (this.selected) {
-                                $this.queryParams.area = this.value;
+                                $this.queryParams.areaManageFid = this.value;
                                 return false;
                             }
                         });
@@ -307,7 +311,7 @@
                             $this.$set($this.activityQueryDates[i], "selected", this.value == $this.queryParams.date);
                         });
                         $($this.regions).each(function (i) {
-                            $this.$set($this.regions[i], "selected", this.value == $this.queryParams.area);
+                            $this.$set($this.regions[i], "selected", this.value == $this.queryParams.areaManageFid);
                         });
                         $($this.statuses).each(function (i) {
                             $this.$set($this.statuses[i], "selected", this.value == $this.queryParams.status);

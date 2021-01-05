@@ -65,6 +65,11 @@
         return null;
     }
 
+    /**
+     * 时间戳转换为日期对象
+     * @param millisecond
+     * @returns {string|{month: (*|number), hour: any, year: number, day: any, minute: any, second: any}}
+     */
     activityApp.prototype.millisecond2DateObj = function (millisecond) {
         var $this = this;
         if ($this.isEmpty(millisecond)) {
@@ -91,7 +96,6 @@
             second: second
         };
     };
-
     /**
      * 毫秒转换为日期字符串
      * @param millisecond
@@ -201,7 +205,7 @@
             case 1:
                 return "待发布";
             case 2:
-                return "活动预告";
+                return "待开始";
             case 3:
                 return "进行中";
             default:
@@ -222,7 +226,34 @@
      * @returns {string}
      */
     activityApp.prototype.getRelativeUrl = function (url) {
-        return document.location.pathname + url;
+        var pathname = document.location.pathname;
+        if (pathname == "/") {
+            pathname = "";
+        }
+        if (!url.startsWith("/")) {
+            url = "/" + url;
+        }
+        return pathname + url;
+    };
+    /**
+     * 生成活动的默认开始时间
+     * @returns {string}
+     */
+    activityApp.prototype.generateActivityDefaultStartTime = function () {
+        var $this = this;
+        var date = new Date();
+        var dateObj = $this.millisecond2DateObj(date.getTime());
+        return dateObj.year + "-" + dateObj.month + "-" + dateObj.day + " " + "00:00:00";
+    };
+    /**
+     * 生成活动的默认结束时间
+     * @returns {string}
+     */
+    activityApp.prototype.generateActivityDefaultEndTime = function () {
+        var $this = this;
+        var date = new Date(new Date().setMonth(new Date().getMonth() + 1));
+        var dateObj = $this.millisecond2DateObj(date.getTime());
+        return dateObj.year + "-" + dateObj.month + "-" + dateObj.day + " " + "23:59:59";
     };
     W['activityApp'] = new activityApp();
 })(window, jQuery, JSON);

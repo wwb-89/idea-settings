@@ -34,7 +34,7 @@
                             </div>
                             <div class="desc">
                                 <div class="title" @click="previewPage(scope.row)">{{scope.row.name}}</div>
-                                <div class="time"><span>{{scope.row.startTime | timestamp2ChineseYMD}}</span> - <span>{{scope.row.endTime | timestamp2ChineseYMD}}</span></div>
+                                <div class="time"><span>{{scope.row.startTime | timestamp2YMDHM}}</span> ~ <span>{{scope.row.endTime | timestamp2YMDHM}}</span></div>
                             </div>
                         </div>
                     </template>
@@ -51,7 +51,7 @@
                 </el-table-column>
                 <el-table-column label="状态" min-width="10%">
                     <template slot="header" slot-scope="scope">
-                        <div class="status">状态<i class="el-icon-arrow-down el-down"></i></div>
+                        <div class="status">{{selectedFilterStatusName}}<i class="el-icon-arrow-down el-down"></i></div>
                         <!--状态筛选-->
                         <div class="filters">
                             <p :class="{'blue': status.selected}" v-for="(status, index) of filterStatus" :key="'status-' + index" @click="changeStatus(index)">{{status.name}}</p>
@@ -64,11 +64,11 @@
                 <el-table-column label="操作" min-width="25%">
                     <template slot-scope="scope">
                         <div>
-                            <el-button type="text" v-if="index < 2" v-for="(operation, index) of scope.row.operations" @click="operateProxy(scope.row.id, operation.value)">{{operation.name}}</el-button>
-                            <div class="more-btn" v-if="scope.row.operations.length > 2">
+                            <el-button type="text" v-if="index < 3" v-for="(operation, index) of scope.row.operations" @click="operateProxy(scope.row.id, operation.value)">{{operation.name}}</el-button>
+                            <div class="more-btn" v-if="scope.row.operations.length > 3">
                                 <el-button type="text">更多<i class="el-icon-arrow-down"></i></el-button>
                                 <div class="more">
-                                    <p v-if="index > 1" v-for="(operation, index) of scope.row.operations" @click="operateProxy(scope.row.id, operation.value)">{{operation.name}}</p>
+                                    <p v-if="index > 2" v-for="(operation, index) of scope.row.operations" @click="operateProxy(scope.row.id, operation.value)">{{operation.name}}</p>
                                 </div>
                             </div>
                         </div>
@@ -94,6 +94,10 @@
     <script src="/static/pc/assets/component/activity-scope.js" th:src="@{/pc/assets/component/activity-scope.js}"></script>
     <script src="/static/pc/assets/lib/jqthumb.min.js" th:src="@{/pc/assets/lib/jqthumb.min.js}"></script>
     <script th:inline="javascript">
+        Vue.filter("timestamp2YMDHM", function (timestamp) {
+            var dateObj = activityApp.millisecond2DateObj(timestamp);
+            return dateObj.year + "." + dateObj.month + "." + dateObj.day + " " + dateObj.hour + ":" + dateObj.minute;
+        });
         activityVue = new Vue({
             el: "#activity-vue",
             data: {
@@ -101,6 +105,7 @@
                 uid: [[${session._login_user_.uid}]],
                 fid: [[${session._login_user_.fid}]],
                 filterStatus: [],
+                selectedFilterStatusName: "全部",
                 queryParams: {
                     pageNum: 1,
                     pageSize: 8,
@@ -116,6 +121,7 @@
                 operations: {
                     edit: {name: "编辑", value: "edit"},
                     delete: {name: "删除", value: "delete"},
+                    manage: {name: "管理", value: "manage"},
                     release: {name: "发布", value: "release"},
                     cancelRelease: {name: "下架", value: "cancelRelease"}
                 }
@@ -125,7 +131,7 @@
                 $this.filterStatus = [
                     {name: "全部", value: "", selected: true},
                     {name: "待发布", value: "1", selected: false},
-                    {name: "活动预告", value: "2", selected: false},
+                    {name: "待开始", value: "2", selected: false},
                     {name: "进行中", value: "3", selected: false},
                     {name: "已结束", value: "4", selected: false}
                 ];
@@ -178,6 +184,9 @@
                                     if (isCreator || isCurrentOrgCreated) {
                                         activity.operations.push($this.operations.release);
                                         activity.operations.push($this.operations.edit);
+                                        if (isCreator && activity.enableSign) {
+                                            activity.operations.push($this.operations.manage);
+                                        }
                                         activity.operations.push($this.operations.delete);
                                     }
                                     break;
@@ -186,11 +195,17 @@
                                     activity.operations.push($this.operations.cancelRelease);
                                     if (isCreator || isCurrentOrgCreated) {
                                         activity.operations.push($this.operations.edit);
+                                        if (isCreator && activity.enableSign) {
+                                            activity.operations.push($this.operations.manage);
+                                        }
                                         activity.operations.push($this.operations.delete);
                                     }
                                     break;
                                 case 4:
                                     if (isCreator || isCurrentOrgCreated) {
+                                        if (isCreator && activity.enableSign) {
+                                            activity.operations.push($this.operations.manage);
+                                        }
                                         activity.operations.push($this.operations.delete);
                                     }
                                     break;
@@ -212,6 +227,7 @@
                     $($this.filterStatus).each(function (i) {
                         if (i == index) {
                             $this.$set($this.filterStatus[i], "selected", true);
+                            $this.selectedFilterStatusName = $this.filterStatus[i].name;
                         } else {
                             $this.$set($this.filterStatus[i], "selected", false);
                         }
@@ -258,6 +274,9 @@
                             break;
                         case "delete":
                             $this.toDelete(id);
+                            break;
+                        case "manage":
+                            $this.toManage(id);
                             break;
                         case "release":
                             $this.toRelease(id);
@@ -310,7 +329,7 @@
                     });
                     if (activityApp.isEmpty(activity.pageId)) {
                         app.showMsg("活动未创建完成，请选择活动模板", function () {
-                            var url = ctx + "/lib/" + $this.processedActivityId + "/edit?step=2";
+                            var url = ctx + "/activity/" + $this.processedActivityId + "/edit?step=2";
                             window.open(url);
                         });
                         return;
@@ -371,6 +390,11 @@
                     if (!activityApp.isEmpty(previewUrl)) {
                         window.open(previewUrl);
                     }
+                },
+                // 管理页面
+                toManage: function (activityId) {
+                    var url = ctx + "/activity/" + activityId;
+                    window.open(url);
                 }
             }
         });

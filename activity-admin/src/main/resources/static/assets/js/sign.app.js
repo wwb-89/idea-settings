@@ -61,6 +61,7 @@
             endTimeStr: "",
             way: 1,
             address: "",
+            detailAddress: "",
             longitude: null,
             dimension: null,
             scanCodeWay: 1,

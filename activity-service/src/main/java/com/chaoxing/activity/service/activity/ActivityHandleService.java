@@ -116,6 +116,8 @@ public class ActivityHandleService {
 		activity.setCreateUserName(loginUser.getRealName());
 		activity.setCreateFid(loginUser.getFid());
 		activity.setCreateOrgName(loginUser.getOrgName());
+		activity.setStartDate(activity.getStartTime().toLocalDate());
+		activity.setEndDate(activity.getEndTime().toLocalDate());
 		activityMapper.insert(activity);
 		// 活动参与范围
 		Integer activityId = activity.getId();
@@ -264,10 +266,13 @@ public class ActivityHandleService {
 		existActivity.setName(activity.getName());
 		existActivity.setStartTime(startTime);
 		existActivity.setEndTime(endTime);
+		existActivity.setStartDate(startTime.toLocalDate());
+		existActivity.setEndDate(endTime.toLocalDate());
 		existActivity.setCoverCloudId(activity.getCoverCloudId());
 		existActivity.setOrganisers(activity.getOrganisers());
 		existActivity.setActivityType(activity.getActivityType());
 		existActivity.setAddress(activity.getAddress());
+		existActivity.setDetailAddress(activity.getDetailAddress());
 		existActivity.setLongitude(activity.getLongitude());
 		existActivity.setDimension(activity.getDimension());
 		existActivity.setActivityClassifyId(activity.getActivityClassifyId());
@@ -275,7 +280,7 @@ public class ActivityHandleService {
 		existActivity.setSignId(activity.getSignId());
 		existActivity.setWebTemplateId(activity.getWebTemplateId());
 		// 根据活动时间判断状态
-		Integer status = activityStatusHandleService.calActivityStatus(startTime, endTime, existActivity.getStatus());
+		Integer status = activityStatusHandleService.calActivityStatus(existActivity);
 		existActivity.setStatus(status);
 		activityMapper.update(existActivity, new UpdateWrapper<Activity>()
 			.lambda()
@@ -309,7 +314,7 @@ public class ActivityHandleService {
 		activity.setReleased(true);
 		activity.setReleaseTime(LocalDateTime.now());
 		activity.setReleaseUid(loginUser.getUid());
-		Integer status = activityStatusHandleService.calActivityStatus(activity.getStartTime(), activity.getEndTime(), Activity.StatusEnum.RELEASED.getValue());
+		Integer status = activityStatusHandleService.calActivityStatus(activity);
 		activityMapper.update(null, new UpdateWrapper<Activity>()
 			.lambda()
 				.eq(Activity::getId, activity.getId())
@@ -337,11 +342,12 @@ public class ActivityHandleService {
 	@Transactional(rollbackFor = Exception.class)
 	public void cancelRelease(Integer activityId, LoginUserDTO loginUser) {
 		Activity activity = activityValidationService.cancelReleaseAble(activityId, loginUser);
-		Integer status = activityStatusHandleService.calActivityStatus(activity.getStartTime(), activity.getEndTime(), Activity.StatusEnum.WAIT_RELEASE.getValue());
+		activity.setReleased(Boolean.FALSE);
+		Integer status = activityStatusHandleService.calActivityStatus(activity);
 		activityMapper.update(null, new UpdateWrapper<Activity>()
 			.lambda()
 				.eq(Activity::getId, activity.getId())
-				.set(Activity::getReleased, false)
+				.set(Activity::getReleased, activity.getReleased())
 				.set(Activity::getStatus, status)
 		);
 		// 删除活动范围
@@ -496,6 +502,7 @@ public class ActivityHandleService {
 		MhCloneParamDTO mhCloneParam = new MhCloneParamDTO();
 		mhCloneParam.setTemplateId(webTemplate.getTemplateId());
 		mhCloneParam.setWebsiteName(activity.getName());
+		mhCloneParam.setOriginPageId(webTemplate.getOriginPageId());
 		mhCloneParam.setUid(loginUser.getUid());
 		mhCloneParam.setWfwfid(loginUser.getFid());
 		List<MhCloneParamDTO.MhAppDTO> appList = packageTemplateApps(activity, webTemplateId);

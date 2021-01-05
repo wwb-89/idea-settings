@@ -142,7 +142,7 @@ public class ActivityApiController {
 		return RestRespDTO.success();
 	}
 
-	/**取消发布
+	/**取消发布（下架）
 	 * @Description 
 	 * @author wwb
 	 * @Date 2020-11-20 11:06:19

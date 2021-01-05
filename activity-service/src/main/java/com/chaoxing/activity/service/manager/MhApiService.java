@@ -45,6 +45,10 @@ public class MhApiService {
 		Integer fid = mhCloneParam.getWfwfid();
 		Integer uid = mhCloneParam.getUid();
 		String url = String.format(CLONE_TEMPLATE_URL, mhCloneParam.getTemplateId(), fid, uid, mhCloneParam.getWebsiteName());
+		Integer originPageId = mhCloneParam.getOriginPageId();
+		if (originPageId != null) {
+			url += "&originPageId=" + originPageId;
+		}
 		HttpHeaders httpHeaders = new HttpHeaders();
 		httpHeaders.setContentType(MediaType.APPLICATION_JSON);
 		HttpEntity<String> httpEntity = new HttpEntity(JSON.toJSONString(mhCloneParam), httpHeaders);

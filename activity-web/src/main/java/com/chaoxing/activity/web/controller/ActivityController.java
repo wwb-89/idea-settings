@@ -23,6 +23,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import java.util.List;
+import java.util.Optional;
 
 /**活动
  * @author wwb
@@ -67,13 +68,19 @@ public class ActivityController {
 	 * @param request
 	 * @param model
 	 * @param code
-	 * @param fid
+	 * @param unitId
+	 * @param state
 	 * @param pageId
+	 * @param fid
 	 * @return java.lang.String
 	*/
 	@GetMapping("lib")
-	public String libIndex(HttpServletRequest request, Model model, String code, @RequestParam(value = "unitId", required = false) Integer fid, Integer pageId) {
-		return handleData(request, model, code, fid, pageId);
+	public String libIndex(HttpServletRequest request, Model model, String code, Integer unitId, Integer state, Integer fid, Integer pageId) {
+		Integer realFid = Optional.ofNullable(unitId).orElse(Optional.ofNullable(state).orElse(fid));
+		if (realFid == null) {
+			return "redirect:/";
+		}
+		return handleData(request, model, code, realFid, pageId);
 	}
 	
 	/**基础教育

@@ -19,7 +19,7 @@ import javax.servlet.http.HttpServletRequest;
  */
 @Slf4j
 @Controller
-@RequestMapping("general")
+@RequestMapping({"general", ""})
 public class GeneralActivityManagementController {
 
 	@Resource
@@ -29,12 +29,13 @@ public class GeneralActivityManagementController {
 	 * @Description
 	 * @author wwb
 	 * @Date 2020-11-18 11:34:30
+	 * @param model
 	 * @param code 图书馆编码
 	 * @return java.lang.String
 	 */
 	@RequestMapping("")
-	public String index(String code) {
-		return activityManageController.index(code);
+	public String index(Model model, String code) {
+		return activityManageController.index(model, code);
 	}
 
 	/**活动新增页面
@@ -43,11 +44,12 @@ public class GeneralActivityManagementController {
 	 * @Date 2020-12-25 10:19:16
 	 * @param model
 	 * @param request
+	 * @param code
 	 * @return java.lang.String
 	*/
 	@GetMapping("activity/add")
-	public String add(Model model, HttpServletRequest request) {
-		return activityManageController.add(model, request);
+	public String add(Model model, HttpServletRequest request, String code) {
+		return activityManageController.add(model, request, code);
 	}
 
 }

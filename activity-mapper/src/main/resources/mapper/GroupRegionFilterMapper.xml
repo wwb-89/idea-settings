@@ -5,12 +5,13 @@
         <id column="id" jdbcType="INTEGER" property="id" />
         <result column="group_id" jdbcType="INTEGER" property="groupId" />
         <result column="name" jdbcType="VARCHAR" property="name" />
+        <result column="manage_fid" jdbcType="VARCHAR" property="manageFid" />
         <result column="sequence" jdbcType="INTEGER" property="sequence" />
         <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
         <result column="update_time" jdbcType="TIMESTAMP" property="updateTime" />
     </resultMap>
     <sql id="Base_Column_List">
-        t.id, t.group_id, t.name, t.sequence, t.create_time, t.update_time
+        t.id, t.group_id, t.name, t.manage_fid, t.sequence, t.create_time, t.update_time
     </sql>
 
     <select id="listByGroupCode" resultMap="BaseResultMap">

@@ -12,6 +12,7 @@ import com.chaoxing.activity.mapper.ActivityMapper;
 import com.chaoxing.activity.model.Activity;
 import com.chaoxing.activity.service.manager.WfwRegionalArchitectureApiService;
 import com.chaoxing.activity.util.DateUtils;
+import com.chaoxing.activity.util.constant.DateFormatConstant;
 import com.chaoxing.activity.util.constant.DateTimeFormatterConstant;
 import com.chaoxing.activity.util.enums.ActivityQueryDateEnum;
 import com.chaoxing.activity.util.enums.ActivityTypeEnum;
@@ -23,6 +24,7 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
+import java.text.ParseException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -74,19 +76,28 @@ public class ActivityQueryService {
 	 * @param mhActivityCalendarQuery
 	 * @return com.baomidou.mybatisplus.extension.plugins.pagination.Page<com.chaoxing.activity.model.Activity>
 	*/
-	public Page<Activity> listActivityCalendarParticipate(Page<Activity> page, MhActivityCalendarQueryDTO mhActivityCalendarQuery) {
+	public Page<Activity> listActivityCalendarParticipate(Page<Activity> page, MhActivityCalendarQueryDTO mhActivityCalendarQuery) throws ParseException {
 		page = activityMapper.listActivityCalendarParticipate(page, mhActivityCalendarQuery);
 		List<Activity> records = page.getRecords();
-		String startDate = mhActivityCalendarQuery.getStartDate();
-		if (CollectionUtils.isNotEmpty(records) && StringUtils.isNotBlank(startDate)) {
+		String startDateStr = mhActivityCalendarQuery.getStartDate();
+		String endDateStr = mhActivityCalendarQuery.getEndDate();
+		if (CollectionUtils.isNotEmpty(records) && StringUtils.isNotBlank(startDateStr)) {
+			LocalDateTime startDateTime = DateUtils.timestamp2Date(DateFormatConstant.YYYYMMDD.parse(startDateStr).getTime());
+			LocalDateTime endDateTime = DateUtils.timestamp2Date(DateFormatConstant.YYYYMMDD.parse(endDateStr).getTime());
 			// 每个活动的开始时间到结束时间
 			List<Activity> activities = Lists.newArrayList();
 			page.setRecords(activities);
 			for (Activity record : records) {
 				LocalDateTime startTime = record.getStartTime();
 				LocalDateTime endTime = record.getEndTime();
+				if (startTime.isBefore(startDateTime)) {
+					startTime = startDateTime;
+				}
+				if (endTime.isAfter(endDateTime)) {
+					endTime = endDateTime;
+				}
 				Calendar startCalendar = Calendar.getInstance();
-				startCalendar.set(startTime.getYear(), startTime.getMonthValue(), startTime.getDayOfMonth(), 0, 0, 0);
+				startCalendar.set(startTime.getYear(), startTime.getMonthValue() - 1, startTime.getDayOfMonth(), 0, 0, 0);
 				while (startTime.isBefore(endTime)) {
 					Activity activity = new Activity();
 					BeanUtils.copyProperties(record, activity);
@@ -227,6 +238,20 @@ public class ActivityQueryService {
 		return activityMapper.selectOne(new QueryWrapper<Activity>()
 			.lambda()
 				.eq(Activity::getPageId, pageId)
+		);
+	}
+
+	/**根据报名签到id查询活动
+	 * @Description 
+	 * @author wwb
+	 * @Date 2020-12-30 20:38:23
+	 * @param signId
+	 * @return com.chaoxing.activity.model.Activity
+	*/
+	public Activity getBySignId(Integer signId) {
+		return activityMapper.selectOne(new QueryWrapper<Activity>()
+				.lambda()
+				.eq(Activity::getSignId, signId)
 		);
 	}
 

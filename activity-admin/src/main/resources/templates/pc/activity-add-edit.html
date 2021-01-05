@@ -47,22 +47,26 @@
     <!-- 创建活动头部 -->
     <div class="top flex box" v-if="!activity.id">
         <div class="flex">
-            <img src="/static/pc/assets/images/left.png" th:src="@{/pc/assets/images/left.png}" class="left" v-show="step > 1" @click="preStep">
-            <span class="create">创建活动</span>
+            <span class="create" v-show="step == 1">创建活动</span>
+            <span class="create" v-show="step == 2">选择活动展示页面</span>
+            <span class="create_tips" v-show="step == 2">请选择你的活动呈现样式</span>
         </div>
         <div>
+            <button type="button" class="create-btn" v-show="step == 2" @click="preStep">上一步</button>
             <button type="button" class="create-btn" v-show="step == 1" @click="nextStep">下一步</button>
         </div>
     </div>
     <!-- 编辑活动头部 -->
     <div class="top flex box" v-if="activity.id">
         <div class="flex">
-            <img src="/static/pc/assets/images/left.png" th:src="@{/pc/assets/images/left.png}" class="left" v-show="step > 1" @click="preStep">
-            <span class="create">编辑活动</span>
+            <span class="create" v-show="step == 1">编辑活动</span>
+            <span class="create" v-show="step == 2">活动展示页</span>
+            <span class="create_tips" v-show="step == 2">请选择你的活动呈现模版</span>
         </div>
         <div>
-            <!--<button type="button" class="cancle-btn" v-show="activity.webTemplateId">预览</button>-->
-            <button type="button" class="create-btn" v-show="step == 1" @click="save">保存</button>
+            <button type="button" class="create-btn" v-show="step == 2" @click="preStep">上一步</button>
+            <button type="button" class="create-btn" v-show="step == 1 && !activity.webTemplateId" @click="save">下一步</button>
+            <button type="button" class="create-btn" v-show="step == 1 && activity.webTemplateId" @click="save">保存</button>
         </div>
     </div>
     <div v-show="step == 1">
@@ -70,19 +74,19 @@
             <form action="">
                 <div class="title">基本信息</div>
                 <div class="form-item">
-                    <label class="label position"><img src="/static/pc/assets/images/required.png" th:src="@{/pc/assets/images/required.png}" class="required-img">名称</label>
+                    <label class="label"><img src="/static/pc/assets/images/required.png" th:src="@{/pc/assets/images/required.png}" class="required-img">名称</label>
                     <div class="input-box">
                         <el-input type="text" placeholder="请填写信息，简短的活动名称" v-model.trim="activity.name" maxlength="50" show-word-limit></el-input>
                     </div>
                 </div>
                 <div class="form-item">
-                    <label class="label position"><img src="/static/pc/assets/images/required.png" th:src="@{/pc/assets/images/required.png}" class="required-img">时间</label>
+                    <label class="label"><img src="/static/pc/assets/images/required.png" th:src="@{/pc/assets/images/required.png}" class="required-img">时间</label>
                     <div class="input-box">
-                        <el-date-picker v-model="activityDateTimeScope" type="datetimerange" format="yyyy-MM-dd HH:mm" value-format="yyyy-MM-dd HH:mm:ss" :editable=false range-separator="至" start-placeholder="开始时间" end-placeholder="结束时间" @change="selectActivityDate($event)"></el-date-picker>
+                        <el-date-picker v-model="activityDateTimeScope" type="datetimerange" format="yyyy-MM-dd HH:mm" value-format="yyyy-MM-dd HH:mm:ss" :editable=false range-separator="至" start-placeholder="开始时间" end-placeholder="结束时间" :default-time="['00:00:00', '23:59:59']" @change="selectActivityDate($event)"></el-date-picker>
                     </div>
                 </div>
                 <div class="form-item">
-                    <label class="label position" style="line-height: 100px;"><img src="/static/pc/assets/images/required.png" th:src="@{/pc/assets/images/required.png}" class="required-img">封面</label>
+                    <label class="label cover" style="line-height: 100px;"><img src="/static/pc/assets/images/required.png" th:src="@{/pc/assets/images/required.png}" class="required-img">封面</label>
                     <div class="input-box">
                         <div class="img-box">
                             <img :src="activity.coverCloudId | getCloudImgUrl" class="cover-img jqthumbImg">
@@ -112,6 +116,7 @@
                     <div class="input-box">
                         <input type="text" readonly required lay-verify="required" v-model.trim="activity.address" placeholder="请选择活动地点" autocomplete="off" class="layui-input name show-addr" style="cursor: pointer;" @click="showActivityMap">
                         <img src="/static/pc/assets/images/location.png" th:src="@{/pc/assets/images/location.png}" class="length icon">
+                        <input type="text" required v-model.trim="activity.detailAddress" lay-verify="required" placeholder="详细地址，例：E5栋1308室" autocomplete="off" class="layui-input name show-addr-detailed">
                     </div>
                 </div>
                 <div class="form-item">
@@ -131,7 +136,7 @@
                     </div>
                 </div>
                 <div class="form-item">
-                    <label class="label">参与范围</label>
+                    <label class="label"><img src="/static/pc/assets/images/required.png" th:src="@{/pc/assets/images/required.png}" class="required-img">参与范围</label>
                     <div class="input-box wrap">
                         <span class="label"><span>{{participatedOrgs.length}}</span>个单位</span>
                         <div class="type-item add" @click="toAddParticipateScope">
@@ -150,9 +155,9 @@
             <!-- 点击参与设置 -->
             <form action="" class="setForm" v-show="enableSignUp">
                 <div class="form-item">
-                    <label class="label position"><img src="/static/pc/assets/images/required.png" th:src="@{/pc/assets/images/required.png}" class="required-img">报名时间</label>
+                    <label class="label"><img src="/static/pc/assets/images/required.png" th:src="@{/pc/assets/images/required.png}" class="required-img">报名时间</label>
                     <div class="input-box">
-                        <el-date-picker v-model="signUpTimeScope" type="datetimerange" format="yyyy-MM-dd HH:mm" value-format="yyyy-MM-dd HH:mm:ss" :editable=false range-separator="至" start-placeholder="开始日期" end-placeholder="结束日期" @change="selectSignUpTime($event)"></el-date-picker>
+                        <el-date-picker v-model="signUpTimeScope" type="datetimerange" format="yyyy-MM-dd HH:mm" value-format="yyyy-MM-dd HH:mm:ss" :editable=false range-separator="至" start-placeholder="开始时间" end-placeholder="结束时间" :default-time="['00:00:00', '23:59:59']" @change="selectSignUpTime($event)"></el-date-picker>
                     </div>
                 </div>
                 <div class="form-item">
@@ -172,11 +177,10 @@
                     <div class="input-box column">
                         <div class="set-box">
                             <el-switch v-model="sign.signUp.fillInfo"></el-switch>
-                            <span class="tips">如何创建报名信息表单？</span>
                         </div>
                         <div class="set-box configurationForm" v-show="sign.signUp.fillInfo" @click="toConfigForm">
                             <img src="/static/pc/assets/images/setting.png" th:src="@{/pc/assets/images/setting.png}">
-                            <span class="tips">配置表单</span>
+                            <span class="tips">配置填报信息</span>
                         </div>
                     </div>
                 </div>
@@ -192,7 +196,7 @@
                         <el-switch v-model="sign.signUp.publicList"></el-switch>
                     </div>
                 </div>
-                <div class="form-item">
+                <div class="form-item" v-show="false">
                     <label class="label position"><img src="/static/pc/assets/images/required.png" th:src="@{/pc/assets/images/required.png}" class="required-img">按钮名称</label>
                     <div class="input-box btn-name">
                         <el-input type="text" v-model.trim="sign.signUp.btnName" placeholder="请输入内容" maxlength="6" show-word-limit></el-input>
@@ -214,13 +218,14 @@
                     </div>
                 </div>
                 <div class="form-item" v-show="sign.signIn.way == 2">
-                    <label class="label position"><img src="/static/pc/assets/images/required.png" th:src="@{/pc/assets/images/required.png}" class="required-img">位置</label>
+                    <label class="label"><img src="/static/pc/assets/images/required.png" th:src="@{/pc/assets/images/required.png}" class="required-img">位置</label>
                     <div class="input-box">
-                        <input type="text" readonly required lay-verify="required" v-model.trim="sign.signIn.address" placeholder="请选择签到地点" autocomplete="off" class="layui-input name" style="cursor: pointer;" @click="showSignInMap">
+                        <input type="text" readonly required lay-verify="required" v-model.trim="sign.signIn.address" placeholder="请选择签到地点" autocomplete="off" class="layui-input name show-addr" style="cursor: pointer;" @click="showSignInMap">
                         <img src="/static/pc/assets/images/location.png" th:src="@{/pc/assets/images/location.png}" class="length icon">
+                        <input type="text" required lay-verify="required" v-model.trim="sign.signIn.detailAddress" placeholder="详细地址，例：E5栋1308室" autocomplete="off" class="layui-input name show-addr-detailed">
                     </div>
                 </div>
-                <div class="form-item" v-show="sign.signIn.way == 3">
+                <!--<div class="form-item" v-show="sign.signIn.way == 3">
                     <label class="label">扫码方式</label>
                     <div class="input-box">
                         <div>
@@ -229,11 +234,11 @@
                             </el-select>
                         </div>
                     </div>
-                </div>
+                </div>-->
                 <div class="form-item">
-                    <label class="label position"><img src="/static/pc/assets/images/required.png" th:src="@{/pc/assets/images/required.png}" class="required-img">签到时间</label>
+                    <label class="label"><img src="/static/pc/assets/images/required.png" th:src="@{/pc/assets/images/required.png}" class="required-img">签到时间</label>
                     <div class="input-box">
-                        <el-date-picker v-model="signInTimeScope" type="datetimerange" format="yyyy-MM-dd HH:mm" value-format="yyyy-MM-dd HH:mm:ss" :editable=false range-separator="至" start-placeholder="开始日期" end-placeholder="结束日期"  @change="selectSignInTime($event)"></el-date-picker>
+                        <el-date-picker v-model="signInTimeScope" type="datetimerange" format="yyyy-MM-dd HH:mm" value-format="yyyy-MM-dd HH:mm:ss" :editable=false range-separator="至" start-placeholder="开始时间" end-placeholder="结束时间" :default-time="['00:00:00', '23:59:59']" @change="selectSignInTime($event)"></el-date-picker>
                     </div>
                 </div>
                 <div class="form-item" v-if="false">
@@ -256,8 +261,8 @@
                         <el-switch v-model="sign.signIn.publicList"></el-switch>
                     </div>
                 </div>
-                <div class="form-item">
-                    <label class="label position"><img src="/static/pc/assets/images/required.png" th:src="@{/pc/assets/images/required.png}" class="required-img">按钮名称</label>
+                <div class="form-item" v-show="false">
+                    <label class="label"><img src="/static/pc/assets/images/required.png" th:src="@{/pc/assets/images/required.png}" class="required-img">按钮名称</label>
                     <div class="input-box btn-name">
                         <el-input type="text" v-model.trim="sign.signIn.btnName" placeholder="请输入内容" maxlength="6" show-word-limit></el-input>
                     </div>
@@ -278,13 +283,14 @@
                     </div>
                 </div>
                 <div class="form-item" v-show="sign.signOut.way == 2">
-                    <label class="label position"><img src="/static/pc/assets/images/required.png" th:src="@{/pc/assets/images/required.png}" class="required-img">位置</label>
+                    <label class="label"><img src="/static/pc/assets/images/required.png" th:src="@{/pc/assets/images/required.png}" class="required-img">位置</label>
                     <div class="input-box">
-                        <input type="text" readonly required lay-verify="required" v-model.trim="sign.signOut.address" placeholder="请选择签到地点" autocomplete="off" class="layui-input name" style="cursor: pointer;" @click="showSignOutMap">
+                        <input type="text" readonly required lay-verify="required" v-model.trim="sign.signOut.address" placeholder="请选择签到地点" autocomplete="off" class="layui-input name show-addr" style="cursor: pointer;" @click="showSignOutMap">
                         <img src="/static/pc/assets/images/location.png" th:src="@{/pc/assets/images/location.png}" class="length icon">
+                        <input type="text" required lay-verify="required" v-model.trim="sign.signOut.detailAddress" placeholder="详细地址，例：E5栋1308室" autocomplete="off" class="layui-input name show-addr-detailed">
                     </div>
                 </div>
-                <div class="form-item" v-show="sign.signOut.way == 3">
+                <!--<div class="form-item" v-show="sign.signOut.way == 3">
                     <label class="label">扫码方式</label>
                     <div class="input-box">
                         <div>
@@ -293,11 +299,11 @@
                             </el-select>
                         </div>
                     </div>
-                </div>
+                </div>-->
                 <div class="form-item">
-                    <label class="label position"><img src="/static/pc/assets/images/required.png" th:src="@{/pc/assets/images/required.png}" class="required-img">签到时间</label>
+                    <label class="label"><img src="/static/pc/assets/images/required.png" th:src="@{/pc/assets/images/required.png}" class="required-img">签到时间</label>
                     <div class="input-box">
-                        <el-date-picker v-model="signOutTimeScope" type="datetimerange" format="yyyy-MM-dd HH:mm" value-format="yyyy-MM-dd HH:mm:ss" :editable=false range-separator="至" start-placeholder="开始日期" end-placeholder="结束日期"  @change="selectSignOutTime($event)"></el-date-picker>
+                        <el-date-picker v-model="signOutTimeScope" type="datetimerange" format="yyyy-MM-dd HH:mm" value-format="yyyy-MM-dd HH:mm:ss" :editable=false range-separator="至" start-placeholder="开始时间" end-placeholder="结束时间" :default-time="['00:00:00', '23:59:59']" @change="selectSignOutTime($event)"></el-date-picker>
                     </div>
                 </div>
                 <div class="form-item" v-if="false">
@@ -320,8 +326,8 @@
                         <el-switch v-model="sign.signOut.publicList"></el-switch>
                     </div>
                 </div>
-                <div class="form-item">
-                    <label class="label position"><img src="/static/pc/assets/images/required.png" th:src="@{/pc/assets/images/required.png}" class="required-img">按钮名称</label>
+                <div class="form-item" v-show="false">
+                    <label class="label"><img src="/static/pc/assets/images/required.png" th:src="@{/pc/assets/images/required.png}" class="required-img">按钮名称</label>
                     <div class="input-box btn-name">
                         <el-input type="text" v-model.trim="sign.signOut.btnName" placeholder="请输入内容" maxlength="6" show-word-limit></el-input>
                     </div>
@@ -331,7 +337,6 @@
     </div>
     <!--选择门户模板-->
     <div class="info box" v-show="step > 1">
-        <div class="title">选择模板</div>
         <div class="page-show">
             <div class="page-box">
                 <div class="page-item" v-for="(webTemplate, index) of webTemplates" :key="'web-templates' + index">
@@ -386,25 +391,6 @@
             <div>
                 <div class="normal-btn">配置页面</div>
                 <div class="normal-btn after-sure">完成</div>
-            </div>
-        </div>
-    </div>
-    <!-- 预览弹窗 -->
-    <div class="dailog-box1" style="display: none;">
-        <div class="dailog look-dailog">
-            <div class="header">
-                <span>预览</span>
-                <img src="/static/pc/assets/images/close.png" th:src="@{/pc/assets/images/close.png}" class="close">
-            </div>
-            <div class="body">
-                <!-- 二维码 -->
-                <div class="code"><img src="/static/pc/assets/images/example.jpg" th:src="@{/pc/assets/images/example.jpg}"></div>
-                <span>使用学习通扫码查看</span>
-                <div class="link-box">
-                    <span>链接</span>
-                    <input type="text" class="input-link">
-                    <a href="">访问</a>
-                </div>
             </div>
         </div>
     </div>
@@ -515,25 +501,26 @@
                     $this.activity = {
                         id: null,
                         name: "",
-                        startTime: "",
-                        endTime: "",
+                        startTime: activityApp.generateActivityDefaultStartTime(),
+                        endTime: activityApp.generateActivityDefaultEndTime(),
                         coverCloudId: activityApp.getDefaultCoverCloudId(),
                         organisers: [[${session._login_user_.orgName}]],
                         activityType: "offline",
                         address: "",
+                        detailAddress: "",
                         longitude: "",
                         dimension: "",
                         activityClassifyId: firstActivityClassifyId,
-                        enableSign: true
+                        enableSign: false
                     };
                 } else {
                     $this.activity.createTime = null;
                     $this.activity.updateTime = null;
                     $this.activity.releaseTime = null;
-                    $this.activityDateTimeScope = [$this.activity.startTimeStr, $this.activity.endTimeStr];
                     $this.activity.startTime = $this.activity.startTimeStr;
                     $this.activity.endTime = $this.activity.endTimeStr;
                 }
+                $this.activityDateTimeScope = [$this.activity.startTime, $this.activity.endTime];
                 $($this.activityTypes).each(function (i) {
                     if ($this.activity.activityType == this.value) {
                         $this.$set($this.activityTypes[i], "selected", true);
@@ -561,9 +548,6 @@
                 if (activityApp.isEmpty($this.sign.id)) {
                     // 生成新的签到报名活动
                     $this.sign = signApp.newSign();
-                    $this.enableSignUp = true;
-                    $this.enableSignIn = false;
-                    $this.enableSignOut = false;
                 } else {
                     $this.sign.createTime = "";
                     $this.sign.updateTime = "";
@@ -610,6 +594,11 @@
                         $this.sign.signOut.endTime = signOutEndTimeStr;
                     }
                 }
+                if (!$this.activity.enableSign) {
+                    $this.enableSignUp = false;
+                    $this.enableSignIn = false;
+                    $this.enableSignOut = false;
+                }
                 $this.calPersonLimitValue();
                 if (activityApp.isEmpty($this.participatedOrgs)) {
                     $this.participatedOrgs = [];
@@ -630,6 +619,24 @@
                     } else {
                         $this.$set($this.sign.signUp, "limitPerson", true);
                     }
+                },
+                "enableSignUp": function () {
+                    var $this = this;
+                    $this.$nextTick(function () {
+                        $this.activity.enableSign = $this.enableSignUp || $this.enableSignIn || $this.enableSignOut;
+                    });
+                },
+                "enableSignIn": function () {
+                    var $this = this;
+                    $this.$nextTick(function () {
+                        $this.activity.enableSign = $this.enableSignUp || $this.enableSignIn || $this.enableSignOut;
+                    });
+                },
+                "enableSignOut": function () {
+                    var $this = this;
+                    $this.$nextTick(function () {
+                        $this.activity.enableSign = $this.enableSignUp || $this.enableSignIn || $this.enableSignOut;
+                    });
                 }
             },
             methods: {
@@ -746,7 +753,7 @@
                 signInAddressSure: function () {
                     var $this = this;
                     if (activityApp.isEmpty($this.$refs.signInMap.longitude) || activityApp.isEmpty($this.$refs.signInMap.dimension)) {
-                        app.showMsg("签到请选择地址");
+                        app.showMsg("请选择签到地址");
                         return;
                     }
                     $this.sign.signIn.address = $this.$refs.signInMap.address;
@@ -903,11 +910,6 @@
                         app.showMsg("请选择参与范围");
                         return false;
                     }
-                    // 报名和签到至少应该开启一个
-                    if (!$this.enableSignUp && !$this.enableSignIn) {
-                        app.showMsg("报名或签到功能请至少开启一项");
-                        return false;
-                    }
                     // 报名设置
                     if ($this.enableSignUp) {
                         if (activityApp.isEmpty($this.sign.signUp.startTime)) {
@@ -927,7 +929,7 @@
                         }
                         if ($this.sign.signUp.fillInfo) {
                             if (activityApp.isEmpty($this.sign.signUp.fillInfoFormId)) {
-                                app.showMsg("请选择报名需要填写的表单");
+                                app.showMsg("请配置填报信息");
                                 return false;
                             }
                         }
@@ -998,9 +1000,8 @@
                 },
                 preStep: function () {
                     var $this = this;
-                    if ($this.step > 1) {
-                        $this.step--;
-                    }
+                    var url = ctx + "/activity/" + $this.activity.id + "/edit";
+                    window.location.replace(url);
                 },
                 // 下一步（创建活动）
                 nextStep: function () {

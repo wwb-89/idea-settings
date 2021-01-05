@@ -74,9 +74,9 @@
                     </div>
                     <div class="font-box">
                         <p class="title1 overHidden2" >{{item.name}}</p>
-                        <p>活动时间：{{item.startTime | timestamp2YMDHM}} ～ {{item.endTime | timestamp2YMDHM}}</p>
+                        <p>活动时间：{{item.startTime | timestamp2YMD}} ～ {{item.endTime | timestamp2YMD}}</p>
                         <p>主办单位：{{item.organisers}}</p>
-                        <p class="overHidden2" v-show="item.address">活动地点：{{item.address}}</p>
+                        <p class="overHidden2" v-show="item.address">活动地点：{{item.address}}{{item.detailAddress ? item.detailAddress : ''}}</p>
                     </div>
                 </div>
             </div>
@@ -94,6 +94,10 @@
     <script src="/static/pc/assets/lib/jqthumb.min.js" th:src="@{/pc/assets/lib/jqthumb.min.js}"></script>
     <script th:if="${pageId != null}" th:src="|//portal.chaoxing.com/outer/${pageId}/footer|"></script>
     <script th:inline="javascript">
+        Vue.filter("timestamp2YMD", function (timestamp) {
+            var dateObj = activityApp.millisecond2DateObj(timestamp);
+            return dateObj.year + "-" + dateObj.month + "-" + dateObj.day;
+        });
         activityVue = new Vue({
             el: '#activity-vue',
             data: {
@@ -131,7 +135,7 @@
                 if($this.regions.length >0){
                     $($this.regions).each(function () {
                         var region = this;
-                        region.value = this.name;
+                        region.value = this.manageFid;
                         region.selected = false;
                         regions.push(region);
                     });
@@ -185,7 +189,7 @@
                     $($this.regions).each(function (i) {
                         $this.$set($this.regions[i], "selected", i == index);
                     });
-                    $this.queryParams.area = $this.regions[index].value;
+                    $this.queryParams.areaManageFid = $this.regions[index].value;
                     $this.queryParams.pageNum = 1;
                     $this.loadData();
                 },
@@ -207,7 +211,7 @@
                         sw: "",
                         activityClassifyName: "",
                         date: "",
-                        area: "",
+                        areaManageFid: "",
                         status: "",
                         areaCode: $this.areaCode,
                         topFid: [[${topFid}]]

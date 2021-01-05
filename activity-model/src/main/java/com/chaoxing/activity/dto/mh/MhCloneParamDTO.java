@@ -26,6 +26,7 @@ public class MhCloneParamDTO {
 	private String websiteName;
 	private Integer wfwfid;
 	private Integer uid;
+	private Integer originPageId;
 	private List<MhAppDTO> appList;
 
 	@Data

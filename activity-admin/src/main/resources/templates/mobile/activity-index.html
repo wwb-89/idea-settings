@@ -24,13 +24,13 @@
         <div :class="{'status': true, 'color0': (activity.status == 2), 'color1': (activity.status == 3), 'color2': (activity.status == 4)}">{{activity.status | activityStatusDescribe}}</div>
     </div>
     <div class="index-list">
-        <div class="item" v-if="signActivityManageIndex.signUpExist">
+        <div class="item" v-if="signActivityManageIndex.signUpExist" @click="signUpList">
             <img src="/static/mobile/assets/images/admin/allWorks.png" th:src="@{/mobile/assets/images/admin/allWorks.png}">
             <p class="flTxt">报名名单</p>
             <p class="frTxt">已报名 {{signActivityManageIndex.signUpNum}}</p>
             <i class="icon-arrow-r"></i>
         </div>
-        <div class="item" v-if="signActivityManageIndex.signInExist">
+        <div class="item" v-if="signActivityManageIndex.signInExist" @click="signInManage">
             <img src="/static/mobile/assets/images/admin/sign-in.png" th:src="@{/mobile/assets/images/admin/sign-in.png}">
             <p class="flTxt">签到管理</p>
             <i class="icon-arrow-r marginAuto"></i>
@@ -59,6 +59,18 @@
 
                 },
                 methods: {
+                    // 报名名单
+                    signUpList: function () {
+                        var $this = this;
+                        var url = "http://reading.chaoxing.com/qd/m/manage/sign-up/"+ $this.signActivityManageIndex.signUpId +"/user-list";
+                        app.openUrl(url);
+                    },
+                    // 签到管理
+                    signInManage: function () {
+                        var $this = this;
+                        var url = "http://reading.chaoxing.com/qd/m/manage/sign-in/list?signId=" + $this.signActivityManageIndex.signId;
+                        app.openUrl(url);
+                    },
                     // 发通知
                     sendNotice: function () {
                         var $this = this;

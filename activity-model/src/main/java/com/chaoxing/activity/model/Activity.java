@@ -11,6 +11,7 @@ import com.chaoxing.activity.util.exception.BusinessException;
 import lombok.*;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Objects;
 
@@ -40,6 +41,10 @@ public class Activity {
     /** 结束时间; column: end_time*/
     @JSONField(serializeUsing = LocalDateTimeSerializer.class, deserializeUsing = LocalDateTimeDeserializer.class)
     private LocalDateTime endTime;
+    /** 开始日期; column: start_date*/
+    private LocalDate startDate;
+    /** 结束日期; column: end_date*/
+    private LocalDate endDate;
     /** 封面云盘id; column: cover_cloud_id*/
     private String coverCloudId;
     /** 主办方; column: organisers*/
@@ -48,6 +53,8 @@ public class Activity {
     private String activityType;
     /** 活动地址; column: address*/
     private String address;
+    /** 详细地址; column: detail_address*/
+    private String detailAddress;
     /** 经度; column: longitude*/
     private BigDecimal longitude;
     /** 维度; column: dimension*/
