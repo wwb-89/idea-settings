@@ -21,26 +21,30 @@
             <div class="entry">
                 <!--报名名单-->
                 <div :class="{'item': true, 'active': menus.signUpList.selected}" v-if="signActivityManageIndex.signUpExist" @click="toSignUpList">
-                    <img :src="menus.signUpList.iconUrl">
+                    <img :src="menus.signUpList.activeIconUrl" v-if="menus.signUpList.selected">
+                    <img :src="menus.signUpList.defaultIconUrl" v-else>
                     <span>{{menus.signUpList.name}}</span>
                 </div>
                 <!--签到管理-->
                 <div :class="{'item': true, 'active': menus.signInManage.selected}" v-if="signActivityManageIndex.signInExist" @click="toSignInManage">
-                    <img :src="menus.signInManage.iconUrl">
+                    <img :src="menus.signInManage.activeIconUrl" v-if="menus.signInManage.selected">
+                    <img :src="menus.signInManage.defaultIconUrl" v-else>
                     <span>{{menus.signInManage.name}}</span>
                 </div>
             </div>
             <div class="message" v-if="signActivityManageIndex.signUpExist">
                 <!--发通知-->
                 <div :class="{'item': true, 'active': menus.notice.selected}" @click="toAddNotice">
-                    <img :src="menus.notice.iconUrl">
+                    <img :src="menus.notice.activeIconUrl" v-if="menus.notice.selected">
+                    <img :src="menus.notice.defaultIconUrl" v-else>
                     <span>{{menus.notice.name}}</span>
                 </div>
             </div>
             <div class="statistics" v-show="false">
                 <!--统计-->
                 <div :class="{'item': true, 'active': menus.stat.selected}">
-                    <img :src="menus.stat.iconUrl">
+                    <img :src="menus.stat.activeIconUrl" v-if="menus.stat.selected">
+                    <img :src="menus.stat.defaultIconUrl" v-else>
                     <span>{{menus.stat.name}}</span>
                 </div>
             </div>
@@ -65,12 +69,12 @@
                 signActivityManageIndex: [[${signActivityManageIndex}]],
                 menus: {
                     // 报名签到
-                    signUpList: {name: "报名名单", iconUrl: ctx + "/pc/assets/images/icon-name-list-active.png", url: "http://reading.chaoxing.com/qd/manage/sign-up/" + [[${signActivityManageIndex.signUpId}]], selected: false},
-                    signInManage: {name: "签到管理", iconUrl: ctx + "/pc/assets/images/icon-name-list-default.png", url: "http://reading.chaoxing.com/qd/manage/sign-in/list?signId=" + [[${signActivityManageIndex.signId}]], selected: false},
+                    signUpList: {name: "报名名单", defaultIconUrl: ctx + "/pc/assets/images/icon-name-list-default.png", activeIconUrl: ctx + "/pc/assets/images/icon-name-list-active.png", url: "http://reading.chaoxing.com/qd/manage/sign-up/" + [[${signActivityManageIndex.signUpId}]], selected: false},
+                    signInManage: {name: "签到管理", defaultIconUrl: ctx + "/pc/assets/images/icon-name-list-default.png", activeIconUrl: ctx + "/pc/assets/images/icon-name-list-active.png", url: "http://reading.chaoxing.com/qd/manage/sign-in/list?signId=" + [[${signActivityManageIndex.signId}]], selected: false},
                     // 通知
-                    notice: {name: "发通知", iconUrl: ctx + "/pc/assets/images/icon-notice-default.png", url: "http://reading.chaoxing.com/qd/manage/notice/add?signId=" + [[${signActivityManageIndex.signId}]], selected: false},
+                    notice: {name: "发通知", defaultIconUrl: ctx + "/pc/assets/images/icon-notice-default.png", activeIconUrl: ctx + "/pc/assets/images/icon-notice-active.png", url: "http://reading.chaoxing.com/qd/manage/notice/add?signId=" + [[${signActivityManageIndex.signId}]], selected: false},
                     // 统计
-                    stat: {name: "统计", iconUrl: ctx + "/pc/assets/images/icon-statistics-default.png", url: "", selected: false}
+                    stat: {name: "统计", defaultIconUrl: ctx + "/pc/assets/images/icon-statistics-default.png", activeIconUrl: ctx + "/pc/assets/images/icon-statistics-active.png", url: "", selected: false}
                 },
                 iframeUrl: ""
             },
