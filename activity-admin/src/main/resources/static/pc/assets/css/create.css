@@ -158,7 +158,7 @@ select {
 }
 
 input::placeholder {
-    font-size: 16px;
+    font-size: 14px;
     color: #cccccc;
 }
 
@@ -170,8 +170,9 @@ input[type="number"] {
     border: 1px solid #e9e9e9;
     border-radius: 2px;
     box-sizing: border-box;
-    font-size: 16px;
+    font-size: 14px;
     color: #333333;
+    padding: 5px 0 5px 12px;
 }
 
 .el-input__inner {
@@ -702,7 +703,7 @@ input.btn-name,
 
 .el-select,
 .el-input {
-    height: 36px;
+    height: 32px;
 }
 
 .down {
