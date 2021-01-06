@@ -31,8 +31,6 @@ public class ActivityQueryDTO {
 	private String activityClassifyName;
 	/** 时间 */
 	private String date;
-	/** 区域管理机构id */
-	private Integer areaManageFid;
 	/** 状态 */
 	private Integer status;
 

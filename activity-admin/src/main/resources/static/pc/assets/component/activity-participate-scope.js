@@ -58,7 +58,6 @@ Vue.component('vue-activity-participate-scope', {
                 // 获取全部节点
                 var allNodes = $this.zTree.getCheckedNodes(false);
                 $(allNodes).each(function () {
-                    var virtualId = this.virtualId;
                     if (checkedFids.indexOf(this.fid) > -1) {
                         $this.zTree.checkNode(this, true);
                     }
@@ -148,12 +147,16 @@ Vue.component('vue-activity-participate-scope', {
         onOrgHierachyCheck: function () {
             var $this = this;
             var nodes = $this.zTree.getCheckedNodes(true);
-            $this.selectedOrgs = [];
+            var selectedOrgs = [];
+            var selectedFids = [];
             $(nodes).each(function () {
-                if (!activityApp.isEmpty(this.virtualId)) {
-                    $this.selectedOrgs.push(this);
+                var checkStatus = this.getCheckStatus();
+                if (!checkStatus.half && selectedFids.indexOf(this.fid) == -1) {
+                    selectedFids.push(this.fid);
+                    selectedOrgs.push(this);
                 }
             });
+            $this.selectedOrgs = selectedOrgs;
         },
         // 清空选择
         clearSelect: function () {
@@ -167,13 +170,17 @@ Vue.component('vue-activity-participate-scope', {
         sureCallback: function () {
             var $this = this;
             $this.show = false;
-            $this.selectedOrgs = [];
             var checkedNodes = $this.zTree.getCheckedNodes(true);
+            var selectedOrgs = [];
+            var selectedFids = [];
             $(checkedNodes).each(function () {
-                if (!activityApp.isEmpty(this.virtualId)) {
-                    $this.selectedOrgs.push(this);
+                var checkStatus = this.getCheckStatus();
+                if (!checkStatus.half && selectedFids.indexOf(this.fid) == -1) {
+                    selectedFids.push(this.fid);
+                    selectedOrgs.push(this);
                 }
             });
+            $this.selectedOrgs = selectedOrgs;
             if ($this.selectedOrgs.length < 1) {
                 app.showMsg("请选择参与范围");
                 $this.show = true;
