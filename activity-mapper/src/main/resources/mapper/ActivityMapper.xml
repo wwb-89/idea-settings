@@ -55,11 +55,6 @@
                     #{value}
                 </foreach>
             </if>
-            <!--地区-->
-            <if test="params.areaManageFid != null">
-                INNER JOIN t_activity_scope t2 ON t.id = t2.activity_id
-                AND t2.fid = #{params.areaManageFid}
-            </if>
             <!--类型-->
             <if test="params.activityClassifyName != null and params.activityClassifyName != ''">
                 INNER JOIN t_activity_classify t3 ON t.activity_classify_id = t3.id

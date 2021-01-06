@@ -135,7 +135,7 @@
                 if($this.regions.length >0){
                     $($this.regions).each(function () {
                         var region = this;
-                        region.value = this.manageFid;
+                        region.value = this.code;
                         region.selected = false;
                         regions.push(region);
                     });
@@ -189,7 +189,10 @@
                     $($this.regions).each(function (i) {
                         $this.$set($this.regions[i], "selected", i == index);
                     });
-                    $this.queryParams.areaManageFid = $this.regions[index].value;
+                    $this.queryParams.areaCode = $this.regions[index].value;
+                    if (activityApp.isEmpty($this.queryParams.areaCode)) {
+                        $this.queryParams.areaCode = $this.areaCode;
+                    }
                     $this.queryParams.pageNum = 1;
                     $this.loadData();
                 },
@@ -211,7 +214,6 @@
                         sw: "",
                         activityClassifyName: "",
                         date: "",
-                        areaManageFid: "",
                         status: "",
                         areaCode: $this.areaCode,
                         topFid: [[${topFid}]]

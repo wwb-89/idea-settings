@@ -142,7 +142,7 @@
                     if ($this.regions.length > 0) {
                         $($this.regions).each(function () {
                             var region = this;
-                            region.value = this.manageFid;
+                            region.value = this.code;
                             region.selected = false;
                             regions.push(region);
                         });
@@ -176,7 +176,6 @@
                             sw: "",
                             activityClassifyName: "",
                             date: "",
-                            areaManageFid: "",
                             status: "",
                             areaCode: $this.areaCode,
                             topFid: [[${topFid}]]
@@ -288,7 +287,10 @@
                         });
                         $($this.regions).each(function () {
                             if (this.selected) {
-                                $this.queryParams.areaManageFid = this.value;
+                                $this.queryParams.areaCode = this.value;
+                                if (activityApp.isEmpty($this.queryParams.areaCode)) {
+                                    $this.queryParams.areaCode = $this.areaCode;
+                                }
                                 return false;
                             }
                         });
@@ -311,7 +313,7 @@
                             $this.$set($this.activityQueryDates[i], "selected", this.value == $this.queryParams.date);
                         });
                         $($this.regions).each(function (i) {
-                            $this.$set($this.regions[i], "selected", this.value == $this.queryParams.areaManageFid);
+                            $this.$set($this.regions[i], "selected", this.value == $this.queryParams.areaCode);
                         });
                         $($this.statuses).each(function (i) {
                             $this.$set($this.statuses[i], "selected", this.value == $this.queryParams.status);
