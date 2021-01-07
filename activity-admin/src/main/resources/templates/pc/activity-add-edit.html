@@ -511,7 +511,7 @@
                         longitude: "",
                         dimension: "",
                         activityClassifyId: firstActivityClassifyId,
-                        enableSign: false
+                        enableSign: true
                     };
                 } else {
                     $this.activity.createTime = null;
@@ -548,6 +548,7 @@
                 if (activityApp.isEmpty($this.sign.id)) {
                     // 生成新的签到报名活动
                     $this.sign = signApp.newSign();
+                    $this.enableSignUp = true;
                 } else {
                     $this.sign.createTime = "";
                     $this.sign.updateTime = "";
