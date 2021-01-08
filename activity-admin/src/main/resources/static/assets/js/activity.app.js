@@ -255,6 +255,18 @@
         var dateObj = $this.millisecond2DateObj(date.getTime());
         return dateObj.year + "-" + dateObj.month + "-" + dateObj.day + " " + "23:59:59";
     };
+    /**
+     * 触发resize
+     */
+    activityApp.prototype.resize = function () {
+        if(document.createEvent) {
+            var event = document.createEvent("HTMLEvents");
+            event.initEvent("resize", true, true);
+            window.dispatchEvent(event);
+        } else if(document.createEventObject) {
+            window.fireEvent("onresize");
+        }
+    };
     W['activityApp'] = new activityApp();
 })(window, jQuery, JSON);
 Array.prototype.remove = function (val) {

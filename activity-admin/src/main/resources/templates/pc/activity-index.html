@@ -91,7 +91,15 @@
             },
             methods: {
                 loadUrl: function (url) {
-                    $("#content")[0].src = url;
+                    if (url.indexOf("?") != -1) {
+                        url += "&";
+                    } else {
+                        url += "?";
+                    }
+                    $("#content")[0].src = url + "time=" + new Date().getTime();
+                    $("#content")[0].onload = function() {
+                        activityApp.resize();
+                    };
                 },
                 selectMenu: function (menuKey) {
                     var $this = this;
