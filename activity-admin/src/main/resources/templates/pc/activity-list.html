@@ -203,6 +203,7 @@
                                     break;
                                 case 4:
                                     if (isCreator || isCurrentOrgCreated) {
+                                        activity.operations.push($this.operations.edit);
                                         if (isCreator && activity.enableSign) {
                                             activity.operations.push($this.operations.manage);
                                         }

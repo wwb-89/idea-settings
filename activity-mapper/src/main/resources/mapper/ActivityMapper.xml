@@ -145,7 +145,7 @@
             AND t.`status` IN ( 2, 3, 4 )
             AND t.page_id IS NOT NULL
         ORDER BY
-            FIELD( t.`status`, 2, 3, 4 ),
+            FIELD( t.`status`, 3, 2, 4 ),
             t.start_time DESC
     </select>
 
