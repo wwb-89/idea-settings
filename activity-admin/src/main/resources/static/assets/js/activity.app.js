@@ -103,6 +103,9 @@
     activityApp.prototype.millisecond2DateStr = function (millisecond) {
         var $this = this;
         var dateObj = $this.millisecond2DateObj(millisecond);
+        if ($this.isEmpty(dateObj)) {
+            return "";
+        }
         return dateObj.year + "-" + dateObj.month + "-" + dateObj.day + " " + dateObj.hour + ":" + dateObj.minute + ":" + dateObj.second;
     };
 

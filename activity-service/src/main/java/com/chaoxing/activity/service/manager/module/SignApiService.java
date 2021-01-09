@@ -2,7 +2,9 @@ package com.chaoxing.activity.service.manager.module;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
+import com.chaoxing.activity.dto.manager.sign.SignIn;
 import com.chaoxing.activity.dto.manager.sign.SignParticipantStatDTO;
+import com.chaoxing.activity.dto.manager.sign.SignUp;
 import com.chaoxing.activity.dto.module.SignAddEditDTO;
 import com.chaoxing.activity.dto.sign.SignActivityManageIndexDTO;
 import com.chaoxing.activity.util.RestTemplateUtils;
@@ -17,6 +19,7 @@ import org.springframework.web.client.RestTemplate;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
+import java.time.ZoneOffset;
 import java.util.List;
 import java.util.Optional;
 
@@ -114,6 +117,21 @@ public class SignApiService {
 		if (success) {
 			String data = jsonObject.getString("data");
 			SignAddEditDTO signAddEdit = JSON.parseObject(data, SignAddEditDTO.class);
+			SignUp signUp = signAddEdit.getSignUp();
+			Optional.ofNullable(signUp).ifPresent(v -> {
+				signUp.setStartTimestamp(signUp.getStartTime().toInstant(ZoneOffset.ofHours(8)).toEpochMilli());
+				signUp.setEndTimestamp(signUp.getEndTime().toInstant(ZoneOffset.ofHours(8)).toEpochMilli());
+			});
+			SignIn signIn = signAddEdit.getSignIn();
+			Optional.ofNullable(signIn).ifPresent(v -> {
+				signIn.setStartTimestamp(signIn.getStartTime().toInstant(ZoneOffset.ofHours(8)).toEpochMilli());
+				signIn.setEndTimestamp(signIn.getEndTime().toInstant(ZoneOffset.ofHours(8)).toEpochMilli());
+			});
+			SignIn signOut = signAddEdit.getSignOut();
+			Optional.ofNullable(signOut).ifPresent(v -> {
+				signOut.setStartTimestamp(signOut.getStartTime().toInstant(ZoneOffset.ofHours(8)).toEpochMilli());
+				signOut.setEndTimestamp(signOut.getEndTime().toInstant(ZoneOffset.ofHours(8)).toEpochMilli());
+			});
 			return signAddEdit;
 		} else {
 			String errorMessage = jsonObject.getString("message");

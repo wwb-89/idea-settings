@@ -157,7 +157,7 @@
                 <div class="form-item">
                     <label class="label"><img src="/static/pc/assets/images/required.png" th:src="@{/pc/assets/images/required.png}" class="required-img">报名时间</label>
                     <div class="input-box">
-                        <el-date-picker v-model="signUpTimeScope" type="datetimerange" format="yyyy-MM-dd HH:mm" value-format="yyyy-MM-dd HH:mm:ss" :editable=false range-separator="至" start-placeholder="开始时间" end-placeholder="结束时间" :default-time="['00:00:00', '23:59:59']" @change="selectSignUpTime($event)"></el-date-picker>
+                        <el-date-picker v-model="signUpTimeScope" type="datetimerange" format="yyyy-MM-dd HH:mm" value-format="timestamp" :editable=false range-separator="至" start-placeholder="开始时间" end-placeholder="结束时间" :default-time="['00:00:00', '23:59:59']" @change="selectSignUpTime($event)"></el-date-picker>
                     </div>
                 </div>
                 <div class="form-item">
@@ -238,7 +238,7 @@
                 <div class="form-item">
                     <label class="label"><img src="/static/pc/assets/images/required.png" th:src="@{/pc/assets/images/required.png}" class="required-img">签到时间</label>
                     <div class="input-box">
-                        <el-date-picker v-model="signInTimeScope" type="datetimerange" format="yyyy-MM-dd HH:mm" value-format="yyyy-MM-dd HH:mm:ss" :editable=false range-separator="至" start-placeholder="开始时间" end-placeholder="结束时间" :default-time="['00:00:00', '23:59:59']" @change="selectSignInTime($event)"></el-date-picker>
+                        <el-date-picker v-model="signInTimeScope" type="datetimerange" format="yyyy-MM-dd HH:mm" value-format="timestamp" :editable=false range-separator="至" start-placeholder="开始时间" end-placeholder="结束时间" :default-time="['00:00:00', '23:59:59']" @change="selectSignInTime($event)"></el-date-picker>
                     </div>
                 </div>
                 <div class="form-item" v-if="false">
@@ -303,7 +303,7 @@
                 <div class="form-item">
                     <label class="label"><img src="/static/pc/assets/images/required.png" th:src="@{/pc/assets/images/required.png}" class="required-img">签到时间</label>
                     <div class="input-box">
-                        <el-date-picker v-model="signOutTimeScope" type="datetimerange" format="yyyy-MM-dd HH:mm" value-format="yyyy-MM-dd HH:mm:ss" :editable=false range-separator="至" start-placeholder="开始时间" end-placeholder="结束时间" :default-time="['00:00:00', '23:59:59']" @change="selectSignOutTime($event)"></el-date-picker>
+                        <el-date-picker v-model="signOutTimeScope" type="datetimerange" format="yyyy-MM-dd HH:mm" value-format="timestamp" :editable=false range-separator="至" start-placeholder="开始时间" end-placeholder="结束时间" :default-time="['00:00:00', '23:59:59']" @change="selectSignOutTime($event)"></el-date-picker>
                     </div>
                 </div>
                 <div class="form-item" v-if="false">
@@ -555,45 +555,39 @@
                     // 报名
                     if (!activityApp.isEmpty($this.sign.signUp)) {
                         $this.enableSignUp = true;
+                        $this.sign.signUp.startTime = $this.sign.signUp.startTimestamp;
+                        $this.sign.signUp.endTime = $this.sign.signUp.endTimestamp;
+                        $this.sign.signUp.createTime = "";
+                        $this.sign.signUp.updateTime = "";
                     } else {
                         $this.enableSignUp = false;
                         $this.sign.signUp = signApp.newSignUp();
                     }
-                    var signUpStartTimeStr = $this.sign.signUp.startTimeStr;
-                    var signUpEndTimeStr = $this.sign.signUp.endTimeStr;
-                    if (!activityApp.isEmpty(signUpStartTimeStr) && !activityApp.isEmpty(signUpEndTimeStr)) {
-                        $this.signUpTimeScope = [signUpStartTimeStr, signUpEndTimeStr];
-                        $this.sign.signUp.startTime = signUpStartTimeStr;
-                        $this.sign.signUp.endTime = signUpEndTimeStr;
-                    }
+                    $this.signUpTimeScope = [$this.sign.signUp.startTime, $this.sign.signUp.endTime];
                     // 签到
                     if (!activityApp.isEmpty($this.sign.signIn)) {
                         $this.enableSignIn = true;
+                        $this.sign.signIn.startTime = $this.sign.signIn.startTimestamp;
+                        $this.sign.signIn.endTime = $this.sign.signIn.endTimestamp;
+                        $this.sign.signIn.createTime = "";
+                        $this.sign.signIn.updateTime = "";
                     } else {
                         $this.enableSignIn = false;
                         $this.sign.signIn = signApp.newSignIn();
                     }
-                    var signInStartTimeStr = $this.sign.signIn.startTimeStr;
-                    var signInEndTimeStr = $this.sign.signIn.endTimeStr;
-                    if (!activityApp.isEmpty(signInStartTimeStr) && !activityApp.isEmpty(signInEndTimeStr)) {
-                        $this.signInTimeScope = [signInStartTimeStr, signInEndTimeStr];
-                        $this.sign.signIn.startTime = signInStartTimeStr;
-                        $this.sign.signIn.endTime = signInEndTimeStr;
-                    }
+                    $this.signInTimeScope = [$this.sign.signIn.startTime, $this.sign.signIn.endTime];
                     // 签退
                     if (!activityApp.isEmpty($this.sign.signOut)) {
                         $this.enableSignOut = true;
+                        $this.sign.signOut.startTime = $this.sign.signOut.startTimestamp;
+                        $this.sign.signOut.endTime = $this.sign.signOut.endTimestamp;
+                        $this.sign.signOut.createTime = "";
+                        $this.sign.signOut.updateTime = "";
                     } else {
                         $this.enableSignOut = false;
                         $this.sign.signOut = signApp.newSignOut();
                     }
-                    var signOutStartTimeStr = $this.sign.signOut.startTimeStr;
-                    var signOutEndTimeStr = $this.sign.signOut.endTimeStr;
-                    if (!activityApp.isEmpty(signOutStartTimeStr) && !activityApp.isEmpty(signOutEndTimeStr)) {
-                        $this.signOutTimeScope = [signOutStartTimeStr, signOutEndTimeStr];
-                        $this.sign.signOut.startTime = signOutStartTimeStr;
-                        $this.sign.signOut.endTime = signOutEndTimeStr;
-                    }
+                    $this.signOutTimeScope = [$this.sign.signOut.startTime, $this.sign.signOut.endTime];
                 }
                 if (!$this.activity.enableSign) {
                     $this.enableSignUp = false;
@@ -1034,14 +1028,14 @@
                     if (!$this.enableSignOut) {
                         sign.signOut = null;
                     } else {
-                        var way = sign.signIn.way;
+                        var way = sign.signOut.way;
                         switch (way) {
                             case 1:
                             case 3:
                                 sign.signOut.address = "";
                                 sign.signOut.longitude = null;
                                 sign.signOut.dimension = null;
-                                sign.signIn.detailAddress = "";
+                                sign.signOut.detailAddress = "";
                                 break;
                             default:
                         }
