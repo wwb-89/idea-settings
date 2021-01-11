@@ -1,9 +1,9 @@
 Vue.component('vue-map', {
-    props:["mapDomId"],
+    props:["mapDomId", "title"],
     template: "<div class='dailog-box1' v-show='show'>\n" +
         "    <div class='dailog map-dailog'>\n" +
         "        <div class='header'>\n" +
-        "            <span>设置地图</span>\n" +
+        "            <span>{{title}}</span>\n" +
         "            <div @click='show = false'>\n" +
         "                <img :src='closeImgUrl' class='close'>\n" +
         "            </div>\n" +

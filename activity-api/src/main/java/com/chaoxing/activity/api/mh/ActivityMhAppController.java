@@ -131,13 +131,13 @@ public class ActivityMhAppController {
 		mhGeneralAppResultDataFields.add(MhGeneralAppResultDataDTO.MhGeneralAppResultDataFieldDTO.builder()
 				.key("主办单位")
 				.value(activity.getOrganisers())
-				.flag("102")
+				.flag("103")
 				.build());
 		// 主办地点
 		mhGeneralAppResultDataFields.add(MhGeneralAppResultDataDTO.MhGeneralAppResultDataFieldDTO.builder()
 				.key("活动地点")
 				.value(Optional.ofNullable(activity.getAddress()).orElse("") + Optional.ofNullable(activity.getDetailAddress()).orElse(""))
-				.flag("103")
+				.flag("104")
 				.build());
 		// 报名、签到人数
 		SignParticipantStatDTO signParticipantStat = signApiService.getSignParticipation(activity.getSignId());
@@ -150,7 +150,7 @@ public class ActivityMhAppController {
 			mhGeneralAppResultDataFields.add(MhGeneralAppResultDataDTO.MhGeneralAppResultDataFieldDTO.builder()
 					.key("报名时间")
 					.value(signUpTimeStringBuilder.toString())
-					.flag("105")
+					.flag("102")
 					.build());
 		}
 		StringBuilder signPepleNumDescribe = new StringBuilder();
@@ -166,7 +166,7 @@ public class ActivityMhAppController {
 		mhGeneralAppResultDataFields.add(MhGeneralAppResultDataDTO.MhGeneralAppResultDataFieldDTO.builder()
 				.key("报名人数")
 				.value(signPepleNumDescribe.toString())
-				.flag("104")
+				.flag("105")
 				.build());
 		return RestRespDTO.success(jsonObject);
 	}

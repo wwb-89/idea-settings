@@ -85,6 +85,10 @@
             },
             mounted: function () {
                 var $this = this;
+                $this.initPageHeight();
+                window.onresize = function () {
+                    $this.initPageHeight();
+                };
                 if ($this.signActivityManageIndex.signUpExist) {
                     $this.toSignUpList();
                 }else {
@@ -92,6 +96,15 @@
                 }
             },
             methods: {
+                initPageHeight: function () {
+                    var height = $(".container").css("min-height");
+                    height = height.replaceAll("px", "");
+                    var windowHeight = $(window).height() - 40;
+                    var iframeHeight = $("#content").height();
+                    height = height > windowHeight ? height : windowHeight;
+                    height = height > iframeHeight ? height : iframeHeight;
+                    $(".container").height(height);
+                },
                 loadUrl: function (url) {
                     if (url.indexOf("?") != -1) {
                         url += "&";
@@ -104,8 +117,8 @@
                         if (iframe) {
                             var iframeWin = iframe.contentWindow || iframe.contentDocument.parentWindow;
                             if (iframeWin.document.body) {
-                                console.log(document.getElementsByClassName('content')[0].style.height);
-                                $('.container').css('height', iframeWin.document.body.scrollHeight);
+                                var iframeHeight = iframeWin.document.body.scrollHeight;
+                                $("#content").height(iframeHeight);
                             }
                         }
                     };

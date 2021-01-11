@@ -92,7 +92,7 @@
                             <img :src="activity.coverCloudId | getCloudImgUrl" class="cover-img jqthumbImg">
                         </div>
                         <div class="font-box">
-                            <span>建议尺寸：1080x500</span>
+                            <span>建议尺寸：540*280</span>
                             <span>大小：小于5M</span>
                             <span>格式：jpg、png、gif</span>
                             <div class="cancle-btn upload" id="cover-upload-btn">上传文件</div>
@@ -177,6 +177,7 @@
                     <div class="input-box column">
                         <div class="set-box">
                             <el-switch v-model="sign.signUp.fillInfo"></el-switch>
+                            <span class="tips">开启后，报名者需填写信息</span>
                         </div>
                         <div class="set-box configurationForm" v-show="sign.signUp.fillInfo" @click="toConfigForm">
                             <img src="/static/pc/assets/images/setting.png" th:src="@{/pc/assets/images/setting.png}">
@@ -188,12 +189,14 @@
                     <label class="label">报名需审核</label>
                     <div class="input-box">
                         <el-switch v-model="sign.signUp.openAudit"></el-switch>
+                        <span class="tips">开启后，参与需发起人审核</span>
                     </div>
                 </div>
                 <div class="form-item">
                     <label class="label">报名名单公开</label>
                     <div class="input-box">
                         <el-switch v-model="sign.signUp.publicList"></el-switch>
+                        <span class="tips">开启后，所有人都能看到报名人员名单</span>
                     </div>
                 </div>
                 <div class="form-item" v-show="false">
@@ -241,24 +244,11 @@
                         <el-date-picker v-model="signInTimeScope" type="datetimerange" format="yyyy-MM-dd HH:mm" value-format="timestamp" :editable=false range-separator="至" start-placeholder="开始时间" end-placeholder="结束时间" :default-time="['00:00:00', '23:59:59']" @change="selectSignInTime($event)"></el-date-picker>
                     </div>
                 </div>
-                <div class="form-item" v-if="false">
-                    <label class="label" style="line-height: 20px;">信息填写</label>
-                    <div class="input-box column">
-                        <div class="set-box">
-                            <el-switch v-model="sign.signIn.fillInfo"></el-switch>
-                            <span class="tips">如何创建报名信息表单？</span>
-                        </div>
-                        <div class="select" v-show="sign.signIn.fillInfo">
-                            <el-select v-model="sign.signIn.fillInfoFormId" placeholder="请选择">
-                                <el-option v-for="(form, index) of forms" :key="'form-' + index" :label="form.name" :value="form.id"></el-option>
-                            </el-select>
-                        </div>
-                    </div>
-                </div>
                 <div class="form-item">
                     <label class="label">签到名单公开</label>
                     <div class="input-box">
                         <el-switch v-model="sign.signIn.publicList"></el-switch>
+                        <span class="tips">开启后，所有人都能看到签到人员名单</span>
                     </div>
                 </div>
                 <div class="form-item" v-show="false">
@@ -277,9 +267,9 @@
             <!-- 点击参与设置 -->
             <form action="" class="setForm" v-show="enableSignOut">
                 <div class="form-item">
-                    <label class="label">签到方式</label>
+                    <label class="label">签退方式</label>
                     <div class="input-box">
-                        <el-radio v-for="(signInWay, index) of signInWays" :key="'sign-out-way-' + index" v-model="sign.signOut.way" :label="signInWay.value" name="signInWay">{{signInWay.name}}</el-radio>
+                        <el-radio v-for="(signOutWay, index) of signOutWays" :key="'sign-out-way-' + index" v-model="sign.signOut.way" :label="signOutWay.value" name="signOutWay">{{signOutWay.name}}</el-radio>
                     </div>
                 </div>
                 <div class="form-item" v-show="sign.signOut.way == 2">
@@ -301,29 +291,16 @@
                     </div>
                 </div>-->
                 <div class="form-item">
-                    <label class="label"><img src="/static/pc/assets/images/required.png" th:src="@{/pc/assets/images/required.png}" class="required-img">签到时间</label>
+                    <label class="label"><img src="/static/pc/assets/images/required.png" th:src="@{/pc/assets/images/required.png}" class="required-img">签退时间</label>
                     <div class="input-box">
                         <el-date-picker v-model="signOutTimeScope" type="datetimerange" format="yyyy-MM-dd HH:mm" value-format="timestamp" :editable=false range-separator="至" start-placeholder="开始时间" end-placeholder="结束时间" :default-time="['00:00:00', '23:59:59']" @change="selectSignOutTime($event)"></el-date-picker>
                     </div>
                 </div>
-                <div class="form-item" v-if="false">
-                    <label class="label" style="line-height: 20px;">信息填写</label>
-                    <div class="input-box column">
-                        <div class="set-box">
-                            <el-switch v-model="sign.signOut.fillInfo"></el-switch>
-                            <span class="tips">如何创建报名信息表单？</span>
-                        </div>
-                        <div class="select" v-show="sign.signOut.fillInfo">
-                            <el-select v-model="sign.signOut.fillInfoFormId" placeholder="请选择">
-                                <el-option v-for="(form, index) of forms" :key="'form-' + index" :label="form.name" :value="form.id"></el-option>
-                            </el-select>
-                        </div>
-                    </div>
-                </div>
                 <div class="form-item">
-                    <label class="label">签到名单公开</label>
+                    <label class="label">签退名单公开</label>
                     <div class="input-box">
                         <el-switch v-model="sign.signOut.publicList"></el-switch>
+                        <span class="tips">开启后，所有人都能看到签退人员名单</span>
                     </div>
                 </div>
                 <div class="form-item" v-show="false">
@@ -413,9 +390,9 @@
         </div>
     </div>
     <!-- 地图弹窗 -->
-    <vue-map ref="activityMap" :map-dom-id="'activity-map'" @callback="activityAddressSure"></vue-map>
-    <vue-map ref="signInMap" :map-dom-id="'sign-in-map'" @callback="signInAddressSure"></vue-map>
-    <vue-map ref="signOutMap" :map-dom-id="'sign-out-map'" @callback="signOutAddressSure"></vue-map>
+    <vue-map ref="activityMap" :map-dom-id="'activity-map'" :title="'设置活动地点'" @callback="activityAddressSure"></vue-map>
+    <vue-map ref="signInMap" :map-dom-id="'sign-in-map'" :title="'设置签到地点'" @callback="signInAddressSure"></vue-map>
+    <vue-map ref="signOutMap" :map-dom-id="'sign-out-map'" :title="'设置签退地点'" @callback="signOutAddressSure"></vue-map>
     <!-- 活动参与范围弹窗 -->
     <vue-activity-participate-scope :fid="fid" ref="activityParticipateScopeWindow" @callback="updateParticipatedOrgs"></vue-activity-participate-scope>
     <!--预览url复制容器-->
@@ -467,6 +444,8 @@
                 forms: [],
                 // 签到方式
                 signInWays: [],
+                // 签退方式
+                signOutWays: [],
                 // 扫码方式
                 scanCodeWays: [],
                 // 是否开启报名
@@ -537,9 +516,14 @@
                     }
                 });
                 $this.signInWays = [
-                    {name: "直接签到", value: 1},
+                    {name: "普通签到", value: 1},
                     {name: "指定位置签到", value: 2},
                     {name: "扫码签到", value: 3}
+                ];
+                $this.signOutWays = [
+                    {name: "普通签退", value: 1},
+                    {name: "指定位置签退", value: 2},
+                    {name: "扫码签退", value: 3}
                 ];
                 $this.scanCodeWays = [
                     {name: "用户扫码", value: 1},

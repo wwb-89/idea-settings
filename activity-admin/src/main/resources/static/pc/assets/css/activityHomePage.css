@@ -10,8 +10,7 @@ body {
 .container {
     height: 100%;
     border-radius: 8px;
-    height: 860px;
-    min-height: 860px;
+    min-height: 380px;
 }
 .slider {
     float: left;
