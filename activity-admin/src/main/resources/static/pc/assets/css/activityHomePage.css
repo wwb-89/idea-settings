@@ -10,6 +10,7 @@ body {
 .container {
     height: 100%;
     border-radius: 8px;
+    height: 860px;
     min-height: 860px;
 }
 .slider {
@@ -81,7 +82,7 @@ body {
     width: calc(100% - 221px);
     border-radius: 0px 8px 8px 0px;
     background: #ffffff;
-    border-left: 1px solid #f0f0f0;;
+    border-left: 1px solid #f0f0f0;
 }
 .content iframe {
     border: none;

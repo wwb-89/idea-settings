@@ -115,8 +115,6 @@
 
 .c-item .item {
     width: 380px;
-    /* height: 318px; */
-    height: 360px;
     background: #ffffff;
     border-radius: 6px;
     box-shadow: 0px 12px 48px 16px rgba(0, 0, 0, 0.03), 0px 9px 28px 0px rgba(0, 0, 0, 0.05), 0px 6px 16px -8px rgba(0, 0, 0, 0.08);
@@ -137,7 +135,7 @@
 .img-box {
     position: relative;
     width: 380px;
-    height: 176px;
+    height: auto;
 }
 
 .img-box img {
