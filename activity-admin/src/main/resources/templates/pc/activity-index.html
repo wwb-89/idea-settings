@@ -79,7 +79,9 @@
                 iframeUrl: ""
             },
             created: function () {
-
+                var $this = this;
+                // 解决跨域
+                document.domain = "chaoxing.com";
             },
             mounted: function () {
                 var $this = this;
@@ -98,7 +100,14 @@
                     }
                     $("#content")[0].src = url + "time=" + new Date().getTime();
                     $("#content")[0].onload = function() {
-                        activityApp.resize();
+                        var iframe = $("#content")[0];
+                        if (iframe) {
+                            var iframeWin = iframe.contentWindow || iframe.contentDocument.parentWindow;
+                            if (iframeWin.document.body) {
+                                console.log(document.getElementsByClassName('content')[0].style.height);
+                                $('.container').css('height', iframeWin.document.body.scrollHeight);
+                            }
+                        }
                     };
                 },
                 selectMenu: function (menuKey) {

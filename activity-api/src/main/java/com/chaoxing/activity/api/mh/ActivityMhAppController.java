@@ -107,7 +107,7 @@ public class ActivityMhAppController {
 		mhGeneralAppResultDataDTO.setPop(0);
 		mhGeneralAppResultDataDTO.setPopUrl("");
 		jsonObject.put("results", Lists.newArrayList(mhGeneralAppResultDataDTO));
-		List<MhGeneralAppResultDataDTO.MhGeneralAppResultDataFieldDTO> mhGeneralAppResultDataFields = new ArrayList<>();
+		List<MhGeneralAppResultDataDTO.MhGeneralAppResultDataFieldDTO> mhGeneralAppResultDataFields = Lists.newArrayList();
 		mhGeneralAppResultDataDTO.setFields(mhGeneralAppResultDataFields);
 		// 活动名称
 		mhGeneralAppResultDataFields.add(MhGeneralAppResultDataDTO.MhGeneralAppResultDataFieldDTO.builder()
@@ -156,7 +156,7 @@ public class ActivityMhAppController {
 		StringBuilder signPepleNumDescribe = new StringBuilder();
 		Integer limitNum = signParticipantStat.getLimitNum();
 		Integer participateNum = signParticipantStat.getParticipateNum();
-		if (participateNum.compareTo(0) > 0) {
+		if (participateNum.compareTo(0) > 0 || limitNum.intValue() > 0) {
 			signPepleNumDescribe.append(participateNum);
 			if (limitNum.intValue() > 0) {
 				signPepleNumDescribe.append("/");
