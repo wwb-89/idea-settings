@@ -66,6 +66,7 @@
 .title {
     line-height: 28px;
     margin-right: 20px;
+    float: left;
 }
 .typeItem ul {
     display: flex;
