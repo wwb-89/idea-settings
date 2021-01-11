@@ -58,9 +58,25 @@
             </div>
         </div>
         <div class="content">
-            <iframe src="test.html"></iframe>
+            <iframe id="ifr" src="test.html"></iframe>
         </div>
     </div>
+
+    <script src="../assets/lib/jquery.min.js"></script>
+    <script>
+        function setIframeHeight(iframe) {
+            if (iframe) {
+                var iframeWin = iframe.contentWindow || iframe.contentDocument.parentWindow;
+                if (iframeWin.document.body) {
+                    console.log(document.getElementsByClassName('content')[0].style.height);
+                    $('.container').css('height', iframeWin.document.body.scrollHeight);
+                }
+            }
+        };
+        window.onload = function () {
+            setIframeHeight(document.getElementById('ifr'));
+        };
+    </script>
 </body>
 
 </html>
