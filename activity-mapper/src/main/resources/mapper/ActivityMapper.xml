@@ -140,12 +140,16 @@
             <include refid="Base_Column_List"></include>
         FROM
             t_activity t
+            INNER JOIN t_activity_scope t1 ON t.id = t1.activity_id
+            AND t1.fid = #{fid}
         WHERE
-            t.create_fid = #{fid}
-            AND t.`status` IN ( 2, 3, 4 )
-            AND t.page_id IS NOT NULL
+            <!--状态-->
+            t.`status` IN ( 2, 3, 4 )
+        GROUP BY
+            t.id
         ORDER BY
-            FIELD( t.`status`, 2, 3, 4 ),
+            FIELD( t.`status`, 3, 2, 4 ),
+            t1.fid <![CDATA[<>]]> #{fid},
             t.start_time DESC
     </select>
 

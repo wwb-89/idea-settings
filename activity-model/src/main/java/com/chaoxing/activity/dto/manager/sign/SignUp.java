@@ -1,9 +1,13 @@
 package com.chaoxing.activity.dto.manager.sign;
 
+import com.alibaba.fastjson.annotation.JSONField;
+import com.chaoxing.activity.util.LocalDateTime2TimestampDeserializer;
+import com.chaoxing.activity.util.LocalDateTimeSerializer;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+
 import java.time.LocalDateTime;
 
 /**
@@ -27,8 +31,10 @@ public class SignUp {
     /** 是否开启审批 */
     private Boolean openAudit;
     /** 开始时间 */
+    @JSONField(serializeUsing = LocalDateTimeSerializer.class, deserializeUsing = LocalDateTime2TimestampDeserializer.class)
     private LocalDateTime startTime;
     /** 结束时间 */
+    @JSONField(serializeUsing = LocalDateTimeSerializer.class, deserializeUsing = LocalDateTime2TimestampDeserializer.class)
     private LocalDateTime endTime;
     /** 是否限制人数 */
     private Boolean limitPerson;
@@ -45,6 +51,7 @@ public class SignUp {
     /** 是否被删除 */
     private Boolean deleted;
     /** 创建时间 */
+    @JSONField(serializeUsing = LocalDateTimeSerializer.class, deserializeUsing = LocalDateTime2TimestampDeserializer.class)
     private LocalDateTime createTime;
     /** 创建人id */
     private Integer createUid;
@@ -55,14 +62,15 @@ public class SignUp {
     /** 创建人机构id */
     private String createOrgName;
     /** 更新时间 */
+    @JSONField(serializeUsing = LocalDateTimeSerializer.class, deserializeUsing = LocalDateTime2TimestampDeserializer.class)
     private LocalDateTime updateTime;
     /** 更新人id */
     private Integer updateUid;
 
     // 附加
     /** 开始时间字符串表示 */
-    private String startTimeStr;
+    private Long startTimestamp;
     /** 结束时间字符串表示 */
-    private String endTimeStr;
+    private Long endTimestamp;
 
 }

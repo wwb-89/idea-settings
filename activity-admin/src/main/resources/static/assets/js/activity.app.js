@@ -103,6 +103,9 @@
     activityApp.prototype.millisecond2DateStr = function (millisecond) {
         var $this = this;
         var dateObj = $this.millisecond2DateObj(millisecond);
+        if ($this.isEmpty(dateObj)) {
+            return "";
+        }
         return dateObj.year + "-" + dateObj.month + "-" + dateObj.day + " " + dateObj.hour + ":" + dateObj.minute + ":" + dateObj.second;
     };
 
@@ -254,6 +257,18 @@
         var date = new Date(new Date().setMonth(new Date().getMonth() + 1));
         var dateObj = $this.millisecond2DateObj(date.getTime());
         return dateObj.year + "-" + dateObj.month + "-" + dateObj.day + " " + "23:59:59";
+    };
+    /**
+     * 触发resize
+     */
+    activityApp.prototype.resize = function () {
+        if(document.createEvent) {
+            var event = document.createEvent("HTMLEvents");
+            event.initEvent("resize", true, true);
+            window.dispatchEvent(event);
+        } else if(document.createEventObject) {
+            window.fireEvent("onresize");
+        }
     };
     W['activityApp'] = new activityApp();
 })(window, jQuery, JSON);
