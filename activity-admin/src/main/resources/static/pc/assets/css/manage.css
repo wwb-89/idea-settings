@@ -97,6 +97,14 @@ table {
 .desc{
     max-width: unset;
 }
+.desc .title {
+    width: 270px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+}
 .desc .time {
     font-size: 14px;
     font-weight: 400;

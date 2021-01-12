@@ -1133,6 +1133,7 @@
                 $.fn.zTree.init($("#organizationTree"), setting, zNodes);
             },
             openModal:function() {
+                $('body').addClass('scroll');
                 layer.open({
                     skin: 'create-class',
                     type: 2,
@@ -1142,8 +1143,10 @@
                     btnAlign: 'c',
                     yes: function (index, layero) {
                         layer.close(index);
+                        $('body').removeClass('scroll');
                     },
                     cancel: function () {
+                        $('body').removeClass('scroll');
                     }
                 })
             },
