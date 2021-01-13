@@ -1,0 +1,141 @@
+.clear {
+    clear: both;
+}
+.container {
+    padding: 74px 65px;
+}
+.container .title {
+    font-size: 20px;
+    font-weight: 600;
+    color: #333333;
+    line-height: 30px;
+    max-width: 497px;
+    margin-bottom: 10px;
+}
+
+.container .banners ul li {
+    float: left;
+    margin-right: 15px;
+    margin-bottom: 15px;
+    height: 24px;
+    border-radius: 12px;
+    border: 1px solid #dce0e3;
+    padding: 0 22px;
+    line-height: 26px;
+    font-size: 13px;
+    font-weight: 500;
+    color: #a4a4a4;
+}
+
+.container .activity-details {
+    margin-bottom: 22px;
+    font-size: 14px;
+    line-height: 24px;
+    color: #666666;
+}
+
+.container .chooseItems {
+    max-width: 460px;
+}
+
+.container .chooseItems ul li {
+    cursor: pointer;
+    float: left;
+    margin: 0 14px 14px 0;
+    width: 101px;
+    height: 39px;
+    border-radius: 4px;
+    background-color:#e0e3eb;
+    font-size: 16px;
+    color: #4e66a7;
+    font-weight: 600;
+    text-align: center;
+    line-height: 39px;
+}
+.container .chooseItems ul .active{
+    background-color: #4e66a7;
+    color: #ffffff;
+}
+
+.container .bottom-btns {
+    display: none;
+}
+
+@media only screen and (min-width: 1px) and (max-width: 767px) {
+    .container {
+        padding: .8125rem .875rem;
+    }
+
+    .container .title {
+        font-size: 1rem;
+    }
+
+    .activity-holder {
+        display: none;
+    }
+
+    .container .chooseItems {
+        display: none;
+    }
+
+    .container .bottom-btns {
+        display: block;
+        margin-bottom: .3125rem;
+    }
+
+    .container .bottom-btns .sign-btn {
+        position: relative;
+        cursor: pointer;
+        height: 2.5625rem;
+        background-color: #0099ff;
+        border-radius: .3125rem;
+        text-align: center;
+        color: #ffffff;
+        font-weight: 600;
+        line-height: 2.5625rem;
+        margin-bottom: 1.21875rem;
+    }
+    .container .bottom-btns .btn-items ul {
+        width: 100%;
+    }
+
+    .container .bottom-btns .btn-items ul li {
+        cursor: pointer;
+        float: left;
+        font-size: .9375rem;
+        font-weight: 550;
+        color: #0099ff;
+        line-height: 1.3125rem;
+        text-align: center;
+    }
+    .container .bottom-btns .btn-items ul .left,
+    .container .bottom-btns .btn-items ul .right {
+        width: 30%;
+    }
+    .container .bottom-btns .btn-items ul .center {
+        border-left: 1px solid #b2b2b2;
+        border-right: 1px solid #b2b2b2;
+        width: 38%;
+    }
+
+    .container .bottom-btns .sign-end {
+        background-color: #e7e8eb;
+        color: #a4a7b0;
+    }
+    .container .bottom-btns .sign-unbegin {
+        opacity: 0.44;
+        background-color: #0099ff;
+    }
+    .container .bottom-btns .loading {
+        position: absolute;
+        top: 50%;
+        left: 35%;
+        transform: translateY(-60%);
+        display: inline-block;
+        width: 1.125rem;
+        height: 1.125rem;
+        background: url("../images/loading.png") center center no-repeat;
+        background-size: 1.125rem 1.125rem; 
+    }
+    
+}
