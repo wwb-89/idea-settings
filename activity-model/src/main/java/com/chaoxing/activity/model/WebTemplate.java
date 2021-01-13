@@ -33,6 +33,8 @@ public class WebTemplate {
     private Integer templateId;
     /** 模板名称; column: name*/
     private String name;
+    /** 活动形式; column: activity_type*/
+    private String activityType;
     /** 封面地址; column: cover_url*/
     private String coverUrl;
     /** 预览地址; column: preview_url*/

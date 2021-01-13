@@ -582,6 +582,9 @@
                 if (activityApp.isEmpty($this.participatedOrgs)) {
                     $this.participatedOrgs = [];
                 }
+                if ($this.step == 2) {
+                    $this.filterOptionalTemplate();
+                }
             },
             mounted: function () {
                 var $this = this;
@@ -1035,6 +1038,7 @@
                             var activityData = data.data;
                             $this.$set($this.activity, "id", activityData.id);
                             $this.$set($this.sign, "id", activityData.signId);
+                            $this.filterOptionalTemplate();
                             $this.step = 2;
                         } else {
                             var errorMessage = data.message;
@@ -1198,6 +1202,18 @@
                     var $this = this;
                     app.closeLayerPop($this.formConfigLayerIndex);
                     $this.$set($this.sign.signUp, "fillInfoFormId", formId);
+                },
+                // 过滤可选的模板
+                filterOptionalTemplate: function () {
+                    var $this = this;
+                    var activityType = $this.activity.activityType;
+                    var webTemplates = [];
+                    $($this.webTemplates).each(function () {
+                        if (this.activityType == activityType) {
+                            webTemplates.push(this);
+                        }
+                    });
+                    $this.webTemplates = webTemplates;
                 }
             }
         });
