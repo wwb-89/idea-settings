@@ -1077,6 +1077,7 @@
                         if (data.success) {
                             app.activityChanged();
                             var activityData = data.data;
+                            $this.filterOptionalTemplate();
                             $this.$set($this.sign, "id", activityData.signId);
                             if (activityApp.isEmpty($this.activity.pageId)) {
                                 $this.step = 2;
