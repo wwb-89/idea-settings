@@ -25,6 +25,8 @@ public class CommonConstant {
 	public static final Integer DISTRIBUTED_LOCK_TIMEOUT = 20;
 	/** 系统fid */
 	public static final Integer SYSTEM_FID = -1;
+	/** 登录认证密钥 */
+	public static final String LOGIN_AUTH_KEY = "9nfNzEXVknFLcSER";
 
 	/** 默认页码 */
 	public static final Integer DEFAULT_PAGE_NUM = 1;
