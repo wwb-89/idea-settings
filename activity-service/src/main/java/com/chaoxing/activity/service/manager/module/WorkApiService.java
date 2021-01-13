@@ -37,6 +37,8 @@ public class WorkApiService {
 	private static final String CREATE_URL = "http://api.reading.chaoxing.com/activity/engine/create";
 	/** 清空活动参与范围 */
 	private static final String CLEAR_ACTIVITY_PARTICIPATE_SCOPE_URL = "http://api.reading.chaoxing.com/cache/activity/clear/participate-fid";
+	/** 统计活动提交作品数量url */
+	private static final String ACTIVITY_SUBMITED_WORK_NUM_URL = "http://api.reading.chaoxing.com/activity/stat/submited-work-num";
 
 	@Resource
 	private RestTemplate restTemplate;
@@ -93,6 +95,29 @@ public class WorkApiService {
 			}
 			throw new BusinessException(errorMessage);
 		}
+	}
+
+	/**统计活动提交作品量
+	 * @Description 
+	 * @author wwb
+	 * @Date 2021-01-13 19:53:30
+	 * @param activityIds
+	 * @return java.lang.Integer
+	*/
+	public Integer countActivitySubmitWorkNum(List<Integer> activityIds) {
+		if (CollectionUtils.isNotEmpty(activityIds)) {
+			HttpHeaders httpHeaders = new HttpHeaders();
+			httpHeaders.setContentType(MediaType.APPLICATION_JSON);
+			HttpEntity<String> httpEntity = new HttpEntity<>(JSON.toJSONString(activityIds), httpHeaders);
+			String result = restTemplate.postForObject(ACTIVITY_SUBMITED_WORK_NUM_URL, httpEntity, String.class);
+			JSONObject jsonObject = JSON.parseObject(result);
+			Boolean success = jsonObject.getBoolean("success");
+			success = Optional.ofNullable(success).orElse(Boolean.FALSE);
+			if (success) {
+				return jsonObject.getInteger("data");
+			}
+		}
+		return 0;
 	}
 
 }
