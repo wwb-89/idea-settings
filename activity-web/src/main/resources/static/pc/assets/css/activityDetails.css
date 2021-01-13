@@ -128,14 +128,22 @@
     }
     .container .bottom-btns .loading {
         position: absolute;
+        left: 50%;
+        transform: translateX(-50%);
+    }
+    .container .bottom-btns .loading-icon {
+        position: absolute;
         top: 50%;
-        left: 35%;
-        transform: translateY(-60%);
+        transform: translateY(-55%);
         display: inline-block;
-        width: 1.125rem;
-        height: 1.125rem;
+        width: 1.325rem;
+        height: 1.325rem;
         background: url("../images/loading.png") center center no-repeat;
-        background-size: 1.125rem 1.125rem; 
+        background-size: 1.325rem 1.325rem; 
+    }
+
+    .container .bottom-btns .loading span {
+        margin-left: 1.75rem;
     }
     
 }
