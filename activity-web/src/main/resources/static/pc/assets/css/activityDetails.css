@@ -61,6 +61,15 @@
     display: none;
 }
 
+@keyframes rotation {
+    from {
+        transform: rotate(0deg);
+    }
+    to {
+        transform: rotate(360deg);
+    }
+}
+
 @media only screen and (min-width: 1px) and (max-width: 767px) {
     .container {
         padding: .8125rem .875rem;
@@ -91,7 +100,6 @@
         border-radius: .3125rem;
         text-align: center;
         color: #ffffff;
-        font-weight: 600;
         line-height: 2.5625rem;
         margin-bottom: 1.21875rem;
     }
@@ -103,7 +111,6 @@
         cursor: pointer;
         float: left;
         font-size: .9375rem;
-        font-weight: 550;
         color: #0099ff;
         line-height: 1.3125rem;
         text-align: center;
@@ -145,5 +152,10 @@
     .container .bottom-btns .loading span {
         margin-left: 1.75rem;
     }
-    
+
+    .Rotation {
+        transform: rotate(360deg);
+        animation: rotation 4s linear infinite;
+    }
+     
 }
