@@ -1143,9 +1143,11 @@
                     btnAlign: 'c',
                     yes: function (index, layero) {
                         layer.close(index);
-                        $('body').removeClass('scroll');
                     },
                     cancel: function () {
+
+                    },
+                    end: function () {
                         $('body').removeClass('scroll');
                     }
                 })

@@ -1173,6 +1173,7 @@
                         formId = $this.sign.signUp.fillInfoFormId;
                     }
                     var url = "http://reading.chaoxing.com/qd/form/config?formId=" + formId;
+                    $('body').addClass('scroll');
                     $this.formConfigLayerIndex = layer.open({
                         title: "表单配置",
                         skin: "create-class",
@@ -1187,6 +1188,9 @@
                         btn2: function (index, layero) {
                             $("#layui-layer-iframe" + $this.formConfigLayerIndex)[0].contentWindow.submit();
                             return false;
+                        },
+                        end: function () {
+                            $('body').removeClass('scroll');
                         }
                     })
                 },
