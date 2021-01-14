@@ -57,6 +57,11 @@
     color: #ffffff;
 }
 
+.container .chooseItems ul .btn-disable{
+    background-color:rgba(78,102,167,.5);
+    color:#ffffff
+}
+
 .container .bottom-btns {
     display: none;
 }
