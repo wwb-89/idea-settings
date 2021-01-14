@@ -38,4 +38,19 @@
             </foreach>
     </insert>
 
+    <select id="listOrgParticipateSignId" resultType="java.lang.Integer">
+        SELECT
+            t.sign_id
+        FROM
+            t_activity t
+            INNER JOIN t_activity_scope t1 ON t.id = t1.activity_id
+            AND t1.fid IN
+                <foreach collection="fids" index="key" item="value" open="(" close=")" separator=",">
+                    #{value}
+                </foreach>
+        WHERE
+            t.sign_id IS NOT NULL
+            AND t.is_enable_sign
+    </select>
+
 </mapper>

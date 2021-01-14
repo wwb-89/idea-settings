@@ -582,6 +582,9 @@
                 if (activityApp.isEmpty($this.participatedOrgs)) {
                     $this.participatedOrgs = [];
                 }
+                if ($this.step == 2) {
+                    $this.filterOptionalTemplate();
+                }
             },
             mounted: function () {
                 var $this = this;
@@ -1035,6 +1038,7 @@
                             var activityData = data.data;
                             $this.$set($this.activity, "id", activityData.id);
                             $this.$set($this.sign, "id", activityData.signId);
+                            $this.filterOptionalTemplate();
                             $this.step = 2;
                         } else {
                             var errorMessage = data.message;
@@ -1073,6 +1077,7 @@
                         if (data.success) {
                             app.activityChanged();
                             var activityData = data.data;
+                            $this.filterOptionalTemplate();
                             $this.$set($this.sign, "id", activityData.signId);
                             if (activityApp.isEmpty($this.activity.pageId)) {
                                 $this.step = 2;
@@ -1173,6 +1178,7 @@
                         formId = $this.sign.signUp.fillInfoFormId;
                     }
                     var url = "http://reading.chaoxing.com/qd/form/config?formId=" + formId;
+                    $('body').addClass('scroll');
                     $this.formConfigLayerIndex = layer.open({
                         title: "表单配置",
                         skin: "create-class",
@@ -1187,6 +1193,9 @@
                         btn2: function (index, layero) {
                             $("#layui-layer-iframe" + $this.formConfigLayerIndex)[0].contentWindow.submit();
                             return false;
+                        },
+                        end: function () {
+                            $('body').removeClass('scroll');
                         }
                     })
                 },
@@ -1194,6 +1203,18 @@
                     var $this = this;
                     app.closeLayerPop($this.formConfigLayerIndex);
                     $this.$set($this.sign.signUp, "fillInfoFormId", formId);
+                },
+                // 过滤可选的模板
+                filterOptionalTemplate: function () {
+                    var $this = this;
+                    var activityType = $this.activity.activityType;
+                    var webTemplates = [];
+                    $($this.webTemplates).each(function () {
+                        if (this.activityType == activityType && !this.deleted) {
+                            webTemplates.push(this);
+                        }
+                    });
+                    $this.webTemplates = webTemplates;
                 }
             }
         });

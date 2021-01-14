@@ -10,6 +10,7 @@ import com.chaoxing.activity.dto.sign.SignActivityManageIndexDTO;
 import com.chaoxing.activity.util.RestTemplateUtils;
 import com.chaoxing.activity.util.exception.BusinessException;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
@@ -46,6 +47,8 @@ public class SignApiService {
 	private static final String PARTICIPATION_URL = DOMAIN + "/sign/%d/participation";
 	/** 统计报名签到在活动管理首页需要的信息 */
 	private static final String STAT_SIGN_ACTIVITY_MANAGE_INDEX_URL = DOMAIN + "/sign/%d/stat/activity-index";
+	/** 统计报名签到报名成功数量url */
+	private static final String STAT_SIGNED_UP_NUM = DOMAIN + "/sign/stat/signed-up-num";
 
 	@Resource
 	private RestTemplate restTemplate;
@@ -201,6 +204,29 @@ public class SignApiService {
 				.signInExist(Boolean.FALSE)
 				.signUpNum(0)
 				.build();
+	}
+
+	/**统计报名人数
+	 * @Description 
+	 * @author wwb
+	 * @Date 2021-01-13 18:00:20
+	 * @param signIds
+	 * @return java.lang.Integer
+	*/
+	public Integer statSignedUpNum(List<Integer> signIds) {
+		if (CollectionUtils.isNotEmpty(signIds)) {
+			HttpHeaders httpHeaders = new HttpHeaders();
+			httpHeaders.setContentType(MediaType.APPLICATION_JSON);
+			HttpEntity<String> httpEntity = new HttpEntity<>(JSON.toJSONString(signIds), httpHeaders);
+			String result = restTemplate.postForObject(STAT_SIGNED_UP_NUM, httpEntity, String.class);
+			JSONObject jsonObject = JSON.parseObject(result);
+			Boolean success = jsonObject.getBoolean("success");
+			success = Optional.ofNullable(success).orElse(Boolean.FALSE);
+			if (success) {
+				return jsonObject.getInteger("data");
+			}
+		}
+		return 0;
 	}
 
 }
