@@ -1210,7 +1210,7 @@
                     var activityType = $this.activity.activityType;
                     var webTemplates = [];
                     $($this.webTemplates).each(function () {
-                        if (this.activityType == activityType) {
+                        if (this.activityType == activityType && !this.deleted) {
                             webTemplates.push(this);
                         }
                     });

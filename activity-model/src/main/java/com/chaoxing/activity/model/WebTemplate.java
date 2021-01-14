@@ -50,6 +50,8 @@ public class WebTemplate {
     private String affiliationFid;
     /** 顺序; column: sequence*/
     private Integer sequence;
+    /** 是否被删除; column: is_deleted*/
+    private Boolean deleted;
     /** 创建时间; column: create_time*/
     private Date createTime;
 
