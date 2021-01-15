@@ -416,6 +416,7 @@
                 activity: [[${activity}]],
                 // 模板列表
                 webTemplates: [[${webTemplates}]],
+                code: [[${code}]],
                 // 活动日期的范围
                 activityDateTimeScope: "",
                 activityTypes: [[${activityTypes}]],
@@ -490,7 +491,8 @@
                         longitude: "",
                         dimension: "",
                         activityClassifyId: firstActivityClassifyId,
-                        enableSign: true
+                        enableSign: true,
+                        createAreaCode: $this.code
                     };
                 } else {
                     $this.activity.createTime = null;

@@ -8,6 +8,7 @@ import com.chaoxing.activity.model.WebTemplate;
 import com.chaoxing.activity.model.WebTemplateApp;
 import com.chaoxing.activity.model.WebTemplateAppData;
 import com.chaoxing.activity.service.manager.WfwRegionalArchitectureApiService;
+import com.chaoxing.activity.util.constant.WebTemplateCustomConfigConstant;
 import com.chaoxing.activity.util.enums.MhAppDataSourceEnum;
 import com.chaoxing.activity.util.enums.MhAppTypeEnum;
 import com.chaoxing.activity.util.exception.BusinessException;
@@ -134,14 +135,17 @@ public class WebTemplateService {
 		if (CollectionUtils.isNotEmpty(orgAffiliations)) {
 			webTemplates.addAll(orgAffiliations);
 		}
-		// 查询系统的
-		List<WebTemplate> systems = webTemplateMapper.selectList(new QueryWrapper<WebTemplate>()
-				.lambda()
-				.eq(WebTemplate::getSystem, Boolean.TRUE)
-				.orderByAsc(WebTemplate::getSequence)
-		);
-		if (CollectionUtils.isNotEmpty(systems)) {
-			webTemplates.addAll(systems);
+		codes.retainAll(WebTemplateCustomConfigConstant.CUSTOM_AREA_CODES);
+		if (CollectionUtils.isEmpty(codes)) {
+			// 查询系统的
+			List<WebTemplate> systems = webTemplateMapper.selectList(new QueryWrapper<WebTemplate>()
+					.lambda()
+					.eq(WebTemplate::getSystem, Boolean.TRUE)
+					.orderByAsc(WebTemplate::getSequence)
+			);
+			if (CollectionUtils.isNotEmpty(systems)) {
+				webTemplates.addAll(systems);
+			}
 		}
 		return webTemplates;
 	}

@@ -95,6 +95,8 @@ public class Activity {
     private String createUserName;
     /** 创建单位id; column: create_fid*/
     private Integer createFid;
+    /** 创建区域编码; column: create_area_code*/
+    private String createAreaCode;
     /** 创建机构名; column: create_org_name*/
     private String createOrgName;
     /** 创建时间; column: create_time*/
