@@ -67,7 +67,7 @@
 }
 
 
-@media only screen and (min-width: 1px) and (max-width: 767px) {
+@media only screen and (min-width: 1px) and (max-width: 500px) {
     .container {
         padding: .8125rem .875rem;
     }
