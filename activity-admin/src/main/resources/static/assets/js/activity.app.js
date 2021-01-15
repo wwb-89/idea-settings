@@ -221,7 +221,7 @@
      * @returns {string}
      */
     activityApp.prototype.getDefaultCoverCloudId = function () {
-        return "68065603fbcb805725f7ef5e21cef03c";
+        return "ce257d8a6c546bcedcc7f415dd504296";
     };
     /**
      * 获取相对路径

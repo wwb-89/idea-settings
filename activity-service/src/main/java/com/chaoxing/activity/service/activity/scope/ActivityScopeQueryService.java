@@ -48,4 +48,15 @@ public class ActivityScopeQueryService {
 		return result;
 	}
 
+	/**查询机构参与的报名签到id列表
+	 * @Description
+	 * @author wwb
+	 * @Date 2021-01-13 17:52:03
+	 * @param fids
+	 * @return java.util.List<java.lang.Integer>
+	 */
+	public List<Integer> listOrgParticipateSignId(List<Integer> fids) {
+		return activityScopeMapper.listOrgParticipateSignId(fids);
+	}
+
 }

@@ -1,5 +1,6 @@
 package com.chaoxing.activity.service.activity;
 
+import com.chaoxing.activity.mapper.ActivityMapper;
 import com.chaoxing.activity.model.Activity;
 import com.chaoxing.activity.util.DateUtils;
 import com.chaoxing.activity.util.constant.CacheConstant;
@@ -28,6 +29,9 @@ public class ActivityStatusHandleService {
 
 	@Resource
 	private RedisTemplate redisTemplate;
+
+	@Resource
+	private ActivityMapper activityMapper;
 	@Resource
 	private ActivityQueryService activityQueryService;
 	@Resource
@@ -148,7 +152,6 @@ public class ActivityStatusHandleService {
 				ZSetOperations<String, Integer> zSetOperations = redisTemplate.opsForZSet();
 				zSetOperations.remove(cacheKey, activityId);
 			}
-
 		}
 	}
 

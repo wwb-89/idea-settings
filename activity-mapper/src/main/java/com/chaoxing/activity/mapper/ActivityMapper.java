@@ -9,6 +9,8 @@ import com.chaoxing.activity.model.Activity;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
+import java.util.List;
+
 /**
  * @className: ActivityMapper
  * @Description:
@@ -43,24 +45,37 @@ public interface ActivityMapper extends BaseMapper<Activity> {
 	 */
 	Page<Activity> listManaging(@Param("page") Page<?> page, @Param("params") ActivityManageQueryDTO activityManageQuery);
 
-	/**查询创建的
-	 * @Description 
-	 * @author wwb
-	 * @Date 2020-11-24 21:49:48
+	/**
+	 * 查询创建的
+	 *
 	 * @param page
 	 * @param fid
 	 * @return com.baomidou.mybatisplus.extension.plugins.pagination.Page<com.chaoxing.activity.model.Activity>
-	*/
+	 * @Description
+	 * @author wwb
+	 * @Date 2020-11-24 21:49:48
+	 */
 	Page<Activity> listCreated(@Param("page") Page<?> page, @Param("fid") Integer fid);
 
-	/**活动日历查询
-	 * @Description 
-	 * @author wwb
-	 * @Date 2020-12-03 15:59:54
+	/**
+	 * 活动日历查询
+	 *
 	 * @param page
 	 * @param activityCalendarQuery
 	 * @return com.baomidou.mybatisplus.extension.plugins.pagination.Page<com.chaoxing.activity.model.Activity>
-	*/
+	 * @Description
+	 * @author wwb
+	 * @Date 2020-12-03 15:59:54
+	 */
 	Page<Activity> listActivityCalendarParticipate(@Param("page") Page<?> page, @Param("params") MhActivityCalendarQueryDTO activityCalendarQuery);
+
+	/**机构参与的活动的pageId列表
+	 * @Description 
+	 * @author wwb
+	 * @Date 2021-01-13 19:22:05
+	 * @param fids
+	 * @return java.util.List<java.lang.Integer>
+	*/
+	List<Integer> listOrgParticipatedActivityPageId(@Param("fids") List<Integer> fids);
 
 }

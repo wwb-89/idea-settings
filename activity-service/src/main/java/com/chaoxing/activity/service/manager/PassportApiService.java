@@ -5,16 +5,28 @@ import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.chaoxing.activity.dto.OrgDTO;
 import com.chaoxing.activity.dto.manager.PassportUserDTO;
+import com.chaoxing.activity.util.CookieUtils;
 import com.chaoxing.activity.util.constant.CacheConstant;
 import com.chaoxing.activity.util.exception.BusinessException;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.codec.digest.DigestUtils;
 import org.springframework.aop.framework.AopContext;
 import org.springframework.cache.annotation.Cacheable;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.util.LinkedMultiValueMap;
+import org.springframework.util.MultiValueMap;
+import org.springframework.util.StringUtils;
 import org.springframework.web.client.RestTemplate;
 
 import javax.annotation.Resource;
+import javax.servlet.http.Cookie;
+import javax.servlet.http.HttpServletResponse;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -34,8 +46,13 @@ public class PassportApiService {
 	/** 获取用户信息地址 */
 	private static final String GET_USER_URL = "http://passport2.chaoxing.com/api/userinfo?uid=%s&enc=%s&last=true";
 	private static final String KEY = "uWwjeEKsri";
+	/** 免密登录key */
+	private static final String AVOID_CLOSE_LOGIN_KEY = "jsDyctOCn7qHzRvrtcJ6";
+	public static final DateTimeFormatter YYYYMMDD = DateTimeFormatter.ofPattern("yyyy-MM-dd");
 	/** 获取机构名称url */
 	private static final String ORG_NAME_URL = "https://passport2.chaoxing.com/org/getName?schoolid=";
+	/** passport免密登录url */
+	public static final String AVOID_CLOSE_LOGIN_URL = "http://passport2.chaoxing.com/api/login";
 
 	@Resource(name = "restTemplateProxy")
 	private RestTemplate restTemplate;
@@ -152,6 +169,79 @@ public class PassportApiService {
 		clearText.append(account);
 		clearText.append(KEY);
 		clearText.append(fid);
+		return DigestUtils.md5Hex(clearText.toString());
+	}
+
+	/**免密登录
+	 * @Description
+	 * 1、根据uid查询用户的登录名
+	 * 2、根据fid和登录名登录
+	 * @author wwb
+	 * @Date 2021-01-13 15:05:25
+	 * @param uid
+	 * @param fid
+	 * @param response
+	 * @return java.util.List<javax.servlet.http.Cookie>
+	*/
+	public List<Cookie> avoidCloseLogin(Integer uid, Integer fid, HttpServletResponse response) {
+		PassportUserDTO passportUser = getByUid(uid);
+		String account = passportUser.getLoginName();
+		String url = AVOID_CLOSE_LOGIN_URL;
+		MultiValueMap<String, Object> params = new LinkedMultiValueMap<>();
+		String enc = getLoginEnc(fid, account);
+		params.add("schoolid", fid);
+		params.add("name", account);
+		params.add("enc", enc);
+		HttpEntity<MultiValueMap<String, Object>> httpEntity = new HttpEntity<>(params, null);
+		ResponseEntity<String> responseEntity = restTemplate.exchange(url, HttpMethod.POST, httpEntity, String.class);
+		String result = responseEntity.getBody();
+		JSONObject jsonObject = JSON.parseObject(result);
+		String resultStatus = jsonObject.getString("status");
+		if ("0".equals(resultStatus)) {
+			// 回写cookie
+			HttpHeaders headers = responseEntity.getHeaders();
+			return CookieUtils.writeCookie(headers, response);
+		} else if ("3".equals(resultStatus)) {
+			enc = getLoginEnc(null, account);
+			params.remove("schoolid");
+			params.remove("enc");
+			params.add("enc", enc);
+			httpEntity = new HttpEntity<>(params, null);
+			responseEntity = restTemplate.exchange(url, HttpMethod.POST, httpEntity, String.class);
+			result = responseEntity.getBody();
+			jsonObject = JSON.parseObject(result);
+			resultStatus = jsonObject.getString("status");
+			if ("0".equals(resultStatus)) {
+				// 回写cookie
+				HttpHeaders headers = responseEntity.getHeaders();
+				return CookieUtils.writeCookie(headers, response);
+			} else {
+				String errorMessage = jsonObject.getString("mes");
+				if (StringUtils.isEmpty(errorMessage)) {
+					errorMessage = jsonObject.getString("errorMsg");
+				}
+				log.error("用户登录error: {}", errorMessage);
+				throw new BusinessException(errorMessage);
+			}
+		} else {
+			String errorMessage = jsonObject.getString("mes");
+			if (StringUtils.isEmpty(errorMessage)) {
+				errorMessage = jsonObject.getString("errorMsg");
+			}
+			log.error("用户登录error: {}", errorMessage);
+			throw new BusinessException(errorMessage);
+		}
+	}
+
+	private String getLoginEnc(Integer fid, String account) {
+		StringBuilder clearText = new StringBuilder();
+		if (fid != null) {
+			clearText.append(fid);
+		}
+		clearText.append(account);
+		LocalDate now = LocalDate.now();
+		clearText.append(now.format(YYYYMMDD));
+		clearText.append(AVOID_CLOSE_LOGIN_KEY);
 		return DigestUtils.md5Hex(clearText.toString());
 	}
 

@@ -1,4 +1,4 @@
-package com.chaoxing.activity.api.mh;
+package com.chaoxing.activity.api.controller.mh;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
@@ -49,6 +49,7 @@ public class ActivityMhAppController {
 
 	/** 签到按钮地址 */
 	private static final String QD_BTN_URL = "http://api.qd.reading.chaoxing.com/sign/%d/btn?activityId=%s";
+	private static final Integer RECOMMEND_ACTIVITY_PAGE_SIZE = 4;
 
 	@Resource
 	private ActivityQueryService activityQueryService;
@@ -218,7 +219,7 @@ public class ActivityMhAppController {
 	public RestRespDTO recommendActivity(@PathVariable Integer activityId, @RequestBody String data) {
 		JSONObject jsonObject = JSON.parseObject(data);
 		Integer pageNum = Optional.ofNullable(jsonObject.getInteger("page")).orElse(CommonConstant.DEFAULT_PAGE_NUM);
-		Integer pageSize = Optional.ofNullable(jsonObject.getInteger("pageSize")).orElse(CommonConstant.DEFAULT_PAGE_SIZE);
+		Integer pageSize = Optional.ofNullable(jsonObject.getInteger("pageSize")).orElse(RECOMMEND_ACTIVITY_PAGE_SIZE);
 		Activity activity = activityQueryService.getById(activityId);
 		Integer createFid = activity.getCreateFid();
 		// 查询机构下的活动列表

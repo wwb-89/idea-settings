@@ -1,4 +1,4 @@
-package com.chaoxing.activity.api;
+package com.chaoxing.activity.api.controller;
 
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.chaoxing.activity.api.service.Model2DtoService;

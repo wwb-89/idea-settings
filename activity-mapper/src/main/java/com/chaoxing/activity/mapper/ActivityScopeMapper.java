@@ -17,13 +17,24 @@ import java.util.List;
 @Mapper
 public interface ActivityScopeMapper extends BaseMapper<ActivityScope> {
 
-	/**批量新增
-	 * @Description 
-	 * @author wwb
-	 * @Date 2020-11-12 16:44:55
+	/**
+	 * 批量新增
+	 *
 	 * @param activityScopes
 	 * @return int
-	*/
+	 * @Description
+	 * @author wwb
+	 * @Date 2020-11-12 16:44:55
+	 */
 	int batchAdd(@Param("activityScopes") List<ActivityScope> activityScopes);
+
+	/**查询机构参与的活动的报名签到列表
+	 * @Description 
+	 * @author wwb
+	 * @Date 2021-01-13 17:53:10
+	 * @param fids
+	 * @return java.util.List<java.lang.Integer>
+	*/
+	List<Integer> listOrgParticipateSignId(@Param("fids") List<Integer> fids);
 
 }

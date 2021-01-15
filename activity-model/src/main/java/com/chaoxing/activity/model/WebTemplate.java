@@ -33,6 +33,8 @@ public class WebTemplate {
     private Integer templateId;
     /** 模板名称; column: name*/
     private String name;
+    /** 活动形式; column: activity_type*/
+    private String activityType;
     /** 封面地址; column: cover_url*/
     private String coverUrl;
     /** 预览地址; column: preview_url*/
@@ -48,6 +50,9 @@ public class WebTemplate {
     private String affiliationFid;
     /** 顺序; column: sequence*/
     private Integer sequence;
+    /** 是否被删除; column: is_deleted*/
+    @TableField(value = "is_deleted")
+    private Boolean deleted;
     /** 创建时间; column: create_time*/
     private Date createTime;
 

@@ -6,10 +6,13 @@ import com.chaoxing.activity.dto.manager.sign.SignIn;
 import com.chaoxing.activity.dto.manager.sign.SignParticipantStatDTO;
 import com.chaoxing.activity.dto.manager.sign.SignUp;
 import com.chaoxing.activity.dto.module.SignAddEditDTO;
+import com.chaoxing.activity.dto.sign.ActivityBlockDetailSignStatDTO;
 import com.chaoxing.activity.dto.sign.SignActivityManageIndexDTO;
+import com.chaoxing.activity.util.DateUtils;
 import com.chaoxing.activity.util.RestTemplateUtils;
 import com.chaoxing.activity.util.exception.BusinessException;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
@@ -46,6 +49,10 @@ public class SignApiService {
 	private static final String PARTICIPATION_URL = DOMAIN + "/sign/%d/participation";
 	/** 统计报名签到在活动管理首页需要的信息 */
 	private static final String STAT_SIGN_ACTIVITY_MANAGE_INDEX_URL = DOMAIN + "/sign/%d/stat/activity-index";
+	/** 统计报名签到报名成功数量url */
+	private static final String STAT_SIGNED_UP_NUM = DOMAIN + "/sign/stat/signed-up-num";
+	/** 活动块详情统计信息url */
+	private static final String ACTIVITY_BLOCK_DETAIL_STAT_URL = DOMAIN + "/sign/stat/activity-block-detail?signId=%s&uid=%s";
 
 	@Resource
 	private RestTemplate restTemplate;
@@ -201,6 +208,57 @@ public class SignApiService {
 				.signInExist(Boolean.FALSE)
 				.signUpNum(0)
 				.build();
+	}
+
+	/**统计报名人数
+	 * @Description 
+	 * @author wwb
+	 * @Date 2021-01-13 18:00:20
+	 * @param signIds
+	 * @return java.lang.Integer
+	*/
+	public Integer statSignedUpNum(List<Integer> signIds) {
+		if (CollectionUtils.isNotEmpty(signIds)) {
+			HttpHeaders httpHeaders = new HttpHeaders();
+			httpHeaders.setContentType(MediaType.APPLICATION_JSON);
+			HttpEntity<String> httpEntity = new HttpEntity<>(JSON.toJSONString(signIds), httpHeaders);
+			String result = restTemplate.postForObject(STAT_SIGNED_UP_NUM, httpEntity, String.class);
+			JSONObject jsonObject = JSON.parseObject(result);
+			Boolean success = jsonObject.getBoolean("success");
+			success = Optional.ofNullable(success).orElse(Boolean.FALSE);
+			if (success) {
+				return jsonObject.getInteger("data");
+			}
+		}
+		return 0;
+	}
+
+	/**活动块详情统计信息
+	 * @Description 
+	 * @author wwb
+	 * @Date 2021-01-14 20:19:14
+	 * @param signId
+	 * @param uid
+	 * @return com.chaoxing.activity.dto.sign.ActivityBlockDetailSignStatDTO
+	*/
+	public ActivityBlockDetailSignStatDTO statActivityBlockDetail(Integer signId, Integer uid) {
+		String url = String.format(ACTIVITY_BLOCK_DETAIL_STAT_URL, signId, uid == null ? "" : uid);
+		String result = restTemplate.getForObject(url, String.class);
+		JSONObject jsonObject = JSON.parseObject(result);
+		Boolean success = jsonObject.getBoolean("success");
+		Optional.ofNullable(success).orElse(Boolean.FALSE);
+		if (success) {
+			ActivityBlockDetailSignStatDTO activityBlockDetailSignStat = JSON.parseObject(jsonObject.getString("data"), ActivityBlockDetailSignStatDTO.class);
+			SignUp signUp = activityBlockDetailSignStat.getSignUp();
+			if (signUp != null) {
+				signUp.setStartTimestamp(DateUtils.date2Timestamp(signUp.getStartTime()));
+				signUp.setEndTimestamp(DateUtils.date2Timestamp(signUp.getEndTime()));
+			}
+			return activityBlockDetailSignStat;
+		} else {
+			String errorMessage = jsonObject.getString("message");
+			throw new BusinessException(errorMessage);
+		}
 	}
 
 }
