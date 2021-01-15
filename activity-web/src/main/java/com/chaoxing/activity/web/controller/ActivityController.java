@@ -13,7 +13,6 @@ import com.chaoxing.activity.web.util.LoginUtils;
 import com.google.common.collect.Lists;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -40,7 +39,7 @@ public class ActivityController {
 
 	@Resource
 	private GroupRegionFilterService groupRegionFilterService;
-	@Autowired
+	@Resource
 	private ActivityClassifyQueryService activityClassifyQueryService;
 	@Resource
 	private GroupService groupService;

@@ -6,7 +6,9 @@ import com.chaoxing.activity.dto.manager.sign.SignIn;
 import com.chaoxing.activity.dto.manager.sign.SignParticipantStatDTO;
 import com.chaoxing.activity.dto.manager.sign.SignUp;
 import com.chaoxing.activity.dto.module.SignAddEditDTO;
+import com.chaoxing.activity.dto.sign.ActivityBlockDetailSignStatDTO;
 import com.chaoxing.activity.dto.sign.SignActivityManageIndexDTO;
+import com.chaoxing.activity.util.DateUtils;
 import com.chaoxing.activity.util.RestTemplateUtils;
 import com.chaoxing.activity.util.exception.BusinessException;
 import lombok.extern.slf4j.Slf4j;
@@ -49,6 +51,8 @@ public class SignApiService {
 	private static final String STAT_SIGN_ACTIVITY_MANAGE_INDEX_URL = DOMAIN + "/sign/%d/stat/activity-index";
 	/** 统计报名签到报名成功数量url */
 	private static final String STAT_SIGNED_UP_NUM = DOMAIN + "/sign/stat/signed-up-num";
+	/** 活动块详情统计信息url */
+	private static final String ACTIVITY_BLOCK_DETAIL_STAT_URL = DOMAIN + "/sign/stat/activity-block-detail?signId=%s&uid=%s";
 
 	@Resource
 	private RestTemplate restTemplate;
@@ -227,6 +231,34 @@ public class SignApiService {
 			}
 		}
 		return 0;
+	}
+
+	/**活动块详情统计信息
+	 * @Description 
+	 * @author wwb
+	 * @Date 2021-01-14 20:19:14
+	 * @param signId
+	 * @param uid
+	 * @return com.chaoxing.activity.dto.sign.ActivityBlockDetailSignStatDTO
+	*/
+	public ActivityBlockDetailSignStatDTO statActivityBlockDetail(Integer signId, Integer uid) {
+		String url = String.format(ACTIVITY_BLOCK_DETAIL_STAT_URL, signId, uid == null ? "" : uid);
+		String result = restTemplate.getForObject(url, String.class);
+		JSONObject jsonObject = JSON.parseObject(result);
+		Boolean success = jsonObject.getBoolean("success");
+		Optional.ofNullable(success).orElse(Boolean.FALSE);
+		if (success) {
+			ActivityBlockDetailSignStatDTO activityBlockDetailSignStat = JSON.parseObject(jsonObject.getString("data"), ActivityBlockDetailSignStatDTO.class);
+			SignUp signUp = activityBlockDetailSignStat.getSignUp();
+			if (signUp != null) {
+				signUp.setStartTimestamp(DateUtils.date2Timestamp(signUp.getStartTime()));
+				signUp.setEndTimestamp(DateUtils.date2Timestamp(signUp.getEndTime()));
+			}
+			return activityBlockDetailSignStat;
+		} else {
+			String errorMessage = jsonObject.getString("message");
+			throw new BusinessException(errorMessage);
+		}
 	}
 
 }
