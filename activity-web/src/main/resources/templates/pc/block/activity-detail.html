@@ -182,7 +182,7 @@
                     if (parent == window) {
                         window.open(url);
                     } else {
-                        parent.postMessage("javascript::window.open('"+ url +"')", "*");
+                        parent.postMessage("javascript:window.open('"+ url +"')", "*");
                     }
                 }
             }
