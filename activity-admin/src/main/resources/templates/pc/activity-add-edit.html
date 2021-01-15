@@ -550,7 +550,11 @@
                     $this.signUpTimeScope = [$this.sign.signUp.startTime, $this.sign.signUp.endTime];
                     // 签到
                     if (!activityApp.isEmpty($this.sign.signIn)) {
-                        $this.enableSignIn = true;
+                        if (!$this.sign.signIn.deleted) {
+                            $this.enableSignIn = true;
+                        } else {
+                            $this.enableSignIn = false;
+                        }
                         $this.sign.signIn.startTime = $this.sign.signIn.startTimestamp;
                         $this.sign.signIn.endTime = $this.sign.signIn.endTimestamp;
                         $this.sign.signIn.createTime = "";
@@ -562,7 +566,11 @@
                     $this.signInTimeScope = [$this.sign.signIn.startTime, $this.sign.signIn.endTime];
                     // 签退
                     if (!activityApp.isEmpty($this.sign.signOut)) {
-                        $this.enableSignOut = true;
+                        if (!$this.sign.signOut.deleted) {
+                            $this.enableSignOut = true;
+                        } else {
+                            $this.enableSignOut = false;
+                        }
                         $this.sign.signOut.startTime = $this.sign.signOut.startTimestamp;
                         $this.sign.signOut.endTime = $this.sign.signOut.endTimestamp;
                         $this.sign.signOut.createTime = "";
