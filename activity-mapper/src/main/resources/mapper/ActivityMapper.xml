@@ -31,6 +31,7 @@
         <result column="create_uid" jdbcType="INTEGER" property="createUid" />
         <result column="create_user_name" jdbcType="INTEGER" property="createUserName" />
         <result column="create_fid" jdbcType="INTEGER" property="createFid" />
+        <result column="create_area_code" jdbcType="VARCHAR" property="createAreaCode" />
         <result column="create_org_name" jdbcType="INTEGER" property="createOrgName" />
         <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
         <result column="update_time" jdbcType="TIMESTAMP" property="updateTime" />
@@ -39,7 +40,7 @@
         t.id, t.name, t.start_time, t.end_time, t.start_date, t.end_date, t.cover_cloud_id, t.organisers, t.activity_type, t.address, t.detail_address,
         t.longitude, t.dimension, t.activity_classify_id, t.is_enable_sign, t.sign_id, t.web_template_id, t.page_id, t.preview_url, t.edit_url,
         t.is_released, t.release_time, t.release_uid, t.status, t.is_open_audit, t.audit_status, 
-        t.create_uid, t.create_user_name, t.create_fid, t.create_org_name, t.create_time,
+        t.create_uid, t.create_user_name, t.create_fid, t.create_area_code, t.create_org_name, t.create_time,
         t.update_time
     </sql>
 
