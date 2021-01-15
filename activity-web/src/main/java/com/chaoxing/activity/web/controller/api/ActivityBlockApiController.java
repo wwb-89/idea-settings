@@ -8,7 +8,6 @@ import com.chaoxing.activity.util.CookieUtils;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
@@ -37,12 +36,17 @@ public class ActivityBlockApiController {
 	 * @Date 2021-01-14 17:20:41
 	 * @param model
 	 * @param request
-	 * @param activityId
+	 * @param pageId
 	 * @return java.lang.String
 	*/
 	@RequestMapping("detail")
-	public String activityDetail(Model model, HttpServletRequest request, @RequestParam Integer activityId) {
-		Activity activity = activityQueryService.getById(activityId);
+	public String activityDetail(Model model, HttpServletRequest request, Integer pageId) {
+		if (pageId == null) {
+			// 返回静态页面
+			return "";
+		}
+		// 根据pageId查询活动id
+		Activity activity = activityQueryService.getByPageId(pageId);
 		model.addAttribute("activity", activity);
 		Boolean enableSign = activity.getEnableSign();
 		enableSign = Optional.ofNullable(enableSign).orElse(Boolean.FALSE);

@@ -33,25 +33,25 @@
     </div>
     <div class="chooseItems">
         <ul>
-            <li class="active" v-if="!signedUp && !signUpWaitAudit && signUpOnGoing" @click="toSignUp">我要报名</li>
-            <li class="btn-disable" v-if="signUpWaitAudit">审核中</li>
+            <li class="active" v-if="!signedUp && !signUpWaitAudit && signUpOnGoing" @click="toSignUp">活动报名</li>
+            <li class="btn-disable" v-if="signUpWaitAudit">报名审核中</li>
             <li class="btn-disable" v-if="signedUp && !haveSignIn">已报名</li>
-            <li class="active" v-if="signedUp && haveSignIn" @click="toSignIn">签到</li>
+            <li class="active" v-if="signedUp && haveSignIn" @click="toSignIn">去签到</li>
             <li v-if="signedUp || signUpWaitAudit" @click="toSignUpResult">报名详情</li>
-            <li class="btn-disable" v-if="signUpNotStarted">未开始</li>
-            <li class="btn-disable" v-if="signUpEnded">已结束</li>
+            <li class="btn-disable" v-if="signUpNotStarted">报名未开始</li>
+            <li class="btn-disable" v-if="signUpEnded">报名已结束</li>
             <!--<li>收藏</li>-->
             <!--<li>评价</li>
             <li>收藏</li>-->
         </ul>
     </div>
     <div class="bottom-btns">
-        <div class="sign-btn" v-if="!signedUp && !signUpWaitAudit && signUpOnGoing" @click="toSignUp">我要报名</div>
-        <div class="sign-btn sign-unbegin" v-if="signUpWaitAudit">审核中</div>
+        <div class="sign-btn" v-if="!signedUp && !signUpWaitAudit && signUpOnGoing" @click="toSignUp">活动报名</div>
+        <div class="sign-btn sign-unbegin" v-if="signUpWaitAudit">报名审核中</div>
         <div class="sign-btn sign-unbegin" v-if="signedUp && !haveSignIn">已报名</div>
-        <div class="sign-btn" v-if="signedUp && haveSignIn" @click="toSignIn">签到</div>
-        <div class="sign-btn sign-unbegin" v-if="signUpNotStarted">未开始</div>
-        <div class="sign-btn sign-end" v-if="signUpEnded">已结束</div>
+        <div class="sign-btn" v-if="signedUp && haveSignIn" @click="toSignIn">去签到</div>
+        <div class="sign-btn sign-unbegin" v-if="signUpNotStarted">报名未开始</div>
+        <div class="sign-btn sign-end" v-if="signUpEnded">报名已结束</div>
         <div class="btn-items">
             <ul>
                 <li v-if="signedUp || signUpWaitAudit" @click="toSignUpResult">报名详情</li>
@@ -103,7 +103,9 @@
                     // 监听状态变化
                     window.addEventListener("message", function (e) {
                         if (e.origin.endsWith("chaoxing.com") && e.data == signUp.id) {
-                            window.location.reload();
+                            setTimeout(function () {
+                                window.location.reload();
+                            }, 300);
                         }
                     });
                 }
