@@ -1,4 +1,4 @@
-package com.chaoxing.activity.api;
+package com.chaoxing.activity.api.controller;
 
 import com.chaoxing.activity.dto.RestRespDTO;
 import com.chaoxing.activity.service.activity.ActivityStatQueryService;
