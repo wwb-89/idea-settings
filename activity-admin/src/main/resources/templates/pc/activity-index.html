@@ -154,6 +154,16 @@
                 }
             }
         });
+
+        /**
+         * 重置iframe的高度
+         */
+        function resetIframeHeight() {
+            // 获取iframe中内容的高度
+            var height = $("#content").contents().find("#sign-up-vue").height();
+            $("#content")[0].style.height = height + "px";
+            activityVue.initPageHeight();
+        }
     </script>
 </div>
 </body>
