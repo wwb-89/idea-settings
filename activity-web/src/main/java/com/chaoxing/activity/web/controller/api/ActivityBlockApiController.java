@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
+import java.util.Objects;
 import java.util.Optional;
 
 /**活动块api
@@ -43,7 +44,7 @@ public class ActivityBlockApiController {
 	public String activityDetail(Model model, HttpServletRequest request, Integer pageId) {
 		if (pageId == null) {
 			// 返回静态页面
-			return "";
+			return "pc/block/activity-detail-static";
 		}
 		// 根据pageId查询活动id
 		Activity activity = activityQueryService.getByPageId(pageId);
@@ -53,12 +54,13 @@ public class ActivityBlockApiController {
 		activity.setEnableSign(enableSign);
 		Integer signId = activity.getSignId();
 		ActivityBlockDetailSignStatDTO activityBlockDetailSignStat = new ActivityBlockDetailSignStatDTO();
+		Integer uid = CookieUtils.getUid(request);
 		if (enableSign && signId != null) {
 			// 查询报名签到
-			Integer uid = CookieUtils.getUid(request);
 			activityBlockDetailSignStat = signApiService.statActivityBlockDetail(signId, uid);
 		}
 		model.addAttribute("activityBlockDetailSignStat", activityBlockDetailSignStat);
+		model.addAttribute("activityCreator", Objects.equals(activity.getCreateUid(), uid));
 		return "pc/block/activity-detail";
 	}
 

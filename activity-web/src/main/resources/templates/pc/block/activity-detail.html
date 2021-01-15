@@ -31,8 +31,12 @@
         <div v-if="signUpNumDescribe">已报名：{{signUpNumDescribe}}</div>
         <div class="activity-holder" v-show="activity.organisers">主办方：{{activity.organisers}}</div>
     </div>
+    <!--pc端-->
     <div class="chooseItems">
-        <ul>
+        <ul th:if="${activityCreator}">
+            <li class="active" @click="toManage">活动管理</li>
+        </ul>
+        <ul th:unless="${activityCreator}">
             <li class="active" v-if="!signedUp && !signUpWaitAudit && signUpOnGoing" @click="toSignUp">活动报名</li>
             <li class="btn-disable" v-if="signUpWaitAudit">报名审核中</li>
             <li class="btn-disable" v-if="signedUp && !haveSignIn">已报名</li>
@@ -45,7 +49,11 @@
             <li>收藏</li>-->
         </ul>
     </div>
-    <div class="bottom-btns">
+    <!--移动端-->
+    <div class="bottom-btns" th:if="${activityCreator}">
+        <div class="sign-btn" @click="toManage">活动管理</div>
+    </div>
+    <div class="bottom-btns" th:unless="${activityCreator}">
         <div class="sign-btn" v-if="!signedUp && !signUpWaitAudit && signUpOnGoing" @click="toSignUp">活动报名</div>
         <div class="sign-btn sign-unbegin" v-if="signUpWaitAudit">报名审核中</div>
         <div class="sign-btn sign-unbegin" v-if="signedUp && !haveSignIn">已报名</div>
@@ -145,6 +153,12 @@
                     if ($this.activityBlockDetailSignStat.signInNum > 0) {
                         $this.haveSignIn = true;
                     }
+                },
+                // 活动管理
+                toManage: function () {
+                    var $this = this;
+                    var url = "http://manage.hd.chaoxing.com/activity/" + $this.activity.id;
+                    $this.openUrl(url);
                 },
                 // 去报名
                 toSignUp: function () {
