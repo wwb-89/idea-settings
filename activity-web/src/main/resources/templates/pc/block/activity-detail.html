@@ -73,7 +73,6 @@
 </div>
 
 <div th:replace="pc/include/common_js :: common_js(~{::script})">
-    <script src="/static/assets/js/set-iframe-height-child-min.js" th:src="@{/assets/js/set-iframe-height-child-min.js}"></script>
     <script th:inline="javascript">
         Vue.filter("activityTimeFormatter", function (date) {
             if (activityApp.isEmpty(date)) {
