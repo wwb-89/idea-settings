@@ -10,17 +10,22 @@ import com.chaoxing.activity.model.Activity;
 import com.chaoxing.activity.model.Group;
 import com.chaoxing.activity.service.GroupService;
 import com.chaoxing.activity.service.activity.ActivityQueryService;
+import com.chaoxing.activity.service.manager.WfwCoordinateApiService;
 import com.chaoxing.activity.service.manager.WfwRegionalArchitectureApiService;
 import com.chaoxing.activity.util.HttpServletRequestUtils;
+import com.google.common.collect.Lists;
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
-import java.util.ArrayList;
+import java.math.BigDecimal;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 /**
@@ -43,6 +48,8 @@ public class ActivityApiController {
 	private GroupService groupService;
 	@Resource
 	private Model2DtoService model2DtoService;
+	@Resource
+	private WfwCoordinateApiService wfwCoordinateApiService;
 
 	/**组活动推荐
 	 * @Description 
@@ -56,8 +63,43 @@ public class ActivityApiController {
 	@RequestMapping("group/{groupCode}/{fid}")
 	public RestRespDTO groupRecommend(HttpServletRequest request, @PathVariable String groupCode, @PathVariable Integer fid) {
 		Group group = groupService.getByCode(groupCode);
-		List<Integer> fids = new ArrayList<>();
-		List<WfwRegionalArchitectureDTO> wfwRegionalArchitectures = wfwRegionalArchitectureApiService.listByCode(group.getAreaCode());
+		String areaCode = group.getAreaCode();
+		return recommend(request, areaCode, fid);
+	}
+
+	/**通过坐标查询推荐活动
+	 * @Description 
+	 * @author wwb
+	 * @Date 2021-01-19 10:57:09
+	 * @param request
+	 * @param wfwfid
+	 * @param longitude
+	 * @param dimension
+	 * @param areaCode
+	 * @return com.chaoxing.activity.dto.RestRespDTO
+	*/
+	@RequestMapping("recommend/coordinate")
+	public RestRespDTO groupCoordinateRecommend(HttpServletRequest request, @RequestParam Integer wfwfid, BigDecimal longitude, BigDecimal dimension, String areaCode) {
+		Integer fid = wfwCoordinateApiService.getCoordinateAffiliationFid(wfwfid, longitude, dimension);
+		fid = Optional.ofNullable(fid).orElse(wfwfid);
+		return recommend(request, areaCode, fid);
+	}
+
+	/**查询推荐活动
+	 * @Description 
+	 * @author wwb
+	 * @Date 2021-01-19 11:04:55
+	 * @param request
+	 * @param areaCode
+	 * @param fid
+	 * @return com.chaoxing.activity.dto.RestRespDTO
+	*/
+	private RestRespDTO recommend(HttpServletRequest request, String areaCode, Integer fid) {
+		List<Integer> fids = Lists.newArrayList();
+		List<WfwRegionalArchitectureDTO> wfwRegionalArchitectures = Lists.newArrayList();
+		if (StringUtils.isNotBlank(areaCode)) {
+			wfwRegionalArchitectures = wfwRegionalArchitectureApiService.listByCode(areaCode);
+		}
 		if (CollectionUtils.isNotEmpty(wfwRegionalArchitectures)) {
 			List<Integer> subFids = wfwRegionalArchitectures.stream().map(WfwRegionalArchitectureDTO::getFid).collect(Collectors.toList());
 			fids.addAll(subFids);
