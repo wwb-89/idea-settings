@@ -269,6 +269,7 @@ public class ActivityHandleService {
 		existActivity.setStartDate(startTime.toLocalDate());
 		existActivity.setEndDate(endTime.toLocalDate());
 		existActivity.setCoverCloudId(activity.getCoverCloudId());
+		existActivity.setCoverUrl(activity.getCoverUrl());
 		existActivity.setOrganisers(activity.getOrganisers());
 		existActivity.setActivityType(activity.getActivityType());
 		existActivity.setAddress(activity.getAddress());

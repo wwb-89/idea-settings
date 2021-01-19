@@ -1,4 +1,4 @@
-package com.chaoxing.activity.api.service;
+package com.chaoxing.activity.service.util;
 
 import com.chaoxing.activity.dto.activity.ActivityExternalDTO;
 import com.chaoxing.activity.model.Activity;

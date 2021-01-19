@@ -3,6 +3,7 @@ package com.chaoxing.activity.web.config;
 import com.chaoxing.activity.web.interceptor.AutoLoginInterceptor;
 import com.chaoxing.activity.web.interceptor.LoginRequiredInterceptor;
 import com.chaoxing.activity.web.interceptor.LoginUserValidateInterceptor;
+import com.google.common.collect.Lists;
 import org.springframework.boot.web.server.ErrorPage;
 import org.springframework.boot.web.server.ErrorPageRegistrar;
 import org.springframework.boot.web.server.ErrorPageRegistry;
@@ -12,7 +13,6 @@ import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 import javax.annotation.Resource;
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -33,21 +33,14 @@ public class WebConfig implements WebMvcConfigurer, ErrorPageRegistrar {
 	@Resource
 	private LoginRequiredInterceptor loginRequiredInterceptor;
 
-	private List<String> listStaticResourcePathPatterns() {
-		return new ArrayList(){{
-			add("/favicon.ico");
-			add("/assets/**");
-			add("/pc/**");
-			add("/mobile/**");
-		}};
-	}
+	private static final List<String> STATIC_RESOURCE_PATH_PATTERNS = Lists.newArrayList("/favicon.ico", "/assets/**", "/pc/**", "/mobile/**");
+	private static final List<String> API_PATH_PATTERNS = Lists.newArrayList("/api/outer/**");
 
 	@Override
 	public void addInterceptors(InterceptorRegistry registry) {
-		List<String> staticResourcePathPatterns = listStaticResourcePathPatterns();
-		registry.addInterceptor(loginUserValidateInterceptor).addPathPatterns("/**").excludePathPatterns(staticResourcePathPatterns);
-		registry.addInterceptor(autoLoginInterceptor).addPathPatterns("/**").excludePathPatterns(staticResourcePathPatterns);
-		registry.addInterceptor(loginRequiredInterceptor).addPathPatterns("/**").excludePathPatterns(staticResourcePathPatterns);
+		registry.addInterceptor(loginUserValidateInterceptor).addPathPatterns("/**").excludePathPatterns(STATIC_RESOURCE_PATH_PATTERNS).excludePathPatterns(API_PATH_PATTERNS);
+		registry.addInterceptor(autoLoginInterceptor).addPathPatterns("/**").excludePathPatterns(STATIC_RESOURCE_PATH_PATTERNS).excludePathPatterns(API_PATH_PATTERNS);
+		registry.addInterceptor(loginRequiredInterceptor).addPathPatterns("/**").excludePathPatterns(STATIC_RESOURCE_PATH_PATTERNS).excludePathPatterns(API_PATH_PATTERNS);
 	}
 
 	@Override
