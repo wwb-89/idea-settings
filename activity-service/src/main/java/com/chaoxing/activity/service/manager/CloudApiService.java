@@ -33,7 +33,7 @@ public class CloudApiService {
 	/** 资源状态url */
 	private static final String GET_CLOUD_RESOURCE_STATUS_URL = "http://cs.ananas.chaoxing.com/status/";
 	/** 云盘图片url */
-	private static final String IMG_URL = "http://d0.ananas.chaoxing.com/download/";
+	private static final String IMG_URL = "http://p.ananas.chaoxing.com/star3/origin/";
 
 	@Resource(name = "restTemplateProxy")
 	private RestTemplate restTemplate;

@@ -170,7 +170,7 @@
      * @returns {string}
      */
     activityApp.prototype.getCloudImgUrl = function (cloudId) {
-        return "http://d0.ananas.chaoxing.com/download/" + cloudId;
+        return "http://p.ananas.chaoxing.com/star3/origin/" + cloudId;
     };
     /**
      * 生成新的签到报名
