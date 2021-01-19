@@ -1,18 +1,18 @@
 package com.chaoxing.activity.admin.interceptor;
 
+import com.chaoxing.activity.admin.util.CookieUtils;
+import com.chaoxing.activity.admin.util.LoginUtils;
 import com.chaoxing.activity.dto.LoginUserDTO;
 import com.chaoxing.activity.service.CookieValidationService;
 import com.chaoxing.activity.service.LoginService;
-import com.chaoxing.activity.admin.util.CookieUtils;
-import com.chaoxing.activity.admin.util.LoginUtils;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.handler.HandlerInterceptorAdapter;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.util.Objects;
 
 /**自定登录
  * @author wwb
@@ -38,13 +38,13 @@ public class AutoLoginInterceptor extends HandlerInterceptorAdapter {
 		LoginUserDTO loginUser = LoginUtils.getLoginUser(request);
 		if (loginUser == null) {
 			// 试着登录
-			String uid = CookieUtils.getUid(request);
-			String fid = CookieUtils.getFid(request);
-			if (StringUtils.isNotBlank(uid) && StringUtils.isNotBlank(fid)) {
+			Integer uid = CookieUtils.getUid(request);
+			Integer fid = CookieUtils.getFid(request);
+			if (uid != null && fid != null) {
 				long validateTime = CookieUtils.getValidateTime(request);
 				String signature = CookieUtils.getSignature(request);
-				if (cookieValidationService.isEffective(Integer.parseInt(uid), validateTime, signature)) {
-					loginUser = loginService.login(Integer.parseInt(uid), Integer.parseInt(fid));
+				if (cookieValidationService.isEffective(uid, validateTime, signature)) {
+					loginUser = loginService.login(uid, fid);
 					LoginUtils.login(request, loginUser);
 				}
 			}
@@ -57,9 +57,9 @@ public class AutoLoginInterceptor extends HandlerInterceptorAdapter {
 		if (loginUser != null) {
 			Integer loginUid = loginUser.getUid();
 			Integer loginFid = loginUser.getFid();
-			String cookieUid = CookieUtils.getUid(request);
-			String cookieFid = CookieUtils.getFid(request);
-			if (!String.valueOf(loginUid).equals(cookieUid) || !String.valueOf(loginFid).equals(cookieFid)) {
+			Integer cookieUid = CookieUtils.getUid(request);
+			Integer cookieFid = CookieUtils.getFid(request);
+			if (!Objects.equals(loginUid, cookieUid) || !Objects.equals(loginFid, cookieFid)) {
 				// uid不匹配或者切换了fid
 				LoginUtils.logout(request);
 			}
