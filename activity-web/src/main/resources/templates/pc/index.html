@@ -17,7 +17,7 @@
 
 <body>
 <div class="page" id="activity-vue" v-cloak>
-    <div class="banner">
+    <div class="banner" th:if="${banner eq 1}">
         <img src="/static/pc/assets/images/banner.png" th:src="@{/pc/assets/images/banner.png}">
     </div>
     <div class="content">
@@ -159,6 +159,8 @@
               var $this = this;
               $this.resetQueryParams();
               $this.loadData();
+            },
+            updated: function () {
                 $('.banner img').jqthumb({
                     width:'100%',
                     height:'100%'
