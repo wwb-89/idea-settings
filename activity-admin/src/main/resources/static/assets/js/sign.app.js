@@ -55,6 +55,7 @@
             id: null,
             signId: null,
             name: "",
+            type: "sign_in",
             startTime: null,
             startTimeStr: "",
             endTime: null,
@@ -79,6 +80,7 @@
     signApp.prototype.newSignOut = function () {
         var $this = this;
         return $.extend({}, $this.newSignIn(), {
+            type: "sign_out",
             btnName: "签退"
         });
     };
