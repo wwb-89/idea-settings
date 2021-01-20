@@ -69,7 +69,7 @@
             <div class="clear"></div>
         </div>
     </div>
-    <iframe src="http://reading.chaoxing.com/qd/api/common/user-sign-up-status-notice" style="display: none;"></iframe>
+    <iframe src="https://reading.chaoxing.com/qd/api/common/user-sign-up-status-notice" style="display: none;"></iframe>
 </div>
 
 <div th:replace="pc/include/common_js :: common_js(~{::script})">
@@ -163,19 +163,19 @@
                 // 去报名
                 toSignUp: function () {
                     var $this = this;
-                    var url = "http://reading.chaoxing.com/qd/api/sign-up?signUpId=" + $this.activityBlockDetailSignStat.signUp.id;
+                    var url = "https://reading.chaoxing.com/qd/api/sign-up?signUpId=" + $this.activityBlockDetailSignStat.signUp.id;
                     $this.openUrl(url);
                 },
                 // 去报名结果页
                 toSignUpResult: function () {
                     var $this = this;
-                    var url = "http://reading.chaoxing.com/qd/sign-up/" + $this.activityBlockDetailSignStat.signUp.id + "/result";
+                    var url = "https://reading.chaoxing.com/qd/sign-up/" + $this.activityBlockDetailSignStat.signUp.id + "/result";
                     $this.openUrl(url);
                 },
                 // 去签到
                 toSignIn: function () {
                     var $this = this;
-                    var url = "http://reading.chaoxing.com/qd/sign-in/list?signId=" + $this.activityBlockDetailSignStat.signId;
+                    var url = "https://reading.chaoxing.com/qd/sign-in/list?signId=" + $this.activityBlockDetailSignStat.signId;
                     $this.openUrl(url);
                 },
                 openUrl: function (url) {

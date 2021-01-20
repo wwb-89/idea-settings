@@ -62,19 +62,19 @@
                     // 报名名单
                     signUpList: function () {
                         var $this = this;
-                        var url = "http://reading.chaoxing.com/qd/m/manage/sign-up/"+ $this.signActivityManageIndex.signUpId +"/user-list";
+                        var url = "https://reading.chaoxing.com/qd/m/manage/sign-up/"+ $this.signActivityManageIndex.signUpId +"/user-list";
                         app.openUrl(url);
                     },
                     // 签到管理
                     signInManage: function () {
                         var $this = this;
-                        var url = "http://reading.chaoxing.com/qd/m/manage/sign-in/list?signId=" + $this.signActivityManageIndex.signId;
+                        var url = "https://reading.chaoxing.com/qd/m/manage/sign-in/list?signId=" + $this.signActivityManageIndex.signId;
                         app.openUrl(url);
                     },
                     // 发通知
                     sendNotice: function () {
                         var $this = this;
-                        var url = "http://reading.chaoxing.com/qd/manage/notice/add?signId=" + $this.signActivityManageIndex.signId;
+                        var url = "https://reading.chaoxing.com/qd/manage/notice/add?signId=" + $this.signActivityManageIndex.signId;
                         app.openUrl(url);
                     }
                 }
