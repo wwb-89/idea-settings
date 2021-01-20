@@ -67,13 +67,13 @@ public class ActivityApiController {
 	 * @param request
 	 * @param fid
 	 * @param longitude
-	 * @param dimension
+	 * @param latitude
 	 * @param areaCode
 	 * @return com.chaoxing.activity.dto.RestRespDTO
 	 */
 	@RequestMapping("recommend/coordinate")
-	public RestRespDTO groupCoordinateRecommend(HttpServletRequest request, @RequestParam Integer fid, BigDecimal longitude, BigDecimal dimension, String areaCode) {
-		Integer wfwfid = wfwCoordinateApiService.getCoordinateAffiliationFid(fid, longitude, dimension);
+	public RestRespDTO groupCoordinateRecommend(HttpServletRequest request, @RequestParam Integer fid, BigDecimal longitude, BigDecimal latitude, String areaCode) {
+		Integer wfwfid = wfwCoordinateApiService.getCoordinateAffiliationFid(fid, longitude, latitude);
 		wfwfid = Optional.ofNullable(wfwfid).orElse(fid);
 		return recommend(request, areaCode, wfwfid);
 	}
