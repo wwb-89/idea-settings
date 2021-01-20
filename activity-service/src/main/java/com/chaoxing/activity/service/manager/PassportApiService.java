@@ -53,6 +53,11 @@ public class PassportApiService {
 	private static final String ORG_NAME_URL = "https://passport2.chaoxing.com/org/getName?schoolid=";
 	/** passport免密登录url */
 	public static final String AVOID_CLOSE_LOGIN_URL = "http://passport2.chaoxing.com/api/login";
+	
+	/** 登录成功状态 */
+	private static final String LOGIN_SUCCESS_RESULT_STATUS = "0";
+	/** 登录失败状态 */
+	private static final String LOGIN_FAIL_RESULT_STATUS = "3";
 
 	@Resource(name = "restTemplateProxy")
 	private RestTemplate restTemplate;
@@ -197,11 +202,11 @@ public class PassportApiService {
 		String result = responseEntity.getBody();
 		JSONObject jsonObject = JSON.parseObject(result);
 		String resultStatus = jsonObject.getString("status");
-		if ("0".equals(resultStatus)) {
+		if (LOGIN_SUCCESS_RESULT_STATUS.equals(resultStatus)) {
 			// 回写cookie
 			HttpHeaders headers = responseEntity.getHeaders();
 			return CookieUtils.writeCookie(headers, response);
-		} else if ("3".equals(resultStatus)) {
+		} else if (LOGIN_FAIL_RESULT_STATUS.equals(resultStatus)) {
 			enc = getLoginEnc(null, account);
 			params.remove("schoolid");
 			params.remove("enc");
@@ -211,7 +216,7 @@ public class PassportApiService {
 			result = responseEntity.getBody();
 			jsonObject = JSON.parseObject(result);
 			resultStatus = jsonObject.getString("status");
-			if ("0".equals(resultStatus)) {
+			if (LOGIN_SUCCESS_RESULT_STATUS.equals(resultStatus)) {
 				// 回写cookie
 				HttpHeaders headers = responseEntity.getHeaders();
 				return CookieUtils.writeCookie(headers, response);

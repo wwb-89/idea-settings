@@ -39,7 +39,7 @@ public class IntegralApiController {
 	 * @return com.chaoxing.activity.dto.RestRespDTO
 	*/
 	@RequestMapping("push/activity/{activityId}/view")
-	public RestRespDTO IntegralPush(HttpServletRequest request, @PathVariable Integer activityId, String activityName) {
+	public RestRespDTO integralPush(HttpServletRequest request, @PathVariable Integer activityId, String activityName) {
 		LoginUserDTO loginUser = LoginUtils.getLoginUser(request);
 		Optional.ofNullable(loginUser).ifPresent(v -> {
 			IntegralPushDTO integralPush = IntegralPushDTO.builder()
