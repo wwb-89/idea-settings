@@ -113,22 +113,9 @@ public class LoginService {
 			loginUser.setClazz(clazz);
 			loginUser.setManageClazzes(manageClasses);
 
-			// 设置登录用户的角色
-			loginUser.setStudent(false);
-			loginUser.setTeacher(false);
-			loginUser.setManager(ucApiService.isManager(fid, uid));
-			// 设置角色
-			for (WfwRoleDTO role : roles) {
-				if (WfwRoleEnum.STUDENT.getValue().equals(role.getId())) {
-					loginUser.setStudent(true);
-				}
-				if (WfwRoleEnum.TEACHER.getValue().equals(role.getId())) {
-					loginUser.setTeacher(true);
-				}
-				if (WfwRoleEnum.MANAGER.getValue().equals(role.getId())) {
-					loginUser.setManager(true);
-				}
-			}
+			// 计算用户角色
+			calUserRole(loginUser, roles);
+
 			cacheLoginUser(loginUser);
 			userService.add(User.builder()
 					.uid(loginUser.getUid())
@@ -145,6 +132,32 @@ public class LoginService {
 			}
 		}
 		return null;
+	}
+
+	/**计算用户角色
+	 * @Description 
+	 * @author wwb
+	 * @Date 2021-01-20 10:18:09
+	 * @param loginUser
+	 * @param roles
+	 * @return void
+	*/
+	private void calUserRole(LoginUserDTO loginUser, List<WfwRoleDTO> roles) {
+		loginUser.setStudent(false);
+		loginUser.setTeacher(false);
+		loginUser.setManager(false);
+		if (CollectionUtils.isNotEmpty(roles)) {
+			// 设置角色
+			for (WfwRoleDTO role : roles) {
+				if (WfwRoleEnum.STUDENT.getValue().equals(role.getId())) {
+					loginUser.setStudent(true);
+				}
+				if (WfwRoleEnum.TEACHER.getValue().equals(role.getId())) {
+					loginUser.setTeacher(true);
+				}
+			}
+		}
+		loginUser.setManager(ucApiService.isManager(loginUser.getFid(), loginUser.getUid()));
 	}
 
 	private void cacheLoginUser(LoginUserDTO loginUser) {
