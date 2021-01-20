@@ -166,11 +166,17 @@
     };
     /**
      * 获取云盘图片的url
-     * @param cloudId
+     * @param activity
      * @returns {string}
      */
-    activityApp.prototype.getCloudImgUrl = function (cloudId) {
-        return "http://p.ananas.chaoxing.com/star3/origin/" + cloudId;
+    activityApp.prototype.getCloudImgUrl = function (activity) {
+        var $this = this;
+        var coverCloudId = activity.coverCloudId;
+        var coverUrl = activity.coverUrl;
+        if (!$this.isEmpty(coverUrl)) {
+            return activity.coverUrl;
+        }
+        return "http://p.ananas.chaoxing.com/star3/origin/" + coverCloudId;
     };
     /**
      * 生成新的签到报名

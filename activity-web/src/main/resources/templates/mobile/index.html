@@ -33,7 +33,7 @@
     <div class="activity-list">
         <ul>
             <li v-for="(activity, index) of activities" :key="'activity-' + index" @click="detail(index)">
-                <img :src="activity.coverCloudId | getCloudImgUrl">
+                <img :src="activity | getCloudImgUrl">
                 <div class="info">
                     <h2 class="title">{{activity.name}}</h2>
                     <div class="time">

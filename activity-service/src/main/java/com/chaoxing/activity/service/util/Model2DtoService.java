@@ -3,8 +3,8 @@ package com.chaoxing.activity.service.util;
 import com.chaoxing.activity.dto.activity.ActivityExternalDTO;
 import com.chaoxing.activity.model.Activity;
 import com.chaoxing.activity.model.ActivityClassify;
+import com.chaoxing.activity.service.activity.ActivityCoverService;
 import com.chaoxing.activity.service.activity.classify.ActivityClassifyQueryService;
-import com.chaoxing.activity.service.manager.CloudApiService;
 import com.chaoxing.activity.util.enums.ActivityTypeEnum;
 import com.google.common.collect.Maps;
 import lombok.extern.slf4j.Slf4j;
@@ -34,7 +34,7 @@ public class Model2DtoService {
 	@Resource
 	private ActivityClassifyQueryService activityClassifyQueryService;
 	@Resource
-	private CloudApiService cloudApiService;
+	private ActivityCoverService activityCoverService;
 
 	/**活动对象转换成dto
 	 * @Description 
@@ -68,7 +68,7 @@ public class Model2DtoService {
 				activityExternal.setActivityClassify(Optional.ofNullable(activityClassify).map(ActivityClassify::getName).orElse(""));
 				activityExternals.add(activityExternal);
 				// 封面地址
-				activityExternal.setCoverUrl(cloudApiService.getCloudImgUrl(activityExternal.getCoverCloudId()));
+				activityExternal.setCoverUrl(activityCoverService.getCoverUrl(activity));
 				// 访问地址
 				activityExternal.setUrl(activity.getPreviewUrl());
 			}

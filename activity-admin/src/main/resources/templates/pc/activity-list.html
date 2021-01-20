@@ -30,7 +30,7 @@
                     <template slot-scope="scope">
                         <div class="item">
                             <div class="img">
-                                <img :src="scope.row.coverCloudId | getCloudImgUrl" class="jqthumbImg">
+                                <img :src="scope.row | getCloudImgUrl" class="jqthumbImg">
                             </div>
                             <div class="desc">
                                 <div class="title" @click="previewPage(scope.row)">{{scope.row.name}}</div>

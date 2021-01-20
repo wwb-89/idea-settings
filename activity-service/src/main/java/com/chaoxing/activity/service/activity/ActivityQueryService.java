@@ -255,4 +255,18 @@ public class ActivityQueryService {
 		);
 	}
 
+	/**查询封面url为空的活动
+	 * @Description 
+	 * @author wwb
+	 * @Date 2021-01-20 14:12:59
+	 * @param 
+	 * @return java.util.List<com.chaoxing.activity.model.Activity>
+	*/
+	public List<Activity> listEmptyCoverUrl() {
+		return activityMapper.selectList(new QueryWrapper<Activity>()
+				.lambda()
+				.and(wrapper -> wrapper.isNull(Activity::getCoverUrl).or().ne(Activity::getCoverUrl, ""))
+		);
+	}
+
 }

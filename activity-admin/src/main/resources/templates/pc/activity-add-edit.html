@@ -89,7 +89,7 @@
                     <label class="label cover" style="line-height: 100px;"><img src="/static/pc/assets/images/required.png" th:src="@{/pc/assets/images/required.png}" class="required-img">封面</label>
                     <div class="input-box">
                         <div class="img-box">
-                            <img :src="activity.coverCloudId | getCloudImgUrl" class="cover-img jqthumbImg">
+                            <img :src="activity | getCloudImgUrl" class="cover-img jqthumbImg">
                         </div>
                         <div class="font-box">
                             <span>建议尺寸：540*280</span>

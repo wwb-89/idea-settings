@@ -16,7 +16,6 @@ import com.chaoxing.activity.service.activity.scope.ActivityScopeService;
 import com.chaoxing.activity.service.manager.CloudApiService;
 import com.chaoxing.activity.service.manager.GuanliApiService;
 import com.chaoxing.activity.service.manager.MhApiService;
-import com.chaoxing.activity.service.manager.WfwRegionalArchitectureApiService;
 import com.chaoxing.activity.service.manager.module.SignApiService;
 import com.chaoxing.activity.service.manager.module.WorkApiService;
 import com.chaoxing.activity.util.constant.ActivityMhUrlConstant;
@@ -34,6 +33,7 @@ import javax.servlet.http.HttpServletRequest;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -59,8 +59,6 @@ public class ActivityHandleService {
 	@Resource
 	private ActivityModuleService activityModuleService;
 	@Resource
-	private WfwRegionalArchitectureApiService wfwRegionalArchitectureApiService;
-	@Resource
 	private ActivityScopeService activityScopeService;
 	@Resource
 	private WorkApiService workApiService;
@@ -72,6 +70,8 @@ public class ActivityHandleService {
 	private CloudApiService cloudApiService;
 	@Resource
 	private ActivityStatusHandleService activityStatusHandleService;
+	@Resource
+	private ActivityCoverService activityCoverService;
 
 	@Resource
 	private SignApiService signApiService;
@@ -119,6 +119,7 @@ public class ActivityHandleService {
 		activity.setStartDate(activity.getStartTime().toLocalDate());
 		activity.setEndDate(activity.getEndTime().toLocalDate());
 		activityMapper.insert(activity);
+		activityCoverService.noticeUpdateCoverUrl(activity.getId(), activity.getCoverCloudId());
 		// 活动参与范围
 		Integer activityId = activity.getId();
 		if (CollectionUtils.isEmpty(wfwRegionalArchitectures)) {
@@ -263,12 +264,15 @@ public class ActivityHandleService {
 		LocalDateTime startTime = activity.getStartTime();
 		LocalDateTime endTime = activity.getEndTime();
 
+		String oldCoverCloudId = existActivity.getCoverCloudId();
+		String newCoverCloudId = activity.getCoverCloudId();
+
 		existActivity.setName(activity.getName());
 		existActivity.setStartTime(startTime);
 		existActivity.setEndTime(endTime);
 		existActivity.setStartDate(startTime.toLocalDate());
 		existActivity.setEndDate(endTime.toLocalDate());
-		existActivity.setCoverCloudId(activity.getCoverCloudId());
+		existActivity.setCoverCloudId(newCoverCloudId);
 		existActivity.setCoverUrl(activity.getCoverUrl());
 		existActivity.setOrganisers(activity.getOrganisers());
 		existActivity.setActivityType(activity.getActivityType());
@@ -287,6 +291,11 @@ public class ActivityHandleService {
 			.lambda()
 				.eq(Activity::getId, activity.getId())
 		);
+		if (!Objects.equals(oldCoverCloudId, newCoverCloudId)) {
+			// 清空封面url
+			existActivity.setCoverUrl("");
+			activityCoverService.noticeUpdateCoverUrl(activityId, newCoverCloudId);
+		}
 		// 活动参与范围
 		if (CollectionUtils.isEmpty(wfwRegionalArchitectures)) {
 			throw new BusinessException("请选择参与范围");
@@ -579,7 +588,7 @@ public class ActivityHandleService {
 						// 访问的url
 						.url(accessUrl)
 						.pageType(3)
-						.coverUrl(cloudApiService.getCloudImgUrl(activityModule.getIconCloudId()))
+						.coverUrl(activityCoverService.getCoverUrl(activity))
 						.build();
 				result.add(mhAppData);
 			}
