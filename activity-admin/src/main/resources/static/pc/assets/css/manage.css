@@ -230,9 +230,10 @@ table {
 }
 
 .more-btn .more {
+    width: 74px;
     position: absolute;
     top: 35px;
-    right: -62px;
+    right: -50px;
     z-index: 2;
     display: none;
     background: #ffffff;
