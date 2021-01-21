@@ -10,6 +10,7 @@ import com.chaoxing.activity.model.Activity;
 import com.chaoxing.activity.service.activity.ActivityQueryService;
 import com.chaoxing.activity.service.manager.WfwRegionalArchitectureApiService;
 import com.chaoxing.activity.util.HttpServletRequestUtils;
+import com.chaoxing.activity.util.constant.CommonConstant;
 import com.chaoxing.activity.web.util.LoginUtils;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -18,9 +19,11 @@ import org.springframework.web.bind.annotation.RestController;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 /**活动api服务
@@ -76,6 +79,24 @@ public class ActivityApiController {
 		Page<Activity> page = HttpServletRequestUtils.buid(request);
 		page = activityQueryService.listParticipate(page, activityQuery);
 		return RestRespDTO.success(page);
+	}
+
+	/**根据pageId获取活动的经纬度
+	 * @Description 
+	 * @author wwb
+	 * @Date 2021-01-21 23:47:50
+	 * @param pageId
+	 * @return com.chaoxing.activity.dto.RestRespDTO
+	*/
+	@RequestMapping("address")
+	public RestRespDTO address(Integer pageId) {
+		Activity activity = activityQueryService.getByPageId(pageId);
+		// 没有经纬度则设置一个默认的
+		BigDecimal longitude = Optional.ofNullable(activity.getLongitude()).orElse(CommonConstant.DEFAULT_LONGITUDE);
+		BigDecimal dimension = Optional.ofNullable(activity.getDimension()).orElse(CommonConstant.DEFAULT_DIMENSION);
+		activity.setLongitude(longitude);
+		activity.setDimension(dimension);
+		return RestRespDTO.success(activity);
 	}
 
 }
