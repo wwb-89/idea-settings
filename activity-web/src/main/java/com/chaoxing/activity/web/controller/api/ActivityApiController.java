@@ -14,6 +14,7 @@ import com.chaoxing.activity.util.constant.CommonConstant;
 import com.chaoxing.activity.web.util.LoginUtils;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -34,6 +35,7 @@ import java.util.stream.Collectors;
  * @blame wwb
  * @date 2020-11-11 10:54:37
  */
+@CrossOrigin
 @RestController
 @RequestMapping("api/activity")
 public class ActivityApiController {
