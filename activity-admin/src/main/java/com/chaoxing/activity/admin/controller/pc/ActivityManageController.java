@@ -17,6 +17,7 @@ import org.springframework.ui.Model;
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import java.util.List;
+import java.util.Optional;
 
 /**
  * @author wwb
@@ -39,6 +40,7 @@ public class ActivityManageController {
 	private GroupService groupService;
 
 	public String index(Model model, String code) {
+		code = Optional.ofNullable(code).orElse("");
 		model.addAttribute("code", code);
 		return "pc/activity-list";
 	}
