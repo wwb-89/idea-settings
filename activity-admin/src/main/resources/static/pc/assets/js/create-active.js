@@ -16,3 +16,6 @@ function showImg1(input) {
     }
     reader.readAsDataURL(file)
 }
+function uploadImage(btn) {
+    $(btn).prev().click();
+}

@@ -87,9 +87,11 @@
     border-radius: 3px;
     color: white;
 }
-.item-box{
-    min-height: 429px;
+
+.item {
+    height: 318px;
 }
+
 .item-box .head {
     display: flex;
     justify-content: space-between;
@@ -111,6 +113,7 @@
     margin-top: 20px;
     display: flex;
     flex-wrap: wrap;
+    min-height: 696px;
 }
 
 .c-item .item {
@@ -119,7 +122,7 @@
     border-radius: 6px;
     box-shadow: 0px 12px 48px 16px rgba(0, 0, 0, 0.03), 0px 9px 28px 0px rgba(0, 0, 0, 0.05), 0px 6px 16px -8px rgba(0, 0, 0, 0.08);
     margin-bottom: 30px;
-    margin-right: 20px;
+    margin-right: 30px;
     cursor: pointer;
 }
 
@@ -135,7 +138,7 @@
 .img-box {
     position: relative;
     width: 380px;
-    height: auto;
+    height: 176px;
 }
 
 .img-box img {
@@ -163,11 +166,15 @@
     padding: 10px 16px;
 }
 
-
-
 .font-box p{
     margin-top: 6px;
     line-height: 24px;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+}
+.font-box p:nth-child(2) {
+    margin-top: 10px;
 }
 .active2{
     color: #415285 !important;      
@@ -178,7 +185,6 @@
     color: #333333;
     margin-top: 0 !important;
     line-height: 30px;
-    margin-bottom: 10px;
     cursor: pointer;
 }
 .title1:hover{

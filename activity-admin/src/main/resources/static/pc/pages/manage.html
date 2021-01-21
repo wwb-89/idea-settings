@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="../assets/css/create.css">
+    <!--<link rel="stylesheet" href="../assets/css/create.css">-->
     <link rel="stylesheet" href="../assets/lib/element-ui/lib/theme-chalk/index.css">
     <link rel="stylesheet" href="../assets/lib/zTree_v3/css/zTreeStyle/zTreeStyle.css" type="text/css">
     <link rel="stylesheet" href="../assets/css/reset.css">
@@ -20,20 +20,32 @@
             活动管理
         </div>
         <div class="main box">
-            <div class="create-btn">创建活动</div>
+            <div class="create-btn">
+                <img src="../assets/images/icon-add.png">
+                <div class="text">
+                    创建活动
+                </div>
+            </div>
+            <div class="search-Box">
+                <el-input placeholder="姓名/账号"
+                          icon="search"
+                          class="search"
+                          v-model="search"
+                          maxlength="10"
+                          suffix-icon="el-icon-search">
+                </el-input>
+                <img class="btn-cancel" style="display: block;" src="../assets/images/icon-cancel.png">
+            </div>
             <div class="table">
                 <el-table :data="tableData" style="width: 100%">
                     <el-table-column prop="name" label="活动名称" min-width="32.5%">
                         <template slot-scope="scope">
-                            <div class="item">
-                                <div class="img">
-                                    <img src="https://p.ananas.chaoxing.com/star3/320_150c/572280b525982f6d3c51fd3fb5ef7449.jpeg"
-                                    alt="" class="jqthumbImg">
-                                </div>
-                                <div class="desc">
-                                    <div class="title">2020年星阅读活动</div>
-                                    <div class="time"><span>2019年10月1日 16:00</span> - <span>2019年10月1日 16:00</span></div>
-                                </div>
+                            <div class="img">
+                                <img src="https://p.ananas.chaoxing.com/star3/320_150c/572280b525982f6d3c51fd3fb5ef7449.jpeg">
+                            </div>
+                            <div class="desc">
+                                <div class="title">2020年星阅读活动</div>
+                                <div class="time"><span>2019年10月1日 16:00</span> - <span>2019年10月1日 16:00</span></div>
                             </div>
                         </template>
                     </el-table-column>
@@ -59,16 +71,18 @@
                         </template>
                         <template slot-scope="scope">
                             <span
-                                :class="scope.row.state=='进行中'?'green':scope.row.state=='未发布'?'blue2':''">{{scope.row.state}}</span>
+                                :class="scope.row.state=='进行中'?'green':scope.row.state=='未发布'?'blue2':scope.row.state=='已结束'?'end_color':''">{{scope.row.state}}</span>
                         </template>
                     </el-table-column>
                     <el-table-column label="操作" min-width="20%">
                         <template slot-scope="scope">
                             <div v-show="scope.row.state == '进行中'">
-                                <el-button type="text">报名管理</el-button>
-                                <el-button type="text">发布范围</el-button>
+                                <el-button type="text">下载</el-button>
+                                <el-button type="text">编辑</el-button>
+                                <el-button type="text">管理</el-button>
                                 <div class="more-btn">
-                                    <el-button type="text">更多<i class="el-icon-arrow-down"></i></el-button>
+                                    <!--<el-button type="text">更多<i class="el-icon-arrow-down"></i></el-button>-->
+                                    <el-button type="text"><img src="../assets/images/more-vertical.png"></el-button>
                                     <div class="more">
                                         <p>全部</p>
                                         <p>进行中</p>
@@ -80,8 +94,10 @@
                             <div v-show="scope.row.state == '未发布'">
                                 <el-button type="text" @click="handleRelease">发布</el-button>
                                 <el-button type="text">编辑</el-button>
+                                <el-button type="text">管理</el-button>
                                 <div class="more-btn">
-                                    <el-button type="text">更多<i class="el-icon-arrow-down"></i></el-button>
+                                    <!--<el-button type="text">更多<i class="el-icon-arrow-down"></i></el-button>-->
+                                    <el-button type="text"><img src="../assets/images/more-vertical.png"></el-button>
                                     <div class="more">
                                         <p>全部</p>
                                         <p>进行中</p>
@@ -160,6 +176,11 @@
                     name: '王小虎',
                     address: '超星小学122222222223333333333333',
                     state: '未发布',
+                    person: '邱强'
+                }, {
+                    name: '王小虎',
+                    address: '超星小学122222222223333333333333',
+                    state: '已结束',
                     person: '邱强'
                 }],
                 deleteShow: false,
@@ -288,12 +309,12 @@
         })
     </script>
     <script>
-        $(function () {
-            $('.jqthumbImg').jqthumb({
-                width:'100%',
-                height:'100%'
-            });
-        });
+        // $(function () {
+        //     $('.jqthumbImg').jqthumb({
+        //         width:'100%',
+        //         height:'100%'
+        //     });
+        // });
         $('.status').click(function () {
             $('.filters').toggle()
             $('.el-down').toggleClass('rotate')

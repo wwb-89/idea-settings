@@ -14,8 +14,8 @@
     width: 100%;
     height: 68px;
     background: #ffffff;
-    border: 1px solid #dadce0;
-    border-radius: 12px;
+    border: 1px solid #E9E9E9;
+    border-radius: 8px;
     padding: 0 24px;
     color: #666666;
     box-sizing: border-box;
@@ -35,24 +35,59 @@
     width: 100%;
     /*max-height: 980px;*/
     background: #ffffff;
-    border: 1px solid #dadce0;
-    border-radius: 12px;
-    padding: 20px;
+    border: 1px solid #E9E9E9;
+    border-radius: 8px;
+    padding: 24px;
     box-sizing: border-box;
 }
 
 .create-btn {
-    width: 80px;
-    height: 30px;
     background: #0084ff;
     border-radius: 15px;
-    font-size: 13px;
-    font-weight: 400;
-    color: #ffffff;
-    text-align: center;
-    line-height: 30px;
-    margin-top: 10px;
     cursor: pointer;
+    display: inline-block;
+    padding: 6px 14px;
+}
+
+.create-btn:hover {
+    background: rgba(0, 132, 255, 0.8);
+}
+
+.create-btn img {
+    margin-right: 4px;
+    width: 16px;
+    height: 16px;
+    float: left;
+}
+
+.create-btn .text {
+    font-size: 13px;
+    color: #ffffff;
+    float: left;
+    height: 18px;
+}
+
+.search-Box {
+    float: right;
+    position: relative;
+}
+.search-Box input {
+    width: 220px;
+    height: 30px;
+    border-radius: 25px;
+    font-size: 13px;
+    line-height: 15px;
+    color: #333333;
+}
+.search-Box .btn-cancel {
+    cursor: pointer;
+    position: absolute;
+    top: 7px;
+    right: 36px;
+}
+
+.el-input__icon {
+    line-height: 30px !important;
 }
 
 .icon {
@@ -73,15 +108,24 @@ table {
     margin-bottom: 20px;
 }
 
-.item {
-    display: flex;
-}
-
-.item>.img {
-    width: 126px;
+.img {
+    width: 115px;
     height: 60px;
     border-radius: 2px;
     margin-right: 10px;
+    border: 1px solid #E9E9E9;
+    position: relative;
+    float: left;
+}
+
+.img img {
+    position: absolute;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    max-width: 100%;
+    margin: auto;
 }
 
 .title {
@@ -89,6 +133,8 @@ table {
     font-weight: 600;
     color: #333333;
     cursor: pointer;
+    line-height: 21px;
+    margin-bottom: 16px;
 }
 
 .title:hover {
@@ -98,19 +144,18 @@ table {
     max-width: unset;
 }
 .desc .title {
-    width: 270px;
     overflow: hidden;
     text-overflow: ellipsis;
     display: -webkit-box;
-    -webkit-line-clamp: 2;
+    -webkit-line-clamp: 1;
     -webkit-box-orient: vertical;
 }
 .desc .time {
     font-size: 14px;
     font-weight: 400;
     color: #999999;
-    margin-top: 13px;
     width: auto;
+    line-height: 23px;
 }
 
 .blue {
@@ -123,6 +168,10 @@ table {
 
 .green {
     color: #24BB1D;
+}
+
+.end_color {
+    color: #7F8E98;
 }
 
 .tree {
@@ -183,23 +232,35 @@ table {
 .more-btn .more {
     position: absolute;
     top: 35px;
-    right: -18px;
+    right: -62px;
     z-index: 2;
     display: none;
     background: #ffffff;
     border-radius: 2px;
     box-shadow: 0px 12px 48px 16px rgba(0, 0, 0, 0.03), 0px 9px 28px 0px rgba(0, 0, 0, 0.05), 0px 6px 16px -8px rgba(0, 0, 0, 0.08);
     cursor: pointer;
-    padding: 0 16px;
+    padding: 2px 0;
 }
 .more-btn .more p{
+    color: #333333;
+    white-space: nowrap;
+    background: #FFFFFF;
+    padding: 8px 16px;
+    font-size: 14px;
+    line-height: 20px;
+}
+.more-btn .more p:hover {
     color: #0084FF;
     white-space: nowrap;
+    background: #F8F8F8;
 }
 .more-btn {
     position: relative;
     display: inline-block;
     margin-left: 10px;
+}
+.more-btn img {
+    transform: translateY(2px);
 }
 .el-table{
     overflow: unset;
@@ -309,3 +370,11 @@ table {
     background-image: url(../images/icon-file.png);
     background-position: unset;
   }
+
+.el-table th>.cell {
+    font-weight: 400 !important;
+}
+
+.el-table--enable-row-hover .el-table__body tr:hover>td{
+    background: #F8F8F8; !important;
+}

@@ -72,7 +72,7 @@
                 <label class="label"><img src="../assets/images/required.png" alt=""
                                           class="required-img">名称</label>
                 <div class="input-box">
-                    <el-input type="text" placeholder="请填写信息，简短的活动名称" v-model="name" maxlength="20" show-word-limit>
+                    <el-input type="text" placeholder="请填写" v-model="name" maxlength="50" show-word-limit>
                     </el-input>
                 </div>
             </div>
@@ -97,8 +97,9 @@
                         <span>大小：小于5M</span>
                         <span>格式：jpg、png、gif</span>
                         <input type="file" class="upload-btn" accept="image/gif, image/jpg, image/png"
-                               onchange="showImg(this)" />
-                        <div class="cancle-btn upload">上传文件</div>
+                               onchange="showImg(this)"/>
+                        <!--<div class="cancle-btn upload">上传文件</div>-->
+                        <button onclick="uploadImage(this)" class="cancle-btn upload">上传文件</button>
                     </div>
                 </div>
             </div>
@@ -127,7 +128,7 @@
                            autocomplete="off" class="layui-input name show-addr-detailed">
                 </div>
             </div>
-            <div class="form-item">
+            <div class="form-item cancel-margin">
                 <label class="label">活动分类</label>
                 <div class="input-box wrap">
                     <div class="type-item active">活动</div>
@@ -141,7 +142,7 @@
                     <div class="type-item">讲座</div>
                     <div class="type-item">征文</div>
                     <div class="type-item">自定义选项
-                        <img src="../assets/images/more.png" alt="" style="margin-left: 10px;">
+                        <img src="../assets/images/icon-more1.png" alt="" style="margin-left: 10px;">
                         <div class="edit-box">
                             <div @click="handleEdit">编辑</div>
                             <div @click="handleDelete">删除</div>
@@ -153,18 +154,27 @@
                     </div>
                 </div>
             </div>
-            <div class="form-item">
+            <div class="form-item last">
                 <label class="label"><img src="../assets/images/required.png"
                                           alt="" class="required-img">参与范围</label>
                 <div class="input-box wrap">
-                    <div class="type-item">一级单位<img src="../assets/images/del-little.png" alt="" class="del-img">
-                    </div>
-                    <div class="type-item">一级单位(1)<img src="../assets/images/del-little.png" alt="" class="del-img">
-                    </div>
+                    <!--添加范围后显示后面这项-->
+                    <div style="display: none;">
+                        <div class="type-item">一级单位<img src="../assets/images/del-little.png" alt="" class="del-img">
+                        </div>
+                        <div class="type-item">一级单位(1)<img src="../assets/images/del-little.png" alt="" class="del-img">
+                        </div>
 
-                    <div class="type-item add" @click="handleRelease">
-                        <img src="../assets/images/add.png" alt="" style="margin-right: 10px;">
-                        添加
+                        <div class="type-item add" @click="handleRelease">
+                            <img src="../assets/images/add.png" alt="" style="margin-right: 10px;">
+                            添加
+                        </div>
+                    </div>
+                    <div style="display: block;" class="already_add">
+                        <div>
+                            已选择单位（192）
+                        </div>
+                        <img src="../assets/images/edit-3.png">
                     </div>
                 </div>
             </div>
@@ -270,7 +280,7 @@
                     <!--</div>-->
                     <div v-show="delivery2" class="set-box configurationForm" @click="openModal">
                         <img src="../assets/images/setting.png">
-                        <span class="tips">配置表单</span>
+                        <span class="tips set-information">配置填报信息</span>
                     </div>
                 </div>
             </div>
@@ -434,7 +444,7 @@
         </div>
     </div>
     <div class="info box" v-show="pageShow">
-        <div class="title">选择模板</div>
+        <!--<div class="title">选择模板</div>-->
         <!-- 创建活动时选择模板 -->
         <div class="page-show">
             <div class="page-box">
