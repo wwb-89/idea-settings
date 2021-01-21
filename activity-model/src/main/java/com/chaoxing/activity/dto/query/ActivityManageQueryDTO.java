@@ -27,5 +27,7 @@ public class ActivityManageQueryDTO {
 	private List<Integer> fids;
 	/** 置顶fid */
 	private Integer topFid;
+	/** 关键字 */
+	private String sw;
 
 }

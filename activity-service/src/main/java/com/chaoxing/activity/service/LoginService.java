@@ -1,10 +1,14 @@
 package com.chaoxing.activity.service;
 
-import com.chaoxing.activity.dto.manager.WfwClassDTO;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.chaoxing.activity.dto.LoginUserDTO;
 import com.chaoxing.activity.dto.manager.PassportUserDTO;
 import com.chaoxing.activity.dto.manager.UserExtraInfoDTO;
+import com.chaoxing.activity.dto.manager.WfwClassDTO;
 import com.chaoxing.activity.dto.manager.WfwRoleDTO;
+import com.chaoxing.activity.mapper.LoginCustomMapper;
+import com.chaoxing.activity.model.Activity;
+import com.chaoxing.activity.model.LoginCustom;
 import com.chaoxing.activity.model.User;
 import com.chaoxing.activity.service.manager.PassportApiService;
 import com.chaoxing.activity.service.manager.UcApiService;
@@ -13,6 +17,7 @@ import com.chaoxing.activity.util.enums.WfwRoleEnum;
 import com.google.common.collect.Lists;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.redisson.api.RLock;
 import org.redisson.api.RedissonClient;
 import org.springframework.data.redis.core.RedisTemplate;
@@ -25,7 +30,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.TimeUnit;
 
-/**
+/**登录服务
  * @author wwb
  * @version ver 1.0
  * @className LoginService
@@ -43,6 +48,8 @@ public class LoginService {
 	private PassportApiService passportApiService;
 	@Resource
 	private UcApiService ucApiService;
+	@Resource
+	private LoginCustomMapper loginCustomMapper;
 
 	@Resource
 	private RedissonClient redissonClient;
@@ -170,6 +177,47 @@ public class LoginService {
 	private LoginUserDTO getLoginUser(Integer uid, Integer fid) {
 		ValueOperations<String, LoginUserDTO> valueOperations = redisTemplate.opsForValue();
 		return valueOperations.get(getLoginUserCacheKey(uid, fid));
+	}
+
+	/**根据活动获取定制的登录数据
+	 * @Description 
+	 * @author wwb
+	 * @Date 2021-01-21 14:57:49
+	 * @param activity
+	 * @return java.lang.String
+	*/
+	public LoginCustom getLoginCustom(Activity activity) {
+		if (activity == null) {
+			return null;
+		}
+		String createAreaCode = activity.getCreateAreaCode();
+		Integer createFid = activity.getCreateFid();
+		// 查询定制的登录地址
+		List<LoginCustom> loginCustoms = loginCustomMapper.selectList(new QueryWrapper<LoginCustom>()
+				.lambda()
+				.eq(LoginCustom::getDeleted, Boolean.FALSE)
+				.and(wrapper -> wrapper.eq(LoginCustom::getAreaCode, createAreaCode).or().eq(LoginCustom::getFid, createFid))
+		);
+		if (CollectionUtils.isNotEmpty(loginCustoms)) {
+			LoginCustom fidCustomLogin = null;
+			LoginCustom areaCodeCustomLogin = null;
+			for (LoginCustom loginCustom : loginCustoms) {
+				String areaCode = loginCustom.getAreaCode();
+				if (StringUtils.isNotBlank(areaCode)) {
+					fidCustomLogin = loginCustom;
+				}
+				if (loginCustom.getFid() != null) {
+					areaCodeCustomLogin = loginCustom;
+				}
+			}
+			if (fidCustomLogin != null) {
+				return fidCustomLogin;
+			}
+			if (areaCodeCustomLogin != null) {
+				return areaCodeCustomLogin;
+			}
+		}
+		return null;
 	}
 
 	private String getLockKey(Integer uid, Integer fid) {

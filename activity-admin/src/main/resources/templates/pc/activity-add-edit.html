@@ -95,7 +95,7 @@
                             <span>建议尺寸：540*280</span>
                             <span>大小：小于5M</span>
                             <span>格式：jpg、png、gif</span>
-                            <div class="cancle-btn upload" id="cover-upload-btn">上传文件</div>
+                            <button id="cover-upload-btn" class="cancle-btn upload">上传文件</button>
                         </div>
                     </div>
                 </div>
@@ -119,11 +119,11 @@
                         <input type="text" required v-model.trim="activity.detailAddress" lay-verify="required" placeholder="详细地址，例：E5栋1308室" autocomplete="off" class="layui-input name show-addr-detailed">
                     </div>
                 </div>
-                <div class="form-item">
+                <div class="form-item cancel-margin">
                     <label class="label">活动分类</label>
                     <div class="input-box wrap">
                         <div :class="{'type-item': true, 'active': activityClassify.selected}" v-for="(activityClassify, index) of activityClassifies" :key="'activity-classify-' + index" @click="selectActivityClassify(index)">{{activityClassify.name}}
-                                <img src="/static/pc/assets/images/more.png" th:src="@{/pc/assets/images/more.png}" style="margin-left: 10px;" v-if="!activityClassify.system">
+                                <img src="/static/pc/assets/images/more1.png" th:src="@{/pc/assets/images/more1.png}" style="margin-left: 10px;" v-if="!activityClassify.system">
                             <div class="edit-box" v-if="!activityClassify.system">
                                 <div @click="toEditActivityClassify(index, $event)">编辑</div>
                                 <div @click="toDeleteActivityClassify(index, $event)">删除</div>
@@ -135,13 +135,21 @@
                         </div>
                     </div>
                 </div>
-                <div class="form-item">
+                <div class="form-item last">
                     <label class="label"><img src="/static/pc/assets/images/required.png" th:src="@{/pc/assets/images/required.png}" class="required-img">参与范围</label>
                     <div class="input-box wrap">
-                        <span class="label"><span>{{participatedOrgs.length}}</span>个单位</span>
-                        <div class="type-item add" @click="toAddParticipateScope">
-                            <img src="/static/pc/assets/images/add.png" th:src="@{/pc/assets/images/add.png}" style="margin-right: 10px;">
-                            添加
+                        <!--添加范围后显示后面这项-->
+                        <div v-show="participatedOrgs.length < 1">
+                            <div class="type-item add" @click="toAddParticipateScope">
+                                <img src="/static/pc/assets/images/add.png" th:src="@{/pc/assets/images/add.png}" style="margin-right: 10px;">
+                                添加
+                            </div>
+                        </div>
+                        <div class="already_add" v-show="participatedOrgs.length > 0">
+                            <div>
+                                已选择单位（{{participatedOrgs.length}}）
+                            </div>
+                            <img src="/static/pc/assets/images/edit-3.png" th:src="@{/pc/assets/images/edit-3.png}" @click="toAddParticipateScope">
                         </div>
                     </div>
                 </div>
@@ -181,7 +189,7 @@
                         </div>
                         <div class="set-box configurationForm" v-show="sign.signUp.fillInfo" @click="toConfigForm">
                             <img src="/static/pc/assets/images/setting.png" th:src="@{/pc/assets/images/setting.png}">
-                            <span class="tips">配置填报信息</span>
+                            <span class="tips set-information">配置填报信息</span>
                         </div>
                     </div>
                 </div>
@@ -416,7 +424,7 @@
                 activity: [[${activity}]],
                 // 模板列表
                 webTemplates: [[${webTemplates}]],
-                code: [[${code}]],
+                areaCode: [[${areaCode}]],
                 // 活动日期的范围
                 activityDateTimeScope: "",
                 activityTypes: [[${activityTypes}]],
@@ -492,7 +500,7 @@
                         dimension: "",
                         activityClassifyId: firstActivityClassifyId,
                         enableSign: true,
-                        createAreaCode: $this.code
+                        createAreaCode: $this.areaCode
                     };
                 } else {
                     $this.activity.createTime = null;

@@ -129,6 +129,13 @@
                     AND t.`status` > 0
                 </otherwise>
             </choose>
+            <if test="params.sw != null and params.sw != ''">
+                AND (
+                    t.name LIKE CONCAT('%', #{params.sw} , '%')
+                    OR t.create_user_name LIKE CONCAT('%', #{params.sw} , '%')
+                    OR t.create_org_name LIKE CONCAT('%', #{params.sw} , '%')
+                )
+            </if>
         GROUP BY
             t.id
         ORDER BY

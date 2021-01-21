@@ -64,27 +64,31 @@
                 </ul>-->
                 <div class="count">共<span>{{total}}</span>个活动</div>
             </div>
-            <div class="c-item" >
-                <div class="item" v-for="(item, index) of activities" :key="'item-' + index" @click="detail(index)">
-                    <div class="img-box">
-                        <img :src="item | getCloudImgUrl">
-                        <div class="tag" v-if="item.status == 2">活动预告</div>
-                        <div class="tag green" v-if="item.status == 3">进行中</div>
-                        <div class="tag black" v-if="item.status == 4">已结束</div>
+            <div style="min-height: 696px;">
+                <div v-show="activities.length > 0">
+                    <div class="c-item">
+                        <div class="item" v-for="(item, index) of activities" :key="'item-' + index" @click="detail(index)">
+                            <div class="img-box">
+                                <img class="jqthumbImg" :src="item | getCloudImgUrl">
+                                <div class="tag" v-if="item.status == 2">活动预告</div>
+                                <div class="tag green" v-if="item.status == 3">进行中</div>
+                                <div class="tag black" v-if="item.status == 4">已结束</div>
+                            </div>
+                            <div class="font-box">
+                                <p class="title1 overHidden2" >{{item.name}}</p>
+                                <p>活动时间：{{item.startTime | timestamp2YMD}} ～ {{item.endTime | timestamp2YMD}}</p>
+                                <p>主办单位：{{item.organisers}}</p>
+                                <p class="overHidden2" v-show="item.address">活动地点：{{item.address}}{{item.detailAddress ? item.detailAddress : ''}}</p>
+                            </div>
+                        </div>
                     </div>
-                    <div class="font-box">
-                        <p class="title1 overHidden2" >{{item.name}}</p>
-                        <p>活动时间：{{item.startTime | timestamp2YMD}} ～ {{item.endTime | timestamp2YMD}}</p>
-                        <p>主办单位：{{item.organisers}}</p>
-                        <p class="overHidden2" v-show="item.address">活动地点：{{item.address}}{{item.detailAddress ? item.detailAddress : ''}}</p>
-                    </div>
+                    <el-pagination style="text-align: center;" v-show="pages > 1" background layout="prev, pager, next" :total="total" :page-size="queryParams.pageSize" :current-page="queryParams.pageNum" @current-change="currenClick"></el-pagination>
                 </div>
-            </div>
-            <el-pagination style="text-align: center;" v-show="pages > 1" background layout="prev, pager, next" :total="total" :page-size="queryParams.pageSize" :current-page="queryParams.pageNum" @current-change="currenClick"></el-pagination>
-            <!-- 当列表为空时展示 -->
-            <div class="empty-box" v-show="total < 1 && loaded">
-                <img src="/static/pc/assets/images/empty.png" th:src="@{/pc/assets/images/empty.png}">
-                <p>无结果～</p>
+                <!-- 当列表为空时展示 -->
+                <div class="empty-box" v-show="total < 1 && loaded">
+                    <img src="/static/pc/assets/images/empty.png" th:src="@{/pc/assets/images/empty.png}">
+                    <p>无结果～</p>
+                </div>
             </div>
     </div>
 </div>
@@ -160,12 +164,6 @@
               $this.resetQueryParams();
               $this.loadData();
             },
-            updated: function () {
-                $('.banner img').jqthumb({
-                    width:'100%',
-                    height:'100%'
-                });
-            },
             methods: {
                 //改变选中状态
                 changeActivityClassifySelected: function(index){
@@ -228,11 +226,18 @@
                     var params = $this.queryParams;
                     $this.loaded = false;
                     $this.searchShow = false;
+                    $this.activities = [];
                     app.ajaxPost(url, {data: activityApp.getJsonStr(params), pageNum: params.pageNum, pageSize: params.pageSize}, function (data) {
                         $this.loaded = true;
                         if (data.success) {
                             $this.loaded = true;
                             $this.activities = data.data.records
+                            $this.$nextTick(function () {
+                                $(".jqthumbImg").jqthumb({
+                                    width:'100%',
+                                    height:'100%'
+                                });
+                            });
                             $this.pages = data.data.pages;
                             $this.total = data.data.total;
                         } else {
