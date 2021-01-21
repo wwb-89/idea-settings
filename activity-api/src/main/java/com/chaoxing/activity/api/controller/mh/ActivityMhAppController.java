@@ -9,6 +9,7 @@ import com.chaoxing.activity.dto.manager.sign.SignParticipantStatDTO;
 import com.chaoxing.activity.dto.mh.MhGeneralAppResultDataDTO;
 import com.chaoxing.activity.dto.query.MhActivityCalendarQueryDTO;
 import com.chaoxing.activity.model.Activity;
+import com.chaoxing.activity.service.activity.ActivityCoverService;
 import com.chaoxing.activity.service.activity.ActivityQueryService;
 import com.chaoxing.activity.service.manager.CloudApiService;
 import com.chaoxing.activity.service.manager.WfwRegionalArchitectureApiService;
@@ -54,6 +55,8 @@ public class ActivityMhAppController {
 	@Resource
 	private ActivityQueryService activityQueryService;
 	@Resource
+	private ActivityCoverService activityCoverService;
+	@Resource
 	private CloudApiService cloudApiService;
 	@Resource
 	private SignApiService signApiService;
@@ -73,8 +76,7 @@ public class ActivityMhAppController {
 	@RequestMapping("activity/{activityId}/cover")
 	public RestRespDTO activityCover(@PathVariable Integer activityId) {
 		Activity activity = activityQueryService.getById(activityId);
-		String coverCloudId = activity.getCoverCloudId();
-		String coverUrl = cloudApiService.getCloudImgUrl(coverCloudId);
+		String coverUrl = activityCoverService.getCoverUrl(activity);
 		JSONObject jsonObject = new JSONObject();
 		MhGeneralAppResultDataDTO mhGeneralAppResultDataDTO = new MhGeneralAppResultDataDTO();
 		mhGeneralAppResultDataDTO.setType(3);
@@ -132,13 +134,13 @@ public class ActivityMhAppController {
 		mhGeneralAppResultDataFields.add(MhGeneralAppResultDataDTO.MhGeneralAppResultDataFieldDTO.builder()
 				.key("主办单位")
 				.value(activity.getOrganisers())
-				.flag("103")
+				.flag("102")
 				.build());
 		// 主办地点
 		mhGeneralAppResultDataFields.add(MhGeneralAppResultDataDTO.MhGeneralAppResultDataFieldDTO.builder()
 				.key("活动地点")
 				.value(Optional.ofNullable(activity.getAddress()).orElse("") + Optional.ofNullable(activity.getDetailAddress()).orElse(""))
-				.flag("104")
+				.flag("103")
 				.build());
 		// 报名、签到人数
 		SignParticipantStatDTO signParticipantStat = signApiService.getSignParticipation(activity.getSignId());
@@ -151,7 +153,7 @@ public class ActivityMhAppController {
 			mhGeneralAppResultDataFields.add(MhGeneralAppResultDataDTO.MhGeneralAppResultDataFieldDTO.builder()
 					.key("报名时间")
 					.value(signUpTimeStringBuilder.toString())
-					.flag("102")
+					.flag("105")
 					.build());
 		}
 		StringBuilder signPepleNumDescribe = new StringBuilder();
@@ -167,7 +169,7 @@ public class ActivityMhAppController {
 		mhGeneralAppResultDataFields.add(MhGeneralAppResultDataDTO.MhGeneralAppResultDataFieldDTO.builder()
 				.key("报名人数")
 				.value(signPepleNumDescribe.toString())
-				.flag("105")
+				.flag("104")
 				.build());
 		return RestRespDTO.success(jsonObject);
 	}
@@ -233,7 +235,7 @@ public class ActivityMhAppController {
 			List<MhGeneralAppResultDataDTO.MhGeneralAppResultDataFieldDTO> mhGeneralAppResultDataFields = new ArrayList<>();
 			// 封面
 			mhGeneralAppResultDataFields.add(MhGeneralAppResultDataDTO.MhGeneralAppResultDataFieldDTO.builder()
-					.value(cloudApiService.getCloudImgUrl(record.getCoverCloudId()))
+					.value(activityCoverService.getCoverUrl(record))
 					.flag("0")
 					.build());
 			// 活动名称
@@ -334,7 +336,7 @@ public class ActivityMhAppController {
 			List<MhGeneralAppResultDataDTO.MhGeneralAppResultDataFieldDTO> mhGeneralAppResultDataFields = Lists.newArrayList();
 			// 封面
 			mhGeneralAppResultDataFields.add(MhGeneralAppResultDataDTO.MhGeneralAppResultDataFieldDTO.builder()
-					.value(cloudApiService.getCloudImgUrl(record.getCoverCloudId()))
+					.value(activityCoverService.getCoverUrl(record))
 					.flag("0")
 					.build());
 			// 活动名称

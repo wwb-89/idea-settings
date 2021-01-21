@@ -52,12 +52,14 @@ public class ActivityController {
 	 * @Date 2020-12-09 10:22:16
 	 * @param request
 	 * @param model
+	 * @param fid
+	 * @param banner
 	 * @return java.lang.String
 	*/
 	@LoginRequired
 	@GetMapping("")
-	public String index(HttpServletRequest request, Model model) {
-		return handleData(request, model, null, null, null);
+	public String index(HttpServletRequest request, Model model, Integer fid, Integer banner) {
+		return handleData(request, model, null, fid, null, banner);
 	}
 
 	/**图书馆
@@ -71,15 +73,16 @@ public class ActivityController {
 	 * @param state
 	 * @param pageId
 	 * @param fid
+	 * @param banner
 	 * @return java.lang.String
 	*/
 	@GetMapping("lib")
-	public String libIndex(HttpServletRequest request, Model model, String code, Integer unitId, Integer state, Integer fid, Integer pageId) {
+	public String libIndex(HttpServletRequest request, Model model, String code, Integer unitId, Integer state, Integer fid, Integer pageId, Integer banner) {
 		Integer realFid = Optional.ofNullable(unitId).orElse(Optional.ofNullable(state).orElse(fid));
 		if (realFid == null) {
 			return "redirect:/";
 		}
-		return handleData(request, model, code, realFid, pageId);
+		return handleData(request, model, code, realFid, pageId, banner);
 	}
 	
 	/**基础教育
@@ -91,12 +94,13 @@ public class ActivityController {
 	 * @param code
 	 * @param fid
 	 * @param pageId
+	 * @param banner
 	 * @return java.lang.String
 	*/
 	@LoginRequired
 	@GetMapping("bas")
-	public String basIndex(HttpServletRequest request, Model model, String code, @RequestParam(value = "unitId", required = false) Integer fid, Integer pageId) {
-		return handleData(request, model, code, fid, pageId);
+	public String basIndex(HttpServletRequest request, Model model, String code, @RequestParam(value = "unitId", required = false) Integer fid, Integer pageId, Integer banner) {
+		return handleData(request, model, code, fid, pageId, banner);
 	}
 	
 	/**高校
@@ -108,15 +112,16 @@ public class ActivityController {
 	 * @param code
 	 * @param fid
 	 * @param pageId
+	 * @param banner
 	 * @return java.lang.String
 	*/
 	@LoginRequired
 	@GetMapping("edu")
-	public String eduIndex(HttpServletRequest request, Model model, String code, @RequestParam(value = "unitId", required = false) Integer fid, Integer pageId) {
-		return handleData(request, model, code, fid, pageId);
+	public String eduIndex(HttpServletRequest request, Model model, String code, @RequestParam(value = "unitId", required = false) Integer fid, Integer pageId, Integer banner) {
+		return handleData(request, model, code, fid, pageId, banner);
 	}
 
-	private String handleData(HttpServletRequest request, Model model, String code, Integer fid, Integer pageId) {
+	private String handleData(HttpServletRequest request, Model model, String code, Integer fid, Integer pageId, Integer banner) {
 		if (fid == null) {
 			fid = LoginUtils.getLoginUser(request).getFid();
 		}
@@ -140,6 +145,8 @@ public class ActivityController {
 		model.addAttribute("areaCode", areaCode);
 		model.addAttribute("topFid", fid);
 		model.addAttribute("pageId", pageId);
+		banner = Optional.ofNullable(banner).orElse(0);
+		model.addAttribute("banner", banner);
 		if (UserAgentUtils.isMobileAccess(request)) {
 			return "mobile/index";
 		}

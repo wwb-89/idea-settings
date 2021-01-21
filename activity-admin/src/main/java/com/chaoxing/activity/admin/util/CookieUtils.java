@@ -20,19 +20,31 @@ public class CookieUtils {
 
     }
 
-    public static String getUid(HttpServletRequest request) {
-        return getValue(request, CookieConstant.UID);
+    public static Integer getUid(HttpServletRequest request) {
+        String uidStr = getValue(request, CookieConstant.UID);
+        if (StringUtils.isNotBlank(uidStr)) {
+            return Integer.parseInt(uidStr);
+        }
+        return null;
     }
 
-    private static String getWfwfid(HttpServletRequest request) {
-        return getValue(request, CookieConstant.WFWFID);
+    private static Integer getWfwfid(HttpServletRequest request) {
+        String wfwfidStr = getValue(request, CookieConstant.WFWFID);
+        if (StringUtils.isNotBlank(wfwfidStr)) {
+            return Integer.parseInt(wfwfidStr);
+        }
+        return null;
     }
 
-    private static String getSpaceFid(HttpServletRequest request) {
-        return getValue(request, CookieConstant.SPACE_FID);
+    private static Integer getSpaceFid(HttpServletRequest request) {
+        String spaceFidStr = getValue(request, CookieConstant.SPACE_FID);
+        if (StringUtils.isNotBlank(spaceFidStr)) {
+            return Integer.parseInt(spaceFidStr);
+        }
+        return null;
     }
 
-    public static String getFid(HttpServletRequest request) {
+    public static Integer getFid(HttpServletRequest request) {
         return getWfwfid(request);
     }
 

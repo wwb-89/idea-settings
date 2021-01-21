@@ -45,6 +45,21 @@
 <div th:replace="mobile/include/common_js :: common_js(~{::script})">
     <script src="/static/mobile/assets/lib/layui/layui.all.js" th:src="@{/mobile/assets/lib/layui/layui.all.js}"></script>
     <script th:inline="javascript">
+        Vue.filter("activityStatusDescribe", function (status) {
+            if (activityApp.isEmpty(status)) {
+                return "";
+            }
+            switch (status) {
+                case 0:
+                    return "已删除";
+                case 3:
+                    return "进行中";
+                case 4:
+                    return "已结束";
+                default:
+                    return "未开始";
+            }
+        });
         function ready() {
             formVue = new Vue({
                 el: "#form-vue",
@@ -62,19 +77,19 @@
                     // 报名名单
                     signUpList: function () {
                         var $this = this;
-                        var url = "http://reading.chaoxing.com/qd/m/manage/sign-up/"+ $this.signActivityManageIndex.signUpId +"/user-list";
+                        var url = "https://reading.chaoxing.com/qd/m/manage/sign-up/"+ $this.signActivityManageIndex.signUpId +"/user-list";
                         app.openUrl(url);
                     },
                     // 签到管理
                     signInManage: function () {
                         var $this = this;
-                        var url = "http://reading.chaoxing.com/qd/m/manage/sign-in/list?signId=" + $this.signActivityManageIndex.signId;
+                        var url = "https://reading.chaoxing.com/qd/m/manage/sign-in/list?signId=" + $this.signActivityManageIndex.signId;
                         app.openUrl(url);
                     },
                     // 发通知
                     sendNotice: function () {
                         var $this = this;
-                        var url = "http://reading.chaoxing.com/qd/manage/notice/add?signId=" + $this.signActivityManageIndex.signId;
+                        var url = "https://reading.chaoxing.com/qd/manage/notice/add?signId=" + $this.signActivityManageIndex.signId;
                         app.openUrl(url);
                     }
                 }

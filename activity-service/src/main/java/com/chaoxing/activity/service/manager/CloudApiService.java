@@ -1,7 +1,8 @@
 package com.chaoxing.activity.service.manager;
 
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONObject;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
@@ -32,8 +33,8 @@ public class CloudApiService {
 	private static final String UPLOAD_URL = "http://cs.ananas.chaoxing.com/upload?uid=-1&clientip=%s&prdid=40";
 	/** 资源状态url */
 	private static final String GET_CLOUD_RESOURCE_STATUS_URL = "http://cs.ananas.chaoxing.com/status/";
-	/** 云盘图片url */
-	private static final String IMG_URL = "http://d0.ananas.chaoxing.com/download/";
+	/** 云盘图片状态url key */
+	private static final String CLOUD_IMAGE_STATUS_URL_KEY = "http";
 
 	@Resource(name = "restTemplateProxy")
 	private RestTemplate restTemplate;
@@ -88,24 +89,25 @@ public class CloudApiService {
 	 * @param cloudId
 	 * @return java.lang.String
 	*/
-	public String getStatus(String cloudId) {
+	private String getStatus(String cloudId) {
 		String urlStringBuilder = GET_CLOUD_RESOURCE_STATUS_URL + cloudId;
 		return restTemplate.getForObject(urlStringBuilder, String.class);
 	}
 
-	/**获取云盘图片url
+	/**获取图片url
 	 * @Description 
 	 * @author wwb
-	 * @Date 2020-11-24 17:50:20
+	 * @Date 2021-01-20 11:03:02
 	 * @param cloudId
 	 * @return java.lang.String
 	*/
-	public String getCloudImgUrl(String cloudId) {
-		if (StringUtils.isBlank(cloudId)) {
-			return "";
+	public String getImageUrl(String cloudId) {
+		String result = getStatus(cloudId);
+		JSONObject jsonObject = JSON.parseObject(result);
+		if (jsonObject.containsKey(CLOUD_IMAGE_STATUS_URL_KEY)) {
+			return jsonObject.getString(CLOUD_IMAGE_STATUS_URL_KEY);
 		}
-		String urlStringBuilder = IMG_URL + cloudId;
-		return urlStringBuilder;
+		return "";
 	}
 
 }

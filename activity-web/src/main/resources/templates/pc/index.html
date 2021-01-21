@@ -17,7 +17,7 @@
 
 <body>
 <div class="page" id="activity-vue" v-cloak>
-    <div class="banner">
+    <div class="banner" th:if="${banner eq 1}">
         <img src="/static/pc/assets/images/banner.png" th:src="@{/pc/assets/images/banner.png}">
     </div>
     <div class="content">
@@ -67,7 +67,7 @@
             <div class="c-item" >
                 <div class="item" v-for="(item, index) of activities" :key="'item-' + index" @click="detail(index)">
                     <div class="img-box">
-                        <img :src="item.coverCloudId| getCloudImgUrl">
+                        <img :src="item | getCloudImgUrl">
                         <div class="tag" v-if="item.status == 2">活动预告</div>
                         <div class="tag green" v-if="item.status == 3">进行中</div>
                         <div class="tag black" v-if="item.status == 4">已结束</div>
@@ -159,6 +159,8 @@
               var $this = this;
               $this.resetQueryParams();
               $this.loadData();
+            },
+            updated: function () {
                 $('.banner img').jqthumb({
                     width:'100%',
                     height:'100%'

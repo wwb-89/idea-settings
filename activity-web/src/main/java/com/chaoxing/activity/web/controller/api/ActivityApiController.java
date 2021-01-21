@@ -20,6 +20,7 @@ import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 /**活动api服务
@@ -53,18 +54,22 @@ public class ActivityApiController {
 		String areaCode = activityQuery.getAreaCode();
 		List<Integer> fids = new ArrayList<>();
 		List<WfwRegionalArchitectureDTO> wfwRegionalArchitectures;
+		LoginUserDTO loginUser = LoginUtils.getLoginUser(request);
+		Integer topFid = activityQuery.getTopFid();
 		if (StringUtils.isNotBlank(areaCode)) {
 			wfwRegionalArchitectures = wfwRegionalArchitectureApiService.listByCode(areaCode);
 		} else {
-			LoginUserDTO loginUser = LoginUtils.getLoginUser(request);
 			Integer fid = loginUser.getFid();
-			wfwRegionalArchitectures = wfwRegionalArchitectureApiService.listByFid(fid);
+			if (!Objects.equals(topFid, fid)) {
+				wfwRegionalArchitectures = wfwRegionalArchitectureApiService.listByFid(topFid);
+			} else {
+				wfwRegionalArchitectures = wfwRegionalArchitectureApiService.listByFid(fid);
+			}
 		}
 		if (CollectionUtils.isNotEmpty(wfwRegionalArchitectures)) {
 			List<Integer> subFids = wfwRegionalArchitectures.stream().map(WfwRegionalArchitectureDTO::getFid).collect(Collectors.toList());
 			fids.addAll(subFids);
 		} else {
-			Integer topFid = activityQuery.getTopFid();
 			fids.add(topFid);
 		}
 		activityQuery.setFids(fids);

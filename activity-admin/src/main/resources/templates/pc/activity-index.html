@@ -69,10 +69,10 @@
                 signActivityManageIndex: [[${signActivityManageIndex}]],
                 menus: {
                     // 报名签到
-                    signUpList: {name: "报名名单", defaultIconUrl: ctx + "/pc/assets/images/icon-name-list-default.png", activeIconUrl: ctx + "/pc/assets/images/icon-name-list-active.png", url: "http://reading.chaoxing.com/qd/manage/sign-up/" + [[${signActivityManageIndex.signUpId}]], selected: false},
-                    signInManage: {name: "签到管理", defaultIconUrl: ctx + "/pc/assets/images/icon-sign-in-default.png", activeIconUrl: ctx + "/pc/assets/images/icon-sign-in-active.png", url: "http://reading.chaoxing.com/qd/manage/sign-in/list?signId=" + [[${signActivityManageIndex.signId}]], selected: false},
+                    signUpList: {name: "报名名单", defaultIconUrl: ctx + "/pc/assets/images/icon-name-list-default.png", activeIconUrl: ctx + "/pc/assets/images/icon-name-list-active.png", url: "//reading.chaoxing.com/qd/manage/sign-up/" + [[${signActivityManageIndex.signUpId}]], selected: false},
+                    signInManage: {name: "签到管理", defaultIconUrl: ctx + "/pc/assets/images/icon-sign-in-default.png", activeIconUrl: ctx + "/pc/assets/images/icon-sign-in-active.png", url: "//reading.chaoxing.com/qd/manage/sign-in/list?signId=" + [[${signActivityManageIndex.signId}]], selected: false},
                     // 通知
-                    notice: {name: "发通知", defaultIconUrl: ctx + "/pc/assets/images/icon-notice-default.png", activeIconUrl: ctx + "/pc/assets/images/icon-notice-active.png", url: "http://reading.chaoxing.com/qd/manage/notice/add?signId=" + [[${signActivityManageIndex.signId}]], selected: false},
+                    notice: {name: "发通知", defaultIconUrl: ctx + "/pc/assets/images/icon-notice-default.png", activeIconUrl: ctx + "/pc/assets/images/icon-notice-active.png", url: "//reading.chaoxing.com/qd/manage/notice/add?signId=" + [[${signActivityManageIndex.signId}]], selected: false},
                     // 统计
                     stat: {name: "统计", defaultIconUrl: ctx + "/pc/assets/images/icon-statistics-default.png", activeIconUrl: ctx + "/pc/assets/images/icon-statistics-active.png", url: "", selected: false}
                 },
@@ -85,9 +85,9 @@
             },
             mounted: function () {
                 var $this = this;
-                $this.initPageHeight();
+                $this.resizePageHeight();
                 window.onresize = function () {
-                    $this.initPageHeight();
+                    $this.resizePageHeight();
                 };
                 if ($this.signActivityManageIndex.signUpExist) {
                     $this.toSignUpList();
@@ -96,16 +96,32 @@
                 }
             },
             methods: {
-                initPageHeight: function () {
-                    var height = $(".container").css("min-height");
-                    height = height.replaceAll("px", "");
+                resizePageHeight: function () {
+                    // container的最小高度
+                    var containerMinHeight = $(".container").css("min-height");
+                    containerMinHeight = containerMinHeight.replaceAll("px", "");
+                    var containerHeight = $(".container").height();
+                    // 窗口的高度
                     var windowHeight = $(window).height() - 40;
+                    // iframe的高度
                     var iframeHeight = $("#content").height();
-                    height = height > windowHeight ? height : windowHeight;
-                    height = height > iframeHeight ? height : iframeHeight;
-                    $(".container").height(height);
+                    // iframe中内容的真实高度
+                    var iframeContentHeight = $("#content").contents().find("body").find("div:first-child").height() + 24;
+                    // container应该取最大高度
+                    var maxHeight = containerMinHeight > containerHeight ? containerMinHeight : containerHeight;
+                    maxHeight = maxHeight > windowHeight ? maxHeight : windowHeight;
+                    maxHeight = maxHeight > iframeHeight ? maxHeight : iframeHeight;
+                    maxHeight = maxHeight > iframeContentHeight ? maxHeight : iframeContentHeight;
+                    // 如果窗口高度能满足最大高度就是用窗口高度
+                    if (windowHeight > iframeContentHeight) {
+                        maxHeight = windowHeight;
+                    }
+                    $(".container").height(maxHeight);
+                    $("#content")[0].style.height = maxHeight + "px";
+                    $("#content").contents().find("body").height(maxHeight);
                 },
                 loadUrl: function (url) {
+                    var $this = this;
                     if (url.indexOf("?") != -1) {
                         url += "&";
                     } else {
@@ -113,14 +129,7 @@
                     }
                     $("#content")[0].src = url + "time=" + new Date().getTime();
                     $("#content")[0].onload = function() {
-                        var iframe = $("#content")[0];
-                        if (iframe) {
-                            var iframeWin = iframe.contentWindow || iframe.contentDocument.parentWindow;
-                            if (iframeWin.document.body) {
-                                var iframeHeight = iframeWin.document.body.scrollHeight;
-                                $("#content").height(iframeHeight);
-                            }
-                        }
+                        $this.resizePageHeight();
                     };
                 },
                 selectMenu: function (menuKey) {
@@ -154,6 +163,13 @@
                 }
             }
         });
+
+        /**
+         * 重置iframe的高度
+         */
+        function resetIframeHeight() {
+            activityVue.resizePageHeight();
+        }
     </script>
 </div>
 </body>

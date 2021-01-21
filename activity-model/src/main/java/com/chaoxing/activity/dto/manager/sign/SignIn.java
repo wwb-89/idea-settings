@@ -31,6 +31,8 @@ public class SignIn {
     private Integer signId;
     /** 签到名称 */
     private String name;
+    /** 签到类型：签到、签退 */
+    private String type;
     /** 签到码 */
     private String code;
     /** 开始时间 */

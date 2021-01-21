@@ -47,6 +47,8 @@ public class Activity {
     private LocalDate endDate;
     /** 封面云盘id; column: cover_cloud_id*/
     private String coverCloudId;
+    /** 封面地址; column: cover_url*/
+    private String coverUrl;
     /** 主办方; column: organisers*/
     private String organisers;
     /** 活动形式; column: activity_type*/

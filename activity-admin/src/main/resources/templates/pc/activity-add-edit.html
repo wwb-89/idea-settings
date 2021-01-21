@@ -89,7 +89,7 @@
                     <label class="label cover" style="line-height: 100px;"><img src="/static/pc/assets/images/required.png" th:src="@{/pc/assets/images/required.png}" class="required-img">封面</label>
                     <div class="input-box">
                         <div class="img-box">
-                            <img :src="activity.coverCloudId | getCloudImgUrl" class="cover-img jqthumbImg">
+                            <img :src="activity | getCloudImgUrl" class="cover-img jqthumbImg">
                         </div>
                         <div class="font-box">
                             <span>建议尺寸：540*280</span>
@@ -549,7 +549,9 @@
                         $this.enableSignUp = false;
                         $this.sign.signUp = signApp.newSignUp();
                     }
-                    $this.signUpTimeScope = [$this.sign.signUp.startTime, $this.sign.signUp.endTime];
+                    if (!activityApp.isEmpty($this.sign.signUp.startTime)) {
+                        $this.signUpTimeScope = [$this.sign.signUp.startTime, $this.sign.signUp.endTime];
+                    }
                     // 签到
                     if (!activityApp.isEmpty($this.sign.signIn)) {
                         if (!$this.sign.signIn.deleted) {
@@ -565,7 +567,9 @@
                         $this.enableSignIn = false;
                         $this.sign.signIn = signApp.newSignIn();
                     }
-                    $this.signInTimeScope = [$this.sign.signIn.startTime, $this.sign.signIn.endTime];
+                    if (!activityApp.isEmpty($this.sign.signIn.startTime)) {
+                        $this.signInTimeScope = [$this.sign.signIn.startTime, $this.sign.signIn.endTime];
+                    }
                     // 签退
                     if (!activityApp.isEmpty($this.sign.signOut)) {
                         if (!$this.sign.signOut.deleted) {
@@ -581,7 +585,9 @@
                         $this.enableSignOut = false;
                         $this.sign.signOut = signApp.newSignOut();
                     }
-                    $this.signOutTimeScope = [$this.sign.signOut.startTime, $this.sign.signOut.endTime];
+                    if (!activityApp.isEmpty($this.sign.signOut.startTime)) {
+                        $this.signOutTimeScope = [$this.sign.signOut.startTime, $this.sign.signOut.endTime];
+                    }
                 }
                 if (!$this.activity.enableSign) {
                     $this.enableSignUp = false;
@@ -1187,7 +1193,7 @@
                     if (!activityApp.isEmpty($this.sign.signUp.fillInfoFormId)) {
                         formId = $this.sign.signUp.fillInfoFormId;
                     }
-                    var url = "http://reading.chaoxing.com/qd/form/config?formId=" + formId;
+                    var url = "https://reading.chaoxing.com/qd/form/config?formId=" + formId;
                     $('body').addClass('scroll');
                     $this.formConfigLayerIndex = layer.open({
                         title: "表单配置",

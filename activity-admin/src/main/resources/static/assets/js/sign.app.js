@@ -34,9 +34,9 @@
             signId: null,
             openAudit: false,
             startTime: null,
-            startTimeStr: "",
+            startTimestamp: "",
             endTime: null,
-            endTimeStr: "",
+            endTimestamp: "",
             limitPerson: false,
             personLimit: 100,
             fillInfo: false,
@@ -55,10 +55,11 @@
             id: null,
             signId: null,
             name: "",
+            type: "sign_in",
             startTime: null,
-            startTimeStr: "",
+            startTimestamp: "",
             endTime: null,
-            endTimeStr: "",
+            endTimestamp: "",
             way: 1,
             address: "",
             detailAddress: "",
@@ -79,6 +80,7 @@
     signApp.prototype.newSignOut = function () {
         var $this = this;
         return $.extend({}, $this.newSignIn(), {
+            type: "sign_out",
             btnName: "签退"
         });
     };
