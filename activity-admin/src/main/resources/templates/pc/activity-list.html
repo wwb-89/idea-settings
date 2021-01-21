@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <title>活动管理</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="/static/pc/assets/css/create.css" th:href="@{/pc/assets/css/create.css}">
     <link rel="stylesheet" href="/static/pc/assets/lib/element-ui/lib/theme-chalk/index.css" th:href="@{/pc/assets/lib/element-ui/lib/theme-chalk/index.css}">
     <link rel="stylesheet" href="/static/pc/assets/lib/zTree_v3/css/zTreeStyle/zTreeStyle.css" th:href="@{/pc/assets/lib/zTree_v3/css/zTreeStyle/zTreeStyle.css}">
     <link rel="stylesheet" href="/static/pc/assets/css/reset.css" th:href="@{/pc/assets/css/reset.css}">
@@ -22,7 +23,7 @@
         活动管理
     </div>
     <div class="main box">
-        <div class="create-btn">
+        <div class="create-btn" style="height: 16px;">
             <img src="/static/pc/assets/images/icon-add.png" th:src="@{/pc/assets/images/icon-add.png}">
             <div class="text" @click="toAdd">
                 创建活动
