@@ -1278,6 +1278,7 @@ input.btn-name,
     width: 131px;
 }
 .date-piker-icon {
+    height: 14px;
     position: absolute;
     left: 319px;
 }
