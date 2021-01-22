@@ -386,3 +386,6 @@ table {
     line-height: 22px;
     color: #CCCCCC;
 }
+.el-icon-search {
+    margin-right: 0px !important;
+}
