@@ -1079,6 +1079,8 @@ input.btn-name,
 }
 .pageset-right a{
     z-index: 2;
+}
+.pageset-right .copy {
     margin-left: 16px;
 }
 .del-img{
@@ -1254,4 +1256,32 @@ input.btn-name,
 
 .el-radio__label {
     color: #333;
+}
+
+.disable {
+    display: none;
+}
+
+.el-range-editor.el-input__inner {
+    padding: 5px 12px;
+    width: 346px;
+}
+
+.el-date-editor .el-range-input, .el-date-editor .el-range-separator {
+    text-align: left;
+}
+
+.el-date-editor .el-range-input {
+    font-size: 14px;
+    line-height: 22px;
+    color: #333333;
+    width: 131px;
+}
+.date-piker-icon {
+    position: absolute;
+    left: 319px;
+}
+.date-piker-icon img {
+    width: 14px;
+    height: 14px;
 }
