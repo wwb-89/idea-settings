@@ -111,6 +111,11 @@
                             </div>
                         </template>
                     </el-table-column>
+                    <template slot="empty">
+                        <div class="noData">
+                            暂无内容
+                        </div>
+                    </template>
                 </el-table>
             </div>
            
@@ -167,22 +172,7 @@
         var app = new Vue({
             el: '#app',
             data: {
-                tableData: [{
-                    name: '王小虎',
-                    address: '超星小学122222222223333333333333',
-                    state: '进行中',
-                    person: '邱强'
-                }, {
-                    name: '王小虎',
-                    address: '超星小学122222222223333333333333',
-                    state: '未发布',
-                    person: '邱强'
-                }, {
-                    name: '王小虎',
-                    address: '超星小学122222222223333333333333',
-                    state: '已结束',
-                    person: '邱强'
-                }],
+                tableData: [],
                 deleteShow: false,
                 releaseShow: false,
             },

@@ -389,3 +389,15 @@ table {
 .el-icon-search {
     margin-right: 0px !important;
 }
+.noData {
+    height: 695px;
+    margin: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.noData span {
+    font-size: 14px;
+    line-height: 20px;
+    color: #999999;
+}
