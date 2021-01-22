@@ -1298,3 +1298,21 @@ input.btn-name,
 .create-class .layui-layer-btn .layui-layer-btn1 {
     background: rgba(0, 132, 255, 0.8);
 }
+.more-btn {
+    width: 16px;
+    height: 16px;
+    margin-left: 4px;
+    background: url("../images/icon-more1.png");
+}
+.type-item:hover > .more-btn {
+    background: url("../images/icon-more-hover.png");
+}
+.add_btn {
+    width: 16px;
+    height: 16px;
+    margin-right: 4px;
+    background: url("../images/icon-add-more.png");
+}
+.type-item.add:hover > .add_btn {
+    background: url("../images/add-active.png");
+}
