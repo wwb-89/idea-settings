@@ -124,7 +124,8 @@
                 //分页
                 currentPage: 1,
                 filterWindowShow: false,
-                searchShadeShow: false
+                searchShadeShow: false,
+                topFid: [[${topFid}]]
             },
             created: function () {
                 var $this = this;
@@ -161,9 +162,25 @@
                 $this.resetQueryParams();
             },
             mounted:function() {
-              var $this = this;
-              $this.resetQueryParams();
-              $this.loadData();
+                var $this = this;
+                $this.resetQueryParams();
+                // 如果topFid符合regions的manageFid那么选中
+                if (!activityApp.isEmpty($this.topFid) && !activityApp.isEmpty($this.regions)) {
+                    var exist = false;
+                    var index = 0;
+                    $($this.regions).each(function (i) {
+                        if (this.manageFid == $this.topFid) {
+                            exist = true;
+                            index = i;
+                            return false;
+                        }
+                    });
+                    if (exist) {
+                        $this.changeActivityRegionsSelected(index);
+                        return;
+                    }
+                }
+                $this.loadData();
             },
             methods: {
                 //改变选中状态
