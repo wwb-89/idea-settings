@@ -229,7 +229,7 @@ table {
     font-size: 14px;
 }
 
-.more-btn .more {
+.manage-more-btn .more {
     width: 74px;
     position: absolute;
     top: 35px;
@@ -242,7 +242,7 @@ table {
     cursor: pointer;
     padding: 2px 0;
 }
-.more-btn .more p{
+.manage-more-btn .more p{
     color: #333333;
     white-space: nowrap;
     background: #FFFFFF;
@@ -250,17 +250,17 @@ table {
     font-size: 14px;
     line-height: 20px;
 }
-.more-btn .more p:hover {
+.manage-more-btn .more p:hover {
     color: #0084FF;
     white-space: nowrap;
     background: #F8F8F8;
 }
-.more-btn {
+.manage-more-btn {
     position: relative;
     display: inline-block;
     margin-left: 10px;
 }
-.more-btn img {
+.manage-more-btn img {
     transform: translateY(2px);
 }
 .el-table{

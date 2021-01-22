@@ -80,7 +80,7 @@
                                 <el-button type="text">下载</el-button>
                                 <el-button type="text">编辑</el-button>
                                 <el-button type="text">管理</el-button>
-                                <div class="more-btn">
+                                <div class="manage-more-btn">
                                     <!--<el-button type="text">更多<i class="el-icon-arrow-down"></i></el-button>-->
                                     <el-button type="text"><img src="../assets/images/more-vertical.png"></el-button>
                                     <div class="more">
@@ -95,7 +95,7 @@
                                 <el-button type="text" @click="handleRelease">发布</el-button>
                                 <el-button type="text">编辑</el-button>
                                 <el-button type="text">管理</el-button>
-                                <div class="more-btn">
+                                <div class="manage-more-btn">
                                     <!--<el-button type="text">更多<i class="el-icon-arrow-down"></i></el-button>-->
                                     <el-button type="text"><img src="../assets/images/more-vertical.png"></el-button>
                                     <div class="more">
@@ -324,10 +324,10 @@
             $('.filters').hide()
             $('.el-down').removeClass('rotate')
         })
-        $('.more-btn').mouseover(function () {
+        $('.manage-more-btn').mouseover(function () {
             $(this).children('.more').show();
         })
-        $('.more-btn').mouseout(function () {
+        $('.manage-more-btn').mouseout(function () {
             $(this).children('.more').hide();
         })
         $('.more p').click(function () {
