@@ -97,6 +97,7 @@
     <script type="text/javascript" src="/static/pc/assets/lib/element-ui/lib/index.js" th:src="@{/pc/assets/lib/element-ui/lib/index.js}"></script>
     <script src="/static/pc/assets/lib/jqthumb.min.js" th:src="@{/pc/assets/lib/jqthumb.min.js}"></script>
     <script th:if="${pageId != null}" th:src="|//portal.chaoxing.com/outer/${pageId}/footer|"></script>
+    <script th:if="${pageId != null}" src="//share.zjlib.cn/engine2/assets/js/header/zjlib-header-engine.js"></script>
     <script th:inline="javascript">
         Vue.filter("timestamp2YMD", function (timestamp) {
             var dateObj = activityApp.millisecond2DateObj(timestamp);

@@ -56,7 +56,7 @@ Vue.component('vue-map', {
             this.map = new BMap.Map($this.mapDomId, {
                 enableMapClick: false
             });
-            var point = new BMap.Point(104.10194, 30.65984);
+            var point = new BMap.Point(104.07073444090588, 30.575041234923084);
             this.map.centerAndZoom(point, 19);
             // 启用滚轮放大缩小，默认禁用
             this.map.enableScrollWheelZoom(true);

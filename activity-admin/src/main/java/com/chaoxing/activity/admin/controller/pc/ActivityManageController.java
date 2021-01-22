@@ -10,6 +10,7 @@ import com.chaoxing.activity.service.GroupService;
 import com.chaoxing.activity.service.WebTemplateService;
 import com.chaoxing.activity.service.activity.ActivityQueryService;
 import com.chaoxing.activity.service.activity.classify.ActivityClassifyQueryService;
+import com.chaoxing.activity.util.constant.CommonConstant;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Component;
 import org.springframework.ui.Model;
@@ -41,6 +42,8 @@ public class ActivityManageController {
 
 	public String index(Model model, String code) {
 		code = Optional.ofNullable(code).orElse("");
+		// 防止挂接到三放也携带了code参数
+		code = code.split(CommonConstant.DEFAULT_SEPARATOR)[0];
 		model.addAttribute("code", code);
 		return "pc/activity-list";
 	}
