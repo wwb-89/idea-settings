@@ -41,7 +41,7 @@
     box-sizing: border-box;
 }
 
-.create-btn {
+.manage-create-btn {
     background: #0084ff;
     border-radius: 15px;
     cursor: pointer;
@@ -49,18 +49,18 @@
     padding: 6px 14px;
 }
 
-.create-btn:hover {
+.manage-create-btn:hover {
     background: rgba(0, 132, 255, 0.8);
 }
 
-.create-btn img {
+.manage-create-btn img {
     margin-right: 4px;
     width: 16px;
     height: 16px;
     float: left;
 }
 
-.create-btn .text {
+.manage-create-btn .text {
     font-size: 13px;
     color: #ffffff;
     float: left;
