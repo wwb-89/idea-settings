@@ -138,14 +138,14 @@
                     <label class="label">活动分类</label>
                     <div class="input-box wrap">
                         <div :class="{'type-item': true, 'active': activityClassify.selected}" v-for="(activityClassify, index) of activityClassifies" :key="'activity-classify-' + index" @click="selectActivityClassify(index)">{{activityClassify.name}}
-                                <img src="/static/pc/assets/images/icon-more1.png" th:src="@{/pc/assets/images/icon-more1.png}" style="margin-left: 10px;" v-if="!activityClassify.system">
+                            <div class="more-btn" v-if="!activityClassify.system"></div>
                             <div class="edit-box" v-if="!activityClassify.system">
                                 <div @click="toEditActivityClassify(index, $event)">编辑</div>
                                 <div @click="toDeleteActivityClassify(index, $event)">删除</div>
                             </div>
                         </div>
                         <div class="type-item add" @click="toAddActivityClassify">
-                            <img src="/static/pc/assets/images/add.png" th:src="@{/pc/assets/images/add.png}" style="margin-right: 10px;">
+                            <div class="add_btn"></div>
                             新增
                         </div>
                     </div>
@@ -156,7 +156,7 @@
                         <!--添加范围后显示后面这项-->
                         <div v-show="participatedOrgs.length < 1">
                             <div class="type-item add" @click="toAddParticipateScope">
-                                <img src="/static/pc/assets/images/add.png" th:src="@{/pc/assets/images/add.png}" style="margin-right: 10px;">
+                                <div class="add_btn"></div>
                                 添加
                             </div>
                         </div>
