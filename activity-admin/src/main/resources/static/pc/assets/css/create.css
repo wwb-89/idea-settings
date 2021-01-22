@@ -698,7 +698,7 @@ input.btn-name,
 .normal-btn {
     box-sizing: border-box;
     height: 30px;
-    padding: 0 27px;
+    padding: 0 14px;
     border: 1px solid #82c3ff;
     border-radius: 15px;
     font-size: 13px;
@@ -1285,4 +1285,16 @@ input.btn-name,
 .date-piker-icon img {
     width: 14px;
     height: 14px;
+}
+.create-class .layui-layer-btn .layui-layer-btn0 {
+    height: 28px !important;
+}
+.create-class .layui-layer-btn .layui-layer-btn0:hover {
+    background: #EBF5FF;
+}
+.create-class .layui-layer-btn .layui-layer-btn1 {
+    height: 28px !important;
+}
+.create-class .layui-layer-btn .layui-layer-btn1 {
+    background: rgba(0, 132, 255, 0.8);
 }

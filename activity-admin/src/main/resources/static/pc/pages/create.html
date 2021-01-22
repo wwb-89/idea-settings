@@ -80,12 +80,20 @@
                 <label class="label"><img src="../assets/images/required.png"
                                           alt="" class="required-img">时间</label>
                 <div class="input-box">
-                    <el-date-picker v-model="time1"
+                    <el-date-picker v-model="time2"
                                     type="datetimerange"
-                                    range-separator="至"
+                                    range-separator="<img src='../assets/images/swap-right.png'>"
                                     start-placeholder="开始时间"
-                                    end-placeholder="结束时间">
+                                    end-placeholder="结束时间"
+                                    format="yyyy-MM-dd HH:mm"
+                                    value-format="yyyy-MM-dd HH:mm"
+                                    prefix-icon="disable"
+                                    clear-icon="disable">
+                        <img style="margin: 0 8px;" slot="range-separator" src="../assets/images/swap-right.png">
                     </el-date-picker>
+                    <span class="date-piker-icon">
+                        <img src="../assets/images/time.png">
+                    </span>
                 </div>
             </div>
             <div class="form-item">

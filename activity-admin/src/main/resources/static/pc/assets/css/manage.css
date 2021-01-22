@@ -379,3 +379,10 @@ table {
 .el-table--enable-row-hover .el-table__body tr:hover>td{
     background: #F8F8F8; !important;
 }
+
+.search input::placeholder{
+    font-family: PingFang SC;
+    font-size: 14px;
+    line-height: 22px;
+    color: #CCCCCC;
+}
