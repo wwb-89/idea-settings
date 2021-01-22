@@ -5,7 +5,7 @@ Vue.component('vue-confirm', {
         "        <img :src='warnImgUrl' class='warn'>\n" +
         "        <span>{{message}}</span>\n" +
         "        <div>\n" +
-        "            <div class='normal-btn' @click='show = false'>{{cancel}}</div>\n" +
+        "            <div class='normal-btn cancle' @click='show = false'>{{cancel}}</div>\n" +
         "            <div class='normal-btn after-sure' @click='sureCallback'>{{sure}}</div>\n" +
         "        </div>\n" +
         "    </div>\n" +

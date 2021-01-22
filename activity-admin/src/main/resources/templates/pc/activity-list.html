@@ -23,7 +23,7 @@
         活动管理
     </div>
     <div class="main box">
-        <div class="create-btn" style="height: 16px;">
+        <div class="manage-create-btn">
             <img src="/static/pc/assets/images/icon-add.png" th:src="@{/pc/assets/images/icon-add.png}">
             <div class="text" @click="toAdd">
                 创建活动
@@ -74,7 +74,7 @@
                     <template slot-scope="scope">
                         <div>
                             <el-button type="text" v-if="index < 3" v-for="(operation, index) of scope.row.operations" @click="operateProxy(scope.row.id, operation.value)">{{operation.name}}</el-button>
-                            <div class="more-btn" v-if="scope.row.operations.length > 3">
+                            <div class="manage-more-btn" v-if="scope.row.operations.length > 3">
                                 <el-button type="text"><img src="/static/pc/assets/images/more-vertical.png" th:src="@{/pc/assets/images/more-vertical.png}"></el-button>
                                 <div class="more">
                                     <p v-if="index > 2" v-for="(operation, index) of scope.row.operations" @click="operateProxy(scope.row.id, operation.value)">{{operation.name}}</p>
@@ -168,10 +168,10 @@
                         $('.filters').toggle();
                         $('.el-down').toggleClass('rotate')
                     });
-                    $(document).on("mouseover", ".more-btn", function () {
+                    $(document).on("mouseover", ".manage-more-btn", function () {
                         $(this).children('.more').show();
                     });
-                    $(document).on("mouseout", ".more-btn", function () {
+                    $(document).on("mouseout", ".manage-more-btn", function () {
                         $(this).children('.more').hide();
                     });
                 },

@@ -82,7 +82,22 @@
                 <div class="form-item">
                     <label class="label"><img src="/static/pc/assets/images/required.png" th:src="@{/pc/assets/images/required.png}" class="required-img">时间</label>
                     <div class="input-box">
-                        <el-date-picker v-model="activityDateTimeScope" type="datetimerange" format="yyyy-MM-dd HH:mm" value-format="yyyy-MM-dd HH:mm:ss" :editable=false range-separator="至" start-placeholder="开始时间" end-placeholder="结束时间" :default-time="['00:00:00', '23:59:59']" @change="selectActivityDate($event)"></el-date-picker>
+                        <el-date-picker v-model="activityDateTimeScope"
+                                        type="datetimerange"
+                                        format="yyyy-MM-dd HH:mm"
+                                        value-format="yyyy-MM-dd HH:mm:ss"
+                                        prefix-icon="disable"
+                                        :clearable="false"
+                                        :editable="false"
+                                        start-placeholder="开始时间"
+                                        end-placeholder="结束时间"
+                                        :default-time="['00:00:00', '23:59:59']"
+                                        @change="selectActivityDate($event)">
+                            <img style="margin: 0 8px;" slot="range-separator" src="/static/pc/assets/images/swap-right.png" th:src="@{/pc/assets/images/swap-right.png}">
+                        </el-date-picker>
+                        <span class="date-piker-icon">
+                            <img src="/static/pc/assets/images/calendar.png" th:src="@{/pc/assets/images/calendar.png}">
+                        </span>
                     </div>
                 </div>
                 <div class="form-item">
@@ -116,14 +131,14 @@
                     <div class="input-box">
                         <input type="text" readonly required lay-verify="required" v-model.trim="activity.address" placeholder="请选择活动地点" autocomplete="off" class="layui-input name show-addr" style="cursor: pointer;" @click="showActivityMap">
                         <img src="/static/pc/assets/images/location.png" th:src="@{/pc/assets/images/location.png}" class="length icon">
-                        <input type="text" required v-model.trim="activity.detailAddress" lay-verify="required" placeholder="详细地址，例：E5栋1308室" autocomplete="off" class="layui-input name show-addr-detailed">
+                        <input type="text" v-model.trim="activity.detailAddress" lay-verify="required" placeholder="详细地址，例：E5栋1308室" autocomplete="off" class="layui-input name show-addr-detailed">
                     </div>
                 </div>
                 <div class="form-item cancel-margin">
                     <label class="label">活动分类</label>
                     <div class="input-box wrap">
                         <div :class="{'type-item': true, 'active': activityClassify.selected}" v-for="(activityClassify, index) of activityClassifies" :key="'activity-classify-' + index" @click="selectActivityClassify(index)">{{activityClassify.name}}
-                                <img src="/static/pc/assets/images/more1.png" th:src="@{/pc/assets/images/more1.png}" style="margin-left: 10px;" v-if="!activityClassify.system">
+                                <img src="/static/pc/assets/images/icon-more1.png" th:src="@{/pc/assets/images/icon-more1.png}" style="margin-left: 10px;" v-if="!activityClassify.system">
                             <div class="edit-box" v-if="!activityClassify.system">
                                 <div @click="toEditActivityClassify(index, $event)">编辑</div>
                                 <div @click="toDeleteActivityClassify(index, $event)">删除</div>
@@ -165,7 +180,22 @@
                 <div class="form-item">
                     <label class="label"><img src="/static/pc/assets/images/required.png" th:src="@{/pc/assets/images/required.png}" class="required-img">报名时间</label>
                     <div class="input-box">
-                        <el-date-picker v-model="signUpTimeScope" type="datetimerange" format="yyyy-MM-dd HH:mm" value-format="timestamp" :editable=false range-separator="至" start-placeholder="开始时间" end-placeholder="结束时间" :default-time="['00:00:00', '23:59:59']" @change="selectSignUpTime($event)"></el-date-picker>
+                        <el-date-picker v-model="signUpTimeScope"
+                                        type="datetimerange"
+                                        format="yyyy-MM-dd HH:mm"
+                                        value-format="timestamp"
+                                        :clearable="false"
+                                        :editable="false"
+                                        prefix-icon="disable"
+                                        start-placeholder="开始时间"
+                                        end-placeholder="结束时间"
+                                        :default-time="['00:00:00', '23:59:59']"
+                                        @change="selectSignUpTime($event)">
+                            <img style="margin: 0 8px;" slot="range-separator" src="/static/pc/assets/images/swap-right.png" th:src="@{/pc/assets/images/swap-right.png}">
+                        </el-date-picker>
+                        <span class="date-piker-icon">
+                            <img src="/static/pc/assets/images/time.png" th:src="@{/pc/assets/images/time.png}">
+                        </span>
                     </div>
                 </div>
                 <div class="form-item">
@@ -249,7 +279,22 @@
                 <div class="form-item">
                     <label class="label"><img src="/static/pc/assets/images/required.png" th:src="@{/pc/assets/images/required.png}" class="required-img">签到时间</label>
                     <div class="input-box">
-                        <el-date-picker v-model="signInTimeScope" type="datetimerange" format="yyyy-MM-dd HH:mm" value-format="timestamp" :editable=false range-separator="至" start-placeholder="开始时间" end-placeholder="结束时间" :default-time="['00:00:00', '23:59:59']" @change="selectSignInTime($event)"></el-date-picker>
+                        <el-date-picker v-model="signInTimeScope"
+                                        type="datetimerange"
+                                        format="yyyy-MM-dd HH:mm"
+                                        value-format="timestamp"
+                                        :clearable="false"
+                                        :editable="false"
+                                        prefix-icon="disable"
+                                        start-placeholder="开始时间"
+                                        end-placeholder="结束时间"
+                                        :default-time="['00:00:00', '23:59:59']"
+                                        @change="selectSignInTime($event)">
+                            <img style="margin: 0 8px;" slot="range-separator" src="/static/pc/assets/images/swap-right.png" th:src="@{/pc/assets/images/swap-right.png}">
+                        </el-date-picker>
+                        <span class="date-piker-icon">
+                            <img src="/static/pc/assets/images/time.png" th:src="@{/pc/assets/images/time.png}">
+                        </span>
                     </div>
                 </div>
                 <div class="form-item">
@@ -301,7 +346,22 @@
                 <div class="form-item">
                     <label class="label"><img src="/static/pc/assets/images/required.png" th:src="@{/pc/assets/images/required.png}" class="required-img">签退时间</label>
                     <div class="input-box">
-                        <el-date-picker v-model="signOutTimeScope" type="datetimerange" format="yyyy-MM-dd HH:mm" value-format="timestamp" :editable=false range-separator="至" start-placeholder="开始时间" end-placeholder="结束时间" :default-time="['00:00:00', '23:59:59']" @change="selectSignOutTime($event)"></el-date-picker>
+                        <el-date-picker v-model="signOutTimeScope"
+                                        type="datetimerange"
+                                        format="yyyy-MM-dd HH:mm"
+                                        value-format="timestamp"
+                                        :clearable="false"
+                                        :editable="false"
+                                        prefix-icon="disable"
+                                        start-placeholder="开始时间"
+                                        end-placeholder="结束时间"
+                                        :default-time="['00:00:00', '23:59:59']"
+                                        @change="selectSignOutTime($event)">
+                            <img style="margin: 0 8px;" slot="range-separator" src="/static/pc/assets/images/swap-right.png" th:src="@{/pc/assets/images/swap-right.png}">
+                        </el-date-picker>
+                        <span class="date-piker-icon">
+                            <img src="/static/pc/assets/images/time.png" th:src="@{/pc/assets/images/time.png}">
+                        </span>
                     </div>
                 </div>
                 <div class="form-item">
@@ -527,13 +587,13 @@
                 });
                 $this.signInWays = [
                     {name: "普通签到", value: 1},
-                    {name: "指定位置签到", value: 2},
-                    {name: "扫码签到", value: 3}
+                    {name: "位置签到", value: 2},
+                    {name: "二维码签到", value: 3}
                 ];
                 $this.signOutWays = [
                     {name: "普通签退", value: 1},
-                    {name: "指定位置签退", value: 2},
-                    {name: "扫码签退", value: 3}
+                    {name: "位置签退", value: 2},
+                    {name: "二维码签退", value: 3}
                 ];
                 $this.scanCodeWays = [
                     {name: "用户扫码", value: 1},
@@ -1201,7 +1261,7 @@
                     if (!activityApp.isEmpty($this.sign.signUp.fillInfoFormId)) {
                         formId = $this.sign.signUp.fillInfoFormId;
                     }
-                    var url = "https://reading.chaoxing.com/qd/form/config?formId=" + formId;
+                    var url = "http://reading.chaoxing.com/qd/form/config?formId=" + formId;
                     $('body').addClass('scroll');
                     $this.formConfigLayerIndex = layer.open({
                         title: "表单配置",
