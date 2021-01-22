@@ -588,7 +588,7 @@ public class ActivityHandleService {
 						// 访问的url
 						.url(accessUrl)
 						.pageType(3)
-						.coverUrl(activityCoverService.getCoverUrl(activity))
+						.coverUrl("http://p.ananas.chaoxing.com/star3/origin/" + activityModule.getIconCloudId())
 						.build();
 				result.add(mhAppData);
 			}

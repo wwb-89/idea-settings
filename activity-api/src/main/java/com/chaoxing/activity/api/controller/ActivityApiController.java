@@ -1,6 +1,8 @@
 package com.chaoxing.activity.api.controller;
 
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.chaoxing.activity.model.LoginCustom;
+import com.chaoxing.activity.service.LoginService;
 import com.chaoxing.activity.service.util.Model2DtoService;
 import com.chaoxing.activity.dto.RestRespDTO;
 import com.chaoxing.activity.dto.activity.ActivityExternalDTO;
@@ -23,7 +25,10 @@ import org.springframework.web.bind.annotation.RestController;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
+import java.io.UnsupportedEncodingException;
 import java.math.BigDecimal;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -40,6 +45,9 @@ import java.util.stream.Collectors;
 @RequestMapping("activity")
 public class ActivityApiController {
 
+	/** 登录地址占位 */
+	private static final String LOGIN_URL_PLACEHOLDER = "url_placeholder";
+
 	@Resource
 	private ActivityQueryService activityQueryService;
 	@Resource
@@ -50,6 +58,8 @@ public class ActivityApiController {
 	private Model2DtoService model2DtoService;
 	@Resource
 	private WfwCoordinateApiService wfwCoordinateApiService;
+	@Resource
+	private LoginService loginService;
 
 	/**组活动推荐
 	 * @Description 
@@ -144,6 +154,34 @@ public class ActivityApiController {
 	public RestRespDTO getActivityBySignId(Integer signId) {
 		Activity activity = activityQueryService.getBySignId(signId);
 		return RestRespDTO.success(activity);
+	}
+
+	/**根据报名签到id查询活动定制登录url
+	 * @Description 
+	 * @author wwb
+	 * @Date 2021-01-21 15:10:17
+	 * @param signId
+	 * @param refer
+	 * @return com.chaoxing.activity.dto.RestRespDTO
+	*/
+	@RequestMapping("custom-login-url")
+	public RestRespDTO getActivityCustomLoginUrl(Integer signId, String refer) throws UnsupportedEncodingException {
+		Activity activity = activityQueryService.getBySignId(signId);
+		LoginCustom loginCustom = loginService.getLoginCustom(activity);
+		String loginUrl = "";
+		if (loginCustom != null) {
+			loginUrl = loginCustom.getLoginUrl();
+			if (StringUtils.isNotBlank(loginUrl) && StringUtils.isNotBlank(refer)) {
+				Integer encodeNum = loginCustom.getEncodeNum();
+				encodeNum = Optional.ofNullable(encodeNum).orElse(0);
+				while (encodeNum-- > 0) {
+					refer = URLEncoder.encode(refer, StandardCharsets.UTF_8.name());
+				}
+				loginUrl = loginUrl.replace(LOGIN_URL_PLACEHOLDER, refer);
+			}
+
+		}
+		return RestRespDTO.success(loginUrl);
 	}
 
 }

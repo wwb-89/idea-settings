@@ -23,7 +23,16 @@
         活动管理
     </div>
     <div class="main box">
-        <div class="create-btn" @click="toAdd" style="cursor: pointer;">创建活动</div>
+        <div class="create-btn" style="height: 16px;">
+            <img src="/static/pc/assets/images/icon-add.png" th:src="@{/pc/assets/images/icon-add.png}">
+            <div class="text" @click="toAdd">
+                创建活动
+            </div>
+        </div>
+        <div class="search-Box">
+            <el-input placeholder="活动名称/创建人/创建单位" icon="search" class="search" v-model.trim="sw" maxlength="10" suffix-icon="el-icon-search" @keyup.enter.native="search"></el-input>
+            <img v-show="sw" class="btn-cancel" style="display: block;" src="/static/pc/assets/images/icon-cancel.png" th:src="@{/pc/assets/images/icon-cancel.png}" @click="clearSearch">
+        </div>
         <div class="table">
             <el-table :data="activities" style="width: 100%" v-show="loaded">
                 <el-table-column label="活动名称" min-width="40%">
@@ -66,7 +75,7 @@
                         <div>
                             <el-button type="text" v-if="index < 3" v-for="(operation, index) of scope.row.operations" @click="operateProxy(scope.row.id, operation.value)">{{operation.name}}</el-button>
                             <div class="more-btn" v-if="scope.row.operations.length > 3">
-                                <el-button type="text">更多<i class="el-icon-arrow-down"></i></el-button>
+                                <el-button type="text"><img src="/static/pc/assets/images/more-vertical.png" th:src="@{/pc/assets/images/more-vertical.png}"></el-button>
                                 <div class="more">
                                     <p v-if="index > 2" v-for="(operation, index) of scope.row.operations" @click="operateProxy(scope.row.id, operation.value)">{{operation.name}}</p>
                                 </div>
@@ -106,10 +115,12 @@
                 fid: [[${session._login_user_.fid}]],
                 filterStatus: [],
                 selectedFilterStatusName: "全部",
+                sw: "",
                 queryParams: {
                     pageNum: 1,
                     pageSize: 8,
-                    status: ""
+                    status: "",
+                    sw: ""
                 },
                 loaded: false,
                 // 总记录数
@@ -124,7 +135,8 @@
                     manage: {name: "管理", value: "manage"},
                     release: {name: "发布", value: "release"},
                     cancelRelease: {name: "下架", value: "cancelRelease"}
-                }
+                },
+                code: [[${code}]]
             },
             created: function () {
                 var $this = this;
@@ -148,12 +160,6 @@
                             $this.loadData();
                         }
                     }
-                });
-            },
-            updated: function () {
-                $('.jqthumbImg').jqthumb({
-                    width: '100%',
-                    height: '100%'
                 });
             },
             methods: {
@@ -216,7 +222,8 @@
                     }
                 },
                 toAdd: function () {
-                    window.open(activityApp.getRelativeUrl("/activity/add"));
+                    var $this = this;
+                    window.open(activityApp.getRelativeUrl("/activity/add?code=" + $this.code));
                 },
                 toEdit: function (id) {
                     window.open("/activity/" + id + "/edit");
@@ -244,14 +251,38 @@
                     $this.queryParams.pageNum = pageNum;
                     $this.loadData();
                 },
+                // 搜索
+                search: function () {
+                    var $this = this;
+                    $this.queryParams.sw = $this.sw;
+                    $this.queryParams.pageNum = 1;
+                    $this.loadData();
+                },
+                // 清空搜索
+                clearSearch: function () {
+                    var $this = this;
+                    $this.sw = "";
+                    if ($this.queryParams.sw != $this.sw) {
+                        $this.queryParams.sw = $this.sw;
+                        // 重新搜索
+                        $this.search();
+                    }
+                },
                 loadData: function () {
                     var $this = this;
                     var url = ctx + "/api/activity/list/managing";
+                    $this.activities = [];
                     app.ajaxPost(url, $this.queryParams, function (data) {
                         $this.loaded = true;
                         if (data.success) {
                             $this.handleOperationSequence(data.data.records);
                             $this.activities = data.data.records;
+                            $this.$nextTick(function () {
+                                $(".jqthumbImg").jqthumb({
+                                    width: "100%",
+                                    height: "100%"
+                                });
+                            });
                             $this.total = data.data.total;
                             $this.pages = data.data.pages;
                         } else {
