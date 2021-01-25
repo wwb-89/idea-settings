@@ -71,7 +71,7 @@
     </div>
     <div v-show="step == 1">
         <div class="info box">
-            <form action="">
+            <form action="" onsubmit="return false;">
                 <div class="title">基本信息</div>
                 <div class="form-item">
                     <label class="label"><img src="/static/pc/assets/images/required.png" th:src="@{/pc/assets/images/required.png}" class="required-img">名称</label>
@@ -176,7 +176,7 @@
                 <el-switch v-model="enableSignUp" class="switch"></el-switch>
             </div>
             <!-- 点击参与设置 -->
-            <form action="" class="setForm" v-show="enableSignUp">
+            <form action="" onsubmit="return false;" class="setForm" v-show="enableSignUp">
                 <div class="form-item">
                     <label class="label"><img src="/static/pc/assets/images/required.png" th:src="@{/pc/assets/images/required.png}" class="required-img">报名时间</label>
                     <div class="input-box">
@@ -251,7 +251,7 @@
                 <el-switch v-model="enableSignIn" class="switch"></el-switch>
             </div>
             <!-- 点击参与设置 -->
-            <form action="" class="setForm" v-show="enableSignIn">
+            <form action="" onsubmit="return false;" class="setForm" v-show="enableSignIn">
                 <div class="form-item">
                     <label class="label">签到方式</label>
                     <div class="input-box">
@@ -318,7 +318,7 @@
                 <el-switch v-model="enableSignOut" class="switch"></el-switch>
             </div>
             <!-- 点击参与设置 -->
-            <form action="" class="setForm" v-show="enableSignOut">
+            <form action="" onsubmit="return false;" class="setForm" v-show="enableSignOut">
                 <div class="form-item">
                     <label class="label">签退方式</label>
                     <div class="input-box">
@@ -740,8 +740,11 @@
                             var result = data.result;
                             if (result == 1) {
                                 var cloudId = data.objectid;
+                                $this.$set($this.activity, "coverUrl", "");
                                 $this.$set($this.activity, "coverCloudId", cloudId);
-                                $this.handleImg();
+                                $this.$nextTick(function () {
+                                    $this.handleImg();
+                                });
                             } else {
                                 app.showMsg("上传失败");
                             }
