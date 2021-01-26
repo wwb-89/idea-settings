@@ -158,13 +158,8 @@
                 $this.bindEvents();
                 $this.loadData();
                 // 监听活动的创建，当创建或者编辑活动后重新加载数据
-                document.addEventListener('visibilitychange',function(){
-                    if ("visible" === document.visibilityState) {
-                        // 判断storage的变化
-                        if (app.isActivityChanged()) {
-                            $this.loadData();
-                        }
-                    }
+                app.bindActivityChangeEvent(function (activityId) {
+                    $this.loadData();
                 });
             },
             methods: {

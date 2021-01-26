@@ -207,24 +207,30 @@
         });
     };
     /**
-     * 活动改变了
+     * 绑定活动改变事件
+     * @param callback
      */
-    app.prototype.activityChanged = function () {
+    app.prototype.bindActivityChangeEvent = function (callback) {
         var $this = this;
-        window.localStorage.setItem($this.activityChangeKey, "1");
+        window.addEventListener("storage", function () {
+            var activityId = window.localStorage.getItem($this.activityChangeKey);
+            if (!activityApp.isEmpty(activityId)) {
+                if (activityApp.isFunction(callback)) {
+                    callback(activityId);
+                }
+                setTimeout(function () {
+                    window.localStorage.removeItem($this.activityChangeKey);
+                }, 300);
+            }
+        });
     };
     /**
-     * 活动是否改变了
-     * @returns {boolean}
+     * 通知活动改变
+     * @param activityId
      */
-    app.prototype.isActivityChanged = function () {
+    app.prototype.noticeActivityChange = function (activityId) {
         var $this = this;
-        var value = window.localStorage.getItem($this.activityChangeKey);
-        if (1 == value) {
-            window.localStorage.removeItem($this.activityChangeKey);
-            return true;
-        }
-        return false;
+        window.localStorage.setItem($this.activityChangeKey, activityId);
     };
     W['app'] = new app();
 })(window, jQuery, JSON);

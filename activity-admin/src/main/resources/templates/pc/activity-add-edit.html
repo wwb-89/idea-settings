@@ -1121,7 +1121,7 @@
                     };
                     app.ajaxPostWithLoading(url, params, function (data) {
                         if (data.success) {
-                            app.activityChanged();
+                            app.noticeActivityChange($this.activity.id);
                             var activityData = data.data;
                             $this.$set($this.activity, "id", activityData.id);
                             $this.$set($this.sign, "id", activityData.signId);
@@ -1162,7 +1162,7 @@
                     };
                     app.ajaxPostWithLoading(url, params, function (data) {
                         if (data.success) {
-                            app.activityChanged();
+                            app.noticeActivityChange($this.activity.id);
                             var activityData = data.data;
                             $this.filterOptionalTemplate();
                             $this.$set($this.sign, "id", activityData.signId);
@@ -1222,7 +1222,7 @@
                     var url = ctx + "/api/activity/" + $this.activity.id + "/bind/template/" + webTemplate.id;
                     app.ajaxPostWithLoading(url, {}, function (data) {
                         if (data.success) {
-                            app.activityChanged();
+                            app.noticeActivityChange($this.activity.id);
                             var editUrl = data.data.editUrl;
                             $this.$set($this.activity, "webTemplateId", $this.handleWebTemplateId);
                             app.showMsg("选择模板成功", function () {
