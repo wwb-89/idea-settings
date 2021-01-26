@@ -307,6 +307,91 @@ input {
   background-size: 100%;
 }
 
+.border-bottom {
+  border-bottom: 1px solid #E9E9E9;
+}
+
+.border {
+  border: 1px solid #E9E9E9;
+}
+
+@media screen and (-webkit-min-device-pixel-ratio: 2) {
+  .border-bottom {
+    border-bottom: 0.5px solid #E9E9E9;
+  }
+  .border {
+    border: 0.5px solid #E9E9E9;
+  }
+}
+
+@media screen and (-webkit-min-device-pixel-ratio: 3) {
+  .border-bottom {
+    border-bottom: 0.333333px solid #E9E9E9;
+  }
+  .border {
+    border: 0.333333px solid #E9E9E9;
+  }
+}
+
+.textSkin.layui-layer {
+  width: 18.75rem;
+  border-radius: 0.625rem;
+}
+
+.textSkin.layui-layer .layui-layer-btn {
+  padding: 0;
+}
+
+.textSkin.layui-layer .layui-layer-btn a {
+  height: 3.4375rem;
+  line-height: 3.4375rem;
+  margin: 0;
+  padding: 0;
+  width: 50%;
+  -webkit-box-sizing: border-box;
+     -moz-box-sizing: border-box;
+          box-sizing: border-box;
+  text-align: center;
+  border-radius: 0;
+}
+
+.textSkin.layui-layer .layui-layer-btn a.layui-layer-btn0 {
+  border-color: #e9e9e9;
+  background-color: #ffffff;
+  color: #0084FF;
+  font-weight: 400;
+  border-radius: 0 0 0 0.625rem;
+}
+
+.textSkin.layui-layer .layui-layer-btn a.layui-layer-btn1 {
+  border-color: #e9e9e9;
+  background-color: #ffffff;
+  color: #0084FF;
+  border-left: none;
+  font-weight: 600;
+  border-radius: 0 0 0.625rem 0;
+}
+
+.textSkin .text {
+  font-size: 1.125rem;
+  line-height: 1.5625rem;
+  margin: 0.625rem 0;
+}
+
+.textSkin .input-text {
+  width: 100%;
+  border: 1px solid #dddddd;
+  font-size: 1.0625rem;
+  color: #333333;
+  -webkit-box-sizing: border-box;
+     -moz-box-sizing: border-box;
+          box-sizing: border-box;
+  height: 3.125rem;
+  line-height: 1.5625rem;
+  padding: 0.78125rem 0.9375rem;
+  margin-bottom: 0.625rem;
+}
+
 [v-cloak] {
   display: none;
 }
