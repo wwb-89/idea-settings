@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- 引入样式 -->
+    <link rel="stylesheet" href="../assets/lib/element-ui/lib/theme-chalk/index.css">
+    <link rel="stylesheet" href="../assets/css/public.css">
+    <link rel="stylesheet" href="../assets/css/activity-list.css">
+</head>
+<body>
+    <div class="activity-list" id="activity-list" v-cloak>
+        <div class="item-block">
+            <h2 class="title fl">我的活动</h2>
+            <div class="btns fr">
+                <button class="btn-main"><i class="addIcon"></i>创建活动</button>
+            </div>
+            <div class="clear"></div>
+        </div>
+        <div class="item-block paddingNew minHeight800">
+            <div class="filter">
+                <div class="tab fl">
+                    <ul>
+                        <li :class="[activeNum==0?'active':'']"  v-on:click="tabChangeFun('0')">已报名</li>
+                        <li :class="[activeNum==1?'active':'']" v-on:click="tabChangeFun('1')">收藏</li>
+                        <li :class="[activeNum==2?'active':'']" v-on:click="tabChangeFun('2')">管理</li>
+                    </ul>
+                    <div class="clear"></div>
+                </div>
+                <div class="searchDiv fr">
+                    <input type="text" placeholder="搜索标题" v-model="inputValue" class="inputValue">
+                    <i class="icon-delete1" v-show="inputValue.length!=0" v-on:click="inputDeleteFun"></i>
+                    <i class="icon-search1"></i>
+                </div>
+                <div class="clear"></div>
+            </div>
+            <div class="tabContent" v-show="activeNum==0">
+                <div class="card-list">
+                    <ul>
+                        <li>
+                            <div class="inner">
+                                <div class="img-box">
+                                    <!--                            状态五种状态-->
+                                    <p class="tips color1">进行中</p>
+                                    <p class="tips color2">未开始</p>
+                                    <p class="tips color3">已结束</p>
+                                    <p class="tips color4">审核中</p>
+                                    <p class="tips color5">活动预告</p>
+                                    <p class="num"><i></i>1028</p>
+                                    <div class="js-crop-img">
+                                        <img src="https://p.ananas.chaoxing.com/star3/270_169c/669ca80d6a0c5f74835bb936a41aabca.jpg">
+                                    </div>
+                                </div>
+                                <div class="card-info">
+                                    <h2 class="title overHidden1">浙江图书馆2020年11月读者活动浙江图书馆2020年11月读者活动浙江图书馆2020年11月读者活动浙江图书馆2020年11月读者活动浙江图书馆2020年11月读者活动浙江图书馆2020年11月读者活动</h2>
+                                    <p class="time">2020.10.10 9:00 ～ 2028.10.1 16:00</p>
+                                    <p class="address">浙江图书馆</p>
+                                </div>
+                            </div>
+                            <div class="handel">
+                                <a class="cancel" v-on:click="cancelFun('确定取消报名吗？')">取消报名</a>
+                            </div>
+                        </li>
+                        <li>
+                            <div class="inner">
+                                <div class="img-box">
+                                    <!--                            状态五种状态-->
+                                    <p class="tips color1">进行中</p>
+                                    <p class="tips color2">未开始</p>
+                                    <p class="tips color3">已结束</p>
+                                    <p class="tips color4">审核中</p>
+                                    <p class="tips color5">活动预告</p>
+                                    <p class="num"><i></i>1028</p>
+                                    <div class="js-crop-img">
+                                        <img src="https://p.ananas.chaoxing.com/star3/270_169c/669ca80d6a0c5f74835bb936a41aabca.jpg">
+                                    </div>
+                                </div>
+                                <div class="card-info">
+                                    <h2 class="title overHidden1">浙江图书馆2020年11月读者活动浙江图书馆2020年11月读者活动浙江图书馆2020年11月读者活动浙江图书馆2020年11月读者活动浙江图书馆2020年11月读者活动浙江图书馆2020年11月读者活动</h2>
+                                    <p class="time">2020.10.10 9:00 ～ 2028.10.1 16:00</p>
+                                    <p class="address">浙江图书馆</p>
+                                </div>
+                            </div>
+                            <div class="handel">
+                                <a class="cancel" v-on:click="cancelFun('确定取消报名吗？')">取消报名</a>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+            <div class="tabContent" v-show="activeNum==1">
+                <div class="card-list">
+                    <ul>
+                        <li>
+                            <div class="inner">
+                                <div class="img-box">
+                                    <!--                            状态五种状态-->
+                                    <p class="tips color1">进行中</p>
+                                    <p class="tips color2">未开始</p>
+                                    <p class="tips color3">已结束</p>
+                                    <p class="tips color4">审核中</p>
+                                    <p class="tips color5">活动预告</p>
+                                    <p class="num"><i></i>1028</p>
+                                    <div class="js-crop-img">
+                                        <img src="https://p.ananas.chaoxing.com/star3/270_169c/669ca80d6a0c5f74835bb936a41aabca.jpg">
+                                    </div>
+                                </div>
+                                <div class="card-info">
+                                    <h2 class="title overHidden1">浙江图书馆2020年11月读者活动浙江图书馆2020年11月读者活动浙江图书馆2020年11月读者活动浙江图书馆2020年11月读者活动浙江图书馆2020年11月读者活动浙江图书馆2020年11月读者活动</h2>
+                                    <p class="time">2020.10.10 9:00 ～ 2028.10.1 16:00</p>
+                                    <p class="address">浙江图书馆</p>
+                                </div>
+                            </div>
+                            <div class="handel">
+                                <a class="cancel">取消收藏</a>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+            <div class="tabContent" v-show="activeNum==2">
+                <div class="card-list">
+                    <ul>
+                        <li>
+                            <div class="inner">
+                                <div class="img-box">
+                                    <!--                            状态五种状态-->
+                                    <p class="tips color1">进行中</p>
+                                    <p class="tips color2">未开始</p>
+                                    <p class="tips color3">已结束</p>
+                                    <p class="tips color4">审核中</p>
+                                    <p class="tips color5">活动预告</p>
+                                    <p class="num"><i></i>1028</p>
+                                    <div class="js-crop-img">
+                                        <img src="https://p.ananas.chaoxing.com/star3/270_169c/669ca80d6a0c5f74835bb936a41aabca.jpg">
+                                    </div>
+                                </div>
+                                <div class="card-info">
+                                    <h2 class="title overHidden1">浙江图书馆2020年11月读者活动浙江图书馆2020年11月读者活动浙江图书馆2020年11月读者活动浙江图书馆2020年11月读者活动浙江图书馆2020年11月读者活动浙江图书馆2020年11月读者活动</h2>
+                                    <p class="time">2020.10.10 9:00 ～ 2028.10.1 16:00</p>
+                                    <p class="address">浙江图书馆</p>
+                                </div>
+                            </div>
+                            <div class="handel">
+                                <a class="edit">编辑</a>
+                                <a class="cancel" v-on:click="cancelFun('确认删除吗？')">删除</a>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- 无数据 -->
+            <div class="noContent" style="display: block;">
+                <p>无搜索结果</p>
+            </div>
+            <div class="load-div loading"><img src="../assets/images/Spinner-1s-200px.svg">加载中…</div>
+            <div class="load-div no-more" style="display: none">没有更多了</div>
+        </div>
+        <!-- 取消报名弹窗 -->
+        <el-dialog title="" :visible.sync="dialogVisible" width="300px"
+                   class="myDialogStyle">
+            <div class="textCenter">
+                <img src="../assets/images/icon-30-warning.png" class="warning">
+                <p class="tips">{{tipsHtml}}</p>
+            </div>
+            <span slot="footer" class="dialog-footer">
+                <el-button @click="dialogVisible = false">取 消</el-button>
+                <el-button type="primary" @click="dialogVisible = false">确 定</el-button>
+            </span>
+        </el-dialog>
+    </div>
+</body>
+</html>
+<script src="../assets/lib/jquery.1.8.2.min.js"></script>
+<script src="../assets/lib/vue.js"></script>
+<script src="../assets/lib/jqthumb.min.js"></script>
+
+<!-- 引入组件库 -->
+<script src="../assets/lib/element-ui/lib/index.js"></script>
+<script src="../assets/js/common.js"></script>
+<script>
+    var vm = new Vue({
+        el: '#activity-list',
+        data: function () {
+            return {
+                activeNum:0,
+                inputValue:'',
+                dialogVisible:false,
+                tipsHtml:'',
+            }
+        },
+        created: function () {
+        },
+        mounted: function () {
+            cropImgFun("body");
+        },
+        methods: {
+            //输入框的交互
+            inputDeleteFun:function (){
+                this.inputValue="";
+            },
+            tabChangeFun:function(num){
+                this.activeNum = num
+            },
+            cancelFun:function (html){
+                this.dialogVisible = !this.dialogVisible;
+                this.tipsHtml = html;
+            },
+        }
+    });
+</script>
