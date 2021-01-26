@@ -103,7 +103,7 @@ body,
 html {
   width: 100%;
   text-align: center;
-  font-family: "Microsoft YaHei", Helvetica;
+  font-family: "SF Pro Display","Helvetica Neue",Helvetica,Tahoma,Arial,"PingFang SC","Hiragino Sans GB","Microsoft YaHei",sans-serif,'Apple Color Emoji','Segoe UI Emoji','Segoe UI Symbol','Noto Color Emoji';
   -webkit-text-size-adjust: 100%;
   -ms-text-size-adjust: 100%;
   -webkit-tap-highlight-color: transparent;
@@ -322,6 +322,9 @@ input {
   .border {
     border: 0.5px solid #E9E9E9;
   }
+  .textSkin.layui-layer .layui-layer-btn a {
+    border: 0.5px solid #E9E9E9;
+  }
 }
 
 @media screen and (-webkit-min-device-pixel-ratio: 3) {
@@ -329,6 +332,9 @@ input {
     border-bottom: 0.333333px solid #E9E9E9;
   }
   .border {
+    border: 0.333333px solid #E9E9E9;
+  }
+  .textSkin.layui-layer .layui-layer-btn a {
     border: 0.333333px solid #E9E9E9;
   }
 }
@@ -353,6 +359,7 @@ input {
           box-sizing: border-box;
   text-align: center;
   border-radius: 0;
+  font-size: 1.125rem;
 }
 
 .textSkin.layui-layer .layui-layer-btn a.layui-layer-btn0 {

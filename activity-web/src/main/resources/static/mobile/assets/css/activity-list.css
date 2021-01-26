@@ -128,6 +128,7 @@ body {
   font-size: .9375rem;
   margin-right: 1.5625rem;
   padding-bottom: .75rem;
+  font-weight: normal;
 }
 
 .activity-list .tab ul li span {
@@ -174,6 +175,7 @@ body {
   border-radius: .3125rem;
   width: 7.5rem;
   height: 5.5rem;
+  overflow: hidden;
 }
 
 .activity-list .card-list ul li .img-box .num {
@@ -207,16 +209,22 @@ body {
   margin-right: .375rem;
 }
 
+.activity-list .card-list ul li .img-box .js-crop-img {
+  width: 7.5rem;
+  height: 5.5rem;
+}
+
 .activity-list .card-list ul li .img-box .tips {
   position: absolute;
   right: 0;
   top: 0;
-  width: 2.6875rem;
+  padding: 0 .5rem;
+  font-weight: 500;
   height: 1rem;
   line-height: 1rem;
   color: #FFFFFF;
   font-size: .5625rem;
-  border-radius: 0px .3125rem 0px .3125rem;
+  border-radius: 0px .28125rem 0px .3125rem;
 }
 
 .activity-list .card-list ul li .img-box .color1 {
@@ -243,6 +251,12 @@ body {
   background: linear-gradient(99.17deg, #FD8585 1.9%, #FC564C 99.8%);
 }
 
+.activity-list .card-list ul li .img-box .color5 {
+  background: -webkit-linear-gradient(353.32deg, #FFB763 1.14%, #FF8B20 98.13%);
+  background: -o-linear-gradient(353.32deg, #FFB763 1.14%, #FF8B20 98.13%);
+  background: linear-gradient(96.68deg, #FFB763 1.14%, #FF8B20 98.13%);
+}
+
 .activity-list .card-list ul li .card-info {
   text-align: left;
 }
@@ -252,6 +266,7 @@ body {
   font-size: .9375rem;
   margin-bottom: .25rem;
   line-height: 1.25rem;
+  font-weight: 500;
 }
 
 .activity-list .card-list ul li .card-info .time {
