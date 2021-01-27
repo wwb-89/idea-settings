@@ -119,6 +119,11 @@ select {
 .form-item {
     display: flex;
     margin: 24px 0;
+    align-items: center;
+}
+
+.form-item.align-start {
+    align-items: start;
 }
 
 .form-item:last-child {
@@ -164,17 +169,6 @@ select {
 }
 
 .label {
-    width: 90px;
-    line-height: 20px;
-    font-size: 14px;
-    color: #666666;
-    margin-left: 9px;
-    margin-top: 6px;
-    text-align: left;
-    position: relative;
-}
-
-.label-20 {
     width: 90px;
     line-height: 20px;
     font-size: 14px;
@@ -278,9 +272,12 @@ input[type="number"] {
     box-sizing: border-box;
     cursor: pointer;
     margin-right: 16px;
-    /*margin-bottom: 16px;*/
     font-size: 14px;
     color: #333333;
+}
+
+.type-item:hover {
+    background: #F8F8F8;
 }
 
 .type-item.add {
@@ -292,8 +289,8 @@ input[type="number"] {
     height: 16px;
 }
 
-.type-item:hover {
-    border: 1px solid #0084FF;
+.type-item.add:hover {
+    border: 1px dashed #0084FF;
     color: #0084FF;
 }
 
@@ -750,6 +747,11 @@ input.btn-name,
 .select-person {
     position: relative;
     width: 140px;
+}
+
+.select-activity {
+    position: relative;
+    width: 200px;
 }
 
 .el-select,
@@ -1311,10 +1313,18 @@ input.btn-name,
     margin-right: 4px;
     background: url("../images/icon-add-more.png");
 }
-.type-item.add:hover > .add_btn {
+.add_btn:hover {
     background: url("../images/add-active.png");
 }
-
+.del_btn {
+    width: 16px;
+    height: 16px;
+    margin-left: 8px;
+    background: url("../images/del-little.png");
+}
+.del_btn:hover {
+    background: url("../images/icon-del-active1.png");
+}
 .el-radio__input.is-checked+.el-radio__label {
     color: #333;
 }

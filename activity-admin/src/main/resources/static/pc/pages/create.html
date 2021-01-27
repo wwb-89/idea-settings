@@ -95,8 +95,8 @@
                     </span>
                 </div>
             </div>
-            <div class="form-item">
-                <label class="label-20 cover"><img src="../assets/images/required.png"
+            <div class="form-item align-start">
+                <label class="label cover"><img src="../assets/images/required.png"
                                                                             alt="" class="required-img">封面</label>
                 <div class="input-box">
                     <div class="img-box">
@@ -114,7 +114,7 @@
                 </div>
             </div>
             <div class="form-item">
-                <label class="label-20">活动类型</label>
+                <label class="label">活动类型</label>
                 <div class="input-box">
                     <el-radio v-model="radio" label="1" name="active-type">线上活动</el-radio>
                     <el-radio v-model="radio" label="2" name="active-type">线下活动</el-radio>
@@ -139,44 +139,59 @@
                 </div>
             </div>
             <div class="form-item cancel-margin">
-                <label class="label">活动分类</label>
+            <label class="label">活动分类</label>
+            <div class="input-box wrap">
+                <!--<div class="type-item active">活动</div>-->
+                <!--<div class="type-item">讲座</div>-->
+                <!--<div class="type-item">讲座</div>-->
+                <!--<div class="type-item">征文</div>-->
+                <!--<div class="type-item">自定义选项-->
+                    <!--&lt;!&ndash;<img src="../assets/images/icon-more1.png" alt="" style="margin-left: 10px;">&ndash;&gt;-->
+                    <!--<div class="more-btn"></div>-->
+                    <!--<div class="edit-box">-->
+                        <!--<div @click="handleEdit">编辑</div>-->
+                        <!--<div @click="handleDelete">删除</div>-->
+                    <!--</div>-->
+                <!--</div>-->
+                <!--<div class="type-item add" @click="handleAdd">-->
+                    <!--<div class="add_btn"></div>-->
+                    <!--新增-->
+                <!--</div>-->
+                <div class="select-activity">
+                    <el-select v-model="value7" placeholder="请选择">
+                        <el-option v-for="item in options7" :key="item.value" :label="item.label"
+                                   :value="item.value">
+                        </el-option>
+                    </el-select>
+                </div>
+            </div>
+        </div>
+            <div class="form-item cancel-margin">
+                <label class="label">活动标签</label>
                 <div class="input-box wrap">
-                    <div class="type-item active">活动</div>
-                    <div class="type-item">讲座</div>
-                    <div class="type-item">讲座</div>
-                    <div class="type-item">征文</div>
-                    <div class="type-item">自定义选项
-                        <!--<img src="../assets/images/icon-more1.png" alt="" style="margin-left: 10px;">-->
-                        <div class="more-btn"></div>
-                        <div class="edit-box">
-                            <div @click="handleEdit">编辑</div>
-                            <div @click="handleDelete">删除</div>
-                        </div>
-                    </div>
+                    <!--添加满3个后，隐藏添加按钮-->
+                    <div class="type-item">讲座<div class="del_btn"></div></div>
+                    <div class="type-item">讲座<div class="del_btn"></div></div>
+                    <div class="type-item">征文<div class="del_btn"></div></div>
                     <div class="type-item add" @click="handleAdd">
-                        <!--<img src="../assets/images/icon-add-more.png" alt="" style="margin-right: 10px;">-->
                         <div class="add_btn"></div>
-                        新增
+                        添加
                     </div>
                 </div>
             </div>
             <div class="form-item last">
-                <label class="label-20"><img src="../assets/images/required.png"
+                <label class="label"><img src="../assets/images/required.png"
                                           alt="" class="required-img">参与范围</label>
                 <div class="input-box wrap">
-                    <!--添加范围后显示后面这项-->
-                    <div style="display: none;">
-                        <div class="type-item">一级单位<img src="../assets/images/del-little.png" alt="" class="del-img">
-                        </div>
-                        <div class="type-item">一级单位(1)<img src="../assets/images/del-little.png" alt="" class="del-img">
-                        </div>
-
+                    <!--添加范围后-->
+                    <div style="display: block;">
                         <div class="type-item add" @click="handleRelease">
-                            <img src="../assets/images/add.png" alt="" style="margin-right: 10px;">
+                            <div class="add_btn"></div>
                             添加
                         </div>
                     </div>
-                    <div style="display: block;" class="already_add">
+                    <!--未添加范围时-->
+                    <div style="display: none;" class="already_add">
                         <div>
                             已选择单位（192）
                         </div>
@@ -280,8 +295,8 @@
                     <span class="tips">参与者需要到达指定位置才能进行签到</span>
                 </div>
             </div> -->
-            <div class="form-item">
-                <label class="label-20" style="line-height: 20px;">信息填写</label>
+            <div class="form-item align-start">
+                <label class="label" style="line-height: 20px;">信息填写</label>
                 <div class="input-box column">
                     <div class="set-box">
                         <el-switch v-model="delivery2"></el-switch>
@@ -301,14 +316,14 @@
                 </div>
             </div>
             <div class="form-item">
-                <label class="label-20 line-h">报名需审核</label>
+                <label class="label line-h">报名需审核</label>
                 <div class="input-box">
                     <el-switch v-model="delivery3"></el-switch>
                     <span class="tips">开启后，参与需发起人审核</span>
                 </div>
             </div>
             <div class="form-item">
-                <label class="label-20 line-h">报名名单公开</label>
+                <label class="label line-h">报名名单公开</label>
                 <div class="input-box">
                     <el-switch v-model="delivery4"></el-switch>
                     <span class="tips">开启后，所有人都能看到报名人员名单</span>
@@ -331,7 +346,7 @@
         </div>
         <form action="" class="setForm" v-show="delivery1">
             <div class="form-item">
-                <label class="label-20">签到方式</label>
+                <label class="label">签到方式</label>
                 <div class="input-box">
                     <el-radio v-model="radio" label="1">普通签到</el-radio>
                     <el-radio v-model="radio" label="2">位置签到</el-radio>
@@ -358,7 +373,7 @@
                 </div>
             </div>
             <div class="form-item">
-                <label class="label-20 line-h">签到名单公开</label>
+                <label class="label line-h">签到名单公开</label>
                 <div class="input-box">
                     <el-switch v-model="delivery3"></el-switch>
                 </div>
@@ -399,7 +414,7 @@
         </div>
         <form action="" class="setForm" v-show="delivery1">
             <div class="form-item">
-                <label class="label-20">签退方式</label>
+                <label class="label">签退方式</label>
                 <div class="input-box">
                     <el-radio v-model="radio" label="1">普通签到</el-radio>
                     <el-radio v-model="radio" label="2">位置签到</el-radio>
@@ -426,7 +441,7 @@
                 </div>
             </div>
             <div class="form-item">
-                <label class="label-20 line-h">签到名单公开</label>
+                <label class="label line-h">签到名单公开</label>
                 <div class="input-box">
                     <el-switch v-model="delivery3"></el-switch>
                 </div>
@@ -566,7 +581,7 @@
     <div class="dailog-box1" v-show="fenleiShow">
         <div class="dailog">
             <div class="header">
-                <span>分类名称</span>
+                <span>标签名称</span>
                 <img src="../assets/images/close.png" alt="" @click="close" class="close">
             </div>
             <div class="body">
@@ -856,6 +871,7 @@
             value3: '1',
             value4: '',
             value5: '',
+            value7: '1',
             fenlei: '',
             delivery: true,
             delivery1: false,
@@ -915,6 +931,13 @@
             }, {
                 value: "2",
                 label: "管理者扫码"
+            }],
+            options7: [{
+                value: "1",
+                label: "展览"
+            }, {
+                value: "2",
+                label: "展览2"
             }],
             address: '', //详细地址
             addrPoint: {
