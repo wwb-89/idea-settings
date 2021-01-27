@@ -177,10 +177,10 @@ public class ActivityApiController {
 				while (encodeNum-- > 0) {
 					refer = URLEncoder.encode(refer, StandardCharsets.UTF_8.name());
 				}
-				loginUrl = loginUrl.replace(LOGIN_URL_PLACEHOLDER, refer);
 			}
-
 		}
+		refer = Optional.ofNullable(refer).filter(v -> StringUtils.isNotBlank(v)).orElse("");
+		loginUrl = loginUrl.replace(LOGIN_URL_PLACEHOLDER, refer);
 		return RestRespDTO.success(loginUrl);
 	}
 

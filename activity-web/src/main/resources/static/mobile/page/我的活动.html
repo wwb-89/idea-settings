@@ -1,0 +1,418 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>我的活动</title>
+    <meta http-equiv="Content-type" content="text/html; charset=utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, minimal-ui" />
+    <meta name="format-detection" content="telephone=no, email=no">
+    <meta http-equiv="Pragma" content="no-cache" />
+    <meta http-equiv="cache-control" content="no-cache" />
+    <link rel="stylesheet" href="../assets/lib/layui/css/layui.css" />
+    <link rel="stylesheet" href="../assets/css/public.css" />
+    <link rel="stylesheet" href="../assets/css/activity-list.css"/>
+</head>
+<body>
+<div class="activity-list" id="activity-list" v-cloak>
+    <div class="searchDiv">
+        <div class="searchbefore" v-show="!inputShowStatus" v-on:click="inputShow"><i></i><span>搜索</span></div>
+        <div class="searchafter" v-show="inputShowStatus">
+            <input type="text" class="txt" placeholder="搜索" v-model="inputValue" v-on:focus="modelShow(true)"  v-on:focus="modelShow(false)">
+            <i class="search"></i>
+            <i class="delete" v-show="inputValue.length!=0" v-on:click="inputDeleteFun"></i>
+            <div class="cancle" v-on:click="inputShow">取消</div>
+        </div>
+    </div>
+    <div class="tab" id="road-tab">
+        <ul>
+            <li :class="[activeNum==0?'active':'']"  v-on:click="tabChangeFun('0')">已报名</li>
+            <li :class="[activeNum==1?'active':'']" v-on:click="tabChangeFun('1')">收藏</li>
+            <li :class="[activeNum==2?'active':'']" v-on:click="tabChangeFun('2')">管理</li>
+        </ul>
+        <div class="clear"></div>
+    </div>
+    <div class="tabContent" v-show="activeNum==0">
+        <div class="card-list">
+            <ul>
+                <li class="list-item" data-type="0" @touchstart.capture="touchStart" @touchend.capture="touchEnd">
+                    <div class="inner">
+                        <div class="img-box border">
+<!--                            状态五种状态-->
+                            <p class="tips color1">进行中</p>
+                            <p class="tips color2">未开始</p>
+                            <p class="tips color3">已结束</p>
+                            <p class="tips color4">审核中</p>
+                             <p class="num"><i></i>1028</p>
+                            <div class="js-crop-img">
+                             <img src="https://p.ananas.chaoxing.com/star3/270_169c/669ca80d6a0c5f74835bb936a41aabca.jpg">
+                            </div>
+                        </div>
+                         <div class="card-info">
+                             <h2 class="title overHidden2">浙江图书馆2020年11月读者活动</h2>
+                             <p class="time">2020.10.10 9:00 ～ 2028.10.1 16:00</p>
+                             <p class="address">浙江图书馆</p>
+                         </div>
+                    </div>
+                    <div class="handel numTotal1">
+                        <a class="cancel" v-on:click="cancelFun"><span>取消<br>报名</span></a>
+                    </div>
+                </li>
+                <li class="list-item" data-type="0" @touchstart.capture="touchStart" @touchend.capture="touchEnd">
+                    <div class="inner">
+                        <div class="img-box border">
+                            <!--                            状态五种状态-->
+                            <p class="tips color1">进行中</p>
+                            <p class="num"><i></i>1028</p>
+                            <div class="js-crop-img">
+                                <img src="https://p.ananas.chaoxing.com/star3/270_169c/669ca80d6a0c5f74835bb936a41aabca.jpg">
+                            </div>
+                        </div>
+                        <div class="card-info">
+                            <h2 class="title overHidden2">浙江图书馆2020年11月读者活动</h2>
+                            <p class="time">2020.10.10 9:00 ～ 2028.10.1 16:00</p>
+                            <p class="address">浙江图书馆</p>
+                        </div>
+                    </div>
+                    <div class="handel numTotal1">
+                        <a class="cancel" v-on:click="cancelFun"><span>取消<br>报名</span></a>
+                    </div>
+                </li>
+                <li class="list-item" data-type="0" @touchstart.capture="touchStart" @touchend.capture="touchEnd">
+                    <div class="inner">
+                        <div class="img-box border">
+                            <!--                            状态五种状态-->
+                            <p class="tips color2">未开始</p>
+                            <p class="num"><i></i>1028</p>
+                            <div class="js-crop-img">
+                                <img src="https://p.ananas.chaoxing.com/star3/270_169c/669ca80d6a0c5f74835bb936a41aabca.jpg">
+                            </div>
+                        </div>
+                        <div class="card-info">
+                            <h2 class="title overHidden2">浙江图书馆2020年11月读者活动</h2>
+                            <p class="time">2020.10.10 9:00 ～ 2028.10.1 16:00</p>
+                            <p class="address">浙江图书馆</p>
+                        </div>
+                    </div>
+                    <div class="handel numTotal1">
+                        <a class="cancel" v-on:click="cancelFun"><span>取消<br>报名</span></a>
+                    </div>
+                </li>
+                <li class="list-item" data-type="0" @touchstart.capture="touchStart" @touchend.capture="touchEnd">
+                    <div class="inner">
+                        <div class="img-box border">
+                            <!--                            状态五种状态-->
+                            <p class="tips color3">已结束</p>
+                            <p class="num"><i></i>1028</p>
+                            <div class="js-crop-img">
+                                <img src="https://p.ananas.chaoxing.com/star3/270_169c/669ca80d6a0c5f74835bb936a41aabca.jpg">
+                            </div>
+                        </div>
+                        <div class="card-info">
+                            <h2 class="title overHidden2">浙江图书馆2020年11月读者活动</h2>
+                            <p class="time">2020.10.10 9:00 ～ 2028.10.1 16:00</p>
+                            <p class="address">浙江图书馆</p>
+                        </div>
+                    </div>
+                    <div class="handel numTotal1">
+                        <a class="cancel" v-on:click="cancelFun"><span>取消<br>报名</span></a>
+                    </div>
+                </li>
+                <li class="list-item" data-type="0" @touchstart.capture="touchStart" @touchend.capture="touchEnd">
+                    <div class="inner">
+                        <div class="img-box border">
+                            <!--                            状态五种状态-->
+                            <p class="tips color1">进行中</p>
+                            <p class="tips color2">未开始</p>
+                            <p class="tips color3">已结束</p>
+                            <p class="tips color4">审核中</p>
+                            <p class="num"><i></i>1028</p>
+                            <div class="js-crop-img">
+                                <img src="https://p.ananas.chaoxing.com/star3/270_169c/669ca80d6a0c5f74835bb936a41aabca.jpg">
+                            </div>
+                        </div>
+                        <div class="card-info">
+                            <h2 class="title overHidden2">浙江图书馆2020年11月读者活动</h2>
+                            <p class="time">2020.10.10 9:00 ～ 2028.10.1 16:00</p>
+                            <p class="address">浙江图书馆</p>
+                        </div>
+                    </div>
+                    <div class="handel numTotal1">
+                        <a class="cancel" v-on:click="cancelFun"><span>取消<br>报名</span></a>
+                    </div>
+                </li>
+                <li class="list-item" data-type="0" @touchstart.capture="touchStart" @touchend.capture="touchEnd">
+                    <div class="inner">
+                        <div class="img-box border">
+                            <!--                            状态五种状态-->
+                            <p class="tips color1">进行中</p>
+                            <p class="tips color2">未开始</p>
+                            <p class="tips color3">已结束</p>
+                            <p class="tips color4">审核中</p>
+                            <p class="num"><i></i>1028</p>
+                            <div class="js-crop-img">
+                                <img src="https://p.ananas.chaoxing.com/star3/270_169c/669ca80d6a0c5f74835bb936a41aabca.jpg">
+                            </div>
+                        </div>
+                        <div class="card-info">
+                            <h2 class="title overHidden2">浙江图书馆2020年11月读者活动</h2>
+                            <p class="time">2020.10.10 9:00 ～ 2028.10.1 16:00</p>
+                            <p class="address">浙江图书馆</p>
+                        </div>
+                    </div>
+                    <div class="handel numTotal1">
+                        <a class="cancel" v-on:click="cancelFun"><span>取消<br>报名</span></a>
+                    </div>
+                </li>
+                <li class="list-item" data-type="0" @touchstart.capture="touchStart" @touchend.capture="touchEnd">
+                    <div class="inner">
+                        <div class="img-box border">
+                            <!--                            状态五种状态-->
+                            <p class="tips color1">进行中</p>
+                            <p class="tips color2">未开始</p>
+                            <p class="tips color3">已结束</p>
+                            <p class="tips color4">审核中</p>
+                            <p class="tips color5">活动预告</p>
+                            <p class="num"><i></i>1028</p>
+                            <div class="js-crop-img">
+                                <img src="https://p.ananas.chaoxing.com/star3/270_169c/669ca80d6a0c5f74835bb936a41aabca.jpg">
+                            </div>
+                        </div>
+                        <div class="card-info">
+                            <h2 class="title overHidden2">浙江图书馆2020年11月读者活动</h2>
+                            <p class="time">2020.10.10 9:00 ～ 2028.10.1 16:00</p>
+                            <p class="address">浙江图书馆</p>
+                        </div>
+                    </div>
+                    <div class="handel numTotal1">
+                        <a class="cancel" v-on:click="cancelFun"><span>取消<br>报名</span></a>
+                    </div>
+                </li>
+            </ul>
+        </div>
+    </div>
+    <div class="tabContent" v-show="activeNum==1">
+        <div class="card-list">
+            <ul>
+                <li class="list-item" data-type="0" @touchstart.capture="touchStart" @touchend.capture="touchEnd">
+                    <div class="inner">
+                        <div class="img-box border">
+<!--                            状态五种状态-->
+                            <p class="tips color1">进行中</p>
+                            <p class="tips color2">未开始</p>
+                            <p class="tips color3">已结束</p>
+                            <p class="tips color4">审核中</p>
+                             <p class="num"><i></i>1028</p>
+                            <div class="js-crop-img">
+                             <img src="https://p.ananas.chaoxing.com/star3/270_169c/669ca80d6a0c5f74835bb936a41aabca.jpg">
+                            </div>
+                        </div>
+                         <div class="card-info">
+                             <h2 class="title overHidden2">浙江图书馆2020年11月读者活动</h2>
+                             <p class="time">2020.10.10 9:00 ～ 2028.10.1 16:00</p>
+                             <p class="address">浙江图书馆</p>
+                         </div>
+                    </div>
+                    <div class="handel numTotal1">
+                        <a class="cancel1"><span>取消<br>收藏</span></a>
+                    </div>
+                </li>
+            </ul>
+        </div>
+    </div>
+    <div class="tabContent" v-show="activeNum==2">
+        <div class="card-list">
+            <ul>
+                <li class="list-item" data-type="0" @touchstart.capture="touchStart" @touchend.capture="touchEnd">
+                    <div class="inner">
+                        <div class="img-box border">
+<!--                            状态五种状态-->
+                            <p class="tips color1">进行中</p>
+                            <p class="tips color2">未开始</p>
+                            <p class="tips color3">已结束</p>
+                            <p class="tips color4">审核中</p>
+                             <p class="num"><i></i>1028</p>
+                            <div class="js-crop-img">
+                             <img src="https://p.ananas.chaoxing.com/star3/270_169c/669ca80d6a0c5f74835bb936a41aabca.jpg">
+                            </div>
+                        </div>
+                         <div class="card-info">
+                             <h2 class="title overHidden2">浙江图书馆2020年11月读者活动</h2>
+                             <p class="time">2020.10.10 9:00 ～ 2028.10.1 16:00</p>
+                             <p class="address">浙江图书馆</p>
+                         </div>
+                    </div>
+                    <div class="handel numTotal2">
+                        <a class="edit">编辑</a>
+                        <a class="delete" v-on:click="deleteFun">删除</a>
+                    </div>
+                </li>
+            </ul>
+        </div>
+    </div>
+    <!-- 无数据 -->
+    <div class="noContent" style="display: none;">
+        <p>无搜索结果</p>
+    </div>
+    <!--        没有更多-->
+    <div class="noMore"><span></span></div>
+<!--    出示签到码位置-->
+    <div class="labelTab border"><i></i><span>出示签到码</span></div>
+</div>
+</body>
+</html>
+<script src="../assets/lib/jquery.1.8.2.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+<script src="../assets/lib/layui/layui.js"></script>
+<script src="../assets/lib/jqthumb.min.js"></script>
+<script src="../assets/js/common.js"></script>
+<script>
+    var vm = new Vue({
+        el: '#activity-list',
+        data: function () {
+            return {
+                inputShowStatus:false,
+                inputValue:'',
+                inputDeleteShow:false,
+                modelShowStatus:false,
+                activeNum:0,
+            }
+        },
+        created: function () {
+        },
+        mounted: function () {
+            cropImgFun("body");
+            // 滑动到顶部停留
+            window.onscroll = function () {
+                let topScroll = get_scrollTop_of_body(); //滚动的距离,距离顶部的距离
+                let bignav = document.getElementById("road-tab"); //获取到导航栏id
+                if (bignav) {
+                    let beforeOffsetTop = bignav.offsetTop;
+                    if (topScroll > beforeOffsetTop) { //当滚动距离大于250px时执行下面的东西
+                        bignav.style.position = 'fixed';
+                        bignav.style.top = '0';
+                        bignav.style.zIndex = '9999';
+                    } else { //当滚动距离小于250的时候执行下面的内容，也就是让导航栏恢复原状
+                        bignav.style.position = 'static';
+                    }
+                }
+            }
+            /*解决浏览器兼容问题*/
+            function get_scrollTop_of_body() {
+                var scrollTop;
+                if (typeof window.pageYOffset != 'undefined') { //pageYOffset指的是滚动条顶部到网页顶部的距离
+                    scrollTop = window.pageYOffset;
+                } else if (typeof document.compatMode != 'undefined' && document.compatMode != 'BackCompat') {
+                    scrollTop = document.documentElement.scrollTop;
+                } else if (typeof document.body != 'undefined') {
+                    scrollTop = document.body.scrollTop;
+                }
+                return scrollTop;
+            }
+        },
+        methods: {
+            // input触发
+            inputShow:function(){
+                this.inputShowStatus = !this.inputShowStatus;
+                this.modelShowStatus=false;
+                this.inputValue="";
+            },
+            //输入框的交互
+            inputDeleteFun:function (){
+                this.inputValue="";
+            },
+            modelShow:function (bool){
+                this.modelShowStatus = bool;
+           },
+           tabChangeFun:function(num){
+                this.activeNum = num
+            },
+            //滑动
+            //滑动开始
+            touchStart(e) {
+                this.startX = e.touches[0].clientX;
+            },
+            //滑动结束
+            touchEnd(e) {
+                // console.log(e.currentTarget);
+                let currentElement = e.currentTarget;
+                this.endX = e.changedTouches[0].clientX;
+                // 左滑
+                if (currentElement.dataset.type == 0 && this.startX - this.endX > 30) {
+                    this.restSlide();
+                    // 判断是几个
+                    // console.log(currentElement.lastChild.className.indexOf('numTotal2'))
+                    if (currentElement.lastChild.className.indexOf('numTotal2') > -1) {
+                        currentElement.dataset.type = 2;
+                    } else {
+                        currentElement.dataset.type = 1;
+                    }
+                }
+                // 右滑
+                if ((currentElement.dataset.type == 1 || currentElement.dataset.type == 2) && this.startX - this.endX < -30) {
+                    this.restSlide();
+                    currentElement.dataset.type = 0;
+                }
+                this.startX = 0;
+                this.endX = 0;
+            },
+            //判断当前是否有滑块处于滑动状态
+            checkSlide() {
+                let listItems = document.querySelectorAll('.list-item');
+                for (let i = 0; i < listItems.length; i++) {
+                    if (listItems[i].dataset.type == 1) {
+                        return true;
+                    }
+                }
+                return false;
+            },
+            //复位滑动状态
+            restSlide() {
+                let listItems = document.querySelectorAll('.list-item');
+                for (let i = 0; i < listItems.length; i++) {
+                    listItems[i].dataset.type = 0;
+                }
+            },
+            //取消方法
+            cancelFun:function(){
+                let $this = this;
+                layui.use(['layer'], function () {
+                    var layer = layui.layer,$ = layui.$;
+                    layer.open({
+                        title: false,
+                        content: '<p class="text">确定取消报名吗？</p> ',
+                        closeBtn: 0,
+                        btn: ['取消', '确定'],
+                        skin: 'textSkin',
+                        yes: function (index, layero) {
+                            layer.close(index);
+                            $this.restSlide();
+                        },
+                        btn2: function (index, layero) {
+                            layer.close(index);
+                        }
+                    });
+                });
+            },
+            //删除方法
+            deleteFun:function(){
+                let $this = this;
+                layui.use(['layer'], function () {
+                    var layer = layui.layer,$ = layui.$;
+                    layer.open({
+                        title: false,
+                        content: '<p class="text">确认删除吗？</p> ',
+                        closeBtn: 0,
+                        btn: ['取消', '确定'],
+                        skin: 'textSkin',
+                        yes: function (index, layero) {
+                            layer.close(index);
+                            $this.restSlide();
+                        },
+                        btn2: function (index, layero) {
+                            layer.close(index);
+                        }
+                    });
+                });
+            },
+        }
+    });
+</script>

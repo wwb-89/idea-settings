@@ -71,7 +71,7 @@
     </div>
     <div v-show="step == 1">
         <div class="info box">
-            <form action="">
+            <form action="" onsubmit="return false;">
                 <div class="title">基本信息</div>
                 <div class="form-item">
                     <label class="label"><img src="/static/pc/assets/images/required.png" th:src="@{/pc/assets/images/required.png}" class="required-img">名称</label>
@@ -138,14 +138,14 @@
                     <label class="label">活动分类</label>
                     <div class="input-box wrap">
                         <div :class="{'type-item': true, 'active': activityClassify.selected}" v-for="(activityClassify, index) of activityClassifies" :key="'activity-classify-' + index" @click="selectActivityClassify(index)">{{activityClassify.name}}
-                                <img src="/static/pc/assets/images/icon-more1.png" th:src="@{/pc/assets/images/icon-more1.png}" style="margin-left: 10px;" v-if="!activityClassify.system">
+                            <div class="more-btn" v-if="!activityClassify.system"></div>
                             <div class="edit-box" v-if="!activityClassify.system">
                                 <div @click="toEditActivityClassify(index, $event)">编辑</div>
                                 <div @click="toDeleteActivityClassify(index, $event)">删除</div>
                             </div>
                         </div>
                         <div class="type-item add" @click="toAddActivityClassify">
-                            <img src="/static/pc/assets/images/add.png" th:src="@{/pc/assets/images/add.png}" style="margin-right: 10px;">
+                            <div class="add_btn"></div>
                             新增
                         </div>
                     </div>
@@ -156,7 +156,7 @@
                         <!--添加范围后显示后面这项-->
                         <div v-show="participatedOrgs.length < 1">
                             <div class="type-item add" @click="toAddParticipateScope">
-                                <img src="/static/pc/assets/images/add.png" th:src="@{/pc/assets/images/add.png}" style="margin-right: 10px;">
+                                <div class="add_btn"></div>
                                 添加
                             </div>
                         </div>
@@ -176,7 +176,7 @@
                 <el-switch v-model="enableSignUp" class="switch"></el-switch>
             </div>
             <!-- 点击参与设置 -->
-            <form action="" class="setForm" v-show="enableSignUp">
+            <form action="" onsubmit="return false;" class="setForm" v-show="enableSignUp">
                 <div class="form-item">
                     <label class="label"><img src="/static/pc/assets/images/required.png" th:src="@{/pc/assets/images/required.png}" class="required-img">报名时间</label>
                     <div class="input-box">
@@ -251,7 +251,7 @@
                 <el-switch v-model="enableSignIn" class="switch"></el-switch>
             </div>
             <!-- 点击参与设置 -->
-            <form action="" class="setForm" v-show="enableSignIn">
+            <form action="" onsubmit="return false;" class="setForm" v-show="enableSignIn">
                 <div class="form-item">
                     <label class="label">签到方式</label>
                     <div class="input-box">
@@ -318,7 +318,7 @@
                 <el-switch v-model="enableSignOut" class="switch"></el-switch>
             </div>
             <!-- 点击参与设置 -->
-            <form action="" class="setForm" v-show="enableSignOut">
+            <form action="" onsubmit="return false;" class="setForm" v-show="enableSignOut">
                 <div class="form-item">
                     <label class="label">签退方式</label>
                     <div class="input-box">
@@ -740,8 +740,11 @@
                             var result = data.result;
                             if (result == 1) {
                                 var cloudId = data.objectid;
+                                $this.$set($this.activity, "coverUrl", "");
                                 $this.$set($this.activity, "coverCloudId", cloudId);
-                                $this.handleImg();
+                                $this.$nextTick(function () {
+                                    $this.handleImg();
+                                });
                             } else {
                                 app.showMsg("上传失败");
                             }
@@ -1118,7 +1121,7 @@
                     };
                     app.ajaxPostWithLoading(url, params, function (data) {
                         if (data.success) {
-                            app.activityChanged();
+                            app.noticeActivityChange($this.activity.id);
                             var activityData = data.data;
                             $this.$set($this.activity, "id", activityData.id);
                             $this.$set($this.sign, "id", activityData.signId);
@@ -1159,7 +1162,7 @@
                     };
                     app.ajaxPostWithLoading(url, params, function (data) {
                         if (data.success) {
-                            app.activityChanged();
+                            app.noticeActivityChange($this.activity.id);
                             var activityData = data.data;
                             $this.filterOptionalTemplate();
                             $this.$set($this.sign, "id", activityData.signId);
@@ -1219,7 +1222,7 @@
                     var url = ctx + "/api/activity/" + $this.activity.id + "/bind/template/" + webTemplate.id;
                     app.ajaxPostWithLoading(url, {}, function (data) {
                         if (data.success) {
-                            app.activityChanged();
+                            app.noticeActivityChange($this.activity.id);
                             var editUrl = data.data.editUrl;
                             $this.$set($this.activity, "webTemplateId", $this.handleWebTemplateId);
                             app.showMsg("选择模板成功", function () {

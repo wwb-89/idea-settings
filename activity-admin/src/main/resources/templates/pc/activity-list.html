@@ -34,7 +34,7 @@
             <img v-show="sw" class="btn-cancel" style="display: block;" src="/static/pc/assets/images/icon-cancel.png" th:src="@{/pc/assets/images/icon-cancel.png}" @click="clearSearch">
         </div>
         <div class="table">
-            <el-table :data="activities" style="width: 100%" v-show="loaded">
+            <el-table :data="activities" style="width: 100%">
                 <el-table-column label="活动名称" min-width="40%">
                     <template slot-scope="scope">
                         <div class="item">
@@ -83,6 +83,11 @@
                         </div>
                     </template>
                 </el-table-column>
+                <template slot="empty">
+                    <div class="noData" v-show="loaded">
+                        暂无内容
+                    </div>
+                </template>
             </el-table>
         </div>
         <el-pagination v-show="pages > 1" background layout="prev, pager, next" :total="total" :page-size="queryParams.pageSize" :current-page="queryParams.pageNum" @current-change="changePage" style="text-align: center;"></el-pagination>
@@ -153,13 +158,8 @@
                 $this.bindEvents();
                 $this.loadData();
                 // 监听活动的创建，当创建或者编辑活动后重新加载数据
-                document.addEventListener('visibilitychange',function(){
-                    if ("visible" === document.visibilityState) {
-                        // 判断storage的变化
-                        if (app.isActivityChanged()) {
-                            $this.loadData();
-                        }
-                    }
+                app.bindActivityChangeEvent(function (activityId) {
+                    $this.loadData();
                 });
             },
             methods: {
@@ -271,7 +271,7 @@
                 loadData: function () {
                     var $this = this;
                     var url = ctx + "/api/activity/list/managing";
-                    $this.activities = [];
+                    $this.loaded = false;
                     app.ajaxPost(url, $this.queryParams, function (data) {
                         $this.loaded = true;
                         if (data.success) {

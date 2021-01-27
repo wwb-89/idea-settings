@@ -82,6 +82,11 @@
                 var $this = this;
                 // 解决跨域
                 document.domain = "chaoxing.com";
+                app.bindActivityChangeEvent(function (activityId) {
+                    if ($this.activity.id == activityId) {
+                        window.location.reload();
+                    }
+                });
             },
             mounted: function () {
                 var $this = this;

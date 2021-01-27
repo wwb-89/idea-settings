@@ -293,6 +293,8 @@ public class ActivityMhAppController {
 		if (StringUtils.isBlank(areaCode)) {
 			areaCode = jsonObject.getString("areaCode");
 		}
+		// 现在不取areaCode的数据
+		areaCode = null;
 		Optional.ofNullable(wfwfid).orElseThrow(() -> new BusinessException("wfwfid不能为空"));
 		List<Integer> fids = Lists.newArrayList();
 		List<WfwRegionalArchitectureDTO> wfwRegionalArchitectures;

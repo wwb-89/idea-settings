@@ -278,8 +278,8 @@ Array.prototype.pushArray = function (array) {
         that.push(this);
     });
 };
-Vue.filter("getCloudImgUrl", function (cloudId) {
-    return activityApp.getCloudImgUrl(cloudId);
+Vue.filter("getCloudImgUrl", function (activity) {
+    return activityApp.getCloudImgUrl(activity);
 });
 Vue.filter("activityStatusInstructions", function (status) {
     return activityApp.getActivityStatusInstructions(status);

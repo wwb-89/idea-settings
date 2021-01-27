@@ -128,7 +128,7 @@ public class ActivityValidationService {
 	 * @return com.chaoxing.activity.model.Activity
 	*/
 	public Activity manageAble(Integer activityId, LoginUserDTO loginUser, String errorMessage) {
-		errorMessage = Optional.ofNullable(errorMessage).filter(StringUtils::isNotBlank).orElse("没有管理权限");
+		errorMessage = Optional.ofNullable(errorMessage).filter(StringUtils::isNotBlank).orElse("没有权限");
 		Activity activity = activityExist(activityId);
 		if (!isCreator(activity, loginUser)) {
 			throw new BusinessException(errorMessage);
