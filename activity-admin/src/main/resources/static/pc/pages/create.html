@@ -96,7 +96,7 @@
                 </div>
             </div>
             <div class="form-item">
-                <label class="label cover" style="line-height: 100px;"><img src="../assets/images/required.png"
+                <label class="label-20 cover"><img src="../assets/images/required.png"
                                                                             alt="" class="required-img">封面</label>
                 <div class="input-box">
                     <div class="img-box">
@@ -114,7 +114,7 @@
                 </div>
             </div>
             <div class="form-item">
-                <label class="label">活动类型</label>
+                <label class="label-20">活动类型</label>
                 <div class="input-box">
                     <el-radio v-model="radio" label="1" name="active-type">线上活动</el-radio>
                     <el-radio v-model="radio" label="2" name="active-type">线下活动</el-radio>
@@ -144,12 +144,6 @@
                     <div class="type-item active">活动</div>
                     <div class="type-item">讲座</div>
                     <div class="type-item">讲座</div>
-                    <div class="type-item">讲座</div>
-                    <div class="type-item">讲座</div>
-                    <div class="type-item">讲座</div>
-                    <div class="type-item">讲座</div>
-                    <div class="type-item">讲座</div>
-                    <div class="type-item">讲座</div>
                     <div class="type-item">征文</div>
                     <div class="type-item">自定义选项
                         <!--<img src="../assets/images/icon-more1.png" alt="" style="margin-left: 10px;">-->
@@ -167,7 +161,7 @@
                 </div>
             </div>
             <div class="form-item last">
-                <label class="label"><img src="../assets/images/required.png"
+                <label class="label-20"><img src="../assets/images/required.png"
                                           alt="" class="required-img">参与范围</label>
                 <div class="input-box wrap">
                     <!--添加范围后显示后面这项-->
@@ -287,7 +281,7 @@
                 </div>
             </div> -->
             <div class="form-item">
-                <label class="label" style="line-height: 20px;">信息填写</label>
+                <label class="label-20" style="line-height: 20px;">信息填写</label>
                 <div class="input-box column">
                     <div class="set-box">
                         <el-switch v-model="delivery2"></el-switch>
@@ -307,14 +301,14 @@
                 </div>
             </div>
             <div class="form-item">
-                <label class="label line-h">报名需审核</label>
+                <label class="label-20 line-h">报名需审核</label>
                 <div class="input-box">
                     <el-switch v-model="delivery3"></el-switch>
                     <span class="tips">开启后，参与需发起人审核</span>
                 </div>
             </div>
             <div class="form-item">
-                <label class="label line-h">报名名单公开</label>
+                <label class="label-20 line-h">报名名单公开</label>
                 <div class="input-box">
                     <el-switch v-model="delivery4"></el-switch>
                     <span class="tips">开启后，所有人都能看到报名人员名单</span>
@@ -337,7 +331,7 @@
         </div>
         <form action="" class="setForm" v-show="delivery1">
             <div class="form-item">
-                <label class="label">签到方式</label>
+                <label class="label-20">签到方式</label>
                 <div class="input-box">
                     <el-radio v-model="radio" label="1">普通签到</el-radio>
                     <el-radio v-model="radio" label="2">位置签到</el-radio>
@@ -364,7 +358,7 @@
                 </div>
             </div>
             <div class="form-item">
-                <label class="label line-h">签到名单公开</label>
+                <label class="label-20 line-h">签到名单公开</label>
                 <div class="input-box">
                     <el-switch v-model="delivery3"></el-switch>
                 </div>
@@ -405,7 +399,7 @@
         </div>
         <form action="" class="setForm" v-show="delivery1">
             <div class="form-item">
-                <label class="label">签退方式</label>
+                <label class="label-20">签退方式</label>
                 <div class="input-box">
                     <el-radio v-model="radio" label="1">普通签到</el-radio>
                     <el-radio v-model="radio" label="2">位置签到</el-radio>
@@ -432,7 +426,7 @@
                 </div>
             </div>
             <div class="form-item">
-                <label class="label line-h">签到名单公开</label>
+                <label class="label-20 line-h">签到名单公开</label>
                 <div class="input-box">
                     <el-switch v-model="delivery3"></el-switch>
                 </div>

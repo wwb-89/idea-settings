@@ -129,14 +129,6 @@ select {
     margin-bottom: 8px;
 }
 
-.form-item.last {
-    margin: 0 0 -16px 0;
-}
-
-.form-item .cover img {
-    top: 44px;
-}
-
 .input-box {
     display: flex;
     align-items: center;
@@ -173,7 +165,18 @@ select {
 
 .label {
     width: 90px;
-    line-height: 36px;
+    line-height: 20px;
+    font-size: 14px;
+    color: #666666;
+    margin-left: 9px;
+    margin-top: 6px;
+    text-align: left;
+    position: relative;
+}
+
+.label-20 {
+    width: 90px;
+    line-height: 20px;
     font-size: 14px;
     color: #666666;
     margin-left: 9px;
@@ -275,7 +278,7 @@ input[type="number"] {
     box-sizing: border-box;
     cursor: pointer;
     margin-right: 16px;
-    margin-bottom: 16px;
+    /*margin-bottom: 16px;*/
     font-size: 14px;
     color: #333333;
 }
@@ -1037,13 +1040,8 @@ input.btn-name,
 .required-img {
     width: 6px;
     height: 6px;
-    /* vertical-align: top;
-    margin-top: 12px;
-    margin-left: -10px; */
-    /*margin-right: 3px;*/
-    /*margin-bottom: 8px;*/
     position: absolute;
-    top: 12px;
+    top: 4px;
     left: -6px;
 }
 
@@ -1315,4 +1313,8 @@ input.btn-name,
 }
 .type-item.add:hover > .add_btn {
     background: url("../images/add-active.png");
+}
+
+.el-radio__input.is-checked+.el-radio__label {
+    color: #333;
 }
