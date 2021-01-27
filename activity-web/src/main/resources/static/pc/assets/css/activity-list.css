@@ -113,12 +113,10 @@ body {
   border-bottom: 1px solid #F0F0F0;
   padding: 24px 0;
   position: relative;
-  cursor: pointer;
 }
 
 .item-block .card-list ul li .inner {
   padding-left: 200px;
-  padding-right: 256px;
   min-height: 96px;
   position: relative;
 }
