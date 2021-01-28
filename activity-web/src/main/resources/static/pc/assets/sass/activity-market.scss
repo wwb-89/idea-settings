@@ -1,0 +1,224 @@
+body {
+  background: #ffffff;
+}
+.activity-market {
+  margin: 0 72px;
+
+  .header-con {
+    padding: 16px 0;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.06);
+    .searchDiv {
+      padding-right: 61px;
+      padding-left: 16px;
+      width: 220px;
+      box-sizing: border-box;
+      background: rgba(0, 0, 0, 0.04);
+      border: none;
+      border-radius: 25px;
+      position: relative;
+      .inputValue {
+        color: #333333;
+        width: 100%;
+        background:none;
+        height: 30px;
+        border: none;
+        font-size: 14px;
+      }
+      .icon-delete1 {
+        cursor: pointer;
+        position: absolute;
+        right: 35px;
+        display: inline-block;
+        width: 17px;
+        height: 30px;
+        background: url("../images/icon-delete.png") center center no-repeat;
+        background-size: 100%;
+      }
+      .icon-search1 {
+        cursor: pointer;
+        position: absolute;
+        right: 9px;
+        display: inline-block;
+        width: 17px;
+        height: 30px;
+        background: url("../images/icon-search.png") center center no-repeat;
+        background-size: 100%;
+
+      }
+    }
+    .user {
+      display: flex;
+      cursor: pointer;
+      .icon-user {
+        display: inline-block;
+        width: 16px;
+        height: 30px;
+        background: url("../images/user.png") center center no-repeat;
+        background-size: 100%;
+      }
+      a{
+        color: #0084FF;
+        line-height: 30px;
+        font-size: 14px;
+      }
+    }
+  }
+  .filter {
+    margin-bottom: 12px;
+    .item {
+      &:first-child {
+        margin-top: 16px;
+      }
+      margin-top: 4px;
+      position: relative;
+      label {
+        width: 44px;
+        font-size: 14px;
+        line-height: 28px;
+        color: #666666;
+        position: absolute;
+        left: 0;
+      }
+      .option-list {
+        padding-left: 44px;
+        ul {
+          li {
+            float: left;
+            margin-right: 10px;
+            font-size: 14px;
+            padding: 4px 8px;
+            color: #333333;
+            border-radius: 4px;
+            cursor: pointer;
+            margin-bottom: 12px;
+            &:hover {
+              background: rgba(0, 0, 0, 0.04);
+            }
+            &.active  {
+              color: #0084FF;
+              background: rgba(0, 132, 255, 0.1);
+            }
+          }
+        }
+      }
+    }
+  }
+  .card-list {
+    margin-bottom: 24px;
+    ul {
+      li {
+        position: relative;
+        margin-bottom: 24px;
+        .inner {
+          padding-left: 248px;
+          min-height: 120px;
+          position: relative;
+        }
+        .img-box {
+          position: absolute;
+          left: 0;
+          border: 1px solid #E9E9E9;
+          box-sizing: border-box;
+          border-radius: 4px;
+          width: 232px;
+          height: 120px;
+          overflow: hidden;
+          .js-crop-img {
+            position: absolute;
+            left: 0;
+            top: 0;
+            width: 232px;
+            height: 120px;
+          }
+          .num {
+            display: flex;
+            background: linear-gradient(180deg, rgba(0, 0, 0, 0) 0%, rgba(0, 0, 0, 0.4) 100%);
+            position: absolute;
+            z-index: 10;
+            left: 0;
+            bottom: 0;
+            width: 100%;
+            font-size: 13px;
+            height: 16px;
+            line-height: 16px;
+            padding: 26px 0 10px;
+            border-radius: 0 0 3px 3px ;
+            color: #FFFFFF;
+            i{
+              display: inline-block;
+              width: 16px;
+              height: 16px;
+              background: url("../images/pv.png")  center center no-repeat;
+              background-size: 100%;
+              margin-left: 10px;
+              margin-right:4px;
+            }
+          }
+          .tips {
+            position: absolute;
+            z-index: 22;
+            right: 0;
+            top: 0;
+            padding: 0 8px;
+            font-weight: 500;
+            height: 22px;
+            line-height: 22px;
+            color: #FFFFFF;
+            font-size: 12px;
+            border-radius: 0px 3px 0px 8px;
+          }
+          .color1 {
+            background: linear-gradient(279.4deg, #24BB1D 0.2%, #48DF4E 100.2%);
+          }
+          .color2 {
+            background: linear-gradient(99.4deg, #91D3FF -0.2%, #51B9FF 99.8%);
+          }
+          .color3 {
+            background: linear-gradient(99.4deg, #ACB8BF -0.2%, #7F8E98 99.8%);
+          }
+          .color4 {
+            background: linear-gradient(99.17deg, #FD8585 1.9%, #FC564C 99.8%);
+          }
+          .color5 {
+
+            background: linear-gradient(96.68deg, #FFB763 1.14%, #FF8B20 98.13%);
+          }
+        }
+        .card-info {
+          text-align: left;
+          .title {
+            color: #333333;
+            font-size: 18px;
+            margin-bottom: 12px;
+            line-height: 24px;
+          }
+          .time {
+            color: #666666;
+            font-size: 14px;
+            line-height: 24px;
+            margin-bottom: 12px;
+          }
+          .address {
+            font-size: 14px;
+            line-height: 24px;
+            color: #999999;
+          }
+        }
+      }
+    }
+  }
+
+}
+//无内容
+.noContent {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  p {
+    text-align: center;
+    color: #999999;
+    font-size: 14px;
+    line-height: 20px;
+  }
+}

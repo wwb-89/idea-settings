@@ -262,6 +262,21 @@ input:-ms-input-placeholder, textarea:-ms-input-placeholder {
   height: 20px;
 }
 
+.MyPagination {
+  text-align: center;
+  margin-bottom: 50px;
+}
+
+.MyPagination.is-background .el-pager li {
+  color: #666666;
+  font-size: 14px;
+  font-weight: normal;
+}
+
+.MyPagination.is-background .el-pager li:not(.disabled).active {
+  background: #0084FF;
+}
+
 [v-cloak] {
   display: none;
 }
