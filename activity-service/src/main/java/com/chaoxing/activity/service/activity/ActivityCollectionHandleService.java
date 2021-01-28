@@ -1,6 +1,5 @@
 package com.chaoxing.activity.service.activity;
 
-import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.chaoxing.activity.dto.LoginUserDTO;
 import com.chaoxing.activity.mapper.ActivityCollectionMapper;
@@ -25,6 +24,9 @@ public class ActivityCollectionHandleService {
 	@Resource
 	private ActivityCollectionMapper activityCollectionMapper;
 
+	@Resource
+	private ActivityCollectionValidateService activityCollectionValidateService;
+
 	/**收藏
 	 * @Description 
 	 * @author wwb
@@ -35,14 +37,20 @@ public class ActivityCollectionHandleService {
 	*/
 	public void collect(Integer activityId, LoginUserDTO loginUser) {
 		Integer uid = loginUser.getUid();
-		ActivityCollection activityCollection = activityCollectionMapper.selectOne(new QueryWrapper<ActivityCollection>()
-				.lambda()
-				.eq(ActivityCollection::getActivityId, activityId)
-				.eq(ActivityCollection::getUid, uid)
-				.eq(ActivityCollection::getDeleted, Boolean.FALSE)
-		);
-		if (activityCollection == null) {
-			activityCollection = ActivityCollection.builder()
+		collect(activityId, uid);
+	}
+
+	/**收藏
+	 * @Description 
+	 * @author wwb
+	 * @Date 2021-01-28 20:44:52
+	 * @param activityId
+	 * @param uid
+	 * @return void
+	*/
+	public void collect(Integer activityId, Integer uid) {
+		if (!activityCollectionValidateService.isCollected(activityId, uid)) {
+			ActivityCollection activityCollection = ActivityCollection.builder()
 					.activityId(activityId)
 					.uid(uid)
 					.build();
@@ -59,10 +67,22 @@ public class ActivityCollectionHandleService {
 	 * @return void
 	*/
 	public void cancelCollect(Integer activityId, LoginUserDTO loginUser) {
+		cancelCollect(activityId, loginUser.getUid());
+	}
+
+	/**取消收藏
+	 * @Description 
+	 * @author wwb
+	 * @Date 2021-01-28 20:45:28
+	 * @param activityId
+	 * @param uid
+	 * @return void
+	*/
+	public void cancelCollect(Integer activityId, Integer uid) {
 		activityCollectionMapper.update(null, new UpdateWrapper<ActivityCollection>()
-			.lambda()
+				.lambda()
 				.eq(ActivityCollection::getActivityId, activityId)
-				.eq(ActivityCollection::getUid, loginUser.getUid())
+				.eq(ActivityCollection::getUid, uid)
 				.set(ActivityCollection::getDeleted, Boolean.TRUE)
 		);
 	}

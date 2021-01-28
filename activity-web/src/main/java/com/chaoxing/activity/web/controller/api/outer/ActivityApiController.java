@@ -6,17 +6,18 @@ import com.chaoxing.activity.dto.activity.ActivityExternalDTO;
 import com.chaoxing.activity.dto.manager.WfwRegionalArchitectureDTO;
 import com.chaoxing.activity.dto.query.ActivityQueryDTO;
 import com.chaoxing.activity.model.Activity;
+import com.chaoxing.activity.service.activity.ActivityCollectionHandleService;
+import com.chaoxing.activity.service.activity.ActivityCollectionValidateService;
 import com.chaoxing.activity.service.activity.ActivityQueryService;
 import com.chaoxing.activity.service.manager.WfwCoordinateApiService;
 import com.chaoxing.activity.service.manager.WfwRegionalArchitectureApiService;
 import com.chaoxing.activity.service.util.Model2DtoService;
+import com.chaoxing.activity.util.CookieUtils;
 import com.chaoxing.activity.util.HttpServletRequestUtils;
 import com.google.common.collect.Lists;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
@@ -33,6 +34,7 @@ import java.util.stream.Collectors;
  * @blame wwb
  * @date 2020-11-11 10:54:37
  */
+@CrossOrigin
 @RestController
 @RequestMapping("api/outer/activity")
 public class ActivityApiController {
@@ -45,6 +47,10 @@ public class ActivityApiController {
 	private Model2DtoService model2DtoService;
 	@Resource
 	private WfwCoordinateApiService wfwCoordinateApiService;
+	@Resource
+	private ActivityCollectionHandleService activityCollectionHandleService;
+	@Resource
+	private ActivityCollectionValidateService activityCollectionValidateService;
 
 	/**组活动推荐
 	 * @Description
@@ -111,6 +117,51 @@ public class ActivityApiController {
 			page.setRecords(activityExternals);
 		}
 		return RestRespDTO.success(page);
+	}
+
+	/**是否已收藏
+	 * @Description 
+	 * @author wwb
+	 * @Date 2021-01-28 20:47:22
+	 * @param request
+	 * @param activityId
+	 * @return com.chaoxing.activity.dto.RestRespDTO
+	*/
+	@RequestMapping("{activityId}/collected")
+	public RestRespDTO isCollected(HttpServletRequest request, @PathVariable Integer activityId) {
+		Integer uid = CookieUtils.getUid(request);
+		boolean collected = activityCollectionValidateService.isCollected(activityId, uid);
+		return RestRespDTO.success(collected);
+	}
+
+	/**收藏
+	 * @Description 
+	 * @author wwb
+	 * @Date 2021-01-28 20:28:15
+	 * @param request
+	 * @param activityId
+	 * @return com.chaoxing.activity.dto.RestRespDTO
+	*/
+	@RequestMapping("{activityId}/collect")
+	public RestRespDTO collect(HttpServletRequest request, @PathVariable Integer activityId) {
+		Integer uid = CookieUtils.getUid(request);
+		activityCollectionHandleService.collect(activityId, uid);
+		return RestRespDTO.success();
+	}
+
+	/**取消收藏
+	 * @Description 
+	 * @author wwb
+	 * @Date 2021-01-28 20:46:18
+	 * @param request
+	 * @param activityId
+	 * @return com.chaoxing.activity.dto.RestRespDTO
+	*/
+	@RequestMapping("{activityId}/collect/cancel")
+	public RestRespDTO cancelCollect(HttpServletRequest request, @PathVariable Integer activityId) {
+		Integer uid = CookieUtils.getUid(request);
+		activityCollectionHandleService.cancelCollect(activityId, uid);
+		return RestRespDTO.success();
 	}
 
 }
