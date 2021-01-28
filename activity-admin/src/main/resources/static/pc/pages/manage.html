@@ -41,7 +41,7 @@
                     <el-table-column prop="name" label="活动名称" min-width="32.5%">
                         <template slot-scope="scope">
                             <div class="img">
-                                <img src="https://p.ananas.chaoxing.com/star3/320_150c/572280b525982f6d3c51fd3fb5ef7449.jpeg">
+                                <img class="jqthumbImg" src="../assets/images/无标题.png">
                             </div>
                             <div class="desc">
                                 <div class="title">2020年星阅读活动</div>
@@ -172,7 +172,22 @@
         var app = new Vue({
             el: '#app',
             data: {
-                tableData: [],
+                tableData: [{
+                    name: '王小虎',
+                    address: '超星小学122222222223333333333333',
+                    state: '进行中',
+                    person: '邱强'
+                }, {
+                    name: '王小虎',
+                    address: '超星小学122222222223333333333333',
+                    state: '未发布',
+                    person: '邱强'
+                }, {
+                    name: '王小虎',
+                    address: '超星小学122222222223333333333333',
+                    state: '已结束',
+                    person: '邱强'
+                }],
                 deleteShow: false,
                 releaseShow: false,
             },
@@ -299,12 +314,12 @@
         })
     </script>
     <script>
-        // $(function () {
-        //     $('.jqthumbImg').jqthumb({
-        //         width:'100%',
-        //         height:'100%'
-        //     });
-        // });
+        $(function () {
+            $('.jqthumbImg').jqthumb({
+                width:'100%',
+                height:'100%'
+            });
+        });
         $('.status').click(function () {
             $('.filters').toggle()
             $('.el-down').toggleClass('rotate')
