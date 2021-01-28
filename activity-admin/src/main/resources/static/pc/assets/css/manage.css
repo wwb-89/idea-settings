@@ -401,3 +401,6 @@ table {
     line-height: 20px;
     color: #999999;
 }
+.el-button {
+    font-weight: 400!important;
+}
