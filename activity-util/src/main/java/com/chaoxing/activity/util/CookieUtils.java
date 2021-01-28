@@ -1,6 +1,7 @@
 package com.chaoxing.activity.util;
 
 import com.chaoxing.activity.util.constant.CookieConstant;
+import com.google.common.collect.Lists;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.http.HttpHeaders;
 import org.springframework.util.CollectionUtils;
@@ -172,6 +173,25 @@ public class CookieUtils {
             });
         }
         return allCookies;
+    }
+
+    /**获取cookie列表
+     * @Description 
+     * @author wwb
+     * @Date 2021-01-28 14:40:34
+     * @param request
+     * @return java.util.List<java.lang.String>
+    */
+    public static List<String> getCookies(HttpServletRequest request) {
+        List<String> cookies = Lists.newArrayList();
+        Cookie[] cookieArr = request.getCookies();
+        if (cookieArr == null || cookieArr.length == 0) {
+            return cookies;
+        }
+        for (Cookie cookie : cookieArr) {
+            cookies.add(cookie.getName() + "=" + cookie.getValue());
+        }
+        return cookies;
     }
 
 }

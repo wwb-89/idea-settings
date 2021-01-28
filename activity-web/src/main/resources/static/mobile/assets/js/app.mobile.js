@@ -10,12 +10,6 @@
     app.prototype.specialSubjectUrl = "https://special.zhexuezj.cn/mobile/mooc/tocourse/";
     /** 课程url */
     app.prototype.courseUrl = "http://mooc1-api.chaoxing.com/phone/courseindex?courseid=";
-    /** 移动端期刊模块的地址 */
-    app.prototype.qkUrl = "http://mguide.chaoxing.com/views/guide/zhizhen/mobiletransferpage.jsp?turntype=link&shouquankan=0";
-    /** 移动端图书馆模块的地址 */
-    app.prototype.libraryUrl = "https://xueya.chaoxing.com/micro-library/";
-    /** 图书url */
-    app.prototype.bookUrl = "/m/book/detail/";
 
     /** 页面刷新标识 */
     app.prototype.pageRefreshFlag = "page_refresh_flag";
@@ -815,7 +809,7 @@
      */
     app.prototype.textareaToHtml = function (content) {
         var $this = this;
-        if ($this.isEmpty(content)) {
+        if (activityApp.isEmpty(content)) {
             return content;
         }
         var reg = new RegExp("\n", "g");
@@ -831,7 +825,7 @@
      */
     app.prototype.htmlToTextarea = function (content) {
         var $this = this;
-        if ($this.isEmpty(content)) {
+        if (activityApp.isEmpty(content)) {
             return content;
         }
         var reg = new RegExp("<br>", "g");
@@ -839,35 +833,6 @@
         content = content.replace(reg, "\n");
         content = content.replace(regSpace, " ");
         return content;
-    };
-    /**
-     * banner跳转
-     * @param banner
-     */
-    app.prototype.bannerJump = function (banner) {
-        var that = this;
-        if (that.isEmpty(banner)) {
-            return;
-        }
-        var linkContent = banner.linkContent;
-        switch (banner.linkType) {
-            case "void":
-                break;
-            case "special_topic":
-                that.openSpecial(linkContent);
-                break;
-            case "course":
-                break;
-            case "link":
-                that.openUrl(linkContent);
-                break;
-            case "group":
-                that.openGroup(linkContent);
-                break;
-            case "js":
-                eval("(" + linkContent + ")");
-                break;
-        }
     };
     /**
      * 创作专题
@@ -886,34 +851,42 @@
      */
     app.prototype.ajaxPost = function(url, params, success, error, tips){
         var $this = this;
-        $.ajax({
-            url: url,
-            type: "post",
-            data: params,
-            dataType: "json",
-            xhrFields: {
-                withCredentials: true
-            },
-            success: function(data){
-                if (!$this.isEmpty(tips)) {
-                    if (data.success) {
-                        $this.showMsg(tips + "成功");
-                        success(data);
-                    } else {
-                        var errorMessage = data.message;
-                        if ($this.isEmpty(errorMessage)) {
-                            errorMessage = tips + "失败";
+        if (activityApp.isEmpty(tips)) {
+            tips = "";
+        }
+        $.post(url, params, function (data) {
+            if (!activityApp.isEmpty(tips)) {
+                if (data.success) {
+                    $this.showMsg(tips + "成功", function () {
+                        if (activityApp.isFunction(success)) {
+                            success(data);
                         }
-                        $this.showMsg(errorMessage);
-                    }
+                    });
                 } else {
+                    var errorMessage = data.message;
+                    if (activityApp.isEmpty(errorMessage)) {
+                        errorMessage = tips + "失败";
+                    }
+                    $this.showMsg(errorMessage, function () {
+                        if (activityApp.isFunction(success)) {
+                            success(data);
+                        }
+                    });
+                }
+            } else {
+                if (activityApp.isFunction(success)) {
                     success(data);
                 }
-            },
-            error:function(){
-                if (!$this.isEmpty(tips)) {
-                    $this.showMsg(tips + "失败");
-                } else {
+            }
+        }).fail(function () {
+            if (!activityApp.isEmpty(tips)) {
+                $this.showMsg(tips + "失败", function () {
+                    if (activityApp.isFunction(error)) {
+                        error(data);
+                    }
+                });
+            }else {
+                if (activityApp.isFunction(error)) {
                     error();
                 }
             }
@@ -921,120 +894,93 @@
     };
     app.prototype.ajaxPostLoading = function(url, params, success, error, tips){
         var $this = this;
-        var object = $this.loading("正在处理");
-        $.ajax({
-            url: url,
-            type: "post",
-            data: params,
-            dataType: "json",
-            xhrFields: {
-                withCredentials: true
-            },
-            success: function(data){
-                if (!$this.isEmpty(tips)) {
-                    if (data.success) {
-                        object.close();
-                        $this.showMsg(tips + "成功");
-                        setTimeout(function () {
-                            success(data);
-                        }, 1500);
-                    } else {
-                        var errorMessage = data.message;
-                        if ($this.isEmpty(errorMessage)) {
-                            errorMessage = tips + "失败";
-                        }
-                        object.close();
-                        $this.showMsg(errorMessage);
-                    }
-                }else {
-                    success(data);
+        if (activityApp.isEmpty(tips)) {
+            tips = "";
+        }
+        var object = $this.loading();
+        $.post(url, params, function (data) {
+            if (data.success) {
+                if (!activityApp.isEmpty(tips)) {
+                    tips += "成功";
                 }
-            },
-            error:function(){
-                object.close();
-                if (!$this.isEmpty(tips)) {
-                    $this.showMsg(tips + "失败");
-                } else {
+                $this.loadingEndSuccess(object, tips, function () {
+                    if (activityApp.isFunction(success)) {
+                        success(data);
+                    }
+                });
+            } else {
+                var errorMessage = data.message;
+                if (!activityApp.isEmpty(errorMessage)) {
+                    tips = errorMessage;
+                } else if (!activityApp.isEmpty(tips)) {
+                    tips += "失败";
+                }
+                $this.loadingEndError(object, tips, function () {
+                    if (activityApp.isFunction(error)) {
+                        error();
+                    }
+                });
+            }
+        }).fail(function () {
+            if (!activityApp.isEmpty(tips)) {
+                tips += "失败";
+            }
+            $this.loadingEndError(object, tips, function () {
+                if (activityApp.isFunction(error)) {
                     error();
                 }
-            }
+            });
         });
     };
-    app.prototype.loading = function (tips) {
+    app.prototype.loading = function () {
         var toast = $(document).dialog({
-            type : 'toast',
-            infoIcon: ctx + '/mobile/assets/img/loading.gif',
-            infoText: tips
+            type : 'noticeLoading',
+            infoIcon: ctx + '/mobile/assets/lib/dialog2/images/icon/loading.gif'
         });
         return toast;
     };
     app.prototype.loadingEndSuccess = function (object, tips, callback) {
-        var $this = this;
-        object.update({
-            infoIcon: ctx + '/mobile/assets/img/success.png',
-            infoText: tips,
-            autoClose: 1500,
-            onClosed: function () {
-                if (!$this.isEmpty(callback) && typeof(callback) === "function") {
-                    callback();
+        object.close();
+        if (!activityApp.isEmpty(tips)) {
+            $(document).dialog({
+                type: 'notice',
+                infoText: tips,
+                autoClose: 1500,
+                onClosed: function () {
+                    if (activityApp.isFunction(callback)) {
+                        callback();
+                    }
                 }
+            });
+        } else {
+            if (activityApp.isFunction(callback)) {
+                callback();
             }
-        });
+        }
     };
     app.prototype.loadingEndError = function (object, tips, callback) {
         var $this = this;
-        object.update({
-            infoIcon: ctx + '/mobile/assets/img/fail.png',
-            infoText: tips,
-            autoClose: 1500,
-            onClosed: function () {
-                if (!$this.isEmpty(callback) && typeof(callback) === "function") {
-                    callback();
-                }
-            }
-        });
+        $this.loadingEndSuccess(object, tips, callback);
     };
-    app.prototype.getCloudFileAnnexType = function (suffix) {
-        var $this = this;
-        if ($this.workAnnexSuffixes.pictureSuffixes.includes(suffix)) {
-            return "picture";
-        } else if ($this.workAnnexSuffixes.audioSuffixes.includes(suffix)) {
-            return "audio";
-        } else if ($this.workAnnexSuffixes.videoSuffixes.includes(suffix)) {
-            return "video";
-        } else if ($this.workAnnexSuffixes.wordSuffixes.includes(suffix)) {
-            return "word";
-        } else if ($this.workAnnexSuffixes.pptSuffixes.includes(suffix)) {
-            return "ppt";
+    app.prototype.confirm = function (title, content, sure, cancel, sureBtnTitle, cancleBtnTitle) {
+        if (activityApp.isEmpty(title)) {
+            title = "提示";
         }
-        return "";
-    };
-    /**
-     * 后退指定层级
-     * @param level
-     */
-    app.prototype.backSpecifiedLevel = function (level) {
-        B.postNotification('CLIENT_EXIT_LEVEL', { "level": level});
-    };
-    app.prototype.isFunction = function (callback) {
-        return typeof (callback) === "function";
-    };
-    app.prototype.confirm = function (title, sure, cancel, sureBtnTitle, cancleBtnTitle) {
-        var $this = this;
-        if ($this.isEmpty(sureBtnTitle)) {
+        if (activityApp.isEmpty(sureBtnTitle)) {
             sureBtnTitle = "确定";
         }
-        if ($this.isEmpty(cancleBtnTitle)) {
+        if (activityApp.isEmpty(cancleBtnTitle)) {
             cancleBtnTitle = "取消";
         }
         $(document).dialog({
+            titleText: title,
             type : 'confirm',
-            content: title,
+            content: content,
             buttons: [
                 {
                     name: cancleBtnTitle,
                     callback: function () {
-                        if ($this.isFunction(cancel)) {
+                        if (activityApp.isFunction(cancel)) {
                             cancel();
                         }
                     }
@@ -1042,7 +988,7 @@
                 {
                     name: sureBtnTitle,
                     callback: function () {
-                        if ($this.isFunction(sure)) {
+                        if (activityApp.isFunction(sure)) {
                             sure();
                         }
                     }

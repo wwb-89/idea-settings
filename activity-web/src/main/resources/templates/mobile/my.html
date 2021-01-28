@@ -1,0 +1,515 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org/">
+<head>
+	<title>我的活动</title>
+	<meta http-equiv="Content-type" content="text/html; charset=utf-8" />
+	<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, minimal-ui" />
+	<meta name="format-detection" content="telephone=no, email=no">
+	<meta http-equiv="Pragma" content="no-cache" />
+	<meta http-equiv="cache-control" content="no-cache" />
+	<link rel="stylesheet" href="/static/mobile/assets/css/public.css" th:href="@{/mobile/assets/css/public.css}" />
+	<link rel="stylesheet" href="/static/mobile/assets/lib/layui/css/layui.css" th:href="@{/mobile/assets/lib/layui/css/layui.css}" />
+	<link rel="stylesheet" href="/static/mobile/assets/css/activity-list.css" th:href="@{/mobile/assets/css/activity-list.css}"/>
+	<link rel="stylesheet" href="/static/mobile/assets/css/dialog.css" th:href="@{/mobile/assets/css/dialog.css}" />
+	<style type="text/css">
+		[v-cloak] {
+			display: none;
+        }
+	</style>
+</head>
+<body>
+<div class="activity-list" id="activity-vue" v-cloak>
+	<div class="searchDiv" v-show="false">
+		<div class="searchbefore"><i></i><span>搜索</span></div>
+		<div class="searchafter">
+			<input type="text" class="txt" placeholder="搜索">
+			<i class="search"></i>
+			<i class="delete"></i>
+			<div class="cancle">取消</div>
+		</div>
+	</div>
+	<div class="tab" id="road-tab">
+		<ul>
+			<li :class="{'active': (activeTabIndex == 0)}" @click="changeTab(0)">已报名</li>
+			<li :class="{'active': (activeTabIndex == 1)}" @click="changeTab(1)">收藏</li>
+			<li :class="{'active': (activeTabIndex == 2)}" @click="changeTab(2)">管理</li>
+		</ul>
+		<div class="clear"></div>
+	</div>
+	<div id="signed-up-container" class="tabContent" v-show="activeTabIndex == 0">
+		<div class="card-list">
+			<ul v-infinite-scroll="loadSignedUp" infinite-scroll-disabled="signedUpLoading" infinite-scroll-distance="10">
+				<li v-for="(activity, index) of signedUps" :key="'activity-' + index" class="list-item" data-type="0" @touchstart.capture="touchStart" @touchend.capture="touchEnd" @click="signedupDetail(index)">
+					<div class="inner">
+						<div class="img-box border">
+							<p :class="{'tips': true, 'color1': (activity.userSignUpStatus == 1), 'color4': (activity.userSignUpStatus == 2)}">{{activity.userSignUpStatus == 1 ? "已报名" : "报名审核中"}}</p>
+							<div class="js-crop-img">
+								<img :src="activity | getCloudImgUrl">
+							</div>
+						</div>
+						<div class="card-info">
+							<h2 class="title overHidden2">{{activity.name}}</h2>
+							<p class="time">{{activity.startTime | activityTimeFormatter}} ～ {{activity.endTime | activityTimeFormatter}}</p>
+							<p class="address">{{activity.address}}{{activity.detailAddress ? activity.detailAddress : ''}}</p>
+						</div>
+					</div>
+					<div class="handel numTotal1">
+						<a class="cancel" v-if="activity.userSignUpStatus == 1" @click="cancelSignUp(index, $event)"><span>取消<br>报名</span></a>
+						<a class="cancel" v-if="activity.userSignUpStatus == 2" @click="revocationSignUp(index, $event)"><span>撤销<br>申请</span></a>
+					</div>
+				</li>
+			</ul>
+		</div>
+	</div>
+	<div id="collected-container" class="tabContent" v-show="activeTabIndex == 1">
+		<div class="card-list">
+			<ul v-infinite-scroll="loadCollected" infinite-scroll-disabled="collectedLoading" infinite-scroll-distance="10">
+				<li v-for="(activity, index) of collecteds" :key="'activity-' + index" class="list-item" data-type="0" @touchstart.capture="touchStart" @touchend.capture="touchEnd" @click="collectedDetail(index)">
+					<div class="inner">
+						<div class="img-box border">
+							<p :class="{'tips': true, 'color1': (activity.status == 3), 'color2': (activity.status == 2), 'color3': (activity.status == 4)}">{{activity.status | activityStatusInstructions}}</p>
+							<div class="js-crop-img">
+								<img :src="activity | getCloudImgUrl">
+							</div>
+						</div>
+						<div class="card-info">
+							<h2 class="title overHidden2">{{activity.name}}</h2>
+							<p class="time">{{activity.startTime | activityTimeFormatter}} ～ {{activity.endTime | activityTimeFormatter}}</p>
+							<p class="address">{{activity.address}}{{activity.detailAddress ? activity.detailAddress : ''}}</p>
+						</div>
+					</div>
+					<div class="handel numTotal1">
+						<a class="cancel1" @click="cancelCollect(index, $event)"><span>取消<br>收藏</span></a>
+					</div>
+				</li>
+			</ul>
+		</div>
+	</div>
+	<div id="managing-container" class="tabContent" v-show="activeTabIndex == 2">
+		<div class="card-list">
+			<ul v-infinite-scroll="loadManaging" infinite-scroll-disabled="managingLoading" infinite-scroll-distance="10">
+				<li v-for="(activity, index) of managings" :key="'activity-' + index" class="list-item" data-type="0" @touchstart.capture="touchStart" @touchend.capture="touchEnd" @click="managingDetail(index)">
+					<div class="inner">
+						<div class="img-box border">
+							<p :class="{'tips': true, 'color1': (activity.status == 3), 'color2': (activity.status == 2), 'color3': (activity.status == 4)}">{{activity.status | activityStatusInstructions}}</p>
+							<div class="js-crop-img">
+								<img :src="activity | getCloudImgUrl">
+							</div>
+						</div>
+						<div class="card-info">
+							<h2 class="title overHidden2">{{activity.name}}</h2>
+							<p class="time">{{activity.startTime | activityTimeFormatter}} ～ {{activity.endTime | activityTimeFormatter}}</p>
+							<p class="address">{{activity.address}}{{activity.detailAddress ? activity.detailAddress : ''}}</p>
+						</div>
+					</div>
+					<div class="handel numTotal2">
+						<a class="edit" v-if="activity.status == 1" @click="release(index, $event)">发布</a>
+						<a class="delete" v-if="activity.status != 1" @click="cancelRelease(index, $event)">下架</a>
+					</div>
+				</li>
+			</ul>
+		</div>
+	</div>
+	<!-- 无数据 -->
+	<div class="noContent" v-show="(signedUpLoaded && signedUps.length < 1 && activeTabIndex == 0) || (collectedLoaded && collecteds.length < 1 && activeTabIndex == 1) || (managingLoaded && managings.length < 1 && activeTabIndex == 2)">
+		<p>无结果</p>
+	</div>
+	<!--加载中-->
+	<div class="loading" v-show="signedUpLoading || collectedLoading || managingLoading"><img src="/static/mobile/assets/images/Spinner-1s-200px.svg" th:src="@{/mobile/assets/images/Spinner-1s-200px.svg}">加载中…</div>
+	<!--没有更多-->
+	<div class="noMore" v-show="(signedUpNoMore && signedUps.length > 0 &&  activeTabIndex == 0) || (collectedNoMore && collecteds.length > 0 && activeTabIndex == 1) || (managingNoMore && managings.length > 0 && activeTabIndex == 2)"><span>没有更多</span></div>
+	<!--出示签到码位置-->
+	<!--<div class="labelTab border"><i></i><span>出示签到码</span></div>-->
+</div>
+<div th:replace="mobile/include/common_js :: common_js(~{::script})">
+	<script src="/static/mobile/assets/lib/vue-infinite-scroll.js" th:src="@{/mobile/assets/lib/vue-infinite-scroll.js}"></script>
+	<script src="/static/mobile/assets/lib/jqthumb.min.js" th:src="@{/mobile/assets/lib/jqthumb.min.js}"></script>
+	<script src="/static/mobile/assets/js/common.js" th:src="@{/mobile/assets/js/common.js}"></script>
+	<script th:inline="javascript">
+		Vue.filter("activityTimeFormatter", function (timestamp) {
+			var dateObj = activityApp.millisecond2DateObj(timestamp);
+			return dateObj.year + "." + dateObj.month + "." + dateObj.day + " " + dateObj.hour + ":" + dateObj.minute;
+		});
+		function ready() {
+			activityVue = new Vue({
+				el: "#activity-vue",
+				data: {
+					activeTabIndex: 0,
+
+					signedUps: [],
+					collecteds: [],
+					managings: [],
+
+					sw: "",
+					signedUpLoading: false,
+					signedUpNoMore: false,
+					signedUpLock: false,
+					signedUpQueryParams: {
+						pageNum: 1,
+						pageSize: 10,
+						sw: ""
+					},
+					signedUpLoaded: false,
+
+					collectedLoading: false,
+					collectedNoMore: false,
+					collectedLock: true,
+					collectedQueryParams: {
+						pageNum: 1,
+						pageSize: 10,
+						sw: ""
+					},
+					collectedLoaded: false,
+
+					managingLoading: false,
+					managingNoMore: false,
+					managingLock: true,
+					managingQueryParams: {
+						pageNum: 1,
+						pageSize: 10,
+						sw: ""
+					},
+					managingLoaded: false
+				},
+				created: function () {
+				},
+				mounted: function () {
+					var $this = this;
+					// 滑动到顶部停留
+					window.onscroll = function () {
+						let topScroll = get_scrollTop_of_body(); //滚动的距离,距离顶部的距离
+						let bignav = document.getElementById("road-tab"); //获取到导航栏id
+						if (bignav) {
+							let beforeOffsetTop = bignav.offsetTop;
+							if (topScroll > beforeOffsetTop) { //当滚动距离大于250px时执行下面的东西
+								bignav.style.position = 'fixed';
+								bignav.style.top = '0';
+								bignav.style.zIndex = '9999';
+							} else { //当滚动距离小于250的时候执行下面的内容，也就是让导航栏恢复原状
+								bignav.style.position = 'static';
+							}
+						}
+					}
+					/*解决浏览器兼容问题*/
+					function get_scrollTop_of_body() {
+						var scrollTop;
+						if (typeof window.pageYOffset != 'undefined') { //pageYOffset指的是滚动条顶部到网页顶部的距离
+							scrollTop = window.pageYOffset;
+						} else if (typeof document.compatMode != 'undefined' && document.compatMode != 'BackCompat') {
+							scrollTop = document.documentElement.scrollTop;
+						} else if (typeof document.body != 'undefined') {
+							scrollTop = document.body.scrollTop;
+						}
+						return scrollTop;
+					}
+				},
+				methods: {
+					changeTab: function (index) {
+						var $this = this;
+						$this.activeTabIndex = index;
+						$this.signedUpLock = true;
+						$this.collectedLock = true;
+						$this.managingLock = true;
+						if (index == 0) {
+							$("html,body").animate({scrollTop: $this.signedUps.length > 0 ? 0 : 10}, 0);
+							$this.signedUpLock = false;
+						}else if (index == 1) {
+							$("html,body").animate({scrollTop: $this.collecteds.length > 0 ? 0 : 10}, 0);
+							$this.collectedLock = false;
+						} else {
+							$("html,body").animate({scrollTop: $this.managings.length > 0 ? 0 : 10}, 0);
+							$this.managingLock = false;
+						}
+					},
+					//滑动
+					touchStart: function (e) {
+						this.startX = e.touches[0].clientX;
+					},
+					//滑动结束
+					touchEnd: function (e) {
+						var currentElement = e.currentTarget;
+						this.endX = e.changedTouches[0].clientX;
+						// 左滑
+						if (currentElement.dataset.type == 0 && this.startX - this.endX > 30) {
+							this.restSlide();
+							if (currentElement.lastChild.className.indexOf('numTotal2') > -1) {
+								currentElement.dataset.type = 2;
+							} else {
+								currentElement.dataset.type = 1;
+							}
+						}
+						// 右滑
+						if ((currentElement.dataset.type == 1 || currentElement.dataset.type == 2) && this.startX - this.endX < -30) {
+							this.restSlide();
+							currentElement.dataset.type = 0;
+						}
+						this.startX = 0;
+						this.endX = 0;
+					},
+					//判断当前是否有滑块处于滑动状态
+					checkSlide: function () {
+						let listItems = document.querySelectorAll('.list-item');
+						for (let i = 0; i < listItems.length; i++) {
+							if (listItems[i].dataset.type == 1) {
+								return true;
+							}
+						}
+						return false;
+					},
+					//复位滑动状态
+					restSlide: function () {
+						let listItems = document.querySelectorAll('.list-item');
+						for (let i = 0; i < listItems.length; i++) {
+							listItems[i].dataset.type = 0;
+						}
+					},
+					resetSignUp: function () {
+						var $this = this;
+						$this.signedUpQueryParams.pageNum = 1;
+						$this.signedUpLoaded = false;
+						$this.signedUps = [];
+					},
+					loadSignedUp: function () {
+						var $this = this;
+						if ($this.signedUpNoMore || $this.signedUpLock) {
+							return;
+						}
+						var url = ctx + "/api/activity/signed-up";
+						$this.signedUpLoading = true;
+						app.ajaxPost(url, $this.signedUpQueryParams, function (data) {
+							$this.signedUpLoading = false;
+							if (data.success) {
+								$this.signedUpLoaded = true;
+								$this.signedUps.pushArray(data.data.records);
+								$this.$nextTick(function () {
+									cropImgFun("body");
+								});
+								if (data.data.records.length > 0) {
+									$this.signedUpQueryParams.pageNum++;
+								}
+								if (data.data.records.length < $this.signedUpQueryParams.pageSize) {
+									// 没有更多数据
+									$this.signedUpNoMore = true;
+								}
+							} else {
+								var errorMessage = data.message;
+								if (activityApp.isEmpty(errorMessage)) {
+									errorMessage = "加载已报名的活动失败";
+								}
+								app.showMsg(errorMessage);
+							}
+						}, function () {
+							$this.signedUpLoading = false;
+							app.showMsg("加载已报名的活动失败");
+						});
+					},
+					resetCollected: function () {
+						var $this = this;
+						$this.collectedQueryParams.pageNum = 1;
+						$this.collectedLoaded = false;
+						$this.collecteds = [];
+					},
+					loadCollected: function () {
+						var $this = this;
+						if ($this.collectedNoMore || $this.collectedLock) {
+							return;
+						}
+						$this.collectedLoading = true;
+						var url = ctx + "/api/activity/collected";
+						app.ajaxPost(url, $this.collectedQueryParams, function (data) {
+							$this.collectedLoading = false;
+							if (data.success) {
+								$this.collectedLoaded = true;
+								$this.collecteds.pushArray(data.data.records);
+								$this.$nextTick(function () {
+									cropImgFun("body");
+								});
+								if (data.data.records.length > 0) {
+									$this.collectedQueryParams.pageNum++;
+								}
+								if (data.data.records.length < $this.collectedQueryParams.pageSize) {
+									// 没有更多数据
+									$this.collectedNoMore = true;
+								}
+							} else {
+								var errorMessage = data.message;
+								if (activityApp.isEmpty(errorMessage)) {
+									errorMessage = "加载管理的的活动失败";
+								}
+								app.showMsg(errorMessage);
+							}
+						}, function () {
+							$this.collectedLoading = false;
+							app.showMsg("加载管理的活动失败");
+						});
+					},
+					resetManaging: function () {
+						var $this = this;
+						$this.managingQueryParams.pageNum = 1;
+						$this.managingLoaded = false;
+						$this.managingNoMore = false;
+						$this.managings = [];
+						$this.loadManaging();
+					},
+					loadManaging: function () {
+						var $this = this;
+						if ($this.managingNoMore || $this.managingLock) {
+							return;
+						}
+						$this.managingLoading = true;
+						var url = ctx + "/api/manage/activity/list";
+						app.ajaxPost(url, $this.managingQueryParams, function (data) {
+							$this.managingLoading = false;
+							if (data.success) {
+								$this.managingLoaded = true;
+								$this.managings.pushArray(data.data.records);
+								$this.$nextTick(function () {
+									cropImgFun("body");
+								});
+								if (data.data.records.length > 0) {
+									$this.managingQueryParams.pageNum++;
+								}
+								if (data.data.records.length < $this.managingQueryParams.pageSize) {
+									// 没有更多数据
+									$this.managingNoMore = true;
+								}
+							} else {
+								var errorMessage = data.message;
+								if (activityApp.isEmpty(errorMessage)) {
+									errorMessage = "加载管理的的活动失败";
+								}
+								app.showMsg(errorMessage);
+							}
+						}, function () {
+							$this.managingLoading = false;
+							app.showMsg("加载管理的活动失败");
+						});
+					},
+					// 取消报名
+					cancelSignUp: function (index, e) {
+						e.stopPropagation();
+						var $this = this;
+						$this.restSlide();
+						app.confirm("确定取消报名？", "取消报名后需要重新报名才能参与活动", function () {
+							var activity = $this.signedUps[index];
+							var url = ctx + "/api/sign-up/" + activity.signUpId + "/cancel";
+							app.ajaxPostLoading(url, {}, function () {
+								// 删除这条数据
+								var signedUps = $this.signedUps;
+								signedUps.splice(index, 1);
+								$this.signedUps = signedUps;
+								$this.$nextTick(function () {
+									cropImgFun("body");
+								});
+							}, function () {
+
+							}, "取消报名");
+						}, function () {
+
+						});
+					},
+					// 撤销申请
+					revocationSignUp: function (index, e) {
+						e.stopPropagation();
+						var $this = this;
+						$this.restSlide();
+						app.confirm("确定撤销申请？", "撤销申请后需要重新报名才能参与活动", function () {
+							var activity = $this.signedUps[index];
+							var url = ctx + "/api/sign-up/" + activity.signUpId + "/revocation";
+							app.ajaxPostLoading(url, {}, function () {
+								// 删除这条数据
+								var signedUps = $this.signedUps;
+								signedUps.splice(index, 1);
+								$this.signedUps = signedUps;
+								$this.$nextTick(function () {
+									cropImgFun("body");
+								});
+							}, function () {
+
+							}, "撤销申请");
+						}, function () {
+						});
+					},
+					// 取消收藏
+					cancelCollect: function (index, e) {
+						e.stopPropagation();
+						var $this = this;
+						var activity = $this.collecteds[index];
+						var url = ctx + "/api/activity/" + activity.id + "/cancel-collect";
+						$this.restSlide();
+						app.ajaxPostLoading(url, {}, function () {
+							// 删除这条数据
+							var collecteds = $this.collecteds;
+							collecteds.splice(index, 1);
+							$this.collecteds = collecteds;
+							$this.$nextTick(function () {
+								cropImgFun("body");
+							});
+						}, function () {
+						}, "取消收藏");
+					},
+					// 发布
+					release: function (index, e) {
+						e.stopPropagation();
+						var $this = this;
+						var activity = $this.managings[index];
+						var url = ctx + "/api/manage/activity/" + activity.id + "/release";
+						$this.restSlide();
+						app.confirm("", "确认发布？", function () {
+							app.ajaxPostLoading(url, {}, function () {
+								$this.resetManaging();
+							}, function () {
+
+							}, "发布");
+						}, function () {
+						});
+					},
+					// 下架
+					cancelRelease: function (index, e) {
+						e.stopPropagation();
+						var $this = this;
+						var activity = $this.managings[index];
+						var url = ctx + "/api/manage/activity/" + activity.id + "/release/cancel";
+						$this.restSlide();
+						app.confirm("", "确认下架？", function () {
+							$this.restSlide();
+							app.ajaxPostLoading(url, {}, function () {
+								$this.resetManaging();
+							}, function () {
+
+							}, "下架");
+						}, function () {
+						});
+					},
+					// 已报名的活动详情
+					signedupDetail: function (index) {
+						var $this = this;
+						var activity = $this.signedUps[index];
+						$this.detail(activity);
+					},
+					// 收藏的活动详情
+					collectedDetail: function (index) {
+						var $this = this;
+						var activity = $this.collecteds[index];
+						$this.detail(activity);
+					},
+					// 管理的活动详情
+					managingDetail: function (index) {
+						var $this = this;
+						var activity = $this.managings[index];
+						$this.detail(activity);
+					},
+					// 活动详情
+					detail: function (activity) {
+						var url = activity.previewUrl;
+						if (!activityApp.isEmpty(url)) {
+							app.openUrl(url);
+						}
+					}
+				}
+			});
+		}
+	</script>
+</div>
+</body>
+</html>

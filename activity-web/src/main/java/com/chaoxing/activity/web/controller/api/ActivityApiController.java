@@ -7,14 +7,17 @@ import com.chaoxing.activity.dto.RestRespDTO;
 import com.chaoxing.activity.dto.manager.WfwRegionalArchitectureDTO;
 import com.chaoxing.activity.dto.query.ActivityQueryDTO;
 import com.chaoxing.activity.model.Activity;
+import com.chaoxing.activity.service.activity.ActivityCollectionHandleService;
 import com.chaoxing.activity.service.activity.ActivityQueryService;
 import com.chaoxing.activity.service.manager.WfwRegionalArchitectureApiService;
 import com.chaoxing.activity.util.HttpServletRequestUtils;
+import com.chaoxing.activity.util.annotation.LoginRequired;
 import com.chaoxing.activity.util.constant.CommonConstant;
 import com.chaoxing.activity.web.util.LoginUtils;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -44,6 +47,8 @@ public class ActivityApiController {
 	private ActivityQueryService activityQueryService;
 	@Resource
 	private WfwRegionalArchitectureApiService wfwRegionalArchitectureApiService;
+	@Resource
+	private ActivityCollectionHandleService activityCollectionHandleService;
 
 	/**可参与的活动列表
 	 * @Description 
@@ -99,6 +104,56 @@ public class ActivityApiController {
 		activity.setLongitude(longitude);
 		activity.setDimension(dimension);
 		return RestRespDTO.success(activity);
+	}
+
+	/**查询报名的活动
+	 * @Description 
+	 * @author wwb
+	 * @Date 2021-01-27 19:34:56
+	 * @param request
+	 * @param sw
+	 * @return com.chaoxing.activity.dto.RestRespDTO
+	*/
+	@LoginRequired
+	@RequestMapping("signed-up")
+	public RestRespDTO pageSignedUp(HttpServletRequest request, String sw) {
+		LoginUserDTO loginUser = LoginUtils.getLoginUser(request);
+		Page page = HttpServletRequestUtils.buid(request);
+		page = activityQueryService.pageSignedUp(page, loginUser.getUid(), sw);
+		return RestRespDTO.success(page);
+	}
+
+	/**分页查询收藏的活动
+	 * @Description 
+	 * @author wwb
+	 * @Date 2021-01-27 20:45:13
+	 * @param request
+	 * @param sw
+	 * @return com.chaoxing.activity.dto.RestRespDTO
+	*/
+	@LoginRequired
+	@RequestMapping("collected")
+	public RestRespDTO pageCollected(HttpServletRequest request, String sw) {
+		LoginUserDTO loginUser = LoginUtils.getLoginUser(request);
+		Page page = HttpServletRequestUtils.buid(request);
+		page = activityQueryService.pageCollected(page, loginUser.getUid(), sw);
+		return RestRespDTO.success(page);
+	}
+
+	/**取消收藏
+	 * @Description 
+	 * @author wwb
+	 * @Date 2021-01-28 15:31:21
+	 * @param request
+	 * @param activityId
+	 * @return com.chaoxing.activity.dto.RestRespDTO
+	*/
+	@LoginRequired
+	@RequestMapping("{activityId}/cancel-collect")
+	public RestRespDTO cancelCollect(HttpServletRequest request, @PathVariable Integer activityId) {
+		LoginUserDTO loginUser = LoginUtils.getLoginUser(request);
+		activityCollectionHandleService.cancelCollect(activityId, loginUser);
+		return RestRespDTO.success();
 	}
 
 }

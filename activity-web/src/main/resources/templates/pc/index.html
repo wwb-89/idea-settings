@@ -5,7 +5,6 @@
     <title>活动首页</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="/static/pc/assets/lib/element-ui/lib/theme-chalk/index.css" th:href="@{/pc/assets/lib/element-ui/lib/theme-chalk/index.css}">
-    <link rel="stylesheet" href="/static/pc/assets/css/public.css" th:href="@{/pc/assets/css/public.css}">
     <link rel="stylesheet" href="/static/pc/assets/css/index.css" th:href="@{/pc/assets/css/index.css}">
     <script th:if="${pageId != null}" th:src="|//portal.chaoxing.com/outer/${pageId}/header|"></script>
     <style type="text/css">
@@ -18,7 +17,7 @@
 <body>
 <div class="page" id="activity-vue" v-cloak>
     <div class="banner" th:if="${banner eq 1}">
-        <img src="/static/pc/assets/images/banner.png" th:src="@{/pc/assets/images/banner.png}">
+        <img class="jqthumbImg" src="/static/pc/assets/images/banner.png" th:src="@{/pc/assets/images/banner.png}">
     </div>
     <div class="content">
         <div class="search">
@@ -75,10 +74,10 @@
                                 <div class="tag black" v-if="item.status == 4">已结束</div>
                             </div>
                             <div class="font-box">
-                                <p class="title1 overHidden2" >{{item.name}}</p>
+                                <p class="title1" >{{item.name}}</p>
                                 <p>活动时间：{{item.startTime | timestamp2YMD}} ～ {{item.endTime | timestamp2YMD}}</p>
                                 <p>主办单位：{{item.organisers}}</p>
-                                <p class="overHidden2" v-show="item.address">活动地点：{{item.address}}{{item.detailAddress ? item.detailAddress : ''}}</p>
+                                <p v-show="item.address">活动地点：{{item.address}}{{item.detailAddress ? item.detailAddress : ''}}</p>
                             </div>
                         </div>
                     </div>
@@ -163,6 +162,10 @@
             },
             mounted:function() {
                 var $this = this;
+                $(".jqthumbImg").jqthumb({
+                    width:'100%',
+                    height:'100%'
+                });
                 $this.resetQueryParams();
                 // 如果topFid符合regions的manageFid那么选中
                 if (!activityApp.isEmpty($this.topFid) && !activityApp.isEmpty($this.regions)) {

@@ -100,8 +100,8 @@
                         </span>
                     </div>
                 </div>
-                <div class="form-item">
-                    <label class="label cover" style="line-height: 100px;"><img src="/static/pc/assets/images/required.png" th:src="@{/pc/assets/images/required.png}" class="required-img">封面</label>
+                <div class="form-item align-start">
+                    <label class="label cover"><img src="/static/pc/assets/images/required.png" th:src="@{/pc/assets/images/required.png}" class="required-img">封面</label>
                     <div class="input-box">
                         <div class="img-box">
                             <img :src="activity | getCloudImgUrl" class="cover-img jqthumbImg">
@@ -210,7 +210,7 @@
                         <input v-show="sign.signUp.limitPerson" v-model="sign.signUp.personLimit" type="number" min="1" step="1" maxlength="10" placeholder="请输入正整数" class="person"><span class="person-span" v-show="sign.signUp.limitPerson">人</span>
                     </div>
                 </div>
-                <div class="form-item">
+                <div class="form-item align-start">
                     <label class="label" style="line-height: 20px;">信息填写</label>
                     <div class="input-box column">
                         <div class="set-box">
@@ -237,7 +237,7 @@
                         <span class="tips">开启后，所有人都能看到报名人员名单</span>
                     </div>
                 </div>
-                <div class="form-item" v-show="false">
+                <div class="form-item" v-if="false">
                     <label class="label position"><img src="/static/pc/assets/images/required.png" th:src="@{/pc/assets/images/required.png}" class="required-img">按钮名称</label>
                     <div class="input-box btn-name">
                         <el-input type="text" v-model.trim="sign.signUp.btnName" placeholder="请输入内容" maxlength="6" show-word-limit></el-input>
@@ -304,7 +304,7 @@
                         <span class="tips">开启后，所有人都能看到签到人员名单</span>
                     </div>
                 </div>
-                <div class="form-item" v-show="false">
+                <div class="form-item" v-if="false">
                     <label class="label"><img src="/static/pc/assets/images/required.png" th:src="@{/pc/assets/images/required.png}" class="required-img">按钮名称</label>
                     <div class="input-box btn-name">
                         <el-input type="text" v-model.trim="sign.signIn.btnName" placeholder="请输入内容" maxlength="6" show-word-limit></el-input>
@@ -371,7 +371,7 @@
                         <span class="tips">开启后，所有人都能看到签退人员名单</span>
                     </div>
                 </div>
-                <div class="form-item" v-show="false">
+                <div class="form-item" v-if="false">
                     <label class="label"><img src="/static/pc/assets/images/required.png" th:src="@{/pc/assets/images/required.png}" class="required-img">按钮名称</label>
                     <div class="input-box btn-name">
                         <el-input type="text" v-model.trim="sign.signOut.btnName" placeholder="请输入内容" maxlength="6" show-word-limit></el-input>

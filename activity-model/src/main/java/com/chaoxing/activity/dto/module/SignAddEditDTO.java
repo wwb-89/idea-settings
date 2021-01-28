@@ -23,7 +23,7 @@ public class SignAddEditDTO {
 
 	/** 主键 */
 	private Integer id;
-	/** 活动名称 */
+	/** 报名签到名称 */
 	private String name;
 	/** 说明 */
 	private String notes;

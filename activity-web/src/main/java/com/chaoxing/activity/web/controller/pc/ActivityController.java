@@ -1,4 +1,4 @@
-package com.chaoxing.activity.web.controller;
+package com.chaoxing.activity.web.controller.pc;
 
 import com.chaoxing.activity.dto.ActivityQueryDateDTO;
 import com.chaoxing.activity.model.Group;
@@ -69,10 +69,10 @@ public class ActivityController {
 	 * @param request
 	 * @param model
 	 * @param code
-	 * @param unitId
-	 * @param state
+	 * @param unitId 门户封装的fid
+	 * @param state 微服务封装的fid
 	 * @param pageId
-	 * @param fid
+	 * @param fid 其他来源封装的fid
 	 * @param banner
 	 * @return java.lang.String
 	*/
@@ -80,6 +80,7 @@ public class ActivityController {
 	public String libIndex(HttpServletRequest request, Model model, String code, Integer unitId, Integer state, Integer fid, Integer pageId, Integer banner) {
 		Integer realFid = Optional.ofNullable(unitId).orElse(Optional.ofNullable(state).orElse(fid));
 		if (realFid == null) {
+			// 使用通用的活动广场
 			return "redirect:/";
 		}
 		return handleData(request, model, code, realFid, pageId, banner);
@@ -151,6 +152,19 @@ public class ActivityController {
 			return "mobile/index";
 		}
 		return "pc/index";
+	}
+
+	/**我的
+	 * @Description 
+	 * @author wwb
+	 * @Date 2021-01-27 14:59:23
+	 * @param request
+	 * @param model
+	 * @return java.lang.String
+	*/
+	@RequestMapping("my")
+	public String my(HttpServletRequest request, Model model) {
+		return "";
 	}
 
 }

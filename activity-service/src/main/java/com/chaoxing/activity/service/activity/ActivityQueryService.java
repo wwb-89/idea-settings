@@ -1,22 +1,28 @@
 package com.chaoxing.activity.service.activity;
 
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.chaoxing.activity.dto.LoginUserDTO;
+import com.chaoxing.activity.dto.activity.ActivitySignedUpDTO;
 import com.chaoxing.activity.dto.activity.ActivityTypeDTO;
 import com.chaoxing.activity.dto.manager.WfwRegionalArchitectureDTO;
 import com.chaoxing.activity.dto.query.ActivityManageQueryDTO;
 import com.chaoxing.activity.dto.query.ActivityQueryDTO;
 import com.chaoxing.activity.dto.query.MhActivityCalendarQueryDTO;
+import com.chaoxing.activity.dto.sign.SignedUpDTO;
 import com.chaoxing.activity.mapper.ActivityMapper;
 import com.chaoxing.activity.model.Activity;
 import com.chaoxing.activity.service.manager.WfwRegionalArchitectureApiService;
+import com.chaoxing.activity.service.manager.module.SignApiService;
 import com.chaoxing.activity.util.DateUtils;
 import com.chaoxing.activity.util.constant.DateFormatConstant;
 import com.chaoxing.activity.util.constant.DateTimeFormatterConstant;
 import com.chaoxing.activity.util.enums.ActivityQueryDateEnum;
 import com.chaoxing.activity.util.enums.ActivityTypeEnum;
 import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -28,10 +34,7 @@ import java.text.ParseException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**活动查询服务
@@ -53,6 +56,8 @@ public class ActivityQueryService {
 	private ActivityValidationService activityValidationService;
 	@Resource
 	private WfwRegionalArchitectureApiService wfwRegionalArchitectureApiService;
+	@Resource
+	private SignApiService signApiService;
 	
 	/**查询参与的活动
 	 * @Description 
@@ -64,7 +69,7 @@ public class ActivityQueryService {
 	*/
 	public Page<Activity> listParticipate(Page<Activity> page, ActivityQueryDTO activityQuery) {
 		calDateScope(activityQuery);
-		page = activityMapper.listParticipate(page, activityQuery);
+		page = activityMapper.pageParticipate(page, activityQuery);
 		return page;
 	}
 
@@ -77,7 +82,7 @@ public class ActivityQueryService {
 	 * @return com.baomidou.mybatisplus.extension.plugins.pagination.Page<com.chaoxing.activity.model.Activity>
 	*/
 	public Page<Activity> listActivityCalendarParticipate(Page<Activity> page, MhActivityCalendarQueryDTO mhActivityCalendarQuery) throws ParseException {
-		page = activityMapper.listActivityCalendarParticipate(page, mhActivityCalendarQuery);
+		page = activityMapper.pageActivityCalendarParticipate(page, mhActivityCalendarQuery);
 		List<Activity> records = page.getRecords();
 		String startDateStr = mhActivityCalendarQuery.getStartDate();
 		String endDateStr = mhActivityCalendarQuery.getEndDate();
@@ -120,7 +125,7 @@ public class ActivityQueryService {
 	 * @return com.baomidou.mybatisplus.extension.plugins.pagination.Page<com.chaoxing.activity.model.Activity>
 	*/
 	public Page<Activity> listCreated(Page<Activity> page, Integer fid) {
-		page = activityMapper.listCreated(page, fid);
+		page = activityMapper.pageOrgCreated(page, fid);
 		return page;
 	}
 
@@ -209,8 +214,21 @@ public class ActivityQueryService {
 			fids.add(fid);
 		}
 		activityManageQuery.setFids(fids);
-		page = activityMapper.listManaging(page, activityManageQuery);
+		page = activityMapper.pageManaging(page, activityManageQuery);
 		return page;
+	}
+
+	/**分页查询创建的活动
+	 * @Description 
+	 * @author wwb
+	 * @Date 2021-01-27 21:04:12
+	 * @param page
+	 * @param uid
+	 * @param sw
+	 * @return com.baomidou.mybatisplus.extension.plugins.pagination.Page<com.chaoxing.activity.model.Activity>
+	*/
+	public Page<Activity> pageCreated(Page<Activity> page, Integer uid, String sw) {
+		return activityMapper.pageUserCreated(page, uid, sw);
 	}
 
 	/**根据活动id查询活动
@@ -267,6 +285,61 @@ public class ActivityQueryService {
 				.lambda()
 				.and(wrapper -> wrapper.isNull(Activity::getCoverUrl).or().ne(Activity::getCoverUrl, ""))
 		);
+	}
+
+	/**
+	 * @Description 
+	 * @author wwb
+	 * @Date 2021-01-27 20:30:46
+	 * @param page
+	 * @param uid
+	 * @param sw
+	 * @return com.baomidou.mybatisplus.extension.plugins.pagination.Page
+	*/
+	public Page pageSignedUp(Page page, Integer uid, String sw) {
+		page = signApiService.pageUserSignedUp(page, uid, sw);
+		List records = page.getRecords();
+		if (CollectionUtils.isNotEmpty(records)) {
+			List<Integer> signIds = Lists.newArrayList();
+			Map<Integer, SignedUpDTO> signIdSignedUpMap = Maps.newHashMap();
+			for (Object record : records) {
+				JSONObject jsonObject = (JSONObject) record;
+				SignedUpDTO signedUp = JSON.parseObject(jsonObject.toJSONString(), SignedUpDTO.class);
+				signIds.add(signedUp.getSignId());
+				signIdSignedUpMap.put(signedUp.getSignId(), signedUp);
+			}
+			List<ActivitySignedUpDTO> activitySignedUps = Lists.newArrayList();
+			List<Activity> activities = activityMapper.listBySignIds(signIds);
+			if (CollectionUtils.isNotEmpty(activities)) {
+				for (Activity activity : activities) {
+					ActivitySignedUpDTO activitySignedUp = new ActivitySignedUpDTO();
+					BeanUtils.copyProperties(activity, activitySignedUp);
+					// 设置报名状态
+					Integer signId = activitySignedUp.getSignId();
+					SignedUpDTO signedUp = signIdSignedUpMap.get(signId);
+					if (signedUp != null) {
+						activitySignedUp.setSignUpId(signedUp.getSignUpId());
+						activitySignedUp.setUserSignUpStatus(signedUp.getUserSignUpStatus());
+					}
+					activitySignedUps.add(activitySignedUp);
+				}
+			}
+			page.setRecords(activitySignedUps);
+		}
+		return page;
+	}
+
+	/**查询收藏的活动
+	 * @Description 
+	 * @author wwb
+	 * @Date 2021-01-27 20:58:26
+	 * @param page
+	 * @param uid
+	 * @param sw
+	 * @return com.baomidou.mybatisplus.extension.plugins.pagination.Page<com.chaoxing.activity.model.Activity>
+	*/
+	public Page<Activity> pageCollected(Page page, Integer uid, String sw) {
+		return activityMapper.pageCollectedActivityId(page, uid, sw);
 	}
 
 }

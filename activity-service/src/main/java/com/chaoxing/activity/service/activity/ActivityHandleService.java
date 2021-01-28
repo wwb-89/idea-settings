@@ -34,7 +34,6 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 /**数据处理服务
@@ -175,8 +174,7 @@ public class ActivityHandleService {
 			signId = signApiService.create(signAddEdit, request);
 		} else {
 			// 修改报名签到
-			String signName = Optional.ofNullable(signAddEdit.getName()).filter(StringUtils::isNotBlank).orElse(activity.getName());
-			signAddEdit.setName(signName);
+			signAddEdit.setName(activity.getName());
 			signApiService.update(signAddEdit, request);
 		}
 		return signId;

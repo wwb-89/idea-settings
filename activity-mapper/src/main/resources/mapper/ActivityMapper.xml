@@ -45,7 +45,7 @@
         t.update_time
     </sql>
 
-    <select id="listParticipate" resultMap="BaseResultMap">
+    <select id="pageParticipate" resultMap="BaseResultMap">
         SELECT
             <include refid="Base_Column_List"></include>
         FROM
@@ -105,7 +105,7 @@
     </select>
 
     <!--查询管理的活动-->
-    <select id="listManaging" resultMap="BaseResultMap">
+    <select id="pageManaging" resultMap="BaseResultMap">
         SELECT
             <include refid="Base_Column_List"></include>
         FROM
@@ -144,7 +144,7 @@
     </select>
 
     <!--查询机构创建的-->
-    <select id="listCreated" resultMap="BaseResultMap">
+    <select id="pageOrgCreated" resultMap="BaseResultMap">
         SELECT
             <include refid="Base_Column_List"></include>
         FROM
@@ -162,7 +162,23 @@
             t.start_time DESC
     </select>
 
-    <select id="listActivityCalendarParticipate" resultMap="BaseResultMap">
+    <!--查询用户创建的-->
+    <select id="pageUserCreated" resultMap="BaseResultMap">
+        SELECT
+            <include refid="Base_Column_List"></include>
+        FROM
+            t_activity t
+        WHERE
+            t.create_uid = #{uid}
+            <if test="sw != null and sw != ''">
+                AND t.`name` LIKE CONCAT( '%', #{sw}, '%' )
+            </if>
+            AND t.`status` IN ( 1, 2, 3, 4 )
+        ORDER BY
+            t.create_time DESC
+    </select>
+
+    <select id="pageActivityCalendarParticipate" resultMap="BaseResultMap">
         SELECT
             <include refid="Base_Column_List"></include>
         FROM
@@ -207,6 +223,39 @@
                 </foreach>
         WHERE
             t.`status` <![CDATA[<>]]> 0
+    </select>
+
+    <select id="listBySignIds" resultMap="BaseResultMap">
+        SELECT
+            <include refid="Base_Column_List"></include>
+        FROM
+            t_activity t
+        WHERE
+            t.sign_id IN
+            <foreach collection="signIds" index="key" item="value" open="(" close=")" separator=",">
+                #{value}
+            </foreach>
+        ORDER BY
+            FIELD('t.sign_id',
+            <foreach collection="signIds" index="key" item="value" open="" close="" separator=",">
+                #{value}
+            </foreach>
+            )
+    </select>
+
+    <select id="pageCollectedActivityId" resultMap="BaseResultMap">
+        SELECT
+            <include refid="Base_Column_List"></include>
+        FROM
+            t_activity t
+            INNER JOIN t_activity_collection t1 ON t.id = t1.activity_id
+            AND t1.uid = #{uid}
+            AND t1.is_deleted = 0
+        WHERE
+            t.`status` IN ( 1, 2, 3, 4 )
+            AND t.`name` LIKE CONCAT( '%', #{sw}, '%' )
+        ORDER BY
+            t1.create_time DESC
     </select>
 
 </mapper>
