@@ -295,6 +295,14 @@ input{
     background: url("../images/loading-icon.png") no-repeat;
     background-size: 100%;
   }
+  img {
+    //position: relative;
+    //top: 0.125rem;
+    margin-right: 0.3125rem;
+    //display: inline-block;
+    width: 0.9375rem;
+    height: 0.9375rem;
+  }
 }
 .border-bottom {
   border-bottom: 1px solid #E9E9E9;

@@ -1,10 +1,28 @@
 body {
   background: #ffffff;
 }
-.activity-market {
+//无内容
+.noContent {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  p {
+    text-align: center;
+    color: #999999;
+    font-size: 14px;
+    line-height: 20px;
+  }
+}
+.activity-market1 {
   margin: 0 72px;
 
   .header-con {
+    position: fixed;
+    top: 0;
+    z-index: 100000;
+    width: calc(100% - 144px);
+    background: #ffffff;
     padding: 16px 0;
     border-bottom: 1px solid rgba(0, 0, 0, 0.06);
     .searchDiv {
@@ -33,6 +51,10 @@ body {
         height: 30px;
         background: url("../images/icon-delete.png") center center no-repeat;
         background-size: 100%;
+        &:hover {
+          background: url("../images/icon-delete-hover.png") center center no-repeat;
+          background-size: 100%;
+        }
       }
       .icon-search1 {
         cursor: pointer;
@@ -43,7 +65,10 @@ body {
         height: 30px;
         background: url("../images/icon-search.png") center center no-repeat;
         background-size: 100%;
-
+        &:hover {
+          background: url("../images/icon-search-hover.png") center center no-repeat;
+          background-size: 100%;
+        }
       }
     }
     .user {
@@ -55,15 +80,22 @@ body {
         height: 30px;
         background: url("../images/user.png") center center no-repeat;
         background-size: 100%;
+        margin-right: 4px;
       }
       a{
         color: #0084FF;
         line-height: 30px;
         font-size: 14px;
       }
+      &:hover {
+        opacity: 0.8;
+        filter: alpha(opacity=80);
+      }
+
     }
   }
   .filter {
+    padding-top: 63px;
     margin-bottom: 12px;
     .item {
       &:first-child {
@@ -189,19 +221,23 @@ body {
           .title {
             color: #333333;
             font-size: 18px;
-            margin-bottom: 12px;
+            margin-bottom: 8px;
             line-height: 24px;
+            cursor: pointer;
+            &:hover {
+              color: #0084FF;
+            }
           }
           .time {
             color: #666666;
             font-size: 14px;
             line-height: 24px;
-            margin-bottom: 12px;
           }
           .address {
             font-size: 14px;
             line-height: 24px;
             color: #999999;
+            margin-top: 8px;
           }
         }
       }
@@ -209,16 +245,6 @@ body {
   }
 
 }
-//无内容
-.noContent {
-  position: absolute;
-  left: 50%;
-  top: 50%;
-  transform: translate(-50%, -50%);
-  p {
-    text-align: center;
-    color: #999999;
-    font-size: 14px;
-    line-height: 20px;
-  }
-}
+
+
+
