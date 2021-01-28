@@ -232,6 +232,21 @@ input:-ms-input-placeholder, textarea:-ms-input-placeholder {
     height: 20px;
   }
 }
+//EUI 分页
+.MyPagination {
+  text-align: center;
+  margin-bottom: 50px;
+  &.is-background {
+    .el-pager li{
+      color: #666666;
+      font-size: 14px;
+      font-weight: normal;
+      &:not(.disabled).active {
+        background: #0084FF;
+      }
+    }
+  }
+}
 [v-cloak] {
   display: none;
 }
