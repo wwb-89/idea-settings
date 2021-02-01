@@ -11,205 +11,341 @@
 <body>
     <div class="activity-market2" id="activity-market">
         <div class="header-con">
-            <div class="searchDiv fl">
-                <input type="text" placeholder="搜索标题" v-model="inputValue" class="inputValue">
-                <i class="icon-delete1" v-show="inputValue.length!=0" v-on:click="inputDeleteFun"></i>
-                <i class="icon-search1"></i>
-            </div>
-            <div class="user fr">
-                <i class="icon-user"></i>
-                <a href="#">我的活动</a>
-            </div>
-            <div class="clear"></div>
-        </div>
-        <div class="filter">
-            <div class="item">
-                <label>类型</label>
-                <div class="option-list">
-                    <ul>
-                        <li class="active">全部</li>
-                        <li>展览</li>
-                        <li>讲座</li>
-                        <li>培训</li>
-                    </ul>
+            <div class="header-inner-content">
+                <div class="searchDiv fl">
+                    <input type="text" placeholder="搜索标题" v-model="inputValue" class="inputValue">
+                    <i class="icon-delete1" v-show="inputValue.length!=0" v-on:click="inputDeleteFun"></i>
+                    <i class="icon-search1"></i>
                 </div>
-                <div class="clear"></div>
-            </div>
-            <div class="item">
-                <label>类型</label>
-                <div class="option-list">
-                    <ul>
-                        <li class="active">全部</li>
-                        <li>近一个月</li>
-                        <li>近三个月</li>
-                        <li>近半年</li>
-                        <li>近一年</li>
-                        <li>更早</li>
-                    </ul>
-                </div>
-                <div class="clear"></div>
-            </div>
-            <div class="item">
-                <label>地区</label>
-                <div class="option-list">
-                    <ul>
-                        <li class="active">全部</li>
-                        <li>龙华区</li>
-                        <li>龙华区</li>
-                        <li>龙华区</li>
-                        <li>龙华区</li>
-                        <li>龙华区</li>
-                        <li>龙华区</li>
-                        <li>龙华区</li>
-                        <li>龙华区</li>
-                        <li>龙华区</li>
-                        <li>龙华区</li>
-                        <li>龙华区</li>
-                        <li>龙华区</li>
-                        <li>龙华区</li>
-                        <li>龙华区</li>
-                        <li>龙华区</li>
-                        <li>龙华区</li>
-                        <li>龙华区</li>
-                        <li>龙华区</li>
-                        <li>龙华区</li>
-                        <li>龙华区</li>
-                        <li>龙华区</li>
-                        <li>龙华区</li>
-                    </ul>
+                <div class="user fr">
+                    <i class="icon-user"></i>
+                    <a href="#">我的活动</a>
                 </div>
                 <div class="clear"></div>
             </div>
         </div>
-        <div class="card-list">
-            <ul>
-                <li>
-                    <div class="inner">
-                        <div class="img-box">
-                            <!--                            状态五种状态-->
-                            <p class="tips color1">进行中</p>
-                            <p class="tips color2">未开始</p>
-                            <p class="tips color3">已结束</p>
-                            <p class="tips color4">审核中</p>
-                            <p class="tips color5">活动预告</p>
-                            <p class="num"><i></i>1028</p>
-                            <div class="js-crop-img">
-                                <img src="https://p.ananas.chaoxing.com/star3/270_169c/669ca80d6a0c5f74835bb936a41aabca.jpg">
+        <div class="inner-content">
+            <div class="filter">
+                <div class="item">
+                    <label>类型</label>
+                    <div class="option-list">
+                        <ul>
+                            <li class="active">全部</li>
+                            <li>展览</li>
+                            <li>讲座</li>
+                            <li>培训</li>
+                        </ul>
+                    </div>
+                    <div class="clear"></div>
+                </div>
+                <div class="item">
+                    <label>时间</label>
+                    <div class="option-list">
+                        <ul>
+                            <li class="active">全部</li>
+                            <li>近一个月</li>
+                            <li>近三个月</li>
+                            <li>近半年</li>
+                            <li>近一年</li>
+                            <li>更早</li>
+                        </ul>
+                    </div>
+                    <div class="clear"></div>
+                </div>
+                <div class="item">
+                    <label>地区</label>
+                    <div class="option-list">
+                        <ul>
+                            <li class="active">全部</li>
+                            <li>龙华区</li>
+                            <li>龙华区</li>
+                            <li>龙华区</li>
+                            <li>龙华区</li>
+                            <li>龙华区</li>
+                            <li>龙华区</li>
+                            <li>龙华区</li>
+                            <li>龙华区</li>
+                            <li>龙华区</li>
+                            <li>龙华区</li>
+                            <li>龙华区</li>
+                            <li>龙华区</li>
+                            <li>龙华区</li>
+                            <li>龙华区</li>
+                            <li>龙华区</li>
+                            <li>龙华区</li>
+                            <li>龙华区</li>
+                            <li>龙华区</li>
+                            <li>龙华区</li>
+                            <li>龙华区</li>
+                            <li>龙华区</li>
+                            <li>龙华区</li>
+                        </ul>
+                    </div>
+                    <div class="clear"></div>
+                </div>
+            </div>
+            <div class="card-list">
+                <ul>
+                    <li>
+                        <div class="inner">
+                            <div class="img-box">
+                                <!--                            状态五种状态-->
+                                <p class="tips color1">进行中</p>
+                                <p class="tips color2">未开始</p>
+                                <p class="tips color3">已结束</p>
+                                <p class="tips color4">审核中</p>
+                                <p class="tips color5">活动预告</p>
+                                <p class="num"><i></i>1028</p>
+                                <div class="js-crop-img">
+                                    <img src="https://p.ananas.chaoxing.com/star/270_160c/1384304676679dmxci.jpg">
+                                </div>
+                            </div>
+                            <div class="card-info">
+                                <h2 class="title overHidden1">浙江图书馆2020年11月读者活动浙江图书馆2020年11月读者活动浙江图书馆2020年11月读者活动浙江图书馆2020年11月读者活动浙江图书馆2020年11月读者活动浙江图书馆2020年11月读者活动</h2>
+                                <p class="time overHidden1">2020.10.10 9:00 ～ 2028.10.1 16:00</p>
+                                <p class="address overHidden1">全国活动运营中心</p>
+                                <p class="address overHidden1">浙江图书馆</p>
                             </div>
                         </div>
-                        <div class="card-info">
-                            <h2 class="title overHidden1">浙江图书馆2020年11月读者活动浙江图书馆2020年11月读者活动浙江图书馆2020年11月读者活动浙江图书馆2020年11月读者活动浙江图书馆2020年11月读者活动浙江图书馆2020年11月读者活动</h2>
-                            <p class="time">2020.10.10 9:00 ～ 2028.10.1 16:00</p>
-                            <p class="address">全国活动运营中心</p>
-                            <p class="address">浙江图书馆</p>
-                        </div>
-                    </div>
-                </li>
-                <li>
-                    <div class="inner">
-                        <div class="img-box">
-                            <!--                            状态五种状态-->
-                            <p class="tips color1">进行中</p>
-                            <p class="tips color2">未开始</p>
-                            <p class="tips color3">已结束</p>
-                            <p class="tips color4">审核中</p>
-                            <p class="tips color5">活动预告</p>
-                            <p class="num"><i></i>1028</p>
-                            <div class="js-crop-img">
-                                <img src="https://p.ananas.chaoxing.com/star3/270_169c/669ca80d6a0c5f74835bb936a41aabca.jpg">
+                    </li>
+                    <li>
+                        <div class="inner">
+                            <div class="img-box">
+                                <!--                            状态五种状态-->
+                                <p class="tips color1">进行中</p>
+                                <p class="tips color2">未开始</p>
+                                <p class="tips color3">已结束</p>
+                                <p class="tips color4">审核中</p>
+                                <p class="tips color5">活动预告</p>
+                                <p class="num"><i></i>1028</p>
+                                <div class="js-crop-img">
+                                    <img src="https://p.ananas.chaoxing.com/star/270_160c/1384304676679dmxci.jpg">
+                                </div>
+                            </div>
+                            <div class="card-info">
+                                <h2 class="title overHidden1">浙江图书馆2020年11月读者活动浙江图书馆2020年11月读者活动浙江图书馆2020年11月读者活动浙江图书馆2020年11月读者活动浙江图书馆2020年11月读者活动浙江图书馆2020年11月读者活动</h2>
+                                <p class="time overHidden1">2020.10.10 9:00 ～ 2028.10.1 16:00</p>
+                                <p class="address overHidden1">全国活动运营中心</p>
+                                <p class="address overHidden1">浙江图书馆</p>
                             </div>
                         </div>
-                        <div class="card-info">
-                            <h2 class="title overHidden1">浙江图书馆2020年11月读者活动浙江图书馆2020年11月读者活动浙江图书馆2020年11月读者活动浙江图书馆2020年11月读者活动浙江图书馆2020年11月读者活动浙江图书馆2020年11月读者活动</h2>
-                            <p class="time">2020.10.10 9:00 ～ 2028.10.1 16:00</p>
-                            <p class="address">全国活动运营中心</p>
-                            <p class="address">浙江图书馆</p>
-                        </div>
-                    </div>
-                </li>
-                <li>
-                    <div class="inner">
-                        <div class="img-box">
-                            <!--                            状态五种状态-->
-                            <p class="tips color2">未开始</p>
-                            <p class="num"><i></i>1028</p>
-                            <div class="js-crop-img">
-                                <img src="https://p.ananas.chaoxing.com/star3/270_169c/669ca80d6a0c5f74835bb936a41aabca.jpg">
+                    </li>
+                    <li>
+                        <div class="inner">
+                            <div class="img-box">
+                                <!--                            状态五种状态-->
+                                <p class="tips color1">进行中</p>
+                                <p class="tips color2">未开始</p>
+                                <p class="tips color3">已结束</p>
+                                <p class="tips color4">审核中</p>
+                                <p class="tips color5">活动预告</p>
+                                <p class="num"><i></i>1028</p>
+                                <div class="js-crop-img">
+                                    <img src="https://p.ananas.chaoxing.com/star/270_160c/1384304676679dmxci.jpg">
+                                </div>
+                            </div>
+                            <div class="card-info">
+                                <h2 class="title overHidden1">浙江图书馆2020年11月读者活动浙江图书馆2020年11月读者活动浙江图书馆2020年11月读者活动浙江图书馆2020年11月读者活动浙江图书馆2020年11月读者活动浙江图书馆2020年11月读者活动</h2>
+                                <p class="time overHidden1">2020.10.10 9:00 ～ 2028.10.1 16:00</p>
+                                <p class="address overHidden1">全国活动运营中心</p>
+                                <p class="address overHidden1">浙江图书馆</p>
                             </div>
                         </div>
-                        <div class="card-info">
-                            <h2 class="title overHidden1">浙江图书馆2020年11月读者活动浙江图书馆2020年11月读者活动浙江图书馆2020年11月读者活动浙江图书馆2020年11月读者活动浙江图书馆2020年11月读者活动浙江图书馆2020年11月读者活动</h2>
-                            <p class="time">2020.10.10 9:00 ～ 2028.10.1 16:00</p>
-                            <p class="address">全国活动运营中心</p>
-                            <p class="address">浙江图书馆</p>
-                        </div>
-                    </div>
-                </li>
-                <li>
-                    <div class="inner">
-                        <div class="img-box">
-                            <!--                            状态五种状态-->
-                            <p class="tips color3">已结束</p>
-                            <p class="num"><i></i>1028</p>
-                            <div class="js-crop-img">
-                                <img src="https://p.ananas.chaoxing.com/star3/270_169c/669ca80d6a0c5f74835bb936a41aabca.jpg">
+                    </li>
+                    <li>
+                        <div class="inner">
+                            <div class="img-box">
+                                <!--                            状态五种状态-->
+                                <p class="tips color1">进行中</p>
+                                <p class="tips color2">未开始</p>
+                                <p class="tips color3">已结束</p>
+                                <p class="tips color4">审核中</p>
+                                <p class="tips color5">活动预告</p>
+                                <p class="num"><i></i>1028</p>
+                                <div class="js-crop-img">
+                                    <img src="https://p.ananas.chaoxing.com/star/270_160c/1384304676679dmxci.jpg">
+                                </div>
+                            </div>
+                            <div class="card-info">
+                                <h2 class="title overHidden1">浙江图书馆2020年11月读者活动浙江图书馆2020年11月读者活动浙江图书馆2020年11月读者活动浙江图书馆2020年11月读者活动浙江图书馆2020年11月读者活动浙江图书馆2020年11月读者活动</h2>
+                                <p class="time overHidden1">2020.10.10 9:00 ～ 2028.10.1 16:00</p>
+                                <p class="address overHidden1">全国活动运营中心</p>
+                                <p class="address overHidden1">浙江图书馆</p>
                             </div>
                         </div>
-                        <div class="card-info">
-                            <h2 class="title overHidden1">浙江图书馆2020年11月读者活动浙江图书馆2020年11月读者活动浙江图书馆2020年11月读者活动浙江图书馆2020年11月读者活动浙江图书馆2020年11月读者活动浙江图书馆2020年11月读者活动</h2>
-                            <p class="time">2020.10.10 9:00 ～ 2028.10.1 16:00</p>
-                            <p class="address">全国活动运营中心</p>
-                            <p class="address">浙江图书馆</p>
-                        </div>
-                    </div>
-                </li>
-                <li>
-                    <div class="inner">
-                        <div class="img-box">
-                            <!--                            状态五种状态-->
-                            <p class="tips color4">审核中</p>
-                            <p class="num"><i></i>1028</p>
-                            <div class="js-crop-img">
-                                <img src="https://p.ananas.chaoxing.com/star3/270_169c/669ca80d6a0c5f74835bb936a41aabca.jpg">
+                    </li>
+                    <li>
+                        <div class="inner">
+                            <div class="img-box">
+                                <!--                            状态五种状态-->
+                                <p class="tips color1">进行中</p>
+                                <p class="tips color2">未开始</p>
+                                <p class="tips color3">已结束</p>
+                                <p class="tips color4">审核中</p>
+                                <p class="tips color5">活动预告</p>
+                                <p class="num"><i></i>1028</p>
+                                <div class="js-crop-img">
+                                    <img src="https://p.ananas.chaoxing.com/star/270_160c/1384304676679dmxci.jpg">
+                                </div>
+                            </div>
+                            <div class="card-info">
+                                <h2 class="title overHidden1">浙江图书馆2020年11月读者活动浙江图书馆2020年11月读者活动浙江图书馆2020年11月读者活动浙江图书馆2020年11月读者活动浙江图书馆2020年11月读者活动浙江图书馆2020年11月读者活动</h2>
+                                <p class="time overHidden1">2020.10.10 9:00 ～ 2028.10.1 16:00</p>
+                                <p class="address overHidden1">全国活动运营中心</p>
+                                <p class="address overHidden1">浙江图书馆</p>
                             </div>
                         </div>
-                        <div class="card-info">
-                            <h2 class="title overHidden1">浙江图书馆2020年11月读者活动浙江图书馆2020年11月读者活动浙江图书馆2020年11月读者活动浙江图书馆2020年11月读者活动浙江图书馆2020年11月读者活动浙江图书馆2020年11月读者活动</h2>
-                            <p class="time">2020.10.10 9:00 ～ 2028.10.1 16:00</p>
-                            <p class="address">全国活动运营中心</p>
-                            <p class="address">浙江图书馆</p>
-                        </div>
-                    </div>
-                </li>
-                <li>
-                    <div class="inner">
-                        <div class="img-box">
-                            <!--                            状态五种状态-->
-                            <p class="tips color1">进行中</p>
-                            <p class="num"><i></i>1028</p>
-                            <div class="js-crop-img">
-                                <img src="https://p.ananas.chaoxing.com/star3/270_169c/669ca80d6a0c5f74835bb936a41aabca.jpg">
+                    </li>
+                    <li>
+                        <div class="inner">
+                            <div class="img-box">
+                                <!--                            状态五种状态-->
+                                <p class="tips color1">进行中</p>
+                                <p class="tips color2">未开始</p>
+                                <p class="tips color3">已结束</p>
+                                <p class="tips color4">审核中</p>
+                                <p class="tips color5">活动预告</p>
+                                <p class="num"><i></i>1028</p>
+                                <div class="js-crop-img">
+                                    <img src="https://p.ananas.chaoxing.com/star/270_160c/1384304676679dmxci.jpg">
+                                </div>
+                            </div>
+                            <div class="card-info">
+                                <h2 class="title overHidden1">浙江图书馆2020年11月读者活动浙江图书馆2020年11月读者活动浙江图书馆2020年11月读者活动浙江图书馆2020年11月读者活动浙江图书馆2020年11月读者活动浙江图书馆2020年11月读者活动</h2>
+                                <p class="time overHidden1">2020.10.10 9:00 ～ 2028.10.1 16:00</p>
+                                <p class="address overHidden1">全国活动运营中心</p>
+                                <p class="address overHidden1">浙江图书馆</p>
                             </div>
                         </div>
-                        <div class="card-info">
-                            <h2 class="title overHidden1">浙江图书馆2020年11月读者活动浙江图书馆2020年11月读者活动浙江图书馆2020年11月读者活动浙江图书馆2020年11月读者活动浙江图书馆2020年11月读者活动浙江图书馆2020年11月读者活动</h2>
-                            <p class="time">2020.10.10 9:00 ～ 2028.10.1 16:00</p>
-                            <p class="address">全国活动运营中心</p>
-                            <p class="address">浙江图书馆</p>
+                    </li>
+                    <li>
+                        <div class="inner">
+                            <div class="img-box">
+                                <!--                            状态五种状态-->
+                                <p class="tips color1">进行中</p>
+                                <p class="tips color2">未开始</p>
+                                <p class="tips color3">已结束</p>
+                                <p class="tips color4">审核中</p>
+                                <p class="tips color5">活动预告</p>
+                                <p class="num"><i></i>1028</p>
+                                <div class="js-crop-img">
+                                    <img src="https://p.ananas.chaoxing.com/star/270_160c/1384304676679dmxci.jpg">
+                                </div>
+                            </div>
+                            <div class="card-info">
+                                <h2 class="title overHidden1">浙江图书馆2020年11月读者活动浙江图书馆2020年11月读者活动浙江图书馆2020年11月读者活动浙江图书馆2020年11月读者活动浙江图书馆2020年11月读者活动浙江图书馆2020年11月读者活动</h2>
+                                <p class="time overHidden1">2020.10.10 9:00 ～ 2028.10.1 16:00</p>
+                                <p class="address overHidden1">全国活动运营中心</p>
+                                <p class="address overHidden1">浙江图书馆</p>
+                            </div>
                         </div>
-                    </div>
-                </li>
-            </ul>
+                    </li>
+                    <li>
+                        <div class="inner">
+                            <div class="img-box">
+                                <!--                            状态五种状态-->
+                                <p class="tips color1">进行中</p>
+                                <p class="tips color2">未开始</p>
+                                <p class="tips color3">已结束</p>
+                                <p class="tips color4">审核中</p>
+                                <p class="tips color5">活动预告</p>
+                                <p class="num"><i></i>1028</p>
+                                <div class="js-crop-img">
+                                    <img src="https://p.ananas.chaoxing.com/star/270_160c/1384304676679dmxci.jpg">
+                                </div>
+                            </div>
+                            <div class="card-info">
+                                <h2 class="title overHidden1">浙江图书馆2020年11月读者活动浙江图书馆2020年11月读者活动浙江图书馆2020年11月读者活动浙江图书馆2020年11月读者活动浙江图书馆2020年11月读者活动浙江图书馆2020年11月读者活动</h2>
+                                <p class="time">2020.10.10 9:00 ～ 2028.10.1 16:00</p>
+                                <p class="address">全国活动运营中心</p>
+                                <p class="address">浙江图书馆</p>
+                            </div>
+                        </div>
+                    </li>
+                    <li>
+                        <div class="inner">
+                            <div class="img-box">
+                                <!--                            状态五种状态-->
+                                <p class="tips color2">未开始</p>
+                                <p class="num"><i></i>1028</p>
+                                <div class="js-crop-img">
+                                    <img src="https://p.ananas.chaoxing.com/star/270_160c/1384304676679dmxci.jpg">
+                                </div>
+                            </div>
+                            <div class="card-info">
+                                <h2 class="title overHidden1">浙江图书馆2020年11月读者活动浙江图书馆2020年11月读者活动浙江图书馆2020年11月读者活动浙江图书馆2020年11月读者活动浙江图书馆2020年11月读者活动浙江图书馆2020年11月读者活动</h2>
+                                <p class="time">2020.10.10 9:00 ～ 2028.10.1 16:00</p>
+                                <p class="address">全国活动运营中心</p>
+                                <p class="address">浙江图书馆</p>
+                            </div>
+                        </div>
+                    </li>
+                    <li>
+                        <div class="inner">
+                            <div class="img-box">
+                                <!--                            状态五种状态-->
+                                <p class="tips color3">已结束</p>
+                                <p class="num"><i></i>1028</p>
+                                <div class="js-crop-img">
+                                    <img src="https://p.ananas.chaoxing.com/star/270_160c/1384304676679dmxci.jpg">
+                                </div>
+                            </div>
+                            <div class="card-info">
+                                <h2 class="title overHidden1">浙江图书馆2020年11月读者活动浙江图书馆2020年11月读者活动浙江图书馆2020年11月读者活动浙江图书馆2020年11月读者活动浙江图书馆2020年11月读者活动浙江图书馆2020年11月读者活动</h2>
+                                <p class="time">2020.10.10 9:00 ～ 2028.10.1 16:00</p>
+                                <p class="address">全国活动运营中心</p>
+                                <p class="address">浙江图书馆</p>
+                            </div>
+                        </div>
+                    </li>
+                    <li>
+                        <div class="inner">
+                            <div class="img-box">
+                                <!--                            状态五种状态-->
+                                <p class="tips color4">审核中</p>
+                                <p class="num"><i></i>1028</p>
+                                <div class="js-crop-img">
+                                    <img src="https://p.ananas.chaoxing.com/star/270_160c/1384304676679dmxci.jpg">
+                                </div>
+                            </div>
+                            <div class="card-info">
+                                <h2 class="title overHidden1">浙江图书馆2020年11月读者活动浙江图书馆2020年11月读者活动浙江图书馆2020年11月读者活动浙江图书馆2020年11月读者活动浙江图书馆2020年11月读者活动浙江图书馆2020年11月读者活动</h2>
+                                <p class="time">2020.10.10 9:00 ～ 2028.10.1 16:00</p>
+                                <p class="address">全国活动运营中心</p>
+                                <p class="address">浙江图书馆</p>
+                            </div>
+                        </div>
+                    </li>
+                    <li>
+                        <div class="inner">
+                            <div class="img-box">
+                                <!--                            状态五种状态-->
+                                <p class="tips color1">进行中</p>
+                                <p class="num"><i></i>1028</p>
+                                <div class="js-crop-img">
+                                    <img src="https://p.ananas.chaoxing.com/star/270_160c/1384304676679dmxci.jpg">
+                                </div>
+                            </div>
+                            <div class="card-info">
+                                <h2 class="title overHidden1">浙江图书馆2020年11月读者活动浙江图书馆2020年11月读者活动浙江图书馆2020年11月读者活动浙江图书馆2020年11月读者活动浙江图书馆2020年11月读者活动浙江图书馆2020年11月读者活动</h2>
+                                <p class="time">2020.10.10 9:00 ～ 2028.10.1 16:00</p>
+                                <p class="address">全国活动运营中心</p>
+                                <p class="address">浙江图书馆</p>
+                            </div>
+                        </div>
+                    </li>
+                </ul>
+                <div class="clear"></div>
+            </div>
+            <!-- 无数据 -->
+            <div class="noContent" style="display: none;">
+                <p>无搜索结果</p>
+            </div>
+            <!--  加载中  -->
+            <div class="loading"><img src="../assets/images/Spinner-1s-200px.svg">加载中…</div>
+            <!--        作为加载完成后占位显示没有更多-->
+            <div class="noMore"  style="display: none"><span></span></div>
         </div>
-        <!-- 无数据 -->
-        <div class="noContent" style="display: none;">
-            <p>无搜索结果</p>
-        </div>
-        <el-pagination
-                background class="MyPagination"
-                layout="prev, pager, next"
-                :total="1000">
-        </el-pagination>
     </div>
 
 </body>
@@ -232,7 +368,13 @@
         created: function () {
         },
         mounted: function () {
+            let $this = this;
             cropImgFun("body");
+            //图片高度根据尺寸等比例变化
+            $this.picHeight();
+            $(window).resize(function (){
+                $this.picHeight()
+            })
         },
         methods: {
             //输入框的交互
@@ -246,6 +388,18 @@
                 this.dialogVisible = !this.dialogVisible;
                 this.tipsHtml = html;
             },
+        //    图片高度计算
+            picHeight:function (){
+                var widthPic = $(".card-list ul li:first-child").find(".js-crop-img").width();
+                var heightPic = 14/27*widthPic;
+                $(".card-list ul li").each(function (){
+                    $(this).find(".js-crop-img").css('height',heightPic+'px');
+                    $(this).find(".img-box").css('height',heightPic+'px');
+                })
+                // return widthPic;
+
+            },
+
         }
     });
 </script>

@@ -18,24 +18,25 @@ body {
   line-height: 20px;
 }
 
-.activity-market1 {
-  margin: 0 72px;
-}
-
-.activity-market1 .header-con {
+.header-con {
   position: fixed;
   top: 0;
   z-index: 100000;
   width: calc(100% - 144px);
   background: #ffffff;
+  padding: 0 72px;
+}
+
+.header-con .header-inner-content {
   padding: 16px 0;
   border-bottom: 1px solid rgba(0, 0, 0, 0.06);
 }
 
-.activity-market1 .header-con .searchDiv {
+.header-con .searchDiv {
   padding-right: 61px;
   padding-left: 16px;
   width: 220px;
+  height: 30px;
   -webkit-box-sizing: border-box;
      -moz-box-sizing: border-box;
           box-sizing: border-box;
@@ -45,16 +46,17 @@ body {
   position: relative;
 }
 
-.activity-market1 .header-con .searchDiv .inputValue {
+.header-con .searchDiv .inputValue {
   color: #333333;
   width: 100%;
   background: none;
   height: 30px;
+  line-height: 30px;
   border: none;
   font-size: 14px;
 }
 
-.activity-market1 .header-con .searchDiv .icon-delete1 {
+.header-con .searchDiv .icon-delete1 {
   cursor: pointer;
   position: absolute;
   right: 35px;
@@ -65,12 +67,12 @@ body {
   background-size: 100%;
 }
 
-.activity-market1 .header-con .searchDiv .icon-delete1:hover {
+.header-con .searchDiv .icon-delete1:hover {
   background: url("../images/icon-delete-hover.png") center center no-repeat;
   background-size: 100%;
 }
 
-.activity-market1 .header-con .searchDiv .icon-search1 {
+.header-con .searchDiv .icon-search1 {
   cursor: pointer;
   position: absolute;
   right: 9px;
@@ -81,12 +83,12 @@ body {
   background-size: 100%;
 }
 
-.activity-market1 .header-con .searchDiv .icon-search1:hover {
+.header-con .searchDiv .icon-search1:hover {
   background: url("../images/icon-search-hover.png") center center no-repeat;
   background-size: 100%;
 }
 
-.activity-market1 .header-con .user {
+.header-con .user {
   display: -webkit-box;
   display: -moz-box;
   display: -ms-flexbox;
@@ -94,7 +96,7 @@ body {
   cursor: pointer;
 }
 
-.activity-market1 .header-con .user .icon-user {
+.header-con .user .icon-user {
   display: inline-block;
   width: 16px;
   height: 30px;
@@ -103,32 +105,32 @@ body {
   margin-right: 4px;
 }
 
-.activity-market1 .header-con .user a {
+.header-con .user a {
   color: #0084FF;
   line-height: 30px;
   font-size: 14px;
 }
 
-.activity-market1 .header-con .user:hover {
+.header-con .user:hover {
   opacity: 0.8;
   filter: alpha(opacity=80);
 }
 
-.activity-market1 .filter {
+.filter {
   padding-top: 63px;
   margin-bottom: 12px;
 }
 
-.activity-market1 .filter .item {
+.filter .item {
   margin-top: 4px;
   position: relative;
 }
 
-.activity-market1 .filter .item:first-child {
+.filter .item:first-child {
   margin-top: 16px;
 }
 
-.activity-market1 .filter .item label {
+.filter .item label {
   width: 44px;
   font-size: 14px;
   line-height: 28px;
@@ -137,11 +139,11 @@ body {
   left: 0;
 }
 
-.activity-market1 .filter .item .option-list {
+.filter .item .option-list {
   padding-left: 44px;
 }
 
-.activity-market1 .filter .item .option-list ul li {
+.filter .item .option-list ul li {
   float: left;
   margin-right: 10px;
   font-size: 14px;
@@ -152,13 +154,18 @@ body {
   margin-bottom: 12px;
 }
 
-.activity-market1 .filter .item .option-list ul li:hover {
+.filter .item .option-list ul li:hover {
   background: rgba(0, 0, 0, 0.04);
 }
 
-.activity-market1 .filter .item .option-list ul li.active {
+.filter .item .option-list ul li.active {
   color: #0084FF;
   background: rgba(0, 132, 255, 0.1);
+}
+
+.inner-content {
+  min-width: 936px;
+  padding: 0 72px;
 }
 
 .activity-market1 .card-list {
@@ -294,4 +301,209 @@ body {
   line-height: 24px;
   color: #999999;
   margin-top: 8px;
+}
+
+.activity-market2 .inner-content {
+  width: auto;
+}
+
+.activity-market2 .card-list {
+  overflow: hidden;
+}
+
+.activity-market2 .card-list ul li {
+  float: left;
+  margin-right: 24px;
+  margin-bottom: 24px;
+  width: calc(33.333% - 16px);
+}
+
+.activity-market2 .card-list ul li:nth-child(3n) {
+  margin-right: 0;
+}
+
+.activity-market2 .card-list ul li .img-box {
+  position: relative;
+  width: 100%;
+  height: 151px;
+  border: 1px solid #E9E9E9;
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.activity-market2 .card-list ul li .img-box .js-crop-img {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 151px;
+}
+
+.activity-market2 .card-list ul li .img-box .num {
+  display: -webkit-box;
+  display: -moz-box;
+  display: -ms-flexbox;
+  display: flex;
+  background: -webkit-gradient(linear, left top, left bottom, from(rgba(0, 0, 0, 0)), to(rgba(0, 0, 0, 0.4)));
+  background: -o-linear-gradient(top, rgba(0, 0, 0, 0) 0%, rgba(0, 0, 0, 0.4) 100%);
+  background: linear-gradient(180deg, rgba(0, 0, 0, 0) 0%, rgba(0, 0, 0, 0.4) 100%);
+  position: absolute;
+  z-index: 10;
+  left: 0;
+  bottom: 0;
+  width: 100%;
+  font-size: 13px;
+  height: 16px;
+  line-height: 16px;
+  padding: 23px 0 11px;
+  border-radius: 0 0 3px 3px;
+  color: #FFFFFF;
+}
+
+.activity-market2 .card-list ul li .img-box .num i {
+  display: inline-block;
+  width: 16px;
+  height: 16px;
+  background: url("../images/pv.png") center center no-repeat;
+  background-size: 100%;
+  margin-left: 10px;
+  margin-right: 4px;
+}
+
+.activity-market2 .card-list ul li .img-box .tips {
+  position: absolute;
+  z-index: 22;
+  right: 0;
+  top: 0;
+  padding: 0 8px;
+  font-weight: 500;
+  height: 22px;
+  line-height: 22px;
+  color: #FFFFFF;
+  font-size: 12px;
+  border-radius: 0px 3px 0px 8px;
+}
+
+.activity-market2 .card-list ul li .img-box .color1 {
+  background: -o-linear-gradient(170.6deg, #24BB1D 0.2%, #48DF4E 100.2%);
+  background: linear-gradient(279.4deg, #24BB1D 0.2%, #48DF4E 100.2%);
+}
+
+.activity-market2 .card-list ul li .img-box .color2 {
+  background: -o-linear-gradient(350.6deg, #91D3FF -0.2%, #51B9FF 99.8%);
+  background: linear-gradient(99.4deg, #91D3FF -0.2%, #51B9FF 99.8%);
+}
+
+.activity-market2 .card-list ul li .img-box .color3 {
+  background: -o-linear-gradient(350.6deg, #ACB8BF -0.2%, #7F8E98 99.8%);
+  background: linear-gradient(99.4deg, #ACB8BF -0.2%, #7F8E98 99.8%);
+}
+
+.activity-market2 .card-list ul li .img-box .color4 {
+  background: -o-linear-gradient(350.83deg, #FD8585 1.9%, #FC564C 99.8%);
+  background: linear-gradient(99.17deg, #FD8585 1.9%, #FC564C 99.8%);
+}
+
+.activity-market2 .card-list ul li .img-box .color5 {
+  background: -o-linear-gradient(353.32deg, #FFB763 1.14%, #FF8B20 98.13%);
+  background: linear-gradient(96.68deg, #FFB763 1.14%, #FF8B20 98.13%);
+}
+
+.activity-market2 .card-list ul li .card-info {
+  text-align: left;
+}
+
+.activity-market2 .card-list ul li .card-info .title {
+  color: #333333;
+  font-size: 18px;
+  margin-top: 8px;
+  line-height: 24px;
+  cursor: pointer;
+}
+
+.activity-market2 .card-list ul li .card-info .title:hover {
+  color: #0084FF;
+}
+
+.activity-market2 .card-list ul li .card-info .time {
+  color: #666666;
+  font-size: 14px;
+  line-height: 24px;
+  margin-top: 8px;
+}
+
+.activity-market2 .card-list ul li .card-info .address {
+  font-size: 14px;
+  line-height: 24px;
+  color: #999999;
+  margin-top: 8px;
+}
+
+.loading {
+  text-align: center;
+  display: -webkit-box;
+  display: -moz-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-align: center;
+     -moz-box-align: center;
+      -ms-flex-align: center;
+          align-items: center;
+  -webkit-box-pack: center;
+     -moz-box-pack: center;
+      -ms-flex-pack: center;
+          justify-content: center;
+  font-size: 16px;
+  line-height: 32px;
+  color: #999999;
+  margin-bottom: 50px;
+}
+
+.loading img {
+  width: 32px;
+  height: 32px;
+}
+
+.noMore {
+  margin-bottom: 26px;
+}
+
+@media screen and (min-width: 1080px) and (max-width: 1365px) {
+  .activity-market2 .card-list ul li {
+    width: calc(33.333% - 16px);
+    margin-right: 24px !important;
+  }
+  .activity-market2 .card-list ul li:nth-child(3n) {
+    margin-right: 0 !important;
+  }
+}
+
+@media screen and (min-width: 1366px) and (max-width: 1919px) {
+  .activity-market2 .card-list ul li {
+    width: calc(25% - 18px);
+    margin-right: 24px !important;
+  }
+  .activity-market2 .card-list ul li:nth-child(4n) {
+    margin-right: 0 !important;
+  }
+}
+
+@media screen and (min-width: 1920px) and (max-width: 2299px) {
+  .activity-market2 .card-list ul li {
+    width: calc(20% - 19.2px);
+    margin-right: 24px !important;
+  }
+  .activity-market2 .card-list ul li:nth-child(5n) {
+    margin-right: 0 !important;
+  }
+}
+
+@media only screen and (min-width: 2300px) {
+  .activity-market2 .card-list ul li {
+    width: calc(16.666% - 20px);
+    margin-right: 24px !important;
+  }
+  .activity-market2 .card-list ul li:nth-child(6n) {
+    margin-right: 0 !important;
+  }
 }
