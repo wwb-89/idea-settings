@@ -36,7 +36,7 @@
 		</ul>
 		<div class="clear"></div>
 	</div>
-	<div id="signed-up-container" class="tabContent" v-show="activeTabIndex == 0">
+	<div class="tabContent" v-show="activeTabIndex == 0">
 		<div class="card-list">
 			<ul v-infinite-scroll="loadSignedUp" infinite-scroll-disabled="signedUpLoading" infinite-scroll-distance="10">
 				<li v-for="(activity, index) of signedUps" :key="'activity-' + index" class="list-item" data-type="0" @touchstart.capture="touchStart" @touchend.capture="touchEnd" @click="signedupDetail(index)">
@@ -61,7 +61,7 @@
 			</ul>
 		</div>
 	</div>
-	<div id="collected-container" class="tabContent" v-show="activeTabIndex == 1">
+	<div class="tabContent" v-show="activeTabIndex == 1">
 		<div class="card-list">
 			<ul v-infinite-scroll="loadCollected" infinite-scroll-disabled="collectedLoading" infinite-scroll-distance="10">
 				<li v-for="(activity, index) of collecteds" :key="'activity-' + index" class="list-item" data-type="0" @touchstart.capture="touchStart" @touchend.capture="touchEnd" @click="collectedDetail(index)">
@@ -85,7 +85,7 @@
 			</ul>
 		</div>
 	</div>
-	<div id="managing-container" class="tabContent" v-show="activeTabIndex == 2">
+	<div class="tabContent" v-show="activeTabIndex == 2">
 		<div class="card-list">
 			<ul v-infinite-scroll="loadManaging" infinite-scroll-disabled="managingLoading" infinite-scroll-distance="10">
 				<li v-for="(activity, index) of managings" :key="'activity-' + index" class="list-item" data-type="0" @touchstart.capture="touchStart" @touchend.capture="touchEnd" @click="managingDetail(index)">
@@ -153,7 +153,7 @@
 
 					collectedLoading: false,
 					collectedNoMore: false,
-					collectedLock: true,
+					collectedLock: false,
 					collectedQueryParams: {
 						pageNum: 1,
 						pageSize: 10,
@@ -163,7 +163,7 @@
 
 					managingLoading: false,
 					managingNoMore: false,
-					managingLock: true,
+					managingLock: false,
 					managingQueryParams: {
 						pageNum: 1,
 						pageSize: 10,
@@ -202,6 +202,11 @@
 						}
 						return scrollTop;
 					}
+
+					$this.loadCollected();
+					$this.collectedLock = true;
+					$this.loadManaging();
+					$this.managingLock = true;
 				},
 				methods: {
 					changeTab: function (index) {
@@ -455,6 +460,10 @@
 						var activity = $this.managings[index];
 						var url = ctx + "/api/manage/activity/" + activity.id + "/release";
 						$this.restSlide();
+						if (activityApp.isEmpty(activity.pageId)) {
+							app.showMsg("活动未创建完成，请在pc端先选择活动模板");
+							return;
+						}
 						app.confirm("", "确认发布？", function () {
 							app.ajaxPostLoading(url, {}, function () {
 								$this.resetManaging();
@@ -472,7 +481,6 @@
 						var url = ctx + "/api/manage/activity/" + activity.id + "/release/cancel";
 						$this.restSlide();
 						app.confirm("", "确认下架？", function () {
-							$this.restSlide();
 							app.ajaxPostLoading(url, {}, function () {
 								$this.resetManaging();
 							}, function () {
