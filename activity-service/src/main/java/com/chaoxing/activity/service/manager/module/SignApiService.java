@@ -2,12 +2,14 @@ package com.chaoxing.activity.service.manager.module;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.chaoxing.activity.dto.manager.sign.SignIn;
 import com.chaoxing.activity.dto.manager.sign.SignParticipantStatDTO;
 import com.chaoxing.activity.dto.manager.sign.SignUp;
 import com.chaoxing.activity.dto.module.SignAddEditDTO;
 import com.chaoxing.activity.dto.sign.ActivityBlockDetailSignStatDTO;
 import com.chaoxing.activity.dto.sign.SignActivityManageIndexDTO;
+import com.chaoxing.activity.util.CookieUtils;
 import com.chaoxing.activity.util.DateUtils;
 import com.chaoxing.activity.util.RestTemplateUtils;
 import com.chaoxing.activity.util.exception.BusinessException;
@@ -17,6 +19,8 @@ import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
+import org.springframework.util.LinkedMultiValueMap;
+import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 
@@ -53,6 +57,13 @@ public class SignApiService {
 	private static final String STAT_SIGNED_UP_NUM = DOMAIN + "/sign/stat/signed-up-num";
 	/** 活动块详情统计信息url */
 	private static final String ACTIVITY_BLOCK_DETAIL_STAT_URL = DOMAIN + "/sign/stat/activity-block-detail?signId=%s&uid=%s";
+	/** 用户报名的报名签到信息url */
+	private static final String USER_SIGNED_UP_URL = DOMAIN + "/sign/stat/sign/user-signed-up/%d";
+	
+	/** 取消报名 */
+	private static final String CANCEL_SIGN_UP_URL = DOMAIN + "/sign-up/%d/cancel";
+	/** 撤销报名 */
+	private static final String REVOCATION_SIGN_UP_URL = DOMAIN + "/sign-up/%d/revocation";
 
 	@Resource
 	private RestTemplate restTemplate;
@@ -256,6 +267,85 @@ public class SignApiService {
 			}
 			return activityBlockDetailSignStat;
 		} else {
+			String errorMessage = jsonObject.getString("message");
+			throw new BusinessException(errorMessage);
+		}
+	}
+
+	/**分页查询用户报名的报名签到
+	 * @Description 
+	 * @author wwb
+	 * @Date 2021-01-27 20:31:46
+	 * @param page
+	 * @param uid
+	 * @param sw
+	 * @return com.baomidou.mybatisplus.extension.plugins.pagination.Page
+	*/
+	public Page pageUserSignedUp(Page page, Integer uid, String sw) {
+		String url = String.format(USER_SIGNED_UP_URL, uid);
+		HttpHeaders httpHeaders = new HttpHeaders();
+		httpHeaders.setContentType(MediaType.APPLICATION_JSON);
+		MultiValueMap<String, Object> multiValuedMap = new LinkedMultiValueMap();
+		multiValuedMap.add("pageNum", page.getCurrent());
+		multiValuedMap.add("pageSize", page.getSize());
+		multiValuedMap.add("sw", sw);
+		HttpEntity<MultiValueMap> httpEntity = new HttpEntity<>(httpHeaders);
+		String result = restTemplate.postForObject(url, httpEntity, String.class);
+		JSONObject jsonObject = JSON.parseObject(result);
+		Boolean success = jsonObject.getBoolean("success");
+		success = Optional.ofNullable(success).orElse(Boolean.FALSE);
+		if (success) {
+			return JSON.parseObject(jsonObject.getString("data"), Page.class);
+		} else {
+			String errorMessage = jsonObject.getString("message");
+			log.error("查询用户报名的报名签到error:{}", errorMessage);
+			throw new BusinessException(errorMessage);
+		}
+	}
+
+	/**取消报名
+	 * @Description 
+	 * @author wwb
+	 * @Date 2021-01-28 14:35:58
+	 * @param request
+	 * @param signUpId
+	 * @return void
+	*/
+	public void cancelSignUp(HttpServletRequest request, Integer signUpId) {
+		String url = String.format(CANCEL_SIGN_UP_URL, signUpId);
+		HttpHeaders headers = new HttpHeaders();
+		List<String> cookies = CookieUtils.getCookies(request);
+		headers.put("Cookie", cookies);
+		HttpEntity<String> httpEntity = new HttpEntity<>(null, headers);
+		String result = restTemplate.postForObject(url, httpEntity, String.class);
+		JSONObject jsonObject = JSON.parseObject(result);
+		Boolean success = jsonObject.getBoolean("success");
+		success = Optional.ofNullable(success).orElse(Boolean.FALSE);
+		if (!success) {
+			String errorMessage = jsonObject.getString("message");
+			throw new BusinessException(errorMessage);
+		}
+	}
+
+	/**撤销报名
+	 * @Description 
+	 * @author wwb
+	 * @Date 2021-01-28 14:36:10
+	 * @param request
+	 * @param signUpId
+	 * @return void
+	*/
+	public void revocationSignUp(HttpServletRequest request, Integer signUpId) {
+		String url = String.format(REVOCATION_SIGN_UP_URL, signUpId);
+		HttpHeaders headers = new HttpHeaders();
+		List<String> cookies = CookieUtils.getCookies(request);
+		headers.put("Cookie", cookies);
+		HttpEntity<String> httpEntity = new HttpEntity<>(null, headers);
+		String result = restTemplate.postForObject(url, httpEntity, String.class);
+		JSONObject jsonObject = JSON.parseObject(result);
+		Boolean success = jsonObject.getBoolean("success");
+		success = Optional.ofNullable(success).orElse(Boolean.FALSE);
+		if (!success) {
 			String errorMessage = jsonObject.getString("message");
 			throw new BusinessException(errorMessage);
 		}

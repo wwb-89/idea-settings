@@ -1328,3 +1328,24 @@ input.btn-name,
 .el-radio__input.is-checked+.el-radio__label {
     color: #333;
 }
+.el-checkbox-button__inner, .el-radio {
+    font-weight: 400!important;
+}
+
+.el-select-dropdown__item.selected {
+    font-weight: 600 !important;
+    color: #0084FF;
+}
+.el-select-dropdown__item.hover, .el-select-dropdown__item:hover {
+    background: #F8F8F8;
+    color: #0084FF;
+}
+.popper__arrow {
+    display: none !important;
+}
+.el-popper[x-placement^=bottom] {
+    margin-top: 4px !important;
+}
+.el-select-dropdown__list {
+    padding: 2px 0 !important;
+}

@@ -42,7 +42,7 @@ public class ActivityController {
 	@Resource
 	private ActivityQueryDateService activityQueryDateService;
 
-	/**移动端活动首页
+	/**移动端活动市场
 	 * @Description 
 	 * @author wwb
 	 * @Date 2020-11-22 14:32:43
@@ -65,9 +65,9 @@ public class ActivityController {
 		model.addAttribute("topFid", fid);
 		return "mobile/index";
 	}
-	/**移动端组别首页
 
-	 * @Description 
+	/**移动端组别活动市场
+	 * @Description
 	 * @author wwb
 	 * @Date 2020-11-22 14:33:02
 	 * @param model
@@ -97,5 +97,17 @@ public class ActivityController {
 		return "mobile/index";
 	}
 
+	/**我的活动
+	 * @Description 
+	 * @author wwb
+	 * @Date 2021-01-27 17:39:48
+	 * @param request
+	 * @param model
+	 * @return java.lang.String
+	*/
+	@RequestMapping("my")
+	public String my(HttpServletRequest request, Model model) {
+		return "mobile/my";
+	}
 
 }

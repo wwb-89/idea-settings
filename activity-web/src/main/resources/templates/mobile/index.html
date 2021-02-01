@@ -37,7 +37,7 @@
                 <div class="info">
                     <h2 class="title">{{activity.name}}</h2>
                     <div class="time">
-                        <span :class="{'status': true, 'released': (activity.status == 2), 'ongoing': (activity.status == 3), 'ended': (activity.status == 4)}">{{activity.status | activityStatusInstructions}}</span>
+                        <span :class="{'status': true, 'status2': (activity.status == 2), 'status3': (activity.status == 3), 'status4': (activity.status == 4)}">{{activity.status | activityStatusInstructions}}</span>
                         <span>{{activity.startTime | timestamp2YMD}} ～ {{activity.endTime | timestamp2YMD}}</span>
                         <div class="clear"></div>
                     </div>
@@ -96,6 +96,7 @@
 </div>
 </body>
 <div th:replace="mobile/include/common_js :: common_js(~{::script})">
+    <script src="/static/pc/assets/lib/set-iframe-height-child.js" th:src="@{/pc/assets/lib/set-iframe-height-child.js}"></script>
     <script src="/static/mobile/assets/lib/mescroll/mescroll.js" th:src="@{/mobile/assets/lib/mescroll/mescroll.js}"></script>
     <script th:inline="javascript">
         Vue.filter("timestamp2YMD", function (timestamp) {
@@ -125,6 +126,10 @@
                 },
                 created: function () {
                     var $this = this;
+                    // 定制右上角菜单
+                    app.customMenu("我的", "", {
+                        option: "activityVue.my();"
+                    });
                     // 活动分类列表
                     $($this.activityClassifyNames).each(function () {
                         $this.activityClassifies.push({name: this, value: this, selected: false});
@@ -215,7 +220,6 @@
                         app.ajaxPost(url, params, function (data) {
                             if (data.success) {
                                 $this.loaded = true;
-                                console.log(data.data.records.length + "-" + data.data.pages);
                                 $this.mescroll.endByPage(data.data.records.length, data.data.pages);
                                 $this.activities.pushArray(data.data.records);
                                 $this.queryParams.pageNum++;
@@ -354,6 +358,10 @@
                             activityApp.integralPush(activity.id, activity.name);
                             app.openUrl(previewUrl);
                         }
+                    },
+                    my: function () {
+                        var url = ctx + "/m/activity/my";
+                        app.openUrl(url);
                     }
                 }
             });
