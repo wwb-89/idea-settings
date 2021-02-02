@@ -14,6 +14,7 @@ import com.chaoxing.activity.service.manager.WfwRegionalArchitectureApiService;
 import com.chaoxing.activity.service.util.Model2DtoService;
 import com.chaoxing.activity.util.CookieUtils;
 import com.chaoxing.activity.util.HttpServletRequestUtils;
+import com.chaoxing.activity.util.constant.CommonConstant;
 import com.google.common.collect.Lists;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -119,18 +120,37 @@ public class ActivityApiController {
 		return RestRespDTO.success(page);
 	}
 
+	/**活动地址(门户地图使用)
+	 * @Description
+	 * @author wwb
+	 * @Date 2020-12-10 18:12:51
+	 * @param pageId
+	 * @return com.chaoxing.activity.dto.RestRespDTO
+	 */
+	@RequestMapping("activity/address")
+	public RestRespDTO activityAddress(Integer pageId) {
+		Activity activity = activityQueryService.getByPageId(pageId);
+		// 没有经纬度则设置一个默认的
+		BigDecimal longitude = Optional.ofNullable(activity.getLongitude()).orElse(CommonConstant.DEFAULT_LONGITUDE);
+		BigDecimal dimension = Optional.ofNullable(activity.getDimension()).orElse(CommonConstant.DEFAULT_DIMENSION);
+		activity.setLongitude(longitude);
+		activity.setDimension(dimension);
+		return RestRespDTO.success(activity);
+	}
+
 	/**是否已收藏
 	 * @Description 
 	 * @author wwb
 	 * @Date 2021-01-28 20:47:22
 	 * @param request
-	 * @param activityId
+	 * @param pageId
 	 * @return com.chaoxing.activity.dto.RestRespDTO
 	*/
-	@RequestMapping("{activityId}/collected")
-	public RestRespDTO isCollected(HttpServletRequest request, @PathVariable Integer activityId) {
+	@RequestMapping("collected")
+	public RestRespDTO isCollected(HttpServletRequest request, Integer pageId) {
+		Activity activity = activityQueryService.getByPageId(pageId);
 		Integer uid = CookieUtils.getUid(request);
-		boolean collected = activityCollectionValidateService.isCollected(activityId, uid);
+		boolean collected = activityCollectionValidateService.isCollected(activity.getId(), uid);
 		return RestRespDTO.success(collected);
 	}
 
@@ -139,13 +159,14 @@ public class ActivityApiController {
 	 * @author wwb
 	 * @Date 2021-01-28 20:28:15
 	 * @param request
-	 * @param activityId
+	 * @param pageId
 	 * @return com.chaoxing.activity.dto.RestRespDTO
 	*/
-	@RequestMapping("{activityId}/collect")
-	public RestRespDTO collect(HttpServletRequest request, @PathVariable Integer activityId) {
+	@RequestMapping("collect")
+	public RestRespDTO collect(HttpServletRequest request, Integer pageId) {
+		Activity activity = activityQueryService.getByPageId(pageId);
 		Integer uid = CookieUtils.getUid(request);
-		activityCollectionHandleService.collect(activityId, uid);
+		activityCollectionHandleService.collect(activity.getId(), uid);
 		return RestRespDTO.success();
 	}
 
@@ -154,13 +175,14 @@ public class ActivityApiController {
 	 * @author wwb
 	 * @Date 2021-01-28 20:46:18
 	 * @param request
-	 * @param activityId
+	 * @param pageId
 	 * @return com.chaoxing.activity.dto.RestRespDTO
 	*/
-	@RequestMapping("{activityId}/collect/cancel")
-	public RestRespDTO cancelCollect(HttpServletRequest request, @PathVariable Integer activityId) {
+	@RequestMapping("cancel-collect")
+	public RestRespDTO cancelCollect(HttpServletRequest request, Integer pageId) {
+		Activity activity = activityQueryService.getByPageId(pageId);
 		Integer uid = CookieUtils.getUid(request);
-		activityCollectionHandleService.cancelCollect(activityId, uid);
+		activityCollectionHandleService.cancelCollect(activity.getId(), uid);
 		return RestRespDTO.success();
 	}
 
