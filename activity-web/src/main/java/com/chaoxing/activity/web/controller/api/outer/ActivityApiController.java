@@ -150,7 +150,10 @@ public class ActivityApiController {
 	public RestRespDTO isCollected(HttpServletRequest request, Integer pageId) {
 		Activity activity = activityQueryService.getByPageId(pageId);
 		Integer uid = CookieUtils.getUid(request);
-		boolean collected = activityCollectionValidateService.isCollected(activity.getId(), uid);
+		boolean collected = false;
+		if (uid != null) {
+			collected = activityCollectionValidateService.isCollected(activity.getId(), uid);
+		}
 		return RestRespDTO.success(collected);
 	}
 
@@ -166,8 +169,11 @@ public class ActivityApiController {
 	public RestRespDTO collect(HttpServletRequest request, Integer pageId) {
 		Activity activity = activityQueryService.getByPageId(pageId);
 		Integer uid = CookieUtils.getUid(request);
-		activityCollectionHandleService.collect(activity.getId(), uid);
-		return RestRespDTO.success();
+		if (uid != null) {
+			activityCollectionHandleService.collect(activity.getId(), uid);
+			return RestRespDTO.success();
+		}
+		return RestRespDTO.fail();
 	}
 
 	/**取消收藏
@@ -182,8 +188,11 @@ public class ActivityApiController {
 	public RestRespDTO cancelCollect(HttpServletRequest request, Integer pageId) {
 		Activity activity = activityQueryService.getByPageId(pageId);
 		Integer uid = CookieUtils.getUid(request);
-		activityCollectionHandleService.cancelCollect(activity.getId(), uid);
-		return RestRespDTO.success();
+		if (uid != null) {
+			activityCollectionHandleService.cancelCollect(activity.getId(), uid);
+			return RestRespDTO.success();
+		}
+		return RestRespDTO.fail();
 	}
 
 }
