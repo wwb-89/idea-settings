@@ -117,10 +117,10 @@
 		</div>
 		<!-- 无数据 -->
 		<div class="noContent" v-show="(signedUpLoaded && signedUps.length < 1 && activeTabIndex == 0) || (collectedLoaded && collecteds.length < 1 && activeTabIndex == 1) || (managingLoaded && managings.length < 1 && activeTabIndex == 2)">
-			<p>无搜索结果</p>
+			<p>无结果</p>
 		</div>
 		<div class="load-div loading" v-show="signedUpLoading || collectedLoading || managingLoading"><img src="/static/pc/assets/images/Spinner-1s-200px.svg" th:src="@{/pc/assets/images/Spinner-1s-200px.svg}">加载中…</div>
-		<div class="load-div no-more" v-show="(signedUpNoMore && signedUps.length > 0 &&  activeTabIndex == 0) || (collectedNoMore && collecteds.length > 0 && activeTabIndex == 1) || (managingNoMore && managings.length > 0 && activeTabIndex == 2)">没有更多了</div>
+		<div class="load-div no-more" v-show="(signedUpNoMore && signedUps.length > 0 && activeTabIndex == 0) || (collectedNoMore && collecteds.length > 0 && activeTabIndex == 1) || (managingNoMore && managings.length > 0 && activeTabIndex == 2)">没有更多了</div>
 	</div>
 	<!--取消报名-->
 	<vue-confirm ref="cancelSignUp" :message="'取消报名后需要重新报名才能参与活动'" @callback="cancelSignUpSubmit"></vue-confirm>
@@ -166,7 +166,7 @@
 
 				collectedLoading: false,
 				collectedNoMore: false,
-				collectedLock: true,
+				collectedLock: false,
 				collectedQueryParams: {
 					pageNum: 1,
 					pageSize: 10,
@@ -176,7 +176,7 @@
 
 				managingLoading: false,
 				managingNoMore: false,
-				managingLock: true,
+				managingLock: false,
 				managingQueryParams: {
 					pageNum: 1,
 					pageSize: 10,
@@ -185,6 +185,13 @@
 				managingLoaded: false,
 
 				handleIndex: ""
+			},
+			mounted: function () {
+				var $this = this;
+				$this.loadCollected();
+				$this.collectedLock = true;
+				$this.loadManaging();
+				$this.managingLock = true;
 			},
 			methods: {
 				// 创建活动
@@ -349,12 +356,14 @@
 					var url = ctx + "/api/sign-up/" + activity.signUpId + "/cancel";
 					app.ajaxPostWithLoading(url, {}, function (data) {
 						if (data.success) {
-							// 删除这条数据
-							var signedUps = $this.signedUps;
-							signedUps.splice(index, 1);
-							$this.signedUps = signedUps;
-							$this.$nextTick(function () {
-								cropImgFun("body");
+							app.showMsg("取消报名成功", function () {
+								// 删除这条数据
+								var signedUps = $this.signedUps;
+								signedUps.splice($this.handleIndex, 1);
+								$this.signedUps = signedUps;
+								$this.$nextTick(function () {
+									cropImgFun("body");
+								});
 							});
 						} else {
 							var errorMessage = data.message;
@@ -381,7 +390,7 @@
 						if (data.success) {
 							// 删除这条数据
 							var signedUps = $this.signedUps;
-							signedUps.splice(index, 1);
+							signedUps.splice($this.handleIndex, 1);
 							$this.signedUps = signedUps;
 							$this.$nextTick(function () {
 								cropImgFun("body");
