@@ -150,6 +150,17 @@
                         </div>
                     </div>
                 </div>
+                <div class="form-item cancel-margin">
+                    <label class="label">活动标签</label>
+                    <div class="input-box wrap">
+                        <!--添加满3个后，隐藏添加按钮-->
+                        <div class="type-item" v-for="(tag, index) of tags" :key="'tag-' + index">{{tag}}<div class="del_btn" @click="deleteTag(index)"></div></div>
+                        <div class="type-item add" @click="toAddTag">
+                            <div class="add_btn"></div>
+                            添加
+                        </div>
+                    </div>
+                </div>
                 <div class="form-item last">
                     <label class="label"><img src="/static/pc/assets/images/required.png" th:src="@{/pc/assets/images/required.png}" class="required-img">参与范围</label>
                     <div class="input-box wrap">
@@ -401,13 +412,13 @@
     <div class="dailog-box1" v-show="addEditActivityClassifyWindowShow">
         <div class="dailog">
             <div class="header">
-                <span>分类名称</span>
+                <span>活动分类</span>
                 <div @click="addEditActivityClassifyWindowShow = false">
                     <img src="/static/pc/assets/images/close.png" th:src="@{/pc/assets/images/close.png}" class="close">
                 </div>
             </div>
             <div class="body">
-                <el-input type="text" class="fenlei-input" v-model="addEditActivityClassify.name" placeholder="请输入" maxlength="6" show-word-limit></el-input>
+                <el-input type="text" class="fenlei-input" v-model.trim="addEditActivityClassify.name" placeholder="请输入" maxlength="6" show-word-limit></el-input>
             </div>
             <div class="footer">
                 <div class="normal-btn cancle" @click="addEditActivityClassifyWindowShow = false">取消</div>
@@ -415,27 +426,21 @@
             </div>
         </div>
     </div>
-    <!-- 确认删除分类弹框 -->
-    <div class="dailog-box3" v-show="deleteActivityClassifyWindowShow">
-        <div class="dailog delete-dailog">
-                <img src="/static/pc/assets/images/warning.png" th:src="@{/pc/assets/images/warning.png}" class="warn">
-            <span>确认删除此分类</span>
-            <div>
-                <div class="normal-btn" @click="deleteActivityClassifyWindowShow = false">保留</div>
-                <div class="normal-btn after-sure" @click="deleteActivityClassifySubmit">删除</div>
+    <!--新增标签弹窗-->
+    <div class="dailog-box1" v-show="addTagWindowShow">
+        <div class="dailog">
+            <div class="header">
+                <span>活动标签</span>
+                <div @click="addTagWindowShow = false">
+                    <img src="/static/pc/assets/images/close.png" th:src="@{/pc/assets/images/close.png}" class="close">
+                </div>
             </div>
-        </div>
-    </div>
-    <!-- 活动创建成功弹框 -->
-    <div class="dailog-box3" style="display: none;">
-        <div class="dailog delete-dailog">
-            <div class="warn">
-                <img src="/static/pc/assets/images/success.png" th:src="@{/pc/assets/images/success.png}">
+            <div class="body">
+                <el-input type="text" class="fenlei-input" v-model.trim="addTag" placeholder="请输入" maxlength="6" show-word-limit></el-input>
             </div>
-            <span>活动创建成功</span>
-            <div>
-                <div class="normal-btn">配置页面</div>
-                <div class="normal-btn after-sure">完成</div>
+            <div class="footer">
+                <div class="normal-btn cancle" @click="addTagWindowShow = false">取消</div>
+                <div :class="{'normal-btn': true, 'before-sure': !addTag, 'after-sure': addTag}" @click="addTagSubmit">确定</div>
             </div>
         </div>
     </div>
@@ -457,6 +462,10 @@
             </div>
         </div>
     </div>
+    <!-- 删除分类弹窗 -->
+    <vue-confirm ref="deleteClassifyWindow" :message="'确认删除此分类'" :cancel="'保留'" :sure="'删除'" @callback="deleteActivityClassifySubmit"></vue-confirm>
+    <!--删除标签标签-->
+    <vue-confirm ref="deleteTagWindow" :message="'确认删除此标签'" :cancel="'保留'" :sure="'删除'" @callback="deleteTagSubmit"></vue-confirm>
     <!-- 地图弹窗 -->
     <vue-map ref="activityMap" :map-dom-id="'activity-map'" :title="'设置活动地点'" @callback="activityAddressSure"></vue-map>
     <vue-map ref="signInMap" :map-dom-id="'sign-in-map'" :title="'设置签到地点'" @callback="signInAddressSure"></vue-map>
@@ -474,6 +483,7 @@
     <script src="/static/pc/assets/lib/webuploader/webuploader.js" th:src="@{/pc/assets/lib/webuploader/webuploader.js}"></script>
     <script src="/static/pc/assets/component/map.js" th:src="@{/pc/assets/component/map.js}"></script>
     <script src="/static/pc/assets/component/activity-participate-scope.js" th:src="@{/pc/assets/component/activity-participate-scope.js}"></script>
+    <script src="/static/pc/assets/component/confirm.js" th:src="@{/pc/assets/component/confirm.js}"></script>
     <script src="/static/pc/assets/lib/jqthumb.min.js" th:src="@{/pc/assets/lib/jqthumb.min.js}"></script>
     <script th:inline="javascript">
         activityVue = new Vue({
@@ -482,6 +492,7 @@
                 step: 1,
                 fid: [[${session._login_user_.fid}]],
                 activity: [[${activity}]],
+                tags: [],
                 // 模板列表
                 webTemplates: [[${webTemplates}]],
                 areaCode: [[${areaCode}]],
@@ -496,12 +507,15 @@
                 mapWindowShow: false,
                 // 新增修改活动分类弹窗的显示
                 addEditActivityClassifyWindowShow: false,
-                deleteActivityClassifyWindowShow: false,
                 addEditActivityClassify: {
                     id: null,
                     name: ""
                 },
                 deleteActivityClassifyId: null,
+                // 标签
+                addTagWindowShow: false,
+                addTag: "",
+                deleteActivityTagIndex: "",
                 // 参与机构列表
                 participatedOrgs: [[${participatedOrgs}]],
                 // 处理的模板id
@@ -560,7 +574,8 @@
                         dimension: "",
                         activityClassifyId: firstActivityClassifyId,
                         enableSign: true,
-                        createAreaCode: $this.areaCode
+                        createAreaCode: $this.areaCode,
+                        tags: ""
                     };
                 } else {
                     $this.activity.createTime = null;
@@ -569,6 +584,13 @@
                     $this.activity.startTime = $this.activity.startTimeStr;
                     $this.activity.endTime = $this.activity.endTimeStr;
                 }
+                var tags = $this.activity.tags;
+                if (activityApp.isEmpty(tags)) {
+                    tags = [];
+                } else {
+                    tags = tags.split(",");
+                }
+                $this.tags = tags;
                 $this.activityDateTimeScope = [$this.activity.startTime, $this.activity.endTime];
                 $($this.activityTypes).each(function (i) {
                     if ($this.activity.activityType == this.value) {
@@ -917,14 +939,14 @@
                     var $this = this;
                     var activityClassify = $this.activityClassifies[index];
                     $this.deleteActivityClassifyId = activityClassify.id;
-                    $this.deleteActivityClassifyWindowShow = true;
+                    $this.$refs.deleteClassifyWindow.show = true;
                 },
                 deleteActivityClassifySubmit: function () {
                     var $this = this;
                     var url = ctx + "/api/activity/classify/" + $this.deleteActivityClassifyId + "/delete";
                     app.ajaxPostWithLoading(url, {}, function (data) {
-                        $this.deleteActivityClassifyWindowShow = false;
                         if (data.success) {
+                            $this.$refs.deleteClassifyWindow.show = false;
                             $($this.activityClassifies).each(function (i) {
                                 if (this.id == $this.deleteActivityClassifyId) {
                                     if (this.selected) {
@@ -942,9 +964,35 @@
                             app.showMsg(errorMessage);
                         }
                     }, function () {
-                        $this.deleteActivityClassifyWindowShow = false;
                         app.showMsg("删除分类失败");
                     });
+                },
+                // 添加标签
+                toAddTag: function () {
+                    var $this = this;
+                    $this.addTagWindowShow = true;
+                },
+                addTagSubmit: function () {
+                    var $this = this;
+                    if ($this.tags.indexOf($this.addTag) > -1) {
+                        app.showMsg("标签已存在");
+                        return;
+                    }
+                    $this.tags.push($this.addTag);
+                    $this.activity.tags = $this.tags.join(",");
+                    $this.addTag = "";
+                    $this.addTagWindowShow = false;
+                },
+                deleteTag: function (index) {
+                    var $this = this;
+                    $this.deleteTagIndex = index;
+                    $this.$refs.deleteTagWindow.show = true;
+                },
+                deleteTagSubmit: function () {
+                    var $this = this;
+                    $this.tags.splice($this.deleteTagIndex, 1);
+                    $this.activity.tags = $this.tags.join(",");
+                    $this.$refs.deleteTagWindow.show = false;
                 },
                 // 计算限制人数value
                 calPersonLimitValue: function () {

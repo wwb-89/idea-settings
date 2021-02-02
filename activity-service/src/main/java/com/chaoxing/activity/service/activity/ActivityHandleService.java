@@ -282,6 +282,7 @@ public class ActivityHandleService {
 		existActivity.setEnableSign(activity.getEnableSign());
 		existActivity.setSignId(activity.getSignId());
 		existActivity.setWebTemplateId(activity.getWebTemplateId());
+		existActivity.setTags(activity.getTags());
 		// 根据活动时间判断状态
 		Integer status = activityStatusHandleService.calActivityStatus(existActivity);
 		existActivity.setStatus(status);

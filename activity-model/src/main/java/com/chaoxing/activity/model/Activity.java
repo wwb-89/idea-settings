@@ -101,6 +101,8 @@ public class Activity {
     private String createAreaCode;
     /** 创建机构名; column: create_org_name*/
     private String createOrgName;
+    /** 标签。以逗号分隔; column: tags */
+    private String tags;
     /** 创建时间; column: create_time*/
     @JSONField(serializeUsing = LocalDateTimeSerializer.class, deserializeUsing = LocalDateTimeDeserializer.class)
     private LocalDateTime createTime;
