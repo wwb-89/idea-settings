@@ -189,31 +189,37 @@
                                 case 1:
                                     if (isCreator || isCurrentOrgCreated) {
                                         activity.operations.push($this.operations.release);
-                                        activity.operations.push($this.operations.edit);
-                                        if (isCreator && activity.enableSign) {
-                                            activity.operations.push($this.operations.manage);
+                                        if (isCreator) {
+                                            activity.operations.push($this.operations.edit);
+                                            if (activity.enableSign) {
+                                                activity.operations.push($this.operations.manage);
+                                            }
+                                            activity.operations.push($this.operations.delete);
                                         }
-                                        activity.operations.push($this.operations.delete);
                                     }
                                     break;
                                 case 2:
                                 case 3:
-                                    activity.operations.push($this.operations.cancelRelease);
                                     if (isCreator || isCurrentOrgCreated) {
-                                        activity.operations.push($this.operations.edit);
-                                        if (isCreator && activity.enableSign) {
-                                            activity.operations.push($this.operations.manage);
+                                        activity.operations.push($this.operations.cancelRelease);
+                                        if (isCreator) {
+                                            activity.operations.push($this.operations.edit);
+                                            if (activity.enableSign) {
+                                                activity.operations.push($this.operations.manage);
+                                            }
+                                            activity.operations.push($this.operations.delete);
                                         }
-                                        activity.operations.push($this.operations.delete);
                                     }
                                     break;
                                 case 4:
                                     if (isCreator || isCurrentOrgCreated) {
-                                        activity.operations.push($this.operations.edit);
-                                        if (isCreator && activity.enableSign) {
-                                            activity.operations.push($this.operations.manage);
+                                        if (isCreator) {
+                                            activity.operations.push($this.operations.edit);
+                                            if (activity.enableSign) {
+                                                activity.operations.push($this.operations.manage);
+                                            }
+                                            activity.operations.push($this.operations.delete);
                                         }
-                                        activity.operations.push($this.operations.delete);
                                     }
                                     break;
                                 default:
