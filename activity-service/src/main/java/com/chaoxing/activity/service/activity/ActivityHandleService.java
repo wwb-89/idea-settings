@@ -13,7 +13,6 @@ import com.chaoxing.activity.model.*;
 import com.chaoxing.activity.service.WebTemplateService;
 import com.chaoxing.activity.service.activity.module.ActivityModuleService;
 import com.chaoxing.activity.service.activity.scope.ActivityScopeService;
-import com.chaoxing.activity.service.manager.CloudApiService;
 import com.chaoxing.activity.service.manager.GuanliApiService;
 import com.chaoxing.activity.service.manager.MhApiService;
 import com.chaoxing.activity.service.manager.module.SignApiService;
@@ -66,11 +65,11 @@ public class ActivityHandleService {
 	@Resource
 	private WebTemplateService webTemplateService;
 	@Resource
-	private CloudApiService cloudApiService;
-	@Resource
 	private ActivityStatusHandleService activityStatusHandleService;
 	@Resource
 	private ActivityCoverService activityCoverService;
+	@Resource
+	private ActivityStartNoticeHandleService activityStartNoticeHandleService;
 
 	@Resource
 	private SignApiService signApiService;
@@ -132,6 +131,8 @@ public class ActivityHandleService {
 		handleActivityArea(activity, loginUser);
 		// 订阅活动状态处理
 		activityStatusHandleService.subscibeStatusUpdate(activity.getId(), activity.getStartTime(), activity.getEndTime());
+		// 订阅活动通知发送
+		activityStartNoticeHandleService.subscibeActivityNotice(activityId, activity.getStartTime());
 	}
 
 	/**处理活动类型
@@ -306,6 +307,8 @@ public class ActivityHandleService {
 		activityScopeService.batchAdd(activityScopes);
 		// 订阅活动状态处理
 		activityStatusHandleService.subscibeStatusUpdate(activity.getId(), activity.getStartTime(), activity.getEndTime());
+		// 订阅活动通知发送
+		activityStartNoticeHandleService.subscibeActivityNotice(activityId, activity.getStartTime());
 	}
 
 	/**发布活动
@@ -377,6 +380,7 @@ public class ActivityHandleService {
 	 * @param loginUser
 	 * @return void
 	*/
+	@Transactional(rollbackFor = Exception.class)
 	public void delete(Integer activityId, LoginUserDTO loginUser) {
 		// 验证是否能删除
 		activityValidationService.deleteAble(activityId, loginUser);
@@ -385,6 +389,7 @@ public class ActivityHandleService {
 				.eq(Activity::getId, activityId)
 				.set(Activity::getStatus, Activity.StatusEnum.DELETED.getValue())
 		);
+		activityStartNoticeHandleService.cancelSubscibeActivityNotice(activityId);
 	}
 
 	/**绑定模板

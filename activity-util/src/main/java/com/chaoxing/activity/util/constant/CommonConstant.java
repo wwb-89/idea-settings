@@ -21,8 +21,6 @@ public class CommonConstant {
 	public static final String DEFAULT_FILE_SEPARATOR = "/";
 	/** 默认的分隔符 */
 	public static final String DEFAULT_SEPARATOR = ",";
-	/** 分布式锁默认超时时间 */
-	public static final Integer DISTRIBUTED_LOCK_TIMEOUT = 20;
 	/** 登录认证密钥 */
 	public static final String LOGIN_AUTH_KEY = "9nfNzEXVknFLcSER";
 
@@ -37,5 +35,10 @@ public class CommonConstant {
 	public static final BigDecimal DEFAULT_LONGITUDE = BigDecimal.valueOf(104.07073444090588000);
 	/** 默认维度 */
 	public static final BigDecimal DEFAULT_DIMENSION = BigDecimal.valueOf(30.57504123492308400);
+	
+	/** 活动开始通知的时间阈值（提前多久发通知）单位：毫秒 */
+	public static final Long ACTIVITY_NOTICE_TIME_MILLISECOND = 24 * 60 * 60 * 1000L;
+	/** 通知发送的uid */
+	public static final Integer NOTICE_SEND_UID = 168054129;
 
 }

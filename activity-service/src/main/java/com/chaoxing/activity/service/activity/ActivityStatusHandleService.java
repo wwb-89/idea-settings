@@ -1,10 +1,8 @@
 package com.chaoxing.activity.service.activity;
 
-import com.chaoxing.activity.mapper.ActivityMapper;
 import com.chaoxing.activity.model.Activity;
 import com.chaoxing.activity.util.DateUtils;
 import com.chaoxing.activity.util.constant.CacheConstant;
-import com.chaoxing.activity.util.exception.BusinessException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.ZSetOperations;
@@ -30,8 +28,6 @@ public class ActivityStatusHandleService {
 	@Resource
 	private RedisTemplate redisTemplate;
 
-	@Resource
-	private ActivityMapper activityMapper;
 	@Resource
 	private ActivityQueryService activityQueryService;
 	@Resource
@@ -95,17 +91,6 @@ public class ActivityStatusHandleService {
 		zSetOperations.remove(endKey, activityId);
 	}
 
-	private ZSetOperations.TypedTuple<Integer> getPendingSubscibeStatusUpdateActivityId(String cacheKey) {
-		ZSetOperations<String, Integer> zSetOperations = redisTemplate.opsForZSet();
-		Set<ZSetOperations.TypedTuple<Integer>> typedTuples = zSetOperations.rangeByScoreWithScores(cacheKey, 0, Long.MAX_VALUE, 0, 1);
-		Iterator<ZSetOperations.TypedTuple<Integer>> iterator = typedTuples.iterator();
-		while (iterator.hasNext()) {
-			// 只有一条数据
-			return iterator.next();
-		}
-		return null;
-	}
-
 	private String getStartSubscibeStatusUpdateCacheKey() {
 		StringBuilder cacheKeyStringBuilder = new StringBuilder();
 		cacheKeyStringBuilder.append(CacheConstant.CACHE_KEY_PREFIX);
@@ -130,26 +115,23 @@ public class ActivityStatusHandleService {
 	}
 
 	private void statusSync(String cacheKey) {
-		ZSetOperations.TypedTuple<Integer> typedTuple = getPendingSubscibeStatusUpdateActivityId(cacheKey);
-		if (typedTuple == null) {
-			return;
-		}
-		Double score = typedTuple.getScore();
-		// 判断时间是不是小于等于当前时间
-		long l = score.longValue();
-		LocalDateTime time = DateUtils.timestamp2Date(l);
-		LocalDateTime now = LocalDateTime.now();
-		if (now.compareTo(time) > -1) {
-			Integer activityId = typedTuple.getValue();
-			// 更新活动状态
-			try {
+		ZSetOperations<String, Integer> zSetOperations = redisTemplate.opsForZSet();
+		Set<ZSetOperations.TypedTuple<Integer>> typedTuples = zSetOperations.rangeByScoreWithScores(cacheKey, 0, Long.MAX_VALUE, 0, 10);
+		Iterator<ZSetOperations.TypedTuple<Integer>> iterator = typedTuples.iterator();
+		while (iterator.hasNext()) {
+			// 只有一条数据
+			ZSetOperations.TypedTuple<Integer> typedTuple = iterator.next();
+			Double score = typedTuple.getScore();
+			// 判断时间是不是小于等于当前时间
+			long l = score.longValue();
+			LocalDateTime time = DateUtils.timestamp2Date(l);
+			LocalDateTime now = LocalDateTime.now();
+			if (now.compareTo(time) > -1) {
+				Integer activityId = typedTuple.getValue();
+				// 更新活动状态
 				Activity activity = activityQueryService.getById(activityId);
 				Integer status = calActivityStatus(activity);
 				activityHandleService.updateActivityStatus(activityId, status);
-			} catch (BusinessException e) {
-				e.printStackTrace();
-			} finally {
-				ZSetOperations<String, Integer> zSetOperations = redisTemplate.opsForZSet();
 				zSetOperations.remove(cacheKey, activityId);
 			}
 		}

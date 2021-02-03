@@ -1,8 +1,12 @@
 package com.chaoxing.activity.api.controller;
 
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.chaoxing.activity.model.LoginCustom;
 import com.chaoxing.activity.service.LoginService;
+import com.chaoxing.activity.service.activity.ActivityCollectionQueryService;
+import com.chaoxing.activity.service.activity.ActivityStartNoticeHandleService;
 import com.chaoxing.activity.service.util.Model2DtoService;
 import com.chaoxing.activity.dto.RestRespDTO;
 import com.chaoxing.activity.dto.activity.ActivityExternalDTO;
@@ -18,10 +22,7 @@ import com.chaoxing.activity.util.HttpServletRequestUtils;
 import com.google.common.collect.Lists;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
@@ -60,6 +61,10 @@ public class ActivityApiController {
 	private WfwCoordinateApiService wfwCoordinateApiService;
 	@Resource
 	private LoginService loginService;
+	@Resource
+	private ActivityCollectionQueryService activityCollectionQueryService;
+	@Resource
+	private ActivityStartNoticeHandleService activityStartNoticeHandleService;
 
 	/**组活动推荐
 	 * @Description 
@@ -182,6 +187,37 @@ public class ActivityApiController {
 		refer = Optional.ofNullable(refer).filter(v -> StringUtils.isNotBlank(v)).orElse("");
 		loginUrl = loginUrl.replace(LOGIN_URL_PLACEHOLDER, refer);
 		return RestRespDTO.success(loginUrl);
+	}
+
+	/**根据报名签到id查询收藏活动的uid列表
+	 * @Description 
+	 * @author wwb
+	 * @Date 2021-02-03 15:18:12
+	 * @param signId
+	 * @return com.chaoxing.activity.dto.RestRespDTO
+	*/
+	@RequestMapping("collected-uid")
+	public RestRespDTO listCollectedUidBySignId(Integer signId) {
+		Activity activity = activityQueryService.getBySignId(signId);
+		List<Integer> collectedUids = activityCollectionQueryService.listCollectedUid(activity.getId());
+		return RestRespDTO.success(collectedUids);
+	}
+
+	/**通知活动已报名
+	 * @Description 
+	 * @author wwb
+	 * @Date 2021-02-03 15:34:35
+	 * @param data
+	 * @return com.chaoxing.activity.dto.RestRespDTO
+	*/
+	@RequestMapping("notice/signed-up")
+	public RestRespDTO sendActivityStartNotice(@RequestBody String data) {
+		JSONObject jsonObject = JSON.parseObject(data);
+		Integer signId = jsonObject.getInteger("signId");
+		List<Integer> uids = JSON.parseArray(jsonObject.getString("uids"), Integer.class);
+		Activity activity = activityQueryService.getBySignId(signId);
+		activityStartNoticeHandleService.generateSignedUpNotice(activity, uids);
+		return RestRespDTO.success();
 	}
 
 }

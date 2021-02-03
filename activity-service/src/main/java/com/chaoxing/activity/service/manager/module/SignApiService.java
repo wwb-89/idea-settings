@@ -65,6 +65,9 @@ public class SignApiService {
 	/** 撤销报名 */
 	private static final String REVOCATION_SIGN_UP_URL = DOMAIN + "/sign-up/%d/revocation";
 
+	/** 查询报名成功的uid列表url */
+	private static final String SIGNED_UP_UIDS_URL = DOMAIN + "/sign/%s/uid/signed-up";
+
 	@Resource
 	private RestTemplate restTemplate;
 
@@ -349,6 +352,29 @@ public class SignApiService {
 			String errorMessage = jsonObject.getString("message");
 			throw new BusinessException(errorMessage);
 		}
+	}
+
+	/**根据报名签到id查询已报名的用户id列表
+	 * @Description 
+	 * @author wwb
+	 * @Date 2021-02-02 17:57:11
+	 * @param signId
+	 * @return java.util.List<java.lang.Integer>
+	*/
+	public List<Integer> listSignedUpUid(Integer signId) {
+		String url = String.format(SIGNED_UP_UIDS_URL, signId);
+		String result = restTemplate.getForObject(url, String.class);
+		JSONObject jsonObject = JSON.parseObject(result);
+		Boolean success = jsonObject.getBoolean("success");
+		success = Optional.ofNullable(success).orElse(Boolean.FALSE);
+		if (success) {
+			return JSON.parseArray(jsonObject.getString("data"), Integer.class);
+		} else {
+			String errorMessage = jsonObject.getString("message");
+			log.error("根据报名签到id:{} 查询已报名的用户id列表error:{}", signId, errorMessage);
+			throw new BusinessException(errorMessage);
+		}
+
 	}
 
 }

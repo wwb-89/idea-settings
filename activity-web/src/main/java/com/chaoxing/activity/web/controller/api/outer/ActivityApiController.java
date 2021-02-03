@@ -9,20 +9,24 @@ import com.chaoxing.activity.model.Activity;
 import com.chaoxing.activity.service.activity.ActivityCollectionHandleService;
 import com.chaoxing.activity.service.activity.ActivityCollectionValidateService;
 import com.chaoxing.activity.service.activity.ActivityQueryService;
+import com.chaoxing.activity.service.activity.ActivityStartNoticeHandleService;
 import com.chaoxing.activity.service.manager.WfwCoordinateApiService;
 import com.chaoxing.activity.service.manager.WfwRegionalArchitectureApiService;
 import com.chaoxing.activity.service.util.Model2DtoService;
-import com.chaoxing.activity.util.CookieUtils;
 import com.chaoxing.activity.util.HttpServletRequestUtils;
 import com.chaoxing.activity.util.constant.CommonConstant;
 import com.google.common.collect.Lists;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -52,6 +56,8 @@ public class ActivityApiController {
 	private ActivityCollectionHandleService activityCollectionHandleService;
 	@Resource
 	private ActivityCollectionValidateService activityCollectionValidateService;
+	@Resource
+	private ActivityStartNoticeHandleService activityStartNoticeHandleService;
 
 	/**组活动推荐
 	 * @Description
@@ -144,12 +150,12 @@ public class ActivityApiController {
 	 * @Date 2021-01-28 20:47:22
 	 * @param request
 	 * @param pageId
+	 * @param uid
 	 * @return com.chaoxing.activity.dto.RestRespDTO
 	*/
 	@RequestMapping("collected")
-	public RestRespDTO isCollected(HttpServletRequest request, Integer pageId) {
+	public RestRespDTO isCollected(HttpServletRequest request, Integer pageId, Integer uid) {
 		Activity activity = activityQueryService.getByPageId(pageId);
-		Integer uid = CookieUtils.getUid(request);
 		boolean collected = false;
 		if (uid != null) {
 			collected = activityCollectionValidateService.isCollected(activity.getId(), uid);
@@ -163,14 +169,16 @@ public class ActivityApiController {
 	 * @Date 2021-01-28 20:28:15
 	 * @param request
 	 * @param pageId
+	 * @param uid
 	 * @return com.chaoxing.activity.dto.RestRespDTO
 	*/
 	@RequestMapping("collect")
-	public RestRespDTO collect(HttpServletRequest request, Integer pageId) {
+	public RestRespDTO collect(HttpServletRequest request, Integer pageId, Integer uid) {
 		Activity activity = activityQueryService.getByPageId(pageId);
-		Integer uid = CookieUtils.getUid(request);
 		if (uid != null) {
 			activityCollectionHandleService.collect(activity.getId(), uid);
+			// 发送活动开始通知
+			activityStartNoticeHandleService.generateCollectNotice(activity, new ArrayList(){{add(uid);}});
 			return RestRespDTO.success();
 		}
 		return RestRespDTO.fail();
@@ -182,12 +190,12 @@ public class ActivityApiController {
 	 * @Date 2021-01-28 20:46:18
 	 * @param request
 	 * @param pageId
+	 * @param uid
 	 * @return com.chaoxing.activity.dto.RestRespDTO
 	*/
 	@RequestMapping("cancel-collect")
-	public RestRespDTO cancelCollect(HttpServletRequest request, Integer pageId) {
+	public RestRespDTO cancelCollect(HttpServletRequest request, Integer pageId, Integer uid) {
 		Activity activity = activityQueryService.getByPageId(pageId);
-		Integer uid = CookieUtils.getUid(request);
 		if (uid != null) {
 			activityCollectionHandleService.cancelCollect(activity.getId(), uid);
 			return RestRespDTO.success();

@@ -18,5 +18,7 @@ public class UrlConstant {
 	public static final String API_DOMAIN = "http://api.hd.chaoxing.com";
 	/** 登录地址 */
 	public static final String LOGIN_URL = "https://passport2.chaoxing.com/login?loginType=4&newversion=true&refer=";
+	/** 发通知logo地址 */
+	public static final String NOTICE_LOGO_URL = "https://p.ananas.chaoxing.com/star3/origin/b4d171e29d3c60e97c594e4d2b816bbe.png";
 
 }
