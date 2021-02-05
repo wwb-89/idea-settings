@@ -26,7 +26,7 @@
                     <span>{{menus.signUpList.name}}</span>
                 </div>
                 <!--签到管理-->
-                <div :class="{'item': true, 'active': menus.signInManage.selected}" v-if="signActivityManageIndex.signInExist" @click="toSignInManage">
+                <div :class="{'item': true, 'active': menus.signInManage.selected}" @click="toSignInManage">
                     <img :src="menus.signInManage.activeIconUrl" v-if="menus.signInManage.selected">
                     <img :src="menus.signInManage.defaultIconUrl" v-else>
                     <span>{{menus.signInManage.name}}</span>
