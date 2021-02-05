@@ -12,6 +12,7 @@ import com.chaoxing.activity.service.activity.ActivityQueryService;
 import com.chaoxing.activity.service.activity.ActivityStartNoticeHandleService;
 import com.chaoxing.activity.service.manager.WfwCoordinateApiService;
 import com.chaoxing.activity.service.manager.WfwRegionalArchitectureApiService;
+import com.chaoxing.activity.service.manager.module.SignApiService;
 import com.chaoxing.activity.service.util.Model2DtoService;
 import com.chaoxing.activity.util.HttpServletRequestUtils;
 import com.chaoxing.activity.util.constant.CommonConstant;
@@ -58,6 +59,8 @@ public class ActivityApiController {
 	private ActivityCollectionValidateService activityCollectionValidateService;
 	@Resource
 	private ActivityStartNoticeHandleService activityStartNoticeHandleService;
+	@Resource
+	private SignApiService signApiService;
 
 	/**组活动推荐
 	 * @Description
@@ -177,8 +180,8 @@ public class ActivityApiController {
 		Activity activity = activityQueryService.getByPageId(pageId);
 		if (uid != null) {
 			activityCollectionHandleService.collect(activity.getId(), uid);
-			// 发送活动开始通知
-			activityStartNoticeHandleService.generateCollectNotice(activity, new ArrayList(){{add(uid);}});
+			// 通知已收藏
+			activityStartNoticeHandleService.noticeCollected(activity, new ArrayList(){{add(uid);}});
 			return RestRespDTO.success();
 		}
 		return RestRespDTO.fail();

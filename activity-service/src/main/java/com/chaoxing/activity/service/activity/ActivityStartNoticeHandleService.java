@@ -132,6 +132,37 @@ public class ActivityStartNoticeHandleService {
 		zSetOperations.remove(ACTIVITY_START_NOTICE_CACHE_KEY, activityId);
 	}
 
+	/**是否直接发送活动开始的通知
+	 * @Description 
+	 * @author wwb
+	 * @Date 2021-02-05 15:59:25
+	 * @param activity
+	 * @return boolean
+	*/
+	private boolean isRedirectSendNotice(Activity activity) {
+		LocalDateTime startTime = activity.getStartTime();
+		LocalDateTime now = LocalDateTime.now();
+		long startTimestamp = DateUtils.date2Timestamp(startTime);
+		long nowTimestamp = DateUtils.date2Timestamp(now);
+		// 如果时间阈值以外或活动一开始则不发送
+		if (startTimestamp - nowTimestamp >= CommonConstant.ACTIVITY_NOTICE_TIME_MILLISECOND || now.isAfter(startTime)) {
+			return false;
+		}
+		return true;
+	}
+	/**报名发送通知
+	 * @Description 
+	 * @author wwb
+	 * @Date 2021-02-05 15:55:38
+	 * @param activity
+	 * @param uids
+	 * @return void
+	*/
+	public void sendSignedUpNotice(Activity activity, List<Integer> uids) {
+		if (isRedirectSendNotice(activity)) {
+			generateSignedUpNotice(activity, uids);
+		}
+	}
 	/**生成报名通知
 	 * @Description 活动通知阈值时间外不需要处理（批量处理）
 	 * @author wwb
@@ -140,8 +171,8 @@ public class ActivityStartNoticeHandleService {
 	 * @param uids
 	 * @return void
 	 */
-	public void generateSignedUpNotice(Activity activity, List<Integer> uids) {
-		if (!isNeedSendNotice(activity)) {
+	private void generateSignedUpNotice(Activity activity, List<Integer> uids) {
+		if (isActivityStarted(activity)) {
 			return;
 		}
 		if (CollectionUtils.isEmpty(uids)) {
@@ -156,6 +187,20 @@ public class ActivityStartNoticeHandleService {
 		}
 	}
 
+	/**通知已收藏
+	 * @Description
+	 * @author wwb
+	 * @Date 2021-02-05 16:23:47
+	 * @param activity
+	 * @param uids
+	 * @return void
+	*/
+	public void noticeCollected(Activity activity, List<Integer> uids) {
+		if (isRedirectSendNotice(activity)) {
+			generateCollectNotice(activity, uids);
+		}
+		signApiService.noticeCollected(activity.getSignId(), uids);
+	}
 	/**生成收藏通知
 	 * @Description 活动通知阈值时间外不需要处理（批量处理）
 	 * @author wwb
@@ -164,8 +209,8 @@ public class ActivityStartNoticeHandleService {
 	 * @param uids
 	 * @return void
 	 */
-	public void generateCollectNotice(Activity activity, List<Integer> uids) {
-		if (!isNeedSendNotice(activity)) {
+	private void generateCollectNotice(Activity activity, List<Integer> uids) {
+		if (isActivityStarted(activity)) {
 			return;
 		}
 		if (CollectionUtils.isEmpty(uids)) {
@@ -186,14 +231,21 @@ public class ActivityStartNoticeHandleService {
 		}
 	}
 
-	private boolean isNeedSendNotice(Activity activity) {
+	/**活动是否已开始
+	 * @Description 
+	 * @author wwb
+	 * @Date 2021-02-05 16:01:58
+	 * @param activity
+	 * @return boolean
+	*/
+	private boolean isActivityStarted(Activity activity) {
 		LocalDateTime startTime = activity.getStartTime();
 		LocalDateTime now = LocalDateTime.now();
 		if (now.isAfter(startTime)) {
 			// 活动已经开始，不需要发送通知
-			return false;
+			return true;
 		}
-		return true;
+		return false;
 	}
 
 	private String generateSignedUpNoticeTitle(Activity activity) {

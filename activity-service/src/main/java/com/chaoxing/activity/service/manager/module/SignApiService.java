@@ -59,6 +59,8 @@ public class SignApiService {
 	private static final String ACTIVITY_BLOCK_DETAIL_STAT_URL = DOMAIN + "/sign/stat/activity-block-detail?signId=%s&uid=%s";
 	/** 用户报名的报名签到信息url */
 	private static final String USER_SIGNED_UP_URL = DOMAIN + "/sign/stat/sign/user-signed-up/%d";
+	/** 通知已收藏url */
+	private static final String NOTICE_COLLECTED_URL = DOMAIN + "/sign/%d/notice/collected";
 	
 	/** 取消报名 */
 	private static final String CANCEL_SIGN_UP_URL = DOMAIN + "/sign-up/%d/cancel";
@@ -375,6 +377,35 @@ public class SignApiService {
 			throw new BusinessException(errorMessage);
 		}
 
+	}
+
+	/**通知已收藏
+	 * @Description 
+	 * @author wwb
+	 * @Date 2021-02-05 16:20:39
+	 * @param signId
+	 * @param uids
+	 * @return void
+	*/
+	public void noticeCollected(Integer signId, List<Integer> uids) {
+		if (signId == null) {
+			return;
+		}
+		String url = String.format(NOTICE_COLLECTED_URL, signId);
+		JSONObject params = new JSONObject();
+		params.put("uids", uids);
+		HttpHeaders httpHeaders = new HttpHeaders();
+		httpHeaders.setContentType(MediaType.APPLICATION_JSON);
+		HttpEntity<String> httpEntity = new HttpEntity<>(params.toJSONString(), httpHeaders);
+		String result = restTemplate.postForObject(url, httpEntity, String.class);
+		JSONObject jsonObject = JSON.parseObject(result);
+		Boolean success = jsonObject.getBoolean("success");
+		success = Optional.ofNullable(success).orElse(Boolean.FALSE);
+		if (!success) {
+			String errorMessage = jsonObject.getString("message");
+			log.error("通知已收藏, 报名签到id:{}, error:{}", signId, errorMessage);
+			throw new BusinessException(errorMessage);
+		}
 	}
 
 }
