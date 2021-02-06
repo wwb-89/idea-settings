@@ -68,7 +68,6 @@ function cropImgFun(elem) {
             var image = new Image();
             var $this = $(this);
             image.src = $(this).attr("src");
-            console.log( image.src)
             image.onload = function () {
                 $this.jqthumb({
                     width: '100%',

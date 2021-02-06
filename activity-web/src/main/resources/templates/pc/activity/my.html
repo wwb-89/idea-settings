@@ -252,10 +252,18 @@
 								errorMessage = "加载已报名的活动失败";
 							}
 							app.showMsg(errorMessage);
+							if ($this.signedUpQueryParams.pageNum == 1) {
+								// 不允许搜索了
+								$this.signedUpNoMore = true;
+							}
 						}
 					}, function () {
 						$this.signedUpLoading = false;
 						app.showMsg("加载已报名的活动失败");
+						if ($this.signedUpQueryParams.pageNum == 1) {
+							// 不允许搜索了
+							$this.signedUpNoMore = true;
+						}
 					});
 				},
 				resetCollected: function () {
@@ -291,13 +299,21 @@
 						} else {
 							var errorMessage = data.message;
 							if (activityApp.isEmpty(errorMessage)) {
-								errorMessage = "加载管理的的活动失败";
+								errorMessage = "加载收藏的的活动失败";
 							}
 							app.showMsg(errorMessage);
+							if ($this.collectedQueryParams.pageNum == 1) {
+								// 不允许搜索了
+								$this.collectedNoMore = true;
+							}
 						}
 					}, function () {
 						$this.collectedLoading = false;
-						app.showMsg("加载管理的活动失败");
+						app.showMsg("加载收藏的活动失败");
+						if ($this.collectedQueryParams.pageNum == 1) {
+							// 不允许搜索了
+							$this.collectedNoMore = true;
+						}
 					});
 				},
 				resetManaging: function () {
@@ -338,10 +354,18 @@
 								errorMessage = "加载管理的的活动失败";
 							}
 							app.showMsg(errorMessage);
+							if ($this.managingQueryParams.pageNum == 1) {
+								// 不允许搜索了
+								$this.managingNoMore = true;
+							}
 						}
 					}, function () {
 						$this.managingLoading = false;
 						app.showMsg("加载管理的活动失败");
+						if ($this.managingQueryParams.pageNum == 1) {
+							// 不允许搜索了
+							$this.managingNoMore = true;
+						}
 					});
 				},
 				// 取消报名

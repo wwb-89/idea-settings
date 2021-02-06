@@ -13,6 +13,7 @@ import com.chaoxing.activity.model.*;
 import com.chaoxing.activity.service.WebTemplateService;
 import com.chaoxing.activity.service.activity.module.ActivityModuleService;
 import com.chaoxing.activity.service.activity.scope.ActivityScopeService;
+import com.chaoxing.activity.service.form.ActivityFormRecordService;
 import com.chaoxing.activity.service.manager.GuanliApiService;
 import com.chaoxing.activity.service.manager.MhApiService;
 import com.chaoxing.activity.service.manager.module.SignApiService;
@@ -70,6 +71,8 @@ public class ActivityHandleService {
 	private ActivityCoverService activityCoverService;
 	@Resource
 	private ActivityStartNoticeHandleService activityStartNoticeHandleService;
+	@Resource
+	private ActivityFormRecordService activityFormRecordService;
 
 	@Resource
 	private SignApiService signApiService;
@@ -335,6 +338,8 @@ public class ActivityHandleService {
 				.set(Activity::getReleaseUid, loginUser.getUid())
 				.set(Activity::getStatus, status)
 		);
+		// 新增表单记录
+		activityFormRecordService.add(activity);
 		// 通知模块方刷新参与范围缓存
 		// 查询活动的作品征集模块活动id列表
 		List<String> externalIds = activityModuleService.listExternalIdsByActivityIdAndType(activityId, ModuleTypeEnum.WORK.getValue());
@@ -390,6 +395,8 @@ public class ActivityHandleService {
 				.set(Activity::getStatus, Activity.StatusEnum.DELETED.getValue())
 		);
 		activityStartNoticeHandleService.cancelSubscibeActivityNotice(activityId);
+		// 删除表单记录
+		activityFormRecordService.delete(activityId);
 	}
 
 	/**绑定模板

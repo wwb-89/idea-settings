@@ -1,0 +1,339 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org/">
+<head>
+	<title>活动市场</title>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<link rel="stylesheet" href="/static/pc/assets/lib/element-ui/lib/theme-chalk/index.css" th:href="@{/pc/assets/lib/element-ui/lib/theme-chalk/index.css}">
+	<link rel="stylesheet" href="/static/pc/assets/css/public.css" th:href="@{/pc/assets/css/public.css}">
+	<link rel="stylesheet" href="/static/pc/assets/css/activity-market.css" th:href="@{/pc/assets/css/activity-market.css}">
+	<link rel="stylesheet" href="/static/assets/lib/mescroll/mescroll.css" th:href="@{/assets/lib/mescroll/mescroll.css}">
+	<style type="text/css">
+        [v-cloak] {
+            display: none;
+        }
+	</style>
+</head>
+<body>
+<div class="activity-market2" id="activity-vue" v-cloak>
+	<div class="header-con">
+		<div class="header-inner-content">
+			<div class="searchDiv fl">
+				<input type="text" placeholder="搜索标题" class="inputValue" v-model.trim="sw" @keyup.enter="search">
+				<i class="icon-delete1" v-show="sw" @click="clearSearch"></i>
+				<i class="icon-search1" @click="search"></i>
+			</div>
+			<div class="user fr">
+				<i class="icon-user"></i>
+				<a href="javascript:" @click="my">我的活动</a>
+			</div>
+			<div class="clear"></div>
+		</div>
+	</div>
+	<div class="inner-content">
+		<div class="filter">
+			<div class="item">
+				<label>类型</label>
+				<div class="option-list">
+					<ul>
+						<li :class="{'active': item.selected}" v-for="(item, index) of activityClassifies" @click="changeActivityClassifySelected(index)">{{item.name}}</li>
+					</ul>
+				</div>
+				<div class="clear"></div>
+			</div>
+			<div class="item">
+				<label>时间</label>
+				<div class="option-list">
+					<ul>
+						<li :class="{'active': item.selected}" v-for="(item, index) of activityQueryDates" @click="changeActivityTimeSelected(index)">{{item.name}}</li>
+					</ul>
+				</div>
+				<div class="clear"></div>
+			</div>
+			<div class="item" v-show="regions.length > 0">
+				<label>地区</label>
+				<div class="option-list">
+					<ul>
+						<li :class="{'active': item.selected}" v-for="(item, index) of regions" @click="changeActivityRegionsSelected(index)">{{item.name}}</li>
+					</ul>
+				</div>
+				<div class="clear"></div>
+			</div>
+		</div>
+		<div class="card-list" id="mescroll">
+			<ul>
+				<li v-for="(item, index) of activities" :key="'item-' + index">
+					<div class="inner">
+						<div class="img-box">
+							<p class="tips color1" v-if="item.status == 3">进行中</p>
+							<p class="tips color3" v-if="item.status == 4">已结束</p>
+							<p class="tips color5" v-if="item.status == 2">活动预告</p>
+							<div class="js-crop-img">
+								<img :src="item | getCloudImgUrl">
+							</div>
+						</div>
+						<div class="card-info">
+							<h2 class="title overHidden1" @click="detail(index)">{{item.name}}</h2>
+							<p class="time overHidden1">{{item.startTime | timestamp2YMD}} ～ {{item.endTime | timestamp2YMD}}</p>
+							<p class="address overHidden1">{{item.organisers}}</p>
+							<p class="address overHidden1"  v-show="item.address">{{item.address}}{{item.detailAddress ? item.detailAddress : ''}}</p>
+						</div>
+					</div>
+				</li>
+			</ul>
+			<div class="clear"></div>
+		</div>
+		<!-- 无数据 -->
+		<div class="noContent" v-show="activities.length < 1 && loaded">
+			<p>无结果</p>
+		</div>
+		<!-- 作为加载完成后占位显示没有更多-->
+		<div class="noMore"><span></span></div>
+	</div>
+</div>
+<div th:replace="pc/include/common_js :: common_js(~{::script})">
+	<script src="/static/pc/assets/lib/element-ui/lib/index.js" th:src="@{/pc/assets/lib/element-ui/lib/index.js}"></script>
+	<script src="/static/assets/lib/mescroll/mescroll.js" th:src="@{/assets/lib/mescroll/mescroll.js}"></script>
+	<script src="/static/pc/assets/lib/jqthumb.min.js" th:src="@{/pc/assets/lib/jqthumb.min.js}"></script>
+	<script src="/static/pc/assets/js/common.js" th:src="@{/pc/assets/js/common.js}"></script>
+	<script src="/static/pc/assets/lib/set-iframe-height-child.js" th:src="@{/pc/assets/lib/set-iframe-height-child.js}"></script>
+	<script th:inline="javascript">
+		Vue.filter("timestamp2YMD", function (timestamp) {
+			var dateObj = activityApp.millisecond2DateObj(timestamp);
+			return dateObj.year + "-" + dateObj.month + "-" + dateObj.day;
+		});
+		activityVue = new Vue({
+			el: '#activity-vue',
+			data: {
+				fids: [[${fids}]],
+				activityClassifyNames: [[${activityClassifyNames}]],
+				activityQueryDates: [[${activityQueryDates}]],
+				activityClassifies: [],
+				regions: [[${regions}]],
+				areaCode: [[${areaCode}]],
+				statuses: [],
+				sw: "",
+				//筛选查询参数对象
+				queryParams: {},
+				activities: [],
+				loaded: false,
+				topFid: [[${topFid}]],
+				mescroll: null
+			},
+			created: function () {
+				var $this = this;
+				$this.activityClassifies.push({name: "全部",value: "", selected: true});
+				$($this.activityClassifyNames).each(function () {
+					$this.activityClassifies.push({name: this,value: this,selected: false});
+				});
+				$($this.activityQueryDates).each(function (i) {
+					$this.$set($this.activityQueryDates[i], "selected", i == 0);
+				});
+				//地区
+				var regions = [];
+				if($this.regions.length >0){
+					$($this.regions).each(function () {
+						var region = this;
+						region.value = this.code;
+						region.selected = false;
+						regions.push(region);
+					});
+					regions.splice(0, 0, {
+						name: "全部",
+						value: "",
+						selected: true
+					});
+					$this.regions = regions;
+				}
+				//状态
+				$this.statuses = [
+					{name: "全部", value: "", selected: true},
+					{name: "活动预告", value: "2", selected: false},
+					{name: "进行中", value: "3", selected: false},
+					{name: "已结束", value: "4", selected: false}
+				];
+				$this.resetQueryParams();
+			},
+			mounted:function() {
+				var $this = this;
+				//图片高度根据尺寸等比例变化
+				$this.picHeight();
+				$(window).resize(function () {
+					$this.picHeight();
+				});
+				$this.resetQueryParams();
+				// 如果topFid符合regions的manageFid那么选中
+				if (!activityApp.isEmpty($this.topFid) && !activityApp.isEmpty($this.regions)) {
+					var exist = false;
+					var index = 0;
+					$($this.regions).each(function (i) {
+						if (this.manageFid == $this.topFid) {
+							exist = true;
+							index = i;
+							return false;
+						}
+					});
+					if (exist) {
+						$this.changeActivityRegionsSelected(index);
+						return;
+					}
+				}
+				$this.initMescroll();
+			},
+			methods: {
+				//改变选中状态
+				changeActivityClassifySelected: function(index){
+					var $this = this;
+					$($this.activityClassifies).each(function (i) {
+						$this.$set($this.activityClassifies[i], "selected", i == index);
+					});
+					$this.queryParams.activityClassifyName = $this.activityClassifies[index].value;
+					$this.activities = [];
+					$this.queryParams.pageNum = 1;
+					$this.loadData();
+				},
+				changeActivityTimeSelected: function(index){
+					var $this = this;
+					$($this.activityQueryDates).each(function (i) {
+						$this.$set($this.activityQueryDates[i], "selected", i == index);
+					});
+					$this.queryParams.date = $this.activityQueryDates[index].value;
+					$this.activities = [];
+					$this.queryParams.pageNum = 1;
+					$this.loadData();
+				},
+				changeActivityRegionsSelected: function(index){
+					var $this = this;
+					$($this.regions).each(function (i) {
+						$this.$set($this.regions[i], "selected", i == index);
+					});
+					$this.queryParams.areaCode = $this.regions[index].value;
+					if (activityApp.isEmpty($this.queryParams.areaCode)) {
+						$this.queryParams.areaCode = $this.areaCode;
+					}
+					$this.activities = [];
+					$this.queryParams.pageNum = 1;
+					$this.loadData();
+				},
+				changeActivityStatusSelected: function(index){
+					var $this = this;
+					$($this.statuses).each(function (i) {
+						$this.$set($this.statuses[i], "selected", i == index);
+					});
+					$this.queryParams.status = $this.statuses[index].value;
+					$this.activities = [];
+					$this.queryParams.pageNum = 1;
+					$this.loadData();
+				},
+				//重置查询条件
+				resetQueryParams: function (){
+					var $this = this;
+					$this.queryParams = {
+						pageNum: 1,
+						pageSize: 12,
+						sw: "",
+						activityClassifyName: "",
+						date: "",
+						status: "",
+						areaCode: $this.areaCode,
+						topFid: [[${topFid}]]
+					};
+					$this.activities = [];
+				},
+				//数据加载渲染
+				loadData: function () {
+					var $this = this;
+					var url = ctx + "/api/activity/list/participate";
+					var params = $this.queryParams;
+					$this.loaded = false;
+					app.ajaxPost(url, {data: activityApp.getJsonStr(params), pageNum: params.pageNum, pageSize: params.pageSize}, function (data) {
+						if (data.success) {
+							$this.loaded = true;
+							$this.queryParams.pageNum++;
+							var activities = $this.activities;
+							$this.mescroll.endBySize(data.data.records.length, data.data.total);
+							if (data.data.records.length < 1) {
+								return;
+							}
+							$(data.data.records).each(function () {
+								activities.push(this);
+							});
+							$this.activities = [];
+							$this.activities = activities;
+							$this.$nextTick(function () {
+								cropImgFun("body");
+							});
+						} else {
+							var errorMessage = data.message;
+							if (activityApp.isEmpty(errorMessage)) {
+								errorMessage = "加载活动列表失败";
+							}
+							app.showMsg(errorMessage);
+						}
+					}, function () {
+						app.showMsg("加载活动列表失败");
+					});
+				},
+				clearSearch: function () {
+					var $this = this;
+					$this.sw = "";
+					if ($this.sw != $this.queryParams.sw) {
+						$this.search();
+					}
+				},
+				search: function () {
+					var $this = this;
+					$this.queryParams.sw = $this.sw;
+					$("#search-input").blur();
+					$this.queryParams.pageNum = 1;
+					$this.loadData();
+				},
+				currenClick:function (currentPage) {
+					var $this = this;
+					$this.queryParams.pageNum = currentPage;
+					$this.loadData();
+				},
+				detail: function (index) {
+					var $this = this;
+					var activity = $this.activities[index];
+					var previewUrl = activity.previewUrl;
+					if (!activityApp.isEmpty(previewUrl)) {
+						// 回收积分
+						activityApp.integralPush(activity.id, activity.name);
+						window.open(previewUrl);
+					}
+				},
+				// 我的活动
+				my: function () {
+					var $this = this;
+					var url = ctx + "/my";
+					window.location.href = url;
+				},
+				picHeight:function (){
+					var widthPic = $(".card-list ul li:first-child").find(".js-crop-img").width();
+					var heightPic = 14/27*widthPic;
+					$(".card-list ul li").each(function () {
+						$(this).find(".js-crop-img").css('height', heightPic + 'px');
+						$(this).find(".img-box").css('height', heightPic + 'px');
+					});
+				},
+				initMescroll: function () {
+					var $this = this;
+					if ($this.mescroll != null) {
+						return;
+					}
+					$this.mescroll = new MeScroll("body", {
+						up: {
+							callback: function () {
+								$this.loadData();
+							},
+							noMoreSize: 5
+						}
+					});
+				}
+			}
+		})
+	</script>
+</div>
+</body>
+</html>
