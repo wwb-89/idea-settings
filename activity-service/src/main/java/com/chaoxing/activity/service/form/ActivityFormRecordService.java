@@ -9,6 +9,7 @@ import com.chaoxing.activity.service.manager.FormApiService;
 import com.chaoxing.activity.service.manager.FormAssistService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
 
@@ -66,6 +67,7 @@ public class ActivityFormRecordService {
 	 * @param activityId
 	 * @return void
 	*/
+	@Transactional(rollbackFor = Exception.class)
 	public void delete(Integer activityId) {
 		ActivityFormRecord activityFormRecord = activityFormRecordMapper.selectOne(new QueryWrapper<ActivityFormRecord>()
 				.lambda()
@@ -74,11 +76,11 @@ public class ActivityFormRecordService {
 		if (activityFormRecord == null) {
 			return;
 		}
+		formApiService.deleteFormRecord(activityFormRecord.getFormId(), activityFormRecord.getFormUserId());
 		activityFormRecordMapper.delete(new QueryWrapper<ActivityFormRecord>()
 			.lambda()
-				.eq(ActivityFormRecord::getActivityId, activityId)
+				.eq(ActivityFormRecord::getId, activityFormRecord.getActivityId())
 		);
-		formApiService.deleteFormRecord(activityFormRecord.getFormId(), activityFormRecord.getFormUserId());
 	}
 
 }

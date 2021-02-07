@@ -93,12 +93,10 @@ public class FormAssistService {
 				continue;
 			}
 			if ("组织者".equals(label)) {
-				JSONObject puid = new JSONObject();
-				puid.put("puid", activity.getCreateUid());
-				data.add(puid);
-				JSONObject uname = new JSONObject();
-				uname.put("uname", activity.getCreateUserName());
-				data.add(uname);
+				JSONObject user = new JSONObject();
+				user.put("puid", activity.getCreateUid());
+				user.put("uname", activity.getCreateUserName());
+				data.add(user);
 				item.put("val", data);
 				continue;
 			}
