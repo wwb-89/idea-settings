@@ -16,73 +16,77 @@
 <body>
 <div class="activity-market1" id="activity-vue" v-cloak>
 	<div class="header-con">
-		<div class="searchDiv fl">
-			<input type="text" id="search-input" placeholder="搜索标题" v-model.trim="sw" class="inputValue" @keyup.enter="search">
-			<i class="icon-delete1" v-show="sw" @click="clearSearch"></i>
-			<i class="icon-search1" @click="search"></i>
-		</div>
-		<div class="user fr">
-			<i class="icon-user"></i>
-			<a href="javascript:" @click="my">我的活动</a>
-		</div>
-		<div class="clear"></div>
-	</div>
-	<div class="filter">
-		<div class="item">
-			<label>类型</label>
-			<div class="option-list">
-				<ul>
-					<li :class="{'active': item.selected}" v-for="(item, index) of activityClassifies" @click="changeActivityClassifySelected(index)">{{item.name}}</li>
-				</ul>
+		<div class="header-inner-content">
+			<div class="searchDiv fl">
+				<input type="text" id="search-input" placeholder="搜索标题" v-model.trim="sw" class="inputValue" @keyup.enter="search">
+				<i class="icon-delete1" v-show="sw" @click="clearSearch"></i>
+				<i class="icon-search1" @click="search"></i>
 			</div>
-			<div class="clear"></div>
-		</div>
-		<div class="item">
-			<label>时间</label>
-			<div class="option-list">
-				<ul>
-					<li :class="{'active': item.selected}" v-for="(item, index) of activityQueryDates" @click="changeActivityTimeSelected(index)">{{item.name}}</li>
-				</ul>
-			</div>
-			<div class="clear"></div>
-		</div>
-		<div class="item" v-show="regions.length > 0">
-			<label>地区</label>
-			<div class="option-list">
-				<ul>
-					<li :class="{'active': item.selected}" v-for="(item, index) of regions" @click="changeActivityRegionsSelected(index)">{{item.name}}</li>
-				</ul>
+			<div class="user fr">
+				<i class="icon-user"></i>
+				<a href="javascript:" @click="my">我的活动</a>
 			</div>
 			<div class="clear"></div>
 		</div>
 	</div>
-	<div class="card-list">
-		<ul>
-			<li v-for="(item, index) of activities" :key="'item-' + index">
-				<div class="inner">
-					<div class="img-box">
-						<p class="tips color1" v-if="item.status == 3">进行中</p>
-						<p class="tips color3" v-if="item.status == 4">已结束</p>
-						<p class="tips color5" v-if="item.status == 2">活动预告</p>
-						<div class="js-crop-img">
-							<img :src="item | getCloudImgUrl">
+	<div class="inner-content">
+		<div class="filter">
+			<div class="item">
+				<label>类型</label>
+				<div class="option-list">
+					<ul>
+						<li :class="{'active': item.selected}" v-for="(item, index) of activityClassifies" @click="changeActivityClassifySelected(index)">{{item.name}}</li>
+					</ul>
+				</div>
+				<div class="clear"></div>
+			</div>
+			<div class="item">
+				<label>时间</label>
+				<div class="option-list">
+					<ul>
+						<li :class="{'active': item.selected}" v-for="(item, index) of activityQueryDates" @click="changeActivityTimeSelected(index)">{{item.name}}</li>
+					</ul>
+				</div>
+				<div class="clear"></div>
+			</div>
+			<div class="item" v-show="regions.length > 0">
+				<label>地区</label>
+				<div class="option-list">
+					<ul>
+						<li :class="{'active': item.selected}" v-for="(item, index) of regions" @click="changeActivityRegionsSelected(index)">{{item.name}}</li>
+					</ul>
+				</div>
+				<div class="clear"></div>
+			</div>
+		</div>
+		<div class="card-list">
+			<ul>
+				<li v-for="(item, index) of activities" :key="'item-' + index">
+					<div class="inner">
+						<div class="img-box">
+							<p class="tips color1" v-if="item.status == 3">进行中</p>
+							<p class="tips color3" v-if="item.status == 4">已结束</p>
+							<p class="tips color5" v-if="item.status == 2">活动预告</p>
+							<div class="js-crop-img">
+								<img :src="item | getCloudImgUrl">
+							</div>
+						</div>
+						<div class="card-info">
+							<h2 class="title overHidden1" @click="detail(index)">{{item.name}}</h2>
+							<p class="time">{{item.startTime | timestamp2YMD}} ～ {{item.endTime | timestamp2YMD}}</p>
+							<p class="address">{{item.organisers}}</p>
+							<p class="address" v-show="item.address">{{item.address}}{{item.detailAddress ? item.detailAddress : ''}}</p>
 						</div>
 					</div>
-					<div class="card-info">
-						<h2 class="title overHidden1" @click="detail(index)">{{item.name}}</h2>
-						<p class="time">{{item.startTime | timestamp2YMD}} ～ {{item.endTime | timestamp2YMD}}</p>
-						<p class="address">{{item.organisers}}</p>
-						<p class="address" v-show="item.address">{{item.address}}{{item.detailAddress ? item.detailAddress : ''}}</p>
-					</div>
-				</div>
-			</li>
-		</ul>
+				</li>
+			</ul>
+		</div>
+		<!-- 无数据 -->
+		<div class="noContent" v-show="total < 1 && loaded">
+			<p>无结果</p>
+		</div>
+		<el-pagination style="text-align: center;" v-show="pages > 1 && loaded" background layout="prev, pager, next" :total="total" :page-size="queryParams.pageSize" :current-page="queryParams.pageNum" @current-change="currenClick"></el-pagination>
 	</div>
-	<!-- 无数据 -->
-	<div class="noContent" v-show="total < 1 && loaded">
-		<p>无结果</p>
-	</div>
-	<el-pagination style="text-align: center;" v-show="pages > 1 && loaded" background layout="prev, pager, next" :total="total" :page-size="queryParams.pageSize" :current-page="queryParams.pageNum" @current-change="currenClick"></el-pagination>
 </div>
 <div th:replace="pc/include/common_js :: common_js(~{::script})">
 	<script type="text/javascript" src="/static/pc/assets/lib/element-ui/lib/index.js" th:src="@{/pc/assets/lib/element-ui/lib/index.js}"></script>
