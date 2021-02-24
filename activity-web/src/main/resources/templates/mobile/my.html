@@ -112,7 +112,7 @@
 	</div>
 	<!-- 无数据 -->
 	<div class="noContent" v-show="(signedUpLoaded && signedUps.length < 1 && activeTabIndex == 0) || (collectedLoaded && collecteds.length < 1 && activeTabIndex == 1) || (managingLoaded && managings.length < 1 && activeTabIndex == 2)">
-		<p>无结果</p>
+		<p>暂无内容</p>
 	</div>
 	<!--加载中-->
 	<div class="loading" v-show="signedUpLoading || collectedLoading || managingLoading"><img src="/static/mobile/assets/images/Spinner-1s-200px.svg" th:src="@{/mobile/assets/images/Spinner-1s-200px.svg}">加载中…</div>
