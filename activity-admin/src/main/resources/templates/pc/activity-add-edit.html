@@ -285,6 +285,7 @@
                                 <el-option v-for="(scanCodeWay, index) of scanCodeWays" :key="'scan-code-way-' + index" :label="scanCodeWay.name" :value="scanCodeWay.value"></el-option>
                             </el-select>
                         </div>
+                        <span v-show="sign.signIn.scanCodeWay == 1" class="tips">参与者需扫描签到二维码进行签到</span>
                         <span v-show="sign.signIn.scanCodeWay == 2" class="tips">需管理员扫描参与者的二维码进行签到</span>
                     </div>
                 </div>
@@ -353,7 +354,8 @@
                                 <el-option v-for="(scanCodeWay, index) of scanCodeWays" :key="'scan-code-way-' + index" :label="scanCodeWay.name" :value="scanCodeWay.value"></el-option>
                             </el-select>
                         </div>
-                        <span v-show="sign.signOut.scanCodeWay == 2" class="tips">需管理员扫描参与者的二维码进行签到</span>
+                        <span v-show="sign.signOut.scanCodeWay == 1" class="tips">参与者需扫描签到二维码进行签退</span>
+                        <span v-show="sign.signOut.scanCodeWay == 2" class="tips">需管理员扫描参与者的二维码进行签退</span>
                     </div>
                 </div>
                 <div class="form-item">
