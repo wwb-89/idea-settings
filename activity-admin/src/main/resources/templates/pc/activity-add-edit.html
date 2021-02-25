@@ -277,7 +277,7 @@
                         <input type="text" required lay-verify="required" v-model.trim="sign.signIn.detailAddress" placeholder="详细地址，例：E5栋1308室" autocomplete="off" class="layui-input name show-addr-detailed">
                     </div>
                 </div>
-                <!--<div class="form-item" v-show="sign.signIn.way == 3">
+                <div class="form-item" v-show="sign.signIn.way == 3">
                     <label class="label">扫码方式</label>
                     <div class="input-box">
                         <div>
@@ -285,8 +285,9 @@
                                 <el-option v-for="(scanCodeWay, index) of scanCodeWays" :key="'scan-code-way-' + index" :label="scanCodeWay.name" :value="scanCodeWay.value"></el-option>
                             </el-select>
                         </div>
+                        <span v-show="sign.signIn.scanCodeWay == 2" class="tips">需管理员扫描参与者的二维码进行签到</span>
                     </div>
-                </div>-->
+                </div>
                 <div class="form-item">
                     <label class="label"><img src="/static/pc/assets/images/required.png" th:src="@{/pc/assets/images/required.png}" class="required-img">签到时间</label>
                     <div class="input-box">
@@ -344,7 +345,7 @@
                         <input type="text" required lay-verify="required" v-model.trim="sign.signOut.detailAddress" placeholder="详细地址，例：E5栋1308室" autocomplete="off" class="layui-input name show-addr-detailed">
                     </div>
                 </div>
-                <!--<div class="form-item" v-show="sign.signOut.way == 3">
+                <div class="form-item" v-show="sign.signOut.way == 3">
                     <label class="label">扫码方式</label>
                     <div class="input-box">
                         <div>
@@ -352,8 +353,9 @@
                                 <el-option v-for="(scanCodeWay, index) of scanCodeWays" :key="'scan-code-way-' + index" :label="scanCodeWay.name" :value="scanCodeWay.value"></el-option>
                             </el-select>
                         </div>
+                        <span v-show="sign.signOut.scanCodeWay == 2" class="tips">需管理员扫描参与者的二维码进行签到</span>
                     </div>
-                </div>-->
+                </div>
                 <div class="form-item">
                     <label class="label"><img src="/static/pc/assets/images/required.png" th:src="@{/pc/assets/images/required.png}" class="required-img">签退时间</label>
                     <div class="input-box">
