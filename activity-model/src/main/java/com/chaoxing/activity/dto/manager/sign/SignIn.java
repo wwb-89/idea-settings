@@ -51,7 +51,7 @@ public class SignIn {
     private BigDecimal longitude;
     /** 签到维度 */
     private BigDecimal dimension;
-    /** 扫码方式。1：用户扫码，2：管理员扫码 */
+    /** 扫码方式。1：参与者扫码，2：参与者扫码 */
     private Integer scanCodeWay;
     /** 是否填写信息 */
     private Boolean fillInfo;

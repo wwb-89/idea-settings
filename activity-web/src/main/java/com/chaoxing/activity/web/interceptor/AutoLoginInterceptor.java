@@ -6,6 +6,7 @@ import com.chaoxing.activity.service.CookieValidationService;
 import com.chaoxing.activity.service.LoginService;
 import com.chaoxing.activity.util.CookieUtils;
 import com.chaoxing.activity.util.HttpServletRequestUtils;
+import com.chaoxing.activity.util.constant.CommonConstant;
 import com.chaoxing.activity.web.util.LoginUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
@@ -41,6 +42,9 @@ public class AutoLoginInterceptor extends HandlerInterceptorAdapter {
 			// 试着登录
 			Integer uid = CookieUtils.getUid(request);
 			Integer fid = CookieUtils.getFid(request);
+			if (uid != null && fid == null) {
+				fid = CommonConstant.CX_NETWORK_FID;
+			}
 			if (uid != null) {
 				long validateTime = CookieUtils.getValidateTime(request);
 				String signature = CookieUtils.getSignature(request);

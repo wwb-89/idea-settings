@@ -40,5 +40,7 @@ public class CommonConstant {
 	public static final Long ACTIVITY_NOTICE_TIME_MILLISECOND = 24 * 60 * 60 * 1000L;
 	/** 通知发送的uid */
 	public static final Integer NOTICE_SEND_UID = 168054129;
+	/** 超星网fid */
+	public static final Integer CX_NETWORK_FID = 0;
 
 }

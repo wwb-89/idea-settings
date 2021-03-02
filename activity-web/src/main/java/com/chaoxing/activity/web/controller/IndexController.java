@@ -37,6 +37,9 @@ import java.util.Optional;
 @RequestMapping("")
 public class IndexController {
 
+	/** 默认风格 */
+	private static final String DEFAULT_STYLE = "1";
+
 	@Resource
 	private GroupRegionFilterService groupRegionFilterService;
 	@Resource
@@ -54,12 +57,14 @@ public class IndexController {
 	 * @param model
 	 * @param fid
 	 * @param banner
+	 * @param style 风格
 	 * @return java.lang.String
 	 */
 	@LoginRequired
 	@GetMapping("")
-	public String index(HttpServletRequest request, Model model, Integer fid, Integer banner) {
-		return handleData(request, model, null, fid, null, banner);
+	public String index(HttpServletRequest request, Model model, Integer fid, Integer banner, String style) {
+		style = Optional.ofNullable(style).filter(StringUtils::isNotBlank).orElse(DEFAULT_STYLE);
+		return handleData(request, model, null, fid, null, banner, style);
 	}
 
 	/**图书馆
@@ -74,16 +79,17 @@ public class IndexController {
 	 * @param pageId
 	 * @param fid 其他来源封装的fid
 	 * @param banner
+	 * @param style
 	 * @return java.lang.String
 	 */
 	@GetMapping("lib")
-	public String libIndex(HttpServletRequest request, Model model, String code, Integer unitId, Integer state, Integer fid, Integer pageId, Integer banner) {
+	public String libIndex(HttpServletRequest request, Model model, String code, Integer unitId, Integer state, Integer fid, Integer pageId, Integer banner, String style) {
 		Integer realFid = Optional.ofNullable(unitId).orElse(Optional.ofNullable(state).orElse(fid));
 		if (realFid == null) {
 			// 使用通用的活动广场
 			return "redirect:/";
 		}
-		return handleData(request, model, code, realFid, pageId, banner);
+		return handleData(request, model, code, realFid, pageId, banner, style);
 	}
 
 	/**基础教育
@@ -96,12 +102,14 @@ public class IndexController {
 	 * @param fid
 	 * @param pageId
 	 * @param banner
+	 * @param style
 	 * @return java.lang.String
 	 */
 	@LoginRequired
 	@GetMapping("bas")
-	public String basIndex(HttpServletRequest request, Model model, String code, @RequestParam(value = "unitId", required = false) Integer fid, Integer pageId, Integer banner) {
-		return handleData(request, model, code, fid, pageId, banner);
+	public String basIndex(HttpServletRequest request, Model model, String code, @RequestParam(value = "unitId", required = false) Integer fid, Integer pageId, Integer banner, String style) {
+		style = Optional.ofNullable(style).filter(StringUtils::isNotBlank).orElse(DEFAULT_STYLE);
+		return handleData(request, model, code, fid, pageId, banner, style);
 	}
 
 	/**高校
@@ -114,15 +122,17 @@ public class IndexController {
 	 * @param fid
 	 * @param pageId
 	 * @param banner
+	 * @param style
 	 * @return java.lang.String
 	 */
 	@LoginRequired
 	@GetMapping("edu")
-	public String eduIndex(HttpServletRequest request, Model model, String code, @RequestParam(value = "unitId", required = false) Integer fid, Integer pageId, Integer banner) {
-		return handleData(request, model, code, fid, pageId, banner);
+	public String eduIndex(HttpServletRequest request, Model model, String code, @RequestParam(value = "unitId", required = false) Integer fid, Integer pageId, Integer banner, String style) {
+		style = Optional.ofNullable(style).filter(StringUtils::isNotBlank).orElse(DEFAULT_STYLE);
+		return handleData(request, model, code, fid, pageId, banner, style);
 	}
 
-	private String handleData(HttpServletRequest request, Model model, String code, Integer fid, Integer pageId, Integer banner) {
+	private String handleData(HttpServletRequest request, Model model, String code, Integer fid, Integer pageId, Integer banner, String style) {
 		if (fid == null) {
 			fid = LoginUtils.getLoginUser(request).getFid();
 		}
@@ -148,13 +158,20 @@ public class IndexController {
 		model.addAttribute("pageId", pageId);
 		banner = Optional.ofNullable(banner).orElse(0);
 		model.addAttribute("banner", banner);
-		if (UserAgentUtils.isMobileAccess(request)) {
-			return "mobile/index";
+		if (StringUtils.isEmpty(style)) {
+			if (UserAgentUtils.isMobileAccess(request)) {
+				return "mobile/index";
+			}
+			return "pc/index";
+		}else {
+			if (UserAgentUtils.isMobileAccess(request)) {
+				return "mobile/index";
+			}
+			return "pc/activity/market/activity-market-" + style;
 		}
-		return "pc/index";
 	}
 
-	/**我的
+	/**我的活动
 	 * @Description
 	 * @author wwb
 	 * @Date 2021-01-27 14:59:23
@@ -170,7 +187,7 @@ public class IndexController {
 		if (UserAgentUtils.isMobileAccess(request)) {
 			return "mobile/my";
 		}
-		return "pc/my";
+		return "pc/activity/my";
 	}
 
 }

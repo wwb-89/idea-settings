@@ -173,7 +173,7 @@
                         </div>
                         <div class="already_add" v-show="participatedOrgs.length > 0">
                             <div>
-                                已选择单位（{{participatedOrgs.length}}）
+                                已选择{{participatedOrgs.length}}个单位
                             </div>
                             <img src="/static/pc/assets/images/edit-3.png" th:src="@{/pc/assets/images/edit-3.png}" @click="toAddParticipateScope">
                         </div>
@@ -214,7 +214,7 @@
                     <div class="input-box">
                         <div class="select-person">
                             <el-select v-model="personLimitValue" value-key="id" placeholder="请选择">
-                                <el-option label="无限制" :value="0"></el-option>
+                                <el-option label="不限" :value="0"></el-option>
                                 <el-option label="自定义人数" :value="1"></el-option>
                             </el-select>
                         </div>
@@ -238,7 +238,7 @@
                     <label class="label">报名需审核</label>
                     <div class="input-box">
                         <el-switch v-model="sign.signUp.openAudit"></el-switch>
-                        <span class="tips">开启后，参与需发起人审核</span>
+                        <span class="tips">报名需管理员审核</span>
                     </div>
                 </div>
                 <div class="form-item">
@@ -277,7 +277,7 @@
                         <input type="text" required lay-verify="required" v-model.trim="sign.signIn.detailAddress" placeholder="详细地址，例：E5栋1308室" autocomplete="off" class="layui-input name show-addr-detailed">
                     </div>
                 </div>
-                <!--<div class="form-item" v-show="sign.signIn.way == 3">
+                <div class="form-item" v-show="sign.signIn.way == 3">
                     <label class="label">扫码方式</label>
                     <div class="input-box">
                         <div>
@@ -285,8 +285,10 @@
                                 <el-option v-for="(scanCodeWay, index) of scanCodeWays" :key="'scan-code-way-' + index" :label="scanCodeWay.name" :value="scanCodeWay.value"></el-option>
                             </el-select>
                         </div>
+                        <span v-show="sign.signIn.scanCodeWay == 1" class="tips">参与者需扫描签到二维码进行签到</span>
+                        <span v-show="sign.signIn.scanCodeWay == 2" class="tips">需管理员扫描参与者的二维码进行签到</span>
                     </div>
-                </div>-->
+                </div>
                 <div class="form-item">
                     <label class="label"><img src="/static/pc/assets/images/required.png" th:src="@{/pc/assets/images/required.png}" class="required-img">签到时间</label>
                     <div class="input-box">
@@ -344,7 +346,7 @@
                         <input type="text" required lay-verify="required" v-model.trim="sign.signOut.detailAddress" placeholder="详细地址，例：E5栋1308室" autocomplete="off" class="layui-input name show-addr-detailed">
                     </div>
                 </div>
-                <!--<div class="form-item" v-show="sign.signOut.way == 3">
+                <div class="form-item" v-show="sign.signOut.way == 3">
                     <label class="label">扫码方式</label>
                     <div class="input-box">
                         <div>
@@ -352,8 +354,10 @@
                                 <el-option v-for="(scanCodeWay, index) of scanCodeWays" :key="'scan-code-way-' + index" :label="scanCodeWay.name" :value="scanCodeWay.value"></el-option>
                             </el-select>
                         </div>
+                        <span v-show="sign.signOut.scanCodeWay == 1" class="tips">参与者需扫描签到二维码进行签退</span>
+                        <span v-show="sign.signOut.scanCodeWay == 2" class="tips">需管理员扫描参与者的二维码进行签退</span>
                     </div>
-                </div>-->
+                </div>
                 <div class="form-item">
                     <label class="label"><img src="/static/pc/assets/images/required.png" th:src="@{/pc/assets/images/required.png}" class="required-img">签退时间</label>
                     <div class="input-box">
@@ -618,12 +622,21 @@
                     {name: "二维码签退", value: 3}
                 ];
                 $this.scanCodeWays = [
-                    {name: "用户扫码", value: 1},
+                    {name: "参与者扫码", value: 1},
                     {name: "管理员扫码", value: 2}
                 ];
                 if (activityApp.isEmpty($this.sign.id)) {
                     // 生成新的签到报名活动
                     $this.sign = signApp.newSign();
+                    if (!activityApp.isEmpty($this.sign.signUp.startTime)) {
+                        $this.signUpTimeScope = [$this.sign.signUp.startTime, $this.sign.signUp.endTime];
+                    }
+                    if (!activityApp.isEmpty($this.sign.signIn.startTime)) {
+                        $this.signInTimeScope = [$this.sign.signIn.startTime, $this.sign.signIn.endTime];
+                    }
+                    if (!activityApp.isEmpty($this.sign.signOut.startTime)) {
+                        $this.signOutTimeScope = [$this.sign.signOut.startTime, $this.sign.signOut.endTime];
+                    }
                     $this.enableSignUp = true;
                 } else {
                     $this.sign.createTime = "";
@@ -725,6 +738,13 @@
                     $this.$nextTick(function () {
                         $this.activity.enableSign = $this.enableSignUp || $this.enableSignIn || $this.enableSignOut;
                     });
+                },
+                "sign.signUp.fillInfo": function () {
+                    var $this = this;
+                    if ($this.sign.signUp.fillInfo && activityApp.isEmpty($this.sign.signUp.fillInfoFormId)) {
+                        // 打开表单配置弹窗
+                        $this.toConfigForm();
+                    }
                 }
             },
             methods: {
@@ -1323,6 +1343,10 @@
                         btn: ["取消", "完成"],
                         btnAlign: "c",
                         yes: function (index) {
+                            if ($this.sign.signUp.fillInfo && activityApp.isEmpty($this.sign.signUp.fillInfoFormId)) {
+                                // 关闭表单填写
+                                $this.$set($this.sign.signUp, "fillInfo", false);
+                            }
                             app.closeLayerPop(index);
                         },
                         btn2: function (index, layero) {

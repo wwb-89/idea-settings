@@ -236,6 +236,7 @@
             <foreach collection="signIds" index="key" item="value" open="(" close=")" separator=",">
                 #{value}
             </foreach>
+            AND t.`status` IN (1, 2, 3, 4)
         ORDER BY
             FIELD('t.sign_id',
             <foreach collection="signIds" index="key" item="value" open="" close="" separator=",">

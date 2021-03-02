@@ -216,7 +216,7 @@ public class ActivityApiController {
 		Integer signId = jsonObject.getInteger("signId");
 		List<Integer> uids = JSON.parseArray(jsonObject.getString("uids"), Integer.class);
 		Activity activity = activityQueryService.getBySignId(signId);
-		activityStartNoticeHandleService.generateSignedUpNotice(activity, uids);
+		activityStartNoticeHandleService.sendSignedUpNotice(activity, uids);
 		return RestRespDTO.success();
 	}
 

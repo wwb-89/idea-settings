@@ -18,18 +18,18 @@
 <div class="activity-list" id="activity-vue" v-cloak>
 	<div class="item-block">
 		<h2 class="title fl">我的活动</h2>
-		<div class="btns fr">
+		<!--<div class="btns fr">
 			<button class="btn-main" @click="toAdd"><i class="addIcon"></i>创建活动</button>
-		</div>
+		</div>-->
 		<div class="clear"></div>
 	</div>
 	<div class="item-block paddingNew minHeight800">
 		<div class="filter">
 			<div class="tab fl">
 				<ul>
-					<li :class="{'active': (activeTabIndex == 0)}" @click="changeTab(0)">已报名</li>
-					<li :class="{'active': (activeTabIndex == 1)}" @click="changeTab(1)">收藏</li>
-					<li :class="{'active': (activeTabIndex == 2)}" @click="changeTab(2)">管理</li>
+					<li :class="{'active': (activeTabIndex == 0)}" @click="changeTab(0)">我报名的</li>
+					<li :class="{'active': (activeTabIndex == 1)}" @click="changeTab(1)">我收藏的</li>
+					<li :class="{'active': (activeTabIndex == 2)}" @click="changeTab(2)">我管理的</li>
 				</ul>
 				<div class="clear"></div>
 			</div>
@@ -43,10 +43,10 @@
 		<div class="tabContent" v-show="activeTabIndex == 0">
 			<div class="card-list">
 				<ul v-infinite-scroll="loadSignedUp" infinite-scroll-disabled="signedUpLoading" infinite-scroll-distance="10">
-					<li v-for="(activity, index) of signedUps" :key="'activity-' + index">
+					<li v-for="(activity, index) of signedUps" :key="'activity-' + index" v-show="!(activity.userSignUpStatus != 1 && activity.status == 4)">
 						<div class="inner">
 							<div class="img-box">
-								<p :class="{'tips': true, 'color1': (activity.userSignUpStatus == 1), 'color4': (activity.userSignUpStatus == 2)}">{{activity.userSignUpStatus == 1 ? "已报名" : "报名审核中"}}</p>
+								<p :class="calSignedUpClass(activity)">{{activity | calSignedUpStatusDescription}}</p>
 								<div class="js-crop-img">
 									<img :src="activity | getCloudImgUrl">
 								</div>
@@ -117,7 +117,7 @@
 		</div>
 		<!-- 无数据 -->
 		<div class="noContent" v-show="(signedUpLoaded && signedUps.length < 1 && activeTabIndex == 0) || (collectedLoaded && collecteds.length < 1 && activeTabIndex == 1) || (managingLoaded && managings.length < 1 && activeTabIndex == 2)">
-			<p>无结果</p>
+			<p>暂无内容</p>
 		</div>
 		<div class="load-div loading" v-show="signedUpLoading || collectedLoading || managingLoading"><img src="/static/pc/assets/images/Spinner-1s-200px.svg" th:src="@{/pc/assets/images/Spinner-1s-200px.svg}">加载中…</div>
 		<div class="load-div no-more" v-show="(signedUpNoMore && signedUps.length > 0 && activeTabIndex == 0) || (collectedNoMore && collecteds.length > 0 && activeTabIndex == 1) || (managingNoMore && managings.length > 0 && activeTabIndex == 2)">没有更多了</div>
@@ -142,6 +142,15 @@
 		Vue.filter("activityTimeFormatter", function (timestamp) {
 			var dateObj = activityApp.millisecond2DateObj(timestamp);
 			return dateObj.year + "." + dateObj.month + "." + dateObj.day + " " + dateObj.hour + ":" + dateObj.minute;
+		});
+		Vue.filter("calSignedUpStatusDescription", function (activity) {
+			var userSignUpStatus = activity.userSignUpStatus;
+			if (1 != userSignUpStatus) {
+				// 返回报名的状态
+				return "报名审核中";
+			}
+			// 返回活动的状态
+			return activityApp.getActivityStatusInstructions(activity.status);
 		});
 		activityVue = new Vue({
 			el: "#activity-vue",
@@ -194,6 +203,20 @@
 				$this.managingLock = true;
 			},
 			methods: {
+				calSignedUpClass: function (activity) {
+					var userSignUpStatus = activity.userSignUpStatus;
+					if (1 != userSignUpStatus) {
+						return "tips color4";
+					}
+					var status = activity.status;
+					if (3 == status) {
+						return "tips color1";
+					}else if (4 == status) {
+						return "tips color3";
+					} else {
+						return "tips color2";
+					}
+				},
 				// 创建活动
 				toAdd: function () {
 					var $this = this;
@@ -252,10 +275,18 @@
 								errorMessage = "加载已报名的活动失败";
 							}
 							app.showMsg(errorMessage);
+							if ($this.signedUpQueryParams.pageNum == 1) {
+								// 不允许搜索了
+								$this.signedUpNoMore = true;
+							}
 						}
 					}, function () {
 						$this.signedUpLoading = false;
 						app.showMsg("加载已报名的活动失败");
+						if ($this.signedUpQueryParams.pageNum == 1) {
+							// 不允许搜索了
+							$this.signedUpNoMore = true;
+						}
 					});
 				},
 				resetCollected: function () {
@@ -291,13 +322,21 @@
 						} else {
 							var errorMessage = data.message;
 							if (activityApp.isEmpty(errorMessage)) {
-								errorMessage = "加载管理的的活动失败";
+								errorMessage = "加载收藏的的活动失败";
 							}
 							app.showMsg(errorMessage);
+							if ($this.collectedQueryParams.pageNum == 1) {
+								// 不允许搜索了
+								$this.collectedNoMore = true;
+							}
 						}
 					}, function () {
 						$this.collectedLoading = false;
-						app.showMsg("加载管理的活动失败");
+						app.showMsg("加载收藏的活动失败");
+						if ($this.collectedQueryParams.pageNum == 1) {
+							// 不允许搜索了
+							$this.collectedNoMore = true;
+						}
 					});
 				},
 				resetManaging: function () {
@@ -338,10 +377,18 @@
 								errorMessage = "加载管理的的活动失败";
 							}
 							app.showMsg(errorMessage);
+							if ($this.managingQueryParams.pageNum == 1) {
+								// 不允许搜索了
+								$this.managingNoMore = true;
+							}
 						}
 					}, function () {
 						$this.managingLoading = false;
 						app.showMsg("加载管理的活动失败");
+						if ($this.managingQueryParams.pageNum == 1) {
+							// 不允许搜索了
+							$this.managingNoMore = true;
+						}
 					});
 				},
 				// 取消报名
