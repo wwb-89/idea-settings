@@ -84,3 +84,4 @@ server:
   tomcat:
     ## 不限制post的大小
     max-http-form-post-size: -1
+  port: -1
