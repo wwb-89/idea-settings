@@ -7,7 +7,7 @@
 
     app.prototype.origin = W.location.origin;
     /** 专题url */
-    app.prototype.specialSubjectUrl = "https://special.zhexuezj.cn/mobile/mooc/tocourse/";
+    app.prototype.specialSubjectUrl = "https://special.rhky.com/mobile/mooc/tocourse/";
     /** 课程url */
     app.prototype.courseUrl = "http://mooc1-api.chaoxing.com/phone/courseindex?courseid=";
 
