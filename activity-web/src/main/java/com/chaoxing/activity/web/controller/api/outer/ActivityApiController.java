@@ -59,8 +59,6 @@ public class ActivityApiController {
 	private ActivityCollectionValidateService activityCollectionValidateService;
 	@Resource
 	private ActivityStartNoticeHandleService activityStartNoticeHandleService;
-	@Resource
-	private SignApiService signApiService;
 
 	/**组活动推荐
 	 * @Description
