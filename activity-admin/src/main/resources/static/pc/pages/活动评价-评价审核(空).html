@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="../assets/lib/layui/css/layui.css">
+    <link rel="stylesheet" href="../assets/lib/element-ui/lib/theme-chalk/index.css">
+    <link rel="stylesheet" href="../assets/css/public.css">
+    <link rel="stylesheet" href="../assets/css/activity-assess.css">
+    <title>评价审核</title>
+</head>
+
+<body>
+    <div class="assess-container" id="vue" v-cloak>
+        <div class="assess-header">
+            <div class="assess-title">
+                书香浙江 云享阅读——2020浙江省云阅读云阅读计划云阅读计划云阅读
+            </div>
+            <div class="assess-header-right">
+                <div class="login-container">
+                    <div class="after-login">
+                        <img class="login-tx" src="../assets/images/touxiang.png" alt="">
+                        <span class="user-name">王小明</span>
+                        <i class="icon-down">
+                            <img src="../assets/images/icon-down.png" alt="">
+                        </i>
+                        <ul class="login-downlist-info">
+                            <li class="login-downlist-item">
+                                <a href="#">进入空间</a>
+                            </li>
+                            <li class="login-downlist-item">
+                                <a href="#">退出登录</a>
+                            </li>
+                        </ul>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+        <div class="assess-content" style="height: 800px;">
+            <div class="assess-content-header assess-check-header">
+                <div class="assess-check-number">共0份</div>
+                <div class="assess-check-btns">
+                    <i class="assess-checkd">
+                        <img v-show="!noChecked" src="../assets/images/radio_normal4.png" alt=""
+                            @click="checkAllHandle">
+                        <img v-show="noChecked" src="../assets/images/radio_normal2.png" alt="" @click="checkAllHandle">
+                    </i>
+                    <div class="check-btn">批量通过 0</div>
+                    <div class="check-btn">批量删除 0</div>
+                </div>
+            </div>
+            <div class="no-assess">暂无内容</div>
+        </div>
+
+    </div>
+
+</body>
+
+
+</html>
+<script src="../assets/lib/vue.js"></script>
+<script src="../assets/lib/jquery.min.js"></script>
+<script src="../assets/lib/layui/layui.js"></script>
+<script src="../assets/lib/element-ui/lib/index.js"></script>
+
+<script>
+    var vm = new Vue({
+        el: '#vue',
+        data: function () {
+            return {
+                noChecked: false,
+                checkedStatus: [false, false, false, false],
+            }
+        },
+        created: function () {
+
+        },
+        mounted: function () {
+            this.layuiInit();
+            this.rateList();
+            this.showMoreLess();
+        },
+        updated: function () {
+            this.layuiInit();
+        },
+        methods: {
+            layuiInit: function () {
+                var _this = this;
+                layui.use(['rate', 'layer'], function () {
+                    var rate = layui.rate;
+                    var layer = layui.layer;
+                    rate.render({
+                        elem: '#test',
+                        value: _this.allRateScore,
+                        readonly: true
+                    })
+
+                    //弹框的自定义文本
+                    rate.render({
+                        elem: '#test5',
+                        value: _this.dialogRateValue,
+                        text: true,
+                        setText: function (value) { //自定义文本的回调
+                            var arrs = {
+                                '0': " ",
+                                '1': '较差',
+                                '2': '一般',
+                                '3': '良好',
+                                '4': '很好',
+                                '5': '非常棒'
+                            };
+                            _this.dialogRateValue = value;
+                            this.span.text(arrs[value] || (value + "星"));
+                        }
+                    })
+
+                })
+            },
+
+            // 遍历每个li中星星
+            rateList: function () {
+                var rates = $(".item-writing>div")
+                rates.each(function (i, n) {
+                    $(n).addClass("testX");
+
+                    layui.use(['rate'], function () {
+                        var rate = layui.rate;
+
+                        rate.render({
+                            elem: $(n),
+                            value: 4,
+                            readonly: true,
+                        })
+                    })
+                })
+            },
+            // 点击展开与收起
+            showMoreLess: function () {
+                $(".item-assess").each(function (i, n) {
+                    if ($(n).height() > 60) {
+                        $(n).addClass("overflowThree")
+                        $(n).parent(".item-writing").siblings(".showmore").show()
+                    } else {
+                        $(n).parent(".item-writing").siblings(".showmore").hide()
+                    }
+                })
+                $(".showmore").each(function (i, n) {
+                    $(n).on("click", function () {
+                        $(this).siblings(".item-writing").children(".item-assess")
+                            .removeClass("overflowThree");
+                        $(this).siblings(".showless").show()
+                        $(this).hide()
+                    })
+                })
+                $(".showless").each(function (i, n) {
+                    $(n).on("click", function () {
+                        $(this).siblings(".item-writing").children(".item-assess").addClass(
+                            "overflowThree");
+                        $(this).siblings(".showmore").show()
+                        $(this).hide()
+                    })
+                })
+            },
+            // 监听所有checkbox改变
+            checkChangeHandle: function () {
+                if (this.checkedStatus.indexOf(true) >= 0) {
+                    this.noChecked = true;
+                } else {
+                    this.noChecked = false;
+                }
+            },
+            // 全选
+            checkAllHandle: function () {
+                this.noChecked = !this.noChecked;
+                for (var i = 0; i < this.checkedStatus.length; i++) {
+                    this.checkedStatus[i] = this.noChecked;
+                }
+            }
+        }
+    });
+</script>

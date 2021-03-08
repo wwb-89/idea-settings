@@ -1,0 +1,459 @@
+/* 活动评价css */
+body {
+    height: 100%;
+    background: #DBDBDB !important;
+}
+
+[v-cloak] {
+    display: none;
+}
+
+.assess-container .assess-header {
+    position: relative;
+    background-color:#FFFFFF;
+    height: 40px;
+    line-height: 40px;
+    padding: 10px 20px;
+    -webkit-box-sizing: border-box;
+        -moz-box-sizing: border-box;
+            box-sizing: border-box;
+}
+
+.assess-title {
+    font-size: 14px;
+    height: 20px;
+    line-height: 20px;
+    color: #333333;
+    max-width: 50%;
+}
+
+.assess-header-right {
+    position: absolute;
+    top: 0;
+    right: 32px;
+}
+
+
+.assess-header-set {
+    position: absolute;
+    top: 0;
+    right: 147px;
+}
+
+.assess-header-set>a:first-child {
+    margin-right: 20px;
+}
+
+/* 登录样式 */
+.login-container {
+    display: inline-block;
+}
+
+.after-login {
+    cursor: pointer;
+    text-align: right;
+}
+
+.login-downlist-info {
+    display: none;
+}
+
+.after-login:hover .login-downlist-info {
+    display: block;
+}
+
+.login-tx {
+    width: 24px;
+    height: 24px;
+    border-radius: 12px;
+    margin-right: 8px;
+}
+
+.icon-down>img {
+    width: 8px;
+    height: 4px;
+}
+
+.login-downlist-info {
+    box-shadow: 0px 6px 16px -8px rgba(0, 0, 0, 0.08), 0px 9px 28px rgba(0, 0, 0, 0.05), 0px 12px 48px 16px rgba(0, 0, 0, 0.03);
+    border-radius: 2px;
+    background-color: #FFFFFF;
+    padding: 2px 0;
+}
+
+.login-downlist-item {
+    padding: 8px 16px;
+    color: #333333;
+    line-height: 16px;
+}
+
+.login-downlist-item:hover {
+    color: #0084FF;
+    background-color: #F8F8F8;
+}
+
+.login-downlist-item:hover>a {
+    color: #0084FF;
+}
+
+.assess-content {
+    margin: 16px auto 0;
+    padding: 24px 32px;
+    background-color:#FFFFFF;
+    border-radius: 8px;
+    width: 1000px;
+    -webkit-box-sizing: border-box;
+        -moz-box-sizing: border-box;
+            box-sizing: border-box;
+}
+
+.assess-content-header {
+    padding-bottom: 17px;
+    border-bottom: 1px solid #E9E9E9;
+}
+
+.btn-addassess {
+    cursor: pointer;
+    margin-top: 3px;
+    width: 87px;
+    height: 30px;
+    background-color: #0084FF;
+    border-radius: 30px;
+    font-size: 13px;
+    line-height: 30px;
+    text-align: center;
+    color: #FFFFFF;
+}
+
+.inall-assess {
+    position: relative;
+    height: 36px;
+    line-height: 36px;
+}
+
+.inall-value {
+    display: inline-block;
+    height: 36px;
+    font-weight: 600;
+    font-size: 26px;
+    line-height: 36px;
+    color: #FB7B33;
+}
+
+#test {
+    position: absolute;
+    width: 136px;
+    left: 42px;
+}
+#test .layui-rate {
+    padding: 0;
+}
+
+.inall-number {
+    position: absolute;
+    left: 170px;
+    top: 10px;
+    width: 74px;
+    font-size: 14px;
+    line-height: 16px;
+    color: #999999;
+}
+
+.assess-list-item>img {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    margin-right: 16px;
+}
+.assess-list-item {
+    padding-top: 16px;
+}
+
+.item-content {
+    padding-bottom: 17px;
+    width: calc(100% - 52px);
+    border-bottom: 1px solid #E9E9E9;
+}
+
+.item-content .item-name {
+    font-size: 14px;
+    line-height: 20px;
+    color: #333333;
+    margin-right: 12px;
+}
+
+.item-content .item-time {
+    font-size: 13px;
+    line-height: 16px;
+    color: #999999;
+    margin-right: 12px;
+}
+
+.item-content .item-checking {
+    font-size: 13px;
+    line-height: 16px;
+    color: #51B9FF;
+}
+
+.item-content .item-deleted {
+    font-size: 13px;
+    line-height: 16px;
+    color: #FF666D;
+}
+
+.item-content .icon-assess-more {
+    cursor: pointer;
+    margin-top: 4px;
+}
+
+.testX .layui-rate li i.layui-icon {
+    font-size: 13px;
+}
+
+.testX .layui-rate {
+    padding-top: 8px;
+    padding-bottom: 0px;
+}
+
+.item-assess {
+    font-size: 14px;
+    line-height: 20px;
+    color: #333333;
+    margin-top: 8px;
+}
+
+.overflowThree {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+}
+
+.showmore,
+.showless {
+    cursor: pointer;
+    margin-top: 4px;
+    font-size: 14px;
+    height: 20px;
+    line-height: 20px;
+    color: #0084FF;
+}
+
+/* 发表评论弹出框 */
+.addAssessDialog .el-dialog{
+    border-radius: 10px;
+}
+
+.addAssessDialog .el-dialog__title {
+    display: inline-block;
+    width: 100%;
+    text-align: center;
+    font-weight: 600;
+    font-size: 18px;
+    color: #333;
+}
+
+.addAssessDialog .el-dialog__header {
+    padding-top: 16px;
+    padding-bottom: 17px;
+    border-bottom: 1px solid #E9E9E9;
+}
+
+.addAssessDialog .el-dialog__body {
+    position: relative;
+    padding: 0 32px 32px;
+}
+/* 文本框 */
+.dialogTextarea {
+    padding: 5px 12px;
+    width: 400px;
+    height: 125px;
+    border: 1px solid #E9E9E9;
+    -webkit-box-sizing: border-box;
+     -moz-box-sizing: border-box;
+          box-sizing: border-box;
+}
+
+.textarea-content {
+    position: relative;
+}
+
+.textarea-number {
+    position: absolute;
+    right: 12px;
+    bottom: 5px;
+}
+
+.addAssessDialog .el-dialog__footer {
+    text-align: center;
+    border-top: 1px solid #E9E9E9;
+    padding: 14px;
+}
+
+.addAssessDialog .dialog-footer .btn-size {
+    cursor: pointer;
+    display: inline-block;
+    width: 54px;
+    height: 30px;
+    line-height: 30px;
+    text-align: center;
+    border-radius: 15px;
+    -webkit-box-sizing: border-box;
+     -moz-box-sizing: border-box;
+          box-sizing: border-box;
+}
+.addAssessDialog .dialog-footer .btn-cancel {
+    color: #0084FF;
+    border: 1px solid #0084FF;
+    margin-right: 24px;
+}   
+
+.addAssessDialog .dialog-footer .btn-submit {
+    color: #FFFFFF;
+    background-color: #0084FF;
+}
+
+/* 弹框的评分 */
+#test5 .layui-rate li i.layui-icon {
+    font-size: 25px;
+}
+
+#test5 .layui-rate {
+    padding: 25px 25px 25px 0;
+}
+
+#test5 .layui-inline {
+    font-size: 16px;
+    line-height: 19px;
+    color: #999999;
+}
+/* 匿名提交样式 */
+.switch-box {
+    margin-top: 16px;
+    font-size: 14px;
+    line-height: 16px;
+    color: #666666;
+}
+
+.switch-box .btn-switch {
+    margin-left: 26px;
+}
+
+.click-rate {
+    position: absolute;
+    top: 23px;
+    display: inline-block;
+    font-size: 16px;
+    color: #CCCCCC;
+}
+
+.loading-container {
+    margin-top: 16px;
+    width: 100%;
+    text-align: center;
+    font-size: 16px;
+    line-height: 32px;
+    color: #999999;
+}
+
+.loading-container>img {
+    width: 32px;
+    height: 32px;
+}
+/* 评价关闭 */
+.assess-close {
+    font-size: 14px;
+    line-height: 16px;
+    color: #999999;
+    height: 100%;
+    line-height: 752px;
+    text-align: center;
+}
+
+/* 暂无评价 */
+.no-assess {
+    font-size: 14px;
+    line-height: 16px;
+    text-align: center;
+    color: #999999;
+    line-height: 752px;
+}
+/* 评价设置 */
+.set-container {
+    background-color: #FFFFFF;
+    border-radius: 8px;
+    margin: 16px auto;
+    width: 1000px;
+    height: 600px;
+    padding: 32px 40px;
+}
+
+.set-container .set-item {
+    margin-bottom: 32px;
+}
+
+.set-container .set-item .set-title {
+    display: inline-block;
+    width: 90px;
+    font-size: 14px;
+    line-height: 16px;
+    color: #666666;
+    margin-right: 24px;
+}
+
+.set-container .set-item .set-detail {
+    font-size: 14px;
+    line-height: 16px;
+    color: #999999;
+    margin-left: 18px;
+}
+
+
+
+
+/* 报名名单页面样式 */
+.sign-container {
+    width: 1000px;
+    margin: 16px auto;
+}
+
+.sign-header {
+    background-color: #FFFFFF;
+    border-radius: 8px;
+    padding: 24px;
+    font-size: 18px;
+    line-height: 21px;
+    color: #333333;
+    font-weight: bold;
+}
+
+.sign-list {
+    background-color: #FFFFFF;
+    border-radius: 8px;
+    padding: 24px;
+    margin-top: 16px;
+}
+
+.sign-list .sign-list-item {
+    border-bottom: 1px solid #F0F2F7;
+    font-size: 14px;
+    /* line-height: 16px; */
+    color: #333333;
+}
+
+.sign-list .sign-list-item>img {
+    width: 36px;
+    height: 36px;
+    border-radius: 18px;
+    margin: 10px 14px 10px 0;
+}
+
+
+
+
+
+
+
+
+

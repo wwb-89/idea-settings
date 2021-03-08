@@ -1,0 +1,298 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="../assets/lib/layui/css/layui.css">
+    <link rel="stylesheet" href="../assets/lib/element-ui/lib/theme-chalk/index.css">
+    <link rel="stylesheet" href="../assets/css/public.css">
+    <link rel="stylesheet" href="../assets/css/activity-assess.css">
+    <title>活动评价</title>
+</head>
+
+<body>
+    <div class="assess-container" id="vue" v-cloak>
+        <div class="assess-header">
+            <div class="assess-title">
+                书香浙江 云享阅读——2020浙江省云阅读云阅读计划云阅读计划云阅读
+            </div>
+            <div class="assess-header-set">
+                <a href="#">评价设置</a>
+                <a href="#">评价审核</a>
+            </div>
+            <div class="assess-header-right">
+                <div class="login-container">
+                    <div class="after-login">
+                        <img class="login-tx" src="../assets/images/touxiang.png" alt="">
+                        <span class="user-name">王小明</span>
+                        <i class="icon-down">
+                            <img src="../assets/images/activity-home/icon-down.png" alt="">
+                        </i>
+                        <ul class="login-downlist-info">
+                            <li class="login-downlist-item">
+                                <a href="#">进入空间</a>
+                            </li>
+                            <li class="login-downlist-item">
+                                <a href="#">退出登录</a>
+                            </li>
+                        </ul>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+        <div class="assess-content">
+            <div class="assess-content-header">
+                <div class="fl inall-assess">
+                    <span class="inall-value">{{this.allRateScore}}</span>
+                    <div id="test"></div>
+                    <span class="inall-number">1985人评论</span>
+                </div>
+                <div class="fr btn-addassess" @click="dialogVisible = true">
+                    <img src="../assets/images/icon-assess.png" alt=""> 写评论
+                </div>
+                <div class="clear"></div>
+            </div>
+            <ul class="assess-list">
+                <li class="assess-list-item">
+                    <img class="fl" src="../assets/images/touxiang.png" alt="">
+                    <div class="item-content fl">
+                        <span class="item-name">郭大帅</span>
+                        <span class="item-time">07-02 01:20</span>
+                        <span class="item-checking">审核中</span>
+                        <img class="fr icon-assess-more" src="../assets/images/icon-assess-more.png" alt="">
+                        <div class="item-writing">
+                            <div></div>
+                            <p class="item-assess">
+                                教学要求、教学策略和活动组织，要有利于教学目标的实现，核心素养的落实可行且合理教学要求、教学策略和活动组织，要有利于教学目标的实现，核心素养的落实可行且合理教学要求、教学策略和活动组织，要有利于教学目标的实现，核心素养的落实可行且合理教学要求、教学策略和活动组织，要有利于教学目标的实现，核心素养的落实可行且合理。要有利于教学目标的实现，核心素养的落实可行且合理教学要求、教学真牛逼啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊
+                            </p>
+                        </div>
+                        <div class="showmore">
+                            展开
+                        </div>
+                        <div class="showless" style="display: none;">
+                            收起
+                        </div>
+                    </div>
+                    <div class="clear"></div>
+                </li>
+                <li class="assess-list-item">
+                    <img class="fl" src="../assets/images/touxiang.png" alt="">
+                    <div class="item-content fl">
+                        <span class="item-name">郭大帅</span>
+                        <span class="item-time">07-02 01:20</span>
+                        <span class="item-deleted">已被管理员删除</span>
+                        <img class="fr icon-assess-more" src="../assets/images/icon-assess-more.png" alt="">
+                        <div class="item-writing">
+                            <div id="test2"></div>
+                            <p class="item-assess">
+                                教学要求、教学策略和活动组织，要有利于教学目标的实现，核心素养的落实可行且合理教学要求、教学策略和活动组织，要有利于教学目标的实现，核心素养的落实可行且合理教学要求、教学策略和活动组织，要有利于教学目标的实现，核心素养的落实可行且合理教学要求、教学策略和活动组织，要有利于教学目标的实现，核心素养的落实可行且合理。要有利于教学目标的实现，核心素养的落实可行且合理教学要求
+                            </p>
+                        </div>
+                        <div class="showmore" style="display: none;">
+                            展开
+                        </div>
+                        <div class="showless" style="display: none;">
+                            收起
+                        </div>
+                    </div>
+                    <div class="clear"></div>
+                </li>
+
+                <li class="assess-list-item">
+                    <img class="fl" src="../assets/images/niming-tx.png" alt="">
+                    <div class="item-content fl">
+                        <span class="item-name">郭大帅</span>
+                        <span class="item-time">07-02 01:20</span>
+                        <img class="fr icon-assess-more" src="../assets/images/icon-assess-more.png" alt="">
+                        <div class="item-writing">
+                            <div id="test2"></div>
+                            <p class="item-assess">
+                                教学要求、教学策略和活动组织，要有利于教学目标的实现
+                            </p>
+                        </div>
+                        <div class="showmore" style="display: none;">
+                            展开
+                        </div>
+                        <div class="showless" style="display: none;">
+                            收起
+                        </div>
+                    </div>
+                    <div class="clear"></div>
+                </li>
+
+                <li class="assess-list-item">
+                    <img class="fl" src="../assets/images/niming-tx.png" alt="">
+                    <div class="item-content fl">
+                        <span class="item-name">郭大帅</span>
+                        <span class="item-time">07-02 01:20</span>
+                        <img class="fr icon-assess-more" src="../assets/images/icon-assess-more.png" alt="">
+                        <div class="item-writing">
+                            <div id="test2"></div>
+                        </div>
+                        <div class="showmore" style="display: none;">
+                            展开
+                        </div>
+                        <div class="showless" style="display: none;">
+                            收起
+                        </div>
+                    </div>
+                    <div class="clear"></div>
+                </li>
+            </ul>
+            <div class="loading-container">
+                <img src="../assets/images/icon-loading.png" alt="">加载中
+            </div>
+        </div>
+
+        <!-- 发布评价弹出框 -->
+        <el-dialog class="addAssessDialog" title="写评价" :visible.sync="dialogVisible" width="464px"
+            :before-close="handleClose">
+            <!-- 评分 -->
+            <div id="test5"></div><span class="click-rate" v-show="dialogRateValue===0">点击评分</span>
+            <div class="textarea-content">
+                <textarea class="dialogTextarea" name="" id="" cols="30" rows="10" maxlength="500" placeholder="请输入"
+                    v-model="dialogTextArea"></textarea>
+                <div class="textarea-number">0/500</div>
+            </div>
+            <span slot="footer" class="dialog-footer">
+                <div @click="dialogVisible = false" class="btn-size btn-cancel">取消</div>
+                <div @click="submithandle" class="btn-size btn-submit">提交</div>
+            </span>
+            <!-- 匿名提交按钮 -->
+            <div class="switch-box">匿名提交
+                <el-switch v-model="value1" class="btn-switch"></el-switch>
+            </div>
+            <div></div>
+        </el-dialog>
+    </div>
+
+</body>
+
+
+</html>
+<script src="../assets/lib/vue.js"></script>
+<script src="../assets/lib/jquery.min.js"></script>
+<script src="../assets/lib/layui/layui.js"></script>
+<script src="../assets/lib/element-ui/lib/index.js"></script>
+
+<script>
+    var vm = new Vue({
+        el: '#vue',
+        data: function () {
+            return {
+                dialogVisible: false,
+                // 匿名提交按钮是否开启
+                value1: true,
+                // 总评分
+                allRateScore: 4.5,
+                // 匿名提交的评分分数
+                dialogRateValue: 0,
+                dialogTextArea: "",
+            }
+        },
+        created: function () {
+
+        },
+        mounted: function () {
+            this.layuiInit();
+            this.rateList();
+            this.showMoreLess();
+        },
+        watch: {
+            dialogTextArea: function () {
+                $(".textarea-number").text(this.dialogTextArea.length + "/500")
+            }
+        },
+        updated: function () {
+            this.layuiInit();
+        },
+        methods: {
+            layuiInit: function () {
+                var _this = this;
+                layui.use(['rate', 'layer'], function () {
+                    var rate = layui.rate;
+                    var layer = layui.layer;
+                    rate.render({
+                        elem: '#test',
+                        value: _this.allRateScore,
+                        readonly: true
+                    })
+
+                    //弹框的自定义文本
+                    rate.render({
+                        elem: '#test5',
+                        value: _this.dialogRateValue,
+                        text: true,
+                        setText: function (value) { //自定义文本的回调
+                            var arrs = {
+                                '0': " ",
+                                '1': '较差',
+                                '2': '一般',
+                                '3': '良好',
+                                '4': '很好',
+                                '5': '非常棒'
+                            };
+                            _this.dialogRateValue = value;
+                            this.span.text(arrs[value] || (value + "星"));
+                        }
+                    })
+
+                })
+            },
+
+            // 遍历每个li中星星
+            rateList: function () {
+                var rates = $(".item-writing>div")
+                rates.each(function (i, n) {
+                    $(n).addClass("testX");
+
+                    layui.use(['rate'], function () {
+                        var rate = layui.rate;
+
+                        rate.render({
+                            elem: $(n),
+                            value: 4,
+                            readonly: true,
+                        })
+                    })
+                })
+            },
+            // 点击展开与收起
+            showMoreLess: function () {
+                $(".item-assess").each(function (i, n) {
+                    if ($(n).height() > 60) {
+                        $(n).addClass("overflowThree")
+                        $(n).parent(".item-writing").siblings(".showmore").show()
+                    } else {
+                        $(n).parent(".item-writing").siblings(".showmore").hide()
+                    }
+                })
+                $(".showmore").each(function (i, n) {
+                    $(n).on("click", function () {
+                        $(this).siblings(".item-writing").children(".item-assess")
+                            .removeClass("overflowThree");
+                        $(this).siblings(".showless").show()
+                        $(this).hide()
+                    })
+                })
+                $(".showless").each(function (i, n) {
+                    $(n).on("click", function () {
+                        $(this).siblings(".item-writing").children(".item-assess").addClass(
+                            "overflowThree");
+                        $(this).siblings(".showmore").show()
+                        $(this).hide()
+                    })
+                })
+            },
+            handleClose(done) {
+                this.dialogVisible = false;
+            },
+            // 提交事件
+            submithandle: function () {
+                layer.msg('请输入低分理由');
+            }
+        }
+    });
+</script>
