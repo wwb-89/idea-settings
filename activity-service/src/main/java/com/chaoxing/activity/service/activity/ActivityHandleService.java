@@ -650,4 +650,30 @@ public class ActivityHandleService {
 		);
 	}
 
+	/**更新活动的评价配置
+	 * @Description 
+	 * @author wwb
+	 * @Date 2021-03-08 16:22:35
+	 * @param activityId
+	 * @param openRating
+	 * @param ratingNeedAudit
+	 * @param loginUser
+	 * @return void
+	*/
+	public void updateRatingConfig(Integer activityId, boolean openRating, boolean ratingNeedAudit, LoginUserDTO loginUser) {
+		Activity activity = activityValidationService.activityExist(activityId);
+		// 验证是不是活动的管理员
+		boolean creator = activityValidationService.isCreator(activity, loginUser);
+		if (!creator) {
+			throw new BusinessException("无权限");
+		}
+		activityMapper.update(null, new UpdateWrapper<Activity>()
+				.lambda()
+				.eq(Activity::getId, activityId)
+				.set(Activity::getOpenRating, openRating)
+				.set(Activity::getRatingNeedAudit, ratingNeedAudit)
+
+		);
+	}
+
 }

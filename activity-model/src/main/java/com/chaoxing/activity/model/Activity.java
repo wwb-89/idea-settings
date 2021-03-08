@@ -103,6 +103,12 @@ public class Activity {
     private String createOrgName;
     /** 标签。以逗号分隔; column: tags */
     private String tags;
+    /** 是否开启评价; column: is_open_rating */
+    @TableField(value = "is_open_rating")
+    private String openRating;
+    /** 评价是否需要审核; column: is_rating_need_audit */
+    @TableField(value = "is_rating_need_audit")
+    private String ratingNeedAudit;
     /** 创建时间; column: create_time*/
     @JSONField(serializeUsing = LocalDateTimeSerializer.class, deserializeUsing = LocalDateTimeDeserializer.class)
     private LocalDateTime createTime;
@@ -122,7 +128,7 @@ public class Activity {
     public enum StatusEnum {
         /** 已删除 */
         DELETED("已删除", 0),
-        WAIT_RELEASE("待发布", 1),
+        WAIT_RELEASE("未发布", 1),
         RELEASED("已发布", 2),
         ONGOING("进行中", 3),
         ENDED("已结束", 4);

@@ -5,6 +5,7 @@ import com.chaoxing.activity.dto.manager.WfwRegionalArchitectureDTO;
 import com.chaoxing.activity.mapper.ActivityMapper;
 import com.chaoxing.activity.model.Activity;
 import com.chaoxing.activity.service.manager.WfwRegionalArchitectureApiService;
+import com.chaoxing.activity.util.exception.ActivityNotExistException;
 import com.chaoxing.activity.util.exception.BusinessException;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
@@ -78,7 +79,8 @@ public class ActivityValidationService {
 	*/
 	public Activity activityExist(Integer activityId) {
 		Activity activity = activityMapper.selectById(activityId);
-		Optional.ofNullable(activity).orElseThrow(() -> new BusinessException("活动不存在"));
+		log.error("活动id:{}对应的活动不存在", activityId);
+		Optional.ofNullable(activity).orElseThrow(() -> new ActivityNotExistException(activityId));
 		return activity;
 	}
 

@@ -251,7 +251,7 @@
             case 0:
                 return "已删除";
             case 1:
-                return "待发布";
+                return "未发布";
             case 2:
                 return "活动预告";
             case 3:
