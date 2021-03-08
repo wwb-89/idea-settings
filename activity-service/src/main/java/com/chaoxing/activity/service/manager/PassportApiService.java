@@ -191,6 +191,9 @@ public class PassportApiService {
 	public List<Cookie> avoidCloseLogin(Integer uid, Integer fid, HttpServletResponse response) {
 		PassportUserDTO passportUser = getByUid(uid);
 		String account = passportUser.getLoginName();
+		if (org.apache.commons.lang3.StringUtils.isBlank(account)) {
+			account = passportUser.getMobile();
+		}
 		String url = AVOID_CLOSE_LOGIN_URL;
 		MultiValueMap<String, Object> params = new LinkedMultiValueMap<>();
 		String enc = getLoginEnc(fid, account);

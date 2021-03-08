@@ -33,9 +33,9 @@
             id: null,
             signId: null,
             openAudit: false,
-            startTime: null,
+            startTime: new Date(activityApp.generateActivityDefaultStartTime()).getTime(),
             startTimestamp: "",
-            endTime: null,
+            endTime: (new Date(new Date(activityApp.generateActivityDefaultEndTime()).getTime() - 24 * 60 * 60 * 1000)).getTime(),
             endTimestamp: "",
             limitPerson: false,
             personLimit: 100,
@@ -51,14 +51,15 @@
      * @returns {{btnName: string, fillInfoFormId: null, address: string, publicList: boolean, startTimeStr: string, scanCodeWay: number, signId: null, way: number, endTimeStr: string, fillInfo: boolean, name: string, startTime: null, id: null, endTime: null, dimension: null, longitude: null}}
      */
     signApp.prototype.newSignIn = function () {
+        var now = new Date();
         return {
             id: null,
             signId: null,
             name: "",
             type: "sign_in",
-            startTime: null,
+            startTime: now.getTime(),
             startTimestamp: "",
-            endTime: null,
+            endTime: (new Date(now.getTime() + 2 * 60 * 60 * 1000)).getTime(),
             endTimestamp: "",
             way: 1,
             address: "",

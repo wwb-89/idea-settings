@@ -106,7 +106,7 @@ public class ActivityModuleApiController {
 		if (mobileAccess) {
 			accessUrl = "https://teacher2.chaoxing.com/tpk3-activity/?activityId=" + tpkId;
 		} else {
-			accessUrl = "https://teacher2.chaoxing.com/tpk3-activity/admin/statistics/activity/" + tpkId;
+			accessUrl = "http://teacher2.chaoxing.com/tpk3-activity/admin/statistics/activity/" + tpkId;
 		}
 		return accessUrl;
 	}

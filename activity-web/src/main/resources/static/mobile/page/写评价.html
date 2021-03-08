@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>写评价</title>
+    <meta http-equiv="Content-type" content="text/html; charset=utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, minimal-ui" />
+    <meta name="format-detection" content="telephone=no, email=no">
+    <meta http-equiv="Pragma" content="no-cache" />
+    <meta http-equiv="cache-control" content="no-cache" />
+    <link rel="stylesheet" href="../assets/lib/layui/css/layui.css" />
+    <link rel="stylesheet" href="../assets/css/public.css" />
+    <link rel="stylesheet" href="../assets/css/activity-comment.css"/>
+</head>
+<style>
+    body{
+        background: #ffffff;
+        padding: 0 1rem;
+        box-sizing: border-box;
+    }
+</style>
+<body>
+    <div class="write-comment" id="write-comment">
+        <form class="layui-form" action="">
+            <div class="rate-box"><div id="rate" class="rate"></div></div>
+            <div class="layui-form-item">
+               <textarea placeholder="输入评语" class="layui-textarea input-comment"></textarea>
+               <span class="textarea_length" id="textarea_length">500</span>
+            </div>
+            <div class="layui-form-item no-name">
+                <span class="fl">匿名提交</span>
+                <input type="checkbox" name="open" lay-skin="switch" lay-filter="switchTest" title="开关">
+             </div>
+             <div class="submit">提交</div>
+        </form>
+    </div>
+    <!-- toast -->
+    <div class="toast reason-toast" style="display: none;">请输入低分理由</div>
+    <div class="toast long-toast" style="display: none;">字数太长了</div>
+    <script src="../assets/lib/jquery.1.8.2.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+    <script src="../assets/lib/layui/layui.js"></script>
+    <script src="../assets/lib/jqthumb.min.js"></script>
+    <script src="../assets/js/common.js"></script>
+    <script>
+        $(function () {
+            var ins1
+            $('.jqthumbImg').jqthumb({
+                width: '100%',
+                height: '100%'
+            }); 
+            $('.input-comment' ).bind( 'input propertychange' ,  function () {
+                var length = $(this).val().length
+                $('.textarea_length').html(500 - length)
+                if(length > 500){
+                    $('.textarea_length').addClass('red')
+                }
+                if(ins1.config.value <= 2 && length > 0){
+                    $('.submit').addClass('active')
+                }
+                if(ins1.config.value <= 2 && length == 0){
+                    $('.submit').removeClass('active')
+                }
+            });
+            layui.use(['form','layer','rate'], function(){
+                var form = layui.form,
+                    layer = layui.layer,
+                    rate = layui.rate;
+                //渲染
+                ins1 = rate.render({
+                    elem: '#rate'  //绑定元素
+                    ,value: 1
+                    ,text: true
+                    ,setText: function(value){ //自定义文本的回调
+                        var arrs = {
+                            '0':'轻触评分',
+                            '1': '较差'
+                            ,'2': '一般'
+                            ,'3': '良好'
+                            ,'4': '很好'
+                            ,'5': '非常棒'
+                        };
+                        this.span.text(arrs[value] || ( value + "星"));
+                        if(value > 2 || (value <= 2 && $('.input-comment').val().length > 0)){
+                            $('.submit').addClass('active')
+                        }else{
+                            $('.submit').removeClass('active')
+                        }
+                    }
+                });
+                $('.submit').click(function(){
+                    if(ins1.config.value < 3 && $('.input-comment').val().length == 0){
+                        $('.reason-toast').fadeIn()
+                        setTimeout(function(){
+                            $('.reason-toast').fadeOut()
+                        },3000)
+                    }
+                    if($('.input-comment').val().length > 500){
+                        $('.long-toast').fadeIn()
+                        setTimeout(function(){
+                            $('.long-toast').fadeOut()
+                        },3000)
+                    }
+                })
+            });
+            
+        });
+        </script>
+</body>
+</html>
