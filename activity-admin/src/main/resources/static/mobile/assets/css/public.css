@@ -307,6 +307,13 @@ input {
   background-size: 100%;
 }
 
+.loading img {
+  margin-right: 0.3125rem;
+  width: 0.9375rem;
+  height: 0.9375rem;
+  vertical-align: middle;
+}
+
 [v-cloak] {
   display: none;
 }
