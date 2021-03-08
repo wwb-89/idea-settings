@@ -105,10 +105,10 @@ public class Activity {
     private String tags;
     /** 是否开启评价; column: is_open_rating */
     @TableField(value = "is_open_rating")
-    private String openRating;
+    private Boolean openRating;
     /** 评价是否需要审核; column: is_rating_need_audit */
     @TableField(value = "is_rating_need_audit")
-    private String ratingNeedAudit;
+    private Boolean ratingNeedAudit;
     /** 创建时间; column: create_time*/
     @JSONField(serializeUsing = LocalDateTimeSerializer.class, deserializeUsing = LocalDateTimeDeserializer.class)
     private LocalDateTime createTime;

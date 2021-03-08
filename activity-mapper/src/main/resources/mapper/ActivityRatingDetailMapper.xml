@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.chaoxing.activity.mapper.ActivityRatingDetailMapper">
+    <resultMap id="BaseResultMap" type="com.chaoxing.activity.model.ActivityRatingDetail">
+        <id column="id" jdbcType="INTEGER" property="id" />
+        <result column="activity_id" jdbcType="INTEGER" property="activityId" />
+        <result column="scorer_uid" jdbcType="INTEGER" property="scorerUid" />
+        <result column="scorer_user_name" jdbcType="VARCHAR" property="scorerUserName" />
+        <result column="score" jdbcType="DECIMAL" property="score" />
+        <result column="comment" jdbcType="VARCHAR" property="comment" />
+        <result column="is_anonymous" jdbcType="BIT" property="isAnonymous" />
+        <result column="is_deleted" jdbcType="BIT" property="deleted" />
+        <result column="is_manager_deleted" jdbcType="BIT" property="isManagerDeleted" />
+        <result column="audit_status" jdbcType="INTEGER" property="auditStatus" />
+        <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
+        <result column="create_uid" jdbcType="INTEGER" property="createUid" />
+        <result column="update_time" jdbcType="TIMESTAMP" property="updateTime" />
+        <result column="update_uid" jdbcType="INTEGER" property="updateUid" />
+    </resultMap>
+    <sql id="Base_Column_List">
+        t.id, t.activity_id, t.scorer_uid, t.scorer_user_name, t.score, t.comment, t.is_anonymous, 
+        t.is_deleted, t.is_manager_deleted, t.audit_status, t.create_time, t.create_uid, 
+        t.update_time, t.update_uid
+    </sql>
+</mapper>

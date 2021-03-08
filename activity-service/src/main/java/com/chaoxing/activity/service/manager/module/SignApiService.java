@@ -57,7 +57,7 @@ public class SignApiService {
 	private static final String STAT_SIGNED_UP_NUM = DOMAIN + "/sign/stat/signed-up-num";
 	/** 活动块详情统计信息url */
 	private static final String ACTIVITY_BLOCK_DETAIL_STAT_URL = DOMAIN + "/sign/stat/activity-block-detail?signId=%s&uid=%s";
-	/** 用户报名的报名签到信息url */
+	/** 用户已报名的报名签到列表url */
 	private static final String USER_SIGNED_UP_URL = DOMAIN + "/sign/stat/sign/user-signed-up/%d";
 	/** 通知已收藏url */
 	private static final String NOTICE_COLLECTED_URL = DOMAIN + "/sign/%d/notice/collected";
@@ -69,6 +69,9 @@ public class SignApiService {
 
 	/** 查询报名成功的uid列表url */
 	private static final String SIGNED_UP_UIDS_URL = DOMAIN + "/sign/%s/uid/signed-up";
+	/** 用户是否已报名（报名成功）url */
+	private static final String USER_SIGNED_UP_SUCCESS_URL = DOMAIN + "/sign-up/%d/signed-up-success?uid=%d";
+
 
 	@Resource
 	private RestTemplate restTemplate;
@@ -406,6 +409,59 @@ public class SignApiService {
 			log.error("通知已收藏, 报名签到id:{}, error:{}", signId, errorMessage);
 			throw new BusinessException(errorMessage);
 		}
+	}
+
+	/**是否开启了报名
+	 * @Description 
+	 * @author wwb
+	 * @Date 2021-03-08 18:48:53
+	 * @param signId
+	 * @return boolean
+	*/
+	public boolean isOpenSignUp(Integer signId) {
+		SignAddEditDTO signAddEdit = getById(signId);
+		if (signAddEdit != null && signAddEdit.getSignUp() != null) {
+			return true;
+		}
+		return false;
+	}
+
+	/**根据报名签到id获取报名信息
+	 * @Description 
+	 * @author wwb
+	 * @Date 2021-03-08 19:18:23
+	 * @param signId
+	 * @return com.chaoxing.activity.dto.manager.sign.SignUp
+	*/
+	public SignUp getBySignId(Integer signId) {
+		SignUp signUp = null;
+		SignAddEditDTO signAddEdit = getById(signId);
+		if (signAddEdit != null) {
+			signUp = signAddEdit.getSignUp();
+		}
+		return signUp;
+	}
+
+	/**用户是否报名成功
+	 * @Description 
+	 * @author wwb
+	 * @Date 2021-03-08 18:52:07
+	 * @param signUpId
+	 * @param uid
+	 * @return boolean
+	*/
+	public boolean isSignedUpSuccess(Integer signUpId, Integer uid) {
+		String url = String.format(USER_SIGNED_UP_SUCCESS_URL, signUpId, uid);
+		String result = restTemplate.getForObject(url, String.class);
+		JSONObject jsonObject = JSON.parseObject(result);
+		Boolean success = jsonObject.getBoolean("success");
+		success = Optional.ofNullable(success).orElse(Boolean.FALSE);
+		if (success) {
+			return jsonObject.getBoolean("data");
+		}
+		String message = jsonObject.getString("message");
+		log.error("获取用户:{} 报名id:{} 获取用户是否报名成功error:{}", uid, signUpId, message);
+		throw new BusinessException(message);
 	}
 
 }
