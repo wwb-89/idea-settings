@@ -93,7 +93,19 @@ public class ActivityValidationService {
 	 * @return boolean
 	*/
 	public boolean isCreator(Activity activity, LoginUserDTO loginUser) {
-		if (Objects.equals(activity.getCreateUid(), loginUser.getUid())) {
+		return isCreator(activity, loginUser.getUid());
+	}
+	
+	/**是不是活动创建者
+	 * @Description 
+	 * @author wwb
+	 * @Date 2021-03-09 19:08:14
+	 * @param activity
+	 * @param uid
+	 * @return boolean
+	*/
+	public boolean isCreator(Activity activity, Integer uid) {
+		if (Objects.equals(activity.getCreateUid(), uid)) {
 			return true;
 		}
 		return false;

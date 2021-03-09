@@ -4,8 +4,9 @@ import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.chaoxing.activity.dto.manager.sign.SignIn;
-import com.chaoxing.activity.dto.manager.sign.SignParticipantStatDTO;
 import com.chaoxing.activity.dto.manager.sign.SignUp;
+import com.chaoxing.activity.dto.manager.sign.SignUpStatDTO;
+import com.chaoxing.activity.dto.manager.sign.UserSignParticipationStatDTO;
 import com.chaoxing.activity.dto.module.SignAddEditDTO;
 import com.chaoxing.activity.dto.sign.ActivityBlockDetailSignStatDTO;
 import com.chaoxing.activity.dto.sign.SignActivityManageIndexDTO;
@@ -15,6 +16,7 @@ import com.chaoxing.activity.util.RestTemplateUtils;
 import com.chaoxing.activity.util.exception.BusinessException;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
@@ -42,35 +44,43 @@ import java.util.Optional;
 @Service
 public class SignApiService {
 
-	private static final String DOMAIN = "http://api.qd.reading.chaoxing.com";
+	/** 报名签到api域名 */
+	private static final String SIGN_API_DOMAIN = "http://api.qd.reading.chaoxing.com";
+	/** 报名签到页面域名 */
+	private static final String SIGN_WEB_DOMAIN = "https://reading.chaoxing.com/qd";
 	/** 创建签到报名的地址 */
-	private static final String CREATE_URL = DOMAIN + "/sign/new";
+	private static final String CREATE_URL = SIGN_API_DOMAIN + "/sign/new";
 	/** 修改签到报名的地址 */
-	private static final String UPDATE_URL = DOMAIN + "/sign/update";
+	private static final String UPDATE_URL = SIGN_API_DOMAIN + "/sign/update";
 	/** 获取签到报名信息的地址 */
-	private static final String DETAIL_URL = DOMAIN + "/sign/%d/detail";
+	private static final String DETAIL_URL = SIGN_API_DOMAIN + "/sign/%d/detail";
 	/** 参与情况 */
-	private static final String PARTICIPATION_URL = DOMAIN + "/sign/%d/participation";
+	private static final String PARTICIPATION_URL = SIGN_API_DOMAIN + "/sign/%d/participation";
 	/** 统计报名签到在活动管理首页需要的信息 */
-	private static final String STAT_SIGN_ACTIVITY_MANAGE_INDEX_URL = DOMAIN + "/sign/%d/stat/activity-index";
+	private static final String STAT_SIGN_ACTIVITY_MANAGE_INDEX_URL = SIGN_API_DOMAIN + "/sign/%d/stat/activity-index";
 	/** 统计报名签到报名成功数量url */
-	private static final String STAT_SIGNED_UP_NUM = DOMAIN + "/sign/stat/signed-up-num";
+	private static final String STAT_SIGNED_UP_NUM = SIGN_API_DOMAIN + "/sign/stat/signed-up-num";
 	/** 活动块详情统计信息url */
-	private static final String ACTIVITY_BLOCK_DETAIL_STAT_URL = DOMAIN + "/sign/stat/activity-block-detail?signId=%s&uid=%s";
+	private static final String ACTIVITY_BLOCK_DETAIL_STAT_URL = SIGN_API_DOMAIN + "/sign/stat/activity-block-detail?signId=%s&uid=%s";
 	/** 用户已报名的报名签到列表url */
-	private static final String USER_SIGNED_UP_URL = DOMAIN + "/sign/stat/sign/user-signed-up/%d";
+	private static final String USER_SIGNED_UP_URL = SIGN_API_DOMAIN + "/sign/stat/sign/user-signed-up/%d";
 	/** 通知已收藏url */
-	private static final String NOTICE_COLLECTED_URL = DOMAIN + "/sign/%d/notice/collected";
+	private static final String NOTICE_COLLECTED_URL = SIGN_API_DOMAIN + "/sign/%d/notice/collected";
 	
 	/** 取消报名 */
-	private static final String CANCEL_SIGN_UP_URL = DOMAIN + "/sign-up/%d/cancel";
+	private static final String CANCEL_SIGN_UP_URL = SIGN_API_DOMAIN + "/sign-up/%d/cancel";
 	/** 撤销报名 */
-	private static final String REVOCATION_SIGN_UP_URL = DOMAIN + "/sign-up/%d/revocation";
+	private static final String REVOCATION_SIGN_UP_URL = SIGN_API_DOMAIN + "/sign-up/%d/revocation";
 
 	/** 查询报名成功的uid列表url */
-	private static final String SIGNED_UP_UIDS_URL = DOMAIN + "/sign/%s/uid/signed-up";
+	private static final String SIGNED_UP_UIDS_URL = SIGN_API_DOMAIN + "/sign/%s/uid/signed-up";
 	/** 用户是否已报名（报名成功）url */
-	private static final String USER_SIGNED_UP_SUCCESS_URL = DOMAIN + "/sign-up/%d/signed-up-success?uid=%d";
+	private static final String USER_SIGNED_UP_SUCCESS_URL = SIGN_API_DOMAIN + "/sign-up/%d/signed-up-success?uid=%d";
+
+	/** 报名名单url */
+	private static final String SIGN_UP_USER_LIST_URL = SIGN_WEB_DOMAIN + "/sign-up/%d/user-list";
+	/** 用户报名签到参与情况url */
+	private static final String USER_SIGN_PARTICIPATION_URL = SIGN_API_DOMAIN + "/sign/%d/stat/user-participation?uid=%d";
 
 
 	@Resource
@@ -171,10 +181,10 @@ public class SignApiService {
 	 * @author wwb
 	 * @Date 2020-11-24 20:15:35
 	 * @param signActivityId
-	 * @return com.chaoxing.activity.dto.manager.SignParticipationDTO
+	 * @return com.chaoxing.activity.dto.manager.SignUpStatDTO
 	*/
-	public SignParticipantStatDTO getSignParticipation(Integer signActivityId) {
-		SignParticipantStatDTO signParticipantStat = null;
+	public SignUpStatDTO getSignParticipation(Integer signActivityId) {
+		SignUpStatDTO signUpStat = null;
 		if (signActivityId != null) {
 			String url = String.format(PARTICIPATION_URL, signActivityId);
 			String result = restTemplate.getForObject(url, String.class);
@@ -182,16 +192,17 @@ public class SignApiService {
 			Boolean success = jsonObject.getBoolean("success");
 			success = Optional.ofNullable(success).orElse(Boolean.FALSE);
 			if (success) {
-				signParticipantStat = JSON.parseObject(jsonObject.getString("data"), SignParticipantStatDTO.class);
+				signUpStat = JSON.parseObject(jsonObject.getString("data"), SignUpStatDTO.class);
 			}
 		}
-		if (signParticipantStat == null) {
-			signParticipantStat = SignParticipantStatDTO.builder()
+		if (signUpStat == null) {
+			signUpStat = SignUpStatDTO.builder()
 					.limitNum(0)
-					.participateNum(0)
+					.signedUpNum(0)
+					.publicList(Boolean.FALSE)
 					.build();
 		}
-		return signParticipantStat;
+		return signUpStat;
 	}
 
 	/**统计报名签到在活动管理首页需要的信息
@@ -462,6 +473,45 @@ public class SignApiService {
 		String message = jsonObject.getString("message");
 		log.error("获取用户:{} 报名id:{} 获取用户是否报名成功error:{}", uid, signUpId, message);
 		throw new BusinessException(message);
+	}
+
+	/**获取报名名单的url
+	 * @Description 
+	 * @author wwb
+	 * @Date 2021-03-09 15:55:55
+	 * @param signUpId
+	 * @return java.lang.String
+	*/
+	public String getSignUpListUrl(Integer signUpId) {
+		return String.format(SIGN_UP_USER_LIST_URL, signUpId);
+	}
+
+	/**获取用户报名签到参与情况
+	 * @Description 
+	 * @author wwb
+	 * @Date 2021-03-09 18:06:18
+	 * @param signId
+	 * @param uid
+	 * @return com.chaoxing.activity.dto.manager.sign.UserSignParticipationStatDTO
+	*/
+	public UserSignParticipationStatDTO userParticipationStat(Integer signId, Integer uid) {
+		String url = String.format(USER_SIGN_PARTICIPATION_URL, signId, uid);
+		String result = restTemplate.getForObject(url, String.class);
+		JSONObject jsonObject = JSON.parseObject(result);
+		Boolean success = jsonObject.getBoolean("success");
+		success = Optional.ofNullable(success).orElse(Boolean.FALSE);
+		if (success) {
+			String data = jsonObject.getString("data");
+			if (StringUtils.isNotBlank(data)) {
+				return JSON.parseObject(data, UserSignParticipationStatDTO.class);
+			} else {
+				return null;
+			}
+		} else {
+			String errorMessage = jsonObject.getString("message");
+			log.error("获取用户:{} 报名签到id:{} 获取用户报名签到参与情况 error:{}", uid, signId, errorMessage);
+			throw new BusinessException(errorMessage);
+		}
 	}
 
 }

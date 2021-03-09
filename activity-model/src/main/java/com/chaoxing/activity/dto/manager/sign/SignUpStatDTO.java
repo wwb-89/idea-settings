@@ -7,29 +7,31 @@ import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
 
-/**参与情况
+/**报名统计信息
  * @author wwb
  * @version ver 1.0
- * @className SignParticipantStatDTO
+ * @className SignUpStatDTO
  * @description
  * @blame wwb
- * @date 2020-11-24 19:27:01
+ * @date 2021-03-09 15:44:04
  */
 @Data
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class SignParticipantStatDTO {
+public class SignUpStatDTO {
 
 	/** 报名id */
-	private Integer signUpId;
+	private Integer id;
 	/** 报名开始时间 */
 	private LocalDateTime signUpStartTime;
 	/** 报名结束时间 */
 	private LocalDateTime signUpEndTime;
 	/** 参与数 */
-	private Integer participateNum;
+	private Integer signedUpNum;
 	/** 限制数 */
 	private Integer limitNum;
+	/** 是否公开报名名单 */
+	private Boolean publicList;
 
 }

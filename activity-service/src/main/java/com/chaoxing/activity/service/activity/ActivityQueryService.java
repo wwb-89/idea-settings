@@ -19,6 +19,7 @@ import com.chaoxing.activity.service.manager.module.SignApiService;
 import com.chaoxing.activity.util.DateUtils;
 import com.chaoxing.activity.util.constant.DateFormatConstant;
 import com.chaoxing.activity.util.constant.DateTimeFormatterConstant;
+import com.chaoxing.activity.util.constant.UrlConstant;
 import com.chaoxing.activity.util.enums.ActivityQueryDateEnum;
 import com.chaoxing.activity.util.enums.ActivityTypeEnum;
 import com.google.common.collect.Lists;
@@ -340,6 +341,17 @@ public class ActivityQueryService {
 	*/
 	public Page<Activity> pageCollected(Page page, Integer uid, String sw) {
 		return activityMapper.pageCollectedActivityId(page, uid, sw);
+	}
+
+	/**获取活动管理url
+	 * @Description 
+	 * @author wwb
+	 * @Date 2021-03-09 19:11:37
+	 * @param activityId
+	 * @return java.lang.String
+	*/
+	public String getActivityManageUrl(Integer activityId) {
+		return String.format(UrlConstant.ATIVITY_MANAGE_URL, activityId);
 	}
 
 }
