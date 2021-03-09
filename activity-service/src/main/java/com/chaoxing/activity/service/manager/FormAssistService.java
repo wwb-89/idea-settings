@@ -94,10 +94,10 @@ public class FormAssistService {
 			}
 			if ("组织者".equals(label)) {
 				JSONObject user = new JSONObject();
-				user.put("puid", activity.getCreateUid());
-				user.put("uname", activity.getCreateUserName());
+				user.put("id", activity.getCreateUid());
+				user.put("name", activity.getCreateUserName());
 				data.add(user);
-				item.put("val", data);
+				item.put("idNames", data);
 				continue;
 			}
 			if ("活动状态".equals(label)) {
