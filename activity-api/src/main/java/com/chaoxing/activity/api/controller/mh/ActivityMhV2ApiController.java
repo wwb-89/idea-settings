@@ -135,11 +135,10 @@ public class ActivityMhV2ApiController {
 		if (signUpId != null) {
 			if (userSignParticipationStat.getSignedUp()) {
 				// 已报名
-
 				if (CollectionUtils.isNotEmpty(signInIds)) {
 					result.add(buildBtnField("去签到", getFlag(availableFlags), userSignParticipationStat.getSignInUrl(), "1"));
-					result.add(buildBtnField("报名信息", getFlag(availableFlags), userSignParticipationStat.getSignUpResultUrl(), "2"));
 				}
+				result.add(buildBtnField("报名信息", getFlag(availableFlags), userSignParticipationStat.getSignUpResultUrl(), "2"));
 			} else if (userSignParticipationStat.getSignUpAudit()) {
 				// 审核中
 				result.add(buildBtnField("报名审核中", getFlag(availableFlags), "", "0"));
@@ -194,8 +193,8 @@ public class ActivityMhV2ApiController {
 		return MhGeneralAppResultDataDTO.MhGeneralAppResultDataFieldDTO.builder()
 				.value(value)
 				.flag(flag)
-				.orsUrl("")
-				.type("")
+				.orsUrl(url)
+				.type(type)
 				.build();
 	}
 

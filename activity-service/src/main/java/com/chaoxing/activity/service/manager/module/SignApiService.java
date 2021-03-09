@@ -55,7 +55,7 @@ public class SignApiService {
 	/** 获取签到报名信息的地址 */
 	private static final String DETAIL_URL = SIGN_API_DOMAIN + "/sign/%d/detail";
 	/** 参与情况 */
-	private static final String PARTICIPATION_URL = SIGN_API_DOMAIN + "/sign/%d/participation";
+	private static final String PARTICIPATION_URL = SIGN_API_DOMAIN + "/sign/%d/signed-up";
 	/** 统计报名签到在活动管理首页需要的信息 */
 	private static final String STAT_SIGN_ACTIVITY_MANAGE_INDEX_URL = SIGN_API_DOMAIN + "/sign/%d/stat/activity-index";
 	/** 统计报名签到报名成功数量url */
@@ -180,13 +180,13 @@ public class SignApiService {
 	 * @Description 
 	 * @author wwb
 	 * @Date 2020-11-24 20:15:35
-	 * @param signActivityId
+	 * @param signId
 	 * @return com.chaoxing.activity.dto.manager.SignUpStatDTO
 	*/
-	public SignUpStatDTO getSignParticipation(Integer signActivityId) {
+	public SignUpStatDTO getSignParticipation(Integer signId) {
 		SignUpStatDTO signUpStat = null;
-		if (signActivityId != null) {
-			String url = String.format(PARTICIPATION_URL, signActivityId);
+		if (signId != null) {
+			String url = String.format(PARTICIPATION_URL, signId);
 			String result = restTemplate.getForObject(url, String.class);
 			JSONObject jsonObject = JSON.parseObject(result);
 			Boolean success = jsonObject.getBoolean("success");
