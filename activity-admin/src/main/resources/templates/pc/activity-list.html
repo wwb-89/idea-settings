@@ -214,7 +214,11 @@
                                 case 4:
                                     // 已结束支持有上下架功能
                                     if (isCreator || isCurrentOrgCreated) {
-                                        activity.operations.push($this.operations.cancelRelease);
+                                        if (activity.released) {
+                                            activity.operations.push($this.operations.cancelRelease);
+                                        }else {
+                                            activity.operations.push($this.operations.release);
+                                        }
                                         if (isCreator) {
                                             activity.operations.push($this.operations.edit);
                                             if (activity.enableSign) {
