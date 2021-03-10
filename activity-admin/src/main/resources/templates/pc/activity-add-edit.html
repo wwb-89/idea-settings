@@ -587,6 +587,8 @@
                     $this.activity.releaseTime = null;
                     $this.activity.startTime = $this.activity.startTimeStr;
                     $this.activity.endTime = $this.activity.endTimeStr;
+                    // 报名签到永远是启用的
+                    $this.activity.enableSign = true;
                 }
                 var tags = $this.activity.tags;
                 if (activityApp.isEmpty(tags)) {
@@ -642,43 +644,42 @@
                     $this.sign.createTime = "";
                     $this.sign.updateTime = "";
                     // 报名
+                    $this.enableSignUp = false;
                     if (!activityApp.isEmpty($this.sign.signUp)) {
-                        $this.enableSignUp = true;
                         $this.sign.signUp.startTime = $this.sign.signUp.startTimestamp;
                         $this.sign.signUp.endTime = $this.sign.signUp.endTimestamp;
                         $this.sign.signUp.createTime = "";
                         $this.sign.signUp.updateTime = "";
+                        if (!$this.sign.signUp.deleted) {
+                            $this.enableSignUp = true;
+                        }
                     } else {
-                        $this.enableSignUp = false;
                         $this.sign.signUp = signApp.newSignUp();
                     }
                     if (!activityApp.isEmpty($this.sign.signUp.startTime)) {
                         $this.signUpTimeScope = [$this.sign.signUp.startTime, $this.sign.signUp.endTime];
                     }
                     // 签到
+                    $this.enableSignIn = false;
                     if (!activityApp.isEmpty($this.sign.signIn)) {
                         if (!$this.sign.signIn.deleted) {
                             $this.enableSignIn = true;
-                        } else {
-                            $this.enableSignIn = false;
                         }
                         $this.sign.signIn.startTime = $this.sign.signIn.startTimestamp;
                         $this.sign.signIn.endTime = $this.sign.signIn.endTimestamp;
                         $this.sign.signIn.createTime = "";
                         $this.sign.signIn.updateTime = "";
                     } else {
-                        $this.enableSignIn = false;
                         $this.sign.signIn = signApp.newSignIn();
                     }
                     if (!activityApp.isEmpty($this.sign.signIn.startTime)) {
                         $this.signInTimeScope = [$this.sign.signIn.startTime, $this.sign.signIn.endTime];
                     }
                     // 签退
+                    $this.enableSignOut = false;
                     if (!activityApp.isEmpty($this.sign.signOut)) {
                         if (!$this.sign.signOut.deleted) {
                             $this.enableSignOut = true;
-                        } else {
-                            $this.enableSignOut = false;
                         }
                         $this.sign.signOut.startTime = $this.sign.signOut.startTimestamp;
                         $this.sign.signOut.endTime = $this.sign.signOut.endTimestamp;
@@ -691,11 +692,6 @@
                     if (!activityApp.isEmpty($this.sign.signOut.startTime)) {
                         $this.signOutTimeScope = [$this.sign.signOut.startTime, $this.sign.signOut.endTime];
                     }
-                }
-                if (!$this.activity.enableSign) {
-                    $this.enableSignUp = false;
-                    $this.enableSignIn = false;
-                    $this.enableSignOut = false;
                 }
                 $this.calPersonLimitValue();
                 if (activityApp.isEmpty($this.participatedOrgs)) {
@@ -720,24 +716,6 @@
                     } else {
                         $this.$set($this.sign.signUp, "limitPerson", true);
                     }
-                },
-                "enableSignUp": function () {
-                    var $this = this;
-                    $this.$nextTick(function () {
-                        $this.activity.enableSign = $this.enableSignUp || $this.enableSignIn || $this.enableSignOut;
-                    });
-                },
-                "enableSignIn": function () {
-                    var $this = this;
-                    $this.$nextTick(function () {
-                        $this.activity.enableSign = $this.enableSignUp || $this.enableSignIn || $this.enableSignOut;
-                    });
-                },
-                "enableSignOut": function () {
-                    var $this = this;
-                    $this.$nextTick(function () {
-                        $this.activity.enableSign = $this.enableSignUp || $this.enableSignIn || $this.enableSignOut;
-                    });
                 },
                 "sign.signUp.fillInfo": function () {
                     var $this = this;

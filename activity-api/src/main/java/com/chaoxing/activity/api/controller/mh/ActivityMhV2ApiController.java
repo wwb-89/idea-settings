@@ -46,6 +46,8 @@ public class ActivityMhV2ApiController {
 
 	@RequestMapping("activity/{activityId}/info")
 	public RestRespDTO activityInfo(@PathVariable Integer activityId, @RequestBody String data) {
+		JSONObject params = JSON.parseObject(data);
+		Integer uid = params.getInteger("uid");
 		Activity activity = activityQueryService.getById(activityId);
 		JSONObject jsonObject = new JSONObject();
 		MhGeneralAppResultDataDTO mhGeneralAppResultDataDTO = new MhGeneralAppResultDataDTO();
@@ -63,29 +65,45 @@ public class ActivityMhV2ApiController {
 		// 结束时间
 		mhGeneralAppResultDataFields.add(buildField("活动结束时间", DateTimeFormatterConstant.YYYY_MM_DD_HH_MM.format(activity.getEndTime()), "101"));
 		// 报名、签到人数
-		SignUpStatDTO signUpStat = signApiService.getSignParticipation(activity.getSignId());
-		if (signUpStat.getId() != null) {
-			// 报名时间
-			mhGeneralAppResultDataFields.add(buildField("报名时间", DateTimeFormatterConstant.YYYY_MM_DD_HH_MM.format(signUpStat.getSignUpStartTime()), "102"));
-			mhGeneralAppResultDataFields.add(buildField("报名结束时间", DateTimeFormatterConstant.YYYY_MM_DD_HH_MM.format(signUpStat.getSignUpEndTime()), "103"));
-			StringBuilder signedUpNumDescribe = new StringBuilder();
-			Integer limitNum = signUpStat.getLimitNum();
-			Integer participateNum = signUpStat.getSignedUpNum();
-			if (participateNum.compareTo(0) > 0 || limitNum.intValue() > 0) {
-				signedUpNumDescribe.append(participateNum);
-				if (limitNum.intValue() > 0) {
-					signedUpNumDescribe.append("/");
-					signedUpNumDescribe.append(limitNum);
+		Boolean enableSign = activity.getEnableSign();
+		enableSign = Optional.ofNullable(enableSign).orElse(Boolean.FALSE);
+		Integer signId = activity.getSignId();
+		List<MhGeneralAppResultDataDTO.MhGeneralAppResultDataFieldDTO> btns = Lists.newArrayList();
+		List<Integer> availableFlags = Lists.newArrayList(109, 111, 113, 115, 116, 117);
+		if (enableSign && signId != null) {
+			SignUpStatDTO signUpStat = signApiService.getSignParticipation(signId);
+			if (signUpStat.getId() != null) {
+				// 报名时间
+				mhGeneralAppResultDataFields.add(buildField("报名时间", DateTimeFormatterConstant.YYYY_MM_DD_HH_MM.format(signUpStat.getSignUpStartTime()), "102"));
+				mhGeneralAppResultDataFields.add(buildField("报名结束时间", DateTimeFormatterConstant.YYYY_MM_DD_HH_MM.format(signUpStat.getSignUpEndTime()), "103"));
+				StringBuilder signedUpNumDescribe = new StringBuilder();
+				Integer limitNum = signUpStat.getLimitNum();
+				Integer participateNum = signUpStat.getSignedUpNum();
+				if (participateNum.compareTo(0) > 0 || limitNum.intValue() > 0) {
+					signedUpNumDescribe.append(participateNum);
+					if (limitNum.intValue() > 0) {
+						signedUpNumDescribe.append("/");
+						signedUpNumDescribe.append(limitNum);
+					}
 				}
+				mhGeneralAppResultDataFields.add(buildField("报名人数", signedUpNumDescribe.toString(), "106"));
+				// 开启了报名名单公开则显示报名人数链接
+				Boolean publicList = signUpStat.getPublicList();
+				String signUpListUrl = "";
+				if (Objects.equals(publicList, Boolean.TRUE)) {
+					signUpListUrl = signApiService.getSignUpListUrl(signUpStat.getId());
+				}
+				mhGeneralAppResultDataFields.add(buildField("报名人数链接", signUpListUrl, "107"));
 			}
-			mhGeneralAppResultDataFields.add(buildField("报名人数", signedUpNumDescribe.toString(), "106"));
-			// 开启了报名名单公开则显示报名人数链接
-			Boolean publicList = signUpStat.getPublicList();
-			String signUpListUrl = "";
-			if (Objects.equals(publicList, Boolean.TRUE)) {
-				signUpListUrl = signApiService.getSignUpListUrl(signUpStat.getId());
+			// 通过报名签到获取按钮列表
+			btns = packageBtns(activity, signId, uid, availableFlags);
+			mhGeneralAppResultDataFields.addAll(btns);
+		}else{
+			// 是不是管理员
+			if (activityValidationService.isCreator(activity, uid)) {
+				MhGeneralAppResultDataDTO.MhGeneralAppResultDataFieldDTO dataField = buildBtnField("管理", getFlag(availableFlags), activityQueryService.getActivityManageUrl(activity.getId()), "2");
+				mhGeneralAppResultDataFields.add(dataField);
 			}
-			mhGeneralAppResultDataFields.add(buildField("报名人数链接", signUpListUrl, "107"));
 		}
 		// 活动地点
 		String activityAddress = "";
@@ -103,10 +121,6 @@ public class ActivityMhV2ApiController {
 		// 主办方
 		mhGeneralAppResultDataFields.add(buildField("主办方", activity.getOrganisers(), "105"));
 		mhGeneralAppResultDataFields.add(buildField("活动对象", "", "108"));
-		// 通过报名签到获取按钮列表
-		JSONObject params = JSON.parseObject(data);
-		Integer uid = params.getInteger("uid");
-		mhGeneralAppResultDataFields.addAll(packageBtns(activity, activity.getSignId(), uid));
 		return RestRespDTO.success(jsonObject);
 	}
 
@@ -117,15 +131,15 @@ public class ActivityMhV2ApiController {
 	 * @param activity
 	 * @param signId
 	 * @param uid
+	 * @param availableFlags
 	 * @return java.util.List<com.chaoxing.activity.dto.mh.MhGeneralAppResultDataDTO.MhGeneralAppResultDataFieldDTO>
 	*/
-	private List<MhGeneralAppResultDataDTO.MhGeneralAppResultDataFieldDTO> packageBtns(Activity activity, Integer signId, Integer uid) {
+	private List<MhGeneralAppResultDataDTO.MhGeneralAppResultDataFieldDTO> packageBtns(Activity activity, Integer signId, Integer uid, List<Integer> availableFlags) {
 		List<MhGeneralAppResultDataDTO.MhGeneralAppResultDataFieldDTO> result = Lists.newArrayList();
 		Integer status = activity.getStatus();
 		Activity.StatusEnum statusEnum = Activity.StatusEnum.fromValue(status);
 		boolean activityEnded = Objects.equals(Activity.StatusEnum.ENDED, statusEnum);
 		UserSignParticipationStatDTO userSignParticipationStat = signApiService.userParticipationStat(signId, uid);
-		List<Integer> availableFlags = Lists.newArrayList(109, 111, 113, 115, 116, 117);
 		if (userSignParticipationStat == null) {
 			return result;
 		}
