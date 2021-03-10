@@ -287,6 +287,10 @@ public class ActivityHandleService {
 		existActivity.setSignId(activity.getSignId());
 		existActivity.setWebTemplateId(activity.getWebTemplateId());
 		existActivity.setTags(activity.getTags());
+		existActivity.setOpenIntegral(activity.getOpenIntegral());
+		existActivity.setIntegralValue(activity.getIntegralValue());
+		existActivity.setOpenRating(activity.getOpenRating());
+		existActivity.setRatingNeedAudit(activity.getRatingNeedAudit());
 		// 根据活动时间判断状态
 		Integer status = activityStatusHandleService.calActivityStatus(existActivity);
 		existActivity.setStatus(status);

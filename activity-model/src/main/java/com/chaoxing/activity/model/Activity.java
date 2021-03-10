@@ -115,6 +115,12 @@ public class Activity {
     /** 修改时间; column: update_time*/
     @JSONField(serializeUsing = LocalDateTimeSerializer.class, deserializeUsing = LocalDateTimeDeserializer.class)
     private LocalDateTime updateTime;
+    /** 是否开启积分设置; column: is_open_integral */
+    @TableField(value = "is_open_integral")
+    private Boolean openIntegral;
+    /** 积分值; column: integral_value*/
+    private BigDecimal integralValue;
+
 
     // 附加
     /** 开始时间字符串 */

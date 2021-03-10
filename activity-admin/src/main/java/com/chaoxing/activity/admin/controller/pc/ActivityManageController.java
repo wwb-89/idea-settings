@@ -3,6 +3,7 @@ package com.chaoxing.activity.admin.controller.pc;
 import com.chaoxing.activity.admin.util.LoginUtils;
 import com.chaoxing.activity.dto.LoginUserDTO;
 import com.chaoxing.activity.dto.activity.ActivityTypeDTO;
+import com.chaoxing.activity.dto.manager.WfwGroupDTO;
 import com.chaoxing.activity.dto.module.SignAddEditDTO;
 import com.chaoxing.activity.model.Group;
 import com.chaoxing.activity.model.WebTemplate;
@@ -10,6 +11,7 @@ import com.chaoxing.activity.service.GroupService;
 import com.chaoxing.activity.service.WebTemplateService;
 import com.chaoxing.activity.service.activity.ActivityQueryService;
 import com.chaoxing.activity.service.activity.classify.ActivityClassifyQueryService;
+import com.chaoxing.activity.service.manager.WfwGroupApiService;
 import com.chaoxing.activity.util.constant.CommonConstant;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Component;
@@ -39,6 +41,8 @@ public class ActivityManageController {
 	private WebTemplateService webTemplateService;
 	@Resource
 	private GroupService groupService;
+	@Resource
+	private WfwGroupApiService wfwGroupApiService;
 
 	public String index(Model model, String code) {
 		code = Optional.ofNullable(code).orElse("");
@@ -69,6 +73,9 @@ public class ActivityManageController {
 		List<WebTemplate> webTemplates = webTemplateService.listAvailable(loginUser.getFid());
 		model.addAttribute("webTemplates", webTemplates);
 		model.addAttribute("areaCode", areaCode);
+
+		List<WfwGroupDTO> wfwGroups = wfwGroupApiService.getGroupByGid(loginUser.getFid(), "0");
+		model.addAttribute("wfwGroups", wfwGroups);
 		return "pc/activity-add-edit";
 	}
 
