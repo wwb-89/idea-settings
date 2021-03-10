@@ -268,10 +268,7 @@ public class ActivityQueryService {
 	 * @return com.chaoxing.activity.model.Activity
 	*/
 	public Activity getBySignId(Integer signId) {
-		return activityMapper.selectOne(new QueryWrapper<Activity>()
-				.lambda()
-				.eq(Activity::getSignId, signId)
-		);
+		return activityMapper.getBySignId(signId);
 	}
 
 	/**查询封面url为空的活动

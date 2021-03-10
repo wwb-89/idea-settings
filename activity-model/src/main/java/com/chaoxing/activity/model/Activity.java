@@ -123,6 +123,9 @@ public class Activity {
     /** 结束时间字符串 */
     @TableField(exist = false)
     private String endTimeStr;
+    /** 活动分类名称 */
+    @TableField(exist = false)
+    private String activityClassifyName;
 
     @Getter
     public enum StatusEnum {
