@@ -274,4 +274,16 @@
         LIMIT 1
     </select>
 
+    <select id="getById" resultMap="BaseResultMap">
+        SELECT
+            <include refid="Base_Column_List"></include>,
+            t1.`name` activityClassifyName
+        FROM
+            t_activity t
+            LEFT JOIN t_activity_classify t1 ON t.activity_classify_id = t1.id
+        WHERE
+            t.id = #{id}
+        LIMIT 1
+    </select>
+
 </mapper>

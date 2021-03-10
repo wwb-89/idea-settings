@@ -44,7 +44,7 @@ public class FormAssistService {
 				item.put("val", data);
 				continue;
 			}
-			if ("活动名称或内容".equals(label)) {
+			if ("活动名称".equals(label)) {
 				data.add(activity.getName());
 				item.put("val", data);
 				continue;
@@ -58,18 +58,9 @@ public class FormAssistService {
 				item.put("val", data);
 				continue;
 			}
-			if ("参与年级".equals(label)) {
-				data.add("2018,2019,2020,2021");
+			if ("活动分类".equals(label)) {
+				data.add(activity.getActivityClassifyName());
 				item.put("val", data);
-				continue;
-			}
-			if ("课程项目类型".equals(label)) {
-				data.add(activity.getActivityType());
-				item.put("val", data);
-				continue;
-			}
-			if ("学分类型编号".equals(label)) {
-				item.put("val",new JSONArray());
 				continue;
 			}
 			if ("活动积分".equals(label)) {
@@ -92,7 +83,7 @@ public class FormAssistService {
 				item.put("val", data);
 				continue;
 			}
-			if ("组织者".equals(label)) {
+			if ("创建者".equals(label)) {
 				JSONObject user = new JSONObject();
 				user.put("id", activity.getCreateUid());
 				user.put("name", activity.getCreateUserName());

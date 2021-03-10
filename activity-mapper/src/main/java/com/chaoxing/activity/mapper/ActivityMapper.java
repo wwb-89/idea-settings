@@ -117,13 +117,24 @@ public interface ActivityMapper extends BaseMapper<Activity> {
 	 */
 	Page<Activity> pageCollectedActivityId(@Param("page") Page<?> page, @Param("uid") Integer uid, @Param("sw") String sw);
 
-	/**根据报名签到id查询活动
-	 * @Description 
-	 * @author wwb
-	 * @Date 2021-03-10 19:20:28
+	/**
+	 * 根据报名签到id查询活动
+	 *
 	 * @param signId
 	 * @return com.chaoxing.activity.model.Activity
-	*/
+	 * @Description
+	 * @author wwb
+	 * @Date 2021-03-10 19:20:28
+	 */
 	Activity getBySignId(@Param("signId") Integer signId);
+
+	/**根据id查询活动
+	 * @Description 
+	 * @author wwb
+	 * @Date 2021-03-10 20:30:11
+	 * @param id
+	 * @return com.chaoxing.activity.model.Activity
+	*/
+	Activity getById(@Param("id") Integer id);
 
 }
