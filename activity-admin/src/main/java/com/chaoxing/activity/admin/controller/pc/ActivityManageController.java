@@ -44,15 +44,16 @@ public class ActivityManageController {
 	@Resource
 	private WfwGroupApiService wfwGroupApiService;
 
-	public String index(Model model, String code) {
+	public String index(Model model, String code, Integer secondClassroomFlag) {
 		code = Optional.ofNullable(code).orElse("");
 		// 防止挂接到三放也携带了code参数
 		code = code.split(CommonConstant.DEFAULT_SEPARATOR)[0];
 		model.addAttribute("code", code);
+		model.addAttribute("secondClassroomFlag", secondClassroomFlag);
 		return "pc/activity-list";
 	}
 
-	public String add(Model model, HttpServletRequest request, String code) {
+	public String add(Model model, HttpServletRequest request, String code, Integer secondClassroomFlag) {
 		String areaCode = "";
 		if (StringUtils.isNotBlank(code)) {
 			// 根据code查询areaCode
@@ -76,6 +77,7 @@ public class ActivityManageController {
 
 		List<WfwGroupDTO> wfwGroups = wfwGroupApiService.getGroupByGid(loginUser.getFid(), "0");
 		model.addAttribute("wfwGroups", wfwGroups);
+		model.addAttribute("secondClassroomFlag", secondClassroomFlag);
 		return "pc/activity-add-edit";
 	}
 

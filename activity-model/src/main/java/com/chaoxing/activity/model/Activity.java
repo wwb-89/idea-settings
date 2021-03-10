@@ -120,7 +120,8 @@ public class Activity {
     private Boolean openIntegral;
     /** 积分值; column: integral_value*/
     private BigDecimal integralValue;
-
+    /** 第二课堂标识; column: second_classroom_flag*/
+    private Integer secondClassroomFlag;
 
     // 附加
     /** 开始时间字符串 */

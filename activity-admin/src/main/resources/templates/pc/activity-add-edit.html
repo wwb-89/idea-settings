@@ -209,7 +209,7 @@
                         </span>
                     </div>
                 </div>
-                <div class="form-item flexStart">
+                <div class="form-item flexStart" v-show="secondClassroomFlag == 1">
                     <label class="label">参与范围</label>
                     <div class="join-box">
                         <div>
@@ -411,7 +411,7 @@
             </form>
         </div>
         <!-- 积分设置 -->
-        <div class="info box">
+        <div class="info box" v-show="secondClassroomFlag == 1">
             <div class="set-box">
                 <div class="title set">积分设置</div>
                 <el-switch v-model="activity.openIntegral" class="switch"></el-switch>
@@ -428,7 +428,7 @@
             </form>
         </div>
         <!-- 评价设置 -->
-        <div class="info box">
+        <div class="info box" v-show="secondClassroomFlag == 1">
             <div class="set-box">
                 <div class="title set">评价设置</div>
                 <el-switch v-model="activity.openRating" class="switch"></el-switch>
@@ -632,6 +632,8 @@
                 groups: [[${sign.signUpGroupRanges}]]!=null?[[${sign.signUpGroupRanges}]]:[],
                 wfwGroups: [[${wfwGroups}]],
                 groupTreeObj: null,
+                // 第二课堂标识
+                secondClassroomFlag: [[${secondClassroomFlag}]]
             },
             created: function () {
                 var $this = this;
@@ -659,7 +661,8 @@
                         activityClassifyId: firstActivityClassifyId,
                         enableSign: true,
                         createAreaCode: $this.areaCode,
-                        tags: ""
+                        tags: "",
+                        secondClassroomFlag: $this.secondClassroomFlag
                     };
                 } else {
                     $this.activity.createTime = null;

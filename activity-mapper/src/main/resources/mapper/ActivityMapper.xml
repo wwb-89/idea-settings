@@ -41,13 +41,14 @@
         <result column="update_time" jdbcType="TIMESTAMP" property="updateTime" />
         <result column="is_open_integral" jdbcType="BIT" property="openIntegral" />
         <result column="integral_value" jdbcType="DECIMAL" property="integralValue" />
+        <result column="second_classroom_flag" jdbcType="INTEGER" property="secondClassroomFlag" />
     </resultMap>
     <sql id="Base_Column_List">
         t.id, t.name, t.start_time, t.end_time, t.start_date, t.end_date, t.cover_cloud_id, t.cover_url, t.organisers, t.activity_type, t.address, t.detail_address,
         t.longitude, t.dimension, t.activity_classify_id, t.is_enable_sign, t.sign_id, t.web_template_id, t.page_id, t.preview_url, t.edit_url,
         t.is_released, t.release_time, t.release_uid, t.status, t.is_open_audit, t.audit_status, 
         t.create_uid, t.create_user_name, t.create_fid, t.create_area_code, t.create_org_name, t.tags, t.is_open_rating, t.is_rating_need_audit, t.create_time,
-        t.update_time, t.is_open_integral, t.integral_value
+        t.update_time, t.is_open_integral, t.integral_value, t.second_classroom_flag
     </sql>
 
     <select id="pageParticipate" resultMap="BaseResultMap">

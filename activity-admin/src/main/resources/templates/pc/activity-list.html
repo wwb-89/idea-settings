@@ -141,7 +141,9 @@
                     release: {name: "发布", value: "release"},
                     cancelRelease: {name: "下架", value: "cancelRelease"}
                 },
-                code: [[${code}]]
+                code: [[${code}]],
+                // 第二课堂标识
+                secondClassroomFlag: [[${secondClassroomFlag}]]
             },
             created: function () {
                 var $this = this;
@@ -229,7 +231,7 @@
                 },
                 toAdd: function () {
                     var $this = this;
-                    window.open(activityApp.getRelativeUrl("/activity/add?code=" + $this.code));
+                    window.open(activityApp.getRelativeUrl("/activity/add?code=" + $this.code + "&secondClassroomFlag=" + $this.secondClassroomFlag));
                 },
                 toEdit: function (id) {
                     window.open("/activity/" + id + "/edit");

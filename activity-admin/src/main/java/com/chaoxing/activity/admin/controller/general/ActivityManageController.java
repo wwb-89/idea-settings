@@ -116,6 +116,7 @@ public class ActivityManageController {
 		// 报名范围
 		List<WfwGroupDTO> wfwGroups = wfwGroupApiService.getGroupByGid(loginUser.getFid(), "0");
 		model.addAttribute("wfwGroups", wfwGroups);
+		model.addAttribute("secondClassroomFlag", activity.getSecondClassroomFlag());
 		return "pc/activity-add-edit";
 	}
 
