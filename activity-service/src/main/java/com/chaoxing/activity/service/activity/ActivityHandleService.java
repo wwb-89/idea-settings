@@ -339,6 +339,7 @@ public class ActivityHandleService {
 				.set(Activity::getStatus, status)
 		);
 		// 新增表单记录
+		activity.setStatus(status);
 		activityFormRecordService.add(activity);
 		// 通知模块方刷新参与范围缓存
 		// 查询活动的作品征集模块活动id列表
