@@ -264,7 +264,7 @@
 
     <select id="getBySignId" resultMap="BaseResultMap">
         SELECT
-            <include refid="Base_Column_List"></include>
+            <include refid="Base_Column_List"></include>,
             t1.`name` activityClassifyName
         FROM
             t_activity t
