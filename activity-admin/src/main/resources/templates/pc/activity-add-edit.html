@@ -213,8 +213,8 @@
                     <label class="label">参与范围</label>
                     <div class="join-box">
                         <div>
-                            <el-radio v-model="sign.signUp.joinRange" label="1" name="active-type">不限</el-radio>
-                            <el-radio v-model="sign.signUp.joinRange" label="2" name="active-type">自定义</el-radio>
+                            <el-radio v-model="sign.signUp.joinRange" :label="1" name="active-type">不限</el-radio>
+                            <el-radio v-model="sign.signUp.joinRange" :label="2" name="active-type">自定义</el-radio>
                         </div>
                         <div class="join-select" v-show="sign.signUp.joinRange==2">
                             <img src="/static/pc/assets/images/add-circle.png" th:src="@{/pc/assets/images/add-circle.png}" alt="" class="add-range" @click="openGroupTreeDiv()">
@@ -629,7 +629,7 @@
                 rangeShow: false,
                 //范围选择
                 rangeRadio: "1",
-                groups: [[${sign.signUpGroupRanges}]],
+                groups: [[${sign.signUpGroupRanges}]]!=null?[[${sign.signUpGroupRanges}]]:[],
                 wfwGroups: [[${wfwGroups}]],
                 groupTreeObj: null,
             },

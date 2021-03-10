@@ -67,7 +67,7 @@ public class SignUp {
     /** 更新人id */
     private Integer updateUid;
     /** 参与范围 1:不限 2：自定义*/
-    private String joinRange;
+    private Integer joinRange;
 
     // 附加
     /** 开始时间字符串表示 */
