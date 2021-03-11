@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <title>组织者管理</title>
+    <meta http-equiv="Content-type" content="text/html; charset=utf-8" />
+    <meta name="viewport"
+        content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, minimal-ui" />
+    <meta name="format-detection" content="telephone=no, email=no">
+    <meta http-equiv="Pragma" content="no-cache" />
+    <meta http-equiv="cache-control" content="no-cache" />
+    <link rel="stylesheet" href="../assets/css/public.css" />
+    <link rel="stylesheet" href="../assets/css/dialog.css">
+    <link rel="stylesheet" href="../assets/css/manage.css">
+</head>
+
+<body>
+    <div class="organizer-manage" id="organizer-manage">
+        <ul>
+            <li class="item" data-type="0" @touchstart.capture="touchStart" @touchend.capture="touchEnd">
+                <div class="inner">
+                    <div class="head-box"><img src="../assets/images/head-img.png" alt="" class="jqthumbImg"></div>
+                    <span class="name">高晓青</span>
+                </div>
+                <div class="handel-box">
+                   <div class="limit-set">权限设置</div>
+                   <div class="remove">移除</div>
+                </div>
+            </li>
+            <li class="item" data-type="0" @touchstart.capture="touchStart" @touchend.capture="touchEnd">
+                <div class="inner">
+                    <div class="head-box"><img src="../assets/images/head-img.png" alt="" class="jqthumbImg"></div>
+                    <span class="name">郝泽梁</span>
+                </div>
+                <div class="handel-box">
+                   <div class="limit-set">权限设置</div>
+                   <div class="remove">移除</div>
+                </div>
+            </li>
+            <li class="item" data-type="0" @touchstart.capture="touchStart" @touchend.capture="touchEnd">
+                <div class="inner">
+                    <div class="head-box"><img src="../assets/images/head-img.png" alt="" class="jqthumbImg"></div>
+                    <span class="name">吴冰冰</span>
+                </div>
+                <div class="handel-box">
+                   <div class="limit-set">权限设置</div>
+                   <div class="remove">移除</div>
+                </div>
+            </li>
+            <li class="item" data-type="0" @touchstart.capture="touchStart" @touchend.capture="touchEnd">
+                <div class="inner">
+                    <div class="head-box"><img src="../assets/images/head-img.png" alt="" class="jqthumbImg"></div>
+                    <span class="name">于金平</span>
+                </div>
+                <div class="handel-box">
+                   <div class="limit-set">权限设置</div>
+                   <div class="remove">移除</div>
+                </div>
+            </li>
+        </ul>
+    </div>
+    <!-- 确认删除 -->
+    <div class="dialog del-div" style="display: none;">
+        <div class="dialog-overlay">
+            <div class="content">
+                <div class="sure">
+                    <p>移除后可重新添加。确定移除吗？</p>
+                    <p class="delete">移除</p>
+                </div>
+                <div class="cancle">取消</div>
+            </div>
+        </div>
+    </div>
+    <div class="toast" style="display: none;">移除成功</div>
+    <script src="../assets/lib/jquery.1.8.2.min.js"></script>
+    <script src="../assets/lib/jqthumb.min.js"></script>
+    <script src="../assets/lib/vue.js"></script>
+    <script>
+        $(function () {
+            $('.jqthumbImg').jqthumb({
+                width: '100%',
+                height: '100%'
+            });
+            $('.limit-set').click(function(){
+                console.log('权限设置')
+            })
+            $('.remove').click(function(){
+                $('.del-div').show()
+            })
+            $('.delete').click(function(){
+                $('.toast').fadeIn()
+                setTimeout(function(){
+                    $('.toast').fadeOut()
+                },1500)
+            })
+            $('.cancle').click(function(){
+                $('.del-div').hide()
+            })
+        })
+        var vm = new Vue({
+            el: '#organizer-manage',
+            data: function () {
+                return {
+                    
+                }
+            },
+            methods: {
+                //滑动开始
+                touchStart(e) {
+                    this.startX = e.touches[0].clientX;
+                },
+                //滑动结束
+                touchEnd(e) {
+                    let currentElement = e.currentTarget;
+                    this.endX = e.changedTouches[0].clientX;
+                    // 左滑
+                    if (currentElement.dataset.type == 0 && this.startX - this.endX > 30) {
+                        this.restSlide();
+                        currentElement.dataset.type = 1;
+                    }
+                    // 右滑
+                    if (currentElement.dataset.type == 1 && this.startX - this.endX < -30) {
+                        this.restSlide();
+                        currentElement.dataset.type = 0;
+                    }
+                    this.startX = 0;
+                    this.endX = 0;
+                },
+                 //复位滑动状态
+                restSlide() {
+                    let itemList = document.querySelectorAll('.item');
+                    for (let i = 0; i < itemList.length; i++) {
+                        itemList[i].dataset.type = 0;
+                    }
+                },
+            }
+        })
+        
+   </script>
+</body>
+
+</html>
