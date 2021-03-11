@@ -115,6 +115,13 @@ public class Activity {
     /** 修改时间; column: update_time*/
     @JSONField(serializeUsing = LocalDateTimeSerializer.class, deserializeUsing = LocalDateTimeDeserializer.class)
     private LocalDateTime updateTime;
+    /** 是否开启积分设置; column: is_open_integral */
+    @TableField(value = "is_open_integral")
+    private Boolean openIntegral;
+    /** 积分值; column: integral_value*/
+    private BigDecimal integralValue;
+    /** 第二课堂标识; column: second_classroom_flag*/
+    private Integer secondClassroomFlag;
 
     // 附加
     /** 开始时间字符串 */
@@ -123,6 +130,9 @@ public class Activity {
     /** 结束时间字符串 */
     @TableField(exist = false)
     private String endTimeStr;
+    /** 活动分类名称 */
+    @TableField(exist = false)
+    private String activityClassifyName;
 
     @Getter
     public enum StatusEnum {

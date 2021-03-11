@@ -39,13 +39,16 @@
         <result column="is_rating_need_audit" jdbcType="BIT" property="ratingNeedAudit" />
         <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
         <result column="update_time" jdbcType="TIMESTAMP" property="updateTime" />
+        <result column="is_open_integral" jdbcType="BIT" property="openIntegral" />
+        <result column="integral_value" jdbcType="DECIMAL" property="integralValue" />
+        <result column="second_classroom_flag" jdbcType="INTEGER" property="secondClassroomFlag" />
     </resultMap>
     <sql id="Base_Column_List">
         t.id, t.name, t.start_time, t.end_time, t.start_date, t.end_date, t.cover_cloud_id, t.cover_url, t.organisers, t.activity_type, t.address, t.detail_address,
         t.longitude, t.dimension, t.activity_classify_id, t.is_enable_sign, t.sign_id, t.web_template_id, t.page_id, t.preview_url, t.edit_url,
         t.is_released, t.release_time, t.release_uid, t.status, t.is_open_audit, t.audit_status, 
         t.create_uid, t.create_user_name, t.create_fid, t.create_area_code, t.create_org_name, t.tags, t.is_open_rating, t.is_rating_need_audit, t.create_time,
-        t.update_time
+        t.update_time, t.is_open_integral, t.integral_value, t.second_classroom_flag
     </sql>
 
     <select id="pageParticipate" resultMap="BaseResultMap">
@@ -260,6 +263,30 @@
             AND t.`name` LIKE CONCAT( '%', #{sw}, '%' )
         ORDER BY
             t1.create_time DESC
+    </select>
+
+    <select id="getBySignId" resultMap="BaseResultMap">
+        SELECT
+            <include refid="Base_Column_List"></include>,
+            t1.`name` activityClassifyName
+        FROM
+            t_activity t
+            LEFT JOIN t_activity_classify t1 ON t.activity_classify_id = t1.id
+        WHERE
+            t.sign_id = #{signId}
+        LIMIT 1
+    </select>
+
+    <select id="getById" resultMap="BaseResultMap">
+        SELECT
+            <include refid="Base_Column_List"></include>,
+            t1.`name` activityClassifyName
+        FROM
+            t_activity t
+            LEFT JOIN t_activity_classify t1 ON t.activity_classify_id = t1.id
+        WHERE
+            t.id = #{id}
+        LIMIT 1
     </select>
 
 </mapper>

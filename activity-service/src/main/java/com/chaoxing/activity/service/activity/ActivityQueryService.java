@@ -54,8 +54,6 @@ public class ActivityQueryService {
 	private ActivityMapper activityMapper;
 
 	@Resource
-	private ActivityValidationService activityValidationService;
-	@Resource
 	private WfwRegionalArchitectureApiService wfwRegionalArchitectureApiService;
 	@Resource
 	private SignApiService signApiService;
@@ -240,7 +238,7 @@ public class ActivityQueryService {
 	 * @return com.chaoxing.activity.model.Activity
 	*/
 	public Activity getById(Integer activityId) {
-		Activity activity = activityValidationService.activityExist(activityId);
+		Activity activity = activityMapper.getById(activityId);
 		Optional.ofNullable(activity).map(Activity::getStartTime).ifPresent(v -> activity.setStartTimeStr(v.format(DateTimeFormatterConstant.YYYY_MM_DD_HH_MM_SS)));
 		Optional.ofNullable(activity).map(Activity::getEndTime).ifPresent(v -> activity.setEndTimeStr(v.format(DateTimeFormatterConstant.YYYY_MM_DD_HH_MM_SS)));
 		return activity;
@@ -268,10 +266,7 @@ public class ActivityQueryService {
 	 * @return com.chaoxing.activity.model.Activity
 	*/
 	public Activity getBySignId(Integer signId) {
-		return activityMapper.selectOne(new QueryWrapper<Activity>()
-				.lambda()
-				.eq(Activity::getSignId, signId)
-		);
+		return activityMapper.getBySignId(signId);
 	}
 
 	/**查询封面url为空的活动

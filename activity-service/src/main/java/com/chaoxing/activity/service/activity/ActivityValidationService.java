@@ -2,7 +2,6 @@ package com.chaoxing.activity.service.activity;
 
 import com.chaoxing.activity.dto.LoginUserDTO;
 import com.chaoxing.activity.dto.manager.WfwRegionalArchitectureDTO;
-import com.chaoxing.activity.mapper.ActivityMapper;
 import com.chaoxing.activity.model.Activity;
 import com.chaoxing.activity.service.manager.WfwRegionalArchitectureApiService;
 import com.chaoxing.activity.util.exception.ActivityNotExistException;
@@ -33,7 +32,7 @@ import java.util.stream.Collectors;
 public class ActivityValidationService {
 
 	@Resource
-	private ActivityMapper activityMapper;
+	private ActivityQueryService activityQueryService;
 	@Resource
 	private WfwRegionalArchitectureApiService wfwRegionalArchitectureApiService;
 
@@ -78,7 +77,7 @@ public class ActivityValidationService {
 	 * @return com.chaoxing.activity.model.Activity
 	*/
 	public Activity activityExist(Integer activityId) {
-		Activity activity = activityMapper.selectById(activityId);
+		Activity activity = activityQueryService.getById(activityId);
 		log.error("活动id:{}对应的活动不存在", activityId);
 		Optional.ofNullable(activity).orElseThrow(() -> new ActivityNotExistException(activityId));
 		return activity;
