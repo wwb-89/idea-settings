@@ -3,6 +3,7 @@ package com.chaoxing.activity.service.activity;
 import com.chaoxing.activity.model.Activity;
 import com.chaoxing.activity.util.DateUtils;
 import com.chaoxing.activity.util.constant.CacheConstant;
+import com.chaoxing.activity.util.exception.ActivityNotExistException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.ZSetOperations;
@@ -46,11 +47,11 @@ public class ActivityStatusHandleService {
 		LocalDateTime now = LocalDateTime.now();
 		boolean guessEnded = now.isAfter(endTime);
 		boolean guessOnGoing = (now.isAfter(startTime) || now.isEqual(startTime)) && (now.isBefore(endTime) || now.isEqual(endTime));
-		if (guessEnded) {
-			// 已结束
-			return Activity.StatusEnum.ENDED.getValue();
-		}
 		if (activity.getReleased()) {
+			if (guessEnded) {
+				// 已结束
+				return Activity.StatusEnum.ENDED.getValue();
+			}
 			// 已发布的活动才处理状态
 			if (guessOnGoing) {
 				return Activity.StatusEnum.ONGOING.getValue();
@@ -126,13 +127,20 @@ public class ActivityStatusHandleService {
 			long l = score.longValue();
 			LocalDateTime time = DateUtils.timestamp2Date(l);
 			LocalDateTime now = LocalDateTime.now();
-			if (now.compareTo(time) > -1) {
+			if (time.compareTo(now) <= 0) {
 				Integer activityId = typedTuple.getValue();
 				// 更新活动状态
-				Activity activity = activityQueryService.getById(activityId);
-				Integer status = calActivityStatus(activity);
-				activityHandleService.updateActivityStatus(activityId, status);
-				zSetOperations.remove(cacheKey, activityId);
+				Activity activity = null;
+				try {
+					activity = activityQueryService.getById(activityId);
+					Integer status = calActivityStatus(activity);
+					activityHandleService.updateActivityStatus(activityId, status);
+					zSetOperations.remove(cacheKey, activityId);
+				} catch (ActivityNotExistException e) {
+					e.printStackTrace();
+					// 活动不存在则删除该缓存
+					zSetOperations.remove(cacheKey, activityId);
+				}
 			}
 		}
 	}

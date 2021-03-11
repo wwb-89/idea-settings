@@ -33,7 +33,7 @@ public class LibActivityManagementController {
 	*/
 	@RequestMapping("")
 	public String index(Model model, String code) {
-		return activityManageController.index(model, code);
+		return activityManageController.index(model, code, 0);
 	}
 
 	/**活动新增页面
@@ -47,7 +47,7 @@ public class LibActivityManagementController {
 	*/
 	@GetMapping("activity/add")
 	public String add(Model model, HttpServletRequest request, String code) {
-		return activityManageController.add(model, request, code);
+		return activityManageController.add(model, request, code, 0);
 	}
 
 }

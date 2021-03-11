@@ -27,14 +27,26 @@ public class UserAgentUtils {
 	 * @return boolean
 	*/
 	public static boolean isMobileAccess(HttpServletRequest request) {
-		String header = request.getHeader("User-Agent");
-		UserAgent userAgent = UserAgent.parseUserAgentString(header);
+		String userAgentString = request.getHeader("User-Agent");
+		UserAgent userAgent = UserAgent.parseUserAgentString(userAgentString);
 		boolean isMobile = false;
 		if (userAgent != null) {
 			DeviceType deviceType = userAgent.getOperatingSystem().getDeviceType();
 			isMobile = deviceType.equals(DeviceType.MOBILE);
 		}
 		return isMobile;
+	}
+
+	/**是否是微信端访问
+	 * @Description 
+	 * @author wwb
+	 * @Date 2021-03-05 16:01:41
+	 * @param request
+	 * @return boolean
+	*/
+	public static boolean isWxAccess(HttpServletRequest request) {
+		String userAgentString = request.getHeader("User-Agent");
+		return userAgentString.matches(".*micromessenger.*");
 	}
 
 }

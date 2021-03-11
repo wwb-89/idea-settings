@@ -1,0 +1,154 @@
+body {
+    background: #F6F7FB;
+}
+.organizer-manage ul{
+    overflow: hidden;
+}
+.organizer-manage .item {
+    position: relative;
+    padding: 1rem;
+    background: #FFFFFF;
+    border-bottom: .03125rem solid #E9E9E9;
+    text-align: left;
+}
+
+.organizer-manage .item .head-box {
+    display: inline-block;
+    vertical-align: top;
+    width: 2.1875rem;
+    height: 2.1875rem;
+    border-radius: 50%;
+    overflow: hidden;
+    margin-right: .75rem;
+}
+
+.organizer-manage .item .name {
+    font-size: .9375rem;
+    line-height: 2.1875rem;
+}
+
+.organizer-manage .item .handel-box {
+    position: absolute;
+    top: 0;
+    right: -9.2rem;
+    font-size: 0;
+}
+
+.organizer-manage .item .handel-box div {
+    display: inline-block;
+    padding: 1.5rem .875rem;
+    font-size: .9375rem;
+    color: #FFFFFF;
+}
+
+.organizer-manage .item .handel-box .limit-set {
+    background: #0084FF;
+}
+
+.organizer-manage .item .handel-box .remove {
+    background: #FF666D;
+}
+
+.organizer-manage .item[data-type="0"] {
+    -webkit-transform: translate3d(0, 0, 0);
+    transform: translate3d(0, 0, 0);
+    -webkit-transition: all 0.3s ease .1s;
+    -o-transition: all 0.3s ease .1s;
+    transition: all 0.3s ease .1s;
+}
+
+.organizer-manage .item[data-type="1"] {
+    -webkit-transform: translate3d(-9.2rem, 0, 0);
+    transform: translate3d(-9.2rem, 0, 0);
+    -webkit-transition: all 0.3s ease .1s;
+    -o-transition: all 0.3s ease .1s;
+    transition: all 0.3s ease .1s;
+}
+.dialog-overlay {
+    background-color: rgba(0, 0, 0, 0.3);
+    padding: 0 .5rem;
+    box-sizing: border-box;
+}
+.dialog-overlay .content{
+    position: absolute;
+    left: .5rem;
+    right: .5rem;
+    bottom: 0;
+}
+.dialog-overlay .content>div{
+    width: 100%;
+    border-radius: .78125rem;
+    background-color: #ffffff;
+    box-sizing: border-box;
+    margin-bottom: .5rem;
+    overflow: hidden;
+}
+.dialog-overlay .content .sure p{
+    padding: 1rem;
+    font-size: .9375rem;
+    color: #666666;
+    line-height: 1.5625rem;
+    border-bottom: 1px solid #EEEEEE;
+}
+.dialog-overlay .content .sure .delete{
+    font-size: 1.25rem;
+    color: #FF666D;
+}
+.dialog-overlay .content .cancle{
+    color: #0084FF;
+    font-size: 1.25rem;
+    line-height: 1.5625rem;
+    padding: 1rem;
+}
+.toast{
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    z-index: 10004;
+    transform: translate(-50%,-50%);
+    padding: 0 .9375rem;
+    height: 3.125rem;
+    background: rgba(0, 0, 0, 0.7);
+    border-radius: .375rem;
+    font-size: 1.125rem;
+    line-height: 3.125rem;
+    color: #ffffff;
+}
+.limit-manage .title{
+    font-size: .8125rem;
+    line-height: 1.125rem;
+    color: #999999;
+    margin-top: .625rem;
+    padding: 0 1rem;
+    text-align: left;
+}
+.limit-manage .item{
+    position: relative;
+    background: #ffffff;
+    padding: 1.125rem 1rem;
+    padding-right: 5.5rem;
+    margin-top: .625rem;
+    text-align: left;
+}
+.limit-manage .item .name{
+    font-size: 1rem;
+    line-height: 1.5625rem;
+    color: #333;
+}
+.limit-manage .item .desc{
+    font-size: .8125rem;
+    line-height: 1.125rem;
+    color: #999999;
+    margin-top: .25rem;
+}
+.limit-manage .item .layui-form-switch{
+    position: absolute;
+    right: 1rem;
+    top: 50%;
+    transform: translateY(-50%);
+    margin-top: 0;
+}
+.layui-form-onswitch {
+    border-color: #0099FF;
+    background-color: #0099FF;
+}

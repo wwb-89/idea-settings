@@ -212,7 +212,7 @@
             case 0:
                 return "已删除";
             case 1:
-                return "待发布";
+                return "未发布";
             case 2:
                 return "待开始";
             case 3:

@@ -161,7 +161,7 @@
                         </div>
                     </div>
                 </div>
-                <div class="form-item last">
+                <div class="form-item last" v-show="secondClassroomFlag != 1">
                     <label class="label"><img src="/static/pc/assets/images/required.png" th:src="@{/pc/assets/images/required.png}" class="required-img">参与范围</label>
                     <div class="input-box wrap">
                         <!--添加范围后显示后面这项-->
@@ -207,6 +207,22 @@
                         <span class="date-piker-icon">
                             <img src="/static/pc/assets/images/time.png" th:src="@{/pc/assets/images/time.png}">
                         </span>
+                    </div>
+                </div>
+                <div class="form-item flexStart" v-show="secondClassroomFlag == 1">
+                    <label class="label">参与范围</label>
+                    <div class="join-box">
+                        <div>
+                            <el-radio v-model="sign.signUp.joinRange" :label="1" name="active-type">不限</el-radio>
+                            <el-radio v-model="sign.signUp.joinRange" :label="2" name="active-type">自定义</el-radio>
+                        </div>
+                        <div class="join-select" v-show="sign.signUp.joinRange==2">
+                            <img src="/static/pc/assets/images/add-circle.png" th:src="@{/pc/assets/images/add-circle.png}" alt="" class="add-range" @click="openGroupTreeDiv()">
+                            <span v-if="groups.length<=0">请选择</span>
+                            <div class="add-tags" v-else>
+                                <span v-for="(group, index) of groups">{{group.groupname}}<i class="del_btn" @click="delRange(index)"></i></span>
+                            </div>
+                        </div>
                     </div>
                 </div>
                 <div class="form-item">
@@ -394,6 +410,39 @@
                 </div>
             </form>
         </div>
+        <!-- 积分设置 -->
+        <div class="info box" v-show="secondClassroomFlag == 1">
+            <div class="set-box">
+                <div class="title set">积分设置</div>
+                <el-switch v-model="activity.openIntegral" class="switch"></el-switch>
+            </div>
+            <form action="" class="setForm" v-show="activity.openIntegral">
+                <div class="form-item">
+                    <label class="label">分值</label>
+                    <div class="input-box">
+                        <input type="number" v-model.trim="activity.integralValue" placeholder="请输入" class="score-input">
+                        <span class="score">分</span>
+                        <span>参与者在活动成绩为合格时，即可获取相应积分</span>
+                    </div>
+                </div>
+            </form>
+        </div>
+        <!-- 评价设置 -->
+        <div class="info box" v-show="secondClassroomFlag == 1">
+            <div class="set-box">
+                <div class="title set">评价设置</div>
+                <el-switch v-model="activity.openRating" class="switch"></el-switch>
+            </div>
+            <form action="" class="setForm" v-show="activity.openRating">
+                <div class="form-item">
+                    <label class="label">评价需审核</label>
+                    <div class="input-box">
+                        <el-switch v-model="activity.ratingNeedAudit" class="examine-switch"></el-switch>
+                        <span>开启后，审核后的评论才能展示在评论列表</span>
+                    </div>
+                </div>
+            </form>
+        </div>
     </div>
     <!--选择门户模板-->
     <div class="info box" v-show="step > 1">
@@ -422,7 +471,7 @@
                 </div>
             </div>
             <div class="body">
-                <el-input type="text" class="fenlei-input" v-model.trim="addEditActivityClassify.name" placeholder="请输入" maxlength="6" show-word-limit></el-input>
+                <el-input type="text" class="fenlei-input" v-model.trim="addEditActivityClassify.name" placeholder="请输入" maxlength="10" show-word-limit></el-input>
             </div>
             <div class="footer">
                 <div class="normal-btn cancle" @click="addEditActivityClassifyWindowShow = false">取消</div>
@@ -478,6 +527,31 @@
     <vue-activity-participate-scope :fid="fid" ref="activityParticipateScopeWindow" @callback="updateParticipatedOrgs"></vue-activity-participate-scope>
     <!--预览url复制容器-->
     <input type="text" id="template-preview-url-input" v-model.trim="activity.previewUrl" style="position: absolute; top: -100px; height: 1px;">
+
+    <!-- 活添加发放对象弹窗 -->
+    <div class="dailog-box1" v-show="rangeShow">
+        <div class="dailog">
+            <div class="header">
+                <span>参与范围</span>
+                <img src="/static/pc/assets/images/close.png" th:src="@{/pc/assets/images/close.png}" alt="" @click="rangeShow = false" class="close">
+            </div>
+            <div class="body">
+                <div class="tree">
+                    <div class="tree-head">
+                        <span>选择发布的范围</span>
+<!--                        <div class="already">已选<span style="margin-left: 5px;">0</span></div>-->
+                    </div>
+                    <div class="tree-box">
+                        <div id="groupTree" class="ztree"></div>
+                    </div>
+                </div>
+            </div>
+            <div class="footer">
+                <div class="normal-btn cancle" @click="rangeShow = false">取消</div>
+                <div class="normal-btn after-sure" @click="rangeSave()">发布</div>
+            </div>
+        </div>
+    </div>
 </div>
 <div th:replace="pc/include/common_js :: common_js(~{::script})">
     <script src="/static/pc/assets/lib/zTree_v3/js/jquery.ztree.core.js" th:src="@{/pc/assets/lib/zTree_v3/js/jquery.ztree.core.js}"></script>
@@ -549,9 +623,17 @@
                 signOutTimeScope: "",
                 // 人数限制值
                 personLimitValue: 0,
-
                 // 表单
-                formConfigLayerIndex: ""
+                formConfigLayerIndex: "",
+                //范围Div
+                rangeShow: false,
+                //范围选择
+                rangeRadio: "1",
+                groups: [[${sign.signUpGroupRanges}]]!=null?[[${sign.signUpGroupRanges}]]:[],
+                wfwGroups: [[${wfwGroups}]],
+                groupTreeObj: null,
+                // 第二课堂标识
+                secondClassroomFlag: [[${secondClassroomFlag}]]
             },
             created: function () {
                 var $this = this;
@@ -579,7 +661,8 @@
                         activityClassifyId: firstActivityClassifyId,
                         enableSign: true,
                         createAreaCode: $this.areaCode,
-                        tags: ""
+                        tags: "",
+                        secondClassroomFlag: $this.secondClassroomFlag
                     };
                 } else {
                     $this.activity.createTime = null;
@@ -587,6 +670,8 @@
                     $this.activity.releaseTime = null;
                     $this.activity.startTime = $this.activity.startTimeStr;
                     $this.activity.endTime = $this.activity.endTimeStr;
+                    // 报名签到永远是启用的
+                    $this.activity.enableSign = true;
                 }
                 var tags = $this.activity.tags;
                 if (activityApp.isEmpty(tags)) {
@@ -642,43 +727,42 @@
                     $this.sign.createTime = "";
                     $this.sign.updateTime = "";
                     // 报名
+                    $this.enableSignUp = false;
                     if (!activityApp.isEmpty($this.sign.signUp)) {
-                        $this.enableSignUp = true;
                         $this.sign.signUp.startTime = $this.sign.signUp.startTimestamp;
                         $this.sign.signUp.endTime = $this.sign.signUp.endTimestamp;
                         $this.sign.signUp.createTime = "";
                         $this.sign.signUp.updateTime = "";
+                        if (!$this.sign.signUp.deleted) {
+                            $this.enableSignUp = true;
+                        }
                     } else {
-                        $this.enableSignUp = false;
                         $this.sign.signUp = signApp.newSignUp();
                     }
                     if (!activityApp.isEmpty($this.sign.signUp.startTime)) {
                         $this.signUpTimeScope = [$this.sign.signUp.startTime, $this.sign.signUp.endTime];
                     }
                     // 签到
+                    $this.enableSignIn = false;
                     if (!activityApp.isEmpty($this.sign.signIn)) {
                         if (!$this.sign.signIn.deleted) {
                             $this.enableSignIn = true;
-                        } else {
-                            $this.enableSignIn = false;
                         }
                         $this.sign.signIn.startTime = $this.sign.signIn.startTimestamp;
                         $this.sign.signIn.endTime = $this.sign.signIn.endTimestamp;
                         $this.sign.signIn.createTime = "";
                         $this.sign.signIn.updateTime = "";
                     } else {
-                        $this.enableSignIn = false;
                         $this.sign.signIn = signApp.newSignIn();
                     }
                     if (!activityApp.isEmpty($this.sign.signIn.startTime)) {
                         $this.signInTimeScope = [$this.sign.signIn.startTime, $this.sign.signIn.endTime];
                     }
                     // 签退
+                    $this.enableSignOut = false;
                     if (!activityApp.isEmpty($this.sign.signOut)) {
                         if (!$this.sign.signOut.deleted) {
                             $this.enableSignOut = true;
-                        } else {
-                            $this.enableSignOut = false;
                         }
                         $this.sign.signOut.startTime = $this.sign.signOut.startTimestamp;
                         $this.sign.signOut.endTime = $this.sign.signOut.endTimestamp;
@@ -691,11 +775,6 @@
                     if (!activityApp.isEmpty($this.sign.signOut.startTime)) {
                         $this.signOutTimeScope = [$this.sign.signOut.startTime, $this.sign.signOut.endTime];
                     }
-                }
-                if (!$this.activity.enableSign) {
-                    $this.enableSignUp = false;
-                    $this.enableSignIn = false;
-                    $this.enableSignOut = false;
                 }
                 $this.calPersonLimitValue();
                 if (activityApp.isEmpty($this.participatedOrgs)) {
@@ -720,24 +799,6 @@
                     } else {
                         $this.$set($this.sign.signUp, "limitPerson", true);
                     }
-                },
-                "enableSignUp": function () {
-                    var $this = this;
-                    $this.$nextTick(function () {
-                        $this.activity.enableSign = $this.enableSignUp || $this.enableSignIn || $this.enableSignOut;
-                    });
-                },
-                "enableSignIn": function () {
-                    var $this = this;
-                    $this.$nextTick(function () {
-                        $this.activity.enableSign = $this.enableSignUp || $this.enableSignIn || $this.enableSignOut;
-                    });
-                },
-                "enableSignOut": function () {
-                    var $this = this;
-                    $this.$nextTick(function () {
-                        $this.activity.enableSign = $this.enableSignUp || $this.enableSignIn || $this.enableSignOut;
-                    });
                 },
                 "sign.signUp.fillInfo": function () {
                     var $this = this;
@@ -1043,7 +1104,7 @@
                         return false;
                     }
                     // 参与范围
-                    if (activityApp.isEmpty($this.participatedOrgs) || $this.participatedOrgs.length < 1) {
+                    if ($this.secondClassroomFlag != 1 && (activityApp.isEmpty($this.participatedOrgs) || $this.participatedOrgs.length < 1)) {
                         app.showMsg("请选择参与范围");
                         return false;
                     }
@@ -1216,6 +1277,10 @@
                     var sign = $.extend({}, $this.sign);
                     if (!$this.enableSignUp) {
                         sign.signUp = null;
+                    }else{
+                        if(sign.signUp.joinRange == 2 && $this.groups.length>0){
+                            sign.signUp.groupsJsonStr = activityApp.getJsonStr($this.groups);
+                        }
                     }
                     if (!$this.enableSignIn) {
                         sign.signIn = null;
@@ -1374,6 +1439,127 @@
                         }
                     });
                     $this.webTemplates = webTemplates;
+                },
+                openGroupTreeDiv: function(){
+                    var $this = this;
+                    $this.rangeShow = true;
+                    if($this.groupTreeObj == null){
+                        $this.initGroupTree();
+                    }
+                },
+                loadFidGroup: function (gid, parentNode){
+                    var $this = this;
+                    var url = ctx + "/api/wfw/group/listGroup?gid="+gid;
+                    app.ajaxPostWithLoading(url, {}, function (data) {
+                        if (data.success) {
+                            var newNodes = data.data;
+                            if(newNodes.length>0){
+                                console.log(newNodes)
+                                $(newNodes).each(function () {
+                                    this.isParent = true;
+                                })
+                                var treeObj = $.fn.zTree.getZTreeObj("groupTree");
+                                var myNode = {
+                                    id: parentNode.id,
+                                    gid: parentNode.gid,
+                                    groupname: parentNode.groupname
+                                }
+                                treeObj.addNodes(parentNode, 0, myNode, false);
+                                treeObj.addNodes(parentNode, 1, newNodes, false);
+                            }
+                        } else {
+                            var errorMessage = data.message;
+                            if (activityApp.isEmpty(errorMessage)) {
+                                errorMessage = "获取机构组织架构失败";
+                            }
+                            app.showMsg(errorMessage);
+                        }
+                    }, function () {
+                        app.showMsg("获取机构组织架构失败");
+                    });
+                },
+                initGroupTree: function () {
+                    var $this = this;
+                    $($this.wfwGroups).each(function () {
+                        this.isParent = true;
+                    })
+                    var setting = {
+                        check: {
+                            enable: true
+                        },
+                        data: {
+                            simpleData: {
+                                enable: true,
+                                idKey: "id",
+                                pIdKey: "gid",
+                            },
+                            key: {
+                                name: "groupname"
+                            },
+                            keep: {
+                                parent: true
+                            }
+                        },
+                        callback: {
+                            onExpand: expandNode
+                        }
+                    };
+
+                    function expandNode(e, b, node) {
+                        console.log(node);
+                        if(node.children==null || node.children.length<=0){
+                            $this.loadFidGroup(node.id, node);
+                        }
+                    };
+                    $this.groupTreeObj = $.fn.zTree.init($("#groupTree"), setting, $this.wfwGroups);
+                },
+                rangeSave: function () {
+                    var $this = this;
+                    var zTree = $.fn.zTree.getZTreeObj("groupTree");
+                    var nodeArr = zTree.getCheckedNodes(true);
+                    console.log(nodeArr)
+                    $this.groups = [];
+                    var parentGroups = [];
+                    var childGroups = [];
+                    //首先保存 搜索父节点被全选的，在看非父节点被选中的(非父节点的父节点被全选，则不保存该条记录)
+                    $(nodeArr).each(function () {
+                        if(this.isParent && this.check_Child_State == 2){
+                            this.type = 2;
+                            parentGroups.push(this);
+                        }else if(this.isParent && this.check_Child_State == -1){
+                            this.type = 2;
+                            parentGroups.push(this);
+                        }
+                    })
+                    $(nodeArr).each(function () {
+                        if(!this.isParent && this.check_Child_State == -1){
+                            var isFind = false;
+                            $.each(parentGroups, function (i, parentItem) {
+                                if(this.gid!=null && parentItem.id == this.gid){
+                                    isFind = true;
+                                    return false;
+                                }else if(parentItem.id == this.id){
+                                    isFind = true;
+                                    return false;
+                                }
+                            })
+                            if(!isFind){
+                                this.type = 1;
+                                childGroups.push(this);
+                            }
+                        }
+                    })
+                    $(parentGroups).each(function () {
+                        $this.groups.push(this);
+                    });
+                    $(childGroups).each(function () {
+                        $this.groups.push(this);
+                    });
+                    $this.rangeShow = false;
+                },
+                delRange: function (index) {
+                    var $this = this;
+                    $this.groups.splice(index, 1);
                 }
             }
         });

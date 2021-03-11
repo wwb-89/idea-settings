@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <title>组织者管理</title>
+    <meta http-equiv="Content-type" content="text/html; charset=utf-8" />
+    <meta name="viewport"
+        content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, minimal-ui" />
+    <meta name="format-detection" content="telephone=no, email=no">
+    <meta http-equiv="Pragma" content="no-cache" />
+    <meta http-equiv="cache-control" content="no-cache" />
+    <link rel="stylesheet" href="../assets/lib/layui/css/layui.css" />
+    <link rel="stylesheet" href="../assets/css/public.css" />
+    <link rel="stylesheet" href="../assets/css/dialog.css">
+    <link rel="stylesheet" href="../assets/css/manage.css">
+</head>
+
+<body>
+    <div class="limit-manage" id="limit-manage">
+        <p class="title">高晓青 拥有以下模块的管理权限</p>
+        <form class="layui-form" action="">
+            <div class="item">
+                <div class="left">
+                    <p class="name">评价需审核</p>
+                    <p class="desc">开启后，审核后的评论才能展示在评论列表</p>
+                </div>
+                <input type="checkbox" checked name="open" lay-skin="switch" lay-filter="switchTest" title="开关">
+            </div>
+            <div class="item">
+                <div class="left">
+                    <p class="name">签到管理</p>
+                    <p class="desc">管理签到、发布签到</p>
+                </div>
+                <input type="checkbox" checked name="open" lay-skin="switch" lay-filter="switchTest" title="开关">
+            </div>
+            <div class="item">
+                <div class="left">
+                    <p class="name">评价管理</p>
+                    <p class="desc">管理、审核评价内容</p>
+                </div>
+                <input type="checkbox" checked name="open" lay-skin="switch" lay-filter="switchTest" title="开关">
+            </div>
+        </form>
+    </div>
+    <script src="../assets/lib/jquery.1.8.2.min.js"></script>
+    <script src="../assets/lib/jqthumb.min.js"></script>
+    <script src="../assets/lib/vue.js"></script>
+    <script src="../assets/lib/layui/layui.js"></script>
+    <script>
+        $(function () {
+            $('.jqthumbImg').jqthumb({
+                width: '100%',
+                height: '100%'
+            });
+        })
+        layui.use(['form', 'layer'], function () {
+            var form = layui.form,
+                layer = layui.layer
+        })
+    </script>
+</body>
+
+</html>

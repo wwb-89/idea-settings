@@ -57,15 +57,17 @@ public interface ActivityMapper extends BaseMapper<Activity> {
 	 */
 	Page<Activity> pageOrgCreated(@Param("page") Page<?> page, @Param("fid") Integer fid);
 
-	/** 分页查询用户创建的
-	 * @Description 
-	 * @author wwb
-	 * @Date 2021-01-27 21:05:26
+	/**
+	 * 分页查询用户创建的
+	 *
 	 * @param page
 	 * @param uid
 	 * @param sw
 	 * @return com.baomidou.mybatisplus.extension.plugins.pagination.Page<com.chaoxing.activity.model.Activity>
-	*/
+	 * @Description
+	 * @author wwb
+	 * @Date 2021-01-27 21:05:26
+	 */
 	Page<Activity> pageUserCreated(@Param("page") Page<?> page, @Param("uid") Integer uid, @Param("sw") String sw);
 
 	/**
@@ -91,24 +93,48 @@ public interface ActivityMapper extends BaseMapper<Activity> {
 	 */
 	List<Integer> listOrgParticipatedActivityPageId(@Param("fids") List<Integer> fids);
 
-	/**根据报名签到id列表查询
-	 * @Description 
-	 * @author wwb
-	 * @Date 2021-01-27 20:24:30
+	/**
+	 * 根据报名签到id列表查询
+	 *
 	 * @param signIds
 	 * @return java.util.List<com.chaoxing.activity.model.Activity>
-	*/
+	 * @Description
+	 * @author wwb
+	 * @Date 2021-01-27 20:24:30
+	 */
 	List<Activity> listBySignIds(@Param("signIds") List<Integer> signIds);
 
-	/**分页查询报名的活动列表
-	 * @Description 
-	 * @author wwb
-	 * @Date 2021-01-27 20:55:30
+	/**
+	 * 分页查询报名的活动列表
+	 *
 	 * @param page
 	 * @param uid
 	 * @param sw
 	 * @return com.baomidou.mybatisplus.extension.plugins.pagination.Page<com.chaoxing.activity.model.Activity>
-	*/
+	 * @Description
+	 * @author wwb
+	 * @Date 2021-01-27 20:55:30
+	 */
 	Page<Activity> pageCollectedActivityId(@Param("page") Page<?> page, @Param("uid") Integer uid, @Param("sw") String sw);
+
+	/**
+	 * 根据报名签到id查询活动
+	 *
+	 * @param signId
+	 * @return com.chaoxing.activity.model.Activity
+	 * @Description
+	 * @author wwb
+	 * @Date 2021-03-10 19:20:28
+	 */
+	Activity getBySignId(@Param("signId") Integer signId);
+
+	/**根据id查询活动
+	 * @Description 
+	 * @author wwb
+	 * @Date 2021-03-10 20:30:11
+	 * @param id
+	 * @return com.chaoxing.activity.model.Activity
+	*/
+	Activity getById(@Param("id") Integer id);
 
 }

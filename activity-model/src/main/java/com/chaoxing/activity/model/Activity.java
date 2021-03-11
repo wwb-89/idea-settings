@@ -103,12 +103,25 @@ public class Activity {
     private String createOrgName;
     /** 标签。以逗号分隔; column: tags */
     private String tags;
+    /** 是否开启评价; column: is_open_rating */
+    @TableField(value = "is_open_rating")
+    private Boolean openRating;
+    /** 评价是否需要审核; column: is_rating_need_audit */
+    @TableField(value = "is_rating_need_audit")
+    private Boolean ratingNeedAudit;
     /** 创建时间; column: create_time*/
     @JSONField(serializeUsing = LocalDateTimeSerializer.class, deserializeUsing = LocalDateTimeDeserializer.class)
     private LocalDateTime createTime;
     /** 修改时间; column: update_time*/
     @JSONField(serializeUsing = LocalDateTimeSerializer.class, deserializeUsing = LocalDateTimeDeserializer.class)
     private LocalDateTime updateTime;
+    /** 是否开启积分设置; column: is_open_integral */
+    @TableField(value = "is_open_integral")
+    private Boolean openIntegral;
+    /** 积分值; column: integral_value*/
+    private BigDecimal integralValue;
+    /** 第二课堂标识; column: second_classroom_flag*/
+    private Integer secondClassroomFlag;
 
     // 附加
     /** 开始时间字符串 */
@@ -117,12 +130,15 @@ public class Activity {
     /** 结束时间字符串 */
     @TableField(exist = false)
     private String endTimeStr;
+    /** 活动分类名称 */
+    @TableField(exist = false)
+    private String activityClassifyName;
 
     @Getter
     public enum StatusEnum {
         /** 已删除 */
         DELETED("已删除", 0),
-        WAIT_RELEASE("待发布", 1),
+        WAIT_RELEASE("未发布", 1),
         RELEASED("已发布", 2),
         ONGOING("进行中", 3),
         ENDED("已结束", 4);

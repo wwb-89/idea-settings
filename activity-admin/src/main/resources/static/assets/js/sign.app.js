@@ -33,7 +33,7 @@
             id: null,
             signId: null,
             openAudit: false,
-            startTime: new Date(activityApp.generateActivityDefaultStartTime()),
+            startTime: new Date(activityApp.generateActivityDefaultStartTime()).getTime(),
             startTimestamp: "",
             endTime: (new Date(new Date(activityApp.generateActivityDefaultEndTime()).getTime() - 24 * 60 * 60 * 1000)).getTime(),
             endTimestamp: "",
@@ -42,7 +42,8 @@
             fillInfo: false,
             fillInfoFormId: null,
             publicList: false,
-            btnName: "报名"
+            btnName: "报名",
+            joinRange: 1
         };
     };
 

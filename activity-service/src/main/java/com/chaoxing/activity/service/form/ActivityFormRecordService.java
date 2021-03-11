@@ -52,12 +52,19 @@ public class ActivityFormRecordService {
 		String formInfo = formApiService.getFormInfo(createFid, formId);
 		String activityFillFormData = formAssistService.getActivityFillFormData(formInfo, activity);
 		Integer formUserId = formApiService.fillForm(createFid, formId, activity.getCreateUid(), activityFillFormData);
-		ActivityFormRecord activityFormRecord = ActivityFormRecord.builder()
-				.activityId(activity.getId())
-				.formId(formId)
-				.formUserId(formUserId)
-				.build();
-		activityFormRecordMapper.insert(activityFormRecord);
+		// 有表单推送记录则不添加
+		ActivityFormRecord existActivityFormRecord = activityFormRecordMapper.selectOne(new QueryWrapper<ActivityFormRecord>()
+				.lambda()
+				.eq(ActivityFormRecord::getActivityId, activity.getId())
+		);
+		if (existActivityFormRecord == null) {
+			ActivityFormRecord activityFormRecord = ActivityFormRecord.builder()
+					.activityId(activity.getId())
+					.formId(formId)
+					.formUserId(formUserId)
+					.build();
+			activityFormRecordMapper.insert(activityFormRecord);
+		}
 	}
 
 	/**删除

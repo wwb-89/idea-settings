@@ -4,6 +4,8 @@ import com.chaoxing.activity.util.CookieUtils;
 import com.chaoxing.activity.util.UserAgentUtils;
 import com.chaoxing.activity.util.constant.UrlConstant;
 import com.chaoxing.activity.util.enums.ModuleTypeEnum;
+import com.chaoxing.activity.util.exception.BusinessException;
+import com.chaoxing.activity.util.exception.WxAccessException;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -38,6 +40,10 @@ public class ActivityModuleApiController {
 	*/
 	@GetMapping("forward/{moduleType}/{moduleId}")
 	public RedirectView urlForward(HttpServletRequest request, @PathVariable String moduleType, @PathVariable Integer moduleId) throws UnsupportedEncodingException {
+		// 微信端不允许访问
+		if (UserAgentUtils.isWxAccess(request)) {
+			throw new WxAccessException();
+		}
 		// 必须要登录
 		Integer uid = CookieUtils.getUid(request);
 		if (uid == null) {
@@ -106,7 +112,7 @@ public class ActivityModuleApiController {
 		if (mobileAccess) {
 			accessUrl = "https://teacher2.chaoxing.com/tpk3-activity/?activityId=" + tpkId;
 		} else {
-			accessUrl = "https://teacher2.chaoxing.com/tpk3-activity/admin/statistics/activity/" + tpkId;
+			accessUrl = "http://teacher2.chaoxing.com/tpk3-activity/admin/statistics/activity/" + tpkId;
 		}
 		return accessUrl;
 	}
