@@ -68,7 +68,7 @@ public class WfwRegionalArchitectureApiService {
 	 * @param fid
 	 * @return com.chaoxing.activity.dto.manager.WfwRegionalArchitectureDTO
 	*/
-	private WfwRegionalArchitectureDTO buildWfwRegionalArchitecture(Integer fid) {
+	public WfwRegionalArchitectureDTO buildWfwRegionalArchitecture(Integer fid) {
 		String orgName = passportApiService.getOrgName(fid);
 		return WfwRegionalArchitectureDTO.builder()
 				.id(0)

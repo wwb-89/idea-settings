@@ -161,7 +161,7 @@
                         </div>
                     </div>
                 </div>
-                <div class="form-item last">
+                <div class="form-item last" v-show="secondClassroomFlag != 1">
                     <label class="label"><img src="/static/pc/assets/images/required.png" th:src="@{/pc/assets/images/required.png}" class="required-img">参与范围</label>
                     <div class="input-box wrap">
                         <!--添加范围后显示后面这项-->
@@ -1104,7 +1104,7 @@
                         return false;
                     }
                     // 参与范围
-                    if (activityApp.isEmpty($this.participatedOrgs) || $this.participatedOrgs.length < 1) {
+                    if ($this.secondClassroomFlag != 1 && (activityApp.isEmpty($this.participatedOrgs) || $this.participatedOrgs.length < 1)) {
                         app.showMsg("请选择参与范围");
                         return false;
                     }

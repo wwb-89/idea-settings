@@ -16,12 +16,14 @@ import com.chaoxing.activity.service.activity.scope.ActivityScopeService;
 import com.chaoxing.activity.service.form.ActivityFormRecordService;
 import com.chaoxing.activity.service.manager.GuanliApiService;
 import com.chaoxing.activity.service.manager.MhApiService;
+import com.chaoxing.activity.service.manager.WfwRegionalArchitectureApiService;
 import com.chaoxing.activity.service.manager.module.SignApiService;
 import com.chaoxing.activity.service.manager.module.WorkApiService;
 import com.chaoxing.activity.util.constant.ActivityMhUrlConstant;
 import com.chaoxing.activity.util.constant.ActivityModuleConstant;
 import com.chaoxing.activity.util.enums.*;
 import com.chaoxing.activity.util.exception.BusinessException;
+import com.google.common.collect.Lists;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -78,6 +80,8 @@ public class ActivityHandleService {
 	private SignApiService signApiService;
 	@Resource
 	private MhApiService mhApiService;
+	@Resource
+	private WfwRegionalArchitectureApiService wfwRegionalArchitectureApiService;
 
 	/**新增活动
 	 * @Description
@@ -123,8 +127,16 @@ public class ActivityHandleService {
 		activityCoverService.noticeUpdateCoverUrl(activity.getId(), activity.getCoverCloudId());
 		// 活动参与范围
 		Integer activityId = activity.getId();
+		// 是不是第二课堂
+		Integer secondClassroomFlag = activity.getSecondClassroomFlag();
 		if (CollectionUtils.isEmpty(wfwRegionalArchitectures)) {
-			throw new BusinessException("请选择参与范围");
+			if (secondClassroomFlag == 1) {
+				// 构建创建者机构的
+				WfwRegionalArchitectureDTO wfwRegionalArchitecture = wfwRegionalArchitectureApiService.buildWfwRegionalArchitecture(activity.getCreateFid());
+				wfwRegionalArchitectures = Lists.newArrayList(wfwRegionalArchitecture);
+			} else {
+				throw new BusinessException("请选择参与范围");
+			}
 		}
 		List<ActivityScope> activityScopes = WfwRegionalArchitectureDTO.convert2ActivityScopes(activityId, wfwRegionalArchitectures);
 		// 新增参与范围
