@@ -62,4 +62,37 @@ public class ActivityRatingValidateService {
 		}
 	}
 
+	/**
+	 * 是否可以报名
+	 * @param activityId
+	 * @param uid
+	 * @return
+	 */
+	public Boolean isSubmitRating(Integer activityId, Integer uid){
+		Activity activity = activityValidationService.activityExist(activityId);
+		// 是否有开启评价
+		Boolean openRating = activity.getOpenRating();
+		openRating = Optional.ofNullable(openRating).orElse(Boolean.FALSE);
+		if (!openRating) {
+			return false;
+		}
+		Integer signId = activity.getSignId();
+		if (signId == null) {
+			// 没有开启报名签到
+			return false;
+		}
+		// 报名签到是否开启了报名
+		SignUp signUp = signApiService.getBySignId(signId);
+		if (signUp == null) {
+			// 没有开启报名
+			return false;
+		}
+		// 用户是否报名
+		boolean signedUpSuccess = signApiService.isSignedUpSuccess(signUp.getId(), uid);
+		if (!signedUpSuccess) {
+			return false;
+		}
+		return true;
+	}
+
 }

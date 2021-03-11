@@ -35,7 +35,7 @@
         <result column="create_area_code" jdbcType="VARCHAR" property="createAreaCode" />
         <result column="create_org_name" jdbcType="INTEGER" property="createOrgName" />
         <result column="tags" jdbcType="INTEGER" property="tags" />
-        <result column="is_open_rating" jdbcType="BIT" property="openAudit" />
+        <result column="is_open_rating" jdbcType="BIT" property="openRating" />
         <result column="is_rating_need_audit" jdbcType="BIT" property="ratingNeedAudit" />
         <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
         <result column="update_time" jdbcType="TIMESTAMP" property="updateTime" />

@@ -7,9 +7,12 @@ import com.chaoxing.activity.mapper.ActivityRatingDetailMapper;
 import com.chaoxing.activity.mapper.ActivityRatingMapper;
 import com.chaoxing.activity.model.ActivityRating;
 import com.chaoxing.activity.model.ActivityRatingDetail;
+import com.chaoxing.activity.service.activity.ActivityQueryService;
+import com.chaoxing.activity.service.activity.ActivityValidationService;
 import com.chaoxing.activity.util.CalculateUtils;
 import com.chaoxing.activity.util.DistributedLock;
 import com.chaoxing.activity.util.constant.CacheConstant;
+import com.chaoxing.activity.util.enums.ActivityRatingAuditStatusEnum;
 import com.chaoxing.activity.util.exception.BusinessException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -17,6 +20,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
 import java.math.BigDecimal;
+import java.util.List;
 import java.util.function.Consumer;
 
 /**活动评价处理服务
@@ -39,7 +43,11 @@ public class ActivityRatingHandleService {
 	@Resource
 	private ActivityRatingValidateService activityRatingValidateService;
 	@Resource
+	private ActivityValidationService activityValidationService;
+	@Resource
 	private ActivityRatingQueryService activityRatingQueryService;
+	@Resource
+	private ActivityQueryService activityQueryService;
 	@Resource
 	private DistributedLock distributedLock;
 
@@ -106,4 +114,57 @@ public class ActivityRatingHandleService {
 		return CacheConstant.LOCK_CACHE_KEY_PREFIX + "activity" + CacheConstant.CACHE_KEY_SEPARATOR + activityId + CacheConstant.CACHE_KEY_SEPARATOR + "rating";
 	}
 
+	/**
+	 * 通过
+	 * @param loginUser
+	 * @param activityId
+	 * @param activityRatingDetailId
+	 */
+	public void pass(LoginUserDTO loginUser, Integer activityId, Integer activityRatingDetailId){
+		activityValidationService.manageAble(activityId, loginUser, null);
+		activityRatingDetailMapper.update(null, new UpdateWrapper<ActivityRatingDetail>()
+				.lambda()
+				.eq(ActivityRatingDetail::getId, activityRatingDetailId)
+				.eq(ActivityRatingDetail::getActivityId, activityId)
+				.set(ActivityRatingDetail::getAuditStatus, ActivityRatingAuditStatusEnum.PASSED.getValue())
+		);
+	}
+
+	/**
+	 * 不通过
+	 * @param loginUser
+	 * @param activityId
+	 * @param activityRatingDetailId
+	 */
+	public void reject(LoginUserDTO loginUser, Integer activityId, Integer activityRatingDetailId){
+		activityValidationService.manageAble(activityId, loginUser, null);
+		activityRatingDetailMapper.update(null, new UpdateWrapper<ActivityRatingDetail>()
+				.lambda()
+				.eq(ActivityRatingDetail::getId, activityRatingDetailId)
+				.eq(ActivityRatingDetail::getActivityId, activityId)
+				.set(ActivityRatingDetail::getAuditStatus, ActivityRatingAuditStatusEnum.NOT_PASS.getValue())
+		);
+	}
+
+	/**
+	 * 批量通过
+	 * @param loginUser
+	 * @param activityId
+	 * @param ratingDetailIds
+	 */
+	public void batchPass(LoginUserDTO loginUser, Integer activityId, List<Integer> ratingDetailIds){
+		activityValidationService.manageAble(activityId, loginUser, null);
+		activityRatingDetailMapper.batchUpAuditStatus(activityId, ratingDetailIds, ActivityRatingAuditStatusEnum.PASSED.getValue());
+	}
+
+	/**
+	 * 批量不通过
+	 * @param loginUser
+	 * @param activityId
+	 * @param ratingDetailIds
+	 */
+	public void batchReject(LoginUserDTO loginUser, Integer activityId, List<Integer> ratingDetailIds){
+		activityValidationService.manageAble(activityId, loginUser, null);
+		activityRatingDetailMapper.batchUpAuditStatus(activityId, ratingDetailIds, ActivityRatingAuditStatusEnum.NOT_PASS.getValue());
+	}
 }

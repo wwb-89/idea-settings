@@ -1,5 +1,6 @@
 package com.chaoxing.activity.model;
 
+import com.alibaba.fastjson.annotation.JSONField;
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
@@ -50,6 +51,7 @@ public class ActivityRatingDetail {
     /** 审核状态。0：拒绝，1:通过，2:待审核; column: audit_status*/
     private Integer auditStatus;
     /** 创建时间; column: create_time*/
+    @JSONField(format = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime createTime;
     /** 创建人uid; column: create_uid*/
     private Integer createUid;

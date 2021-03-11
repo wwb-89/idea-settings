@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org/">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="/static/pc/assets/lib/layui/css/layui.css" th:href="@{/pc/assets/lib/layui/css/layui.css}">
+    <link rel="stylesheet" href="/static/pc/assets/lib/element-ui/lib/theme-chalk/index.css" th:href="@{/pc/assets/lib/element-ui/lib/theme-chalk/index.css}">
+    <link rel="stylesheet" href="/static/pc/assets/css/public.css" th:href="@{/pc/assets/css/public.css}">
+    <link rel="stylesheet" href="/static/pc/assets/css/activity-assess.css" th:href="@{/pc/assets/css/activity-assess.css}">
+    <title>活动评价</title>
+</head>
+<body>
+    <div class="assess-container" id="vue" v-cloak>
+        <div class="assess-header">
+            <div class="assess-title">
+                {{activity.name}}
+            </div>
+            <div class="assess-header-right">
+                <div class="login-container">
+                    <div class="after-login">
+                        <img class="login-tx"  :src="'http://photo.chaoxing.com/p/'+loginUser.uid+'_80'" alt="">
+                        <span class="user-name">{{loginUser.realName}}</span>
+                        <i class="icon-down">
+                            <img src="/static/pc/assets/images/icon-down.png" th:src="@{/pc/assets/images/icon-down.png}" alt="">
+                        </i>
+                        <ul class="login-downlist-info">
+                            <li class="login-downlist-item">
+                                <a href="https://i.chaoxing.com/" target="_blank">进入空间</a>
+                            </li>
+                            <li class="login-downlist-item">
+                                <a href="javascript:;" @click="loginOUt()">退出登录</a>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="set-container">
+            <div class="set-item">
+                <span class="set-title">开启评价</span>
+                <el-switch v-model="activity.openRating" @change="upSet()"></el-switch>
+                <span class="set-detail">开启后，允许参与者评价活动</span>
+            </div>
+            <div class="set-item" v-show="activity.openRating">
+                <span class="set-title">评价需审核</span>
+                <el-switch v-model="activity.ratingNeedAudit" @change="upSet()"></el-switch>
+                <span class="set-detail">开启后，审核后的评论才能展示在评论列表</span>
+            </div>
+        </div>
+    </div>
+
+</body>
+<div th:replace="pc/include/common_js :: common_js(~{::script})">
+    <script src="/static/pc/assets/lib/layui/layui.js" th:src="@{/pc/assets/lib/layui/layui.js}"></script>
+    <script src="/static/pc/assets/lib/element-ui/lib/index.js" th:src="@{/pc/assets/lib/element-ui/lib/index.js}"></script>
+    <script th:inline="javascript">
+        var vm = new Vue({
+            el: '#vue',
+            data: function () {
+                return {
+                    activity: [[${activity}]],
+                    loginUser: [[${session._login_user_}]],
+                    value1: false,
+                    value2: false
+                }
+            },
+            created: function () {
+
+            },
+            mounted: function () {
+
+            },
+            watch: {
+
+            },
+            methods: {
+                loginOUt: function(){
+                    var $this = this;
+                    var refer = window.location.protocol + "//" + window.location.host + ctx + "/rating/" + $this.activity.id;
+                    var loginOutUrl = "https://passport2.chaoxing.com/logout.html?refer=" + refer;
+                    window.location.href = loginOutUrl;
+                },
+                upSet: function () {
+                    var $this = this;
+                    var url = ctx + "/api/activity/rating/up-rating-set";
+                    var activity = {
+                        id: $this.activity.id,
+                        openRating: $this.activity.openRating,
+                        ratingNeedAudit: $this.activity.ratingNeedAudit
+                    };
+                    var params = {
+                        activityJsonStr: activityApp.getJsonStr(activity)
+                    };
+                    app.ajaxPostWithLoading(url, params, function (data) {
+                        if (data.success) {
+
+                        } else {
+                            var errorMessage = data.message;
+                            if (activityApp.isEmpty(errorMessage)) {
+                                errorMessage = "修改评分状态失败";
+                            }
+                            app.showMsg(errorMessage);
+                        }
+                    }, function () {
+                        app.showMsg("修改评分状态失败");
+                    });
+                }
+            }
+        });
+    </script>
+</div>
+</html>
