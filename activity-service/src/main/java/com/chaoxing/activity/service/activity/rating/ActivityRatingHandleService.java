@@ -5,6 +5,7 @@ import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.chaoxing.activity.dto.LoginUserDTO;
 import com.chaoxing.activity.mapper.ActivityRatingDetailMapper;
 import com.chaoxing.activity.mapper.ActivityRatingMapper;
+import com.chaoxing.activity.model.Activity;
 import com.chaoxing.activity.model.ActivityRating;
 import com.chaoxing.activity.model.ActivityRatingDetail;
 import com.chaoxing.activity.service.activity.ActivityQueryService;
@@ -75,6 +76,12 @@ public class ActivityRatingHandleService {
 			// 获取锁成功
 			// 验证是否可以评价
 			activityRatingValidateService.canSubmitRating(activityId, loginUser.getUid());
+			Activity activity = activityValidationService.activityExist(activityId);
+			if(activity.getRatingNeedAudit()){
+				activityRatingDetail.setAuditStatus(ActivityRatingAuditStatusEnum.WAIT.getValue());
+			}else{
+				activityRatingDetail.setAuditStatus(ActivityRatingAuditStatusEnum.PASSED.getValue());
+			}
 			activityRatingDetailMapper.insert(activityRatingDetail);
 			ActivityRating activityRating = activityRatingQueryService.getByActivityId(activityId);
 			if (activityRating == null) {
