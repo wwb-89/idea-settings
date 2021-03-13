@@ -30,4 +30,10 @@
       <option name="JAVA_CODE" value="true" />
     </context>
   </template>
+  <template name="psf" value="public static final $SELECT$" description="公开的静态常量" toReformat="false" toShortenFQNames="true">
+    <variable name="SELECT" expression="" defaultValue="" alwaysStopAt="true" />
+    <context>
+      <option name="JAVA_CODE" value="true" />
+    </context>
+  </template>
 </templateSet>
