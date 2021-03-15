@@ -109,19 +109,19 @@ public class Activity {
     /** 评价是否需要审核; column: is_rating_need_audit */
     @TableField(value = "is_rating_need_audit")
     private Boolean ratingNeedAudit;
+    /** 第二课堂标识; column: second_classroom_flag*/
+    private Integer secondClassroomFlag;
+    /** 是否开启积分设置; column: is_open_integral */
+    @TableField(value = "is_open_integral")
+    private Boolean openIntegral;
+    /** 积分值; column: integral_value*/
+    private BigDecimal integralValue;
     /** 创建时间; column: create_time*/
     @JSONField(serializeUsing = LocalDateTimeSerializer.class, deserializeUsing = LocalDateTimeDeserializer.class)
     private LocalDateTime createTime;
     /** 修改时间; column: update_time*/
     @JSONField(serializeUsing = LocalDateTimeSerializer.class, deserializeUsing = LocalDateTimeDeserializer.class)
     private LocalDateTime updateTime;
-    /** 是否开启积分设置; column: is_open_integral */
-    @TableField(value = "is_open_integral")
-    private Boolean openIntegral;
-    /** 积分值; column: integral_value*/
-    private BigDecimal integralValue;
-    /** 第二课堂标识; column: second_classroom_flag*/
-    private Integer secondClassroomFlag;
 
     // 附加
     /** 开始时间字符串 */

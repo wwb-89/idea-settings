@@ -42,12 +42,14 @@ public class ActivityRatingDetail {
     /** 评论; column: comment*/
     private String comment;
     /** 是否匿名的; column: is_anonymous*/
-    private Boolean isAnonymous;
+    @TableField(value = "is_anonymous")
+    private Boolean anonymous;
     /** 是否被删除; column: is_deleted*/
     @TableField(value = "is_deleted")
     private Boolean deleted;
     /** 是否被管理员删除; column: is_manager_deleted*/
-    private Boolean isManagerDeleted;
+    @TableField(value = "is_manager_deleted")
+    private Boolean managerDeleted;
     /** 审核状态。0：拒绝，1:通过，2:待审核; column: audit_status*/
     private Integer auditStatus;
     /** 创建时间; column: create_time*/

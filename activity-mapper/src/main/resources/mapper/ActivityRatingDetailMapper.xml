@@ -8,9 +8,9 @@
         <result column="scorer_user_name" jdbcType="VARCHAR" property="scorerUserName" />
         <result column="score" jdbcType="DECIMAL" property="score" />
         <result column="comment" jdbcType="VARCHAR" property="comment" />
-        <result column="is_anonymous" jdbcType="BIT" property="isAnonymous" />
+        <result column="is_anonymous" jdbcType="BIT" property="anonymous" />
         <result column="is_deleted" jdbcType="BIT" property="deleted" />
-        <result column="is_manager_deleted" jdbcType="BIT" property="isManagerDeleted" />
+        <result column="is_manager_deleted" jdbcType="BIT" property="managerDeleted" />
         <result column="audit_status" jdbcType="INTEGER" property="auditStatus" />
         <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
         <result column="create_uid" jdbcType="INTEGER" property="createUid" />

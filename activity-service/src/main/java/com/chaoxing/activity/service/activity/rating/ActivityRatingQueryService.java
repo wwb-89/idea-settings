@@ -11,6 +11,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
+import java.util.List;
 
 /**活动评价查询服务
  * @author wwb
@@ -51,6 +52,24 @@ public class ActivityRatingQueryService {
 	 */
 	public Page<ActivityRatingDetail> listByActivityId(Page<ActivityRatingDetail> page, ActivityRatingQueryDTO activityRatingQueryDTO){
 		return activityRatingDetailMapper.listByQuery(page, activityRatingQueryDTO);
+	}
+
+	/**根据活动id和uid列表查询活动评价详情
+	 * @Description 
+	 * @author wwb
+	 * @Date 2021-03-15 19:11:04
+	 * @param activityId
+	 * @param uids
+	 * @return java.util.List<com.chaoxing.activity.model.ActivityRatingDetail>
+	*/
+	public List<ActivityRatingDetail> listDetail(Integer activityId, List<Integer> uids) {
+		return activityRatingDetailMapper.selectList(new QueryWrapper<ActivityRatingDetail>()
+			.lambda()
+				.eq(ActivityRatingDetail::getActivityId, activityId)
+				.in(ActivityRatingDetail::getScorerUid, uids)
+				.eq(ActivityRatingDetail::getDeleted, Boolean.FALSE)
+				.eq(ActivityRatingDetail::getManagerDeleted, Boolean.FALSE)
+		);
 	}
 
 }
