@@ -136,6 +136,7 @@ a:visited {
   display: -webkit-box;
   overflow: hidden;
   white-space: normal !important;
+  -o-text-overflow: ellipsis;
   text-overflow: ellipsis;
   word-wrap: break-word;
   -webkit-line-clamp: 5;
@@ -148,56 +149,67 @@ a:visited {
     font-size: 9.088px;
   }
 }
+
 @media screen and (min-width: 319px) {
   html {
     font-size: 13.6533px;
   }
 }
+
 @media screen and (min-width: 359px) {
   html {
     font-size: 15.36px;
   }
 }
+
 @media screen and (min-width: 374px) {
   html {
     font-size: 16px;
   }
 }
+
 @media screen and (min-width: 383px) {
   html {
     font-size: 16.384px;
   }
 }
+
 @media screen and (min-width: 399px) {
   html {
     font-size: 17.0667px;
   }
 }
+
 @media screen and (min-width: 414px) {
   html {
     font-size: 17.7067px;
   }
 }
+
 @media screen and (min-width: 423px) {
   html {
     font-size: 18.0907px;
   }
 }
+
 @media screen and (min-width: 479px) {
   html {
     font-size: 20.48px;
   }
 }
+
 @media screen and (min-width: 539px) {
   html {
     font-size: 23.04px;
   }
 }
+
 @media screen and (min-width: 639px) {
   html {
     font-size: 27.3067px;
   }
 }
+
 .msgDialog.layui-layer-msg {
   background: rgba(0, 0, 0, 0.6);
   color: #fff;
@@ -235,6 +247,7 @@ input:-ms-input-placeholder, textarea:-ms-input-placeholder {
 
 .overHidden1 {
   overflow: hidden;
+  -o-text-overflow: ellipsis;
   text-overflow: ellipsis;
   white-space: nowrap;
 }
@@ -254,6 +267,7 @@ input {
   text-align: center;
   margin: 1.125rem 0;
 }
+
 .noMore span {
   display: inline-block;
   color: rgba(0, 0, 0, 0.2);
@@ -261,9 +275,11 @@ input {
   line-height: .9375rem;
   height: .9375rem;
 }
+
 .noMore span:nth-child(2) {
   margin: 0 .9375rem;
 }
+
 .noMore .line {
   position: relative;
   top: -0.1875rem;
@@ -279,6 +295,7 @@ input {
   color: #999999;
   font-size: 0.8125rem;
 }
+
 .loading .loading-icon {
   position: relative;
   top: 0.125rem;
@@ -288,6 +305,13 @@ input {
   height: 0.9375rem;
   background: url("../images/loading-icon.png") no-repeat;
   background-size: 100%;
+}
+
+.loading img {
+  margin-right: 0.3125rem;
+  width: 0.9375rem;
+  height: 0.9375rem;
+  vertical-align: middle;
 }
 
 [v-cloak] {
