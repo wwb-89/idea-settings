@@ -93,6 +93,7 @@
 	<script src="/static/pc/assets/lib/jqthumb.min.js" th:src="@{/pc/assets/lib/jqthumb.min.js}"></script>
 	<script src="/static/pc/assets/js/common.js" th:src="@{/pc/assets/js/common.js}"></script>
 	<script src="/static/pc/assets/lib/set-iframe-height-child.js" th:src="@{/pc/assets/lib/set-iframe-height-child.js}"></script>
+	<script src="/static/pc/assets/lib/jquery.mCustomScrollbar.concat.min.js" th:src="@{/pc/assets/lib/jquery.mCustomScrollbar.concat.min.js}"></script>
 	<script th:inline="javascript">
 		Vue.filter("timestamp2YMD", function (timestamp) {
 			var dateObj = activityApp.millisecond2DateObj(timestamp);
@@ -154,6 +155,7 @@
 			},
 			mounted:function() {
 				var $this = this;
+				document.domain = "chaoxing.com";
 				$this.resetQueryParams();
 				// 如果topFid符合regions的manageFid那么选中
 				if (!activityApp.isEmpty($this.topFid) && !activityApp.isEmpty($this.regions)) {
