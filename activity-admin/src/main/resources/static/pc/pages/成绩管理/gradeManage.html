@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>成绩管理</title>
+    <link rel="stylesheet" href="../../assets/lib/jquery.mCustomScrollbar.css">
+    <link rel="stylesheet" href="../../assets/css/create.css">
+    <link rel="stylesheet" href="../../assets/lib/element-ui/lib/theme-chalk/index.css">
+    <link rel="stylesheet" href="../../assets/css/reset.css">
+    <link rel="stylesheet" href="../../assets/css/public.css">
+    <link rel="stylesheet" href="../../assets/css/gradeManage.css">
+</head>
+<body>
+<div class="grade-manage-container" id="gradeManageApp" v-cloak>
+    <div class="tab-box">
+        <span :class="{current:curStatus==0}" @click="initTab(0)">待审核</span>
+        <span :class="{current:curStatus==1}" @click="initTab(1)">合格</span>
+        <span :class="{current:curStatus==2}" @click="initTab(2)">不合格</span>
+        <button class="ui-btn fr">导出</button>
+    </div>
+    <div class="content">
+        <div class="btns">
+            <button class="ui-btn" :class="{'btn-disabled':checkedLists.length==0}">批量合格</button>
+            <button class="ui-btn" :class="{'btn-disabled':checkedLists.length==0}">批量不合格</button>
+        </div>
+        <div class="list-box">
+            <div class="t-head clear">
+                <div class="td row1">
+                    <el-checkbox :indeterminate="isIndeterminate" v-model="checkAll" @change="handleCheckAllChange">
+                    </el-checkbox>
+                    姓名
+                </div>
+                <div class="td row2">签到率</div>
+                <div class="td row3">评价</div>
+                <div class="td row4">操作</div>
+            </div>
+            <el-checkbox-group v-model="checkedLists" @change="handleCheckedChange">
+                <div class="t-body">
+                    <div class="list-item " v-for="(item,index) in lists">
+                        <div class="item-title clear">
+                            <div class="row1">
+                                <span class="icon-info item-down"></span>
+                                <el-checkbox :key="index" :label="item.name" :checked="isIndeterminate"></el-checkbox>
+                            </div>
+                            <div class="row2">{{item.sign}}</div>
+                            <div class="row3">已评价</div>
+                            <div class="row4 color-blue">
+                                <span class="btn-edit">合格</span>
+                                <span class="btn-edit">不合格</span>
+                            </div>
+                        </div>
+                        <ul class="item-info">
+                            <li class="clear li-head">
+                                <div class="row1">姓名</div>
+                                <div class="row2">时间</div>
+                                <div class="row3">状态</div>
+                                <div class="row4">查看</div>
+                            </li>
+                            <li class="clear li-body">
+                                <div class="row1 overHidden1">教学会议现场签到教学会议现场签到教学会议现场签到教学</div>
+                                <div class="row2">10-17 16:32</div>
+                                <div class="row3">已签到</div>
+                                <div class="row4 color-blue">-</div>
+                            </li>
+                            <li class="clear li-body">
+                                <div class="row1 overHidden1">教学会议现场签到教学会议现场签到教学会议现场签到教学</div>
+                                <div class="row2">10-17 16:32</div>
+                                <div class="row3">已签到</div>
+                                <div class="row4 color-blue">-</div>
+                            </li>
+                            <li class="clear li-body">
+                                <div class="row1 overHidden1">教学会议现场签到教学会议现场签到教学会议现场签到教学</div>
+                                <div class="row2">10-17 16:32</div>
+                                <div class="row3">已签到</div>
+                                <div class="row4 color-blue">-</div>
+                            </li>
+                            <li class="clear li-body">
+                                <div class="row1 overHidden1">教学会议现场签到教学会议现场签到教学会议现场签到教学</div>
+                                <div class="row2">10-17 16:32</div>
+                                <div class="row3">已签到</div>
+                                <div class="row4 color-blue">-</div>
+                            </li>
+                        </ul>
+                    </div>
+
+                </div>
+            </el-checkbox-group>
+        </div>
+    </div>
+    <el-pagination background layout="prev, pager, next" :total="10">
+    </el-pagination>
+
+</div>
+
+
+<script src="../../assets/lib/jquery.min.js"></script>
+<script src="../../assets/lib/vue.js"></script>
+<script src="../../assets/lib/element-ui/lib/index.js"></script>
+<script src="../../assets/lib/jquery.mousewheel.min.js"></script>
+<script src="../../assets/lib/jquery.mCustomScrollbar.js"></script>
+<script>
+    var app = new Vue({
+        el: '#gradeManageApp',
+        data: {
+            curStatus: 0,
+            checked: false,
+            name: false,
+            checkAll: false,
+            lists: [{
+                name: '张三',
+                sign: '50%'
+            }, {
+                name: '李四',
+                sign: '50%'
+            }, {
+                name: '王胖子',
+                sign: '50%'
+            }],
+            isIndeterminate: false,
+            checkedLists: [],
+            checkedKeyLists: ['张三', '李四', '王胖子']
+
+        },
+        mounted: function () {
+            this.initDownUp();
+
+        },
+        methods: {
+            initTab: function (index) {
+                this.curStatus = index;
+            },
+            //    展开收起
+            initDownUp: function () {
+                $('.grade-manage-container').on('click', '.list-box .icon-info', function () {
+                    $(this).parents('.list-item').toggleClass('item-down').siblings().removeClass('item-down');
+                    $(this).parents('.list-item').siblings().find('.item-info').slideUp();
+                    $(this).parents('.list-item').find('.item-info').slideToggle();
+                })
+            },
+            handleCheckAllChange: function (val) {
+                this.checkedLists = val ? this.checkedKeyLists : [];
+                this.isIndeterminate = false;
+            },
+            handleCheckedChange: function (value) {
+                var checkedCount = value.length;
+                this.checkAll = checkedCount === this.lists.length;
+                this.isIndeterminate = checkedCount > 0 && checkedCount < this.lists.length;
+            }
+
+
+        }
+    })
+</script>
+</body>
+</html>

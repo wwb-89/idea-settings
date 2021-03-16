@@ -3,7 +3,6 @@
   padding: 1rem;
   background: #ffffff;
 }
-
 .administrators .title .txt {
   padding-right: 5.6875rem;
   line-height: 1.5625rem;
@@ -12,34 +11,26 @@
   font-size: .9375rem;
   text-align: left;
 }
-
 .administrators .title .status {
   position: absolute;
   font-size: .8125rem;
   right: 1rem;
   top: 1rem;
 }
-
 .administrators .title .status.color0 {
   color: #51B9FF;
 }
-
 .administrators .title .status.color1 {
   color: #0084FF;
 }
-
 .administrators .title .status.color2 {
   color: #999999;
 }
-
 .administrators .index-list {
   padding: 0 .75rem;
 }
-
 .administrators .index-list .item {
   display: -webkit-box;
-  display: -webkit-flex;
-  display: -moz-box;
   display: -ms-flexbox;
   display: flex;
   background: #FFFFFF;
@@ -49,26 +40,22 @@
   padding: 1rem;
   margin-top: .75rem;
 }
-
 .administrators .index-list .item img {
   width: 2.5rem;
   height: 2.5rem;
 }
-
 .administrators .index-list .item .flTxt {
   line-height: 2.5rem;
   color: #333333;
   font-size: .9375rem;
   margin-left: .5rem;
 }
-
 .administrators .index-list .item .frTxt {
   line-height: 2.5rem;
   font-size: .8125rem;
   color: #999999;
   margin-left: auto;
 }
-
 .administrators .index-list .item .icon-arrow-r {
   display: inline-block;
   width: .375rem;
@@ -77,7 +64,6 @@
   background-size: 100%;
   margin-left: .5rem;
 }
-
 .administrators .index-list .item .marginAuto {
   margin-left: auto;
 }
@@ -96,10 +82,8 @@
   left: 50%;
   top: 50%;
   -webkit-transform: translate(-50%, -50%);
-      -ms-transform: translate(-50%, -50%);
           transform: translate(-50%, -50%);
 }
-
 .noContent p {
   text-align: center;
   color: #999999;
