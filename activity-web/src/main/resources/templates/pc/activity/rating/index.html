@@ -2,6 +2,7 @@
 <html lang="en" xmlns:th="http://www.thymeleaf.org/">
 
 <head>
+    <title>活动评价</title>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="/static/pc/assets/lib/layui/css/layui.css" th:href="@{/pc/assets/lib/layui/css/layui.css}">
@@ -9,33 +10,37 @@
     <link rel="stylesheet" href="/static/pc/assets/css/public.css" th:href="@{/pc/assets/css/public.css}">
     <link rel="stylesheet" href="/static/pc/assets/css/activity-assess.css" th:href="@{/pc/assets/css/activity-assess.css}">
     <link rel="stylesheet" href="/static/assets/lib/mescroll/mescroll.css" th:href="@{/assets/lib/mescroll/mescroll.css}">
-    <title>活动评价</title>
+    <style type="text/css">
+        [v-cloak] {
+            display: none;
+        }
+    </style>
 </head>
 
 <body>
-    <div class="assess-container" id="vue" v-cloak>
+    <div class="assess-container" id="rating-vue" v-cloak>
         <div class="assess-header">
             <div class="assess-title">
                 {{activity.name}}
             </div>
-            <div class="assess-header-set" v-if="isCreate()">
-                <a href="javascript:;">评价设置</a>
-                <a href="javascript:;">评价审核</a>
+            <div class="assess-header-set" v-if="isCreator()">
+                <a href="javascript:">评价设置</a>
+                <a href="javascript:">评价审核</a>
             </div>
             <div class="assess-header-right">
-                <div class="login-container" v-if="loginUser!=null">
+                <div class="login-container" v-if="loginUser != null">
                     <div class="after-login">
-                        <img class="login-tx"  :src="'http://photo.chaoxing.com/p/'+loginUser.uid+'_80'" alt="">
+                        <img class="login-tx" :src="'http://photo.chaoxing.com/p/'+loginUser.uid+'_80'">
                         <span class="user-name"></span>
                         <i class="icon-down">
-                            <img src="/static/pc/assets/images/activity-home/icon-down.png" th:src="@{/pc/assets/images/activity-home/icon-down.png}" alt="">
+                            <img src="/static/pc/assets/images/activity-home/icon-down.png" th:src="@{/pc/assets/images/activity-home/icon-down.png}">
                         </i>
                         <ul class="login-downlist-info">
                             <li class="login-downlist-item">
                                 <a href="https://i.chaoxing.com/" target="_blank">进入空间</a>
                             </li>
                             <li class="login-downlist-item">
-                                <a href="javascript:;" @click="loginOUt()">退出登录</a>
+                                <a href="javascript:" @click="loginOUt">退出登录</a>
                             </li>
                         </ul>
                     </div>
@@ -43,55 +48,43 @@
             </div>
         </div>
         <!-- 评价功能关闭 -->
-        <div class="assess-content" style="height: 800px; display: block;" v-show="!loaded && ratings.length<=0">
-            <div class="assess-close" v-if="activity.openRating">评价功能已关闭</div>
+        <div class="assess-content" style="height: 800px; display: block;" v-show="loaded && ratings.length <= 0">
+            <div class="assess-close" v-if="!activity.openRating">评价功能已关闭</div>
             <div class="assess-close" v-else>暂无评价</div>
         </div>
-        <div class="assess-content" v-show="ratings.length>0">
+        <div class="assess-content">
             <div class="assess-content-header">
-                <div class="fl inall-assess" v-if="activityRating!=null">
+                <div class="fl inall-assess" v-if="activityRating != null">
                     <span class="inall-value" v-text="formatScore()"></span>
                     <div id="test"></div>
                     <span class="inall-number">{{activityRating.scoreNum}}人评论</span>
                 </div>
                 <div class="fr btn-addassess" v-if="isCanRating()" @click="openRatingDialog()">
-                    <img src="/static/pc/assets/images/icon-assess.png" th:src="@{/pc/assets/images/icon-assess.png}" alt=""> 写评论
+                    <img src="/static/pc/assets/images/icon-assess.png" th:src="@{/pc/assets/images/icon-assess.png}"> 写评论
                 </div>
                 <div class="clear"></div>
             </div>
             <ul class="assess-list">
                 <li class="assess-list-item" v-for="(rating, index) of ratings">
-                    <img class="fl" v-if="isAnonymousShow(index)" src="/static/pc/assets/images/niming-tx.png" th:src="@{/pc/assets/images/niming-tx.png}" alt="">
-                    <img class="fl" v-else :src="'http://photo.chaoxing.com/p/'+rating.scorerUid+'_80'" alt="">
+                    <img class="fl" v-if="isAnonymousShow(index)" src="/static/pc/assets/images/niming-tx.png" th:src="@{/pc/assets/images/niming-tx.png}">
+                    <img class="fl" v-else :src="'http://photo.chaoxing.com/p/'+rating.scorerUid+'_80'">
                     <div class="item-content fl">
                         <span class="item-name" v-if="isAnonymousShow(index)">匿名</span>
                         <span class="item-name" v-else>{{rating.scorerUserName}}</span>
                         <span class="item-time">{{rating.createTime}}</span>
                         <span class="item-checking" v-if="rating.auditStatus=='2'">审核中</span>
                         <span class="item-deleted" v-if="rating.auditStatus=='0'">已被管理员删除</span>
-<!--                        <img class="fr icon-assess-more" src="/static/pc/assets/images/icon-assess-more.png" th:src="@{/pc/assets/images/icon-assess-more.png}" alt="">-->
                         <div class="item-writing" >
                             <div></div>
                             <p class="item-assess">
                                 {{rating.comment}}
                             </p>
                         </div>
-<!--                        <div class="showmore">-->
-<!--                            展开-->
-<!--                        </div>-->
-<!--                        <div class="showless" style="display: none;">-->
-<!--                            收起-->
-<!--                        </div>-->
                     </div>
                     <div class="clear"></div>
                 </li>
-<!--            <div class="loading-container">-->
-<!--                <img src="/static/pc/assets/images/icon-loading.png" alt="">加载中-->
-<!--            </div>-->
             </ul>
         </div>
-
-
         <!-- 发布评价弹出框 -->
         <el-dialog class="addAssessDialog" title="写评价" :visible.sync="dialogVisible" width="464px">
             <!-- 评分 -->
@@ -118,28 +111,26 @@
     <script src="/static/pc/assets/lib/element-ui/lib/index.js" th:src="@{/pc/assets/lib/element-ui/lib/index.js}"></script>
     <script src="/static/assets/lib/mescroll/mescroll.min.js" th:src="@{/assets/lib/mescroll/mescroll.min.js}"></script>
     <script th:inline="javascript">
-        var vm = new Vue({
-            el: '#vue',
-            data: function () {
-                return {
-                    activity: [[${activity}]],
-                    activityRating: [[${activityRating}]],
-                    loginUser: [[${session._login_user_}]],
-                    canRating: [[${canRating}]],
-                    activityRatingDetail: {isAnonymous:0},
-                    ratings: [],
-                    loaded: false,
-                    pages: 0,
-                    total: 0,
-                    queryParams: {
-                        pageNum: 1,
-                        pageSize: 10
-                    },
-                    dialogVisible: false,
-                    // 默认提交的评分分数
-                    ratingDefaultValue: 0,
-                    scroll: null
-                }
+        ratingVue = new Vue({
+            el: "#rating-vue",
+            data: {
+                activity: [[${activity}]],
+                activityRating: [[${activityRating}]],
+                loginUser: [[${session._login_user_}]],
+                canRating: [[${canRating}]],
+                activityRatingDetail: {isAnonymous:0},
+                ratings: [],
+                loaded: false,
+                pages: 0,
+                total: 0,
+                queryParams: {
+                    pageNum: 1,
+                    pageSize: 10
+                },
+                dialogVisible: false,
+                // 默认提交的评分分数
+                ratingDefaultValue: 0,
+                scroll: null
             },
             created: function () {
                 var $this = this;
@@ -224,13 +215,13 @@
                         app.showMsg("加载评价列表失败");
                     });
                 },
-                isCreate: function(){
+                isCreator: function () {
                     var $this = this;
-                    return $this.loginUser!=null && $this.loginUser.uid == $this.activity.createUid;
+                    return $this.loginUser != null && $this.loginUser.uid == $this.activity.createUid;
                 },
                 isCanRating: function(){
                     var $this = this;
-                    return $this.loginUser!=null && $this.canRating;
+                    return $this.loginUser != null && $this.canRating;
                 },
                 loginOUt: function(){
                     var $this = this;
