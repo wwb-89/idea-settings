@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <title>不合格-批量审核</title>
+    <meta http-equiv="Content-type" content="text/html; charset=utf-8" />
+    <meta name="viewport"
+        content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, minimal-ui" />
+    <meta name="format-detection" content="telephone=no, email=no">
+    <meta http-equiv="Pragma" content="no-cache" />
+    <meta http-equiv="cache-control" content="no-cache" />
+    <link rel="stylesheet" href="../../assets/lib/layui/css/layui.css" />
+    <link rel="stylesheet" href="../../assets/css/public.css" />
+    <link rel="stylesheet" href="../../assets/css/dialog.css">
+    <link rel="stylesheet" href="../../assets/css/result-manage.css">
+</head>
+
+<body>
+    <div class="result-manage" id="result-manage">
+        <div class="examine-list">
+            <form class="layui-form" action="">
+                <div class="item">
+                    <div class="check-box"><input type="checkbox" name="" lay-skin="primary" title=""
+                            lay-filter="checkChild"></div>
+                    <div class="head-box"><img src="../../assets/images/head-img.png" alt="" class="jqthumbImg"></div>
+                    <div class="text">
+                        <p class="name">高晓青</p>
+                        <p class="percent"><span>签到率 63%</span> <i class="icon-right"></i></p>
+                    </div>
+                </div>
+                <div class="item">
+                    <div class="check-box"><input type="checkbox" name="" lay-skin="primary" title=""
+                            lay-filter="checkChild"></div>
+                    <div class="head-box"><img src="../../assets/images/head-img.png" alt="" class="jqthumbImg"></div>
+                    <div class="text">
+                        <p class="name">高晓青</p>
+                        <p class="percent"><span>签到率 63%</span> <i class="icon-right"></i></p>
+                    </div>
+                </div>
+                <div class="item">
+                    <div class="check-box"><input type="checkbox" name="" lay-skin="primary" title=""
+                            lay-filter="checkChild"></div>
+                    <div class="head-box"><img src="../../assets/images/head-img.png" alt="" class="jqthumbImg"></div>
+                    <div class="text">
+                        <p class="name">高晓青</p>
+                        <p class="percent"><span>签到率 63%</span> <i class="icon-right"></i></p>
+                    </div>
+                </div>
+                <div class="item">
+                    <div class="check-box"><input type="checkbox" name="" lay-skin="primary" title=""
+                            lay-filter="checkChild"></div>
+                    <div class="head-box"><img src="../../assets/images/head-img.png" alt="" class="jqthumbImg"></div>
+                    <div class="text">
+                        <p class="name">高晓青</p>
+                        <p class="percent"><span>签到率 63%</span> <i class="icon-right"></i></p>
+                    </div>
+                </div>
+                <div class="item">
+                    <div class="check-box"><input type="checkbox" name="" lay-skin="primary" title=""
+                            lay-filter="checkChild"></div>
+                    <div class="head-box"><img src="../../assets/images/head-img.png" alt="" class="jqthumbImg"></div>
+                    <div class="text">
+                        <p class="name">高晓青</p>
+                        <p class="percent"><span>签到率 63%</span> <i class="icon-right"></i></p>
+                    </div>
+                </div>
+                <div class="item">
+                    <div class="check-box"><input type="checkbox" name="" lay-skin="primary" title=""
+                            lay-filter="checkChild"></div>
+                    <div class="head-box"><img src="../../assets/images/head-img.png" alt="" class="jqthumbImg"></div>
+                    <div class="text">
+                        <p class="name">高晓青</p>
+                        <p class="percent"><span>签到率 63%</span> <i class="icon-right"></i></p>
+                    </div>
+                </div>
+            </form>
+        </div>
+        <div class="bottom">
+            <form class="layui-form clear" action="">
+                <div class="check-box fl"><input type="checkbox" name="" lay-skin="primary" title="全选"
+                        lay-filter="checkAll"></div>
+                <div class="btn-box fr">
+                    <div class="btn marginr0">改为合格</div>
+                </div>
+            </form>
+
+        </div>
+    </div>
+    <script src="../../assets/lib/jquery.1.8.2.min.js"></script>
+    <script src="../../assets/lib/vue.js"></script>
+    <script src="../../assets/lib/layui/layui.js"></script>
+    <script src="../../assets/js/common.js"></script>
+    <script src="../../assets/lib/jqthumb.min.js"></script>
+    <script>
+        $(function () {
+            $('.jqthumbImg').jqthumb({
+                width: '100%',
+                height: '100%'
+            });
+        })
+        layui.use(['form', 'layer'], function () {
+            var form = layui.form,
+                layer = layui.layer;
+            // 全选、反选
+            form.on('checkbox(checkAll)',function(data){
+                $("input[lay-filter=checkChild]").prop("checked",this.checked);
+                form.render('checkbox');
+                if(this.checked){
+                    $('.bottom .btn').addClass('active')
+                }else{
+                    $('.bottom .btn').removeClass('active')
+                }
+            });
+            form.on('checkbox(checkChild)', function (data) {
+                var length = $("input[lay-filter=checkChild]").length
+                if(this.checked){
+                    if($(this).parent().parent().siblings().children(".check-box").children('.layui-form-checked').length === length - 1){
+                        $("input[lay-filter=checkAll]").prop("checked",true)
+                        form.render('checkbox');
+                    }
+                } else {
+                    $("input[lay-filter=checkAll]").prop("checked",false)
+                    form.render('checkbox');
+                }
+                if($("input[lay-filter=checkChild]").siblings('.layui-form-checked').length > 0){
+                    $('.bottom .btn').addClass('active')
+                }else{
+                    $('.bottom .btn').removeClass('active')
+                }
+            });
+        })
+    </script>
+</body>
+
+</html>

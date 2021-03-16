@@ -1,0 +1,340 @@
+.clear:after {
+    content: '';
+    display: block;
+    clear: both;
+}
+body{
+    background: #F6F7FB;
+}
+.noContent {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    -webkit-transform: translate(-50%, -50%);
+    -ms-transform: translate(-50%, -50%);
+    transform: translate(-50%, -50%);
+    font-size: .875rem;
+    color: #999999;
+}
+/* 搜索框 */
+.result-manage .searchDiv {
+    background: #ffffff;
+    padding: .75rem 1rem .5rem;
+    position: relative;
+    z-index: 20;
+}
+
+.result-manage .searchDiv .searchbefore {
+    width: 100%;
+    display: -webkit-box;
+    display: -webkit-flex;
+    display: -moz-box;
+    display: -ms-flexbox;
+    display: flex;
+    -webkit-box-align: center;
+    -webkit-align-items: center;
+    -moz-box-align: center;
+    -ms-flex-align: center;
+    align-items: center;
+    -webkit-box-pack: center;
+    -webkit-justify-content: center;
+    -moz-box-pack: center;
+    -ms-flex-pack: center;
+    justify-content: center;
+    background: #F6F7FB;
+    height: 1.125rem;
+    line-height: 1.125rem;
+    padding: .375rem 0;
+    border-radius: .9375rem;
+    font-size: .8125rem;
+    color: #999999;
+}
+
+.result-manage .searchDiv .searchbefore i {
+    display: inline-block;
+    width: .96875rem;
+    height: .9375rem;
+    background: url("../images/icon-30-search.png") center center no-repeat;
+    background-size: 100%;
+    margin-right: .375rem;
+    position: relative;
+    top: -0.0625rem;
+}
+
+.result-manage .searchDiv .searchbefore span {
+    display: inline-block;
+    height: 1.125rem;
+    line-height: 1.125rem;
+    font-weight: 100;
+}
+
+.result-manage .searchDiv .searchafter {
+    position: relative;
+    background: #F6F7FB;
+    border-radius: .9375rem;
+    margin-right: 2.875rem;
+}
+
+.result-manage .searchDiv .searchafter .search {
+    position: absolute;
+    left: .9375rem;
+    top: 0;
+    display: inline-block;
+    width: .96875rem;
+    height: 1.875rem;
+    background: url("../images/icon-30-search.png") center center no-repeat;
+    background-size: 100%;
+}
+
+.result-manage .searchDiv .searchafter .delete {
+    position: absolute;
+    right: .9375rem;
+    top: 0;
+    display: inline-block;
+    width: 1rem;
+    height: 1.875rem;
+    background: url("../images/x-circle.png") center center no-repeat;
+    background-size: 100%;
+}
+
+.result-manage .searchDiv .searchafter .txt {
+    height: 1.875rem;
+    line-height: 1.875rem;
+    padding: .375rem 2.1875rem;
+    background: none;
+    font-size: .8125rem;
+    width: 100%;
+    border: none;
+    -webkit-box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    box-sizing: border-box;
+}
+
+.result-manage .searchDiv .searchafter .cancle {
+    position: absolute;
+    top: 0;
+    height: 1.875rem;
+    line-height: 1.875rem;
+    right: -2.875rem;
+    color: #0084FF;
+    font-size: .9375rem;
+}
+/* 待审核 */
+.result-manage .item-list .item{
+    padding: 1rem;
+    background: #ffffff;
+    border-bottom: 1px solid #E9E9E9;
+    text-align: left;
+}
+.result-manage .item .head-box{
+    display: inline-block;
+    width: 2.5rem;
+    height: 2.5rem;
+    border-radius: 50%;
+    overflow: hidden;
+    margin-right: .75rem;
+}
+.result-manage .item .text{
+    display: inline-block;
+    vertical-align: top;
+    font-size: .9375rem;
+    line-height: 1.09375rem;
+    color: #333333;
+}
+.result-manage .item .name{
+    line-height: 1.3125rem;
+}
+.result-manage .item .percent{
+    font-size: .8125rem;
+    line-height: 1.125rem;
+    color: #999999;
+    margin-top: .25rem;
+}
+.result-manage .item .icon-right{
+    display: inline-block;
+    vertical-align: top;
+    line-height: .5rem;
+    width: .25rem;
+    height: .4375rem;
+    background-image: url(../images/right.png);
+    background-repeat: no-repeat;
+    background-size: cover;
+    background-position: center center;
+    margin-left: .5625rem;
+    margin-top: .25rem;
+}
+.result-manage .item-list .item .right{
+    font-size: .9375rem;
+    line-height: 2.5rem;
+    color: #0084FF;
+}
+.result-manage .item-list .item .right .line{
+    display: inline-block;
+    vertical-align: middle;
+    width: .03125rem;
+    height: 1rem;
+    background: #DDDDDD;
+    margin: 0 .75rem;
+}
+/* 下拉 */
+.drop-down .content{
+    position: absolute;
+    top: 0;
+    width: 100%;
+    background: #ffffff;
+    padding: .75rem .9375rem 1.875rem .9375rem;
+    box-sizing: border-box;
+}
+.drop-down .content .text{
+    text-align: left;
+    font-size: .6875rem;
+    line-height: .96875rem;
+    color: #BDBDBD;
+}
+.drop-down .content ul{
+    font-size: 0;
+    text-align: left;
+}
+.drop-down .content li{
+    display: inline-block;
+    margin-top: .75rem;
+    margin-right: .5rem;
+    width: 6.8125rem;
+    height: 2.25rem;
+    line-height: 2.25rem;
+    background: #F5F6F8;
+    border-radius: .25rem;
+    text-align: center;
+    font-size: .8125rem;
+    color: #373737;
+}
+.drop-down .content li:nth-child(3n){
+    margin-right: 0;
+}
+.drop-down .content li.active{
+    color: #0099FF;
+}
+/* 批量审核 */
+.result-manage .examine-list .item{
+    padding: 1rem;
+    background: #ffffff;
+    text-align: left;
+    border-bottom: 1px solid#E9E9E9;
+}
+.result-manage .check-box{
+    display: inline-block;
+    vertical-align: top;
+    margin-top: .71875rem;
+    margin-right: 1rem;
+}
+.result-manage .check-box .layui-form-checkbox[lay-skin=primary] {
+    padding: 0;
+}
+.result-manage .check-box .layui-form-checkbox i{
+    width: 1.0625rem;
+    height: 1.0625rem;
+    border-radius: 50%;
+}
+.result-manage .check-box .layui-form-checked[lay-skin=primary] i {
+    border-color: #0084FF!important;
+    background-color: #0084FF;
+    line-height: 20px;
+}
+.result-manage .check-box .layui-form-checkbox[lay-skin=primary]:hover i {
+    border-color: #0084FF;
+}
+.result-manage .bottom{
+    position: fixed;
+    bottom: 0;
+    width: 100%;
+    height: 3.4375rem;
+    background: #ffffff;
+    padding: .59375rem 1rem;
+    box-sizing: border-box;
+}
+.result-manage .bottom .btn-box{
+    display: inline-block;
+    font-size: 0;
+}
+.result-manage .bottom .btn{
+    display: inline-block;
+    width: 6.875rem;
+    height: 2.25rem;
+    text-align: center;
+    line-height: 2.1875rem;
+    box-sizing: border-box;
+    border-radius: 1.25rem;
+    border: 1px solid rgba(0, 132, 255, 0.3);
+    color: rgba(0, 132, 255, 0.3);
+    margin-right: 1rem;
+    font-size: 1.0625rem;
+}
+.result-manage .bottom .btn.active{
+    border: 1px solid #0084FF;
+    color: #0084FF;
+}
+.result-manage .bottom .btn.marginr0{
+    margin-right: 0;
+}
+.result-manage .bottom .check-box {
+    margin-top: .5rem;
+}
+.result-manage .check-box .layui-form-checkbox[lay-skin=primary] span {
+    line-height: 20px;
+}
+.result-manage .bottom .check-box .layui-form-checkbox[lay-skin=primary] {
+    padding-left: 28px;
+}
+/* 签到详情 */
+.sign-details .sign-list .item{
+    padding: 1rem;
+    background: #ffffff;
+    border-bottom: 1px solid #E9E9E9;
+    box-sizing: border-box;
+    text-align: left;
+}
+.sign-details .sign-list .item .img-box{
+    display: inline-block;
+    width: 2.5rem;
+    height: 2.5rem;
+    border-radius: 50%;
+    overflow: hidden;
+    margin-right: 1rem;
+}
+.sign-details .sign-list .item .text-box{
+    width: 11.28125rem;
+    display: inline-block;
+    vertical-align: top;
+}
+.sign-details .sign-list .item .name{
+    font-size: .9375rem;
+    line-height: 1.3125rem;
+    color: #333333;
+}
+.sign-details .sign-list .item .name.lineh80{
+    line-height: 2.5rem;
+}
+.sign-details .sign-list .item .state{
+    font-size: .8125rem;
+    line-height: 1.125rem;
+    color: #999999;
+    margin-top: .25rem;
+}
+.sign-details .sign-list .item .state.active{
+    color: #FBA233;
+}
+.sign-details .sign-list .item .time{
+    font-size: .8125rem;
+    line-height: 2.5rem;
+    color: #999999;
+}
+.sign-details .sign-list .item .time .icon-right{
+    display: inline-block;
+    width: .333437rem;
+    height: .583438rem;
+    background-image: url(../images/right.png);
+    background-repeat: no-repeat;
+    background-size: cover;
+    background-position: center center;
+    margin-left: .583438rem;
+}

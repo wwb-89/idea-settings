@@ -1,0 +1,112 @@
+.clear:after {
+    content: '';
+    display: block;
+    clear: both;
+}
+body{
+    background: #F6F7FB;
+}
+/* 报名详情 */
+.sign-up .top{
+    padding: 2.75rem;
+    background: #ffffff;
+    border-bottom: 1px solid #E9E9E9;
+}
+.sign-up .top .success-img{
+    width: 2.5rem;
+    height: 2.5rem;
+    margin-bottom: .75rem;
+}
+.sign-up .top p{
+    font-size: 1.25rem;
+    line-height: 1.75rem;
+    color: #333333;
+}
+.sign-up .cancle-btn{
+    display: inline-block;
+    width: 18.75rem;
+    height: 2.8125rem;
+    border: 1px solid #CCCCCC;
+    border-radius: 1.5625rem;
+    color: #999999;
+    font-size: 1.0625rem;
+    line-height: 2.8125rem;
+    margin-top: 2.5rem;
+}
+.sign-up .content{
+    padding: .5rem 0;
+    background: #ffffff;
+}
+.sign-up .content .item{
+    padding: .5rem 1rem;
+    font-size: .9375rem;
+    color: #333333;
+    line-height: 1.3125rem;
+}
+.sign-up .content .item .name{
+    color: #999999;
+}
+.sign-up .content .item .icon-right{
+    display: inline-block;
+    width: .333437rem;
+    height: .583438rem;
+    background-image: url(../images/right.png);
+    background-repeat: no-repeat;
+    background-size: cover;
+    background-position: center center;
+    margin-left: .583438rem;
+}
+.sign-up .content .item .look{
+    color: #0084FF;
+}
+.dialog-overlay {
+    background-color: rgba(0, 0, 0, 0.3);
+    padding: 0 .5rem;
+    box-sizing: border-box;
+}
+.dialog-overlay .content{
+    position: absolute;
+    left: .5rem;
+    right: .5rem;
+    bottom: 0;
+}
+.dialog-overlay .content>div{
+    width: 100%;
+    border-radius: .78125rem;
+    background-color: #ffffff;
+    box-sizing: border-box;
+    margin-bottom: .5rem;
+    overflow: hidden;
+}
+.dialog-overlay .content .sure p{
+    padding: 1rem;
+    line-height: 1.5625rem;
+}
+.dialog-overlay .content .sure p:first-child{
+    font-size: .9375rem;
+    color: #666666;
+    border-bottom: 1px solid #EEEEEE;
+}
+.dialog-overlay .content .blue{
+    font-size: 1.25rem;
+    color: #0084FF;
+}
+.dialog-overlay .content .cancle{
+    font-size: 1.25rem;
+    line-height: 1.5625rem;
+    padding: 1rem;
+}
+.toast{
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    z-index: 10004;
+    transform: translate(-50%,-50%);
+    padding: 0 .9375rem;
+    height: 3.125rem;
+    background: rgba(0, 0, 0, 0.7);
+    border-radius: .375rem;
+    font-size: 1.125rem;
+    line-height: 3.125rem;
+    color: #ffffff;
+}
