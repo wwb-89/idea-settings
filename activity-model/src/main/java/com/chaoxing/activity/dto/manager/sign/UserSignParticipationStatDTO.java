@@ -31,6 +31,8 @@ public class UserSignParticipationStatDTO {
 	private Boolean signUpEnded;
 	/** 没有名额 */
 	private Boolean noPlaces;
+	/** 是否在参与范围 */
+	private Boolean inParticipationScope;
 	/** 签到id列表 */
 	private List<Integer> signInIds;
 	/** 用户id */

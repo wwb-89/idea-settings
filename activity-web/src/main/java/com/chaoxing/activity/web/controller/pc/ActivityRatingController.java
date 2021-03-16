@@ -4,8 +4,10 @@ import com.chaoxing.activity.dto.LoginUserDTO;
 import com.chaoxing.activity.model.Activity;
 import com.chaoxing.activity.model.ActivityRating;
 import com.chaoxing.activity.service.activity.ActivityQueryService;
+import com.chaoxing.activity.service.activity.ActivityValidationService;
 import com.chaoxing.activity.service.activity.rating.ActivityRatingQueryService;
 import com.chaoxing.activity.service.activity.rating.ActivityRatingValidateService;
+import com.chaoxing.activity.util.constant.UrlConstant;
 import com.chaoxing.activity.web.util.LoginUtils;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -35,6 +37,9 @@ public class ActivityRatingController {
     @Resource
     private ActivityQueryService activityQueryService;
 
+    @Resource
+    private ActivityValidationService activityValidationService;
+
     /**
      * 活动评价首页
      * @param model
@@ -43,15 +48,20 @@ public class ActivityRatingController {
     @GetMapping("")
     public String index(HttpServletRequest request, Model model, @PathVariable Integer activityId) {
         LoginUserDTO loginUser = LoginUtils.getLoginUser(request);
+        Boolean canRating = false;
+        if (loginUser != null) {
+            // 如果是创建者就到管理页面
+            boolean creator = activityValidationService.isCreator(activityId, loginUser);
+            if (creator) {
+                model.addAttribute("url", String.format(UrlConstant.ACTIVITY_RATING_MANAGE_URL, activityId));
+                return "common/redirect";
+            }
+            canRating = activityRatingValidateService.isSubmitRating(activityId, loginUser.getUid());
+        }
         Activity activity = activityQueryService.getById(activityId);
         ActivityRating activityRating = activityRatingQueryService.getByActivityId(activityId);
         model.addAttribute("activity", activity);
         model.addAttribute("activityRating", activityRating);
-
-        Boolean canRating = false;
-        if(loginUser!=null){
-            canRating = activityRatingValidateService.isSubmitRating(activityId, loginUser.getUid());
-        }
         model.addAttribute("canRating", canRating);
         return "pc/activity/rating/index";
     }
