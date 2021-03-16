@@ -235,6 +235,7 @@
                                     value-format="yyyy-MM-dd HH:mm"
                                     prefix-icon="disable"
                                     clear-icon="disable"
+                                    el-date-picker
                                     unlink-panels>
                         <img style="margin: 0 8px;" slot="range-separator" src="../assets/images/swap-right.png">
                     </el-date-picker>
@@ -243,6 +244,27 @@
                     </span>
                 </div>
             </div>
+            <div class="form-item flexStart">
+                <label class="label">参与范围</label>
+                <div class="join-box">
+                    <div>
+                        <el-radio v-model="rangeRadio" label="1" name="active-type">不限</el-radio>
+                        <el-radio v-model="rangeRadio" label="2" name="active-type">自定义</el-radio>
+                    </div>
+                    <div class="join-select" v-show="rangeRadio==2">
+                        <img src="../assets/images/add-circle.png" alt="" class="add-range" @click="handleAddRange">
+                        <span v-if="rangeShow">请选择</span>
+                        <div class="add-tags" v-else>
+                            <span>产品研发<i class="del_btn" @click="handleDelRange"></i></span>
+                            <span>基础教育研发部<i class="del_btn" @click="handleDelRange"></i></span>
+                            <span>市场部<i class="del_btn" @click="handleDelRange"></i></span>
+                            <span>产品研发<i class="del_btn" @click="handleDelRange"></i></span>
+                        </div>
+                    </div>
+                    
+                </div>
+            </div>
+            
             <div class="form-item">
                 <label class="label"><img src="../assets/images/required.png"
                                           alt="" class="required-img">人数限制</label>
@@ -366,7 +388,8 @@
                                     format="yyyy-MM-dd HH:mm"
                                     value-format="yyyy-MM-dd HH:mm"
                                     prefix-icon="disable"
-                                    clear-icon="disable">
+                                    clear-icon="disable"
+                                    unlink-panels>
                         <img style="margin: 0 8px;" slot="range-separator" src="../assets/images/swap-right.png">
                     </el-date-picker>
                     <span class="date-piker-icon">
@@ -434,7 +457,8 @@
                                     format="yyyy-MM-dd HH:mm"
                                     value-format="yyyy-MM-dd HH:mm"
                                     prefix-icon="disable"
-                                    clear-icon="disable">
+                                    clear-icon="disable"
+                                    unlink-panels>
                         <img style="margin: 0 8px;" slot="range-separator" src="../assets/images/swap-right.png">
                     </el-date-picker>
                     <span class="date-piker-icon">
@@ -472,6 +496,39 @@
                         </el-select>
                     </div>
                     <span class="tips">需管理员扫描参与者的二维码进行签到</span>
+                </div>
+            </div>
+        </form>
+    </div>
+    <!-- 积分设置 -->
+    <div class="info box">
+        <div class="set-box">
+            <div class="title set">积分设置</div>
+            <el-switch v-model="delivery5" class="switch"></el-switch>
+        </div>
+        <form action="" class="setForm" v-show="delivery5">
+            <div class="form-item">
+                <label class="label">分值</label>
+                <div class="input-box">
+                    <input type="number" placeholder="请输入" class="score-input">
+                    <span class="score">分</span>
+                    <span>参与者在活动成绩为合格时，即可获取相应积分</span>
+                </div>
+            </div>
+        </form>
+    </div>
+    <!-- 评价设置 -->
+    <div class="info box">
+        <div class="set-box">
+            <div class="title set">评价设置</div>
+            <el-switch v-model="delivery5" class="switch"></el-switch>
+        </div>
+        <form action="" class="setForm" v-show="delivery5">
+            <div class="form-item">
+                <label class="label">评价需审核</label>
+                <div class="input-box">
+                    <el-switch v-model="delivery6" class="examine-switch"></el-switch>
+                    <span>开启后，审核后的评论才能展示在评论列表</span>
                 </div>
             </div>
         </form>
@@ -809,7 +866,7 @@
     <div class="dailog-box1" v-show="releaseShow">
         <div class="dailog">
             <div class="header">
-                <span>活动发布</span>
+                <span>参与范围</span>
                 <img src="../assets/images/close.png" alt="" @click="close" class="close">
             </div>
             <div class="body">
@@ -864,6 +921,7 @@
         el: '#app',
         data: {
             name: '',
+            btnName:['1','2','3','4','5','6'],
             btnName1: '报名',
             btnName2: '签到',
             name2: '',
@@ -880,6 +938,8 @@
             delivery2: true,
             delivery3: false,
             delivery4: false,
+            delivery5: true,
+            delivery6: false,
             time1: ['2020-11-16', '2020-11-17'],
             time2: '',
             time3: '',
@@ -970,6 +1030,8 @@
             previewShow: false,
             releaseShow: false,
             link: "http://xueya.chaox",
+            rangeRadio: '2',
+            rangeShow: false
         },
         mounted: function () {
             // this.initMap()
@@ -1123,6 +1185,7 @@
                     },
                     view: {
                         // showIcon: false,
+                        addDiyDom: addDiyDom
                     }
                 };
                 var zNodes = [{
@@ -1201,6 +1264,20 @@
                         console.log(nodes)
                     }
                 };
+                // 显示子节点数量
+                function addDiyDom(treeId, treeNode){
+                    var count;
+                    if(treeNode.isParent) {
+                        count = treeNode.children.length ;
+                    } else {
+                        count = 0;
+                    }
+                    var aObj = $("#" + treeNode.tId + "_span");
+                    if(count>0){
+                        var editStr = "<span id='repairtypelist_" +treeNode.tId+ "_count' >("+count+")</span>";
+                        aObj.after(editStr);
+                    }
+                }
                 $.fn.zTree.init($("#organizationTree"), setting, zNodes);
             },
             openModal:function() {
@@ -1223,6 +1300,15 @@
                     }
                 })
             },
+            // 添加参与范围
+            handleAddRange:function(){
+                this.releaseShow = true
+                $('body').addClass('scroll')
+            },
+            // 删除参与范围
+            handleDelRange:function(){
+               
+            }
         }
     })
 </script>

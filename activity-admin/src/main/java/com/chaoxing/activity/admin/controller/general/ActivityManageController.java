@@ -2,6 +2,7 @@ package com.chaoxing.activity.admin.controller.general;
 
 import com.chaoxing.activity.admin.util.LoginUtils;
 import com.chaoxing.activity.dto.LoginUserDTO;
+import com.chaoxing.activity.dto.manager.WfwGroupDTO;
 import com.chaoxing.activity.dto.manager.WfwRegionalArchitectureDTO;
 import com.chaoxing.activity.dto.module.SignAddEditDTO;
 import com.chaoxing.activity.dto.sign.SignActivityManageIndexDTO;
@@ -13,6 +14,7 @@ import com.chaoxing.activity.service.activity.ActivityQueryService;
 import com.chaoxing.activity.service.activity.ActivityValidationService;
 import com.chaoxing.activity.service.activity.classify.ActivityClassifyQueryService;
 import com.chaoxing.activity.service.activity.scope.ActivityScopeQueryService;
+import com.chaoxing.activity.service.manager.WfwGroupApiService;
 import com.chaoxing.activity.service.manager.module.SignApiService;
 import com.chaoxing.activity.util.UserAgentUtils;
 import org.springframework.stereotype.Controller;
@@ -49,6 +51,8 @@ public class ActivityManageController {
 	private ActivityScopeQueryService activityScopeQueryService;
 	@Resource
 	private ActivityValidationService activityValidationService;
+	@Resource
+	private WfwGroupApiService wfwGroupApiService;
 
 	/**活动管理主页
 	 * @Description 
@@ -108,6 +112,11 @@ public class ActivityManageController {
 		// 活动参与范围
 		List<WfwRegionalArchitectureDTO> wfwRegionalArchitectures = activityScopeQueryService.listByActivityId(activityId);
 		model.addAttribute("participatedOrgs", wfwRegionalArchitectures);
+
+		// 报名范围
+		List<WfwGroupDTO> wfwGroups = wfwGroupApiService.getGroupByGid(loginUser.getFid(), "0");
+		model.addAttribute("wfwGroups", wfwGroups);
+		model.addAttribute("secondClassroomFlag", activity.getSecondClassroomFlag());
 		return "pc/activity-add-edit";
 	}
 

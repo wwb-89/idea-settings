@@ -16,12 +16,14 @@ import com.chaoxing.activity.service.activity.scope.ActivityScopeService;
 import com.chaoxing.activity.service.form.ActivityFormRecordService;
 import com.chaoxing.activity.service.manager.GuanliApiService;
 import com.chaoxing.activity.service.manager.MhApiService;
+import com.chaoxing.activity.service.manager.WfwRegionalArchitectureApiService;
 import com.chaoxing.activity.service.manager.module.SignApiService;
 import com.chaoxing.activity.service.manager.module.WorkApiService;
 import com.chaoxing.activity.util.constant.ActivityMhUrlConstant;
 import com.chaoxing.activity.util.constant.ActivityModuleConstant;
 import com.chaoxing.activity.util.enums.*;
 import com.chaoxing.activity.util.exception.BusinessException;
+import com.google.common.collect.Lists;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -78,6 +80,8 @@ public class ActivityHandleService {
 	private SignApiService signApiService;
 	@Resource
 	private MhApiService mhApiService;
+	@Resource
+	private WfwRegionalArchitectureApiService wfwRegionalArchitectureApiService;
 
 	/**新增活动
 	 * @Description
@@ -123,8 +127,16 @@ public class ActivityHandleService {
 		activityCoverService.noticeUpdateCoverUrl(activity.getId(), activity.getCoverCloudId());
 		// 活动参与范围
 		Integer activityId = activity.getId();
+		// 是不是第二课堂
+		Integer secondClassroomFlag = activity.getSecondClassroomFlag();
 		if (CollectionUtils.isEmpty(wfwRegionalArchitectures)) {
-			throw new BusinessException("请选择参与范围");
+			if (secondClassroomFlag == 1) {
+				// 构建创建者机构的
+				WfwRegionalArchitectureDTO wfwRegionalArchitecture = wfwRegionalArchitectureApiService.buildWfwRegionalArchitecture(activity.getCreateFid());
+				wfwRegionalArchitectures = Lists.newArrayList(wfwRegionalArchitecture);
+			} else {
+				throw new BusinessException("请选择参与范围");
+			}
 		}
 		List<ActivityScope> activityScopes = WfwRegionalArchitectureDTO.convert2ActivityScopes(activityId, wfwRegionalArchitectures);
 		// 新增参与范围
@@ -287,6 +299,10 @@ public class ActivityHandleService {
 		existActivity.setSignId(activity.getSignId());
 		existActivity.setWebTemplateId(activity.getWebTemplateId());
 		existActivity.setTags(activity.getTags());
+		existActivity.setOpenIntegral(activity.getOpenIntegral());
+		existActivity.setIntegralValue(activity.getIntegralValue());
+		existActivity.setOpenRating(activity.getOpenRating());
+		existActivity.setRatingNeedAudit(activity.getRatingNeedAudit());
 		// 根据活动时间判断状态
 		Integer status = activityStatusHandleService.calActivityStatus(existActivity);
 		existActivity.setStatus(status);
@@ -339,6 +355,7 @@ public class ActivityHandleService {
 				.set(Activity::getStatus, status)
 		);
 		// 新增表单记录
+		activity.setStatus(status);
 		activityFormRecordService.add(activity);
 		// 通知模块方刷新参与范围缓存
 		// 查询活动的作品征集模块活动id列表
@@ -647,6 +664,32 @@ public class ActivityHandleService {
 			.lambda()
 				.eq(Activity::getId, activityId)
 				.set(Activity::getStatus, status)
+		);
+	}
+
+	/**更新活动的评价配置
+	 * @Description 
+	 * @author wwb
+	 * @Date 2021-03-08 16:22:35
+	 * @param activityId
+	 * @param openRating
+	 * @param ratingNeedAudit
+	 * @param loginUser
+	 * @return void
+	*/
+	public void updateRatingConfig(Integer activityId, boolean openRating, boolean ratingNeedAudit, LoginUserDTO loginUser) {
+		Activity activity = activityValidationService.activityExist(activityId);
+		// 验证是不是活动的管理员
+		boolean creator = activityValidationService.isCreator(activity, loginUser);
+		if (!creator) {
+			throw new BusinessException("无权限");
+		}
+		activityMapper.update(null, new UpdateWrapper<Activity>()
+				.lambda()
+				.eq(Activity::getId, activityId)
+				.set(Activity::getOpenRating, openRating)
+				.set(Activity::getRatingNeedAudit, ratingNeedAudit)
+
 		);
 	}
 

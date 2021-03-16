@@ -42,7 +42,8 @@
             fillInfo: false,
             fillInfoFormId: null,
             publicList: false,
-            btnName: "报名"
+            btnName: "报名",
+            joinRange: 1
         };
     };
 

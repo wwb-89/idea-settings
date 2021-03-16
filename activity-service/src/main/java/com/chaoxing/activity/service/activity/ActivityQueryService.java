@@ -19,6 +19,7 @@ import com.chaoxing.activity.service.manager.module.SignApiService;
 import com.chaoxing.activity.util.DateUtils;
 import com.chaoxing.activity.util.constant.DateFormatConstant;
 import com.chaoxing.activity.util.constant.DateTimeFormatterConstant;
+import com.chaoxing.activity.util.constant.UrlConstant;
 import com.chaoxing.activity.util.enums.ActivityQueryDateEnum;
 import com.chaoxing.activity.util.enums.ActivityTypeEnum;
 import com.google.common.collect.Lists;
@@ -52,8 +53,6 @@ public class ActivityQueryService {
 	@Resource
 	private ActivityMapper activityMapper;
 
-	@Resource
-	private ActivityValidationService activityValidationService;
 	@Resource
 	private WfwRegionalArchitectureApiService wfwRegionalArchitectureApiService;
 	@Resource
@@ -239,7 +238,7 @@ public class ActivityQueryService {
 	 * @return com.chaoxing.activity.model.Activity
 	*/
 	public Activity getById(Integer activityId) {
-		Activity activity = activityValidationService.activityExist(activityId);
+		Activity activity = activityMapper.getById(activityId);
 		Optional.ofNullable(activity).map(Activity::getStartTime).ifPresent(v -> activity.setStartTimeStr(v.format(DateTimeFormatterConstant.YYYY_MM_DD_HH_MM_SS)));
 		Optional.ofNullable(activity).map(Activity::getEndTime).ifPresent(v -> activity.setEndTimeStr(v.format(DateTimeFormatterConstant.YYYY_MM_DD_HH_MM_SS)));
 		return activity;
@@ -267,10 +266,7 @@ public class ActivityQueryService {
 	 * @return com.chaoxing.activity.model.Activity
 	*/
 	public Activity getBySignId(Integer signId) {
-		return activityMapper.selectOne(new QueryWrapper<Activity>()
-				.lambda()
-				.eq(Activity::getSignId, signId)
-		);
+		return activityMapper.getBySignId(signId);
 	}
 
 	/**查询封面url为空的活动
@@ -340,6 +336,17 @@ public class ActivityQueryService {
 	*/
 	public Page<Activity> pageCollected(Page page, Integer uid, String sw) {
 		return activityMapper.pageCollectedActivityId(page, uid, sw);
+	}
+
+	/**获取活动管理url
+	 * @Description 
+	 * @author wwb
+	 * @Date 2021-03-09 19:11:37
+	 * @param activityId
+	 * @return java.lang.String
+	*/
+	public String getActivityManageUrl(Integer activityId) {
+		return String.format(UrlConstant.ATIVITY_MANAGE_URL, activityId);
 	}
 
 }

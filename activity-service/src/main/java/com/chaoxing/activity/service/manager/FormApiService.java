@@ -3,7 +3,7 @@ package com.chaoxing.activity.service.manager;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
-import com.chaoxing.activity.dto.manager.FormDTO;
+import com.chaoxing.activity.dto.manager.form.FormDTO;
 import com.chaoxing.activity.util.exception.BusinessException;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.codec.digest.DigestUtils;
@@ -75,8 +75,8 @@ public class FormApiService {
 				for (int i = 0; i < size; i++) {
 					JSONObject data = jsonArray.getJSONObject(i);
 					FormDTO form = FormDTO.builder()
-							.id(data.getString("id"))
-							.name(data.getString("name"))
+							.formId(data.getInteger("id"))
+							.formName(data.getString("name"))
 							.build();
 					forms.add(form);
 				}

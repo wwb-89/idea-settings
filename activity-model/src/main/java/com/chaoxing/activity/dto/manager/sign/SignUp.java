@@ -66,11 +66,15 @@ public class SignUp {
     private LocalDateTime updateTime;
     /** 更新人id */
     private Integer updateUid;
+    /** 参与范围 1:不限 2：自定义*/
+    private Integer joinRange;
 
     // 附加
     /** 开始时间字符串表示 */
     private Long startTimestamp;
     /** 结束时间字符串表示 */
     private Long endTimestamp;
+    /** 选中范围 */
+    private String groupsJsonStr;
 
 }

@@ -5,6 +5,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
@@ -31,11 +32,12 @@ public class GeneralActivityManagementController {
 	 * @Date 2020-11-18 11:34:30
 	 * @param model
 	 * @param code 图书馆编码
+	 * @param secondClassroomFlag 第二课堂标识
 	 * @return java.lang.String
 	 */
 	@RequestMapping("")
-	public String index(Model model, String code) {
-		return activityManageController.index(model, code);
+	public String index(Model model, String code, @RequestParam(defaultValue = "0") Integer secondClassroomFlag) {
+		return activityManageController.index(model, code, secondClassroomFlag);
 	}
 
 	/**活动新增页面
@@ -45,11 +47,12 @@ public class GeneralActivityManagementController {
 	 * @param model
 	 * @param request
 	 * @param code
+	 * @param secondClassroomFlag 第二课堂标识
 	 * @return java.lang.String
 	*/
 	@GetMapping("activity/add")
-	public String add(Model model, HttpServletRequest request, String code) {
-		return activityManageController.add(model, request, code);
+	public String add(Model model, HttpServletRequest request, String code, @RequestParam(defaultValue = "0") Integer secondClassroomFlag) {
+		return activityManageController.add(model, request, code, secondClassroomFlag);
 	}
 
 }
