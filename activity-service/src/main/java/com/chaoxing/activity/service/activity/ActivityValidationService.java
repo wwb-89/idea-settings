@@ -83,6 +83,18 @@ public class ActivityValidationService {
 		return activity;
 	}
 
+	/**是不是活动的创建者
+	 * @Description 
+	 * @author wwb
+	 * @Date 2021-03-16 11:06:20
+	 * @param activityId
+	 * @param loginUser
+	 * @return boolean
+	*/
+	public boolean isCreator(Integer activityId, LoginUserDTO loginUser) {
+		Activity activity = activityQueryService.getById(activityId);
+		return isCreator(activity, loginUser.getUid());
+	}
 	/**是不是活动创建者
 	 * @Description 
 	 * @author wwb

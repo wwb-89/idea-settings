@@ -2,7 +2,6 @@ package com.chaoxing.activity.admin.controller.pc;
 
 import com.chaoxing.activity.model.Activity;
 import com.chaoxing.activity.service.activity.ActivityQueryService;
-import com.chaoxing.activity.service.activity.ActivityValidationService;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -24,8 +23,6 @@ public class ActivityRatingManageController {
 
     @Resource
     private ActivityQueryService activityQueryService;
-    @Resource
-    private ActivityValidationService activityValidationService;
 
     /**
      * 评分设置页面

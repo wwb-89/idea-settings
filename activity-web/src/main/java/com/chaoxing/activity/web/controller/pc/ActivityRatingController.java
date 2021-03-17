@@ -43,15 +43,14 @@ public class ActivityRatingController {
     @GetMapping("")
     public String index(HttpServletRequest request, Model model, @PathVariable Integer activityId) {
         LoginUserDTO loginUser = LoginUtils.getLoginUser(request);
+        Boolean canRating = false;
+        if (loginUser != null) {
+            canRating = activityRatingValidateService.isSubmitRating(activityId, loginUser.getUid());
+        }
         Activity activity = activityQueryService.getById(activityId);
         ActivityRating activityRating = activityRatingQueryService.getByActivityId(activityId);
         model.addAttribute("activity", activity);
         model.addAttribute("activityRating", activityRating);
-
-        Boolean canRating = false;
-        if(loginUser!=null){
-            canRating = activityRatingValidateService.isSubmitRating(activityId, loginUser.getUid());
-        }
         model.addAttribute("canRating", canRating);
         return "pc/activity/rating/index";
     }

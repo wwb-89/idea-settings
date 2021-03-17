@@ -349,4 +349,15 @@ public class ActivityQueryService {
 		return String.format(UrlConstant.ATIVITY_MANAGE_URL, activityId);
 	}
 
+	/**活动评价地址
+	 * @Description 
+	 * @author wwb
+	 * @Date 2021-03-16 11:12:37
+	 * @param activityId
+	 * @return java.lang.String
+	*/
+	public String getActivityRatingUrl(Integer activityId) {
+		return String.format(UrlConstant.ACTIVITY_RATING_URL, activityId);
+	}
+
 }

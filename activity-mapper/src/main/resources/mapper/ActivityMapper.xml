@@ -98,7 +98,10 @@
                 </choose>
             </if>
             <if test="params.sw != null and params.sw != ''">
-                AND t.name LIKE CONCAT('%', #{params.sw}, '%')
+                AND (
+                    t.`name` LIKE CONCAT('%', #{params.sw}, '%')
+                    OR t.organisers LIKE CONCAT('%', #{params.sw}, '%')
+                )
             </if>
         GROUP BY
             t.id
