@@ -1,7 +1,7 @@
 /* 活动评价css */
 body {
     height: 100%;
-    background: #DBDBDB !important;
+    background: #F2F4F7 !important;
 }
 
 [v-cloak] {
@@ -144,6 +144,7 @@ body {
     position: absolute;
     width: 136px;
     left: 42px;
+    top: 0;
 }
 #test .layui-rate {
     padding: 0;
@@ -202,8 +203,48 @@ body {
 }
 
 .item-content .icon-assess-more {
+    position: relative;
     cursor: pointer;
     margin-top: 4px;
+}
+
+.item-content .icon-assess-more .assess-img-more {
+    width: 3px;
+    height: 13px;
+    background: url("../images/icon-assess-more.png") no-repeat;
+    padding-bottom: 3px;
+}
+
+.item-content .icon-assess-more .nav-down-more {
+    display: none;
+    position: absolute;
+    left: -3px;
+    top: 16px;
+    padding: 2px 0;
+    box-shadow: 0px 6px 16px -8px rgba(0, 0, 0, 0.08), 0px 9px 28px rgba(0, 0, 0, 0.05), 0px 12px 48px 16px rgba(0, 0, 0, 0.03);
+    border-radius: 2px;
+    background-color: #fff;
+}
+
+.item-content .icon-assess-more .nav-down-more>li {
+    width: 60px;
+    height: 36px;
+    font-size: 14px;
+    color: #333;
+    line-height: 36px;
+    text-align: center;
+}
+
+.item-content .icon-assess-more:hover .nav-down-more  {
+    display: block;
+}
+
+.item-content .icon-assess-more:hover .assess-img-more {
+    background: url("../images/icon-assess-more2.png") no-repeat;
+}
+
+.item-content .icon-assess-more .nav-down-more>li:hover {
+     color: #0084FF;
 }
 
 .testX .layui-rate li i.layui-icon {

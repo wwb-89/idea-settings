@@ -47,7 +47,7 @@ public class ActivityRatingApiController {
 		Activity activity = activityQueryService.getBySignId(signId);
 		List<ActivityRatingDetail> activityRatingDetails = Lists.newArrayList();
 		if (activity != null) {
-			activityRatingQueryService.listDetail(activity.getId(), uids);
+			activityRatingDetails = activityRatingQueryService.listDetail(activity.getId(), uids);
 		}
 		return RestRespDTO.success(activityRatingDetails);
 	}

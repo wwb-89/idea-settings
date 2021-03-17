@@ -54,14 +54,20 @@
                 </div>
                 <div class="clear"></div>
             </div>
-            <ul class="assess-list">
+            <ul class="assess-list" style="display: block;">
                 <li class="assess-list-item">
                     <img class="fl" src="../assets/images/touxiang.png" alt="">
                     <div class="item-content fl">
                         <span class="item-name">郭大帅</span>
                         <span class="item-time">07-02 01:20</span>
                         <span class="item-checking">审核中</span>
-                        <img class="fr icon-assess-more" src="../assets/images/icon-assess-more.png" alt="">
+                        <div class="fr icon-assess-more">
+                            <div class="assess-img-more"></div>
+                            <ul class="nav-down-more">
+                                <li>编辑</li>
+                                <li>删除</li>
+                            </ul>
+                        </div>
                         <div class="item-writing">
                             <div></div>
                             <p class="item-assess">
@@ -83,7 +89,13 @@
                         <span class="item-name">郭大帅</span>
                         <span class="item-time">07-02 01:20</span>
                         <span class="item-deleted">已被管理员删除</span>
-                        <img class="fr icon-assess-more" src="../assets/images/icon-assess-more.png" alt="">
+                        <div class="fr icon-assess-more">
+                            <div class="assess-img-more"></div>
+                            <ul class="nav-down-more">
+                                <li>编辑</li>
+                                <li>删除</li>
+                            </ul>
+                        </div>
                         <div class="item-writing">
                             <div id="test2"></div>
                             <p class="item-assess">
@@ -105,7 +117,12 @@
                     <div class="item-content fl">
                         <span class="item-name">郭大帅</span>
                         <span class="item-time">07-02 01:20</span>
-                        <img class="fr icon-assess-more" src="../assets/images/icon-assess-more.png" alt="">
+                        <div class="fr icon-assess-more">
+                            <div class="assess-img-more"></div>
+                            <ul class="nav-down-more">
+                                <li>举报</li>
+                            </ul>
+                        </div>
                         <div class="item-writing">
                             <div id="test2"></div>
                             <p class="item-assess">
@@ -127,7 +144,12 @@
                     <div class="item-content fl">
                         <span class="item-name">郭大帅</span>
                         <span class="item-time">07-02 01:20</span>
-                        <img class="fr icon-assess-more" src="../assets/images/icon-assess-more.png" alt="">
+                        <div class="fr icon-assess-more">
+                            <div class="assess-img-more"></div>
+                            <ul class="nav-down-more">
+                                <li>举报</li>
+                            </ul>
+                        </div>
                         <div class="item-writing">
                             <div id="test2"></div>
                         </div>
@@ -141,9 +163,16 @@
                     <div class="clear"></div>
                 </li>
             </ul>
-            <div class="loading-container">
+            <div class="loading-container" style="display: block;">
                 <img src="../assets/images/icon-loading.png" alt="">加载中
             </div>
+            <!-- 无评价 -->
+            <div class="no-assess" style="display: none;">暂无评价</div>
+        </div>
+
+        <!-- 评价功能关闭 -->
+        <div class="assess-content" style="height: 800px; display: block;">
+            <div class="assess-close">评价功能已关闭</div>
         </div>
 
         <!-- 发布评价弹出框 -->
@@ -286,7 +315,7 @@
                     })
                 })
             },
-            handleClose(done) {
+            handleClose: function (done) {
                 this.dialogVisible = false;
             },
             // 提交事件
