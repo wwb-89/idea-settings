@@ -44,13 +44,42 @@ public class ActivityRatingQueryService {
 		);
 	}
 
-	/**
-	 * 分页查询
+	/**查询用户创建的评论
+	 * @Description 
+	 * @author wwb
+	 * @Date 2021-03-17 21:36:27
+	 * @param activityId
+	 * @param uid
+	 * @return java.util.List<com.chaoxing.activity.model.ActivityRatingDetail>
+	*/
+	public List<ActivityRatingDetail> listUserCreated(Integer activityId, Integer uid) {
+		return activityRatingDetailMapper.listUserCreated(activityId, uid);
+	}
+
+	/**根据评价详情id查询评价详情
+	 * @Description 
+	 * @author wwb
+	 * @Date 2021-03-17 19:18:30
+	 * @param activityRatingDetailId
+	 * @return com.chaoxing.activity.model.ActivityRatingDetail
+	*/
+	public ActivityRatingDetail getDetailById(Integer activityRatingDetailId) {
+		return activityRatingDetailMapper.selectOne(new QueryWrapper<ActivityRatingDetail>()
+			.lambda()
+				.eq(ActivityRatingDetail::getId, activityRatingDetailId)
+				.eq(ActivityRatingDetail::getDeleted, Boolean.FALSE)
+		);
+	}
+
+	/**分页查询
+	 * @Description 
+	 * @author wwb
+	 * @Date 2021-03-17 19:52:47
 	 * @param page
 	 * @param activityRatingQueryDTO
-	 * @return
-	 */
-	public Page<ActivityRatingDetail> listByActivityId(Page<ActivityRatingDetail> page, ActivityRatingQueryDTO activityRatingQueryDTO){
+	 * @return com.baomidou.mybatisplus.extension.plugins.pagination.Page<com.chaoxing.activity.model.ActivityRatingDetail>
+	*/
+	public Page<ActivityRatingDetail> paging(Page<ActivityRatingDetail> page, ActivityRatingQueryDTO activityRatingQueryDTO){
 		return activityRatingDetailMapper.listByQuery(page, activityRatingQueryDTO);
 	}
 
@@ -68,7 +97,23 @@ public class ActivityRatingQueryService {
 				.eq(ActivityRatingDetail::getActivityId, activityId)
 				.in(ActivityRatingDetail::getScorerUid, uids)
 				.eq(ActivityRatingDetail::getDeleted, Boolean.FALSE)
-				.eq(ActivityRatingDetail::getManagerDeleted, Boolean.FALSE)
+		);
+	}
+
+	/**根据活动id和评价id列表查询评价
+	 * @Description 
+	 * @author wwb
+	 * @Date 2021-03-17 19:54:50
+	 * @param activityId
+	 * @param activityRatingDetailIds
+	 * @return java.util.List<com.chaoxing.activity.model.ActivityRatingDetail>
+	*/
+	public List<ActivityRatingDetail> listDetailByDetailIds(Integer activityId, List<Integer> activityRatingDetailIds) {
+		return activityRatingDetailMapper.selectList(new QueryWrapper<ActivityRatingDetail>()
+				.lambda()
+				.eq(ActivityRatingDetail::getActivityId, activityId)
+				.in(ActivityRatingDetail::getId, activityRatingDetailIds)
+				.eq(ActivityRatingDetail::getDeleted, Boolean.FALSE)
 		);
 	}
 

@@ -3,10 +3,12 @@ package com.chaoxing.activity.web.controller.pc;
 import com.chaoxing.activity.dto.LoginUserDTO;
 import com.chaoxing.activity.model.Activity;
 import com.chaoxing.activity.model.ActivityRating;
+import com.chaoxing.activity.model.ActivityRatingDetail;
 import com.chaoxing.activity.service.activity.ActivityQueryService;
 import com.chaoxing.activity.service.activity.rating.ActivityRatingQueryService;
 import com.chaoxing.activity.service.activity.rating.ActivityRatingValidateService;
 import com.chaoxing.activity.web.util.LoginUtils;
+import com.google.common.collect.Lists;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -15,6 +17,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
+import java.util.List;
 
 /**
  * @author xhl
@@ -43,10 +46,15 @@ public class ActivityRatingController {
     @GetMapping("")
     public String index(HttpServletRequest request, Model model, @PathVariable Integer activityId) {
         LoginUserDTO loginUser = LoginUtils.getLoginUser(request);
+        List<ActivityRatingDetail> activityRatingDetails = Lists.newArrayList();
         Boolean canRating = false;
         if (loginUser != null) {
-            canRating = activityRatingValidateService.isSubmitRating(activityId, loginUser.getUid());
+            canRating = activityRatingValidateService.submitRatingAble(activityId, loginUser.getUid());
+            // 查询用户创建的评价列表
+            activityRatingDetails = activityRatingQueryService.listUserCreated(activityId, loginUser.getUid());
+
         }
+        model.addAttribute("activityRatingDetails", activityRatingDetails);
         Activity activity = activityQueryService.getById(activityId);
         ActivityRating activityRating = activityRatingQueryService.getByActivityId(activityId);
         model.addAttribute("activity", activity);

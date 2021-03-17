@@ -9,6 +9,7 @@
     <link rel="stylesheet" href="/static/pc/assets/css/public.css" th:href="@{/pc/assets/css/public.css}">
     <link rel="stylesheet" href="/static/pc/assets/css/activity-assess.css" th:href="@{/pc/assets/css/activity-assess.css}">
     <link rel="stylesheet" href="/static/assets/lib/mescroll/mescroll.css" th:href="@{/assets/lib/mescroll/mescroll.css}">
+    <link rel="stylesheet" href="/static/pc/assets/css/confirm-dialog.css" th:href="@{/pc/assets/css/confirm-dialog.css}">
     <style type="text/css">
         [v-cloak] {
             display: none;
@@ -46,11 +47,6 @@
                 </div>
             </div>
         </div>
-        <!-- 评价功能关闭 -->
-        <div class="assess-content" style="height: 800px; display: block;" v-show="loaded && ratings.length < 1">
-            <div class="assess-close" v-if="!activity.openRating">评价功能已关闭</div>
-            <div class="assess-close" v-else>暂无评价</div>
-        </div>
         <div class="assess-content">
             <div class="assess-content-header">
                 <div class="fl inall-assess" v-if="activityRating != null">
@@ -58,7 +54,7 @@
                     <div id="test"></div>
                     <span class="inall-number">{{activityRating.scoreNum}}人评论</span>
                 </div>
-                <div class="fr btn-addassess" v-if="isCanRating()" @click="openRatingDialog()">
+                <div class="fr btn-addassess" v-if="isCanRating()" @click="toAdd">
                     <img src="/static/pc/assets/images/icon-assess.png" th:src="@{/pc/assets/images/icon-assess.png}"> 写评论
                 </div>
                 <div class="clear"></div>
@@ -75,13 +71,13 @@
                         <span class="item-checking" v-if="rating.auditStatus=='2'">审核中</span>
                         <span class="item-deleted" v-if="rating.auditStatus=='0'">已被管理员删除</span>
                         <!--操作菜单-->
-                        <!--<div class="fr icon-assess-more" v-if="loginUser && rating.createUid == loginUser.uid">
+                        <div class="fr icon-assess-more" v-if="loginUser && rating.createUid == loginUser.uid">
                             <div class="assess-img-more"></div>
                             <ul class="nav-down-more">
-                                <li>编辑</li>
-                                <li>删除</li>
+                                <li @click="toEdit(index)">编辑</li>
+                                <li @click="toDelete(index)">删除</li>
                             </ul>
-                        </div>-->
+                        </div>
                         <div class="item-writing" >
                             <div></div>
                             <p class="item-assess">
@@ -96,28 +92,31 @@
         <!-- 发布评价弹出框 -->
         <el-dialog class="addAssessDialog" title="写评价" :visible.sync="dialogVisible" width="464px">
             <!-- 评分 -->
-            <div id="test5"></div><span class="click-rate" v-show="ratingDefaultValue===0">点击评分</span>
+            <div id="test5"></div><span class="click-rate" v-show="addEditRating.score == 0">点击评分</span>
             <div class="textarea-content">
-                <textarea class="dialogTextarea" name="" id="" cols="30" rows="10" maxlength="500" placeholder="请输入"
-                    v-model="activityRatingDetail.comment"></textarea>
-                <div class="textarea-number">0/500</div>
+                <textarea class="dialogTextarea" cols="30" rows="10" maxlength="500" placeholder="请输入"
+                    v-model.trim="addEditRating.comment"></textarea>
+                <div class="textarea-number">{{addEditRating.comment.length}}/500</div>
             </div>
             <span slot="footer" class="dialog-footer">
                 <div @click="dialogVisible = false" class="btn-size btn-cancel">取消</div>
-                <div @click="submitRate()" class="btn-size btn-submit">提交</div>
+                <div @click="addSubmit()" class="btn-size btn-submit">提交</div>
             </span>
             <!-- 匿名提交按钮 -->
             <div class="switch-box">匿名提交
-                <el-switch v-model="activityRatingDetail.anonymous" class="btn-switch"></el-switch>
+                <el-switch v-model="addEditRating.anonymous" class="btn-switch"></el-switch>
             </div>
             <div></div>
         </el-dialog>
+        <!--取消报名-->
+        <vue-confirm ref="deleteWindow" :message="'确认删除'" @callback="deleteSubmit"></vue-confirm>
     </div>
 </body>
 <div th:replace="pc/include/common_js :: common_js(~{::script})">
     <script src="/static/pc/assets/lib/layui/layui.js" th:src="@{/pc/assets/lib/layui/layui.js}"></script>
     <script src="/static/pc/assets/lib/element-ui/lib/index.js" th:src="@{/pc/assets/lib/element-ui/lib/index.js}"></script>
     <script src="/static/assets/lib/mescroll/mescroll.min.js" th:src="@{/assets/lib/mescroll/mescroll.min.js}"></script>
+    <script src="/static/pc/assets/component/confirm.js" th:src="@{/pc/assets/component/confirm.js}"></script>
     <script th:inline="javascript">
         ratingVue = new Vue({
             el: "#rating-vue",
@@ -126,8 +125,7 @@
                 activityRating: [[${activityRating}]],
                 loginUser: [[${session._login_user_}]],
                 canRating: [[${canRating}]],
-                activityRatingDetail: {isAnonymous:0},
-                ratings: [],
+                ratings: [[${activityRatingDetails}]],
                 loaded: false,
                 total: 0,
                 queryParams: {
@@ -135,31 +133,35 @@
                     pageSize: 10
                 },
                 dialogVisible: false,
-                // 默认提交的评分分数
-                ratingDefaultValue: 0,
-                scroll: null
+                scroll: null,
+                activeIndex: null,
+                addEditRating: null
             },
             created: function () {
                 var $this = this;
+                $this.initAddEditRating();
                 $this.loadRatings();
             },
             mounted: function () {
                 var $this = this;
                 $this.loadRatingTotalData();
-                $this.layuiRateInit();
+                $this.layuiRateInit(0);
                 $this.showMoreLess();
-            },
-            watch: {
-                "activityRatingDetail.comment": function () {
-                    var $this = this
-                    $(".textarea-number").text($this.activityRatingDetail.comment.length + "/500")
-                }
             },
             updated: function () {
                 var $this = this;
-                $this.layuiRateInit();
+                $this.layuiRateInit($this.addEditRating.score);
             },
             methods: {
+                initAddEditRating: function (obj) {
+                    var $this = this;
+                    $this.addEditRating = $.extend({
+                        activityId: $this.activity.id,
+                        anonymous: 0,
+                        score: 0,
+                        comment: ""
+                    }, obj);
+                },
                 //是否匿名显示
                 isAnonymousShow: function(index){
                     var $this = this;
@@ -182,7 +184,6 @@
                     app.ajaxPost(url, params, function (data) {
                         if (data.success) {
                             $this.loaded = true;
-                            $this.loaded = false;
                             $this.total = data.data.total;
                             var ratings = data.data.records;
                             $this.ratings.pushArray(ratings);
@@ -240,7 +241,7 @@
                 },
                 loadRatingTotalData: function(){
                     var $this =this;
-                    if($this.activityRating!=null){
+                    if ($this.activityRating != null) {
                         layui.use(['rate', 'layer'], function () {
                             var rate = layui.rate;
                             rate.render({
@@ -249,17 +250,17 @@
                                 half: true,
                                 readonly: true
                             });
-                        })
+                        });
                     }
                 },
-                layuiRateInit: function () {
+                layuiRateInit: function (score) {
                     var $this = this;
                     layui.use(['rate', 'layer'], function () {
                         var rate = layui.rate;
                         //弹框的自定义文本
                         rate.render({
                             elem: '#test5',
-                            value: $this.ratingDefaultValue,
+                            value: score,
                             text: true,
                             setText: function (value) { //自定义文本的回调
                                 var arrs = {
@@ -270,12 +271,11 @@
                                     '4': '很好',
                                     '5': '非常棒'
                                 };
-                                $this.ratingDefaultValue = value;
+                                $this.addEditRating.score = value;
                                 this.span.text(arrs[value] || (value + "星"));
                             }
-                        })
-
-                    })
+                        });
+                    });
                 },
                 // 遍历每个li中星星
                 rateList: function () {
@@ -322,46 +322,45 @@
                         })
                     })
                 },
-                openRatingDialog: function(){
+                toAdd: function () {
                     var $this = this;
-                    $this.activityRatingDetail = {isAnonymous:0};
                     $this.dialogVisible = true;
                 },
-                resetQuery: function(){
+                // 提交
+                addSubmit: function () {
                     var $this = this;
-                    $this.queryParams.pageNum = 1;
-                    $this.totalNum = 0;
-                    $this.loaded = false;
-                    $this.ratings = [];
-                    $this.loadRatings();
-                },
-                // 提交事件
-                submitRate: function () {
-                    var $this = this;
-                    if($this.ratingDefaultValue<=2 && activityApp.isEmpty($this.activityRatingDetail.comment)){
+                    if ($this.addEditRating.score <= 2 && activityApp.isEmpty($this.addEditRating.comment)) {
                         layer.msg('请输入低分理由');
                         return;
                     }
-                    $this.activityRatingDetail.score = $this.ratingDefaultValue;
                     var url = ctx + "/api/activity/rating/add";
+                    var tips = "提交";
+                    if (!activityApp.isEmpty($this.addEditRating.id)) {
+                        url = ctx + "/api/activity/rating/update";
+                        tips = "修改";
+                    }
                     var params = {
                         activityId: $this.activity.id,
-                        activityRatingDetailJsonStr: activityApp.getJsonStr($this.activityRatingDetail)
-                    }
+                        activityRatingDetailJsonStr: activityApp.getJsonStr($this.addEditRating)
+                    };
                     app.ajaxPostWithLoading(url, params, function (data) {
                         if (data.success) {
-                            $this.dialogVisible = false;
-                            $this.resetQuery();
+                            window.location.reload();
                         } else {
                             var errorMessage = data.message;
                             if (activityApp.isEmpty(errorMessage)) {
-                                errorMessage = "提交评价失败";
+                                errorMessage = tips + "评价失败";
                             }
                             app.showMsg(errorMessage);
                         }
                     }, function () {
-                        app.showMsg("提交评价失败");
+                        app.showMsg(tips + "评价失败");
                     });
+                },
+                toEdit: function (index) {
+                    var $this = this;
+                    $this.initAddEditRating($this.ratings[index]);
+                    $this.dialogVisible = true;
                 },
                 initScroll: function () {
                     var $this = this;
@@ -379,6 +378,29 @@
                             }
                         });
                     }
+                },
+                // 删除评价
+                toDelete: function (index) {
+                    var $this = this;
+                    $this.activeIndex = index;
+                    $this.$refs.deleteWindow.show = true;
+                },
+                deleteSubmit: function () {
+                    var $this = this;
+                    var url = ctx + "/api/activity/rating/" + $this.ratings[$this.activeIndex].id + "/delete";
+                    app.ajaxPostWithLoading(url, {}, function (data) {
+                        if (data.success) {
+                            window.location.reload();
+                        } else {
+                            var errorMessage = data.message;
+                            if (activityApp.isEmpty(errorMessage)) {
+                                errorMessage = "删除评价失败";
+                            }
+                            app.showMsg(errorMessage);
+                        }
+                    }, function () {
+                        app.showMsg("删除评价失败");
+                    });
                 },
                 // 评价设置
                 toRatingSetting: function () {

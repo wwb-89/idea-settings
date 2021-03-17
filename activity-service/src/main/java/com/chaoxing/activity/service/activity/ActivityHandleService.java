@@ -678,18 +678,12 @@ public class ActivityHandleService {
 	 * @return void
 	*/
 	public void updateRatingConfig(Integer activityId, boolean openRating, boolean ratingNeedAudit, LoginUserDTO loginUser) {
-		Activity activity = activityValidationService.activityExist(activityId);
-		// 验证是不是活动的管理员
-		boolean creator = activityValidationService.isCreator(activity, loginUser);
-		if (!creator) {
-			throw new BusinessException("无权限");
-		}
+		activityValidationService.manageAble(activityId, loginUser, "");
 		activityMapper.update(null, new UpdateWrapper<Activity>()
 				.lambda()
 				.eq(Activity::getId, activityId)
 				.set(Activity::getOpenRating, openRating)
 				.set(Activity::getRatingNeedAudit, ratingNeedAudit)
-
 		);
 	}
 

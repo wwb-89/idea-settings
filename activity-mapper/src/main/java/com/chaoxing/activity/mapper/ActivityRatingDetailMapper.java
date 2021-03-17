@@ -28,6 +28,16 @@ public interface ActivityRatingDetailMapper extends BaseMapper<ActivityRatingDet
      */
     Page<ActivityRatingDetail> listByQuery(@Param("page") Page<?> page, @Param("params") ActivityRatingQueryDTO activityRatingQueryDTO);
 
+    /**查询用户创建的评价
+     * @Description 
+     * @author wwb
+     * @Date 2021-03-17 21:33:00
+     * @param activityId
+     * @param uid
+     * @return java.util.List<com.chaoxing.activity.model.ActivityRatingDetail>
+    */
+    List<ActivityRatingDetail> listUserCreated(@Param("activityId") Integer activityId, @Param("uid") Integer uid);
+
     /**
      * 批量更新状态
      *
