@@ -152,6 +152,35 @@
             t.create_fid <![CDATA[<>]]> #{params.topFid}
     </select>
 
+    <!--查询创建的活动-->
+    <select id="pageCreated" resultMap="BaseResultMap">
+        SELECT
+            <include refid="Base_Column_List"></include>
+        FROM
+            t_activity t
+        WHERE
+            t.create_uid = #{params.createUid}
+            <choose>
+                <when test="params.status != null">
+                    AND t.`status` = #{params.status}
+                </when>
+                <otherwise>
+                    AND t.`status` > 0
+                </otherwise>
+            </choose>
+            <if test="params.sw != null and params.sw != ''">
+                AND (
+                t.name LIKE CONCAT('%', #{params.sw} , '%')
+                OR t.create_user_name LIKE CONCAT('%', #{params.sw} , '%')
+                OR t.create_org_name LIKE CONCAT('%', #{params.sw} , '%')
+                )
+            </if>
+        GROUP BY
+            t.id
+        ORDER BY
+            t.create_time DESC
+    </select>
+
     <!--查询机构创建的-->
     <select id="pageOrgCreated" resultMap="BaseResultMap">
         SELECT

@@ -1,113 +1,107 @@
 <!DOCTYPE html>
 <html lang="en" xmlns:th="http://www.thymeleaf.org/">
 <head>
+    <title>评价审核</title>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="/static/pc/assets/lib/layui/css/layui.css" th:href="@{/pc/assets/lib/layui/css/layui.css}">
     <link rel="stylesheet" href="/static/pc/assets/lib/element-ui/lib/theme-chalk/index.css" th:href="@{/pc/assets/lib/element-ui/lib/theme-chalk/index.css}">
     <link rel="stylesheet" href="/static/pc/assets/css/public.css" th:href="@{/pc/assets/css/public.css}">
     <link rel="stylesheet" href="/static/pc/assets/css/activity-assess.css" th:href="@{/pc/assets/css/activity-assess.css}">
-    <title>评价审核</title>
+    <style type="text/css">
+        [v-cloak] {
+            display: none;
+        }
+    </style>
 </head>
 <body>
-    <div class="assess-container" id="vue" v-cloak>
-        <div class="assess-header">
-            <div class="assess-title">
-                {{activity.name}}
-            </div>
-            <div class="assess-header-right">
-                <div class="login-container">
-                    <div class="after-login">
-                        <img class="login-tx"  :src="'http://photo.chaoxing.com/p/'+loginUser.uid+'_80'" alt="">
-                        <span class="user-name">{{loginUser.realName}}</span>
-                        <i class="icon-down">
-                            <img src="/static/pc/assets/images/icon-down.png" th:src="@{/pc/assets/images/icon-down.png}" alt="">
-                        </i>
-                        <ul class="login-downlist-info">
-                            <li class="login-downlist-item">
-                                <a href="https://i.chaoxing.com/" target="_blank">进入空间</a>
-                            </li>
-                            <li class="login-downlist-item">
-                                <a href="javascript:;" @click="loginOUt()">退出登录</a>
-                            </li>
-                        </ul>
-                    </div>
-                </div>
-            </div>
+<div class="assess-container" id="rating-vue" v-cloak>
+    <div class="assess-header">
+        <div class="assess-title">
+            {{activity.name}}
         </div>
-        <div class="assess-content">
-            <div class="assess-content-header assess-check-header">
-                <div class="assess-check-number">共{{total}}份</div>
-                <div class="assess-check-btns">
-                    <i class="assess-checkd">
-                        <img v-show="!allChecked" src="/static/pc/assets/images/radio_normal4.png" th:src="@{/pc/assets/images/radio_normal4.png}" alt="" @click="checkAllHandle">
-                        <img v-show="allChecked" src="/static/pc/assets/images/radio_normal2.png" th:src="@{/pc/assets/images/radio_normal2.png}" alt=""  @click="checkAllHandle">
+        <div class="assess-header-set">
+            <a href="javascript:" @click="toRatingSetting">评价设置</a>
+            <a href="javascript:" @click="toRatingAudit">评价审核</a>
+        </div>
+        <div class="assess-header-right">
+            <div class="login-container">
+                <div class="after-login">
+                    <img class="login-tx" :src="'http://photo.chaoxing.com/p/'+ loginUser.uid +'_80'">
+                    <span class="user-name">{{loginUser.realName}}</span>
+                    <i class="icon-down">
+                        <img src="/static/pc/assets/images/icon-down.png" th:src="@{/pc/assets/images/icon-down.png}">
                     </i>
-                    <div class="check-btn" @click="batchPass()">批量通过</div>
-                    <div class="check-btn" @click="batchReject()">批量删除</div>
+                    <ul class="login-downlist-info">
+                        <li class="login-downlist-item">
+                            <a href="https://i.chaoxing.com/" target="_blank">进入空间</a>
+                        </li>
+                        <li class="login-downlist-item">
+                            <a href="javascript:" @click="loginOUt()">退出登录</a>
+                        </li>
+                    </ul>
                 </div>
             </div>
-            <ul class="assess-list">
-                <li class="assess-list-item assess-check-list-item" v-for="(rating, index) of ratings">
-                    <el-checkbox v-model="rating.checked" class="check-item-checkbox fl" @change="checkChangeHandle"></el-checkbox>
-                    <img class="fl" v-if="isAnonymousShow(index)" src="/static/pc/assets/images/niming-tx.png" th:src="@{/pc/assets/images/niming-tx.png}" alt="">
-                    <img class="fl" v-else :src="'http://photo.chaoxing.com/p/'+rating.scorerUid+'_80'" alt="">
-                    <div class="check-item-content fl">
-                        <span class="item-name" v-if="isAnonymousShow(index)">匿名</span>
-                        <span class="item-name" v-else>{{rating.scorerUserName}}</span>
-                        <span class="item-time">{{rating.createTime}}</span>
-                        <div class="item-writing">
-                            <div></div>
-                            <p class="item-assess">
-                                {{rating.comment}}
-                            </p>
-                        </div>
-<!--                        <div class="showmore">-->
-<!--                            展开-->
-<!--                        </div>-->
-<!--                        <div class="showless" style="display: none;">-->
-<!--                            收起-->
-<!--                        </div>-->
-                        <div class="assess-footer-btns">
-                            <div class="assess-footer-btn assess-footer-btn-pass" @click="pass(index)">通过</div>
-                            <div class="assess-footer-btn assess-footer-btn-del" @click="reject(index)">删除</div>
-                        </div>
-                    </div>
-                    <div class="clear"></div>
-                </li>
-            </ul>
-            <div class="page-container">
-                <el-pagination v-show="pages > 1" background layout="prev, pager, next" :total="total" :page-size="queryParams.pageSize" :current-page="queryParams.pageNum" @current-change="changePage"></el-pagination>
+        </div>
+    </div>
+    <div class="assess-content">
+        <div class="assess-content-header assess-check-header">
+            <div class="assess-check-number">共{{total}}份</div>
+            <div class="assess-check-btns">
+                <i class="assess-checkd">
+                    <el-checkbox class="check-item-checkbox fl"></el-checkbox>
+                </i>
+                <div class="check-btn" @click="batchPass()">批量通过</div>
+                <div class="check-btn" @click="batchReject()">批量删除</div>
             </div>
         </div>
-
+        <div class="no-assess" v-if="loaded && ratings.length < 1">暂无评价</div>
+        <ul class="assess-list">
+            <li class="assess-list-item assess-check-list-item" v-for="(rating, index) of ratings">
+                <el-checkbox v-model="rating.checked" class="check-item-checkbox fl" @change="checkChangeHandle"></el-checkbox>
+                <img class="fl" v-if="isAnonymousShow(index)" src="/static/pc/assets/images/niming-tx.png" th:src="@{/pc/assets/images/niming-tx.png}">
+                <img class="fl" v-else :src="'http://photo.chaoxing.com/p/'+ rating.scorerUid +'_80'">
+                <div class="check-item-content fl">
+                    <span class="item-name" v-if="isAnonymousShow(index)">匿名</span>
+                    <span class="item-name" v-else>{{rating.scorerUserName}}</span>
+                    <span class="item-time">{{rating.createTime}}</span>
+                    <div class="item-writing">
+                        <div></div>
+                        <p class="item-assess">
+                            {{rating.comment}}
+                        </p>
+                    </div>
+                    <div class="assess-footer-btns">
+                        <div class="assess-footer-btn assess-footer-btn-pass" @click="pass(index)">通过</div>
+                        <div class="assess-footer-btn assess-footer-btn-del" @click="reject(index)">删除</div>
+                    </div>
+                </div>
+                <div class="clear"></div>
+            </li>
+        </ul>
+        <div class="page-container">
+            <el-pagination background layout="prev, pager, next" v-show="ratings.length > queryParams.pageSize" :total="total" :page-size="queryParams.pageSize" :current-page="queryParams.pageNum" @current-change="changePage"></el-pagination>
+        </div>
     </div>
-
+</div>
 </body>
 <div th:replace="pc/include/common_js :: common_js(~{::script})">
     <script src="/static/pc/assets/lib/layui/layui.js" th:src="@{/pc/assets/lib/layui/layui.js}"></script>
     <script src="/static/pc/assets/lib/element-ui/lib/index.js" th:src="@{/pc/assets/lib/element-ui/lib/index.js}"></script>
-
     <script th:inline="javascript">
-        var vm = new Vue({
-            el: '#vue',
-            data: function () {
-                return {
-                    activity: [[${activity}]],
-                    loginUser: [[${session._login_user_}]],
-                    ratings: [],
-                    loaded: false,
-                    pages: 0,
-                    total: 0,
-                    queryParams: {
-                        pageNum: 1,
-                        pageSize: 10
-                    },
-                    allChecked: false
-                }
-            },
-            created: function () {
-
+        ratingVue = new Vue({
+            el: "#rating-vue",
+            data: {
+                activity: [[${activity}]],
+                loginUser: [[${session._login_user_}]],
+                ratings: [],
+                loaded: false,
+                total: 0,
+                queryParams: {
+                    pageNum: 1,
+                    pageSize: 10
+                },
+                allChecked: false
             },
             mounted: function () {
                 var $this = this;
@@ -115,6 +109,34 @@
                 $this.showMoreLess();
             },
             methods: {
+                loadRatings: function(){
+                    var $this = this;
+                    var url = ctx + "/api/activity/rating/audit/list";
+                    var params = {
+                        pageNum: $this.queryParams.pageNum,
+                        pageSize: $this.queryParams.pageSize,
+                        activityId: $this.activity.id,
+                        auditStatus: 2
+                    };
+                    app.ajaxPost(url, params, function (data) {
+                        if (data.success) {
+                            $this.loaded = true;
+                            $this.total = data.data.total;
+                            $this.ratings = data.data.records;
+                            $this.$nextTick(function () {
+                                $this.rateList();
+                            });
+                        } else {
+                            var errorMessage = data.message;
+                            if (activityApp.isEmpty(errorMessage)) {
+                                errorMessage = "加载评价列表失败";
+                            }
+                            app.showMsg(errorMessage);
+                        }
+                    }, function () {
+                        app.showMsg("加载评价列表失败");
+                    });
+                },
                 pass: function(index){
                     var $this = this;
                     var url = ctx + "/api/activity/rating/audit/pass";
@@ -122,9 +144,7 @@
                         activityId: $this.activity.id,
                         activityRatingDetailId: $this.ratings[index].id
                     };
-                    $this.loaded = true;
                     app.ajaxPost(url, params, function (data) {
-                        $this.loaded = true;
                         if (data.success) {
                             app.showMsg("操作成功", function () {
                                 $this.resetQuery();
@@ -137,7 +157,6 @@
                             app.showMsg(errorMessage);
                         }
                     }, function () {
-                        $this.loaded = false;
                         app.showMsg("操作失败");
                     });
                 },
@@ -158,9 +177,7 @@
                         activityId: $this.activity.id,
                         ratingDetailIds: checkedRatingIds
                     };
-                    $this.loaded = true;
                     app.ajaxPost(url, params, function (data) {
-                        $this.loaded = true;
                         if (data.success) {
                             app.showMsg("操作成功", function () {
                                 $this.resetQuery();
@@ -173,7 +190,6 @@
                             app.showMsg(errorMessage);
                         }
                     }, function () {
-                        $this.loaded = false;
                         app.showMsg("操作失败");
                     });
                 },
@@ -184,9 +200,7 @@
                         activityId: $this.activity.id,
                         activityRatingDetailId: $this.ratings[index].id
                     };
-                    $this.loaded = true;
                     app.ajaxPost(url, params, function (data) {
-                        $this.loaded = true;
                         if (data.success) {
                             app.showMsg("操作成功", function () {
                                 $this.resetQuery();
@@ -199,34 +213,26 @@
                             app.showMsg(errorMessage);
                         }
                     }, function () {
-                        $this.loaded = false;
                         app.showMsg("操作失败");
                     });
                 },
                 batchReject: function(){
                     var $this = this;
-                    var $this = this;
-
                     var checkedRatingIds = [];
                     $($this.ratings).each(function () {
                         if(this.checked){
                             checkedRatingIds.push(this.id);
                         }
                     })
-
                     if(checkedRatingIds.length<=0){
-                        app.showMsg("请选择数据");
                         return;
                     }
-
                     var url = ctx + "/api/activity/rating/audit/reject/batch";
                     var params = {
                         activityId: $this.activity.id,
                         ratingDetailIds: checkedRatingIds
                     };
-                    $this.loaded = true;
                     app.ajaxPost(url, params, function (data) {
-                        $this.loaded = true;
                         if (data.success) {
                             app.showMsg("操作成功", function () {
                                 $this.resetQuery();
@@ -239,7 +245,6 @@
                             app.showMsg(errorMessage);
                         }
                     }, function () {
-                        $this.loaded = false;
                         app.showMsg("操作失败");
                     });
                 },
@@ -262,38 +267,6 @@
                     }
                     return $this.ratings[index].anonymous;
                 },
-                loadRatings: function(){
-                    var $this = this;
-                    var url = ctx + "/api/activity/rating/audit/list";
-                    var params = {
-                        pageNum: $this.queryParams.pageNum,
-                        pageSize: $this.queryParams.pageSize,
-                        activityId: $this.activity.id,
-                        auditStatus: 2
-                    };
-                    $this.loaded = true;
-                    app.ajaxPost(url, params, function (data) {
-                        $this.loaded = true;
-                        if (data.success) {
-                            $this.loaded = false;
-                            $this.pages = data.data.pages;
-                            $this.total = data.data.total;
-                            $this.ratings = data.data.records;
-                            $this.$nextTick(function () {
-                                $this.rateList();
-                            });
-                        } else {
-                            var errorMessage = data.message;
-                            if (activityApp.isEmpty(errorMessage)) {
-                                errorMessage = "加载评价列表失败";
-                            }
-                            app.showMsg(errorMessage);
-                        }
-                    }, function () {
-                        $this.loaded = false;
-                        app.showMsg("加载评价列表失败");
-                    });
-                },
                 changePage: function (pageNum) {
                     var $this = this;
                     $this.queryParams.pageNum = pageNum;
@@ -305,24 +278,23 @@
                     var loginOutUrl = "https://passport2.chaoxing.com/logout.html?refer=" + refer;
                     window.location.href = loginOutUrl;
                 },
-                // 遍历每个li中星星
+                // 渲染评分
                 rateList: function () {
                     var $this = this;
-                    var rates = $(".item-writing>div")
+                    var rates = $(".item-writing>div");
                     rates.each(function (i, n) {
                         $(n).addClass("testX");
                         var score = $this.ratings[i].score;
                         layui.use(['rate'], function () {
                             var rate = layui.rate;
-
                             rate.render({
                                 elem: $(n),
                                 value: score,
                                 half: true,
                                 readonly: true
-                            })
-                        })
-                    })
+                            });
+                        });
+                    });
                 },
                 // 点击展开与收起
                 showMoreLess: function () {
@@ -337,7 +309,7 @@
                     $(".showmore").each(function (i, n) {
                         $(n).on("click", function () {
                             $(this).siblings(".item-writing").children(".item-assess")
-                                .removeClass("overflowThree");
+                                    .removeClass("overflowThree");
                             $(this).siblings(".showless").show()
                             $(this).hide()
                         })
@@ -345,7 +317,7 @@
                     $(".showless").each(function (i, n) {
                         $(n).on("click", function () {
                             $(this).siblings(".item-writing").children(".item-assess").addClass(
-                                "overflowThree");
+                                    "overflowThree");
                             $(this).siblings(".showmore").show()
                             $(this).hide()
                         })
@@ -370,7 +342,19 @@
                     $this.allChecked = !$this.allChecked;
                     $($this.ratings).each(function () {
                         this.checked = $this.allChecked;
-                    })
+                    });
+                },
+                // 评价设置
+                toRatingSetting: function () {
+                    var $this = this;
+                    var url = "http://manage.hd.chaoxing.com/activity/" + $this.activity.id + "/rating/setting";
+                    window.location.href = url;
+                },
+                // 评价审核
+                toRatingAudit: function () {
+                    var $this = this;
+                    var url = "http://manage.hd.chaoxing.com/activity/" + $this.activity.id + "/rating/audit";
+                    window.location.href = url;
                 }
             }
         });

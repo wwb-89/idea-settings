@@ -1,6 +1,5 @@
 <!DOCTYPE html>
 <html lang="en" xmlns:th="http://www.thymeleaf.org/">
-
 <head>
     <title>活动评价</title>
     <meta charset="UTF-8">
@@ -24,14 +23,14 @@
                 {{activity.name}}
             </div>
             <div class="assess-header-set" v-if="isCreator()">
-                <a href="javascript:">评价设置</a>
-                <a href="javascript:">评价审核</a>
+                <a href="javascript:" @click="toRatingSetting">评价设置</a>
+                <a href="javascript:" @click="toRatingAudit">评价审核</a>
             </div>
             <div class="assess-header-right">
                 <div class="login-container" v-if="loginUser != null">
                     <div class="after-login">
-                        <img class="login-tx" :src="'http://photo.chaoxing.com/p/'+loginUser.uid+'_80'">
-                        <span class="user-name"></span>
+                        <img class="login-tx" :src="'http://photo.chaoxing.com/p/'+ loginUser.uid +'_80'">
+                        <span class="user-name">{{loginUser.realName}}</span>
                         <i class="icon-down">
                             <img src="/static/pc/assets/images/activity-home/icon-down.png" th:src="@{/pc/assets/images/activity-home/icon-down.png}">
                         </i>
@@ -48,7 +47,7 @@
             </div>
         </div>
         <!-- 评价功能关闭 -->
-        <div class="assess-content" style="height: 800px; display: block;" v-show="loaded && ratings.length <= 0">
+        <div class="assess-content" style="height: 800px; display: block;" v-show="loaded && ratings.length < 1">
             <div class="assess-close" v-if="!activity.openRating">评价功能已关闭</div>
             <div class="assess-close" v-else>暂无评价</div>
         </div>
@@ -64,7 +63,8 @@
                 </div>
                 <div class="clear"></div>
             </div>
-            <ul class="assess-list">
+            <div class="assess-close" v-if="ratings.length < 1">暂无评价</div>
+            <ul class="assess-list" v-if="ratings.length > 0">
                 <li class="assess-list-item" v-for="(rating, index) of ratings">
                     <img class="fl" v-if="isAnonymousShow(index)" src="/static/pc/assets/images/niming-tx.png" th:src="@{/pc/assets/images/niming-tx.png}">
                     <img class="fl" v-else :src="'http://photo.chaoxing.com/p/'+rating.scorerUid+'_80'">
@@ -74,6 +74,14 @@
                         <span class="item-time">{{rating.createTime}}</span>
                         <span class="item-checking" v-if="rating.auditStatus=='2'">审核中</span>
                         <span class="item-deleted" v-if="rating.auditStatus=='0'">已被管理员删除</span>
+                        <!--操作菜单-->
+                        <div class="fr icon-assess-more" v-if="loginUser && rating.createUid == loginUser.uid">
+                            <div class="assess-img-more"></div>
+                            <ul class="nav-down-more">
+                                <li>编辑</li>
+                                <li>删除</li>
+                            </ul>
+                        </div>
                         <div class="item-writing" >
                             <div></div>
                             <p class="item-assess">
@@ -121,7 +129,6 @@
                 activityRatingDetail: {isAnonymous:0},
                 ratings: [],
                 loaded: false,
-                pages: 0,
                 total: 0,
                 queryParams: {
                     pageNum: 1,
@@ -172,12 +179,10 @@
                         pageSize: $this.queryParams.pageSize,
                         activityId: $this.activity.id
                     };
-                    $this.loaded = true;
                     app.ajaxPost(url, params, function (data) {
-                        $this.loaded = true;
                         if (data.success) {
+                            $this.loaded = true;
                             $this.loaded = false;
-                            $this.pages = data.data.pages;
                             $this.total = data.data.total;
                             var ratings = data.data.records;
                             $this.ratings.pushArray(ratings);
@@ -188,11 +193,10 @@
                                 }
                             }
                             //总数小于分页数量
-                            if($this.ratings.length<$this.queryParams.pageSize){
-                                if(!activityApp.isEmpty($this.scroll)){
+                            if ($this.ratings.length < $this.queryParams.pageSize) {
+                                if (!activityApp.isEmpty($this.scroll)) {
                                     $this.scroll.endSuccess($this.ratings.length);
                                 }
-                                return;
                             }
                             $this.queryParams.pageNum++;
                             $this.$nextTick(function () {
@@ -211,7 +215,6 @@
                             app.showMsg(errorMessage);
                         }
                     }, function () {
-                        $this.loaded = false;
                         app.showMsg("加载评价列表失败");
                     });
                 },
@@ -345,9 +348,7 @@
                         activityId: $this.activity.id,
                         activityRatingDetailJsonStr: activityApp.getJsonStr($this.activityRatingDetail)
                     }
-                    $this.loaded = true;
                     app.ajaxPostWithLoading(url, params, function (data) {
-                        $this.loaded = false;
                         if (data.success) {
                             $this.dialogVisible = false;
                             $this.resetQuery();
@@ -359,7 +360,6 @@
                             app.showMsg(errorMessage);
                         }
                     }, function () {
-                        $this.loaded = false;
                         app.showMsg("提交评价失败");
                     });
                 },
@@ -380,6 +380,18 @@
                         });
                     }
                 },
+                // 评价设置
+                toRatingSetting: function () {
+                    var $this = this;
+                    var url = "http://manage.hd.chaoxing.com/activity/" + $this.activity.id + "/rating/setting";
+                    window.open(url);
+                },
+                // 评价审核
+                toRatingAudit: function () {
+                    var $this = this;
+                    var url = "http://manage.hd.chaoxing.com/activity/" + $this.activity.id + "/rating/audit";
+                    window.open(url);
+                }
             }
         });
     </script>

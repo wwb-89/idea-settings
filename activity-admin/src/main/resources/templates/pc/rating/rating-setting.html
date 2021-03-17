@@ -15,6 +15,10 @@
             <div class="assess-title">
                 {{activity.name}}
             </div>
+            <div class="assess-header-set">
+                <a href="javascript:" @click="toRatingSetting">评价设置</a>
+                <a href="javascript:" @click="toRatingAudit">评价审核</a>
+            </div>
             <div class="assess-header-right">
                 <div class="login-container">
                     <div class="after-login">
@@ -104,6 +108,18 @@
                     }, function () {
                         app.showMsg("修改评分状态失败");
                     });
+                },
+                // 评价设置
+                toRatingSetting: function () {
+                    var $this = this;
+                    var url = "http://manage.hd.chaoxing.com/activity/" + $this.activity.id + "/rating/setting";
+                    window.location.href = url;
+                },
+                // 评价审核
+                toRatingAudit: function () {
+                    var $this = this;
+                    var url = "http://manage.hd.chaoxing.com/activity/" + $this.activity.id + "/rating/audit";
+                    window.location.href = url;
                 }
             }
         });
