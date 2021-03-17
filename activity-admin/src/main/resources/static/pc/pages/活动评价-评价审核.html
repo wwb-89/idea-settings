@@ -7,6 +7,7 @@
     <link rel="stylesheet" href="../assets/lib/layui/css/layui.css">
     <link rel="stylesheet" href="../assets/lib/element-ui/lib/theme-chalk/index.css">
     <link rel="stylesheet" href="../assets/css/public.css">
+    <link rel="stylesheet" href="../assets/css/dialog.css">
     <link rel="stylesheet" href="../assets/css/activity-assess.css">
     <title>评价审核</title>
 </head>
@@ -43,12 +44,12 @@
                 <div class="assess-check-number">共125425份</div>
                 <div class="assess-check-btns">
                     <i class="assess-checkd">
-                        <img v-show="!noChecked" src="../assets/images/radio_normal4.png" alt=""
-                            @click="checkAllHandle">
-                        <img v-show="noChecked" src="../assets/images/radio_normal2.png" alt="" @click="checkAllHandle">
+                        <el-checkbox v-model="noChecked" :indeterminate="isIndeterminate" @change="checkAllHandle">
+                        </el-checkbox>
                     </i>
                     <div class="check-btn">批量通过 2</div>
                     <div class="check-btn">批量删除 2</div>
+                    <div class="check-btn btn-disabled">批量删除 0</div>
                 </div>
             </div>
             <ul class="assess-list">
@@ -56,7 +57,7 @@
                     <el-checkbox v-model="checkedStatus[0]" class="check-item-checkbox fl" @change="checkChangeHandle">
                     </el-checkbox>
                     <img class="fl" src="../assets/images/touxiang.png" alt="">
-                    <div class="check-item-content fl">
+                    <div class="item-content check-item-content fl">
                         <span class="item-name">郭大帅</span>
                         <span class="item-time">07-02 01:20</span>
                         <div class="item-writing">
@@ -73,7 +74,7 @@
                         </div>
                         <div class="assess-footer-btns">
                             <div class="assess-footer-btn assess-footer-btn-pass">通过</div>
-                            <div class="assess-footer-btn assess-footer-btn-del">删除</div>
+                            <div class="assess-footer-btn assess-footer-btn-del" @click="delDialog=true">删除</div>
                         </div>
                     </div>
                     <div class="clear"></div>
@@ -82,7 +83,7 @@
                     <el-checkbox v-model="checkedStatus[1]" class="check-item-checkbox fl" @change="checkChangeHandle">
                     </el-checkbox>
                     <img class="fl" src="../assets/images/touxiang.png" alt="">
-                    <div class="check-item-content fl">
+                    <div class="item-content check-item-content fl">
                         <span class="item-name">郭大帅</span>
                         <span class="item-time">07-02 01:20</span>
                         <div class="item-writing">
@@ -99,7 +100,7 @@
                         </div>
                         <div class="assess-footer-btns">
                             <div class="assess-footer-btn assess-footer-btn-pass">通过</div>
-                            <div class="assess-footer-btn assess-footer-btn-del">删除</div>
+                            <div class="assess-footer-btn assess-footer-btn-del" @click="delDialog=true">删除</div>
                         </div>
                     </div>
                     <div class="clear"></div>
@@ -108,7 +109,7 @@
                     <el-checkbox v-model="checkedStatus[2]" class="check-item-checkbox fl" @change="checkChangeHandle">
                     </el-checkbox>
                     <img class="fl" src="../assets/images/niming-tx.png" alt="">
-                    <div class="check-item-content fl">
+                    <div class="item-content check-item-content fl">
                         <span class="item-name">郭大帅</span>
                         <span class="item-time">07-02 01:20</span>
                         <div class="item-writing">
@@ -125,7 +126,7 @@
                         </div>
                         <div class="assess-footer-btns">
                             <div class="assess-footer-btn assess-footer-btn-pass">通过</div>
-                            <div class="assess-footer-btn assess-footer-btn-del">删除</div>
+                            <div class="assess-footer-btn assess-footer-btn-del" @click="delDialog=true">删除</div>
                         </div>
                     </div>
                     <div class="clear"></div>
@@ -134,7 +135,7 @@
                     <el-checkbox v-model="checkedStatus[3]" class="check-item-checkbox fl" @change="checkChangeHandle">
                     </el-checkbox>
                     <img class="fl" src="../assets/images/niming-tx.png" alt="">
-                    <div class="check-item-content fl">
+                    <div class="item-content check-item-content fl">
                         <span class="item-name">郭大帅</span>
                         <span class="item-time">07-02 01:20</span>
                         <div class="item-writing">
@@ -151,7 +152,7 @@
                         </div>
                         <div class="assess-footer-btns">
                             <div class="assess-footer-btn assess-footer-btn-pass">通过</div>
-                            <div class="assess-footer-btn assess-footer-btn-del">删除</div>
+                            <div class="assess-footer-btn assess-footer-btn-del" @click="delDialog=true">删除</div>
                         </div>
                     </div>
                     <div class="clear"></div>
@@ -164,8 +165,19 @@
 
             <!-- <div class="no-assess">暂无内容</div> -->
         </div>
-
+        <!-- 确认删除模块弹框 -->
+        <div class="dailog-box3" v-show="delDialog">
+            <div class="dailog delete-dailog">
+                <div class="warn"><img src="../assets/images/warning.png" alt=""></div>
+                <span>删除后，可重新添加。确定删除？</span>
+                <div>
+                    <div class="normal-btn" @click="delDialog=false">保留</div>
+                    <div class="normal-btn after-sure">删除</div>
+                </div>
+            </div>
+        </div>
     </div>
+
 
 </body>
 
@@ -183,6 +195,9 @@
             return {
                 noChecked: false,
                 checkedStatus: [false, false, false, false],
+                isIndeterminate: false,
+                checkAll: false,
+                delDialog: false
             }
         },
         created: function () {
@@ -276,19 +291,29 @@
             },
             // 监听所有checkbox改变
             checkChangeHandle: function () {
-                if (this.checkedStatus.indexOf(true) >= 0) {
+                var number = 0;
+                for (var i = 0; i < this.checkedStatus.length; i++) {
+                    if (this.checkedStatus[i] == true) {
+                        number++
+                    }
+                }
+                if (number > 0 && number < this.checkedStatus.length) {
+                    this.isIndeterminate = true;
+                } else if (number == this.checkedStatus.length) {
+                    this.isIndeterminate = false;
                     this.noChecked = true;
-                } else {
+                } else if (number <= 0) {
+                    this.isIndeterminate = false;
                     this.noChecked = false;
                 }
             },
             // 全选
             checkAllHandle: function () {
-                this.noChecked = !this.noChecked;
+                this.isIndeterminate = false;
                 for (var i = 0; i < this.checkedStatus.length; i++) {
                     this.checkedStatus[i] = this.noChecked;
                 }
-            }
+            },
         }
     });
 </script>

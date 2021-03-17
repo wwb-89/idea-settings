@@ -478,6 +478,11 @@ html,body {
     border: 1px solid #0084FF;
 }
 
+.btn-disabled {
+    color: rgba(0, 132, 255, 0.3);
+    border: 1px solid rgba(0, 132, 255, 0.3);
+}
+
 .check-item-content {
     width: calc(100% - 90px);
 }

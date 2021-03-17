@@ -209,16 +209,17 @@ body {
 }
 
 .item-content .icon-assess-more .assess-img-more {
-    width: 3px;
+    /* width: 3px; */
+    width: 20px;
     height: 13px;
-    background: url("../images/icon-assess-more.png") no-repeat;
+    background: url("../images/icon-assess-more.png") no-repeat center center;
     padding-bottom: 3px;
 }
 
 .item-content .icon-assess-more .nav-down-more {
     display: none;
     position: absolute;
-    left: -3px;
+    left: 0px;
     top: 16px;
     padding: 2px 0;
     box-shadow: 0px 6px 16px -8px rgba(0, 0, 0, 0.08), 0px 9px 28px rgba(0, 0, 0, 0.05), 0px 12px 48px 16px rgba(0, 0, 0, 0.03);
@@ -240,7 +241,7 @@ body {
 }
 
 .item-content .icon-assess-more:hover .assess-img-more {
-    background: url("../images/icon-assess-more2.png") no-repeat;
+    background: url("../images/icon-assess-more2.png") no-repeat center center;
 }
 
 .item-content .icon-assess-more .nav-down-more>li:hover {
