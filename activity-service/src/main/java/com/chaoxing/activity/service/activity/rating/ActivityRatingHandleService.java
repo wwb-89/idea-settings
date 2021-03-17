@@ -13,7 +13,6 @@ import com.chaoxing.activity.service.activity.ActivityValidationService;
 import com.chaoxing.activity.util.CalculateUtils;
 import com.chaoxing.activity.util.DistributedLock;
 import com.chaoxing.activity.util.constant.CacheConstant;
-import com.chaoxing.activity.util.enums.ActivityRatingAuditStatusEnum;
 import com.chaoxing.activity.util.exception.BusinessException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -78,9 +77,9 @@ public class ActivityRatingHandleService {
 			activityRatingValidateService.canSubmitRating(activityId, loginUser.getUid());
 			Activity activity = activityValidationService.activityExist(activityId);
 			if(activity.getRatingNeedAudit()){
-				activityRatingDetail.setAuditStatus(ActivityRatingAuditStatusEnum.WAIT.getValue());
+				activityRatingDetail.setAuditStatus(ActivityRatingDetail.AuditStatus.WAIT.getValue());
 			}else{
-				activityRatingDetail.setAuditStatus(ActivityRatingAuditStatusEnum.PASSED.getValue());
+				activityRatingDetail.setAuditStatus(ActivityRatingDetail.AuditStatus.PASSED.getValue());
 			}
 			activityRatingDetailMapper.insert(activityRatingDetail);
 			ActivityRating activityRating = activityRatingQueryService.getByActivityId(activityId);
@@ -133,7 +132,7 @@ public class ActivityRatingHandleService {
 				.lambda()
 				.eq(ActivityRatingDetail::getId, activityRatingDetailId)
 				.eq(ActivityRatingDetail::getActivityId, activityId)
-				.set(ActivityRatingDetail::getAuditStatus, ActivityRatingAuditStatusEnum.PASSED.getValue())
+				.set(ActivityRatingDetail::getAuditStatus, ActivityRatingDetail.AuditStatus.PASSED.getValue())
 		);
 	}
 
@@ -149,7 +148,7 @@ public class ActivityRatingHandleService {
 				.lambda()
 				.eq(ActivityRatingDetail::getId, activityRatingDetailId)
 				.eq(ActivityRatingDetail::getActivityId, activityId)
-				.set(ActivityRatingDetail::getAuditStatus, ActivityRatingAuditStatusEnum.NOT_PASS.getValue())
+				.set(ActivityRatingDetail::getAuditStatus, ActivityRatingDetail.AuditStatus.REJECT.getValue())
 		);
 	}
 
@@ -161,7 +160,7 @@ public class ActivityRatingHandleService {
 	 */
 	public void batchPass(LoginUserDTO loginUser, Integer activityId, List<Integer> ratingDetailIds){
 		activityValidationService.manageAble(activityId, loginUser, null);
-		activityRatingDetailMapper.batchUpAuditStatus(activityId, ratingDetailIds, ActivityRatingAuditStatusEnum.PASSED.getValue());
+		activityRatingDetailMapper.batchUpAuditStatus(activityId, ratingDetailIds, ActivityRatingDetail.AuditStatus.PASSED.getValue());
 	}
 
 	/**
@@ -172,6 +171,6 @@ public class ActivityRatingHandleService {
 	 */
 	public void batchReject(LoginUserDTO loginUser, Integer activityId, List<Integer> ratingDetailIds){
 		activityValidationService.manageAble(activityId, loginUser, null);
-		activityRatingDetailMapper.batchUpAuditStatus(activityId, ratingDetailIds, ActivityRatingAuditStatusEnum.NOT_PASS.getValue());
+		activityRatingDetailMapper.batchUpAuditStatus(activityId, ratingDetailIds, ActivityRatingDetail.AuditStatus.REJECT.getValue());
 	}
 }

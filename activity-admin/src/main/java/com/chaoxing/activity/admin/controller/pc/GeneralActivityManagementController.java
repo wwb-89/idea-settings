@@ -33,11 +33,12 @@ public class GeneralActivityManagementController {
 	 * @param model
 	 * @param code 图书馆编码
 	 * @param secondClassroomFlag 第二课堂标识
+	 * @param strict
 	 * @return java.lang.String
 	 */
 	@RequestMapping("")
-	public String index(Model model, String code, @RequestParam(defaultValue = "0") Integer secondClassroomFlag) {
-		return activityManageController.index(model, code, secondClassroomFlag);
+	public String index(Model model, String code, @RequestParam(defaultValue = "0") Integer secondClassroomFlag, @RequestParam(defaultValue = "0") Integer strict) {
+		return activityManageController.index(model, code, secondClassroomFlag, strict);
 	}
 
 	/**活动新增页面

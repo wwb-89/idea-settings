@@ -29,5 +29,9 @@ public class ActivityManageQueryDTO {
 	private Integer topFid;
 	/** 关键字 */
 	private String sw;
+	/** 是不是严格模式， 严格模式：只显示自己创建的活动 */
+	private Integer strict;
+	/** 创建人id */
+	private Integer createUid;
 
 }

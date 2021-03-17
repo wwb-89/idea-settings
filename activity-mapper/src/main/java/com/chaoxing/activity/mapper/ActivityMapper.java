@@ -45,6 +45,16 @@ public interface ActivityMapper extends BaseMapper<Activity> {
 	 */
 	Page<Activity> pageManaging(@Param("page") Page<?> page, @Param("params") ActivityManageQueryDTO activityManageQuery);
 
+	/**查询创建的活动
+	 * @Description 
+	 * @author wwb
+	 * @Date 2021-03-17 16:11:49
+	 * @param page
+	 * @param activityManageQuery
+	 * @return com.baomidou.mybatisplus.extension.plugins.pagination.Page<com.chaoxing.activity.model.Activity>
+	*/
+	Page<Activity> pageCreated(@Param("page") Page<?> page, @Param("params") ActivityManageQueryDTO activityManageQuery);
+
 	/**
 	 * 查询机构创建的
 	 *

@@ -8,6 +8,7 @@
     <meta http-equiv="Pragma" content="no-cache" />
     <meta http-equiv="cache-control" content="no-cache" />
     <link rel="stylesheet" href="../assets/lib/layui/css/layui.css" />
+    <link rel="stylesheet" href="../assets/css/dialog.css">
     <link rel="stylesheet" href="../assets/css/public.css" />
     <link rel="stylesheet" href="../assets/css/activity-comment.css"/>
 </head>
@@ -110,6 +111,31 @@
         <!-- 活动评价-已关闭 -->
         <div class="noContent" style="display: none;">评价功能已关闭</div>
     </div>
+     <!-- 我的评价-更多菜单 -->
+     <div class="dialog more-div" style="display: none;">
+        <div class="dialog-overlay">
+            <div class="content">
+                <div class="sure">
+                    <p class="blue">编辑</p>
+                    <p class="blue sure-btn">删除</p>
+                </div>
+                <div class="blue cancle">取消</div>
+            </div>
+        </div>
+    </div>
+    <div class="toast delToast" style="display: none;">删除成功</div>
+    <!-- 别人的评价-更多菜单 -->
+     <div class="dialog" style="display: none;">
+        <div class="dialog-overlay">
+            <div class="content">
+                <div class="sure">
+                    <p class="blue sure-btn">举报</p>
+                </div>
+                <div class="blue cancle">取消</div>
+            </div>
+        </div>
+    </div>
+    <div class="toast" style="display: none;">举报成功</div>
     <script src="../assets/lib/jquery.1.8.2.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
     <script src="../assets/lib/layui/layui.js"></script>
@@ -130,6 +156,16 @@
                     $(this).html('展开')
                     $(this).prev($('.content .desc')).addClass('overHidden5')
                 }
+            })
+            $('.more').click(function(){
+                $('.more-div').show()
+            })
+            $('.sure-btn').click(function(){
+                $('.delToast').show()
+                $('.more-div').hide()
+                setTimeout(function() {
+                    $('.delToast').hide()
+                }, 3000);
             })
         });
     </script>
