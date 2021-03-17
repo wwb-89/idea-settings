@@ -75,13 +75,13 @@
                         <span class="item-checking" v-if="rating.auditStatus=='2'">审核中</span>
                         <span class="item-deleted" v-if="rating.auditStatus=='0'">已被管理员删除</span>
                         <!--操作菜单-->
-                        <div class="fr icon-assess-more" v-if="loginUser && rating.createUid == loginUser.uid">
+                        <!--<div class="fr icon-assess-more" v-if="loginUser && rating.createUid == loginUser.uid">
                             <div class="assess-img-more"></div>
                             <ul class="nav-down-more">
                                 <li>编辑</li>
                                 <li>删除</li>
                             </ul>
-                        </div>
+                        </div>-->
                         <div class="item-writing" >
                             <div></div>
                             <p class="item-assess">
