@@ -175,7 +175,7 @@ public class ActivityMhV2ApiController {
 				result.add(buildBtnField("报名已结束", getFlag(availableFlags), "", "0"));
 			} else if (userSignParticipationStat.getSignUpNotStart()) {
 				result.add(buildBtnField("报名未开始", getFlag(availableFlags), "", "0"));
-			} else if (!userSignParticipationStat.getInParticipationScope()) {
+			} else if (!userSignParticipationStat.getInParticipationScope() && uid != null) {
 				result.add(buildBtnField("不在参与范围内", getFlag(availableFlags), "", "0"));
 			} else if (userSignParticipationStat.getNoPlaces()) {
 				result.add(buildBtnField("名额已满", getFlag(availableFlags), "", "0"));
