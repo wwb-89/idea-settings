@@ -40,7 +40,7 @@
                     <span>{{menus.resultsManage.name}}</span>
                 </div>
                 <!--组织者管理-->
-                <div :class="{'item': true, 'active': menus.managerManage.selected}" @click="toResultsManage">
+                <div :class="{'item': true, 'active': menus.managerManage.selected}" @click="toResultsManage" v-if="false">
                     <img :src="menus.managerManage.activeIconUrl" v-if="menus.managerManage.selected">
                     <img :src="menus.managerManage.defaultIconUrl" v-else>
                     <span>{{menus.managerManage.name}}</span>
