@@ -1442,7 +1442,8 @@
                     var activityType = $this.activity.activityType;
                     var webTemplates = [];
                     $($this.webTemplates).each(function () {
-                        if (this.activityType == activityType && !this.deleted) {
+                        if ((this.activityType == activityType || activityApp.isEmpty(this.activityType)) && !this.deleted) {
+                            // 模板的类型为空则表示线上和线下都可用
                             webTemplates.push(this);
                         }
                     });
