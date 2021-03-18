@@ -497,7 +497,7 @@ public class SignApiService {
 	public UserSignParticipationStatDTO userParticipationStat(Integer signId, Integer uid) {
 		String uidStr = "";
 		if (uid != null) {
-			uidStr = String.valueOf(uidStr);
+			uidStr = String.valueOf(uid);
 		}
 		String url = String.format(USER_SIGN_PARTICIPATION_URL, signId, uidStr);
 		String result = restTemplate.getForObject(url, String.class);

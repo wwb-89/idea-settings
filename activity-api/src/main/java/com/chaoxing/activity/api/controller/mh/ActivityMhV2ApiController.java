@@ -72,7 +72,7 @@ public class ActivityMhV2ApiController {
 		Boolean enableSign = activity.getEnableSign();
 		enableSign = Optional.ofNullable(enableSign).orElse(Boolean.FALSE);
 		Integer signId = activity.getSignId();
-		List<MhGeneralAppResultDataDTO.MhGeneralAppResultDataFieldDTO> btns = Lists.newArrayList();
+		List<MhGeneralAppResultDataDTO.MhGeneralAppResultDataFieldDTO> btns;
 		List<Integer> availableFlags = Lists.newArrayList(109, 111, 113, 115, 116, 117);
 		if (enableSign && signId != null) {
 			SignUpStatDTO signUpStat = signApiService.getSignParticipation(signId);
@@ -80,15 +80,11 @@ public class ActivityMhV2ApiController {
 				// 报名时间
 				mhGeneralAppResultDataFields.add(buildField("报名时间", DateTimeFormatterConstant.YYYY_MM_DD_HH_MM.format(signUpStat.getSignUpStartTime()), "102"));
 				mhGeneralAppResultDataFields.add(buildField("报名结束时间", DateTimeFormatterConstant.YYYY_MM_DD_HH_MM.format(signUpStat.getSignUpEndTime()), "103"));
-				StringBuilder signedUpNumDescribe = new StringBuilder();
-				Integer limitNum = signUpStat.getLimitNum();
 				Integer participateNum = signUpStat.getSignedUpNum();
-				if (participateNum.compareTo(0) > 0 || limitNum.intValue() > 0) {
-					signedUpNumDescribe.append(participateNum);
-					if (limitNum.intValue() > 0) {
-						signedUpNumDescribe.append("/");
-						signedUpNumDescribe.append(limitNum);
-					}
+				String signedUpNumDescribe = String.valueOf(participateNum);
+				Integer limitNum = signUpStat.getLimitNum();
+				if (limitNum.intValue() > 0) {
+					signedUpNumDescribe += "/" + limitNum;
 				}
 				mhGeneralAppResultDataFields.add(buildField("报名人数", signedUpNumDescribe.toString(), "106"));
 				// 开启了报名名单公开则显示报名人数链接
@@ -105,16 +101,14 @@ public class ActivityMhV2ApiController {
 		}else{
 			// 是不是管理员
 			if (activityValidationService.isCreator(activity, uid)) {
-				MhGeneralAppResultDataDTO.MhGeneralAppResultDataFieldDTO dataField = buildBtnField("管理", getFlag(availableFlags), activityQueryService.getActivityManageUrl(activity.getId()), "2");
-				mhGeneralAppResultDataFields.add(dataField);
+				mhGeneralAppResultDataFields.addAll(buildBtnField("管理", getFlag(availableFlags), activityQueryService.getActivityManageUrl(activity.getId()), "2"));
 			}
 		}
 		// 评价
 		Boolean openRating = activity.getOpenRating();
 		openRating = Optional.ofNullable(openRating).orElse(Boolean.FALSE);
 		if (openRating) {
-			MhGeneralAppResultDataDTO.MhGeneralAppResultDataFieldDTO dataField = buildBtnField("评价", getFlag(availableFlags), activityQueryService.getActivityRatingUrl(activity.getId()), "2");
-			mhGeneralAppResultDataFields.add(dataField);
+			mhGeneralAppResultDataFields.addAll(buildBtnField("评价", getFlag(availableFlags), activityQueryService.getActivityRatingUrl(activity.getId()), "2"));
 		}
 		// 活动地点
 		String activityAddress = "";
@@ -161,39 +155,43 @@ public class ActivityMhV2ApiController {
 			if (userSignParticipationStat.getSignedUp()) {
 				// 已报名
 				if (CollectionUtils.isNotEmpty(signInIds)) {
-					result.add(buildBtnField("去签到", getFlag(availableFlags), userSignParticipationStat.getSignInUrl(), "1"));
+					result.addAll(buildBtnField("去签到", getFlag(availableFlags), userSignParticipationStat.getSignInUrl(), "1"));
 				}
-				result.add(buildBtnField("报名信息", getFlag(availableFlags), userSignParticipationStat.getSignUpResultUrl(), "2"));
+				result.addAll(buildBtnField("报名信息", getFlag(availableFlags), userSignParticipationStat.getSignUpResultUrl(), "2"));
 			} else if (userSignParticipationStat.getSignUpAudit()) {
 				// 审核中
-				result.add(buildBtnField("报名审核中", getFlag(availableFlags), "", "0"));
-				result.add(buildBtnField("报名信息", getFlag(availableFlags), userSignParticipationStat.getSignUpResultUrl(), "2"));
+				result.addAll(buildBtnField("报名审核中", getFlag(availableFlags), "", "0"));
+				result.addAll(buildBtnField("报名信息", getFlag(availableFlags), userSignParticipationStat.getSignUpResultUrl(), "2"));
 			} else if (activityEnded && userSignParticipationStat.getSignUpEnded()) {
 				// 活动和报名都结束的情况显示活动已结束
-				result.add(buildBtnField("活动已结束", getFlag(availableFlags), "", "0"));
+				result.addAll(buildBtnField("活动已结束", getFlag(availableFlags), "", "0"));
 			} else if (userSignParticipationStat.getSignUpEnded()) {
-				result.add(buildBtnField("报名已结束", getFlag(availableFlags), "", "0"));
+				result.addAll(buildBtnField("报名已结束", getFlag(availableFlags), "", "0"));
 			} else if (userSignParticipationStat.getSignUpNotStart()) {
-				result.add(buildBtnField("报名未开始", getFlag(availableFlags), "", "0"));
+				result.addAll(buildBtnField("报名未开始", getFlag(availableFlags), "", "0"));
 			} else if (!userSignParticipationStat.getInParticipationScope() && uid != null) {
-				result.add(buildBtnField("不在参与范围内", getFlag(availableFlags), "", "0"));
+				result.addAll(buildBtnField("不在参与范围内", getFlag(availableFlags), "", "0"));
 			} else if (userSignParticipationStat.getNoPlaces()) {
-				result.add(buildBtnField("名额已满", getFlag(availableFlags), "", "0"));
+				result.addAll(buildBtnField("名额已满", getFlag(availableFlags), "", "0"));
 			} else {
-				result.add(buildBtnField("报名参加", getFlag(availableFlags), userSignParticipationStat.getSignUpUrl(), "1"));
+				result.addAll(buildBtnField("报名参加", getFlag(availableFlags), userSignParticipationStat.getSignUpUrl(), "1"));
 			}
 		}else {
 			if (CollectionUtils.isNotEmpty(signInIds)) {
-				result.add(buildBtnField("去签到", getFlag(availableFlags), userSignParticipationStat.getSignInUrl(), "1"));
+				result.addAll(buildBtnField("去签到", getFlag(availableFlags), userSignParticipationStat.getSignInUrl(), "1"));
 			}
 		}
 		// 是不是管理员
 		if (activityValidationService.isCreator(activity, uid)) {
-			MhGeneralAppResultDataDTO.MhGeneralAppResultDataFieldDTO dataField = buildBtnField("管理", getFlag(availableFlags), activityQueryService.getActivityManageUrl(activity.getId()), "2");
+			List<MhGeneralAppResultDataDTO.MhGeneralAppResultDataFieldDTO> btns = buildBtnField("管理", getFlag(availableFlags), activityQueryService.getActivityManageUrl(activity.getId()), "2");
 			if (signUpId != null || CollectionUtils.isNotEmpty(signInIds)) {
-				result.add(1, dataField);
+				for (int i = 0; i < btns.size(); i++) {
+					result.add(i + 2, btns.get(i));
+				}
 			} else {
-				result.add(dataField);
+				for (MhGeneralAppResultDataDTO.MhGeneralAppResultDataFieldDTO btn : btns) {
+					result.add(btn);
+				}
 			}
 		}
 		return result;
@@ -216,13 +214,21 @@ public class ActivityMhV2ApiController {
 				.flag(flag)
 				.build();
 	}
-	private MhGeneralAppResultDataDTO.MhGeneralAppResultDataFieldDTO buildBtnField(String value, String flag, String url, String type) {
-		return MhGeneralAppResultDataDTO.MhGeneralAppResultDataFieldDTO.builder()
-				.value(value)
+	private List<MhGeneralAppResultDataDTO.MhGeneralAppResultDataFieldDTO> buildBtnField(String value, String flag, String url, String type) {
+		List<MhGeneralAppResultDataDTO.MhGeneralAppResultDataFieldDTO> result = Lists.newArrayList();
+		result.add(MhGeneralAppResultDataDTO.MhGeneralAppResultDataFieldDTO.builder()
+				.key(value)
+				.value(url)
 				.flag(flag)
-				.orsUrl(url)
-				.type(type)
-				.build();
+				.build());
+		Integer intFlag = Integer.parseInt(flag);
+		if (intFlag.compareTo(115) <= 0) {
+			result.add(MhGeneralAppResultDataDTO.MhGeneralAppResultDataFieldDTO.builder()
+					.value(type)
+					.flag(String.valueOf(intFlag + 1))
+					.build());
+		}
+		return result;
 	}
 
 }
