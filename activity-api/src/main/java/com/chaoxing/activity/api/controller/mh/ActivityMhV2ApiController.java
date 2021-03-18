@@ -15,6 +15,7 @@ import com.chaoxing.activity.util.constant.DateTimeFormatterConstant;
 import com.chaoxing.activity.util.enums.ActivityTypeEnum;
 import com.google.common.collect.Lists;
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -45,9 +46,12 @@ public class ActivityMhV2ApiController {
 	private ActivityValidationService activityValidationService;
 
 	@RequestMapping("activity/{activityId}/info")
-	public RestRespDTO activityInfo(@PathVariable Integer activityId, @RequestBody String data) {
-		JSONObject params = JSON.parseObject(data);
-		Integer uid = params.getInteger("uid");
+	public RestRespDTO activityInfo(@PathVariable Integer activityId, @RequestBody(required = false) String data) {
+		Integer uid = null;
+		if (StringUtils.isNotBlank(data)) {
+			JSONObject params = JSON.parseObject(data);
+			uid = params.getInteger("uid");
+		}
 		Activity activity = activityQueryService.getById(activityId);
 		JSONObject jsonObject = new JSONObject();
 		MhGeneralAppResultDataDTO mhGeneralAppResultDataDTO = new MhGeneralAppResultDataDTO();

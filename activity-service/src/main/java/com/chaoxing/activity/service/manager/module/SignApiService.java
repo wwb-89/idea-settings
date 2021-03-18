@@ -80,7 +80,7 @@ public class SignApiService {
 	/** 报名名单url */
 	private static final String SIGN_UP_USER_LIST_URL = SIGN_WEB_DOMAIN + "/sign-up/%d/user-list";
 	/** 用户报名签到参与情况url */
-	private static final String USER_SIGN_PARTICIPATION_URL = SIGN_API_DOMAIN + "/sign/%d/stat/user-participation?uid=%d";
+	private static final String USER_SIGN_PARTICIPATION_URL = SIGN_API_DOMAIN + "/sign/%d/stat/user-participation?uid=%s";
 
 
 	@Resource
@@ -495,7 +495,11 @@ public class SignApiService {
 	 * @return com.chaoxing.activity.dto.manager.sign.UserSignParticipationStatDTO
 	*/
 	public UserSignParticipationStatDTO userParticipationStat(Integer signId, Integer uid) {
-		String url = String.format(USER_SIGN_PARTICIPATION_URL, signId, uid);
+		String uidStr = "";
+		if (uid != null) {
+			uidStr = String.valueOf(uidStr);
+		}
+		String url = String.format(USER_SIGN_PARTICIPATION_URL, signId, uidStr);
 		String result = restTemplate.getForObject(url, String.class);
 		JSONObject jsonObject = JSON.parseObject(result);
 		Boolean success = jsonObject.getBoolean("success");
