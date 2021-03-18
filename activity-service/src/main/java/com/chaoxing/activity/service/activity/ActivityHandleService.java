@@ -641,6 +641,8 @@ public class ActivityHandleService {
 				return String.format(ActivityMhUrlConstant.ACTIVITY_COVER_URL, activityId);
 			case ACTIVITY_INFO:
 				return String.format(ActivityMhUrlConstant.ACTIVITY_INFO_URL, activityId);
+			case ACTIVITY_SIGN_INFO:
+				return String.format(ActivityMhUrlConstant.ACTIVITY_SIGN_INFO_URL, activityId);
 			case SIGN_IN_UP:
 				return String.format(ActivityMhUrlConstant.ACTIVITY_SIGN_URL, activityId);
 			case ACTIVITY_LIST:
