@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.chaoxing.activity.mapper.ActivityManagerMapper">
+    <resultMap id="BaseResultMap" type="com.chaoxing.activity.model.ActivityManager">
+        <result column="activity_id" jdbcType="INTEGER" property="activityId" />
+        <result column="uid" jdbcType="INTEGER" property="uid" />
+        <result column="user_name" jdbcType="VARCHAR" property="userName" />
+        <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
+        <result column="create_uid" jdbcType="INTEGER" property="createUid" />
+    </resultMap>
+</mapper>
