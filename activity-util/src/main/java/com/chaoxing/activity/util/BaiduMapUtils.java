@@ -13,7 +13,7 @@ import java.math.BigDecimal;
 public class BaiduMapUtils {
 	
 	private static final String ADDRESS_PC_URL = "http://api.map.baidu.com/marker?location=%s&title=%s&content=%s&output=webapp.baidu.openAPIdemo";
-	private static final String ADDRESS_MOBILE_URL = "http://api.map.baidu.com/mobile/marker?location=%s&title=%s&content=%s&output=webapp.baidu.openAPIdemo";
+	private static final String ADDRESS_MOBILE_URL = "http://api.map.baidu.com/mobile/marker?location=%s&title=%s&content=%s&output=html";
 
 	private BaiduMapUtils() {
 
