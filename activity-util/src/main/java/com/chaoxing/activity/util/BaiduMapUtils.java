@@ -33,7 +33,7 @@ public class BaiduMapUtils {
 		if (longitude == null || dimension == null) {
 			return "";
 		}
-		return String.format(ADDRESS_PC_URL, longitude + "," + dimension, activityName, address);
+		return String.format(ADDRESS_PC_URL, dimension + "," + longitude, activityName, address);
 	}
 	
 	/**生成移动端的地址url
