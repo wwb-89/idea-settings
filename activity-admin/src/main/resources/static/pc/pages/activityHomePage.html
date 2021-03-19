@@ -17,7 +17,7 @@
                 <span>成都少儿阅读活动</span>
             </div>
             <div class="menu">
-                <div class="entry">
+                <div class="entry menu-item">
                     <div class="item ">
                         <img src="../assets/images/icon-name-list-active.png">
                         <span>
@@ -31,7 +31,7 @@
                         </span>
                     </div>
                 </div>
-                <div class="grade">
+                <div class="grade menu-item">
                     <div class="item active">
                         <img src="../assets/images/icon-grade-manage-active.png">
                         <span>
@@ -45,7 +45,7 @@
                         </span>
                     </div>
                 </div>
-                <div class="message">
+                <div class="message menu-item">
                     <div class="item">
                         <img src="../assets/images/icon-notice-default.png">
                         <span>
@@ -53,7 +53,7 @@
                         </span>
                     </div>
                 </div>
-                <div class="statistics">
+                <div class="statistics menu-item">
                     <div class="item">
                         <img src="../assets/images/icon-statistics-default.png">
                         <span>
@@ -78,18 +78,34 @@
 
     <script src="../assets/lib/jquery.min.js"></script>
     <script>
-        function setIframeHeight(iframe) {
-            if (iframe) {
-                var iframeWin = iframe.contentWindow || iframe.contentDocument.parentWindow;
-                if (iframeWin.document.body) {
-                    console.log(document.getElementsByClassName('content')[0].style.height);
-                    $('.container').css('height', iframeWin.document.body.scrollHeight);
-                }
-            }
-        };
         window.onload = function () {
-            setIframeHeight(document.getElementById('ifr'));
+            resizePageHeight();
         };
+
+        function resizePageHeight () {
+            // container的最小高度
+            var containerMinHeight = $(".container").css("min-height");
+            containerMinHeight = containerMinHeight.replaceAll("px", "");
+            var containerHeight = $(".container").height();
+            // 窗口的高度
+            var windowHeight = $(window).height() - 40;
+            // iframe的高度
+            var iframeHeight = $("#content").height();
+            // iframe中内容的真实高度
+            var iframeContentHeight = $("#content").contents().find("body").find("div:first-child").height() + 24;
+            // container应该取最大高度
+            var maxHeight = containerMinHeight > containerHeight ? containerMinHeight : containerHeight;
+            maxHeight = maxHeight > windowHeight ? maxHeight : windowHeight;
+            maxHeight = maxHeight > iframeHeight ? maxHeight : iframeHeight;
+            maxHeight = maxHeight > iframeContentHeight ? maxHeight : iframeContentHeight;
+            // 如果窗口高度能满足最大高度就是用窗口高度
+            if (windowHeight > iframeContentHeight) {
+                maxHeight = windowHeight;
+            }
+            $(".container").height(maxHeight);
+            $("#content").height(maxHeight);
+            $("#content").contents().find("body").height(maxHeight);
+        }
     </script>
 </body>
 
