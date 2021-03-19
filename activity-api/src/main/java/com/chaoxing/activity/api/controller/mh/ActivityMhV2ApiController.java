@@ -118,7 +118,7 @@ public class ActivityMhV2ApiController {
 		if (ActivityTypeEnum.OFFLINE.equals(activityTypeEnum)) {
 			// 线下活动才有活动地点
 			activityAddress = Optional.ofNullable(activity.getAddress()).orElse("") + Optional.ofNullable(activity.getDetailAddress()).orElse("");
-			activityAddressLink = BaiduMapUtils.generateAddressPcUrl(activity.getLongitude(), activity.getDimension(), activity.getName(), activityAddress);
+			activityAddressLink = BaiduMapUtils.generateAddressUrl(activity.getLongitude(), activity.getDimension(), activity.getName(), activityAddress);
 		}
 		mhGeneralAppResultDataFields.add(buildField("活动地点", activityAddress, "104"));
 		// 活动地点链接（线下的活动有）
