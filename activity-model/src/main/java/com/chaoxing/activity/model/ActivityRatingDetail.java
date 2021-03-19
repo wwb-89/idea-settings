@@ -9,6 +9,7 @@ import lombok.*;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.Objects;
 
 /**
  * 活动评价详情
@@ -81,6 +82,16 @@ public class ActivityRatingDetail {
         AuditStatus(String name, Integer value) {
             this.name = name;
             this.value = value;
+        }
+
+        public static AuditStatus fromValue(Integer value) {
+            AuditStatus[] values = AuditStatus.values();
+            for (AuditStatus auditStatus : values) {
+                if (Objects.equals(auditStatus.getValue(), value)) {
+                    return auditStatus;
+                }
+            }
+            return null;
         }
     }
 

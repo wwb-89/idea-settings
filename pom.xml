@@ -27,7 +27,6 @@
 		<module>activity-api</module>
 		<module>activity-web</module>
 		<module>activity-admin</module>
-		<module>activity-task</module>
 	</modules>
 
 	<dependencyManagement>
@@ -65,11 +64,6 @@
 			<dependency>
 				<groupId>com.chaoxing</groupId>
 				<artifactId>activity-admin</artifactId>
-				<version>${project.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>com.chaoxing</groupId>
-				<artifactId>activity-task</artifactId>
 				<version>${project.version}</version>
 			</dependency>
 		</dependencies>

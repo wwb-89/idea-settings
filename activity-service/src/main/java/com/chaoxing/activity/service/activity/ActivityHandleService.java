@@ -641,6 +641,8 @@ public class ActivityHandleService {
 				return String.format(ActivityMhUrlConstant.ACTIVITY_COVER_URL, activityId);
 			case ACTIVITY_INFO:
 				return String.format(ActivityMhUrlConstant.ACTIVITY_INFO_URL, activityId);
+			case ACTIVITY_SIGN_INFO:
+				return String.format(ActivityMhUrlConstant.ACTIVITY_SIGN_INFO_URL, activityId);
 			case SIGN_IN_UP:
 				return String.format(ActivityMhUrlConstant.ACTIVITY_SIGN_URL, activityId);
 			case ACTIVITY_LIST:
@@ -678,18 +680,12 @@ public class ActivityHandleService {
 	 * @return void
 	*/
 	public void updateRatingConfig(Integer activityId, boolean openRating, boolean ratingNeedAudit, LoginUserDTO loginUser) {
-		Activity activity = activityValidationService.activityExist(activityId);
-		// 验证是不是活动的管理员
-		boolean creator = activityValidationService.isCreator(activity, loginUser);
-		if (!creator) {
-			throw new BusinessException("无权限");
-		}
+		activityValidationService.manageAble(activityId, loginUser, "");
 		activityMapper.update(null, new UpdateWrapper<Activity>()
 				.lambda()
 				.eq(Activity::getId, activityId)
 				.set(Activity::getOpenRating, openRating)
 				.set(Activity::getRatingNeedAudit, ratingNeedAudit)
-
 		);
 	}
 

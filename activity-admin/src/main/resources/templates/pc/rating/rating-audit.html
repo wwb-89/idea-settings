@@ -7,6 +7,7 @@
     <link rel="stylesheet" href="/static/pc/assets/lib/layui/css/layui.css" th:href="@{/pc/assets/lib/layui/css/layui.css}">
     <link rel="stylesheet" href="/static/pc/assets/lib/element-ui/lib/theme-chalk/index.css" th:href="@{/pc/assets/lib/element-ui/lib/theme-chalk/index.css}">
     <link rel="stylesheet" href="/static/pc/assets/css/public.css" th:href="@{/pc/assets/css/public.css}">
+    <link rel="stylesheet" href="/static/pc/assets/css/dialog.css" th:href="@{/pc/assets/css/dialog.css}">
     <link rel="stylesheet" href="/static/pc/assets/css/activity-assess.css" th:href="@{/pc/assets/css/activity-assess.css}">
     <style type="text/css">
         [v-cloak] {
@@ -49,16 +50,16 @@
             <div class="assess-check-number">共{{total}}份</div>
             <div class="assess-check-btns">
                 <i class="assess-checkd">
-                    <el-checkbox class="check-item-checkbox fl"></el-checkbox>
+                    <el-checkbox v-model="allChecked" :indeterminate="indeterminate" @change="checkAllHandle"></el-checkbox>
                 </i>
-                <div class="check-btn" @click="batchPass()">批量通过</div>
-                <div class="check-btn" @click="batchReject()">批量删除</div>
+                <div :class="{'check-btn': true, 'btn-disabled': !batchAble}" @click="batchPass">批量通过</div>
+                <div :class="{'check-btn': true, 'btn-disabled': !batchAble}" @click="batchReject">批量删除</div>
             </div>
         </div>
         <div class="no-assess" v-if="loaded && ratings.length < 1">暂无评价</div>
         <ul class="assess-list">
             <li class="assess-list-item assess-check-list-item" v-for="(rating, index) of ratings">
-                <el-checkbox v-model="rating.checked" class="check-item-checkbox fl" @change="checkChangeHandle"></el-checkbox>
+                <el-checkbox v-model="rating.checked" class="check-item-checkbox fl" @change="checkHandle"></el-checkbox>
                 <img class="fl" v-if="isAnonymousShow(index)" src="/static/pc/assets/images/niming-tx.png" th:src="@{/pc/assets/images/niming-tx.png}">
                 <img class="fl" v-else :src="'http://photo.chaoxing.com/p/'+ rating.scorerUid +'_80'">
                 <div class="check-item-content fl">
@@ -83,11 +84,16 @@
             <el-pagination background layout="prev, pager, next" v-show="ratings.length > queryParams.pageSize" :total="total" :page-size="queryParams.pageSize" :current-page="queryParams.pageNum" @current-change="changePage"></el-pagination>
         </div>
     </div>
+    <!-- 删除弹窗 -->
+    <vue-confirm ref="deleteWindow" :message="'确认删除？'" :cancel="'取消'" :sure="'删除'" @callback="rejectSubmit"></vue-confirm>
+    <!-- 批量删除弹窗 -->
+    <vue-confirm ref="batchDeleteWindow" :message="'确认删除？'" :cancel="'取消'" :sure="'删除'" @callback="batchRejectSubmit"></vue-confirm>
 </div>
 </body>
 <div th:replace="pc/include/common_js :: common_js(~{::script})">
     <script src="/static/pc/assets/lib/layui/layui.js" th:src="@{/pc/assets/lib/layui/layui.js}"></script>
     <script src="/static/pc/assets/lib/element-ui/lib/index.js" th:src="@{/pc/assets/lib/element-ui/lib/index.js}"></script>
+    <script src="/static/pc/assets/component/confirm.js" th:src="@{/pc/assets/component/confirm.js}"></script>
     <script th:inline="javascript">
         ratingVue = new Vue({
             el: "#rating-vue",
@@ -101,12 +107,28 @@
                     pageNum: 1,
                     pageSize: 10
                 },
-                allChecked: false
+                allChecked: false,
+                // 半选
+                indeterminate: false,
+                activeIndex: null
             },
             mounted: function () {
                 var $this = this;
                 $this.loadRatings();
                 $this.showMoreLess();
+            },
+            computed: {
+                "batchAble": function () {
+                    var $this = this;
+                    var existChecked = false;
+                    $($this.ratings).each(function () {
+                        if (this.checked) {
+                            existChecked = true;
+                            return false;
+                        }
+                    });
+                    return existChecked;
+                }
             },
             methods: {
                 loadRatings: function(){
@@ -120,9 +142,14 @@
                     };
                     app.ajaxPost(url, params, function (data) {
                         if (data.success) {
+                            $this.allChecked = false;
                             $this.loaded = true;
                             $this.total = data.data.total;
-                            $this.ratings = data.data.records;
+                            var ratings = data.data.records;
+                            $(ratings).each(function () {
+                                this.checked = false;
+                            });
+                            $this.ratings = ratings;
                             $this.$nextTick(function () {
                                 $this.rateList();
                             });
@@ -162,14 +189,16 @@
                 },
                 batchPass: function(){
                     var $this = this;
+                    if (!$this.batchAble) {
+                        return;
+                    }
                     checkedRatingIds = [];
                     $($this.ratings).each(function () {
-                        if(this.checked){
+                        if (this.checked) {
                             checkedRatingIds.push(this.id);
                         }
-                    })
-                    if(checkedRatingIds.length<=0){
-                        app.showMsg("请选择数据");
+                    });
+                    if (checkedRatingIds.length <= 0) {
                         return;
                     }
                     var url = ctx + "/api/activity/rating/audit/pass/batch";
@@ -195,10 +224,15 @@
                 },
                 reject: function(index){
                     var $this = this;
+                    $this.activeIndex = index;
+                    $this.$refs.deleteWindow.show = true;
+                },
+                rejectSubmit: function () {
+                    var $this = this;
                     var url = ctx + "/api/activity/rating/audit/reject";
                     var params = {
                         activityId: $this.activity.id,
-                        activityRatingDetailId: $this.ratings[index].id
+                        activityRatingDetailId: $this.ratings[$this.activeIndex].id
                     };
                     app.ajaxPost(url, params, function (data) {
                         if (data.success) {
@@ -218,13 +252,21 @@
                 },
                 batchReject: function(){
                     var $this = this;
+                    if (!$this.batchAble) {
+                        return;
+                    }
+                    $this.$refs.batchDeleteWindow.show = true;
+                },
+                // 批量删除提交
+                batchRejectSubmit: function () {
+                    var $this = this;
                     var checkedRatingIds = [];
                     $($this.ratings).each(function () {
-                        if(this.checked){
+                        if (this.checked) {
                             checkedRatingIds.push(this.id);
                         }
-                    })
-                    if(checkedRatingIds.length<=0){
+                    });
+                    if (checkedRatingIds.length <= 0) {
                         return;
                     }
                     var url = ctx + "/api/activity/rating/audit/reject/batch";
@@ -260,8 +302,8 @@
                 isAnonymousShow: function(index){
                     var $this = this;
                     var scorerUid = $this.ratings[index].scorerUid;
-                    if($this.loginUser!=null){
-                        if($this.loginUser.uid == scorerUid){
+                    if ($this.loginUser != null) {
+                        if ($this.loginUser.uid == scorerUid) {
                             return false;
                         }
                     }
@@ -324,25 +366,31 @@
                     })
                 },
                 // 监听所有checkbox改变
-                checkChangeHandle: function () {
+                checkHandle: function () {
                     var $this = this;
-                    var isAll = true;
+                    var allChecked = true;
+                    var existChecked = false;
                     $($this.ratings).each(function () {
-                        if(!this.checked){
-                            isAll = false;
+                        if (!this.checked) {
+                            allChecked = false;
+                        } else {
+                            existChecked = true;
                         }
                     })
-                    if(isAll){
-                        $this.allChecked = true;
+                    $this.allChecked = allChecked;
+                    if (allChecked) {
+                        $this.indeterminate = false;
+                    } else {
+                        $this.indeterminate = existChecked;
                     }
                 },
                 // 全选
                 checkAllHandle: function () {
                     var $this = this;
-                    $this.allChecked = !$this.allChecked;
                     $($this.ratings).each(function () {
                         this.checked = $this.allChecked;
                     });
+                    $this.indeterminate = false;
                 },
                 // 评价设置
                 toRatingSetting: function () {
