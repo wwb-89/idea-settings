@@ -73,7 +73,7 @@ public class ActivityMhV2ApiController {
 		enableSign = Optional.ofNullable(enableSign).orElse(Boolean.FALSE);
 		Integer signId = activity.getSignId();
 		List<MhGeneralAppResultDataDTO.MhGeneralAppResultDataFieldDTO> btns;
-		List<Integer> availableFlags = Lists.newArrayList(109, 111, 113, 115, 116, 117);
+		List<Integer> availableFlags = Lists.newArrayList(109, 111, 113, 115, 116, 118);
 		if (enableSign && signId != null) {
 			SignUpStatDTO signUpStat = signApiService.getSignParticipation(signId);
 			if (signUpStat.getId() != null) {
@@ -222,7 +222,7 @@ public class ActivityMhV2ApiController {
 				.flag(flag)
 				.build());
 		Integer intFlag = Integer.parseInt(flag);
-		if (intFlag.compareTo(115) <= 0) {
+		if (intFlag.compareTo(115) < 0) {
 			result.add(MhGeneralAppResultDataDTO.MhGeneralAppResultDataFieldDTO.builder()
 					.value(type)
 					.flag(String.valueOf(intFlag + 1))
