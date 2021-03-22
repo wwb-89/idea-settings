@@ -209,6 +209,7 @@
 /* 暂无内容 */
 .no-content {
     font-size: 14px;
+    /* line-height: 484px; */
     line-height: 484px;
     text-align: center;
     color: #999999;
@@ -383,223 +384,38 @@
     text-align: center;
 }
 
- .ztreeDiv {
-    border: none;
-    padding-top: 0;
-    margin-top: 10px;
-  }
-  
-   .ztreeDiv .ztree {
-    height: 364px;
-    padding-right: 16px;
-    overflow: auto;
-  }
-  
-   .ztreeDiv .ztree .node_name {
-    display: inline-block;
-    max-width: 198px !important;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
+.edit-input {
     position: relative;
+    width: 336px;
+    height: 32px;
+    padding: 6px 12px;
+    border: 1px solid #E9E9E9;
+    -webkit-box-sizing: border-box;
+     -moz-box-sizing: border-box;
+          box-sizing: border-box;
+    border-radius: 2px;
+}   
+
+.edit-input>input {
+    border: none;
+}
+
+.edit-input .input-number {
+    position: absolute;
     top: 4px;
-    color: #333333;
+    right: 12px;
     font-size: 14px;
-  }
-  
-   .ztreeDiv .ztree li {
-    position: relative;
-    line-height: 40px;
-  }
-  
-   .ztreeDiv .ztree li span.button.root_open {
-    width: 18px;
-    height: 40px;
-    background: url("../images/triangle.png") center center no-repeat;
-    transform: rotate(90deg);
-    -ms-transform: rotate(90deg);
-    /* IE 9 */
-    -moz-transform: rotate(90deg);
-    /* Firefox */
-    -webkit-transform: rotate(90deg);
-    /* Safari 和 Chrome */
-    -o-transform: rotate(90deg);
-    /* Opera */
-    position: relative;
-    z-index: 2;
-  }
-  
-   .ztreeDiv .ztree li span.button.root_close {
-    width: 18px;
-    height: 40px;
-    background: url("../images/triangle.png") center center no-repeat;
-  }
-  
-   .ztreeDiv .ztree li span.button.chk.checkbox_false_full,  .ztreeDiv .ztree li span.button.chk.checkbox_false_full_focus,  .ztreeDiv .ztree li span.button.chk.checkbox_false_part,  .ztreeDiv .ztree li span.button.chk.checkbox_false_part_focus {
-    width: 15px;
-    height: 15px;
-    background: url("../images/treeCheck.png") no-repeat;
-    position: relative;
-    top: -2px;
-    z-index: 2;
-    margin-right: 10px;
-  }
-  
-   .ztreeDiv .ztree li span.button.center_docu,  .ztreeDiv .ztree li span.button.bottom_docu,  .ztreeDiv .ztree li ul.line {
-    background: none;
-  }
-  
-   .ztreeDiv .ztree li span.button.chk.checkbox_true_full,
-   .ztreeDiv .ztree li span.button.chk.checkbox_true_full_focus {
-    width: 15px;
-    height: 15px;
-    background: url("../images/treeCheck_.png") no-repeat;
-    position: relative;
-    top: -2px;
-    z-index: 2;
-    margin-right: 10px;
-  }
-  
-   .ztreeDiv .ztree li span.button.chk.checkbox_true_part,
-   .ztreeDiv .ztree li span.button.chk.checkbox_true_part_focus {
-    width: 15px;
-    height: 15px;
-    background: url("../images/treeRadio.png") no-repeat;
-    position: relative;
-    top: -2px;
-    z-index: 2;
-    margin-right: 10px;
-  }
-  
-   .ztreeDiv .ztree li span.button.chk.checkbox_false_full {
-    position: relative;
-    z-index: 2;
-    margin-right: 10px;
-  }
-  
-   .ztreeDiv .ztree li span.button.roots_open {
-    position: relative;
-    z-index: 2;
-  }
-  
-   .ztreeDiv .ztree li span.button.ico_open {
-    display: none;
-  }
-  
-   .ztreeDiv .ztree li span.button.ico_docu {
-    display: none;
-  }
-  
-   .ztreeDiv .ztree li span.button.ico_close {
-    display: none;
-  }
-  
-   .ztreeDiv .ztree li span.button.roots_open,
-   .ztreeDiv .ztree li span.button.bottom_open,
-   .ztreeDiv .ztree li span.button.center_open {
-    display: inline-block;
-    width: 18px;
-    height: 40px;
-    background: url("../images/triangle.png") center center no-repeat;
-    position: relative;
-    z-index: 2;
-    transform: rotate(90deg);
-    -ms-transform: rotate(90deg);
-    /* IE 9 */
-    -moz-transform: rotate(90deg);
-    /* Firefox */
-    -webkit-transform: rotate(90deg);
-    /* Safari 和 Chrome */
-    -o-transform: rotate(90deg);
-    /* Opera */
-  }
-  
-   .ztreeDiv .ztree li span.button.roots_close,
-   .ztreeDiv .ztree li span.button.bottom_close,
-   .ztreeDiv .ztree li span.button.center_close {
-    width: 18px;
-    height: 40px;
-    background: url("../images/triangle.png") center center no-repeat;
-  }
-  
-   .ztreeDiv .ztree li a {
-    width: 358px;
-    height: 40px;
-    padding: 0;
-    padding-left: 16px;
-  }
-  
-   .ztreeDiv .ztree li a:hover {
-    text-decoration: none !important;
-    background: #F8F8F8;
-  }
-  
-   .ztreeDiv .ztree li ul {
-    margin:0;
-    padding:0;
-  }
-  
-   .ztreeDiv .ztree li a.curSelectedNode {
-    background: #FFF;
-    border: none;
-    opacity: 1;
-  }
-  
-   .ztreeDiv .ztree li .stuImg {
-    width: 25px;
-    height: 25px;
-    border-radius: 18px;
-    position: relative;
-    top: 5px;
-    margin-right: 6px;
-  }
-  
-   .ztreeDiv .ztree span.button.chk {
-    float: right;
-    position: relative;
-    top: 14px !important;
-  }
-  
-   .ztreeDiv .ztree .piaochecked {
-    width: 15px;
-    height: 15px;
-    cursor: pointer;
-    margin-right: 4px;
-    text-align: center;
-    background: url("../images/PCtreeCheck.png") no-repeat;
-    background-size: 100%;
-  }
-  
-   .ztreeDiv .ztree .on_check {
-    background: url("../images/PCtreeCheck_.png") no-repeat;
-    background-size: 100%;
-  }
-  
-   .ztreeDiv .ztree .checkboxBtn {
-    opacity: 0;
-    cursor: pointer;
-    -ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=0)";
-    filter: alpha(opacity=0);
-  }
-  
-   .ztreeDiv .ztree.fileShow .node_name {
-    max-width: 178px !important;
-  }
-  
-   .ztreeDiv .ztree.fileShow li span.button.ico_open {
-    display: inline-block;
-    position: relative;
-    top: 12px;
-  }
-  
-   .ztreeDiv .ztree.fileShow li span.button.ico_docu {
-    display: inline-block;
-    position: relative;
-    top: 12px;
-  }
-  
-   .ztreeDiv .ztree.fileShow li span.button.ico_close {
-    display: inline-block;
-    position: relative;
-    top: 12px;
-  }
+    line-height: 22px;
+    color: #999;
+}
+
+.activity-type {
+    border-radius: 10px;
+    height: 925px;
+}
+
+.btn-submit-dsiable {
+    background: rgba(0, 132, 255, 0.3);
+    color: #FFFFFF;
+}
+
