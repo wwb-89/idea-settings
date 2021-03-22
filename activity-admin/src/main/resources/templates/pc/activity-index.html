@@ -120,7 +120,7 @@
                 resizePageHeight: function () {
                     // container的最小高度
                     var containerMinHeight = $(".container").css("min-height");
-                    containerMinHeight = containerMinHeight.replaceAll("px", "");
+                    containerMinHeight = containerMinHeight.replace(/px/gi, "");
                     var containerHeight = $(".container").height();
                     // 窗口的高度
                     var windowHeight = $(window).height() - 40;
