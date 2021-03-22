@@ -960,6 +960,53 @@
             }
         });
     };
+
+    app.prototype.ajaxPostWithPayloadLoading = function(url, params, success, error, tips){
+        var $this = this;
+        var object = $this.loading("正在处理");
+        $.ajax({
+            url: url,
+            type: "post",
+            data: params,
+            contentType:"application/json;charset=UTF-8",
+            dataType: "json",
+            xhrFields: {
+                withCredentials: true
+            },
+            success: function(data){
+                if (!$this.isEmpty(tips)) {
+                    if (data.success) {
+                        object.close();
+                        $this.showMsg(tips + "成功");
+                        setTimeout(function () {
+                            success(data);
+                        }, 1500);
+                    } else {
+                        var errorMessage = data.message;
+                        if ($this.isEmpty(errorMessage)) {
+                            errorMessage = tips + "失败";
+                        }
+                        object.close();
+                        $this.showMsg(errorMessage);
+                    }
+                }else {
+                    success(data);
+                }
+            },
+            error:function(){
+                object.close();
+                if (!$this.isEmpty(tips)) {
+                    $this.showMsg(tips + "失败");
+                } else {
+                    error();
+                }
+            },
+            complete:function () {
+                object.close();
+            }
+        });
+    };
+
     app.prototype.loading = function (tips) {
         var toast = $(document).dialog({
             type : 'toast',
@@ -1050,6 +1097,20 @@
             ]
         });
     };
+
+    /**
+     * 拍照
+     * @param callBack
+     */
+    app.prototype.concat = function (callBack) {
+        var cmd = "CLIENT_CHOOSE_NEWCONTACT";
+        var rcmd = "CLIENT_CHOOSE_CONTACT_RESULT";
+
+        B.unbind(rcmd);
+        callBack && B.bind(rcmd, callBack);
+        B.postNotification(cmd, {'multiple':true,'chooseDept':false,'choosePerson':true,'deptType':0});
+    };
+
     W['app'] = new app();
 })(window, jQuery, JSON, jsBridge);
 Array.prototype.remove = function(val) {
@@ -1064,6 +1125,14 @@ Array.prototype.pushArray = function (array) {
         that.push(this);
     });
 }
+
+Array.prototype.unshiftArray = function (array) {
+    var that = this;
+    $.each(array, function () {
+        that.unshift(this);
+    });
+}
+
 Array.prototype.contains = function (val) {
     var result = false;
     $(this).each(function () {

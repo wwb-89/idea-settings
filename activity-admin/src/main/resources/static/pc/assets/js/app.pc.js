@@ -85,6 +85,27 @@
             }
         });
     };
+    app.prototype.ajaxPostWithPayload = function(url, params, success){
+        $.ajax({
+            url: url,
+            type: "post",
+            data: params,
+            contentType:"application/json;charset=UTF-8",
+            dataType: "json",
+            xhrFields: {
+                withCredentials: true
+            },
+            success: function(data) {
+                success(data);
+            },
+            error:function(){
+
+            },
+            complete:function () {
+            }
+        });
+    };
+
 
     /**
      * 显示信息
