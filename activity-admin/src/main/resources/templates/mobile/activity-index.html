@@ -35,6 +35,11 @@
             <p class="flTxt">签到管理</p>
             <i class="icon-arrow-r marginAuto"></i>
         </div>
+        <div class="item" v-if="(signActivityManageIndex.signUpExist || signActivityManageIndex.signInExist)" @click="resultsManage">
+            <img src="/static/mobile/assets/images/admin/score-icon.png" th:src="@{/mobile/assets/images/admin/score-icon.png}">
+            <p class="flTxt">成绩管理</p>
+            <i class="icon-arrow-r marginAuto"></i>
+        </div>
         <div class="item" v-if="signActivityManageIndex.signUpExist" @click="sendNotice">
             <img src="/static/mobile/assets/images/admin/notice.png" th:src="@{/mobile/assets/images/admin/notice.png}">
             <p class="flTxt">发通知</p>
@@ -84,6 +89,12 @@
                     signInManage: function () {
                         var $this = this;
                         var url = "https://reading.chaoxing.com/qd/m/manage/sign-in/list?signId=" + $this.signActivityManageIndex.signId;
+                        app.openUrl(url);
+                    },
+                    // 成绩管理
+                    resultsManage: function () {
+                        var $this = this;
+                        var url = "https://reading.chaoxing.com/qd/m/manage/results?signId=" + $this.signActivityManageIndex.signId;
                         app.openUrl(url);
                     },
                     // 发通知
