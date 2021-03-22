@@ -82,3 +82,20 @@ server:
   tomcat:
     ## 不限制post的大小
     max-http-form-post-size: -1
+## actuator配置
+management:
+  access:
+    ip-white-list: 127.0.0.1
+  endpoints:
+    web:
+      base-path: /engine-actuator
+      exposure:
+        ## 暴露所有的端点
+        include: '*'
+    ## 启用所有端点
+    enabled-by-default: true
+  endpoint:
+    health:
+      show-details: always
+    env:
+      enabled: false
