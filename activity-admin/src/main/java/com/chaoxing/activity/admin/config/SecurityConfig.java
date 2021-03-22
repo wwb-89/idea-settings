@@ -1,5 +1,6 @@
 package com.chaoxing.activity.admin.config;
 
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -28,7 +29,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 		//hasIpAddress('10.0.0.0/16') or hasIpAddress('127.0.0.1/32')
 		String[] splitAddress = ipWhiteList.split(",");
 		for (String ip : splitAddress) {
-			if (ipRule.equals("")) {
+			if (StringUtils.isBlank(ipRule)) {
 				ipRule = "hasIpAddress('" + ip + "')";
 			} else {
 				ipRule += " or hasIpAddress('" + ip + "')";

@@ -38,6 +38,8 @@ import java.util.Optional;
 @RequestMapping("mh/v2")
 public class ActivityMhV2ApiController {
 
+	private static final Integer MULTI_BTN_MAX_FLAG = 115;
+
 	@Resource
 	private ActivityQueryService activityQueryService;
 	@Resource
@@ -222,7 +224,7 @@ public class ActivityMhV2ApiController {
 				.flag(flag)
 				.build());
 		Integer intFlag = Integer.parseInt(flag);
-		if (intFlag.compareTo(115) < 0) {
+		if (intFlag.compareTo(MULTI_BTN_MAX_FLAG) < 0) {
 			result.add(MhGeneralAppResultDataDTO.MhGeneralAppResultDataFieldDTO.builder()
 					.value(type)
 					.flag(String.valueOf(intFlag + 1))

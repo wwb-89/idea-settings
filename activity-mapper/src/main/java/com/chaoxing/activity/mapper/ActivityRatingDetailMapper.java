@@ -43,6 +43,7 @@ public interface ActivityRatingDetailMapper extends BaseMapper<ActivityRatingDet
      *
      * @param activityId
      * @param ratingDetailIds
+     * @param auditStatus
      * @return
      */
     Integer batchUpAuditStatus(@Param("activityId") Integer activityId, @Param("ratingDetailIds") List<Integer> ratingDetailIds, @Param("auditStatus") Integer auditStatus);
