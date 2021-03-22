@@ -203,17 +203,26 @@ public class ActivityQueryService {
 	 * @return com.baomidou.mybatisplus.extension.plugins.pagination.Page<com.chaoxing.activity.model.Activity>
 	*/
 	public Page<Activity> listManaging(Page<Activity> page, ActivityManageQueryDTO activityManageQuery, LoginUserDTO loginUser) {
-		List<Integer> fids = new ArrayList<>();
-		Integer fid = loginUser.getFid();
-		List<WfwRegionalArchitectureDTO> wfwRegionalArchitectures = wfwRegionalArchitectureApiService.listByFid(fid);
-		if (CollectionUtils.isNotEmpty(wfwRegionalArchitectures)) {
-			List<Integer> subFids = wfwRegionalArchitectures.stream().map(WfwRegionalArchitectureDTO::getFid).collect(Collectors.toList());
-			fids.addAll(subFids);
+		Integer strict = activityManageQuery.getStrict();
+		strict = Optional.ofNullable(strict).orElse(0);
+		if (strict.compareTo(1) == 0) {
+			// 严格模式
+			activityManageQuery.setCreateUid(loginUser.getUid());
+			activityManageQuery.setCreateWfwfid(loginUser.getFid());
+			page = activityMapper.pageCreated(page, activityManageQuery);
 		} else {
-			fids.add(fid);
+			List<Integer> fids = new ArrayList<>();
+			Integer fid = loginUser.getFid();
+			List<WfwRegionalArchitectureDTO> wfwRegionalArchitectures = wfwRegionalArchitectureApiService.listByFid(fid);
+			if (CollectionUtils.isNotEmpty(wfwRegionalArchitectures)) {
+				List<Integer> subFids = wfwRegionalArchitectures.stream().map(WfwRegionalArchitectureDTO::getFid).collect(Collectors.toList());
+				fids.addAll(subFids);
+			} else {
+				fids.add(fid);
+			}
+			activityManageQuery.setFids(fids);
+			page = activityMapper.pageManaging(page, activityManageQuery);
 		}
-		activityManageQuery.setFids(fids);
-		page = activityMapper.pageManaging(page, activityManageQuery);
 		return page;
 	}
 

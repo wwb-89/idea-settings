@@ -18,7 +18,7 @@
             <span th:text="${activity.name}">成都少儿阅读活动</span>
         </div>
         <div class="menu">
-            <div class="entry">
+            <div class="entry menu-item">
                 <!--报名名单-->
                 <div :class="{'item': true, 'active': menus.signUpList.selected}" v-if="signActivityManageIndex.signUpExist" @click="toSignUpList">
                     <img :src="menus.signUpList.activeIconUrl" v-if="menus.signUpList.selected">
@@ -32,15 +32,21 @@
                     <span>{{menus.signInManage.name}}</span>
                 </div>
             </div>
-            <div class="entry">
+            <div class="entry menu-item">
                 <!--成绩管理-->
                 <div :class="{'item': true, 'active': menus.resultsManage.selected}" v-if="signActivityManageIndex.signUpExist || signActivityManageIndex.signInExist" @click="toResultsManage">
                     <img :src="menus.resultsManage.activeIconUrl" v-if="menus.resultsManage.selected">
                     <img :src="menus.resultsManage.defaultIconUrl" v-else>
                     <span>{{menus.resultsManage.name}}</span>
                 </div>
+                <!--组织者管理-->
+                <div :class="{'item': true, 'active': menus.managerManage.selected}" @click="toResultsManage" v-if="false">
+                    <img :src="menus.managerManage.activeIconUrl" v-if="menus.managerManage.selected">
+                    <img :src="menus.managerManage.defaultIconUrl" v-else>
+                    <span>{{menus.managerManage.name}}</span>
+                </div>
             </div>
-            <div class="message" v-if="signActivityManageIndex.signUpExist">
+            <div class="message menu-item" v-if="signActivityManageIndex.signUpExist">
                 <!--发通知-->
                 <div :class="{'item': true, 'active': menus.notice.selected}" @click="toAddNotice">
                     <img :src="menus.notice.activeIconUrl" v-if="menus.notice.selected">
@@ -48,7 +54,7 @@
                     <span>{{menus.notice.name}}</span>
                 </div>
             </div>
-            <div class="statistics" v-show="false">
+            <div class="statistics menu-item" v-show="false">
                 <!--统计-->
                 <div :class="{'item': true, 'active': menus.stat.selected}">
                     <img :src="menus.stat.activeIconUrl" v-if="menus.stat.selected">
@@ -79,7 +85,8 @@
                     // 报名签到
                     signUpList: {name: "报名名单", defaultIconUrl: ctx + "/pc/assets/images/icon-name-list-default.png", activeIconUrl: ctx + "/pc/assets/images/icon-name-list-active.png", url: "//reading.chaoxing.com/qd/manage/sign-up/" + [[${signActivityManageIndex.signUpId}]], selected: false},
                     signInManage: {name: "签到管理", defaultIconUrl: ctx + "/pc/assets/images/icon-sign-in-default.png", activeIconUrl: ctx + "/pc/assets/images/icon-sign-in-active.png", url: "//reading.chaoxing.com/qd/manage/sign-in/list?signId=" + [[${signActivityManageIndex.signId}]], selected: false},
-                    resultsManage: {name: "成绩管理", defaultIconUrl: ctx + "/pc/assets/images/icon-sign-in-default.png", activeIconUrl: ctx + "/pc/assets/images/icon-sign-in-active.png", url: "//reading.chaoxing.com/qd/manage/results?signId=" + [[${signActivityManageIndex.signId}]], selected: false},
+                    resultsManage: {name: "成绩管理", defaultIconUrl: ctx + "/pc/assets/images/icon-grade-manage-default.png", activeIconUrl: ctx + "/pc/assets/images/icon-grade-manage-active.png", url: "//reading.chaoxing.com/qd/manage/results?signId=" + [[${signActivityManageIndex.signId}]], selected: false},
+                    managerManage: {name: "组织者管理", defaultIconUrl: ctx + "/pc/assets/images/icon-organizer-default.png", activeIconUrl: ctx + "/pc/assets/images/icon-organizer-active.png", url: "//reading.chaoxing.com/qd/manage/results?signId=" + [[${signActivityManageIndex.signId}]], selected: false},
                     // 通知
                     notice: {name: "发通知", defaultIconUrl: ctx + "/pc/assets/images/icon-notice-default.png", activeIconUrl: ctx + "/pc/assets/images/icon-notice-active.png", url: "//reading.chaoxing.com/qd/manage/notice/add?signId=" + [[${signActivityManageIndex.signId}]], selected: false},
                     // 统计
@@ -113,7 +120,7 @@
                 resizePageHeight: function () {
                     // container的最小高度
                     var containerMinHeight = $(".container").css("min-height");
-                    containerMinHeight = containerMinHeight.replaceAll("px", "");
+                    containerMinHeight = containerMinHeight.replace(/px/gi, "");
                     var containerHeight = $(".container").height();
                     // 窗口的高度
                     var windowHeight = $(window).height() - 40;

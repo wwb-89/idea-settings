@@ -18,6 +18,8 @@ public class ActivityMhUrlConstant {
 	public static final String ACTIVITY_COVER_URL = UrlConstant.API_DOMAIN + "/mh/activity/%d/cover/";
 	/** 活动信息外部数据源url */
 	public static final String ACTIVITY_INFO_URL = UrlConstant.API_DOMAIN + "/mh/activity/%d/info";
+	/** 活动报名信息外部数据源url */
+	public static final String ACTIVITY_SIGN_INFO_URL = UrlConstant.API_DOMAIN + "/mh/v2/activity/%d/info";
 	/** 推荐活动外部数据源url */
 	public static final String ACTIVITY_RECOMMEND_URL = UrlConstant.API_DOMAIN + "/mh/activity/%d/recommend";
 	/** 报名签到外部数据源url */

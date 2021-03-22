@@ -5,13 +5,11 @@ import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.Objects;
 
 /**
  * 活动评价详情
@@ -61,5 +59,40 @@ public class ActivityRatingDetail {
     private LocalDateTime updateTime;
     /** 更新人uid; column: update_uid*/
     private Integer updateUid;
+
+    /** 审核状态枚举
+     * @className ActivityRatingDetail
+     * @description 
+     * @author wwb
+     * @blame wwb
+     * @date 2021-03-17 14:22:07
+     * @version ver 1.0
+     */
+    @Getter
+    public enum AuditStatus {
+
+        /** 不通过 */
+        REJECT("不通过", 0),
+        PASSED("通过", 1),
+        WAIT("待审核", 2);
+
+        private String name;
+        private Integer value;
+
+        AuditStatus(String name, Integer value) {
+            this.name = name;
+            this.value = value;
+        }
+
+        public static AuditStatus fromValue(Integer value) {
+            AuditStatus[] values = AuditStatus.values();
+            for (AuditStatus auditStatus : values) {
+                if (Objects.equals(auditStatus.getValue(), value)) {
+                    return auditStatus;
+                }
+            }
+            return null;
+        }
+    }
 
 }

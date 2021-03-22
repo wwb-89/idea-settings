@@ -6,9 +6,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="../assets/lib/element-ui/lib/theme-chalk/index.css">
     <link rel="stylesheet" href="../assets/lib/layui/css/layui.css">
-    <link rel="stylesheet" href="../assets/lib/zTree_v3/css/zTreeStyle/zTreeStyle.css">
     <link rel="stylesheet" href="../assets/css/public.css">
-    <link rel="stylesheet" href="../assets/css/create.css">
+    <link rel="stylesheet" href="../assets/css/dialog.css">
     <link rel="stylesheet" href="../assets/css/organizer-manage.css">
     <title>组织者管理</title>
 </head>
@@ -19,7 +18,7 @@
             组织者管理
         </div>
         <div class="manage-content">
-            <div class="btn-add btn-size fl" onclick="addStuFun()">
+            <div class="btn-add btn-size fl" @click="addShow = true">
                 <img src="../assets/images/add-small.png" alt="">
                 <span>添加</span>
             </div>
@@ -122,26 +121,336 @@
             </div>
         </div>
 
-        <!--添加学生-->
-        <div id="addStu" class="addGrade" style="display: none">
-            <div class="gradeList">
-                <div class="leftCon">
-                    <div class="position">
-                        <input placeholder="姓名/手机号/工号">
-                        <img src="../assets/images/icon-search.png" onclick="positionNode()">
+        <!--添加弹框-->
+        <div class="dailog-box1" v-show="addShow">
+            <div class="dailog choose-dialog">
+                <div class="header">
+                    <span>选择人员</span>
+                    <img src="../assets/images/close.png" alt="" class="close" @click="addShow = false">
+                </div>
+                <div class="body clear">
+                    <div class="choose-list fl">
+                        <div class="search">
+                            <input class="search-ipt" type="text" name="" id="" placeholder="姓名/手机号"
+                                v-model="addIptValue" @input="addIptValueHandle">
+                            <i class="icon close" v-show="closeValue" @click="clearIptValue"></i>
+                            <i class="icon search-icon"></i>
+                        </div>
+                        <div class="crumb" style="display: block;">
+                            <ul class="clear">
+                                <li class="back-item">全部</li>
+                                <li> > 通讯录1</li>
+                            </ul>
+                        </div>
+                        <div class="catalog-list" style="display: block;">
+                            <div class="catalog-item">
+                                <div class="catalog-photo">
+                                    <img src="../assets/images/catalog1.png" alt="">
+                                </div>
+                                <div class="catalog-title">
+                                    层级名称层级名称层级名称层级名称层级名称
+                                </div>
+                                <img class="right-img" src="../assets/images/icon-right.png" alt="">
+                            </div>
+                            <div class="catalog-item">
+                                <div class="catalog-photo">
+                                    <img src="../assets/images/catalog1.png" alt="">
+                                </div>
+                                <div class="catalog-title">
+                                    层级名称层级名
+                                </div>
+                                <img class="right-img" src="../assets/images/icon-right.png" alt="">
+                            </div>
+                            <div class="catalog-item">
+                                <div class="catalog-photo">
+                                    <img src="../assets/images/catalog2.png" alt="">
+                                </div>
+                                <div class="catalog-title">
+                                    小组名称
+                                </div>
+                                <img class="right-img" src="../assets/images/icon-right.png" alt="">
+                            </div>
+                            <div :class='["catalog-item",checked==true ? "bgc-blue" : ""]'>
+                                <div class="catalog-photo">
+                                    <img src="../assets/images/catalog-tx.png" alt="">
+                                </div>
+                                <div class="catalog-title">
+                                    小组名称
+                                </div>
+                                <el-checkbox class="right-check" v-model="checked"></el-checkbox>
+                            </div>
+                            <div :class='["catalog-item",checked1==true ? "bgc-blue" : ""]'>
+                                <div class="catalog-photo">
+                                    <img src="../assets/images/catalog-tx.png" alt="">
+                                </div>
+                                <div class="catalog-title">
+                                    小组名称
+                                </div>
+                                <el-checkbox class="right-check" v-model="checked1"></el-checkbox>
+                            </div>
+                            <div :class='["catalog-item",checked2==true ? "bgc-blue" : ""]'>
+                                <div class="catalog-photo">
+                                    <img src="../assets/images/catalog-tx.png" alt="">
+                                </div>
+                                <div class="catalog-title">
+                                    小组名称
+                                </div>
+                                <el-checkbox class="right-check" v-model="checked2"></el-checkbox>
+                            </div>
+                            <div :class='["catalog-item",checked2==true ? "bgc-blue" : ""]'>
+                                <div class="catalog-photo">
+                                    <img src="../assets/images/catalog-tx.png" alt="">
+                                </div>
+                                <div class="catalog-title">
+                                    小组名称
+                                </div>
+                                <el-checkbox class="right-check" v-model="checked2"></el-checkbox>
+                            </div>
+                            <div :class='["catalog-item",checked2==true ? "bgc-blue" : ""]'>
+                                <div class="catalog-photo">
+                                    <img src="../assets/images/catalog-tx.png" alt="">
+                                </div>
+                                <div class="catalog-title">
+                                    小组名称
+                                </div>
+                                <el-checkbox class="right-check" v-model="checked2"></el-checkbox>
+                            </div>
+                            <div :class='["catalog-item",checked2==true ? "bgc-blue" : ""]'>
+                                <div class="catalog-photo">
+                                    <img src="../assets/images/catalog-tx.png" alt="">
+                                </div>
+                                <div class="catalog-title">
+                                    小组名称
+                                </div>
+                                <el-checkbox class="right-check" v-model="checked2"></el-checkbox>
+                            </div>
+                            <div :class='["catalog-item",checked2==true ? "bgc-blue" : ""]'>
+                                <div class="catalog-photo">
+                                    <img src="../assets/images/catalog-tx.png" alt="">
+                                </div>
+                                <div class="catalog-title">
+                                    小组名称
+                                </div>
+                                <el-checkbox class="right-check" v-model="checked2"></el-checkbox>
+                            </div>
+                            <div :class='["catalog-item",checked2==true ? "bgc-blue" : ""]'>
+                                <div class="catalog-photo">
+                                    <img src="../assets/images/catalog-tx.png" alt="">
+                                </div>
+                                <div class="catalog-title">
+                                    小组名称
+                                </div>
+                                <el-checkbox class="right-check" v-model="checked2"></el-checkbox>
+                            </div>
+                            <div :class='["catalog-item",checked2==true ? "bgc-blue" : ""]'>
+                                <div class="catalog-photo">
+                                    <img src="../assets/images/catalog-tx.png" alt="">
+                                </div>
+                                <div class="catalog-title">
+                                    小组名称
+                                </div>
+                                <el-checkbox class="right-check" v-model="checked2"></el-checkbox>
+                            </div>
+                            <div :class='["catalog-item",checked2==true ? "bgc-blue" : ""]'>
+                                <div class="catalog-photo">
+                                    <img src="../assets/images/catalog-tx.png" alt="">
+                                </div>
+                                <div class="catalog-title">
+                                    小组名称
+                                </div>
+                                <el-checkbox class="right-check" v-model="checked2"></el-checkbox>
+                            </div>
+                            <div :class='["catalog-item",checked2==true ? "bgc-blue" : ""]'>
+                                <div class="catalog-photo">
+                                    <img src="../assets/images/catalog-tx.png" alt="">
+                                </div>
+                                <div class="catalog-title">
+                                    小组名称
+                                </div>
+                                <el-checkbox class="right-check" v-model="checked2"></el-checkbox>
+                            </div>
+                            <div :class='["catalog-item",checked2==true ? "bgc-blue" : ""]'>
+                                <div class="catalog-photo">
+                                    <img src="../assets/images/catalog-tx.png" alt="">
+                                </div>
+                                <div class="catalog-title">
+                                    小组名称
+                                </div>
+                                <el-checkbox class="right-check" v-model="checked2"></el-checkbox>
+                            </div>
+                            <div :class='["catalog-item",checked2==true ? "bgc-blue" : ""]'>
+                                <div class="catalog-photo">
+                                    <img src="../assets/images/catalog-tx.png" alt="">
+                                </div>
+                                <div class="catalog-title">
+                                    小组名称
+                                </div>
+                                <el-checkbox class="right-check" v-model="checked2"></el-checkbox>
+                            </div>
+                            <div :class='["catalog-item",checked2==true ? "bgc-blue" : ""]'>
+                                <div class="catalog-photo">
+                                    <img src="../assets/images/catalog-tx.png" alt="">
+                                </div>
+                                <div class="catalog-title">
+                                    小组名称
+                                </div>
+                                <el-checkbox class="right-check" v-model="checked2"></el-checkbox>
+                            </div>
+                            <div :class='["catalog-item",checked2==true ? "bgc-blue" : ""]'>
+                                <div class="catalog-photo">
+                                    <img src="../assets/images/catalog-tx.png" alt="">
+                                </div>
+                                <div class="catalog-title">
+                                    小组名称
+                                </div>
+                                <el-checkbox class="right-check" v-model="checked2"></el-checkbox>
+                            </div>
+                            <div :class='["catalog-item",checked2==true ? "bgc-blue" : ""]'>
+                                <div class="catalog-photo">
+                                    <img src="../assets/images/catalog-tx.png" alt="">
+                                </div>
+                                <div class="catalog-title">
+                                    小组名称
+                                </div>
+                                <el-checkbox class="right-check" v-model="checked2"></el-checkbox>
+                            </div>
+                        </div>
+                        <div class="loading" style="display: block;">
+                            <img src="../assets/images/icon-loading.png" alt="">
+                            <span>加载中</span>
+                        </div>
+                        <div class="empty-content" style="display: none;">
+                            无搜索结果
+                        </div>
                     </div>
-                    <div class="ztreeDiv">
-                        <div class="ztree" id="organizationTree"></div>
+                    <div class="item-choosed fl">
+                        <div class="choose-number">已选0人</div>
+                        <div class="catalog-list" style="display: block;">
+                            <div class="catalog-item">
+                                <div class="catalog-photo">
+                                    <img src="../assets/images/catalog-tx.png" alt="">
+                                </div>
+                                <div class="catalog-title">
+                                    侯伟
+                                </div>
+                                <div class="del-img"></div>
+                            </div>
+                            <div class="catalog-item">
+                                <div class="catalog-photo">
+                                    <img src="../assets/images/catalog-tx.png" alt="">
+                                </div>
+                                <div class="catalog-title">
+                                    侯伟
+                                </div>
+                                <div class="del-img"></div>
+                            </div>
+                            <div class="catalog-item">
+                                <div class="catalog-photo">
+                                    <img src="../assets/images/catalog-tx.png" alt="">
+                                </div>
+                                <div class="catalog-title">
+                                    侯伟
+                                </div>
+                                <div class="del-img"></div>
+                            </div>
+                            <div class="catalog-item">
+                                <div class="catalog-photo">
+                                    <img src="../assets/images/catalog-tx.png" alt="">
+                                </div>
+                                <div class="catalog-title">
+                                    侯伟
+                                </div>
+                                <div class="del-img"></div>
+                            </div>
+                            <div class="catalog-item">
+                                <div class="catalog-photo">
+                                    <img src="../assets/images/catalog-tx.png" alt="">
+                                </div>
+                                <div class="catalog-title">
+                                    侯伟
+                                </div>
+                                <div class="del-img"></div>
+                            </div>
+                            <div class="catalog-item">
+                                <div class="catalog-photo">
+                                    <img src="../assets/images/catalog-tx.png" alt="">
+                                </div>
+                                <div class="catalog-title">
+                                    侯伟
+                                </div>
+                                <div class="del-img"></div>
+                            </div>
+                            <div class="catalog-item">
+                                <div class="catalog-photo">
+                                    <img src="../assets/images/catalog-tx.png" alt="">
+                                </div>
+                                <div class="catalog-title">
+                                    侯伟
+                                </div>
+                                <div class="del-img"></div>
+                            </div>
+                            <div class="catalog-item">
+                                <div class="catalog-photo">
+                                    <img src="../assets/images/catalog-tx.png" alt="">
+                                </div>
+                                <div class="catalog-title">
+                                    侯伟
+                                </div>
+                                <div class="del-img"></div>
+                            </div>
+                            <div class="catalog-item">
+                                <div class="catalog-photo">
+                                    <img src="../assets/images/catalog-tx.png" alt="">
+                                </div>
+                                <div class="catalog-title">
+                                    侯伟
+                                </div>
+                                <div class="del-img"></div>
+                            </div>
+                            <div class="catalog-item">
+                                <div class="catalog-photo">
+                                    <img src="../assets/images/catalog-tx.png" alt="">
+                                </div>
+                                <div class="catalog-title">
+                                    侯伟
+                                </div>
+                                <div class="del-img"></div>
+                            </div>
+                            <div class="catalog-item">
+                                <div class="catalog-photo">
+                                    <img src="../assets/images/catalog-tx.png" alt="">
+                                </div>
+                                <div class="catalog-title">
+                                    侯伟
+                                </div>
+                                <div class="del-img"></div>
+                            </div>
+                            <div class="catalog-item">
+                                <div class="catalog-photo">
+                                    <img src="../assets/images/catalog-tx.png" alt="">
+                                </div>
+                                <div class="catalog-title">
+                                    侯伟
+                                </div>
+                                <div class="del-img"></div>
+                            </div>
+                            <div class="catalog-item">
+                                <div class="catalog-photo">
+                                    <img src="../assets/images/catalog-tx.png" alt="">
+                                </div>
+                                <div class="catalog-title">
+                                    侯伟
+                                </div>
+                                <div class="del-img"></div>
+                            </div>
+                        </div>
                     </div>
                 </div>
-                <div class="rightCon">
-                    <div class="title">已选</div>
-                    <div class="selectedList selectedList1">
-                        <ul>
-                        </ul>
-                    </div>
+                <div class="footer">
+                    <div class="normal-btn cancle" @click="addShow=false">取消</div>
+                    <div class="normal-btn before-sure">完成</div>
+                    <div class="normal-btn after-sure">完成</div>
                 </div>
-                <div class="clear"></div>
             </div>
         </div>
     </div>
@@ -151,13 +460,11 @@
 </html>
 <script type="text/javascript" src="../assets/lib/vue.js"></script>
 <script type="text/javascript" src="../assets/lib/jquery.min.js"></script>
+<script type="text/javascript" src="../assets/lib/jquery.nicescroll.min.js"></script>
 <script type="text/javascript" src="../assets/lib/element-ui/lib/index.js"></script>
 <script type="text/javascript" src="../assets/lib/layer/layer.js"></script>
 <script type="text/javascript" src="../assets/lib/layui/layui.js"></script>
-<script type="text/javascript" src="../assets/lib/zTree_v3/js/jquery-1.4.4.min.js"></script>
-<script type="text/javascript" src="../assets/lib/zTree_v3/js/jquery.ztree.core.js"></script>
-<script type="text/javascript" src="../assets/lib/zTree_v3/js/jquery.ztree.excheck.js"></script>
-<script type="text/javascript" src="../assets/lib/zTree_v3/js/jquery.ztree.exedit.js"></script>
+
 
 <script>
     var vm = new Vue({
@@ -175,14 +482,24 @@
                 value3: false,
                 // 成绩管理状态
                 value4: false,
-                deleteShow: false
+                // 删除弹出框
+                deleteShow: false,
+                //添加弹出框
+                addShow: false,
+                // 添加弹框 input 值
+                addIptValue: "",
+                // 输入框清空按钮是否显示
+                closeValue: false,
+                checked: false,
+                checked1: false,
+                checked2: false
             }
         },
         created: function () {
 
         },
         mounted: function () {
-
+            this.initScroll()
         },
         methods: {
             checkChangeHandle: function () {
@@ -211,253 +528,30 @@
             handleSure: function () {
                 layer.msg('移除成功');
                 this.deleteShow = false
+            },
+            // 监听添加弹框input
+            addIptValueHandle: function () {
+                if (this.addIptValue.trim() !== "") {
+                    this.closeValue = true
+                } else {
+                    this.closeValue = false
+                }
+            },
+            // 清空输入框的值
+            clearIptValue: function () {
+                this.addIptValue = "";
+                this.closeValue = false;
+            },
+            initScroll: function () {
+                $(".item-choosed,.choose-list").niceScroll({
+                    cursorborder: "",
+                    cursorwidth: 8,
+                    cursorcolor: "#DADADA",
+                    boxzoom: false,
+                    autohidemode: true
+                });
+                $(".item-choosed,.choose-list").getNiceScroll().resize();
             }
         }
     });
-
-    $(function () {
-        layui.use(['form', 'layer', 'laypage', 'upload'], function () {
-            var $ = layui.jquery,
-                layer = layui.layer
-        });
-
-        $(".position input").keypress(function (event) {
-            if (event.which === 13) {
-                positionNode();
-            }
-        })
-    })
-    var zNodes = [{
-            id: 1,
-            pId: 0,
-            name: "北京外国语学校（教导处）",
-            open: false,
-            isSelect: false
-        },
-        {
-            id: 11,
-            pId: 1,
-            name: "一年级",
-            open: false,
-            isSelect: false
-        },
-        {
-            id: 111,
-            pId: 11,
-            name: "1班",
-            isSelect: false
-        },
-        {
-            id: 112,
-            pId: 11,
-            name: "2班",
-            isSelect: false
-        },
-        {
-            id: 1111,
-            pId: 111,
-            name: "小明",
-            img: "http://photo.chaoxing.com/p/70458705_80",
-            isSelect: true
-        },
-        {
-            id: 1112,
-            pId: 111,
-            name: "小红",
-            img: "http://photo.chaoxing.com/p/70458705_80",
-            isSelect: true
-        },
-        {
-            id: 1121,
-            pId: 112,
-            name: "小刚",
-            img: "http://photo.chaoxing.com/p/70458705_80",
-            isSelect: true
-        },
-        {
-            id: 1123,
-            pId: 112,
-            name: "小黑",
-            img: "http://photo.chaoxing.com/p/70458705_80",
-            isSelect: true
-        },
-        {
-            id: 1124,
-            pId: 112,
-            name: "小白",
-            img: "http://photo.chaoxing.com/p/70458705_80",
-            isSelect: true
-        },
-        {
-            id: 2,
-            pId: 0,
-            name: "二年级",
-            open: false,
-            isSelect: false
-        },
-        {
-            id: 21,
-            pId: 2,
-            name: "2班",
-            open: false,
-            isSelect: false
-        },
-    ];
-
-    function organizationTree() {
-        var setting = {
-            check: {
-                enable: true
-            },
-            data: {
-                simpleData: {
-                    enable: true
-                }
-            },
-            view: {
-                addDiyDom: addDiyDom
-            }
-        };
-
-        function addDiyDom(treeId, treeNode) {
-            var spaceWidth = 10;
-
-            var switchObj = $("#" + treeNode.tId + "_switch"),
-                icoObj = $("#" + treeNode.tId + "_ico");
-            switchObj.remove();
-            icoObj.before(switchObj);
-
-            if (treeNode.img) {
-                var img = '<img class="stuImg" src="' + treeNode.img + '">';
-                icoObj.before(img);
-            }
-
-            if (treeNode.level > 0) {
-                var spaceStr = "<span style='display: inline-block;width:" + (spaceWidth * treeNode.level) +
-                    "px'></span>";
-                switchObj.before(spaceStr);
-            }
-
-            var btn = $("#" + treeNode.tId + "_check");
-            if (btn) btn.bind("click", function () {
-                // 判断是否为人员节点
-                if (treeNode.isSelect) {
-                    if (!btn.hasClass("checkbox_true_full_focus")) {
-                        var html = '<li class="tree' + treeNode.id + '">' +
-                            '                                <img src="' + treeNode.img + '">' +
-                            '                                <p class="name overHidden1">' + treeNode.name +
-                            '</p>' +
-                            '                                <div class="deleteIcon" onclick = cancelCheck(' +
-                            treeNode.id + ')></div>' +
-                            '                            </li>'
-                        $(".selectedList ul").append(html);
-                    } else {
-                        $(".selectedList ul li.tree" + treeNode.id).remove();
-                    }
-                } else if (treeNode.hasOwnProperty('children')) {
-                    var result = [];
-                    result = findChildren(treeNode, result);
-                    if (!btn.hasClass("checkbox_true_full_focus") && !btn.hasClass(
-                            "checkbox_true_part_focus")) {
-                        if (result.length > 0) {
-                            result.forEach(function (item) {
-                                var html = '<li class="tree' + item.id + '">' +
-                                    '                                <img src="' + item.img + '">' +
-                                    '                                <p class="name overHidden1">' +
-                                    item.name + '</p>' +
-                                    '                                <div class="deleteIcon" onclick = cancelCheck(' +
-                                    item.id + ')></div>' +
-                                    '                            </li>'
-                                $(".selectedList ul").append(html);
-                            });
-                        }
-                    } else {
-                        if (result.length > 0) {
-                            result.forEach(function (item) {
-                                $(".selectedList ul li.tree" + item.id).remove();
-                            });
-                        }
-                    }
-
-                }
-
-            });
-        }
-        $.fn.zTree.init($("#organizationTree"), setting, zNodes);
-    }
-
-    function addStuFun(obj) {
-        this.organizationTree();
-        layui.use(['layer'], function () {
-            var $ = layui.jquery,
-                layer = layui.layer;
-            var index = layer.open({
-                type: 1,
-                title: '选择指定人员',
-                move: false,
-                content: $("#addStu"),
-                area: ['660px'],
-                btn: ['取消', '确定'],
-                shadeClose: true,
-                skin: 'addGrade',
-                success: function () {},
-                yes: function () {
-                    layer.close(index)
-                },
-                btn2: function () {
-                    layer.close(index)
-                    layer.msg('操作成功');
-                    // 获取当前选中对象
-                    var nodeIds = [];
-                    var selectNodes = [];
-                    $(".selectedList ul li").each(function (index, element) {
-                        nodeIds.push($(element).attr("class").slice((0, 4)));
-                    });
-                    nodeIds.forEach(function (id) {
-                        selectNodes.push(zNodes.filter(node => node.id == Number(id))[0]);
-                    });
-                }
-            });
-        });
-    }
-
-    // 取消选中
-    function cancelCheck(id) {
-        $(".selectedList ul li.tree" + id).remove();
-        var treeObj = $.fn.zTree.getZTreeObj("organizationTree");
-        var nodes = treeObj.getCheckedNodes();
-        if (nodes.length > 0) {
-            var node = nodes.filter(item => item.id == id)[0];
-            node.checked = false;
-            treeObj.updateNode(node, true);
-        }
-    }
-    // 递归找到所有选中的人员节点
-    function findChildren(treeNode, result) {
-        if (treeNode.isParent) {
-            treeNode.children.forEach(function (item) {
-                findChildren(item, result);
-            })
-        } else {
-            if (treeNode.isSelect) {
-                result.push(treeNode);
-            }
-        }
-        return result;
-    }
-    // 定位当前搜索节点位置
-    function positionNode() {
-        $('#organizationTree a').css('background-color', '#FFF');
-        var treeObj = $.fn.zTree.getZTreeObj("organizationTree");
-        var keywords = $(".position input").val();
-        if (keywords != '') {
-            var nodes = treeObj.getNodesByParamFuzzy("name", keywords, null);
-            if (nodes.length > 0) {
-                nodes.forEach(function (node) {
-                    treeObj.selectNode(node);
-                    $('#' + node.tId + '_a').css('background-color', 'rgba(0, 132, 255, 0.04)');
-                });
-            }
-        }
-    }
 </script>

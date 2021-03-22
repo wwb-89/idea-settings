@@ -4,6 +4,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
@@ -29,11 +30,12 @@ public class LibActivityManagementController {
 	 * @Date 2020-11-18 11:34:30
 	 * @param model
 	 * @param code 图书馆编码
+	 * @param strict
 	 * @return java.lang.String
 	*/
 	@RequestMapping("")
-	public String index(Model model, String code) {
-		return activityManageController.index(model, code, 0);
+	public String index(Model model, String code, @RequestParam(defaultValue = "0") Integer strict) {
+		return activityManageController.index(model, code, 0, strict);
 	}
 
 	/**活动新增页面

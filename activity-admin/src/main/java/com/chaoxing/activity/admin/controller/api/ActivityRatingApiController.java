@@ -68,16 +68,19 @@ public class ActivityRatingApiController {
         activityRatingQuery.setActivityId(activityId);
         activityRatingQuery.setAuditStatus(auditStatus);
         Page<ActivityRatingDetail> page = HttpServletRequestUtils.buid(request);
-        activityRatingQueryService.listByActivityId(page, activityRatingQuery);
+        activityRatingQueryService.paging(page, activityRatingQuery);
         return RestRespDTO.success(page);
     }
 
-    /**
-     * 通过
+    /**通过审核
+     * @Description 
+     * @author wwb
+     * @Date 2021-03-17 20:04:20
      * @param request
+     * @param activityId
      * @param activityRatingDetailId
-     * @return
-     */
+     * @return com.chaoxing.activity.dto.RestRespDTO
+    */
     @PostMapping("audit/pass")
     public RestRespDTO pass(HttpServletRequest request, @RequestParam Integer activityId, @RequestParam Integer activityRatingDetailId){
         LoginUserDTO loginUser = LoginUtils.getLoginUser(request);
@@ -85,12 +88,15 @@ public class ActivityRatingApiController {
         return RestRespDTO.success();
     }
 
-    /**
-     * 拒绝
+    /**不通过审核
+     * @Description 
+     * @author wwb
+     * @Date 2021-03-17 20:04:34
      * @param request
+     * @param activityId
      * @param activityRatingDetailId
-     * @return
-     */
+     * @return com.chaoxing.activity.dto.RestRespDTO
+    */
     @PostMapping("audit/reject")
     public RestRespDTO reject(HttpServletRequest request, @RequestParam Integer activityId, @RequestParam Integer activityRatingDetailId){
         LoginUserDTO loginUser = LoginUtils.getLoginUser(request);
@@ -98,33 +104,37 @@ public class ActivityRatingApiController {
         return RestRespDTO.success();
     }
 
-    /**
-     * 批量通过
+    /**批量通过审核
+     * @Description 
+     * @author wwb
+     * @Date 2021-03-17 20:04:59
      * @param request
      * @param activityId
      * @param ratingDetailIdArr
-     * @return
-     */
+     * @return com.chaoxing.activity.dto.RestRespDTO
+    */
     @PostMapping("audit/pass/batch")
     public RestRespDTO batchPass(HttpServletRequest request, @RequestParam Integer activityId, @RequestParam("ratingDetailIds[]") Integer[] ratingDetailIdArr){
         LoginUserDTO loginUser = LoginUtils.getLoginUser(request);
         List<Integer> ratingDetailIds = new ArrayList<>(Arrays.asList(ratingDetailIdArr));
-        activityRatingHandleService.batchPass(loginUser, activityId, ratingDetailIds);
+        activityRatingHandleService.batchPass(activityId, ratingDetailIds, loginUser);
         return RestRespDTO.success();
     }
 
-    /**
-     * 批量不通过
+    /**批量不通过审核
+     * @Description 
+     * @author wwb
+     * @Date 2021-03-17 20:05:21
      * @param request
      * @param activityId
      * @param ratingDetailIdArr
-     * @return
-     */
+     * @return com.chaoxing.activity.dto.RestRespDTO
+    */
     @PostMapping("audit/reject/batch")
     public RestRespDTO batchReject(HttpServletRequest request, @RequestParam Integer activityId, @RequestParam("ratingDetailIds[]") Integer[] ratingDetailIdArr){
         LoginUserDTO loginUser = LoginUtils.getLoginUser(request);
         List<Integer> ratingDetailIds = new ArrayList<>(Arrays.asList(ratingDetailIdArr));
-        activityRatingHandleService.batchReject(loginUser, activityId, ratingDetailIds);
+        activityRatingHandleService.batchReject(activityId, ratingDetailIds, loginUser);
         return RestRespDTO.success();
     }
 }

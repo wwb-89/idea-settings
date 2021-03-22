@@ -10,10 +10,7 @@ import com.chaoxing.activity.service.activity.rating.ActivityRatingHandleService
 import com.chaoxing.activity.service.activity.rating.ActivityRatingQueryService;
 import com.chaoxing.activity.util.HttpServletRequestUtils;
 import com.chaoxing.activity.web.util.LoginUtils;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
@@ -35,12 +32,14 @@ public class ActivityRatingApiController {
     @Resource
     private ActivityRatingHandleService activityRatingHandleService;
 
-    /**
-     * 评分列表
+    /**评价列表
+     * @Description 
+     * @author wwb
+     * @Date 2021-03-17 20:10:58
      * @param request
      * @param activityId
-     * @return
-     */
+     * @return com.chaoxing.activity.dto.RestRespDTO
+    */
     @RequestMapping("list")
     public RestRespDTO listByActivityId(HttpServletRequest request, @RequestParam Integer activityId){
         LoginUserDTO loginUser = LoginUtils.getLoginUser(request);
@@ -50,23 +49,57 @@ public class ActivityRatingApiController {
             activityRatingQuery.setUid(loginUser.getUid());
         }
         Page<ActivityRatingDetail> page = HttpServletRequestUtils.buid(request);
-        activityRatingQueryService.listByActivityId(page, activityRatingQuery);
+        activityRatingQueryService.paging(page, activityRatingQuery);
         return RestRespDTO.success(page);
     }
 
-    /**
-     * 保存
+    /**新增评价
+     * @Description 
+     * @author wwb
+     * @Date 2021-03-17 20:10:34
      * @param request
      * @param activityId
      * @param activityRatingDetailJsonStr
-     * @return
-     */
+     * @return com.chaoxing.activity.dto.RestRespDTO
+    */
     @PostMapping("add")
     public RestRespDTO add(HttpServletRequest request, @RequestParam Integer activityId, @RequestParam String activityRatingDetailJsonStr){
         LoginUserDTO loginUser = LoginUtils.getLoginUser(request);
         ActivityRatingDetail activityRatingDetail = JSONObject.parseObject(activityRatingDetailJsonStr, ActivityRatingDetail.class);
         activityRatingDetail.setActivityId(activityId);
-        activityRatingHandleService.add(activityRatingDetail, loginUser);
+        activityRatingHandleService.addRating(activityRatingDetail, loginUser);
         return RestRespDTO.success();
     }
+
+    /**更新评价
+     * @Description 
+     * @author wwb
+     * @Date 2021-03-17 17:55:41
+     * @param request
+     * @param activityRatingDetailJsonStr
+     * @return com.chaoxing.activity.dto.RestRespDTO
+    */
+    @PostMapping("update")
+    public RestRespDTO update(HttpServletRequest request, @RequestParam String activityRatingDetailJsonStr) {
+        LoginUserDTO loginUser = LoginUtils.getLoginUser(request);
+        ActivityRatingDetail activityRatingDetail = JSONObject.parseObject(activityRatingDetailJsonStr, ActivityRatingDetail.class);
+        activityRatingHandleService.updateRating(activityRatingDetail, loginUser);
+        return RestRespDTO.success();
+    }
+
+    /**删除评价
+     * @Description 
+     * @author wwb
+     * @Date 2021-03-17 20:12:00
+     * @param request
+     * @param ratingId
+     * @return com.chaoxing.activity.dto.RestRespDTO
+    */
+    @PostMapping("{ratingId}/delete")
+    public RestRespDTO delete(HttpServletRequest request, @PathVariable Integer ratingId) {
+        LoginUserDTO loginUser = LoginUtils.getLoginUser(request);
+        activityRatingHandleService.deleteRating(ratingId, loginUser);
+        return RestRespDTO.success();
+    }
+
 }

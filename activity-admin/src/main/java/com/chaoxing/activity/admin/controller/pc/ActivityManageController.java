@@ -44,12 +44,23 @@ public class ActivityManageController {
 	@Resource
 	private WfwGroupApiService wfwGroupApiService;
 
-	public String index(Model model, String code, Integer secondClassroomFlag) {
+	/**活动管理主页
+	 * @Description 
+	 * @author wwb
+	 * @Date 2021-03-17 15:32:59
+	 * @param model
+	 * @param code 图书馆专用的code
+	 * @param secondClassroomFlag 第二课堂标识
+	 * @param strict 是不是严格模式， 严格模式：只显示自己创建的活动
+	 * @return java.lang.String
+	*/
+	public String index(Model model, String code, Integer secondClassroomFlag, Integer strict) {
 		code = Optional.ofNullable(code).orElse("");
 		// 防止挂接到三放也携带了code参数
 		code = code.split(CommonConstant.DEFAULT_SEPARATOR)[0];
 		model.addAttribute("code", code);
 		model.addAttribute("secondClassroomFlag", secondClassroomFlag);
+		model.addAttribute("strict", strict);
 		return "pc/activity-list";
 	}
 

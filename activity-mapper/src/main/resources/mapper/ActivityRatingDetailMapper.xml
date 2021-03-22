@@ -24,31 +24,46 @@
     </sql>
 
     <select id="listByQuery" resultMap="BaseResultMap">
-        SELECT <include refid="Base_Column_List"></include>
-        FROM  t_activity_rating_detail t
+        SELECT
+            <include refid="Base_Column_List"></include>
+        FROM
+            t_activity_rating_detail t
         WHERE
             t.activity_id = #{params.activityId}
-        AND
-            t.is_deleted = 0
-        <if test="params.auditStatus!=null">
-            AND t.audit_status = #{params.auditStatus}
-        </if>
-        ORDER BY
-            <if test="params.uid!=null and params.uid!=''">
-                t.scorer_uid <![CDATA[<>]]> #{params.uid} ,
+            AND t.is_deleted = 0
+            AND t.audit_status = 1
+            <if test="params.auditStatus != null">
+                AND t.audit_status = #{params.auditStatus}
             </if>
+            <if test="params.uid!=null and params.uid!=''">
+                AND t.scorer_uid <![CDATA[<>]]> #{params.uid}
+            </if>
+        ORDER BY
+            t.create_time DESC
+    </select>
+
+    <select id="listUserCreated" resultMap="BaseResultMap">
+        SELECT
+            <include refid="Base_Column_List"></include>
+        FROM
+            t_activity_rating_detail t
+        WHERE
+            t.activity_id = #{activityId}
+            AND t.is_deleted = 0
+            AND t.create_uid = #{uid}
+        ORDER BY
             t.create_time DESC
     </select>
 
     <update id="batchUpAuditStatus">
         UPDATE `t_activity_rating_detail`
-        SET `audit_status` = #{auditStatus}
+        SET
+            `audit_status` = #{auditStatus}
         WHERE
             `activity_id` = #{activityId}
-        AND
-            `id` IN
-        <foreach collection="ratingDetailIds" index="key" item="value" open="(" close=")" separator=",">
-            #{value}
-        </foreach>
+            AND `id` IN
+            <foreach collection="ratingDetailIds" index="key" item="value" open="(" close=")" separator=",">
+                #{value}
+            </foreach>
     </update>
 </mapper>

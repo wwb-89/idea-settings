@@ -125,6 +125,8 @@
                     pageNum: 1,
                     pageSize: 8,
                     status: "",
+                    // 严格模式 只查询自己创建的
+                    strict: [[${strict}]],
                     sw: ""
                 },
                 loaded: false,
@@ -143,7 +145,7 @@
                 },
                 code: [[${code}]],
                 // 第二课堂标识
-                secondClassroomFlag: [[${secondClassroomFlag}]]
+                secondClassroomFlag: [[${secondClassroomFlag}]],
             },
             created: function () {
                 var $this = this;
