@@ -64,10 +64,18 @@
                 </foreach>
             </if>
             <!--类型-->
-            <if test="params.activityClassifyName != null and params.activityClassifyName != ''">
-                INNER JOIN t_activity_classify t3 ON t.activity_classify_id = t3.id
-                AND t3.name = #{params.activityClassifyName}
-            </if>
+            <choose>
+                <when test="params.activityClassifyId != null">
+                    INNER JOIN t_activity_classify t3 ON t.activity_classify_id = t3.id
+                    AND t3.id = #{params.activityClassifyId}
+                </when>
+                <otherwise>
+                    <if test="params.activityClassifyName != null and params.activityClassifyName != ''">
+                        INNER JOIN t_activity_classify t3 ON t.activity_classify_id = t3.id
+                        AND t3.name = #{params.activityClassifyName}
+                    </if>
+                </otherwise>
+            </choose>
         WHERE
             <!--状态-->
             <choose>

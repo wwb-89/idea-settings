@@ -27,7 +27,9 @@ public class ActivityQueryDTO {
 	private List<Integer> fids;
 	/** 置顶的fid（查询的结果该机构的数据靠前） */
 	private Integer topFid;
-	/** 分类名称 */
+	/** 活动分类id（与活动分类名称互斥） */
+	private Integer activityClassifyId;
+	/** 活动分类名称（与活动分类id互斥） */
 	private String activityClassifyName;
 	/** 时间 */
 	private String date;
