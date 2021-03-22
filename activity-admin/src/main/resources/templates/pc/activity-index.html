@@ -18,7 +18,7 @@
             <span th:text="${activity.name}">成都少儿阅读活动</span>
         </div>
         <div class="menu">
-            <div class="entry">
+            <div class="entry menu-item">
                 <!--报名名单-->
                 <div :class="{'item': true, 'active': menus.signUpList.selected}" v-if="signActivityManageIndex.signUpExist" @click="toSignUpList">
                     <img :src="menus.signUpList.activeIconUrl" v-if="menus.signUpList.selected">
@@ -32,7 +32,7 @@
                     <span>{{menus.signInManage.name}}</span>
                 </div>
             </div>
-            <div class="entry">
+            <div class="entry menu-item">
                 <!--成绩管理-->
                 <div :class="{'item': true, 'active': menus.resultsManage.selected}" v-if="signActivityManageIndex.signUpExist || signActivityManageIndex.signInExist" @click="toResultsManage">
                     <img :src="menus.resultsManage.activeIconUrl" v-if="menus.resultsManage.selected">
@@ -46,7 +46,7 @@
                     <span>{{menus.managerManage.name}}</span>
                 </div>
             </div>
-            <div class="message" v-if="signActivityManageIndex.signUpExist">
+            <div class="message menu-item" v-if="signActivityManageIndex.signUpExist">
                 <!--发通知-->
                 <div :class="{'item': true, 'active': menus.notice.selected}" @click="toAddNotice">
                     <img :src="menus.notice.activeIconUrl" v-if="menus.notice.selected">
@@ -54,7 +54,7 @@
                     <span>{{menus.notice.name}}</span>
                 </div>
             </div>
-            <div class="statistics" v-show="false">
+            <div class="statistics menu-item" v-show="false">
                 <!--统计-->
                 <div :class="{'item': true, 'active': menus.stat.selected}">
                     <img :src="menus.stat.activeIconUrl" v-if="menus.stat.selected">
@@ -120,7 +120,7 @@
                 resizePageHeight: function () {
                     // container的最小高度
                     var containerMinHeight = $(".container").css("min-height");
-                    containerMinHeight = containerMinHeight.replaceAll("px", "");
+                    containerMinHeight = containerMinHeight.replace(/px/gi, "");
                     var containerHeight = $(".container").height();
                     // 窗口的高度
                     var windowHeight = $(window).height() - 40;
