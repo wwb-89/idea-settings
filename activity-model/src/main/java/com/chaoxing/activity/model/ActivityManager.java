@@ -26,7 +26,6 @@ import java.time.LocalDateTime;
 public class ActivityManager {
 
     /** 活动id; column: activity_id*/
-    @TableId(type = IdType.AUTO)
     private Integer activityId;
     /** 用户id; column: uid*/
     private Integer uid;

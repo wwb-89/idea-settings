@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org/">
+
+<head>
+    <title>组织者管理</title>
+    <meta http-equiv="Content-type" content="text/html; charset=utf-8" />
+    <meta name="viewport"
+        content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, minimal-ui" />
+    <meta name="format-detection" content="telephone=no, email=no">
+    <meta http-equiv="Pragma" content="no-cache" />
+    <meta http-equiv="cache-control" content="no-cache" />
+    <link rel="stylesheet" th:href="@{/mobile/assets/css/public.css}" />
+    <link rel="stylesheet" th:href="@{/mobile/assets/css/dialog.css}">
+    <link rel="stylesheet" th:href="@{/mobile/assets/css/manage.css}">
+    <link rel="stylesheet" th:href="@{/mobile/assets/lib/mescroll/mescroll.css}">
+    <style type="text/css">
+        [v-cloak] {
+            display: none;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="organizer-manage" id="organizer-manage">
+        <ul>
+            <li v-for="l of list" class="item" data-type="0" @touchstart.capture="touchStart" @touchend.capture="touchEnd" :key="l.uid">
+                <div class="inner">
+                    <div class="head-box"><img :src="'http://photo.chaoxing.com/p/'+l.uid+'_80'" alt="" class="jqthumbImg"></div>
+                    <span class="name">{{l.userName}}</span>
+                </div>
+                <div class="handel-box">
+                   <div class="limit-set" @click="openWeightSetDialog(l)">权限设置</div>
+                   <div class="remove" @click="openDeleteDialog(l)">移除</div>
+                </div>
+            </li>
+        </ul>
+        <!-- 确认删除 -->
+        <div class="dialog del-div" style="display: none;">
+            <div class="dialog-overlay">
+                <div class="content">
+                    <div class="sure">
+                        <p>移除后可重新添加。确定移除吗？</p>
+                        <p class="delete" @click="deleteManager()">移除</p>
+                    </div>
+                    <div class="cancle">取消</div>
+                </div>
+            </div>
+        </div>
+        <div class="toast" style="display: none;">移除成功</div>
+    </div>
+
+    <div th:replace="mobile/include/common_js :: common_js(~{::script})">
+        <script th:src="@{/mobile/assets/lib/mescroll/mescroll.js}"></script>
+        <script th:src="@{/mobile/assets/lib/jqthumb.min.js}"></script>
+        <script th:inline="javascript">
+            $(function () {
+                $('.jqthumbImg').jqthumb({
+                    width: '100%',
+                    height: '100%'
+                });
+            })
+
+            function ready() {
+                vm = new Vue({
+                    el: '#organizer-manage',
+                    data: function () {
+                        return {
+                            activity:[[${activity}]],
+
+                            //辅助分页
+                            page:1,
+                            mescroll:{},
+                            list:[],
+                            loaded:false,
+                            //
+
+                            cur:{},
+                        }
+                    },
+                    created: function () {
+                        var self = this;
+
+                        app.customMenu("添加",'',{option:'vm.addConcat()'})
+
+                    },
+                    mounted: function () {
+                        var self = this;
+                        self.mescroll = self.initMescroll("body", self.getManagers);
+
+                        $('.cancle').click(function(){
+                            $('.del-div').hide()
+                        })
+                    },
+                    methods: {
+                        initMescroll: function (mescrollId,callback) {
+                            //创建MeScroll对象,内部已默认开启下拉刷新,自动执行up.callback,刷新列表数据;
+                            var mescroll = new MeScroll(mescrollId, {
+                                //上拉加载的配置项
+                                up: {
+                                    callback: callback, //上拉回调,此处可简写; 相当于 callback: function (page) { getListData(page); }
+                                    isBounce: false, //此处禁止ios回弹,解析(务必认真阅读,特别是最后一点): http://www.mescroll.com/qa.html#q10
+                                    noMoreSize: 3, //如果列表已无数据,可设置列表的总数量要大于半页才显示无更多数据;避免列表数据过少(比如只有一条数据),显示无更多数据会不好看; 默认5
+                                    /*   empty: {
+                                        tip: "暂无相关数据~", //提示
+                                    },*/
+                                    htmlNodata: '<div class="loadMore loading"><p style="display: block" class="loadEndText">已经到底啦~</p></div>',
+                                    // htmlLoading:'<div class="loadMore loading"><p style="display: block" class="loadingText">正在加载中，请稍候...</p></div>',
+                                    lazyLoad: {
+                                        use: true // 是否开启懒加载,默认false
+                                    },
+                                    page: {
+                                        num: 0,
+                                        size: 20,
+                                        time: null
+                                    }
+                                },
+                                down:{
+                                    use:false,
+                                }
+                            });
+                            return mescroll;
+                        },
+                        getManagers: function (page) {
+                            var self = this;
+                            var url = ctx + "/activity/"+self.activity.id +"/managers";
+                            app.ajaxPost(url, {page: page.num, pageSize: page.size}, function (data) {
+                                self.loaded = true;
+                                if (data.success) {
+                                    self.list.pushArray(data.data);
+                                    self.page = page.num;
+                                    self.mescroll.endSuccess(data.data.length); //必传参数(当前页的数据个数, 总数据量)
+                                    self.$nextTick(function () {
+                                        $(".jqthumbImg").jqthumb({
+                                            width: "100%",
+                                            height: "100%"
+                                        });
+                                    });
+
+                                } else {
+                                    var errorMessage = data.message;
+                                    app.showMsg(errorMessage);
+                                }
+                            }, function () {
+                                self.loaded = true;
+                                app.showMsg("加载失败");
+                            });
+                        },
+                        addConcat:function(){
+                            var self = this;
+                            app.concat(function (object) {
+                                var users = object.personList;
+                                var managers = [];
+                                for (var i = 0; i < users.length; i++) {
+                                    var user = users[i];
+                                    var manager = {};
+                                    manager.uid = user.puid;
+                                    manager.userName = user.name;
+                                    managers.push(manager);
+                                }
+                                var url = ctx + "/activity/"+self.activity.id +"/add/batch/manager";
+                                app.ajaxPostWithPayloadLoading(url, JSON.stringify(managers), function (data) {
+                                    if (data.success) {
+                                        self.list.unshiftArray(data.data);
+                                        self.$nextTick(function () {
+                                            $(".jqthumbImg").jqthumb({
+                                                width: "100%",
+                                                height: "100%"
+                                            });
+                                        });
+                                    } else {
+                                        var errorMessage = data.message;
+                                        app.showMsg(errorMessage);
+                                    }
+                                }, function () {
+                                    app.showMsg("添加失败");
+                                },'添加');
+                            })
+                        },
+                        openDeleteDialog:function(l){
+                            var self = this;
+                            self.cur = l;
+                            $('.del-div').fadeIn()
+                        },
+                        deleteManager:function(){
+                          var self = this;
+                            var url = ctx + "/activity/"+self.activity.id +"/manager/delete/"+self.cur.uid;
+                            app.ajaxPost(url, {}, function (data) {
+                                if (data.success) {
+                                    self.list.remove(self.cur);
+                                    $('.del-div').hide();
+                                } else {
+                                    var errorMessage = data.message;
+                                    app.showMsg(errorMessage);
+                                }
+                            }, function () {
+                                app.showMsg("删除失败");
+                            },'删除');
+                        },
+                        openWeightSetDialog:function(l){
+                          app.showMsg("功能暂未开放")
+                        },
+                        //滑动开始
+                        touchStart(e) {
+                            this.startX = e.touches[0].clientX;
+                        },
+                        //滑动结束
+                        touchEnd(e) {
+                            let currentElement = e.currentTarget;
+                            this.endX = e.changedTouches[0].clientX;
+                            // 左滑
+                            if (currentElement.dataset.type == 0 && this.startX - this.endX > 30) {
+                                this.restSlide();
+                                currentElement.dataset.type = 1;
+                            }
+                            // 右滑
+                            if (currentElement.dataset.type == 1 && this.startX - this.endX < -30) {
+                                this.restSlide();
+                                currentElement.dataset.type = 0;
+                            }
+                            this.startX = 0;
+                            this.endX = 0;
+                        },
+                        //复位滑动状态
+                        restSlide() {
+                            let itemList = document.querySelectorAll('.item');
+                            for (let i = 0; i < itemList.length; i++) {
+                                itemList[i].dataset.type = 0;
+                            }
+                        },
+                    }
+                })
+            }
+
+        </script>
+    </div>
+    
+</body>
+
+</html>
