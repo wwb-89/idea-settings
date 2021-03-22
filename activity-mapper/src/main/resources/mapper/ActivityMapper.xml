@@ -160,6 +160,7 @@
             t_activity t
         WHERE
             t.create_uid = #{params.createUid}
+            AND t.create_fid = #{param1.createWfwfid}
             <choose>
                 <when test="params.status != null">
                     AND t.`status` = #{params.status}

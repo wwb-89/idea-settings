@@ -208,6 +208,7 @@ public class ActivityQueryService {
 		if (strict.compareTo(1) == 0) {
 			// 严格模式
 			activityManageQuery.setCreateUid(loginUser.getUid());
+			activityManageQuery.setCreateWfwfid(loginUser.getFid());
 			page = activityMapper.pageCreated(page, activityManageQuery);
 		} else {
 			List<Integer> fids = new ArrayList<>();

@@ -33,5 +33,7 @@ public class ActivityManageQueryDTO {
 	private Integer strict;
 	/** 创建人id */
 	private Integer createUid;
+	/** 创建wfwfid */
+	private Integer createWfwfid;
 
 }
