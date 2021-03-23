@@ -1,8 +1,8 @@
 package com.chaoxing.activity.service.activity;
 
-import com.baomidou.mybatisplus.core.conditions.Wrapper;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.chaoxing.activity.dto.LoginUserDTO;
 import com.chaoxing.activity.mapper.ActivityManagerMapper;
 import com.chaoxing.activity.model.ActivityManager;
 import com.chaoxing.activity.util.Pagination;
@@ -21,11 +21,12 @@ public class ActivityManagerService {
     @Resource
     private ActivityManagerMapper activityManagerMapper;
 
-    public boolean add(ActivityManager activityManager){
+    public boolean add(ActivityManager activityManager, LoginUserDTO loginUser){
+        activityManager.setCreateUid(loginUser.getUid());
         ActivityManager manager = activityManagerMapper.selectOne(new LambdaQueryWrapper<ActivityManager>()
                 .eq(ActivityManager::getActivityId, activityManager.getActivityId())
                 .eq(ActivityManager::getUid, activityManager.getUid()));
-        if(manager == null) {
+        if (manager == null) {
             activityManagerMapper.insert(activityManager);
             return true;
         }

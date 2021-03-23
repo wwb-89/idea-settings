@@ -22,7 +22,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.annotation.Resource;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -38,9 +37,6 @@ import java.util.stream.Collectors;
 @RestController
 @RequestMapping("mh/activity-market")
 public class ActivityMarketApiController {
-
-	/** 分类参数值 */
-	private static final String CLASSIFY_PARAM_VALUE = "data";
 
 	@Resource
 	private ActivityQueryService activityQueryService;
@@ -149,14 +145,19 @@ public class ActivityMarketApiController {
 	 * @Description 
 	 * @author wwb
 	 * @Date 2021-03-22 18:41:25
+	 * @param data
 	 * @param wfwfid
 	 * @return com.chaoxing.activity.dto.RestRespDTO
 	*/
 	@RequestMapping("classifies")
-	public RestRespDTO listClassify(Integer wfwfid) {
-		List<ActivityClassify> activityClassifies = activityClassifyQueryService.listOrgsOptional(new ArrayList() {{
-			add(wfwfid);
-		}});
+	public RestRespDTO listClassify(@RequestBody String data, Integer wfwfid) {
+		JSONObject params = JSON.parseObject(data);
+		if (wfwfid == null) {
+			wfwfid = params.getInteger("wfwfid");
+		}
+		List<Integer> wfwfids = Lists.newArrayList();
+		wfwfids.add(wfwfid);
+		List<ActivityClassify> activityClassifies = activityClassifyQueryService.listOrgsOptional(wfwfids);
 		JSONObject jsonObject = new JSONObject();
 		JSONArray activityClassifyJsonArray = new JSONArray();
 		jsonObject.put("classifies", activityClassifyJsonArray);

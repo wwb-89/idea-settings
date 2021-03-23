@@ -1,11 +1,8 @@
 package com.chaoxing.activity.admin.controller.api;
 
 
-import com.alibaba.fastjson.JSON;
-import com.alibaba.fastjson.JSONArray;
-import com.alibaba.fastjson.JSONObject;
 import com.chaoxing.activity.dto.RestRespDTO;
-import com.chaoxing.activity.service.manager.WfwContactService;
+import com.chaoxing.activity.service.manager.WfwContactApiService;
 import com.chaoxing.activity.util.Pagination;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -16,17 +13,12 @@ import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 
 @RestController
-@RequestMapping("wfw/contact")
-public class WfwContactController {
+@RequestMapping("api/wfw/contact")
+public class WfwContactApiController {
 
     @Resource
-    private WfwContactService wfwContactService;
+    private WfwContactApiService wfwContactService;
 
-
-    @RequestMapping("{uid}/organizations")
-    public RestRespDTO getByFanyaMultiple(@PathVariable Integer uid) {
-        return RestRespDTO.success(wfwContactService.getByFanyaMultiple(uid));
-    }
 
     @RequestMapping("{uid}/search")
     public RestRespDTO search(@PathVariable Integer uid, @RequestParam(required = false,defaultValue = "") String keyword, Pagination pagination, HttpServletRequest request){

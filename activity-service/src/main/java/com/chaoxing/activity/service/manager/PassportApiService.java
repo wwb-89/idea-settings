@@ -8,8 +8,10 @@ import com.chaoxing.activity.dto.manager.PassportUserDTO;
 import com.chaoxing.activity.util.CookieUtils;
 import com.chaoxing.activity.util.constant.CacheConstant;
 import com.chaoxing.activity.util.exception.BusinessException;
+import com.google.common.collect.Lists;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.codec.digest.DigestUtils;
+import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.aop.framework.AopContext;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.http.HttpEntity;
@@ -251,6 +253,28 @@ public class PassportApiService {
 		clearText.append(now.format(YYYYMMDD));
 		clearText.append(AVOID_CLOSE_LOGIN_KEY);
 		return DigestUtils.md5Hex(clearText.toString());
+	}
+
+	/**查询机构列表
+	 * @Description 
+	 * @author wwb
+	 * @Date 2021-03-23 16:39:52
+	 * @param fids
+	 * @return java.util.List<com.chaoxing.activity.dto.OrgDTO>
+	*/
+	public List<OrgDTO> listOrg(List<Integer> fids) {
+		List<OrgDTO> result = Lists.newArrayList();
+		if (CollectionUtils.isNotEmpty(fids)) {
+			for (Integer fid : fids) {
+				String orgName = ((PassportApiService)AopContext.currentProxy()).getOrgName(fid);
+				OrgDTO org = OrgDTO.builder()
+						.fid(fid)
+						.name(orgName)
+						.build();
+				result.add(org);
+			}
+		}
+		return result;
 	}
 
 }
