@@ -139,6 +139,19 @@ public class ActivityMarketApiController {
 		jsonObject.put("curPage", page.getCurrent());
 		jsonObject.put("totalPages", page.getPages());
 		jsonObject.put("totalRecords", page.getTotal());
+		List<ActivityClassify> activityClassifies = activityClassifyQueryService.listOrgsOptional(new ArrayList() {{
+			add(wfwfid);
+		}});
+		JSONArray activityClassifyJsonArray = new JSONArray();
+		jsonObject.put("classifies", activityClassifyJsonArray);
+		if (CollectionUtils.isNotEmpty(activityClassifies)) {
+			for (ActivityClassify activityClassify : activityClassifies) {
+				JSONObject item = new JSONObject();
+				item.put("id", activityClassify.getId());
+				item.put("name", activityClassify.getName());
+				activityClassifyJsonArray.add(item);
+			}
+		}
 		JSONArray activityJsonArray = new JSONArray();
 		jsonObject.put("results", activityJsonArray);
 		List<Activity> records = page.getRecords();

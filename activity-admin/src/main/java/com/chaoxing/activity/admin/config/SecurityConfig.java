@@ -2,10 +2,13 @@ package com.chaoxing.activity.admin.config;
 
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
+import org.springframework.security.web.firewall.DefaultHttpFirewall;
+import org.springframework.security.web.firewall.HttpFirewall;
 
 /**security安全配置
  * @author wwb
@@ -40,7 +43,13 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 				.csrf().disable()
 				.authorizeRequests()
 				.antMatchers("/engine-actuator/**").access(ipRule)
-				.anyRequest().permitAll();
+				.anyRequest().permitAll()
+				.and().headers().disable();
+	}
+
+	@Bean
+	public HttpFirewall defaultHttpFirewall() {
+		return new DefaultHttpFirewall();
 	}
 
 }

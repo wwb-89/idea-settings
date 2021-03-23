@@ -13,6 +13,7 @@ import com.chaoxing.activity.service.manager.WfwRegionalArchitectureApiService;
 import com.chaoxing.activity.util.HttpServletRequestUtils;
 import com.chaoxing.activity.util.annotation.LoginRequired;
 import com.chaoxing.activity.util.constant.CommonConstant;
+import com.chaoxing.activity.util.exception.BusinessException;
 import com.chaoxing.activity.web.util.LoginUtils;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -98,6 +99,7 @@ public class ActivityApiController {
 	@RequestMapping("address")
 	public RestRespDTO address(Integer pageId) {
 		Activity activity = activityQueryService.getByPageId(pageId);
+		Optional.ofNullable(activity).orElseThrow(() -> new BusinessException("活动不存在"));
 		// 没有经纬度则设置一个默认的
 		BigDecimal longitude = Optional.ofNullable(activity.getLongitude()).orElse(CommonConstant.DEFAULT_LONGITUDE);
 		BigDecimal dimension = Optional.ofNullable(activity.getDimension()).orElse(CommonConstant.DEFAULT_DIMENSION);
