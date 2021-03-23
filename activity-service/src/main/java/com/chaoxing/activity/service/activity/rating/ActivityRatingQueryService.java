@@ -83,6 +83,18 @@ public class ActivityRatingQueryService {
 		return activityRatingDetailMapper.listByQuery(page, activityRatingQueryDTO);
 	}
 
+	/**分页查询待审核的
+	 * @Description 
+	 * @author wwb
+	 * @Date 2021-03-23 13:12:13
+	 * @param page
+ * @param activityId
+	 * @return com.baomidou.mybatisplus.extension.plugins.pagination.Page<com.chaoxing.activity.model.ActivityRatingDetail>
+	*/
+	public Page<ActivityRatingDetail> pagingWaitAudit(Page<ActivityRatingDetail> page, Integer activityId){
+		return activityRatingDetailMapper.pagingWaitAudit(page, activityId);
+	}
+
 	/**根据活动id和uid列表查询活动评价详情
 	 * @Description 
 	 * @author wwb

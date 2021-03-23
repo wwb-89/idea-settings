@@ -5,10 +5,10 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.chaoxing.activity.admin.util.LoginUtils;
 import com.chaoxing.activity.dto.LoginUserDTO;
 import com.chaoxing.activity.dto.RestRespDTO;
-import com.chaoxing.activity.dto.query.ActivityRatingQueryDTO;
 import com.chaoxing.activity.model.Activity;
 import com.chaoxing.activity.model.ActivityRatingDetail;
 import com.chaoxing.activity.service.activity.ActivityHandleService;
+import com.chaoxing.activity.service.activity.ActivityValidationService;
 import com.chaoxing.activity.service.activity.rating.ActivityRatingHandleService;
 import com.chaoxing.activity.service.activity.rating.ActivityRatingQueryService;
 import com.chaoxing.activity.util.HttpServletRequestUtils;
@@ -41,6 +41,8 @@ public class ActivityRatingApiController {
     private ActivityRatingQueryService activityRatingQueryService;
     @Resource
     private ActivityRatingHandleService activityRatingHandleService;
+    @Resource
+    private ActivityValidationService activityValidationService;
 
     /**
      * 更新评分设置
@@ -48,8 +50,8 @@ public class ActivityRatingApiController {
      * @param activityJsonStr
      * @return
      */
-    @PostMapping("up-rating-set")
-    public RestRespDTO upActivityRatingSet(HttpServletRequest request, String activityJsonStr){
+    @PostMapping("setting")
+    public RestRespDTO setting(HttpServletRequest request, String activityJsonStr){
         LoginUserDTO loginUser = LoginUtils.getLoginUser(request);
         Activity activity = JSONObject.parseObject(activityJsonStr, Activity.class);
         activityHandleService.updateRatingConfig(activity.getId(), activity.getOpenRating(), activity.getRatingNeedAudit(), loginUser);
@@ -63,12 +65,11 @@ public class ActivityRatingApiController {
      * @return
      */
     @PostMapping("audit/list")
-    public RestRespDTO listAuditByActivityId(HttpServletRequest request, @RequestParam Integer activityId, @RequestParam Integer auditStatus){
-        ActivityRatingQueryDTO activityRatingQuery = new ActivityRatingQueryDTO();
-        activityRatingQuery.setActivityId(activityId);
-        activityRatingQuery.setAuditStatus(auditStatus);
+    public RestRespDTO listAuditByActivityId(HttpServletRequest request, @RequestParam Integer activityId){
+        LoginUserDTO loginUser = LoginUtils.getLoginUser(request);
+        activityValidationService.manageAble(activityId, loginUser);
         Page<ActivityRatingDetail> page = HttpServletRequestUtils.buid(request);
-        activityRatingQueryService.paging(page, activityRatingQuery);
+        activityRatingQueryService.pagingWaitAudit(page, activityId);
         return RestRespDTO.success(page);
     }
 

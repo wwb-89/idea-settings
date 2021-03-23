@@ -143,7 +143,18 @@ public class ActivityValidationService {
 		return manageFids.contains(fid);
 	}
 
-	/**活动可管理
+	/** 可管理活动
+	 * @Description
+	 * @author wwb
+	 * @Date 2021-03-23 13:12:57
+	 * @param activityId
+	 * @param loginUser
+	 * @return com.chaoxing.activity.model.Activity
+	*/
+	public Activity manageAble(Integer activityId, LoginUserDTO loginUser) {
+		return manageAble(activityId, loginUser, "");
+	}
+	/**可管理活动
 	 * @Description 
 	 * @author wwb
 	 * @Date 2020-12-24 10:28:29

@@ -49,6 +49,19 @@
             t.create_time DESC
     </select>
 
+    <select id="pagingWaitAudit" resultMap="BaseResultMap">
+        SELECT
+            <include refid="Base_Column_List"></include>
+        FROM
+            t_activity_rating_detail t
+        WHERE
+            t.activity_id = #{activityId}
+            AND t.is_deleted = 0
+            AND t.audit_status = 2
+        ORDER BY
+            t.create_time DESC
+    </select>
+
     <select id="listUserCreated" resultMap="BaseResultMap">
         SELECT
             <include refid="Base_Column_List"></include>

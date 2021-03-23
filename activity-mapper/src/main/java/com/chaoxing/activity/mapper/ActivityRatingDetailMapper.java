@@ -28,14 +28,26 @@ public interface ActivityRatingDetailMapper extends BaseMapper<ActivityRatingDet
      */
     Page<ActivityRatingDetail> listByQuery(@Param("page") Page<?> page, @Param("params") ActivityRatingQueryDTO activityRatingQueryDTO);
 
-    /**查询用户创建的评价
+    /**分页查询待审核的
      * @Description 
      * @author wwb
-     * @Date 2021-03-17 21:33:00
+     * @Date 2021-03-23 13:09:22
+     * @param page
+     * @param activityId
+     * @return com.baomidou.mybatisplus.extension.plugins.pagination.Page<com.chaoxing.activity.model.ActivityRatingDetail>
+    */
+    Page<ActivityRatingDetail> pagingWaitAudit(@Param("page") Page<?> page, @Param("activityId") Integer activityId);
+
+    /**
+     * 查询用户创建的评价
+     *
      * @param activityId
      * @param uid
      * @return java.util.List<com.chaoxing.activity.model.ActivityRatingDetail>
-    */
+     * @Description
+     * @author wwb
+     * @Date 2021-03-17 21:33:00
+     */
     List<ActivityRatingDetail> listUserCreated(@Param("activityId") Integer activityId, @Param("uid") Integer uid);
 
     /**
