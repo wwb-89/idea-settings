@@ -73,7 +73,9 @@ public class ActivityRatingHandleService {
 		anonymous = Optional.ofNullable(anonymous).orElse(Boolean.FALSE);
 		activityRatingDetail.setAnonymous(anonymous);
 		activityRatingDetail.setCreateUid(loginUser.getUid());
-		if(activity.getRatingNeedAudit()){
+		// 是不是管理员创建的评价？是则直接审核通过
+		boolean activityManager = activityValidationService.isActivityManager(activity, loginUser);
+		if(activity.getRatingNeedAudit() && !activityManager){
 			activityRatingDetail.setAuditStatus(ActivityRatingDetail.AuditStatus.WAIT.getValue());
 		}else{
 			activityRatingDetail.setAuditStatus(ActivityRatingDetail.AuditStatus.PASSED.getValue());

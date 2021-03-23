@@ -143,6 +143,29 @@ public class ActivityValidationService {
 		return manageFids.contains(fid);
 	}
 
+	/**是不是活动的管理员
+	 * @Description 
+	 * @author wwb
+	 * @Date 2021-03-23 13:21:46
+	 * @param activityId
+	 * @param loginUser
+	 * @return boolean
+	*/
+	public boolean isActivityManager(Integer activityId, LoginUserDTO loginUser) {
+		Activity activity = activityExist(activityId);
+		return isActivityManager(activity, loginUser);
+	}
+	/**是不是活动的管理员
+	 * @Description 
+	 * @author wwb
+	 * @Date 2021-03-23 13:23:55
+	 * @param activity
+	 * @param loginUser
+	 * @return boolean
+	*/
+	public boolean isActivityManager(Activity activity, LoginUserDTO loginUser) {
+		return isCreator(activity, loginUser);
+	}
 	/** 可管理活动
 	 * @Description
 	 * @author wwb
@@ -166,7 +189,7 @@ public class ActivityValidationService {
 	public Activity manageAble(Integer activityId, LoginUserDTO loginUser, String errorMessage) {
 		errorMessage = Optional.ofNullable(errorMessage).filter(StringUtils::isNotBlank).orElse("没有权限");
 		Activity activity = activityExist(activityId);
-		if (!isCreator(activity, loginUser)) {
+		if (!isActivityManager(activity, loginUser)) {
 			throw new BusinessException(errorMessage);
 		}
 		return activity;
