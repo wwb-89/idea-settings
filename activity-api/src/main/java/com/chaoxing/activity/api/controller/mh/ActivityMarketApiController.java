@@ -158,7 +158,7 @@ public class ActivityMarketApiController {
 				fields.add(cover);
 				// 活动名称
 				JSONObject name = new JSONObject();
-				name.put("flag", "4");
+				name.put("flag", "1");
 				name.put("key", "活动名称");
 				name.put("value", record.getName());
 				fields.add(name);
