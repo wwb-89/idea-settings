@@ -45,7 +45,7 @@ public class ActivityRatingApiController {
         LoginUserDTO loginUser = LoginUtils.getLoginUser(request);
         ActivityRatingQueryDTO activityRatingQuery = new ActivityRatingQueryDTO();
         activityRatingQuery.setActivityId(activityId);
-        if(loginUser!=null){
+        if (loginUser != null) {
             activityRatingQuery.setUid(loginUser.getUid());
         }
         Page<ActivityRatingDetail> page = HttpServletRequestUtils.buid(request);

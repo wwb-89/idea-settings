@@ -24,7 +24,6 @@ import org.springframework.web.bind.annotation.RestController;
 import javax.annotation.Resource;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -59,54 +58,12 @@ public class ActivityMarketApiController {
 	 * @return com.chaoxing.activity.dto.RestRespDTO
 	*/
 	@RequestMapping
-	public RestRespDTO list(@RequestBody String data, Integer wfwfid) {
+	public RestRespDTO index(@RequestBody String data, Integer wfwfid) {
 		JSONObject params = JSON.parseObject(data);
 		if (wfwfid == null) {
 			wfwfid = params.getInteger("wfwfid");
 		}
 		Optional.ofNullable(wfwfid).orElseThrow(() -> new BusinessException("wfwfid不能为空"));
-		String dataType = params.getString("dataType");
-		if (Objects.equals(CLASSIFY_PARAM_VALUE, dataType)) {
-			// 查询分类
-			return listClassify(wfwfid);
-		}
-		return listData(wfwfid, params);
-	}
-
-	/**活动分类数据
-	 * @Description 
-	 * @author wwb
-	 * @Date 2021-03-22 18:41:25
-	 * @param wfwfid
-	 * @return com.chaoxing.activity.dto.RestRespDTO
-	*/
-	private RestRespDTO listClassify(Integer wfwfid) {
-		List<ActivityClassify> activityClassifies = activityClassifyQueryService.listOrgsOptional(new ArrayList() {{
-			add(wfwfid);
-		}});
-		JSONObject jsonObject = new JSONObject();
-		JSONArray activityClassifyJsonArray = new JSONArray();
-		jsonObject.put("classifies", activityClassifyJsonArray);
-		if (CollectionUtils.isNotEmpty(activityClassifies)) {
-			for (ActivityClassify activityClassify : activityClassifies) {
-				JSONObject item = new JSONObject();
-				item.put("id", activityClassify.getId());
-				item.put("name", activityClassify.getName());
-				activityClassifyJsonArray.add(item);
-			}
-		}
-		return RestRespDTO.success(jsonObject);
-	}
-
-	/**活动数据
-	 * @Description 
-	 * @author wwb
-	 * @Date 2021-03-22 18:41:30
-	 * @param wfwfid
-	 * @param params
-	 * @return com.chaoxing.activity.dto.RestRespDTO
-	*/
-	private RestRespDTO listData(Integer wfwfid, JSONObject params) {
 		Integer pageNum = params.getInteger("pageNum");
 		pageNum = Optional.ofNullable(pageNum).orElse(1);
 		Integer pageSize = params.getInteger("pageSize");
@@ -139,19 +96,6 @@ public class ActivityMarketApiController {
 		jsonObject.put("curPage", page.getCurrent());
 		jsonObject.put("totalPages", page.getPages());
 		jsonObject.put("totalRecords", page.getTotal());
-		List<ActivityClassify> activityClassifies = activityClassifyQueryService.listOrgsOptional(new ArrayList() {{
-			add(wfwfid);
-		}});
-		JSONArray activityClassifyJsonArray = new JSONArray();
-		jsonObject.put("classifies", activityClassifyJsonArray);
-		if (CollectionUtils.isNotEmpty(activityClassifies)) {
-			for (ActivityClassify activityClassify : activityClassifies) {
-				JSONObject item = new JSONObject();
-				item.put("id", activityClassify.getId());
-				item.put("name", activityClassify.getName());
-				activityClassifyJsonArray.add(item);
-			}
-		}
 		JSONArray activityJsonArray = new JSONArray();
 		jsonObject.put("results", activityJsonArray);
 		List<Activity> records = page.getRecords();
@@ -196,6 +140,32 @@ public class ActivityMarketApiController {
 				address.put("value", activityAddress);
 				fields.add(address);
 				activityJsonArray.add(activity);
+			}
+		}
+		return RestRespDTO.success(jsonObject);
+	}
+
+	/**活动分类数据
+	 * @Description 
+	 * @author wwb
+	 * @Date 2021-03-22 18:41:25
+	 * @param wfwfid
+	 * @return com.chaoxing.activity.dto.RestRespDTO
+	*/
+	@RequestMapping("classifies")
+	public RestRespDTO listClassify(Integer wfwfid) {
+		List<ActivityClassify> activityClassifies = activityClassifyQueryService.listOrgsOptional(new ArrayList() {{
+			add(wfwfid);
+		}});
+		JSONObject jsonObject = new JSONObject();
+		JSONArray activityClassifyJsonArray = new JSONArray();
+		jsonObject.put("classifies", activityClassifyJsonArray);
+		if (CollectionUtils.isNotEmpty(activityClassifies)) {
+			for (ActivityClassify activityClassify : activityClassifies) {
+				JSONObject item = new JSONObject();
+				item.put("id", activityClassify.getId());
+				item.put("name", activityClassify.getName());
+				activityClassifyJsonArray.add(item);
 			}
 		}
 		return RestRespDTO.success(jsonObject);

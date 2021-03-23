@@ -50,11 +50,8 @@ public class ActivityRatingController {
         Boolean canRating = false;
         if (loginUser != null) {
             canRating = activityRatingValidateService.submitRatingAble(activityId, loginUser.getUid());
-            // 查询用户创建的评价列表
-            activityRatingDetails = activityRatingQueryService.listUserCreated(activityId, loginUser.getUid());
 
         }
-        model.addAttribute("activityRatingDetails", activityRatingDetails);
         Activity activity = activityQueryService.getById(activityId);
         ActivityRating activityRating = activityRatingQueryService.getByActivityId(activityId);
         model.addAttribute("activity", activity);

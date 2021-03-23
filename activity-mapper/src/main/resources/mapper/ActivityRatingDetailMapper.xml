@@ -31,14 +31,21 @@
         WHERE
             t.activity_id = #{params.activityId}
             AND t.is_deleted = 0
-            AND t.audit_status = 1
+            AND (
+                t.audit_status = 1
+                <if test="params.uid != null">
+                    OR t.scorer_uid = #{params.uid}
+                </if>
+            )
             <if test="params.auditStatus != null">
                 AND t.audit_status = #{params.auditStatus}
             </if>
-            <if test="params.uid!=null and params.uid!=''">
-                AND t.scorer_uid <![CDATA[<>]]> #{params.uid}
-            </if>
+        GROUP BY
+            t.id
         ORDER BY
+            <if test="params.uid != null">
+                t.scorer_uid <![CDATA[<>]]> #{params.uid} ,
+            </if>
             t.create_time DESC
     </select>
 
