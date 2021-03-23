@@ -22,20 +22,24 @@ body {
     background: #ffffff;
     border-radius: 8px 0px 0px 8px;
     position: relative;
+
 }
 
 .title {
-    height: 79px;
     color: #333333;
     text-align: left;
-    padding: 0 24px;
-    display: table-cell;
-    vertical-align: middle;
+    padding: 24px;
+
 }
 
 .title span {
     font-size: 20px;
     font-weight: 600;
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    -webkit-line-clamp: 2;
 }
 
 .menu {
@@ -100,9 +104,19 @@ body {
 
 .active {
     background: rgba(0, 132, 255, 0.04);
+
+}
+
+.active span {
+    color: #0084FF;
+    font-weight: 500;
 }
 
 .edit .item {
     position: absolute;
     bottom: 16px;
+}
+
+.edit .item:hover {
+    background: rgba(0, 132, 255, 0.04);
 }
