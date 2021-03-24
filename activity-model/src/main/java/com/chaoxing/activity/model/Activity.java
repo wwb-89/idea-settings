@@ -133,6 +133,9 @@ public class Activity {
     /** 活动分类名称 */
     @TableField(exist = false)
     private String activityClassifyName;
+    /** 报名人数 */
+    @TableField(exist = false)
+    private Integer signedUpNum;
 
     @Getter
     public enum StatusEnum {

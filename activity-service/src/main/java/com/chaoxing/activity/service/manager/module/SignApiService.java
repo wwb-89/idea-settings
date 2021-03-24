@@ -3,10 +3,7 @@ package com.chaoxing.activity.service.manager.module;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
-import com.chaoxing.activity.dto.manager.sign.SignIn;
-import com.chaoxing.activity.dto.manager.sign.SignUp;
-import com.chaoxing.activity.dto.manager.sign.SignUpStatDTO;
-import com.chaoxing.activity.dto.manager.sign.UserSignParticipationStatDTO;
+import com.chaoxing.activity.dto.manager.sign.*;
 import com.chaoxing.activity.dto.module.SignAddEditDTO;
 import com.chaoxing.activity.dto.sign.ActivityBlockDetailSignStatDTO;
 import com.chaoxing.activity.dto.sign.SignActivityManageIndexDTO;
@@ -82,7 +79,9 @@ public class SignApiService {
 	private static final String SIGN_UP_USER_LIST_URL = SIGN_WEB_DOMAIN + "/sign-up/%d/user-list";
 	/** 用户报名签到参与情况url */
 	private static final String USER_SIGN_PARTICIPATION_URL = SIGN_API_DOMAIN + "/sign/%d/stat/user-participation?uid=%s";
-	
+	/** 根据signId列表查询报名的人数 */
+	private static final String STAT_SIGN_SIGNED_UP_NUM_URL = SIGN_API_DOMAIN + "/sign/stat/sign/signed-up-num";
+
 	/** 通知活动已评价 */
 	private static final String NOTICE_HAVE_RATING_URL = SIGN_API_DOMAIN + "/sign/%d/notice/rating?uid=%d";
 
@@ -558,6 +557,32 @@ public class SignApiService {
 		Boolean success = jsonObject.getBoolean("success");
 		success = Optional.ofNullable(success).orElse(Boolean.FALSE);
 		if (!success) {
+			String errorMessage = jsonObject.getString("message");
+			throw new BusinessException(errorMessage);
+		}
+	}
+
+	/**根据signId列表查询报名的人数
+	 * @Description 
+	 * @author wwb
+	 * @Date 2021-03-24 20:24:58
+	 * @param signIds
+	 * @return java.util.List<com.chaoxing.activity.dto.manager.sign.SignStatDTO>
+	*/
+	public List<SignStatDTO> statSignSignedUpNum(List<Integer> signIds) {
+		HttpHeaders httpHeaders = new HttpHeaders();
+		httpHeaders.setContentType(MediaType.APPLICATION_JSON);
+		JSONObject params = new JSONObject();
+		params.put("signIds", signIds);
+		HttpEntity<String> httpEntity = new HttpEntity(params.toJSONString(), httpHeaders);
+		String result = restTemplate.postForObject(STAT_SIGN_SIGNED_UP_NUM_URL, httpEntity, String.class);
+		JSONObject jsonObject = JSON.parseObject(result);
+		Boolean success = jsonObject.getBoolean("success");
+		success = Optional.ofNullable(success).orElse(Boolean.FALSE);
+		if (success) {
+			String data = jsonObject.getString("data");
+			return JSON.parseArray(data, SignStatDTO.class);
+		} else {
 			String errorMessage = jsonObject.getString("message");
 			throw new BusinessException(errorMessage);
 		}

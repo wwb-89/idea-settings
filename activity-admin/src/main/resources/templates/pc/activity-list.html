@@ -48,9 +48,14 @@
                         </div>
                     </template>
                 </el-table-column>
-                <el-table-column label="创建单位" min-width="15%">
+                <el-table-column label="创建单位" min-width="15%" th:unless="${secondClassroomFlag eq 1}">
                     <template slot-scope="scope">
                         <div class="overHidden2">{{scope.row.createOrgName}}</div>
+                    </template>
+                </el-table-column>
+                <el-table-column label="报名人数" min-width="15%" th:if="${secondClassroomFlag eq 1}">
+                    <template slot-scope="scope">
+                        <div class="overHidden2">{{scope.row.signedUpNum}}</div>
                     </template>
                 </el-table-column>
                 <el-table-column label="创建人" min-width="10%">

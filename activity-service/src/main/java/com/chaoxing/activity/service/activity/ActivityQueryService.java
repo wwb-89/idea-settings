@@ -8,6 +8,7 @@ import com.chaoxing.activity.dto.LoginUserDTO;
 import com.chaoxing.activity.dto.activity.ActivitySignedUpDTO;
 import com.chaoxing.activity.dto.activity.ActivityTypeDTO;
 import com.chaoxing.activity.dto.manager.WfwRegionalArchitectureDTO;
+import com.chaoxing.activity.dto.manager.sign.SignStatDTO;
 import com.chaoxing.activity.dto.query.ActivityManageQueryDTO;
 import com.chaoxing.activity.dto.query.ActivityQueryDTO;
 import com.chaoxing.activity.dto.query.MhActivityCalendarQueryDTO;
@@ -223,7 +224,31 @@ public class ActivityQueryService {
 			activityManageQuery.setFids(fids);
 			page = activityMapper.pageManaging(page, activityManageQuery);
 		}
+		List<Activity> activities = page.getRecords();
+		packageSignedUpNum(activities);
 		return page;
+	}
+
+	private void packageSignedUpNum(List<Activity> activities) {
+		if (CollectionUtils.isNotEmpty(activities)) {
+			// 查询报名人数
+			List<Integer> signIds = Lists.newArrayList();
+			for (Activity activity : activities) {
+				Integer signId = activity.getSignId();
+				if (signId != null) {
+					signIds.add(signId);
+				}
+			}
+			List<SignStatDTO> signStats = signApiService.statSignSignedUpNum(signIds);
+			Map<Integer, Integer> signIdSignedUpNumMap = signStats.stream().collect(Collectors.toMap(v -> v.getSignId(), v -> v.getSignedUpNum(), (v1, v2) -> v2));
+			for (Activity activity : activities) {
+				Integer signId = activity.getSignId();
+				if (signId != null) {
+					Integer signedUpNum = signIdSignedUpNumMap.get(signId);
+					activity.setSignedUpNum(signedUpNum);
+				}
+			}
+		}
 	}
 
 	/**分页查询创建的活动
