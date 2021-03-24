@@ -8,6 +8,7 @@ import com.chaoxing.activity.model.Activity;
 import com.chaoxing.activity.model.ActivityRating;
 import com.chaoxing.activity.model.ActivityRatingDetail;
 import com.chaoxing.activity.service.activity.ActivityValidationService;
+import com.chaoxing.activity.service.manager.module.SignApiService;
 import com.chaoxing.activity.util.CalculateUtils;
 import com.chaoxing.activity.util.DistributedLock;
 import com.chaoxing.activity.util.constant.CacheConstant;
@@ -20,6 +21,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -49,6 +51,8 @@ public class ActivityRatingHandleService {
 	private ActivityValidationService activityValidationService;
 	@Resource
 	private ActivityRatingQueryService activityRatingQueryService;
+	@Resource
+	private SignApiService signApiService;
 
 	@Resource
 	private DistributedLock distributedLock;
@@ -83,6 +87,21 @@ public class ActivityRatingHandleService {
 		activityRatingDetailMapper.insert(activityRatingDetail);
 		if (activityRatingValidateService.isNeedUpdateActivityScore(activityRatingDetail)) {
 			updateActivityScore(activityRatingDetail.getActivityId(), 1, activityRatingDetail.getScore());
+		}
+		ratingFinishExtraProcess(activity.getSignId(), new ArrayList(){{add(loginUser.getUid());}});
+	}
+
+	/**评价成功额外处理
+	 * @Description 
+	 * @author wwb
+	 * @Date 2021-03-24 14:17:22
+	 * @param signId
+	 * @param uids
+	 * @return void
+	*/
+	private void ratingFinishExtraProcess(Integer signId, List<Integer> uids) {
+		if (signId != null) {
+			signApiService.noticeRating(signId, uids);
 		}
 	}
 
@@ -132,7 +151,7 @@ public class ActivityRatingHandleService {
 				);
 			}
 			return null;
-		}, (e) -> fail.accept(e));
+		}, fail);
 	}
 
 	/**更新评价
@@ -191,9 +210,13 @@ public class ActivityRatingHandleService {
 				.eq(ActivityRatingDetail::getId, ratingId)
 				.set(ActivityRatingDetail::getDeleted, Boolean.TRUE)
 		);
+		Integer activityId = existActivityRatingDetail.getActivityId();
 		if (activityRatingValidateService.isNeedUpdateActivityScore(existActivityRatingDetail)) {
-			updateActivityScore(existActivityRatingDetail.getActivityId(), -1, BigDecimal.valueOf(0).subtract(existActivityRatingDetail.getScore()));
+			updateActivityScore(activityId, -1, BigDecimal.valueOf(0).subtract(existActivityRatingDetail.getScore()));
 		}
+		// 评价成功后的额外操作
+		Activity activity = activityValidationService.activityExist(activityId);
+		ratingFinishExtraProcess(activity.getSignId(), new ArrayList(){{add(loginUser.getUid());}});
 	}
 
 	/**获取活动评价缓存lock key

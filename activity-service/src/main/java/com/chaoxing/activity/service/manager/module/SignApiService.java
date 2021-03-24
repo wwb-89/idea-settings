@@ -10,6 +10,7 @@ import com.chaoxing.activity.dto.manager.sign.UserSignParticipationStatDTO;
 import com.chaoxing.activity.dto.module.SignAddEditDTO;
 import com.chaoxing.activity.dto.sign.ActivityBlockDetailSignStatDTO;
 import com.chaoxing.activity.dto.sign.SignActivityManageIndexDTO;
+import com.chaoxing.activity.service.queue.SignQueueService;
 import com.chaoxing.activity.util.CookieUtils;
 import com.chaoxing.activity.util.DateUtils;
 import com.chaoxing.activity.util.RestTemplateUtils;
@@ -81,7 +82,12 @@ public class SignApiService {
 	private static final String SIGN_UP_USER_LIST_URL = SIGN_WEB_DOMAIN + "/sign-up/%d/user-list";
 	/** 用户报名签到参与情况url */
 	private static final String USER_SIGN_PARTICIPATION_URL = SIGN_API_DOMAIN + "/sign/%d/stat/user-participation?uid=%s";
+	
+	/** 通知活动已评价 */
+	private static final String NOTICE_HAVE_RATING_URL = SIGN_API_DOMAIN + "/sign/%d/notice/rating?uid=%d";
 
+	@Resource
+	private SignQueueService signNoticeService;
 
 	@Resource
 	private RestTemplate restTemplate;
@@ -514,6 +520,45 @@ public class SignApiService {
 		} else {
 			String errorMessage = jsonObject.getString("message");
 			log.error("获取用户:{} 报名签到id:{} 获取用户报名签到参与情况 error:{}", uid, signId, errorMessage);
+			throw new BusinessException(errorMessage);
+		}
+	}
+
+	/**通知已评价
+	 * @Description 
+	 * @author wwb
+	 * @Date 2021-03-24 13:00:27
+	 * @param signId
+	 * @param uids
+	 * @return void
+	*/
+	public void noticeRating(Integer signId, List<Integer> uids) {
+		if (CollectionUtils.isNotEmpty(uids)) {
+			for (Integer uid : uids) {
+				signNoticeService.add(signId, uid);
+			}
+		}
+	}
+
+	/**处理通知评价
+	 * @Description 
+	 * @author wwb
+	 * @Date 2021-03-24 14:08:22
+	 * @param signId
+	 * @param uid
+	 * @return void
+	*/
+	public void handleNoticeRating(Integer signId, Integer uid) {
+		String url = String.format(NOTICE_HAVE_RATING_URL, signId, uid);
+		HttpHeaders httpHeaders = new HttpHeaders();
+		httpHeaders.setContentType(MediaType.APPLICATION_JSON);
+		HttpEntity httpEntity = new HttpEntity(httpHeaders);
+		String result = restTemplate.postForObject(url, httpEntity, String.class);
+		JSONObject jsonObject = JSON.parseObject(result);
+		Boolean success = jsonObject.getBoolean("success");
+		success = Optional.ofNullable(success).orElse(Boolean.FALSE);
+		if (!success) {
+			String errorMessage = jsonObject.getString("message");
 			throw new BusinessException(errorMessage);
 		}
 	}
