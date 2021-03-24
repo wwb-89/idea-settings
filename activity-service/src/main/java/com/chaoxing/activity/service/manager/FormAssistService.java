@@ -64,7 +64,7 @@ public class FormAssistService {
 				continue;
 			}
 			if ("活动积分".equals(label)) {
-				data.add(2);
+				data.add(activity.getIntegralValue());
 				item.put("val", data);
 				continue;
 			}
