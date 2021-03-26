@@ -9,7 +9,7 @@ import com.chaoxing.activity.model.Activity;
 import com.chaoxing.activity.service.activity.ActivityCollectionHandleService;
 import com.chaoxing.activity.service.activity.ActivityCollectionValidateService;
 import com.chaoxing.activity.service.activity.ActivityQueryService;
-import com.chaoxing.activity.service.activity.ActivityStartNoticeHandleService;
+import com.chaoxing.activity.service.activity.ActivityIsAboutStartHandleService;
 import com.chaoxing.activity.service.manager.WfwCoordinateApiService;
 import com.chaoxing.activity.service.manager.WfwRegionalArchitectureApiService;
 import com.chaoxing.activity.service.util.Model2DtoService;
@@ -58,7 +58,7 @@ public class ActivityApiController {
 	@Resource
 	private ActivityCollectionValidateService activityCollectionValidateService;
 	@Resource
-	private ActivityStartNoticeHandleService activityStartNoticeHandleService;
+	private ActivityIsAboutStartHandleService activityStartNoticeHandleService;
 
 	/**组活动推荐
 	 * @Description

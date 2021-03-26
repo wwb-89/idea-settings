@@ -6,7 +6,7 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.chaoxing.activity.model.LoginCustom;
 import com.chaoxing.activity.service.LoginService;
 import com.chaoxing.activity.service.activity.ActivityCollectionQueryService;
-import com.chaoxing.activity.service.activity.ActivityStartNoticeHandleService;
+import com.chaoxing.activity.service.activity.ActivityIsAboutStartHandleService;
 import com.chaoxing.activity.service.util.Model2DtoService;
 import com.chaoxing.activity.dto.RestRespDTO;
 import com.chaoxing.activity.dto.activity.ActivityExternalDTO;
@@ -64,7 +64,7 @@ public class ActivityApiController {
 	@Resource
 	private ActivityCollectionQueryService activityCollectionQueryService;
 	@Resource
-	private ActivityStartNoticeHandleService activityStartNoticeHandleService;
+	private ActivityIsAboutStartHandleService activityStartNoticeHandleService;
 
 	/**组活动推荐
 	 * @Description 

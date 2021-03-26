@@ -394,4 +394,18 @@ public class ActivityQueryService {
 		return String.format(UrlConstant.ACTIVITY_RATING_URL, activityId);
 	}
 
+	/**查询所有的活动
+	 * @Description 
+	 * @author wwb
+	 * @Date 2021-03-26 18:32:13
+	 * @param 
+	 * @return java.util.List<com.chaoxing.activity.model.Activity>
+	*/
+	public List<Activity> list() {
+		return activityMapper.selectList(new QueryWrapper<Activity>()
+			.lambda()
+				.ne(Activity::getStatus, Activity.StatusEnum.DELETED.getValue())
+		);
+	}
+
 }

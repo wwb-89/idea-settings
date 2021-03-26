@@ -2,8 +2,8 @@ package com.chaoxing.activity.api.controller;
 
 import com.chaoxing.activity.dto.RestRespDTO;
 import com.chaoxing.activity.model.Activity;
-import com.chaoxing.activity.service.activity.ActivityCoverService;
 import com.chaoxing.activity.service.activity.ActivityQueryService;
+import com.chaoxing.activity.service.queue.ActivityCoverUrlSyncQueueService;
 import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -26,7 +26,7 @@ public class TaskApiController {
 	@Resource
 	private ActivityQueryService activityQueryService;
 	@Resource
-	private ActivityCoverService activityCoverService;
+	private ActivityCoverUrlSyncQueueService activityCoverUrlSyncQueueService;
 
 	/**同步没有封面url的活动封面url
 	 * @Description 
@@ -39,10 +39,12 @@ public class TaskApiController {
 		List<Activity> activities = activityQueryService.listEmptyCoverUrl();
 		if (CollectionUtils.isNotEmpty(activities)) {
 			for (Activity activity : activities) {
-				activityCoverService.noticeUpdateCoverUrl(activity.getId(), activity.getCoverCloudId());
+				activityCoverUrlSyncQueueService.add(activity.getId());
 			}
 		}
 		return RestRespDTO.success();
 	}
+
+
 
 }

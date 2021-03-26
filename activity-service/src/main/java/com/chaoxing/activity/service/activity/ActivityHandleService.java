@@ -13,7 +13,7 @@ import com.chaoxing.activity.model.*;
 import com.chaoxing.activity.service.WebTemplateService;
 import com.chaoxing.activity.service.activity.module.ActivityModuleService;
 import com.chaoxing.activity.service.activity.scope.ActivityScopeService;
-import com.chaoxing.activity.service.form.ActivityFormRecordService;
+import com.chaoxing.activity.service.event.ActivityChangeEventService;
 import com.chaoxing.activity.service.manager.GuanliApiService;
 import com.chaoxing.activity.service.manager.MhApiService;
 import com.chaoxing.activity.service.manager.WfwRegionalArchitectureApiService;
@@ -68,13 +68,9 @@ public class ActivityHandleService {
 	@Resource
 	private WebTemplateService webTemplateService;
 	@Resource
-	private ActivityStatusHandleService activityStatusHandleService;
+	private ActivityStatusUpdateService activityStatusUpdateService;
 	@Resource
-	private ActivityCoverService activityCoverService;
-	@Resource
-	private ActivityStartNoticeHandleService activityStartNoticeHandleService;
-	@Resource
-	private ActivityFormRecordService activityFormRecordService;
+	private ActivityChangeEventService activityChangeEventService;
 
 	@Resource
 	private SignApiService signApiService;
@@ -124,7 +120,6 @@ public class ActivityHandleService {
 		activity.setStartDate(activity.getStartTime().toLocalDate());
 		activity.setEndDate(activity.getEndTime().toLocalDate());
 		activityMapper.insert(activity);
-		activityCoverService.noticeUpdateCoverUrl(activity.getId(), activity.getCoverCloudId());
 		// 活动参与范围
 		Integer activityId = activity.getId();
 		// 是不是第二课堂
@@ -144,10 +139,8 @@ public class ActivityHandleService {
 
 		// 处理活动的所属区域
 		handleActivityArea(activity, loginUser);
-		// 订阅活动状态处理
-		activityStatusHandleService.subscibeStatusUpdate(activity.getId(), activity.getStartTime(), activity.getEndTime());
-		// 订阅活动通知发送
-		activityStartNoticeHandleService.subscibeActivityNotice(activityId, activity.getStartTime());
+		// 活动改变
+		activityChangeEventService.change(activity);
 	}
 
 	/**处理活动类型
@@ -304,7 +297,7 @@ public class ActivityHandleService {
 		existActivity.setOpenRating(activity.getOpenRating());
 		existActivity.setRatingNeedAudit(activity.getRatingNeedAudit());
 		// 根据活动时间判断状态
-		Integer status = activityStatusHandleService.calActivityStatus(existActivity);
+		Integer status = activityStatusUpdateService.calActivityStatus(existActivity);
 		existActivity.setStatus(status);
 		activityMapper.update(existActivity, new UpdateWrapper<Activity>()
 			.lambda()
@@ -313,7 +306,6 @@ public class ActivityHandleService {
 		if (!Objects.equals(oldCoverCloudId, newCoverCloudId)) {
 			// 清空封面url
 			existActivity.setCoverUrl("");
-			activityCoverService.noticeUpdateCoverUrl(activityId, newCoverCloudId);
 		}
 		// 活动参与范围
 		if (CollectionUtils.isEmpty(wfwRegionalArchitectures)) {
@@ -324,10 +316,8 @@ public class ActivityHandleService {
 		activityScopeService.deleteByActivityId(activityId);
 		// 新增参与范围
 		activityScopeService.batchAdd(activityScopes);
-		// 订阅活动状态处理
-		activityStatusHandleService.subscibeStatusUpdate(activity.getId(), activity.getStartTime(), activity.getEndTime());
-		// 订阅活动通知发送
-		activityStartNoticeHandleService.subscibeActivityNotice(activityId, activity.getStartTime());
+		// 活动改变
+		activityChangeEventService.change(activity);
 	}
 
 	/**发布活动
@@ -345,24 +335,18 @@ public class ActivityHandleService {
 		activity.setReleased(true);
 		activity.setReleaseTime(LocalDateTime.now());
 		activity.setReleaseUid(loginUser.getUid());
-		Integer status = activityStatusHandleService.calActivityStatus(activity);
+		Integer status = activityStatusUpdateService.calActivityStatus(activity);
+		activity.setStatus(status);
 		activityMapper.update(null, new UpdateWrapper<Activity>()
 			.lambda()
 				.eq(Activity::getId, activity.getId())
 				.set(Activity::getReleased, true)
 				.set(Activity::getReleaseTime, LocalDateTime.now())
 				.set(Activity::getReleaseUid, loginUser.getUid())
-				.set(Activity::getStatus, status)
+				.set(Activity::getStatus, activity.getStatus())
 		);
-		// 新增表单记录
-		activity.setStatus(status);
-		activityFormRecordService.add(activity);
-		// 通知模块方刷新参与范围缓存
-		// 查询活动的作品征集模块活动id列表
-		List<String> externalIds = activityModuleService.listExternalIdsByActivityIdAndType(activityId, ModuleTypeEnum.WORK.getValue());
-		if (CollectionUtils.isNotEmpty(externalIds)) {
-			workApiService.clearActivityParticipateScopeCache(externalIds.stream().map(v -> Integer.parseInt(v)).collect(Collectors.toList()));
-		}
+		// 活动改变
+		activityChangeEventService.change(activity);
 	}
 
 	/**取消发布（下架）
@@ -377,7 +361,7 @@ public class ActivityHandleService {
 	public void cancelRelease(Integer activityId, LoginUserDTO loginUser) {
 		Activity activity = activityValidationService.cancelReleaseAble(activityId, loginUser);
 		activity.setReleased(Boolean.FALSE);
-		Integer status = activityStatusHandleService.calActivityStatus(activity);
+		Integer status = activityStatusUpdateService.calActivityStatus(activity);
 		activityMapper.update(null, new UpdateWrapper<Activity>()
 			.lambda()
 				.eq(Activity::getId, activity.getId())
@@ -405,15 +389,15 @@ public class ActivityHandleService {
 	@Transactional(rollbackFor = Exception.class)
 	public void delete(Integer activityId, LoginUserDTO loginUser) {
 		// 验证是否能删除
-		activityValidationService.deleteAble(activityId, loginUser);
+		Activity activity = activityValidationService.deleteAble(activityId, loginUser);
+		activity.setStatus(Activity.StatusEnum.DELETED.getValue());
 		activityMapper.update(null, new UpdateWrapper<Activity>()
 			.lambda()
 				.eq(Activity::getId, activityId)
-				.set(Activity::getStatus, Activity.StatusEnum.DELETED.getValue())
+				.set(Activity::getStatus, activity.getStatus())
 		);
-		activityStartNoticeHandleService.cancelSubscibeActivityNotice(activityId);
-		// 删除表单记录
-		activityFormRecordService.delete(activityId);
+		// 活动改变
+		activityChangeEventService.change(activity);
 	}
 
 	/**绑定模板
@@ -686,6 +670,22 @@ public class ActivityHandleService {
 				.eq(Activity::getId, activityId)
 				.set(Activity::getOpenRating, openRating)
 				.set(Activity::getRatingNeedAudit, ratingNeedAudit)
+		);
+	}
+
+	/**更新活动封面
+	 * @Description 
+	 * @author wwb
+	 * @Date 2021-03-26 16:25:00
+	 * @param activityId
+	 * @param coverUrl
+	 * @return void
+	*/
+	public void updateActivityCoverUrl(Integer activityId, String coverUrl) {
+		activityMapper.update(null, new UpdateWrapper<Activity>()
+				.lambda()
+				.eq(Activity::getId, activityId)
+				.set(Activity::getCoverUrl, coverUrl)
 		);
 	}
 

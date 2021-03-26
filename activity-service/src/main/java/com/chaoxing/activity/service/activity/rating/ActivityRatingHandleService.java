@@ -8,7 +8,7 @@ import com.chaoxing.activity.model.Activity;
 import com.chaoxing.activity.model.ActivityRating;
 import com.chaoxing.activity.model.ActivityRatingDetail;
 import com.chaoxing.activity.service.activity.ActivityValidationService;
-import com.chaoxing.activity.service.manager.module.SignApiService;
+import com.chaoxing.activity.service.event.UserRatingChangeEventService;
 import com.chaoxing.activity.util.CalculateUtils;
 import com.chaoxing.activity.util.DistributedLock;
 import com.chaoxing.activity.util.constant.CacheConstant;
@@ -21,7 +21,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
 import java.math.BigDecimal;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -52,7 +51,7 @@ public class ActivityRatingHandleService {
 	@Resource
 	private ActivityRatingQueryService activityRatingQueryService;
 	@Resource
-	private SignApiService signApiService;
+	private UserRatingChangeEventService userRatingChangeEventService;
 
 	@Resource
 	private DistributedLock distributedLock;
@@ -88,21 +87,8 @@ public class ActivityRatingHandleService {
 		if (activityRatingValidateService.isNeedUpdateActivityScore(activityRatingDetail)) {
 			updateActivityScore(activityRatingDetail.getActivityId(), 1, activityRatingDetail.getScore());
 		}
-		ratingFinishExtraProcess(activity.getSignId(), new ArrayList(){{add(loginUser.getUid());}});
-	}
-
-	/**评价成功额外处理
-	 * @Description 
-	 * @author wwb
-	 * @Date 2021-03-24 14:17:22
-	 * @param signId
-	 * @param uids
-	 * @return void
-	*/
-	private void ratingFinishExtraProcess(Integer signId, List<Integer> uids) {
-		if (signId != null) {
-			signApiService.noticeRating(signId, uids);
-		}
+		// 评价变更
+		userRatingChangeEventService.change(loginUser.getUid(), activity.getSignId());
 	}
 
 	/**更新活动评分
@@ -216,7 +202,8 @@ public class ActivityRatingHandleService {
 		}
 		// 评价成功后的额外操作
 		Activity activity = activityValidationService.activityExist(activityId);
-		ratingFinishExtraProcess(activity.getSignId(), new ArrayList(){{add(loginUser.getUid());}});
+		// 评价变更
+		userRatingChangeEventService.change(loginUser.getUid(), activity.getSignId());
 	}
 
 	/**获取活动评价缓存lock key

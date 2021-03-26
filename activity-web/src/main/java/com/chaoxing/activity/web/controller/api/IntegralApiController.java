@@ -3,7 +3,7 @@ package com.chaoxing.activity.web.controller.api;
 import com.chaoxing.activity.dto.LoginUserDTO;
 import com.chaoxing.activity.dto.RestRespDTO;
 import com.chaoxing.activity.dto.manager.IntegralPushDTO;
-import com.chaoxing.activity.service.manager.IntegralApiService;
+import com.chaoxing.activity.service.queue.IntegralPushQueueService;
 import com.chaoxing.activity.util.enums.IntegralOriginTypeEnum;
 import com.chaoxing.activity.web.util.LoginUtils;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -27,7 +27,7 @@ import java.util.Optional;
 public class IntegralApiController {
 
 	@Resource
-	private IntegralApiService integralApiService;
+	private IntegralPushQueueService integralPushQueueService;
 
 	/**活动访问积分推送
 	 * @Description 
@@ -49,7 +49,7 @@ public class IntegralApiController {
 					.resourceId(String.valueOf(activityId))
 					.resourceName(activityName)
 					.build();
-			integralApiService.integralPush(integralPush);
+			integralPushQueueService.add(integralPush);
 		});
 		return RestRespDTO.success();
 	}

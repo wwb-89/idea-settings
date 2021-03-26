@@ -9,7 +9,7 @@ import com.chaoxing.activity.dto.manager.sign.SignUpStatDTO;
 import com.chaoxing.activity.dto.mh.MhGeneralAppResultDataDTO;
 import com.chaoxing.activity.dto.query.MhActivityCalendarQueryDTO;
 import com.chaoxing.activity.model.Activity;
-import com.chaoxing.activity.service.activity.ActivityCoverService;
+import com.chaoxing.activity.service.activity.ActivityCoverUrlSyncService;
 import com.chaoxing.activity.service.activity.ActivityQueryService;
 import com.chaoxing.activity.service.manager.WfwRegionalArchitectureApiService;
 import com.chaoxing.activity.service.manager.module.SignApiService;
@@ -54,7 +54,7 @@ public class ActivityMhAppController {
 	@Resource
 	private ActivityQueryService activityQueryService;
 	@Resource
-	private ActivityCoverService activityCoverService;
+	private ActivityCoverUrlSyncService activityCoverService;
 	@Resource
 	private SignApiService signApiService;
 	@Resource

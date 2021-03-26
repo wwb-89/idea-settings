@@ -7,7 +7,6 @@ import com.chaoxing.activity.dto.manager.sign.*;
 import com.chaoxing.activity.dto.module.SignAddEditDTO;
 import com.chaoxing.activity.dto.sign.ActivityBlockDetailSignStatDTO;
 import com.chaoxing.activity.dto.sign.SignActivityManageIndexDTO;
-import com.chaoxing.activity.service.queue.SignQueueService;
 import com.chaoxing.activity.util.CookieUtils;
 import com.chaoxing.activity.util.DateUtils;
 import com.chaoxing.activity.util.RestTemplateUtils;
@@ -84,9 +83,6 @@ public class SignApiService {
 
 	/** 通知活动已评价 */
 	private static final String NOTICE_HAVE_RATING_URL = SIGN_API_DOMAIN + "/sign/%d/notice/rating?uid=%d";
-
-	@Resource
-	private SignQueueService signNoticeService;
 
 	@Resource
 	private RestTemplate restTemplate;
@@ -520,22 +516,6 @@ public class SignApiService {
 			String errorMessage = jsonObject.getString("message");
 			log.error("获取用户:{} 报名签到id:{} 获取用户报名签到参与情况 error:{}", uid, signId, errorMessage);
 			throw new BusinessException(errorMessage);
-		}
-	}
-
-	/**通知已评价
-	 * @Description 
-	 * @author wwb
-	 * @Date 2021-03-24 13:00:27
-	 * @param signId
-	 * @param uids
-	 * @return void
-	*/
-	public void noticeRating(Integer signId, List<Integer> uids) {
-		if (CollectionUtils.isNotEmpty(uids)) {
-			for (Integer uid : uids) {
-				signNoticeService.add(signId, uid);
-			}
 		}
 	}
 
