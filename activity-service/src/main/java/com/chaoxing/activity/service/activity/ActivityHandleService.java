@@ -1,5 +1,6 @@
 package com.chaoxing.activity.service.activity;
 
+import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.chaoxing.activity.dto.LoginUserDTO;
 import com.chaoxing.activity.dto.OrgAddressDTO;
@@ -18,9 +19,10 @@ import com.chaoxing.activity.service.manager.GuanliApiService;
 import com.chaoxing.activity.service.manager.MhApiService;
 import com.chaoxing.activity.service.manager.WfwRegionalArchitectureApiService;
 import com.chaoxing.activity.service.manager.module.SignApiService;
-import com.chaoxing.activity.service.manager.module.WorkApiService;
+import com.chaoxing.activity.util.DistributedLock;
 import com.chaoxing.activity.util.constant.ActivityMhUrlConstant;
 import com.chaoxing.activity.util.constant.ActivityModuleConstant;
+import com.chaoxing.activity.util.constant.CacheConstant;
 import com.chaoxing.activity.util.enums.*;
 import com.chaoxing.activity.util.exception.BusinessException;
 import com.google.common.collect.Lists;
@@ -36,7 +38,7 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
-import java.util.stream.Collectors;
+import java.util.function.Consumer;
 
 /**数据处理服务
  * @author wwb
@@ -62,8 +64,6 @@ public class ActivityHandleService {
 	@Resource
 	private ActivityScopeService activityScopeService;
 	@Resource
-	private WorkApiService workApiService;
-	@Resource
 	private GuanliApiService guanliApiService;
 	@Resource
 	private WebTemplateService webTemplateService;
@@ -78,6 +78,8 @@ public class ActivityHandleService {
 	private MhApiService mhApiService;
 	@Resource
 	private WfwRegionalArchitectureApiService wfwRegionalArchitectureApiService;
+	@Resource
+	private DistributedLock distributedLock;
 
 	/**新增活动
 	 * @Description
@@ -140,7 +142,7 @@ public class ActivityHandleService {
 		// 处理活动的所属区域
 		handleActivityArea(activity, loginUser);
 		// 活动改变
-		activityChangeEventService.change(activity);
+		activityChangeEventService.dataChange(activity);
 	}
 
 	/**处理活动类型
@@ -252,72 +254,88 @@ public class ActivityHandleService {
 	 * @return void
 	*/
 	@Transactional(rollbackFor = Exception.class)
-	public void edit(Activity activity, SignAddEditDTO signAddEdit, List<WfwRegionalArchitectureDTO> wfwRegionalArchitectures, LoginUserDTO loginUser, HttpServletRequest request) {
-		activityValidationService.addInputValidate(activity);
-		// 处理活动类型
-		handleActivityType(activity);
+	public void edit(Activity activity, SignAddEditDTO signAddEdit, final List<WfwRegionalArchitectureDTO> wfwRegionalArchitectures, LoginUserDTO loginUser, HttpServletRequest request) {
 		Integer activityId = activity.getId();
-		Activity existActivity = activityValidationService.editAble(activityId, loginUser);
-		// 更新报名签到
-		Boolean enableSign = activity.getEnableSign();
-		if (enableSign) {
-			// 修改或更新
-			Integer signId = existActivity.getSignId();
-			signAddEdit.setId(signId);
-			signId = handleSign(activity, signAddEdit, loginUser, request);
-			activity.setSignId(signId);
-		}
-		// 处理活动相关
-		LocalDateTime startTime = activity.getStartTime();
-		LocalDateTime endTime = activity.getEndTime();
+		String activityEditLockKey = getActivityEditLockKey(activityId);
+		Consumer<Exception> fail = (e) -> {
+			log.error("更新活动:{} error:{}", JSON.toJSONString(activity), e.getMessage());
+			throw new BusinessException("更新活动失败");
+		};
+		distributedLock.lock(activityEditLockKey, () -> {
+			activityValidationService.addInputValidate(activity);
+			// 处理活动类型
+			handleActivityType(activity);
+			Activity existActivity = activityValidationService.editAble(activityId, loginUser);
+			// 更新报名签到
+			Boolean enableSign = activity.getEnableSign();
+			if (enableSign) {
+				// 修改或更新
+				Integer signId = existActivity.getSignId();
+				signAddEdit.setId(signId);
+				signId = handleSign(activity, signAddEdit, loginUser, request);
+				activity.setSignId(signId);
+			}
+			// 处理活动相关
+			LocalDateTime startTime = activity.getStartTime();
+			LocalDateTime endTime = activity.getEndTime();
 
-		String oldCoverCloudId = existActivity.getCoverCloudId();
-		String newCoverCloudId = activity.getCoverCloudId();
+			String oldCoverCloudId = existActivity.getCoverCloudId();
+			String newCoverCloudId = activity.getCoverCloudId();
 
-		existActivity.setName(activity.getName());
-		existActivity.setStartTime(startTime);
-		existActivity.setEndTime(endTime);
-		existActivity.setStartDate(startTime.toLocalDate());
-		existActivity.setEndDate(endTime.toLocalDate());
-		existActivity.setCoverCloudId(newCoverCloudId);
-		existActivity.setCoverUrl(activity.getCoverUrl());
-		existActivity.setOrganisers(activity.getOrganisers());
-		existActivity.setActivityType(activity.getActivityType());
-		existActivity.setAddress(activity.getAddress());
-		existActivity.setDetailAddress(activity.getDetailAddress());
-		existActivity.setLongitude(activity.getLongitude());
-		existActivity.setDimension(activity.getDimension());
-		existActivity.setActivityClassifyId(activity.getActivityClassifyId());
-		existActivity.setEnableSign(activity.getEnableSign());
-		existActivity.setSignId(activity.getSignId());
-		existActivity.setWebTemplateId(activity.getWebTemplateId());
-		existActivity.setTags(activity.getTags());
-		existActivity.setOpenIntegral(activity.getOpenIntegral());
-		existActivity.setIntegralValue(activity.getIntegralValue());
-		existActivity.setOpenRating(activity.getOpenRating());
-		existActivity.setRatingNeedAudit(activity.getRatingNeedAudit());
-		// 根据活动时间判断状态
-		Integer status = activityStatusUpdateService.calActivityStatus(existActivity);
-		existActivity.setStatus(status);
-		activityMapper.update(existActivity, new UpdateWrapper<Activity>()
-			.lambda()
-				.eq(Activity::getId, activity.getId())
-		);
-		if (!Objects.equals(oldCoverCloudId, newCoverCloudId)) {
-			// 清空封面url
-			existActivity.setCoverUrl("");
-		}
-		// 活动参与范围
-		if (CollectionUtils.isEmpty(wfwRegionalArchitectures)) {
-			throw new BusinessException("请选择参与范围");
-		}
-		List<ActivityScope> activityScopes = WfwRegionalArchitectureDTO.convert2ActivityScopes(activityId, wfwRegionalArchitectures);
-		// 删除以前发布的参与范围
-		activityScopeService.deleteByActivityId(activityId);
-		// 新增参与范围
-		activityScopeService.batchAdd(activityScopes);
-		// 活动改变
-		activityChangeEventService.change(activity);
+			existActivity.setName(activity.getName());
+			existActivity.setStartTime(startTime);
+			existActivity.setEndTime(endTime);
+			existActivity.setStartDate(startTime.toLocalDate());
+			existActivity.setEndDate(endTime.toLocalDate());
+			existActivity.setCoverCloudId(newCoverCloudId);
+			existActivity.setCoverUrl(activity.getCoverUrl());
+			existActivity.setOrganisers(activity.getOrganisers());
+			existActivity.setActivityType(activity.getActivityType());
+			existActivity.setAddress(activity.getAddress());
+			existActivity.setDetailAddress(activity.getDetailAddress());
+			existActivity.setLongitude(activity.getLongitude());
+			existActivity.setDimension(activity.getDimension());
+			existActivity.setActivityClassifyId(activity.getActivityClassifyId());
+			existActivity.setEnableSign(activity.getEnableSign());
+			existActivity.setSignId(activity.getSignId());
+			existActivity.setWebTemplateId(activity.getWebTemplateId());
+			existActivity.setTags(activity.getTags());
+			existActivity.setOpenIntegral(activity.getOpenIntegral());
+			existActivity.setIntegralValue(activity.getIntegralValue());
+			existActivity.setOpenRating(activity.getOpenRating());
+			existActivity.setRatingNeedAudit(activity.getRatingNeedAudit());
+			// 根据活动时间判断状态
+			Integer status = activityStatusUpdateService.calActivityStatus(existActivity);
+			existActivity.setStatus(status);
+			activityMapper.update(existActivity, new UpdateWrapper<Activity>()
+					.lambda()
+					.eq(Activity::getId, activity.getId())
+			);
+			if (!Objects.equals(oldCoverCloudId, newCoverCloudId)) {
+				// 清空封面url
+				existActivity.setCoverUrl("");
+			}
+			List<WfwRegionalArchitectureDTO> itemWfwRegionalArchitectures = wfwRegionalArchitectures;
+			// 是不是第二课堂
+			Integer secondClassroomFlag = activity.getSecondClassroomFlag();
+			if (CollectionUtils.isEmpty(itemWfwRegionalArchitectures)) {
+				if (secondClassroomFlag == 1) {
+					// 构建创建者机构的
+					WfwRegionalArchitectureDTO wfwRegionalArchitecture = wfwRegionalArchitectureApiService.buildWfwRegionalArchitecture(activity.getCreateFid());
+					itemWfwRegionalArchitectures = Lists.newArrayList(wfwRegionalArchitecture);
+				} else {
+					throw new BusinessException("请选择参与范围");
+				}
+			}
+			List<ActivityScope> activityScopes = WfwRegionalArchitectureDTO.convert2ActivityScopes(activityId, itemWfwRegionalArchitectures);
+			// 删除以前发布的参与范围
+			activityScopeService.deleteByActivityId(activityId);
+			// 新增参与范围
+			activityScopeService.batchAdd(activityScopes);
+			// 活动改变
+			activityChangeEventService.dataChange(activity);
+			return null;
+		}, fail);
 	}
 
 	/**发布活动
@@ -340,13 +358,13 @@ public class ActivityHandleService {
 		activityMapper.update(null, new UpdateWrapper<Activity>()
 			.lambda()
 				.eq(Activity::getId, activity.getId())
-				.set(Activity::getReleased, true)
+				.set(Activity::getReleased, activity.getReleased())
 				.set(Activity::getReleaseTime, LocalDateTime.now())
 				.set(Activity::getReleaseUid, loginUser.getUid())
 				.set(Activity::getStatus, activity.getStatus())
 		);
-		// 活动改变
-		activityChangeEventService.change(activity);
+		// 活动状态改变
+		activityChangeEventService.releaseStatusChange(activity);
 	}
 
 	/**取消发布（下架）
@@ -370,12 +388,8 @@ public class ActivityHandleService {
 		);
 		// 删除活动范围
 		activityScopeService.deleteByActivityId(activityId);
-		// 通知模块方刷新参与范围缓存
-		// 查询活动的作品征集模块活动id列表
-		List<String> externalIds = activityModuleService.listExternalIdsByActivityIdAndType(activityId, ModuleTypeEnum.WORK.getValue());
-		if (CollectionUtils.isNotEmpty(externalIds)) {
-			workApiService.clearActivityParticipateScopeCache(externalIds.stream().map(v -> Integer.parseInt(v)).collect(Collectors.toList()));
-		}
+		// 活动状态改变
+		activityChangeEventService.releaseStatusChange(activity);
 	}
 
 	/**删除活动
@@ -396,8 +410,8 @@ public class ActivityHandleService {
 				.eq(Activity::getId, activityId)
 				.set(Activity::getStatus, activity.getStatus())
 		);
-		// 活动改变
-		activityChangeEventService.change(activity);
+		// 活动状态改变
+		activityChangeEventService.statusChange(activity);
 	}
 
 	/**绑定模板
@@ -687,6 +701,17 @@ public class ActivityHandleService {
 				.eq(Activity::getId, activityId)
 				.set(Activity::getCoverUrl, coverUrl)
 		);
+	}
+
+	/**获取活动修改锁key
+	 * @Description 修改活动的时候需要上锁
+	 * @author wwb
+	 * @Date 2021-03-26 20:27:43
+	 * @param activityId
+	 * @return java.lang.String
+	*/
+	public String getActivityEditLockKey(Integer activityId) {
+		return CacheConstant.LOCK_CACHE_KEY_PREFIX + "activity" + CacheConstant.CACHE_KEY_SEPARATOR + activityId;
 	}
 
 }

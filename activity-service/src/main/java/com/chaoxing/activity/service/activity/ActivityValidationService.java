@@ -78,7 +78,6 @@ public class ActivityValidationService {
 	*/
 	public Activity activityExist(Integer activityId) {
 		Activity activity = activityQueryService.getById(activityId);
-		log.error("活动id:{}对应的活动不存在", activityId);
 		Optional.ofNullable(activity).orElseThrow(() -> new ActivityNotExistException(activityId));
 		return activity;
 	}

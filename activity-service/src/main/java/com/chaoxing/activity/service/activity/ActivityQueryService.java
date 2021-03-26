@@ -243,10 +243,12 @@ public class ActivityQueryService {
 			Map<Integer, Integer> signIdSignedUpNumMap = signStats.stream().collect(Collectors.toMap(v -> v.getSignId(), v -> v.getSignedUpNum(), (v1, v2) -> v2));
 			for (Activity activity : activities) {
 				Integer signId = activity.getSignId();
+				Integer signedUpNum = 0;
 				if (signId != null) {
-					Integer signedUpNum = signIdSignedUpNumMap.get(signId);
-					activity.setSignedUpNum(signedUpNum);
+					signedUpNum = signIdSignedUpNumMap.get(signId);
 				}
+				signedUpNum = Optional.ofNullable(signedUpNum).orElse(0);
+				activity.setSignedUpNum(signedUpNum);
 			}
 		}
 	}

@@ -8,14 +8,18 @@ import com.chaoxing.activity.mapper.ActivityFormRecordMapper;
 import com.chaoxing.activity.model.Activity;
 import com.chaoxing.activity.model.ActivityFormRecord;
 import com.chaoxing.activity.model.OrgForm;
+import com.chaoxing.activity.service.activity.ActivityHandleService;
 import com.chaoxing.activity.service.activity.ActivityQueryService;
 import com.chaoxing.activity.service.manager.FormApiService;
+import com.chaoxing.activity.util.DistributedLock;
+import com.chaoxing.activity.util.exception.BusinessException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
 import java.util.List;
 import java.util.Objects;
+import java.util.function.Consumer;
 
 /**活动表单记录服务
  * @author wwb
@@ -38,6 +42,11 @@ public class ActivityFormRecordService {
 	private FormApiService formApiService;
 	@Resource
 	private ActivityQueryService activityQueryService;
+	@Resource
+	private ActivityHandleService activityHandleService;
+
+	@Resource
+	private DistributedLock distributedLock;
 
 	/**处理活动推送
 	 * @Description 
@@ -46,12 +55,57 @@ public class ActivityFormRecordService {
 	 * @param activityId
 	 * @return void
 	*/
-	public void handleActivityPush(Integer activityId) {
-		Activity activity = activityQueryService.getById(activityId);
-		ActivityFormRecord existActivityFormRecord = activityFormRecordMapper.selectOne(new QueryWrapper<ActivityFormRecord>()
-				.lambda()
-				.eq(ActivityFormRecord::getActivityId, activity.getId())
-		);
+	public void add(Integer activityId) {
+		String activityEditLockKey = activityHandleService.getActivityEditLockKey(activityId);
+		Consumer<Exception> fail = (e) -> {
+			throw new BusinessException("处理活动推送失败");
+		};
+		distributedLock.lock(activityEditLockKey, () -> {
+			Activity activity = activityQueryService.getById(activityId);
+			ActivityFormRecord existActivityFormRecord = activityFormRecordMapper.selectOne(new QueryWrapper<ActivityFormRecord>()
+					.lambda()
+					.eq(ActivityFormRecord::getActivityId, activity.getId())
+			);
+			addOrUpdate(activity, existActivityFormRecord);
+			return null;
+		}, fail);
+	}
+
+	/**更新
+	 * @Description 
+	 * @author wwb
+	 * @Date 2021-03-26 19:35:23
+	 * @param activityId
+	 * @return void
+	*/
+	public void update(Integer activityId) {
+		String activityEditLockKey = activityHandleService.getActivityEditLockKey(activityId);
+		Consumer<Exception> fail = (e) -> {
+			throw new BusinessException("处理活动推送失败");
+		};
+		distributedLock.lock(activityEditLockKey, () -> {
+			Activity activity = activityQueryService.getById(activityId);
+			ActivityFormRecord existActivityFormRecord = activityFormRecordMapper.selectOne(new QueryWrapper<ActivityFormRecord>()
+					.lambda()
+					.eq(ActivityFormRecord::getActivityId, activity.getId())
+			);
+			if (existActivityFormRecord != null) {
+				addOrUpdate(activity, existActivityFormRecord);
+			}
+			return null;
+		}, fail);
+	}
+
+	/**新增或更新
+	 * @Description 
+	 * @author wwb
+	 * @Date 2021-03-26 19:36:03
+	 * @param activity
+	 * @param existActivityFormRecord
+	 * @return void
+	*/
+	private void addOrUpdate(Activity activity, ActivityFormRecord existActivityFormRecord) {
+		Integer activityId = activity.getId();
 		if (activity == null || Objects.equals(Activity.StatusEnum.DELETED.getValue(), activity.getStatus())) {
 			// 活动不存在或被删除
 			if (existActivityFormRecord != null) {
@@ -80,7 +134,6 @@ public class ActivityFormRecordService {
 				formApiService.updateForm(formId, existActivityFormRecord.getFormUserId(), formData);
 			}
 		}
-
 	}
 
 	/**删除
@@ -90,7 +143,7 @@ public class ActivityFormRecordService {
 	 * @param activityId
 	 * @return void
 	*/
-	private void delete(Integer activityId) {
+	public void delete(Integer activityId) {
 		ActivityFormRecord activityFormRecord = activityFormRecordMapper.selectOne(new QueryWrapper<ActivityFormRecord>()
 				.lambda()
 				.eq(ActivityFormRecord::getActivityId, activityId)

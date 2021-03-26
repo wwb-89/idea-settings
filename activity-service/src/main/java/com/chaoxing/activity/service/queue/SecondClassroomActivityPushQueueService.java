@@ -23,8 +23,12 @@ import java.util.Objects;
 @Service
 public class SecondClassroomActivityPushQueueService {
 
-	/** 队列缓存key */
-	private static final String QUEUE_CACHE_KEY = CacheConstant.QUEUE_CACHE_KEY_PREFIX + "second_classroom_activity_push";
+	/** 新增队列缓存key */
+	private static final String ADD_QUEUE_CACHE_KEY = CacheConstant.QUEUE_CACHE_KEY_PREFIX + "second_classroom_activity_push" + CacheConstant.CACHE_KEY_SEPARATOR + "add";
+	/** 修改队列缓存key */
+	private static final String UPDATE_QUEUE_CACHE_KEY = CacheConstant.QUEUE_CACHE_KEY_PREFIX + "second_classroom_activity_push" + CacheConstant.CACHE_KEY_SEPARATOR + "update";
+	/** 修改队列缓存key */
+	private static final String DELETE_QUEUE_CACHE_KEY = CacheConstant.QUEUE_CACHE_KEY_PREFIX + "second_classroom_activity_push" + CacheConstant.CACHE_KEY_SEPARATOR + "delete";
 
 	@Resource
 	private RedisTemplate redisTemplate;
@@ -44,16 +48,69 @@ public class SecondClassroomActivityPushQueueService {
 	}
 
 	/**往队列中添加数据
-	 * @Description 
+	 * @Description
 	 * @author wwb
 	 * @Date 2021-03-26 17:48:46
 	 * @param activityId
 	 * @return void
-	*/
+	 */
 	public void add(Integer activityId) {
 		ListOperations<String, Integer> listOperations = redisTemplate.opsForList();
-		listOperations.leftPush(QUEUE_CACHE_KEY, activityId);
+		listOperations.leftPush(ADD_QUEUE_CACHE_KEY, activityId);
 	}
+
+	/**往队列中添加数据
+	 * @Description 
+	 * @author wwb
+	 * @Date 2021-03-26 19:30:08
+	 * @param activity
+	 * @return void
+	*/
+	public void update(Activity activity) {
+		Integer secondClassroomFlag = activity.getSecondClassroomFlag();
+		if (Objects.equals(secondClassroomFlag, 1)) {
+			update(activity.getId());
+		}
+	}
+
+	/**往队列中添加数据
+	 * @Description 
+	 * @author wwb
+	 * @Date 2021-03-26 19:32:18
+	 * @param activityId
+	 * @return void
+	*/
+	public void update(Integer activityId) {
+		ListOperations<String, Integer> listOperations = redisTemplate.opsForList();
+		listOperations.leftPush(UPDATE_QUEUE_CACHE_KEY, activityId);
+	}
+
+	/**往队列中添加数据
+	 * @Description
+	 * @author wwb
+	 * @Date 2021-03-26 19:30:08
+	 * @param activity
+	 * @return void
+	 */
+	public void delete(Activity activity) {
+		Integer secondClassroomFlag = activity.getSecondClassroomFlag();
+		if (Objects.equals(secondClassroomFlag, 1)) {
+			delete(activity.getId());
+		}
+	}
+
+	/**往队列中添加数据
+	 * @Description
+	 * @author wwb
+	 * @Date 2021-03-26 19:32:18
+	 * @param activityId
+	 * @return void
+	 */
+	public void delete(Integer activityId) {
+		ListOperations<String, Integer> listOperations = redisTemplate.opsForList();
+		listOperations.leftPush(DELETE_QUEUE_CACHE_KEY, activityId);
+	}
+
 
 	/**从队列中获取数据
 	 * @Description 
@@ -62,9 +119,33 @@ public class SecondClassroomActivityPushQueueService {
 	 * @param 
 	 * @return java.lang.Integer
 	*/
-	public Integer get() {
+	public Integer getAdd() {
 		ListOperations<String, Integer> listOperations = redisTemplate.opsForList();
-		return listOperations.rightPop(QUEUE_CACHE_KEY, CommonConstant.QUEUE_GET_WAIT_TIME);
+		return listOperations.rightPop(ADD_QUEUE_CACHE_KEY, CommonConstant.QUEUE_GET_WAIT_TIME);
+	}
+
+	/**从队列中获取数据
+	 * @Description 
+	 * @author wwb
+	 * @Date 2021-03-26 19:31:01
+	 * @param 
+	 * @return java.lang.Integer
+	*/
+	public Integer getUpdate() {
+		ListOperations<String, Integer> listOperations = redisTemplate.opsForList();
+		return listOperations.rightPop(UPDATE_QUEUE_CACHE_KEY, CommonConstant.QUEUE_GET_WAIT_TIME);
+	}
+
+	/**从队列中获取数据
+	 * @Description
+	 * @author wwb
+	 * @Date 2021-03-26 19:31:01
+	 * @param
+	 * @return java.lang.Integer
+	 */
+	public Integer getDelete() {
+		ListOperations<String, Integer> listOperations = redisTemplate.opsForList();
+		return listOperations.rightPop(DELETE_QUEUE_CACHE_KEY, CommonConstant.QUEUE_GET_WAIT_TIME);
 	}
 
 }
