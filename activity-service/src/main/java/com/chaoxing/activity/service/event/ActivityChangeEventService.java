@@ -6,7 +6,9 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
+import java.math.BigDecimal;
 import java.util.Objects;
+import java.util.Optional;
 
 /**活动改变事件服务
  * @author wwb
@@ -32,15 +34,18 @@ public class ActivityChangeEventService {
 	private ActivityReleaseScopeChangeQueueService activityReleaseScopeChangeQueueService;
 	@Resource
 	private SecondClassroomActivityPushQueueService secondClassroomActivityPushQueueService;
+	@Resource
+	private ActivityIntegralChangeQueueService activityIntegralChangeQueueService;
 
 	/**活动数据改变
 	 * @Description 
 	 * @author wwb
 	 * @Date 2021-03-26 14:54:18
 	 * @param activity
+	 * @param oldIntegralValue 原积分
 	 * @return void
 	*/
-	public void dataChange(Activity activity) {
+	public void dataChange(Activity activity, BigDecimal oldIntegralValue) {
 		// 往表单推送数据
 		secondClassroomActivityPushQueueService.update(activity);
 		// 订阅活动状态处理
@@ -54,6 +59,15 @@ public class ActivityChangeEventService {
 		activityIsAboutToStartQueueService.add(activity);
 		// 活动封面url同步
 		activityCoverUrlSyncQueueService.add(activity.getId());
+		Integer signId = activity.getSignId();
+		if (signId != null) {
+			BigDecimal integralValue = activity.getIntegralValue();
+			integralValue = Optional.ofNullable(integralValue).orElse(BigDecimal.valueOf(0));
+			oldIntegralValue = Optional.ofNullable(oldIntegralValue).orElse(BigDecimal.valueOf(0));
+			if (integralValue.compareTo(oldIntegralValue) != 0) {
+				activityIntegralChangeQueueService.add(signId);
+			}
+		}
 	}
 
 	/**活动状态变更

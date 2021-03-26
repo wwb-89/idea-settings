@@ -34,6 +34,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -142,7 +143,7 @@ public class ActivityHandleService {
 		// 处理活动的所属区域
 		handleActivityArea(activity, loginUser);
 		// 活动改变
-		activityChangeEventService.dataChange(activity);
+		activityChangeEventService.dataChange(activity, activity.getIntegralValue());
 	}
 
 	/**处理活动类型
@@ -266,6 +267,7 @@ public class ActivityHandleService {
 			// 处理活动类型
 			handleActivityType(activity);
 			Activity existActivity = activityValidationService.editAble(activityId, loginUser);
+			BigDecimal oldIntegralValue = existActivity.getIntegralValue();
 			// 更新报名签到
 			Boolean enableSign = activity.getEnableSign();
 			if (enableSign) {
@@ -333,7 +335,7 @@ public class ActivityHandleService {
 			// 新增参与范围
 			activityScopeService.batchAdd(activityScopes);
 			// 活动改变
-			activityChangeEventService.dataChange(activity);
+			activityChangeEventService.dataChange(activity, oldIntegralValue);
 			return null;
 		}, fail);
 	}

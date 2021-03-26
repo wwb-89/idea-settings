@@ -83,6 +83,8 @@ public class SignApiService {
 
 	/** 通知活动已评价 */
 	private static final String NOTICE_HAVE_RATING_URL = SIGN_API_DOMAIN + "/sign/%d/notice/rating?uid=%d";
+	/** 通知第二课堂积分已变更 */
+	private static final String NOTICE_SECOND_CLASSROOM_INTEGRAL_CHANGE_URL = SIGN_API_DOMAIN + "/sign/%d/notice/second-classroom-integral-change";
 
 	@Resource
 	private RestTemplate restTemplate;
@@ -563,6 +565,25 @@ public class SignApiService {
 			String data = jsonObject.getString("data");
 			return JSON.parseArray(data, SignStatDTO.class);
 		} else {
+			String errorMessage = jsonObject.getString("message");
+			throw new BusinessException(errorMessage);
+		}
+	}
+
+	/**通知第二课堂积分已变更
+	 * @Description 
+	 * @author wwb
+	 * @Date 2021-03-26 21:50:30
+	 * @param signId
+	 * @return void
+	*/
+	public void noticeSecondClassroomIntegralChange(Integer signId) {
+		String url = String.format(NOTICE_SECOND_CLASSROOM_INTEGRAL_CHANGE_URL, signId);
+		String result = restTemplate.getForObject(url, String.class);
+		JSONObject jsonObject = JSON.parseObject(result);
+		Boolean success = jsonObject.getBoolean("success");
+		success = Optional.ofNullable(success).orElse(Boolean.FALSE);
+		if (!success) {
 			String errorMessage = jsonObject.getString("message");
 			throw new BusinessException(errorMessage);
 		}

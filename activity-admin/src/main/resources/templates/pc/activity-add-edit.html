@@ -424,7 +424,7 @@
                 <div class="form-item">
                     <label class="label">分值</label>
                     <div class="input-box">
-                        <input type="number" v-model.trim="activity.integralValue" placeholder="请输入" class="score-input">
+                        <input type="number" v-model.trim="activity.integralValue" min="0" placeholder="请输入" class="score-input">
                         <span class="score">分</span>
                         <span>参与者在活动成绩为合格时，即可获取相应积分</span>
                     </div>
@@ -1199,6 +1199,19 @@
                         }
                         if (activityApp.isEmpty($this.sign.signOut.btnName)) {
                             app.showMsg("签退按钮名称不能为空");
+                            return false;
+                        }
+                    }
+                    var openIntegral = $this.activity.openIntegral;
+                    if (openIntegral) {
+                        var integralValue = $this.activity.integralValue;
+                        if (activityApp.isEmpty(integralValue)) {
+                            app.showMsg("积分分值不能为空");
+                            return false;
+                        }
+                        integralValue = parseFloat(integralValue);
+                        if (integralValue <= 0) {
+                            app.showMsg("积分分值不能小于0");
                             return false;
                         }
                     }
