@@ -4,7 +4,9 @@ import com.chaoxing.activity.admin.util.LoginUtils;
 import com.chaoxing.activity.dto.LoginUserDTO;
 import com.chaoxing.activity.dto.OrgDTO;
 import com.chaoxing.activity.model.Activity;
+import com.chaoxing.activity.service.activity.ActivityManagerService;
 import com.chaoxing.activity.service.activity.ActivityQueryService;
+import com.chaoxing.activity.service.activity.ActivityValidationService;
 import com.chaoxing.activity.service.manager.MoocApiService;
 import com.chaoxing.activity.service.manager.PassportApiService;
 import com.chaoxing.activity.util.UserAgentUtils;
@@ -31,7 +33,9 @@ import java.util.List;
 public class ActivityManagerManageController {
 
 	@Resource
-	private ActivityQueryService activityQueryService;
+	private ActivityValidationService activityValidationService;
+	@Resource
+	private ActivityManagerService activityManagerService;
 	@Resource
 	private MoocApiService moocApiService;
 	@Resource
@@ -41,12 +45,15 @@ public class ActivityManagerManageController {
 	@RequestMapping
 	public String index(@PathVariable Integer activityId, Model model, HttpServletRequest request) {
 		LoginUserDTO loginUser = LoginUtils.getLoginUser(request);
-		Activity activity = activityQueryService.getById(activityId);
-		model.addAttribute("activity", activity);
+		activityValidationService.manageAble(activityId, loginUser);
+		model.addAttribute("activityId", activityId);
 		// 查询用户的机构列表
 		List<Integer> fids = moocApiService.listUserFids(loginUser.getUid());
 		List<OrgDTO> orgs = passportApiService.listOrg(fids);
 		model.addAttribute("orgs", orgs);
+		// 查询以选择的uid列表
+		List<Integer> managerUids = activityManagerService.listUid(activityId);
+		model.addAttribute("managerUids", managerUids);
 		if (UserAgentUtils.isMobileAccess(request)) {
 			return "mobile/activity-manager";
 		} else {

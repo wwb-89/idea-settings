@@ -273,9 +273,9 @@ Array.prototype.remove = function (val) {
     }
 };
 Array.prototype.pushArray = function (array) {
-    var that = this;
+    var $this = this;
     $.each(array, function () {
-        that.push(this);
+        $this.push(this);
     });
 };
 Vue.filter("getCloudImgUrl", function (activity) {

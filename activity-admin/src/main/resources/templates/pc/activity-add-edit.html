@@ -1471,7 +1471,7 @@
                 },
                 loadFidGroup: function (gid, parentNode){
                     var $this = this;
-                    var url = ctx + "/api/wfw/group/listGroup?gid="+gid;
+                    var url = ctx + "/api/wfw/org/groups?gid="+gid;
                     app.ajaxPostWithLoading(url, {}, function (data) {
                         if (data.success) {
                             var newNodes = data.data;

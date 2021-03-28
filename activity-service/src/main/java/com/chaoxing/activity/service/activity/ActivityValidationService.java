@@ -163,7 +163,7 @@ public class ActivityValidationService {
 	 * @return boolean
 	*/
 	public boolean isActivityManager(Activity activity, LoginUserDTO loginUser) {
-		return isCreator(activity, loginUser);
+		return isActivityManager(activity, loginUser);
 	}
 	/** 可管理活动
 	 * @Description
