@@ -453,17 +453,17 @@
                     var url = ctx + "/api/activity/" + $this.activityId + "/manager/"+ $this.cur.uid +"/delete";
                     app.ajaxPost(url, {}, function (data) {
                         if (data.success) {
-                            $this.managers.remove($this.cur);
                             $this.deleteShow = false;
-                            $this.cur = {};
-                            app.showMsg("移除成功")
+                            app.showMsg("处理成功", function () {
+                                window.location.reload();
+                            });
                         } else {
                             var errorMessage = data.message;
                             app.showMsg(errorMessage);
                         }
                     }, function () {
-                        app.showMsg("移除成功");
-                    }, '移除');
+                        app.showMsg("处理成功");
+                    }, '处理');
                 },
                 deleteBatchManager: function () {
                     var $this = this;
