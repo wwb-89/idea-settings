@@ -8,7 +8,7 @@ import org.springframework.stereotype.Service;
 import javax.annotation.Resource;
 import java.time.LocalDateTime;
 
-/**
+/**活动状态更新服务
  * @author wwb
  * @version ver 1.0
  * @className ActivityStatusUpdateService

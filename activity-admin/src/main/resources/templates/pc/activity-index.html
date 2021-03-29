@@ -40,11 +40,11 @@
                     <span>{{menus.resultsManage.name}}</span>
                 </div>
                 <!--组织者管理-->
-                <div :class="{'item': true, 'active': menus.managerManage.selected}" @click="toManagerManage">
+                <!--<div :class="{'item': true, 'active': menus.managerManage.selected}" th:if="${isCreator}" @click="toManagerManage">
                     <img :src="menus.managerManage.activeIconUrl" v-if="menus.managerManage.selected">
                     <img :src="menus.managerManage.defaultIconUrl" v-else>
                     <span>{{menus.managerManage.name}}</span>
-                </div>
+                </div>-->
             </div>
             <div class="message menu-item" v-if="signActivityManageIndex.signUpExist">
                 <!--发通知-->

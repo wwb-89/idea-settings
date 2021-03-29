@@ -10,10 +10,10 @@ import com.chaoxing.activity.model.Activity;
 import com.chaoxing.activity.model.ActivityClassify;
 import com.chaoxing.activity.model.WebTemplate;
 import com.chaoxing.activity.service.WebTemplateService;
-import com.chaoxing.activity.service.activity.ActivityManagerService;
 import com.chaoxing.activity.service.activity.ActivityQueryService;
 import com.chaoxing.activity.service.activity.ActivityValidationService;
 import com.chaoxing.activity.service.activity.classify.ActivityClassifyQueryService;
+import com.chaoxing.activity.service.activity.manager.ActivityManagerService;
 import com.chaoxing.activity.service.activity.scope.ActivityScopeQueryService;
 import com.chaoxing.activity.service.manager.WfwGroupApiService;
 import com.chaoxing.activity.service.manager.module.SignApiService;
@@ -70,11 +70,15 @@ public class ActivityManageController {
 	@RequestMapping("{activityId}")
 	public String activityIndex(Model model, @PathVariable Integer activityId, HttpServletRequest request) {
 		LoginUserDTO loginUser = LoginUtils.getLoginUser(request);
-		Activity activity = activityValidationService.manageAble(activityId, loginUser, null);
+		Integer operateUid = loginUser.getUid();
+		Activity activity = activityValidationService.manageAble(activityId, operateUid);
 		model.addAttribute("activity", activity);
 		Integer signId = activity.getSignId();
 		SignActivityManageIndexDTO signActivityManageIndex = signApiService.statSignActivityManageIndex(signId);
 		model.addAttribute("signActivityManageIndex", signActivityManageIndex);
+		// 是不是创建者
+		boolean creator = activityValidationService.isCreator(activity, operateUid);
+		model.addAttribute("isCreator", creator);
 		if (UserAgentUtils.isMobileAccess(request)) {
 			return "mobile/activity-index";
 		} else {
@@ -95,7 +99,7 @@ public class ActivityManageController {
 	@GetMapping("{activityId}/edit")
 	public String edit(Model model, @PathVariable Integer activityId, HttpServletRequest request, String code, Integer step) {
 		LoginUserDTO loginUser = LoginUtils.getLoginUser(request);
-		Activity activity = activityValidationService.manageAble(activityId, loginUser, "");
+		Activity activity = activityValidationService.manageAble(activityId, loginUser.getUid());
 		model.addAttribute("activity", activity);
 		// 活动类型列表
 		model.addAttribute("activityTypes", activityQueryService.listActivityType());

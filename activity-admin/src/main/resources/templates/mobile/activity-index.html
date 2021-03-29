@@ -19,10 +19,6 @@
 </head>
 <body>
 <div class="administrators" id="form-vue" v-cloak>
-    <!--<div class="title">
-        <p class="txt overHidden1">{{activity.name}}</p>
-        <div :class="{'status': true, 'color0': (activity.status == 2), 'color1': (activity.status == 3), 'color2': (activity.status == 4)}">{{activity.status | activityStatusDescribe}}</div>
-    </div>-->
     <div class="index-list">
         <div class="item" v-if="signActivityManageIndex.signUpExist" @click="signUpList">
             <img src="/static/mobile/assets/images/admin/allWorks.png" th:src="@{/mobile/assets/images/admin/allWorks.png}">
@@ -38,6 +34,11 @@
         <div class="item" v-if="(signActivityManageIndex.signUpExist || signActivityManageIndex.signInExist)" @click="resultsManage">
             <img src="/static/mobile/assets/images/admin/score-icon.png" th:src="@{/mobile/assets/images/admin/score-icon.png}">
             <p class="flTxt">成绩管理</p>
+            <i class="icon-arrow-r marginAuto"></i>
+        </div>
+        <div class="item" v-if="(signActivityManageIndex.signUpExist || signActivityManageIndex.signInExist)" @click="resultsManage">
+            <img src="/static/mobile/assets/images/admin/score-icon.png" th:src="@{/mobile/assets/images/admin/score-icon.png}">
+            <p class="flTxt">组织者管理</p>
             <i class="icon-arrow-r marginAuto"></i>
         </div>
         <div class="item" v-if="signActivityManageIndex.signUpExist" @click="sendNotice">

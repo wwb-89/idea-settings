@@ -5,7 +5,7 @@ import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.chaoxing.activity.model.LoginCustom;
 import com.chaoxing.activity.service.LoginService;
-import com.chaoxing.activity.service.activity.ActivityCollectionQueryService;
+import com.chaoxing.activity.service.activity.collection.ActivityCollectionQueryService;
 import com.chaoxing.activity.service.activity.ActivityIsAboutStartHandleService;
 import com.chaoxing.activity.service.util.Model2DtoService;
 import com.chaoxing.activity.dto.RestRespDTO;

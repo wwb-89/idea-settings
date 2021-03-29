@@ -1,4 +1,4 @@
-package com.chaoxing.activity.service.activity;
+package com.chaoxing.activity.service.activity.manager;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
@@ -6,9 +6,8 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.chaoxing.activity.dto.LoginUserDTO;
 import com.chaoxing.activity.mapper.ActivityManagerMapper;
 import com.chaoxing.activity.model.ActivityManager;
-import com.chaoxing.activity.util.Pagination;
+import com.chaoxing.activity.service.activity.ActivityValidationService;
 import com.chaoxing.activity.util.exception.BusinessException;
-import com.github.pagehelper.PageHelper;
 import com.google.common.collect.Lists;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
@@ -57,13 +56,14 @@ public class ActivityManagerService {
      * @return boolean
      */
     public boolean add(ActivityManager activityManager, LoginUserDTO loginUser){
-        boolean creator = activityValidationService.isCreator(activityManager.getActivityId(), loginUser);
+        Integer activityId = activityManager.getActivityId();
+        boolean creator = activityValidationService.isCreator(activityId, loginUser);
         if (!creator) {
             throw new BusinessException("无权限");
         }
         activityManager.setCreateUid(loginUser.getUid());
         List<ActivityManager> activityManagers = activityManagerMapper.selectList(new LambdaQueryWrapper<ActivityManager>()
-                .eq(ActivityManager::getActivityId, activityManager.getActivityId())
+                .eq(ActivityManager::getActivityId, activityId)
                 .eq(ActivityManager::getUid, activityManager.getUid()));
         if (CollectionUtils.isEmpty(activityManagers)) {
             activityManagerMapper.insert(activityManager);
@@ -85,6 +85,9 @@ public class ActivityManagerService {
             return;
         }
         Integer activityId = activityManagers.get(0).getUid();
+        for (ActivityManager activityManager : activityManagers) {
+            activityManager.setActivityId(activityId);
+        }
         boolean creator = activityValidationService.isCreator(activityId, loginUser);
         if (!creator) {
             throw new BusinessException("无权限");

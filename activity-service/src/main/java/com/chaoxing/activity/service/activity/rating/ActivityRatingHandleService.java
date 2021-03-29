@@ -66,18 +66,19 @@ public class ActivityRatingHandleService {
 	*/
 	@Transactional(rollbackFor = Exception.class)
 	public void addRating(ActivityRatingDetail activityRatingDetail, LoginUserDTO loginUser) {
+		Integer operateUid = loginUser.getUid();
 		Integer activityId = activityRatingDetail.getActivityId();
 		Activity activity = activityValidationService.activityExist(activityId);
 		// 验证是否可以评价
-		activityRatingValidateService.canSubmitRating(activityId, loginUser.getUid());
+		activityRatingValidateService.canSubmitRating(activityId, operateUid);
 		activityRatingDetail.setScorerUid(loginUser.getUid());
 		activityRatingDetail.setScorerUserName(loginUser.getRealName());
 		Boolean anonymous = activityRatingDetail.getAnonymous();
 		anonymous = Optional.ofNullable(anonymous).orElse(Boolean.FALSE);
 		activityRatingDetail.setAnonymous(anonymous);
-		activityRatingDetail.setCreateUid(loginUser.getUid());
+		activityRatingDetail.setCreateUid(operateUid);
 		// 是不是管理员创建的评价？是则直接审核通过
-		boolean activityManager = activityValidationService.isActivityManager(activity, loginUser);
+		boolean activityManager = activityValidationService.isManageAble(activity, operateUid);
 		if(activity.getRatingNeedAudit() && !activityManager){
 			activityRatingDetail.setAuditStatus(ActivityRatingDetail.AuditStatus.WAIT.getValue());
 		}else{
@@ -228,7 +229,7 @@ public class ActivityRatingHandleService {
 	*/
 	@Transactional(rollbackFor = Exception.class)
 	public void pass(LoginUserDTO loginUser, Integer activityId, Integer activityRatingDetailId){
-		activityValidationService.manageAble(activityId, loginUser, null);
+		activityValidationService.manageAble(activityId, loginUser.getUid());
 		ActivityRatingDetail activityRatingDetail = activityRatingValidateService.auditAble(activityRatingDetailId);
 		activityRatingDetailMapper.update(null, new UpdateWrapper<ActivityRatingDetail>()
 				.lambda()
@@ -250,7 +251,7 @@ public class ActivityRatingHandleService {
 	*/
 	@Transactional(rollbackFor = Exception.class)
 	public void reject(LoginUserDTO loginUser, Integer activityId, Integer activityRatingDetailId){
-		activityValidationService.manageAble(activityId, loginUser, null);
+		activityValidationService.manageAble(activityId, loginUser.getUid());
 		activityRatingValidateService.auditAble(activityRatingDetailId);
 		activityRatingDetailMapper.update(null, new UpdateWrapper<ActivityRatingDetail>()
 				.lambda()
@@ -299,7 +300,7 @@ public class ActivityRatingHandleService {
 	 * @return void
 	*/
 	private void batchAuditRating(Integer activityId, List<Integer> ratingDetailIds, LoginUserDTO loginUser, ActivityRatingDetail.AuditStatus auditStatus) {
-		activityValidationService.manageAble(activityId, loginUser, null);
+		activityValidationService.manageAble(activityId, loginUser.getUid());
 		List<ActivityRatingDetail> activityRatingDetails = activityRatingQueryService.listDetailByDetailIds(activityId, ratingDetailIds);
 		if (CollectionUtils.isNotEmpty(activityRatingDetails)) {
 			List<ActivityRatingDetail> auditAbleActivityRatingDetails = Lists.newArrayList();

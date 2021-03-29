@@ -5,15 +5,17 @@ import com.chaoxing.activity.admin.util.LoginUtils;
 import com.chaoxing.activity.dto.LoginUserDTO;
 import com.chaoxing.activity.dto.RestRespDTO;
 import com.chaoxing.activity.model.ActivityManager;
-import com.chaoxing.activity.service.activity.ActivityManagerService;
 import com.chaoxing.activity.service.activity.ActivityValidationService;
+import com.chaoxing.activity.service.activity.manager.ActivityManagerService;
 import com.chaoxing.activity.util.HttpServletRequestUtils;
-import com.chaoxing.activity.util.exception.BusinessException;
-import org.springframework.web.bind.annotation.*;
+import com.chaoxing.activity.util.annotation.LoginRequired;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
-import java.util.ArrayList;
 import java.util.List;
 
 /**活动管理者api服务
@@ -41,7 +43,7 @@ public class ActivityManagerApiController {
 	 * @param activityId
 	 * @return com.chaoxing.activity.dto.RestRespDTO
 	 */
-	@ResponseBody
+	@LoginRequired
 	@RequestMapping("list")
 	public RestRespDTO list(HttpServletRequest request, @PathVariable Integer activityId) {
 		Page<ActivityManager> page = HttpServletRequestUtils.buid(request);
@@ -58,14 +60,10 @@ public class ActivityManagerApiController {
 	 * @param activityManager
 	 * @return com.chaoxing.activity.dto.RestRespDTO
 	*/
-	@ResponseBody
+	@LoginRequired
 	@RequestMapping("add")
 	public RestRespDTO activityAddManager(HttpServletRequest request, @PathVariable Integer activityId, ActivityManager activityManager) {
 		LoginUserDTO loginUser = LoginUtils.getLoginUser(request);
-		boolean creator = activityValidationService.isCreator(activityId, loginUser);
-		if (!creator) {
-			throw new BusinessException("无权限");
-		}
 		activityManagerService.add(activityManager, loginUser);
 		return RestRespDTO.success(activityManager);
 	}
@@ -79,14 +77,10 @@ public class ActivityManagerApiController {
 	 * @param request
 	 * @return com.chaoxing.activity.dto.RestRespDTO
 	*/
-	@ResponseBody
+	@LoginRequired
 	@RequestMapping("add/batch")
 	public RestRespDTO activityAddManager(HttpServletRequest request, @PathVariable Integer activityId, @RequestBody List<ActivityManager> activityManagers) {
 		LoginUserDTO loginUser = LoginUtils.getLoginUser(request);
-		boolean creator = activityValidationService.isCreator(activityId, loginUser);
-		if (!creator) {
-			throw new BusinessException("无权限");
-		}
 		activityManagerService.batchAdd(activityManagers, loginUser);
 		return RestRespDTO.success();
 	}
@@ -100,14 +94,10 @@ public class ActivityManagerApiController {
 	 * @param uid
 	 * @return com.chaoxing.activity.dto.RestRespDTO
 	*/
-	@ResponseBody
+	@LoginRequired
 	@RequestMapping("{uid}/delete")
 	public RestRespDTO activityDeleteManagers(HttpServletRequest request, @PathVariable Integer activityId, @PathVariable Integer uid) {
 		LoginUserDTO loginUser = LoginUtils.getLoginUser(request);
-		boolean creator = activityValidationService.isCreator(activityId, loginUser);
-		if (!creator) {
-			throw new BusinessException("无权限");
-		}
 		activityManagerService.delete(activityId, uid, loginUser);
 		return RestRespDTO.success();
 	}
@@ -121,7 +111,7 @@ public class ActivityManagerApiController {
 	 * @param uids
 	 * @return com.chaoxing.activity.dto.RestRespDTO
 	*/
-	@ResponseBody
+	@LoginRequired
 	@RequestMapping("delete/batch")
 	public RestRespDTO activityDeleteManagers(HttpServletRequest request, @PathVariable Integer activityId, @RequestBody List<Integer> uids) {
 		LoginUserDTO loginUser = LoginUtils.getLoginUser(request);

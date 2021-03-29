@@ -3,9 +3,7 @@ package com.chaoxing.activity.admin.controller.general;
 import com.chaoxing.activity.admin.util.LoginUtils;
 import com.chaoxing.activity.dto.LoginUserDTO;
 import com.chaoxing.activity.dto.OrgDTO;
-import com.chaoxing.activity.model.Activity;
-import com.chaoxing.activity.service.activity.ActivityManagerService;
-import com.chaoxing.activity.service.activity.ActivityQueryService;
+import com.chaoxing.activity.service.activity.manager.ActivityManagerService;
 import com.chaoxing.activity.service.activity.ActivityValidationService;
 import com.chaoxing.activity.service.manager.MoocApiService;
 import com.chaoxing.activity.service.manager.PassportApiService;
@@ -45,10 +43,11 @@ public class ActivityManagerManageController {
 	@RequestMapping
 	public String index(@PathVariable Integer activityId, Model model, HttpServletRequest request) {
 		LoginUserDTO loginUser = LoginUtils.getLoginUser(request);
-		activityValidationService.manageAble(activityId, loginUser);
+		Integer operateUid = loginUser.getUid();
+		activityValidationService.manageAble(activityId, operateUid);
 		model.addAttribute("activityId", activityId);
 		// 查询用户的机构列表
-		List<Integer> fids = moocApiService.listUserFids(loginUser.getUid());
+		List<Integer> fids = moocApiService.listUserFids(operateUid);
 		List<OrgDTO> orgs = passportApiService.listOrg(fids);
 		model.addAttribute("orgs", orgs);
 		// 查询以选择的uid列表

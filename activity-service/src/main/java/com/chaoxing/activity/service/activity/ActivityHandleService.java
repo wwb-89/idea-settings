@@ -680,7 +680,7 @@ public class ActivityHandleService {
 	 * @return void
 	*/
 	public void updateRatingConfig(Integer activityId, boolean openRating, boolean ratingNeedAudit, LoginUserDTO loginUser) {
-		activityValidationService.manageAble(activityId, loginUser, "");
+		activityValidationService.manageAble(activityId, loginUser.getUid());
 		activityMapper.update(null, new UpdateWrapper<Activity>()
 				.lambda()
 				.eq(Activity::getId, activityId)

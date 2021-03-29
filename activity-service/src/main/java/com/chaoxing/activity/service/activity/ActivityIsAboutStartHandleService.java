@@ -4,6 +4,7 @@ import com.chaoxing.activity.dto.manager.NoticeDTO;
 import com.chaoxing.activity.dto.manager.sign.SignUp;
 import com.chaoxing.activity.dto.module.SignAddEditDTO;
 import com.chaoxing.activity.model.Activity;
+import com.chaoxing.activity.service.activity.collection.ActivityCollectionQueryService;
 import com.chaoxing.activity.service.manager.XxtNoticeApiService;
 import com.chaoxing.activity.service.manager.module.SignApiService;
 import com.chaoxing.activity.util.DateUtils;
