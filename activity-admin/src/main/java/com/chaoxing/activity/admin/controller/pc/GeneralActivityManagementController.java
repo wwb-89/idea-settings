@@ -34,11 +34,12 @@ public class GeneralActivityManagementController {
 	 * @param code 图书馆编码
 	 * @param secondClassroomFlag 第二课堂标识
 	 * @param strict
+	 * @param flag 活动标示。通用、第二课堂、双选会...
 	 * @return java.lang.String
 	 */
 	@RequestMapping("")
-	public String index(Model model, String code, @RequestParam(defaultValue = "0") Integer secondClassroomFlag, @RequestParam(defaultValue = "0") Integer strict) {
-		return activityManageController.index(model, code, secondClassroomFlag, strict);
+	public String index(Model model, String code, @RequestParam(defaultValue = "0") Integer secondClassroomFlag, @RequestParam(defaultValue = "0") Integer strict, String flag) {
+		return activityManageController.index(model, code, secondClassroomFlag, strict, flag);
 	}
 
 	/**活动新增页面
@@ -49,11 +50,12 @@ public class GeneralActivityManagementController {
 	 * @param request
 	 * @param code
 	 * @param secondClassroomFlag 第二课堂标识
+	 * @param flag
 	 * @return java.lang.String
 	*/
 	@GetMapping("activity/add")
-	public String add(Model model, HttpServletRequest request, String code, @RequestParam(defaultValue = "0") Integer secondClassroomFlag) {
-		return activityManageController.add(model, request, code, secondClassroomFlag);
+	public String add(Model model, HttpServletRequest request, String code, @RequestParam(defaultValue = "0") Integer secondClassroomFlag, String flag) {
+		return activityManageController.add(model, request, code, secondClassroomFlag, flag);
 	}
 
 }

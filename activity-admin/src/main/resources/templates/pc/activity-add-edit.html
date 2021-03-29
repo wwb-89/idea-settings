@@ -162,7 +162,7 @@
                         </div>
                     </div>
                 </div>
-                <div class="form-item last" v-show="secondClassroomFlag != 1">
+                <div class="form-item last" v-show="activityFlag != 'second_classroom'">
                     <label class="label"><img src="/static/pc/assets/images/required.png" th:src="@{/pc/assets/images/required.png}" class="required-img">参与范围</label>
                     <div class="input-box wrap">
                         <!--添加范围后显示后面这项-->
@@ -211,7 +211,7 @@
                         </span>
                     </div>
                 </div>
-                <div class="form-item flexStart" v-show="secondClassroomFlag == 1">
+                <div class="form-item flexStart" v-show="activityFlag == 'second_classroom'">
                     <label class="label">参与范围</label>
                     <div class="join-box">
                         <div>
@@ -415,7 +415,7 @@
             </form>
         </div>
         <!-- 积分设置 -->
-        <div class="info box" v-show="secondClassroomFlag == 1">
+        <div class="info box" v-show="activityFlag == 'second_classroom'">
             <div class="set-box">
                 <div class="title set">积分设置</div>
                 <el-switch v-model="activity.openIntegral" class="switch"></el-switch>
@@ -432,7 +432,7 @@
             </form>
         </div>
         <!-- 评价设置 -->
-        <div class="info box" v-show="secondClassroomFlag == 1">
+        <div class="info box" v-show="activityFlag == 'second_classroom'">
             <div class="set-box">
                 <div class="title set">评价设置</div>
                 <el-switch v-model="activity.openRating" class="switch"></el-switch>
@@ -634,8 +634,8 @@
                 groups: [[${sign.signUpGroupRanges}]]!=null?[[${sign.signUpGroupRanges}]]:[],
                 wfwGroups: [[${wfwGroups}]],
                 groupTreeObj: null,
-                // 第二课堂标识
-                secondClassroomFlag: [[${secondClassroomFlag}]]
+                // 活动标示
+                activityFlag: [[${activityFlag}]],
             },
             created: function () {
                 var $this = this;
@@ -664,7 +664,7 @@
                         enableSign: true,
                         createAreaCode: $this.areaCode,
                         tags: "",
-                        secondClassroomFlag: $this.secondClassroomFlag
+                        activityFlag: $this.activityFlag
                     };
                 } else {
                     $this.activity.createTime = null;
@@ -1106,7 +1106,7 @@
                         return false;
                     }
                     // 参与范围
-                    if ($this.secondClassroomFlag != 1 && (activityApp.isEmpty($this.participatedOrgs) || $this.participatedOrgs.length < 1)) {
+                    if ($this.activityFlag != "second_classroom" && (activityApp.isEmpty($this.participatedOrgs) || $this.participatedOrgs.length < 1)) {
                         app.showMsg("请选择参与范围");
                         return false;
                     }

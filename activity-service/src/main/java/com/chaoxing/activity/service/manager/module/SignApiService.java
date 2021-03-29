@@ -72,7 +72,7 @@ public class SignApiService {
 	/** 查询报名成功的uid列表url */
 	private static final String SIGNED_UP_UIDS_URL = SIGN_API_DOMAIN + "/sign/%s/uid/signed-up";
 	/** 用户是否已报名（报名成功）url */
-	private static final String USER_SIGNED_UP_SUCCESS_URL = SIGN_API_DOMAIN + "/sign-up/%d/signed-up-success?uid=%d";
+	private static final String USER_SIGNED_UP_SUCCESS_URL = SIGN_API_DOMAIN + "/sign-up/signed-up-success?signId=%d&uid=%d";
 
 	/** 报名名单url */
 	private static final String SIGN_UP_USER_LIST_URL = SIGN_WEB_DOMAIN + "/sign-up/%d/user-list";
@@ -156,21 +156,20 @@ public class SignApiService {
 		if (success) {
 			String data = jsonObject.getString("data");
 			SignAddEditDTO signAddEdit = JSON.parseObject(data, SignAddEditDTO.class);
-			SignUp signUp = signAddEdit.getSignUp();
-			Optional.ofNullable(signUp).ifPresent(v -> {
-				signUp.setStartTimestamp(signUp.getStartTime().toInstant(ZoneOffset.ofHours(8)).toEpochMilli());
-				signUp.setEndTimestamp(signUp.getEndTime().toInstant(ZoneOffset.ofHours(8)).toEpochMilli());
-			});
-			SignIn signIn = signAddEdit.getSignIn();
-			Optional.ofNullable(signIn).ifPresent(v -> {
-				signIn.setStartTimestamp(signIn.getStartTime().toInstant(ZoneOffset.ofHours(8)).toEpochMilli());
-				signIn.setEndTimestamp(signIn.getEndTime().toInstant(ZoneOffset.ofHours(8)).toEpochMilli());
-			});
-			SignIn signOut = signAddEdit.getSignOut();
-			Optional.ofNullable(signOut).ifPresent(v -> {
-				signOut.setStartTimestamp(signOut.getStartTime().toInstant(ZoneOffset.ofHours(8)).toEpochMilli());
-				signOut.setEndTimestamp(signOut.getEndTime().toInstant(ZoneOffset.ofHours(8)).toEpochMilli());
-			});
+			List<SignUp> signUps = signAddEdit.getSignUps();
+			if (CollectionUtils.isNotEmpty(signUps)) {
+				for (SignUp signUp : signUps) {
+					signUp.setStartTimestamp(signUp.getStartTime().toInstant(ZoneOffset.ofHours(8)).toEpochMilli());
+					signUp.setEndTimestamp(signUp.getEndTime().toInstant(ZoneOffset.ofHours(8)).toEpochMilli());
+				}
+			}
+			List<SignIn> signIns = signAddEdit.getSignIns();
+			if (CollectionUtils.isNotEmpty(signIns)) {
+				for (SignIn signIn : signIns) {
+					signIn.setStartTimestamp(signIn.getStartTime().toInstant(ZoneOffset.ofHours(8)).toEpochMilli());
+					signIn.setEndTimestamp(signIn.getEndTime().toInstant(ZoneOffset.ofHours(8)).toEpochMilli());
+				}
+			}
 			return signAddEdit;
 		} else {
 			String errorMessage = jsonObject.getString("message");
@@ -428,44 +427,37 @@ public class SignApiService {
 	/**是否开启了报名
 	 * @Description 
 	 * @author wwb
-	 * @Date 2021-03-08 18:48:53
+	 * @Date 2021-03-08 19:18:23
 	 * @param signId
 	 * @return boolean
 	*/
 	public boolean isOpenSignUp(Integer signId) {
-		SignAddEditDTO signAddEdit = getById(signId);
-		if (signAddEdit != null && signAddEdit.getSignUp() != null) {
-			return true;
-		}
-		return false;
-	}
-
-	/**根据报名签到id获取报名信息
-	 * @Description 
-	 * @author wwb
-	 * @Date 2021-03-08 19:18:23
-	 * @param signId
-	 * @return com.chaoxing.activity.dto.manager.sign.SignUp
-	*/
-	public SignUp getBySignId(Integer signId) {
-		SignUp signUp = null;
+		boolean isOpenSignUp = false;
 		SignAddEditDTO signAddEdit = getById(signId);
 		if (signAddEdit != null) {
-			signUp = signAddEdit.getSignUp();
+			List<SignUp> signUps = signAddEdit.getSignUps();
+			if (CollectionUtils.isNotEmpty(signUps)) {
+				for (SignUp signUp : signUps) {
+					if (!signUp.getDeleted()) {
+						isOpenSignUp = true;
+						break;
+					}
+				}
+			}
 		}
-		return signUp;
+		return isOpenSignUp;
 	}
 
 	/**用户是否报名成功
 	 * @Description 
 	 * @author wwb
 	 * @Date 2021-03-08 18:52:07
-	 * @param signUpId
+	 * @param signId
 	 * @param uid
 	 * @return boolean
 	*/
-	public boolean isSignedUpSuccess(Integer signUpId, Integer uid) {
-		String url = String.format(USER_SIGNED_UP_SUCCESS_URL, signUpId, uid);
+	public boolean isSignedUpSuccess(Integer signId, Integer uid) {
+		String url = String.format(USER_SIGNED_UP_SUCCESS_URL, signId, uid);
 		String result = restTemplate.getForObject(url, String.class);
 		JSONObject jsonObject = JSON.parseObject(result);
 		Boolean success = jsonObject.getBoolean("success");
@@ -474,7 +466,7 @@ public class SignApiService {
 			return jsonObject.getBoolean("data");
 		}
 		String message = jsonObject.getString("message");
-		log.error("获取用户:{} 报名id:{} 获取用户是否报名成功error:{}", uid, signUpId, message);
+		log.error("获取用户:{} 报名签到id:{} 获取用户是否报名成功error:{}", uid, signId, message);
 		throw new BusinessException(message);
 	}
 

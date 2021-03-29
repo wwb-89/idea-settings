@@ -166,15 +166,17 @@ public class ActivityIsAboutStartHandleService {
 		String name = activity.getName();
 		String previewUrl = activity.getPreviewUrl();
 		Integer signId = activity.getSignId();
-		SignUp signUp = null;
+		List<SignUp> signUps = null;
 		if (signId != null) {
 			SignAddEditDTO signAddEditDTO = signApiService.getById(signId);
-			signUp = signAddEditDTO.getSignUp();
+			signUps = signAddEditDTO.getSignUps();
 		}
 		String title = generateCollectedNoticeTitle(activity);
-		String content = generateCollectedNoticeContent(activity, signUp);
-		for (Integer collectedUid : uids) {
-			noticeApiService.sendNotice(title, content, NoticeDTO.generateAttachment(name, previewUrl), CommonConstant.NOTICE_SEND_UID, new ArrayList(){{add(collectedUid);}});
+		for (SignUp signUp : signUps) {
+			String content = generateCollectedNoticeContent(activity, signUp);
+			for (Integer collectedUid : uids) {
+				noticeApiService.sendNotice(title, content, NoticeDTO.generateAttachment(name, previewUrl), CommonConstant.NOTICE_SEND_UID, new ArrayList(){{add(collectedUid);}});
+			}
 		}
 	}
 

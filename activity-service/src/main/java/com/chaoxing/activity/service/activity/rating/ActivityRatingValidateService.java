@@ -1,6 +1,5 @@
 package com.chaoxing.activity.service.activity.rating;
 
-import com.chaoxing.activity.dto.manager.sign.SignUp;
 import com.chaoxing.activity.model.Activity;
 import com.chaoxing.activity.model.ActivityRatingDetail;
 import com.chaoxing.activity.service.activity.ActivityValidationService;
@@ -54,13 +53,13 @@ public class ActivityRatingValidateService {
 			return;
 		}
 		// 报名签到是否开启了报名
-		SignUp signUp = signApiService.getBySignId(signId);
-		if (signUp == null) {
+		boolean openSignUp = signApiService.isOpenSignUp(signId);
+		if (!openSignUp) {
 			// 没有开启报名
 			return;
 		}
 		// 用户是否报名
-		boolean signedUpSuccess = signApiService.isSignedUpSuccess(signUp.getId(), uid);
+		boolean signedUpSuccess = signApiService.isSignedUpSuccess(signId, uid);
 		if (!signedUpSuccess) {
 			throw new BusinessException("未报名");
 		}

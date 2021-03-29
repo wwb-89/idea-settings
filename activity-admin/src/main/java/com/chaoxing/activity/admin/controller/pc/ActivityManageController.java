@@ -5,6 +5,7 @@ import com.chaoxing.activity.dto.LoginUserDTO;
 import com.chaoxing.activity.dto.activity.ActivityTypeDTO;
 import com.chaoxing.activity.dto.manager.WfwGroupDTO;
 import com.chaoxing.activity.dto.module.SignAddEditDTO;
+import com.chaoxing.activity.model.Activity;
 import com.chaoxing.activity.model.Group;
 import com.chaoxing.activity.model.WebTemplate;
 import com.chaoxing.activity.service.GroupService;
@@ -20,6 +21,7 @@ import org.springframework.ui.Model;
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 
 /**
@@ -52,19 +54,56 @@ public class ActivityManageController {
 	 * @param code 图书馆专用的code
 	 * @param secondClassroomFlag 第二课堂标识
 	 * @param strict 是不是严格模式， 严格模式：只显示自己创建的活动
+	 * @param flag 活动标示。通用、第二课堂、双选会...
 	 * @return java.lang.String
 	*/
-	public String index(Model model, String code, Integer secondClassroomFlag, Integer strict) {
+	public String index(Model model, String code, Integer secondClassroomFlag, Integer strict, String flag) {
 		code = Optional.ofNullable(code).orElse("");
 		// 防止挂接到三放也携带了code参数
 		code = code.split(CommonConstant.DEFAULT_SEPARATOR)[0];
 		model.addAttribute("code", code);
 		model.addAttribute("secondClassroomFlag", secondClassroomFlag);
 		model.addAttribute("strict", strict);
+		flag = calActivityFlag(flag, secondClassroomFlag);
+		model.addAttribute("activityFlag", flag);
 		return "pc/activity-list";
 	}
 
-	public String add(Model model, HttpServletRequest request, String code, Integer secondClassroomFlag) {
+	/**计算活动标示
+	 * @Description 
+	 * @author wwb
+	 * @Date 2021-03-29 14:50:27
+	 * @param flag
+	 * @param secondClassroomFlag
+	 * @return java.lang.String
+	*/
+	private String calActivityFlag(String flag, Integer secondClassroomFlag) {
+		if (StringUtils.isBlank(flag)) {
+			if (Objects.equals(secondClassroomFlag, 1)) {
+				flag = Activity.ActivityFlag.SECOND_CLASSROOM.getValue();
+			} else {
+				flag = Activity.ActivityFlag.NORMAL.getValue();
+			}
+		}
+		Activity.ActivityFlag activityFlag = Activity.ActivityFlag.fromValue(flag);
+		if (activityFlag == null) {
+			flag = Activity.ActivityFlag.NORMAL.getValue();
+		}
+		return flag;
+	}
+
+	/**新增活动页面
+	 * @Description 
+	 * @author wwb
+	 * @Date 2021-03-29 14:49:00
+	 * @param model
+	 * @param request
+	 * @param code
+	 * @param secondClassroomFlag
+	 * @param flag
+	 * @return java.lang.String
+	*/
+	public String add(Model model, HttpServletRequest request, String code, Integer secondClassroomFlag, String flag) {
 		String areaCode = "";
 		if (StringUtils.isNotBlank(code)) {
 			// 根据code查询areaCode
@@ -86,9 +125,10 @@ public class ActivityManageController {
 		model.addAttribute("webTemplates", webTemplates);
 		model.addAttribute("areaCode", areaCode);
 
-		List<WfwGroupDTO> wfwGroups = wfwGroupApiService.getGroupByGid(loginUser.getFid(), "0");
+		List<WfwGroupDTO> wfwGroups = wfwGroupApiService.getGroupByGid(loginUser.getFid(), 0);
 		model.addAttribute("wfwGroups", wfwGroups);
-		model.addAttribute("secondClassroomFlag", secondClassroomFlag);
+		flag = calActivityFlag(flag, secondClassroomFlag);
+		model.addAttribute("activityFlag", flag);
 		return "pc/activity-add-edit";
 	}
 

@@ -13,7 +13,6 @@ import com.chaoxing.activity.service.WebTemplateService;
 import com.chaoxing.activity.service.activity.ActivityQueryService;
 import com.chaoxing.activity.service.activity.ActivityValidationService;
 import com.chaoxing.activity.service.activity.classify.ActivityClassifyQueryService;
-import com.chaoxing.activity.service.activity.manager.ActivityManagerService;
 import com.chaoxing.activity.service.activity.scope.ActivityScopeQueryService;
 import com.chaoxing.activity.service.manager.WfwGroupApiService;
 import com.chaoxing.activity.service.manager.module.SignApiService;
@@ -54,9 +53,6 @@ public class ActivityManageController {
 	private ActivityValidationService activityValidationService;
 	@Resource
 	private WfwGroupApiService wfwGroupApiService;
-
-	@Resource
-	private ActivityManagerService activityManagerService;
 
 	/**活动管理主页
 	 * @Description 
@@ -122,7 +118,7 @@ public class ActivityManageController {
 		model.addAttribute("participatedOrgs", wfwRegionalArchitectures);
 
 		// 报名范围
-		List<WfwGroupDTO> wfwGroups = wfwGroupApiService.getGroupByGid(loginUser.getFid(), "0");
+		List<WfwGroupDTO> wfwGroups = wfwGroupApiService.getGroupByGid(loginUser.getFid(), 0);
 		model.addAttribute("wfwGroups", wfwGroups);
 		model.addAttribute("secondClassroomFlag", activity.getSecondClassroomFlag());
 		return "pc/activity-add-edit";

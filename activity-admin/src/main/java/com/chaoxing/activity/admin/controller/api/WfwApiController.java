@@ -45,7 +45,7 @@ public class WfwApiController {
 	 * @return com.chaoxing.activity.dto.RestRespDTO
 	*/
 	@RequestMapping("org/groups")
-	public RestRespDTO listGroup(HttpServletRequest request, String gid) {
+	public RestRespDTO listGroup(HttpServletRequest request, Integer gid) {
 		LoginUserDTO loginUser = LoginUtils.getLoginUser(request);
 		List<WfwGroupDTO> wfwGroups = wfwGroupApiService.getGroupByGid(loginUser.getFid(), gid);
 		return RestRespDTO.success(wfwGroups);

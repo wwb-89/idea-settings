@@ -39,6 +39,15 @@ public class ActivityManagerManageController {
 	@Resource
 	private PassportApiService passportApiService;
 
+	/**组织者管理主页
+	 * @Description 
+	 * @author wwb
+	 * @Date 2021-03-29 14:41:22
+	 * @param activityId
+	 * @param model
+	 * @param request
+	 * @return java.lang.String
+	*/
 	@LoginRequired
 	@RequestMapping
 	public String index(@PathVariable Integer activityId, Model model, HttpServletRequest request) {
