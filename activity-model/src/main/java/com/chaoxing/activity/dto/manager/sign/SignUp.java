@@ -1,7 +1,7 @@
 package com.chaoxing.activity.dto.manager.sign;
 
 import com.alibaba.fastjson.annotation.JSONField;
-import com.chaoxing.activity.util.LocalDateTimeDeserializer;
+import com.chaoxing.activity.util.LocalDateTime2TimestampDeserializer;
 import com.chaoxing.activity.util.LocalDateTimeSerializer;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -29,13 +29,15 @@ public class SignUp {
     private Integer id;
     /** 报名签到id */
     private Integer signId;
+    /** 报名名称 */
+    private String name;
     /** 是否开启审批 */
     private Boolean openAudit;
     /** 开始时间 */
-    @JSONField(serializeUsing = LocalDateTimeSerializer.class, deserializeUsing = LocalDateTimeDeserializer.class)
+    @JSONField(serializeUsing = LocalDateTimeSerializer.class, deserializeUsing = LocalDateTime2TimestampDeserializer.class)
     private LocalDateTime startTime;
     /** 结束时间 */
-    @JSONField(serializeUsing = LocalDateTimeSerializer.class, deserializeUsing = LocalDateTimeDeserializer.class)
+    @JSONField(serializeUsing = LocalDateTimeSerializer.class, deserializeUsing = LocalDateTime2TimestampDeserializer.class)
     private LocalDateTime endTime;
     /** 是否限制人数 */
     private Boolean limitPerson;
@@ -51,6 +53,8 @@ public class SignUp {
     private String btnName;
     /** 是否报名结束后允许取消报名 */
     private Boolean endAllowCancel;
+    /** 是否启用限制参与范围 */
+    private Boolean enableLimitParticipateScope;
     /** 是否限制参与范围 */
     private Boolean limitParticipateScope;
     /** 参与范围限制类型 */
@@ -62,7 +66,7 @@ public class SignUp {
     /** 是否被删除 */
     private Boolean deleted;
     /** 创建时间 */
-    @JSONField(serializeUsing = LocalDateTimeSerializer.class, deserializeUsing = LocalDateTimeDeserializer.class)
+    @JSONField(serializeUsing = LocalDateTimeSerializer.class, deserializeUsing = LocalDateTime2TimestampDeserializer.class)
     private LocalDateTime createTime;
     /** 创建人id */
     private Integer createUid;
@@ -73,7 +77,7 @@ public class SignUp {
     /** 创建人机构id */
     private String createOrgName;
     /** 更新时间 */
-    @JSONField(serializeUsing = LocalDateTimeSerializer.class, deserializeUsing = LocalDateTimeDeserializer.class)
+    @JSONField(serializeUsing = LocalDateTimeSerializer.class, deserializeUsing = LocalDateTime2TimestampDeserializer.class)
     private LocalDateTime updateTime;
     /** 更新人id */
     private Integer updateUid;
@@ -84,6 +88,6 @@ public class SignUp {
     /** 结束时间字符串表示 */
     private Long endTimestamp;
     /** 参与范围 */
-    private List<SignUpParticipateScope> signUpParticipateScopes;
+    private List<SignUpParticipateScope> participateScopes;
 
 }

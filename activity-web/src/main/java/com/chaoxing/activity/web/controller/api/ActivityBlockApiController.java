@@ -24,6 +24,7 @@ import java.util.Optional;
  */
 @Controller
 @RequestMapping("activity/block")
+@Deprecated
 public class ActivityBlockApiController {
 
 	@Resource

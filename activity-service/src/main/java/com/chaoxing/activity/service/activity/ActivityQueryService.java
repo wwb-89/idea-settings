@@ -14,7 +14,11 @@ import com.chaoxing.activity.dto.query.ActivityQueryDTO;
 import com.chaoxing.activity.dto.query.MhActivityCalendarQueryDTO;
 import com.chaoxing.activity.dto.sign.SignedUpDTO;
 import com.chaoxing.activity.mapper.ActivityMapper;
+import com.chaoxing.activity.mapper.ActivityFlagSignModuleMapper;
+import com.chaoxing.activity.mapper.ActivitySignModuleMapper;
 import com.chaoxing.activity.model.Activity;
+import com.chaoxing.activity.model.ActivityFlagSignModule;
+import com.chaoxing.activity.model.ActivitySignModule;
 import com.chaoxing.activity.service.manager.WfwRegionalArchitectureApiService;
 import com.chaoxing.activity.service.manager.module.SignApiService;
 import com.chaoxing.activity.util.DateUtils;
@@ -53,12 +57,16 @@ public class ActivityQueryService {
 
 	@Resource
 	private ActivityMapper activityMapper;
+	@Resource
+	private ActivityFlagSignModuleMapper activityFlagSignModuleMapper;
+	@Resource
+	private ActivitySignModuleMapper activitySignModuleMapper;
 
 	@Resource
 	private WfwRegionalArchitectureApiService wfwRegionalArchitectureApiService;
 	@Resource
 	private SignApiService signApiService;
-	
+
 	/**查询参与的活动
 	 * @Description 
 	 * @author wwb
@@ -407,6 +415,34 @@ public class ActivityQueryService {
 		return activityMapper.selectList(new QueryWrapper<Activity>()
 			.lambda()
 				.ne(Activity::getStatus, Activity.StatusEnum.DELETED.getValue())
+		);
+	}
+
+	/**根据flag查询
+	 * @Description 
+	 * @author wwb
+	 * @Date 2021-03-30 09:46:45
+	 * @param activityFlag
+	 * @return java.util.List<com.chaoxing.activity.model.ActivityFlagSignModule>
+	*/
+	public List<ActivityFlagSignModule> listSignModuleByFlag(String activityFlag) {
+		return activityFlagSignModuleMapper.selectList(new QueryWrapper<ActivityFlagSignModule>()
+			.lambda()
+				.eq(ActivityFlagSignModule::getActivityFlag, activityFlag)
+		);
+	}
+
+	/**根据活动id查询
+	 * @Description 
+	 * @author wwb
+	 * @Date 2021-03-30 18:14:10
+	 * @param activityId
+	 * @return java.util.List<com.chaoxing.activity.model.ActivitySignModule>
+	*/
+	public List<ActivitySignModule> listByActivityId(Integer activityId) {
+		return activitySignModuleMapper.selectList(new QueryWrapper<ActivitySignModule>()
+				.lambda()
+				.eq(ActivitySignModule::getActivityId, activityId)
 		);
 	}
 

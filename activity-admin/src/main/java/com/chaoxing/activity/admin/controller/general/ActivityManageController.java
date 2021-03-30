@@ -6,9 +6,7 @@ import com.chaoxing.activity.dto.manager.WfwGroupDTO;
 import com.chaoxing.activity.dto.manager.WfwRegionalArchitectureDTO;
 import com.chaoxing.activity.dto.module.SignAddEditDTO;
 import com.chaoxing.activity.dto.sign.SignActivityManageIndexDTO;
-import com.chaoxing.activity.model.Activity;
-import com.chaoxing.activity.model.ActivityClassify;
-import com.chaoxing.activity.model.WebTemplate;
+import com.chaoxing.activity.model.*;
 import com.chaoxing.activity.service.WebTemplateService;
 import com.chaoxing.activity.service.activity.ActivityQueryService;
 import com.chaoxing.activity.service.activity.ActivityValidationService;
@@ -116,11 +114,17 @@ public class ActivityManageController {
 		// 活动参与范围
 		List<WfwRegionalArchitectureDTO> wfwRegionalArchitectures = activityScopeQueryService.listByActivityId(activityId);
 		model.addAttribute("participatedOrgs", wfwRegionalArchitectures);
-
 		// 报名范围
 		List<WfwGroupDTO> wfwGroups = wfwGroupApiService.getGroupByGid(loginUser.getFid(), 0);
 		model.addAttribute("wfwGroups", wfwGroups);
-		model.addAttribute("secondClassroomFlag", activity.getSecondClassroomFlag());
+		String activityFlag = activity.getActivityFlag();
+		model.addAttribute("activityFlag", activityFlag);
+		// flag配置的报名签到的模块
+		List<ActivityFlagSignModule> activityFlagSignModules = activityQueryService.listSignModuleByFlag(activityFlag);
+		model.addAttribute("activityFlagSignModules", activityFlagSignModules);
+		// 活动关联的报名签到模块列表
+		List<ActivitySignModule> activitySignModules = activityQueryService.listByActivityId(activityId);
+		model.addAttribute("activitySignModules", activitySignModules);
 		return "pc/activity-add-edit";
 	}
 

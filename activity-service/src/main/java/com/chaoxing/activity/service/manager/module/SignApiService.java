@@ -5,12 +5,14 @@ import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.chaoxing.activity.dto.manager.sign.*;
 import com.chaoxing.activity.dto.module.SignAddEditDTO;
+import com.chaoxing.activity.dto.module.SignAddEditResultDTO;
 import com.chaoxing.activity.dto.sign.ActivityBlockDetailSignStatDTO;
 import com.chaoxing.activity.dto.sign.SignActivityManageIndexDTO;
 import com.chaoxing.activity.util.CookieUtils;
 import com.chaoxing.activity.util.DateUtils;
 import com.chaoxing.activity.util.RestTemplateUtils;
 import com.chaoxing.activity.util.exception.BusinessException;
+import com.google.common.collect.Lists;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -95,9 +97,9 @@ public class SignApiService {
 	 * @Date 2020-11-11 14:26:33
 	 * @param signAddEdit
 	 * @param request
-	 * @return java.lang.Integer 签到报名id
+	 * @return com.chaoxing.activity.dto.module.SignAddEditResultDTO
 	*/
-	public Integer create(SignAddEditDTO signAddEdit, HttpServletRequest request) {
+	public SignAddEditResultDTO create(SignAddEditDTO signAddEdit, HttpServletRequest request) {
 		HttpHeaders httpHeaders = new HttpHeaders();
 		httpHeaders.setContentType(MediaType.APPLICATION_JSON);
 		List<String> cookies = RestTemplateUtils.getCookies(request);
@@ -108,7 +110,7 @@ public class SignApiService {
 		Boolean success = jsonObject.getBoolean("success");
 		success = Optional.ofNullable(success).orElse(Boolean.FALSE);
 		if (success) {
-			return jsonObject.getInteger("data");
+			return JSON.parseObject(jsonObject.getString("data"), SignAddEditResultDTO.class);
 		} else {
 			String errorMessage = jsonObject.getString("message");
 			log.error("创建报名报名:{}失败:{}", JSON.toJSONString(signAddEdit), errorMessage);
@@ -236,7 +238,7 @@ public class SignApiService {
 		return SignActivityManageIndexDTO.builder()
 				.signId(signId)
 				.signUpExist(Boolean.FALSE)
-				.signUpId(null)
+				.signUpIds(Lists.newArrayList())
 				.signInExist(Boolean.FALSE)
 				.signUpNum(0)
 				.build();

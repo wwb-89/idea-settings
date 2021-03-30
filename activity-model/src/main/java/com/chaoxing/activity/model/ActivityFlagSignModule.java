@@ -1,5 +1,6 @@
 package com.chaoxing.activity.model;
 
+import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.*;
 
@@ -27,10 +28,13 @@ public class ActivityFlagSignModule {
     private String moduleType;
     /** 模块名称; column: module_name*/
     private String moduleName;
-    /** 是否限制参与范围; column: is_limit_participate_scope*/
-    private Boolean isLimitParticipateScope;
+    /** 是否启用限制参与范围; column: is_enable_limit_participate_scope*/
+    @TableField(value = "is_enable_limit_participate_scope")
+    private Boolean enableLimitParticipateScope;
     /** 限制参与范围类型; column: limit_participate_scope_type*/
     private String limitParticipateScopeType;
+    /** 定制报名类型; column: custom_sign_up_type*/
+    private String customSignUpType;
     /** 顺序; column: sequence*/
     private Integer sequence;
     /** 创建时间; column: create_time*/
@@ -49,7 +53,8 @@ public class ActivityFlagSignModule {
 
         /** 报名 */
         SIGN_UP("报名", "sign_up"),
-        SIGN_IN("签到", "sign_in");
+        SIGN_IN("签到", "sign_in"),
+        SIGN_OUT("签退", "sign_out");
 
         private String name;
         private String value;

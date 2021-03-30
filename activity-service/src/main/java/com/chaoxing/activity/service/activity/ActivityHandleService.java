@@ -5,11 +5,15 @@ import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.chaoxing.activity.dto.LoginUserDTO;
 import com.chaoxing.activity.dto.OrgAddressDTO;
 import com.chaoxing.activity.dto.manager.WfwRegionalArchitectureDTO;
+import com.chaoxing.activity.dto.manager.sign.SignIn;
+import com.chaoxing.activity.dto.manager.sign.SignUp;
 import com.chaoxing.activity.dto.mh.MhCloneParamDTO;
 import com.chaoxing.activity.dto.mh.MhCloneResultDTO;
 import com.chaoxing.activity.dto.module.SignAddEditDTO;
+import com.chaoxing.activity.dto.module.SignAddEditResultDTO;
 import com.chaoxing.activity.mapper.ActivityAreaFlagMapper;
 import com.chaoxing.activity.mapper.ActivityMapper;
+import com.chaoxing.activity.mapper.ActivitySignModuleMapper;
 import com.chaoxing.activity.model.*;
 import com.chaoxing.activity.service.WebTemplateService;
 import com.chaoxing.activity.service.activity.module.ActivityModuleService;
@@ -57,6 +61,8 @@ public class ActivityHandleService {
 	private ActivityMapper activityMapper;
 	@Resource
 	private ActivityAreaFlagMapper activityAreaFlagMapper;
+	@Resource
+	private ActivitySignModuleMapper activitySignModuleMapper;
 
 	@Resource
 	private ActivityValidationService activityValidationService;
@@ -98,13 +104,9 @@ public class ActivityHandleService {
 		activityValidationService.addInputValidate(activity);
 		// 处理活动类型
 		handleActivityType(activity);
-		// 是否开启参与设置
-		Boolean enableSign = activity.getEnableSign();
-		if (enableSign) {
-			// 添加报名签到
-			Integer signId = handleSign(activity, signAddEdit, loginUser, request);
-			activity.setSignId(signId);
-		}
+		// 添加报名签到
+		SignAddEditResultDTO signAddEditResult = handleSign(activity, signAddEdit, loginUser, request);
+		activity.setSignId(signAddEditResult.getSignId());
 		// 保存活动
 		// 处理活动的状态, 新增的活动都是待发布的
 		activity.setStatus(Activity.StatusEnum.WAIT_RELEASE.getValue());
@@ -123,19 +125,11 @@ public class ActivityHandleService {
 		activity.setStartDate(activity.getStartTime().toLocalDate());
 		activity.setEndDate(activity.getEndTime().toLocalDate());
 		activityMapper.insert(activity);
-		// 活动参与范围
+		// 活动报名签到模块
+		handleActivitySignModule(activity.getId(), signAddEditResult);
+		// 处理参与范围
+		wfwRegionalArchitectures = handleParticipateScope(activity, wfwRegionalArchitectures);
 		Integer activityId = activity.getId();
-		// 是不是第二课堂
-		Integer secondClassroomFlag = activity.getSecondClassroomFlag();
-		if (CollectionUtils.isEmpty(wfwRegionalArchitectures)) {
-			if (secondClassroomFlag == 1) {
-				// 构建创建者机构的
-				WfwRegionalArchitectureDTO wfwRegionalArchitecture = wfwRegionalArchitectureApiService.buildWfwRegionalArchitecture(activity.getCreateFid());
-				wfwRegionalArchitectures = Lists.newArrayList(wfwRegionalArchitecture);
-			} else {
-				throw new BusinessException("请选择参与范围");
-			}
-		}
 		List<ActivityScope> activityScopes = WfwRegionalArchitectureDTO.convert2ActivityScopes(activityId, wfwRegionalArchitectures);
 		// 新增参与范围
 		activityScopeService.batchAdd(activityScopes);
@@ -144,6 +138,71 @@ public class ActivityHandleService {
 		handleActivityArea(activity, loginUser);
 		// 活动改变
 		activityChangeEventService.dataChange(activity, activity.getIntegralValue());
+	}
+
+	/**处理参与范围
+	 * @Description 
+	 * @author wwb
+	 * @Date 2021-03-30 19:49:43
+	 * @param activity
+	 * @param wfwRegionalArchitectures
+	 * @return java.util.List<com.chaoxing.activity.dto.manager.WfwRegionalArchitectureDTO>
+	*/
+	private List<WfwRegionalArchitectureDTO> handleParticipateScope(Activity activity, List<WfwRegionalArchitectureDTO> wfwRegionalArchitectures) {
+		if (CollectionUtils.isEmpty(wfwRegionalArchitectures)) {
+			String activityFlag = activity.getActivityFlag();
+			if (Objects.equals(Activity.ActivityFlag.SECOND_CLASSROOM.getValue(), activityFlag)) {
+				// 构建创建者机构的
+				WfwRegionalArchitectureDTO wfwRegionalArchitecture = wfwRegionalArchitectureApiService.buildWfwRegionalArchitecture(activity.getCreateFid());
+				wfwRegionalArchitectures = Lists.newArrayList(wfwRegionalArchitecture);
+			} else {
+				throw new BusinessException("请选择参与范围");
+			}
+		}
+		return wfwRegionalArchitectures;
+	}
+
+	/**处理活动与报名签到模块的关系
+	 * @Description 
+	 * @author wwb
+	 * @Date 2021-03-30 17:16:57
+	 * @param activityId
+	 * @param signAddEditResult
+	 * @return void
+	*/
+	private void handleActivitySignModule(Integer activityId, SignAddEditResultDTO signAddEditResult) {
+		if (activityId == null || signAddEditResult == null) {
+			return;
+		}
+		activitySignModuleMapper.delete(new UpdateWrapper<ActivitySignModule>()
+			.lambda()
+				.eq(ActivitySignModule::getActivityId, activityId)
+		);
+		List<ActivitySignModule> activitySignModules = Lists.newArrayList();
+		List<SignUp> signUpModules = signAddEditResult.getSignUpModules();
+		for (int i = 0; i < signUpModules.size(); i++) {
+			ActivitySignModule activitySignModule = ActivitySignModule.builder()
+					.activityId(activityId)
+					.moduleType(ActivityFlagSignModule.ModuleType.SIGN_UP.getValue())
+					.moduleId(signUpModules.get(i).getId())
+					.sequence(i)
+					.build();
+			activitySignModules.add(activitySignModule);
+		}
+		List<SignIn> signInModules = signAddEditResult.getSignInModules();
+		for (int i = 0; i < signInModules.size(); i++) {
+			SignIn signIn = signInModules.get(i);
+			ActivitySignModule activitySignModule = ActivitySignModule.builder()
+					.activityId(activityId)
+					.moduleType(ActivityFlagSignModule.ModuleType.fromValue(signIn.getType()).getValue())
+					.moduleId(signIn.getId())
+					.sequence(i)
+					.build();
+			activitySignModules.add(activitySignModule);
+		}
+		if (CollectionUtils.isNotEmpty(activitySignModules)) {
+			activitySignModuleMapper.batchAdd(activitySignModules);
+		}
 	}
 
 	/**处理活动类型
@@ -170,10 +229,20 @@ public class ActivityHandleService {
 	 * @param signAddEdit
 	 * @param loginUser
 	 * @param request
-	 * @return java.lang.Integer
+	 * @return com.chaoxing.activity.dto.module.SignAddEditResultDTO
 	*/
-	private Integer handleSign(Activity activity, SignAddEditDTO signAddEdit, LoginUserDTO loginUser, HttpServletRequest request) {
+	private SignAddEditResultDTO handleSign(Activity activity, SignAddEditDTO signAddEdit, LoginUserDTO loginUser, HttpServletRequest request) {
 		Integer signId = signAddEdit.getId();
+		List<SignUp> signUps = signAddEdit.getSignUps();
+		if (CollectionUtils.isNotEmpty(signUps)) {
+			String activityFlag = activity.getActivityFlag();
+			if (StringUtils.isEmpty(activityFlag)) {
+				activityFlag = Activity.ActivityFlag.NORMAL.getValue();
+			}
+			for (SignUp signUp : signUps) {
+				signUp.setActivityFlag(activityFlag);
+			}
+		}
 		if (signId == null) {
 			// 签到的名称为活动引擎活动的名称
 			signAddEdit.setName(activity.getName());
@@ -183,13 +252,14 @@ public class ActivityHandleService {
 			signAddEdit.setCreateFid(loginUser.getFid());
 			signAddEdit.setCreateOrgName(loginUser.getOrgName());
 			signAddEdit.setUpdateUid(loginUser.getUid());
-			signId = signApiService.create(signAddEdit, request);
+			return signApiService.create(signAddEdit, request);
 		} else {
 			// 修改报名签到
+			signAddEdit.setUpdateUid(loginUser.getUid());
 			signAddEdit.setName(activity.getName());
 			signApiService.update(signAddEdit, request);
+			return null;
 		}
-		return signId;
 	}
 
 	/**处理活动所属范围
@@ -269,14 +339,10 @@ public class ActivityHandleService {
 			Activity existActivity = activityValidationService.editAble(activityId, loginUser);
 			BigDecimal oldIntegralValue = existActivity.getIntegralValue();
 			// 更新报名签到
-			Boolean enableSign = activity.getEnableSign();
-			if (enableSign) {
-				// 修改或更新
-				Integer signId = existActivity.getSignId();
-				signAddEdit.setId(signId);
-				signId = handleSign(activity, signAddEdit, loginUser, request);
-				activity.setSignId(signId);
-			}
+			Integer signId = existActivity.getSignId();
+			signAddEdit.setId(signId);
+			SignAddEditResultDTO signAddEditResult = handleSign(activity, signAddEdit, loginUser, request);
+			handleActivitySignModule(activity.getId(), signAddEditResult);
 			// 处理活动相关
 			LocalDateTime startTime = activity.getStartTime();
 			LocalDateTime endTime = activity.getEndTime();
@@ -318,17 +384,8 @@ public class ActivityHandleService {
 				existActivity.setCoverUrl("");
 			}
 			List<WfwRegionalArchitectureDTO> itemWfwRegionalArchitectures = wfwRegionalArchitectures;
-			// 是不是第二课堂
-			Integer secondClassroomFlag = activity.getSecondClassroomFlag();
-			if (CollectionUtils.isEmpty(itemWfwRegionalArchitectures)) {
-				if (secondClassroomFlag == 1) {
-					// 构建创建者机构的
-					WfwRegionalArchitectureDTO wfwRegionalArchitecture = wfwRegionalArchitectureApiService.buildWfwRegionalArchitecture(activity.getCreateFid());
-					itemWfwRegionalArchitectures = Lists.newArrayList(wfwRegionalArchitecture);
-				} else {
-					throw new BusinessException("请选择参与范围");
-				}
-			}
+			// 处理参与范围
+			itemWfwRegionalArchitectures = handleParticipateScope(activity, itemWfwRegionalArchitectures);
 			List<ActivityScope> activityScopes = WfwRegionalArchitectureDTO.convert2ActivityScopes(activityId, itemWfwRegionalArchitectures);
 			// 删除以前发布的参与范围
 			activityScopeService.deleteByActivityId(activityId);

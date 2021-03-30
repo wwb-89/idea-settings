@@ -113,7 +113,7 @@ public class Activity {
     /** 积分值; column: integral_value*/
     private BigDecimal integralValue;
     /** 活动标示，通用、第二课堂、双选会等; column: activity_flag*/
-    private Integer activityFlag;
+    private String activityFlag;
     /** 第二课堂标识; column: second_classroom_flag*/
     private Integer secondClassroomFlag;
     /** 状态。0：已删除，1：待发布，2：已发布，3：进行中，4：已结束; column: status*/

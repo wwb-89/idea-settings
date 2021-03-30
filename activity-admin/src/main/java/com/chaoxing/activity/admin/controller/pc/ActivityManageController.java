@@ -6,6 +6,7 @@ import com.chaoxing.activity.dto.activity.ActivityTypeDTO;
 import com.chaoxing.activity.dto.manager.WfwGroupDTO;
 import com.chaoxing.activity.dto.module.SignAddEditDTO;
 import com.chaoxing.activity.model.Activity;
+import com.chaoxing.activity.model.ActivityFlagSignModule;
 import com.chaoxing.activity.model.Group;
 import com.chaoxing.activity.model.WebTemplate;
 import com.chaoxing.activity.service.GroupService;
@@ -124,12 +125,14 @@ public class ActivityManageController {
 		List<WebTemplate> webTemplates = webTemplateService.listAvailable(loginUser.getFid());
 		model.addAttribute("webTemplates", webTemplates);
 		model.addAttribute("areaCode", areaCode);
-
+		// 微服务组织架构
 		List<WfwGroupDTO> wfwGroups = wfwGroupApiService.getGroupByGid(loginUser.getFid(), 0);
 		model.addAttribute("wfwGroups", wfwGroups);
 		flag = calActivityFlag(flag, secondClassroomFlag);
 		model.addAttribute("activityFlag", flag);
+		// flag配置的报名签到的模块
+		List<ActivityFlagSignModule> activityFlagSignModules = activityQueryService.listSignModuleByFlag(flag);
+		model.addAttribute("activityFlagSignModules", activityFlagSignModules);
 		return "pc/activity-add-edit";
 	}
-
 }
