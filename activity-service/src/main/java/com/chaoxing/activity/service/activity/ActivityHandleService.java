@@ -445,8 +445,6 @@ public class ActivityHandleService {
 				.set(Activity::getReleased, activity.getReleased())
 				.set(Activity::getStatus, status)
 		);
-		// 删除活动范围
-		activityScopeService.deleteByActivityId(activityId);
 		// 活动状态改变
 		activityChangeEventService.releaseStatusChange(activity);
 	}
