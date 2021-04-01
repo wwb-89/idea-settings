@@ -48,12 +48,12 @@
                         </div>
                     </template>
                 </el-table-column>
-                <el-table-column label="创建单位" min-width="15%" th:unless="${secondClassroomFlag eq 1}">
+                <el-table-column label="创建单位" min-width="15%" th:unless="${activityFlag eq 'second_classroom'}">
                     <template slot-scope="scope">
                         <div class="overHidden2">{{scope.row.createOrgName}}</div>
                     </template>
                 </el-table-column>
-                <el-table-column label="报名人数" min-width="15%" th:if="${secondClassroomFlag eq 1}">
+                <el-table-column label="报名人数" min-width="15%" th:if="${activityFlag eq 'second_classroom'}">
                     <template slot-scope="scope">
                         <div class="overHidden2">{{scope.row.signedUpNum}}</div>
                     </template>
@@ -149,8 +149,8 @@
                     cancelRelease: {name: "下架", value: "cancelRelease"}
                 },
                 code: [[${code}]],
-                // 第二课堂标识
-                secondClassroomFlag: [[${secondClassroomFlag}]],
+                // 活动标示
+                activityFlag: [[${activityFlag}]]
             },
             created: function () {
                 var $this = this;
@@ -238,7 +238,7 @@
                 },
                 toAdd: function () {
                     var $this = this;
-                    window.open(activityApp.getRelativeUrl("/activity/add?code=" + $this.code + "&secondClassroomFlag=" + $this.secondClassroomFlag));
+                    window.open(activityApp.getRelativeUrl("/activity/add?code=" + $this.code + "&flag=" + $this.activityFlag));
                 },
                 toEdit: function (id) {
                     window.open("/activity/" + id + "/edit");

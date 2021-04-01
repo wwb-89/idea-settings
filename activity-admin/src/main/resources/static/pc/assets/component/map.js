@@ -35,9 +35,9 @@ Vue.component('vue-map', {
             // 地址
             address: "",
             // 经度
-            longitude: "",
+            longitude: null,
             // 维度
-            dimension: "",
+            dimension: null,
             // 地图实例
             map: '',
             // Marker实例
@@ -47,6 +47,16 @@ Vue.component('vue-map', {
     mounted: function () {
         var $this = this;
         $this.initMap();
+    },
+    watch: {
+        "show": function () {
+            var $this = this;
+            if (!$this.show) {
+                $this.address = "";
+                $this.longitude = null;
+                $this.dimension = null;
+            }
+        }
     },
     methods: {
         // 初始化百度地图

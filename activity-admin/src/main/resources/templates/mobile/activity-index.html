@@ -18,17 +18,13 @@
     </style>
 </head>
 <body>
-<div class="administrators" id="form-vue" v-cloak>
-    <!--<div class="title">
-        <p class="txt overHidden1">{{activity.name}}</p>
-        <div :class="{'status': true, 'color0': (activity.status == 2), 'color1': (activity.status == 3), 'color2': (activity.status == 4)}">{{activity.status | activityStatusDescribe}}</div>
-    </div>-->
+<div class="administrators" id="activity-vue" v-cloak>
     <div class="index-list">
         <div class="item" v-if="signActivityManageIndex.signUpExist" @click="signUpList">
             <img src="/static/mobile/assets/images/admin/allWorks.png" th:src="@{/mobile/assets/images/admin/allWorks.png}">
-            <p class="flTxt">报名名单</p>
-            <p class="frTxt">已报名 {{signActivityManageIndex.signUpNum}}</p>
-            <i class="icon-arrow-r"></i>
+            <p class="flTxt">{{signActivityManageIndex.signUpIds.length > 1 ? '报名项目' : '报名名单'}}</p>
+            <p class="frTxt" v-show="signActivityManageIndex.signUpIds.length == 1">已报名 {{signActivityManageIndex.signUpNum}}</p>
+            <i :class="{'icon-arrow-r': true, 'marginAuto': (signActivityManageIndex.signUpIds.length > 1)}"></i>
         </div>
         <div class="item" v-if="signActivityManageIndex.signInExist" @click="signInManage">
             <img src="/static/mobile/assets/images/admin/sign-in.png" th:src="@{/mobile/assets/images/admin/sign-in.png}">
@@ -38,6 +34,11 @@
         <div class="item" v-if="(signActivityManageIndex.signUpExist || signActivityManageIndex.signInExist)" @click="resultsManage">
             <img src="/static/mobile/assets/images/admin/score-icon.png" th:src="@{/mobile/assets/images/admin/score-icon.png}">
             <p class="flTxt">成绩管理</p>
+            <i class="icon-arrow-r marginAuto"></i>
+        </div>
+        <div class="item" v-if="(signActivityManageIndex.signUpExist || signActivityManageIndex.signInExist)" @click="resultsManage">
+            <img src="/static/mobile/assets/images/admin/score-icon.png" th:src="@{/mobile/assets/images/admin/score-icon.png}">
+            <p class="flTxt">组织者管理</p>
             <i class="icon-arrow-r marginAuto"></i>
         </div>
         <div class="item" v-if="signActivityManageIndex.signUpExist" @click="sendNotice">
@@ -66,23 +67,20 @@
             }
         });
         function ready() {
-            formVue = new Vue({
-                el: "#form-vue",
+            activityVue = new Vue({
+                el: "#activity-vue",
                 data: {
                     activity: [[${activity}]],
                     signActivityManageIndex: [[${signActivityManageIndex}]]
-                },
-                created: function () {
-
-                },
-                mounted: function () {
-
                 },
                 methods: {
                     // 报名名单
                     signUpList: function () {
                         var $this = this;
                         var url = "https://reading.chaoxing.com/qd/m/manage/sign-up/"+ $this.signActivityManageIndex.signUpId +"/user-list";
+                        if ($this.signActivityManageIndex.signUpIds.length > 1) {
+                            url = "https://reading.chaoxing.com/qd/m/manage/sign-up?signId="+ $this.signActivityManageIndex.signId;
+                        }
                         app.openUrl(url);
                     },
                     // 签到管理

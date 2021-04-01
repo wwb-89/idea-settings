@@ -1,6 +1,7 @@
 package com.chaoxing.activity.util.constant;
 
 import java.math.BigDecimal;
+import java.time.Duration;
 import java.time.ZoneOffset;
 
 /**
@@ -38,9 +39,11 @@ public class CommonConstant {
 	
 	/** 活动开始通知的时间阈值（提前多久发通知）单位：毫秒 */
 	public static final Long ACTIVITY_NOTICE_TIME_MILLISECOND = 24 * 60 * 60 * 1000L;
-	/** 通知发送的uid */
+	/** 通知发送人的uid */
 	public static final Integer NOTICE_SEND_UID = 168054129;
 	/** 超星网fid */
 	public static final Integer CX_NETWORK_FID = 0;
+	/** 队列获取数据等待时间 */
+	public static final Duration QUEUE_GET_WAIT_TIME = Duration.ofMinutes(1);
 
 }

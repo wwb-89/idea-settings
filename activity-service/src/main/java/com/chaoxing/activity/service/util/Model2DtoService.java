@@ -3,7 +3,7 @@ package com.chaoxing.activity.service.util;
 import com.chaoxing.activity.dto.activity.ActivityExternalDTO;
 import com.chaoxing.activity.model.Activity;
 import com.chaoxing.activity.model.ActivityClassify;
-import com.chaoxing.activity.service.activity.ActivityCoverService;
+import com.chaoxing.activity.service.activity.ActivityCoverUrlSyncService;
 import com.chaoxing.activity.service.activity.classify.ActivityClassifyQueryService;
 import com.chaoxing.activity.util.enums.ActivityTypeEnum;
 import com.google.common.collect.Maps;
@@ -34,7 +34,7 @@ public class Model2DtoService {
 	@Resource
 	private ActivityClassifyQueryService activityClassifyQueryService;
 	@Resource
-	private ActivityCoverService activityCoverService;
+	private ActivityCoverUrlSyncService activityCoverService;
 
 	/**活动对象转换成dto
 	 * @Description 

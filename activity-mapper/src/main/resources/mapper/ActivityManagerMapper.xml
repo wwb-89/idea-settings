@@ -8,4 +8,30 @@
         <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
         <result column="create_uid" jdbcType="INTEGER" property="createUid" />
     </resultMap>
+    <sql id="Base_Column_List">
+        t.activity_id, t.uid, t.user_name, t.create_time, t.create_uid
+    </sql>
+
+    <select id="paging" resultMap="BaseResultMap">
+        SELECT
+            <include refid="Base_Column_List"></include>
+        FROM
+            t_activity_manager t
+        WHERE
+            t.activity_id = #{activityId}
+    </select>
+
+    <insert id="batchAdd">
+        INSERT INTO t_activity_manager ( activity_id, uid, user_name, create_uid )
+        VALUES
+            <foreach collection="activityManagers" index="key" item="value" open="" close="" separator=",">
+                (
+                    #{value.activityId},
+                    #{value.uid},
+                    #{value.userName},
+                    #{value.createUid}
+                )
+            </foreach>
+    </insert>
+
 </mapper>

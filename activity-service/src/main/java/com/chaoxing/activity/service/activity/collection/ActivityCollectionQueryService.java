@@ -1,4 +1,4 @@
-package com.chaoxing.activity.service.activity;
+package com.chaoxing.activity.service.activity.collection;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.chaoxing.activity.mapper.ActivityCollectionMapper;

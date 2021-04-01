@@ -67,7 +67,7 @@ public class ActivityRatingApiController {
     @PostMapping("audit/list")
     public RestRespDTO listAuditByActivityId(HttpServletRequest request, @RequestParam Integer activityId){
         LoginUserDTO loginUser = LoginUtils.getLoginUser(request);
-        activityValidationService.manageAble(activityId, loginUser);
+        activityValidationService.manageAble(activityId, loginUser.getUid());
         Page<ActivityRatingDetail> page = HttpServletRequestUtils.buid(request);
         activityRatingQueryService.pagingWaitAudit(page, activityId);
         return RestRespDTO.success(page);

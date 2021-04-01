@@ -5,13 +5,14 @@ import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.chaoxing.activity.dto.manager.sign.*;
 import com.chaoxing.activity.dto.module.SignAddEditDTO;
+import com.chaoxing.activity.dto.module.SignAddEditResultDTO;
 import com.chaoxing.activity.dto.sign.ActivityBlockDetailSignStatDTO;
 import com.chaoxing.activity.dto.sign.SignActivityManageIndexDTO;
-import com.chaoxing.activity.service.queue.SignQueueService;
 import com.chaoxing.activity.util.CookieUtils;
 import com.chaoxing.activity.util.DateUtils;
 import com.chaoxing.activity.util.RestTemplateUtils;
 import com.chaoxing.activity.util.exception.BusinessException;
+import com.google.common.collect.Lists;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -73,7 +74,7 @@ public class SignApiService {
 	/** 查询报名成功的uid列表url */
 	private static final String SIGNED_UP_UIDS_URL = SIGN_API_DOMAIN + "/sign/%s/uid/signed-up";
 	/** 用户是否已报名（报名成功）url */
-	private static final String USER_SIGNED_UP_SUCCESS_URL = SIGN_API_DOMAIN + "/sign-up/%d/signed-up-success?uid=%d";
+	private static final String USER_SIGNED_UP_SUCCESS_URL = SIGN_API_DOMAIN + "/sign-up/signed-up-success?signId=%d&uid=%d";
 
 	/** 报名名单url */
 	private static final String SIGN_UP_USER_LIST_URL = SIGN_WEB_DOMAIN + "/sign-up/%d/user-list";
@@ -84,9 +85,8 @@ public class SignApiService {
 
 	/** 通知活动已评价 */
 	private static final String NOTICE_HAVE_RATING_URL = SIGN_API_DOMAIN + "/sign/%d/notice/rating?uid=%d";
-
-	@Resource
-	private SignQueueService signNoticeService;
+	/** 通知第二课堂积分已变更 */
+	private static final String NOTICE_SECOND_CLASSROOM_INTEGRAL_CHANGE_URL = SIGN_API_DOMAIN + "/sign/%d/notice/second-classroom-integral-change";
 
 	@Resource
 	private RestTemplate restTemplate;
@@ -97,9 +97,9 @@ public class SignApiService {
 	 * @Date 2020-11-11 14:26:33
 	 * @param signAddEdit
 	 * @param request
-	 * @return java.lang.Integer 签到报名id
+	 * @return com.chaoxing.activity.dto.module.SignAddEditResultDTO
 	*/
-	public Integer create(SignAddEditDTO signAddEdit, HttpServletRequest request) {
+	public SignAddEditResultDTO create(SignAddEditDTO signAddEdit, HttpServletRequest request) {
 		HttpHeaders httpHeaders = new HttpHeaders();
 		httpHeaders.setContentType(MediaType.APPLICATION_JSON);
 		List<String> cookies = RestTemplateUtils.getCookies(request);
@@ -110,7 +110,7 @@ public class SignApiService {
 		Boolean success = jsonObject.getBoolean("success");
 		success = Optional.ofNullable(success).orElse(Boolean.FALSE);
 		if (success) {
-			return jsonObject.getInteger("data");
+			return JSON.parseObject(jsonObject.getString("data"), SignAddEditResultDTO.class);
 		} else {
 			String errorMessage = jsonObject.getString("message");
 			log.error("创建报名报名:{}失败:{}", JSON.toJSONString(signAddEdit), errorMessage);
@@ -158,21 +158,20 @@ public class SignApiService {
 		if (success) {
 			String data = jsonObject.getString("data");
 			SignAddEditDTO signAddEdit = JSON.parseObject(data, SignAddEditDTO.class);
-			SignUp signUp = signAddEdit.getSignUp();
-			Optional.ofNullable(signUp).ifPresent(v -> {
-				signUp.setStartTimestamp(signUp.getStartTime().toInstant(ZoneOffset.ofHours(8)).toEpochMilli());
-				signUp.setEndTimestamp(signUp.getEndTime().toInstant(ZoneOffset.ofHours(8)).toEpochMilli());
-			});
-			SignIn signIn = signAddEdit.getSignIn();
-			Optional.ofNullable(signIn).ifPresent(v -> {
-				signIn.setStartTimestamp(signIn.getStartTime().toInstant(ZoneOffset.ofHours(8)).toEpochMilli());
-				signIn.setEndTimestamp(signIn.getEndTime().toInstant(ZoneOffset.ofHours(8)).toEpochMilli());
-			});
-			SignIn signOut = signAddEdit.getSignOut();
-			Optional.ofNullable(signOut).ifPresent(v -> {
-				signOut.setStartTimestamp(signOut.getStartTime().toInstant(ZoneOffset.ofHours(8)).toEpochMilli());
-				signOut.setEndTimestamp(signOut.getEndTime().toInstant(ZoneOffset.ofHours(8)).toEpochMilli());
-			});
+			List<SignUp> signUps = signAddEdit.getSignUps();
+			if (CollectionUtils.isNotEmpty(signUps)) {
+				for (SignUp signUp : signUps) {
+					signUp.setStartTimestamp(signUp.getStartTime().toInstant(ZoneOffset.ofHours(8)).toEpochMilli());
+					signUp.setEndTimestamp(signUp.getEndTime().toInstant(ZoneOffset.ofHours(8)).toEpochMilli());
+				}
+			}
+			List<SignIn> signIns = signAddEdit.getSignIns();
+			if (CollectionUtils.isNotEmpty(signIns)) {
+				for (SignIn signIn : signIns) {
+					signIn.setStartTimestamp(signIn.getStartTime().toInstant(ZoneOffset.ofHours(8)).toEpochMilli());
+					signIn.setEndTimestamp(signIn.getEndTime().toInstant(ZoneOffset.ofHours(8)).toEpochMilli());
+				}
+			}
 			return signAddEdit;
 		} else {
 			String errorMessage = jsonObject.getString("message");
@@ -239,7 +238,7 @@ public class SignApiService {
 		return SignActivityManageIndexDTO.builder()
 				.signId(signId)
 				.signUpExist(Boolean.FALSE)
-				.signUpId(null)
+				.signUpIds(Lists.newArrayList())
 				.signInExist(Boolean.FALSE)
 				.signUpNum(0)
 				.build();
@@ -430,44 +429,37 @@ public class SignApiService {
 	/**是否开启了报名
 	 * @Description 
 	 * @author wwb
-	 * @Date 2021-03-08 18:48:53
+	 * @Date 2021-03-08 19:18:23
 	 * @param signId
 	 * @return boolean
 	*/
 	public boolean isOpenSignUp(Integer signId) {
-		SignAddEditDTO signAddEdit = getById(signId);
-		if (signAddEdit != null && signAddEdit.getSignUp() != null) {
-			return true;
-		}
-		return false;
-	}
-
-	/**根据报名签到id获取报名信息
-	 * @Description 
-	 * @author wwb
-	 * @Date 2021-03-08 19:18:23
-	 * @param signId
-	 * @return com.chaoxing.activity.dto.manager.sign.SignUp
-	*/
-	public SignUp getBySignId(Integer signId) {
-		SignUp signUp = null;
+		boolean isOpenSignUp = false;
 		SignAddEditDTO signAddEdit = getById(signId);
 		if (signAddEdit != null) {
-			signUp = signAddEdit.getSignUp();
+			List<SignUp> signUps = signAddEdit.getSignUps();
+			if (CollectionUtils.isNotEmpty(signUps)) {
+				for (SignUp signUp : signUps) {
+					if (!signUp.getDeleted()) {
+						isOpenSignUp = true;
+						break;
+					}
+				}
+			}
 		}
-		return signUp;
+		return isOpenSignUp;
 	}
 
 	/**用户是否报名成功
 	 * @Description 
 	 * @author wwb
 	 * @Date 2021-03-08 18:52:07
-	 * @param signUpId
+	 * @param signId
 	 * @param uid
 	 * @return boolean
 	*/
-	public boolean isSignedUpSuccess(Integer signUpId, Integer uid) {
-		String url = String.format(USER_SIGNED_UP_SUCCESS_URL, signUpId, uid);
+	public boolean isSignedUpSuccess(Integer signId, Integer uid) {
+		String url = String.format(USER_SIGNED_UP_SUCCESS_URL, signId, uid);
 		String result = restTemplate.getForObject(url, String.class);
 		JSONObject jsonObject = JSON.parseObject(result);
 		Boolean success = jsonObject.getBoolean("success");
@@ -476,7 +468,7 @@ public class SignApiService {
 			return jsonObject.getBoolean("data");
 		}
 		String message = jsonObject.getString("message");
-		log.error("获取用户:{} 报名id:{} 获取用户是否报名成功error:{}", uid, signUpId, message);
+		log.error("获取用户:{} 报名签到id:{} 获取用户是否报名成功error:{}", uid, signId, message);
 		throw new BusinessException(message);
 	}
 
@@ -520,22 +512,6 @@ public class SignApiService {
 			String errorMessage = jsonObject.getString("message");
 			log.error("获取用户:{} 报名签到id:{} 获取用户报名签到参与情况 error:{}", uid, signId, errorMessage);
 			throw new BusinessException(errorMessage);
-		}
-	}
-
-	/**通知已评价
-	 * @Description 
-	 * @author wwb
-	 * @Date 2021-03-24 13:00:27
-	 * @param signId
-	 * @param uids
-	 * @return void
-	*/
-	public void noticeRating(Integer signId, List<Integer> uids) {
-		if (CollectionUtils.isNotEmpty(uids)) {
-			for (Integer uid : uids) {
-				signNoticeService.add(signId, uid);
-			}
 		}
 	}
 
@@ -583,6 +559,25 @@ public class SignApiService {
 			String data = jsonObject.getString("data");
 			return JSON.parseArray(data, SignStatDTO.class);
 		} else {
+			String errorMessage = jsonObject.getString("message");
+			throw new BusinessException(errorMessage);
+		}
+	}
+
+	/**通知第二课堂积分已变更
+	 * @Description 
+	 * @author wwb
+	 * @Date 2021-03-26 21:50:30
+	 * @param signId
+	 * @return void
+	*/
+	public void noticeSecondClassroomIntegralChange(Integer signId) {
+		String url = String.format(NOTICE_SECOND_CLASSROOM_INTEGRAL_CHANGE_URL, signId);
+		String result = restTemplate.getForObject(url, String.class);
+		JSONObject jsonObject = JSON.parseObject(result);
+		Boolean success = jsonObject.getBoolean("success");
+		success = Optional.ofNullable(success).orElse(Boolean.FALSE);
+		if (!success) {
 			String errorMessage = jsonObject.getString("message");
 			throw new BusinessException(errorMessage);
 		}

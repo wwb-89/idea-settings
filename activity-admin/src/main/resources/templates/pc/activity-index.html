@@ -40,11 +40,11 @@
                     <span>{{menus.resultsManage.name}}</span>
                 </div>
                 <!--组织者管理-->
-                <div :class="{'item': true, 'active': menus.managerManage.selected}" @click="toManagerManage" v-if="false">
+                <!--<div :class="{'item': true, 'active': menus.managerManage.selected}" th:if="${isCreator}" @click="toManagerManage">
                     <img :src="menus.managerManage.activeIconUrl" v-if="menus.managerManage.selected">
                     <img :src="menus.managerManage.defaultIconUrl" v-else>
                     <span>{{menus.managerManage.name}}</span>
-                </div>
+                </div>-->
             </div>
             <div class="message menu-item" v-if="signActivityManageIndex.signUpExist">
                 <!--发通知-->
@@ -83,7 +83,7 @@
                 signActivityManageIndex: [[${signActivityManageIndex}]],
                 menus: {
                     // 报名签到
-                    signUpList: {name: "报名名单", defaultIconUrl: ctx + "/pc/assets/images/icon-name-list-default.png", activeIconUrl: ctx + "/pc/assets/images/icon-name-list-active.png", url: "//reading.chaoxing.com/qd/manage/sign-up/" + [[${signActivityManageIndex.signUpId}]], selected: false},
+                    signUpList: {name: "报名名单", defaultIconUrl: ctx + "/pc/assets/images/icon-name-list-default.png", activeIconUrl: ctx + "/pc/assets/images/icon-name-list-active.png", url: "//reading.chaoxing.com/qd/manage/sign-up?signId=" + [[${signActivityManageIndex.signId}]], selected: false},
                     signInManage: {name: "签到管理", defaultIconUrl: ctx + "/pc/assets/images/icon-sign-in-default.png", activeIconUrl: ctx + "/pc/assets/images/icon-sign-in-active.png", url: "//reading.chaoxing.com/qd/manage/sign-in/list?signId=" + [[${signActivityManageIndex.signId}]], selected: false},
                     resultsManage: {name: "成绩管理", defaultIconUrl: ctx + "/pc/assets/images/icon-grade-manage-default.png", activeIconUrl: ctx + "/pc/assets/images/icon-grade-manage-active.png", url: "//reading.chaoxing.com/qd/manage/results?signId=" + [[${signActivityManageIndex.signId}]], selected: false},
                     managerManage: {name: "组织者管理", defaultIconUrl: ctx + "/pc/assets/images/icon-organizer-default.png", activeIconUrl: ctx + "/pc/assets/images/icon-organizer-active.png", url: ctx + "/activity/" + [[${activity.id}]] + "/manager", selected: false},
@@ -98,6 +98,10 @@
                 var $this = this;
                 // 解决跨域
                 document.domain = "chaoxing.com";
+                var signUpIds = $this.signActivityManageIndex;
+                if (!activityApp.isEmpty(signUpIds) && signUpIds.length > 1) {
+                    $this.menus.signUpList.name = "报名项目";
+                }
                 app.bindActivityChangeEvent(function (activityId) {
                     if ($this.activity.id == activityId) {
                         window.location.reload();

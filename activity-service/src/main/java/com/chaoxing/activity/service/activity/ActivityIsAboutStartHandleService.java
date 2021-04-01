@@ -4,14 +4,13 @@ import com.chaoxing.activity.dto.manager.NoticeDTO;
 import com.chaoxing.activity.dto.manager.sign.SignUp;
 import com.chaoxing.activity.dto.module.SignAddEditDTO;
 import com.chaoxing.activity.model.Activity;
-import com.chaoxing.activity.service.manager.NoticeApiService;
+import com.chaoxing.activity.service.activity.collection.ActivityCollectionQueryService;
+import com.chaoxing.activity.service.manager.XxtNoticeApiService;
 import com.chaoxing.activity.service.manager.module.SignApiService;
 import com.chaoxing.activity.util.DateUtils;
-import com.chaoxing.activity.util.constant.CacheConstant;
 import com.chaoxing.activity.util.constant.CommonConstant;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
-import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.ZSetOperations;
 import org.springframework.stereotype.Service;
 
@@ -19,14 +18,12 @@ import javax.annotation.Resource;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
-import java.util.Set;
 
 /**活动通开始知处理服务
  * @author wwb
  * @version ver 1.0
- * @className ActivityStartNoticeHandleService
+ * @className ActivityIsAboutStartHandleService
  * @description
  * 活动开始前一天需要发送通知
  * 通知对象：已报名活动的用户，已收藏活动的用户（且活动不需要报名）
@@ -35,17 +32,13 @@ import java.util.Set;
  */
 @Slf4j
 @Service
-public class ActivityStartNoticeHandleService {
+public class ActivityIsAboutStartHandleService {
 
-	/** 活动开始时通知的缓存key */
-	private static final String ACTIVITY_START_NOTICE_CACHE_KEY = CacheConstant.CACHE_KEY_PREFIX + "activity_start_notice_queue";
 	/** 活动时间格式化 */
 	private static final DateTimeFormatter ACTIVITY_TIME_FORMATTER = DateTimeFormatter.ofPattern("yyyy年MM月dd日HH:mm");
 	/** 报名时间格式化 */
 	private static final DateTimeFormatter SIGN_UP_TIME_FORMATTER = DateTimeFormatter.ofPattern("yyyy年MM月dd日HH:mm");
 
-	@Resource
-	private RedisTemplate redisTemplate;
 
 	@Resource
 	private SignApiService signApiService;
@@ -54,82 +47,36 @@ public class ActivityStartNoticeHandleService {
 	@Resource
 	private ActivityCollectionQueryService activityCollectionQueryService;
 	@Resource
-	private NoticeApiService noticeApiService;
+	private XxtNoticeApiService noticeApiService;
 
-	/**订阅活动开始前通知发送
+	/**发送活动即将开始通知
 	 * @Description 
 	 * @author wwb
-	 * @Date 2021-02-02 17:30:54
-	 * @param activityId
-	 * @param startTime
-	 * @return void
+	 * @Date 2021-03-26 16:48:31
+	 * @param typedTuple
+	 * @return boolean
 	*/
-	public void subscibeActivityNotice(Integer activityId, LocalDateTime startTime) {
+	public boolean sendActivityIsAboutStartNotice(ZSetOperations.TypedTuple<Integer> typedTuple) {
+		Integer activityId = typedTuple.getValue();
+		Double score = typedTuple.getScore();
+		long noticeTimestamp = score.longValue();
 		LocalDateTime now = LocalDateTime.now();
 		long nowTimestamp = DateUtils.date2Timestamp(now);
-		long startTimestamp = DateUtils.date2Timestamp(startTime);
-		if (startTimestamp - nowTimestamp < CommonConstant.ACTIVITY_NOTICE_TIME_MILLISECOND) {
-			// 小于通知阈值不处理
-			return;
-		}
-		ZSetOperations<String, Integer> zSetOperations = redisTemplate.opsForZSet();
-		// 开始前多少时间发送通知
-		zSetOperations.add(ACTIVITY_START_NOTICE_CACHE_KEY, activityId, startTimestamp - CommonConstant.ACTIVITY_NOTICE_TIME_MILLISECOND);
-	}
-
-	/**取消订阅活动开始前通知发送
-	 * @Description 
-	 * @author wwb
-	 * @Date 2021-02-03 16:31:50
-	 * @param activityId
-	 * @return void
-	*/
-	public void cancelSubscibeActivityNotice(Integer activityId) {
-		ZSetOperations<String, Integer> zSetOperations = redisTemplate.opsForZSet();
-		zSetOperations.remove(ACTIVITY_START_NOTICE_CACHE_KEY, activityId);
-	}
-
-	/**消费活动开始通知
-	 * @Description 将通知存入通知队列中
-	 * @author wwb
-	 * @Date 2021-02-03 11:12:15
-	 * @param 
-	 * @return void
-	*/
-	public void consumeActivityNotice() {
-		ZSetOperations<String, Integer> zSetOperations = redisTemplate.opsForZSet();
-		Set<ZSetOperations.TypedTuple<Integer>> typedTuples = zSetOperations.rangeByScoreWithScores(ACTIVITY_START_NOTICE_CACHE_KEY, 0, Long.MAX_VALUE, 0, 10);
-		Iterator<ZSetOperations.TypedTuple<Integer>> iterator = typedTuples.iterator();
-		while (iterator.hasNext()) {
-			// 只有一条数据
-			ZSetOperations.TypedTuple<Integer> typedTuple = iterator.next();
-			Integer activityId = typedTuple.getValue();
-			Double score = typedTuple.getScore();
-			long noticeTimestamp = score.longValue();
-			LocalDateTime now = LocalDateTime.now();
-			long nowTimestamp = DateUtils.date2Timestamp(now);
-			if (noticeTimestamp <= nowTimestamp) {
-				// 处理通知， 已报名的和已收藏（活动不需要报名的）
-				sendActivityNotice(activityId);
+		if (noticeTimestamp <= nowTimestamp) {
+			// 处理通知， 已报名的和已收藏（活动不需要报名的）
+			Activity activity = activityQueryService.getById(activityId);
+			Integer signId = activity.getSignId();
+			if (signId != null) {
+				// 报名的uid列表
+				List<Integer> signedUpUids = signApiService.listSignedUpUid(signId);
+				generateSignedUpNotice(activity, signedUpUids);
 			}
+			// 收藏的uid列表
+			List<Integer> collectedUids = activityCollectionQueryService.listCollectedUid(activityId);
+			generateCollectNotice(activity, collectedUids);
+			return true;
 		}
-	}
-
-	private void sendActivityNotice(Integer activityId) {
-		// 发送通知
-		Activity activity = activityQueryService.getById(activityId);
-		Integer signId = activity.getSignId();
-		if (signId != null) {
-			// 报名的uid列表
-			List<Integer> signedUpUids = signApiService.listSignedUpUid(signId);
-			generateSignedUpNotice(activity, signedUpUids);
-		}
-		// 收藏的uid列表
-		List<Integer> collectedUids = activityCollectionQueryService.listCollectedUid(activityId);
-		generateCollectNotice(activity, collectedUids);
-		// 删除缓存
-		ZSetOperations<String, Integer> zSetOperations = redisTemplate.opsForZSet();
-		zSetOperations.remove(ACTIVITY_START_NOTICE_CACHE_KEY, activityId);
+		return false;
 	}
 
 	/**是否直接发送活动开始的通知
@@ -183,7 +130,7 @@ public class ActivityStartNoticeHandleService {
 		String title = generateSignedUpNoticeTitle(activity);
 		String content = generateSignedUpNoticeContent(activity);
 		for (Integer signedUpUid : uids) {
-			noticeApiService.produceNotice(title, content, NoticeDTO.generateAttachment(name, previewUrl), CommonConstant.NOTICE_SEND_UID, new ArrayList(){{add(signedUpUid);}});
+			noticeApiService.sendNotice(title, content, NoticeDTO.generateAttachment(name, previewUrl), CommonConstant.NOTICE_SEND_UID, new ArrayList(){{add(signedUpUid);}});
 		}
 	}
 
@@ -219,15 +166,17 @@ public class ActivityStartNoticeHandleService {
 		String name = activity.getName();
 		String previewUrl = activity.getPreviewUrl();
 		Integer signId = activity.getSignId();
-		SignUp signUp = null;
+		List<SignUp> signUps = null;
 		if (signId != null) {
 			SignAddEditDTO signAddEditDTO = signApiService.getById(signId);
-			signUp = signAddEditDTO.getSignUp();
+			signUps = signAddEditDTO.getSignUps();
 		}
 		String title = generateCollectedNoticeTitle(activity);
-		String content = generateCollectedNoticeContent(activity, signUp);
-		for (Integer collectedUid : uids) {
-			noticeApiService.produceNotice(title, content, NoticeDTO.generateAttachment(name, previewUrl), CommonConstant.NOTICE_SEND_UID, new ArrayList(){{add(collectedUid);}});
+		for (SignUp signUp : signUps) {
+			String content = generateCollectedNoticeContent(activity, signUp);
+			for (Integer collectedUid : uids) {
+				noticeApiService.sendNotice(title, content, NoticeDTO.generateAttachment(name, previewUrl), CommonConstant.NOTICE_SEND_UID, new ArrayList(){{add(collectedUid);}});
+			}
 		}
 	}
 

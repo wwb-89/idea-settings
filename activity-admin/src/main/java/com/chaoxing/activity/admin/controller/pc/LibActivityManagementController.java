@@ -31,11 +31,12 @@ public class LibActivityManagementController {
 	 * @param model
 	 * @param code 图书馆编码
 	 * @param strict
+	 * @param flag 活动标示。通用、第二课堂、双选会...
 	 * @return java.lang.String
 	*/
 	@RequestMapping("")
-	public String index(Model model, String code, @RequestParam(defaultValue = "0") Integer strict) {
-		return activityManageController.index(model, code, 0, strict);
+	public String index(Model model, String code, @RequestParam(defaultValue = "0") Integer strict, String flag) {
+		return activityManageController.index(model, code, 0, strict, flag);
 	}
 
 	/**活动新增页面
@@ -45,11 +46,12 @@ public class LibActivityManagementController {
 	 * @param model
 	 * @param request
 	 * @param code
+	 * @param flag
 	 * @return java.lang.String
 	*/
 	@GetMapping("activity/add")
-	public String add(Model model, HttpServletRequest request, String code) {
-		return activityManageController.add(model, request, code, 0);
+	public String add(Model model, HttpServletRequest request, String code, String flag) {
+		return activityManageController.add(model, request, code, 0, flag);
 	}
 
 }

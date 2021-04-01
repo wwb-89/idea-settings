@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.chaoxing.activity.mapper.ActivityFlagSignModuleMapper">
+    <resultMap id="BaseResultMap" type="com.chaoxing.activity.model.ActivityFlagSignModule">
+        <result column="activity_flag" jdbcType="VARCHAR" property="activityFlag" />
+        <result column="module_type" jdbcType="VARCHAR" property="moduleType" />
+        <result column="module_name" jdbcType="VARCHAR" property="moduleName" />
+        <result column="is_enable_limit_participate_scope" jdbcType="BIT" property="enableLimitParticipateScope" />
+        <result column="limit_participate_scope_type" jdbcType="VARCHAR" property="limitParticipateScopeType" />
+        <result column="custom_sign_up_type" jdbcType="VARCHAR" property="customSignUpType" />
+        <result column="sequence" jdbcType="INTEGER" property="sequence" />
+        <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
+    </resultMap>
+</mapper>

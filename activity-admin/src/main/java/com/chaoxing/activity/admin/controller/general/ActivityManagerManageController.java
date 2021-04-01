@@ -3,8 +3,8 @@ package com.chaoxing.activity.admin.controller.general;
 import com.chaoxing.activity.admin.util.LoginUtils;
 import com.chaoxing.activity.dto.LoginUserDTO;
 import com.chaoxing.activity.dto.OrgDTO;
-import com.chaoxing.activity.model.Activity;
-import com.chaoxing.activity.service.activity.ActivityQueryService;
+import com.chaoxing.activity.service.activity.manager.ActivityManagerService;
+import com.chaoxing.activity.service.activity.ActivityValidationService;
 import com.chaoxing.activity.service.manager.MoocApiService;
 import com.chaoxing.activity.service.manager.PassportApiService;
 import com.chaoxing.activity.util.UserAgentUtils;
@@ -31,22 +31,37 @@ import java.util.List;
 public class ActivityManagerManageController {
 
 	@Resource
-	private ActivityQueryService activityQueryService;
+	private ActivityValidationService activityValidationService;
+	@Resource
+	private ActivityManagerService activityManagerService;
 	@Resource
 	private MoocApiService moocApiService;
 	@Resource
 	private PassportApiService passportApiService;
 
+	/**组织者管理主页
+	 * @Description 
+	 * @author wwb
+	 * @Date 2021-03-29 14:41:22
+	 * @param activityId
+	 * @param model
+	 * @param request
+	 * @return java.lang.String
+	*/
 	@LoginRequired
 	@RequestMapping
 	public String index(@PathVariable Integer activityId, Model model, HttpServletRequest request) {
 		LoginUserDTO loginUser = LoginUtils.getLoginUser(request);
-		Activity activity = activityQueryService.getById(activityId);
-		model.addAttribute("activity", activity);
+		Integer operateUid = loginUser.getUid();
+		activityValidationService.manageAble(activityId, operateUid);
+		model.addAttribute("activityId", activityId);
 		// 查询用户的机构列表
-		List<Integer> fids = moocApiService.listUserFids(loginUser.getUid());
+		List<Integer> fids = moocApiService.listUserFids(operateUid);
 		List<OrgDTO> orgs = passportApiService.listOrg(fids);
 		model.addAttribute("orgs", orgs);
+		// 查询以选择的uid列表
+		List<Integer> managerUids = activityManagerService.listUid(activityId);
+		model.addAttribute("managerUids", managerUids);
 		if (UserAgentUtils.isMobileAccess(request)) {
 			return "mobile/activity-manager";
 		} else {

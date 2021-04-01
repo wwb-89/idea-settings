@@ -5,6 +5,8 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.List;
+
 /**表单结构对象
  * @author wwb
  * @version ver 1.0
@@ -24,5 +26,6 @@ public class FormStructureDTO {
 	/** 字段名称 */
 	private String label;
 	private String compt;
+	private List<FormStructureDTO> compts;
 
 }
