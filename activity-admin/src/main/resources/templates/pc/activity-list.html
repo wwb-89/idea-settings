@@ -35,7 +35,7 @@
         </div>
         <div class="table">
             <el-table :data="activities" style="width: 100%">
-                <el-table-column label="活动名称" min-width="40%">
+                <el-table-column label="名称" min-width="40%">
                     <template slot-scope="scope">
                         <div class="item">
                             <div class="img">
@@ -146,7 +146,8 @@
                     delete: {name: "删除", value: "delete"},
                     manage: {name: "管理", value: "manage"},
                     release: {name: "发布", value: "release"},
-                    cancelRelease: {name: "下架", value: "cancelRelease"}
+                    cancelRelease: {name: "下架", value: "cancelRelease"},
+                    exhibitionArrangement: {name: "展会安排", value: "exhibitionArrangement"}
                 },
                 code: [[${code}]],
                 // 活动标示
@@ -192,6 +193,7 @@
                             var activity = this;
                             var isCreator = activity.createUid == $this.uid;
                             var isCurrentOrgCreated = activity.createFid == $this.fid;
+                            var isDualSelect = activity.activityFlag == "dual_select";
                             var status = activity.status;
                             activity.operations = [];
                             switch (status) {
@@ -201,6 +203,9 @@
                                         if (isCreator) {
                                             activity.operations.push($this.operations.edit);
                                             activity.operations.push($this.operations.manage);
+                                            if (isDualSelect) {
+                                                activity.operations.push($this.operations.exhibitionArrangement);
+                                            }
                                             activity.operations.push($this.operations.delete);
                                         }
                                     }
@@ -212,6 +217,9 @@
                                         if (isCreator) {
                                             activity.operations.push($this.operations.edit);
                                             activity.operations.push($this.operations.manage);
+                                            if (isDualSelect) {
+                                                activity.operations.push($this.operations.exhibitionArrangement);
+                                            }
                                             activity.operations.push($this.operations.delete);
                                         }
                                     }
@@ -227,6 +235,9 @@
                                         if (isCreator) {
                                             activity.operations.push($this.operations.edit);
                                             activity.operations.push($this.operations.manage);
+                                            if (isDualSelect) {
+                                                activity.operations.push($this.operations.exhibitionArrangement);
+                                            }
                                             activity.operations.push($this.operations.delete);
                                         }
                                     }

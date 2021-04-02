@@ -3,13 +3,13 @@ package com.chaoxing.activity.dto.manager.sign;
 import com.alibaba.fastjson.annotation.JSONField;
 import com.chaoxing.activity.util.LocalDateTime2TimestampDeserializer;
 import com.chaoxing.activity.util.LocalDateTimeSerializer;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import com.chaoxing.activity.util.exception.BusinessException;
+import lombok.*;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.Objects;
+import java.util.Optional;
 
 /**
  * 签到表
@@ -85,5 +85,46 @@ public class SignIn {
     private Long startTimestamp;
     /** 结束时间字符串表示 */
     private Long endTimestamp;
+
+    /** 签到方式枚举
+     * @className SignIn
+     * @description 
+     * @author wwb
+     * @blame wwb
+     * @date 2021-04-01 19:27:56
+     * @version ver 1.0
+     */
+    @Getter
+    public enum Way {
+
+        /** 直接签到 */
+        DIRECT("直接签到", 1),
+        POSITION("位置签到", 2),
+        QR_CODE("二维码签到", 3);
+
+        private String name;
+        private Integer value;
+
+        Way(String name, Integer value) {
+            this.name = name;
+            this.value = value;
+        }
+
+        public static Way fromValue(Integer value) {
+            Way[] values = Way.values();
+            for (Way way : values) {
+                if (Objects.equals(way.getValue(), value)) {
+                    return way;
+                }
+            }
+            return null;
+        }
+
+        public static void notNull(Way way) {
+            Optional.ofNullable(way).orElseThrow(() -> new BusinessException("未知的签到方式"));
+        }
+
+    }
+
 
 }

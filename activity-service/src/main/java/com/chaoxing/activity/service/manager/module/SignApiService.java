@@ -100,6 +100,7 @@ public class SignApiService {
 	 * @return com.chaoxing.activity.dto.module.SignAddEditResultDTO
 	*/
 	public SignAddEditResultDTO create(SignAddEditDTO signAddEdit, HttpServletRequest request) {
+		createPretreatment(signAddEdit);
 		HttpHeaders httpHeaders = new HttpHeaders();
 		httpHeaders.setContentType(MediaType.APPLICATION_JSON);
 		List<String> cookies = RestTemplateUtils.getCookies(request);
@@ -118,14 +119,35 @@ public class SignApiService {
 		}
 	}
 
+	private void createPretreatment(SignAddEditDTO signAddEdit) {
+		List<SignIn> signIns = signAddEdit.getSignIns();
+		if (CollectionUtils.isNotEmpty(signIns)) {
+			for (SignIn signIn : signIns) {
+				SignIn.Way way = SignIn.Way.fromValue(signIn.getWay());
+				switch (way) {
+					case DIRECT:
+						signIn.setName("签到");
+						break;
+					case POSITION:
+						signIn.setName("位置签到");
+						break;
+					case QR_CODE:
+						signIn.setName("扫码签到");
+						break;
+					default:
+				}
+			}
+		}
+	}
+
 	/**更新报名签到
 	 * @Description 
 	 * @author wwb
 	 * @Date 2020-11-11 17:58:39
 	 * @param signAddEdit
-	 * @return void
+	 * @return com.chaoxing.activity.dto.module.SignAddEditResultDTO
 	*/
-	public void update(SignAddEditDTO signAddEdit, HttpServletRequest request) {
+	public SignAddEditResultDTO update(SignAddEditDTO signAddEdit, HttpServletRequest request) {
 		HttpHeaders httpHeaders = new HttpHeaders();
 		httpHeaders.setContentType(MediaType.APPLICATION_JSON);
 		List<String> cookies = RestTemplateUtils.getCookies(request);
@@ -135,7 +157,9 @@ public class SignApiService {
 		JSONObject jsonObject = JSON.parseObject(result);
 		Boolean success = jsonObject.getBoolean("success");
 		success = Optional.ofNullable(success).orElse(Boolean.FALSE);
-		if (!success) {
+		if (success) {
+			return JSON.parseObject(jsonObject.getString("data"), SignAddEditResultDTO.class);
+		} else {
 			String errorMessage = jsonObject.getString("message");
 			log.error("修改签到报名:{}失败:{}", JSON.toJSONString(signAddEdit), errorMessage);
 			throw new BusinessException(errorMessage);

@@ -151,7 +151,8 @@ public class ActivityHandleService {
 	private List<WfwRegionalArchitectureDTO> handleParticipateScope(Activity activity, List<WfwRegionalArchitectureDTO> wfwRegionalArchitectures) {
 		if (CollectionUtils.isEmpty(wfwRegionalArchitectures)) {
 			String activityFlag = activity.getActivityFlag();
-			if (Objects.equals(Activity.ActivityFlag.SECOND_CLASSROOM.getValue(), activityFlag)) {
+			if (Objects.equals(Activity.ActivityFlag.SECOND_CLASSROOM.getValue(), activityFlag) ||
+					Objects.equals(Activity.ActivityFlag.DUAL_SELECT.getValue(), activityFlag)) {
 				// 构建创建者机构的
 				WfwRegionalArchitectureDTO wfwRegionalArchitecture = wfwRegionalArchitectureApiService.buildWfwRegionalArchitecture(activity.getCreateFid());
 				wfwRegionalArchitectures = Lists.newArrayList(wfwRegionalArchitecture);
@@ -163,7 +164,7 @@ public class ActivityHandleService {
 	}
 
 	/**处理活动与报名签到模块的关系
-	 * @Description 
+	 * @Description handleParticipateScope
 	 * @author wwb
 	 * @Date 2021-03-30 17:16:57
 	 * @param activityId
@@ -257,8 +258,7 @@ public class ActivityHandleService {
 			// 修改报名签到
 			signAddEdit.setUpdateUid(loginUser.getUid());
 			signAddEdit.setName(activity.getName());
-			signApiService.update(signAddEdit, request);
-			return null;
+			return signApiService.update(signAddEdit, request);
 		}
 	}
 

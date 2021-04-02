@@ -48,8 +48,7 @@
     <div class="top flex box" v-if="!activity.id">
         <div class="flex">
             <span class="create" v-show="step == 1">创建活动</span>
-            <span class="create" v-show="step == 2">选择活动展示页面</span>
-            <span class="create_tips" v-show="step == 2">请选择你的活动呈现样式</span>
+            <span class="create" v-show="step == 2">选择展示页面</span>
         </div>
         <div>
             <button type="button" class="create-btn" v-show="step == 2" @click="preStep">上一步</button>
@@ -60,8 +59,7 @@
     <div class="top flex box" v-if="activity.id">
         <div class="flex">
             <span class="create" v-show="step == 1">编辑活动</span>
-            <span class="create" v-show="step == 2">选择活动展示页面</span>
-            <span class="create_tips" v-show="step == 2">请选择你的活动呈现样式</span>
+            <span class="create" v-show="step == 2">选择展示页面</span>
         </div>
         <div>
             <button type="button" class="create-btn" v-show="step == 2" @click="preStep">上一步</button>
@@ -76,7 +74,7 @@
                 <div class="form-item">
                     <label class="label"><img src="/static/pc/assets/images/required.png" th:src="@{/pc/assets/images/required.png}" class="required-img">名称</label>
                     <div class="input-box">
-                        <el-input type="text" placeholder="请填写信息，简短的活动名称" v-model.trim="activity.name" maxlength="50" show-word-limit></el-input>
+                        <el-input type="text" placeholder="请填写信息，简短的名称" v-model.trim="activity.name" maxlength="50" show-word-limit></el-input>
                     </div>
                 </div>
                 <div class="form-item">
@@ -93,7 +91,7 @@
                                         start-placeholder="开始时间"
                                         end-placeholder="结束时间"
                                         :default-time="['00:00:00', '23:59:59']"
-                                        @change="selectActivityDate($event)">
+                                        @input="selectActivityDate">
                             <img style="margin: 0 8px;" slot="range-separator" src="/static/pc/assets/images/swap-right.png" th:src="@{/pc/assets/images/swap-right.png}">
                         </el-date-picker>
                         <span class="date-piker-icon">
@@ -122,7 +120,7 @@
                     </div>
                 </div>
                 <div class="form-item">
-                    <label class="label">活动类型</label>
+                    <label class="label">类型</label>
                     <div class="input-box">
                         <el-radio v-for="(activityType, index) of activityTypes" :key="'activity-type-' + index" v-model="activity.activityType" :label="activityType.value" name="active-type">{{activityType.name}}</el-radio>
                     </div>
@@ -130,13 +128,13 @@
                 <div class="form-item" v-show="activity.activityType == 'offline'">
                     <label class="label">位置</label>
                     <div class="input-box">
-                        <input type="text" readonly required lay-verify="required" v-model.trim="activity.address" placeholder="请选择活动地点" autocomplete="off" class="layui-input name show-addr" style="cursor: pointer;" @click="showActivityMap">
+                        <input type="text" readonly required lay-verify="required" v-model.trim="activity.address" placeholder="请选择地点" autocomplete="off" class="layui-input name show-addr" style="cursor: pointer;" @click="showActivityMap">
                         <img src="/static/pc/assets/images/location.png" th:src="@{/pc/assets/images/location.png}" class="length icon">
                         <input type="text" v-model.trim="activity.detailAddress" lay-verify="required" placeholder="详细地址，例：E5栋1308室" autocomplete="off" class="layui-input name show-addr-detailed">
                     </div>
                 </div>
                 <div class="form-item cancel-margin">
-                    <label class="label">活动分类</label>
+                    <label class="label">分类</label>
                     <div class="input-box wrap">
                         <div :class="{'type-item': true, 'active': activityClassify.selected}" v-for="(activityClassify, index) of activityClassifies" :key="'activity-classify-' + index" @click="selectActivityClassify(index)">{{activityClassify.name}}
                             <div class="more-btn" v-if="!activityClassify.system"></div>
@@ -151,8 +149,8 @@
                         </div>
                     </div>
                 </div>
-                <div class="form-item cancel-margin">
-                    <label class="label">活动标签</label>
+                <div class="form-item cancel-margin" v-show="isShowActivityFlag()">
+                    <label class="label">标签</label>
                     <div class="input-box wrap">
                         <!--添加满3个后，隐藏添加按钮-->
                         <div class="type-item" v-for="(tag, index) of tags" :key="'tag-' + index">{{tag}}<div class="del_btn" @click="deleteTag(index)"></div></div>
@@ -162,7 +160,7 @@
                         </div>
                     </div>
                 </div>
-                <div class="form-item last" v-show="activityFlag != 'second_classroom'">
+                <div class="form-item last" v-show="isShowActivityParticipateScope()">
                     <label class="label"><img src="/static/pc/assets/images/required.png" th:src="@{/pc/assets/images/required.png}" class="required-img">参与范围</label>
                     <div class="input-box wrap">
                         <!--添加范围后显示后面这项-->
@@ -185,7 +183,7 @@
         <!--报名设置列表-->
         <div class="info box" v-for="(signUp, index) of sign.signUps" :key="'sign-up' + index">
             <div class="set-box">
-                <div class="title set">{{signUp.name}}设置</div>
+                <div class="title set">{{signUp.name ? signUp.name : '报名'}}设置</div>
                 <el-switch v-model="signUp.enable" class="switch" @change="signUpEnableChanged(index)"></el-switch>
             </div>
             <!-- 点击参与设置 -->
@@ -204,7 +202,7 @@
                                         start-placeholder="开始时间"
                                         end-placeholder="结束时间"
                                         :default-time="['00:00:00', '23:59:59']"
-                                        @change="selectSignUpTime(index, $event)">
+                                        @input="selectSignUpTime(index, $event)">
                             <img style="margin: 0 8px;" slot="range-separator" src="/static/pc/assets/images/swap-right.png" th:src="@{/pc/assets/images/swap-right.png}">
                         </el-date-picker>
                         <span class="date-piker-icon">
@@ -323,7 +321,7 @@
                                         start-placeholder="开始时间"
                                         end-placeholder="结束时间"
                                         :default-time="['00:00:00', '23:59:59']"
-                                        @change="selectSignInTime(index, $event)">
+                                        @input="selectSignInTime(index, $event)">
                             <img style="margin: 0 8px;" slot="range-separator" src="/static/pc/assets/images/swap-right.png" th:src="@{/pc/assets/images/swap-right.png}">
                         </el-date-picker>
                         <span class="date-piker-icon">
@@ -358,7 +356,7 @@
                     <div class="input-box">
                         <input type="number" v-model.trim="activity.integralValue" min="0" placeholder="请输入" class="score-input">
                         <span class="score">分</span>
-                        <span>参与者在活动成绩为合格时，即可获取相应积分</span>
+                        <span>参与者成绩合格时，即可获取相应积分</span>
                     </div>
                 </div>
             </form>
@@ -401,7 +399,7 @@
     <div class="dailog-box1" v-show="addEditActivityClassifyWindowShow">
         <div class="dailog">
             <div class="header">
-                <span>活动分类</span>
+                <span>分类</span>
                 <div @click="addEditActivityClassifyWindowShow = false">
                     <img src="/static/pc/assets/images/close.png" th:src="@{/pc/assets/images/close.png}" class="close">
                 </div>
@@ -419,7 +417,7 @@
     <div class="dailog-box1" v-show="addTagWindowShow">
         <div class="dailog">
             <div class="header">
-                <span>活动标签</span>
+                <span>标签</span>
                 <div @click="addTagWindowShow = false">
                     <img src="/static/pc/assets/images/close.png" th:src="@{/pc/assets/images/close.png}" class="close">
                 </div>
@@ -456,7 +454,7 @@
     <!--删除标签标签-->
     <vue-confirm ref="deleteTagWindow" :message="'确认删除此标签'" :cancel="'保留'" :sure="'删除'" @callback="deleteTagSubmit"></vue-confirm>
     <!-- 活动地图弹窗 -->
-    <vue-map ref="activityMap" :map-dom-id="'activity-map'" :title="'设置活动地点'" @callback="activityAddressSure"></vue-map>
+    <vue-map ref="activityMap" :map-dom-id="'activity-map'" :title="'设置地点'" @callback="activityAddressSure"></vue-map>
     <!--签到-->
     <vue-map ref="signInMap" :map-dom-id="'sign-in-map'" :title="'设置'+ signInMapTitleKey +'地点'" @callback="signInAddressSure"></vue-map>
     <!-- 活动参与范围弹窗 -->
@@ -473,7 +471,7 @@
             <div class="body">
                 <div class="tree">
                     <div class="tree-head">
-                        <span>选择发布的范围</span>
+                        <span>选择参与的范围</span>
                     </div>
                     <div class="tree-box">
                         <div id="sign-up-participate-scope-tree" class="ztree"></div>
@@ -950,11 +948,11 @@
                         return false;
                     }
                     if (activityApp.isEmpty($this.activity.coverCloudId)) {
-                        app.showMsg("请上传活动封面");
+                        app.showMsg("请上传封面");
                         return false;
                     }
                     if (activityApp.isEmpty($this.activity.activityClassifyId)) {
-                        app.showMsg("活动分类不能为空");
+                        app.showMsg("分类不能为空");
                         return false;
                     }
                     // 参与范围
@@ -1092,12 +1090,12 @@
                         } else {
                             var errorMessage = data.message;
                             if (activityApp.isEmpty(errorMessage)) {
-                                errorMessage = "创建活动失败";
+                                errorMessage = "创建失败";
                             }
                             app.showMsg(errorMessage);
                         }
                     }, function () {
-                        app.showMsg("创建活动失败");
+                        app.showMsg("创建失败");
                     });
                 },
                 // 编辑活动提交
@@ -1122,19 +1120,19 @@
                                 $this.filterOptionalTemplate();
                                 $this.step = 2;
                             } else {
-                                app.showMsg("修改活动成功", function () {
+                                app.showMsg("修改成功", function () {
                                     window.close();
                                 });
                             }
                         } else {
                             var errorMessage = data.message;
                             if (activityApp.isEmpty(errorMessage)) {
-                                errorMessage = "修改活动失败";
+                                errorMessage = "修改失败";
                             }
                             app.showMsg(errorMessage);
                         }
                     }, function () {
-                        app.showMsg("修改活动失败");
+                        app.showMsg("修改失败");
                     });
                 },
                 // 选中活动的日期范围
@@ -1386,6 +1384,18 @@
                 deleteSignUpParticipateScope: function (signUpIndex, scopeIndex) {
                     var $this = this;
                     $this.sign.signUps[signUpIndex].participateScopes.splice(scopeIndex, 1);
+                },
+                // 活动是否显示标签
+                isShowActivityFlag: function () {
+                    var $this = this;
+                    var hides = ["second_classroom", "dual_select"];
+                    return hides.indexOf($this.activity.activityFlag) == -1;
+                },
+                // 活动是否显示参与范围
+                isShowActivityParticipateScope: function () {
+                    var $this = this;
+                    var hides = ["second_classroom", "dual_select"];
+                    return hides.indexOf($this.activity.activityFlag) == -1;
                 }
             }
         });

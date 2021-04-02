@@ -15,9 +15,9 @@ import java.util.Objects;
 @Getter
 public enum ActivityTypeEnum {
 
-	/** 线上活动 */
-	ONLINE("线上活动", "online"),
-	OFFLINE("线下活动", "offline");
+	/** 线上举办 */
+	ONLINE("线上举办", "online"),
+	OFFLINE("线下举办", "offline");
 
 	private String name;
 	private String value;

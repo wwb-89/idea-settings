@@ -5,10 +5,10 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-/**报名的报名签到
+/**用户报名状态统计对象
  * @author wwb
  * @version ver 1.0
- * @className SignedUpDTO
+ * @className UserSignUpStatusStatDTO
  * @description
  * @blame wwb
  * @date 2021-01-27 18:21:37
@@ -17,7 +17,7 @@ import lombok.NoArgsConstructor;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class SignedUpDTO {
+public class UserSignUpStatusStatDTO {
 
 	/** 报名签到id */
 	private Integer signId;

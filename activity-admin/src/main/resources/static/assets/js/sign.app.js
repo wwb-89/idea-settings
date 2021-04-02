@@ -52,6 +52,15 @@
      * @returns {{btnName: string, fillInfoFormId: null, limitPerson: boolean, publicList: boolean, moduleName: (*|string), signId: null, deleted: boolean, openAudit: boolean, personLimit: number, fillInfo: boolean, startTime: number, id: null, endTime: number, endTimestamp: string, startTimestamp: string}}
      */
     signApp.prototype.newSignUp = function (activityFlagSignModule) {
+        $this = this;
+        if (activityApp.isEmpty(activityFlagSignModule)) {
+            activityFlagSignModule = {
+                moduleName: "报名",
+                enableLimitParticipateScope: false,
+                limitParticipateScopeType: "",
+                customSignUpType: ""
+            }
+        }
         return {
             id: null,
             signId: null,
@@ -87,6 +96,11 @@
     signApp.prototype.newSignIn = function (activityFlagSignModule) {
         var $this = this;
         var now = new Date();
+        if (activityApp.isEmpty(activityFlagSignModule)) {
+            activityFlagSignModule = {
+                moduleName: "签到"
+            }
+        }
         return {
             id: null,
             signId: null,
@@ -120,6 +134,11 @@
      */
     signApp.prototype.newSignOut = function (activityFlagSignModule) {
         var $this = this;
+        if (activityApp.isEmpty(activityFlagSignModule)) {
+            activityFlagSignModule = {
+                moduleName: "签退"
+            }
+        }
         return $.extend({}, $this.newSignIn(activityFlagSignModule), {
             type: $this.signOutModuleType,
             typeName: "签退",

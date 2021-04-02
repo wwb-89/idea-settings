@@ -12,7 +12,7 @@ import com.chaoxing.activity.dto.manager.sign.SignStatDTO;
 import com.chaoxing.activity.dto.query.ActivityManageQueryDTO;
 import com.chaoxing.activity.dto.query.ActivityQueryDTO;
 import com.chaoxing.activity.dto.query.MhActivityCalendarQueryDTO;
-import com.chaoxing.activity.dto.sign.SignedUpDTO;
+import com.chaoxing.activity.dto.sign.UserSignUpStatusStatDTO;
 import com.chaoxing.activity.mapper.ActivityMapper;
 import com.chaoxing.activity.mapper.ActivityFlagSignModuleMapper;
 import com.chaoxing.activity.mapper.ActivitySignModuleMapper;
@@ -341,10 +341,10 @@ public class ActivityQueryService {
 		List records = page.getRecords();
 		if (CollectionUtils.isNotEmpty(records)) {
 			List<Integer> signIds = Lists.newArrayList();
-			Map<Integer, SignedUpDTO> signIdSignedUpMap = Maps.newHashMap();
+			Map<Integer, UserSignUpStatusStatDTO> signIdSignedUpMap = Maps.newHashMap();
 			for (Object record : records) {
 				JSONObject jsonObject = (JSONObject) record;
-				SignedUpDTO signedUp = JSON.parseObject(jsonObject.toJSONString(), SignedUpDTO.class);
+				UserSignUpStatusStatDTO signedUp = JSON.parseObject(jsonObject.toJSONString(), UserSignUpStatusStatDTO.class);
 				signIds.add(signedUp.getSignId());
 				signIdSignedUpMap.put(signedUp.getSignId(), signedUp);
 			}
@@ -356,7 +356,7 @@ public class ActivityQueryService {
 					BeanUtils.copyProperties(activity, activitySignedUp);
 					// 设置报名状态
 					Integer signId = activitySignedUp.getSignId();
-					SignedUpDTO signedUp = signIdSignedUpMap.get(signId);
+					UserSignUpStatusStatDTO signedUp = signIdSignedUpMap.get(signId);
 					if (signedUp != null) {
 						activitySignedUp.setSignUpId(signedUp.getSignUpId());
 						activitySignedUp.setUserSignUpStatus(signedUp.getUserSignUpStatus());

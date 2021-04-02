@@ -3,6 +3,7 @@ package com.chaoxing.activity.service.form;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.chaoxing.activity.dto.manager.form.FormDTO;
 import com.chaoxing.activity.dto.manager.form.FormStructureDTO;
 import com.chaoxing.activity.mapper.ActivityFormRecordMapper;
 import com.chaoxing.activity.model.Activity;
@@ -105,11 +106,10 @@ public class ActivityFormRecordService {
 	 * @return void
 	*/
 	private void addOrUpdate(Activity activity, ActivityFormRecord existActivityFormRecord) {
-		Integer activityId = activity.getId();
 		if (activity == null || Objects.equals(Activity.StatusEnum.DELETED.getValue(), activity.getStatus())) {
 			// 活动不存在或被删除
 			if (existActivityFormRecord != null) {
-				delete(activityId);
+				delete(activity);
 			}
 		} else {
 			Integer createFid = activity.getCreateFid();
@@ -142,8 +142,21 @@ public class ActivityFormRecordService {
 	 * @Date 2021-02-06 19:48:37
 	 * @param activityId
 	 * @return void
-	*/
+	 */
 	public void delete(Integer activityId) {
+		Activity activity = activityQueryService.getById(activityId);
+		delete(activity);
+	}
+
+	/**删除
+	 * @Description
+	 * @author wwb
+	 * @Date 2021-04-01 18:08:35
+	 * @param activity
+	 * @return void
+	 */
+	public void delete(Activity activity) {
+		Integer activityId = activity.getId();
 		ActivityFormRecord activityFormRecord = activityFormRecordMapper.selectOne(new QueryWrapper<ActivityFormRecord>()
 				.lambda()
 				.eq(ActivityFormRecord::getActivityId, activityId)
@@ -151,9 +164,12 @@ public class ActivityFormRecordService {
 		if (activityFormRecord == null) {
 			return;
 		}
-		formApiService.deleteFormRecord(activityFormRecord.getFormId(), activityFormRecord.getFormUserId());
+		FormDTO formData = formApiService.getFormData(activity.getCreateFid(), activityFormRecord.getFormId(), activityFormRecord.getFormUserId());
+		if (formData != null) {
+			formApiService.deleteFormRecord(activityFormRecord.getFormId(), activityFormRecord.getFormUserId());
+		}
 		activityFormRecordMapper.delete(new QueryWrapper<ActivityFormRecord>()
-			.lambda()
+				.lambda()
 				.eq(ActivityFormRecord::getId, activityFormRecord.getActivityId())
 		);
 	}
