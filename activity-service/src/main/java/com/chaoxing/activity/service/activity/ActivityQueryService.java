@@ -248,7 +248,7 @@ public class ActivityQueryService {
 				}
 			}
 			List<SignStatDTO> signStats = signApiService.statSignSignedUpNum(signIds);
-			Map<Integer, Integer> signIdSignedUpNumMap = signStats.stream().collect(Collectors.toMap(v -> v.getSignId(), v -> v.getSignedUpNum(), (v1, v2) -> v2));
+			Map<Integer, Integer> signIdSignedUpNumMap = signStats.stream().collect(Collectors.toMap(v -> v.getId(), v -> v.getSignedUpNum(), (v1, v2) -> v2));
 			for (Activity activity : activities) {
 				Integer signId = activity.getSignId();
 				Integer signedUpNum = 0;

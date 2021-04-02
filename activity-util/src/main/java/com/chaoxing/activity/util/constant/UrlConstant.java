@@ -27,4 +27,8 @@ public class UrlConstant {
 	/** 活动评价的管理地址 */
 	public static final String ACTIVITY_RATING_MANAGE_URL = "http://manage.hd.chaoxing.com/activity/%d/rating/audit";
 
+	/** 双选会 */
+	/** 双选会主页url */
+	public static final String DUAL_SELECT_INDEX_URL = "http://appcd.chaoxing.com/form-employment/pc/double/election?activityId=%s&wfwfid=%s";
+
 }

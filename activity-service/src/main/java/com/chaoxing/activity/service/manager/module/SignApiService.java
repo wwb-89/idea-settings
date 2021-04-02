@@ -204,15 +204,15 @@ public class SignApiService {
 		}
 	}
 
-	/**查询签到活动的参与情况
+	/**查询报名签到的参与情况
 	 * @Description 
 	 * @author wwb
 	 * @Date 2020-11-24 20:15:35
 	 * @param signId
-	 * @return com.chaoxing.activity.dto.manager.SignUpStatDTO
+	 * @return com.chaoxing.activity.dto.manager.SignStatDTO
 	*/
-	public SignUpStatDTO getSignParticipation(Integer signId) {
-		SignUpStatDTO signUpStat = null;
+	public SignStatDTO getSignParticipation(Integer signId) {
+		SignStatDTO signStat = null;
 		if (signId != null) {
 			String url = String.format(PARTICIPATION_URL, signId);
 			String result = restTemplate.getForObject(url, String.class);
@@ -220,17 +220,10 @@ public class SignApiService {
 			Boolean success = jsonObject.getBoolean("success");
 			success = Optional.ofNullable(success).orElse(Boolean.FALSE);
 			if (success) {
-				signUpStat = JSON.parseObject(jsonObject.getString("data"), SignUpStatDTO.class);
+				signStat = JSON.parseObject(jsonObject.getString("data"), SignStatDTO.class);
 			}
 		}
-		if (signUpStat == null) {
-			signUpStat = SignUpStatDTO.builder()
-					.limitNum(0)
-					.signedUpNum(0)
-					.publicList(Boolean.FALSE)
-					.build();
-		}
-		return signUpStat;
+		return signStat;
 	}
 
 	/**统计报名签到在活动管理首页需要的信息

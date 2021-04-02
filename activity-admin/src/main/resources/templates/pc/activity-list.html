@@ -78,11 +78,11 @@
                 <el-table-column label="操作" min-width="25%">
                     <template slot-scope="scope">
                         <div>
-                            <el-button type="text" v-if="index < 3" v-for="(operation, index) of scope.row.operations" @click="operateProxy(scope.row.id, operation.value)">{{operation.name}}</el-button>
+                            <el-button type="text" v-if="index < 3" v-for="(operation, index) of scope.row.operations" @click="operateProxy(scope.row, operation.value)">{{operation.name}}</el-button>
                             <div class="manage-more-btn" v-if="scope.row.operations.length > 3">
                                 <el-button type="text"><img src="/static/pc/assets/images/more-vertical.png" th:src="@{/pc/assets/images/more-vertical.png}"></el-button>
                                 <div class="more">
-                                    <p v-if="index > 2" v-for="(operation, index) of scope.row.operations" @click="operateProxy(scope.row.id, operation.value)">{{operation.name}}</p>
+                                    <p v-if="index > 2" v-for="(operation, index) of scope.row.operations" @click="operateProxy(scope.row, operation.value)">{{operation.name}}</p>
                                 </div>
                             </div>
                         </div>
@@ -324,7 +324,8 @@
                     });
                 },
                 // 操作代理
-                operateProxy: function (id, operation) {
+                operateProxy: function (activity, operation) {
+                    var id = activity.id;
                     var $this = this;
                     switch (operation) {
                         case "edit":
@@ -341,6 +342,9 @@
                             break;
                         case "cancelRelease":
                             $this.toCancelRelease(id);
+                            break;
+                        case "exhibitionArrangement":
+                            $this.toExhibitionArrangement(id, activity.createFid);
                             break;
                         default:
                     }
@@ -434,6 +438,10 @@
                     }, function () {
                         app.showMsg("下架失败");
                     });
+                },
+                toExhibitionArrangement: function (activityId, fid) {
+                    var url = activityApp.generateDualSelectIndexUrl(activityId, fid);
+                    window.open(url);
                 },
                 // 配置页面
                 configPage: function (activity) {
