@@ -1,13 +1,14 @@
 package com.chaoxing.activity.util.config;
 
+import com.chaoxing.activity.util.property.ProxyProperties;
 import okhttp3.OkHttpClient;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;
 import org.springframework.http.client.OkHttp3ClientHttpRequestFactory;
 import org.springframework.web.client.RestTemplate;
 
+import javax.annotation.Resource;
 import java.net.InetSocketAddress;
 import java.net.Proxy;
 import java.util.concurrent.TimeUnit;
@@ -23,10 +24,8 @@ import java.util.concurrent.TimeUnit;
 @Configuration
 public class RestTemplateConfig {
 
-	private static final String PROFILE_DEV = "dev";
-
-	@Value("${spring.profiles.active}")
-	private String active;
+	@Resource
+	private ProxyProperties proxyProperties;
 
 	private static final int CONNECT_TIMEOUT = 60 * 1000;
 
@@ -41,12 +40,12 @@ public class RestTemplateConfig {
 
 	@Bean(name = "restTemplateProxy")
 	public RestTemplate restTemplateProxy(){
-		if (PROFILE_DEV.equals(active)) {
-			Proxy proxy = new Proxy(Proxy.Type.SOCKS, new InetSocketAddress("127.0.0.1", 1090));
+		if (proxyProperties.getEnable()) {
+			Proxy proxy = new Proxy(Proxy.Type.SOCKS, new InetSocketAddress(proxyProperties.getHost(), proxyProperties.getPort()));
 			OkHttpClient okHttpClient = new OkHttpClient().newBuilder().connectTimeout(CONNECT_TIMEOUT, TimeUnit.SECONDS).build().newBuilder().proxy(proxy).build();
 			OkHttp3ClientHttpRequestFactory okHttp3ClientHttpRequestFactory = new OkHttp3ClientHttpRequestFactory(okHttpClient);
 			// 连接超时时间60s
-			okHttp3ClientHttpRequestFactory.setConnectTimeout(60 * 1000);
+			okHttp3ClientHttpRequestFactory.setConnectTimeout(CONNECT_TIMEOUT);
 			return new RestTemplate(okHttp3ClientHttpRequestFactory);
 		}
 		return restTemplate();

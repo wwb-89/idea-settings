@@ -186,6 +186,7 @@ public class FormApiService {
 	 * @return void
 	 */
 	public void updateForm(Integer formId, Integer formUserId, String data) {
+		// 先查看表单数据是否存在
 		LocalDateTime now = LocalDateTime.now();
 		String formatDateStr = now.format(DATE_TIME_FORMATTER);
 		String enc = calUpdateFormEnc(formId, formUserId, formatDateStr, data);
