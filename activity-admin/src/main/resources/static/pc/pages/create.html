@@ -142,32 +142,34 @@
             <div class="form-item cancel-margin">
             <label class="label">活动分类</label>
             <div class="input-box wrap">
-                <!--<div class="type-item active">活动</div>-->
-                <!--<div class="type-item">讲座</div>-->
-                <!--<div class="type-item">讲座</div>-->
-                <!--<div class="type-item">征文</div>-->
-                <!--<div class="type-item">自定义选项-->
-                    <!--&lt;!&ndash;<img src="../assets/images/icon-more1.png" alt="" style="margin-left: 10px;">&ndash;&gt;-->
-                    <!--<div class="more-btn"></div>-->
-                    <!--<div class="edit-box">-->
-                        <!--<div @click="handleEdit">编辑</div>-->
-                        <!--<div @click="handleDelete">删除</div>-->
-                    <!--</div>-->
-                <!--</div>-->
-                <!--<div class="type-item add" @click="handleAdd">-->
-                    <!--<div class="add_btn"></div>-->
-                    <!--新增-->
-                <!--</div>-->
-                <div class="select-activity">
+                <div class="type-item active">活动</div>
+                <div class="type-item">讲座</div>
+                <div class="type-item">讲座</div>
+                <div class="type-item">征文</div>
+                <div class="type-item paddingR0">自定义选项
+                    <!-- &lt;!&ndash;<img src="../assets/images/icon-more1.png" alt="" style="margin-left: 10px;">&ndash;&gt; -->
+                    <div class="more-box">
+                        <div class="more-btn"></div>
+                        <div class="edit-box">
+                            <div @click="handleEdit">编辑</div>
+                            <div @click="handleDelete">删除</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="type-item add" @click="handleAdd">
+                    <div class="add_btn"></div>
+                    新增
+                </div>
+                <!-- <div class="select-activity">
                     <el-select v-model="value7" placeholder="请选择">
                         <el-option v-for="item in options7" :key="item.value" :label="item.label"
                                    :value="item.value">
                         </el-option>
                     </el-select>
-                </div>
+                </div> -->
             </div>
         </div>
-            <div class="form-item cancel-margin">
+            <div class="form-item cancel-margin marginTop16">
                 <label class="label">活动标签</label>
                 <div class="input-box wrap">
                     <!--添加满3个后，隐藏添加按钮-->
@@ -180,7 +182,7 @@
                     </div>
                 </div>
             </div>
-            <div class="form-item last">
+            <div class="form-item last marginTop16">
                 <label class="label"><img src="../assets/images/required.png"
                                           alt="" class="required-img">参与范围</label>
                 <div class="input-box wrap">
@@ -844,7 +846,7 @@
                 <div class="body-head">
                     <div class="input-addr">
                         <el-autocomplete style="width:100%;" popper-class="autoAddressClass" v-model="address"
-                                         :fetch-suggestions="querySearchAsync" :trigger-on-focus="false" placeholder="请输入地址"
+                                         :fetch-suggestions="querySearchAsync" :trigger-on-focus="true" placeholder="请输入地址"
                                          @select="handleSelect" clearable>
                             <template slot-scope="scope"> <i class="el-icon-search fl mgr10"></i>
                                 <div class="address-box">
@@ -852,6 +854,7 @@
                                     &#45;&#45;
                                     <span class="address ellipsis">{{ scope.item.address }}</span>
                                 </div>
+                                <i class="el-icon-close" @click.stop="handleDelAddr($event)"></i>
                             </template>
                         </el-autocomplete>
                     </div>
@@ -1038,6 +1041,9 @@
             this.organizationTreeFun();
         },
         methods: {
+            handleDelAddr:function(e){
+                //删除元素
+            },
             initMap: function () {
                 var that = this;
                 this.map = new BMap.Map("map-contain", {
@@ -1082,9 +1088,15 @@
                     }
                 }
                 var local = new BMap.LocalSearch(this.map, options) //创建LocalSearch构造函数
-                local.search(str) //调用search方法，根据检索词str发起检索
+                if(!str){
+                    // 获取历史记录
+                    local.search(111)
+                }else{
+                    local.search(str) //调用search方法，根据检索词str发起检索
+                }
             },
             handleSelect: function (item) {
+                console.log(item)
                 this.address = item.address + item.title; //记录详细地址，含建筑物名
                 this.addrPoint = item.point; //记录当前选中地址坐标
                 this.map.clearOverlays() //清除地图上所有覆盖物

@@ -121,7 +121,9 @@ select {
     margin: 24px 0;
     align-items: center;
 }
-
+.marginTop16{
+    margin-top: 16px;
+}
 .form-item.align-start {
     align-items: start;
 }
@@ -271,11 +273,13 @@ input[type="number"] {
     border-radius: 2px;
     box-sizing: border-box;
     cursor: pointer;
-    margin-right: 16px;
+    margin: 4px 16px 4px 0;
     font-size: 14px;
     color: #333333;
 }
-
+.paddingR0{
+    padding-right: 0;
+}
 .type-item:hover {
     background: #F8F8F8;
 }
@@ -294,7 +298,7 @@ input[type="number"] {
     color: #0084FF;
 }
 
-.type-item:hover>.edit-box {
+.type-item .more-box:hover>.edit-box {
     display: block;
     z-index: 10;
 }
@@ -513,9 +517,11 @@ input.btn-name,
 
 .dailog {
     position: absolute;
-    top: 50%;
+    /* top: 50%;
     left: 50%;
-    transform: translate(-50%, -50%);
+    transform: translate(-50%, -50%); */
+    top: 146px;
+    left: calc(50% - 450px);
     background: #ffffff;
     border-radius: 10px;
     box-shadow: 0px 12px 48px 16px rgba(0, 0, 0, 0.03), 0px 9px 28px 0px rgba(0, 0, 0, 0.05), 0px 6px 16px -8px rgba(0, 0, 0, 0.08);
@@ -996,13 +1002,18 @@ input.btn-name,
     text-overflow: ellipsis;
     overflow: hidden;
 }
-
+.el-scrollbar li{
+    padding-right: 30px;
+}
 .el-scrollbar li,
 .address-box {
     display: flex;
     align-items: center;
+    overflow: hidden;
 }
-
+.el-autocomplete-suggestion li:hover .el-icon-close{
+    display: block;
+}
 .el-icon-search {
     margin-right: 10px;
 }
@@ -1025,7 +1036,7 @@ input.btn-name,
 
 .edit-box {
     position: absolute;
-    top: 34px;
+    top: 32px;
     right: -29px;
     width: 58px;
     height: 72px;
@@ -1033,12 +1044,17 @@ input.btn-name,
     border-radius: 2px;
     box-shadow: 0px 12px 48px 16px rgba(0, 0, 0, 0.03), 0px 9px 28px 0px rgba(0, 0, 0, 0.05), 0px 6px 16px -8px rgba(0, 0, 0, 0.08);
     color: #333333;
-    font-size: 16px;
+    font-size: 14px;
     line-height: 36px;
     text-align: center;
+    padding: 2px 0;
+    box-sizing: border-box;
     display: none;
 }
-
+.edit-box div:hover{
+    background: #F8F8F8;
+    color: #0084FF;
+}
 .required-img {
     width: 6px;
     height: 6px;
@@ -1299,13 +1315,18 @@ input.btn-name,
 .create-class .layui-layer-btn .layui-layer-btn1 {
     background: rgba(0, 132, 255, 0.8);
 }
+.more-box{
+    padding-right: 10px;
+    height: 32px;
+}
 .more-btn {
     width: 16px;
     height: 16px;
     margin-left: 4px;
+    margin-top: 8px;
     background: url("../images/icon-more1.png");
 }
-.type-item:hover > .more-btn {
+.type-item .more-box:hover .more-btn{
     background: url("../images/icon-more-hover.png");
 }
 .add_btn {
@@ -1412,4 +1433,10 @@ input.btn-name,
 }
 .examine-switch{
     margin-right: 16px;
+}
+.autoAddressClass .el-icon-close{
+    position: absolute;
+    right: 10px;
+    color: #999999;
+    display: none;
 }
