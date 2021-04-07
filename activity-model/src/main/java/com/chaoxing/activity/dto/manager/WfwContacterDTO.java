@@ -28,4 +28,5 @@ public class WfwContacterDTO {
 	private String phone;
 	@JSONField(name = "deptids")
 	private String deptIds;
+
 }
