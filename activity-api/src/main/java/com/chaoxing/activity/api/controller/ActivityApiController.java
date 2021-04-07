@@ -230,7 +230,8 @@ public class ActivityApiController {
 	@RequestMapping("{activityId}")
 	public RestRespDTO getById(@PathVariable Integer activityId) {
 		Activity activity = activityQueryService.getById(activityId);
-		return RestRespDTO.success(activity);
+		ActivityExternalDTO activityExternal = model2DtoService.activity2Dto(activity);
+		return RestRespDTO.success(activityExternal);
 	}
 
 }

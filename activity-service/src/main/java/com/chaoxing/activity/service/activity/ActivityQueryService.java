@@ -18,7 +18,9 @@ import com.chaoxing.activity.mapper.ActivityFlagSignModuleMapper;
 import com.chaoxing.activity.mapper.ActivitySignModuleMapper;
 import com.chaoxing.activity.model.Activity;
 import com.chaoxing.activity.model.ActivityFlagSignModule;
+import com.chaoxing.activity.model.ActivityManager;
 import com.chaoxing.activity.model.ActivitySignModule;
+import com.chaoxing.activity.service.activity.manager.ActivityManagerQueryService;
 import com.chaoxing.activity.service.manager.WfwRegionalArchitectureApiService;
 import com.chaoxing.activity.service.manager.module.SignApiService;
 import com.chaoxing.activity.util.DateUtils;
@@ -66,6 +68,8 @@ public class ActivityQueryService {
 	private WfwRegionalArchitectureApiService wfwRegionalArchitectureApiService;
 	@Resource
 	private SignApiService signApiService;
+	@Resource
+	private ActivityManagerQueryService activityManagerQueryService;
 
 	/**查询参与的活动
 	 * @Description 
@@ -217,23 +221,25 @@ public class ActivityQueryService {
 		if (strict.compareTo(1) == 0) {
 			// 严格模式
 			activityManageQuery.setCreateUid(loginUser.getUid());
-			activityManageQuery.setCreateWfwfid(loginUser.getFid());
+			activityManageQuery.setCreateWfwfid(activityManageQuery.getFid());
 			page = activityMapper.pageCreated(page, activityManageQuery);
 		} else {
 			List<Integer> fids = new ArrayList<>();
-			Integer fid = loginUser.getFid();
-			List<WfwRegionalArchitectureDTO> wfwRegionalArchitectures = wfwRegionalArchitectureApiService.listByFid(fid);
+			List<WfwRegionalArchitectureDTO> wfwRegionalArchitectures = wfwRegionalArchitectureApiService.listByFid(activityManageQuery.getFid());
 			if (CollectionUtils.isNotEmpty(wfwRegionalArchitectures)) {
 				List<Integer> subFids = wfwRegionalArchitectures.stream().map(WfwRegionalArchitectureDTO::getFid).collect(Collectors.toList());
 				fids.addAll(subFids);
 			} else {
-				fids.add(fid);
+				fids.add(activityManageQuery.getFid());
 			}
 			activityManageQuery.setFids(fids);
 			page = activityMapper.pageManaging(page, activityManageQuery);
 		}
 		List<Activity> activities = page.getRecords();
+		// 封装报名的数量
 		packageSignedUpNum(activities);
+		// 封装是不是组织者
+		packageManager(activities);
 		return page;
 	}
 
@@ -257,6 +263,31 @@ public class ActivityQueryService {
 				}
 				signedUpNum = Optional.ofNullable(signedUpNum).orElse(0);
 				activity.setSignedUpNum(signedUpNum);
+			}
+		}
+	}
+
+	/**封装管理者（组织者）
+	 * @Description 
+	 * @author wwb
+	 * @Date 2021-04-06 14:20:51
+	 * @param activities
+	 * @return void
+	*/
+	private void packageManager(List<Activity> activities) {
+		if (CollectionUtils.isNotEmpty(activities)) {
+			List<Integer> activityIds = activities.stream().map(Activity::getId).collect(Collectors.toList());
+			// 查询配置的组织者列表
+			List<ActivityManager> allActivityManagers = activityManagerQueryService.listByActivityId(activityIds);
+			// 根据活动id分组
+			Map<Integer, List<ActivityManager>> activityIdActivitiesMap = allActivityManagers.stream().collect(Collectors.groupingBy(ActivityManager::getActivityId));
+			for (Activity activity : activities) {
+				Integer activityId = activity.getId();
+				List<ActivityManager> activityManagers = activityIdActivitiesMap.get(activityId);
+				if (activityManagers == null) {
+					activityManagers = Lists.newArrayList();
+				}
+				activity.setManagerUids(activityManagers.stream().map(ActivityManager::getUid).collect(Collectors.toList()));
 			}
 		}
 	}

@@ -36,11 +36,11 @@
             <p class="flTxt">成绩管理</p>
             <i class="icon-arrow-r marginAuto"></i>
         </div>
-        <div class="item" v-if="(signActivityManageIndex.signUpExist || signActivityManageIndex.signInExist)" @click="resultsManage">
+        <!--<div class="item" v-if="(signActivityManageIndex.signUpExist || signActivityManageIndex.signInExist)" @click="resultsManage">
             <img src="/static/mobile/assets/images/admin/score-icon.png" th:src="@{/mobile/assets/images/admin/score-icon.png}">
             <p class="flTxt">组织者管理</p>
             <i class="icon-arrow-r marginAuto"></i>
-        </div>
+        </div>-->
         <div class="item" v-if="signActivityManageIndex.signUpExist" @click="sendNotice">
             <img src="/static/mobile/assets/images/admin/notice.png" th:src="@{/mobile/assets/images/admin/notice.png}">
             <p class="flTxt">发通知</p>

@@ -38,4 +38,18 @@ public class ActivityManagerQueryService {
 		);
 	}
 
+	/**根据活动id列表查询组织者列表
+	 * @Description 
+	 * @author wwb
+	 * @Date 2021-04-06 14:07:58
+	 * @param activityIds
+	 * @return java.util.List<com.chaoxing.activity.model.ActivityManager>
+	*/
+	public List<ActivityManager> listByActivityId(List<Integer> activityIds) {
+		return activityManagerMapper.selectList(new QueryWrapper<ActivityManager>()
+				.lambda()
+				.in(ActivityManager::getActivityId, activityIds)
+		);
+	}
+
 }

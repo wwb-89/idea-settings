@@ -6,10 +6,8 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.chaoxing.activity.dto.manager.WfwContacterDTO;
 import com.chaoxing.activity.dto.manager.WfwDepartmentDTO;
 import com.chaoxing.activity.util.exception.BusinessException;
-import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
-import org.springframework.util.Assert;
 import org.springframework.web.client.RestTemplate;
 
 import javax.annotation.Resource;
@@ -34,7 +32,7 @@ public class WfwContactApiService {
 	/** 搜索联系人url */
 	private static final String SEARCH_CONTACTS_URL = DOMAIN + "/apis/roster/searchRosterUser?puid={uid}&keyword={keyword}&page={page}&pageSize={pageSize}";
 	/** 获取部门列表url */
-	private static final String GET_DEPARTMENT_URL = DOMAIN + "/apis/dept/getDeptsByServer?fid={fid}&pid={pid}&cpage={page}&pageSize={pageSize}";
+	private static final String GET_DEPARTMENT_URL = DOMAIN + "/apis/dept/getDeptsByServer?type=unit&fid={fid}&puid={uid}&cpage={page}&pageSize={pageSize}";
 	/** 获取部门人员列表url */
 	private static final String GET_DEPARTMENT_USER_URL = DOMAIN + "/apis/user/getSubDeptUserInfinite?deptId={deptId}&includeSub={includeSub}&cpage={page}&pagesize={pageSize}";
 
@@ -72,11 +70,11 @@ public class WfwContactApiService {
 	 * @Date 2021-03-28 16:59:08
 	 * @param page
 	 * @param fid
-	 * @param pid
+	 * @param uid
 	 * @return com.baomidou.mybatisplus.extension.plugins.pagination.Page<com.chaoxing.activity.dto.manager.WfwDepartmentDTO>
 	*/
-	public Page<WfwDepartmentDTO> listOrgDepartment(Page<WfwDepartmentDTO> page, Integer fid, Integer pid) {
-		String forObject = restTemplate.getForObject(GET_DEPARTMENT_URL, String.class, fid, pid, page.getCurrent(), page.getSize());
+	public Page<WfwDepartmentDTO> listOrgDepartment(Page<WfwDepartmentDTO> page, Integer fid, Integer uid) {
+		String forObject = restTemplate.getForObject(GET_DEPARTMENT_URL, String.class, fid, uid, page.getCurrent(), page.getSize());
 		JSONObject jsonObject = JSON.parseObject(forObject);
 		Integer result = jsonObject.getInteger("result");
 		if (Objects.equals(result, 1)) {
@@ -85,7 +83,7 @@ public class WfwContactApiService {
 			page.setRecords(wfwDepartments);
 			return page;
 		} else {
-			log.error("根据fid:{}, pid:{} 查询部门error:{}", fid, pid);
+			log.error("根据fid:{}, uid:{} 查询部门error:{}", fid, uid);
 			throw new BusinessException("查询部门列表失败");
 		}
 	}

@@ -53,16 +53,18 @@ public class ActivityManageController {
 	 * @Date 2021-03-17 15:32:59
 	 * @param model
 	 * @param code 图书馆专用的code
+	 * @param fid 空间或微服务后台进入时查询的活动以该fid为主
 	 * @param secondClassroomFlag 第二课堂标识
 	 * @param strict 是不是严格模式， 严格模式：只显示自己创建的活动
 	 * @param flag 活动标示。通用、第二课堂、双选会...
 	 * @return java.lang.String
 	*/
-	public String index(Model model, String code, Integer secondClassroomFlag, Integer strict, String flag) {
+	public String index(Model model, String code, Integer fid, Integer secondClassroomFlag, Integer strict, String flag) {
 		code = Optional.ofNullable(code).orElse("");
 		// 防止挂接到三放也携带了code参数
 		code = code.split(CommonConstant.DEFAULT_SEPARATOR)[0];
 		model.addAttribute("code", code);
+		model.addAttribute("fid", fid);
 		model.addAttribute("secondClassroomFlag", secondClassroomFlag);
 		model.addAttribute("strict", strict);
 		flag = calActivityFlag(flag, secondClassroomFlag);

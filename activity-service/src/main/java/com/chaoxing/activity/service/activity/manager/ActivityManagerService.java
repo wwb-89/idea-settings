@@ -84,7 +84,7 @@ public class ActivityManagerService {
         if (CollectionUtils.isEmpty(activityManagers)) {
             return;
         }
-        Integer activityId = activityManagers.get(0).getUid();
+        Integer activityId = activityManagers.get(0).getActivityId();
         for (ActivityManager activityManager : activityManagers) {
             activityManager.setActivityId(activityId);
         }
@@ -105,7 +105,7 @@ public class ActivityManagerService {
                 addActivityManagers.add(activityManager);
             }
         }
-        if (CollectionUtils.isEmpty(addActivityManagers)) {
+        if (CollectionUtils.isNotEmpty(addActivityManagers)) {
             activityManagerMapper.batchAdd(addActivityManagers);
         }
     }

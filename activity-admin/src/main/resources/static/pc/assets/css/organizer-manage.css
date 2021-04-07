@@ -1,3 +1,6 @@
+html, body {
+    background-color: #fff;
+}
 .manage-container {
     background: #FFFFFF;
     /* width: 1188px; */

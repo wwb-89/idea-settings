@@ -122,11 +122,12 @@
             data: {
                 activities: [],
                 uid: [[${session._login_user_.uid}]],
-                fid: [[${session._login_user_.fid}]],
+                fid: [[${fid != null ? fid : session._login_user_.fid}]],
                 filterStatus: [],
                 selectedFilterStatusName: "全部",
                 sw: "",
                 queryParams: {
+                    fid: [[${fid != null ? fid : session._login_user_.fid}]],
                     pageNum: 1,
                     pageSize: 8,
                     status: "",
@@ -191,16 +192,16 @@
                     if (activities && activities.length > 0) {
                         $(activities).each(function () {
                             var activity = this;
-                            var isCreator = activity.createUid == $this.uid;
+                            var manager = activity.managerUids.indexOf($this.uid) > -1 || activity.createUid == $this.uid;
                             var isCurrentOrgCreated = activity.createFid == $this.fid;
                             var isDualSelect = activity.activityFlag == "dual_select";
                             var status = activity.status;
                             activity.operations = [];
                             switch (status) {
                                 case 1:
-                                    if (isCreator || isCurrentOrgCreated) {
+                                    if (manager || isCurrentOrgCreated) {
                                         activity.operations.push($this.operations.release);
-                                        if (isCreator) {
+                                        if (manager) {
                                             activity.operations.push($this.operations.edit);
                                             activity.operations.push($this.operations.manage);
                                             if (isDualSelect) {
@@ -212,9 +213,9 @@
                                     break;
                                 case 2:
                                 case 3:
-                                    if (isCreator || isCurrentOrgCreated) {
+                                    if (manager || isCurrentOrgCreated) {
                                         activity.operations.push($this.operations.cancelRelease);
-                                        if (isCreator) {
+                                        if (manager) {
                                             activity.operations.push($this.operations.edit);
                                             activity.operations.push($this.operations.manage);
                                             if (isDualSelect) {
@@ -226,13 +227,13 @@
                                     break;
                                 case 4:
                                     // 已结束支持有上下架功能
-                                    if (isCreator || isCurrentOrgCreated) {
+                                    if (manager || isCurrentOrgCreated) {
                                         if (activity.released) {
                                             activity.operations.push($this.operations.cancelRelease);
                                         }else {
                                             activity.operations.push($this.operations.release);
                                         }
-                                        if (isCreator) {
+                                        if (manager) {
                                             activity.operations.push($this.operations.edit);
                                             activity.operations.push($this.operations.manage);
                                             if (isDualSelect) {

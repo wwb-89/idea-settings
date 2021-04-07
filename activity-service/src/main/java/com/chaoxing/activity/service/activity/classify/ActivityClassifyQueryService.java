@@ -147,4 +147,17 @@ public class ActivityClassifyQueryService {
 				.in(ActivityClassify::getId, ids)
 		);
 	}
+
+	/**根据id查询
+	 * @Description 
+	 * @author wwb
+	 * @Date 2021-04-06 19:14:23
+	 * @param id
+	 * @return com.chaoxing.activity.model.ActivityClassify
+	*/
+	public ActivityClassify getById(Integer id) {
+		return activityClassifyMapper.selectOne(new QueryWrapper<ActivityClassify>()
+				.lambda()
+				.eq(ActivityClassify::getId, id));
+	}
 }
