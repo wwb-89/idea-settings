@@ -13,6 +13,7 @@ import lombok.*;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Objects;
 
 /**
@@ -138,6 +139,9 @@ public class Activity {
     /** 报名人数 */
     @TableField(exist = false)
     private Integer signedUpNum;
+    /** 组织者uid列表 */
+    @TableField(exist = false)
+    private List<Integer> managerUids;
 
     @Getter
     public enum StatusEnum {

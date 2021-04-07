@@ -163,7 +163,8 @@
                 // 去报名
                 toSignUp: function () {
                     var $this = this;
-                    var url = "https://reading.chaoxing.com/qd/api/sign-up?signUpId=" + $this.activityBlockDetailSignStat.signUp.id;
+                    var signId = $this.activityBlockDetailSignStat.signId;
+                    var url = "https://reading.chaoxing.com/qd/sign/" + signId + "/to-sign-up";
                     $this.openUrl(url);
                 },
                 // 去报名结果页
@@ -175,7 +176,8 @@
                 // 去签到
                 toSignIn: function () {
                     var $this = this;
-                    var url = "https://reading.chaoxing.com/qd/sign-in/list?signId=" + $this.activityBlockDetailSignStat.signId;
+                    var signId = $this.activityBlockDetailSignStat.signId;
+                    var url = "https://reading.chaoxing.com/qd/sign/" + signId + "/to-sign-in";
                     $this.openUrl(url);
                 },
                 openUrl: function (url) {

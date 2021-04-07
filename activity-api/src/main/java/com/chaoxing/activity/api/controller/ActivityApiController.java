@@ -220,4 +220,18 @@ public class ActivityApiController {
 		return RestRespDTO.success();
 	}
 
+	/**查询活动
+	 * @Description 
+	 * @author wwb
+	 * @Date 2021-04-02 10:29:45
+	 * @param activityId
+	 * @return com.chaoxing.activity.dto.RestRespDTO
+	*/
+	@RequestMapping("{activityId}")
+	public RestRespDTO getById(@PathVariable Integer activityId) {
+		Activity activity = activityQueryService.getById(activityId);
+		ActivityExternalDTO activityExternal = model2DtoService.activity2Dto(activity);
+		return RestRespDTO.success(activityExternal);
+	}
+
 }

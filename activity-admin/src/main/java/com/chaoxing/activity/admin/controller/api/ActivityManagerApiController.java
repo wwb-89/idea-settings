@@ -5,7 +5,6 @@ import com.chaoxing.activity.admin.util.LoginUtils;
 import com.chaoxing.activity.dto.LoginUserDTO;
 import com.chaoxing.activity.dto.RestRespDTO;
 import com.chaoxing.activity.model.ActivityManager;
-import com.chaoxing.activity.service.activity.ActivityValidationService;
 import com.chaoxing.activity.service.activity.manager.ActivityManagerService;
 import com.chaoxing.activity.util.HttpServletRequestUtils;
 import com.chaoxing.activity.util.annotation.LoginRequired;
@@ -30,8 +29,6 @@ import java.util.List;
 @RequestMapping("api/activity/{activityId}/manager")
 public class ActivityManagerApiController {
 
-	@Resource
-	private ActivityValidationService activityValidationService;
 	@Resource
 	private ActivityManagerService activityManagerService;
 

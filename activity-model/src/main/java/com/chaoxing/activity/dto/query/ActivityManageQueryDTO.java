@@ -21,6 +21,8 @@ import java.util.List;
 @AllArgsConstructor
 public class ActivityManageQueryDTO {
 
+	/** 当前机构fid */
+	private Integer fid;
 	/** 活动状态 */
 	private Integer status;
 	/** 创建活动的fid列表 */

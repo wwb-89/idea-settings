@@ -141,6 +141,103 @@ public class ActivityMarketApiController {
 		return RestRespDTO.success(jsonObject);
 	}
 
+	/**活动市场数据源
+	 * @Description
+	 * @author wwb
+	 * @Date 2021-03-22 19:40:38
+	 * @param data
+	 * @param wfwfid
+	 * @return com.chaoxing.activity.dto.RestRespDTO
+	 */
+	@RequestMapping("custom")
+	public RestRespDTO customIndex(@RequestBody String data, Integer wfwfid) {
+		JSONObject params = JSON.parseObject(data);
+		if (wfwfid == null) {
+			wfwfid = params.getInteger("wfwfid");
+		}
+		Optional.ofNullable(wfwfid).orElseThrow(() -> new BusinessException("wfwfid不能为空"));
+		Integer pageNum = params.getInteger("pageNum");
+		pageNum = Optional.ofNullable(pageNum).orElse(1);
+		Integer pageSize = params.getInteger("pageSize");
+		pageSize = Optional.ofNullable(pageSize).orElse(12);
+		Integer activityClassifyId = null;
+		String classifies = params.getString("classifies");
+		if (StringUtils.isNotBlank(classifies)) {
+			JSONArray jsonArray = JSON.parseArray(classifies);
+			if (jsonArray.size() > 0) {
+				JSONObject activityClassify = jsonArray.getJSONObject(0);
+				activityClassifyId = activityClassify.getInteger("id");
+			}
+		}
+		ActivityQueryDTO activityQuery = ActivityQueryDTO.builder()
+				.topFid(wfwfid)
+				.activityClassifyId(activityClassifyId)
+				.build();
+		List<Integer> fids = Lists.newArrayList();
+		List<WfwRegionalArchitectureDTO> wfwRegionalArchitectures = wfwRegionalArchitectureApiService.listByFid(wfwfid);
+		if (CollectionUtils.isNotEmpty(wfwRegionalArchitectures)) {
+			List<Integer> subFids = wfwRegionalArchitectures.stream().map(WfwRegionalArchitectureDTO::getFid).collect(Collectors.toList());
+			fids.addAll(subFids);
+		} else {
+			fids.add(wfwfid);
+		}
+		activityQuery.setFids(fids);
+		Page<Activity> page = new Page(pageNum, pageSize);
+		page = activityQueryService.listParticipate(page, activityQuery);
+		JSONObject jsonObject = new JSONObject();
+		jsonObject.put("curPage", page.getCurrent());
+		jsonObject.put("totalPages", page.getPages());
+		jsonObject.put("totalRecords", page.getTotal());
+		JSONArray activityJsonArray = new JSONArray();
+		jsonObject.put("results", activityJsonArray);
+		List<Activity> records = page.getRecords();
+		if (CollectionUtils.isNotEmpty(records)) {
+			for (Activity record : records) {
+				JSONObject activity = new JSONObject();
+				activity.put("id", record.getId());
+				activity.put("type", 3);
+				activity.put("orsUrl", record.getPreviewUrl());
+				JSONArray fields = new JSONArray();
+				activity.put("fields", fields);
+				// 封面
+				JSONObject cover = new JSONObject();
+				cover.put("flag", "0");
+				cover.put("key", "封面");
+				cover.put("value", record.getCoverUrl());
+				fields.add(cover);
+				// 活动名称
+				JSONObject name = new JSONObject();
+				name.put("flag", "1");
+				name.put("key", "活动名称");
+				name.put("value", record.getName());
+				fields.add(name);
+				// 副标题
+				// 时间
+				JSONObject customTime = new JSONObject();
+				customTime.put("flag", "3");
+				customTime.put("key", "活动时间");
+				customTime.put("value", DateTimeFormatterConstant.YYYY_MM_DD_HH_MM.format(record.getStartTime()) + " ~ " + DateTimeFormatterConstant.YYYY_MM_DD_HH_MM.format(record.getEndTime()));
+				fields.add(customTime);
+
+				// 地点
+				JSONObject address = new JSONObject();
+				address.put("flag", "102");
+				address.put("key", "活动地点");
+				String activityAddress = record.getAddress();
+				if (StringUtils.isNotBlank(activityAddress)) {
+					String detailAddress = record.getDetailAddress();
+					if (StringUtils.isNotBlank(detailAddress)) {
+						activityAddress += detailAddress;
+					}
+				}
+				address.put("value", activityAddress);
+				fields.add(address);
+				activityJsonArray.add(activity);
+			}
+		}
+		return RestRespDTO.success(jsonObject);
+	}
+
 	/**活动分类数据
 	 * @Description 
 	 * @author wwb

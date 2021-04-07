@@ -74,13 +74,14 @@ public class WfwApiController {
 	 * @Date 2021-03-28 17:37:49
 	 * @param request
 	 * @param fid
-	 * @param pid
 	 * @return com.chaoxing.activity.dto.RestRespDTO
 	*/
+	@LoginRequired
 	@RequestMapping("org/{fid}/department")
-	public RestRespDTO listOrgDepartment(HttpServletRequest request, @PathVariable Integer fid, Integer pid) {
+	public RestRespDTO listOrgDepartment(HttpServletRequest request, @PathVariable Integer fid) {
+		LoginUserDTO loginUser = LoginUtils.getLoginUser(request);
 		Page<WfwDepartmentDTO> page = HttpServletRequestUtils.buid(request);
-		page = wfwContactApiService.listOrgDepartment(page, fid, pid);
+		page = wfwContactApiService.listOrgDepartment(page, fid, loginUser.getUid());
 		return RestRespDTO.success(page);
 	}
 

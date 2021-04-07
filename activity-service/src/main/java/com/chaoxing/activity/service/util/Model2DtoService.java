@@ -76,4 +76,30 @@ public class Model2DtoService {
 		return activityExternals;
 	}
 
+	/**将activity转换为ActivityExternalDTO
+	 * @Description 
+	 * @author wwb
+	 * @Date 2021-04-06 19:15:44
+	 * @param activity
+	 * @return com.chaoxing.activity.dto.activity.ActivityExternalDTO
+	*/
+	public ActivityExternalDTO activity2Dto(Activity activity) {
+		// 查询活动分类列表
+		ActivityClassify activityClassify = activityClassifyQueryService.getById(activity.getActivityClassifyId());
+		ActivityExternalDTO activityExternal = new ActivityExternalDTO();
+		BeanUtils.copyProperties(activity, activityExternal);
+		Integer activityClassifyId = activityExternal.getActivityClassifyId();
+		// 处理活动形式
+		String activityType = activityExternal.getActivityType();
+		ActivityTypeEnum activityTypeEnum = ActivityTypeEnum.fromValue(activityType);
+		activityExternal.setActivityType(Optional.ofNullable(activityTypeEnum).map(ActivityTypeEnum::getName).orElse(""));
+		// 处理活动分类名
+		activityExternal.setActivityClassify(Optional.ofNullable(activityClassify).map(ActivityClassify::getName).orElse(""));
+		// 封面地址
+		activityExternal.setCoverUrl(activityCoverService.getCoverUrl(activity));
+		// 访问地址
+		activityExternal.setUrl(activity.getPreviewUrl());
+		return activityExternal;
+	}
+
 }

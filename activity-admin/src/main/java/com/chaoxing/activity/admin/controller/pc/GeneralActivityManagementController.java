@@ -32,14 +32,15 @@ public class GeneralActivityManagementController {
 	 * @Date 2020-11-18 11:34:30
 	 * @param model
 	 * @param code 图书馆编码
+	 * @param fid
 	 * @param secondClassroomFlag 第二课堂标识
 	 * @param strict
 	 * @param flag 活动标示。通用、第二课堂、双选会...
 	 * @return java.lang.String
 	 */
 	@RequestMapping("")
-	public String index(Model model, String code, @RequestParam(defaultValue = "0") Integer secondClassroomFlag, @RequestParam(defaultValue = "0") Integer strict, String flag) {
-		return activityManageController.index(model, code, secondClassroomFlag, strict, flag);
+	public String index(Model model, String code, Integer fid, @RequestParam(defaultValue = "0") Integer secondClassroomFlag, @RequestParam(defaultValue = "0") Integer strict, String flag) {
+		return activityManageController.index(model, code, fid, secondClassroomFlag, strict, flag);
 	}
 
 	/**活动新增页面

@@ -718,6 +718,7 @@
                         // 不压缩image, 默认如果是jpeg，文件上传前会压缩一把再上传！
                         resize: false,
                         auto: true,
+                        duplicate: true,
                         // 只允许选择图片文件。
                         accept: {
                             title: 'Images',
@@ -956,7 +957,7 @@
                         return false;
                     }
                     // 参与范围
-                    if ($this.activityFlag != "second_classroom" && (activityApp.isEmpty($this.participatedOrgs) || $this.participatedOrgs.length < 1)) {
+                    if ($this.isShowActivityParticipateScope() && (activityApp.isEmpty($this.participatedOrgs) || $this.participatedOrgs.length < 1)) {
                         app.showMsg("请选择参与范围");
                         return false;
                     }
