@@ -3,7 +3,10 @@ package com.chaoxing.activity.service.manager.module;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
-import com.chaoxing.activity.dto.manager.sign.*;
+import com.chaoxing.activity.dto.manager.sign.SignIn;
+import com.chaoxing.activity.dto.manager.sign.SignStatDTO;
+import com.chaoxing.activity.dto.manager.sign.SignUp;
+import com.chaoxing.activity.dto.manager.sign.UserSignParticipationStatDTO;
 import com.chaoxing.activity.dto.module.SignAddEditDTO;
 import com.chaoxing.activity.dto.module.SignAddEditResultDTO;
 import com.chaoxing.activity.dto.sign.ActivityBlockDetailSignStatDTO;
@@ -87,6 +90,11 @@ public class SignApiService {
 	private static final String NOTICE_HAVE_RATING_URL = SIGN_API_DOMAIN + "/sign/%d/notice/rating?uid=%d";
 	/** 通知第二课堂积分已变更 */
 	private static final String NOTICE_SECOND_CLASSROOM_INTEGRAL_CHANGE_URL = SIGN_API_DOMAIN + "/sign/%d/notice/second-classroom-integral-change";
+	
+	/** 签到位置搜索缓存 */
+	private static final String SIGN_IN_POSITION_HISTORY_LIST_URL = SIGN_API_DOMAIN + "/sign-in/position-history";
+	private static final String SIGN_IN_POSITION_HISTORY_ADD_URL = SIGN_API_DOMAIN + "/sign-in/position-history/add";
+	private static final String SIGN_IN_POSITION_HISTORY_DELETE_URL = SIGN_API_DOMAIN + "/sign-in/position-history/delete";
 
 	@Resource
 	private RestTemplate restTemplate;
@@ -598,6 +606,71 @@ public class SignApiService {
 			String errorMessage = jsonObject.getString("message");
 			throw new BusinessException(errorMessage);
 		}
+	}
+
+	/**查询签到位置历史记录
+	 * @Description 
+	 * @author wwb
+	 * @Date 2021-04-07 18:50:54
+	 * @param uid
+	 * @param fid
+	 * @return java.util.List<java.lang.String>
+	*/
+	public List<String> listSignInPositionHistory(Integer uid, Integer fid) {
+		LinkedMultiValueMap<String, Object> params = new LinkedMultiValueMap<>();
+		params.add("uid", uid);
+		params.add("fid", fid);
+		HttpHeaders httpHeaders = new HttpHeaders();
+		httpHeaders.setContentType(MediaType.APPLICATION_JSON);
+		HttpEntity<LinkedMultiValueMap<String, Object>> httpEntity = new HttpEntity(params, httpHeaders);
+		String result = restTemplate.postForObject(SIGN_IN_POSITION_HISTORY_LIST_URL, httpEntity, String.class);
+		JSONObject jsonObject = JSON.parseObject(result);
+		Boolean success = jsonObject.getBoolean("success");
+		success = Optional.ofNullable(success).orElse(Boolean.FALSE);
+		if (success) {
+			return JSON.parseArray(jsonObject.getString("data"), String.class);
+		}
+		return Lists.newArrayList();
+	}
+
+	/**新增签到位置历史记录
+	 * @Description 
+	 * @author wwb
+	 * @Date 2021-04-07 18:51:05
+	 * @param uid
+	 * @param fid
+	 * @param jsonStr
+	 * @return void
+	*/
+	public void addSignInPositionHistory(Integer uid, Integer fid, String jsonStr) {
+		LinkedMultiValueMap<String, Object> params = new LinkedMultiValueMap<>();
+		params.add("uid", uid);
+		params.add("fid", fid);
+		params.add("jsonStr", jsonStr);
+		HttpHeaders httpHeaders = new HttpHeaders();
+		httpHeaders.setContentType(MediaType.APPLICATION_JSON);
+		HttpEntity<LinkedMultiValueMap<String, Object>> httpEntity = new HttpEntity(params, httpHeaders);
+		restTemplate.postForObject(SIGN_IN_POSITION_HISTORY_ADD_URL, httpEntity, String.class);
+	}
+
+	/**删除签到位置历史记录
+	 * @Description 
+	 * @author wwb
+	 * @Date 2021-04-07 18:51:15
+	 * @param uid
+	 * @param fid
+	 * @param jsonStr
+	 * @return void
+	*/
+	public void deleteSignInPositionHistory(Integer uid, Integer fid, String jsonStr) {
+		LinkedMultiValueMap<String, Object> params = new LinkedMultiValueMap<>();
+		params.add("uid", uid);
+		params.add("fid", fid);
+		params.add("jsonStr", jsonStr);
+		HttpHeaders httpHeaders = new HttpHeaders();
+		httpHeaders.setContentType(MediaType.APPLICATION_JSON);
+		HttpEntity<LinkedMultiValueMap<String, Object>> httpEntity = new HttpEntity(params, httpHeaders);
+		restTemplate.postForObject(SIGN_IN_POSITION_HISTORY_DELETE_URL, httpEntity, String.class);
 	}
 
 }

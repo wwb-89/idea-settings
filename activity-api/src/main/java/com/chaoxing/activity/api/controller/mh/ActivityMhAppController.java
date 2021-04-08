@@ -141,7 +141,7 @@ public class ActivityMhAppController {
 				.build());
 		// 报名、签到人数
 		SignStatDTO signStat = signApiService.getSignParticipation(activity.getSignId());
-		if (signStat != null) {
+		if (signStat != null && CollectionUtils.isNotEmpty(signStat.getSignUpIds())) {
 			StringBuilder signUpTimeStringBuilder = new StringBuilder();
 			signUpTimeStringBuilder.append(DateTimeFormatterConstant.YYYY_MM_DD_HH_MM.format(signStat.getSignUpStartTime()));
 			signUpTimeStringBuilder.append(" ~ ");
@@ -152,22 +152,22 @@ public class ActivityMhAppController {
 					.value(signUpTimeStringBuilder.toString())
 					.flag("105")
 					.build());
-		}
-		StringBuilder signPepleNumDescribe = new StringBuilder();
-		Integer limitNum = signStat.getLimitNum();
-		Integer participateNum = signStat.getSignedUpNum();
-		if (participateNum.compareTo(0) > 0 || limitNum.intValue() > 0) {
-			signPepleNumDescribe.append(participateNum);
-			if (limitNum.intValue() > 0) {
-				signPepleNumDescribe.append("/");
-				signPepleNumDescribe.append(limitNum);
+			StringBuilder signPepleNumDescribe = new StringBuilder();
+			Integer limitNum = signStat.getLimitNum();
+			Integer participateNum = signStat.getSignedUpNum();
+			if (participateNum.compareTo(0) > 0 || limitNum.intValue() > 0) {
+				signPepleNumDescribe.append(participateNum);
+				if (limitNum.intValue() > 0) {
+					signPepleNumDescribe.append("/");
+					signPepleNumDescribe.append(limitNum);
+				}
 			}
+			mhGeneralAppResultDataFields.add(MhGeneralAppResultDataDTO.MhGeneralAppResultDataFieldDTO.builder()
+					.key("报名人数")
+					.value(signPepleNumDescribe.toString())
+					.flag("104")
+					.build());
 		}
-		mhGeneralAppResultDataFields.add(MhGeneralAppResultDataDTO.MhGeneralAppResultDataFieldDTO.builder()
-				.key("报名人数")
-				.value(signPepleNumDescribe.toString())
-				.flag("104")
-				.build());
 		return RestRespDTO.success(jsonObject);
 	}
 

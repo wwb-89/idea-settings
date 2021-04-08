@@ -36,11 +36,11 @@
             <p class="flTxt">成绩管理</p>
             <i class="icon-arrow-r marginAuto"></i>
         </div>
-        <!--<div class="item" v-if="(signActivityManageIndex.signUpExist || signActivityManageIndex.signInExist)" @click="resultsManage">
+        <div class="item" v-if="(signActivityManageIndex.signUpExist || signActivityManageIndex.signInExist)" @click="resultsManage">
             <img src="/static/mobile/assets/images/admin/score-icon.png" th:src="@{/mobile/assets/images/admin/score-icon.png}">
             <p class="flTxt">组织者管理</p>
             <i class="icon-arrow-r marginAuto"></i>
-        </div>-->
+        </div>
         <div class="item" v-if="signActivityManageIndex.signUpExist" @click="sendNotice">
             <img src="/static/mobile/assets/images/admin/notice.png" th:src="@{/mobile/assets/images/admin/notice.png}">
             <p class="flTxt">发通知</p>
@@ -77,7 +77,7 @@
                     // 报名名单
                     signUpList: function () {
                         var $this = this;
-                        var url = "https://reading.chaoxing.com/qd/m/manage/sign-up/"+ $this.signActivityManageIndex.signUpId +"/user-list";
+                        var url = "https://reading.chaoxing.com/qd/m/manage/sign-up/"+ $this.signActivityManageIndex.signUpIds[0] +"/user-list";
                         if ($this.signActivityManageIndex.signUpIds.length > 1) {
                             url = "https://reading.chaoxing.com/qd/m/manage/sign-up?signId="+ $this.signActivityManageIndex.signId;
                         }
