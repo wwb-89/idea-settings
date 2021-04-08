@@ -8,9 +8,9 @@ body {
     padding: 20px;
 }
 .container {
-    height: 100%;
     border-radius: 8px;
-    min-height: 380px;
+    min-height: 860px;
+    height: 100%;
 }
 .slider {
     float: left;
