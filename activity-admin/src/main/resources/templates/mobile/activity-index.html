@@ -36,7 +36,7 @@
             <p class="flTxt">成绩管理</p>
             <i class="icon-arrow-r marginAuto"></i>
         </div>
-        <div class="item" v-if="(signActivityManageIndex.signUpExist || signActivityManageIndex.signInExist)" @click="resultsManage">
+        <div class="item" th:if="${isCreator}" @click="manager">
             <img src="/static/mobile/assets/images/admin/score-icon.png" th:src="@{/mobile/assets/images/admin/score-icon.png}">
             <p class="flTxt">管理员</p>
             <i class="icon-arrow-r marginAuto"></i>
@@ -93,6 +93,12 @@
                     resultsManage: function () {
                         var $this = this;
                         var url = "https://reading.chaoxing.com/qd/m/manage/results?signId=" + $this.signActivityManageIndex.signId;
+                        app.openUrl(url);
+                    },
+                    // 管理员
+                    manager: function () {
+                        var $this = this;
+                        var url = ctx + "/activity/" + $this.activity.id + "/manager"
                         app.openUrl(url);
                     },
                     // 发通知

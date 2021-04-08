@@ -77,7 +77,7 @@
                                     app.showMsg(errorMessage);
                                 }
                             }, function () {
-                                app.showMsg("加载组织者失败");
+                                app.showMsg("加载管理员失败");
                             });
                         },
                         addConcat: function () {
@@ -127,11 +127,14 @@
                                     });
                                 } else {
                                     var errorMessage = data.message;
+                                    if (activityApp.isEmpty(errorMessage)) {
+                                        errorMessage = "处理失败";
+                                    }
                                     app.showMsg(errorMessage);
                                 }
                             }, function () {
                                 app.showMsg("处理失败");
-                            }, '处理');
+                            });
                         },
                         //滑动开始
                         touchStart: function (e) {

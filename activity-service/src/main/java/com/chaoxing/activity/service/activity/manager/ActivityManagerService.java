@@ -153,7 +153,7 @@ public class ActivityManagerService {
         }
     }
 
-    /**查询活动的组织者uid列表
+    /**查询活动的管理员uid列表
      * @Description 
      * @author wwb
      * @Date 2021-03-28 20:38:19

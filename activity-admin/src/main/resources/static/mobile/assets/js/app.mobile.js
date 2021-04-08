@@ -71,8 +71,8 @@
      * @returns {string}
      */
     app.prototype.getChaoxingVersion = function () {
-        var that = this;
-        if (!that.isChaoxingApp()) {
+        var $this = this;
+        if (!$this.isChaoxingApp()) {
             return null;
         }
         var userAgent = navigator.userAgent;
@@ -147,29 +147,29 @@
      * @returns {boolean|*}
      */
     app.prototype.isApp = function(){
-        var that = this;
-        return that.browser.versions.mobile;
+        var $this = this;
+        return $this.browser.versions.mobile;
     };
     /**
      * 判断当前环境是不是安卓
      */
     app.prototype.isAndroid = function(){
-        var that = this;
-        return that.browser.versions.android;
+        var $this = this;
+        return $this.browser.versions.android;
     };
     /**
      * 判断当前环境是不是ios
      */
     app.prototype.isIos = function(){
-        var that = this;
-        return that.browser.versions.iPhone;
+        var $this = this;
+        return $this.browser.versions.iPhone;
     };
     /**
      * 判断当前环境是不是微信
      */
     app.prototype.isWeixin = function () {
-        var that = this;
-        if (that.browser.versions.mobile) {//判断是否是移动设备打开。browser代码在下面
+        var $this = this;
+        if ($this.browser.versions.mobile) {//判断是否是移动设备打开。browser代码在下面
             var ua = navigator.userAgent.toLowerCase();//获取判断用的对象
             return ua.match(/MicroMessenger/i) == 'micromessenger';
         } else {
@@ -181,8 +181,8 @@
      * @returns {boolean}
      */
     app.prototype.isQQ = function () {
-        var that = this;
-        if (that.browser.versions.mobile) {//判断是否是移动设备打开。browser代码在下面
+        var $this = this;
+        if ($this.browser.versions.mobile) {//判断是否是移动设备打开。browser代码在下面
             var ua = navigator.userAgent.toLowerCase();//获取判断用的对象
             return ua.match(/QQ/i) == "qq";
         } else {
@@ -208,8 +208,8 @@
         return false;
     };
     app.prototype.noAppMsg = function () {
-        var that = this;
-        that.showMsg("请使用学习通客户端");
+        var $this = this;
+        $this.showMsg("请使用学习通客户端");
     };
     /**
      * 通知自己刷新
@@ -235,10 +235,10 @@
      * 通知页面刷新
      */
     app.prototype.noticeRefresh = function () {
-        var that = this;
-        if (that.isChaoxingApp()) {
+        var $this = this;
+        if ($this.isChaoxingApp()) {
             var storage = W.localStorage;
-            storage[that.pageRefreshFlag] = "1";
+            storage[$this.pageRefreshFlag] = "1";
             B.postNotification("CLIENT_REFRESH_STATUS", {"status": "1"});
         }
     };
@@ -247,21 +247,21 @@
      * @returns {boolean}
      */
     app.prototype.isRefresh = function () {
-        var that = this;
+        var $this = this;
         var storage = W.localStorage;
-        var reflushPageFlag = storage[that.pageRefreshFlag];//页面刷新标识
-        storage.removeItem(that.pageRefreshFlag);//清空刷新标识
+        var reflushPageFlag = storage[$this.pageRefreshFlag];//页面刷新标识
+        storage.removeItem($this.pageRefreshFlag);//清空刷新标识
         return "1" == reflushPageFlag;
     };
     /**
      * 通知修改
      */
     app.prototype.noticeModify = function(id){
-        var that = this;
-        if(that.isChaoxingApp()){
+        var $this = this;
+        if($this.isChaoxingApp()){
             var storage = W.localStorage;
-            storage[that.dataModifyFlag] = "1";
-            storage[that.dataModifyObject] = id;
+            storage[$this.dataModifyFlag] = "1";
+            storage[$this.dataModifyObject] = id;
             B.postNotification("CLIENT_REFRESH_STATUS", {"status":"1"});
         }
     };
@@ -270,10 +270,10 @@
      * @returns {boolean}
      */
     app.prototype.isModify = function () {
-        var that = this;
+        var $this = this;
         var storage = W.localStorage;
-        var dataModifyFlag = storage[that.dataModifyFlag];//页面修改标识
-        storage.removeItem(that.dataModifyFlag);//清空数据修改标识
+        var dataModifyFlag = storage[$this.dataModifyFlag];//页面修改标识
+        storage.removeItem($this.dataModifyFlag);//清空数据修改标识
         return "1" == dataModifyFlag;
     };
     /**
@@ -281,21 +281,21 @@
      * @returns {any}
      */
     app.prototype.getModifyObject = function () {
-        var that = this;
+        var $this = this;
         var storage = W.localStorage;
-        var obj = storage[that.dataModifyObject];
-        storage.removeItem(that.dataModifyObject);
+        var obj = storage[$this.dataModifyObject];
+        storage.removeItem($this.dataModifyObject);
         return obj;
     };
     /**
      * 通知删除
      */
     app.prototype.noticeDelete = function(id){
-        var that = this;
-        if(that.isChaoxingApp()){
+        var $this = this;
+        if($this.isChaoxingApp()){
             var storage = W.localStorage;
-            storage[that.dataDeleteFlag] = "1";
-            storage[that.dataDeleteObject] = id;
+            storage[$this.dataDeleteFlag] = "1";
+            storage[$this.dataDeleteObject] = id;
             B.postNotification("CLIENT_REFRESH_STATUS", {"status":"1"});
         }
     };
@@ -304,10 +304,10 @@
      * @returns {boolean}
      */
     app.prototype.isDelete = function () {
-        var that = this;
+        var $this = this;
         var storage = W.localStorage;
-        var dataDeleteFlag = storage[that.dataDeleteFlag];
-        storage.removeItem(that.dataDeleteFlag);
+        var dataDeleteFlag = storage[$this.dataDeleteFlag];
+        storage.removeItem($this.dataDeleteFlag);
         return "1" == dataDeleteFlag;
     };
     /**
@@ -315,10 +315,10 @@
      * @returns {any}
      */
     app.prototype.getDeleteObject = function () {
-        var that = this;
+        var $this = this;
         var storage = W.localStorage;
-        var obj = storage[that.dataDeleteObject];
-        storage.removeItem(that.dataDeleteObject);
+        var obj = storage[$this.dataDeleteObject];
+        storage.removeItem($this.dataDeleteObject);
         return obj;
     };
     /**
@@ -333,13 +333,13 @@
      * @param tips 退出时的提示信息
      */
     app.prototype.exit = function(tips){
-        var that = this;
-        if(that.isChaoxingApp()){
+        var $this = this;
+        if($this.isChaoxingApp()){
             B.postNotification("CLIENT_EXIT_WEBAPP", {
                 message: tips || ''
             });
         }else{
-            that.noAppMsg();
+            $this.noAppMsg();
         }
     };
     /**
@@ -347,8 +347,8 @@
      * @param tips
      */
     app.prototype.closeView = function(tips){
-        var that = this;
-        if(that.isChaoxingApp()){
+        var $this = this;
+        if($this.isChaoxingApp()){
             B.postNotification("CLIENT_EXIT_LEVEL", {
                 message: tips || ''
             });
@@ -381,14 +381,14 @@
      * @param title
      */
     app.prototype.replaceUrl = function(url, title){
-        var that = this;
+        var $this = this;
         var option = {
             "title":title,
             "webUrl":url,
             "loadType":0
         };
-        if(that.isChaoxingApp()){
-            that.packageOpenUrl(option);
+        if($this.isChaoxingApp()){
+            $this.packageOpenUrl(option);
         }else{
             window.location.replace(url);
         }
@@ -399,14 +399,14 @@
      * @param title
      */
     app.prototype.openUrl = function(url, title){
-        var that = this;
+        var $this = this;
         var option = {
             "title":title,
             "webUrl":url,
             "loadType":1
         };
-        if(that.isChaoxingApp()){
-            that.packageOpenUrl(option);
+        if($this.isChaoxingApp()){
+            $this.packageOpenUrl(option);
         }else{
             window.location.href = url;
         }
@@ -417,14 +417,14 @@
      * @param title
      */
     app.prototype.openUrlByBrower = function(url, title){
-        var that = this;
+        var $this = this;
         var option = {
             "title":title,
             "webUrl":url,
             "loadType":2
         };
-        if(that.isChaoxingApp()){
-            that.packageOpenUrl(option);
+        if($this.isChaoxingApp()){
+            $this.packageOpenUrl(option);
         }else{
             window.location.href = url;
         }
@@ -435,15 +435,15 @@
      * @param title
      */
     app.prototype.openUrlNoBar = function(url, title){
-        var that = this;
+        var $this = this;
         var option = {
             "title":title,
             "webUrl":url,
             "loadType":1,
             "toolbarType":0
         };
-        if(that.isChaoxingApp()){
-            that.packageOpenUrl(option);
+        if($this.isChaoxingApp()){
+            $this.packageOpenUrl(option);
         }else{
             window.location.href = url;
         }
@@ -480,14 +480,22 @@
      * 显示提示信息
      * @param msg
      */
-    app.prototype.showMsg = function(msg){
-        var that = this;
-        if(that.isChaoxingApp()){
+    app.prototype.showMsg = function(msg, callback){
+        var $this = this;
+        if($this.isChaoxingApp()){
             B.postNotification('CLIENT_DISPLAY_MESSAGE',{
                 message: msg
             });
+            if ($this.isFunction(callback)) {
+                setTimeout(function () {
+                    callback();
+                }, 1000);
+            }
         }else{
             alert(msg);
+            if ($this.isFunction(callback)) {
+                callback();
+            }
         }
     };
     /**
@@ -495,8 +503,8 @@
      * @param callback
      */
     app.prototype.getSelfUserInfo = function(callback){
-        var that = this;
-        if(that.isChaoxingApp()){
+        var $this = this;
+        if($this.isChaoxingApp()){
             var cmd = 'CLIENT_GET_USERINFO';
             B.unbind(cmd);
             callback && B.bind(cmd, callback);
@@ -504,7 +512,7 @@
                 accountKey: ""
             });
         }else{
-            that.noAppMsg();
+            $this.noAppMsg();
         }
     };
     /**
@@ -513,24 +521,24 @@
      * @param resName
      */
     app.prototype.openSpecial = function(resId, resName){
-        var that = this;
-        var url = that.specialSubjectUrl + resId;
-        that.openUrl(url, resName);
+        var $this = this;
+        var url = $this.specialSubjectUrl + resId;
+        $this.openUrl(url, resName);
     };
     /**
      *打开小组
      * @param groupId
      */
     app.prototype.openGroup = function (groupId) {
-        var that = this;
-        if (that.isChaoxingApp()) {
+        var $this = this;
+        if ($this.isChaoxingApp()) {
             var cmd = 'CLIENT_OPEN_GROUP';
             B.postNotification(cmd, {
                 "GroupId": groupId,
                 "needRecord": "false"
             });
         } else {
-            that.noAppMsg();
+            $this.noAppMsg();
         }
     };
     /**
@@ -538,8 +546,8 @@
      * @param jsonStr
      */
     app.prototype.getJsonObject = function(jsonStr){
-        var that = this;
-        if(that.isEmpty(jsonStr)){
+        var $this = this;
+        if($this.isEmpty(jsonStr)){
             return null;
         }
         return J.parse(jsonStr);
@@ -549,8 +557,8 @@
      * @param jsonObject
      */
     app.prototype.getJsonStr = function(jsonObject){
-        var that = this;
-        if(that.isEmpty(jsonObject)){
+        var $this = this;
+        if($this.isEmpty(jsonObject)){
             return null;
         }
         return J.stringify(jsonObject);
@@ -575,28 +583,28 @@
      * @param logoUrl
      */
     app.prototype.transmitWebUrl = function (title, url, logoUrl) {
-        var that = this;
+        var $this = this;
         var resUid = $.md5(url);
         var content = {"resTitle": title, "resUrl": url, "resLogo": logoUrl, "resUid": resUid, "toolbarType": 2}
-        B.postNotification("CLIENT_TRANSFER_INFO", {"cataid": that.resCategory.webUrl.id, "content": content});
+        B.postNotification("CLIENT_TRANSFER_INFO", {"cataid": $this.resCategory.webUrl.id, "content": content});
     };
     /**
      * 从cookie中获取uid
      * @returns {*}
      */
     app.prototype.getUid = function () {
-        var that = this;
-        return that.getCookie("_uid")
+        var $this = this;
+        return $this.getCookie("_uid")
     };
     /**
      * 直播
      * @param id
      */
     app.prototype.live = function (id) {
-        var that = this;
+        var $this = this;
         var params = {
             "liveId": id,
-            "UID": that.getUid()
+            "UID": $this.getUid()
         };
         $.ajax({
             url : app.liveCourseDomain + "/api/getStartZhiboInfo",
@@ -701,8 +709,8 @@
         $(cloudIds).each(function () {
             urls.push("http://p.ananas.chaoxing.com/star3/origin/" + this);
         });
-        var that = this;
-        if (that.isEmpty(urls)) {
+        var $this = this;
+        if ($this.isEmpty(urls)) {
             return;
         }
         var imageUrls = [];
@@ -711,7 +719,7 @@
                 imageUrl: this
             });
         });
-        if (that.isEmpty(curIndex)) {
+        if ($this.isEmpty(curIndex)) {
             curIndex = 0;
         }
         var option = {
@@ -785,15 +793,15 @@
      * @param option 格式{option: '调用的方法名，需要拼接成字符串'}
      */
     app.prototype.customMenu = function (name, iconUrl, option) {
-        var that = this;
+        var $this = this;
         var cmd = 'CLIENT_CUSTOM_MENU';
         B.postNotification(cmd, $.extend({
             index: 0,
             show: 1, //是否显示  1显示，0不显示
             width: '60',
             height: '25',
-            icon: that.isEmpty(iconUrl) ? '' : iconUrl, //菜单图标，为空或没有此属性，则不显示
-            menu: that.isEmpty(name) ? '' : name, //菜单名称，为空或没有此属性，则不显示
+            icon: $this.isEmpty(iconUrl) ? '' : iconUrl, //菜单图标，为空或没有此属性，则不显示
+            menu: $this.isEmpty(name) ? '' : name, //菜单名称，为空或没有此属性，则不显示
             option: '', //操作，实际类型为js方法，在客户端上调用webapp内的js方法
             children: [] //为子菜单列表，如上述属性
         }, option));
@@ -845,8 +853,8 @@
      * @param banner
      */
     app.prototype.bannerJump = function (banner) {
-        var that = this;
-        if (that.isEmpty(banner)) {
+        var $this = this;
+        if ($this.isEmpty(banner)) {
             return;
         }
         var linkContent = banner.linkContent;
@@ -854,15 +862,15 @@
             case "void":
                 break;
             case "special_topic":
-                that.openSpecial(linkContent);
+                $this.openSpecial(linkContent);
                 break;
             case "course":
                 break;
             case "link":
-                that.openUrl(linkContent);
+                $this.openUrl(linkContent);
                 break;
             case "group":
-                that.openGroup(linkContent);
+                $this.openGroup(linkContent);
                 break;
             case "js":
                 eval("(" + linkContent + ")");
@@ -1120,16 +1128,16 @@ Array.prototype.remove = function(val) {
     }
 };
 Array.prototype.pushArray = function (array) {
-    var that = this;
+    var $this = this;
     $.each(array, function () {
-        that.push(this);
+        $this.push(this);
     });
 }
 
 Array.prototype.unshiftArray = function (array) {
-    var that = this;
+    var $this = this;
     $.each(array, function () {
-        that.unshift(this);
+        $this.unshift(this);
     });
 }
 

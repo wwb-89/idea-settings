@@ -19,7 +19,7 @@ import java.util.List;
 public interface ActivityManagerMapper extends BaseMapper<ActivityManager> {
 
 	/**
-	 * 分页查询组织者
+	 * 分页查询管理员
 	 *
 	 * @param page
 	 * @param activityId

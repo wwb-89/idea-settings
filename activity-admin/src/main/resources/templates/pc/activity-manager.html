@@ -176,7 +176,7 @@
             data: {
                 activityId: [[${activityId}]],
                 managerUids: [[${managerUids}]],
-                // 组织者
+                // 管理员
                 managers: [],
                 managerQueryParams: {
                     pageNum: 1,
@@ -264,12 +264,12 @@
                         } else {
                             var errorMessage = data.message;
                             if (activityApp.isEmpty(errorMessage)) {
-                                errorMessage = "加载组织者失败";
+                                errorMessage = "加载管理员失败";
                             }
                             app.showMsg(errorMessage);
                         }
                     }, function () {
-                        app.showMsg("加载组织者失败");
+                        app.showMsg("加载管理员失败");
                     });
                 },
                 changeAllChecked: function () {

@@ -8,7 +8,7 @@ import javax.annotation.Resource;
 import java.util.List;
 import java.util.Objects;
 
-/**组织者验证服务
+/**管理员验证服务
  * @author wwb
  * @version ver 1.0
  * @className ActivityManagerValidationService
@@ -23,7 +23,7 @@ public class ActivityManagerValidationService {
 	@Resource
 	private ActivityManagerQueryService activityManagerQueryService;
 
-	/**是不是组织者
+	/**是不是管理员
 	 * @Description 
 	 * @author wwb
 	 * @Date 2021-03-29 09:48:31
