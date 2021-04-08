@@ -617,11 +617,11 @@ public class SignApiService {
 	 * @return java.util.List<java.lang.String>
 	*/
 	public List<String> listSignInPositionHistory(Integer uid, Integer fid) {
-		LinkedMultiValueMap<String, Object> params = new LinkedMultiValueMap<>();
+		MultiValueMap<String, Object> params = new LinkedMultiValueMap<>();
 		params.add("uid", uid);
 		params.add("fid", fid);
 		HttpHeaders httpHeaders = new HttpHeaders();
-		httpHeaders.setContentType(MediaType.APPLICATION_JSON);
+		httpHeaders.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
 		HttpEntity<LinkedMultiValueMap<String, Object>> httpEntity = new HttpEntity(params, httpHeaders);
 		String result = restTemplate.postForObject(SIGN_IN_POSITION_HISTORY_LIST_URL, httpEntity, String.class);
 		JSONObject jsonObject = JSON.parseObject(result);
@@ -643,12 +643,12 @@ public class SignApiService {
 	 * @return void
 	*/
 	public void addSignInPositionHistory(Integer uid, Integer fid, String jsonStr) {
-		LinkedMultiValueMap<String, Object> params = new LinkedMultiValueMap<>();
+		MultiValueMap<String, Object> params = new LinkedMultiValueMap<>();
 		params.add("uid", uid);
 		params.add("fid", fid);
 		params.add("jsonStr", jsonStr);
 		HttpHeaders httpHeaders = new HttpHeaders();
-		httpHeaders.setContentType(MediaType.APPLICATION_JSON);
+		httpHeaders.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
 		HttpEntity<LinkedMultiValueMap<String, Object>> httpEntity = new HttpEntity(params, httpHeaders);
 		restTemplate.postForObject(SIGN_IN_POSITION_HISTORY_ADD_URL, httpEntity, String.class);
 	}
@@ -663,12 +663,12 @@ public class SignApiService {
 	 * @return void
 	*/
 	public void deleteSignInPositionHistory(Integer uid, Integer fid, String jsonStr) {
-		LinkedMultiValueMap<String, Object> params = new LinkedMultiValueMap<>();
+		MultiValueMap<String, Object> params = new LinkedMultiValueMap<>();
 		params.add("uid", uid);
 		params.add("fid", fid);
 		params.add("jsonStr", jsonStr);
 		HttpHeaders httpHeaders = new HttpHeaders();
-		httpHeaders.setContentType(MediaType.APPLICATION_JSON);
+		httpHeaders.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
 		HttpEntity<LinkedMultiValueMap<String, Object>> httpEntity = new HttpEntity(params, httpHeaders);
 		restTemplate.postForObject(SIGN_IN_POSITION_HISTORY_DELETE_URL, httpEntity, String.class);
 	}
