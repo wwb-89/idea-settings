@@ -279,14 +279,14 @@ public class ActivityValidationService {
 		}
 		Integer createFid = activity.getCreateFid();
 		// 是不是创建者
-		boolean creator = isCreator(activity, loginUser.getUid());
+		boolean manager = isManageAble(activity, loginUser.getUid());
 		// 是不是本单位创建的活动
 		boolean isCurrentOrgCreated = false;
 		if (Objects.equals(createFid, loginUser.getFid())) {
 			isCurrentOrgCreated = true;
 		}
-		if (!creator && !isCurrentOrgCreated) {
-			throw new BusinessException("只能发布自己或本单位创建的活动");
+		if (!manager && !isCurrentOrgCreated) {
+			throw new BusinessException("只能发布自己管理或本单位创建的活动");
 		}
 		return activity;
 	}
@@ -334,16 +334,16 @@ public class ActivityValidationService {
 			throw new BusinessException("活动已下架");
 		}
 		Integer createFid = activity.getCreateFid();
-		// 是不是创建者
-		boolean creator = isCreator(activity, loginUser.getUid());
+		// 是不是管理者
+		boolean manager = isManageAble(activity, loginUser.getUid());
 		// 是不是本单位创建的活动
 		boolean isCurrentOrgCreated = false;
 		if (Objects.equals(createFid, loginUser.getFid())) {
 			isCurrentOrgCreated = true;
 		}
 		boolean orgInManageScope = isOrgInManageScope(createFid, loginUser);
-		if (!creator && !isCurrentOrgCreated && !orgInManageScope) {
-			throw new BusinessException("只能下架自己、本单位或下级创建的活动");
+		if (!manager && !isCurrentOrgCreated && !orgInManageScope) {
+			throw new BusinessException("只能下架自己管理的、本单位或下级创建的活动");
 		}
 		return activity;
 	}
