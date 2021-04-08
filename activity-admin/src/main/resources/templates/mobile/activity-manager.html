@@ -2,7 +2,7 @@
 <html lang="en" xmlns:th="http://www.thymeleaf.org/">
 
 <head>
-    <title>管理员</title>
+    <title>活动管理员</title>
     <meta http-equiv="Content-type" content="text/html; charset=utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, minimal-ui" />
     <meta name="format-detection" content="telephone=no, email=no">
@@ -52,7 +52,7 @@
                     },
                     created: function () {
                         var $this = this;
-                        app.customMenu("添加", '', {option: 'activityManagerVue.addConcat()'});
+                        app.customMenu("", activityApp.add_icon_url, {option: 'activityManagerVue.addConcat()'});
                     },
                     mounted: function () {
                         var $this = this;
