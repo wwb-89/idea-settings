@@ -45,7 +45,7 @@ public class ActivityManageApiController {
 	public RestRespDTO pageManaged(HttpServletRequest request, String sw) {
 		LoginUserDTO loginUser = LoginUtils.getLoginUser(request);
 		Page page = HttpServletRequestUtils.buid(request);
-		page = activityQueryService.pageCreated(page, loginUser.getUid(), sw);
+		page = activityQueryService.pageManaged(page, loginUser.getUid(), sw);
 		return RestRespDTO.success(page);
 	}
 

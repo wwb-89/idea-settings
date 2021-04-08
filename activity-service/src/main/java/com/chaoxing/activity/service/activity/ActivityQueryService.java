@@ -305,6 +305,19 @@ public class ActivityQueryService {
 		return activityMapper.pageUserCreated(page, uid, sw);
 	}
 
+	/**分页查询管理的活动
+	 * @Description 
+	 * @author wwb
+	 * @Date 2021-04-08 18:00:51
+	 * @param page
+	 * @param uid
+	 * @param sw
+	 * @return com.baomidou.mybatisplus.extension.plugins.pagination.Page<com.chaoxing.activity.model.Activity>
+	*/
+	public Page<Activity> pageManaged(Page<Activity> page, Integer uid, String sw) {
+		return activityMapper.pageUserCreated(page, uid, sw);
+	}
+
 	/**根据活动id查询活动
 	 * @Description 
 	 * @author wwb

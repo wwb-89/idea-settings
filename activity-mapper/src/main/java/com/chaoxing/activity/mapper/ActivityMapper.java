@@ -80,6 +80,17 @@ public interface ActivityMapper extends BaseMapper<Activity> {
 	 */
 	Page<Activity> pageUserCreated(@Param("page") Page<?> page, @Param("uid") Integer uid, @Param("sw") String sw);
 
+	/**分页查询用户管理的
+	 * @Description 
+	 * @author wwb
+	 * @Date 2021-04-08 18:01:23
+	 * @param page
+	 * @param uid
+	 * @param sw
+	 * @return com.baomidou.mybatisplus.extension.plugins.pagination.Page<com.chaoxing.activity.model.Activity>
+	*/
+	Page<Activity> pageUserManaged(@Param("page") Page<?> page, @Param("uid") Integer uid, @Param("sw") String sw);
+
 	/**
 	 * 活动日历查询
 	 *

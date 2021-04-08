@@ -226,6 +226,25 @@
             t.create_time DESC
     </select>
 
+    <!--查询用户管理的-->
+    <select id="pageUserManaged" resultMap="BaseResultMap">
+        SELECT
+        <include refid="Base_Column_List"></include>
+        FROM
+            t_activity t
+            INNER JOIN t_activity_manager t1 ON t.id = t1.activity_id
+            AND t1.uid = #{uid}
+        WHERE
+            t.`status` IN ( 1, 2, 3, 4 )
+            <if test="sw != null and sw != ''">
+                AND t.`name` LIKE CONCAT( '%', #{sw}, '%' )
+            </if>
+        GROUP BY
+            t.id
+        ORDER BY
+            t.create_time DESC
+    </select>
+
     <select id="pageActivityCalendarParticipate" resultMap="BaseResultMap">
         SELECT
             <include refid="Base_Column_List"></include>
