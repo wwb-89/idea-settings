@@ -90,25 +90,14 @@ public class ActivityValidationService {
 	 * @author wwb
 	 * @Date 2021-03-16 11:06:20
 	 * @param activityId
-	 * @param loginUser
+	 * @param uid
 	 * @return boolean
 	*/
-	public boolean isCreator(Integer activityId, LoginUserDTO loginUser) {
+	public boolean isCreator(Integer activityId, Integer uid) {
 		Activity activity = activityQueryService.getById(activityId);
-		return isCreator(activity, loginUser.getUid());
+		return isCreator(activity, uid);
 	}
-	/**是不是活动创建者
-	 * @Description 
-	 * @author wwb
-	 * @Date 2020-12-01 16:17:22
-	 * @param activity
-	 * @param loginUser
-	 * @return boolean
-	*/
-	public boolean isCreator(Activity activity, LoginUserDTO loginUser) {
-		return isCreator(activity, loginUser.getUid());
-	}
-	
+
 	/**是不是活动创建者
 	 * @Description 
 	 * @author wwb
@@ -122,6 +111,22 @@ public class ActivityValidationService {
 			return true;
 		}
 		return false;
+	}
+
+	/**活动创建者
+	 * @Description 
+	 * @author wwb
+	 * @Date 2021-04-08 15:40:56
+	 * @param activityId
+	 * @param uid
+	 * @return com.chaoxing.activity.model.Activity
+	*/
+	public Activity creator(Integer activityId, Integer uid) {
+		Activity activity = activityQueryService.getById(activityId);
+		if (!isCreator(activity, uid)) {
+			throw new BusinessException("无权限");
+		}
+		return activity;
 	}
 
 	/**机构是否在管理范围内
@@ -222,7 +227,7 @@ public class ActivityValidationService {
 		Activity activity = activityExist(activityId);
 		Integer createFid = activity.getCreateFid();
 		// 是不是创建者
-		boolean creator = isCreator(activity, loginUser);
+		boolean creator = isCreator(activity, loginUser.getUid());
 		// 是不是本单位创建的活动
 		boolean isCurrentOrgCreated = false;
 		if (Objects.equals(createFid, loginUser.getFid())) {
@@ -246,7 +251,7 @@ public class ActivityValidationService {
 		Activity activity = activityExist(activityId);
 		Integer createFid = activity.getCreateFid();
 		// 是不是创建者
-		boolean creator = isCreator(activity, loginUser);
+		boolean creator = isCreator(activity, loginUser.getUid());
 		// 是不是本单位创建的活动
 		boolean isCurrentOrgCreated = false;
 		if (Objects.equals(createFid, loginUser.getFid())) {
@@ -274,7 +279,7 @@ public class ActivityValidationService {
 		}
 		Integer createFid = activity.getCreateFid();
 		// 是不是创建者
-		boolean creator = isCreator(activity, loginUser);
+		boolean creator = isCreator(activity, loginUser.getUid());
 		// 是不是本单位创建的活动
 		boolean isCurrentOrgCreated = false;
 		if (Objects.equals(createFid, loginUser.getFid())) {
@@ -302,7 +307,7 @@ public class ActivityValidationService {
 		}
 		Integer createFid = activity.getCreateFid();
 		// 是不是创建者
-		boolean creator = isCreator(activity, loginUser);
+		boolean creator = isCreator(activity, loginUser.getUid());
 		// 是不是本单位创建的活动
 		boolean isCurrentOrgCreated = false;
 		if (Objects.equals(createFid, loginUser.getFid())) {
@@ -330,7 +335,7 @@ public class ActivityValidationService {
 		}
 		Integer createFid = activity.getCreateFid();
 		// 是不是创建者
-		boolean creator = isCreator(activity, loginUser);
+		boolean creator = isCreator(activity, loginUser.getUid());
 		// 是不是本单位创建的活动
 		boolean isCurrentOrgCreated = false;
 		if (Objects.equals(createFid, loginUser.getFid())) {

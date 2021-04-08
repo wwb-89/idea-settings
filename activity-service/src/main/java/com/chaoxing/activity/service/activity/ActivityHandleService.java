@@ -16,6 +16,7 @@ import com.chaoxing.activity.mapper.ActivityMapper;
 import com.chaoxing.activity.mapper.ActivitySignModuleMapper;
 import com.chaoxing.activity.model.*;
 import com.chaoxing.activity.service.WebTemplateService;
+import com.chaoxing.activity.service.activity.manager.ActivityManagerService;
 import com.chaoxing.activity.service.activity.module.ActivityModuleService;
 import com.chaoxing.activity.service.activity.scope.ActivityScopeService;
 import com.chaoxing.activity.service.event.ActivityChangeEventService;
@@ -78,6 +79,8 @@ public class ActivityHandleService {
 	private ActivityStatusUpdateService activityStatusUpdateService;
 	@Resource
 	private ActivityChangeEventService activityChangeEventService;
+	@Resource
+	private ActivityManagerService activityManagerService;
 
 	@Resource
 	private SignApiService signApiService;
@@ -125,6 +128,13 @@ public class ActivityHandleService {
 		activity.setStartDate(activity.getStartTime().toLocalDate());
 		activity.setEndDate(activity.getEndTime().toLocalDate());
 		activityMapper.insert(activity);
+		// 添加管理员
+		ActivityManager activityManager = new ActivityManager();
+		activityManager.setActivityId(activity.getId());
+		activityManager.setUid(activity.getCreateUid());
+		activityManager.setUserName(activity.getCreateUserName());
+		activityManager.setCreateUid(activity.getCreateUid());
+		activityManagerService.add(activityManager, loginUser);
 		// 活动报名签到模块
 		handleActivitySignModule(activity.getId(), signAddEditResult);
 		// 处理参与范围

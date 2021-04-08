@@ -170,6 +170,9 @@ public class ActivityMhV2ApiController {
 		if (existSignUp) {
 			if (userSignParticipationStat.getSignedUp()) {
 				// 已报名
+				if (activityFlagValidateService.isDualSelect(activity)) {
+					result.addAll(buildBtnField("进入会场", getFlag(availableFlags), getDualSelectIndexUrl(activity), "1"));
+				}
 				if (CollectionUtils.isNotEmpty(signInIds)) {
 					result.addAll(buildBtnField("去签到", getFlag(availableFlags), userSignParticipationStat.getSignInUrl(), "1"));
 				}
@@ -201,6 +204,9 @@ public class ActivityMhV2ApiController {
 				result.addAll(buildBtnField(showName, getFlag(availableFlags), userSignParticipationStat.getSignUpUrl(), "1"));
 			}
 		}else {
+			if (activityFlagValidateService.isDualSelect(activity)) {
+				result.addAll(buildBtnField("进入会场", getFlag(availableFlags), getDualSelectIndexUrl(activity), "1"));
+			}
 			if (CollectionUtils.isNotEmpty(signInIds)) {
 				result.addAll(buildBtnField("去签到", getFlag(availableFlags), userSignParticipationStat.getSignInUrl(), "1"));
 			}

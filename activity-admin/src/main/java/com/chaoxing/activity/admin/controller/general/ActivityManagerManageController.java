@@ -18,7 +18,7 @@ import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import java.util.List;
 
-/**活动组织者管理
+/**活动管理员
  * @author wwb
  * @version ver 1.0
  * @className ActivityManagerController
@@ -39,7 +39,7 @@ public class ActivityManagerManageController {
 	@Resource
 	private PassportApiService passportApiService;
 
-	/**组织者管理主页
+	/**管理员主页
 	 * @Description 
 	 * @author wwb
 	 * @Date 2021-03-29 14:41:22
