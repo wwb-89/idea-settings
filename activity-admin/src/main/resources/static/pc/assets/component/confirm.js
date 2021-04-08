@@ -20,6 +20,7 @@ Vue.component('vue-confirm', {
     methods: {
         sureCallback: function () {
             var $this = this;
+            $this.show = false;
             $this.$emit("callback");
         }
     }

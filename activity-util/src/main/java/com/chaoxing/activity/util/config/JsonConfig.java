@@ -6,7 +6,6 @@ import com.alibaba.fastjson.support.spring.FastJsonHttpMessageConverter;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.MediaType;
 import org.springframework.http.converter.HttpMessageConverter;
-import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 import java.util.ArrayList;
@@ -27,12 +26,6 @@ public class JsonConfig implements WebMvcConfigurer {
 	@Override
 	public void configureMessageConverters(List<HttpMessageConverter<?>> converters) {
 		Iterator<HttpMessageConverter<?>> iterator = converters.iterator();
-		while(iterator.hasNext()){
-			HttpMessageConverter<?> converter = iterator.next();
-			if(converter instanceof MappingJackson2HttpMessageConverter){
-				iterator.remove();
-			}
-		}
 		FastJsonHttpMessageConverter fastJsonHttpMessageConverter = new FastJsonHttpMessageConverter();
 		FastJsonConfig fastJsonConfig = new FastJsonConfig();
 		fastJsonConfig.setSerializerFeatures(
@@ -51,7 +44,7 @@ public class JsonConfig implements WebMvcConfigurer {
 		fastMediaTypes.add(MediaType.APPLICATION_JSON);
 		fastJsonHttpMessageConverter.setSupportedMediaTypes(fastMediaTypes);
 
-		converters.add(fastJsonHttpMessageConverter);
+		converters.add(0, fastJsonHttpMessageConverter);
 	}
 
 }

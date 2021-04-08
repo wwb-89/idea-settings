@@ -6,16 +6,16 @@ import com.chaoxing.activity.dto.activity.ActivityExternalDTO;
 import com.chaoxing.activity.dto.manager.WfwRegionalArchitectureDTO;
 import com.chaoxing.activity.dto.query.ActivityQueryDTO;
 import com.chaoxing.activity.model.Activity;
-import com.chaoxing.activity.service.activity.ActivityCollectionHandleService;
-import com.chaoxing.activity.service.activity.ActivityCollectionValidateService;
+import com.chaoxing.activity.service.activity.collection.ActivityCollectionHandleService;
+import com.chaoxing.activity.service.activity.collection.ActivityCollectionValidateService;
 import com.chaoxing.activity.service.activity.ActivityQueryService;
-import com.chaoxing.activity.service.activity.ActivityStartNoticeHandleService;
+import com.chaoxing.activity.service.activity.ActivityIsAboutStartHandleService;
 import com.chaoxing.activity.service.manager.WfwCoordinateApiService;
 import com.chaoxing.activity.service.manager.WfwRegionalArchitectureApiService;
-import com.chaoxing.activity.service.manager.module.SignApiService;
 import com.chaoxing.activity.service.util.Model2DtoService;
 import com.chaoxing.activity.util.HttpServletRequestUtils;
 import com.chaoxing.activity.util.constant.CommonConstant;
+import com.chaoxing.activity.util.exception.BusinessException;
 import com.google.common.collect.Lists;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -58,7 +58,7 @@ public class ActivityApiController {
 	@Resource
 	private ActivityCollectionValidateService activityCollectionValidateService;
 	@Resource
-	private ActivityStartNoticeHandleService activityStartNoticeHandleService;
+	private ActivityIsAboutStartHandleService activityStartNoticeHandleService;
 
 	/**组活动推荐
 	 * @Description
@@ -149,14 +149,14 @@ public class ActivityApiController {
 	 * @Description 
 	 * @author wwb
 	 * @Date 2021-01-28 20:47:22
-	 * @param request
 	 * @param pageId
 	 * @param uid
 	 * @return com.chaoxing.activity.dto.RestRespDTO
 	*/
 	@RequestMapping("collected")
-	public RestRespDTO isCollected(HttpServletRequest request, Integer pageId, Integer uid) {
+	public RestRespDTO isCollected(Integer pageId, Integer uid) {
 		Activity activity = activityQueryService.getByPageId(pageId);
+		Optional.ofNullable(activity).orElseThrow(() -> new BusinessException("活动不存在"));
 		boolean collected = false;
 		if (uid != null) {
 			collected = activityCollectionValidateService.isCollected(activity.getId(), uid);
@@ -168,14 +168,14 @@ public class ActivityApiController {
 	 * @Description 
 	 * @author wwb
 	 * @Date 2021-01-28 20:28:15
-	 * @param request
 	 * @param pageId
 	 * @param uid
 	 * @return com.chaoxing.activity.dto.RestRespDTO
 	*/
 	@RequestMapping("collect")
-	public RestRespDTO collect(HttpServletRequest request, Integer pageId, Integer uid) {
+	public RestRespDTO collect(Integer pageId, Integer uid) {
 		Activity activity = activityQueryService.getByPageId(pageId);
+		Optional.ofNullable(activity).orElseThrow(() -> new BusinessException("活动不存在"));
 		if (uid != null) {
 			activityCollectionHandleService.collect(activity.getId(), uid);
 			// 通知已收藏
@@ -189,14 +189,14 @@ public class ActivityApiController {
 	 * @Description 
 	 * @author wwb
 	 * @Date 2021-01-28 20:46:18
-	 * @param request
 	 * @param pageId
 	 * @param uid
 	 * @return com.chaoxing.activity.dto.RestRespDTO
 	*/
 	@RequestMapping("cancel-collect")
-	public RestRespDTO cancelCollect(HttpServletRequest request, Integer pageId, Integer uid) {
+	public RestRespDTO cancelCollect(Integer pageId, Integer uid) {
 		Activity activity = activityQueryService.getByPageId(pageId);
+		Optional.ofNullable(activity).orElseThrow(() -> new BusinessException("活动不存在"));
 		if (uid != null) {
 			activityCollectionHandleService.cancelCollect(activity.getId(), uid);
 			return RestRespDTO.success();

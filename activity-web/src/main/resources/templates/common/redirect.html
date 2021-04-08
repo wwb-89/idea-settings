@@ -1,0 +1,13 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org/">
+<head>
+	<meta charset="UTF-8">
+	<title>重定向</title>
+	<script th:inline="javascript">
+		var url = [[${url}]];
+		window.location.replace(url);
+	</script>
+</head>
+<body>
+</body>
+</html>

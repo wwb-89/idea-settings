@@ -5,6 +5,8 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.List;
+
 /**活动管理首页需要的报名签到信息
  * @author wwb
  * @version ver 1.0
@@ -24,7 +26,7 @@ public class SignActivityManageIndexDTO {
 	/** 报名存在 */
 	private Boolean signUpExist;
 	/** 报名id */
-	private Integer signUpId;
+	private List<Integer> signUpIds;
 	/** 签到存在 */
 	private Boolean signInExist;
 	/** 报名人数 */

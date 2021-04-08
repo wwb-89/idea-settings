@@ -4,16 +4,18 @@ import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.chaoxing.activity.dto.manager.sign.SignIn;
+import com.chaoxing.activity.dto.manager.sign.SignStatDTO;
 import com.chaoxing.activity.dto.manager.sign.SignUp;
-import com.chaoxing.activity.dto.manager.sign.SignUpStatDTO;
 import com.chaoxing.activity.dto.manager.sign.UserSignParticipationStatDTO;
 import com.chaoxing.activity.dto.module.SignAddEditDTO;
+import com.chaoxing.activity.dto.module.SignAddEditResultDTO;
 import com.chaoxing.activity.dto.sign.ActivityBlockDetailSignStatDTO;
 import com.chaoxing.activity.dto.sign.SignActivityManageIndexDTO;
 import com.chaoxing.activity.util.CookieUtils;
 import com.chaoxing.activity.util.DateUtils;
 import com.chaoxing.activity.util.RestTemplateUtils;
 import com.chaoxing.activity.util.exception.BusinessException;
+import com.google.common.collect.Lists;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -75,13 +77,24 @@ public class SignApiService {
 	/** 查询报名成功的uid列表url */
 	private static final String SIGNED_UP_UIDS_URL = SIGN_API_DOMAIN + "/sign/%s/uid/signed-up";
 	/** 用户是否已报名（报名成功）url */
-	private static final String USER_SIGNED_UP_SUCCESS_URL = SIGN_API_DOMAIN + "/sign-up/%d/signed-up-success?uid=%d";
+	private static final String USER_SIGNED_UP_SUCCESS_URL = SIGN_API_DOMAIN + "/sign-up/signed-up-success?signId=%d&uid=%d";
 
 	/** 报名名单url */
 	private static final String SIGN_UP_USER_LIST_URL = SIGN_WEB_DOMAIN + "/sign-up/%d/user-list";
 	/** 用户报名签到参与情况url */
-	private static final String USER_SIGN_PARTICIPATION_URL = SIGN_API_DOMAIN + "/sign/%d/stat/user-participation?uid=%d";
+	private static final String USER_SIGN_PARTICIPATION_URL = SIGN_API_DOMAIN + "/sign/%d/stat/user-participation?uid=%s";
+	/** 根据signId列表查询报名的人数 */
+	private static final String STAT_SIGN_SIGNED_UP_NUM_URL = SIGN_API_DOMAIN + "/sign/stat/sign/signed-up-num";
 
+	/** 通知活动已评价 */
+	private static final String NOTICE_HAVE_RATING_URL = SIGN_API_DOMAIN + "/sign/%d/notice/rating?uid=%d";
+	/** 通知第二课堂积分已变更 */
+	private static final String NOTICE_SECOND_CLASSROOM_INTEGRAL_CHANGE_URL = SIGN_API_DOMAIN + "/sign/%d/notice/second-classroom-integral-change";
+	
+	/** 签到位置搜索缓存 */
+	private static final String SIGN_IN_POSITION_HISTORY_LIST_URL = SIGN_API_DOMAIN + "/sign-in/position-history";
+	private static final String SIGN_IN_POSITION_HISTORY_ADD_URL = SIGN_API_DOMAIN + "/sign-in/position-history/add";
+	private static final String SIGN_IN_POSITION_HISTORY_DELETE_URL = SIGN_API_DOMAIN + "/sign-in/position-history/delete";
 
 	@Resource
 	private RestTemplate restTemplate;
@@ -92,9 +105,10 @@ public class SignApiService {
 	 * @Date 2020-11-11 14:26:33
 	 * @param signAddEdit
 	 * @param request
-	 * @return java.lang.Integer 签到报名id
+	 * @return com.chaoxing.activity.dto.module.SignAddEditResultDTO
 	*/
-	public Integer create(SignAddEditDTO signAddEdit, HttpServletRequest request) {
+	public SignAddEditResultDTO create(SignAddEditDTO signAddEdit, HttpServletRequest request) {
+		createPretreatment(signAddEdit);
 		HttpHeaders httpHeaders = new HttpHeaders();
 		httpHeaders.setContentType(MediaType.APPLICATION_JSON);
 		List<String> cookies = RestTemplateUtils.getCookies(request);
@@ -105,11 +119,32 @@ public class SignApiService {
 		Boolean success = jsonObject.getBoolean("success");
 		success = Optional.ofNullable(success).orElse(Boolean.FALSE);
 		if (success) {
-			return jsonObject.getInteger("data");
+			return JSON.parseObject(jsonObject.getString("data"), SignAddEditResultDTO.class);
 		} else {
 			String errorMessage = jsonObject.getString("message");
 			log.error("创建报名报名:{}失败:{}", JSON.toJSONString(signAddEdit), errorMessage);
 			throw new BusinessException(errorMessage);
+		}
+	}
+
+	private void createPretreatment(SignAddEditDTO signAddEdit) {
+		List<SignIn> signIns = signAddEdit.getSignIns();
+		if (CollectionUtils.isNotEmpty(signIns)) {
+			for (SignIn signIn : signIns) {
+				SignIn.Way way = SignIn.Way.fromValue(signIn.getWay());
+				switch (way) {
+					case DIRECT:
+						signIn.setName("签到");
+						break;
+					case POSITION:
+						signIn.setName("位置签到");
+						break;
+					case QR_CODE:
+						signIn.setName("扫码签到");
+						break;
+					default:
+				}
+			}
 		}
 	}
 
@@ -118,9 +153,9 @@ public class SignApiService {
 	 * @author wwb
 	 * @Date 2020-11-11 17:58:39
 	 * @param signAddEdit
-	 * @return void
+	 * @return com.chaoxing.activity.dto.module.SignAddEditResultDTO
 	*/
-	public void update(SignAddEditDTO signAddEdit, HttpServletRequest request) {
+	public SignAddEditResultDTO update(SignAddEditDTO signAddEdit, HttpServletRequest request) {
 		HttpHeaders httpHeaders = new HttpHeaders();
 		httpHeaders.setContentType(MediaType.APPLICATION_JSON);
 		List<String> cookies = RestTemplateUtils.getCookies(request);
@@ -130,7 +165,9 @@ public class SignApiService {
 		JSONObject jsonObject = JSON.parseObject(result);
 		Boolean success = jsonObject.getBoolean("success");
 		success = Optional.ofNullable(success).orElse(Boolean.FALSE);
-		if (!success) {
+		if (success) {
+			return JSON.parseObject(jsonObject.getString("data"), SignAddEditResultDTO.class);
+		} else {
 			String errorMessage = jsonObject.getString("message");
 			log.error("修改签到报名:{}失败:{}", JSON.toJSONString(signAddEdit), errorMessage);
 			throw new BusinessException(errorMessage);
@@ -153,21 +190,20 @@ public class SignApiService {
 		if (success) {
 			String data = jsonObject.getString("data");
 			SignAddEditDTO signAddEdit = JSON.parseObject(data, SignAddEditDTO.class);
-			SignUp signUp = signAddEdit.getSignUp();
-			Optional.ofNullable(signUp).ifPresent(v -> {
-				signUp.setStartTimestamp(signUp.getStartTime().toInstant(ZoneOffset.ofHours(8)).toEpochMilli());
-				signUp.setEndTimestamp(signUp.getEndTime().toInstant(ZoneOffset.ofHours(8)).toEpochMilli());
-			});
-			SignIn signIn = signAddEdit.getSignIn();
-			Optional.ofNullable(signIn).ifPresent(v -> {
-				signIn.setStartTimestamp(signIn.getStartTime().toInstant(ZoneOffset.ofHours(8)).toEpochMilli());
-				signIn.setEndTimestamp(signIn.getEndTime().toInstant(ZoneOffset.ofHours(8)).toEpochMilli());
-			});
-			SignIn signOut = signAddEdit.getSignOut();
-			Optional.ofNullable(signOut).ifPresent(v -> {
-				signOut.setStartTimestamp(signOut.getStartTime().toInstant(ZoneOffset.ofHours(8)).toEpochMilli());
-				signOut.setEndTimestamp(signOut.getEndTime().toInstant(ZoneOffset.ofHours(8)).toEpochMilli());
-			});
+			List<SignUp> signUps = signAddEdit.getSignUps();
+			if (CollectionUtils.isNotEmpty(signUps)) {
+				for (SignUp signUp : signUps) {
+					signUp.setStartTimestamp(signUp.getStartTime().toInstant(ZoneOffset.ofHours(8)).toEpochMilli());
+					signUp.setEndTimestamp(signUp.getEndTime().toInstant(ZoneOffset.ofHours(8)).toEpochMilli());
+				}
+			}
+			List<SignIn> signIns = signAddEdit.getSignIns();
+			if (CollectionUtils.isNotEmpty(signIns)) {
+				for (SignIn signIn : signIns) {
+					signIn.setStartTimestamp(signIn.getStartTime().toInstant(ZoneOffset.ofHours(8)).toEpochMilli());
+					signIn.setEndTimestamp(signIn.getEndTime().toInstant(ZoneOffset.ofHours(8)).toEpochMilli());
+				}
+			}
 			return signAddEdit;
 		} else {
 			String errorMessage = jsonObject.getString("message");
@@ -176,15 +212,15 @@ public class SignApiService {
 		}
 	}
 
-	/**查询签到活动的参与情况
+	/**查询报名签到的参与情况
 	 * @Description 
 	 * @author wwb
 	 * @Date 2020-11-24 20:15:35
 	 * @param signId
-	 * @return com.chaoxing.activity.dto.manager.SignUpStatDTO
+	 * @return com.chaoxing.activity.dto.manager.SignStatDTO
 	*/
-	public SignUpStatDTO getSignParticipation(Integer signId) {
-		SignUpStatDTO signUpStat = null;
+	public SignStatDTO getSignParticipation(Integer signId) {
+		SignStatDTO signStat = null;
 		if (signId != null) {
 			String url = String.format(PARTICIPATION_URL, signId);
 			String result = restTemplate.getForObject(url, String.class);
@@ -192,17 +228,10 @@ public class SignApiService {
 			Boolean success = jsonObject.getBoolean("success");
 			success = Optional.ofNullable(success).orElse(Boolean.FALSE);
 			if (success) {
-				signUpStat = JSON.parseObject(jsonObject.getString("data"), SignUpStatDTO.class);
+				signStat = JSON.parseObject(jsonObject.getString("data"), SignStatDTO.class);
 			}
 		}
-		if (signUpStat == null) {
-			signUpStat = SignUpStatDTO.builder()
-					.limitNum(0)
-					.signedUpNum(0)
-					.publicList(Boolean.FALSE)
-					.build();
-		}
-		return signUpStat;
+		return signStat;
 	}
 
 	/**统计报名签到在活动管理首页需要的信息
@@ -234,7 +263,7 @@ public class SignApiService {
 		return SignActivityManageIndexDTO.builder()
 				.signId(signId)
 				.signUpExist(Boolean.FALSE)
-				.signUpId(null)
+				.signUpIds(Lists.newArrayList())
 				.signInExist(Boolean.FALSE)
 				.signUpNum(0)
 				.build();
@@ -425,44 +454,37 @@ public class SignApiService {
 	/**是否开启了报名
 	 * @Description 
 	 * @author wwb
-	 * @Date 2021-03-08 18:48:53
+	 * @Date 2021-03-08 19:18:23
 	 * @param signId
 	 * @return boolean
 	*/
 	public boolean isOpenSignUp(Integer signId) {
-		SignAddEditDTO signAddEdit = getById(signId);
-		if (signAddEdit != null && signAddEdit.getSignUp() != null) {
-			return true;
-		}
-		return false;
-	}
-
-	/**根据报名签到id获取报名信息
-	 * @Description 
-	 * @author wwb
-	 * @Date 2021-03-08 19:18:23
-	 * @param signId
-	 * @return com.chaoxing.activity.dto.manager.sign.SignUp
-	*/
-	public SignUp getBySignId(Integer signId) {
-		SignUp signUp = null;
+		boolean isOpenSignUp = false;
 		SignAddEditDTO signAddEdit = getById(signId);
 		if (signAddEdit != null) {
-			signUp = signAddEdit.getSignUp();
+			List<SignUp> signUps = signAddEdit.getSignUps();
+			if (CollectionUtils.isNotEmpty(signUps)) {
+				for (SignUp signUp : signUps) {
+					if (!signUp.getDeleted()) {
+						isOpenSignUp = true;
+						break;
+					}
+				}
+			}
 		}
-		return signUp;
+		return isOpenSignUp;
 	}
 
 	/**用户是否报名成功
 	 * @Description 
 	 * @author wwb
 	 * @Date 2021-03-08 18:52:07
-	 * @param signUpId
+	 * @param signId
 	 * @param uid
 	 * @return boolean
 	*/
-	public boolean isSignedUpSuccess(Integer signUpId, Integer uid) {
-		String url = String.format(USER_SIGNED_UP_SUCCESS_URL, signUpId, uid);
+	public boolean isSignedUpSuccess(Integer signId, Integer uid) {
+		String url = String.format(USER_SIGNED_UP_SUCCESS_URL, signId, uid);
 		String result = restTemplate.getForObject(url, String.class);
 		JSONObject jsonObject = JSON.parseObject(result);
 		Boolean success = jsonObject.getBoolean("success");
@@ -471,7 +493,7 @@ public class SignApiService {
 			return jsonObject.getBoolean("data");
 		}
 		String message = jsonObject.getString("message");
-		log.error("获取用户:{} 报名id:{} 获取用户是否报名成功error:{}", uid, signUpId, message);
+		log.error("获取用户:{} 报名签到id:{} 获取用户是否报名成功error:{}", uid, signId, message);
 		throw new BusinessException(message);
 	}
 
@@ -495,7 +517,11 @@ public class SignApiService {
 	 * @return com.chaoxing.activity.dto.manager.sign.UserSignParticipationStatDTO
 	*/
 	public UserSignParticipationStatDTO userParticipationStat(Integer signId, Integer uid) {
-		String url = String.format(USER_SIGN_PARTICIPATION_URL, signId, uid);
+		String uidStr = "";
+		if (uid != null) {
+			uidStr = String.valueOf(uid);
+		}
+		String url = String.format(USER_SIGN_PARTICIPATION_URL, signId, uidStr);
 		String result = restTemplate.getForObject(url, String.class);
 		JSONObject jsonObject = JSON.parseObject(result);
 		Boolean success = jsonObject.getBoolean("success");
@@ -512,6 +538,139 @@ public class SignApiService {
 			log.error("获取用户:{} 报名签到id:{} 获取用户报名签到参与情况 error:{}", uid, signId, errorMessage);
 			throw new BusinessException(errorMessage);
 		}
+	}
+
+	/**处理通知评价
+	 * @Description 
+	 * @author wwb
+	 * @Date 2021-03-24 14:08:22
+	 * @param signId
+	 * @param uid
+	 * @return void
+	*/
+	public void handleNoticeRating(Integer signId, Integer uid) {
+		String url = String.format(NOTICE_HAVE_RATING_URL, signId, uid);
+		HttpHeaders httpHeaders = new HttpHeaders();
+		httpHeaders.setContentType(MediaType.APPLICATION_JSON);
+		HttpEntity httpEntity = new HttpEntity(httpHeaders);
+		String result = restTemplate.postForObject(url, httpEntity, String.class);
+		JSONObject jsonObject = JSON.parseObject(result);
+		Boolean success = jsonObject.getBoolean("success");
+		success = Optional.ofNullable(success).orElse(Boolean.FALSE);
+		if (!success) {
+			String errorMessage = jsonObject.getString("message");
+			throw new BusinessException(errorMessage);
+		}
+	}
+
+	/**根据signId列表查询报名的人数
+	 * @Description 
+	 * @author wwb
+	 * @Date 2021-03-24 20:24:58
+	 * @param signIds
+	 * @return java.util.List<com.chaoxing.activity.dto.manager.sign.SignStatDTO>
+	*/
+	public List<SignStatDTO> statSignSignedUpNum(List<Integer> signIds) {
+		HttpHeaders httpHeaders = new HttpHeaders();
+		httpHeaders.setContentType(MediaType.APPLICATION_JSON);
+		JSONObject params = new JSONObject();
+		params.put("signIds", signIds);
+		HttpEntity<String> httpEntity = new HttpEntity(params.toJSONString(), httpHeaders);
+		String result = restTemplate.postForObject(STAT_SIGN_SIGNED_UP_NUM_URL, httpEntity, String.class);
+		JSONObject jsonObject = JSON.parseObject(result);
+		Boolean success = jsonObject.getBoolean("success");
+		success = Optional.ofNullable(success).orElse(Boolean.FALSE);
+		if (success) {
+			String data = jsonObject.getString("data");
+			return JSON.parseArray(data, SignStatDTO.class);
+		} else {
+			String errorMessage = jsonObject.getString("message");
+			throw new BusinessException(errorMessage);
+		}
+	}
+
+	/**通知第二课堂积分已变更
+	 * @Description 
+	 * @author wwb
+	 * @Date 2021-03-26 21:50:30
+	 * @param signId
+	 * @return void
+	*/
+	public void noticeSecondClassroomIntegralChange(Integer signId) {
+		String url = String.format(NOTICE_SECOND_CLASSROOM_INTEGRAL_CHANGE_URL, signId);
+		String result = restTemplate.getForObject(url, String.class);
+		JSONObject jsonObject = JSON.parseObject(result);
+		Boolean success = jsonObject.getBoolean("success");
+		success = Optional.ofNullable(success).orElse(Boolean.FALSE);
+		if (!success) {
+			String errorMessage = jsonObject.getString("message");
+			throw new BusinessException(errorMessage);
+		}
+	}
+
+	/**查询签到位置历史记录
+	 * @Description 
+	 * @author wwb
+	 * @Date 2021-04-07 18:50:54
+	 * @param uid
+	 * @param fid
+	 * @return java.util.List<java.lang.String>
+	*/
+	public List<String> listSignInPositionHistory(Integer uid, Integer fid) {
+		LinkedMultiValueMap<String, Object> params = new LinkedMultiValueMap<>();
+		params.add("uid", uid);
+		params.add("fid", fid);
+		HttpHeaders httpHeaders = new HttpHeaders();
+		httpHeaders.setContentType(MediaType.APPLICATION_JSON);
+		HttpEntity<LinkedMultiValueMap<String, Object>> httpEntity = new HttpEntity(params, httpHeaders);
+		String result = restTemplate.postForObject(SIGN_IN_POSITION_HISTORY_LIST_URL, httpEntity, String.class);
+		JSONObject jsonObject = JSON.parseObject(result);
+		Boolean success = jsonObject.getBoolean("success");
+		success = Optional.ofNullable(success).orElse(Boolean.FALSE);
+		if (success) {
+			return JSON.parseArray(jsonObject.getString("data"), String.class);
+		}
+		return Lists.newArrayList();
+	}
+
+	/**新增签到位置历史记录
+	 * @Description 
+	 * @author wwb
+	 * @Date 2021-04-07 18:51:05
+	 * @param uid
+	 * @param fid
+	 * @param jsonStr
+	 * @return void
+	*/
+	public void addSignInPositionHistory(Integer uid, Integer fid, String jsonStr) {
+		LinkedMultiValueMap<String, Object> params = new LinkedMultiValueMap<>();
+		params.add("uid", uid);
+		params.add("fid", fid);
+		params.add("jsonStr", jsonStr);
+		HttpHeaders httpHeaders = new HttpHeaders();
+		httpHeaders.setContentType(MediaType.APPLICATION_JSON);
+		HttpEntity<LinkedMultiValueMap<String, Object>> httpEntity = new HttpEntity(params, httpHeaders);
+		restTemplate.postForObject(SIGN_IN_POSITION_HISTORY_ADD_URL, httpEntity, String.class);
+	}
+
+	/**删除签到位置历史记录
+	 * @Description 
+	 * @author wwb
+	 * @Date 2021-04-07 18:51:15
+	 * @param uid
+	 * @param fid
+	 * @param jsonStr
+	 * @return void
+	*/
+	public void deleteSignInPositionHistory(Integer uid, Integer fid, String jsonStr) {
+		LinkedMultiValueMap<String, Object> params = new LinkedMultiValueMap<>();
+		params.add("uid", uid);
+		params.add("fid", fid);
+		params.add("jsonStr", jsonStr);
+		HttpHeaders httpHeaders = new HttpHeaders();
+		httpHeaders.setContentType(MediaType.APPLICATION_JSON);
+		HttpEntity<LinkedMultiValueMap<String, Object>> httpEntity = new HttpEntity(params, httpHeaders);
+		restTemplate.postForObject(SIGN_IN_POSITION_HISTORY_DELETE_URL, httpEntity, String.class);
 	}
 
 }

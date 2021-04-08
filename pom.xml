@@ -27,7 +27,6 @@
 		<module>activity-api</module>
 		<module>activity-web</module>
 		<module>activity-admin</module>
-		<module>activity-task</module>
 	</modules>
 
 	<dependencyManagement>
@@ -67,12 +66,20 @@
 				<artifactId>activity-admin</artifactId>
 				<version>${project.version}</version>
 			</dependency>
-			<dependency>
-				<groupId>com.chaoxing</groupId>
-				<artifactId>activity-task</artifactId>
-				<version>${project.version}</version>
-			</dependency>
 		</dependencies>
 	</dependencyManagement>
+
+	<repositories>
+		<repository>
+			<id>central</id>
+			<url>http://maven.aliyun.com/nexus/content/groups/public/</url>
+		</repository>
+	</repositories>
+	<pluginRepositories>
+		<pluginRepository>
+			<id>central</id>
+			<url>http://maven.aliyun.com/nexus/content/groups/public/</url>
+		</pluginRepository>
+	</pluginRepositories>
 
 </project>

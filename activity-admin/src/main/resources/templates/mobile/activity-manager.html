@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org/">
+
+<head>
+    <title>组织者管理</title>
+    <meta http-equiv="Content-type" content="text/html; charset=utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, minimal-ui" />
+    <meta name="format-detection" content="telephone=no, email=no">
+    <meta http-equiv="Pragma" content="no-cache" />
+    <meta http-equiv="cache-control" content="no-cache" />
+    <link rel="stylesheet" th:href="@{/mobile/assets/css/public.css}" />
+    <link rel="stylesheet" th:href="@{/mobile/assets/css/dialog.css}">
+    <link rel="stylesheet" th:href="@{/mobile/assets/css/manage.css}">
+    <style type="text/css">
+        [v-cloak] {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="organizer-manage" id="activity-manager-vue" v-cloak>
+        <ul>
+            <li v-for="(manager, index) of managers" class="item" data-type="0" @touchstart.capture="touchStart" @touchend.capture="touchEnd" :key="'manager-' + index">
+                <div class="inner">
+                    <div class="head-box">
+                        <img :src="'http://photo.chaoxing.com/p/' + manager.uid + '_80'" class="jqthumbImg">
+                    </div>
+                    <span class="name">{{manager.userName}}</span>
+                </div>
+                <div class="handel-box">
+                   <div class="limit-set" @click="permissionSetting(index)">权限设置</div>
+                   <div class="remove" @click="toDelete(index)">移除</div>
+                </div>
+            </li>
+        </ul>
+    </div>
+    <div th:replace="mobile/include/common_js :: common_js(~{::script})">
+        <script th:src="@{/mobile/assets/lib/jqthumb.min.js}"></script>
+        <script th:inline="javascript">
+            function ready() {
+                activityManagerVue = new Vue({
+                    el: "#activity-manager-vue",
+                    data: {
+                        activityId: [[${activityId}]],
+                        managerQueryParams: {
+                            pageNum: 1,
+                            pageSize: 1000
+                        },
+                        managers: [],
+                        loaded: false,
+                        operateIndex: null
+                    },
+                    created: function () {
+                        var $this = this;
+                        app.customMenu("添加", '', {option: 'activityManagerVue.addConcat()'});
+                    },
+                    mounted: function () {
+                        var $this = this;
+                        $this.listManagers();
+                    },
+                    methods: {
+                        listManagers: function () {
+                            var $this = this;
+                            var url = ctx + "/api/activity/" + $this.activityId + "/manager/list";
+                            app.ajaxPost(url, $this.managerQueryParams, function (data) {
+                                if (data.success) {
+                                    $this.loaded = true;
+                                    $this.managers.pushArray(data.data.records);
+                                    $this.$nextTick(function () {
+                                        $(".jqthumbImg").jqthumb({
+                                            width: "100%",
+                                            height: "100%"
+                                        });
+                                    });
+                                } else {
+                                    var errorMessage = data.message;
+                                    app.showMsg(errorMessage);
+                                }
+                            }, function () {
+                                app.showMsg("加载组织者失败");
+                            });
+                        },
+                        addConcat: function () {
+                            var $this = this;
+                            app.concat(function (object) {
+                                var users = object.personList;
+                                var managers = [];
+                                $(users).each(function () {
+                                    managers.push({
+                                        activityId: $this.activityId,
+                                        uid: this.puid,
+                                        userName: this.name
+                                    });
+                                });
+                                var url = ctx + "/api/activity/" + $this.activityId + "/manager/add/batch";
+                                app.ajaxPostWithPayloadLoading(url, JSON.stringify(managers), function (data) {
+                                    if (data.success) {
+                                        app.showMsg("处理成功", function () {
+                                            window.location.reload();
+                                        });
+                                    } else {
+                                        var errorMessage = data.message;
+                                        app.showMsg(errorMessage);
+                                    }
+                                }, function () {
+                                    app.showMsg("处理失败");
+                                }, '处理');
+                            });
+                        },
+                        toDelete: function (index) {
+                            var $this = this;
+                            $this.operateIndex = index;
+                            app.confirm("移除后可重新添加。确定移除吗？", function () {
+                                $this.deleteSubmit();
+                            }, function () {
+
+                            }, "移除");
+                        },
+                        deleteSubmit: function () {
+                            var $this = this;
+                            var manager = $this.managers[$this.operateIndex];
+                            var url = ctx + "/api/activity/" + $this.activityId + "/manager/" + manager.uid + "/delete";
+                            app.ajaxPost(url, {}, function (data) {
+                                if (data.success) {
+                                    app.showMsg("处理成功", function () {
+                                        window.location.reload();
+                                    });
+                                } else {
+                                    var errorMessage = data.message;
+                                    app.showMsg(errorMessage);
+                                }
+                            }, function () {
+                                app.showMsg("处理失败");
+                            }, '处理');
+                        },
+                        //滑动开始
+                        touchStart: function (e) {
+                            this.startX = e.touches[0].clientX;
+                        },
+                        //滑动结束
+                        touchEnd: function (e) {
+                            let currentElement = e.currentTarget;
+                            this.endX = e.changedTouches[0].clientX;
+                            // 左滑
+                            if (currentElement.dataset.type == 0 && this.startX - this.endX > 30) {
+                                this.restSlide();
+                                currentElement.dataset.type = 1;
+                            }
+                            // 右滑
+                            if (currentElement.dataset.type == 1 && this.startX - this.endX < -30) {
+                                this.restSlide();
+                                currentElement.dataset.type = 0;
+                            }
+                            this.startX = 0;
+                            this.endX = 0;
+                        },
+                        //复位滑动状态
+                        restSlide: function () {
+                            let itemList = document.querySelectorAll('.item');
+                            for (let i = 0; i < itemList.length; i++) {
+                                itemList[i].dataset.type = 0;
+                            }
+                        },
+                        // 权限设置
+                        permissionSetting: function (index) {
+                            app.showMsg("暂未开放");
+                        }
+                    }
+                })
+            }
+
+        </script>
+    </div>
+    
+</body>
+
+</html>

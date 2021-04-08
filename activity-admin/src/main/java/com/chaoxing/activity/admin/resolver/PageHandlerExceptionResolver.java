@@ -3,6 +3,8 @@ package com.chaoxing.activity.admin.resolver;
 import com.chaoxing.activity.util.UserAgentUtils;
 import com.chaoxing.activity.util.constant.ExceptionConstant;
 import com.chaoxing.activity.util.exception.BusinessException;
+import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.springframework.core.annotation.AnnotationUtils;
 import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
@@ -23,13 +25,15 @@ import javax.servlet.http.HttpServletResponse;
  * @blame wwb
  * @date 2020-08-21 22:07:40
  */
+@Slf4j
 @Order(-1)
 @Component
 public class PageHandlerExceptionResolver implements HandlerExceptionResolver {
 
 	@Override
 	public ModelAndView resolveException(HttpServletRequest request, HttpServletResponse response, Object handler, Exception ex) {
-		ex.printStackTrace();
+		log.error("请求url:{}, 请求参数:{}", request.getRequestURI(), request.getQueryString());
+		log.error(ExceptionUtils.getStackTrace(ex));
 		if (isPageRequest(handler)) {
 			String message = getMessage(ex);
 			ModelAndView modelAndView = new ModelAndView();

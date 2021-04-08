@@ -1,0 +1,411 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org/">
+<head>
+    <title th:text="|活动评价_${activity.name}|">活动评价</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="/static/pc/assets/lib/layui/css/layui.css" th:href="@{/pc/assets/lib/layui/css/layui.css}">
+    <link rel="stylesheet" href="/static/pc/assets/lib/element-ui/lib/theme-chalk/index.css" th:href="@{/pc/assets/lib/element-ui/lib/theme-chalk/index.css}">
+    <link rel="stylesheet" href="/static/pc/assets/css/public.css" th:href="@{/pc/assets/css/public.css}">
+    <link rel="stylesheet" href="/static/pc/assets/css/dialog.css" th:href="@{/pc/assets/css/dialog.css}">
+    <link rel="stylesheet" href="/static/pc/assets/css/activity-assess.css" th:href="@{/pc/assets/css/activity-assess.css}">
+    <style type="text/css">
+        [v-cloak] {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+<div class="assess-container" id="rating-vue" v-cloak>
+    <div class="assess-header">
+        <div class="assess-title">
+            {{activity.name}}
+        </div>
+        <div class="assess-header-set">
+            <a href="javascript:" @click="toRatingSetting">评价设置</a>
+            <a href="javascript:" @click="toRatingAudit">评价审核</a>
+        </div>
+        <div class="assess-header-right">
+            <div class="login-container">
+                <div class="after-login">
+                    <img class="login-tx" :src="'http://photo.chaoxing.com/p/'+ loginUser.uid +'_80'">
+                    <span class="user-name">{{loginUser.realName}}</span>
+                    <i class="icon-down">
+                        <img src="/static/pc/assets/images/icon-down.png" th:src="@{/pc/assets/images/icon-down.png}">
+                    </i>
+                    <ul class="login-downlist-info">
+                        <li class="login-downlist-item">
+                            <a href="https://i.chaoxing.com/" target="_blank">进入空间</a>
+                        </li>
+                        <li class="login-downlist-item">
+                            <a href="javascript:" @click="loginOUt()">退出登录</a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="assess-content">
+        <div class="assess-content-header assess-check-header">
+            <div class="assess-check-number">共{{total}}份</div>
+            <div class="assess-check-btns">
+                <i class="assess-checkd">
+                    <el-checkbox v-model="allChecked" :indeterminate="indeterminate" @change="checkAllHandle"></el-checkbox>
+                </i>
+                <div :class="{'check-btn': true, 'btn-disabled': !batchAble}" @click="batchPass">批量通过</div>
+                <div :class="{'check-btn': true, 'btn-disabled': !batchAble}" @click="batchReject">批量删除</div>
+            </div>
+        </div>
+        <div class="no-assess" v-if="loaded && ratings.length < 1">暂无评价</div>
+        <ul class="assess-list">
+            <li class="assess-list-item assess-check-list-item" v-for="(rating, index) of ratings">
+                <el-checkbox v-model="rating.checked" class="check-item-checkbox fl" @change="checkHandle"></el-checkbox>
+                <img class="fl" v-if="isAnonymousShow(index)" src="/static/pc/assets/images/niming-tx.png" th:src="@{/pc/assets/images/niming-tx.png}">
+                <img class="fl" v-else :src="'http://photo.chaoxing.com/p/'+ rating.scorerUid +'_80'">
+                <div class="check-item-content fl">
+                    <span class="item-name" v-if="isAnonymousShow(index)">匿名</span>
+                    <span class="item-name" v-else>{{rating.scorerUserName}}</span>
+                    <span class="item-time">{{rating.createTime}}</span>
+                    <div class="item-writing">
+                        <div></div>
+                        <p class="item-assess">
+                            {{rating.comment}}
+                        </p>
+                    </div>
+                    <div class="assess-footer-btns">
+                        <div class="assess-footer-btn assess-footer-btn-pass" @click="pass(index)">通过</div>
+                        <div class="assess-footer-btn assess-footer-btn-del" @click="reject(index)">删除</div>
+                    </div>
+                </div>
+                <div class="clear"></div>
+            </li>
+        </ul>
+        <div class="page-container">
+            <el-pagination background layout="prev, pager, next" v-show="ratings.length > queryParams.pageSize" :total="total" :page-size="queryParams.pageSize" :current-page="queryParams.pageNum" @current-change="changePage"></el-pagination>
+        </div>
+    </div>
+    <!-- 删除弹窗 -->
+    <vue-confirm ref="deleteWindow" :message="'确认删除？'" :cancel="'取消'" :sure="'删除'" @callback="rejectSubmit"></vue-confirm>
+    <!-- 批量删除弹窗 -->
+    <vue-confirm ref="batchDeleteWindow" :message="'确认删除？'" :cancel="'取消'" :sure="'删除'" @callback="batchRejectSubmit"></vue-confirm>
+</div>
+</body>
+<div th:replace="pc/include/common_js :: common_js(~{::script})">
+    <script src="/static/pc/assets/lib/layui/layui.js" th:src="@{/pc/assets/lib/layui/layui.js}"></script>
+    <script src="/static/pc/assets/lib/element-ui/lib/index.js" th:src="@{/pc/assets/lib/element-ui/lib/index.js}"></script>
+    <script src="/static/pc/assets/component/confirm.js" th:src="@{/pc/assets/component/confirm.js}"></script>
+    <script th:inline="javascript">
+        ratingVue = new Vue({
+            el: "#rating-vue",
+            data: {
+                activity: [[${activity}]],
+                loginUser: [[${session._login_user_}]],
+                ratings: [],
+                loaded: false,
+                total: 0,
+                queryParams: {
+                    pageNum: 1,
+                    pageSize: 10
+                },
+                allChecked: false,
+                // 半选
+                indeterminate: false,
+                activeIndex: null
+            },
+            mounted: function () {
+                var $this = this;
+                $this.loadRatings();
+                $this.showMoreLess();
+            },
+            computed: {
+                "batchAble": function () {
+                    var $this = this;
+                    var existChecked = false;
+                    $($this.ratings).each(function () {
+                        if (this.checked) {
+                            existChecked = true;
+                            return false;
+                        }
+                    });
+                    return existChecked;
+                }
+            },
+            methods: {
+                loadRatings: function(){
+                    var $this = this;
+                    var url = ctx + "/api/activity/rating/audit/list";
+                    var params = {
+                        pageNum: $this.queryParams.pageNum,
+                        pageSize: $this.queryParams.pageSize,
+                        activityId: $this.activity.id,
+                        auditStatus: 2
+                    };
+                    app.ajaxPost(url, params, function (data) {
+                        if (data.success) {
+                            $this.allChecked = false;
+                            $this.loaded = true;
+                            $this.total = data.data.total;
+                            var ratings = data.data.records;
+                            $(ratings).each(function () {
+                                this.checked = false;
+                            });
+                            $this.ratings = ratings;
+                            $this.$nextTick(function () {
+                                $this.rateList();
+                            });
+                        } else {
+                            var errorMessage = data.message;
+                            if (activityApp.isEmpty(errorMessage)) {
+                                errorMessage = "加载评价列表失败";
+                            }
+                            app.showMsg(errorMessage);
+                        }
+                    }, function () {
+                        app.showMsg("加载评价列表失败");
+                    });
+                },
+                pass: function(index){
+                    var $this = this;
+                    var url = ctx + "/api/activity/rating/audit/pass";
+                    var params = {
+                        activityId: $this.activity.id,
+                        activityRatingDetailId: $this.ratings[index].id
+                    };
+                    app.ajaxPost(url, params, function (data) {
+                        if (data.success) {
+                            app.showMsg("操作成功", function () {
+                                $this.resetQuery();
+                            })
+                        } else {
+                            var errorMessage = data.message;
+                            if (activityApp.isEmpty(errorMessage)) {
+                                errorMessage = "操作失败";
+                            }
+                            app.showMsg(errorMessage);
+                        }
+                    }, function () {
+                        app.showMsg("操作失败");
+                    });
+                },
+                batchPass: function(){
+                    var $this = this;
+                    if (!$this.batchAble) {
+                        return;
+                    }
+                    checkedRatingIds = [];
+                    $($this.ratings).each(function () {
+                        if (this.checked) {
+                            checkedRatingIds.push(this.id);
+                        }
+                    });
+                    if (checkedRatingIds.length <= 0) {
+                        return;
+                    }
+                    var url = ctx + "/api/activity/rating/audit/pass/batch";
+                    var params = {
+                        activityId: $this.activity.id,
+                        ratingDetailIds: checkedRatingIds
+                    };
+                    app.ajaxPost(url, params, function (data) {
+                        if (data.success) {
+                            app.showMsg("操作成功", function () {
+                                $this.resetQuery();
+                            })
+                        } else {
+                            var errorMessage = data.message;
+                            if (activityApp.isEmpty(errorMessage)) {
+                                errorMessage = "操作失败";
+                            }
+                            app.showMsg(errorMessage);
+                        }
+                    }, function () {
+                        app.showMsg("操作失败");
+                    });
+                },
+                reject: function(index){
+                    var $this = this;
+                    $this.activeIndex = index;
+                    $this.$refs.deleteWindow.show = true;
+                },
+                rejectSubmit: function () {
+                    var $this = this;
+                    var url = ctx + "/api/activity/rating/audit/reject";
+                    var params = {
+                        activityId: $this.activity.id,
+                        activityRatingDetailId: $this.ratings[$this.activeIndex].id
+                    };
+                    app.ajaxPost(url, params, function (data) {
+                        if (data.success) {
+                            app.showMsg("操作成功", function () {
+                                $this.resetQuery();
+                            })
+                        } else {
+                            var errorMessage = data.message;
+                            if (activityApp.isEmpty(errorMessage)) {
+                                errorMessage = "操作失败";
+                            }
+                            app.showMsg(errorMessage);
+                        }
+                    }, function () {
+                        app.showMsg("操作失败");
+                    });
+                },
+                batchReject: function(){
+                    var $this = this;
+                    if (!$this.batchAble) {
+                        return;
+                    }
+                    $this.$refs.batchDeleteWindow.show = true;
+                },
+                // 批量删除提交
+                batchRejectSubmit: function () {
+                    var $this = this;
+                    var checkedRatingIds = [];
+                    $($this.ratings).each(function () {
+                        if (this.checked) {
+                            checkedRatingIds.push(this.id);
+                        }
+                    });
+                    if (checkedRatingIds.length <= 0) {
+                        return;
+                    }
+                    var url = ctx + "/api/activity/rating/audit/reject/batch";
+                    var params = {
+                        activityId: $this.activity.id,
+                        ratingDetailIds: checkedRatingIds
+                    };
+                    app.ajaxPost(url, params, function (data) {
+                        if (data.success) {
+                            app.showMsg("操作成功", function () {
+                                $this.resetQuery();
+                            })
+                        } else {
+                            var errorMessage = data.message;
+                            if (activityApp.isEmpty(errorMessage)) {
+                                errorMessage = "操作失败";
+                            }
+                            app.showMsg(errorMessage);
+                        }
+                    }, function () {
+                        app.showMsg("操作失败");
+                    });
+                },
+                resetQuery: function(){
+                    var $this = this;
+                    $this.queryParams.pageNum = 1;
+                    $this.totalNum = 0;
+                    $this.loaded = false;
+                    $this.ratings = [];
+                    $this.loadRatings();
+                },
+                //是否匿名显示
+                isAnonymousShow: function(index){
+                    var $this = this;
+                    var scorerUid = $this.ratings[index].scorerUid;
+                    if ($this.loginUser != null) {
+                        if ($this.loginUser.uid == scorerUid) {
+                            return false;
+                        }
+                    }
+                    return $this.ratings[index].anonymous;
+                },
+                changePage: function (pageNum) {
+                    var $this = this;
+                    $this.queryParams.pageNum = pageNum;
+                    $this.loadRatings();
+                },
+                loginOUt: function(){
+                    var $this = this;
+                    var refer = window.location.protocol + "//" + window.location.host + ctx + "/rating/" + $this.activity.id;
+                    var loginOutUrl = "https://passport2.chaoxing.com/logout.html?refer=" + refer;
+                    window.location.href = loginOutUrl;
+                },
+                // 渲染评分
+                rateList: function () {
+                    var $this = this;
+                    var rates = $(".item-writing>div");
+                    rates.each(function (i, n) {
+                        $(n).addClass("testX");
+                        var score = $this.ratings[i].score;
+                        layui.use(['rate'], function () {
+                            var rate = layui.rate;
+                            rate.render({
+                                elem: $(n),
+                                value: score,
+                                half: true,
+                                readonly: true
+                            });
+                        });
+                    });
+                },
+                // 点击展开与收起
+                showMoreLess: function () {
+                    $(".item-assess").each(function (i, n) {
+                        if ($(n).height() > 60) {
+                            $(n).addClass("overflowThree")
+                            $(n).parent(".item-writing").siblings(".showmore").show()
+                        } else {
+                            $(n).parent(".item-writing").siblings(".showmore").hide()
+                        }
+                    })
+                    $(".showmore").each(function (i, n) {
+                        $(n).on("click", function () {
+                            $(this).siblings(".item-writing").children(".item-assess")
+                                    .removeClass("overflowThree");
+                            $(this).siblings(".showless").show()
+                            $(this).hide()
+                        })
+                    })
+                    $(".showless").each(function (i, n) {
+                        $(n).on("click", function () {
+                            $(this).siblings(".item-writing").children(".item-assess").addClass(
+                                    "overflowThree");
+                            $(this).siblings(".showmore").show()
+                            $(this).hide()
+                        })
+                    })
+                },
+                // 监听所有checkbox改变
+                checkHandle: function () {
+                    var $this = this;
+                    var allChecked = true;
+                    var existChecked = false;
+                    $($this.ratings).each(function () {
+                        if (!this.checked) {
+                            allChecked = false;
+                        } else {
+                            existChecked = true;
+                        }
+                    })
+                    $this.allChecked = allChecked;
+                    if (allChecked) {
+                        $this.indeterminate = false;
+                    } else {
+                        $this.indeterminate = existChecked;
+                    }
+                },
+                // 全选
+                checkAllHandle: function () {
+                    var $this = this;
+                    $($this.ratings).each(function () {
+                        this.checked = $this.allChecked;
+                    });
+                    $this.indeterminate = false;
+                },
+                // 评价设置
+                toRatingSetting: function () {
+                    var $this = this;
+                    var url = "http://manage.hd.chaoxing.com/activity/" + $this.activity.id + "/rating/setting";
+                    window.location.href = url;
+                },
+                // 评价审核
+                toRatingAudit: function () {
+                    var $this = this;
+                    var url = "http://manage.hd.chaoxing.com/activity/" + $this.activity.id + "/rating/audit";
+                    window.location.href = url;
+                }
+            }
+        });
+    </script>
+</div>
+</html>

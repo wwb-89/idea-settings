@@ -3,6 +3,7 @@ package com.chaoxing.activity.service.activity;
 import com.chaoxing.activity.dto.LoginUserDTO;
 import com.chaoxing.activity.dto.manager.WfwRegionalArchitectureDTO;
 import com.chaoxing.activity.model.Activity;
+import com.chaoxing.activity.service.activity.manager.ActivityManagerValidationService;
 import com.chaoxing.activity.service.manager.WfwRegionalArchitectureApiService;
 import com.chaoxing.activity.util.exception.ActivityNotExistException;
 import com.chaoxing.activity.util.exception.BusinessException;
@@ -35,6 +36,8 @@ public class ActivityValidationService {
 	private ActivityQueryService activityQueryService;
 	@Resource
 	private WfwRegionalArchitectureApiService wfwRegionalArchitectureApiService;
+	@Resource
+	private ActivityManagerValidationService activityManagerValidationService;
 
 	/**新增活动输入验证
 	 * @Description 
@@ -78,11 +81,22 @@ public class ActivityValidationService {
 	*/
 	public Activity activityExist(Integer activityId) {
 		Activity activity = activityQueryService.getById(activityId);
-		log.error("活动id:{}对应的活动不存在", activityId);
 		Optional.ofNullable(activity).orElseThrow(() -> new ActivityNotExistException(activityId));
 		return activity;
 	}
 
+	/**是不是活动的创建者
+	 * @Description 
+	 * @author wwb
+	 * @Date 2021-03-16 11:06:20
+	 * @param activityId
+	 * @param loginUser
+	 * @return boolean
+	*/
+	public boolean isCreator(Integer activityId, LoginUserDTO loginUser) {
+		Activity activity = activityQueryService.getById(activityId);
+		return isCreator(activity, loginUser.getUid());
+	}
 	/**是不是活动创建者
 	 * @Description 
 	 * @author wwb
@@ -131,20 +145,67 @@ public class ActivityValidationService {
 		return manageFids.contains(fid);
 	}
 
-	/**活动可管理
+	/**是否能管理活动
 	 * @Description 
 	 * @author wwb
-	 * @Date 2020-12-24 10:28:29
+	 * @Date 2021-03-29 09:49:49
 	 * @param activityId
-	 * @param loginUser
-	 * @param errorMessage
+	 * @param uid
+	 * @return boolean
+	*/
+	public boolean isManageAble(Integer activityId, Integer uid) {
+		Activity activity = activityQueryService.getById(activityId);
+		return isManageAble(activity, uid);
+	}
+
+	/**是否能管理活动
+	 * @Description 
+	 * @author wwb
+	 * @Date 2021-03-29 09:51:58
+	 * @param activity
+	 * @param uid
+	 * @return boolean
+	*/
+	public boolean isManageAble(Activity activity, Integer uid) {
+		if (activity != null) {
+			boolean creator = isCreator(activity, uid);
+			if (creator) {
+				return true;
+			} else {
+				return activityManagerValidationService.isManager(activity.getId(), uid);
+			}
+		}
+		return false;
+	}
+
+	/**可管理活动
+	 * @Description 
+	 * @author wwb
+	 * @Date 2021-03-29 09:55:31
+	 * @param activityId
+	 * @param uid
 	 * @return com.chaoxing.activity.model.Activity
 	*/
-	public Activity manageAble(Integer activityId, LoginUserDTO loginUser, String errorMessage) {
-		errorMessage = Optional.ofNullable(errorMessage).filter(StringUtils::isNotBlank).orElse("没有权限");
-		Activity activity = activityExist(activityId);
-		if (!isCreator(activity, loginUser)) {
-			throw new BusinessException(errorMessage);
+	public Activity manageAble(Integer activityId, Integer uid) {
+		Activity activity = activityQueryService.getById(activityId);
+		boolean isManager = isManageAble(activity, uid);
+		if (!isManager) {
+			throw new BusinessException("无权限");
+		}
+		return activity;
+	}
+
+	/**可管理活动
+	 * @Description 
+	 * @author wwb
+	 * @Date 2021-03-29 09:55:52
+	 * @param activity
+	 * @param uid
+	 * @return com.chaoxing.activity.model.Activity
+	*/
+	public Activity manageAble(Activity activity, Integer uid) {
+		if (!isManageAble(activity, uid)) {
+			throw new BusinessException("无权限");
 		}
 		return activity;
 	}

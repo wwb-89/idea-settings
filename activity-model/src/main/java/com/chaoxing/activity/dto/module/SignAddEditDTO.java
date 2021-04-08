@@ -2,7 +2,6 @@ package com.chaoxing.activity.dto.module;
 
 import com.chaoxing.activity.dto.manager.sign.SignIn;
 import com.chaoxing.activity.dto.manager.sign.SignUp;
-import com.chaoxing.activity.dto.manager.sign.SignUpGroupRange;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -43,14 +42,9 @@ public class SignAddEditDTO {
 	/** 更新人id */
 	private Integer updateUid;
 
-	/** 报名 */
-	private SignUp signUp;
-	/** 签到 */
-	private SignIn signIn;
-	/** 签退 */
-	private SignIn signOut;
-
-	/** 报名范围 */
-	private List<SignUpGroupRange> signUpGroupRanges;
+	/** 报名列表 */
+	private List<SignUp> signUps;
+	/** 签到列表 */
+	private List<SignIn> signIns;
 
 }

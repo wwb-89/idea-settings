@@ -5,6 +5,7 @@ import com.chaoxing.activity.dto.RestRespDTO;
 import com.chaoxing.activity.util.constant.ExceptionConstant;
 import com.chaoxing.activity.util.exception.BusinessException;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.springframework.core.annotation.AnnotationUtils;
 import org.springframework.stereotype.Component;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -30,7 +31,8 @@ public class RestHandlerExceptionResolver implements HandlerExceptionResolver {
 
 	@Override
 	public ModelAndView resolveException(HttpServletRequest request, HttpServletResponse response, Object handler, Exception ex) {
-		log.error("{}", ex);
+		log.error("请求url:{}, 请求参数:{}", request.getRequestURI(), request.getQueryString());
+		log.error(ExceptionUtils.getStackTrace(ex));
 		// 是Rest请求 并且 接受该异常类型
 		if(isRestRequest(handler) && isAcceptException(ex)){
 			// 直接通过Response将结果写回

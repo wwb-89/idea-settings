@@ -4,6 +4,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
@@ -29,11 +30,14 @@ public class LibActivityManagementController {
 	 * @Date 2020-11-18 11:34:30
 	 * @param model
 	 * @param code 图书馆编码
+	 * @param fid
+	 * @param strict
+	 * @param flag 活动标示。通用、第二课堂、双选会...
 	 * @return java.lang.String
 	*/
 	@RequestMapping("")
-	public String index(Model model, String code) {
-		return activityManageController.index(model, code, 0);
+	public String index(Model model, String code, Integer fid, @RequestParam(defaultValue = "0") Integer strict, String flag) {
+		return activityManageController.index(model, code, fid,0, strict, flag);
 	}
 
 	/**活动新增页面
@@ -43,11 +47,12 @@ public class LibActivityManagementController {
 	 * @param model
 	 * @param request
 	 * @param code
+	 * @param flag
 	 * @return java.lang.String
 	*/
 	@GetMapping("activity/add")
-	public String add(Model model, HttpServletRequest request, String code) {
-		return activityManageController.add(model, request, code, 0);
+	public String add(Model model, HttpServletRequest request, String code, String flag) {
+		return activityManageController.add(model, request, code, 0, flag);
 	}
 
 }

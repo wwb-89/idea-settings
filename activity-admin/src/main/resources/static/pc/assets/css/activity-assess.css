@@ -1,7 +1,6 @@
 /* 活动评价css */
 html,body {
     height: 100%;
-    background: #DBDBDB !important;
 }
 
 [v-cloak] {
@@ -144,6 +143,7 @@ html,body {
     position: absolute;
     width: 136px;
     left: 42px;
+    top: 0;
 }
 #test .layui-rate {
     padding: 0;
@@ -476,6 +476,11 @@ html,body {
      -moz-box-sizing: border-box;
           box-sizing: border-box;
     border: 1px solid #0084FF;
+}
+
+.btn-disabled {
+    color: rgba(0, 132, 255, 0.3);
+    border: 1px solid rgba(0, 132, 255, 0.3);
 }
 
 .check-item-content {

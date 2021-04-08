@@ -8,12 +8,19 @@ import com.chaoxing.activity.dto.LoginUserDTO;
 import com.chaoxing.activity.dto.activity.ActivitySignedUpDTO;
 import com.chaoxing.activity.dto.activity.ActivityTypeDTO;
 import com.chaoxing.activity.dto.manager.WfwRegionalArchitectureDTO;
+import com.chaoxing.activity.dto.manager.sign.SignStatDTO;
 import com.chaoxing.activity.dto.query.ActivityManageQueryDTO;
 import com.chaoxing.activity.dto.query.ActivityQueryDTO;
 import com.chaoxing.activity.dto.query.MhActivityCalendarQueryDTO;
-import com.chaoxing.activity.dto.sign.SignedUpDTO;
+import com.chaoxing.activity.dto.sign.UserSignUpStatusStatDTO;
 import com.chaoxing.activity.mapper.ActivityMapper;
+import com.chaoxing.activity.mapper.ActivityFlagSignModuleMapper;
+import com.chaoxing.activity.mapper.ActivitySignModuleMapper;
 import com.chaoxing.activity.model.Activity;
+import com.chaoxing.activity.model.ActivityFlagSignModule;
+import com.chaoxing.activity.model.ActivityManager;
+import com.chaoxing.activity.model.ActivitySignModule;
+import com.chaoxing.activity.service.activity.manager.ActivityManagerQueryService;
 import com.chaoxing.activity.service.manager.WfwRegionalArchitectureApiService;
 import com.chaoxing.activity.service.manager.module.SignApiService;
 import com.chaoxing.activity.util.DateUtils;
@@ -52,12 +59,18 @@ public class ActivityQueryService {
 
 	@Resource
 	private ActivityMapper activityMapper;
+	@Resource
+	private ActivityFlagSignModuleMapper activityFlagSignModuleMapper;
+	@Resource
+	private ActivitySignModuleMapper activitySignModuleMapper;
 
 	@Resource
 	private WfwRegionalArchitectureApiService wfwRegionalArchitectureApiService;
 	@Resource
 	private SignApiService signApiService;
-	
+	@Resource
+	private ActivityManagerQueryService activityManagerQueryService;
+
 	/**查询参与的活动
 	 * @Description 
 	 * @author wwb
@@ -203,18 +216,80 @@ public class ActivityQueryService {
 	 * @return com.baomidou.mybatisplus.extension.plugins.pagination.Page<com.chaoxing.activity.model.Activity>
 	*/
 	public Page<Activity> listManaging(Page<Activity> page, ActivityManageQueryDTO activityManageQuery, LoginUserDTO loginUser) {
-		List<Integer> fids = new ArrayList<>();
-		Integer fid = loginUser.getFid();
-		List<WfwRegionalArchitectureDTO> wfwRegionalArchitectures = wfwRegionalArchitectureApiService.listByFid(fid);
-		if (CollectionUtils.isNotEmpty(wfwRegionalArchitectures)) {
-			List<Integer> subFids = wfwRegionalArchitectures.stream().map(WfwRegionalArchitectureDTO::getFid).collect(Collectors.toList());
-			fids.addAll(subFids);
+		Integer strict = activityManageQuery.getStrict();
+		strict = Optional.ofNullable(strict).orElse(0);
+		if (strict.compareTo(1) == 0) {
+			// 严格模式
+			activityManageQuery.setCreateUid(loginUser.getUid());
+			activityManageQuery.setCreateWfwfid(activityManageQuery.getFid());
+			page = activityMapper.pageCreated(page, activityManageQuery);
 		} else {
-			fids.add(fid);
+			List<Integer> fids = new ArrayList<>();
+			List<WfwRegionalArchitectureDTO> wfwRegionalArchitectures = wfwRegionalArchitectureApiService.listByFid(activityManageQuery.getFid());
+			if (CollectionUtils.isNotEmpty(wfwRegionalArchitectures)) {
+				List<Integer> subFids = wfwRegionalArchitectures.stream().map(WfwRegionalArchitectureDTO::getFid).collect(Collectors.toList());
+				fids.addAll(subFids);
+			} else {
+				fids.add(activityManageQuery.getFid());
+			}
+			activityManageQuery.setFids(fids);
+			page = activityMapper.pageManaging(page, activityManageQuery);
 		}
-		activityManageQuery.setFids(fids);
-		page = activityMapper.pageManaging(page, activityManageQuery);
+		List<Activity> activities = page.getRecords();
+		// 封装报名的数量
+		packageSignedUpNum(activities);
+		// 封装是不是组织者
+		packageManager(activities);
 		return page;
+	}
+
+	private void packageSignedUpNum(List<Activity> activities) {
+		if (CollectionUtils.isNotEmpty(activities)) {
+			// 查询报名人数
+			List<Integer> signIds = Lists.newArrayList();
+			for (Activity activity : activities) {
+				Integer signId = activity.getSignId();
+				if (signId != null) {
+					signIds.add(signId);
+				}
+			}
+			List<SignStatDTO> signStats = signApiService.statSignSignedUpNum(signIds);
+			Map<Integer, Integer> signIdSignedUpNumMap = signStats.stream().collect(Collectors.toMap(v -> v.getId(), v -> v.getSignedUpNum(), (v1, v2) -> v2));
+			for (Activity activity : activities) {
+				Integer signId = activity.getSignId();
+				Integer signedUpNum = 0;
+				if (signId != null) {
+					signedUpNum = signIdSignedUpNumMap.get(signId);
+				}
+				signedUpNum = Optional.ofNullable(signedUpNum).orElse(0);
+				activity.setSignedUpNum(signedUpNum);
+			}
+		}
+	}
+
+	/**封装管理者（组织者）
+	 * @Description 
+	 * @author wwb
+	 * @Date 2021-04-06 14:20:51
+	 * @param activities
+	 * @return void
+	*/
+	private void packageManager(List<Activity> activities) {
+		if (CollectionUtils.isNotEmpty(activities)) {
+			List<Integer> activityIds = activities.stream().map(Activity::getId).collect(Collectors.toList());
+			// 查询配置的组织者列表
+			List<ActivityManager> allActivityManagers = activityManagerQueryService.listByActivityId(activityIds);
+			// 根据活动id分组
+			Map<Integer, List<ActivityManager>> activityIdActivitiesMap = allActivityManagers.stream().collect(Collectors.groupingBy(ActivityManager::getActivityId));
+			for (Activity activity : activities) {
+				Integer activityId = activity.getId();
+				List<ActivityManager> activityManagers = activityIdActivitiesMap.get(activityId);
+				if (activityManagers == null) {
+					activityManagers = Lists.newArrayList();
+				}
+				activity.setManagerUids(activityManagers.stream().map(ActivityManager::getUid).collect(Collectors.toList()));
+			}
+		}
 	}
 
 	/**分页查询创建的活动
@@ -297,10 +372,10 @@ public class ActivityQueryService {
 		List records = page.getRecords();
 		if (CollectionUtils.isNotEmpty(records)) {
 			List<Integer> signIds = Lists.newArrayList();
-			Map<Integer, SignedUpDTO> signIdSignedUpMap = Maps.newHashMap();
+			Map<Integer, UserSignUpStatusStatDTO> signIdSignedUpMap = Maps.newHashMap();
 			for (Object record : records) {
 				JSONObject jsonObject = (JSONObject) record;
-				SignedUpDTO signedUp = JSON.parseObject(jsonObject.toJSONString(), SignedUpDTO.class);
+				UserSignUpStatusStatDTO signedUp = JSON.parseObject(jsonObject.toJSONString(), UserSignUpStatusStatDTO.class);
 				signIds.add(signedUp.getSignId());
 				signIdSignedUpMap.put(signedUp.getSignId(), signedUp);
 			}
@@ -312,7 +387,7 @@ public class ActivityQueryService {
 					BeanUtils.copyProperties(activity, activitySignedUp);
 					// 设置报名状态
 					Integer signId = activitySignedUp.getSignId();
-					SignedUpDTO signedUp = signIdSignedUpMap.get(signId);
+					UserSignUpStatusStatDTO signedUp = signIdSignedUpMap.get(signId);
 					if (signedUp != null) {
 						activitySignedUp.setSignUpId(signedUp.getSignUpId());
 						activitySignedUp.setUserSignUpStatus(signedUp.getUserSignUpStatus());
@@ -347,6 +422,59 @@ public class ActivityQueryService {
 	*/
 	public String getActivityManageUrl(Integer activityId) {
 		return String.format(UrlConstant.ATIVITY_MANAGE_URL, activityId);
+	}
+
+	/**活动评价地址
+	 * @Description 
+	 * @author wwb
+	 * @Date 2021-03-16 11:12:37
+	 * @param activityId
+	 * @return java.lang.String
+	*/
+	public String getActivityRatingUrl(Integer activityId) {
+		return String.format(UrlConstant.ACTIVITY_RATING_URL, activityId);
+	}
+
+	/**查询所有的活动
+	 * @Description 
+	 * @author wwb
+	 * @Date 2021-03-26 18:32:13
+	 * @param 
+	 * @return java.util.List<com.chaoxing.activity.model.Activity>
+	*/
+	public List<Activity> list() {
+		return activityMapper.selectList(new QueryWrapper<Activity>()
+			.lambda()
+				.ne(Activity::getStatus, Activity.StatusEnum.DELETED.getValue())
+		);
+	}
+
+	/**根据flag查询
+	 * @Description 
+	 * @author wwb
+	 * @Date 2021-03-30 09:46:45
+	 * @param activityFlag
+	 * @return java.util.List<com.chaoxing.activity.model.ActivityFlagSignModule>
+	*/
+	public List<ActivityFlagSignModule> listSignModuleByFlag(String activityFlag) {
+		return activityFlagSignModuleMapper.selectList(new QueryWrapper<ActivityFlagSignModule>()
+			.lambda()
+				.eq(ActivityFlagSignModule::getActivityFlag, activityFlag)
+		);
+	}
+
+	/**根据活动id查询
+	 * @Description 
+	 * @author wwb
+	 * @Date 2021-03-30 18:14:10
+	 * @param activityId
+	 * @return java.util.List<com.chaoxing.activity.model.ActivitySignModule>
+	*/
+	public List<ActivitySignModule> listByActivityId(Integer activityId) {
+		return activitySignModuleMapper.selectList(new QueryWrapper<ActivitySignModule>()
+				.lambda()
+				.eq(ActivitySignModule::getActivityId, activityId)
+		);
 	}
 
 }

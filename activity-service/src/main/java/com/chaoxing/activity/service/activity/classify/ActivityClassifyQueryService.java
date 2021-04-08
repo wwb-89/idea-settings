@@ -3,13 +3,16 @@ package com.chaoxing.activity.service.activity.classify;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.chaoxing.activity.mapper.ActivityClassifyMapper;
 import com.chaoxing.activity.model.ActivityClassify;
+import com.google.common.collect.Lists;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
 import java.util.ArrayList;
+import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**活动分类查询服务
  * @author wwb
@@ -54,26 +57,34 @@ public class ActivityClassifyQueryService {
 	 * @return java.util.List<java.lang.String>
 	*/
 	public List<String> listOrgsOptionalName(List<Integer> fids) {
-		List<String> result = new ArrayList<>();
+		List<String> result = Lists.newArrayList();
+		List<ActivityClassify> activityClassifies = listOrgsOptional(fids);
+		if (CollectionUtils.isNotEmpty(activityClassifies)) {
+			List<String> activityClassifyNames = activityClassifies.stream().map(ActivityClassify::getName).collect(Collectors.toList());
+			LinkedHashSet<String> set = new LinkedHashSet<>(activityClassifyNames);
+			result.addAll(set);
+		}
+		return result;
+	}
+
+	/**查询机构列表所能筛选的活动分类列表
+	 * @Description 
+	 * @author wwb
+	 * @Date 2021-03-22 19:31:12
+	 * @param fids
+	 * @return java.util.List<com.chaoxing.activity.model.ActivityClassify>
+	*/
+	public List<ActivityClassify> listOrgsOptional(List<Integer> fids) {
+		List<ActivityClassify> result = Lists.newArrayList();
 		// 系统分类
 		List<ActivityClassify> systemActivityClassifies = listSystem();
 		if (CollectionUtils.isNotEmpty(systemActivityClassifies)) {
-			for (ActivityClassify systemActivityClassify : systemActivityClassifies) {
-				String name = systemActivityClassify.getName();
-				if (!result.contains(name)) {
-					result.add(name);
-				}
-			}
+			result.addAll(systemActivityClassifies);
 		}
 		// 机构列表所有的活动分类列表
 		List<ActivityClassify> activityClassifies = listOrgsAffiliation(fids);
 		if (CollectionUtils.isNotEmpty(activityClassifies)) {
-			for (ActivityClassify activityClassify : activityClassifies) {
-				String name = activityClassify.getName();
-				if (!result.contains(name)) {
-					result.add(name);
-				}
-			}
+			result.addAll(activityClassifies);
 		}
 		return result;
 	}
@@ -135,5 +146,18 @@ public class ActivityClassifyQueryService {
 			.lambda()
 				.in(ActivityClassify::getId, ids)
 		);
+	}
+
+	/**根据id查询
+	 * @Description 
+	 * @author wwb
+	 * @Date 2021-04-06 19:14:23
+	 * @param id
+	 * @return com.chaoxing.activity.model.ActivityClassify
+	*/
+	public ActivityClassify getById(Integer id) {
+		return activityClassifyMapper.selectOne(new QueryWrapper<ActivityClassify>()
+				.lambda()
+				.eq(ActivityClassify::getId, id));
 	}
 }

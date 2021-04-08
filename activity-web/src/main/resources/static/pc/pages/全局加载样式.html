@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>加载</title>
+</head>
+<style>
+    .loading-mask{
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background:  rgba(255, 255, 255, 0.7);;
+    }
+    .loading-mask .loading{
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%,-50%);
+        width: 48px;
+        height: 48px;
+    }
+</style>
+<body>
+    <div class="loading-mask">
+        <img src="../assets/images/Rolling-1s-200px.svg" alt="" class="loading">
+    </div>
+</body>
+</html>

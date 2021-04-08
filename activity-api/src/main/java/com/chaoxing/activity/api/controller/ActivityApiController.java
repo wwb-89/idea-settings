@@ -5,8 +5,10 @@ import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.chaoxing.activity.model.LoginCustom;
 import com.chaoxing.activity.service.LoginService;
-import com.chaoxing.activity.service.activity.ActivityCollectionQueryService;
-import com.chaoxing.activity.service.activity.ActivityStartNoticeHandleService;
+import com.chaoxing.activity.service.activity.ActivityValidationService;
+import com.chaoxing.activity.service.activity.collection.ActivityCollectionQueryService;
+import com.chaoxing.activity.service.activity.ActivityIsAboutStartHandleService;
+import com.chaoxing.activity.service.activity.manager.ActivityManagerValidationService;
 import com.chaoxing.activity.service.util.Model2DtoService;
 import com.chaoxing.activity.dto.RestRespDTO;
 import com.chaoxing.activity.dto.activity.ActivityExternalDTO;
@@ -64,7 +66,11 @@ public class ActivityApiController {
 	@Resource
 	private ActivityCollectionQueryService activityCollectionQueryService;
 	@Resource
-	private ActivityStartNoticeHandleService activityStartNoticeHandleService;
+	private ActivityIsAboutStartHandleService activityStartNoticeHandleService;
+	@Resource
+	private ActivityManagerValidationService activityManagerValidationService;
+	@Resource
+	private ActivityValidationService activityValidationService;
 
 	/**组活动推荐
 	 * @Description 
@@ -218,6 +224,35 @@ public class ActivityApiController {
 		Activity activity = activityQueryService.getBySignId(signId);
 		activityStartNoticeHandleService.sendSignedUpNotice(activity, uids);
 		return RestRespDTO.success();
+	}
+
+	/**查询活动
+	 * @Description 
+	 * @author wwb
+	 * @Date 2021-04-02 10:29:45
+	 * @param activityId
+	 * @return com.chaoxing.activity.dto.RestRespDTO
+	*/
+	@RequestMapping("{activityId}")
+	public RestRespDTO getById(@PathVariable Integer activityId) {
+		Activity activity = activityQueryService.getById(activityId);
+		ActivityExternalDTO activityExternal = model2DtoService.activity2Dto(activity);
+		return RestRespDTO.success(activityExternal);
+	}
+
+	/**是不是管理者
+	 * @Description 
+	 * @author wwb
+	 * @Date 2021-04-08 11:37:17
+	 * @param signId
+	 * @param uid
+	 * @return com.chaoxing.activity.dto.RestRespDTO
+	*/
+	@RequestMapping("manager-judge")
+	public RestRespDTO isManager(@RequestParam Integer signId, @RequestParam Integer uid) {
+		Activity activity = activityQueryService.getBySignId(signId);
+		boolean manager = activityValidationService.isManageAble(activity.getId(), uid);
+		return RestRespDTO.success(manager);
 	}
 
 }

@@ -5,11 +5,11 @@ import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.chaoxing.activity.dto.RestRespDTO;
 import com.chaoxing.activity.dto.manager.WfwRegionalArchitectureDTO;
-import com.chaoxing.activity.dto.manager.sign.SignUpStatDTO;
+import com.chaoxing.activity.dto.manager.sign.SignStatDTO;
 import com.chaoxing.activity.dto.mh.MhGeneralAppResultDataDTO;
 import com.chaoxing.activity.dto.query.MhActivityCalendarQueryDTO;
 import com.chaoxing.activity.model.Activity;
-import com.chaoxing.activity.service.activity.ActivityCoverService;
+import com.chaoxing.activity.service.activity.ActivityCoverUrlSyncService;
 import com.chaoxing.activity.service.activity.ActivityQueryService;
 import com.chaoxing.activity.service.manager.WfwRegionalArchitectureApiService;
 import com.chaoxing.activity.service.manager.module.SignApiService;
@@ -54,7 +54,7 @@ public class ActivityMhAppController {
 	@Resource
 	private ActivityQueryService activityQueryService;
 	@Resource
-	private ActivityCoverService activityCoverService;
+	private ActivityCoverUrlSyncService activityCoverService;
 	@Resource
 	private SignApiService signApiService;
 	@Resource
@@ -140,34 +140,34 @@ public class ActivityMhAppController {
 				.flag("103")
 				.build());
 		// 报名、签到人数
-		SignUpStatDTO signUpStat = signApiService.getSignParticipation(activity.getSignId());
-		if (signUpStat.getId() != null) {
+		SignStatDTO signStat = signApiService.getSignParticipation(activity.getSignId());
+		if (signStat != null && CollectionUtils.isNotEmpty(signStat.getSignUpIds())) {
 			StringBuilder signUpTimeStringBuilder = new StringBuilder();
-			signUpTimeStringBuilder.append(DateTimeFormatterConstant.YYYY_MM_DD_HH_MM.format(signUpStat.getSignUpStartTime()));
+			signUpTimeStringBuilder.append(DateTimeFormatterConstant.YYYY_MM_DD_HH_MM.format(signStat.getSignUpStartTime()));
 			signUpTimeStringBuilder.append(" ~ ");
-			signUpTimeStringBuilder.append(DateTimeFormatterConstant.YYYY_MM_DD_HH_MM.format(signUpStat.getSignUpEndTime()));
+			signUpTimeStringBuilder.append(DateTimeFormatterConstant.YYYY_MM_DD_HH_MM.format(signStat.getSignUpEndTime()));
 			// 报名时间
 			mhGeneralAppResultDataFields.add(MhGeneralAppResultDataDTO.MhGeneralAppResultDataFieldDTO.builder()
 					.key("报名时间")
 					.value(signUpTimeStringBuilder.toString())
 					.flag("105")
 					.build());
-		}
-		StringBuilder signPepleNumDescribe = new StringBuilder();
-		Integer limitNum = signUpStat.getLimitNum();
-		Integer participateNum = signUpStat.getSignedUpNum();
-		if (participateNum.compareTo(0) > 0 || limitNum.intValue() > 0) {
-			signPepleNumDescribe.append(participateNum);
-			if (limitNum.intValue() > 0) {
-				signPepleNumDescribe.append("/");
-				signPepleNumDescribe.append(limitNum);
+			StringBuilder signPepleNumDescribe = new StringBuilder();
+			Integer limitNum = signStat.getLimitNum();
+			Integer participateNum = signStat.getSignedUpNum();
+			if (participateNum.compareTo(0) > 0 || limitNum.intValue() > 0) {
+				signPepleNumDescribe.append(participateNum);
+				if (limitNum.intValue() > 0) {
+					signPepleNumDescribe.append("/");
+					signPepleNumDescribe.append(limitNum);
+				}
 			}
+			mhGeneralAppResultDataFields.add(MhGeneralAppResultDataDTO.MhGeneralAppResultDataFieldDTO.builder()
+					.key("报名人数")
+					.value(signPepleNumDescribe.toString())
+					.flag("104")
+					.build());
 		}
-		mhGeneralAppResultDataFields.add(MhGeneralAppResultDataDTO.MhGeneralAppResultDataFieldDTO.builder()
-				.key("报名人数")
-				.value(signPepleNumDescribe.toString())
-				.flag("104")
-				.build());
 		return RestRespDTO.success(jsonObject);
 	}
 

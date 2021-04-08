@@ -18,6 +18,6 @@ public class WebTemplateCustomConfigConstant {
 
 	}
 
-	public static final List<String> CUSTOM_AREA_CODES = Lists.newArrayList("046");
+	public static final List<String> CUSTOM_AREA_CODES = Lists.newArrayList("0046");
 
 }

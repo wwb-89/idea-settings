@@ -21,7 +21,7 @@
     </div>
     <div class="content">
         <div class="search">
-            <input type="text" id="search-input" v-model.trim="sw" placeholder="搜索标题" @keyup.enter="search">
+            <input type="text" id="search-input" v-model.trim="sw" placeholder="搜索标题、主办方" @keyup.enter="search">
             <div class="search-foot" @click="search">
                 <div class="img">
                     <img src="/static/pc/assets/images/search.png" th:src="@{/pc/assets/images/search.png}">
@@ -96,6 +96,7 @@
     <script type="text/javascript" src="/static/pc/assets/lib/element-ui/lib/index.js" th:src="@{/pc/assets/lib/element-ui/lib/index.js}"></script>
     <script src="/static/pc/assets/lib/jqthumb.min.js" th:src="@{/pc/assets/lib/jqthumb.min.js}"></script>
     <script src="/static/pc/assets/lib/set-iframe-height-child.js" th:src="@{/pc/assets/lib/set-iframe-height-child.js}"></script>
+    <script src="/static/pc/assets/lib/jquery.mCustomScrollbar.concat.min.js" th:src="@{/pc/assets/lib/jquery.mCustomScrollbar.concat.min.js}"></script>
     <script th:inline="javascript">
         Vue.filter("timestamp2YMD", function (timestamp) {
             var dateObj = activityApp.millisecond2DateObj(timestamp);
@@ -161,6 +162,7 @@
             },
             mounted:function() {
                 var $this = this;
+                document.domain = "chaoxing.com";
                 $(".jqthumbImg").jqthumb({
                     width:'100%',
                     height:'100%'

@@ -1,0 +1,424 @@
+html, body {
+    background-color: #fff;
+}
+.manage-container {
+    background: #FFFFFF;
+    /* width: 1188px; */
+    /* margin: 20px auto; */
+    /*height: 860px;*/
+    border-radius: 0 10px 10px 0;
+}
+.manage-header {
+    padding-left: 24px;
+    height: 62px;
+    line-height: 62px;
+    font-size: 18px;
+    color: #333333;
+    font-weight: bold;
+    border-bottom: 1px solid #F0F0F0;;
+}
+
+.manage-content {
+    padding: 16px 24px;
+}
+
+.btn-size {
+    cursor: pointer;
+    height: 30px;
+    line-height: 30px;
+    border-radius: 15px;
+    font-size: 13px;
+    text-align: center;
+    padding: 0 14px;
+}
+
+.btn-size * {
+    display: inline-block;
+    vertical-align: middle;
+}
+
+.btn-add {
+    margin-right: 24px;
+    background-color:  #0084FF;
+    color: #FFFFFF;
+}
+
+.btn-add>img {
+    margin-right: 3px;
+}
+
+.btn-del {
+    height: 28px;
+    color:  #0084FF;
+    border: 1px solid  #0084FF;
+}
+
+.btn-del-disable {
+    height: 28px;
+    color: rgba(0, 132, 255, 0.3);
+    border: 1px solid rgba(0, 132, 255, 0.3);
+}
+
+.table-box {
+    width: 100%;
+    margin-top: 16px;
+}
+
+.table-box thead th{
+    background: #FAFAFA;
+    font-size: 14px;
+    color: #999;
+    font-weight: normal;
+}
+
+
+.table-box thead th {
+    height: 40px;
+}
+
+.table-box thead th:nth-child(2){
+    width: 766px;
+}
+
+.table-box .check-box {
+    width: 14px;
+    padding: 0 8px;
+    line-height: 40px;
+}
+
+.table-box tr {
+    border-bottom: 1px solid #E9E9E9;
+}
+
+.table-box tbody th{
+    background: #FFFFFF;
+    font-size: 14px;
+    color: #333333;
+    font-weight: normal !important;
+}
+
+.table-box tbody th>span {
+    cursor: pointer;
+    color: #0084FF;
+    margin-right: 16px;
+}
+/* 权限设置弹框样式 */
+.manageStatusDialog .el-dialog{
+    border-radius: 10px;
+}
+
+.manageStatusDialog .el-dialog__title {
+    position: absolute;
+    left: 0;
+    display: inline-block;
+    width: 100%;
+    text-align: center;
+    font-weight: 600;
+    font-size: 18px;
+    color: #333;
+}
+
+.manageStatusDialog .el-dialog__header {
+    height: 58px;
+    padding-top: 16px;
+    padding-bottom: 17px;
+    border-bottom: 1px solid #E9E9E9;
+    -webkit-box-sizing: border-box;
+     -moz-box-sizing: border-box;
+          box-sizing: border-box;
+}
+
+.manageStatusDialog  .el-dialog__body {
+    position: relative;
+    padding: 24px 32px 32px;
+}
+
+.manageStatusDialog .el-dialog__footer {
+    text-align: center;
+    border-top: 1px solid #E9E9E9;
+    padding: 14px;
+}
+
+.manageStatusDialog .dialog-footer .btn-size {
+    cursor: pointer;
+    display: inline-block;
+    height: 30px;
+    line-height: 30px;
+    text-align: center;
+    border-radius: 15px;
+    -webkit-box-sizing: border-box;
+     -moz-box-sizing: border-box;
+          box-sizing: border-box;
+}
+.manageStatusDialog .dialog-footer .btn-cancel {
+    color: #0084FF;
+    border: 1px solid #0084FF;
+    margin-right: 24px;
+}   
+
+.manageStatusDialog .dialog-footer .btn-submit {
+    color: #FFFFFF;
+    background-color: #0084FF;
+}
+
+
+.manageStatusDialog .manage-name {
+    font-size: 14px;
+    line-height: 20px;
+    color: #666666;
+    margin-bottom: 24px;
+}
+
+.manageStatusDialog .manage-name>span {
+    color: #333;
+}
+
+.manageStatusDialog .manage-status {
+    line-height: 20px;
+    margin-bottom: 32px;
+} 
+
+.manageStatusDialog .last-manage-status {
+    margin-bottom: 0;
+}
+
+.manageStatusDialog .manage-status .limit-name {
+    font-size: 14px;
+    line-height: 16px;
+    color: #333333;
+    margin-right: 20px;
+}
+
+.manageStatusDialog .manage-status .limit-detail {
+    margin-left: 14px;
+    font-size: 14px;
+    line-height: 16px;
+    color: #999999;
+}
+
+/* 移除弹框 */
+.delete-dailog {
+    height: 216px;
+}
+
+.delete-dailog>span {
+    width: 90%;
+}
+
+.delete-dailog>div {
+    margin-top: 24px;
+}
+
+/* 暂无内容 */
+.no-content {
+    font-size: 14px;
+    /* line-height: 484px; */
+    line-height: 484px;
+    text-align: center;
+    color: #999999;
+}
+
+/* 添加弹框 */
+.addGrade.layui-layer {
+    border-radius: 8px;
+    overflow: hidden;
+}
+  
+.addGrade.layui-layer .layui-layer-title {
+    background-color: #FFFFFF;
+    text-align: center;
+    padding: 0;
+    font-weight: 600;
+    font-size: 18px;
+    line-height: 25px;
+    color: #333333;
+    padding-top: 16px;
+}
+  
+.addGrade.layui-layer .layui-layer-btn a {
+    border-radius: 4px;
+    font-size: 14px;
+}
+  
+.addGrade.layui-layer .layui-layer-btn a.layui-layer-btn0 {
+    background: #FFFFFF;
+    height: 28px;
+    line-height: 28px;
+    color: #2D84FF;
+    border: 1px solid #2D84FF;
+    border-radius: 15px;
+}
+  
+.addGrade.layui-layer .layui-layer-btn a.layui-layer-btn1 {
+    background: #459AFD;
+    color: #FFFFFF;
+    border-radius: 15px;
+}
+  
+.addGrade .gradeList {
+    border-bottom: 1px solid #EAEDF3;
+    padding: 12px 24px 0 24px;
+}
+  
+.addGrade .gradeList .leftCon {
+    width: 385px;
+    float: left;
+    border-right: 1px solid #EAEDF3;
+}
+
+.addGrade .gradeList .leftCon .position {
+    width: 369px;
+    position: relative;
+}
+
+.addGrade .gradeList .leftCon .position input{
+    width: 350px;
+    height: 22px;
+    background: #FFFFFF;
+    border: 1px solid #E9E9E9;
+    border-radius: 25px;
+    padding: 4px 0 4px 16px;
+    font-size: 14px;
+    line-height: 22px;
+    color: #333;
+}
+  
+ .addGrade .gradeList .leftCon .position img {
+    width: 16px;
+    height: 16px;
+    position: absolute;
+    top: 7px;
+    right: 10px;
+    cursor: pointer;
+}
+  
+.addGrade .gradeList .rightCon {
+    float: left;
+    width: 226px;
+}
+  
+.addGrade .gradeList .rightCon .title {
+    font-size: 14px;
+    line-height: 50px;
+    color: #666666;
+    padding: 0 10px;
+}
+  
+.addGrade .gradeList .rightCon .selectedList {
+    height: 319px;
+    overflow: auto;
+}
+  
+.addGrade .gradeList .rightCon .selectedList ul li {
+    padding: 10px 0;
+    line-height: 20px;
+    font-size: 13px;
+    position: relative;
+    color: #333333;
+    cursor: pointer;
+}
+  
+.addGrade .gradeList .rightCon .selectedList ul li .circle {
+    display: inline-block;
+    position: absolute;
+    width: 6px;
+    height: 6px;
+    border-radius: 3px;
+    background: #0099FF;
+    left: 7px;
+    top: 16px;
+}
+  
+.addGrade .gradeList .rightCon .selectedList ul li .name {
+    padding-right: 44px;
+    padding-left: 24px;
+}
+  
+.addGrade .gradeList .rightCon .selectedList ul li:hover {
+    background: #F8F8F8;
+}
+  
+  /* .addGrade .gradeList .rightCon .selectedList ul li:hover .deleteIcon {*/
+    /*background: url("../images/deletecircle.png") center no-repeat;*/
+    /*background-size: 100%;*/
+  /*}*/
+  
+.addGrade .gradeList .rightCon .selectedList ul li .deleteIcon {
+    background: url("../images/deletecirclegrey.png") center no-repeat;
+    position: absolute;
+    cursor: pointer;
+    top: 17px;
+    right: 17px;
+    width: 14px;
+    height: 14px;
+}
+  
+.addGrade .gradeList .rightCon .selectedList ul li .deleteIcon:hover {
+    background: url("../images/deletecircle.png") center no-repeat;
+    background-size: 100%;
+}
+  
+.addGrade .gradeList .rightCon .selectedList ul li .deleteIcon i {
+    display: inline-block;
+    width: 15px;
+    height: 40px;
+    background: url("../images/deletecirclegrey.png") center no-repeat;
+    background-size: 100%;
+}
+  
+.addGrade .gradeList .rightCon .selectedList1 ul li {
+    line-height: 25px;
+}
+  
+.addGrade .gradeList .rightCon .selectedList1 ul li .name {
+    padding-left: 45px;
+    padding-right: 10px;
+}
+  
+.addGrade .gradeList .rightCon .selectedList1 ul li img {
+    position: absolute;
+    left: 10px;
+    width: 25px;
+    height: 25px;
+    border-radius: 14px;
+}
+  
+.addGrade .layui-layer-btn {
+    text-align: center;
+}
+
+.edit-input {
+    position: relative;
+    width: 336px;
+    height: 32px;
+    padding: 6px 12px;
+    border: 1px solid #E9E9E9;
+    -webkit-box-sizing: border-box;
+     -moz-box-sizing: border-box;
+          box-sizing: border-box;
+    border-radius: 2px;
+}   
+
+.edit-input>input {
+    border: none;
+}
+
+.edit-input .input-number {
+    position: absolute;
+    top: 4px;
+    right: 12px;
+    font-size: 14px;
+    line-height: 22px;
+    color: #999;
+}
+
+.activity-type {
+    border-radius: 10px;
+    height: 925px;
+}
+
+.btn-submit-dsiable {
+    background: rgba(0, 132, 255, 0.3);
+    color: #FFFFFF;
+}
+

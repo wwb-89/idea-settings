@@ -21,6 +21,8 @@ import java.util.List;
 @AllArgsConstructor
 public class ActivityManageQueryDTO {
 
+	/** 当前机构fid */
+	private Integer fid;
 	/** 活动状态 */
 	private Integer status;
 	/** 创建活动的fid列表 */
@@ -29,5 +31,11 @@ public class ActivityManageQueryDTO {
 	private Integer topFid;
 	/** 关键字 */
 	private String sw;
+	/** 是不是严格模式， 严格模式：只显示自己创建的活动 */
+	private Integer strict;
+	/** 创建人id */
+	private Integer createUid;
+	/** 创建wfwfid */
+	private Integer createWfwfid;
 
 }

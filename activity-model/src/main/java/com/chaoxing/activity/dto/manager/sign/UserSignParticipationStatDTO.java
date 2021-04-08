@@ -23,14 +23,16 @@ public class UserSignParticipationStatDTO {
 
 	/** 报名签到id */
 	private Integer signId;
-	/** 报名id */
-	private Integer signUpId;
+	/** 报名id列表 */
+	private List<Integer> signUpIds;
 	/** 报名未开始 */
 	private Boolean signUpNotStart;
 	/** 报名已结束 */
 	private Boolean signUpEnded;
 	/** 没有名额 */
 	private Boolean noPlaces;
+	/** 是否在参与范围 */
+	private Boolean inParticipationScope;
 	/** 签到id列表 */
 	private List<Integer> signInIds;
 	/** 用户id */

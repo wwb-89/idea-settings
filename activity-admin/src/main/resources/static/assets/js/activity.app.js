@@ -264,6 +264,15 @@
         var dateObj = $this.millisecond2DateObj(date.getTime());
         return dateObj.year + "-" + dateObj.month + "-" + dateObj.day + " " + "23:59:59";
     };
+    /**
+     * 获取双选会主页地址
+     * @param activityId
+     * @param fid
+     * @returns {string}
+     */
+    activityApp.prototype.generateDualSelectIndexUrl = function (activityId, fid) {
+        return "http://appcd.chaoxing.com/form-employment/pc/double/election?activityId=" + activityId + "&wfwfid=" + fid;
+    };
     W['activityApp'] = new activityApp();
 })(window, jQuery, JSON);
 Array.prototype.remove = function (val) {
@@ -273,9 +282,9 @@ Array.prototype.remove = function (val) {
     }
 };
 Array.prototype.pushArray = function (array) {
-    var that = this;
+    var $this = this;
     $.each(array, function () {
-        that.push(this);
+        $this.push(this);
     });
 };
 Vue.filter("getCloudImgUrl", function (activity) {

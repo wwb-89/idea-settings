@@ -48,6 +48,7 @@ public class WebConfig implements WebMvcConfigurer, ErrorPageRegistrar {
 	@Override
 	public void registerErrorPages(ErrorPageRegistry registry) {
 		registry.addErrorPages(new ErrorPage(HttpStatus.NOT_FOUND, "/error/404"));
+		registry.addErrorPages(new ErrorPage(HttpStatus.FORBIDDEN, "/error/403"));
 	}
 
 }

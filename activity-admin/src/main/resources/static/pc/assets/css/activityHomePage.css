@@ -1,17 +1,20 @@
 html {
-    height:100%;
-    margin:0;
+    height: 100%;
+    margin: 0;
 }
+
 body {
     background: #F2F4F7;
     margin: 0;
     padding: 20px;
 }
+
 .container {
     border-radius: 8px;
     min-height: 860px;
     height: 100%;
 }
+
 .slider {
     float: left;
     height: 100%;
@@ -19,35 +22,35 @@ body {
     background: #ffffff;
     border-radius: 8px 0px 0px 8px;
     position: relative;
+
 }
+
 .title {
-    height: 79px;
     color: #333333;
     text-align: left;
-    padding: 0 24px;
-    display: table-cell;
-    vertical-align: middle;
+    padding: 24px;
+
 }
+
 .title span {
     font-size: 20px;
     font-weight: 600;
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    -webkit-line-clamp: 2;
 }
+
 .menu {
     width: 220px;
 }
-.entry {
-    margin-bottom: 12px;
-    border-top: 1px solid #f0f0f0;
-}
-.message {
-    margin: 12px 0 0 0;
+
+.menu-item {
     padding: 12px 0;
     border-top: 1px solid #f0f0f0;
 }
-.statistics {
-    padding: 12px 0;
-    border-top: 1px solid #f0f0f0;
-}
+
 .item {
     width: 196px;
     height: 24px;
@@ -55,18 +58,26 @@ body {
     text-align: left;
     cursor: pointer;
 }
+
+.menu .menu-item .item:hover {
+    background: rgba(0, 132, 255, 0.04);
+}
+
 .message .item {
     padding: 14px 0 14px 24px;
 }
+
 .statistics .item {
     padding: 14px 0 14px 24px;
 }
+
 .item img {
     width: 24px;
     height: 24px;
     display: block;
     float: left;
 }
+
 .item span {
     font-size: 14px;
     color: #737886;
@@ -75,6 +86,7 @@ body {
     float: left;
     margin-left: 7px;
 }
+
 .content {
     float: left;
     height: calc(100%);
@@ -83,15 +95,28 @@ body {
     background: #ffffff;
     border-left: 1px solid #f0f0f0;
 }
+
 .content iframe {
     border: none;
     width: 100%;
     height: 100%;
 }
+
 .active {
-    background: rgba(0,132,255,0.04);
+    background: rgba(0, 132, 255, 0.04);
+
 }
+
+.active span {
+    color: #0084FF;
+    font-weight: 500;
+}
+
 .edit .item {
     position: absolute;
     bottom: 16px;
+}
+
+.edit .item:hover {
+    background: rgba(0, 132, 255, 0.04);
 }

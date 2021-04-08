@@ -10,6 +10,7 @@ import org.springframework.web.client.RestTemplate;
 
 import javax.annotation.Resource;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -40,8 +41,10 @@ public class MoocApiService {
 	 */
 	public List<Integer> listUserFids(Integer uid) {
 		List<MoocUserOrgDTO> moocUserOrgs = listMoocUserOrgResult(uid);
-		if (CollectionUtils.isEmpty(moocUserOrgs)) {
-			return moocUserOrgs.stream().map(MoocUserOrgDTO::getFid).collect(Collectors.toList());
+		if (CollectionUtils.isNotEmpty(moocUserOrgs)) {
+			List<Integer> fids = moocUserOrgs.stream().map(MoocUserOrgDTO::getFid).collect(Collectors.toList());
+			Collections.reverse(fids);
+			return fids;
 		} else {
 			return new ArrayList<>();
 		}

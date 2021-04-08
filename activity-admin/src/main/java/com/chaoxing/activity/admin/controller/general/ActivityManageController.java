@@ -6,9 +6,7 @@ import com.chaoxing.activity.dto.manager.WfwGroupDTO;
 import com.chaoxing.activity.dto.manager.WfwRegionalArchitectureDTO;
 import com.chaoxing.activity.dto.module.SignAddEditDTO;
 import com.chaoxing.activity.dto.sign.SignActivityManageIndexDTO;
-import com.chaoxing.activity.model.Activity;
-import com.chaoxing.activity.model.ActivityClassify;
-import com.chaoxing.activity.model.WebTemplate;
+import com.chaoxing.activity.model.*;
 import com.chaoxing.activity.service.WebTemplateService;
 import com.chaoxing.activity.service.activity.ActivityQueryService;
 import com.chaoxing.activity.service.activity.ActivityValidationService;
@@ -66,11 +64,15 @@ public class ActivityManageController {
 	@RequestMapping("{activityId}")
 	public String activityIndex(Model model, @PathVariable Integer activityId, HttpServletRequest request) {
 		LoginUserDTO loginUser = LoginUtils.getLoginUser(request);
-		Activity activity = activityValidationService.manageAble(activityId, loginUser, null);
+		Integer operateUid = loginUser.getUid();
+		Activity activity = activityValidationService.manageAble(activityId, operateUid);
 		model.addAttribute("activity", activity);
 		Integer signId = activity.getSignId();
 		SignActivityManageIndexDTO signActivityManageIndex = signApiService.statSignActivityManageIndex(signId);
 		model.addAttribute("signActivityManageIndex", signActivityManageIndex);
+		// 是不是创建者
+		boolean creator = activityValidationService.isCreator(activity, operateUid);
+		model.addAttribute("isCreator", creator);
 		if (UserAgentUtils.isMobileAccess(request)) {
 			return "mobile/activity-index";
 		} else {
@@ -91,7 +93,7 @@ public class ActivityManageController {
 	@GetMapping("{activityId}/edit")
 	public String edit(Model model, @PathVariable Integer activityId, HttpServletRequest request, String code, Integer step) {
 		LoginUserDTO loginUser = LoginUtils.getLoginUser(request);
-		Activity activity = activityQueryService.getById(activityId);
+		Activity activity = activityValidationService.manageAble(activityId, loginUser.getUid());
 		model.addAttribute("activity", activity);
 		// 活动类型列表
 		model.addAttribute("activityTypes", activityQueryService.listActivityType());
@@ -112,11 +114,17 @@ public class ActivityManageController {
 		// 活动参与范围
 		List<WfwRegionalArchitectureDTO> wfwRegionalArchitectures = activityScopeQueryService.listByActivityId(activityId);
 		model.addAttribute("participatedOrgs", wfwRegionalArchitectures);
-
 		// 报名范围
-		List<WfwGroupDTO> wfwGroups = wfwGroupApiService.getGroupByGid(loginUser.getFid(), "0");
+		List<WfwGroupDTO> wfwGroups = wfwGroupApiService.getGroupByGid(loginUser.getFid(), 0);
 		model.addAttribute("wfwGroups", wfwGroups);
-		model.addAttribute("secondClassroomFlag", activity.getSecondClassroomFlag());
+		String activityFlag = activity.getActivityFlag();
+		model.addAttribute("activityFlag", activityFlag);
+		// flag配置的报名签到的模块
+		List<ActivityFlagSignModule> activityFlagSignModules = activityQueryService.listSignModuleByFlag(activityFlag);
+		model.addAttribute("activityFlagSignModules", activityFlagSignModules);
+		// 活动关联的报名签到模块列表
+		List<ActivitySignModule> activitySignModules = activityQueryService.listByActivityId(activityId);
+		model.addAttribute("activitySignModules", activitySignModules);
 		return "pc/activity-add-edit";
 	}
 

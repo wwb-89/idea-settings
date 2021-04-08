@@ -13,6 +13,7 @@ import lombok.*;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Objects;
 
 /**
@@ -84,8 +85,6 @@ public class Activity {
     private LocalDateTime releaseTime;
     /** 发布人id; column: release_uid*/
     private Integer releaseUid;
-    /** 状态。0：已删除，1：待发布，2：已发布，3：进行中，4：已结束; column: status*/
-    private Integer status;
     /** 是否开启审核; column: is_open_audit*/
     @TableField(value = "is_open_audit")
     private Boolean openAudit;
@@ -109,19 +108,23 @@ public class Activity {
     /** 评价是否需要审核; column: is_rating_need_audit */
     @TableField(value = "is_rating_need_audit")
     private Boolean ratingNeedAudit;
+    /** 是否开启积分设置; column: is_open_integral */
+    @TableField(value = "is_open_integral")
+    private Boolean openIntegral;
+    /** 积分值; column: integral_value*/
+    private BigDecimal integralValue;
+    /** 活动标示，通用、第二课堂、双选会等; column: activity_flag*/
+    private String activityFlag;
+    /** 第二课堂标识; column: second_classroom_flag*/
+    private Integer secondClassroomFlag;
+    /** 状态。0：已删除，1：待发布，2：已发布，3：进行中，4：已结束; column: status*/
+    private Integer status;
     /** 创建时间; column: create_time*/
     @JSONField(serializeUsing = LocalDateTimeSerializer.class, deserializeUsing = LocalDateTimeDeserializer.class)
     private LocalDateTime createTime;
     /** 修改时间; column: update_time*/
     @JSONField(serializeUsing = LocalDateTimeSerializer.class, deserializeUsing = LocalDateTimeDeserializer.class)
     private LocalDateTime updateTime;
-    /** 是否开启积分设置; column: is_open_integral */
-    @TableField(value = "is_open_integral")
-    private Boolean openIntegral;
-    /** 积分值; column: integral_value*/
-    private BigDecimal integralValue;
-    /** 第二课堂标识; column: second_classroom_flag*/
-    private Integer secondClassroomFlag;
 
     // 附加
     /** 开始时间字符串 */
@@ -133,6 +136,12 @@ public class Activity {
     /** 活动分类名称 */
     @TableField(exist = false)
     private String activityClassifyName;
+    /** 报名人数 */
+    @TableField(exist = false)
+    private Integer signedUpNum;
+    /** 组织者uid列表 */
+    @TableField(exist = false)
+    private List<Integer> managerUids;
 
     @Getter
     public enum StatusEnum {
@@ -162,6 +171,14 @@ public class Activity {
         }
     }
 
+    /**活动状态枚举
+     * @className Activity
+     * @description
+     * @author wwb
+     * @blame wwb
+     * @date 2021-03-29 10:49:06
+     * @version ver 1.0
+     */
     @Getter
     public enum AuditStatusEnum {
         /** 已删除 */
@@ -184,7 +201,44 @@ public class Activity {
                     return auditStatusEnum;
                 }
             }
-            throw new BusinessException("未知的审核状态");
+            return null;
+        }
+    }
+
+    /** 活动标示枚举
+     * @className Activity
+     * @description 
+     * @author wwb
+     * @blame wwb
+     * @date 2021-03-29 10:50:40
+     * @version ver 1.0
+     */
+    @Getter
+    public enum ActivityFlag {
+
+        /** 通用 */
+        NORMAL("通用", "normal"),
+        /** 第二课堂 */
+        SECOND_CLASSROOM("第二课堂", "second_classroom"),
+        /** 双选会 */
+        DUAL_SELECT("双选会", "dual_select");
+
+        private String name;
+        private String value;
+
+        ActivityFlag(String name, String value) {
+            this.name = name;
+            this.value = value;
+        }
+
+        public static ActivityFlag fromValue(String value) {
+            ActivityFlag[] values = ActivityFlag.values();
+            for (ActivityFlag activityFlag : values) {
+                if (Objects.equals(activityFlag.getValue(), value)) {
+                    return activityFlag;
+                }
+            }
+            return null;
         }
 
     }

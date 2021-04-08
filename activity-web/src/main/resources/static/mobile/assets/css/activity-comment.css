@@ -236,3 +236,44 @@ body{
     line-height: 3.125rem;
     color: #ffffff;
 }
+.dialog-overlay {
+    background-color: rgba(0, 0, 0, 0.3);
+    padding: 0 .5rem;
+    box-sizing: border-box;
+}
+
+.dialog-overlay .content {
+    position: absolute;
+    left: .5rem;
+    right: .5rem;
+    bottom: 0;
+}
+
+.dialog-overlay .content>div {
+    width: 100%;
+    border-radius: .78125rem;
+    background-color: #ffffff;
+    box-sizing: border-box;
+    margin-bottom: .5rem;
+    overflow: hidden;
+}
+
+.dialog-overlay .content .sure p {
+    padding: 1rem;
+    line-height: 1.5625rem;
+}
+
+.dialog-overlay .content .sure p:first-child {
+    border-bottom: 1px solid #EEEEEE;
+}
+
+.dialog-overlay .content .blue {
+    font-size: 1.25rem;
+    color: #0084FF;
+}
+
+.dialog-overlay .content .cancle {
+    font-size: 1.25rem;
+    line-height: 1.5625rem;
+    padding: 1rem;
+}

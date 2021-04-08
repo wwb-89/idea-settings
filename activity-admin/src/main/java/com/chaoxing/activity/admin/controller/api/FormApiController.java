@@ -2,7 +2,7 @@ package com.chaoxing.activity.admin.controller.api;
 
 import com.chaoxing.activity.dto.LoginUserDTO;
 import com.chaoxing.activity.dto.RestRespDTO;
-import com.chaoxing.activity.dto.manager.FormDTO;
+import com.chaoxing.activity.dto.manager.form.FormDTO;
 import com.chaoxing.activity.service.manager.FormApiService;
 import com.chaoxing.activity.admin.util.LoginUtils;
 import org.springframework.web.bind.annotation.PostMapping;
