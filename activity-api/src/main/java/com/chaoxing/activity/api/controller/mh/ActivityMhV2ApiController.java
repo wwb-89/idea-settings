@@ -4,6 +4,7 @@ import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.chaoxing.activity.dto.RestRespDTO;
 import com.chaoxing.activity.dto.manager.sign.SignStatDTO;
+import com.chaoxing.activity.dto.manager.sign.SignUp;
 import com.chaoxing.activity.dto.manager.sign.UserSignParticipationStatDTO;
 import com.chaoxing.activity.dto.mh.MhGeneralAppResultDataDTO;
 import com.chaoxing.activity.model.Activity;
@@ -163,14 +164,12 @@ public class ActivityMhV2ApiController {
 			return result;
 		}
 		List<Integer> signInIds = userSignParticipationStat.getSignInIds();
+		List<Integer> signUpIds = userSignParticipationStat.getSignUpIds();
 		// 报名信息
-		boolean existSignUp = CollectionUtils.isNotEmpty(userSignParticipationStat.getSignUpIds());
+		boolean existSignUp = CollectionUtils.isNotEmpty(signUpIds);
 		if (existSignUp) {
 			if (userSignParticipationStat.getSignedUp()) {
 				// 已报名
-				if (activityFlagValidateService.isDualSelect(activity)) {
-					result.addAll(buildBtnField("进入会场", getFlag(availableFlags), getDualSelectIndexUrl(activity), "1"));
-				}
 				if (CollectionUtils.isNotEmpty(signInIds)) {
 					result.addAll(buildBtnField("去签到", getFlag(availableFlags), userSignParticipationStat.getSignInUrl(), "1"));
 				}
@@ -191,12 +190,17 @@ public class ActivityMhV2ApiController {
 			} else if (userSignParticipationStat.getNoPlaces()) {
 				result.addAll(buildBtnField("名额已满", getFlag(availableFlags), "", "0"));
 			} else {
-				result.addAll(buildBtnField("报名参加", getFlag(availableFlags), userSignParticipationStat.getSignUpUrl(), "1"));
+				String showName = "报名参加";
+				if (signUpIds.size() == 1) {
+					SignUp signUp = userSignParticipationStat.getSignUp();
+					String btnName = signUp.getBtnName();
+					if (StringUtils.isNotBlank(btnName)) {
+						showName = btnName;
+					}
+				}
+				result.addAll(buildBtnField(showName, getFlag(availableFlags), userSignParticipationStat.getSignUpUrl(), "1"));
 			}
 		}else {
-			if (activityFlagValidateService.isDualSelect(activity)) {
-				result.addAll(buildBtnField("进入会场", getFlag(availableFlags), getDualSelectIndexUrl(activity), "1"));
-			}
 			if (CollectionUtils.isNotEmpty(signInIds)) {
 				result.addAll(buildBtnField("去签到", getFlag(availableFlags), userSignParticipationStat.getSignInUrl(), "1"));
 			}

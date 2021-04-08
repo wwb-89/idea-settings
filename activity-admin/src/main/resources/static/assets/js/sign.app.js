@@ -75,7 +75,7 @@
             fillInfo: false,
             fillInfoFormId: null,
             publicList: false,
-            btnName: "报名",
+            btnName: activityFlagSignModule.btnName ? activityFlagSignModule.btnName : "报名参与",
             enableLimitParticipateScope: activityFlagSignModule.enableLimitParticipateScope,
             limitParticipateScope: false,
             limitParticipateScopeType: activityFlagSignModule.limitParticipateScopeType,

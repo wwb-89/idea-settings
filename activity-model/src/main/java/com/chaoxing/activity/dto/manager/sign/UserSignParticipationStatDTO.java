@@ -25,6 +25,8 @@ public class UserSignParticipationStatDTO {
 	private Integer signId;
 	/** 报名id列表 */
 	private List<Integer> signUpIds;
+	/** 报名(如果只有一个报名的情况查询出第一个报名) */
+	private SignUp signUp;
 	/** 报名未开始 */
 	private Boolean signUpNotStart;
 	/** 报名已结束 */
