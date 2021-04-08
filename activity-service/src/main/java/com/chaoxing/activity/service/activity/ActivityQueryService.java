@@ -315,7 +315,7 @@ public class ActivityQueryService {
 	 * @return com.baomidou.mybatisplus.extension.plugins.pagination.Page<com.chaoxing.activity.model.Activity>
 	*/
 	public Page<Activity> pageManaged(Page<Activity> page, Integer uid, String sw) {
-		return activityMapper.pageUserCreated(page, uid, sw);
+		return activityMapper.pageUserManaged(page, uid, sw);
 	}
 
 	/**根据活动id查询活动
