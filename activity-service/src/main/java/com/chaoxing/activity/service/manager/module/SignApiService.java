@@ -571,6 +571,9 @@ public class SignApiService {
 	 * @return java.util.List<com.chaoxing.activity.dto.manager.sign.SignStatDTO>
 	*/
 	public List<SignStatDTO> statSignSignedUpNum(List<Integer> signIds) {
+		if (CollectionUtils.isNotEmpty(signIds)) {
+			return Lists.newArrayList();
+		}
 		HttpHeaders httpHeaders = new HttpHeaders();
 		httpHeaders.setContentType(MediaType.APPLICATION_JSON);
 		JSONObject params = new JSONObject();

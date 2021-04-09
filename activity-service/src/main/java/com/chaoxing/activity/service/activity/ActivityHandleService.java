@@ -296,7 +296,7 @@ public class ActivityHandleService {
 			if (workId == null) {
 				// 创建作品征集
 				WorkFormDTO workForm = WorkFormDTO.builder()
-						.name(activity.getName())
+						.name("作品征集")
 						.wfwfid(loginUser.getFid())
 						.uid(loginUser.getUid())
 						.startTime(DateUtils.date2Timestamp(activity.getStartTime()))
