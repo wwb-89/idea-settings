@@ -115,8 +115,11 @@ public class Activity {
     private BigDecimal integralValue;
     /** 活动标示，通用、第二课堂、双选会等; column: activity_flag*/
     private String activityFlag;
-    /** 第二课堂标识; column: second_classroom_flag*/
-    private Integer secondClassroomFlag;
+    /** 是否开启作品征集; column: is_open_work*/
+    @TableField(value = "is_open_work")
+    private Boolean openWork;
+    /** 作品征集id; column: work_id*/
+    private Integer workId;
     /** 状态。0：已删除，1：待发布，2：已发布，3：进行中，4：已结束; column: status*/
     private Integer status;
     /** 创建时间; column: create_time*/

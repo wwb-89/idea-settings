@@ -4,7 +4,6 @@ import com.chaoxing.activity.util.CookieUtils;
 import com.chaoxing.activity.util.UserAgentUtils;
 import com.chaoxing.activity.util.constant.UrlConstant;
 import com.chaoxing.activity.util.enums.ModuleTypeEnum;
-import com.chaoxing.activity.util.exception.BusinessException;
 import com.chaoxing.activity.util.exception.WxAccessException;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -74,14 +73,7 @@ public class ActivityModuleApiController {
 	}
 
 	private String getWorkAccessUrl(Integer activityId, HttpServletRequest request) {
-		boolean mobileAccess = UserAgentUtils.isMobileAccess(request);
-		String accessUrl;
-		if (mobileAccess) {
-			accessUrl = "https://reading.chaoxing.com/m/activity/" + activityId;
-		} else {
-			accessUrl = "http://reading.chaoxing.com/activity/" + activityId;
-		}
-		return accessUrl;
+		return "http://reading.chaoxing.com/zj/activity/forward/" + activityId;
 	}
 
 	private String getStarAccessUrl(Integer starId, HttpServletRequest request) {

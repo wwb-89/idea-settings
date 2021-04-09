@@ -55,6 +55,9 @@ public class WorkApiService {
 		map.add("activityName", workForm.getName());
 		map.add("wfwfid", workForm.getWfwfid());
 		map.add("uid", workForm.getUid());
+		map.add("startTime", workForm.getStartTime());
+		map.add("endTime", workForm.getEndTime());
+		map.add("edition", "v2");
 		HttpHeaders httpHeaders = new HttpHeaders();
 		httpHeaders.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
 		HttpEntity<MultiValueMap<String, Object>> httpEntity = new HttpEntity<>(map, httpHeaders);

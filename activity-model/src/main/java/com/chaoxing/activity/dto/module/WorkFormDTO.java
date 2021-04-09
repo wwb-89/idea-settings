@@ -27,5 +27,9 @@ public class WorkFormDTO {
 	private Integer wfwfid;
 	/** uid */
 	private Integer uid;
+	/** 开始时间 */
+	private Long startTime;
+	/** 结束时间 */
+	private Long endTime;
 
 }

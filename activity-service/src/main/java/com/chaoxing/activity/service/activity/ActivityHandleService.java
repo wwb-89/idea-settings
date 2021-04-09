@@ -11,6 +11,7 @@ import com.chaoxing.activity.dto.mh.MhCloneParamDTO;
 import com.chaoxing.activity.dto.mh.MhCloneResultDTO;
 import com.chaoxing.activity.dto.module.SignAddEditDTO;
 import com.chaoxing.activity.dto.module.SignAddEditResultDTO;
+import com.chaoxing.activity.dto.module.WorkFormDTO;
 import com.chaoxing.activity.mapper.ActivityAreaFlagMapper;
 import com.chaoxing.activity.mapper.ActivityMapper;
 import com.chaoxing.activity.mapper.ActivitySignModuleMapper;
@@ -24,6 +25,8 @@ import com.chaoxing.activity.service.manager.GuanliApiService;
 import com.chaoxing.activity.service.manager.MhApiService;
 import com.chaoxing.activity.service.manager.WfwRegionalArchitectureApiService;
 import com.chaoxing.activity.service.manager.module.SignApiService;
+import com.chaoxing.activity.service.manager.module.WorkApiService;
+import com.chaoxing.activity.util.DateUtils;
 import com.chaoxing.activity.util.DistributedLock;
 import com.chaoxing.activity.util.constant.ActivityMhUrlConstant;
 import com.chaoxing.activity.util.constant.ActivityModuleConstant;
@@ -44,6 +47,7 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.function.Consumer;
 
 /**数据处理服务
@@ -81,6 +85,8 @@ public class ActivityHandleService {
 	private ActivityChangeEventService activityChangeEventService;
 	@Resource
 	private ActivityManagerService activityManagerService;
+	@Resource
+	private WorkApiService workApiService;
 
 	@Resource
 	private SignApiService signApiService;
@@ -110,6 +116,8 @@ public class ActivityHandleService {
 		// 添加报名签到
 		SignAddEditResultDTO signAddEditResult = handleSign(activity, signAddEdit, loginUser, request);
 		activity.setSignId(signAddEditResult.getSignId());
+		// 添加作品征集
+		handleWork(activity, loginUser);
 		// 保存活动
 		// 处理活动的状态, 新增的活动都是待发布的
 		activity.setStatus(Activity.StatusEnum.WAIT_RELEASE.getValue());
@@ -272,6 +280,34 @@ public class ActivityHandleService {
 		}
 	}
 
+	/**处理作品征集
+	 * @Description 
+	 * @author wwb
+	 * @Date 2021-04-09 15:04:39
+	 * @param activity
+	 * @param loginUser
+	 * @return void
+	*/
+	private void handleWork(Activity activity, LoginUserDTO loginUser) {
+		Boolean openWork = activity.getOpenWork();
+		openWork = Optional.ofNullable(openWork).orElse(Boolean.FALSE);
+		if (openWork) {
+			Integer workId = activity.getWorkId();
+			if (workId == null) {
+				// 创建作品征集
+				WorkFormDTO workForm = WorkFormDTO.builder()
+						.name(activity.getName())
+						.wfwfid(loginUser.getFid())
+						.uid(loginUser.getUid())
+						.startTime(DateUtils.date2Timestamp(activity.getStartTime()))
+						.endTime(DateUtils.date2Timestamp(activity.getEndTime()))
+						.build();
+				workId = workApiService.create(workForm);
+				activity.setWorkId(workId);
+			}
+		}
+	}
+
 	/**处理活动所属范围
 	 * @Description
 	 * @author wwb
@@ -353,6 +389,8 @@ public class ActivityHandleService {
 			signAddEdit.setId(signId);
 			SignAddEditResultDTO signAddEditResult = handleSign(activity, signAddEdit, loginUser, request);
 			handleActivitySignModule(activity.getId(), signAddEditResult);
+			// 征集相关
+			handleWork(activity, loginUser);
 			// 处理活动相关
 			LocalDateTime startTime = activity.getStartTime();
 			LocalDateTime endTime = activity.getEndTime();
@@ -382,6 +420,8 @@ public class ActivityHandleService {
 			existActivity.setIntegralValue(activity.getIntegralValue());
 			existActivity.setOpenRating(activity.getOpenRating());
 			existActivity.setRatingNeedAudit(activity.getRatingNeedAudit());
+			existActivity.setOpenWork(activity.getOpenWork());
+			existActivity.setWorkId(activity.getWorkId());
 			// 根据活动时间判断状态
 			Integer status = activityStatusUpdateService.calActivityStatus(existActivity);
 			existActivity.setStatus(status);

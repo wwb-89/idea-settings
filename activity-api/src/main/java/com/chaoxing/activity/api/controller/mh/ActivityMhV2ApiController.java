@@ -165,6 +165,9 @@ public class ActivityMhV2ApiController {
 		}
 		List<Integer> signInIds = userSignParticipationStat.getSignInIds();
 		List<Integer> signUpIds = userSignParticipationStat.getSignUpIds();
+		Boolean openWork = activity.getOpenWork();
+		openWork = Optional.ofNullable(openWork).orElse(Boolean.FALSE);
+		Integer workId = activity.getWorkId();
 		// 报名信息
 		boolean existSignUp = CollectionUtils.isNotEmpty(signUpIds);
 		if (existSignUp) {
@@ -172,6 +175,9 @@ public class ActivityMhV2ApiController {
 				// 已报名
 				if (activityFlagValidateService.isDualSelect(activity)) {
 					result.addAll(buildBtnField("进入会场", getFlag(availableFlags), getDualSelectIndexUrl(activity), "1"));
+				}
+				if (openWork && workId != null) {
+					result.addAll(buildBtnField("提交作品", getFlag(availableFlags), getWorkIndexUrl(workId), "1"));
 				}
 				if (CollectionUtils.isNotEmpty(signInIds)) {
 					result.addAll(buildBtnField("去签到", getFlag(availableFlags), userSignParticipationStat.getSignInUrl(), "1"));
@@ -207,6 +213,9 @@ public class ActivityMhV2ApiController {
 			if (activityFlagValidateService.isDualSelect(activity)) {
 				result.addAll(buildBtnField("进入会场", getFlag(availableFlags), getDualSelectIndexUrl(activity), "1"));
 			}
+			if (openWork && workId != null) {
+				result.addAll(buildBtnField("提交作品", getFlag(availableFlags), getWorkIndexUrl(workId), "1"));
+			}
 			if (CollectionUtils.isNotEmpty(signInIds)) {
 				result.addAll(buildBtnField("去签到", getFlag(availableFlags), userSignParticipationStat.getSignInUrl(), "1"));
 			}
@@ -236,6 +245,17 @@ public class ActivityMhV2ApiController {
 	*/
 	private String getDualSelectIndexUrl(Activity activity) {
 		return String.format(UrlConstant.DUAL_SELECT_INDEX_URL, activity.getId(), activity.getCreateFid());
+	}
+
+	/**获取作品征集主页地址
+	 * @Description 
+	 * @author wwb
+	 * @Date 2021-04-09 15:30:32
+	 * @param workId
+	 * @return java.lang.String
+	*/
+	private String getWorkIndexUrl(Integer workId) {
+		return String.format(UrlConstant.WORK_INDEX_URL, workId);
 	}
 
 	private String getFlag(List<Integer> availableFlags) {
