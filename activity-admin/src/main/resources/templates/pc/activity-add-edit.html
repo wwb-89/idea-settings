@@ -290,7 +290,7 @@
                 <div class="form-item" v-show="signIn.way == 2">
                     <label class="label"><img src="/static/pc/assets/images/required.png" th:src="@{/pc/assets/images/required.png}" class="required-img">位置</label>
                     <div class="input-box">
-                        <input type="text" readonly required lay-verify="required" v-model.trim="signIn.address" placeholder="请选择签到地点" autocomplete="off" class="layui-input name show-addr" style="cursor: pointer;" @click="showSignInMap(index)">
+                        <input type="text" readonly required lay-verify="required" v-model.trim="signIn.address" :placeholder="'请选择'+ signIn.typeName +'地点'" autocomplete="off" class="layui-input name show-addr" style="cursor: pointer;" @click="showSignInMap(index)">
                         <img src="/static/pc/assets/images/location.png" th:src="@{/pc/assets/images/location.png}" class="length icon">
                         <input type="text" required lay-verify="required" v-model.trim="signIn.detailAddress" placeholder="详细地址，例：E5栋1308室" autocomplete="off" class="layui-input name show-addr-detailed">
                     </div>
@@ -303,12 +303,12 @@
                                 <el-option v-for="(scanCodeWay, index) of scanCodeWays" :key="'scan-code-way-' + index" :label="scanCodeWay.name" :value="scanCodeWay.value"></el-option>
                             </el-select>
                         </div>
-                        <span v-show="signIn.scanCodeWay == 1" class="tips">参与者需扫描签到二维码进行签到</span>
-                        <span v-show="signIn.scanCodeWay == 2" class="tips">需管理员扫描参与者的二维码进行签到</span>
+                        <span v-show="signIn.scanCodeWay == 1" class="tips">参与者需扫描签到二维码进行{{signIn.typeName}}</span>
+                        <span v-show="signIn.scanCodeWay == 2" class="tips">需管理员扫描参与者的二维码进行{{signIn.typeName}}</span>
                     </div>
                 </div>
                 <div class="form-item">
-                    <label class="label"><img src="/static/pc/assets/images/required.png" th:src="@{/pc/assets/images/required.png}" class="required-img">签到时间</label>
+                    <label class="label"><img src="/static/pc/assets/images/required.png" th:src="@{/pc/assets/images/required.png}" class="required-img">{{signIn.typeName}}时间</label>
                     <div class="input-box">
                         <el-date-picker v-model="signIn.timeScope"
                                         type="datetimerange"
@@ -330,10 +330,10 @@
                     </div>
                 </div>
                 <div class="form-item">
-                    <label class="label">签到名单公开</label>
+                    <label class="label">{{signIn.typeName}}名单公开</label>
                     <div class="input-box">
                         <el-switch v-model="signIn.publicList"></el-switch>
-                        <span class="tips">开启后，所有人都能看到签到人员名单</span>
+                        <span class="tips">开启后，所有人都能看到{{signIn.typeName}}人员名单</span>
                     </div>
                 </div>
                 <div class="form-item" v-if="false">
