@@ -8,7 +8,7 @@ import org.springframework.stereotype.Service;
 import javax.annotation.Resource;
 import java.util.List;
 
-/**
+/**地区组别服务
  * @author wwb
  * @version ver 1.0
  * @className GroupRegionFilterService

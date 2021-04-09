@@ -165,12 +165,12 @@ public class IndexController {
 		model.addAttribute("flag", flag);
 		if (StringUtils.isEmpty(style)) {
 			if (UserAgentUtils.isMobileAccess(request)) {
-				return "mobile/index";
+				return "mobile/index-new";
 			}
 			return "pc/index";
 		}else {
 			if (UserAgentUtils.isMobileAccess(request)) {
-				return "mobile/index";
+				return "mobile/index-new";
 			}
 			return "pc/activity/market/activity-market-" + style;
 		}
@@ -187,8 +187,7 @@ public class IndexController {
 	 * @return java.lang.String
 	 */
 	@RequestMapping("my")
-	public String my(HttpServletRequest request, Model model, String areaCode, @RequestParam(defaultValue = "") String flag) {
-		areaCode = Optional.ofNullable(areaCode).orElse("");
+	public String my(HttpServletRequest request, Model model, @RequestParam(defaultValue = "") String areaCode, @RequestParam(defaultValue = "") String flag) {
 		model.addAttribute("areaCode", areaCode);
 		model.addAttribute("flag", flag);
 		if (UserAgentUtils.isMobileAccess(request)) {
