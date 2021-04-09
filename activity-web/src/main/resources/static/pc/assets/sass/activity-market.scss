@@ -390,6 +390,7 @@ body {
       ul {
         li {
           width: calc(33.333% - 16px);
+          height: 283px;
           margin-right: 24px!important;
           &:nth-child(3n){
             margin-right: 0!important;
@@ -408,6 +409,7 @@ body {
         li {
           width: calc(25% - 18px);
           margin-right: 24px!important;
+          height: 280px;
           &:nth-child(4n){
             margin-right: 0!important;
           }
@@ -424,6 +426,7 @@ body {
         li {
           width: calc(20% - 19.2px);
           margin-right: 24px!important;
+          height: 305px;
           &:nth-child(5n){
             margin-right: 0!important;
           }
@@ -440,6 +443,7 @@ body {
         li {
           width: calc(16.666% - 20px);
           margin-right: 24px!important;
+          height: 306px;
           &:nth-child(6n){
             margin-right: 0!important;
           }

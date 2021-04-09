@@ -471,6 +471,7 @@ body {
 @media screen and (min-width: 1080px) and (max-width: 1365px) {
   .activity-market2 .card-list ul li {
     width: calc(33.333% - 16px);
+    height: 283px;
     margin-right: 24px !important;
   }
   .activity-market2 .card-list ul li:nth-child(3n) {
@@ -482,6 +483,7 @@ body {
   .activity-market2 .card-list ul li {
     width: calc(25% - 18px);
     margin-right: 24px !important;
+    height: 280px;
   }
   .activity-market2 .card-list ul li:nth-child(4n) {
     margin-right: 0 !important;
@@ -492,6 +494,7 @@ body {
   .activity-market2 .card-list ul li {
     width: calc(20% - 19.2px);
     margin-right: 24px !important;
+    height: 305px;
   }
   .activity-market2 .card-list ul li:nth-child(5n) {
     margin-right: 0 !important;
@@ -502,6 +505,7 @@ body {
   .activity-market2 .card-list ul li {
     width: calc(16.666% - 20px);
     margin-right: 24px !important;
+    height: 306px;
   }
   .activity-market2 .card-list ul li:nth-child(6n) {
     margin-right: 0 !important;
