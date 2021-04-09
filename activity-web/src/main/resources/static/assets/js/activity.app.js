@@ -264,6 +264,28 @@
         }
     };
     /**
+     * 获取我的活动状态说明
+     * @param status
+     * @returns {string|*}
+     */
+    activityApp.prototype.getMyActivityStatusInstructions = function (status) {
+        var $this = this;
+        if ($this.isEmpty(status)) {
+            return status;
+        }
+        switch (status) {
+            case 0:
+                return "已删除";
+            case 1:
+            case 2:
+                return "未开始";
+            case 3:
+                return "进行中";
+            default:
+                return "已结束";
+        }
+    };
+    /**
      * 获取活动默认封面云盘id
      * @returns {string}
      */
@@ -290,6 +312,14 @@
     activityApp.prototype.getRelativeUrl = function (url) {
         return document.location.pathname + url;
     };
+    /**
+     * 获取活动管理主页url
+     * @param activityId
+     * @returns {string}
+     */
+    activityApp.prototype.getActivityManageIndexUrl = function (activityId) {
+        return "http://manage.hd.chaoxing.com/activity/" + activityId;
+    };
     W['activityApp'] = new activityApp();
 })(window, jQuery, JSON);
 Array.prototype.remove = function (val) {
@@ -309,6 +339,9 @@ Vue.filter("getCloudImgUrl", function (cloudId) {
 });
 Vue.filter("activityStatusInstructions", function (status) {
     return activityApp.getActivityStatusInstructions(status);
+});
+Vue.filter("myActivityStatusInstructions", function (status) {
+    return activityApp.getMyActivityStatusInstructions(status);
 });
 Vue.filter("timestamp2ChineseYMD", function (timestamp) {
     var dateObj = activityApp.millisecond2DateObj(timestamp);

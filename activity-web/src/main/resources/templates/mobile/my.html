@@ -67,7 +67,7 @@
 				<li v-for="(activity, index) of collecteds" :key="'activity-' + index" class="list-item" data-type="0" @touchstart.capture="touchStart" @touchend.capture="touchEnd" @click="collectedDetail(index)">
 					<div class="inner">
 						<div class="img-box border">
-							<p :class="{'tips': true, 'color1': (activity.status == 3), 'color2': (activity.status == 2), 'color3': (activity.status == 4)}">{{activity.status | activityStatusInstructions}}</p>
+							<p :class="{'tips': true, 'color1': (activity.status == 3), 'color2': (activity.status == 2), 'color3': (activity.status == 4)}">{{activity.status | myActivityStatusInstructions}}</p>
 							<div class="js-crop-img">
 								<img :src="activity | getCloudImgUrl">
 							</div>
@@ -91,7 +91,7 @@
 				<li v-for="(activity, index) of managings" :key="'activity-' + index" class="list-item" data-type="0" @touchstart.capture="touchStart" @touchend.capture="touchEnd" @click="managingDetail(index)">
 					<div class="inner">
 						<div class="img-box border">
-							<p :class="{'tips': true, 'color1': (activity.status == 3), 'color2': (activity.status == 2), 'color3': (activity.status == 4)}">{{activity.status | activityStatusInstructions}}</p>
+							<p :class="{'tips': true, 'color1': (activity.status == 3), 'color2': (activity.status == 2), 'color3': (activity.status == 4)}">{{activity.status | myActivityStatusInstructions}}</p>
 							<div class="js-crop-img">
 								<img :src="activity | getCloudImgUrl">
 							</div>
@@ -103,8 +103,7 @@
 						</div>
 					</div>
 					<div class="handel numTotal2">
-						<a class="edit" v-if="activity.status == 1" @click="release(index, $event)">发布</a>
-						<a class="delete" v-if="activity.status != 1" @click="cancelRelease(index, $event)">下架</a>
+						<a class="delete" v-if="activity.status != 1" @click="toDelete(index, $event)">下架</a>
 					</div>
 				</li>
 			</ul>
@@ -137,7 +136,7 @@
 				return "报名审核中";
 			}
 			// 返回活动的状态
-			return activityApp.getActivityStatusInstructions(activity.status);
+			return activityApp.getMyActivityStatusInstructions(activity.status);
 		});
 		function ready() {
 			activityVue = new Vue({
@@ -510,6 +509,21 @@
 						}, function () {
 						});
 					},
+					toDelete: function (index, e) {
+						e.stopPropagation();
+						var $this = this;
+						var activity = $this.managings[index];
+						var url = ctx + "/api/manage/activity/" + activity.id + "/delete";
+						$this.restSlide();
+						app.confirm("", "确认删除？", function () {
+							app.ajaxPostLoading(url, {}, function () {
+								$this.resetManaging();
+							}, function () {
+
+							}, "删除");
+						}, function () {
+						});
+					},
 					// 已报名的活动详情
 					signedupDetail: function (index) {
 						var $this = this;
@@ -526,7 +540,10 @@
 					managingDetail: function (index) {
 						var $this = this;
 						var activity = $this.managings[index];
-						$this.detail(activity);
+						var url = activityApp.getActivityManageIndexUrl(activity.id);
+						if (!activityApp.isEmpty(url)) {
+							app.openUrl(url);
+						}
 					},
 					// 活动详情
 					detail: function (activity) {

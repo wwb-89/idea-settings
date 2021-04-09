@@ -71,7 +71,7 @@
 					<li v-for="(activity, index) of collecteds" :key="'activity-' + index">
 						<div class="inner">
 							<div class="img-box">
-								<p :class="{'tips': true, 'color1': (activity.status == 3), 'color2': (activity.status == 2), 'color3': (activity.status == 4)}">{{activity.status | activityStatusInstructions}}</p>
+								<p :class="{'tips': true, 'color1': (activity.status == 3), 'color2': (activity.status == 2), 'color3': (activity.status == 4)}">{{activity.status | myActivityStatusInstructions}}</p>
 								<div class="js-crop-img">
 									<img :src="activity | getCloudImgUrl">
 								</div>
@@ -95,21 +95,19 @@
 					<li v-for="(activity, index) of managings" :key="'activity-' + index">
 						<div class="inner">
 							<div class="img-box">
-								<p :class="{'tips': true, 'color1': (activity.status == 3), 'color2': (activity.status == 2), 'color3': (activity.status == 4)}">{{activity.status | activityStatusInstructions}}</p>
+								<p :class="{'tips': true, 'color1': (activity.status == 3), 'color2': (activity.status == 2), 'color3': (activity.status == 4)}">{{activity.status | myActivityStatusInstructions}}</p>
 								<div class="js-crop-img">
 									<img :src="activity | getCloudImgUrl">
 								</div>
 							</div>
 							<div class="card-info">
-								<h2 class="title overHidden1" @click="managingDetail(index)">{{activity.name}}</h2>
+								<h2 class="title overHidden1" @click="activityManageIndex(index)">{{activity.name}}</h2>
 								<p class="time">{{activity.startTime | activityTimeFormatter}} ～ {{activity.endTime | activityTimeFormatter}}</p>
 								<p class="address">{{activity.address}}{{activity.detailAddress ? activity.detailAddress : ''}}</p>
 							</div>
 						</div>
 						<div class="handel">
-							<a class="edit" href="javascript:" v-if="activity.status == 1" @click="release(index, $event)">发布</a>
-							<a class="cancel" href="javascript:" v-if="activity.status != 1" @click="cancelRelease(index, $event)">下架</a>
-							<a class="edit" href="javascript:" @click="toEdit(index, $event)">编辑</a>
+							<a class="edit" href="javascript:" @click="toDelete(index, $event)">编辑</a>
 						</div>
 					</li>
 				</ul>
@@ -130,6 +128,8 @@
 	<vue-confirm ref="release" :message="'发布后，该活动将展示在活动市场中'" :sure-btn-name="'发布'" @callback="releaseSubmit"></vue-confirm>
 	<!--下架-->
 	<vue-confirm ref="canRelease" :message="'下架后，该活动将不在活动广场中显示'" :sure-btn-name="'下架'" @callback="cancelReleaseSubmit"></vue-confirm>
+	<!--删除-->
+	<vue-confirm ref="deleteWindow" :message="'删除后，将清空该活动的相关信息和记录'" :sure-btn-name="'删除'" @callback="deleteSubmit"></vue-confirm>
 </div>
 <div th:replace="pc/include/common_js :: common_js(~{::script})">
 	<!-- 引入组件库 -->
@@ -150,7 +150,7 @@
 				return "报名审核中";
 			}
 			// 返回活动的状态
-			return activityApp.getActivityStatusInstructions(activity.status);
+			return activityApp.getMyActivityStatusInstructions(activity.status);
 		});
 		activityVue = new Vue({
 			el: "#activity-vue",
@@ -192,8 +192,8 @@
 					sw: ""
 				},
 				managingLoaded: false,
-
-				handleIndex: ""
+				// 操作的活动下标
+				operateIndex: ""
 			},
 			mounted: function () {
 				var $this = this;
@@ -394,19 +394,19 @@
 				// 取消报名
 				cancelSignUp: function (index) {
 					var $this = this;
-					$this.handleIndex = index;
+					$this.operateIndex = index;
 					$this.$refs.cancelSignUp.show = true;
 				},
 				cancelSignUpSubmit: function () {
 					var $this = this;
-					var activity = $this.signedUps[$this.handleIndex];
+					var activity = $this.signedUps[$this.operateIndex];
 					var url = ctx + "/api/sign-up/" + activity.signUpId + "/cancel";
 					app.ajaxPostWithLoading(url, {}, function (data) {
 						if (data.success) {
 							app.showMsg("取消报名成功", function () {
 								// 删除这条数据
 								var signedUps = $this.signedUps;
-								signedUps.splice($this.handleIndex, 1);
+								signedUps.splice($this.operateIndex, 1);
 								$this.signedUps = signedUps;
 								$this.$nextTick(function () {
 									cropImgFun("body");
@@ -426,18 +426,18 @@
 				// 撤销申请
 				revocationSignUp: function (index) {
 					var $this = this;
-					$this.handleIndex = index;
+					$this.operateIndex = index;
 					$this.$refs.revocationSignUp.show = true;
 				},
 				revocationSignUpSubmit: function () {
 					var $this = this;
-					var activity = $this.signedUps[$this.handleIndex];
+					var activity = $this.signedUps[$this.operateIndex];
 					var url = ctx + "/api/sign-up/" + activity.signUpId + "/revocation";
 					app.ajaxPostWithLoading(url, {}, function (data) {
 						if (data.success) {
 							// 删除这条数据
 							var signedUps = $this.signedUps;
-							signedUps.splice($this.handleIndex, 1);
+							signedUps.splice($this.operateIndex, 1);
 							$this.signedUps = signedUps;
 							$this.$nextTick(function () {
 								cropImgFun("body");
@@ -484,8 +484,8 @@
 				// 发布
 				release: function (index) {
 					var $this = this;
-					$this.handleIndex = index;
-					var activity = $this.managings[$this.handleIndex];
+					$this.operateIndex = index;
+					var activity = $this.managings[$this.operateIndex];
 					if (activityApp.isEmpty(activity.pageId)) {
 						app.showMsg("活动未创建完成，请选择活动模板", function () {
 							var url = "http://manage.hd.chaoxing.com/activity/" + activity.id + "/edit?step=2";
@@ -497,7 +497,7 @@
 				},
 				releaseSubmit: function () {
 					var $this = this;
-					var activity = $this.managings[$this.handleIndex];
+					var activity = $this.managings[$this.operateIndex];
 					var url = ctx + "/api/manage/activity/" + activity.id + "/release";
 					app.ajaxPostWithLoading(url, {}, function (data) {
 						if (data.success) {
@@ -518,12 +518,12 @@
 				// 下架
 				cancelRelease: function (index) {
 					var $this = this;
-					$this.handleIndex = index;
+					$this.operateIndex = index;
 					$this.$refs.canRelease.show = true;
 				},
 				cancelReleaseSubmit: function () {
 					var $this = this;
-					var activity = $this.managings[$this.handleIndex];
+					var activity = $this.managings[$this.operateIndex];
 					var url = ctx + "/api/manage/activity/" + activity.id + "/release/cancel";
 					app.ajaxPostWithLoading(url, {}, function (data) {
 						if (data.success) {
@@ -541,6 +541,33 @@
 						app.showMsg("下架失败");
 					});
 				},
+				// 删除
+				toDelete: function (index, e) {
+					var $this = this;
+					$this.operateIndex = index;
+					$this.$refs.deleteWindow.show = true;
+				},
+				// 删除提交
+				deleteSubmit: function () {
+					var $this = this;
+					var activity = $this.managings[$this.operateIndex];
+					var url = ctx + "/api/manage/activity/" + activity.id + "/delete";
+					app.ajaxPostWithLoading(url, {}, function (data) {
+						if (data.success) {
+							app.showMsg("删除成功", function () {
+								$this.resetManaging();
+							});
+						} else {
+							var errorMessage = data.message;
+							if (activityApp.isEmpty(errorMessage)) {
+								errorMessage = "删除失败";
+							}
+							app.showMsg(errorMessage);
+						}
+					}, function () {
+						app.showMsg("删除失败");
+					});
+				},
 				// 已报名的活动详情
 				signedupDetail: function (index) {
 					var $this = this;
@@ -553,11 +580,11 @@
 					var activity = $this.collecteds[index];
 					$this.detail(activity);
 				},
-				// 管理的活动详情
-				managingDetail: function (index) {
+				// 活动管理主页
+				activityManageIndex: function (index) {
 					var $this = this;
 					var activity = $this.managings[index];
-					$this.detail(activity);
+					window.open(activityApp.getActivityManageIndexUrl(activity.id));
 				},
 				// 活动详情
 				detail: function (activity) {
