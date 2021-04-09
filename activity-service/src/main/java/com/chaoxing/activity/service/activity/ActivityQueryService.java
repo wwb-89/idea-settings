@@ -238,7 +238,7 @@ public class ActivityQueryService {
 		List<Activity> activities = page.getRecords();
 		// 封装报名的数量
 		packageSignedUpNum(activities);
-		// 封装是不是组织者
+		// 封装是不是管理员
 		packageManager(activities);
 		return page;
 	}
@@ -267,7 +267,7 @@ public class ActivityQueryService {
 		}
 	}
 
-	/**封装管理者（组织者）
+	/**封装管理者（管理员）
 	 * @Description 
 	 * @author wwb
 	 * @Date 2021-04-06 14:20:51
@@ -277,7 +277,7 @@ public class ActivityQueryService {
 	private void packageManager(List<Activity> activities) {
 		if (CollectionUtils.isNotEmpty(activities)) {
 			List<Integer> activityIds = activities.stream().map(Activity::getId).collect(Collectors.toList());
-			// 查询配置的组织者列表
+			// 查询配置的管理员列表
 			List<ActivityManager> allActivityManagers = activityManagerQueryService.listByActivityId(activityIds);
 			// 根据活动id分组
 			Map<Integer, List<ActivityManager>> activityIdActivitiesMap = allActivityManagers.stream().collect(Collectors.groupingBy(ActivityManager::getActivityId));
@@ -303,6 +303,19 @@ public class ActivityQueryService {
 	*/
 	public Page<Activity> pageCreated(Page<Activity> page, Integer uid, String sw) {
 		return activityMapper.pageUserCreated(page, uid, sw);
+	}
+
+	/**分页查询管理的活动
+	 * @Description 
+	 * @author wwb
+	 * @Date 2021-04-08 18:00:51
+	 * @param page
+	 * @param uid
+	 * @param sw
+	 * @return com.baomidou.mybatisplus.extension.plugins.pagination.Page<com.chaoxing.activity.model.Activity>
+	*/
+	public Page<Activity> pageManaged(Page<Activity> page, Integer uid, String sw) {
+		return activityMapper.pageUserManaged(page, uid, sw);
 	}
 
 	/**根据活动id查询活动

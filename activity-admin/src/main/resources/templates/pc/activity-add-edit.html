@@ -456,7 +456,7 @@
     <!-- 活动地图弹窗 -->
     <vue-map ref="activityMap" :map-dom-id="'activity-map'" :title="'设置地点'" @callback="activityAddressSure"></vue-map>
     <!--签到-->
-    <vue-map ref="signInMap" :map-dom-id="'sign-in-map'" :title="'设置'+ signInMapTitleKey +'地点'" @callback="signInAddressSure"></vue-map>
+    <vue-sign-map ref="signInMap" :map-dom-id="'sign-in-map'" :title="'设置'+ signInMapTitleKey +'地点'" th:uid="${session._login_user_.uid}" th:fid="${session._login_user_.fid}" @callback="signInAddressSure"></vue-sign-map>
     <!-- 活动参与范围弹窗 -->
     <vue-activity-participate-scope :fid="fid" ref="activityParticipateScopeWindow" @callback="updateParticipatedOrgs"></vue-activity-participate-scope>
     <!--预览url复制容器-->
@@ -492,6 +492,7 @@
     <script src="/static/pc/assets/lib/element-ui/lib/index.js" th:src="@{/pc/assets/lib/element-ui/lib/index.js}"></script>
     <script src="/static/pc/assets/lib/webuploader/webuploader.js" th:src="@{/pc/assets/lib/webuploader/webuploader.js}"></script>
     <script src="/static/pc/assets/component/map.js" th:src="@{/pc/assets/component/map.js}"></script>
+    <script src="/static/pc/assets/component/sign-map.js" th:src="@{/pc/assets/component/sign-map.js}"></script>
     <script src="/static/pc/assets/component/activity-participate-scope.js" th:src="@{/pc/assets/component/activity-participate-scope.js}"></script>
     <script src="/static/pc/assets/component/confirm.js" th:src="@{/pc/assets/component/confirm.js}"></script>
     <script src="/static/pc/assets/lib/jqthumb.min.js" th:src="@{/pc/assets/lib/jqthumb.min.js}"></script>

@@ -12,6 +12,9 @@
         activityApp.prototype.origin = W.location.origin;
     }
 
+    /** 新增图标的地址 */
+    activityApp.prototype.add_icon_url = "http://p.ananas.chaoxing.com/star3/origin/1424584b7802e81c1e2db2e89b855c4f";
+
     /**
      * 字符串是否为空
      * @param str
@@ -26,7 +29,7 @@
      * @returns {boolean}
      */
     activityApp.prototype.isMobile = function (phone) {
-        return (/^1(3|4|5|7|8|9)\d{9}$/.test(phone));
+        return (/^1\d{10}$/.test(phone));
     };
     /**
      * 获取json对象

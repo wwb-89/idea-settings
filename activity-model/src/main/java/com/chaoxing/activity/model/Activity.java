@@ -139,7 +139,7 @@ public class Activity {
     /** 报名人数 */
     @TableField(exist = false)
     private Integer signedUpNum;
-    /** 组织者uid列表 */
+    /** 管理员uid列表 */
     @TableField(exist = false)
     private List<Integer> managerUids;
 

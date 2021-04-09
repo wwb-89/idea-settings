@@ -9,7 +9,7 @@ import org.springframework.stereotype.Service;
 import javax.annotation.Resource;
 import java.util.List;
 
-/**组织者查询服务
+/**管理员查询服务
  * @author wwb
  * @version ver 1.0
  * @className ActivityManagerQueryService
@@ -24,7 +24,7 @@ public class ActivityManagerQueryService {
 	@Resource
 	private ActivityManagerMapper activityManagerMapper;
 
-	/**根据活动id查询组织者列表
+	/**根据活动id查询管理员列表
 	 * @Description 
 	 * @author wwb
 	 * @Date 2021-03-29 09:45:19
@@ -38,7 +38,7 @@ public class ActivityManagerQueryService {
 		);
 	}
 
-	/**根据活动id列表查询组织者列表
+	/**根据活动id列表查询管理员列表
 	 * @Description 
 	 * @author wwb
 	 * @Date 2021-04-06 14:07:58

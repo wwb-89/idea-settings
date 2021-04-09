@@ -199,7 +199,7 @@
      * loading
      */
     app.prototype.loading = function () {
-        return layer.load(1, {shade: [0.2, '#000']});
+        return layer.load(1, {shade: [0.7, '#fff']});
     };
 
     app.prototype.closeLayerPop = function (index) {

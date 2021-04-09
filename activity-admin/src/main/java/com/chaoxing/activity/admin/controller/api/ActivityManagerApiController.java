@@ -32,7 +32,7 @@ public class ActivityManagerApiController {
 	@Resource
 	private ActivityManagerService activityManagerService;
 
-	/**查询组织者管理
+	/**查询管理员
 	 * @Description
 	 * @author wwb
 	 * @Date 2021-03-27 12:39:05

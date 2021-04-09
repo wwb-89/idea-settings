@@ -8,6 +8,7 @@
         <result column="is_enable_limit_participate_scope" jdbcType="BIT" property="enableLimitParticipateScope" />
         <result column="limit_participate_scope_type" jdbcType="VARCHAR" property="limitParticipateScopeType" />
         <result column="custom_sign_up_type" jdbcType="VARCHAR" property="customSignUpType" />
+        <result column="btn_name" jdbcType="VARCHAR" property="btnName" />
         <result column="sequence" jdbcType="INTEGER" property="sequence" />
         <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
     </resultMap>

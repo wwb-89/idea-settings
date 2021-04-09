@@ -9,13 +9,13 @@
     <link rel="stylesheet" href="../assets/css/public.css">
     <link rel="stylesheet" href="../assets/css/dialog.css">
     <link rel="stylesheet" href="../assets/css/organizer-manage.css">
-    <title>组织者管理</title>
+    <title>管理员</title>
 </head>
 
 <body>
     <div class="manage-container" id="vue" v-cloak>
         <div class="manage-header">
-            组织者管理
+            管理员
         </div>
         <div class="manage-content">
             <div class="btn-add btn-size fl" @click="addShow = true">
@@ -113,7 +113,7 @@
         <div class="dailog-box3" v-show="deleteShow">
             <div class="dailog delete-dailog">
                 <div class="warn"><img src="../assets/images/warning.png" alt=""></div>
-                <span>移除后可重新添加。确定移除吗？</span>
+                <span>确定移除吗？</span>
                 <div>
                     <div class="normal-btn" @click="handleSave">保留</div>
                     <div class="normal-btn after-sure" @click="handleSure">移除</div>

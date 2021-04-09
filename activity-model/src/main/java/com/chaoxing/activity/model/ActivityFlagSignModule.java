@@ -35,6 +35,8 @@ public class ActivityFlagSignModule {
     private String limitParticipateScopeType;
     /** 定制报名类型; column: custom_sign_up_type*/
     private String customSignUpType;
+    /** 按钮名称; column: btn_name*/
+    private String btnName;
     /** 顺序; column: sequence*/
     private Integer sequence;
     /** 创建时间; column: create_time*/

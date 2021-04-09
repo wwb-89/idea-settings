@@ -90,25 +90,14 @@ public class ActivityValidationService {
 	 * @author wwb
 	 * @Date 2021-03-16 11:06:20
 	 * @param activityId
-	 * @param loginUser
+	 * @param uid
 	 * @return boolean
 	*/
-	public boolean isCreator(Integer activityId, LoginUserDTO loginUser) {
+	public boolean isCreator(Integer activityId, Integer uid) {
 		Activity activity = activityQueryService.getById(activityId);
-		return isCreator(activity, loginUser.getUid());
+		return isCreator(activity, uid);
 	}
-	/**是不是活动创建者
-	 * @Description 
-	 * @author wwb
-	 * @Date 2020-12-01 16:17:22
-	 * @param activity
-	 * @param loginUser
-	 * @return boolean
-	*/
-	public boolean isCreator(Activity activity, LoginUserDTO loginUser) {
-		return isCreator(activity, loginUser.getUid());
-	}
-	
+
 	/**是不是活动创建者
 	 * @Description 
 	 * @author wwb
@@ -122,6 +111,22 @@ public class ActivityValidationService {
 			return true;
 		}
 		return false;
+	}
+
+	/**活动创建者
+	 * @Description 
+	 * @author wwb
+	 * @Date 2021-04-08 15:40:56
+	 * @param activityId
+	 * @param uid
+	 * @return com.chaoxing.activity.model.Activity
+	*/
+	public Activity creator(Integer activityId, Integer uid) {
+		Activity activity = activityQueryService.getById(activityId);
+		if (!isCreator(activity, uid)) {
+			throw new BusinessException("无权限");
+		}
+		return activity;
 	}
 
 	/**机构是否在管理范围内
@@ -222,7 +227,7 @@ public class ActivityValidationService {
 		Activity activity = activityExist(activityId);
 		Integer createFid = activity.getCreateFid();
 		// 是不是创建者
-		boolean creator = isCreator(activity, loginUser);
+		boolean creator = isCreator(activity, loginUser.getUid());
 		// 是不是本单位创建的活动
 		boolean isCurrentOrgCreated = false;
 		if (Objects.equals(createFid, loginUser.getFid())) {
@@ -246,7 +251,7 @@ public class ActivityValidationService {
 		Activity activity = activityExist(activityId);
 		Integer createFid = activity.getCreateFid();
 		// 是不是创建者
-		boolean creator = isCreator(activity, loginUser);
+		boolean creator = isCreator(activity, loginUser.getUid());
 		// 是不是本单位创建的活动
 		boolean isCurrentOrgCreated = false;
 		if (Objects.equals(createFid, loginUser.getFid())) {
@@ -274,14 +279,14 @@ public class ActivityValidationService {
 		}
 		Integer createFid = activity.getCreateFid();
 		// 是不是创建者
-		boolean creator = isCreator(activity, loginUser);
+		boolean manager = isManageAble(activity, loginUser.getUid());
 		// 是不是本单位创建的活动
 		boolean isCurrentOrgCreated = false;
 		if (Objects.equals(createFid, loginUser.getFid())) {
 			isCurrentOrgCreated = true;
 		}
-		if (!creator && !isCurrentOrgCreated) {
-			throw new BusinessException("只能发布自己或本单位创建的活动");
+		if (!manager && !isCurrentOrgCreated) {
+			throw new BusinessException("只能发布自己管理或本单位创建的活动");
 		}
 		return activity;
 	}
@@ -302,7 +307,7 @@ public class ActivityValidationService {
 		}
 		Integer createFid = activity.getCreateFid();
 		// 是不是创建者
-		boolean creator = isCreator(activity, loginUser);
+		boolean creator = isCreator(activity, loginUser.getUid());
 		// 是不是本单位创建的活动
 		boolean isCurrentOrgCreated = false;
 		if (Objects.equals(createFid, loginUser.getFid())) {
@@ -329,16 +334,16 @@ public class ActivityValidationService {
 			throw new BusinessException("活动已下架");
 		}
 		Integer createFid = activity.getCreateFid();
-		// 是不是创建者
-		boolean creator = isCreator(activity, loginUser);
+		// 是不是管理者
+		boolean manager = isManageAble(activity, loginUser.getUid());
 		// 是不是本单位创建的活动
 		boolean isCurrentOrgCreated = false;
 		if (Objects.equals(createFid, loginUser.getFid())) {
 			isCurrentOrgCreated = true;
 		}
 		boolean orgInManageScope = isOrgInManageScope(createFid, loginUser);
-		if (!creator && !isCurrentOrgCreated && !orgInManageScope) {
-			throw new BusinessException("只能下架自己、本单位或下级创建的活动");
+		if (!manager && !isCurrentOrgCreated && !orgInManageScope) {
+			throw new BusinessException("只能下架自己管理的、本单位或下级创建的活动");
 		}
 		return activity;
 	}

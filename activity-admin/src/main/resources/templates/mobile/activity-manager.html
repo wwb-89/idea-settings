@@ -2,7 +2,7 @@
 <html lang="en" xmlns:th="http://www.thymeleaf.org/">
 
 <head>
-    <title>组织者管理</title>
+    <title>活动管理员</title>
     <meta http-equiv="Content-type" content="text/html; charset=utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, minimal-ui" />
     <meta name="format-detection" content="telephone=no, email=no">
@@ -52,7 +52,7 @@
                     },
                     created: function () {
                         var $this = this;
-                        app.customMenu("添加", '', {option: 'activityManagerVue.addConcat()'});
+                        app.customMenu("", activityApp.add_icon_url, {option: 'activityManagerVue.addConcat()'});
                     },
                     mounted: function () {
                         var $this = this;
@@ -77,7 +77,7 @@
                                     app.showMsg(errorMessage);
                                 }
                             }, function () {
-                                app.showMsg("加载组织者失败");
+                                app.showMsg("加载管理员失败");
                             });
                         },
                         addConcat: function () {
@@ -110,7 +110,7 @@
                         toDelete: function (index) {
                             var $this = this;
                             $this.operateIndex = index;
-                            app.confirm("移除后可重新添加。确定移除吗？", function () {
+                            app.confirm("确定移除吗？", function () {
                                 $this.deleteSubmit();
                             }, function () {
 
@@ -127,11 +127,14 @@
                                     });
                                 } else {
                                     var errorMessage = data.message;
+                                    if (activityApp.isEmpty(errorMessage)) {
+                                        errorMessage = "处理失败";
+                                    }
                                     app.showMsg(errorMessage);
                                 }
                             }, function () {
                                 app.showMsg("处理失败");
-                            }, '处理');
+                            });
                         },
                         //滑动开始
                         touchStart: function (e) {

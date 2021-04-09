@@ -2,7 +2,7 @@
 <html lang="en" xmlns:th="http://www.thymeleaf.org/">
 
 <head>
-    <title>组织者管理</title>
+    <title>管理员</title>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="/static/pc/assets/lib/element-ui/lib/theme-chalk/index.css" th:href="@{/pc/assets/lib/element-ui/lib/theme-chalk/index.css}">
@@ -20,7 +20,7 @@
 <body >
 <div class="manage-container" id="activity-manager-vue" v-cloak>
     <div class="manage-header">
-        组织者管理
+        管理员
     </div>
     <div class="manage-content" id="manager-content">
         <div class="btn-add btn-size fl" @click="toAdd">
@@ -159,9 +159,9 @@
         </div>
     </div>
     <!-- 移除弹窗 -->
-    <vue-confirm ref="deleteWindow" :message="'移除后可重新添加。确定移除吗？'" :cancel="'取消'" :sure="'删除'" @callback="deleteSubmit"></vue-confirm>
+    <vue-confirm ref="deleteWindow" :message="'确定移除吗？'" :cancel="'取消'" :sure="'删除'" @callback="deleteSubmit"></vue-confirm>
     <!--批量移除弹窗-->
-    <vue-confirm ref="batchDeleteWindow" :message="'移除后可重新添加。确定移除吗？'" :cancel="'取消'" :sure="'删除'" @callback="batchDeleteSubmit"></vue-confirm>
+    <vue-confirm ref="batchDeleteWindow" :message="'确定移除吗？'" :cancel="'取消'" :sure="'删除'" @callback="batchDeleteSubmit"></vue-confirm>
 </div>
 </body>
 <th:block th:replace="pc/include/common_js :: common_js(~{::script})">
@@ -176,7 +176,7 @@
             data: {
                 activityId: [[${activityId}]],
                 managerUids: [[${managerUids}]],
-                // 组织者
+                // 管理员
                 managers: [],
                 managerQueryParams: {
                     pageNum: 1,
@@ -264,12 +264,12 @@
                         } else {
                             var errorMessage = data.message;
                             if (activityApp.isEmpty(errorMessage)) {
-                                errorMessage = "加载组织者失败";
+                                errorMessage = "加载管理员失败";
                             }
                             app.showMsg(errorMessage);
                         }
                     }, function () {
-                        app.showMsg("加载组织者失败");
+                        app.showMsg("加载管理员失败");
                     });
                 },
                 changeAllChecked: function () {

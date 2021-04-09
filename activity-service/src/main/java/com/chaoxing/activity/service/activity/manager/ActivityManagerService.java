@@ -5,6 +5,7 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.chaoxing.activity.dto.LoginUserDTO;
 import com.chaoxing.activity.mapper.ActivityManagerMapper;
+import com.chaoxing.activity.model.Activity;
 import com.chaoxing.activity.model.ActivityManager;
 import com.chaoxing.activity.service.activity.ActivityValidationService;
 import com.chaoxing.activity.util.exception.BusinessException;
@@ -15,9 +16,10 @@ import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
-/** 组织者管理服务
+/** 管理员服务
  * @className ActivityManagerService
  * @description 
  * @author wwb
@@ -57,7 +59,7 @@ public class ActivityManagerService {
      */
     public boolean add(ActivityManager activityManager, LoginUserDTO loginUser){
         Integer activityId = activityManager.getActivityId();
-        boolean creator = activityValidationService.isCreator(activityId, loginUser);
+        boolean creator = activityValidationService.isCreator(activityId, loginUser.getUid());
         if (!creator) {
             throw new BusinessException("无权限");
         }
@@ -88,7 +90,7 @@ public class ActivityManagerService {
         for (ActivityManager activityManager : activityManagers) {
             activityManager.setActivityId(activityId);
         }
-        boolean creator = activityValidationService.isCreator(activityId, loginUser);
+        boolean creator = activityValidationService.isCreator(activityId, loginUser.getUid());
         if (!creator) {
             throw new BusinessException("无权限");
         }
@@ -120,9 +122,10 @@ public class ActivityManagerService {
      * @return void
     */
     public void delete(Integer activityId, Integer uid, LoginUserDTO loginUser) {
-        boolean creator = activityValidationService.isCreator(activityId, loginUser);
-        if (!creator) {
-            throw new BusinessException("无权限");
+        Activity activity = activityValidationService.creator(activityId, loginUser.getUid());
+        // 不能删除创建者
+        if (Objects.equals(uid, activity.getCreateUid())) {
+            throw new BusinessException("不能删除创建者");
         }
         activityManagerMapper.delete(new LambdaQueryWrapper<ActivityManager>()
                 .eq(ActivityManager::getActivityId, activityId)
@@ -139,10 +142,10 @@ public class ActivityManagerService {
      * @return void
     */
     public void batchDelete(Integer activityId, List<Integer> uids, LoginUserDTO loginUser) {
-        boolean creator = activityValidationService.isCreator(activityId, loginUser);
-        if (!creator) {
-            throw new BusinessException("无权限");
-        }
+        Activity activity = activityValidationService.creator(activityId, loginUser.getUid());
+        // 排除活动创建者
+        Integer createUid = activity.getCreateUid();
+        uids.remove(createUid);
         if (!CollectionUtils.isEmpty(uids)) {
             activityManagerMapper.delete(new LambdaQueryWrapper<ActivityManager>()
                     .eq(ActivityManager::getActivityId, activityId)
@@ -150,7 +153,7 @@ public class ActivityManagerService {
         }
     }
 
-    /**查询活动的组织者uid列表
+    /**查询活动的管理员uid列表
      * @Description 
      * @author wwb
      * @Date 2021-03-28 20:38:19
