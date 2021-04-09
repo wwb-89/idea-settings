@@ -517,11 +517,9 @@ input.btn-name,
 
 .dailog {
     position: absolute;
-    /* top: 50%;
+    top: 50%;
     left: 50%;
-    transform: translate(-50%, -50%); */
-    top: 146px;
-    left: calc(50% - 450px);
+    transform: translate(-50%, -50%);
     background: #ffffff;
     border-radius: 10px;
     box-shadow: 0px 12px 48px 16px rgba(0, 0, 0, 0.03), 0px 9px 28px 0px rgba(0, 0, 0, 0.05), 0px 6px 16px -8px rgba(0, 0, 0, 0.08);
@@ -960,6 +958,9 @@ input.btn-name,
 }
 
 .map-dailog {
+    top: 146px;
+    left: calc(50% - 450px);
+    transform: none;
     width: 900px;
     height: 622px;
 }
