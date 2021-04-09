@@ -35,6 +35,8 @@ public class ActivityQueryDTO {
 	private String date;
 	/** 状态 */
 	private Integer status;
+	/** 活动标示 */
+	private String flag;
 
 	/** 最小日期 */
 	private String minDateStr;

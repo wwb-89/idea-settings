@@ -87,6 +87,9 @@
                     t.`status` IN ( 2, 3, 4 )
                 </otherwise>
             </choose>
+            <if test="params.flag != null and params.flag != ''">
+                AND t.activity_flag = #{params.flag}
+            </if>
             <!--时间-->
             <if test="(params.minDateStr != null and params.minDateStr != '') or (params.maxDateStr != null and params.maxDateStr != '')">
                 <choose>
