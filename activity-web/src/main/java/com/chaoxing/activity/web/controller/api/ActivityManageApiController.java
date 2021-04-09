@@ -81,4 +81,20 @@ public class ActivityManageApiController {
 		return RestRespDTO.success();
 	}
 
+	/**删除活动
+	 * @Description 
+	 * @author wwb
+	 * @Date 2021-04-09 11:37:39
+	 * @param request
+	 * @param activityId
+	 * @return com.chaoxing.activity.dto.RestRespDTO
+	*/
+	@LoginRequired
+	@RequestMapping("{activityId}/delete")
+	public RestRespDTO delete(HttpServletRequest request, @PathVariable Integer activityId) {
+		LoginUserDTO loginUser = LoginUtils.getLoginUser(request);
+		activityHandleService.delete(activityId, loginUser);
+		return RestRespDTO.success();
+	}
+
 }

@@ -26,6 +26,7 @@ body {
   font-weight: 600;
   font-size: 20px;
   line-height: 30px;
+  cursor: auto;
 }
 
 .item-block .btns button {
@@ -222,6 +223,11 @@ body {
   margin-bottom: 12px;
   line-height: 24px;
   font-weight: 500;
+  cursor: pointer;
+}
+
+.item-block .card-list ul li .card-info .title:hover {
+  color: #0084FF;
 }
 
 .item-block .card-list ul li .card-info .time {

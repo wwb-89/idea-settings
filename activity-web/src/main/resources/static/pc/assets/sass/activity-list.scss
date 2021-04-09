@@ -19,6 +19,7 @@ body {
     font-weight: 600;
     font-size: 20px;
     line-height: 30px;
+    cursor: auto;
   }
   .btns {
     button {
@@ -186,6 +187,10 @@ body {
             margin-bottom: 12px;
             line-height: 24px;
             font-weight: 500;
+            cursor: pointer;
+            &:hover {
+              color: #0084FF;
+            }
           }
           .time {
             color: #666666;

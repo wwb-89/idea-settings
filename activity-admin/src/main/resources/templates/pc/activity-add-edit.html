@@ -377,6 +377,21 @@
                 </div>
             </form>
         </div>
+        <!--征集设置-->
+        <div class="info box">
+            <div class="set-box">
+                <div class="title set">作品征集</div>
+            </div>
+            <form action="" class="setForm">
+                <div class="form-item">
+                    <label class="label">作品征集</label>
+                    <div class="input-box">
+                        <el-switch v-model="activity.openWork" class="examine-switch"></el-switch>
+                        <span>开启后，参与者可以在活动中提交作品，管理员在征集模块中进行审核评分推优等操作</span>
+                    </div>
+                </div>
+            </form>
+        </div>
     </div>
     <!--选择门户模板-->
     <div class="info box" v-show="step > 1">
@@ -582,7 +597,8 @@
                         enableSign: true,
                         createAreaCode: $this.areaCode,
                         tags: "",
-                        activityFlag: $this.activityFlag
+                        activityFlag: $this.activityFlag,
+                        openWork: false
                     };
                 } else {
                     // 修改活动

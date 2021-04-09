@@ -41,8 +41,7 @@ public class SecondClassroomActivityPushQueueService {
 	 * @return void
 	*/
 	public void add(Activity activity) {
-		Integer secondClassroomFlag = activity.getSecondClassroomFlag();
-		if (Objects.equals(secondClassroomFlag, 1)) {
+		if (isSecondClassroomActivity(activity)) {
 			add(activity.getId());
 		}
 	}
@@ -67,8 +66,7 @@ public class SecondClassroomActivityPushQueueService {
 	 * @return void
 	*/
 	public void update(Activity activity) {
-		Integer secondClassroomFlag = activity.getSecondClassroomFlag();
-		if (Objects.equals(secondClassroomFlag, 1)) {
+		if (isSecondClassroomActivity(activity)) {
 			update(activity.getId());
 		}
 	}
@@ -93,8 +91,7 @@ public class SecondClassroomActivityPushQueueService {
 	 * @return void
 	 */
 	public void delete(Activity activity) {
-		Integer secondClassroomFlag = activity.getSecondClassroomFlag();
-		if (Objects.equals(secondClassroomFlag, 1)) {
+		if (isSecondClassroomActivity(activity)) {
 			delete(activity.getId());
 		}
 	}
@@ -146,6 +143,18 @@ public class SecondClassroomActivityPushQueueService {
 	public Integer getDelete() {
 		ListOperations<String, Integer> listOperations = redisTemplate.opsForList();
 		return listOperations.rightPop(DELETE_QUEUE_CACHE_KEY, CommonConstant.QUEUE_GET_WAIT_TIME);
+	}
+
+	/**是不是第二课堂活动
+	 * @Description 
+	 * @author wwb
+	 * @Date 2021-04-09 14:16:39
+	 * @param activity
+	 * @return boolean
+	*/
+	private boolean isSecondClassroomActivity(Activity activity) {
+		String activityFlag = activity.getActivityFlag();
+		return Objects.equals(activityFlag, Activity.ActivityFlag.SECOND_CLASSROOM.getValue());
 	}
 
 }

@@ -108,7 +108,7 @@ public class ActivityApiController {
 		return RestRespDTO.success(activity);
 	}
 
-	/**查询报名的活动
+	/**分页查询报名的活动
 	 * @Description 
 	 * @author wwb
 	 * @Date 2021-01-27 19:34:56
