@@ -13,6 +13,7 @@ import com.chaoxing.activity.model.Activity;
 import com.chaoxing.activity.service.activity.ActivityHandleService;
 import com.chaoxing.activity.service.activity.ActivityQueryService;
 import com.chaoxing.activity.util.HttpServletRequestUtils;
+import com.chaoxing.activity.util.annotation.LoginRequired;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
@@ -46,6 +47,7 @@ public class ActivityApiController {
 	 * @param signJsonStr
 	 * @return com.chaoxing.activity.dto.RestRespDTO
 	*/
+	@LoginRequired
 	@PostMapping("new")
 	public RestRespDTO create(HttpServletRequest request, String activityJsonStr, String participateScopeJsonStr, String signJsonStr) {
 		LoginUserDTO loginUser = LoginUtils.getLoginUser(request);
@@ -68,6 +70,7 @@ public class ActivityApiController {
 	 * @param signJsonStr
 	 * @return com.chaoxing.activity.dto.RestRespDTO
 	*/
+	@LoginRequired
 	@PostMapping("edit")
 	public RestRespDTO edit(HttpServletRequest request, String activityJsonStr, String participateScopeJsonStr, String signJsonStr) {
 		LoginUserDTO loginUser = LoginUtils.getLoginUser(request);
@@ -87,6 +90,7 @@ public class ActivityApiController {
 	 * @param activityId
 	 * @return com.chaoxing.activity.dto.RestRespDTO
 	*/
+	@LoginRequired
 	@PostMapping("{activityId}/delete")
 	public RestRespDTO delele(HttpServletRequest request, @PathVariable Integer activityId) {
 		LoginUserDTO loginUser = LoginUtils.getLoginUser(request);
@@ -103,6 +107,7 @@ public class ActivityApiController {
 	 * @param webTemplateId
 	 * @return com.chaoxing.activity.dto.RestRespDTO
 	*/
+	@LoginRequired
 	@PostMapping("{activityId}/bind/template/{webTemplateId}")
 	public RestRespDTO bindWebTemplate(HttpServletRequest request, @PathVariable Integer activityId, @PathVariable Integer webTemplateId) {
 		LoginUserDTO loginUser = LoginUtils.getLoginUser(request);
@@ -118,6 +123,7 @@ public class ActivityApiController {
 	 * @param activityManageQuery
 	 * @return com.chaoxing.activity.dto.RestRespDTO
 	*/
+	@LoginRequired
 	@RequestMapping("list/managing")
 	public RestRespDTO listManaging(HttpServletRequest request, ActivityManageQueryDTO activityManageQuery) {
 		LoginUserDTO loginUser = LoginUtils.getLoginUser(request);
@@ -135,6 +141,7 @@ public class ActivityApiController {
 	 * @param activityId
 	 * @return com.chaoxing.activity.dto.RestRespDTO
 	*/
+	@LoginRequired
 	@PostMapping("{activityId}/release")
 	public RestRespDTO release(HttpServletRequest request, @PathVariable Integer activityId) {
 		LoginUserDTO loginUser = LoginUtils.getLoginUser(request);
@@ -147,9 +154,10 @@ public class ActivityApiController {
 	 * @author wwb
 	 * @Date 2020-11-20 11:06:19
 	 * @param request
-	 * @param activityId
+	 * @param activityId 活动id
 	 * @return com.chaoxing.activity.dto.RestRespDTO
 	*/
+	@LoginRequired
 	@PostMapping("{activityId}/release/cancel")
 	public RestRespDTO cancelRelease(HttpServletRequest request, @PathVariable Integer activityId) {
 		LoginUserDTO loginUser = LoginUtils.getLoginUser(request);
