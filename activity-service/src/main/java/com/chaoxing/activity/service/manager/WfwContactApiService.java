@@ -3,6 +3,8 @@ package com.chaoxing.activity.service.manager;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.chaoxing.activity.dto.OrgDTO;
+import com.chaoxing.activity.dto.manager.MoocUserOrgDTO;
 import com.chaoxing.activity.dto.manager.WfwContacterDTO;
 import com.chaoxing.activity.dto.manager.WfwDepartmentDTO;
 import com.chaoxing.activity.util.exception.BusinessException;
@@ -29,6 +31,8 @@ public class WfwContactApiService {
 	/** 微服务联系人域名 */
 	private static final String DOMAIN = "https://contactsyd.chaoxing.com";
 
+	/** 用户有通讯录的机构列表url */
+	private static final String GET_USER_HAVE_CONTACTS_ORG_URL = "http://learn.chaoxing.com/apis/roster/getUserUnitList?puid=%s";
 	/** 搜索联系人url */
 	private static final String SEARCH_CONTACTS_URL = DOMAIN + "/apis/roster/searchRosterUser?puid={uid}&keyword={keyword}&page={page}&pageSize={pageSize}";
 	/** 获取部门列表url */
@@ -39,6 +43,25 @@ public class WfwContactApiService {
 	@Resource(name = "restTemplateProxy")
 	private RestTemplate restTemplate;
 
+	/**用户有通讯录的机构列表
+	 * @Description 
+	 * @author wwb
+	 * @Date 2021-04-12 17:10:16
+	 * @param uid
+	 * @return java.util.List<com.chaoxing.activity.dto.OrgDTO>
+	*/
+	public List<OrgDTO> listUserHaveContactsOrg(Integer uid) {
+		String url = String.format(GET_USER_HAVE_CONTACTS_ORG_URL, uid);
+		String result = restTemplate.getForObject(url, String.class);
+		JSONObject jsonObject = JSON.parseObject(result);
+		Integer status = jsonObject.getInteger("result");
+		if (Objects.equals(status, 1)) {
+			return JSON.parseArray(jsonObject.getString("msg"), OrgDTO.class);
+		} else {
+			String errorMessage = jsonObject.getString("errorMsg");
+			throw new BusinessException(errorMessage);
+		}
+	}
 	/**搜索联系人
 	 * @Description 
 	 * @author wwb

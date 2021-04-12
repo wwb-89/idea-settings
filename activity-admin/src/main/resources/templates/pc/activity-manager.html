@@ -49,7 +49,8 @@
                 <th>
                     <span v-if="false">权限设置</span>
                     <!--活动创建者不显示移除按钮-->
-                    <span @click="toDelete(index)">移除</span>
+                    <span v-if="activity.createUid != manager.uid" @click="toDelete(index)">移除</span>
+                    <span v-else>-</span>
                 </th>
             </tr>
             </tbody>
@@ -175,7 +176,8 @@
         activityManagerVue = new Vue({
             el: "#activity-manager-vue",
             data: {
-                activityId: [[${activityId}]],
+                activity: [[${activity}]],
+                activityId: [[${activity.id}]],
                 managerUids: [[${managerUids}]],
                 // 管理员
                 managers: [],
