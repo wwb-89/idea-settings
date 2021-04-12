@@ -38,7 +38,7 @@ import java.util.Optional;
 public class IndexController {
 
 	/** 默认风格 */
-	private static final String DEFAULT_STYLE = "1";
+	private static final String DEFAULT_STYLE = "2";
 
 	@Resource
 	private GroupRegionFilterService groupRegionFilterService;

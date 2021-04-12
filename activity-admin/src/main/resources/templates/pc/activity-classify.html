@@ -1,187 +1,249 @@
 <!DOCTYPE html>
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
-  <title>活动类型</title>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <link rel="stylesheet" href="/static/pc/assets/lib/element-ui/lib/theme-chalk/index.css" th:href="@{/pc/assets/lib/element-ui/lib/theme-chalk/index.css}">
-  <link rel="stylesheet" href="/static/pc/assets/lib/layui/css/layui.css" th:href="@{/pc/assets/lib/layui/css/layui.css}">
-  <link rel="stylesheet" href="/static/pc/assets/css/public.css" th:href="@{/pc/assets/css/public.css}">
-  <link rel="stylesheet" href="/static/pc/assets/css/dialog.css" th:href="@{/pc/assets/css/dialog.css}">
-  <link rel="stylesheet" href="/static/pc/assets/css/organizer-manage.css" th:href="@{/pc/assets/css/organizer-manage.css}">
+	<title>活动类型</title>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<link rel="stylesheet" href="/static/pc/assets/lib/element-ui/lib/theme-chalk/index.css" th:href="@{/pc/assets/lib/element-ui/lib/theme-chalk/index.css}">
+	<link rel="stylesheet" href="/static/pc/assets/lib/layui/css/layui.css" th:href="@{/pc/assets/lib/layui/css/layui.css}">
+	<link rel="stylesheet" href="/static/pc/assets/css/public.css" th:href="@{/pc/assets/css/public.css}">
+	<link rel="stylesheet" href="/static/pc/assets/css/dialog.css" th:href="@{/pc/assets/css/dialog.css}">
+	<link rel="stylesheet" href="/static/pc/assets/css/organizer-manage.css" th:href="@{/pc/assets/css/organizer-manage.css}">
+	<style type="text/css">
+		[v-cloak] {
+			display: none;
+        }
+	</style>
 </head>
 <body>
-<div class="manage-container activity-type" id="vue" v-cloak>
-  <div class="manage-content">
-    <div class="btn-add btn-size fl" @click="addDialogVisible = true">
-      <img src="/static/pc/assets/images/add-small.png" th:src="@{/pc/assets/images/add-small.png}" alt="">
-      <span>添加</span>
-    </div>
-    <div v-show="!checkAllStatus" class="btn-del-disable btn-size fl">批量删除</div>
-    <div v-show="checkAllStatus" class="btn-del btn-size fl">批量删除</div>
-    <div class="clear"></div>
-    <table class="table-box">
-      <thead>
-      <tr>
-        <th class="check-box">
-          <el-checkbox v-model="checkAllStatus" class="check-item-checkbox fl"
-                       @change="checkAllChange">
-          </el-checkbox>
-        </th>
-        <th>类型名称</th>
-        <th>操作</th>
-      </tr>
-      </thead>
-      <tbody>
-      <tr>
-        <th class="check-box">
-          <el-checkbox v-model="checkedStatus[0]" class="check-item-checkbox fl"
-                       @change="checkChangeHandle">
-          </el-checkbox>
-        </th>
-        <th>科技成果</th>
-        <th>
-          <span @click="editDialogVisible=true">编辑</span>
-          <span @click="deleteShow=true">删除</span>
-        </th>
-      </tr>
-      <tr>
-        <th class="check-box">
-          <el-checkbox v-model="checkedStatus[1]" class="check-item-checkbox fl"
-                       @change="checkChangeHandle">
-          </el-checkbox>
-        </th>
-        <th>科技成果</th>
-        <th>
-          <span @click="editDialogVisible=true">编辑</span>
-          <span @click="deleteShow=true">删除</span>
-        </th>
-      </tr>
-      <tr>
-        <th class="check-box">
-          <el-checkbox v-model="checkedStatus[2]" class="check-item-checkbox fl"
-                       @change="checkChangeHandle">
-          </el-checkbox>
-        </th>
-        <th>科技成果</th>
-        <th>
-          <span @click="editDialogVisible=true">编辑</span>
-          <span @click="deleteShow=true">删除</span>
-        </th>
-      </tr>
-      </tbody>
-    </table>
-    <div class="no-content" style="display: none;">
-      暂无内容
-    </div>
-  </div>
-
-  <!-- 编辑弹出框 -->
-  <el-dialog class="manageStatusDialog" title="类型名称" :visible.sync="editDialogVisible" width="400px"
-             :before-close="handleClose">
-    <div class="edit-input">
-      <!--  v-model="editDialogIpt" -->
-      <input type="text" placeholder="请输入" v-model="editDialogIpt" @input="IptValueHandle">
-      <span class="input-number">{{editDialogIpt.length}} / 8</span>
-    </div>
-    <span slot="footer" class="dialog-footer">
-                <div @click="editDialogVisible = false" class="btn-size btn-cancel">取消</div>
-                <div class="btn-size btn-submit">确定</div>
-                <div class="btn-size btn-submit-dsiable">确定</div>
-            </span>
-  </el-dialog>
-
-  <!-- 确认删除分类弹框 -->
-  <div class="dailog-box3" v-show="deleteShow">
-    <div class="dailog delete-dailog">
-      <div class="warn"><img src="/static/pc/assets/images/warning.png" th:src="@{/pc/assets/images/warning.png}"
-                             alt=""></div>
-      <span style="width: 100%;">删除后，无法恢复。确定删除？</span>
-      <div>
-        <div class="normal-btn" @click="handleSave">保留</div>
-        <div class="normal-btn after-sure" @click="handleSure">删除</div>
-      </div>
-    </div>
-  </div>
-
-  <!--添加弹框-->
-  <el-dialog class="manageStatusDialog" title="类型名称" :visible.sync="addDialogVisible" width="400px"
-             :before-close="addHandleClose">
-    <div class="edit-input">
-      <!--  v-model="editDialogIpt" -->
-      <input type="text" placeholder="请输入" v-model="editDialogIpt" @input="IptValueHandle">
-      <span class="input-number">{{editDialogIpt.length}} / 8</span>
-    </div>
-    <span slot="footer" class="dialog-footer">
-                <div @click="addDialogVisible = false" class="btn-size btn-cancel">取消</div>
-                <div class="btn-size btn-submit">确定</div>
-            </span>
-  </el-dialog>
+<div class="manage-container activity-type" id="activity-classify-vue" v-cloak>
+	<div class="manage-content">
+		<div class="btn-add btn-size fl" @click="toAdd">
+			<img src="/static/pc/assets/images/add-small.png" th:src="@{/pc/assets/images/add-small.png}">
+			<span>添加</span>
+		</div>
+		<div class="btn-del-disable btn-size fl" v-show="!batchAble">批量删除</div>
+		<div class="btn-del btn-size fl" v-show="batchAble" @click="batchDelete">批量删除</div>
+		<div class="clear"></div>
+		<table class="table-box">
+			<thead>
+			<tr>
+				<th class="check-box">
+					<el-checkbox class="check-item-checkbox fl" v-model="allChecked" @change="allCheckedChange"></el-checkbox>
+				</th>
+				<th>类型名称</th>
+				<th>操作</th>
+			</tr>
+			</thead>
+			<tbody>
+				<tr v-for="(activityClassify, index) of activityClassifies" :key="'activity-classify-' + activityClassify.id">
+					<th class="check-box">
+						<el-checkbox class="check-item-checkbox fl" v-model="activityClassify.checked" @change="checkedChange"></el-checkbox>
+					</th>
+					<th>{{activityClassify.name}}</th>
+					<th>
+						<span @click="toEdit(activityClassify)">编辑</span>
+						<span @click="toDelete(activityClassify.id)">删除</span>
+					</th>
+				</tr>
+			</tbody>
+		</table>
+		<div class="no-content" style="display: none;">
+			暂无内容
+		</div>
+	</div>
+	<!--添加弹框-->
+	<el-dialog class="manageStatusDialog" :visible.sync="addEditShow" title="类型名称" width="400px">
+		<div class="edit-input">
+			<input type="text" placeholder="请输入" v-model.trim="addEditObj.name" maxlength="8">
+			<span class="input-number">{{addEditObj.name.length}} / 8</span>
+		</div>
+		<span slot="footer" class="dialog-footer">
+            <div class="btn-size btn-cancel" @click="addEditShow = false">取消</div>
+            <div class="btn-size btn-submit" @click="addEditSubmit">确定</div>
+        </span>
+	</el-dialog>
+	<!--删除弹窗-->
+	<vue-confirm ref="deleteWindow" :message="'确定删除吗？'" :cancel="'取消'" :sure="'删除'" @callback="deleteSubmit"></vue-confirm>
+	<!--批量删除弹窗-->
+	<vue-confirm ref="batchDeleteWindow" :message="'确定删除吗？'" :cancel="'取消'" :sure="'删除'" @callback="batchDeleteSubmit"></vue-confirm>
+</div>
+<div th:replace="pc/include/common_js :: common_js(~{::script})">
+	<script src="/static/pc/assets/lib/element-ui/lib/index.js" th:src="@{/pc/assets/lib/element-ui/lib/index.js}"></script>
+	<script src="/static/pc/assets/component/confirm.js" th:src="@{/pc/assets/component/confirm.js}"></script>
+	<script th:inline="javascript">
+        activityClassifyVue = new Vue({
+	        el: "#activity-classify-vue",
+	        data: {
+	            activityMarketId: [[${activityMarketId}]],
+                activityClassifies: [[${activityClassifies}]],
+				addEditObj: null,
+		        addEditShow: false,
+		        operateId: null,
+		        allChecked: false,
+                batchAble: false
+	        },
+            created: function () {
+	            var $this = this;
+                $this.initAddEditObj();
+                $($this.activityClassifies).each(function () {
+                    this.checked = false;
+                });
+            },
+	        methods: {
+                initAddEditObj: function (obj) {
+                    var $this = this;
+	                $this.addEditObj = {
+                        id: null,
+                        name: "",
+                        activityMarketId: [[${activityMarketId}]]
+	                }
+                    if (!activityApp.isEmpty(obj)) {
+                        $this.addEditObj = {
+                            id: obj.id,
+                            name: obj.name,
+                            activityMarketId: obj.activityMarketId
+                        };
+                    }
+                },
+                toAdd: function () {
+					var $this = this;
+                    $this.initAddEditObj();
+                    $this.addEditShow = true;
+                },
+                addEditValidate: function () {
+                    var $this = this;
+                    if (activityApp.isEmpty($this.addEditObj.name)) {
+                        app.showMsg("类型名称不能为空");
+                        return false;
+                    }
+                    return true;
+                },
+                addEditSubmit: function () {
+					var $this = this;
+                    if (!$this.addEditValidate()) {
+                        return;
+                    }
+                    var url = ctx + "/api/activity/classify/new/add";
+                    var tips = "添加";
+                    if (!activityApp.isEmpty($this.addEditObj.id)) {
+                        url = ctx + "/api/activity/classify/new/edit";
+                        tips = "修改";
+                    }
+                    app.ajaxPostWithLoading(url, $this.addEditObj, function (data) {
+                        if (data.success) {
+                            app.showMsg(tips + "成功", function () {
+                                window.location.reload();
+                            });
+                        } else {
+                            var errorMessage = data.message;
+                            if (activityApp.isEmpty(errorMessage)) {
+                                errorMessage = tips + "失败";
+                            }
+                            app.showMsg(errorMessage);
+                        }
+                    }, function () {
+                        app.showMsg(tips + "失败");
+                    });
+                },
+                toEdit: function (activityClaasify) {
+					var $this = this;
+                    $this.initAddEditObj(activityClaasify);
+                    $this.addEditShow = true;
+                },
+                toDelete: function (activityClassfyId) {
+					var $this = this;
+                    $this.operateId = activityClassfyId;
+                    $this.$refs.deleteWindow.show = true
+                },
+                deleteSubmit: function () {
+                    var $this = this;
+                    var url = ctx + "/api/activity/classify/new/"+ $this.operateId +"/delete";
+                    app.ajaxPostWithLoading(url, {}, function (data) {
+                        if (data.success) {
+                            app.showMsg("删除成功", function () {
+                                window.location.reload();
+                            });
+                        } else {
+                            var errorMessage = data.message;
+                            if (activityApp.isEmpty(errorMessage)) {
+                                errorMessage = "删除失败";
+                            }
+                            app.showMsg(errorMessage);
+                        }
+                    }, function () {
+                        app.showMsg("删除失败");
+                    });
+                },
+                allCheckedChange: function () {
+					var $this = this;
+                    $($this.activityClassifies).each(function (i) {
+                        $this.$set($this.activityClassifies[i], "checked", $this.allChecked);
+                    });
+                    $this.calBatchAble();
+                },
+                checkedChange: function () {
+					var $this = this;
+					var allChecked = true;
+                    $($this.activityClassifies).each(function (i) {
+                        if (!this.checked) {
+                            allChecked = false;
+                            return false;
+                        }
+                    });
+                    $this.allChecked = allChecked;
+                    $this.calBatchAble();
+                },
+                calBatchAble: function () {
+                    var $this = this;
+                    var existChecked = false;
+                    $($this.activityClassifies).each(function (i) {
+                        if (this.checked) {
+                            existChecked = true;
+                            return false;
+                        }
+                    });
+                    $this.batchAble = existChecked;
+                },
+                batchDelete: function () {
+                    var $this = this;
+                    $this.$refs.batchDeleteWindow.show = true
+                },
+                batchDeleteSubmit: function () {
+                    var $this = this;
+                    var url = ctx + "/api/activity/classify/new/delete/batch";
+                    var activityClassifyIds = [];
+                    $($this.activityClassifies).each(function (i) {
+                        if (this.checked) {
+                            activityClassifyIds.push(this.id);
+                        }
+                    });
+                    if (activityClassifyIds.length < 1) {
+                        app.showMsg("请选择活动类型");
+                        return false;
+                    }
+                    var params = {
+                        activityClassifyIds: activityClassifyIds
+                    };
+                    app.ajaxPostWithLoading(url, params, function (data) {
+                        if (data.success) {
+                            app.showMsg("删除成功", function () {
+                                window.location.reload();
+                            });
+                        } else {
+                            var errorMessage = data.message;
+                            if (activityApp.isEmpty(errorMessage)) {
+                                errorMessage = "删除失败";
+                            }
+                            app.showMsg(errorMessage);
+                        }
+                    }, function () {
+                        app.showMsg("删除失败");
+                    });
+                }
+	        }
+        });
+	</script>
 </div>
 </body>
-
-
 </html>
-<script type="text/javascript" src="/static/pc/assets/lib/vue.js" th:src="@{/pc/assets/lib/vue.js}"></script>
-<script type="text/javascript" src="/static/pc/assets/lib/jquery.min.js" th:src="@{/pc/assets/lib/jquery.min.js}"></script>
-<script type="text/javascript" src="/static/pc/assets/lib/element-ui/lib/index.js" th:src="@{/pc/assets/lib/element-ui/lib/index.js}"></script>
-<script type="text/javascript" src="/static/pc/assets/lib/layer/layer.js" th:src="@{/pc/assets/lib/layer/layer.js}"></script>
-<script type="text/javascript" src="/static/pc/assets/lib/layui/layui.js" th:src="@{/pc/assets/lib/layui/layui.js}"></script>
-
-
-<script>
-  var vm = new Vue({
-    el: '#vue',
-    data: function () {
-      return {
-        checkAllStatus: false,
-        checkedStatus: [false, false, false, false],
-        editDialogVisible: false,
-        addDialogVisible: false,
-        value4: false,
-        // 删除弹出框
-        deleteShow: false,
-        //添加弹出框
-        addShow: false,
-        editDialogIpt: ""
-      }
-    },
-    created: function () {
-
-    },
-    mounted: function () {},
-    methods: {
-      checkChangeHandle: function () {
-        if (this.checkedStatus.indexOf(true) >= 0) {
-          this.checkAllStatus = true;
-        } else {
-          this.checkAllStatus = false;
-        }
-      },
-      checkAllChange: function () {
-        for (var i = 0; i < this.checkedStatus.length; i++) {
-          this.checkedStatus[i] = this.checkAllStatus
-        }
-      },
-      handleClose(done) {
-        this.editDialogVisible = false;
-      },
-      handleSave: function () {
-        this.deleteShow = false
-      },
-      handleSure: function () {
-        layer.msg('删除成功');
-        this.deleteShow = false
-      },
-      IptValueHandle: function () {
-        if (this.editDialogIpt.length > 8) {
-          this.editDialogIpt = this.editDialogIpt.substring(0, 8)
-        }
-      },
-      addHandleClose: function () {
-        this.addDialogVisible = false;
-      }
-
-    }
-  });
-</script>

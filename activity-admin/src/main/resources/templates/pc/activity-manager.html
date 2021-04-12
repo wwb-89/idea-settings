@@ -48,6 +48,7 @@
                 <th>{{manager.userName}}</th>
                 <th>
                     <span v-if="false">权限设置</span>
+                    <!--活动创建者不显示移除按钮-->
                     <span @click="toDelete(index)">移除</span>
                 </th>
             </tr>
@@ -159,9 +160,9 @@
         </div>
     </div>
     <!-- 移除弹窗 -->
-    <vue-confirm ref="deleteWindow" :message="'确定移除吗？'" :cancel="'取消'" :sure="'删除'" @callback="deleteSubmit"></vue-confirm>
+    <vue-confirm ref="deleteWindow" :message="'确定移除吗？'" :cancel="'取消'" :sure="'移除'" @callback="deleteSubmit"></vue-confirm>
     <!--批量移除弹窗-->
-    <vue-confirm ref="batchDeleteWindow" :message="'确定移除吗？'" :cancel="'取消'" :sure="'删除'" @callback="batchDeleteSubmit"></vue-confirm>
+    <vue-confirm ref="batchDeleteWindow" :message="'确定移除吗？'" :cancel="'取消'" :sure="'移除'" @callback="batchDeleteSubmit"></vue-confirm>
 </div>
 </body>
 <th:block th:replace="pc/include/common_js :: common_js(~{::script})">
