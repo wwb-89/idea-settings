@@ -20,6 +20,13 @@ body{
     margin: 0 .3125rem;
     font-size: 0;
 }
+.activity-comment .star-box .layui-rate {
+    padding: 0;
+}
+.activity-comment .title .star-box .layui-rate li i.layui-icon {
+    font-size: 1.03125rem;
+    margin: 0 .234375rem;
+}
 .activity-comment .title .star-box img{
     width: 1.03125rem;
     margin: .25rem;
@@ -81,6 +88,10 @@ body{
 }
 .activity-comment .comment-list .content .star-box img{
     width: .6875rem;
+}
+.activity-comment .comment-list .content .star-box .layui-rate li i.layui-icon{
+    font-size: .75rem;
+    margin: 0 .09375rem;
 }
 .activity-comment .comment-list .content .desc{
     font-size: .9375rem;
