@@ -136,11 +136,13 @@
                 <div class="form-item cancel-margin">
                     <label class="label">分类</label>
                     <div class="input-box wrap">
-                        <div :class="{'type-item': true, 'active': activityClassify.selected}" v-for="(activityClassify, index) of activityClassifies" :key="'activity-classify-' + index" @click="selectActivityClassify(index)">{{activityClassify.name}}
-                            <div class="more-btn" v-if="!activityClassify.system"></div>
-                            <div class="edit-box" v-if="!activityClassify.system">
-                                <div @click="toEditActivityClassify(index, $event)">编辑</div>
-                                <div @click="toDeleteActivityClassify(index, $event)">删除</div>
+                        <div :class="{'type-item': true, 'paddingR0': (!activityClassify.system), 'active': activityClassify.selected}" v-for="(activityClassify, index) of activityClassifies" :key="'activity-classify-' + index" @click="selectActivityClassify(index)">{{activityClassify.name}}
+                            <div class="more-box" v-if="!activityClassify.system">
+                                <div class="more-btn"></div>
+                                <div class="edit-box">
+                                    <div @click="toEditActivityClassify(index, $event)">编辑</div>
+                                    <div @click="toDeleteActivityClassify(index, $event)">删除</div>
+                                </div>
                             </div>
                         </div>
                         <div class="type-item add" @click="toAddActivityClassify">
