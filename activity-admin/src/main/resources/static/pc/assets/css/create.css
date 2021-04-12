@@ -1406,9 +1406,10 @@ input.btn-name,
 .setForm .join-box .add-tags{
     padding-right: 26px;
     box-sizing: border-box;
-    font-size: 14px;
+    font-size: 0;
     color: #333333;
-    
+    padding-top: 4px;
+    line-height: 20px;
 }
 .setForm .join-box .add-tags span{
     display: inline-block;
@@ -1417,6 +1418,8 @@ input.btn-name,
     border-radius: 2px;
     line-height: 20px;
     margin-bottom: 4px;
+    margin-right: 4px;
+    font-size: 14px;
 }
 .setForm .join-box .add-tags span i{
     display: inline-block;
