@@ -6,6 +6,7 @@ import com.chaoxing.activity.model.ActivityRating;
 import com.chaoxing.activity.service.activity.ActivityQueryService;
 import com.chaoxing.activity.service.activity.rating.ActivityRatingQueryService;
 import com.chaoxing.activity.service.activity.rating.ActivityRatingValidateService;
+import com.chaoxing.activity.util.UserAgentUtils;
 import com.chaoxing.activity.web.util.LoginUtils;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -52,6 +53,9 @@ public class ActivityRatingController {
         model.addAttribute("activity", activity);
         model.addAttribute("activityRating", activityRating);
         model.addAttribute("canRating", canRating);
+        if (UserAgentUtils.isMobileAccess(request)) {
+            return "mobile/activity/rating/index";
+        }
         return "pc/activity/rating/index";
     }
 }
