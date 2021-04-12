@@ -38,6 +38,13 @@
     height: 16px;
     line-height: 16px;
 }
+.comment-examine .star-box .layui-rate {
+    padding: 0;
+}
+.comment-examine .comment-list .content .star-box .layui-rate li i.layui-icon{
+    font-size: .75rem;
+    margin: 0 .09375rem;
+}
 .comment-examine .comment-list .content .star-box img{
     width: .6875rem;
 }

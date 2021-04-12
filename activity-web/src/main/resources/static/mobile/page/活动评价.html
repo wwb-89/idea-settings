@@ -16,13 +16,7 @@
     <div class="activity-comment" id="activity-comment">
         <div class="title" >
             <span class="score">4.5</span>
-            <div class="star-box">
-                <img src="../assets/images/star2.png" alt="">
-                <img src="../assets/images/star2.png" alt="">
-                <img src="../assets/images/star2.png" alt="">
-                <img src="../assets/images/star2.png" alt="">
-                <img src="../assets/images/star1.png" alt="">
-            </div>
+            <div class="star-box"></div>
             <span class="people">1985人评价</span>
         </div>
         <div class="comment-list">
@@ -35,13 +29,7 @@
                         <span class="time">07-02 01:20</span>
                         <span class="state blue">审核中</span>
                     </div>
-                    <div class="star-box">
-                        <img src="../assets/images/star2.png" alt="">
-                        <img src="../assets/images/star2.png" alt="">
-                        <img src="../assets/images/star2.png" alt="">
-                        <img src="../assets/images/star2.png" alt="">
-                        <img src="../assets/images/star1.png" alt="">
-                    </div>
+                    <div class="star-box"></div>
                     <p class="desc overHidden5">教学要求、教学策略和活动组织，要有利于教学目标的实现，核心素养的落实可行且合理教学要求、教学策略和活动组织，要有利于教学目标的实现，核心素养的落实可行且合理教学要求、教学策略和活动组织，要教学要求、教学策略和活动组织，要有利于教学目标的实现，核心素养的落实可行且合理教学要求、教学策略和活动组织</p>
                     <span class="open_close">展开</span>
                 </div>
@@ -55,13 +43,7 @@
                         <span class="time">07-02 01:20</span>
                         <span class="state red">已被管理员删除</span>
                     </div>
-                    <div class="star-box">
-                        <img src="../assets/images/star2.png" alt="">
-                        <img src="../assets/images/star2.png" alt="">
-                        <img src="../assets/images/star2.png" alt="">
-                        <img src="../assets/images/star2.png" alt="">
-                        <img src="../assets/images/star2.png" alt="">
-                    </div>
+                    <div class="star-box"></div>
                     <p class="desc overHidden5">教学要求、教学策略和活动组织，要有利于教学目标的实现，核心素养的落实可行且合理教学要求、教学策略和活动组织，要有利于教学目标的实现，核心素养的落实可行且合理教学要求、教学策略和活动组织，要教学要求、教学策略和活动组织，要有利于教学目标的实现，核心素养的落实可行且合理教学要求、教学策略和活动组织</p>
                     <span class="open_close">展开</span>
                 </div>
@@ -74,13 +56,7 @@
                         <span class="name">匿名</span>
                         <span class="time">07-02 01:20</span>
                     </div>
-                    <div class="star-box">
-                        <img src="../assets/images/star2.png" alt="">
-                        <img src="../assets/images/star2.png" alt="">
-                        <img src="../assets/images/star2.png" alt="">
-                        <img src="../assets/images/star1.png" alt="">
-                        <img src="../assets/images/star1.png" alt="">
-                    </div>
+                    <div class="star-box"></div>
                 </div>
             </div>
             <div class="list clear">
@@ -91,13 +67,7 @@
                         <span class="name">郭文</span>
                         <span class="time">07-02 01:20</span>
                     </div>
-                    <div class="star-box">
-                        <img src="../assets/images/star2.png" alt="">
-                        <img src="../assets/images/star2.png" alt="">
-                        <img src="../assets/images/star2.png" alt="">
-                        <img src="../assets/images/star2.png" alt="">
-                        <img src="../assets/images/star1.png" alt="">
-                    </div>
+                    <div class="star-box"></div>
                     <p class="desc overHidden5">体现良好的教学个性与风格。</p>
                 </div>
             </div>
@@ -167,6 +137,22 @@
                     $('.delToast').hide()
                 }, 3000);
             })
+            rateList()
+            // 遍历每个li中星星
+            function rateList() {
+                var rates = $(".star-box")
+                rates.each(function (i, n) {
+                    $(n).addClass("testX");
+                    layui.use(['rate'], function () {
+                        var rate = layui.rate;
+                        rate.render({
+                            elem: $(n),
+                            value: 4,
+                            readonly: true,
+                        })
+                    })
+                })
+            }
         });
     </script>
 </body>

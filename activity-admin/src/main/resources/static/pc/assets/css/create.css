@@ -280,10 +280,12 @@ input[type="number"] {
 .paddingR0{
     padding-right: 0;
 }
-.type-item:hover {
+/* .type-item:hover {
     background: #F8F8F8;
+} */
+.type-item:hover .add_btn{
+    background: url("../images/add-active.png");
 }
-
 .type-item.add {
     border: 1px dashed #e9e9e9;
 }
@@ -1337,13 +1339,13 @@ input.btn-name,
     margin-right: 4px;
     background: url("../images/icon-add-more.png");
 }
-.add_btn:hover {
+/* .add_btn:hover {
     background: url("../images/add-active.png");
-}
+} */
 .del_btn {
     width: 16px;
     height: 16px;
-    margin-left: 8px;
+    margin-left: 4px;
     background: url("../images/del-little.png");
 }
 .del_btn:hover {
