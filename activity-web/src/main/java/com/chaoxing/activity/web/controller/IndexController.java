@@ -8,7 +8,6 @@ import com.chaoxing.activity.service.GroupRegionFilterService;
 import com.chaoxing.activity.service.GroupService;
 import com.chaoxing.activity.service.activity.classify.ActivityClassifyQueryService;
 import com.chaoxing.activity.util.UserAgentUtils;
-import com.chaoxing.activity.util.annotation.LoginRequired;
 import com.chaoxing.activity.web.util.LoginUtils;
 import com.google.common.collect.Lists;
 import lombok.extern.slf4j.Slf4j;
@@ -61,7 +60,6 @@ public class IndexController {
 	 * @param flag 活动标示：双选会、第二课堂等
 	 * @return java.lang.String
 	 */
-	@LoginRequired
 	@GetMapping("")
 	public String index(HttpServletRequest request, Model model, Integer fid, Integer banner, String style, @RequestParam(defaultValue = "") String flag) {
 		style = Optional.ofNullable(style).filter(StringUtils::isNotBlank).orElse(DEFAULT_STYLE);
@@ -108,7 +106,6 @@ public class IndexController {
 	 * @param flag 活动标示：双选会、第二课堂等
 	 * @return java.lang.String
 	 */
-	@LoginRequired
 	@GetMapping("bas")
 	public String basIndex(HttpServletRequest request, Model model, String code, @RequestParam(value = "unitId", required = false) Integer fid, Integer pageId, Integer banner, String style, @RequestParam(defaultValue = "") String flag) {
 		style = Optional.ofNullable(style).filter(StringUtils::isNotBlank).orElse(DEFAULT_STYLE);
@@ -129,7 +126,6 @@ public class IndexController {
 	 * @param flag 活动标示：双选会、第二课堂等
 	 * @return java.lang.String
 	 */
-	@LoginRequired
 	@GetMapping("edu")
 	public String eduIndex(HttpServletRequest request, Model model, String code, @RequestParam(value = "unitId", required = false) Integer fid, Integer pageId, Integer banner, String style, @RequestParam(defaultValue = "") String flag) {
 		style = Optional.ofNullable(style).filter(StringUtils::isNotBlank).orElse(DEFAULT_STYLE);
