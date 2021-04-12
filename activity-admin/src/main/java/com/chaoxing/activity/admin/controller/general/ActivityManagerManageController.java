@@ -3,10 +3,11 @@ package com.chaoxing.activity.admin.controller.general;
 import com.chaoxing.activity.admin.util.LoginUtils;
 import com.chaoxing.activity.dto.LoginUserDTO;
 import com.chaoxing.activity.dto.OrgDTO;
-import com.chaoxing.activity.service.activity.manager.ActivityManagerService;
+import com.chaoxing.activity.model.Activity;
 import com.chaoxing.activity.service.activity.ActivityValidationService;
+import com.chaoxing.activity.service.activity.manager.ActivityManagerService;
 import com.chaoxing.activity.service.manager.MoocApiService;
-import com.chaoxing.activity.service.manager.PassportApiService;
+import com.chaoxing.activity.service.manager.WfwContactApiService;
 import com.chaoxing.activity.util.UserAgentUtils;
 import com.chaoxing.activity.util.annotation.LoginRequired;
 import org.springframework.stereotype.Controller;
@@ -37,7 +38,7 @@ public class ActivityManagerManageController {
 	@Resource
 	private MoocApiService moocApiService;
 	@Resource
-	private PassportApiService passportApiService;
+	private WfwContactApiService wfwContactApiService;
 
 	/**管理员主页
 	 * @Description 
@@ -53,11 +54,11 @@ public class ActivityManagerManageController {
 	public String index(@PathVariable Integer activityId, Model model, HttpServletRequest request) {
 		LoginUserDTO loginUser = LoginUtils.getLoginUser(request);
 		Integer operateUid = loginUser.getUid();
-		activityValidationService.manageAble(activityId, operateUid);
-		model.addAttribute("activityId", activityId);
+		Activity activity = activityValidationService.manageAble(activityId, operateUid);
+		model.addAttribute("activity", activity);
 		// 查询用户的机构列表
 		List<Integer> fids = moocApiService.listUserFids(operateUid);
-		List<OrgDTO> orgs = passportApiService.listOrg(fids);
+		List<OrgDTO> orgs = wfwContactApiService.listUserHaveContactsOrg(operateUid);
 		model.addAttribute("orgs", orgs);
 		// 查询以选择的uid列表
 		List<Integer> managerUids = activityManagerService.listUid(activityId);

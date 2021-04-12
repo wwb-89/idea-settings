@@ -29,7 +29,7 @@
                 </div>
                 <div class="handel-box">
                    <div class="limit-set" @click="permissionSetting(index)">权限设置</div>
-                   <div class="remove" @click="toDelete(index)">移除</div>
+                   <div v-if="activity.createUid != manager.uid" class="remove" @click="toDelete(index)">移除</div>
                 </div>
             </li>
         </ul>
@@ -41,7 +41,8 @@
                 activityManagerVue = new Vue({
                     el: "#activity-manager-vue",
                     data: {
-                        activityId: [[${activityId}]],
+                        activity: [[${activity}]],
+                        activityId: [[${activity.id}]],
                         managerQueryParams: {
                             pageNum: 1,
                             pageSize: 1000
