@@ -612,7 +612,7 @@
                     // 报名签到永远是启用的
                     $this.activity.enableSign = true;
                 }
-                $this.activity.timeScope = [$this.activity.startTime, $this.activity.endTime];
+                $this.$set($this.activity, "timeScope", [$this.activity.startTime, $this.activity.endTime]);
                 // 标签
                 var tags = $this.activity.tags;
                 if (activityApp.isEmpty(tags)) {
@@ -678,14 +678,14 @@
                         }
                     });
                 }
-                $($this.sign.signUps).each(function () {
+                $($this.sign.signUps).each(function (i) {
                     if (!activityApp.isEmpty(this.startTime)) {
-                        this.timeScope = [this.startTime, this.endTime];
+                        $this.$set($this.sign.signUps[i], "timeScope", [this.startTime, this.endTime]);
                     }
                 });
-                $($this.sign.signIns).each(function () {
+                $($this.sign.signIns).each(function (i) {
                     if (!activityApp.isEmpty(this.startTime)) {
-                        this.timeScope = [this.startTime, this.endTime];
+                        $this.$set($this.sign.signIns[i], "timeScope", [this.startTime, this.endTime]);
                     }
                 });
                 if (activityApp.isEmpty($this.participatedOrgs)) {
