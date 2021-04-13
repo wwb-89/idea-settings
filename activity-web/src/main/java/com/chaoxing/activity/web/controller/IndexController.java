@@ -54,6 +54,8 @@ public class IndexController {
 	 * @Date 2020-12-09 10:22:16
 	 * @param request
 	 * @param model
+	 * @param unitId
+	 * @param state
 	 * @param fid
 	 * @param banner
 	 * @param style 风格
@@ -61,9 +63,10 @@ public class IndexController {
 	 * @return java.lang.String
 	 */
 	@GetMapping("")
-	public String index(HttpServletRequest request, Model model, Integer fid, Integer banner, String style, @RequestParam(defaultValue = "") String flag) {
+	public String index(HttpServletRequest request, Model model, Integer unitId, Integer state, Integer fid, Integer banner, String style, @RequestParam(defaultValue = "") String flag) {
+		Integer realFid = Optional.ofNullable(unitId).orElse(Optional.ofNullable(state).orElse(fid));
 		style = Optional.ofNullable(style).filter(StringUtils::isNotBlank).orElse(DEFAULT_STYLE);
-		return handleData(request, model, null, fid, null, banner, style, flag);
+		return handleData(request, model, null, realFid, null, banner, style, flag);
 	}
 
 	/**图书馆
@@ -99,6 +102,8 @@ public class IndexController {
 	 * @param request
 	 * @param model
 	 * @param code
+	 * @param unitId
+	 * @param state
 	 * @param fid
 	 * @param pageId
 	 * @param banner
@@ -107,9 +112,10 @@ public class IndexController {
 	 * @return java.lang.String
 	 */
 	@GetMapping("bas")
-	public String basIndex(HttpServletRequest request, Model model, String code, @RequestParam(value = "unitId", required = false) Integer fid, Integer pageId, Integer banner, String style, @RequestParam(defaultValue = "") String flag) {
+	public String basIndex(HttpServletRequest request, Model model, String code, Integer unitId, Integer state, Integer fid, Integer pageId, Integer banner, String style, @RequestParam(defaultValue = "") String flag) {
+		Integer realFid = Optional.ofNullable(unitId).orElse(Optional.ofNullable(state).orElse(fid));
 		style = Optional.ofNullable(style).filter(StringUtils::isNotBlank).orElse(DEFAULT_STYLE);
-		return handleData(request, model, code, fid, pageId, banner, style, flag);
+		return handleData(request, model, code, realFid, pageId, banner, style, flag);
 	}
 
 	/**高校
@@ -119,6 +125,8 @@ public class IndexController {
 	 * @param request
 	 * @param model
 	 * @param code
+	 * @param unitId
+	 * @param state
 	 * @param fid
 	 * @param pageId
 	 * @param banner
@@ -127,9 +135,10 @@ public class IndexController {
 	 * @return java.lang.String
 	 */
 	@GetMapping("edu")
-	public String eduIndex(HttpServletRequest request, Model model, String code, @RequestParam(value = "unitId", required = false) Integer fid, Integer pageId, Integer banner, String style, @RequestParam(defaultValue = "") String flag) {
+	public String eduIndex(HttpServletRequest request, Model model, String code, Integer unitId, Integer state, Integer fid, Integer pageId, Integer banner, String style, @RequestParam(defaultValue = "") String flag) {
+		Integer realFid = Optional.ofNullable(unitId).orElse(Optional.ofNullable(state).orElse(fid));
 		style = Optional.ofNullable(style).filter(StringUtils::isNotBlank).orElse(DEFAULT_STYLE);
-		return handleData(request, model, code, fid, pageId, banner, style, flag);
+		return handleData(request, model, code, realFid, pageId, banner, style, flag);
 	}
 
 	private String handleData(HttpServletRequest request, Model model, String code, Integer fid, Integer pageId, Integer banner, String style, String flag) {
