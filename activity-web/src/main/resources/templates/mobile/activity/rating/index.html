@@ -11,6 +11,7 @@
     <link rel="stylesheet" href="/static/mobile/assets/css/dialog.css" th:href="@{/mobile/assets/css/dialog.css}">
     <link rel="stylesheet" href="/static/mobile/assets/css/public.css" th:href="@{/mobile/assets/css/public.css}" />
     <link rel="stylesheet" href="/static/mobile/assets/css/activity-comment.css" th:href="@{/mobile/assets/css/activity-comment.css}"/>
+    <link rel="stylesheet" href="/static/mobile/assets/lib/mescroll/mescroll.css" th:href="@{/mobile/assets/lib/mescroll/mescroll.css}" />
     <style type="text/css">
         [v-cloak] {
             display: none;
@@ -18,122 +19,94 @@
     </style>
 </head>
 <body>
-    <div class="activity-comment" id="activity-comment" v-cloak>
-        <div class="title" v-if="activityRating != null" >
-            <span class="score" v-text="formatScore()"></span>
-            <div class="star-box" id="m-total-star-box"></div>
-            <span class="people">{{activityRating.scoreNum}}人评价</span>
-        </div>
-        <div class="comment-list" v-if="ratings.length < 1">暂无评价</div>
-        <div class="comment-list" v-else>
-            <div class="list clear" v-for="(rating, index) of ratings">
-                <div class="head-box">
-                    <img v-if="isAnonymousShow(index)" src="/static/mobile/assets/images/head-default.png" th:src="@{/mobile/assets/images/head-default.png}" class="jqthumbImg" />
-                    <img v-else :src="'http://photo.chaoxing.com/p/'+rating.scorerUid+'_80'" class="jqthumbImg">
+    <div  id="activity-comment" v-cloak>
+        <div class="activity-comment">
+            <template v-if="hasRatings">
+                <div class="title" v-if="activityRating != null" >
+                    <span class="score" v-text="formatScore()"></span>
+                    <div class="star-box" id="m-total-star-box"></div>
+                    <span class="people">{{activityRating.scoreNum}}人评价</span>
                 </div>
+                <div class="comment-list">
+                    <div class="list clear" v-for="(rating, index) of ratings">
+                        <div class="head-box">
+                            <img v-if="isAnonymousShow(index)" src="/static/mobile/assets/images/head-default.png" th:src="@{/mobile/assets/images/head-default.png}" class="jqthumbImg" />
+                            <img v-else :src="'http://photo.chaoxing.com/p/'+rating.scorerUid+'_80'" class="jqthumbImg">
+                        </div>
+                        <div class="content">
+                            <img src="/static/mobile/assets/images/line.png" th:src="@{/mobile/assets/images/line.png}"
+                                 class="more" @click="showOperateOpts(index)" v-if="loginUser && rating.createUid == loginUser.uid">
+                            <div class="head">
+                                <span class="name" v-if="isAnonymousShow(index)">匿名</span>
+                                <span class="name" v-else>{{rating.scorerUserName}}</span>
+                                <span class="time">{{rating.createTime}}</span>
+                                <span class="state blue" v-if="rating.auditStatus == '2'">审核中</span>
+                                <span class="state red" v-if="rating.auditStatus == '0'">已被管理员删除</span>
+                            </div>
+                            <div class="star-box" data-name="star-box"></div>
+                            <p class="desc overHidden5">{{rating.comment}}</p>
+                            <span class="open_close" @click="showDetailComment($event)"></span>
+                        </div>
+                    </div>
+                </div>
+            </template>
+
+            <!-- 写评价按钮 -->
+            <div class="edit-btn" v-if="isCanRating() && hasRatings" @click="modifyRate(false)">
+                <img src="/static/mobile/assets/images/edit.png" th:src="@{/mobile/assets/images/edit.png}">
+            </div>
+
+            <template v-if="!hasRatings && loaded">
+                <!-- 活动评价-已关闭 -->
+                <div class="noContent" v-if="!canRating">评价功能已关闭</div>
+                <!-- 活动评价-空 -->
+                <div class="noContent" v-else>
+                    暂无内容
+                    <template v-if="isCanRating()">
+                        ，<span class="blue">写一条 </span>吧
+                    </template>
+                </div>
+            </template>
+
+        </div>
+        <!-- 我的评价-更多菜单 -->
+        <div class="dialog more-div" v-show="optsShow">
+            <div class="dialog-overlay">
                 <div class="content">
-                    <img src="/static/mobile/assets/images/line.png" th:src="@{/mobile/assets/images/line.png}" class="more">
-                    <div class="head">
-                        <span class="name" v-if="isAnonymousShow(index)">匿名</span>
-                        <span class="name" v-else>{{rating.scorerUserName}}</span>
-                        <span class="time">{{rating.createTime}}</span>
-                        <span class="state blue" v-if="rating.auditStatus == '2'">审核中</span>
-                        <span class="state red" v-if="rating.auditStatus == '0'">已被管理员删除</span>
+                    <div class="sure">
+                        <p class="blue" @click="modifyRate(true)">编辑</p>
+                        <p class="blue sure-btn" @click="deleteRate">删除</p>
                     </div>
-                    <div class="star-box single-comment">
-                        <div></div>
-                        <p class="item-assess">
-                            {{rating.comment}}
-                        </p>
+                    <div class="blue cancle" @click="cancelOpt">取消</div>
+                </div>
+            </div>
+        </div>
+        <!-- 别人的评价-更多菜单 -->
+        <div class="dialog" style="display: none;">
+            <div class="dialog-overlay">
+                <div class="content">
+                    <div class="sure">
+                        <p class="blue sure-btn">举报</p>
                     </div>
+                    <div class="blue cancle">取消</div>
+                </div>
+            </div>
+        </div>
+    </div>
 
-    <!--                <div class="star-box">-->
-    <!--                    <img src="/static/mobile/assets/images/star2.png" th:src="@{/mobile/assets/images/star2.png}" alt="">-->
-    <!--                    <img src="/static/mobile/assets/images/star2.png" th:src="@{/mobile/assets/images/star2.png}" alt="">-->
-    <!--                    <img src="/static/mobile/assets/images/star2.png" th:src="@{/mobile/assets/images/star2.png}" alt="">-->
-    <!--                    <img src="/static/mobile/assets/images/star2.png" th:src="@{/mobile/assets/images/star2.png}" alt="">-->
-    <!--                    <img src="/static/mobile/assets/images/star1.png" th:src="@{/mobile/assets/images/star1.png}" alt="">-->
-    <!--                </div>-->
-    <!--                <p class="desc overHidden5">教学要求、教学策略和活动组织，要有利于教学目标的实现，核心素养的落实可行且合理教学要求、教学策略和活动组织，要有利于教学目标的实现，核心素养的落实可行且合理教学要求、教学策略和活动组织，要教学要求、教学策略和活动组织，要有利于教学目标的实现，核心素养的落实可行且合理教学要求、教学策略和活动组织</p>-->
-    <!--                <span class="open_close">展开</span>-->
-                </div>
-            </div>
-        </div>
-        <!-- 写评价按钮 -->
-        <div class="edit-btn" v-if="isCanRating()" @click="toAdd">
-            <img src="/static/mobile/assets/images/edit.png" th:src="@{/mobile/assets/images/edit.png}">
-        </div>
-        <!-- 活动评价-空 -->
-        <div class="noContent" style="display: none;">暂无内容，<span class="blue">写一条 </span>吧</div>
-        <!-- 活动评价-已关闭 -->
-        <div class="noContent" style="display: none;">评价功能已关闭</div>
-    </div>
-    <!-- 我的评价-更多菜单 -->
-    <div class="dialog more-div" style="display: none;">
-        <div class="dialog-overlay">
-            <div class="content">
-                <div class="sure">
-                    <p class="blue">编辑</p>
-                    <p class="blue sure-btn">删除</p>
-                </div>
-                <div class="blue cancle">取消</div>
-            </div>
-        </div>
-    </div>
-    <div class="toast delToast" style="display: none;">删除成功</div>
-    <!-- 别人的评价-更多菜单 -->
-    <div class="dialog" style="display: none;">
-        <div class="dialog-overlay">
-            <div class="content">
-                <div class="sure">
-                    <p class="blue sure-btn">举报</p>
-                </div>
-                <div class="blue cancle">取消</div>
-            </div>
-        </div>
-    </div>
-    <div class="toast" style="display: none;">举报成功</div>
     <div th:replace="mobile/include/common_js :: common_js(~{::script})">
-    <script src="/static/mobile/assets/lib/layui/layui.js" th:src="@{/mobile/assets/lib/layui/layui.js}"></script>
-    <script src="/static/mobile/assets/lib/jqthumb.min.js" th:src="@{/mobile/assets/lib/jqthumb.min.js}"></script>
-    <script src="/static/mobile/assets/lib/mescroll/mescroll.js" th:src="@{/mobile/assets/lib/mescroll/mescroll.js}"></script>
-    <script src="/static/mobile/assets/js/common.js" th:src="@{/mobile/assets/js/common.js}"></script>
-    <script>
-        $(function () {
-            $('.jqthumbImg').jqthumb({
-                width: '100%',
-                height: '100%'
-            });
-            $('.open_close').click(function(){
-                if($(this).prev($('.content .desc')).hasClass('overHidden5')){
-                    $(this).html('收起')
-                    $(this).prev($('.content .desc')).removeClass('overHidden5')
-
-                }else{
-                    $(this).html('展开')
-                    $(this).prev($('.content .desc')).addClass('overHidden5')
-                }
-            })
-            $('.more').click(function(){
-                $('.more-div').show()
-            })
-            $('.sure-btn').click(function(){
-                $('.delToast').show()
-                $('.more-div').hide()
-                setTimeout(function() {
-                    $('.delToast').hide()
-                }, 3000);
-            })
-        });
-    </script>
-
-    <script th:inline="javascript">
-        ratingVue = new Vue({
+        <script src="/static/mobile/assets/lib/layui/layui.js" th:src="@{/mobile/assets/lib/layui/layui.js}"></script>
+        <script src="/static/mobile/assets/lib/jqthumb.min.js" th:src="@{/mobile/assets/lib/jqthumb.min.js}"></script>
+        <script src="/static/mobile/assets/lib/mescroll/mescroll.js" th:src="@{/mobile/assets/lib/mescroll/mescroll.js}"></script>
+        <script src="/static/mobile/assets/js/common.js" th:src="@{/mobile/assets/js/common.js}"></script>
+        <script th:inline="javascript">
+            ratingVue = new Vue({
             el: "#activity-comment",
             data: {
                 ratings: [],
                 mescroll: null,
-
+                loaded: false,
+                optsShow: false,
                 activity: [[${activity}]],
                 activityRating: [[${activityRating}]],
                 loginUser: [[${session._login_user_}]],
@@ -149,16 +122,17 @@
                 addEditRating: null
             },
             created: function () {
-                // var $this = this;
-                // $this.loadRatings();
+            },
+            computed: {
+              hasRatings() {
+                  var $this = this;
+                  return $this.ratings.length > 0;
+              }
             },
             mounted: function () {
                 var $this = this;
                 $this.initMescroll();
                 $this.loadRatingTotalData();
-            },
-            updated: function () {
-
             },
             methods: {
                 // 加载评论数据
@@ -172,11 +146,16 @@
                     };
                     app.ajaxPost(url, params, function (data) {
                         if (data.success) {
-                            $this.total = data.data.total;
-                            $this.mescroll.endByPage(data.data.records.length, data.data.pages);
+                            $this.loaded = true;
                             var ratings = data.data.records;
+                            $this.total = data.data.total;
+                            $this.mescroll.endByPage(ratings.length, data.data.pages);
                             $this.ratings.pushArray(ratings);
                             $this.queryParams.pageNum++;
+                            $this.$nextTick(function () {
+                                $this.rateList();
+                                $this.initJqthumbImg();
+                            })
                         } else {
                             var errorMessage = data.message;
                             if (activityApp.isEmpty(errorMessage)) {
@@ -187,9 +166,6 @@
                     }, function () {
                         app.showMsg("加载评价列表失败");
                     });
-                    $this.$nextTick(() => {
-                        $this.rateList();
-                    })
                 },
                 loadRatingTotalData: function(){
                     var $this =this;
@@ -219,21 +195,82 @@
                 isAnonymousShow: function(index) {
                     var $this = this;
                     var scorerUid = $this.ratings[index].scorerUid;
-                    if($this.loginUser!=null){
+                    if($this.loginUser != null){
                         if($this.loginUser.uid == scorerUid){
                             return false;
                         }
                     }
                     return $this.ratings[index].anonymous;
                 },
+                // 显示操作项
+                showOperateOpts: function(index) {
+                    var $this = this;
+                    $this.optsShow = true;
+                    $this.activeIndex = index
+                },
+                // 取消操作项
+                cancelOpt: function() {
+                    var $this = this;
+                    $this.optsShow = false;
+                    $this.activeIndex = null;
+                },
+                // 新增/编辑评论
+                modifyRate: function(isEdit) {
+                    var $this = this;
+                    var url = ctx + "/m/activity/" + $this.activity.id + "/rating/writeComment";
+                    if (isEdit) {
+                        url +=  "?ratingId=" + $this.ratings[$this.activeIndex].id;
+                    }
+                    app.openUrl(url)
+                },
+                // 删除评论
+                deleteRate: function() {
+                    var $this = this;
+                    app.confirm("", "确认删除评论?", function () {
+                        var url = ctx + "/api/activity/rating/" + $this.ratings[$this.activeIndex].id + "/delete";
+                        app.ajaxPostLoading(url, {}, function (data) {
+                            if (data.success) {
+                                app.showMsg("删除成功");
+                                window.location.reload();
+                            } else {
+                                var errorMessage = data.message;
+                                if (activityApp.isEmpty(errorMessage)) {
+                                    errorMessage = "删除评价失败";
+                                }
+                                app.showMsg(errorMessage);
+                            }
+                        }, function () {
+                            app.showMsg("删除评价失败");
+                        });
+                    }, function () {
+
+                    });
+                },
+                showDetailComment: function(e) {
+                    var rateDom = e.target
+                    if($(rateDom).prev($('.content .desc')).hasClass('overHidden5')){
+                        $(rateDom).html('收起')
+                        $(rateDom).prev($('.content .desc')).removeClass('overHidden5')
+                    }else{
+                        $(rateDom).html('展开')
+                        $(rateDom).prev($('.content .desc')).addClass('overHidden5')
+                    }
+                },
                 // 初始化 Mescroll
+                initJqthumbImg: function() {
+                    $('.jqthumbImg').jqthumb({
+                        width: '100%',
+                        height: '100%'
+                    });
+                },
                 initMescroll: function () {
                     var $this = this;
                     if ($this.mescroll == null) {
                         $this.mescroll = new MeScroll("body", {
                             //第一个参数"mescroll"对应上面布局结构div的id (1.3.5版本支持传入dom对象)
                             //如果您的下拉刷新是重置列表数据,那么down完全可以不用配置,具体用法参考第一个基础案例
-                            //解析: down.callback默认调用mescroll.resetUpScroll(),而resetUpScroll会将page.num=1,再触发up.callback
+                            //解析: down.callback默认调用mescroll.resetUpScroll(),而resetUpScroll会将page.num=1,
+                            // 再触发up.callback
                             down: {
                                 use: false
                             },
@@ -247,31 +284,36 @@
                         });
                     }
                 },
-                toAdd: function () {
-                },
                 // 遍历每个li中星星
                 rateList: function () {
                     var $this = this;
-                    var rates = $(".single-comment>div");
+                    var rates = $("div[data-name='star-box']");
                     rates.each(function (i, n) {
                         var score = $this.ratings[i].score;
+
                         $(n).addClass("testX");
                         layui.use(['rate'], function () {
                             var rate = layui.rate;
                             rate.render({
                                 elem: $(n),
                                 value: score,
-                                half: true,
-                                readonly: true
+                                readonly: true,
                             })
                         })
+                    })
+
+                    var openClose = $(".open_close")
+                    openClose.each(function(i, n) {
+                        if ($(n).prev().height() >= 130) {
+                            $(n).html("展开")
+                        }
                     })
                 },
 
             }
         })
-    </script>
-</div>
+        </script>
+    </div>
 
 </body>
 </html>

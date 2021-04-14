@@ -97,8 +97,8 @@ public class SignIn {
     @Getter
     public enum Way {
 
-        /** 直接签到 */
-        DIRECT("直接签到", 1),
+        /** 普通签到 */
+        DIRECT("普通签到", 1),
         POSITION("位置签到", 2),
         QR_CODE("二维码签到", 3);
 
