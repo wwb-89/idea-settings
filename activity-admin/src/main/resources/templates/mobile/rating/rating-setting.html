@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org/">
+<head>
+    <title>评价设置</title>
+    <meta http-equiv="Content-type" content="text/html; charset=utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, minimal-ui" />
+    <meta name="format-detection" content="telephone=no, email=no">
+    <meta http-equiv="Pragma" content="no-cache" />
+    <meta http-equiv="cache-control" content="no-cache" />
+    <link rel="stylesheet" href="/static/mobile/assets/lib/layui/css/layui.css" th:href="@{/mobile/assets/lib/layui/css/layui.css}" />
+    <link rel="stylesheet" href="/static/mobile/assets/css/public.css" th:href="@{/mobile/assets/css/public.css}" />
+    <link rel="stylesheet" href="/static/mobile/assets/css/comment.css" th:href="@{/mobile/assets/css/comment.css}"/>
+</head>
+<style>
+    body {
+        background: #F6F7FB;
+    }
+</style>
+<body>
+    <div class="comment-set" id="comment-set">
+        <form class="layui-form" action="" lay-filter="rateSettingForm">
+            <div class="item clear">
+                <div class="fl">
+                    <p class="name">开启评价</p>
+                    <p class="desc">开启后，允许参与者评价活动</p>
+                </div>
+                <input type="checkbox" name="openRating" lay-skin="switch" lay-filter="switchOpenRating" title="评价开关">
+            </div>
+            <div class="item clear" v-show="activity.openRating">
+                <div class="fl">
+                    <p class="name">评价需审核</p>
+                    <p class="desc">开启后，审核后的评论才能展示在评论列表</p>
+                </div>
+                <input type="checkbox" name="ratingNeedAudit" lay-skin="switch" lay-filter="switchRatingAudit" title="评价审核开关">
+            </div>
+        </form>
+    </div>
+
+    <div th:replace="mobile/include/common_js :: common_js(~{::script})">
+        <script src="/static/mobile/assets/lib/layui/layui.js" th:src="@{/mobile/assets/lib/layui/layui.js}"></script>
+        <script src="/static/mobile/assets/lib/jqthumb.min.js" th:src="@{/mobile/assets/lib/jqthumb.min.js}"></script>
+        <script src="/static/mobile/assets/js/common.js" th:src="@{/mobile/assets/js/common.js}"></script>
+        <script th:inline="javascript">
+            rateSetting = new Vue({
+                el: "#comment-set",
+                data: {
+                    activity: [[${activity}]],
+                    loginUser: [[${session._login_user_}]]
+                },
+                mounted: function(){
+                    var $this = this;
+                    $this.initFormSwitch();
+                },
+                methods: {
+                    initFormSwitch: function() {
+                        var $this = this;
+                        layui.use('form', function() {
+                            var form = layui.form;
+                            form.on('switch(switchOpenRating)', function (data) {
+                                $this.activity.openRating = data.elem.checked;
+                                $this.upSet();
+                            });
+                            form.on('switch(switchRatingAudit)', function (data) {
+                                $this.activity.ratingNeedAudit = data.elem.checked;
+                                $this.upSet();
+                            });
+                            form.val('rateSettingForm', $this.activity);
+                            form.render();
+                        });
+                    },
+                    upSet: function () {
+                        var $this = this;
+                        var url = ctx + "/api/activity/rating/setting";
+                        var activity = {
+                            id: $this.activity.id,
+                            openRating: $this.activity.openRating,
+                            ratingNeedAudit: $this.activity.ratingNeedAudit
+                        };
+                        var params = {
+                            activityJsonStr: activityApp.getJsonStr(activity)
+                        };
+                        app.ajaxPost(url, params, function (data) {
+                            if (data.success) {
+
+                            } else {
+                                var errorMessage = data.message;
+                                if (activityApp.isEmpty(errorMessage)) {
+                                    errorMessage = "修改评分状态失败";
+                                }
+                                app.showMsg(errorMessage);
+                            }
+                        }, function () {
+                            app.showMsg("修改评分状态失败");
+                        });
+                    }
+                }
+            });
+        </script>
+    </div>
+</body>
+</html>
