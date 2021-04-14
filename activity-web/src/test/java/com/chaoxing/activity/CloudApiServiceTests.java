@@ -23,7 +23,7 @@ public class CloudApiServiceTests {
 
 	@Test
 	public void upload() {
-		File file = new File("/Users/wwb/Desktop/招聘简章.docx");
+		File file = new File("/Users/wwb/Downloads/my.png");
 		String ip = "171.212.208.156";
 		String upload = cloudApiService.upload(file, ip);
 		System.out.println(upload);

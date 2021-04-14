@@ -168,17 +168,16 @@ public class IndexController {
 		banner = Optional.ofNullable(banner).orElse(0);
 		model.addAttribute("banner", banner);
 		model.addAttribute("flag", flag);
-		if (StringUtils.isEmpty(style)) {
-			if (UserAgentUtils.isMobileAccess(request)) {
-				return "mobile/index-new";
-			}
-			return "pc/index";
+		if (UserAgentUtils.isMobileAccess(request)) {
+			return "mobile/index";
 		}else {
-			if (UserAgentUtils.isMobileAccess(request)) {
-				return "mobile/index-new";
+			if (StringUtils.isEmpty(style)) {
+				return "pc/index";
+			}else {
+				return "pc/activity/market/activity-market-" + style;
 			}
-			return "pc/activity/market/activity-market-" + style;
 		}
+
 	}
 
 	/**我的活动

@@ -14,6 +14,8 @@
 
     /** 新增图标的地址 */
     activityApp.prototype.add_icon_url = "http://p.ananas.chaoxing.com/star3/origin/1424584b7802e81c1e2db2e89b855c4f";
+    /** "我的"图标的地址 */
+    activityApp.prototype.my_icon_url = "http://p.ananas.chaoxing.com/star3/origin/ce27315ad48158b1df8fba285eb9f1d4";
 
     /**
      * 字符串是否为空
