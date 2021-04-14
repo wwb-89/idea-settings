@@ -150,3 +150,32 @@
     line-height: 3.125rem;
     color: #ffffff;
 }
+.clear:after {
+    content: '';
+    display: block;
+    clear: both;
+}
+.comment-set .item{
+    padding: 1.125rem 1rem;
+    background: #ffffff;
+    text-align: left;
+    margin-bottom: .625rem;
+}
+.comment-set .item .name{
+    font-size: 1rem;
+    line-height: 1.5625rem;
+    color: #333333;
+}
+.comment-set .item .desc{
+    font-size: .8125rem;
+    line-height: .9375rem;
+    color: #999999;
+    margin-top: .25rem;
+}
+.comment-set .item .layui-form-switch {
+    float: right;
+}
+.layui-form-onswitch{
+    border-color: #0099FF;
+    background-color: #0099FF;
+}
