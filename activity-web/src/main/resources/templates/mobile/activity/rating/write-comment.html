@@ -24,7 +24,7 @@
             <div class="rate-box"><div id="rate" class="rate"></div></div>
             <div class="layui-form-item">
                <textarea placeholder="输入评语" class="layui-textarea input-comment" v-model="rateItem.comment"></textarea>
-               <span class="textarea_length" id="textarea_length">500</span>
+               <span class="textarea_length" id="textarea_length">{{500 - rateItem.comment.length}}</span>
             </div>
             <div class="layui-form-item no-name">
                 <span class="fl">匿名提交</span>
@@ -34,7 +34,7 @@
         </form>
     </div>
 
-    <div th:replace="mobile/include/common_js :: common_js(~{::script})">
+    <div th:replace="mobile/include/common_js_exclude_fastclick :: common_js(~{::script})">
         <script src="/static/mobile/assets/lib/layui/layui.js" th:src="@{/mobile/assets/lib/layui/layui.js}"></script>
         <script src="/static/mobile/assets/lib/jqthumb.min.js" th:src="@{/mobile/assets/lib/jqthumb.min.js}"></script>
         <script src="/static/mobile/assets/js/common.js" th:src="@{/mobile/assets/js/common.js}"></script>
@@ -52,10 +52,6 @@
                     form: null
                 },
                 created: function () {
-                },
-                updated: function() {
-                  var $this = this;
-                  $this.initRateEdit($this.rateItem.score)
                 },
                 mounted: function () {
                     var $this = this;
