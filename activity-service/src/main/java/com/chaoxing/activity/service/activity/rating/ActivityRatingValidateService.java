@@ -59,7 +59,7 @@ public class ActivityRatingValidateService {
 			return;
 		}
 		// 用户是否报名
-		boolean signedUpSuccess = signApiService.isSignedUpSuccess(signId, uid);
+		boolean signedUpSuccess = signApiService.isSignedUp(signId, uid);
 		if (!signedUpSuccess) {
 			throw new BusinessException("未报名");
 		}

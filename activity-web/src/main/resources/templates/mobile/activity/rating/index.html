@@ -19,7 +19,7 @@
     </style>
 </head>
 <body>
-    <div  id="activity-comment" v-cloak>
+    <div id="activity-comment" v-cloak>
         <div class="activity-comment">
             <template v-if="hasRatings">
                 <div class="title" v-if="activityRating != null" >
@@ -39,7 +39,7 @@
                             <div class="head">
                                 <span class="name" v-if="isAnonymousShow(index)">匿名</span>
                                 <span class="name" v-else>{{rating.scorerUserName}}</span>
-                                <span class="time">{{rating.createTime}}</span>
+                                <span class="time">{{ rating.createTime | timestampMDH}}</span>
                                 <span class="state blue" v-if="rating.auditStatus == '2'">审核中</span>
                                 <span class="state red" v-if="rating.auditStatus == '0'">已被管理员删除</span>
                             </div>
@@ -63,7 +63,7 @@
                 <div class="noContent" v-else>
                     暂无内容
                     <template v-if="isCanRating()">
-                        ，<span class="blue">写一条 </span>吧
+                        ，<span class="blue" @click="modifyRate(false)">写一条 </span>吧
                     </template>
                 </div>
             </template>
@@ -81,17 +81,17 @@
                 </div>
             </div>
         </div>
-        <!-- 别人的评价-更多菜单 -->
-        <div class="dialog" style="display: none;">
-            <div class="dialog-overlay">
-                <div class="content">
-                    <div class="sure">
-                        <p class="blue sure-btn">举报</p>
-                    </div>
-                    <div class="blue cancle">取消</div>
-                </div>
-            </div>
-        </div>
+<!--        &lt;!&ndash; 别人的评价-更多菜单 &ndash;&gt;-->
+<!--        <div class="dialog" style="display: none;">-->
+<!--            <div class="dialog-overlay">-->
+<!--                <div class="content">-->
+<!--                    <div class="sure">-->
+<!--                        <p class="blue sure-btn">举报</p>-->
+<!--                    </div>-->
+<!--                    <div class="blue cancle">取消</div>-->
+<!--                </div>-->
+<!--            </div>-->
+<!--        </div>-->
     </div>
 
     <div th:replace="mobile/include/common_js :: common_js(~{::script})">
@@ -100,6 +100,11 @@
         <script src="/static/mobile/assets/lib/mescroll/mescroll.js" th:src="@{/mobile/assets/lib/mescroll/mescroll.js}"></script>
         <script src="/static/mobile/assets/js/common.js" th:src="@{/mobile/assets/js/common.js}"></script>
         <script th:inline="javascript">
+            Vue.filter("timestampMDH", function (timestamp) {
+                var dateObj = activityApp.millisecond2DateObj(timestamp);
+                return `${dateObj.month}-${dateObj.day} ${dateObj.hour}:${dateObj.minute}`;
+            });
+
             ratingVue = new Vue({
             el: "#activity-comment",
             data: {
@@ -116,10 +121,7 @@
                     pageNum: 1,
                     pageSize: 10
                 },
-                dialogVisible: false,
-                scroll: null,
-                activeIndex: null,
-                addEditRating: null
+                activeIndex: null
             },
             created: function () {
             },
@@ -135,7 +137,7 @@
                 $this.loadRatingTotalData();
             },
             methods: {
-                // 加载评论数据
+                // 加载评价数据
                 loadRatings: function () {
                     var $this = this;
                     var url = ctx + "/api/activity/rating/list";
@@ -214,19 +216,21 @@
                     $this.optsShow = false;
                     $this.activeIndex = null;
                 },
-                // 新增/编辑评论
+                // 新增/编辑评价
                 modifyRate: function(isEdit) {
                     var $this = this;
-                    var url = ctx + "/m/activity/" + $this.activity.id + "/rating/writeComment";
+                    var url = ctx + "/m/activity/" + $this.activity.id + "/rating";
                     if (isEdit) {
-                        url +=  "?ratingId=" + $this.ratings[$this.activeIndex].id;
+                        url +=  "/edit?ratingId=" + $this.ratings[$this.activeIndex].id;
+                    } else {
+                        url += "/add"
                     }
                     app.openUrl(url)
                 },
-                // 删除评论
+                // 删除评价
                 deleteRate: function() {
                     var $this = this;
-                    app.confirm("", "确认删除评论?", function () {
+                    app.confirm("", "确认删除评价?", function () {
                         var url = ctx + "/api/activity/rating/" + $this.ratings[$this.activeIndex].id + "/delete";
                         app.ajaxPostLoading(url, {}, function (data) {
                             if (data.success) {
@@ -256,14 +260,14 @@
                         $(rateDom).prev($('.content .desc')).addClass('overHidden5')
                     }
                 },
-                // 初始化 Mescroll
                 initJqthumbImg: function() {
                     $('.jqthumbImg').jqthumb({
                         width: '100%',
                         height: '100%'
                     });
                 },
-                initMescroll: function () {
+                // 初始化 Mescroll
+                initMescroll: function() {
                     var $this = this;
                     if ($this.mescroll == null) {
                         $this.mescroll = new MeScroll("body", {
@@ -301,15 +305,13 @@
                             })
                         })
                     })
-
                     var openClose = $(".open_close")
                     openClose.each(function(i, n) {
-                        if ($(n).prev().height() >= 130) {
+                        if ($(n).prev().height() >= 130 && !$(n).text()) {
                             $(n).html("展开")
                         }
                     })
-                },
-
+                }
             }
         })
         </script>

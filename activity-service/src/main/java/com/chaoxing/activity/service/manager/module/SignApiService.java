@@ -77,7 +77,7 @@ public class SignApiService {
 	/** 查询报名成功的uid列表url */
 	private static final String SIGNED_UP_UIDS_URL = SIGN_API_DOMAIN + "/sign/%s/uid/signed-up";
 	/** 用户是否已报名（报名成功）url */
-	private static final String USER_SIGNED_UP_SUCCESS_URL = SIGN_API_DOMAIN + "/sign-up/signed-up-success?signId=%d&uid=%d";
+	private static final String USER_IS_SIGNED_UP_URL = SIGN_API_DOMAIN + "/sign/%d/is-signed-up?uid=%d";
 
 	/** 报名名单url */
 	private static final String SIGN_UP_USER_LIST_URL = SIGN_WEB_DOMAIN + "/sign-up/%d/user-list";
@@ -483,8 +483,8 @@ public class SignApiService {
 	 * @param uid
 	 * @return boolean
 	*/
-	public boolean isSignedUpSuccess(Integer signId, Integer uid) {
-		String url = String.format(USER_SIGNED_UP_SUCCESS_URL, signId, uid);
+	public boolean isSignedUp(Integer signId, Integer uid) {
+		String url = String.format(USER_IS_SIGNED_UP_URL, signId, uid);
 		String result = restTemplate.getForObject(url, String.class);
 		JSONObject jsonObject = JSON.parseObject(result);
 		Boolean success = jsonObject.getBoolean("success");

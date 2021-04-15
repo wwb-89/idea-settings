@@ -24,7 +24,7 @@
             <div class="rate-box"><div id="rate" class="rate"></div></div>
             <div class="layui-form-item">
                <textarea placeholder="输入评语" class="layui-textarea input-comment" v-model="rateItem.comment"></textarea>
-               <span class="textarea_length" id="textarea_length">{{500 - rateItem.comment.length}}</span>
+               <span class="textarea_length" :class="remainNum.fontClass">{{remainNum.text}}</span>
             </div>
             <div class="layui-form-item no-name">
                 <span class="fl">匿名提交</span>
@@ -47,9 +47,8 @@
                         activityId: [[${activityId}]],
                         anonymous: 0,
                         score: 0,
-                        comment: ""
-                    },
-                    form: null
+                        comment: ''
+                    }
                 },
                 created: function () {
                 },
@@ -60,34 +59,34 @@
                     $this.initRateEdit($this.rateItem.score);
                     $this.initForm();
                 },
-                watch: {
-                    'rateItem.comment': {
-                        handler(val) {
-                            if (!val) {
-                                return;
-                            }
-                            var length = val.length;
-                            $('.textarea_length').html(500 - length);
-                            if(length > 500){
-                                $('.textarea_length').addClass('red')
-                            } else {
-                                $('.textarea_length').removeClass('red')
-                            }
-                        },
-                        immediate: true,
-                        deep: true
-                    }
+                computed: {
+                  remainNum: function() {
+                      var $this = this;
+                      var comment = $this.rateItem.comment;
+                      var res = { fontClass: '', text: '500'};
+                      if (!comment) {
+                          return res;
+                      }
+                      var nums = 500 - comment.length;
+                      if (nums < 0) {
+                          res.fontClass = 'red';
+                          res.text = `已超过${Math.abs(nums)}字`;
+                      } else {
+                          res.text = `${nums}`;
+                      }
+                      return res;
+                  }
                 },
                 methods: {
                     initForm: function() {
                         var $this = this;
                         layui.use('form', function() {
-                            $this.form = layui.form;
-                            $this.form.on('switch(switchTest)', function(data) {
+                            var form = layui.form;
+                            form.on('switch(switchTest)', function(data) {
                                 $this.rateItem.anonymous = data.elem.checked;
                             })
-                            $this.form.val('rateForm', $this.rateItem);
-                            $this.form.render();
+                            form.val('rateForm', $this.rateItem);
+                            form.render();
                         });
                     },
                     initRateEdit: function(score) {
@@ -119,7 +118,6 @@
                             });
                         })
                     },
-
                     addSubmit: function () {
                         var $this = this;
                         if ($this.rateItem.score <= 2 && activityApp.isEmpty($this.rateItem.comment)) {
@@ -133,20 +131,24 @@
 
                         var url = ctx + "/api/activity/rating/add";
                         var tips = "提交";
-                        var successMsg = '评论成功';
+                        var successMsg = '评价成功';
                         if (!activityApp.isEmpty($this.rateItem.id)) {
                             url = ctx + "/api/activity/rating/update";
                             tips = "修改";
                             successMsg = tips + successMsg;
                         }
-
+                        var postData = {
+                            id: $this.rateItem.id,
+                            comment: $this.rateItem.comment,
+                            score: $this.rateItem.score,
+                            anonymous: $this.rateItem.anonymous
+                        }
                         var params = {
                             activityId: $this.activityId,
-                            activityRatingDetailJsonStr: activityApp.getJsonStr($this.rateItem)
+                            activityRatingDetailJsonStr: activityApp.getJsonStr(postData)
                         };
                         app.ajaxPostLoading(url, params, function (data) {
                             if (data.success) {
-                                // window.location.reload();
                                 var url = ctx + "/activity/" + $this.activityId + "/rating";
                                 app.showMsg(successMsg);
                                 app.openUrl(url)
