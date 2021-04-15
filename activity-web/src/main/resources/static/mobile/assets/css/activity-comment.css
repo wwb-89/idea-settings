@@ -61,8 +61,8 @@ body{
 .activity-comment .comment-list .content .more{
     position: absolute;
     right: 0;
-    top: .59375rem;
-    width: .8125rem;
+    top: .25rem;
+    width: 1rem;
 }
 .activity-comment .comment-list .content .name{
     font-size: .9375rem;
