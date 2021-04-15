@@ -17,6 +17,17 @@
     /** 图书url */
     app.prototype.bookUrl = "/m/book/detail/";
 
+    /** 新增图标的地址 */
+    app.prototype.add_icon_url = "http://p.ananas.chaoxing.com/star3/origin/0e6082347825f0867c68879c0ab8653a";
+    /** "我的"图标的地址 */
+    app.prototype.my_icon_url = "http://p.ananas.chaoxing.com/star3/origin/d0bc593e7d861ce9aa7045c2f5051404";
+    /** 更多图标的地址 */
+    app.prototype.menu_icon_url = "http://p.ananas.chaoxing.com/star3/origin/462897190a5a4aef68dc7f345acd97e2";
+    /** 更多图标的地址(带tab) */
+    app.prototype.menu_icon_tab_url = "http://p.ananas.chaoxing.com/star3/origin/51c2dab40663e15ac85180abe886bc94";
+    /** 分享图标的地址 */
+    app.prototype.share_icon_url = "http://p.ananas.chaoxing.com/star3/origin/1f1abfda16859aa69b2fe2b76b220c43";
+
     /** 页面刷新标识 */
     app.prototype.pageRefreshFlag = "page_refresh_flag";
     /** 数据删除标识 */
