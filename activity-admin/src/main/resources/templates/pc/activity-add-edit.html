@@ -1025,7 +1025,7 @@
                     for (var i = 0; i < $this.sign.signIns.length; i++) {
                         var signIn = $this.sign.signIns[i];
                         // 签到方式
-                        if (signIn.way == 2) {
+                        if (signIn.way == 2 && !signIn.deleted) {
                             // 位置签到
                             if (activityApp.isEmpty(signIn.address)) {
                                 app.showMsg(signIn.name + "位置不能为空");

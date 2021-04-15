@@ -41,12 +41,12 @@ Vue.component('vue-map', {
             // 地图实例
             map: '',
             // Marker实例
-            mk: ''
+            mk: '',
+            inited: false
         }
     },
     mounted: function () {
         var $this = this;
-        $this.initMap();
     },
     watch: {
         "show": function () {
@@ -55,6 +55,12 @@ Vue.component('vue-map', {
                 $this.address = "";
                 $this.longitude = null;
                 $this.dimension = null;
+            } else {
+                if (!$this.inited) {
+                    $this.$nextTick(function () {
+                        $this.initMap();
+                    });
+                }
             }
         }
     },
@@ -66,8 +72,8 @@ Vue.component('vue-map', {
             this.map = new BMap.Map($this.mapDomId, {
                 enableMapClick: false
             });
-            var point = new BMap.Point(104.07073444090588, 30.575041234923084);
-            this.map.centerAndZoom(point, 19);
+            var point = new BMap.Point(116.41338729034514000, 39.91092364795759600);
+            this.map.centerAndZoom(point, 11);
             // 启用滚轮放大缩小，默认禁用
             this.map.enableScrollWheelZoom(true);
             this.mk = new BMap.Marker(point);
@@ -77,6 +83,7 @@ Vue.component('vue-map', {
                 // 点击后调用逆地址解析函数
                 $this.getAddrByPoint(e.point);
             });
+            $this.inited = true;
         },
         //逆地址解析
         getAddrByPoint: function (point) {

@@ -102,6 +102,8 @@
         <vue-confirm ref="releaseWindow" :message="'发布后，该活动将展示在活动市场中'" :cancel="'取消'" :sure="'发布'" @callback="release"></vue-confirm>
         <!--下架弹窗-->
         <vue-confirm ref="canReleaseWindow" :message="'下架后，该活动将不在活动广场中显示'" :cancel="'取消'" :sure="'下架'" @callback="cancelRelease"></vue-confirm>
+        <!--去选择模版-->
+        <vue-confirm ref="selectTemlateWindow" :message="'活动还未选择模板，请选择模板后发布'" :cancel="'取消'" :sure="'去选择'" @callback="toSelectTemplate"></vue-confirm>
     </div>
 </div>
 <div th:replace="pc/include/common_js :: common_js(~{::script})">
@@ -141,7 +143,7 @@
                 // 总页数
                 pages: 0,
                 // 正在处理的活动id
-                processedActivityId: null,
+                operateActivityId: null,
                 operations: {
                     edit: {name: "编辑", value: "edit"},
                     delete: {name: "删除", value: "delete"},
@@ -192,7 +194,7 @@
                     if (activities && activities.length > 0) {
                         $(activities).each(function () {
                             var activity = this;
-                            var manager = activity.managerUids.indexOf($this.uid) > -1 || activity.createUid == $this.uid;
+                            var manager = $this.isActivityManager(activity);
                             var isCurrentOrgCreated = activity.createFid == $this.fid;
                             var isDualSelect = activity.activityFlag == "dual_select";
                             var status = activity.status;
@@ -353,12 +355,12 @@
                 // 删除
                 toDelete: function (id) {
                     var $this = this;
-                    $this.processedActivityId = id;
+                    $this.operateActivityId = id;
                     $this.$refs.deleteWindow.show = true;
                 },
                 deleteSubmit: function () {
                     var $this = this;
-                    var url = ctx + "/api/activity/" + $this.processedActivityId + "/delete"
+                    var url = ctx + "/api/activity/" + $this.operateActivityId + "/delete"
                     app.ajaxPostWithLoading(url, {}, function (data) {
                         if (data.success) {
                             $this.$refs.deleteWindow.show = false;
@@ -377,7 +379,7 @@
                 },
                 toRelease: function (id) {
                     var $this = this;
-                    $this.processedActivityId = id;
+                    $this.operateActivityId = id;
                     $this.$refs.releaseWindow.show = true;
                 },
                 // 发布
@@ -385,20 +387,16 @@
                     var $this = this;
                     var activity = null;
                     $($this.activities).each(function () {
-                        if (this.id == $this.processedActivityId) {
+                        if (this.id == $this.operateActivityId) {
                             activity = this;
                             return false;
                         }
                     });
-                    if (activityApp.isEmpty(activity.pageId)) {
-                        app.showMsg("活动未创建完成，请选择活动模板", function () {
-                            var url = ctx + "/activity/" + $this.processedActivityId + "/edit?step=2";
-                            window.open(url);
-                        });
+                    if (!$this.selectedTemplateValidate(activity)) {
                         return;
                     }
                     $this.$refs.releaseWindow.show = false;
-                    var url = ctx + "/api/activity/" + $this.processedActivityId + "/release";
+                    var url = ctx + "/api/activity/" + $this.operateActivityId + "/release";
                     app.ajaxPostWithLoading(url, {}, function (data) {
                         if (data.success) {
                             app.showMsg("发布成功", function () {
@@ -415,15 +413,39 @@
                         app.showMsg("发布失败");
                     });
                 },
+                isActivityManager: function (activity) {
+                    var $this = this;
+                    return activity.managerUids.indexOf($this.uid) > -1 || activity.createUid == $this.uid;
+                },
+                // 已选择模版验证
+                selectedTemplateValidate: function (activity) {
+                    var $this = this;
+                    if (activityApp.isEmpty(activity.pageId)) {
+                        if ($this.isActivityManager(activity)) {
+                            // 有管理权限
+                            $this.$refs.selectTemlateWindow.show = true;
+                        } else {
+                            app.showMsg("活动未选择模板，请联系活动创建者完善活动信息");
+                        }
+                        return false;
+                    }
+                    return true;
+                },
+                // 去选中模版
+                toSelectTemplate: function () {
+                    var $this = this;
+                    var url = ctx + "/activity/" + $this.operateActivityId + "/edit?step=2";
+                    window.open(url);
+                },
                 toCancelRelease: function (id) {
                     var $this = this;
-                    $this.processedActivityId = id;
+                    $this.operateActivityId = id;
                     $this.$refs.canReleaseWindow.show = true;
                 },
                 cancelRelease: function () {
                     var $this = this;
                     $this.$refs.canReleaseWindow.show = false;
-                    var url = ctx + "/api/activity/" + $this.processedActivityId + "/release/cancel";
+                    var url = ctx + "/api/activity/" + $this.operateActivityId + "/release/cancel";
                     app.ajaxPostWithLoading(url, {}, function (data) {
                         if (data.success) {
                             app.showMsg("下架成功", function () {
@@ -453,6 +475,11 @@
                 },
                 // 预览页面
                 previewPage: function (activity) {
+                    var $this = this;
+                    $this.operateActivityId = activity.id;
+                    if (!$this.selectedTemplateValidate(activity)) {
+                        return;
+                    }
                     var previewUrl = activity.previewUrl;
                     if (!activityApp.isEmpty(previewUrl)) {
                         window.open(previewUrl);
