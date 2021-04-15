@@ -39,7 +39,7 @@
                             <div class="head">
                                 <span class="name" v-if="isAnonymousShow(index)">匿名</span>
                                 <span class="name" v-else>{{rating.scorerUserName}}</span>
-                                <span class="time">{{createTimeFormat(rating.createTime)}}</span>
+                                <span class="time">{{ rating.createTime | timestampMDH}}</span>
                                 <span class="state blue" v-if="rating.auditStatus == '2'">审核中</span>
                                 <span class="state red" v-if="rating.auditStatus == '0'">已被管理员删除</span>
                             </div>
@@ -100,6 +100,11 @@
         <script src="/static/mobile/assets/lib/mescroll/mescroll.js" th:src="@{/mobile/assets/lib/mescroll/mescroll.js}"></script>
         <script src="/static/mobile/assets/js/common.js" th:src="@{/mobile/assets/js/common.js}"></script>
         <script th:inline="javascript">
+            Vue.filter("timestampMDH", function (timestamp) {
+                var dateObj = activityApp.millisecond2DateObj(timestamp);
+                return `${dateObj.month}-${dateObj.day} ${dateObj.hour}:${dateObj.minute}`;
+            });
+
             ratingVue = new Vue({
             el: "#activity-comment",
             data: {
@@ -132,7 +137,7 @@
                 $this.loadRatingTotalData();
             },
             methods: {
-                // 加载评论数据
+                // 加载评价数据
                 loadRatings: function () {
                     var $this = this;
                     var url = ctx + "/api/activity/rating/list";
@@ -211,7 +216,7 @@
                     $this.optsShow = false;
                     $this.activeIndex = null;
                 },
-                // 新增/编辑评论
+                // 新增/编辑评价
                 modifyRate: function(isEdit) {
                     var $this = this;
                     var url = ctx + "/m/activity/" + $this.activity.id + "/rating";
@@ -222,10 +227,10 @@
                     }
                     app.openUrl(url)
                 },
-                // 删除评论
+                // 删除评价
                 deleteRate: function() {
                     var $this = this;
-                    app.confirm("", "确认删除评论?", function () {
+                    app.confirm("", "确认删除评价?", function () {
                         var url = ctx + "/api/activity/rating/" + $this.ratings[$this.activeIndex].id + "/delete";
                         app.ajaxPostLoading(url, {}, function (data) {
                             if (data.success) {
@@ -282,12 +287,6 @@
                             }
                         });
                     }
-                },
-                createTimeFormat: function(createTime){
-                    if (!createTime) {
-                        return '';
-                    }
-                    return createTime.substring(11);
                 },
                 // 遍历每个li中星星
                 rateList: function () {
