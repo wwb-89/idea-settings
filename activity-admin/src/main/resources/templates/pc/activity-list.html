@@ -199,8 +199,8 @@
                             activity.operations = [];
                             switch (status) {
                                 case 1:
+                                    activity.operations.push($this.operations.release);
                                     if (manager || isCurrentOrgCreated) {
-                                        activity.operations.push($this.operations.release);
                                         if (manager) {
                                             activity.operations.push($this.operations.edit);
                                             activity.operations.push($this.operations.manage);
@@ -213,8 +213,8 @@
                                     break;
                                 case 2:
                                 case 3:
+                                    activity.operations.push($this.operations.cancelRelease);
                                     if (manager || isCurrentOrgCreated) {
-                                        activity.operations.push($this.operations.cancelRelease);
                                         if (manager) {
                                             activity.operations.push($this.operations.edit);
                                             activity.operations.push($this.operations.manage);
