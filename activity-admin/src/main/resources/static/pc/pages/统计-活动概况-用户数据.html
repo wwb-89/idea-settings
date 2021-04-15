@@ -6,6 +6,7 @@
     <title>阅读活动统计-活动概况/用户数据</title>
     <link rel="stylesheet" href="../assets/lib/layui/css/layui.css">
     <link rel="stylesheet" href="../assets/lib/element-ui/lib/theme-chalk/index.css">
+    <link rel="stylesheet" href="../assets/icomoon/style.css">
     <link rel="stylesheet" href="../assets/css/reset-tongji.css">
     <link rel="stylesheet" href="../assets/lib/qrm-pinming/qrm-pinming.css">
     <link rel="stylesheet" href="../assets/css/common.css">
@@ -100,8 +101,8 @@
                                         <div class="fr">
                                             <div class="search-content fl">
                                                 <input class="search-ipt" name="" id="" placeholder="搜索">
-                                                <img class="close" src="../assets/images/icon-16-cancel.png" alt="">
-                                                <img class="search-icon" src="../assets/images/icon-loupe.png" alt="">
+                                                <span class="icon-icon-cancel close"></span>
+                                                <span class="search-icon icon-icon-search"></span>
                                             </div>
                                             <div class="btn-output fl">导出</div>
                                         </div>
@@ -123,9 +124,12 @@
                                             <tbody>
                                                 <tr>
                                                     <td>
-                                                        <img class="add-img" src="../assets/images/icon-add2.png"
-                                                            alt="">
-                                                        <img class="sub-img" src="../assets/images/icon-sub.png" alt="">
+                                                        <span class="add-img">
+                                                            <i class="icon-plus-square"></i>
+                                                        </span>
+                                                        <span class="sub-img">
+                                                            <i class="icon-minus-square"></i>
+                                                        </span>
                                                     </td>
                                                     <td>
                                                         <input type="checkbox" name="sigle" lay-skin="primary"
@@ -136,9 +140,12 @@
                                                 </tr>
                                                 <tr>
                                                     <td>
-                                                        <img class="add-img" src="../assets/images/icon-add2.png"
-                                                            alt="">
-                                                        <img class="sub-img" src="../assets/images/icon-sub.png" alt="">
+                                                        <span class="add-img">
+                                                            <i class="icon-plus-square"></i>
+                                                        </span>
+                                                        <span class="sub-img">
+                                                            <i class="icon-minus-square"></i>
+                                                        </span>
                                                     </td>
                                                     <td>
                                                         <input type="checkbox" name="sigle" lay-skin="primary"
@@ -519,6 +526,8 @@
         initForm();
         showTable();
         searchClose();
+        initSearchBorder();
+        enterSearch();
         new EW_tab({
             'tabBtn': '#tabA .tab-i',
             'tabCon': '#tabB .tab-c',
@@ -538,6 +547,15 @@
             $($('.more-info-pop')[index]).niceScroll(customScroll);
         }, 10)
     })
+
+    function initSearchBorder() {
+        $(".search-ipt").focus(function () {
+            $(this).parent(".search-content").addClass("ipt-blu")
+        })
+        $(".search-ipt").blur(function () {
+            $(this).parent(".search-content").removeClass("ipt-blu")
+        })
+    }
 
     function initForm() {
         layui.use(['form', 'laydate'], function () {
@@ -610,6 +628,16 @@
             $('.search-ipt').val("")
             $(this).hide()
         })
+    }
+    // 回车触发事件 需要 input获取焦点
+    function enterSearch() {
+        var input = document.getElementsByClassName("search-ipt")
+        input[0].addEventListener("keyup", function (event) {
+            event.preventDefault();
+            if (event.keyCode === 13) {
+                console.log(123);
+            }
+        });
     }
 </script>
 
