@@ -371,7 +371,7 @@ public class ActivityQueryService {
 		);
 	}
 
-	/**分页查询我报名的活动
+	/**分页查询已报名活动
 	 * @Description 
 	 * @author wwb
 	 * @Date 2021-01-27 20:30:46

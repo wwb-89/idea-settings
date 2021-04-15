@@ -2,12 +2,14 @@ package com.chaoxing.activity.admin.controller.pc;
 
 import com.chaoxing.activity.model.Activity;
 import com.chaoxing.activity.service.activity.ActivityQueryService;
+import com.chaoxing.activity.util.UserAgentUtils;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 import javax.annotation.Resource;
+import javax.servlet.http.HttpServletRequest;
 
 /**
  * @author xhl
@@ -30,9 +32,12 @@ public class ActivityRatingManageController {
      * @return
      */
     @RequestMapping("setting")
-    public String setting(Model model, @PathVariable Integer activityId){
+    public String setting(HttpServletRequest request, Model model, @PathVariable Integer activityId){
         Activity activity = activityQueryService.getById(activityId);
         model.addAttribute("activity", activity);
+        if (UserAgentUtils.isMobileAccess(request)) {
+            return "mobile/rating/rating-setting";
+        }
         return "pc/rating/rating-setting";
     }
 
@@ -43,9 +48,12 @@ public class ActivityRatingManageController {
      * @return
      */
     @RequestMapping("audit")
-    public String auditIndex(Model model, @PathVariable Integer activityId){
+    public String auditIndex(HttpServletRequest request,  Model model, @PathVariable Integer activityId){
         Activity activity = activityQueryService.getById(activityId);
         model.addAttribute("activity", activity);
+        if (UserAgentUtils.isMobileAccess(request)) {
+            return "mobile/rating/rating-audit";
+        }
         return "pc/rating/rating-audit";
     }
 }
