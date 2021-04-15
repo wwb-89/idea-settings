@@ -12,10 +12,15 @@
         activityApp.prototype.origin = W.location.origin;
     }
 
+    /** 活动管理的域名 */
+    activityApp.prototype.manage_domain = "http://manage.hd.chaoxing.com";
+
     /** 新增图标的地址 */
     activityApp.prototype.add_icon_url = "http://p.ananas.chaoxing.com/star3/origin/1424584b7802e81c1e2db2e89b855c4f";
     /** "我的"图标的地址 */
     activityApp.prototype.my_icon_url = "http://p.ananas.chaoxing.com/star3/origin/ce27315ad48158b1df8fba285eb9f1d4";
+    /** 更多图标的地址 */
+    activityApp.prototype.more_icon_url = "http://p.ananas.chaoxing.com/star3/origin/4e462ff961ef7f94dfb02b2d301a8b7a";
 
     /**
      * 字符串是否为空

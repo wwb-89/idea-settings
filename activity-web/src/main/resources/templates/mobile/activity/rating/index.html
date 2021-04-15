@@ -19,23 +19,23 @@
     </style>
 </head>
 <body>
-    <div id="activity-comment" v-cloak>
+    <div id="rating-vue" v-cloak>
         <div class="activity-comment">
-            <template v-if="hasRatings">
-                <div class="title" v-if="activityRating != null" >
-                    <span class="score" v-text="formatScore()"></span>
+            <template v-show="hasRatings">
+                <div class="title" v-if="activityRating" >
+                    <span class="score">{{activityRating.score.toFixed(1)}}</span>
                     <div class="star-box" id="m-total-star-box"></div>
                     <span class="people">{{activityRating.scoreNum}}人评价</span>
                 </div>
                 <div class="comment-list">
-                    <div class="list clear" v-for="(rating, index) of ratings">
+                    <div class="list clear" v-for="(rating, index) of ratings" :key="'rating-' + index">
                         <div class="head-box">
                             <img v-if="isAnonymousShow(index)" src="/static/mobile/assets/images/head-default.png" th:src="@{/mobile/assets/images/head-default.png}" class="jqthumbImg" />
                             <img v-else :src="'http://photo.chaoxing.com/p/'+rating.scorerUid+'_80'" class="jqthumbImg">
                         </div>
                         <div class="content">
-                            <img src="/static/mobile/assets/images/line.png" th:src="@{/mobile/assets/images/line.png}"
-                                 class="more" @click="showOperateOpts(index)" v-if="loginUser && rating.createUid == loginUser.uid">
+                            <img src="/static/mobile/assets/images/line.png" th:src="@{/mobile/assets/images/line.png}" class="more needsclick"
+                                 v-if="loginUser && rating.createUid == loginUser.uid" @click="showOperateOpts(index)">
                             <div class="head">
                                 <span class="name" v-if="isAnonymousShow(index)">匿名</span>
                                 <span class="name" v-else>{{rating.scorerUserName}}</span>
@@ -81,17 +81,17 @@
                 </div>
             </div>
         </div>
-<!--        &lt;!&ndash; 别人的评价-更多菜单 &ndash;&gt;-->
-<!--        <div class="dialog" style="display: none;">-->
-<!--            <div class="dialog-overlay">-->
-<!--                <div class="content">-->
-<!--                    <div class="sure">-->
-<!--                        <p class="blue sure-btn">举报</p>-->
-<!--                    </div>-->
-<!--                    <div class="blue cancle">取消</div>-->
-<!--                </div>-->
-<!--            </div>-->
-<!--        </div>-->
+        <!-- 别人的评价-更多菜单 -->
+        <!--<div class="dialog" style="display: none;">
+            <div class="dialog-overlay">
+                <div class="content">
+                    <div class="sure">
+                        <p class="blue sure-btn">举报</p>
+                    </div>
+                    <div class="blue cancle">取消</div>
+                </div>
+            </div>
+        </div>-->
     </div>
 
     <div th:replace="mobile/include/common_js :: common_js(~{::script})">
@@ -104,216 +104,242 @@
                 var dateObj = activityApp.millisecond2DateObj(timestamp);
                 return `${dateObj.month}-${dateObj.day} ${dateObj.hour}:${dateObj.minute}`;
             });
-
-            ratingVue = new Vue({
-            el: "#activity-comment",
-            data: {
-                ratings: [],
-                mescroll: null,
-                loaded: false,
-                optsShow: false,
-                activity: [[${activity}]],
-                activityRating: [[${activityRating}]],
-                loginUser: [[${session._login_user_}]],
-                canRating: [[${canRating}]],
-                total: 0,
-                queryParams: {
-                    pageNum: 1,
-                    pageSize: 10
-                },
-                activeIndex: null
-            },
-            created: function () {
-            },
-            computed: {
-              hasRatings() {
-                  var $this = this;
-                  return $this.ratings.length > 0;
-              }
-            },
-            mounted: function () {
-                var $this = this;
-                $this.initMescroll();
-                $this.loadRatingTotalData();
-            },
-            methods: {
-                // 加载评价数据
-                loadRatings: function () {
-                    var $this = this;
-                    var url = ctx + "/api/activity/rating/list";
-                    var params = {
-                        pageNum: $this.queryParams.pageNum,
-                        pageSize: $this.queryParams.pageSize,
-                        activityId: $this.activity.id
-                    };
-                    app.ajaxPost(url, params, function (data) {
-                        if (data.success) {
-                            $this.loaded = true;
-                            var ratings = data.data.records;
-                            $this.total = data.data.total;
-                            $this.mescroll.endByPage(ratings.length, data.data.pages);
-                            $this.ratings.pushArray(ratings);
-                            $this.queryParams.pageNum++;
-                            $this.$nextTick(function () {
-                                $this.rateList();
-                                $this.initJqthumbImg();
-                            })
-                        } else {
-                            var errorMessage = data.message;
-                            if (activityApp.isEmpty(errorMessage)) {
-                                errorMessage = "加载评价列表失败";
-                            }
-                            app.showMsg(errorMessage);
-                        }
-                    }, function () {
-                        app.showMsg("加载评价列表失败");
-                    });
-                },
-                loadRatingTotalData: function(){
-                    var $this =this;
-                    if ($this.activityRating != null) {
-                        layui.use(['rate', 'layer'], function () {
-                            var rate = layui.rate;
-                            rate.render({
-                                elem: '#m-total-star-box',
-                                value: $this.activityRating.score,
-                                half: true,
-                                readonly: true
-                            });
-                        });
-                    }
-                },
-                formatScore: function(){
-                    var $this = this;
-                    var score = $this.activityRating.score;
-                    return score.toFixed(1);
-                },
-                // 是否能写评价
-                isCanRating: function(){
-                    var $this = this;
-                    return $this.loginUser != null && $this.canRating;
-                },
-                // 是否匿名显示
-                isAnonymousShow: function(index) {
-                    var $this = this;
-                    var scorerUid = $this.ratings[index].scorerUid;
-                    if($this.loginUser != null){
-                        if($this.loginUser.uid == scorerUid){
-                            return false;
-                        }
-                    }
-                    return $this.ratings[index].anonymous;
-                },
-                // 显示操作项
-                showOperateOpts: function(index) {
-                    var $this = this;
-                    $this.optsShow = true;
-                    $this.activeIndex = index
-                },
-                // 取消操作项
-                cancelOpt: function() {
-                    var $this = this;
-                    $this.optsShow = false;
-                    $this.activeIndex = null;
-                },
-                // 新增/编辑评价
-                modifyRate: function(isEdit) {
-                    var $this = this;
-                    var url = ctx + "/m/activity/" + $this.activity.id + "/rating";
-                    if (isEdit) {
-                        url +=  "/edit?ratingId=" + $this.ratings[$this.activeIndex].id;
-                    } else {
-                        url += "/add"
-                    }
-                    app.openUrl(url)
-                },
-                // 删除评价
-                deleteRate: function() {
-                    var $this = this;
-                    app.confirm("", "确认删除评价?", function () {
-                        var url = ctx + "/api/activity/rating/" + $this.ratings[$this.activeIndex].id + "/delete";
-                        app.ajaxPostLoading(url, {}, function (data) {
-                            if (data.success) {
-                                app.showMsg("删除成功");
+            function ready() {
+                ratingVue = new Vue({
+                    el: "#rating-vue",
+                    data: {
+                        ratings: [],
+                        mescroll: null,
+                        loaded: false,
+                        optsShow: false,
+                        activity: [[${activity}]],
+                        activityRating: [[${activityRating}]],
+                        loginUser: [[${session._login_user_}]],
+                        canRating: [[${canRating}]],
+                        total: 0,
+                        queryParams: {
+                            pageNum: 1,
+                            pageSize: 10
+                        },
+                        activeIndex: null,
+                        // 是不是管理员
+                        isManager: [[${isManager}]]
+                    },
+                    created: function () {
+                        var $this = this;
+                        // 绑定刷新
+                        app.bindRefresh(function () {
+                            if (app.isRefresh()) {
                                 window.location.reload();
-                            } else {
-                                var errorMessage = data.message;
-                                if (activityApp.isEmpty(errorMessage)) {
-                                    errorMessage = "删除评价失败";
-                                }
-                                app.showMsg(errorMessage);
-                            }
-                        }, function () {
-                            app.showMsg("删除评价失败");
-                        });
-                    }, function () {
-
-                    });
-                },
-                showDetailComment: function(e) {
-                    var rateDom = e.target
-                    if($(rateDom).prev($('.content .desc')).hasClass('overHidden5')){
-                        $(rateDom).html('收起')
-                        $(rateDom).prev($('.content .desc')).removeClass('overHidden5')
-                    }else{
-                        $(rateDom).html('展开')
-                        $(rateDom).prev($('.content .desc')).addClass('overHidden5')
-                    }
-                },
-                initJqthumbImg: function() {
-                    $('.jqthumbImg').jqthumb({
-                        width: '100%',
-                        height: '100%'
-                    });
-                },
-                // 初始化 Mescroll
-                initMescroll: function() {
-                    var $this = this;
-                    if ($this.mescroll == null) {
-                        $this.mescroll = new MeScroll("body", {
-                            //第一个参数"mescroll"对应上面布局结构div的id (1.3.5版本支持传入dom对象)
-                            //如果您的下拉刷新是重置列表数据,那么down完全可以不用配置,具体用法参考第一个基础案例
-                            //解析: down.callback默认调用mescroll.resetUpScroll(),而resetUpScroll会将page.num=1,
-                            // 再触发up.callback
-                            down: {
-                                use: false
-                            },
-                            up: {
-                                callback: function () {
-                                    $this.loadRatings();
-                                }, //上拉加载的回调
-                                htmlNodata: '<p class="upwarp-nodata">-- 没有更多了 --</p>',
-                                noMoreSize: 5, //如果列表已无数据,可设置列表的总数量要大于5才显示无更多数据; 避免列表数据过少(比如只有一条数据),显示无更多数据会不好看 这就是为什么无更多数据有时候不显示的原因.
                             }
                         });
-                    }
-                },
-                // 遍历每个li中星星
-                rateList: function () {
-                    var $this = this;
-                    var rates = $("div[data-name='star-box']");
-                    rates.each(function (i, n) {
-                        var score = $this.ratings[i].score;
-
-                        $(n).addClass("testX");
-                        layui.use(['rate'], function () {
-                            var rate = layui.rate;
-                            rate.render({
-                                elem: $(n),
-                                value: score,
-                                readonly: true,
-                            })
-                        })
-                    })
-                    var openClose = $(".open_close")
-                    openClose.each(function(i, n) {
-                        if ($(n).prev().height() >= 130 && !$(n).text()) {
-                            $(n).html("展开")
+                        if ($this.isManager) {
+                            app.customMenu("", app.menu_icon_url, {
+                                children: [
+                                    {menu: "评价设置", option: "ratingVue.ratingSetting()"},
+                                    {menu: "评价审核", option: "ratingVue.ratingAudit()"}
+                                ]
+                            });
                         }
-                    })
-                }
+                    },
+                    computed: {
+                        hasRatings: function () {
+                            var $this = this;
+                            return $this.ratings.length > 0;
+                        }
+                    },
+                    mounted: function () {
+                        var $this = this;
+                        $this.initMescroll();
+                        $this.loadRatingTotalData();
+                    },
+                    methods: {
+                        // 加载评价数据
+                        loadRatings: function () {
+                            var $this = this;
+                            var url = ctx + "/api/activity/rating/list";
+                            var params = {
+                                pageNum: $this.queryParams.pageNum,
+                                pageSize: $this.queryParams.pageSize,
+                                activityId: $this.activity.id
+                            };
+                            app.ajaxPost(url, params, function (data) {
+                                if (data.success) {
+                                    $this.loaded = true;
+                                    var ratings = data.data.records;
+                                    $this.total = data.data.total;
+                                    $this.mescroll.endByPage(ratings.length, data.data.pages);
+                                    $this.ratings.pushArray(ratings);
+                                    $this.queryParams.pageNum++;
+                                    $this.$nextTick(function () {
+                                        $this.rateList();
+                                        $this.initJqthumbImg();
+                                    })
+                                } else {
+                                    var errorMessage = data.message;
+                                    if (activityApp.isEmpty(errorMessage)) {
+                                        errorMessage = "加载评价列表失败";
+                                    }
+                                    app.showMsg(errorMessage);
+                                }
+                            }, function () {
+                                app.showMsg("加载评价列表失败");
+                            });
+                        },
+                        loadRatingTotalData: function () {
+                            var $this = this;
+                            if ($this.activityRating != null) {
+                                layui.use(['rate', 'layer'], function () {
+                                    var rate = layui.rate;
+                                    rate.render({
+                                        elem: '#m-total-star-box',
+                                        value: $this.activityRating.score,
+                                        half: true,
+                                        readonly: true
+                                    });
+                                });
+                            }
+                        },
+                        // 是否能写评价
+                        isCanRating: function () {
+                            var $this = this;
+                            return $this.loginUser != null && $this.canRating;
+                        },
+                        // 是否匿名显示
+                        isAnonymousShow: function (index) {
+                            var $this = this;
+                            var scorerUid = $this.ratings[index].scorerUid;
+                            if ($this.loginUser != null) {
+                                if ($this.loginUser.uid == scorerUid) {
+                                    return false;
+                                }
+                            }
+                            return $this.ratings[index].anonymous;
+                        },
+                        // 显示操作项
+                        showOperateOpts: function (index) {
+                            var $this = this;
+                            $this.optsShow = true;
+                            $this.activeIndex = index
+                        },
+                        // 取消操作项
+                        cancelOpt: function () {
+                            var $this = this;
+                            $this.optsShow = false;
+                            $this.activeIndex = null;
+                        },
+                        // 新增/编辑评价
+                        modifyRate: function (isEdit) {
+                            var $this = this;
+                            var url = ctx + "/m/activity/" + $this.activity.id + "/rating";
+                            if (isEdit) {
+                                url += "/edit?ratingId=" + $this.ratings[$this.activeIndex].id;
+                            } else {
+                                url += "/add";
+                            }
+                            $this.optsShow = false;
+                            app.openUrl(url)
+                        },
+                        // 删除评价
+                        deleteRate: function () {
+                            var $this = this;
+                            app.confirm("", "确认删除评价?", function () {
+                                var url = ctx + "/api/activity/rating/" + $this.ratings[$this.activeIndex].id + "/delete";
+                                app.ajaxPostLoading(url, {}, function (data) {
+                                    if (data.success) {
+                                        app.showMsg("删除成功");
+                                        window.location.reload();
+                                    } else {
+                                        var errorMessage = data.message;
+                                        if (activityApp.isEmpty(errorMessage)) {
+                                            errorMessage = "删除评价失败";
+                                        }
+                                        app.showMsg(errorMessage);
+                                    }
+                                }, function () {
+                                    app.showMsg("删除评价失败");
+                                });
+                            }, function () {
+
+                            });
+                        },
+                        showDetailComment: function (e) {
+                            var rateDom = e.target
+                            if ($(rateDom).prev($('.content .desc')).hasClass('overHidden5')) {
+                                $(rateDom).html('收起')
+                                $(rateDom).prev($('.content .desc')).removeClass('overHidden5')
+                            } else {
+                                $(rateDom).html('展开')
+                                $(rateDom).prev($('.content .desc')).addClass('overHidden5')
+                            }
+                        },
+                        initJqthumbImg: function () {
+                            $('.jqthumbImg').jqthumb({
+                                width: '100%',
+                                height: '100%'
+                            });
+                        },
+                        // 初始化 Mescroll
+                        initMescroll: function () {
+                            var $this = this;
+                            if ($this.mescroll == null) {
+                                $this.mescroll = new MeScroll("body", {
+                                    //第一个参数"mescroll"对应上面布局结构div的id (1.3.5版本支持传入dom对象)
+                                    //如果您的下拉刷新是重置列表数据,那么down完全可以不用配置,具体用法参考第一个基础案例
+                                    //解析: down.callback默认调用mescroll.resetUpScroll(),而resetUpScroll会将page.num=1,
+                                    // 再触发up.callback
+                                    down: {
+                                        use: false
+                                    },
+                                    up: {
+                                        callback: function () {
+                                            $this.loadRatings();
+                                        }, //上拉加载的回调
+                                        htmlNodata: '<p class="upwarp-nodata">-- 没有更多了 --</p>',
+                                        noMoreSize: 5, //如果列表已无数据,可设置列表的总数量要大于5才显示无更多数据; 避免列表数据过少(比如只有一条数据),显示无更多数据会不好看 这就是为什么无更多数据有时候不显示的原因.
+                                    }
+                                });
+                            }
+                        },
+                        // 遍历每个li中星星
+                        rateList: function () {
+                            var $this = this;
+                            var rates = $("div[data-name='star-box']");
+                            rates.each(function (i, n) {
+                                var score = $this.ratings[i].score;
+
+                                $(n).addClass("testX");
+                                layui.use(['rate'], function () {
+                                    var rate = layui.rate;
+                                    rate.render({
+                                        elem: $(n),
+                                        value: score,
+                                        readonly: true,
+                                    })
+                                })
+                            })
+                            var openClose = $(".open_close")
+                            openClose.each(function (i, n) {
+                                if ($(n).prev().height() >= 130 && !$(n).text()) {
+                                    $(n).html("展开")
+                                }
+                            });
+                        },
+                        // 评价设置
+                        ratingSetting: function () {
+                            var $this = this;
+                            var url = activityApp.manage_domain + "/activity/" + $this.activity.id + "/rating/setting";
+                            app.openUrl(url);
+                        },
+                        // 评价审核
+                        ratingAudit: function () {
+                            var $this = this;
+                            var url = activityApp.manage_domain + "/activity/" + $this.activity.id + "/rating/audit";
+                            app.openUrl(url);
+                        }
+                    }
+                });
             }
-        })
         </script>
     </div>
 

@@ -10,6 +10,7 @@
     <link rel="stylesheet" href="/static/mobile/assets/lib/layui/css/layui.css" th:href="@{/mobile/assets/lib/layui/css/layui.css}" />
     <link rel="stylesheet" href="/static/mobile/assets/css/public.css" th:href="@{/mobile/assets/css/public.css}" />
     <link rel="stylesheet" href="/static/mobile/assets/css/activity-comment.css" th:href="@{/mobile/assets/css/activity-comment.css}"/>
+    <link rel="stylesheet" href="/static/mobile/assets/css/dialog.css" th:href="@{/mobile/assets/css/dialog.css}">
 </head>
 <style>
     body{
@@ -149,9 +150,10 @@
                         };
                         app.ajaxPostLoading(url, params, function (data) {
                             if (data.success) {
-                                var url = ctx + "/activity/" + $this.activityId + "/rating";
-                                app.showMsg(successMsg);
-                                app.openUrl(url)
+                                app.showMsg(successMsg, function () {
+                                    app.noticeRefresh();
+                                    app.closeView();
+                                });
                             } else {
                                 var errorMessage = data.message;
                                 if (activityApp.isEmpty(errorMessage)) {
