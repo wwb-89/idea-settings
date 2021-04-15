@@ -1,24 +1,20 @@
 package com.chaoxing.activity.service.activity;
 
 import com.chaoxing.activity.dto.LoginUserDTO;
-import com.chaoxing.activity.dto.manager.WfwRegionalArchitectureDTO;
 import com.chaoxing.activity.model.Activity;
 import com.chaoxing.activity.service.activity.manager.ActivityManagerValidationService;
 import com.chaoxing.activity.service.manager.WfwRegionalArchitectureApiService;
 import com.chaoxing.activity.util.exception.ActivityNotExistException;
 import com.chaoxing.activity.util.exception.BusinessException;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 /**活动验证服务
  * @author wwb
@@ -139,14 +135,7 @@ public class ActivityValidationService {
 	*/
 	public boolean isOrgInManageScope(Integer fid, LoginUserDTO loginUser) {
 		Integer loginUserFid = loginUser.getFid();
-		List<Integer> manageFids = new ArrayList<>();
-		List<WfwRegionalArchitectureDTO> wfwRegionalArchitectures = wfwRegionalArchitectureApiService.listByFid(loginUserFid);
-		if (CollectionUtils.isNotEmpty(wfwRegionalArchitectures)) {
-			List<Integer> subFids = wfwRegionalArchitectures.stream().map(WfwRegionalArchitectureDTO::getFid).collect(Collectors.toList());
-			manageFids.addAll(subFids);
-		} else {
-			manageFids.add(loginUserFid);
-		}
+		List<Integer> manageFids = wfwRegionalArchitectureApiService.listSubFid(loginUserFid);
 		return manageFids.contains(fid);
 	}
 
@@ -282,11 +271,15 @@ public class ActivityValidationService {
 		boolean manager = isManageAble(activity, loginUser.getUid());
 		// 是不是本单位创建的活动
 		boolean isCurrentOrgCreated = false;
-		if (Objects.equals(createFid, loginUser.getFid())) {
+		Integer fid = loginUser.getFid();
+		if (Objects.equals(createFid, fid)) {
 			isCurrentOrgCreated = true;
 		}
-		if (!manager && !isCurrentOrgCreated) {
-			throw new BusinessException("只能发布自己管理或本单位创建的活动");
+		// 活动是不是下级机构创建的
+		List<Integer> subFids = wfwRegionalArchitectureApiService.listSubFid(fid);
+		if (!manager && !isCurrentOrgCreated && !subFids.contains(createFid)) {
+			// 自己是活动的管理员、是本机构创建的、是自己机构的下级机构创建的
+			throw new BusinessException("无权限");
 		}
 		return activity;
 	}

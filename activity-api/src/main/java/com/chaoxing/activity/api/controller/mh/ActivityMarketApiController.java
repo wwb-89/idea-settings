@@ -5,7 +5,6 @@ import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.chaoxing.activity.dto.RestRespDTO;
-import com.chaoxing.activity.dto.manager.WfwRegionalArchitectureDTO;
 import com.chaoxing.activity.dto.query.ActivityQueryDTO;
 import com.chaoxing.activity.model.Activity;
 import com.chaoxing.activity.model.ActivityClassify;
@@ -24,7 +23,6 @@ import org.springframework.web.bind.annotation.RestController;
 import javax.annotation.Resource;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 /**活动市场api服务
  * @author wwb
@@ -77,14 +75,7 @@ public class ActivityMarketApiController {
 				.topFid(wfwfid)
 				.activityClassifyId(activityClassifyId)
 				.build();
-		List<Integer> fids = Lists.newArrayList();
-		List<WfwRegionalArchitectureDTO> wfwRegionalArchitectures = wfwRegionalArchitectureApiService.listByFid(wfwfid);
-		if (CollectionUtils.isNotEmpty(wfwRegionalArchitectures)) {
-			List<Integer> subFids = wfwRegionalArchitectures.stream().map(WfwRegionalArchitectureDTO::getFid).collect(Collectors.toList());
-			fids.addAll(subFids);
-		} else {
-			fids.add(wfwfid);
-		}
+		List<Integer> fids = wfwRegionalArchitectureApiService.listSubFid(wfwfid);
 		activityQuery.setFids(fids);
 		Page<Activity> page = new Page(pageNum, pageSize);
 		page = activityQueryService.listParticipate(page, activityQuery);
@@ -173,14 +164,7 @@ public class ActivityMarketApiController {
 				.topFid(wfwfid)
 				.activityClassifyId(activityClassifyId)
 				.build();
-		List<Integer> fids = Lists.newArrayList();
-		List<WfwRegionalArchitectureDTO> wfwRegionalArchitectures = wfwRegionalArchitectureApiService.listByFid(wfwfid);
-		if (CollectionUtils.isNotEmpty(wfwRegionalArchitectures)) {
-			List<Integer> subFids = wfwRegionalArchitectures.stream().map(WfwRegionalArchitectureDTO::getFid).collect(Collectors.toList());
-			fids.addAll(subFids);
-		} else {
-			fids.add(wfwfid);
-		}
+		List<Integer> fids = wfwRegionalArchitectureApiService.listSubFid(wfwfid);
 		activityQuery.setFids(fids);
 		Page<Activity> page = new Page(pageNum, pageSize);
 		page = activityQueryService.listParticipate(page, activityQuery);

@@ -14,6 +14,7 @@ import javax.annotation.Resource;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 /**微服务组织架构服务
  * @author wwb
@@ -137,6 +138,25 @@ public class WfwRegionalArchitectureApiService {
 			}
 		}
 		return codes;
+	}
+
+	/**查询下级机构fid列表
+	 * @Description 
+	 * @author wwb
+	 * @Date 2021-04-15 20:08:32
+	 * @param fid
+	 * @return java.util.List<java.lang.Integer>
+	*/
+	public List<Integer> listSubFid(Integer fid) {
+		List<Integer> fids = Lists.newArrayList();
+		List<WfwRegionalArchitectureDTO> wfwRegionalArchitectures = listByFid(fid);
+		if (CollectionUtils.isNotEmpty(wfwRegionalArchitectures)) {
+			List<Integer> subFids = wfwRegionalArchitectures.stream().map(WfwRegionalArchitectureDTO::getFid).collect(Collectors.toList());
+			fids.addAll(subFids);
+		} else {
+			fids.add(fid);
+		}
+		return fids;
 	}
 
 }
