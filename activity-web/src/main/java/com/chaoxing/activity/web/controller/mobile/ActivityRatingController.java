@@ -31,18 +31,31 @@ public class ActivityRatingController {
 
 
     /**
-     * 活动评价首页
+     * 新增活动评价
+     *
      * @param model
      * @return
      */
-    @GetMapping("writeComment")
+    @GetMapping("add")
+    public String addComment(Model model, @PathVariable Integer activityId) {
+        model.addAttribute("activityId", activityId);
+        return "mobile/activity/rating/write-comment";
+
+    }
+
+
+    /**
+     * 活动评价首页
+     *
+     * @param model
+     * @return
+     */
+    @GetMapping("edit")
     public String writeComment(HttpServletRequest request, Model model,
                                @PathVariable Integer activityId, @Param("ratingId") Integer ratingId) {
-        if (ratingId != null) {
-            ActivityRatingDetail actRatingDetail = actRatingQueryService.getDataByActIdDetailId(activityId, ratingId);
-            model.addAttribute("activityId", activityId);
-            model.addAttribute("rateItem", JSONObject.parseObject(JSON.toJSONString(actRatingDetail)));
-        }
+        ActivityRatingDetail actRatingDetail = actRatingQueryService.getDataByActIdDetailId(activityId, ratingId);
+        model.addAttribute("activityId", activityId);
+        model.addAttribute("rateItem", actRatingDetail);
         return "mobile/activity/rating/write-comment";
 
     }
