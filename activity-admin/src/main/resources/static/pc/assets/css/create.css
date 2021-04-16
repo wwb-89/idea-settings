@@ -134,6 +134,10 @@ select {
 
 .form-item.cancel-margin {
     margin-bottom: 8px;
+    align-items: flex-start;
+}
+.form-item.cancel-margin .label{
+    margin-top: 10px;
 }
 
 .input-box {
@@ -753,6 +757,10 @@ input.btn-name,
 .select-person {
     position: relative;
     width: 140px;
+}
+
+.select-person-radio{
+    line-height: 32px;
 }
 
 .select-activity {

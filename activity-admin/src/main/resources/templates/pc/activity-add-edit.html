@@ -134,7 +134,7 @@
                     </div>
                 </div>
                 <div class="form-item cancel-margin">
-                    <label class="label">分类</label>
+                    <label class="label">活动类型</label>
                     <div class="input-box wrap">
                         <div :class="{'type-item': true, 'paddingR0': (!activityClassify.system), 'active': activityClassify.selected}" v-for="(activityClassify, index) of activityClassifies" :key="'activity-classify-' + index" @click="selectActivityClassify(index)">{{activityClassify.name}}
                             <div class="more-box" v-if="!activityClassify.system">

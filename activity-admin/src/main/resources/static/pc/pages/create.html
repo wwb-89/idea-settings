@@ -140,7 +140,7 @@
                 </div>
             </div>
             <div class="form-item cancel-margin">
-            <label class="label">活动分类</label>
+            <label class="label">活动类型</label>
             <div class="input-box wrap">
                 <div class="type-item active">活动</div>
                 <div class="type-item">讲座</div>
@@ -160,13 +160,13 @@
                     <div class="add_btn"></div>
                     新增
                 </div>
-                <!-- <div class="select-activity">
+                 <div class="select-activity">
                     <el-select v-model="value7" placeholder="请选择">
                         <el-option v-for="item in options7" :key="item.value" :label="item.label"
                                    :value="item.value">
                         </el-option>
                     </el-select>
-                </div> -->
+                </div>
             </div>
         </div>
             <div class="form-item cancel-margin marginTop16">
@@ -263,21 +263,25 @@
                             <span>产品研发<i class="del_btn" @click="handleDelRange"></i></span>
                         </div>
                     </div>
-                    
+
                 </div>
             </div>
-            
+
             <div class="form-item">
                 <label class="label"><img src="../assets/images/required.png"
                                           alt="" class="required-img">人数限制</label>
                 <div class="input-box">
-                    <div class="select-person">
-                        <el-select v-model="value1" placeholder="请选择">
-                            <el-option v-for="item in options1" :key="item.value" :label="item.label"
-                                       :value="item.value">
-                            </el-option>
-                        </el-select>
+                    <div class="select-person-radio">
+                        <el-radio v-model="value1" label="1" name="active-type">不限</el-radio>
+                        <el-radio v-model="value1" label="2" name="active-type">自定义</el-radio>
                     </div>
+                    <!--<div class="select-person">-->
+                        <!--<el-select v-model="value1" placeholder="请选择">-->
+                            <!--<el-option v-for="item in options1" :key="item.value" :label="item.label"-->
+                                       <!--:value="item.value">-->
+                            <!--</el-option>-->
+                        <!--</el-select>-->
+                    <!--</div>-->
                     <input type="number" placeholder="请输入正整数" class="person" v-show="value1 == 2">
                     <span class="person-span" v-show="value1 == 2">人</span>
                 </div>
@@ -1319,7 +1323,7 @@
             },
             // 删除参与范围
             handleDelRange:function(){
-               
+
             }
         }
     })

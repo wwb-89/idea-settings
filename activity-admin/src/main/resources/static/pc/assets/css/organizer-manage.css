@@ -80,6 +80,14 @@ html, body {
     width: 766px;
 }
 
+.table-box.table-th-three thead th:nth-child(2){
+    width: calc(70% - 30px);
+}
+
+.table-box.table-th-three thead th:nth-child(3) {
+    width: 30%;
+}
+
 .table-box .check-box {
     width: 14px;
     padding: 0 8px;
@@ -154,7 +162,7 @@ html, body {
     color: #0084FF;
     border: 1px solid #0084FF;
     margin-right: 24px;
-}   
+}
 
 .manageStatusDialog .dialog-footer .btn-submit {
     color: #FFFFFF;
@@ -176,7 +184,7 @@ html, body {
 .manageStatusDialog .manage-status {
     line-height: 20px;
     margin-bottom: 32px;
-} 
+}
 
 .manageStatusDialog .last-manage-status {
     margin-bottom: 0;
@@ -223,7 +231,7 @@ html, body {
     border-radius: 8px;
     overflow: hidden;
 }
-  
+
 .addGrade.layui-layer .layui-layer-title {
     background-color: #FFFFFF;
     text-align: center;
@@ -234,12 +242,12 @@ html, body {
     color: #333333;
     padding-top: 16px;
 }
-  
+
 .addGrade.layui-layer .layui-layer-btn a {
     border-radius: 4px;
     font-size: 14px;
 }
-  
+
 .addGrade.layui-layer .layui-layer-btn a.layui-layer-btn0 {
     background: #FFFFFF;
     height: 28px;
@@ -248,18 +256,18 @@ html, body {
     border: 1px solid #2D84FF;
     border-radius: 15px;
 }
-  
+
 .addGrade.layui-layer .layui-layer-btn a.layui-layer-btn1 {
     background: #459AFD;
     color: #FFFFFF;
     border-radius: 15px;
 }
-  
+
 .addGrade .gradeList {
     border-bottom: 1px solid #EAEDF3;
     padding: 12px 24px 0 24px;
 }
-  
+
 .addGrade .gradeList .leftCon {
     width: 385px;
     float: left;
@@ -282,7 +290,7 @@ html, body {
     line-height: 22px;
     color: #333;
 }
-  
+
  .addGrade .gradeList .leftCon .position img {
     width: 16px;
     height: 16px;
@@ -291,24 +299,24 @@ html, body {
     right: 10px;
     cursor: pointer;
 }
-  
+
 .addGrade .gradeList .rightCon {
     float: left;
     width: 226px;
 }
-  
+
 .addGrade .gradeList .rightCon .title {
     font-size: 14px;
     line-height: 50px;
     color: #666666;
     padding: 0 10px;
 }
-  
+
 .addGrade .gradeList .rightCon .selectedList {
     height: 319px;
     overflow: auto;
 }
-  
+
 .addGrade .gradeList .rightCon .selectedList ul li {
     padding: 10px 0;
     line-height: 20px;
@@ -317,7 +325,7 @@ html, body {
     color: #333333;
     cursor: pointer;
 }
-  
+
 .addGrade .gradeList .rightCon .selectedList ul li .circle {
     display: inline-block;
     position: absolute;
@@ -328,21 +336,21 @@ html, body {
     left: 7px;
     top: 16px;
 }
-  
+
 .addGrade .gradeList .rightCon .selectedList ul li .name {
     padding-right: 44px;
     padding-left: 24px;
 }
-  
+
 .addGrade .gradeList .rightCon .selectedList ul li:hover {
     background: #F8F8F8;
 }
-  
+
   /* .addGrade .gradeList .rightCon .selectedList ul li:hover .deleteIcon {*/
     /*background: url("../images/deletecircle.png") center no-repeat;*/
     /*background-size: 100%;*/
   /*}*/
-  
+
 .addGrade .gradeList .rightCon .selectedList ul li .deleteIcon {
     background: url("../images/deletecirclegrey.png") center no-repeat;
     position: absolute;
@@ -352,12 +360,12 @@ html, body {
     width: 14px;
     height: 14px;
 }
-  
+
 .addGrade .gradeList .rightCon .selectedList ul li .deleteIcon:hover {
     background: url("../images/deletecircle.png") center no-repeat;
     background-size: 100%;
 }
-  
+
 .addGrade .gradeList .rightCon .selectedList ul li .deleteIcon i {
     display: inline-block;
     width: 15px;
@@ -365,16 +373,16 @@ html, body {
     background: url("../images/deletecirclegrey.png") center no-repeat;
     background-size: 100%;
 }
-  
+
 .addGrade .gradeList .rightCon .selectedList1 ul li {
     line-height: 25px;
 }
-  
+
 .addGrade .gradeList .rightCon .selectedList1 ul li .name {
     padding-left: 45px;
     padding-right: 10px;
 }
-  
+
 .addGrade .gradeList .rightCon .selectedList1 ul li img {
     position: absolute;
     left: 10px;
@@ -382,7 +390,7 @@ html, body {
     height: 25px;
     border-radius: 14px;
 }
-  
+
 .addGrade .layui-layer-btn {
     text-align: center;
 }
@@ -397,7 +405,7 @@ html, body {
      -moz-box-sizing: border-box;
           box-sizing: border-box;
     border-radius: 2px;
-}   
+}
 
 .edit-input>input {
     border: none;
