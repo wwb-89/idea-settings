@@ -29,13 +29,14 @@ public class ActivityRatingController {
     @Resource
     private ActivityRatingQueryService actRatingQueryService;
 
-
     /**
-     * 新增活动评价
-     *
-     * @param model
-     * @return
-     */
+    * 新增活动评价
+    * @author huxiaolong
+    * 2021-04-15 10:33:41
+    * @param model
+    * @param activityId
+    * @return java.lang.String
+    */
     @GetMapping("add")
     public String addComment(Model model, @PathVariable Integer activityId) {
         model.addAttribute("activityId", activityId);
@@ -45,11 +46,15 @@ public class ActivityRatingController {
 
 
     /**
-     * 活动评价首页
-     *
-     * @param model
-     * @return
-     */
+    * 编辑活动评价
+    * @author huxiaolong
+    * 2021-04-15 10:36:02
+    * @param request
+    * @param model
+    * @param activityId
+    * @param ratingId
+    * @return java.lang.String
+    */
     @GetMapping("edit")
     public String writeComment(HttpServletRequest request, Model model,
                                @PathVariable Integer activityId, @Param("ratingId") Integer ratingId) {

@@ -149,6 +149,13 @@
                             <div class="add_btn"></div>
                             新增
                         </div>
+                        <div class="select-activity">
+                            <el-select v-model="activity.activityClassifyId" placeholder="请选择">
+                                <el-option v-for="item in activityClassifies" :key="item.id" :label="item.name"
+                                           :value="item.id">
+                                </el-option>
+                            </el-select>
+                        </div>
                     </div>
                 </div>
                 <div class="form-item cancel-margin marginTop16" v-show="isShowActivityFlag()">
@@ -232,10 +239,14 @@
                     <label class="label">人数限制</label>
                     <div class="input-box">
                         <div class="select-person">
-                            <el-select v-model="signUp.limitPerson" value-key="id" placeholder="请选择">
-                                <el-option label="不限" :value="false"></el-option>
-                                <el-option label="自定义人数" :value="true"></el-option>
-                            </el-select>
+                            <div class="select-person-radio">
+                                <el-radio v-model="signUp.limitPerson" :label="false" name="active-type">不限</el-radio>
+                                <el-radio v-model="signUp.limitPerson" :label="true" name="active-type">自定义</el-radio>
+                            </div>
+<!--                            <el-select v-model="signUp.limitPerson" value-key="id" placeholder="请选择">-->
+<!--                                <el-option label="不限" :value="false"></el-option>-->
+<!--                                <el-option label="自定义人数" :value="true"></el-option>-->
+<!--                            </el-select>-->
                         </div>
                         <input v-show="signUp.limitPerson" v-model="signUp.personLimit" type="number" min="1" step="1" maxlength="10" placeholder="请输入正整数" class="person"><span class="person-span" v-show="signUp.limitPerson">人</span>
                     </div>
