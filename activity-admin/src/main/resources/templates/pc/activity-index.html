@@ -54,9 +54,9 @@
                     <span>{{menus.notice.name}}</span>
                 </div>
             </div>
-            <div class="statistics menu-item" v-show="false">
+            <div class="statistics menu-item">
                 <!--统计-->
-                <div :class="{'item': true, 'active': menus.stat.selected}">
+                <div :class="{'item': true, 'active': menus.stat.selected}" @click="toStat">
                     <img :src="menus.stat.activeIconUrl" v-if="menus.stat.selected">
                     <img :src="menus.stat.defaultIconUrl" v-else>
                     <span>{{menus.stat.name}}</span>
@@ -90,7 +90,7 @@
                     // 通知
                     notice: {name: "发通知", defaultIconUrl: ctx + "/pc/assets/images/icon-notice-default.png", activeIconUrl: ctx + "/pc/assets/images/icon-notice-active.png", url: "//reading.chaoxing.com/qd/manage/notice/add?signId=" + [[${signActivityManageIndex.signId}]], selected: false},
                     // 统计
-                    stat: {name: "统计", defaultIconUrl: ctx + "/pc/assets/images/icon-statistics-default.png", activeIconUrl: ctx + "/pc/assets/images/icon-statistics-active.png", url: "", selected: false}
+                    stat: {name: "统计", defaultIconUrl: ctx + "/pc/assets/images/icon-statistics-default.png", activeIconUrl: ctx + "/pc/assets/images/icon-statistics-active.png", url: ctx + "/stat/activity/" + [[${activity.id}]], selected: false}
                 },
                 iframeUrl: ""
             },
@@ -189,6 +189,11 @@
                 toAddNotice: function () {
                     var $this = this;
                     $this.selectMenu("notice");
+                },
+                // 去统计
+                toStat: function () {
+                    var $this = this;
+                    $this.selectMenu("stat");
                 },
                 // 去编辑活动
                 toEdit: function () {

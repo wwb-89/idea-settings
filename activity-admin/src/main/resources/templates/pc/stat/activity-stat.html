@@ -2,9 +2,488 @@
 <html lang="en" xmlns:th="http://www.thymeleaf.org/">
 <head>
 	<meta charset="UTF-8">
-	<title>Title</title>
+	<title>活动统计</title>
+	<link rel="stylesheet" href="/static/pc/assets/lib/layui/css/layui.css" th:href="@{/pc/assets/lib/layui/css/layui.css}">
+	<link rel="stylesheet" href="/static/pc/assets/lib/element-ui/lib/theme-chalk/index.css" th:href="@{/pc/assets/lib/element-ui/lib/theme-chalk/index.css}">
+	<link rel="stylesheet" href="/static/pc/assets/icomoon/style.css" th:href="@{/pc/assets/icomoon/style.css}">
+	<link rel="stylesheet" href="/static/pc/assets/css/reset-tongji.css" th:href="@{/pc/assets/css/reset-tongji.css}">
+	<link rel="stylesheet" href="/static/pc/assets/lib/qrm-pinming/qrm-pinming.css" th:href="@{/pc/assets/lib/qrm-pinming/qrm-pinming.css}">
+	<link rel="stylesheet" href="/static/pc/assets/css/common.css" th:href="@{/pc/assets/css/common.css}">
+	<link rel="stylesheet" href="/static/pc/assets/css/activity-detail.css" th:href="@{/pc/assets/css/activity-detail.css}">
+	<!--引入js-->
+	<script src="/static/pc/assets/lib/jquery.min.js" th:src="@{/pc/assets/lib/jquery.min.js}"></script>
+	<script src="/static/pc/assets/lib/echarts.min.js" th:src="@{/pc/assets/lib/echarts.min.js}"></script>
+	<style type="text/css">
+		[v-cloak] {
+			display: none;
+        }
+	</style>
 </head>
-<body>
 
+<body>
+<div class="block" id="activity-vue" v-cloak>
+	<section>
+		<div class="page-container">
+			<div class="activity-tab flex" v-show="false">
+				<ul class="tabs font16 flex" id="tabA">
+					<li class="tab-i current">
+						<a href="javascript:" class="">活动概况</a>
+					</li>
+					<li class="tab-i">
+						<a href="javascript:" class="">用户数据</a>
+					</li>
+				</ul>
+			</div>
+			<div id="tabB">
+				<div class="tab-c">
+					<!--使用概况-->
+					<div class="white-part" style="margin-bottom: 0;">
+						<div class="part-title">
+							<div class="more-info-content">
+								<span class="font16 fontbold colorDeep inlinemiddle more-info">活动参与趋势图</span>
+							</div>
+						</div>
+						<div class="content1">
+							<ul class="count-ul clearfix">
+								<li class="count-li fl">
+									<img class="count-img" src="/static/pc/assets/images/yd-icon/icon-eye.png" th:src="@{/pc/assets/images/yd-icon/icon-eye.png}" alt="">
+									<div>
+										<p>
+											<span class="count-num">{{activityStat.pv}}</span>
+										</p>
+										<p class="count-name">浏览量(pv)</p>
+									</div>
+								</li>
+								<li class="count-li fl">
+									<img class="count-img" src="/static/pc/assets/images/yd-icon/icon-shi2.png" th:src="@{/pc/assets/images/yd-icon/icon-shi2.png}" alt="">
+									<div>
+										<p>
+											<span class="count-num">{{activityStat.signedUpNum}}</span>
+										</p>
+										<p class="count-name">报名人数(人)</p>
+									</div>
+								</li>
+								<li class="count-li fl">
+									<img class="count-img" src="/static/pc/assets/images/yd-icon/icon-sign-number.png" th:src="@{/pc/assets/images/yd-icon/icon-sign-number.png}"
+									     alt="">
+									<div>
+										<p>
+											<span class="count-num">{{activityStat.signedInNum}}</span>
+										</p>
+										<p class="count-name">签到数(人·次)</p>
+									</div>
+								</li>
+							</ul>
+						</div>
+					</div>
+					<div class="white-part white-part1">
+						<div class="height515px" id="line-aqxec"></div>
+						<!--<div class="tooltips">* 统计数据每小时更新一次</div>-->
+					</div>
+				</div>
+				<div class="tab-c">
+					<div class="white-part1">
+						<div class="user-detail">
+							<div class="layui-form">
+								<div class="layui-form-item">
+									<div class="layui-inline">
+										<div class="layui-input-inline">
+											<el-date-picker type="daterange" range-separator=" " start-placeholder="开始日期" end-placeholder="结束日期" unlink-panels></el-date-picker>
+										</div>
+									</div>
+									<div class="fr">
+										<div class="search-content fl">
+											<input class="search-ipt" name="" id="" placeholder="搜索">
+											<span class="icon-icon-cancel close"></span>
+											<span class="search-icon icon-icon-search"></span>
+										</div>
+										<div class="btn-output fl">导出</div>
+									</div>
+								</div>
+								<div class="layui-form-item">
+									<table class="table-content" style="white-space: nowrap;width: 100%; table-layout:fixed;">
+										<thead>
+											<tr>
+												<th></th>
+												<th>
+													<input type="checkbox" name="all" lay-skin="primary" lay-filter="allChoose" class="allchoose">姓名
+												</th>
+												<th>签到率</th>
+												<th>评价</th>
+											</tr>
+										</thead>
+										<tbody>
+											<tr>
+												<td>
+	                                                <span class="add-img">
+	                                                    <i class="icon-plus-square"></i>
+	                                                </span>
+													<span class="sub-img">
+	                                                    <i class="icon-minus-square"></i>
+	                                                </span>
+												</td>
+												<td>
+													<input type="checkbox" name="sigle" lay-skin="primary" lay-filter="itemChoose" class="itemchoose">李世民
+												</td>
+												<td>80%</td>
+												<td>已评价</td>
+											</tr>
+										</tbody>
+									</table>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</section>
+</div>
+<div th:replace="pc/include/common_js :: common_js(~{::script})">
+	<script src="/static/pc/assets/lib/layui/layui.js" th:src="@{/pc/assets/lib/layui/layui.js}"></script>
+	<script src="/static/pc/assets/lib/element-ui/lib/index.js" th:src="@{/pc/assets/lib/element-ui/lib/index.js}"></script>
+	<script src="/static/pc/assets/lib/qrm-pinming/qrm-pinming.js" th:src="@{/pc/assets/lib/qrm-pinming/qrm-pinming.js}"></script>
+	<script src="/static/pc/assets/lib/jquery.nicescroll.min.js" th:src="@{/pc/assets/lib/jquery.nicescroll.min.js}"></script>
+	<script src="/static/pc/assets/js/main.js" th:src="@{/pc/assets/js/main.js}"></script>
+	<script th:inline="javascript">
+        activityVue = new Vue({
+	        el: "#activity-vue",
+	        data: {
+                activityStat: [[${activityStat}]],
+                myChart: null
+	        },
+            mounted: function () {
+				var $this = this;
+                $this.initTrend();
+                window.onload = function () {
+                    if ($this.myChart) {
+                        $this.myChart.resize();
+                    }
+                }
+                window.onresize = function () {
+                    if ($this.myChart) {
+                        $this.myChart.resize();
+                    }
+                }
+            },
+	        methods: {
+                initTrend: function () {
+                    var $this = this;
+                    var maxValue = 5;
+                    var data1 = [];
+                    $($this.activityStat.daily).each(function () {
+                        data1.push(this.substring(5));
+                    });
+                    var data2 = [];
+                    $($this.activityStat.signUpTrend).each(function () {
+                        var value = parseInt(this.value);
+                        if (maxValue < value) {
+                            maxValue = value;
+                        }
+                        data2.push(value);
+                    });
+                    var data3 = [];
+                    $($this.activityStat.signInTrend).each(function () {
+                        var value = parseInt(this.value);
+                        if (maxValue < value) {
+                            maxValue = value;
+                        }
+                        data3.push(value);
+                    });
+                    var data4 = [];
+                    $($this.activityStat.pvTrend).each(function () {
+                        var value = parseInt(this.value);
+                        if (maxValue < value) {
+                            maxValue = value;
+                        }
+                        data4.push(value);
+                    });
+                    // 活动参与趋势
+                    $this.myChart = echarts.init(document.getElementById('line-aqxec'));
+                    var option = {
+                        title: {
+                            text: '活动参与趋势图',
+                            textStyle: {
+                                fontWeight: 'bold',
+                                fontSize: 16,
+                                color: '#454548',
+                            },
+                            left: 0,
+                            top: 0,
+                        },
+                        color: ['#3A8BFF', '#9FE6B8'],
+                        legend: {
+                            top: 0,
+                            right: 20,
+                            itemWidth: 8,
+                            itemHeight: 8,
+                            itemGap: 16,
+                            textStyle: {
+                                fontSize: 13,
+                                color: '#91A0B5'
+                            },
+                            icon: 'circle',
+                            data: ['报名人数', '浏览量']
+                        },
+                        grid: {
+                            bottom: 30,
+                            top: 70,
+                            left: 0,
+                            right: 30,
+                            containLabel: true,
+                        },
+                        tooltip: {
+                            trigger: 'axis',
+                            backgroundColor: 'rgba(0,0,0,0.7)',
+                            padding: [12, 16],
+                            axisPointer: {
+                                type: 'line',
+                                lineStyle: {
+                                    color: 'rgba(0, 0, 0, 0.1)'
+                                }
+                            }
+                        },
+                        xAxis: {
+                            type: 'category',
+                            boundaryGap: false,
+                            data: data1,
+                            axisLine: {
+                                show: true,
+                                lineStyle: {
+                                    color: '#E3ECFB',
+                                }
+                            },
+                            axisTick: {
+                                show: false
+                            },
+                            splitLine: {
+                                lineStyle: {
+                                    color: '#f8f8f8',
+                                },
+                            },
+                            axisLabel: {
+                                lineHeight: 40,
+                                textStyle: {
+                                    color: '#767690'
+                                }
+                            },
+                            offset: 10
+                        },
+                        yAxis: {
+                            type: 'value',
+                            name: '',
+                            axisLine: {
+                                show: false
+                            },
+                            axisTick: {
+                                show: false
+                            },
+                            splitLine: {
+                                lineStyle: {
+                                    type: 'dashed',
+                                    color: '#E3ECFB',
+                                },
+                            },
+                            min: 0,
+                            max: maxValue
+                        },
+                        series: [{
+                            name: '报名人数',
+                            data: data2,
+                            type: 'line',
+                            itemStyle: {
+                                normal: {
+                                    opacity: 0,
+                                },
+                            },
+                            smooth: true,
+                            lineStyle: {
+                                normal: {
+                                    color: '#3A8BFF',
+                                    width: 2,
+                                }
+                            },
+                            areaStyle: {
+                                normal: {
+                                    color: {
+                                        type: 'linear',
+                                        x: 0,
+                                        y: 0,
+                                        x2: 0,
+                                        y2: 1,
+                                        colorStops: [{
+                                            offset: 0,
+                                            color: 'rgba(58,139,255,0.3)' // 0% 处的颜色
+                                        }, {
+                                            offset: 1,
+                                            color: 'rgba(58,139,255,0)' // 100% 处的颜色
+                                        }],
+                                        global: false // 缺省为 false
+                                    },
+                                },
+                            },
+                        },
+                        {
+                            name: '浏览量',
+                            data: data3,
+                            type: 'line',
+                            itemStyle: {
+                                normal: {
+                                    opacity: 0,
+                                },
+                            },
+                            smooth: true,
+                            lineStyle: {
+                                normal: {
+                                    color: '#9FE6B8',
+                                    width: 2,
+                                }
+                            },
+                            areaStyle: {
+                                normal: {
+                                    color: {
+                                        type: 'linear',
+                                        x: 0,
+                                        y: 0,
+                                        x2: 0,
+                                        y2: 1,
+                                        colorStops: [{
+                                            offset: 0,
+                                            color: 'rgba(159,230,184,0.3)' // 0% 处的颜色
+                                        }, {
+                                            offset: 1,
+                                            color: 'rgba(159,230,184,0)' // 100% 处的颜色
+                                        }],
+                                        global: false // 缺省为 false
+                                    },
+                                },
+                            },
+                        }]
+                    };
+                    $this.myChart.setOption(option);
+                }
+	        }
+        });
+	</script>
+</div>
 </body>
+<script>
+    $(function () {
+        initForm();
+        showTable();
+        searchClose();
+        initSearchBorder();
+        enterSearch();
+        new EW_tab({
+            'tabBtn': '#tabA .tab-i',
+            'tabCon': '#tabB .tab-c',
+            'cur': 'current'
+        });
+        new EW_tab({
+            'tabBtn': '#tabEchartsA .tab-i',
+            'tabCon': '#tabEchartsB .tab-c',
+            'cur': 'current'
+        });
+        $($('.more-info-pop')[0]).niceScroll(customScroll);
+
+    })
+    $('.activity-tab .tab-i').click(function () {
+        var index = $(this).index();
+        setTimeout(function () {
+            $($('.more-info-pop')[index]).niceScroll(customScroll);
+        }, 10)
+    })
+
+    function initSearchBorder() {
+        $(".search-ipt").focus(function () {
+            $(this).parent(".search-content").addClass("ipt-blu")
+        })
+        $(".search-ipt").blur(function () {
+            $(this).parent(".search-content").removeClass("ipt-blu")
+        })
+    }
+
+    function initForm() {
+        layui.use(['form', 'laydate'], function () {
+            var form = layui.form;
+            var laydate = layui.laydate;
+
+            laydate.render({
+                elem: '#test6',
+                range: '→',
+                // format: 'yyyy年MM月dd日'
+                change: function (value, date, endDate) {
+                    return false;
+                }
+            });
+
+            form.on('checkbox(allChoose)', function (data) {
+                var child = $("input[type='checkbox']");
+                child.each(function (index, item) {
+                    item.checked = data.elem.checked
+                });
+                form.render('checkbox')
+            })
+        })
+    }
+
+    function showTable() {
+        $(".sub-img").hide()
+        var data = [
+            ['教学会议现场签到教学会议现场签到教学会议现场签到签到教学啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊', '10-17 16:32', '已签到'],
+            ['教学会议现场签到教学会议现场签到教学会议现场签到签到教学', '10-17 16:32', '已签到'],
+            ['教学会议现场签到教学会议现场签到教学会议现场签到签到教学', '10-17 16:32', '已签到']
+        ]
+        var html1 = ''
+        var html = ''
+        $(".add-img").click(function () {
+            var index = $(this).parent().parent().index();
+            $(this).siblings('.sub-img').addClass(`table${index}`)
+            html1 =
+                `<tr class='showTable table-header table${index}'><td></td><td>名称</td><td>时间</td><td>状态</td></tr>`;
+            for (var i = 0; i < data.length; i++) {
+                var html2 = html2 +
+                    `<tr class='showTable sign-details table${index}'><td></td><td>${data[i][0]}</td><td>${data[i][1]}</td><td>${data[i][2]}</td></tr>`;
+            }
+            html = html1 + html2;
+            $(this).parent().parent().after(html)
+            $(this).hide()
+            $(this).siblings('.sub-img').show()
+        })
+        $('.sub-img').click(function () {
+            var var2 = $(this).prop("className").split(' ')[1];
+            var className = 'tr' + '.' + var2;
+            $(className).remove();
+            $(this).removeClass(var2)
+            $(this).hide()
+            $(this).siblings('.add-img').show()
+        })
+    }
+
+    function searchClose() {
+        $('.search-ipt').on('input propertychange', function () {
+            var value = $(this).val()
+            if (value.trim() !== "") {
+                $('.close').show()
+            } else {
+                $('.close').hide()
+            }
+        })
+
+        $('.close').on('click', function () {
+            $('.search-ipt').val("")
+            $(this).hide()
+        })
+    }
+    // 回车触发事件 需要 input获取焦点
+    function enterSearch() {
+        var input = document.getElementsByClassName("search-ipt")
+        input[0].addEventListener("keyup", function (event) {
+            event.preventDefault();
+            if (event.keyCode === 13) {
+                console.log(123);
+            }
+        });
+    }
+</script>
 </html>

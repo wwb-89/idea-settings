@@ -1,10 +1,16 @@
 package com.chaoxing.activity.admin.controller.pc.stat;
 
+import com.chaoxing.activity.admin.util.LoginUtils;
+import com.chaoxing.activity.dto.LoginUserDTO;
+import com.chaoxing.activity.dto.stat.ActivityStatDTO;
+import com.chaoxing.activity.service.activity.ActivityStatQueryService;
+import com.chaoxing.activity.util.annotation.LoginRequired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 
+import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 
 /**活动统计
@@ -19,6 +25,9 @@ import javax.servlet.http.HttpServletRequest;
 @RequestMapping("stat/activity")
 public class ActivityStatController {
 
+    @Resource
+    private ActivityStatQueryService activityStatQueryService;
+
     /**活动统计主页
      * @Description 
      * @author wwb
@@ -28,9 +37,12 @@ public class ActivityStatController {
      * @param activityId
      * @return java.lang.String
     */
+    @LoginRequired
     @RequestMapping("{activityId}")
     public String index(HttpServletRequest request, Model model, @PathVariable Integer activityId) {
-
+        LoginUserDTO loginUser = LoginUtils.getLoginUser(request);
+        ActivityStatDTO activityStat = activityStatQueryService.activityStat(activityId, loginUser);
+        model.addAttribute("activityStat", activityStat);
         return "pc/stat/activity-stat";
     }
 

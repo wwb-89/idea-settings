@@ -134,7 +134,7 @@ public class MhApiService {
 	 * @param websiteId
 	 * @return java.lang.Integer
 	*/
-	public Integer countWebsiteViewNum(Integer websiteId) {
+	public Integer countWebsitePv(Integer websiteId) {
 		String url = String.format(WEBSITE_TOTAL_VIEW_NUM_URL, websiteId);
 		String result = restTemplate.getForObject(url, String.class);
 		JSONObject jsonObject = JSON.parseObject(result);
@@ -156,9 +156,9 @@ public class MhApiService {
 	 * @param endTime
 	 * @return java.util.List<com.chaoxing.activity.dto.stat.MhViewNumDailyStatDTO>
 	*/
-	public List<MhViewNumDailyStatDTO> statWebsiteDailyViewNum(Integer websiteId, LocalDateTime startTime, LocalDateTime endTime) {
+	public List<MhViewNumDailyStatDTO> statWebsiteDailyViewNum(Integer websiteId, String startTime, String endTime) {
 		List<MhViewNumDailyStatDTO> dailyStats = Lists.newArrayList();
-		String url = String.format(WEBSITE_DAILY_VIEW_NUM_STAT_URL, websiteId, startTime.format(DATE_TIME_FORMATTER), endTime.format(DATE_TIME_FORMATTER));
+		String url = String.format(WEBSITE_DAILY_VIEW_NUM_STAT_URL, websiteId, startTime, endTime);
 		String result = restTemplate.getForObject(url, String.class);
 		JSONObject jsonObject = JSON.parseObject(result);
 		Integer code = jsonObject.getInteger("code");

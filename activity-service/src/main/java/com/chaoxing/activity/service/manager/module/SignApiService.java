@@ -11,6 +11,7 @@ import com.chaoxing.activity.dto.module.SignAddEditDTO;
 import com.chaoxing.activity.dto.module.SignAddEditResultDTO;
 import com.chaoxing.activity.dto.sign.ActivityBlockDetailSignStatDTO;
 import com.chaoxing.activity.dto.sign.SignActivityManageIndexDTO;
+import com.chaoxing.activity.dto.stat.SignActivityStatDTO;
 import com.chaoxing.activity.util.CookieUtils;
 import com.chaoxing.activity.util.DateUtils;
 import com.chaoxing.activity.util.RestTemplateUtils;
@@ -85,6 +86,8 @@ public class SignApiService {
 	private static final String USER_SIGN_PARTICIPATION_URL = SIGN_API_DOMAIN + "/stat/sign/%d/user-participation?uid=%s";
 	/** 根据signId列表查询报名的人数 */
 	private static final String STAT_SIGN_SIGNED_UP_INFO_URL = SIGN_API_DOMAIN + "/stat/signs";
+	/** 单活动统计 */
+	public static final String STAT_SINGLE_ACTIVITY_URL = SIGN_API_DOMAIN + "/stat/sign/%d/single-activity?startTime=%s&endTime=%s";
 
 	/** 通知活动已评价 */
 	private static final String NOTICE_HAVE_RATING_URL = SIGN_API_DOMAIN + "/sign/%d/notice/rating?uid=%d";
@@ -674,6 +677,29 @@ public class SignApiService {
 		httpHeaders.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
 		HttpEntity<LinkedMultiValueMap<String, Object>> httpEntity = new HttpEntity(params, httpHeaders);
 		restTemplate.postForObject(SIGN_IN_POSITION_HISTORY_DELETE_URL, httpEntity, String.class);
+	}
+
+	/**报名签到每日统计
+	 * @Description 
+	 * @author wwb
+	 * @Date 2021-04-16 14:15:00
+	 * @param signId
+	 * @param startTime
+	 * @param endTime
+	 * @return com.chaoxing.activity.dto.stat.SignActivityStatDTO
+	*/
+	public SignActivityStatDTO singleActivityStat(Integer signId, String startTime, String endTime) {
+		String url = String.format(STAT_SINGLE_ACTIVITY_URL, signId, startTime, endTime);
+		String result = restTemplate.getForObject(url, String.class);
+		JSONObject jsonObject = JSON.parseObject(result);
+		Boolean success = jsonObject.getBoolean("success");
+		success = Optional.ofNullable(success).orElse(Boolean.FALSE);
+		if (success) {
+			return JSON.parseObject(jsonObject.getString("data"), SignActivityStatDTO.class);
+		} else {
+			String errorMessage = jsonObject.getString("message");
+			throw new BusinessException(errorMessage);
+		}
 	}
 
 }

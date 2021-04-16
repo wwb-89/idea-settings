@@ -20,6 +20,7 @@ import java.util.List;
 public class DateUtils {
 
 	public static final DateTimeFormatter DAY_DATE_TIME_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+	public static final DateTimeFormatter FULL_TIME_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 
 	private DateUtils() {
 
@@ -61,7 +62,7 @@ public class DateUtils {
 		LocalDate endDate = endTime.toLocalDate();
 		while (endDate.compareTo(startDate) >= 0) {
 			result.add(startDate.format(DAY_DATE_TIME_FORMATTER));
-			endDate = endDate.plusDays(1);
+			startDate = startDate.plusDays(1);
 		}
 		return result;
 	}
