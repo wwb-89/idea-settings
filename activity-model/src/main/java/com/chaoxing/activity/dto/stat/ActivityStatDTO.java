@@ -1,5 +1,6 @@
 package com.chaoxing.activity.dto.stat;
 
+import com.google.common.collect.Lists;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -27,11 +28,25 @@ public class ActivityStatDTO {
     private Integer signedUpNum;
     /** 签到数 */
     private Integer signedInNum;
+    /** 日期范围 */
+    private List<String> daily;
     /** 访问量趋势 */
-    private List<DailyStatDTO> pvs;
+    private List<DailyStatDTO> pvTrend;
     /** 报名趋势 */
-    private List<DailyStatDTO> signedUps;
+    private List<DailyStatDTO> signUpTrend;
     /** 签到趋势 */
-    private List<DailyStatDTO> signedIns;
+    private List<DailyStatDTO> signInTrend;
+
+    public static ActivityStatDTO buildDefault() {
+        return ActivityStatDTO.builder()
+                .pv(0)
+                .signedUpNum(0)
+                .signedInNum(0)
+                .daily(Lists.newArrayList())
+                .pvTrend(Lists.newArrayList())
+                .signUpTrend(Lists.newArrayList())
+                .signInTrend(Lists.newArrayList())
+                .build();
+    }
 
 }
