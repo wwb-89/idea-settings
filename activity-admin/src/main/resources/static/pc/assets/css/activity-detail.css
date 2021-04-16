@@ -70,9 +70,16 @@ html,body{
 }
 
 .user-detail {
-    padding: 24px 0;
+    padding: 16px 0;
 }
 
+.user-detail .layui-form-item {
+    margin-bottom: 16px;
+}
+
+.user-detail .layui-form-item .layui-inline {
+    margin-bottom: 0;
+}
 .layui-input {
     height: 30px;
     font-size: 14px;
@@ -115,7 +122,10 @@ html,body{
     color: #ccc;
 }
 
-.search-content .close:hover,
+.search-content .close:hover{
+    color: #999999;
+}
+
 .search-content .search-icon:hover {
     color: #0084ff;
 }
@@ -267,7 +277,7 @@ html,body{
     background-color: #F9FAFD;
 }
 
-.showTable:hover {
+.table-content tbody tr.showTable:hover {
     background-color: #F2F5FC;
 }
 
