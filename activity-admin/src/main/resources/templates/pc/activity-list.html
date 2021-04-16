@@ -128,6 +128,8 @@
                 filterStatus: [],
                 selectedFilterStatusName: "全部",
                 sw: "",
+                // 严格模式 只查询自己创建的
+                strict: [[${strict}]],
                 queryParams: {
                     fid: [[${fid != null ? fid : session._login_user_.fid}]],
                     pageNum: 1,
@@ -256,10 +258,11 @@
                 },
                 toAdd: function () {
                     var $this = this;
-                    window.open(activityApp.getRelativeUrl("/activity/add?code=" + $this.code + "&flag=" + $this.activityFlag));
+                    window.open(activityApp.getRelativeUrl("/activity/add?code=" + $this.code + "&flag=" + $this.activityFlag + "&strict=" + $this.strict));
                 },
                 toEdit: function (id) {
-                    window.open("/activity/" + id + "/edit");
+                    var $this = this;
+                    window.open("/activity/" + id + "/edit?strict=" + $this.strict);
                 },
                 // 修改状态
                 changeStatus: function (index) {

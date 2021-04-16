@@ -20,6 +20,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
@@ -88,10 +89,12 @@ public class ActivityManageController {
 	 * @param activityId
 	 * @param request
 	 * @param code
+	 * @param step
+	 * @param strict
 	 * @return java.lang.String
 	 */
 	@GetMapping("{activityId}/edit")
-	public String edit(Model model, @PathVariable Integer activityId, HttpServletRequest request, String code, Integer step) {
+	public String edit(Model model, @PathVariable Integer activityId, HttpServletRequest request, String code, Integer step, @RequestParam(defaultValue = "0") Integer strict) {
 		LoginUserDTO loginUser = LoginUtils.getLoginUser(request);
 		Activity activity = activityValidationService.manageAble(activityId, loginUser.getUid());
 		model.addAttribute("activity", activity);
@@ -125,6 +128,7 @@ public class ActivityManageController {
 		// 活动关联的报名签到模块列表
 		List<ActivitySignModule> activitySignModules = activityQueryService.listByActivityId(activityId);
 		model.addAttribute("activitySignModules", activitySignModules);
+		model.addAttribute("strict", strict);
 		return "pc/activity-add-edit";
 	}
 

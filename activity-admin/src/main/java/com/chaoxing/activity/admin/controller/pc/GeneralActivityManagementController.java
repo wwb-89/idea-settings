@@ -52,11 +52,12 @@ public class GeneralActivityManagementController {
 	 * @param code
 	 * @param secondClassroomFlag 第二课堂标识
 	 * @param flag
+	 * @param strict
 	 * @return java.lang.String
 	*/
 	@GetMapping("activity/add")
-	public String add(Model model, HttpServletRequest request, String code, @RequestParam(defaultValue = "0") Integer secondClassroomFlag, String flag) {
-		return activityManageController.add(model, request, code, secondClassroomFlag, flag);
+	public String add(Model model, HttpServletRequest request, String code, @RequestParam(defaultValue = "0") Integer secondClassroomFlag, String flag, @RequestParam(defaultValue = "0") Integer strict) {
+		return activityManageController.add(model, request, code, secondClassroomFlag, flag, strict);
 	}
 
 }

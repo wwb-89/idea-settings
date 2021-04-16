@@ -48,11 +48,12 @@ public class LibActivityManagementController {
 	 * @param request
 	 * @param code
 	 * @param flag
+	 * @param strict
 	 * @return java.lang.String
 	*/
 	@GetMapping("activity/add")
-	public String add(Model model, HttpServletRequest request, String code, String flag) {
-		return activityManageController.add(model, request, code, 0, flag);
+	public String add(Model model, HttpServletRequest request, String code, String flag, @RequestParam(defaultValue = "0") Integer strict) {
+		return activityManageController.add(model, request, code, 0, flag, strict);
 	}
 
 }

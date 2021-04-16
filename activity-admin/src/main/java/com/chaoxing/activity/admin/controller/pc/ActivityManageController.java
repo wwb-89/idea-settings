@@ -106,7 +106,7 @@ public class ActivityManageController {
 	 * @param flag
 	 * @return java.lang.String
 	*/
-	public String add(Model model, HttpServletRequest request, String code, Integer secondClassroomFlag, String flag) {
+	public String add(Model model, HttpServletRequest request, String code, Integer secondClassroomFlag, String flag, Integer strict) {
 		String areaCode = "";
 		if (StringUtils.isNotBlank(code)) {
 			// 根据code查询areaCode
@@ -135,6 +135,7 @@ public class ActivityManageController {
 		// flag配置的报名签到的模块
 		List<ActivityFlagSignModule> activityFlagSignModules = activityQueryService.listSignModuleByFlag(flag);
 		model.addAttribute("activityFlagSignModules", activityFlagSignModules);
+		model.addAttribute("strict", strict);
 		return "pc/activity-add-edit";
 	}
 }

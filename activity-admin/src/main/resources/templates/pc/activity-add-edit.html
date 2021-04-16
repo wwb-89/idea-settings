@@ -136,20 +136,22 @@
                 <div class="form-item cancel-margin">
                     <label class="label">活动类型</label>
                     <div class="input-box wrap">
-                        <div :class="{'type-item': true, 'paddingR0': (!activityClassify.system), 'active': activityClassify.selected}" v-for="(activityClassify, index) of activityClassifies" :key="'activity-classify-' + index" @click="selectActivityClassify(index)">{{activityClassify.name}}
-                            <div class="more-box" v-if="!activityClassify.system">
-                                <div class="more-btn"></div>
-                                <div class="edit-box">
-                                    <div @click="toEditActivityClassify(index, $event)">编辑</div>
-                                    <div @click="toDeleteActivityClassify(index, $event)">删除</div>
+                        <template v-if="strict != 1">
+                            <div :class="{'type-item': true, 'paddingR0': (!activityClassify.system), 'active': activityClassify.selected}" v-for="(activityClassify, index) of activityClassifies" :key="'activity-classify-' + index" @click="selectActivityClassify(index)">{{activityClassify.name}}
+                                <div class="more-box" v-if="!activityClassify.system">
+                                    <div class="more-btn"></div>
+                                    <div class="edit-box">
+                                        <div @click="toEditActivityClassify(index, $event)">编辑</div>
+                                        <div @click="toDeleteActivityClassify(index, $event)">删除</div>
+                                    </div>
                                 </div>
                             </div>
-                        </div>
-                        <div class="type-item add" @click="toAddActivityClassify">
-                            <div class="add_btn"></div>
-                            新增
-                        </div>
-                        <div class="select-activity">
+                            <div class="type-item add" @click="toAddActivityClassify">
+                                <div class="add_btn"></div>
+                                新增
+                            </div>
+                        </template>
+                        <div class="select-activity" v-if="strict == 1">
                             <el-select v-model="activity.activityClassifyId" placeholder="请选择">
                                 <el-option v-for="item in activityClassifies" :key="item.id" :label="item.name"
                                            :value="item.id">
@@ -238,15 +240,9 @@
                 <div class="form-item">
                     <label class="label">人数限制</label>
                     <div class="input-box">
-                        <div class="select-person">
-                            <div class="select-person-radio">
-                                <el-radio v-model="signUp.limitPerson" :label="false" name="active-type">不限</el-radio>
-                                <el-radio v-model="signUp.limitPerson" :label="true" name="active-type">自定义</el-radio>
-                            </div>
-<!--                            <el-select v-model="signUp.limitPerson" value-key="id" placeholder="请选择">-->
-<!--                                <el-option label="不限" :value="false"></el-option>-->
-<!--                                <el-option label="自定义人数" :value="true"></el-option>-->
-<!--                            </el-select>-->
+                        <div class="select-person-radio">
+                            <el-radio v-model="signUp.limitPerson" :label="false" name="active-type">不限</el-radio>
+                            <el-radio v-model="signUp.limitPerson" :label="true" name="active-type">自定义</el-radio>
                         </div>
                         <input v-show="signUp.limitPerson" v-model="signUp.personLimit" type="number" min="1" step="1" maxlength="10" placeholder="请输入正整数" class="person"><span class="person-span" v-show="signUp.limitPerson">人</span>
                     </div>
@@ -577,7 +573,8 @@
                 // 当前操作的对象
                 operateSignUpIndex: -1,
                 operateSignInIndex: -1,
-                signInMapTitleKey: "签到"
+                signInMapTitleKey: "签到",
+                strict: [[${strict}]]
             },
             created: function () {
                 var $this = this;
