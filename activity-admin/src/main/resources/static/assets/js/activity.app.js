@@ -273,6 +273,15 @@
     activityApp.prototype.generateDualSelectIndexUrl = function (activityId, fid) {
         return "http://appcd.chaoxing.com/form-employment/pc/double/election?activityId=" + activityId + "&wfwfid=" + fid;
     };
+    /**
+     * 双选会统计导出地址
+     * @param activityId
+     * @param fid
+     * @returns {string}
+     */
+    activityApp.prototype.generateDualSelectStatExportUrl = function (activityId, fid) {
+        return "http://appcd.chaoxing.com/form-employment/export/double/selection/statistics?activityId=" + activityId + "&wfwfid=" + fid;
+    };
     W['activityApp'] = new activityApp();
 })(window, jQuery, JSON);
 Array.prototype.remove = function (val) {
