@@ -59,13 +59,13 @@ public class SignApiService {
 	/** 参与情况 */
 	private static final String PARTICIPATION_URL = SIGN_API_DOMAIN + "/sign/%d/signed-up";
 	/** 统计报名签到在活动管理首页需要的信息 */
-	private static final String STAT_SIGN_ACTIVITY_MANAGE_INDEX_URL = SIGN_API_DOMAIN + "/sign/%d/stat/activity-index";
+	private static final String STAT_SIGN_ACTIVITY_MANAGE_INDEX_URL = SIGN_API_DOMAIN + "/stat/sign/%d/activity-index";
 	/** 统计报名签到报名成功数量url */
-	private static final String STAT_SIGNED_UP_NUM = SIGN_API_DOMAIN + "/sign/stat/signed-up-num";
+	private static final String STAT_SIGNED_UP_NUM = SIGN_API_DOMAIN + "/stat/sign/signed-up-num";
 	/** 活动块详情统计信息url */
-	private static final String ACTIVITY_BLOCK_DETAIL_STAT_URL = SIGN_API_DOMAIN + "/sign/stat/activity-block-detail?signId=%s&uid=%s";
+	private static final String ACTIVITY_BLOCK_DETAIL_STAT_URL = SIGN_API_DOMAIN + "/stat/sign/activity-block-detail?signId=%s&uid=%s";
 	/** 用户已报名的报名签到列表url */
-	private static final String USER_SIGNED_UP_URL = SIGN_API_DOMAIN + "/sign/stat/sign/user-signed-up/%d";
+	private static final String USER_SIGNED_UP_URL = SIGN_API_DOMAIN + "/stat/sign/user-signed-up/%d";
 	/** 通知已收藏url */
 	private static final String NOTICE_COLLECTED_URL = SIGN_API_DOMAIN + "/sign/%d/notice/collected";
 	
@@ -82,9 +82,9 @@ public class SignApiService {
 	/** 报名名单url */
 	private static final String SIGN_UP_USER_LIST_URL = SIGN_WEB_DOMAIN + "/sign-up/%d/user-list";
 	/** 用户报名签到参与情况url */
-	private static final String USER_SIGN_PARTICIPATION_URL = SIGN_API_DOMAIN + "/sign/%d/stat/user-participation?uid=%s";
+	private static final String USER_SIGN_PARTICIPATION_URL = SIGN_API_DOMAIN + "/stat/sign/%d/user-participation?uid=%s";
 	/** 根据signId列表查询报名的人数 */
-	private static final String STAT_SIGN_SIGNED_UP_NUM_URL = SIGN_API_DOMAIN + "/sign/stat/sign/signed-up-num";
+	private static final String STAT_SIGN_SIGNED_UP_INFO_URL = SIGN_API_DOMAIN + "/stat/signs";
 
 	/** 通知活动已评价 */
 	private static final String NOTICE_HAVE_RATING_URL = SIGN_API_DOMAIN + "/sign/%d/notice/rating?uid=%d";
@@ -579,7 +579,7 @@ public class SignApiService {
 		JSONObject params = new JSONObject();
 		params.put("signIds", signIds);
 		HttpEntity<String> httpEntity = new HttpEntity(params.toJSONString(), httpHeaders);
-		String result = restTemplate.postForObject(STAT_SIGN_SIGNED_UP_NUM_URL, httpEntity, String.class);
+		String result = restTemplate.postForObject(STAT_SIGN_SIGNED_UP_INFO_URL, httpEntity, String.class);
 		JSONObject jsonObject = JSON.parseObject(result);
 		Boolean success = jsonObject.getBoolean("success");
 		success = Optional.ofNullable(success).orElse(Boolean.FALSE);
