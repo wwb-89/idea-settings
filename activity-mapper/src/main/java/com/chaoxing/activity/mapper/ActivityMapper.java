@@ -45,18 +45,20 @@ public interface ActivityMapper extends BaseMapper<Activity> {
 	 */
 	Page<Activity> pageManaging(@Param("page") Page<?> page, @Param("params") ActivityManageQueryDTO activityManageQuery);
 
-	/**查询创建的活动
-	 * @Description 
-	 * @author wwb
-	 * @Date 2021-03-17 16:11:49
+	/**
+	 * 查询创建的活动
+	 *
 	 * @param page
 	 * @param activityManageQuery
 	 * @return com.baomidou.mybatisplus.extension.plugins.pagination.Page<com.chaoxing.activity.model.Activity>
-	*/
+	 * @Description
+	 * @author wwb
+	 * @Date 2021-03-17 16:11:49
+	 */
 	Page<Activity> pageCreated(@Param("page") Page<?> page, @Param("params") ActivityManageQueryDTO activityManageQuery);
 
 	/**
-	 * 查询机构创建的
+	 * 查询机构创建的或能参与的
 	 *
 	 * @param page
 	 * @param fid
@@ -65,7 +67,7 @@ public interface ActivityMapper extends BaseMapper<Activity> {
 	 * @author wwb
 	 * @Date 2020-11-24 21:49:48
 	 */
-	Page<Activity> pageOrgCreated(@Param("page") Page<?> page, @Param("fid") Integer fid);
+	Page<Activity> listOrgParticipatedOrCreated(@Param("page") Page<?> page, @Param("fid") Integer fid);
 
 	/**
 	 * 分页查询用户创建的
@@ -80,15 +82,17 @@ public interface ActivityMapper extends BaseMapper<Activity> {
 	 */
 	Page<Activity> pageUserCreated(@Param("page") Page<?> page, @Param("uid") Integer uid, @Param("sw") String sw);
 
-	/**分页查询用户管理的
-	 * @Description 
-	 * @author wwb
-	 * @Date 2021-04-08 18:01:23
+	/**
+	 * 分页查询用户管理的
+	 *
 	 * @param page
 	 * @param uid
 	 * @param sw
 	 * @return com.baomidou.mybatisplus.extension.plugins.pagination.Page<com.chaoxing.activity.model.Activity>
-	*/
+	 * @Description
+	 * @author wwb
+	 * @Date 2021-04-08 18:01:23
+	 */
 	Page<Activity> pageUserManaged(@Param("page") Page<?> page, @Param("uid") Integer uid, @Param("sw") String sw);
 
 	/**
@@ -149,13 +153,25 @@ public interface ActivityMapper extends BaseMapper<Activity> {
 	 */
 	Activity getBySignId(@Param("signId") Integer signId);
 
-	/**根据id查询活动
-	 * @Description 
-	 * @author wwb
-	 * @Date 2021-03-10 20:30:11
+	/**
+	 * 根据id查询活动
+	 *
 	 * @param id
 	 * @return com.chaoxing.activity.model.Activity
-	*/
+	 * @Description
+	 * @author wwb
+	 * @Date 2021-03-10 20:30:11
+	 */
 	Activity getById(@Param("id") Integer id);
+
+	/**查询机构创建的
+	 * @Description 
+	 * @author wwb
+	 * @Date 2021-04-19 10:41:04
+	 * @param fid
+	 * @param activityFlag
+	 * @return java.util.List<com.chaoxing.activity.model.Activity>
+	*/
+	List<Activity> listOrgCreated(@Param("fid") Integer fid, @Param("activityFlag") String activityFlag);
 
 }

@@ -127,7 +127,7 @@ public class ActivityQueryService {
 		return page;
 	}
 	
-	/**查询机构创建的
+	/**查询机构创建的或能参与的
 	 * @Description 
 	 * @author wwb
 	 * @Date 2020-11-24 21:48:23
@@ -135,8 +135,8 @@ public class ActivityQueryService {
 	 * @param fid
 	 * @return com.baomidou.mybatisplus.extension.plugins.pagination.Page<com.chaoxing.activity.model.Activity>
 	*/
-	public Page<Activity> listCreated(Page<Activity> page, Integer fid) {
-		page = activityMapper.pageOrgCreated(page, fid);
+	public Page<Activity> listOrgParticipatedOrCreated(Page<Activity> page, Integer fid) {
+		page = activityMapper.listOrgParticipatedOrCreated(page, fid);
 		return page;
 	}
 
@@ -480,6 +480,18 @@ public class ActivityQueryService {
 				.lambda()
 				.eq(ActivitySignModule::getActivityId, activityId)
 		);
+	}
+
+	/**查询机构创建的指定flag的活动列表
+	 * @Description 
+	 * @author wwb
+	 * @Date 2021-04-19 10:46:24
+	 * @param fid
+	 * @param activityFlag
+	 * @return java.util.List<com.chaoxing.activity.model.Activity>
+	*/
+	public List<Activity> listOrgCreated(Integer fid, String activityFlag) {
+		return activityMapper.listOrgCreated(fid, activityFlag);
 	}
 
 }

@@ -196,7 +196,7 @@
     </select>
 
     <!--查询机构创建的-->
-    <select id="pageOrgCreated" resultMap="BaseResultMap">
+    <select id="listOrgParticipatedOrCreated" resultMap="BaseResultMap">
         SELECT
             <include refid="Base_Column_List"></include>
         FROM
@@ -352,6 +352,22 @@
         WHERE
             t.id = #{id}
         LIMIT 1
+    </select>
+
+    <select id="listOrgCreated" resultMap="BaseResultMap">
+        SELECT
+            <include refid="Base_Column_List"></include>
+        FROM
+            t_activity t
+        WHERE
+            t.create_fid = #{fid}
+            <if test="activityFlag != null and activityFlag != ''">
+                AND t.activity_flag = #{activityFlag}
+            </if>
+            AND t.`status` IN ( 2, 3, 4 )
+        ORDER BY
+            FIELD( t.`status`, 3, 2, 4 ),
+            t.start_time DESC
     </select>
 
 </mapper>

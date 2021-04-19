@@ -3,23 +3,23 @@ package com.chaoxing.activity.api.controller;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
-import com.chaoxing.activity.model.LoginCustom;
-import com.chaoxing.activity.service.LoginService;
-import com.chaoxing.activity.service.activity.ActivityValidationService;
-import com.chaoxing.activity.service.activity.collection.ActivityCollectionQueryService;
-import com.chaoxing.activity.service.activity.ActivityIsAboutStartHandleService;
-import com.chaoxing.activity.service.activity.manager.ActivityManagerValidationService;
-import com.chaoxing.activity.service.util.Model2DtoService;
 import com.chaoxing.activity.dto.RestRespDTO;
 import com.chaoxing.activity.dto.activity.ActivityExternalDTO;
 import com.chaoxing.activity.dto.manager.WfwRegionalArchitectureDTO;
 import com.chaoxing.activity.dto.query.ActivityQueryDTO;
 import com.chaoxing.activity.model.Activity;
 import com.chaoxing.activity.model.Group;
+import com.chaoxing.activity.model.LoginCustom;
 import com.chaoxing.activity.service.GroupService;
+import com.chaoxing.activity.service.LoginService;
+import com.chaoxing.activity.service.activity.ActivityIsAboutStartHandleService;
 import com.chaoxing.activity.service.activity.ActivityQueryService;
+import com.chaoxing.activity.service.activity.ActivityValidationService;
+import com.chaoxing.activity.service.activity.collection.ActivityCollectionQueryService;
 import com.chaoxing.activity.service.manager.WfwCoordinateApiService;
 import com.chaoxing.activity.service.manager.WfwRegionalArchitectureApiService;
+import com.chaoxing.activity.service.manager.module.SignApiService;
+import com.chaoxing.activity.service.util.Model2DtoService;
 import com.chaoxing.activity.util.HttpServletRequestUtils;
 import com.google.common.collect.Lists;
 import org.apache.commons.collections4.CollectionUtils;
@@ -68,7 +68,7 @@ public class ActivityApiController {
 	@Resource
 	private ActivityIsAboutStartHandleService activityStartNoticeHandleService;
 	@Resource
-	private ActivityManagerValidationService activityManagerValidationService;
+	private SignApiService signApiService;
 	@Resource
 	private ActivityValidationService activityValidationService;
 
@@ -253,6 +253,39 @@ public class ActivityApiController {
 		Activity activity = activityQueryService.getBySignId(signId);
 		boolean manager = activityValidationService.isManageAble(activity.getId(), uid);
 		return RestRespDTO.success(manager);
+	}
+
+	/**机构创建的活动列表
+	 * @Description 
+	 * @author wwb
+	 * @Date 2021-04-19 10:12:18
+	 * @param fid
+	 * @param activityFlag
+	 * @return com.chaoxing.activity.dto.RestRespDTO
+	*/
+	@RequestMapping("org/{fid}/created")
+	public RestRespDTO listOrgCreated(@PathVariable Integer fid, @RequestParam(defaultValue = "") String activityFlag) {
+		return RestRespDTO.success(activityQueryService.listOrgCreated(fid, activityFlag));
+	}
+
+	/**活动参与的用户uid
+	 * @Description
+	 * @author wwb
+	 * @Date 2021-04-19 10:14:24
+	 * @param activityId
+	 * @return com.chaoxing.activity.dto.RestRespDTO
+	*/
+	@RequestMapping("{activityId}/participated-uid")
+	public RestRespDTO participatedUid(@PathVariable Integer activityId) {
+		Activity activity = activityQueryService.getById(activityId);
+		List<Integer> uids = Lists.newArrayList();
+		if (activity != null) {
+			Integer signId = activity.getSignId();
+			if (signId != null) {
+				uids = signApiService.listSignedUpUid(signId);
+			}
+		}
+		return RestRespDTO.success(uids);
 	}
 
 }

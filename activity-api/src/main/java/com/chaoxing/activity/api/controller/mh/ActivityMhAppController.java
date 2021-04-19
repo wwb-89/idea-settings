@@ -223,7 +223,7 @@ public class ActivityMhAppController {
 		Integer createFid = activity.getCreateFid();
 		// 查询机构下的活动列表
 		Page<Activity> page = new Page(pageNum, pageSize);
-		page = activityQueryService.listCreated(page, createFid);
+		page = activityQueryService.listOrgParticipatedOrCreated(page, createFid);
 		JSONObject result = new JSONObject();
 		result.put("curPage", pageNum);
 		result.put("totalPages", page.getPages());
