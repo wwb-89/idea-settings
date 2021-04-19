@@ -107,55 +107,67 @@
                                             <div class="btn-output fl">导出</div>
                                         </div>
                                     </div>
-                                    <div class="layui-form-item">
-                                        <table class="table-content"
-                                            style="white-space: nowrap;width: 100%; table-layout:fixed;">
-                                            <thead>
-                                                <tr>
-                                                    <th></th>
-                                                    <th>
-                                                        <input type="checkbox" name="all" lay-skin="primary"
-                                                            lay-filter="allChoose" class="allchoose">姓名
-                                                    </th>
-                                                    <th>签到率</th>
-                                                    <th>评价</th>
-                                                </tr>
-                                            </thead>
-                                            <tbody>
-                                                <tr>
-                                                    <td>
-                                                        <span class="add-img">
-                                                            <i class="icon-plus-square"></i>
-                                                        </span>
-                                                        <span class="sub-img">
-                                                            <i class="icon-minus-square"></i>
-                                                        </span>
-                                                    </td>
-                                                    <td>
-                                                        <input type="checkbox" name="sigle" lay-skin="primary"
-                                                            lay-filter="itemChoose" class="itemchoose">李世民
-                                                    </td>
-                                                    <td>80%</td>
-                                                    <td>已评价</td>
-                                                </tr>
-                                                <tr>
-                                                    <td>
-                                                        <span class="add-img">
-                                                            <i class="icon-plus-square"></i>
-                                                        </span>
-                                                        <span class="sub-img">
-                                                            <i class="icon-minus-square"></i>
-                                                        </span>
-                                                    </td>
-                                                    <td>
-                                                        <input type="checkbox" name="sigle" lay-skin="primary"
-                                                            lay-filter="itemChoose" class="itemchoose">李世民
-                                                    </td>
-                                                    <td>69%</td>
-                                                    <td>已评价</td>
-                                                </tr>
-                                            </tbody>
-                                        </table>
+                                    <div class="list-box">
+                                        <div class="t-head clear">
+                                            <div class="td row1">
+                                                <el-checkbox :indeterminate="isIndeterminate" v-model="checkAll"
+                                                    @change="handleCheckAllChange">
+                                                </el-checkbox>
+                                                姓名
+                                            </div>
+                                            <div class="td row3">签到率</div>
+                                            <div class="td row3">评价</div>
+                                        </div>
+                                        <el-checkbox-group v-model="checkedLists" @change="handleCheckedChange">
+                                            <div class="t-body">
+                                                <div class="list-item " v-for="(item,index) in lists">
+                                                    <div class="item-title clear">
+                                                        <div class="row1">
+                                                            <span class="icon-info item-down icon-plus-square"></span>
+                                                            <el-checkbox :key="index" :label="item.name"
+                                                                :checked="isIndeterminate"></el-checkbox>
+                                                        </div>
+                                                        <div class="row3">{{item.sign}}</div>
+                                                        <div class="row3">已评价</div>
+
+                                                    </div>
+                                                    <ul class="item-info">
+                                                        <li class="clear li-head">
+                                                            <div class="row1">名称</div>
+                                                            <div class="row3">时间</div>
+                                                            <div class="row3">状态</div>
+                                                        </li>
+                                                        <li class="clear li-body">
+                                                            <div class="row1 overHidden1">教学会议现场签到教学会议现场签到教学会议现场签到教学
+                                                            </div>
+                                                            <div class="row3">10-17 16:32</div>
+                                                            <div class="row3">已签到</div>
+                                                        </li>
+                                                        <li class="clear li-body">
+                                                            <div class="row1 overHidden1">教学会议现场签到教学会议现场签到教学会议现场签到教学
+                                                            </div>
+                                                            <div class="row3">10-17 16:32</div>
+                                                            <div class="row3">已签到</div>
+                                                        </li>
+                                                        <li class="clear li-body">
+                                                            <div class="row1 overHidden1">教学会议现场签到教学会议现场签到教学会议现场签到教学
+                                                            </div>
+                                                            <div class="row3">10-17 16:32</div>
+                                                            <div class="row3">已签到</div>
+
+                                                        </li>
+                                                        <li class="clear li-body">
+                                                            <div class="row1 overHidden1">教学会议现场签到教学会议现场签到教学会议现场签到教学
+                                                            </div>
+                                                            <div class="row3">10-17 16:32</div>
+                                                            <div class="row3">已签到</div>
+                                                        </li>
+                                                    </ul>
+                                                </div>
+                                                <!--空数据-->
+                                                <div class="null-date">暂无内容</div>
+                                            </div>
+                                        </el-checkbox-group>
                                     </div>
                                 </div>
                             </div>
@@ -180,7 +192,21 @@
         el: '#vue',
         data: function () {
             return {
-                value1: ''
+                value1: '',
+                checkAll: false,
+                lists: [{
+                    name: '张三',
+                    sign: '50%'
+                }, {
+                    name: '李四',
+                    sign: '50%'
+                }, {
+                    name: '王胖子',
+                    sign: '50%'
+                }],
+                isIndeterminate: false,
+                checkedLists: [],
+                checkedKeyLists: ['张三', '李四', '王胖子']
             }
         },
         created: function () {
@@ -556,14 +582,23 @@
         },
         methods: {
 
+            handleCheckAllChange: function (val) {
+                this.checkedLists = val ? this.checkedKeyLists : [];
+                this.isIndeterminate = false;
+            },
+            handleCheckedChange: function (value) {
+                var checkedCount = value.length;
+                this.checkAll = checkedCount === this.lists.length;
+                this.isIndeterminate = checkedCount > 0 && checkedCount < this.lists.length;
+            }
         }
     });
     $(function () {
         initForm();
-        showTable();
         searchClose();
         initSearchBorder();
         enterSearch();
+        initDownUp();
         new EW_tab({
             'tabBtn': '#tabA .tab-i',
             'tabCon': '#tabB .tab-c',
@@ -616,37 +651,16 @@
             })
         })
     }
-
-    function showTable() {
-        $(".sub-img").hide()
-        var data = [
-            ['教学会议现场签到教学会议现场签到教学会议现场签到签到教学啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊', '10-17 16:32', '已签到'],
-            ['教学会议现场签到教学会议现场签到教学会议现场签到签到教学', '10-17 16:32', '已签到'],
-            ['教学会议现场签到教学会议现场签到教学会议现场签到签到教学', '10-17 16:32', '已签到']
-        ]
-        var html1 = ''
-        var html = ''
-        $(".add-img").click(function () {
-            var index = $(this).parent().parent().index();
-            $(this).siblings('.sub-img').addClass(`table${index}`)
-            html1 =
-                `<tr class='showTable table-header table${index}'><td></td><td>名称</td><td>时间</td><td>状态</td></tr>`;
-            for (var i = 0; i < data.length; i++) {
-                var html2 = html2 +
-                    `<tr class='showTable sign-details table${index}'><td></td><td>${data[i][0]}</td><td>${data[i][1]}</td><td>${data[i][2]}</td></tr>`;
-            }
-            html = html1 + html2;
-            $(this).parent().parent().after(html)
-            $(this).hide()
-            $(this).siblings('.sub-img').show()
-        })
-        $('.sub-img').click(function () {
-            var var2 = $(this).prop("className").split(' ')[1];
-            var className = 'tr' + '.' + var2;
-            $(className).remove();
-            $(this).removeClass(var2)
-            $(this).hide()
-            $(this).siblings('.add-img').show()
+    //    展开收起
+    function initDownUp() {
+        $('.page-container').on('click', '.list-box .icon-info', function () {
+            $(this).parents('.list-item').toggleClass('item-down').siblings().removeClass(
+                'item-down');
+            $(this).parents('.list-item').siblings().find('.item-info').slideUp();
+            $(this).parents('.list-item').find('.item-info').slideToggle();
+            $('.grade-manage-container .list-box .icon-info').removeClass(
+                'icon-minus-square').addClass('icon-plus-square');
+            $(this).toggleClass('icon-minus-square').toggleClass('icon-plus-square');
         })
     }
 

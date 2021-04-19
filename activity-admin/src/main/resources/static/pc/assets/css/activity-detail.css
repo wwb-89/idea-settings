@@ -464,3 +464,111 @@ html,body{
 .activity-statistics .activity-tab .tab-i a {
     margin-right: 36px;
 }
+
+/* 页面修改后table样式 */
+.page-container .list-box .list-item {
+    border-bottom: 1px solid #F0F0F0;
+  }
+  .page-container .list-box .t-head {
+    background: #FAFAFA;
+    border-bottom: 1px solid #F0F0F0;
+    height: 40px;
+    line-height: 40px;
+    font-size: 14px;
+    color: #999999;
+  }
+  .page-container .list-box .t-head .row1 {
+    padding-left: 65px;
+  }
+  .page-container .list-box .row1 {
+    float: left;
+    width: 40%;
+    -webkit-box-sizing: border-box;
+    box-sizing: border-box;
+    padding: 0 8px;
+  }
+  .page-container .list-box .row2, .page-container .list-box .row3, .page-container .list-box .row4 {
+    float: left;
+    width: 30%;
+    -webkit-box-sizing: border-box;
+    box-sizing: border-box;
+    padding: 0 8px;
+  }
+  .page-container .list-box .el-checkbox {
+    margin-right: 8px;
+  }
+  .page-container .list-box .el-checkbox__inner {
+    width: 16px;
+    height: 16px;
+  }
+  .page-container .list-box .el-checkbox__inner::after {
+    height: 8px;
+    left: 5px;
+  }
+  .page-container .list-box .item-title {
+    line-height: 52px;
+    height: 52px;
+    color: #333333;
+    font-size: 14px;
+  }
+  .page-container .list-box .item-title:hover {
+    background: #F8F8F8;
+  }
+  .page-container .list-box .item-title .row1 {
+    padding-left: 21px;
+  }
+  .page-container .list-box .item-info {
+    display: none;
+    width: 100%;
+    background: #F9FAFD;
+    font-size: 13px;
+  }
+  .page-container .list-box .item-info .li-head {
+    color: #999999;
+  }
+  .page-container .list-box .item-info .li-body {
+    color: #333333;
+  }
+  .page-container .list-box .item-info li {
+    height: 44px;
+    line-height: 44px;
+  }
+  .page-container .list-box .item-info li:hover {
+    background: #F2F5FC;
+  }
+  .page-container .list-box .item-info .row1 {
+    padding-left: 91px;
+  }
+  .page-container .list-box .icon-info {
+    font-size: 16px;
+    color: #CCCCCC;
+    margin-right: 24px;
+    cursor: pointer;
+  }
+  .page-container .list-box .icon-info:hover {
+    color: #0084FF;
+  }
+  .page-container .list-box .color-blue {
+    color: #0084FF;
+  }
+  .page-container .list-box .color-blue span {
+    margin-right: 16px;
+    cursor: pointer;
+  }
+  .page-container .list-box .color-blue span:hover {
+    color: rgba(0, 132, 255, 0.8);
+  }
+  .page-container .ui-checkbox {
+    display: inline-block;
+    width: 16px;
+    height: 16px;
+    background: url("../images/icon_checkbox.png") no-repeat center;
+    background-size: 100%;
+    margin-right: 8px;
+    vertical-align: middle;
+    cursor: pointer;
+  }
+
+  .page-container .layui-form-checkbox {
+      display: none;
+  }
