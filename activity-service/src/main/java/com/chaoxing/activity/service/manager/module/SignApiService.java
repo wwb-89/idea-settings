@@ -69,7 +69,7 @@ public class SignApiService {
 	private static final String USER_SIGNED_UP_URL = SIGN_API_DOMAIN + "/stat/sign/user-signed-up/%d";
 	/** 通知已收藏url */
 	private static final String NOTICE_COLLECTED_URL = SIGN_API_DOMAIN + "/sign/%d/notice/collected";
-	
+
 	/** 取消报名 */
 	private static final String CANCEL_SIGN_UP_URL = SIGN_API_DOMAIN + "/sign-up/%d/cancel";
 	/** 撤销报名 */
@@ -111,7 +111,6 @@ public class SignApiService {
 	 * @return com.chaoxing.activity.dto.module.SignAddEditResultDTO
 	*/
 	public SignAddEditResultDTO create(SignAddEditDTO signAddEdit, HttpServletRequest request) {
-		createPretreatment(signAddEdit);
 		HttpHeaders httpHeaders = new HttpHeaders();
 		httpHeaders.setContentType(MediaType.APPLICATION_JSON);
 		List<String> cookies = RestTemplateUtils.getCookies(request);
@@ -127,27 +126,6 @@ public class SignApiService {
 			String errorMessage = jsonObject.getString("message");
 			log.error("创建报名报名:{}失败:{}", JSON.toJSONString(signAddEdit), errorMessage);
 			throw new BusinessException(errorMessage);
-		}
-	}
-
-	private void createPretreatment(SignAddEditDTO signAddEdit) {
-		List<SignIn> signIns = signAddEdit.getSignIns();
-		if (CollectionUtils.isNotEmpty(signIns)) {
-			for (SignIn signIn : signIns) {
-				SignIn.Way way = SignIn.Way.fromValue(signIn.getWay());
-				switch (way) {
-					case DIRECT:
-						signIn.setName("签到");
-						break;
-					case POSITION:
-						signIn.setName("位置签到");
-						break;
-					case QR_CODE:
-						signIn.setName("扫码签到");
-						break;
-					default:
-				}
-			}
 		}
 	}
 
