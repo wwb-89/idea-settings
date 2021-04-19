@@ -22,7 +22,7 @@ import java.util.List;
 public class WfwGroupApiService {
 
     /** 根据fid和父级id获取组织架构 */
-    public static final String GET_GROUP_URL = "http://uc1-ans.chaoxing.com/gas/usergroup?fid=%d&gid=%d&fields=id,groupname,gid&offset=0&limit=1000";
+    public static final String GET_GROUP_URL = "http://uc1-ans.chaoxing.com/gas/usergroup?fid=%d&gid=%d&fields=id,groupname,gid,soncount&offset=0&limit=1000";
 
     @Resource(name = "restTemplateProxy")
     private RestTemplate restTemplate;

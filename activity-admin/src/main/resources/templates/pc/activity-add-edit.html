@@ -1293,13 +1293,13 @@
                     }
                 },
                 loadFidGroup: function (gid, parentNode){
-                    var url = ctx + "/api/wfw/org/groups?gid="+gid;
+                    var url = ctx + "/api/wfw/org/groups?gid=" + gid;
                     app.ajaxPostWithLoading(url, {}, function (data) {
                         if (data.success) {
                             var newNodes = data.data;
                             if (newNodes.length > 0) {
                                 $(newNodes).each(function () {
-                                    this.isParent = true;
+                                    this.isParent = this.soncount > 0;
                                 })
                                 var treeObj = $.fn.zTree.getZTreeObj("sign-up-participate-scope-tree");
                                 var myNode = {
@@ -1324,7 +1324,7 @@
                 initGroupTree: function () {
                     var $this = this;
                     $($this.wfwGroups).each(function () {
-                        this.isParent = true;
+                        this.isParent = this.soncount > 0;
                     })
                     var setting = {
                         check: {
@@ -1344,12 +1344,11 @@
                             }
                         },
                         callback: {
-                            onExpand: expandNode
-                        }
-                    };
-                    function expandNode(e, b, node) {
-                        if(node.children==null || node.children.length<=0){
-                            $this.loadFidGroup(node.id, node);
+                            onExpand: function (e, b, node) {
+                                if (node.children == null || node.children.length <= 0) {
+                                    $this.loadFidGroup(node.id, node);
+                                }
+                            }
                         }
                     };
                     $this.signUpParticipateScopeTreeObj = $.fn.zTree.init($("#sign-up-participate-scope-tree"), setting, $this.wfwGroups);
