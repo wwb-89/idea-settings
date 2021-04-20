@@ -12,6 +12,7 @@ import com.chaoxing.activity.model.OrgForm;
 import com.chaoxing.activity.service.activity.ActivityHandleService;
 import com.chaoxing.activity.service.activity.ActivityQueryService;
 import com.chaoxing.activity.service.manager.FormApiService;
+import com.chaoxing.activity.service.manager.module.SignApiService;
 import com.chaoxing.activity.util.DistributedLock;
 import com.chaoxing.activity.util.exception.BusinessException;
 import lombok.extern.slf4j.Slf4j;
@@ -45,6 +46,8 @@ public class ActivityFormRecordService {
 	private ActivityQueryService activityQueryService;
 	@Resource
 	private ActivityHandleService activityHandleService;
+	@Resource
+	private SignApiService signApiService;
 
 	@Resource
 	private DistributedLock distributedLock;
@@ -198,8 +201,9 @@ public class ActivityFormRecordService {
 				item.put("val", new JSONArray());
 				continue;
 			}
-			if ("参与学院".equals(label)) {
-				data.add("信息工程学院");
+			if ("参与范围".equals(label)) {
+				// 获取报名的参与范围
+				data.add(signApiService.getActivitySignParticipateScopeDescribe(activity.getSignId()));
 				item.put("val", data);
 				continue;
 			}
@@ -224,8 +228,10 @@ public class ActivityFormRecordService {
 				continue;
 			}
 			if ("发起人".equals(label)) {
-				data.add(activity.getCreateUserName());
-				item.put("val", data);
+				JSONObject user = new JSONObject();
+				user.put("id", activity.getCreateUid());
+				user.put("name", activity.getCreateUserName());
+				data.add(user);
 				continue;
 			}
 			if ("创建者".equals(label)) {

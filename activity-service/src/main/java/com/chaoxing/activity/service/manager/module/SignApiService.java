@@ -69,6 +69,8 @@ public class SignApiService {
 	private static final String USER_SIGNED_UP_URL = SIGN_API_DOMAIN + "/stat/sign/user-signed-up/%d";
 	/** 通知已收藏url */
 	private static final String NOTICE_COLLECTED_URL = SIGN_API_DOMAIN + "/sign/%d/notice/collected";
+	/** 报名签到参与范围描述yrl */
+	private static final String SIGN_PARTICIPATE_SCOPE_DESCRIBE_URL = SIGN_API_DOMAIN + "/sign/%d/scope/describe";
 
 	/** 取消报名 */
 	private static final String CANCEL_SIGN_UP_URL = SIGN_API_DOMAIN + "/sign-up/%d/cancel";
@@ -674,6 +676,27 @@ public class SignApiService {
 		success = Optional.ofNullable(success).orElse(Boolean.FALSE);
 		if (success) {
 			return JSON.parseObject(jsonObject.getString("data"), SignActivityStatDTO.class);
+		} else {
+			String errorMessage = jsonObject.getString("message");
+			throw new BusinessException(errorMessage);
+		}
+	}
+
+	/**获取活动报名签到参与范围描述
+	 * @Description 
+	 * @author wwb
+	 * @Date 2021-04-20 10:16:17
+	 * @param signId
+	 * @return java.lang.String
+	*/
+	public String getActivitySignParticipateScopeDescribe(Integer signId) {
+		String url = String.format(SIGN_PARTICIPATE_SCOPE_DESCRIBE_URL, signId);
+		String result = restTemplate.getForObject(url, String.class);
+		JSONObject jsonObject = JSON.parseObject(result);
+		Boolean success = jsonObject.getBoolean("success");
+		success = Optional.ofNullable(success).orElse(Boolean.FALSE);
+		if (success) {
+			return jsonObject.getString("data");
 		} else {
 			String errorMessage = jsonObject.getString("message");
 			throw new BusinessException(errorMessage);
