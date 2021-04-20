@@ -168,6 +168,7 @@ public class ActivityMhV2ApiController {
 		Boolean openWork = activity.getOpenWork();
 		openWork = Optional.ofNullable(openWork).orElse(Boolean.FALSE);
 		Integer workId = activity.getWorkId();
+		boolean isManager = activityValidationService.isCreator(activity, uid);
 		// 报名信息
 		boolean existSignUp = CollectionUtils.isNotEmpty(signUpIds);
 		if (existSignUp) {
@@ -176,7 +177,7 @@ public class ActivityMhV2ApiController {
 				if (activityFlagValidateService.isDualSelect(activity)) {
 					result.addAll(buildBtnField("进入会场", getFlag(availableFlags), getDualSelectIndexUrl(activity), "1"));
 				}
-				if (openWork && workId != null) {
+				if (openWork && workId != null && !isManager) {
 					result.addAll(buildBtnField("提交作品", getFlag(availableFlags), getWorkIndexUrl(workId), "1"));
 				}
 				if (CollectionUtils.isNotEmpty(signInIds)) {
@@ -213,7 +214,7 @@ public class ActivityMhV2ApiController {
 			if (activityFlagValidateService.isDualSelect(activity)) {
 				result.addAll(buildBtnField("进入会场", getFlag(availableFlags), getDualSelectIndexUrl(activity), "1"));
 			}
-			if (openWork && workId != null) {
+			if (openWork && workId != null && !isManager) {
 				result.addAll(buildBtnField("提交作品", getFlag(availableFlags), getWorkIndexUrl(workId), "1"));
 			}
 			if (CollectionUtils.isNotEmpty(signInIds)) {
@@ -221,8 +222,9 @@ public class ActivityMhV2ApiController {
 			}
 		}
 		// 是不是管理员
-		if (activityValidationService.isCreator(activity, uid)) {
+		if (isManager) {
 			List<MhGeneralAppResultDataDTO.MhGeneralAppResultDataFieldDTO> btns = buildBtnField("管理", getFlag(availableFlags), activityQueryService.getActivityManageUrl(activity.getId()), "2");
+			btns.addAll(buildBtnField("提交作品", getFlag(availableFlags), getWorkIndexUrl(workId), "1"));
 			if (existSignUp || CollectionUtils.isNotEmpty(signInIds)) {
 				for (int i = 0; i < btns.size(); i++) {
 					result.add(i + 2, btns.get(i));
