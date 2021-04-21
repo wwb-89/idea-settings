@@ -31,7 +31,7 @@ public class ActivityStatusUpdateTask {
 	 * @param 
 	 * @return void
 	*/
-	@Scheduled(fixedDelay = 1000L)
+	@Scheduled(fixedDelay = 100L)
 	public void syncStartTimeStatus() {
 		ZSetOperations.TypedTuple<Integer> startTimeQueueData = activityStatusUpdateQueueService.getStartTimeQueueData();
 		if (startTimeQueueData == null) {
@@ -53,7 +53,7 @@ public class ActivityStatusUpdateTask {
 	 * @param
 	 * @return void
 	 */
-	@Scheduled(fixedDelay = 1000L)
+	@Scheduled(fixedDelay = 100L)
 	public void syncEndTimeStatus() {
 		ZSetOperations.TypedTuple<Integer> endTimeQueueData = activityStatusUpdateQueueService.getEndTimeQueueData();
 		if (endTimeQueueData == null) {
