@@ -272,6 +272,9 @@
                     OR ( #{params.startDate} <![CDATA[<=]]> t.start_date AND #{params.endDate} >= t.end_date )
                 )
             </if>
+            <if test="params.activityFlag != null and params.activityFlag != ''">
+                AND t.activity_flag = #{param1.activityFlag}
+            </if>
         GROUP BY
             t.id
         ORDER BY
@@ -279,6 +282,33 @@
             <if test="params.topFid != null">
                 , t1.fid <![CDATA[<>]]> #{params.topFid}
             </if>
+            ,t.start_time DESC
+    </select>
+
+    <select id="pageActivityCalendarCreated" resultMap="BaseResultMap">
+        SELECT
+            <include refid="Base_Column_List"></include>
+        FROM
+            t_activity t
+        WHERE
+            <!--状态-->
+            t.create_fid = #{params.topFid}
+            AND t.`status` IN ( 2, 3, 4 )
+            <if test="params.date != null and params.date != ''">
+                AND #{params.date} BETWEEN t.start_date AND t.end_date
+            </if>
+            <if test="params.startDate != null and params.startDate != ''">
+                AND (
+                ( #{params.startDate} BETWEEN t.start_date AND t.end_date )
+                OR (#{params.endDate} BETWEEN t.start_date AND t.end_date )
+                OR ( #{params.startDate} <![CDATA[<=]]> t.start_date AND #{params.endDate} >= t.end_date )
+                )
+            </if>
+            <if test="params.activityFlag != null and params.activityFlag != ''">
+                AND t.activity_flag = #{param1.activityFlag}
+            </if>
+        ORDER BY
+            FIELD( t.`status`, 3, 2, 4 )
             ,t.start_time DESC
     </select>
 

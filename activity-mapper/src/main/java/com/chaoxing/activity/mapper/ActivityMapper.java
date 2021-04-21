@@ -107,6 +107,16 @@ public interface ActivityMapper extends BaseMapper<Activity> {
 	 */
 	Page<Activity> pageActivityCalendarParticipate(@Param("page") Page<?> page, @Param("params") MhActivityCalendarQueryDTO activityCalendarQuery);
 
+	/**活动日历查询（创建的活动）
+	 * @Description 
+	 * @author wwb
+	 * @Date 2021-04-21 17:10:04
+	 * @param page
+	 * @param activityCalendarQuery
+	 * @return com.baomidou.mybatisplus.extension.plugins.pagination.Page<com.chaoxing.activity.model.Activity>
+	*/
+	Page<Activity> pageActivityCalendarCreated(@Param("page") Page<?> page, @Param("params") MhActivityCalendarQueryDTO activityCalendarQuery);
+
 	/**
 	 * 机构参与的活动的pageId列表
 	 *

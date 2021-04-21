@@ -92,8 +92,13 @@ public class ActivityQueryService {
 	 * @param mhActivityCalendarQuery
 	 * @return com.baomidou.mybatisplus.extension.plugins.pagination.Page<com.chaoxing.activity.model.Activity>
 	*/
-	public Page<Activity> listActivityCalendarParticipate(Page<Activity> page, MhActivityCalendarQueryDTO mhActivityCalendarQuery) throws ParseException {
-		page = activityMapper.pageActivityCalendarParticipate(page, mhActivityCalendarQuery);
+	public Page<Activity> listActivityCalendar(Page<Activity> page, MhActivityCalendarQueryDTO mhActivityCalendarQuery) throws ParseException {
+		Integer strict = mhActivityCalendarQuery.getStrict();
+		if (Objects.equals(1, strict)) {
+			page = activityMapper.pageActivityCalendarCreated(page, mhActivityCalendarQuery);
+		} else {
+			page = activityMapper.pageActivityCalendarParticipate(page, mhActivityCalendarQuery);
+		}
 		List<Activity> records = page.getRecords();
 		String startDateStr = mhActivityCalendarQuery.getStartDate();
 		String endDateStr = mhActivityCalendarQuery.getEndDate();

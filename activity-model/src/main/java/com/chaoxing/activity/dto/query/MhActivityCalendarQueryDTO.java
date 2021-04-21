@@ -21,7 +21,7 @@ import java.util.List;
 @AllArgsConstructor
 public class MhActivityCalendarQueryDTO {
 
-	/** 置顶的fid（查询的结果该机构的数据靠前 */
+	/** 置顶的fid（当前机构fid，查询的结果该机构的数据靠前 */
 	private Integer topFid;
 	/** 参与范围 */
 	private List<Integer> fids;
@@ -31,5 +31,9 @@ public class MhActivityCalendarQueryDTO {
 	private String endDate;
 	/** 具体日期的数据 */
 	private String date;
+	/** 严格模式（查询自己机构的）） */
+	private Integer strict;
+	/** 活动标示 */
+	private String activityFlag;
 
 }

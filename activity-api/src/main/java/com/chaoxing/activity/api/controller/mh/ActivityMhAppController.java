@@ -283,7 +283,7 @@ public class ActivityMhAppController {
 	 * @return com.chaoxing.activity.dto.RestRespDTO
 	*/
 	@RequestMapping("activity/calendar")
-	public RestRespDTO activityCalendar(String areaCode, @RequestBody String data) throws ParseException {
+	public RestRespDTO activityCalendar(String areaCode, @RequestParam(defaultValue = "0") Integer strict, String activityFlag, @RequestBody String data) throws ParseException {
 		JSONObject jsonObject = JSON.parseObject(data);
 		// 获取参数
 		Integer wfwfid = jsonObject.getInteger("wfwfid");
@@ -312,6 +312,8 @@ public class ActivityMhAppController {
 		MhActivityCalendarQueryDTO mhActivityCalendarQuery = MhActivityCalendarQueryDTO.builder()
 				.fids(fids)
 				.topFid(wfwfid)
+				.strict(strict)
+				.activityFlag(activityFlag)
 				.build();
 		String year = jsonObject.getString("year");
 		String month = jsonObject.getString("month");
@@ -326,7 +328,7 @@ public class ActivityMhAppController {
 		if (StringUtils.isNotBlank(date)) {
 			mhActivityCalendarQuery.setDate(date);
 		}
-		page = activityQueryService.listActivityCalendarParticipate(page, mhActivityCalendarQuery);
+		page = activityQueryService.listActivityCalendar(page, mhActivityCalendarQuery);
 		JSONObject result = new JSONObject();
 		result.put("curPage", pageNum);
 		result.put("totalPages", page.getPages());
