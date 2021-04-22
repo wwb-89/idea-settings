@@ -224,7 +224,10 @@ public class ActivityMhV2ApiController {
 		}
 		// 是不是管理员
 		if (isManager) {
-			List<MhGeneralAppResultDataDTO.MhGeneralAppResultDataFieldDTO> btns = buildBtnField("提交作品", getFlag(availableFlags), getWorkIndexUrl(workId), "1");
+			List<MhGeneralAppResultDataDTO.MhGeneralAppResultDataFieldDTO> btns = Lists.newArrayList();
+			if (openWork && workId != null) {
+				btns.addAll(buildBtnField("提交作品", getFlag(availableFlags), getWorkIndexUrl(workId), "1"));
+			}
 			btns.addAll(buildBtnField("管理", getFlag(availableFlags), activityQueryService.getActivityManageUrl(activity.getId()), "2"));
 			for (MhGeneralAppResultDataDTO.MhGeneralAppResultDataFieldDTO btn : btns) {
 				result.add(btn);
