@@ -319,7 +319,7 @@
                     var $this = this;
                     var url = ctx + "/api/wfw/contacter/search";
                     $this.searchUserQueryParams.sw = $this.sw;
-                    app.ajaxPost(url, $this.searchUserQueryParams, function (data) {
+                    app.ajaxPostWithLoading(url, $this.searchUserQueryParams, function (data) {
                         if (data.success) {
                             $this.searchLoaded = true;
                             var searchUsers = data.data.records;
