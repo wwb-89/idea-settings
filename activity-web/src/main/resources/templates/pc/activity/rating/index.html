@@ -67,7 +67,7 @@
                     <div class="item-content fl">
                         <span class="item-name" v-if="isAnonymousShow(index)">匿名</span>
                         <span class="item-name" v-else>{{rating.scorerUserName}}</span>
-                        <span class="item-time">{{rating.createTime | timestampMDH}}</span>
+                        <span class="item-time">{{rating.createTime | timestampFormat}}</span>
                         <span class="item-checking" v-if="rating.auditStatus=='2'">审核中</span>
                         <span class="item-deleted" v-if="rating.auditStatus=='0'">已被管理员删除</span>
                         <!--操作菜单-->
@@ -118,10 +118,6 @@
     <script src="/static/assets/lib/mescroll/mescroll.min.js" th:src="@{/assets/lib/mescroll/mescroll.min.js}"></script>
     <script src="/static/pc/assets/component/confirm.js" th:src="@{/pc/assets/component/confirm.js}"></script>
     <script th:inline="javascript">
-        Vue.filter("timestampMDH", function (timestamp) {
-            var dateObj = activityApp.millisecond2DateObj(timestamp);
-            return `${dateObj.month}-${dateObj.day} ${dateObj.hour}:${dateObj.minute}`;
-        });
         ratingVue = new Vue({
             el: "#rating-vue",
             data: {
