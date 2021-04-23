@@ -8,11 +8,15 @@ import com.chaoxing.activity.model.ActivityClassify;
 import com.chaoxing.activity.util.exception.BusinessException;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.compress.utils.Lists;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 /**活动分类处理服务
  * @author wwb
@@ -120,5 +124,23 @@ public class ActivityClassifyHandleService {
 		}
 	}
 
+	public void cloneSystemClassifyNoCheck(Integer targetFid) {
+		List<ActivityClassify> existActivityClassifies = activityClassifyQueryService.listOrgOptional(targetFid);
+		List<String> existActivityClassifyNames = existActivityClassifies.stream().map(ActivityClassify::getName).collect(Collectors.toList());
+		Set<String> existActivityClassifyNameSet = new HashSet<>(existActivityClassifyNames);
+		List<ActivityClassify> activityClassifies = activityClassifyQueryService.listSystem();
+		List<ActivityClassify> adds = Lists.newArrayList();
+		if (CollectionUtils.isNotEmpty(activityClassifies)) {
+			for (ActivityClassify activityClassify : activityClassifies) {
+				if (existActivityClassifyNameSet.contains(activityClassify.getName())) {
+					continue;
+				}
+				activityClassify.setSystem(false);
+				activityClassify.setAffiliationFid(targetFid);
+				adds.add(activityClassify);
+			}
+			activityClassifyMapper.batchAdd(activityClassifies);
+		}
+	}
 
 }
