@@ -24,4 +24,17 @@
             t.affiliation_fid = #{fid}
     </select>
 
+    <insert id="batchAdd">
+        INSERT INTO t_activity_classify ( `name`, is_system, affiliation_fid, sequence )
+        VALUES
+            <foreach collection="activityClassifies" index="key" item="value" open="" close="" separator=",">
+                (
+                    #{value.name},
+                    #{value.system},
+                    #{value.affiliationFid},
+                    #{value.sequence}
+                )
+            </foreach>
+    </insert>
+
 </mapper>

@@ -9,7 +9,6 @@ import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
-import java.util.ArrayList;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -37,16 +36,7 @@ public class ActivityClassifyQueryService {
 	 * @return java.util.List<com.chaoxing.activity.model.ActivityClassify>
 	*/
 	public List<ActivityClassify> listOrgOptional(Integer fid) {
-		List<ActivityClassify> activityClassifies = new ArrayList<>();
-		List<ActivityClassify> systemActivityClassifies = listSystem();
-		if (CollectionUtils.isNotEmpty(systemActivityClassifies)) {
-			activityClassifies.addAll(systemActivityClassifies);
-		}
-		List<ActivityClassify> orgActivityClassifies = listOrgAffiliation(fid);
-		if (CollectionUtils.isNotEmpty(orgActivityClassifies)) {
-			activityClassifies.addAll(orgActivityClassifies);
-		}
-		return activityClassifies;
+		return listOrgAffiliation(fid);
 	}
 
 	/**查询机构列表所能筛选的活动分类名称列表
@@ -75,18 +65,7 @@ public class ActivityClassifyQueryService {
 	 * @return java.util.List<com.chaoxing.activity.model.ActivityClassify>
 	*/
 	public List<ActivityClassify> listOrgsOptional(List<Integer> fids) {
-		List<ActivityClassify> result = Lists.newArrayList();
-		// 系统分类
-		List<ActivityClassify> systemActivityClassifies = listSystem();
-		if (CollectionUtils.isNotEmpty(systemActivityClassifies)) {
-			result.addAll(systemActivityClassifies);
-		}
-		// 机构列表所有的活动分类列表
-		List<ActivityClassify> activityClassifies = listOrgsAffiliation(fids);
-		if (CollectionUtils.isNotEmpty(activityClassifies)) {
-			result.addAll(activityClassifies);
-		}
-		return result;
+		return listOrgsAffiliation(fids);
 	}
 
 	/**查询系统的活动分类

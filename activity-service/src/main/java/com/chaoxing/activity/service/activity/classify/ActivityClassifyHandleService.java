@@ -1,15 +1,18 @@
 package com.chaoxing.activity.service.activity.classify;
 
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.chaoxing.activity.dto.LoginUserDTO;
 import com.chaoxing.activity.mapper.ActivityClassifyMapper;
 import com.chaoxing.activity.model.ActivityClassify;
 import com.chaoxing.activity.util.exception.BusinessException;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
+import java.util.List;
 
 /**活动分类处理服务
  * @author wwb
@@ -28,6 +31,8 @@ public class ActivityClassifyHandleService {
 
 	@Resource
 	private ActivityClassifyValidationService activityClassifyValidationService;
+	@Resource
+	private ActivityClassifyQueryService activityClassifyQueryService;
 
 	/**新增
 	 * @Description 
@@ -88,5 +93,32 @@ public class ActivityClassifyHandleService {
 		activityClassifyMapper.deleteById(id);
 
 	}
+
+	/**克隆系统分类
+	 * @Description 
+	 * @author wwb
+	 * @Date 2021-04-23 18:31:44
+	 * @param targetFid
+	 * @return void
+	*/
+	public void cloneSystemClassify(Integer targetFid) {
+		// 没有分类才添加
+		Integer count = activityClassifyMapper.selectCount(new QueryWrapper<ActivityClassify>()
+				.lambda()
+				.eq(ActivityClassify::getAffiliationFid, targetFid)
+		);
+		if (count.compareTo(0) > 0) {
+			return;
+		}
+		List<ActivityClassify> activityClassifies = activityClassifyQueryService.listSystem();
+		if (CollectionUtils.isNotEmpty(activityClassifies)) {
+			for (ActivityClassify activityClassify : activityClassifies) {
+				activityClassify.setSystem(false);
+				activityClassify.setAffiliationFid(targetFid);
+			}
+			activityClassifyMapper.batchAdd(activityClassifies);
+		}
+	}
+
 
 }

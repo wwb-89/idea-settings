@@ -12,6 +12,7 @@ import com.chaoxing.activity.model.WebTemplate;
 import com.chaoxing.activity.service.GroupService;
 import com.chaoxing.activity.service.WebTemplateService;
 import com.chaoxing.activity.service.activity.ActivityQueryService;
+import com.chaoxing.activity.service.activity.classify.ActivityClassifyHandleService;
 import com.chaoxing.activity.service.activity.classify.ActivityClassifyQueryService;
 import com.chaoxing.activity.service.manager.WfwGroupApiService;
 import com.chaoxing.activity.util.constant.CommonConstant;
@@ -46,6 +47,8 @@ public class ActivityManageController {
 	private GroupService groupService;
 	@Resource
 	private WfwGroupApiService wfwGroupApiService;
+	@Resource
+	private ActivityClassifyHandleService activityClassifyHandleService;
 
 	/**活动管理主页
 	 * @Description 
@@ -120,6 +123,8 @@ public class ActivityManageController {
 		List<ActivityTypeDTO> activityTypes = activityQueryService.listActivityType();
 		model.addAttribute("activityTypes", activityTypes);
 		// 活动分类列表
+		// 先克隆
+		activityClassifyHandleService.cloneSystemClassify(loginUser.getFid());
 		model.addAttribute("activityClassifies", activityClassifyQueryService.listOrgOptional(loginUser.getFid()));
 		// 报名签到
 		model.addAttribute("sign", SignAddEditDTO.builder().build());
