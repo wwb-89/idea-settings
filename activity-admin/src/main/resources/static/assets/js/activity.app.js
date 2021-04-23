@@ -302,26 +302,6 @@ Vue.filter("getCloudImgUrl", function (activity) {
 Vue.filter("activityStatusInstructions", function (status) {
     return activityApp.getActivityStatusInstructions(status);
 });
-Vue.filter("timestamp2ChineseYMD", function (timestamp) {
-    var dateObj = activityApp.millisecond2DateObj(timestamp);
-    return dateObj.year + "年" + dateObj.month + "月" + dateObj.day + "日";
-});
-Vue.filter("timestamp2ChineseYMDHM", function (timestamp) {
-    var dateObj = activityApp.millisecond2DateObj(timestamp);
-    return dateObj.year + "年" + dateObj.month + "月" + dateObj.day + "日" + " " + dateObj.hour + ":" + dateObj.minute;
-});
-Vue.filter("timestamp2ChineseYMDHMS", function (timestamp) {
-    var dateObj = activityApp.millisecond2DateObj(timestamp);
-    return dateObj.year + "年" + dateObj.month + "月" + dateObj.day + "日" + " " + dateObj.hour + ":" + dateObj.minute + ":" + dateObj.second;
-});
-Vue.filter("timestamp2YMD", function (timestamp) {
-    var dateObj = activityApp.millisecond2DateObj(timestamp);
-    return dateObj.year + "-" + dateObj.month + "-" + dateObj.day;
-});
-Vue.filter("timestamp2YMDH", function (timestamp) {
-    var dateObj = activityApp.millisecond2DateObj(timestamp);
-    return dateObj.year + "-" + dateObj.month + "-" + dateObj.day +" "+dateObj.hour;
-});
 Vue.filter("activityStatusDescribe", function (status) {
     if (activityApp.isEmpty(status)) {
         return "";
