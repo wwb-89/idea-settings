@@ -245,8 +245,8 @@
                     var params = $this.queryParams;
                     $this.loaded = false;
                     $this.searchShow = false;
-                    $this.activities = [];
                     app.ajaxPost(url, {data: activityApp.getJsonStr(params), pageNum: params.pageNum, pageSize: params.pageSize}, function (data) {
+                        $this.activities = [];
                         $this.loaded = true;
                         if (data.success) {
                             $this.loaded = true;
@@ -267,6 +267,7 @@
                             app.showMsg(errorMessage);
                         }
                     }, function () {
+                        $this.activities = [];
                         $this.loaded = true;
                         app.showMsg("加载活动列表失败");
                     });
