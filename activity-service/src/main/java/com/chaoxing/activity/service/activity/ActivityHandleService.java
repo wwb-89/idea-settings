@@ -48,7 +48,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
-import java.util.function.Consumer;
 
 /**数据处理服务
  * @author wwb
@@ -374,10 +373,6 @@ public class ActivityHandleService {
 	public void edit(Activity activity, SignAddEditDTO signAddEdit, final List<WfwRegionalArchitectureDTO> wfwRegionalArchitectures, LoginUserDTO loginUser, HttpServletRequest request) {
 		Integer activityId = activity.getId();
 		String activityEditLockKey = getActivityEditLockKey(activityId);
-		Consumer<Exception> fail = (e) -> {
-			log.error("更新活动:{} error:{}", JSON.toJSONString(activity), e.getMessage());
-			throw new BusinessException("更新活动失败");
-		};
 		distributedLock.lock(activityEditLockKey, () -> {
 			activityValidationService.addInputValidate(activity);
 			// 处理活动类型
@@ -444,7 +439,10 @@ public class ActivityHandleService {
 			// 活动改变
 			activityChangeEventService.dataChange(activity, oldIntegralValue);
 			return null;
-		}, fail);
+		}, e -> {
+			log.error("更新活动:{} error:{}", JSON.toJSONString(activity), e.getMessage());
+			throw new BusinessException("更新活动失败");
+		});
 	}
 
 	/**发布活动

@@ -24,7 +24,6 @@ import java.math.BigDecimal;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
-import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
 /**活动评价处理服务
@@ -104,10 +103,6 @@ public class ActivityRatingHandleService {
 	private void updateActivityScore(Integer activityId, Integer scoreNum, BigDecimal totalScore) {
 		// 获取锁
 		String lockKey = getActivityRatingLockKey(activityId);
-		Consumer<Exception> fail = (e) -> {
-			log.error("更新活动:{}评分error:{}", activityId, e.getMessage());
-			throw new BusinessException("更新活动评分失败");
-		};
 		distributedLock.lock(lockKey, CacheConstant.LOCK_MAXIMUM_WAIT_TIME, () -> {
 			ActivityRating activityRating = activityRatingQueryService.getByActivityId(activityId);
 			if (activityRating == null) {
@@ -138,7 +133,10 @@ public class ActivityRatingHandleService {
 				);
 			}
 			return null;
-		}, fail);
+		}, e -> {
+			log.error("更新活动:{}评分error:{}", activityId, e.getMessage());
+			throw new BusinessException("更新活动评分失败");
+		});
 	}
 
 	/**更新评价

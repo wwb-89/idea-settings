@@ -61,9 +61,6 @@ public class ActivityFormRecordService {
 	*/
 	public void add(Integer activityId) {
 		String activityEditLockKey = activityHandleService.getActivityEditLockKey(activityId);
-		Consumer<Exception> fail = (e) -> {
-			throw new BusinessException("处理活动推送失败");
-		};
 		distributedLock.lock(activityEditLockKey, () -> {
 			Activity activity = activityQueryService.getById(activityId);
 			ActivityFormRecord existActivityFormRecord = activityFormRecordMapper.selectOne(new QueryWrapper<ActivityFormRecord>()
@@ -72,7 +69,9 @@ public class ActivityFormRecordService {
 			);
 			addOrUpdate(activity, existActivityFormRecord);
 			return null;
-		}, fail);
+		}, e -> {
+			throw new BusinessException("处理活动推送失败");
+		});
 	}
 
 	/**更新
@@ -84,9 +83,6 @@ public class ActivityFormRecordService {
 	*/
 	public void update(Integer activityId) {
 		String activityEditLockKey = activityHandleService.getActivityEditLockKey(activityId);
-		Consumer<Exception> fail = (e) -> {
-			throw new BusinessException("处理活动推送失败");
-		};
 		distributedLock.lock(activityEditLockKey, () -> {
 			Activity activity = activityQueryService.getById(activityId);
 			ActivityFormRecord existActivityFormRecord = activityFormRecordMapper.selectOne(new QueryWrapper<ActivityFormRecord>()
@@ -97,7 +93,9 @@ public class ActivityFormRecordService {
 				addOrUpdate(activity, existActivityFormRecord);
 			}
 			return null;
-		}, fail);
+		}, e -> {
+			throw new BusinessException("处理活动推送失败");
+		});
 	}
 
 	/**新增或更新
