@@ -34,6 +34,7 @@
         <option name="useTranslateGoogleCom" value="true" />
       </google-translate>
     </option>
+    <option name="targetLanguageSelection" value="PRIMARY_LANGUAGE" />
     <option name="youdaoTranslateSettings">
       <youdao-translate>
         <option name="appId" value="3376380652f4a93f" />
