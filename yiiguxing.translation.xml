@@ -1,6 +1,9 @@
 <application>
   <component name="AppStorage">
+    <option name="newTranslationDialogX" value="1103" />
+    <option name="newTranslationDialogY" value="603" />
     <histories>
+      <item value="Documented" />
       <item value="/** * Simple utility methods for working with network sockets &amp;mdash; for example, * for finding available ports on {@code localhost}. * * &lt;p&gt;Within this class, a TCP port refers to a port for a {@link ServerSocket}; * whereas, a UDP port refers to a port for a {@link DatagramSocket}. * * @author Sam Brannen * @author Ben Hale * @author Arjen Poutsma * @author Gunnar Hillert * @author Gary Russell * @since 4.0 */" />
       <item value="Source code recreated from a .class file by IntelliJ IDEA" />
       <item value="exposes" />
@@ -22,13 +25,15 @@
       </map>
     </option>
   </component>
+  <component name="Cache">
+    <option name="lastTrimTime" value="1619507847639" />
+  </component>
   <component name="Settings">
     <option name="googleTranslateSettings">
       <google-translate>
         <option name="useTranslateGoogleCom" value="true" />
       </google-translate>
     </option>
-    <option name="ignoreRegExp" value="" />
     <option name="youdaoTranslateSettings">
       <youdao-translate>
         <option name="appId" value="3376380652f4a93f" />
