@@ -152,3 +152,81 @@ body {
     border-color: #0099FF;
     background-color: #0099FF;
 }
+/* 统计样式 */
+.statistics{
+    padding: 0 .75rem;
+}
+.statistics .white-con{
+    padding: 1rem;
+    background: #ffffff;
+    margin-top: .75rem;
+}
+.statistics .title{
+    font-weight: 500;
+    font-size: 1rem;
+    line-height: 1.5625rem;
+    color: #181E33;
+    text-align: left;
+}
+.statistics .item-list{
+    text-align: left;
+    font-size: 0;
+}
+.statistics .item-list .item{
+    position: relative;
+    display: inline-block;
+    width: 50%;
+    padding: 1rem 0;
+    text-align: center;
+    box-sizing: border-box;
+}
+.statistics .item-list .item:nth-of-type(2n+1)::after{
+    position: absolute;
+    top: 1rem;
+    right: 0;
+    content: "";
+    width: .03125rem;
+    height: calc(100% - 2rem);
+    background: #E9E9E9;
+}
+.statistics .item-list .item .view{
+    font-size: .875rem;
+    line-height: 1.21875rem;
+    color: #91A0B5;
+    margin-bottom: 16px;
+}
+.statistics .item-list .item .number{
+    font-weight: 500;
+    font-size: 1.5rem;
+    line-height: 1.5rem;
+    letter-spacing: -0.0625rem;
+    color: #333333;
+}
+.statistics .survey{
+    min-height: 11.4375rem;
+}
+.statistics .loading {
+    line-height: 1.875rem;
+    margin-top: 3.25rem;
+}
+.statistics .loading img {
+    width: 1.875rem;
+    height: 1.875rem;
+    vertical-align: top;
+}
+.statistics .activity-trends{
+    min-height: 22.4375rem;
+}
+.statistics .activity-trends .loading {
+    margin-top: 9.03125rem;
+}
+.statistics .tips{
+    font-size: .875rem;
+    line-height: 3.125rem;
+    color: #CCCCCC;
+    text-align: center;
+}
+.statistics .activity-trends .echart-box{
+    width: 100%;
+    height: 19.3125rem;
+}
