@@ -1,9 +1,10 @@
-package com.chaoxing.activity.admin.controller.pc.stat;
+package com.chaoxing.activity.admin.controller.general;
 
 import com.chaoxing.activity.admin.util.LoginUtils;
 import com.chaoxing.activity.dto.LoginUserDTO;
 import com.chaoxing.activity.dto.stat.ActivityStatDTO;
 import com.chaoxing.activity.service.activity.ActivityStatQueryService;
+import com.chaoxing.activity.util.UserAgentUtils;
 import com.chaoxing.activity.util.annotation.LoginRequired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -22,7 +23,7 @@ import javax.servlet.http.HttpServletRequest;
  * @date 2021-04-15 15:57:59
  */
 @Controller
-@RequestMapping("stat/activity")
+@RequestMapping("activity")
 public class ActivityStatController {
 
     @Resource
@@ -38,12 +39,16 @@ public class ActivityStatController {
      * @return java.lang.String
     */
     @LoginRequired
-    @RequestMapping("{activityId}")
+    @RequestMapping("{activityId}/stat")
     public String index(HttpServletRequest request, Model model, @PathVariable Integer activityId) {
         LoginUserDTO loginUser = LoginUtils.getLoginUser(request);
         ActivityStatDTO activityStat = activityStatQueryService.activityStat(activityId, loginUser);
         model.addAttribute("activityStat", activityStat);
-        return "pc/stat/activity-stat";
+        if (UserAgentUtils.isMobileAccess(request)) {
+            return "mobile/stat/activity-stat";
+        } else {
+            return "pc/stat/activity-stat";
+        }
     }
 
 }

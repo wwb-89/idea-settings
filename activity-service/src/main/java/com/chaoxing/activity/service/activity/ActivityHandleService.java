@@ -750,6 +750,8 @@ public class ActivityHandleService {
 				return String.format(ActivityMhUrlConstant.ACTIVITY_SIGN_URL, activityId);
 			case ACTIVITY_LIST:
 				return String.format(ActivityMhUrlConstant.ACTIVITY_RECOMMEND_URL, activityId);
+			case DUAL_SELECT:
+				return String.format(ActivityMhUrlConstant.DUAL_SELECT_URL, activityId);
 			default:
 
 		}
