@@ -118,7 +118,7 @@
 			<p>暂无内容</p>
 		</div>
 		<div class="load-div loading" v-show="signedUpLoading || collectedLoading || managingLoading"><img src="/static/pc/assets/images/Spinner-1s-200px.svg" th:src="@{/pc/assets/images/Spinner-1s-200px.svg}">加载中…</div>
-		<div class="load-div no-more" v-show="(signedUpNoMore && signedUps.length > 0 && activeTabIndex == 0) || (collectedNoMore && collecteds.length > 0 && activeTabIndex == 1) || (managingNoMore && managings.length > 0 && activeTabIndex == 2)">没有更多了</div>
+		<div class="load-div no-more" v-show="(signedUpNoMore && signedUps.length > 10 && activeTabIndex == 0) || (collectedNoMore && collecteds.length > 10 && activeTabIndex == 1) || (managingNoMore && managings.length > 10 && activeTabIndex == 2)">没有更多了</div>
 	</div>
 	<!--取消报名-->
 	<vue-confirm ref="cancelSignUp" :message="'取消报名后需要重新报名才能参与活动'" @callback="cancelSignUpSubmit"></vue-confirm>
