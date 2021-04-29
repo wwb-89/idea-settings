@@ -338,11 +338,8 @@
             </foreach>
             AND t.`status` IN (1, 2, 3, 4)
         ORDER BY
-            FIELD('t.sign_id',
-            <foreach collection="signIds" index="key" item="value" open="" close="" separator=",">
-                #{value}
-            </foreach>
-            )
+            FIELD( t.`status`, 3, 2, 4 )
+            ,t.start_time DESC
     </select>
 
     <select id="pageCollectedActivityId" resultMap="BaseResultMap">
