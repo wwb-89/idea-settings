@@ -32,6 +32,6 @@ public class UrlConstant {
 	public static final String DUAL_SELECT_INDEX_URL = "http://appcd.chaoxing.com/form-employment/pc/double/election?activityId=%s&wfwfid=%s";
 
 	/** 作品征集主页 */
-	public static final String WORK_INDEX_URL = "http://reading.chaoxing.com/zj/activity/forward/%s";
+	public static final String WORK_INDEX_URL = "https://reading.chaoxing.com/zj/activity/forward/%s";
 
 }
