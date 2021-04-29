@@ -274,6 +274,13 @@
                         <span class="tips">开启后，所有人都能看到报名人员名单</span>
                     </div>
                 </div>
+                <div class="form-item">
+                    <label class="label">取消报名限制</label>
+                    <div class="input-box">
+                        <el-switch v-model="signUp.endNotAllowCancel"></el-switch>
+                        <span class="tips">开启后，报名结束后参与者不能取消报名</span>
+                    </div>
+                </div>
                 <div class="form-item" v-if="false">
                     <label class="label position"><img src="/static/pc/assets/images/required.png" th:src="@{/pc/assets/images/required.png}" class="required-img">按钮名称</label>
                     <div class="input-box btn-name">
@@ -668,13 +675,14 @@
                     $this.sign.createTime = "";
                     $this.sign.updateTime = "";
                     // 报名
-                    $($this.sign.signUps).each(function () {
+                    $($this.sign.signUps).each(function (i) {
                         if (!activityApp.isEmpty(this.id)) {
                             this.startTime = this.startTimestamp;
                             this.endTime = this.endTimestamp;
                             this.createTime = "";
                             this.updateTime = "";
                         }
+                        $this.$set($this.sign.signUps[i], "endNotAllowCancel", !this.endAllowCancel);
                     });
                     // 签到、签退
                     $($this.sign.signIns).each(function () {
@@ -1023,6 +1031,8 @@
                                     return false;
                                 }
                             }
+                            // 取消报名限制
+                            signUp.endAllowCancel = !signUp.endNotAllowCancel;
                             if (activityApp.isEmpty(signUp.btnName)) {
                                 app.showMsg(signUp.name + "按钮名称不能为空");
                                 return false;
