@@ -345,6 +345,11 @@ public class ActivityMhAppController {
 					.value(record.getName())
 					.flag("1")
 					.build());
+			// 活动分类
+			mhGeneralAppResultDataFields.add(MhGeneralAppResultDataDTO.MhGeneralAppResultDataFieldDTO.builder()
+					.value(record.getActivityClassifyName())
+					.flag("2")
+					.build());
 			// 作者
 			mhGeneralAppResultDataFields.add(MhGeneralAppResultDataDTO.MhGeneralAppResultDataFieldDTO.builder()
 					.value(record.getCreateOrgName())
