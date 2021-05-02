@@ -61,6 +61,8 @@ public class SignUp {
     private String limitParticipateScopeType;
     /** 活动标示 */
     private String activityFlag;
+    /** 定制报名类型*/
+    private String customSignUpType;
     /** 状态。1：未开始，2：进行中，3：已结束 */
     private Integer status;
     /** 是否被删除 */
