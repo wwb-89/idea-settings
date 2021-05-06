@@ -218,6 +218,7 @@ body {
   position: absolute;
   right: 0;
   top: 0;
+  z-index: 1;
   padding: 0 .5rem;
   font-weight: 500;
   height: 1rem;

@@ -67,7 +67,7 @@
 				<li v-for="(activity, index) of collecteds" :key="'activity-' + index" class="list-item" data-type="0" @touchstart.capture="touchStart" @touchend.capture="touchEnd" @click="collectedDetail(index)">
 					<div class="inner">
 						<div class="img-box border">
-							<p :class="{'tips': true, 'color1': (activity.status == 3), 'color2': (activity.status == 2), 'color3': (activity.status == 4)}">{{activity.status | myActivityStatusInstructions}}</p>
+							<p :class="calCollectedClass(activity)">{{activity.status | myActivityStatusInstructions}}</p>
 							<div class="js-crop-img">
 								<img :src="activity | getCloudImgUrl">
 							</div>
@@ -91,7 +91,7 @@
 				<li v-for="(activity, index) of managings" :key="'activity-' + index" class="list-item" data-type="0" @touchstart.capture="touchStart" @touchend.capture="touchEnd" @click="managingDetail(index)">
 					<div class="inner">
 						<div class="img-box border">
-							<p :class="{'tips': true, 'color1': (activity.status == 3), 'color2': (activity.status == 2), 'color3': (activity.status == 4)}">{{activity.status | myActivityStatusInstructions}}</p>
+							<p :class="calManageClass(activity)">{{activity.status | myActivityStatusInstructions}}</p>
 							<div class="js-crop-img">
 								<img :src="activity | getCloudImgUrl">
 							</div>
@@ -225,6 +225,26 @@
 							return "tips color2";
 						}
 					},
+                    calCollectedClass: function (activity) {
+                        var status = activity.status;
+                        if (3 == status) {
+                            return "tips color1";
+                        }else if (4 == status) {
+                            return "tips color3";
+                        } else {
+                            return "tips color2";
+                        }
+                    },
+                    calManageClass: function (activity) {
+                        var status = activity.status;
+                        if (3 == status) {
+                            return "tips color1";
+                        }else if (4 == status) {
+                            return "tips color3";
+                        } else {
+                            return "tips color2";
+                        }
+                    },
 					changeTab: function (index) {
 						var $this = this;
 						$this.activeTabIndex = index;
