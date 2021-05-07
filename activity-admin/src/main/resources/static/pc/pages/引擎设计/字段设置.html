@@ -1,0 +1,452 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>字段设置</title>
+    <link rel="stylesheet" href="../../assets/lib/element-ui/lib/theme-chalk/index.css">
+    <link rel="stylesheet" href="../../assets/css/public.css">
+    <link rel="stylesheet" href="../../assets/css/engine-design.css">
+</head>
+<body>
+    <div class="field-setting" id="field-setting">
+        <div class="top-con">
+            <div class="go-back white-border-btn"><i></i><span>返回</span></div>
+            <div class="step-box">
+                <img src="../../assets/images/yq-design/step1-normal.png" alt="">
+                <img src="../../assets/images/yq-design/step2-active.png" alt="">
+                <img src="../../assets/images/yq-design/step3-normal.png" alt="">
+            </div>
+            <div class="look-div fr">
+                <div class="btn-width80px-color1">预览</div>
+                <div class="btn-width80px-color2">发布</div>
+            </div>
+            <div class="step-div fr">
+                <div class="prev-step white-border-btn">上一步</div>
+                <div class="next-step white-border-btn">下一步</div>
+            </div>
+        </div>
+        <div class="content">
+            <div class="w-900px choose-mould" style="display: none;">
+                <p class="title">请选择模版</p>
+                <ul class="mould">
+                    <li class="mould-item">
+                        <div class="img-box"><img src="../../assets/images/yq-design/cover.png" alt=""></div>
+                        <p>通用模板</p>
+                    </li>
+                    <li class="mould-item active">
+                        <div class="img-box"><img src="../../assets/images/yq-design/cover.png" alt=""></div>
+                        <p>第二课堂活动</p>
+                    </li>
+                    <li class="mould-item">
+                        <div class="img-box"><img src="../../assets/images/yq-design/cover.png" alt=""></div>
+                        <p>党政活动</p>
+                    </li>
+                    <li class="mould-item">
+                        <div class="img-box"><img src="../../assets/images/yq-design/cover.png" alt=""></div>
+                        <p>党政活动</p>
+                    </li>
+                </ul>
+            </div>
+            <div class="w-900px info-box">
+                <form action="" id="drag-box">
+                    <!-- 基本信息 -->
+                    <div class="title sort-item">
+                        <i class="icon-drag"></i>
+                        <div class="lable">基本信息</div>
+                        <div class="icon-div">
+                            <i class="icon-edit"></i>
+                            <i class="icon-delete"></i>
+                        </div>
+                    </div>
+                    <div class="form-item sort-item">
+                        <i class="icon-drag"></i>
+                        <div class="icon-div">
+                            <i class="icon-edit"></i>
+                        </div>
+                        <label class="label required">活动名称</label>
+                        <div class="input-box">
+                            <el-input type="text" placeholder="请填写" maxlength="20" show-word-limit readonly></el-input>
+                        </div>
+                    </div>
+                    <div class="form-item sort-item">
+                        <i class="icon-drag"></i>
+                        <div class="icon-div">
+                            <i class="icon-edit"></i>
+                        </div>
+                        <label class="label required">活动时间</label>
+                        <div class="input-box">
+                            <el-date-picker type="daterange"
+                                            start-placeholder="开始时间"
+                                            end-placeholder="结束时间"
+                                            format="yyyy-MM-dd"
+                                            value-format="yyyy-MM-dd"
+                                            prefix-icon="disable"
+                                            clear-icon="disable"
+                                            unlink-panels
+                                            readonly>
+                                <img style="margin: 0 8px;" slot="range-separator" src="../../assets/images/swap-right.png">
+                            </el-date-picker>
+                            <span class="date-piker-icon"><img src="../../assets/images/calendar.png"></span>
+                        </div>
+                    </div>
+                    <div class="form-item sort-item">
+                        <i class="icon-drag"></i>
+                        <div class="icon-div">
+                            <i class="icon-edit"></i>
+                        </div>
+                        <label class="label required">封面</label>
+                        <div class="input-box">
+                            <div class="img-box">
+                                <img src="../../assets/images/img.png" alt="" class="cover-img jqthumbImg">
+                            </div>
+                            <div class="font-box">
+                                <p>建议尺寸：1080x500</p>
+                                <p>大小：小于5M</p>
+                                <p>格式：jpg、png、gif</p>
+                                <div class="blue-border-btn upload">上传文件</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-item sort-item">
+                        <i class="icon-drag"></i>
+                        <div class="icon-div">
+                            <i class="icon-edit"></i>
+                            <i class="icon-delete"></i>
+                        </div>
+                        <label class="label">活动形式</label>
+                        <div class="input-box">
+                            <div>
+                                <el-radio v-model="radio1" label="1" name="active-type" class="radio-item" readonly>线下活动</el-radio>
+                                <el-radio label="2" name="active-type" class="radio-item" readonly>线上活动</el-radio>
+                            </div>
+                            <div class="address-box">
+                                <el-input type="text" placeholder="请输入活动地点" autocomplete="off" class="address-input" readonly></el-input>
+                                <img src="../../assets/images/location.png" alt="" class="address-icon">
+                                <el-input type="text" placeholder="详细地址，例：E5栋1308室" autocomplete="off" class="detaile-address" readonly></el-input>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-item sort-item">
+                        <i class="icon-drag"></i>
+                        <div class="icon-div">
+                            <i class="icon-edit"></i>
+                        </div>
+                        <label class="label">活动类型</label>
+                        <div class="input-box">
+                            <el-input type="text" v-model="activityType" placeholder="请选择" autocomplete="off" class="select-input" readonly></el-input>
+                            <img src="../../assets/images/yq-design/arrow-down-small.png" alt="" class="arrow-down">
+                            <p class="tips first">辅助说明文字，这是最长效果这是最长效果这是最长效果这是最长效果这是最长效果这是最长</p>
+                        </div>
+                    </div>
+                    <div class="form-item sort-item">
+                        <i class="icon-drag"></i>
+                        <div class="icon-div">
+                            <i class="icon-edit"></i>
+                            <i class="icon-delete"></i>
+                        </div>
+                        <label class="label">活动标签</label>
+                        <div class="input-box">
+                            <div class="type-item">
+                                <i class="add_btn"></i>新增
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-item sort-item">
+                        <i class="icon-drag"></i>
+                        <div class="icon-div">
+                            <i class="icon-edit"></i>
+                            <i class="icon-delete"></i>
+                        </div>
+                        <label class="label">参与范围</label>
+                        <div class="input-box">
+                            <div class="type-item">
+                                <div class="add_btn"></div>选择
+                            </div>
+                        </div>
+                    </div>
+                    <!-- 特殊活动报名设置 -->
+                    <div class="title sort-item">
+                        <i class="icon-drag"></i>
+                        <div class="lable">特殊活动报名设置</div>
+                        <div class="icon-div">
+                            <i class="icon-edit"></i>
+                            <i class="icon-delete"></i>
+                        </div>
+                        <div class="input-box">
+                            <el-switch v-model="delivery1" class="switch fl" disabled></el-switch>
+                            <p class="tips second">辅助说明文字，这是最长效果这是最长效果这是最长效果这是最长效果这是最长效果这是最</p>
+                        </div>
+                    </div>
+                    <div class="form-item sort-item">
+                        <i class="icon-drag"></i>
+                        <div class="icon-div">
+                            <i class="icon-edit"></i>
+                        </div>
+                        <label class="label required">报名时间</label>
+                        <div class="input-box">
+                            <el-date-picker v-model="form.time1"
+                                            type="daterange"
+                                            start-placeholder="开始时间"
+                                            end-placeholder="结束时间"
+                                            format="yyyy-MM-dd"
+                                            value-format="yyyy-MM-dd"
+                                            prefix-icon="disable"
+                                            clear-icon="disable"
+                                            unlink-panels
+                                            readonly>
+                                <img style="margin: 0 8px;" slot="range-separator" src="../../assets/images/swap-right.png">
+                            </el-date-picker>
+                            <span class="date-piker-icon"><img src="../../assets/images/calendar.png"></span>
+                        </div>
+                    </div>
+                    <div class="form-item sort-item">
+                        <i class="icon-drag"></i>
+                        <div class="icon-div">
+                            <i class="icon-edit"></i>
+                            <i class="icon-delete"></i>
+                        </div>
+                        <label class="label">人数限制</label>
+                        <div class="input-box">
+                            <el-input type="text" v-model="person" placeholder="请选择" autocomplete="off" class="select-input" readonly></el-input>
+                            <img src="../../assets/images/yq-design/arrow-down-small.png" alt="" class="arrow-down">
+                            <div class="person-box">
+                                <el-input type="number" placeholder="请输入正整数" readonly></el-input>
+                                <span class="person-span">人</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-item sort-item">
+                        <i class="icon-drag"></i>
+                        <div class="icon-div">
+                            <i class="icon-edit"></i>
+                            <i class="icon-delete"></i>
+                        </div>
+                        <label class="label">信息填写</label>
+                        <div class="input-box">
+                            <el-switch class="switch fl marginTop6" disabled></el-switch>
+                            <p class="tips third">开启后，报名者需填写信息</p>
+                        </div>
+                    </div>
+                    <div class="form-item sort-item">
+                        <i class="icon-drag"></i>
+                        <div class="icon-div">
+                            <i class="icon-edit"></i>
+                            <i class="icon-delete"></i>
+                        </div>
+                        <label class="label">报名需审核</label>
+                        <div class="input-box">
+                            <el-switch class="switch fl marginTop6" disabled></el-switch>
+                            <p class="tips third">开启后，参与需发起人审核</p>
+                        </div>
+                    </div>
+                    <div class="form-item sort-item">
+                        <i class="icon-drag"></i>
+                        <div class="icon-div">
+                            <i class="icon-edit"></i>
+                            <i class="icon-delete"></i>
+                        </div>
+                        <label class="label">报名名单公开</label>
+                        <div class="input-box">
+                            <el-switch class="switch fl marginTop6" disabled></el-switch>
+                            <p class="tips third">开启后，所有人都能看到报名人员名单</p>
+                        </div>
+                    </div>
+                    <!-- 签到设置 -->
+                    <div class="title sort-item">
+                        <i class="icon-drag"></i>
+                        <div class="lable">签到设置</div>
+                        <div class="icon-div">
+                            <i class="icon-edit"></i>
+                            <i class="icon-delete"></i>
+                        </div>
+                        <div class="input-box">
+                            <el-switch v-model="delivery1" class="switch fl" disabled></el-switch>
+                        </div>
+                    </div>
+                    <div class="form-item sort-item">
+                        <i class="icon-drag"></i>
+                        <div class="icon-div">
+                            <i class="icon-edit"></i>
+                            <i class="icon-delete"></i>
+                        </div>
+                        <label class="label required">签到方式</label>
+                        <div class="input-box sign-in">
+                            <el-radio v-model="radio1" label="1" class="radio-item" readonly>普通签到</el-radio>
+                            <el-radio label="2" class="radio-item">位置签到</el-radio>
+                            <el-radio label="3" class="radio-item">二维码签到</el-radio>
+                        </div>
+                    </div>
+                    <div class="form-item sort-item">
+                        <i class="icon-drag"></i>
+                        <div class="icon-div">
+                            <i class="icon-edit"></i>
+                        </div>
+                        <label class="label required">签到时间</label>
+                        <div class="input-box">
+                            <el-date-picker v-model="form.time1"
+                                            type="daterange"
+                                            start-placeholder="开始时间"
+                                            end-placeholder="结束时间"
+                                            format="yyyy-MM-dd"
+                                            value-format="yyyy-MM-dd"
+                                            prefix-icon="disable"
+                                            clear-icon="disable"
+                                            unlink-panels
+                                            readonly>
+                                <img style="margin: 0 8px;" slot="range-separator" src="../../assets/images/swap-right.png">
+                            </el-date-picker>
+                            <span class="date-piker-icon"><img src="../../assets/images/calendar.png"></span>
+                        </div>
+                    </div>
+                    <div class="form-item sort-item">
+                        <i class="icon-drag"></i>
+                        <div class="icon-div">
+                            <i class="icon-edit"></i>
+                            <i class="icon-delete"></i>
+                        </div>
+                        <label class="label">签到人员名单公开</label>
+                        <div class="input-box">
+                            <el-switch class="switch fl marginTop6" disabled></el-switch>
+                            <p class="tips third">开启后，所有人都能看到报名人员名单</p>
+                        </div>
+                    </div>
+                    <!-- 签退设置 -->
+                    <div class="title sort-item">
+                        <i class="icon-drag"></i>
+                        <div class="lable">签退设置</div>
+                        <div class="icon-div">
+                            <i class="icon-edit"></i>
+                            <i class="icon-delete"></i>
+                        </div>
+                        <div class="input-box">
+                            <el-switch v-model="delivery1" class="switch fl" disabled></el-switch>
+                        </div>
+                    </div>
+                    <div class="form-item sort-item">
+                        <i class="icon-drag"></i>
+                        <div class="icon-div">
+                            <i class="icon-edit"></i>
+                            <i class="icon-delete"></i>
+                        </div>
+                        <label class="label required">签退方式</label>
+                        <div class="input-box sign-in">
+                            <el-radio v-model="radio1" label="1" class="radio-item" readonly>普通签退</el-radio>
+                            <el-radio label="2" class="radio-item">位置签退</el-radio>
+                            <el-radio label="3" class="radio-item">二维码签退</el-radio>
+                        </div>
+                    </div>
+                    <div class="form-item sort-item">
+                        <i class="icon-drag"></i>
+                        <div class="icon-div">
+                            <i class="icon-edit"></i>
+                        </div>
+                        <label class="label required">签退时间</label>
+                        <div class="input-box">
+                            <el-date-picker v-model="form.time1"
+                                            type="daterange"
+                                            start-placeholder="开始时间"
+                                            end-placeholder="结束时间"
+                                            format="yyyy-MM-dd"
+                                            value-format="yyyy-MM-dd"
+                                            prefix-icon="disable"
+                                            clear-icon="disable"
+                                            unlink-panels
+                                            readonly>
+                                <img style="margin: 0 8px;" slot="range-separator" src="../../assets/images/swap-right.png">
+                            </el-date-picker>
+                            <span class="date-piker-icon"><img src="../../assets/images/calendar.png"></span>
+                        </div>
+                    </div>
+                    <div class="form-item sort-item">
+                        <i class="icon-drag"></i>
+                        <div class="icon-div">
+                            <i class="icon-edit"></i>
+                            <i class="icon-delete"></i>
+                        </div>
+                        <label class="label">签退名单公开</label>
+                        <div class="input-box">
+                            <el-switch class="switch fl marginTop6" disabled></el-switch>
+                            <p class="tips third">开启后，所有人都能看到报名人员名单</p>
+                        </div>
+                    </div>
+                </form>
+                <div class="add-circle"></div>
+            </div>
+        </div>
+        <div class="dialog-mask">
+            <div class="dailog">
+                <div class="header">
+                    <span>添加字段</span>
+                    <img src="../../assets/images/close.png" alt="" @click="close" class="close">
+                </div>
+                <div class="body">
+                    <div class="field-item"></div>
+                    <div class="field-item"></div>
+                </div>
+                <div class="footer">
+                    <div class="btn-box">
+                        <div class="border-btn">取消</div>
+                        <div class="normal-btn">确定</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script src="../../assets/lib/jquery.min.js"></script>
+    <script src="../../assets/lib/vue.js"></script>
+    <script src="../../assets/lib/element-ui/lib/index.js"></script>
+    <script src="../../assets/lib/drag/sortTable.js"></script>
+    <script src="../../assets/lib/jqthumb.min.js"></script>
+    <script src="../../assets/js/create-active.js"></script>
+    <script>
+        var app = new Vue({
+            el: '#field-setting',
+            data: {
+                radio1:'1',
+                activityType:'创新创业',
+                delivery1:'',
+                delivery2:false,
+                person:'自定义人数',
+                form:{
+                    time1:'',
+                    radio:'',
+                    type:'',
+                    options1: [{
+                        value: "1",
+                        label: "展览"
+                    }, {
+                        value: "2",
+                        label: "展览2"
+                    }],
+                    options2: [{
+                        value: "1",
+                        label: "自定义人数"
+                    }, {
+                        value: "2",
+                        label: "不限"
+                    }],
+                    delivery1:'',
+                    person:'',
+                    radio1:''
+                }
+            }
+        })
+    </script>
+    <script>
+        $(function(){
+            $('.jqthumbImg').jqthumb({
+                width: '100%',
+                height: '100%'
+            });
+            $("#drag-box").sortable({
+                scroll: true,
+                axis: "y",
+                dalay: 300,
+                handle: ".icon-drag",
+            });
+        })
+    </script>
+</body>
+</html>
