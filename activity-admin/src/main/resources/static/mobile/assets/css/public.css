@@ -137,7 +137,7 @@ a:visited {
   overflow: hidden;
   white-space: normal !important;
   -o-text-overflow: ellipsis;
-  text-overflow: ellipsis;
+     text-overflow: ellipsis;
   word-wrap: break-word;
   -webkit-line-clamp: 5;
   -webkit-box-orient: vertical;
@@ -248,7 +248,7 @@ input:-ms-input-placeholder, textarea:-ms-input-placeholder {
 .overHidden1 {
   overflow: hidden;
   -o-text-overflow: ellipsis;
-  text-overflow: ellipsis;
+     text-overflow: ellipsis;
   white-space: nowrap;
 }
 
@@ -305,13 +305,6 @@ input {
   height: 0.9375rem;
   background: url("../images/loading-icon.png") no-repeat;
   background-size: 100%;
-}
-
-.loading img {
-  margin-right: 0.3125rem;
-  width: 0.9375rem;
-  height: 0.9375rem;
-  vertical-align: middle;
 }
 
 [v-cloak] {
