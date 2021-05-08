@@ -85,7 +85,17 @@
                     t.`status` = #{params.status}
                 </when>
                 <otherwise>
-                    t.`status` IN ( 2, 3, 4 )
+                    <choose>
+                        <when test="params.statusList != null and params.statusList.size() != 0">
+                            t.`status` IN
+                            <foreach collection="params.statusList" index="key" item="value" open="(" close=")" separator=",">
+                                #{value}
+                            </foreach>
+                        </when>
+                        <otherwise>
+                            t.`status` IN ( 2, 3, 4 )
+                        </otherwise>
+                    </choose>
                 </otherwise>
             </choose>
             <if test="params.flag != null and params.flag != ''">

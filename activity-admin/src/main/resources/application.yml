@@ -43,17 +43,7 @@ spring:
         loginPassword: druid_passwd
   ## redis相关
   redis:
-    jedis:
-      pool:
-        max-active: 500
-        ## 连接池的最大等待时间（-1表示无限制）
-        max-wait: -1
-        ## 连接池中的最大空闲连接
-        max-idle: 100
-        ## 连接池中的最小空闲连接
-        min-idle: 50
-      ## 连接超时时间
-      time-out: 10000
+    timeout: 10000
   servlet:
     multipart:
       ## 上传一个文件最大值
