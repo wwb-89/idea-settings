@@ -71,8 +71,11 @@ public class ActivityMarketApiController {
 				activityClassifyId = activityClassify.getInteger("id");
 			}
 		}
+		// 状态
+		Integer status = params.getInteger("status");
 		ActivityQueryDTO activityQuery = ActivityQueryDTO.builder()
 				.topFid(wfwfid)
+				.status(status)
 				.activityClassifyId(activityClassifyId)
 				.build();
 		List<Integer> fids = wfwRegionalArchitectureApiService.listSubFid(wfwfid);
