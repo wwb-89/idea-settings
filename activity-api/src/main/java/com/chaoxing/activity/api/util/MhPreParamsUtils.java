@@ -38,23 +38,33 @@ public class MhPreParamsUtils {
                     if (kv.length == 2) {
                         String k = kv[0];
                         String v = kv[1];
-                        if (StringUtils.isNotBlank(v)) {
-                            String[] values = v.split(",");
-                            if (values.length > 1) {
-                                List<String> valuesClone = Lists.newArrayList(values);
-                                urlParams.put(k, valuesClone);
-                            } else {
-                                urlParams.put(k, v);
-                            }
-                        } else {
-                            urlParams.put(k, v);
-                        }
+                        urlParams.put(k, v);
                     }
                 }
 
             }
         }
         return urlParams;
+    }
+
+    public static List<String> resolveStringV(String v) {
+        List<String> values = Lists.newArrayList();
+        if (StringUtils.isNotBlank(v)) {
+            String[] split = v.split(",");
+            values = Lists.newArrayList(split);
+        }
+        return values;
+    }
+
+    public static List<Integer> resolveIntegerV(String v) {
+        List<Integer> values = Lists.newArrayList();
+        if (StringUtils.isNotBlank(v)) {
+            String[] split = v.split(",");
+            for (int i = 0; i < split.length; i++) {
+                values.add(Integer.parseInt(split[i]));
+            }
+        }
+        return values;
     }
 
 }

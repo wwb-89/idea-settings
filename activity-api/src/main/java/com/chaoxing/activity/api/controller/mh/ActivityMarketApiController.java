@@ -75,10 +75,11 @@ public class ActivityMarketApiController {
 		String preParams = params.getString("preParams");
 		JSONObject urlParams = MhPreParamsUtils.resolve(preParams);
 		// 状态
-		Integer status = urlParams.getInteger("status");
+		String statusParams = urlParams.getString("status");
+		List<Integer> statusList = MhPreParamsUtils.resolveIntegerV(statusParams);
 		ActivityQueryDTO activityQuery = ActivityQueryDTO.builder()
 				.topFid(wfwfid)
-				.status(status)
+				.statusList(statusList)
 				.activityClassifyId(activityClassifyId)
 				.build();
 		List<Integer> fids = wfwRegionalArchitectureApiService.listSubFid(wfwfid);

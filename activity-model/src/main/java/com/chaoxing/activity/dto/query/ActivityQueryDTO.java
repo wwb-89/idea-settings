@@ -37,6 +37,8 @@ public class ActivityQueryDTO {
 	private Integer status;
 	/** 活动标示 */
 	private String flag;
+	/** 状态列表 */
+	private List<Integer> statusList;
 
 	/** 最小日期 */
 	private String minDateStr;
