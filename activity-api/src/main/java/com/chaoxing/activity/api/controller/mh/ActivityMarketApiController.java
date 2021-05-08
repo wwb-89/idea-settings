@@ -4,6 +4,7 @@ import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.chaoxing.activity.api.util.MhPreParamsUtils;
 import com.chaoxing.activity.dto.RestRespDTO;
 import com.chaoxing.activity.dto.query.ActivityQueryDTO;
 import com.chaoxing.activity.model.Activity;
@@ -71,8 +72,10 @@ public class ActivityMarketApiController {
 				activityClassifyId = activityClassify.getInteger("id");
 			}
 		}
+		String preParams = params.getString("preParams");
+		JSONObject urlParams = MhPreParamsUtils.resolve(preParams);
 		// 状态
-		Integer status = params.getInteger("status");
+		Integer status = urlParams.getInteger("status");
 		ActivityQueryDTO activityQuery = ActivityQueryDTO.builder()
 				.topFid(wfwfid)
 				.status(status)
