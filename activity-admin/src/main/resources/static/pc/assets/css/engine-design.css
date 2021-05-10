@@ -113,6 +113,10 @@
   opacity: 0.3;
 }
 
+.normal-btn.disable:hover {
+  opacity: 0.3;
+}
+
 .normal-btn:hover {
   opacity: 0.8;
 }
@@ -125,6 +129,12 @@
   -webkit-box-sizing: border-box;
      -moz-box-sizing: border-box;
           box-sizing: border-box;
+}
+
+.el-tooltip__popper {
+  max-width: 240px;
+  font-size: 14px;
+  line-height: 20px;
 }
 
 .dialog-mask {
@@ -146,7 +156,7 @@
   -webkit-transform: translate(-50%, -50%);
       -ms-transform: translate(-50%, -50%);
           transform: translate(-50%, -50%);
-  width: 534px;
+  width: 488px;
   background: #ffffff;
   border-radius: 8px;
   -webkit-box-shadow: 0px 6px 16px -8px rgba(0, 0, 0, 0.08), 0px 9px 28px rgba(0, 0, 0, 0.05), 0px 12px 48px 16px rgba(0, 0, 0, 0.03);
@@ -185,26 +195,111 @@
   position: relative;
   padding: 16px 32px;
   font-size: 0;
-}
-
-.dailog .body .field-item {
-  display: inline-block;
-  vertical-align: top;
-  width: 223px;
-  height: 36px;
-  background: #FFFFFF;
-  border: 1px solid #E9E9E9;
   -webkit-box-sizing: border-box;
      -moz-box-sizing: border-box;
           box-sizing: border-box;
-  border-radius: 4px;
-  margin-right: 24px;
-  padding: 8px 12px;
-  line-height: 20px;
 }
 
-.dailog .body .field-item:nth-child(2n) {
-  margin-right: 0;
+.dailog .body .custom-box {
+  background: #F6F7F9;
+  border-radius: 2px;
+  padding: 8px 12px;
+  color: #666666;
+  font-size: 13px;
+  margin-bottom: 16px;
+}
+
+.dailog .body .custom-box .fr {
+  color: #999999;
+}
+
+.dailog .body .marginBottom24 {
+  margin-bottom: 24px;
+}
+
+.dailog .body .marginBottom8 {
+  margin-bottom: 8px;
+}
+
+.dailog .body .switch-box {
+  margin-bottom: 8px;
+}
+
+.dailog .body .switch-box .label {
+  display: inline-block;
+  vertical-align: top;
+  font-size: 14px;
+  line-height: 20px;
+  color: #333333;
+  margin-right: 16px;
+}
+
+.dailog .body .switch-box .switch {
+  margin-right: 32px;
+}
+
+.dailog .body .input-box {
+  margin-bottom: 16px;
+  line-height: 32px;
+  height: 32px;
+}
+
+.dailog .body .input-box .label {
+  display: inline-block;
+  vertical-align: top;
+  font-size: 14px;
+  color: #333333;
+  margin-right: 16px;
+}
+
+.dailog .body .input-box .weight348 {
+  width: 348px;
+}
+
+.dailog .body .input-box .weight372 {
+  width: 372px;
+}
+
+.dailog .body .input-box .del-circle {
+  width: 16px;
+  height: 16px;
+  display: inline-block;
+  vertical-align: top;
+  background-image: url(../images/yq-design/minus-circle.png);
+  margin-left: 8px;
+  margin-top: 8px;
+  cursor: pointer;
+}
+
+.dailog .body .input-box .del-circle:hover {
+  background-image: url(../images/yq-design/minus-circle-hover.png);
+}
+
+.dailog .body .input-box .del-circle.disable {
+  cursor: not-allowed;
+}
+
+.dailog .body .input-box .del-circle.disable:hover {
+  background-image: url(../images/yq-design/minus-circle-disable.png);
+}
+
+.dailog .body .add-option {
+  display: inline-block;
+  margin-left: 52px;
+  color: #0084FF;
+  font-size: 14px;
+  cursor: pointer;
+  margin-bottom: 24px;
+}
+
+.dailog .body .add-option i {
+  width: 16px;
+  height: 16px;
+  display: inline-block;
+  vertical-align: top;
+  background-image: url(../images/yq-design/plus-circle-16.png);
+  margin-top: 2px;
+  margin-right: 4px;
 }
 
 .dailog .footer {
@@ -230,6 +325,125 @@
 }
 
 .dailog .footer .normal-btn {
+  display: inline-block;
+  vertical-align: top;
+}
+
+.dailog.add-field {
+  width: 534px;
+}
+
+.dailog.add-field .body {
+  max-height: 561px;
+  overflow: auto;
+}
+
+.dailog.add-field .field-item {
+  position: relative;
+  display: inline-block;
+  vertical-align: top;
+  width: 223px;
+  height: 36px;
+  background: #FFFFFF;
+  border: 1px solid #E9E9E9;
+  -webkit-box-sizing: border-box;
+     -moz-box-sizing: border-box;
+          box-sizing: border-box;
+  border-radius: 4px;
+  margin: 8px 0;
+  margin-right: 24px;
+  padding: 8px 12px;
+  line-height: 20px;
+  cursor: pointer;
+}
+
+.dailog.add-field .field-item:nth-child(2n) {
+  margin-right: 0;
+}
+
+.dailog.add-field .field-item:hover {
+  background: #F8F8F8;
+}
+
+.dailog.add-field .field-item:hover .aready-add {
+  color: #FF666D;
+  cursor: pointer;
+}
+
+.dailog.add-field .field-item .field {
+  display: inline-block;
+  vertical-align: top;
+  max-width: 124px;
+  font-size: 14px;
+  color: #333333;
+  margin-right: 4px;
+}
+
+.dailog.add-field .field-item .icon-info {
+  display: inline-block;
+  vertical-align: top;
+  margin-top: 2px;
+  width: 16px;
+  height: 16px;
+  background-image: url(../images/yq-design/info.png);
+  cursor: pointer;
+}
+
+.dailog.add-field .field-item .icon-info:hover {
+  background-image: url(../images/yq-design/info-hover.png);
+}
+
+.dailog.add-field .field-item .icon-add {
+  display: inline-block;
+  vertical-align: top;
+  width: 18px;
+  height: 18px;
+  background-image: url(../images/yq-design/plus-circle.png);
+  cursor: pointer;
+}
+
+.dailog.add-field .field-item .aready-add {
+  font-size: 12px;
+  color: #999999;
+  line-height: 20px;
+}
+
+.dailog.choose-field .body {
+  max-height: 561px;
+  overflow: auto;
+}
+
+.dailog.delete-dailog {
+  width: 300px;
+  height: 216px;
+  border-radius: 10px;
+  padding: 30px;
+  text-align: center;
+  font-size: 0;
+}
+
+.dailog.delete-dailog .text {
+  font-size: 16px;
+  line-height: 24px;
+  font-weight: normal;
+  margin: 24px 0;
+  text-align: center;
+  padding: 0 16px;
+  color: #333333;
+}
+
+.dailog.delete-dailog .btn-box {
+  text-align: center;
+  font-size: 0;
+}
+
+.dailog.delete-dailog .border-btn {
+  display: inline-block;
+  vertical-align: top;
+  margin-right: 24px;
+}
+
+.dailog.delete-dailog .normal-btn {
   display: inline-block;
   vertical-align: top;
 }
@@ -314,6 +528,12 @@
   right: 0;
 }
 
+.el-input__inner {
+  height: 32px;
+  border: 1px solid #E9E9E9;
+  border-radius: 2px;
+}
+
 .field-setting .content {
   margin-top: 60px;
   padding-top: 20px;
@@ -330,7 +550,7 @@
   font-size: 18px;
   line-height: 25px;
   color: #333333;
-  margin-bottom: 18px;
+  margin-bottom: 22px;
 }
 
 .field-setting .choose-mould .mould {
@@ -338,7 +558,7 @@
 }
 
 .field-setting .choose-mould .mould .mould-item {
-  margin-top: 14px;
+  margin-top: 20px;
   margin-right: 20px;
   width: 194px;
   font-size: 0;
@@ -392,12 +612,6 @@
   width: 98px;
   margin-right: 24px;
   font-weight: 500;
-}
-
-.field-setting .info-box .el-input__inner {
-  height: 32px;
-  border: 1px solid #E9E9E9;
-  border-radius: 2px;
 }
 
 .field-setting .info-box .el-input .el-input__count {
@@ -518,6 +732,10 @@
   position: absolute;
   left: 172px;
   top: 8px;
+}
+
+.field-setting .info-box .el-checkbox {
+  line-height: 32px;
 }
 
 .field-setting .info-box .form-item {
