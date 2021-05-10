@@ -71,6 +71,8 @@ public class Activity {
     private Integer signId;
     /** 网页模板id; column: web_template_id*/
     private Integer webTemplateId;
+    /** 门户网站id; column: website_id*/
+    private Integer websiteId;
     /** 门户网页id; column: page_id*/
     private Integer pageId;
     /** 门户预览地址; column: preview_url*/
