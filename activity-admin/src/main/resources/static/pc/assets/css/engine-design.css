@@ -11,6 +11,10 @@
   cursor: pointer;
 }
 
+.white-border-btn:hover {
+  background: rgba(255, 255, 255, 0.2);
+}
+
 .blue-border-btn {
   width: 80px;
   height: 30px;
@@ -125,6 +129,14 @@
   width: 900px;
   background: #FFFFFF;
   border-radius: 8px;
+  margin: 0 auto;
+  -webkit-box-sizing: border-box;
+     -moz-box-sizing: border-box;
+          box-sizing: border-box;
+}
+
+.w-1000px {
+  width: 1000px;
   margin: 0 auto;
   -webkit-box-sizing: border-box;
      -moz-box-sizing: border-box;
@@ -534,14 +546,14 @@
   border-radius: 2px;
 }
 
-.field-setting .content {
+.content {
   margin-top: 60px;
   padding-top: 20px;
   padding-bottom: 50px;
 }
 
 .field-setting .choose-mould {
-  min-height: 800px;
+  min-height: 600px;
   padding: 32px;
 }
 
@@ -937,4 +949,253 @@
   width: 24px;
   height: 24px;
   background-image: url(../images/yq-design/add-circle.png);
+}
+
+.basic-setting .basic-con {
+  padding: 96px 163px;
+  min-height: 600px;
+}
+
+.basic-setting .basic-con .input-box {
+  margin-bottom: 32px;
+  line-height: 32px;
+  font-size: 0;
+}
+
+.basic-setting .basic-con .input-box .label {
+  display: inline-block;
+  vertical-align: top;
+  line-height: 32px;
+  width: 90px;
+  margin-right: 24px;
+  font-size: 14px;
+  color: #666666;
+}
+
+.basic-setting .basic-con .input-box .el-input {
+  display: inline-block;
+  vertical-align: top;
+  width: 460px;
+}
+
+.basic-setting .basic-con .input-box .icon-box {
+  display: inline-block;
+  vertical-align: top;
+  width: 460px;
+}
+
+.basic-setting .basic-con .input-box .icon-box .img-box {
+  display: inline-block;
+  vertical-align: top;
+  width: 80px;
+  height: 80px;
+}
+
+.basic-setting .basic-con .input-box .icon-box .text-box {
+  padding: 4px 0;
+}
+
+.basic-setting .basic-con .input-box .icon-box .text-box p {
+  font-size: 13px;
+  line-height: 18px;
+  color: #666666;
+}
+
+.basic-setting .basic-con .input-box .icon-box .text-box .btn-box {
+  margin-top: 24px;
+}
+
+.basic-setting .basic-con .input-box .icon-box .text-box .btn-box .webuploader-pick {
+  -webkit-box-sizing: border-box;
+     -moz-box-sizing: border-box;
+          box-sizing: border-box;
+  height: 30px;
+  line-height: 30px;
+  padding: 0 14px;
+  border: 1px solid #82c3ff;
+  border-radius: 15px;
+  font-size: 13px;
+  font-weight: 400;
+  color: #0084ff;
+  cursor: pointer;
+  background: #ffffff;
+  margin-right: 16px;
+}
+
+.basic-setting .basic-con .input-box .icon-box .text-box .btn-box .webuploader-pick:hover {
+  background: #EBF5FF;
+}
+
+.basic-setting .basic-con .input-box .icon-box .text-box .btn-box .webuploader-pick-hover {
+  background: #EBF5FF;
+}
+
+.basic-setting .basic-con .input-box .icon-box .text-box .btn-box div {
+  display: inline-block;
+  vertical-align: top;
+}
+
+.clear::after {
+  content: "";
+  display: block;
+  clear: both;
+}
+
+.show-setting .left-tab {
+  width: 220px;
+  height: 790px;
+  overflow: auto;
+  background: #FFFFFF;
+  border-radius: 8px;
+  margin-right: 20px;
+  padding: 24px 0;
+  -webkit-box-sizing: border-box;
+     -moz-box-sizing: border-box;
+          box-sizing: border-box;
+}
+
+.show-setting .left-tab .tab {
+  position: relative;
+  color: #737886;
+  font-size: 14px;
+  padding: 16px 24px 16px 27px;
+  cursor: pointer;
+}
+
+.show-setting .left-tab .tab.active {
+  background: rgba(0, 132, 255, 0.04);
+  color: #0084FF;
+}
+
+.show-setting .left-tab .tab.active::before {
+  content: "";
+  display: inline-block;
+  position: absolute;
+  left: 0;
+  top: 0;
+  background: #0084FF;
+  width: 3px;
+  height: 52px;
+}
+
+.show-setting .tab-content {
+  width: 760px;
+  height: 790px;
+  overflow: auto;
+  background: #FFFFFF;
+  border-radius: 8px;
+  -webkit-box-sizing: border-box;
+     -moz-box-sizing: border-box;
+          box-sizing: border-box;
+}
+
+.show-setting .tab-content .title {
+  padding: 16px 32px;
+  font-weight: 600;
+  font-size: 18px;
+  line-height: 30px;
+  color: #333333;
+  border-bottom: 1px solid #F0F0F0;
+  -webkit-box-sizing: border-box;
+     -moz-box-sizing: border-box;
+          box-sizing: border-box;
+}
+
+.show-setting .tab-content .config-box {
+  padding: 16px 32px;
+  -webkit-box-sizing: border-box;
+     -moz-box-sizing: border-box;
+          box-sizing: border-box;
+}
+
+.show-setting .tab-content .config-box .name {
+  font-weight: 500;
+  font-size: 16px;
+  line-height: 30px;
+  color: #333333;
+}
+
+.show-setting .tab-content .config-box .field-config .checkbox-box {
+  margin-top: 12px;
+  margin-bottom: 8px;
+}
+
+.show-setting .tab-content .config-box .field-config .checkbox-box .el-checkbox {
+  width: 150px;
+  margin-right: 32px;
+}
+
+.show-setting .tab-content .config-box .field-config .checkbox-box .el-checkbox:nth-child(4n) {
+  margin-right: 0;
+}
+
+.show-setting .tab-content .config-box .field-config .checkbox-box .el-checkbox__label {
+  line-height: 32px;
+  font-weight: 400;
+}
+
+.show-setting .tab-content .config-box .preview .tips {
+  font-size: 14px;
+  line-height: 30px;
+  color: #999999;
+  margin-bottom: 8px;
+}
+
+.show-setting .tab-content .config-box .preview .info-box p {
+  margin-top: 8px;
+  font-size: 14px;
+  line-height: 24px;
+  color: #666666;
+}
+
+.show-setting .tab-content .config-box .preview .info-box .cover-box {
+  font-size: 0;
+  line-height: 0;
+}
+
+.show-setting .tab-content .config-box .preview .info-box .name {
+  font-weight: 500;
+  font-size: 16px;
+  line-height: 24px;
+  color: #333333;
+}
+
+.show-setting .tab-content .content2 .info-box {
+  border-bottom: 1px solid #E9E9E9;
+}
+
+.show-setting .tab-content .content2 .info-box p {
+  line-height: 18px !important;
+}
+
+.show-setting .tab-content .content2 .info-box .name {
+  line-height: 24px !important;
+}
+
+.show-setting .tab-content .content2 .info-box .time {
+  line-height: 24px !important;
+}
+
+.show-setting .tab-content .content2 .info-box .btn {
+  width: 110px;
+  height: 32px;
+  line-height: 32px;
+  text-align: center;
+  background: #0084FF;
+  border-radius: 4px;
+  color: #FFFFFF;
+  font-size: 14px;
+  margin: 16px 0;
+  cursor: pointer;
+}
+
+.show-setting .tab-content .content2 .info-box .right-text {
+  margin-left: 317px;
+}
+
+.show-setting .tab-content .content2 .desc {
+  font-size: 13px;
+  line-height: 18px;
+  color: #999999;
+  margin-top: 16px;
 }
