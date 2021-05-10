@@ -26,6 +26,7 @@ import com.chaoxing.activity.service.manager.MhApiService;
 import com.chaoxing.activity.service.manager.WfwRegionalArchitectureApiService;
 import com.chaoxing.activity.service.manager.module.SignApiService;
 import com.chaoxing.activity.service.manager.module.WorkApiService;
+import com.chaoxing.activity.service.queue.ActivityWebsiteIdSyncQueueService;
 import com.chaoxing.activity.util.DateUtils;
 import com.chaoxing.activity.util.DistributedLock;
 import com.chaoxing.activity.util.constant.ActivityMhUrlConstant;
@@ -69,6 +70,8 @@ public class ActivityHandleService {
 	private ActivitySignModuleMapper activitySignModuleMapper;
 
 	@Resource
+	private ActivityQueryService activityQueryService;
+	@Resource
 	private ActivityValidationService activityValidationService;
 	@Resource
 	private ActivityModuleService activityModuleService;
@@ -86,6 +89,8 @@ public class ActivityHandleService {
 	private ActivityManagerService activityManagerService;
 	@Resource
 	private WorkApiService workApiService;
+	@Resource
+	private ActivityWebsiteIdSyncQueueService activityWebsiteIdSyncQueueService;
 
 	@Resource
 	private SignApiService signApiService;
@@ -553,6 +558,7 @@ public class ActivityHandleService {
 				.set(Activity::getPreviewUrl, mhCloneResult.getPreviewUrl())
 				.set(Activity::getEditUrl, mhCloneResult.getEditUrl())
 		);
+		activityWebsiteIdSyncQueueService.add(activityId);
 		return mhCloneResult;
 	}
 
@@ -819,6 +825,28 @@ public class ActivityHandleService {
 	*/
 	public String getActivityEditLockKey(Integer activityId) {
 		return CacheConstant.LOCK_CACHE_KEY_PREFIX + "activity" + CacheConstant.CACHE_KEY_SEPARATOR + activityId;
+	}
+
+	/**同步活动websiteId
+	 * @Description 
+	 * @author wwb
+	 * @Date 2021-05-10 15:28:53
+	 * @param activityId
+	 * @return void
+	*/
+	public void syncActivityWebsiteId(Integer activityId) {
+		Activity activity = activityQueryService.getById(activityId);
+		if (activity != null) {
+			Integer pageId = activity.getPageId();
+			if (pageId != null) {
+				Integer websiteId = mhApiService.getWebsiteIdByPageId(pageId);
+				activityMapper.update(null, new UpdateWrapper<Activity>()
+						.lambda()
+						.eq(Activity::getId, activityId)
+						.set(Activity::getWebsiteId, websiteId)
+				);
+			}
+		}
 	}
 
 }
