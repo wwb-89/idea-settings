@@ -29,14 +29,14 @@ public class FormActivityApiController {
      * 判断是审核通过则创建一个活动（当活动不存在的时候）
      * @author wwb
      * @Date 2021-05-10 16:26:47
-     * @param fid
+     * @param deptId
      * @param formId
-     * @param formUserId
+     * @param indexID
      * @return com.chaoxing.activity.dto.RestRespDTO
      */
     @RequestMapping("create")
-    public RestRespDTO formCreateActivity(@RequestParam Integer fid, Integer formId, Integer formUserId) {
-        formApprovalApiService.addActivity(fid, formId, formUserId);
+    public RestRespDTO formCreateActivity(@RequestParam Integer deptId, Integer formId, Integer indexID) {
+        formApprovalApiService.addActivity(deptId, formId, indexID);
         return RestRespDTO.success();
     }
 
