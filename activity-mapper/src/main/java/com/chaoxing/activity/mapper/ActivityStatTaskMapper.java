@@ -1,7 +1,7 @@
 package com.chaoxing.activity.mapper;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
-import com.chaoxing.activity.model.ActivityStat;
+import com.chaoxing.activity.model.ActivityStatTask;
 import org.apache.ibatis.annotations.Mapper;
 
 /**
@@ -12,5 +12,5 @@ import org.apache.ibatis.annotations.Mapper;
  * @version: ver 1.0
  */
 @Mapper
-public interface ActivityStatTaskMapper extends BaseMapper<ActivityStat> {
+public interface ActivityStatTaskMapper extends BaseMapper<ActivityStatTask> {
 }

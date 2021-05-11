@@ -201,6 +201,12 @@
   width: 16px;
   height: 16px;
   cursor: pointer;
+  background-image: url("../images/yq-design/close-default.png");
+  background-size: cover;
+}
+
+.dailog .header .close:hover {
+  background-image: url("../images/yq-design/close-hover.png");
 }
 
 .dailog .body {

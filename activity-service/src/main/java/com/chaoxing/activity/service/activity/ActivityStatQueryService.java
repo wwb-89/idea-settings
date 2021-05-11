@@ -2,10 +2,7 @@ package com.chaoxing.activity.service.activity;
 
 import com.chaoxing.activity.dto.LoginUserDTO;
 import com.chaoxing.activity.dto.TimeScopeDTO;
-import com.chaoxing.activity.dto.stat.ActivityStatDTO;
-import com.chaoxing.activity.dto.stat.DailyStatDTO;
-import com.chaoxing.activity.dto.stat.MhViewNumDailyStatDTO;
-import com.chaoxing.activity.dto.stat.SignActivityStatDTO;
+import com.chaoxing.activity.dto.stat.*;
 import com.chaoxing.activity.mapper.ActivityMapper;
 import com.chaoxing.activity.model.Activity;
 import com.chaoxing.activity.service.manager.MhApiService;
@@ -105,6 +102,31 @@ public class ActivityStatQueryService {
 	public ActivityStatDTO activityStat(Integer activityId, LoginUserDTO loginUser) {
 		ActivityStatDTO activityStat = ActivityStatDTO.buildDefault();
 		Activity activity = activityValidationService.manageAble(activityId, loginUser.getUid());
+		return activityStat(activityStat, activity);
+	}
+
+	/**活动统计
+	 * @Description
+	 * @author wwb
+	 * @Date 2021-04-15 20:03:05
+	 * @param activityId
+	 * @return com.chaoxing.activity.dto.stat.ActivityStatDTO
+	*/
+	public ActivityStatDTO activityStat(Integer activityId) {
+		ActivityStatDTO activityStat = ActivityStatDTO.buildDefault();
+		Activity activity = activityQueryService.getById(activityId);
+		return activityStat(activityStat, activity);
+	}
+
+	/**活动统计
+	* @Description
+	* @author huxiaolong
+	* @Date 2021-05-10 18:31:42
+	* @param activityStat
+	* @param activity
+	* @return com.chaoxing.activity.dto.stat.ActivityStatDTO
+	*/
+	public ActivityStatDTO activityStat(ActivityStatDTO activityStat, Activity activity) {
 		TimeScopeDTO activityStatTimeScope = getActivityStatTimeScope(activity);
 		List<String> daily = DateUtils.listEveryDay(activityStatTimeScope.getStartTime(), activityStatTimeScope.getEndTime());
 		activityStat.setDaily(daily);
