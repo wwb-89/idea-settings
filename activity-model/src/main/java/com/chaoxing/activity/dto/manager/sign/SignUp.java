@@ -96,7 +96,7 @@ public class SignUp {
     public static SignUp buildDefault() {
         LocalDateTime now = LocalDateTime.now();
         return SignUp.builder()
-                .name("name")
+                .name("报名")
                 .openAudit(false)
                 .startTime(now)
                 .endTime(now.plusMonths(1))
