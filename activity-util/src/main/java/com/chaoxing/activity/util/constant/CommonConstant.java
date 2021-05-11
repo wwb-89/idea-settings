@@ -46,4 +46,11 @@ public class CommonConstant {
 	/** 队列获取数据等待时间 */
 	public static final Duration QUEUE_GET_WAIT_TIME = Duration.ofMinutes(1);
 
+	/** 默认封面云盘id */
+	public static final String ACTIVITY_DEFAULT_COVER_CLOUD_ID = "ce257d8a6c546bcedcc7f415dd504296";
+
+	// 表单相关
+	/** 表单审批同意 */
+	public static final Integer FORM_APPROVAL_AGREE_VALUE = 2;
+
 }

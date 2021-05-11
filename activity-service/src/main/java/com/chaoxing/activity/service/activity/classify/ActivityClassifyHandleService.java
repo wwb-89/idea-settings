@@ -47,11 +47,14 @@ public class ActivityClassifyHandleService {
 	 * @return com.chaoxing.activity.model.ActivityClassify
 	*/
 	public ActivityClassify add(ActivityClassify activityClassify, LoginUserDTO loginUser) {
+		return add(activityClassify, loginUser.getFid());
+	}
+
+	public ActivityClassify add(ActivityClassify activityClassify, Integer fid) {
 		String name = activityClassify.getName();
 		if (StringUtils.isEmpty(name)) {
 			throw new BusinessException("分类名称不能为空");
 		}
-		Integer fid = loginUser.getFid();
 		activityClassifyValidationService.nameNotExist(name, null, fid);
 		activityClassify.setAffiliationFid(fid);
 		activityClassify.setSequence(activityClassifyMapper.getMaxSequence(fid));
@@ -141,6 +144,31 @@ public class ActivityClassifyHandleService {
 			}
 			activityClassifyMapper.batchAdd(activityClassifies);
 		}
+	}
+
+	/**新增并返回
+	 * @Description
+	 * @author wwb
+	 * @Date 2021-05-11 15:58:51
+	 * @param activityClassifyName
+	 * @param fid
+	 * @return com.chaoxing.activity.model.ActivityClassify
+	 */
+	public ActivityClassify addAndGet(String activityClassifyName, Integer fid) {
+		List<ActivityClassify> activityClassifies = activityClassifyMapper.selectList(new QueryWrapper<ActivityClassify>()
+				.lambda()
+				.eq(ActivityClassify::getAffiliationFid, fid)
+				.eq(ActivityClassify::getName, activityClassifyName)
+		);
+		if (CollectionUtils.isNotEmpty(activityClassifies)) {
+			return activityClassifies.get(0);
+		}
+		// 新增
+		ActivityClassify activityClassify = ActivityClassify.builder()
+				.affiliationFid(fid)
+				.name(activityClassifyName)
+				.build();
+		return add(activityClassify, fid);
 	}
 
 }
