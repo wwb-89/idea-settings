@@ -127,12 +127,15 @@ public class ActivityStatHandleService {
             );
             if (CollectionUtils.isNotEmpty(taskDetailList)) {
                 int execSuccessNum = 0;
+                // 任务异常标识，默认false
                 boolean taskFail = Boolean.FALSE;
                 for (ActivityStatTaskDetail detail : taskDetailList) {
                     boolean result;
                     try {
+                        // 获取任务详情处理结果
                         result = handleActivityStatItem(detail, statTask.getDate());
-                    } catch (Exception e) {
+                    } catch (BusinessException e) {
+                        // 仅当任务详情5次处理失败时，产生业务异常
                         activityStatTaskDetailMapper.update(null, new UpdateWrapper<ActivityStatTaskDetail>()
                                 .lambda()
                                 .eq(ActivityStatTaskDetail::getTaskId, detail.getTaskId())
@@ -143,6 +146,9 @@ public class ActivityStatHandleService {
                         );
                         result = Boolean.FALSE;
                         taskFail = Boolean.TRUE;
+                    } catch (Exception e) {
+                        // 其他异常应是插入活动统计记录或更新任务详情信息错误
+                        result = Boolean.FALSE;
                     }
                     if (result) {
                         execSuccessNum++;
