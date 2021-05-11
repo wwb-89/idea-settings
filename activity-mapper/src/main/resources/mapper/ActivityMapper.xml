@@ -414,4 +414,10 @@
             t.start_time DESC
     </select>
 
+    <select id="listByActivityDate" resultType="java.lang.Integer">
+        SELECT t.id
+        FROM t_activity t
+        WHERE t.start_date &lt;= #{activityDate} and t.end_date &gt;= #{activityDate}
+    </select>
+
 </mapper>

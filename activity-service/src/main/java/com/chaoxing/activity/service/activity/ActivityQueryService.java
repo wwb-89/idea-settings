@@ -499,4 +499,8 @@ public class ActivityQueryService {
 		return activityMapper.listOrgCreated(fid, activityFlag);
 	}
 
+
+    public List<Integer> listByActivityDate(LocalDate date) {
+		return activityMapper.listByActivityDate(date.format(DateTimeFormatter.ofPattern("yyyy-MM-dd")));
+    }
 }

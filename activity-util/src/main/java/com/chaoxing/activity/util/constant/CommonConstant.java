@@ -45,5 +45,7 @@ public class CommonConstant {
 	public static final Integer CX_NETWORK_FID = 0;
 	/** 队列获取数据等待时间 */
 	public static final Duration QUEUE_GET_WAIT_TIME = Duration.ofMinutes(1);
+	/** 最大失败次数 */
+	public static final Integer MAX_ERROR_TIMES = 5;
 
 }

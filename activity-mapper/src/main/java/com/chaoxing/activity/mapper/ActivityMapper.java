@@ -184,4 +184,12 @@ public interface ActivityMapper extends BaseMapper<Activity> {
 	*/
 	List<Activity> listOrgCreated(@Param("fid") Integer fid, @Param("activityFlag") String activityFlag);
 
+	/**查询活动进行日期范围中含activityDate的活动id
+	* @Description
+	* @author huxiaolong
+	* @Date 2021-05-10 17:24:10
+	* @param activityDate
+	* @return java.util.List<java.lang.Integer>
+	*/
+	List<Integer> listByActivityDate(@Param("activityDate") String activityDate);
 }
