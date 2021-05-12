@@ -119,6 +119,8 @@
 			},
 			created: function () {
 				var $this = this;
+                // 解决跨域
+                document.domain = "chaoxing.com";
 				$this.activityClassifies.push({name: "全部",value: "", selected: true});
 				$($this.activityClassifyNames).each(function () {
 					$this.activityClassifies.push({name: this,value: this,selected: false});
