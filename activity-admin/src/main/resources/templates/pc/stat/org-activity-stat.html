@@ -13,17 +13,17 @@
 </head>
 
 <body>
-    <div class="activity-statistics" id="activity-statistics">
+    <div class="activity-statistics" id="activity-statistics" v-cloak>
         <div class="white-part title-box">
             <div class="clear name-box">
                 <span class="title fl">机构活动统计</span>
                 <span class="tip fr">统计数据每天更新一次</span>
             </div>
-            <div class="date-box">
-                <el-date-picker v-model="time" type="daterange" range-separator="" start-placeholder="开始日期"
-                    end-placeholder="结束日期">
-                </el-date-picker>
-            </div>
+<!--            <div class="date-box">-->
+<!--                <el-date-picker v-model="time" type="daterange" value-format="yyyy-MM-dd" range-separator="" start-placeholder="开始日期"-->
+<!--                    end-placeholder="结束日期" @change="dateScopeChange">-->
+<!--                </el-date-picker>-->
+<!--            </div>-->
         </div>
         <div class="white-part paddingb12">
             <p class="title">概况</p>
@@ -83,29 +83,29 @@
                 </div>
             </div>
             <div class="table-box">
-                <el-table :data="tableData" style="width: 100%">
+                <el-table :data="topActivityStat" style="width: 100%">
                     <el-table-column prop="rank" label="排名" width="50" align="center">
                         <template slot-scope="scope">
                             <span
                                 :class="scope.row.rank == 1 ? 'rank one' : scope.row.rank == 2 ? 'rank two' : scope.row.rank == 3 ? 'rank three' : 'rank' ">{{scope.row.rank}}</span>
                         </template>
                     </el-table-column>
-                    <el-table-column prop="name" label="活动名称" width="421">
+                    <el-table-column prop="activityName" label="活动名称" width="421">
                     </el-table-column>
-                    <el-table-column prop="view" label="浏览量" width="234" align="center">
+                    <el-table-column prop="pv" label="浏览量" width="234" align="center">
                         <template #header>
-                            <div class="number active"> 浏览量<i class="down-icon"></i></div>
+                            <div class="number" :class="{'active': sortCol === 0}" @click="reloadTopActivity(0)"> 浏览量<i class="down-icon"></i></div>
                         </template>
                         <template slot-scope="scope">
-                            <span class="color">{{scope.row.view}}</span>
+                            <span class="color">{{scope.row.pv}}</span>
                         </template>
                     </el-table-column>
-                    <el-table-column prop="num" label="报名人数" align="center">
+                    <el-table-column prop="signedUpNum" label="报名人数" align="center">
                         <template #header>
-                            <div class="number"> 报名人数<i class="down-icon"></i></div>
+                            <div class="number" :class="{'active': sortCol === 1}" @click="reloadTopActivity(1)"> 报名人数<i class="down-icon"></i></div>
                         </template>
                         <template slot-scope="scope">
-                            <span class="color">{{scope.row.num}}</span>
+                            <span class="color">{{scope.row.signedUpNum}}</span>
                         </template>
                     </el-table-column>
                 </el-table>
@@ -118,43 +118,25 @@
     <script src="/static/pc/assets/lib/element-ui/lib/index.js" th:src="@{/pc/assets/lib/element-ui/lib/index.js}"></script>
     <script src="/static/pc/assets/lib/jquery.nicescroll.min.js" th:src="@{/pc/assets/lib/jquery.nicescroll.min.js}"></script>
     <script th:inline="javascript">
-        $(function () {
-            $('.el-table .number').click(function () {
-                $(this).parents('.el-table').find($(' .number')).removeClass('active')
-                $(this).addClass('active')
-            })
-        })
+        // $(function () {
+        //     $('.el-table .number').click(function () {
+        //         $(this).parents('.el-table').find($(' .number')).removeClass('active')
+        //         $(this).addClass('active')
+        //     })
+        // })
         var vm = new Vue({
             el: '#activity-statistics',
             data: {
+                fid: [[${fid}]],
                 activityOrgStat: [[${activityOrgStat}]],
-                time: '',
-                tableData: [{
-                    rank: 1,
-                    name: '中国梦·中华颂',
-                    view: 123,
-                    num: 4704
-                }, {
-                    rank: 2,
-                    name: '信息技术学科赛课活动',
-                    view: 123,
-                    num: 4704
-                }, {
-                    rank: 3,
-                    name: '来杭图看“初见”刘毅·鱼拓展',
-                    view: 123,
-                    num: 4704
-                }, {
-                    rank: 4,
-                    name: '来杭图看“初见”刘毅·鱼拓展',
-                    view: 123,
-                    num: 4704
-                }, {
-                    rank: 5,
-                    name: '来杭图看“初见”刘毅·鱼拓展',
-                    view: 123,
-                    num: 4704
-                }]
+                topActivityStat: [[${topActivityStat}]],
+                // 排序列-> 0: 浏览量， 1: 报名人数
+                sortCol: 0,
+                sortField: {
+                    0: 'pv',
+                    1: 'signed_up_num'
+                },
+                time: []
             },
             mounted: function () {
                 /* 条形图 */
@@ -621,6 +603,57 @@
             methods: {
                 randomHexColor: function () {
                     return '#'+Math.floor(Math.random() * 0xffffff).toString(16).padEnd(6, '0');
+                },
+                dateScopeChange: function (dateScope) {
+                    var queryParams = {
+                        activityIds: $this.activityOrgStat.activityIds,
+                        startDate: $this.time[0],
+                        endDate: $this.time[1]
+                    }
+
+                    var queryStr = activityApp.getJsonStr(queryParams);
+
+                    var url = ctx + "/api/activity/stat/org/" + $this.fid +"/top-activity";
+
+
+                    // 重新获取top排行榜数据
+                    $this.reloadTopActivity()
+                },
+                reloadTopActivity: function (sortCol) {
+                    var $this = this;
+
+                    sortCol = sortCol || 0;
+                    if ($this.sortCol === sortCol) {
+                        return;
+                    }
+                    $this.sortCol = sortCol;
+
+                    var queryParams = {
+                        activityIds: $this.activityOrgStat.activityIds,
+                        startDate: $this.time[0],
+                        endDate: $this.time[1],
+                        sortField: $this.sortField[sortCol]
+                    }
+
+                    var queryStr = activityApp.getJsonStr(queryParams);
+
+                    var url = ctx + "/api/activity/stat/org/" + $this.fid +"/top-activity";
+
+                    app.ajaxPost(url, {queryParamsStr: queryStr}, function (res) {
+                        if (res.success) {
+                            $this.topActivityStat = res.data;
+                        } else {
+                            var errorMessage = res.message;
+                            if (activityApp.isEmpty(errorMessage)) {
+                                errorMessage = "获取TOP活动榜数据失败!";
+                            }
+                            app.showMsg(errorMessage);
+                        }
+                    }, function () {
+                        app.showMsg("获取TOP活动榜数据失败!");
+                    });
+
+
                 }
             }
         })

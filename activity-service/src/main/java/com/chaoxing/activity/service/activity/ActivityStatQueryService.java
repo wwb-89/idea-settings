@@ -208,8 +208,12 @@ public class ActivityStatQueryService {
 		return result;
 	}
 
+
 	/**
 	 * 根据机构fid查询机构下的活动统计信息
+	 * 浏览量为所有统计记录pv总和，pv趋势为每日所有统计记录pv总和
+	 * 报名人数以所有活动最新统计记录的signedUpNum总和
+	 * 签到人数以所有活动最新统计记录的signedInNum总和
 	 *
 	 * @param fid
 	 * @return com.chaoxing.activity.dto.stat.ActivityOrgStatDTO
@@ -218,24 +222,6 @@ public class ActivityStatQueryService {
 	 * @Date 2021-05-11 15:21:34
 	 */
 	public ActivityOrgStatDTO orgActivityStat(Integer fid) {
-		return orgActivityStat(fid, null, null);
-	}
-
-	/**
-	 * 根据机构fid、startTime、endTime查询机构下的活动统计信息
-	 * 浏览量为所有统计记录pv总和，pv趋势为每日所有统计记录pv总和
-	 * 报名人数以所有活动最新统计记录的signedUpNum总和
-	 * 签到人数以所有活动最新统计记录的signedInNum总和
-	 *
-	 * @param fid
-	 * @param startDate
-	 * @param endDate
-	 * @return com.chaoxing.activity.dto.stat.ActivityOrgStatDTO
-	 * @Description
-	 * @author huxiaolong
-	 * @Date 2021-05-11 15:21:34
-	 */
-	public ActivityOrgStatDTO orgActivityStat(Integer fid, String startDate, String endDate) {
 		ActivityOrgStatDTO result = ActivityOrgStatDTO.buildDefault();
 		// 根据fid查询机构下的活动，活动按照类型进行分组并统计数量
 		List<ActivityClassifyDTO> activityClassifyList = activityMapper.listActivityGroupByClassifyId(fid);
@@ -245,15 +231,11 @@ public class ActivityStatQueryService {
 		result.setClassifyStatList(activityClassifyList);
 
 		// 获取机构下的activityIds
-		List<Integer> activityIds = activityMapper.selectList(new QueryWrapper<Activity>()
-				.lambda().select(Activity::getId)
-				.eq(Activity::getCreateFid, fid))
-				.stream().map(Activity::getId)
-				.collect(Collectors.toList());
+		List<Integer> activityIds = activityQueryService.listActivityIdsByFid(fid);
+		result.setActivityIds(activityIds);
 
-		boolean timeScopeQuery = StringUtils.isBlank(startDate) || StringUtils.isBlank(endDate);
 		// 查询结果根据statDate升序排列
-		List<ActivityStat> activityStatList = activityStatMapper.listActivityStat(startDate, endDate, activityIds);
+		List<ActivityStat> activityStatList = activityStatMapper.listActivityStat(activityIds);
 
 		if (CollectionUtils.isNotEmpty(activityStatList)) {
 			int statSize = activityStatList.size();
@@ -305,13 +287,7 @@ public class ActivityStatQueryService {
 				signedUpNumSum += item.getSignedUpNum();
 			}
 
-			List<String> daily;
-			if (timeScopeQuery) {
-				daily = DateUtils.listEveryDay(activityStatList.get(0).getStatDate(),
-						activityStatList.get(statSize - 1).getStatDate());
-			} else {
-				daily = DateUtils.listEveryDay(LocalDate.parse(startDate), LocalDate.parse(endDate));
-			}
+			List<String> daily= DateUtils.listEveryDay(activityStatList.get(0).getStatDate(), activityStatList.get(statSize - 1).getStatDate());
 
 			result.setActivityNum(activityIds.size());
 			result.setPv(pvSum);
@@ -337,5 +313,21 @@ public class ActivityStatQueryService {
 			result.add(dailyStat);
 		}
 		return result;
+	}
+
+	public List<ActivityStat> listTopActivity(List<Integer> activityIds) {
+		return listTopActivity(null, activityIds);
+	}
+
+	public List<ActivityStat> listTopActivity(String sortField, List<Integer> activityIds) {
+		if (CollectionUtils.isEmpty(activityIds)) {
+			return new ArrayList<>();
+		}
+		List<ActivityStat> topActivityList = activityStatMapper.listTopActivity(Optional.ofNullable(sortField).orElse("pv"), activityIds);
+		int rank = 0;
+		for (ActivityStat item : topActivityList) {
+			item.setRank(++rank);
+		}
+		return topActivityList;
 	}
 }

@@ -521,25 +521,40 @@ public class ActivityQueryService {
 		return null;
 	}
 
+	/**根据fid查询活动ids
+	* @Description
+	* @author huxiaolong
+	* @Date 2021-05-12 15:26:37
+	* @param fid
+	* @return java.util.List<java.lang.Integer>
+	*/
+    public List<Integer> listActivityIdsByFid(Integer fid) {
+		return activityMapper.selectList(new QueryWrapper<Activity>().lambda()
+				.select(Activity::getId)
+				.eq(Activity::getCreateFid, fid))
+				.stream().map(Activity::getId)
+				.collect(Collectors.toList());
+    }
+
 	/**查询活动已报名用户id列表
-	 * @Description 
+	 * @Description
 	 * @author wwb
 	 * @Date 2021-05-12 18:09:16
 	 * @param activityId
 	 * @return java.util.List<java.lang.Integer>
-	*/
+	 */
 	public List<Integer> listSignedUpUid(Integer activityId) {
 		Activity activity = getById(activityId);
 		return listSignedUpUid(activity);
 	}
 
 	/**查询活动已报名用户id列表
-	 * @Description 
+	 * @Description
 	 * @author wwb
 	 * @Date 2021-05-12 18:16:06
 	 * @param activity
 	 * @return java.util.List<java.lang.Integer>
-	*/
+	 */
 	public List<Integer> listSignedUpUid(Activity activity) {
 		List<Integer> uids = Lists.newArrayList();
 		if (activity != null) {

@@ -41,6 +41,8 @@ public class ActivityOrgStatDTO {
     private List<DailyStatDTO> signInTrend;
     /** 活动类型占比统计list */
     private List<ActivityClassifyDTO> classifyStatList;
+    /** 机构fid下的活动id */
+    private List<Integer> activityIds;
 
     public static ActivityOrgStatDTO buildDefault() {
         return ActivityOrgStatDTO.builder()
@@ -53,6 +55,7 @@ public class ActivityOrgStatDTO {
                 .signUpTrend(Lists.newArrayList())
                 .signInTrend(Lists.newArrayList())
                 .classifyStatList(Lists.newArrayList())
+                .activityIds(Lists.newArrayList())
                 .build();
     }
 }

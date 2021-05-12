@@ -175,7 +175,7 @@
                             <i class="icon-delete" @click="delDialog=true"></i>
                         </div>
                         <div class="input-box">
-                            <el-switch v-model="delivery1" class="switch fl" disabled></el-switch>
+                            <el-switch v-model="delivery1" class="switch fl marginTop6" disabled></el-switch>
                             <p class="tips second">辅助说明文字，这是最长效果这是最长效果这是最长效果这是最长效果这是最长效果这是最</p>
                         </div>
                     </div>
@@ -261,7 +261,7 @@
                             <i class="icon-delete"></i>
                         </div>
                         <div class="input-box">
-                            <el-switch v-model="delivery1" class="switch fl" disabled></el-switch>
+                            <el-switch v-model="delivery1" class="switch fl marginTop6" disabled></el-switch>
                         </div>
                     </div>
                     <div class="form-item sort-item">
@@ -325,7 +325,7 @@
                             <i class="icon-delete"></i>
                         </div>
                         <div class="input-box">
-                            <el-switch v-model="delivery1" class="switch fl" disabled></el-switch>
+                            <el-switch v-model="delivery1" class="switch fl marginTop6" disabled></el-switch>
                         </div>
                     </div>
                     <div class="form-item sort-item">
@@ -375,9 +375,11 @@
                         </div>
                     </div>
                 </form>
-                <div class="add-circle" @click="addFieldDialog=true"></div>
+                <div class="add-circle" @click="addFieldDialog=true" id="add-circle"></div>
             </div>
         </div>
+        <!--拖拽排序的提示-->
+        <div id="dragBubble" class="bubble">拖动可排序</div>
         <!-- 确认删除模块弹框 -->
         <div class="dialog-mask" v-show="delDialog">
             <div class="dailog delete-dailog">
@@ -402,42 +404,66 @@
                         <el-tooltip class="tooltip" effect="dark" content="说明文字单行效果" placement="top">
                             <i class="icon-info"></i>
                         </el-tooltip>
-                        <div class="fr add-btn"><i class="icon-add"></i></div>
+                        <div class="fr add-btn">
+                            <i class="icon-add"></i>
+                            <span class="aready" style="display: none;">已添加</span>
+                            <span class="remove" style="display: none;">移除</span>
+                        </div>
                     </div>
-                    <div class="field-item">
+                    <div class="field-item aready-add">
                         <p class="field overHidden1">活动时间活动时间活动</p>
                         <el-tooltip class="tooltip" effect="dark" content="说明文字单行效果" placement="top">
                             <i class="icon-info"></i>
                         </el-tooltip>
-                        <div class="fr add-btn aready-add">已添加</div>
+                        <div class="fr add-btn">
+                            <i class="icon-add" style="display: none;"></i>
+                            <span class="aready">已添加</span>
+                            <span class="remove" style="display: none;">移除</span>
+                        </div>
                     </div>
                     <div class="field-item">
                         <p class="field overHidden1">活动时间活动时间活动</p>
                         <el-tooltip class="tooltip" effect="dark" content="说明文字多行效果说明文字多行效果说明文字多行效果说明文字多行效果说明文字多行效果" placement="top">
                             <i class="icon-info"></i>
                         </el-tooltip>
-                        <div class="fr add-btn"><i class="icon-add"></i></div>
+                        <div class="fr add-btn">
+                            <i class="icon-add"></i>
+                            <span class="aready" style="display: none;">已添加</span>
+                            <span class="remove" style="display: none;">移除</span>
+                        </div>
                     </div>
                     <div class="field-item">
                         <p class="field overHidden1">活动标签</p>
                         <el-tooltip class="tooltip" effect="dark" content="说明文字单行效果" placement="top">
                             <i class="icon-info"></i>
                         </el-tooltip>
-                        <div class="fr add-btn"><i class="icon-add"></i></div>
+                        <div class="fr add-btn">
+                            <i class="icon-add"></i>
+                            <span class="aready" style="display: none;">已添加</span>
+                            <span class="remove" style="display: none;">移除</span>
+                        </div>
                     </div>
                     <div class="field-item">
                         <p class="field overHidden1">活动形式</p>
                         <el-tooltip class="tooltip" effect="dark" content="说明文字单行效果" placement="top">
                             <i class="icon-info"></i>
                         </el-tooltip>
-                        <div class="fr add-btn"><i class="icon-add"></i></div>
+                        <div class="fr add-btn">
+                            <i class="icon-add"></i>
+                            <span class="aready" style="display: none;">已添加</span>
+                            <span class="remove" style="display: none;">移除</span>
+                        </div>
                     </div>
                     <div class="field-item">
                         <p class="field overHidden1">活动类型</p>
                         <el-tooltip class="tooltip" effect="dark" content="说明文字单行效果" placement="top">
                             <i class="icon-info"></i>
                         </el-tooltip>
-                        <div class="fr add-btn"><i class="icon-add"></i></div>
+                        <div class="fr add-btn">
+                            <i class="icon-add"></i>
+                            <span class="aready" style="display: none;">已添加</span>
+                            <span class="remove" style="display: none;">移除</span>
+                        </div>
                     </div>
                     <div class="field-item" @click="addFieldDialog=false,textDialog=true">
                         <p class="field overHidden1">文本字段</p>
@@ -809,22 +835,51 @@
                 axis: "y",
                 dalay: 300,
                 handle: ".icon-drag",
+                start: function () {
+                    $("#dragBubble").hide()
+                },
             });
+            $('.icon-drag').on('mouseenter', function (e) {
+                var $event = $(e.target);
+                var top = $event.offset().top - 39;
+                var left = $event.offset().left - 40;
+                $('#dragBubble').css({
+                    top: top,
+                    left: left
+                }).show()
+            })
+            $('.icon-drag').on('mouseleave', function (e) {
+                $('#dragBubble').hide()
+            })
             /* 添加字段弹窗 */
-            $('.add-btn').click(function() {
-                if($(this).hasClass('aready-add')){
-                    $(this).removeClass('aready-add')
-                    $(this).html(`<i class="icon-add"></i>`)
-                }else{
-                    $(this).addClass('aready-add')
-                    $(this).html('已添加')
-                }
+            $('.add-btn .icon-add').click(function() {
+                $(this).hide()
+                $(this).siblings('.aready').show()
+                $(this).parents('.field-item').addClass('aready-add')
+            })
+            $('.add-btn .remove').click(function() {
+                $(this).hide()
+                $(this).siblings('.icon-add').show()
+                $(this).parents('.field-item').removeClass('aready-add')
             })
             $('.field-item').mouseenter(function() {
-                $(this).children('.aready-add').html('移除')
+                if($(this).hasClass('aready-add')){
+                    $(this).find('.remove').show()
+                    $(this).find('.aready').hide()
+                }
             })
             $('.field-item').mouseleave(function() {
-                $(this).children('.aready-add').html('已添加')
+                if($(this).hasClass('aready-add')){
+                    $(this).find('.remove').hide()
+                    $(this).find('.aready').show()
+                }
+            })
+            /* 右下角加号的位置 */
+            var right = $('.w-900px.info-box').offset().left + 50
+            $('#add-circle').css('right',right)
+            $(window).resize(function () {   
+                var right = $('.w-900px.info-box').offset().left + 50
+                $('#add-circle').css('right',right)
             })
         })
     </script>

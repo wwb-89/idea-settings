@@ -1,6 +1,7 @@
 package com.chaoxing.activity.model;
 
 import com.baomidou.mybatisplus.annotation.IdType;
+import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.AllArgsConstructor;
@@ -37,5 +38,12 @@ public class ActivityStat {
     private Integer signedInNum;
     /** 创建时间; column: create_time*/
     private LocalDateTime createTime;
+
+    /** 活动名称*/
+    @TableField(exist = false)
+    private String activityName;
+    /** 序号*/
+    @TableField(exist = false)
+    private Integer rank;
 
 }

@@ -20,25 +20,18 @@ public interface ActivityStatMapper extends BaseMapper<ActivityStat> {
     * @Description 
     * @author huxiaolong
     * @Date 2021-05-11 15:42:38
-    * @param startDate
-    * @param endDate
     * @param activityIds
     * @return java.util.List<com.chaoxing.activity.model.ActivityStat>
     */
-    List<ActivityStat> listActivityStat(@Param("startDate") String startDate,
-                                        @Param("endDate") String endDate,
-                                        @Param("activityIds") List<Integer> activityIds);
+    List<ActivityStat> listActivityStat(@Param("activityIds") List<Integer> activityIds);
 
-    /**根据统计起始时间，统计结束时间，查询每一个activity最新stat统计结果列表
+    /**列出前十活动榜，默认浏览量排序
      * @Description
      * @author huxiaolong
-     * @Date 2021-05-11 15:42:38
-     * @param startDate
-     * @param endDate
+     * @Date 2021-05-12 13:19:43
+     * @param sortField
      * @param activityIds
      * @return java.util.List<com.chaoxing.activity.model.ActivityStat>
      */
-    List<ActivityStat> listLatestStatResults(@Param("startDate") String startDate,
-                                             @Param("endDate") String endDate,
-                                             @Param("activityIds") List<Integer> activityIds);
+    List<ActivityStat> listTopActivity(@Param("sortField") String sortField, @Param("activityIds") List<Integer> activityIds);
 }

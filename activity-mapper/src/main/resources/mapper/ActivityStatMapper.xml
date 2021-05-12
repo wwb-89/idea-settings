@@ -23,37 +23,28 @@
             <foreach collection="activityIds" item="value" open="(" close=")" separator=",">
                 #{value}
             </foreach>
-            <if test="startDate != null and startDate != ''">
-                and t.stat_date &gt;= #{startDate}
-            </if>
-            <if test="endDate != null and endDate != ''">
-                and t.stat_date &lt;= #{endDate}
-            </if>
         </where>
         ORDER BY t.stat_date
     </select>
 
-    <select id="listLatestStatResults" resultType="com.chaoxing.activity.model.ActivityStat">
+    <select id="listTopActivity" resultType="com.chaoxing.activity.model.ActivityStat">
         SELECT
-        <include refid="Base_Column_List"></include>
+            ta.name as activityName, t.activity_id as activityId, t.stat_date as statDate, t.signed_up_num as signedUpNum,
+            t.signed_in_num as signedInNum, t.create_time as createTime, a.pv as pv
         FROM (
-        SELECT activity_id, max(stat_date) as stat_date
-        FROM t_activity_stat
-        <where>
-            activity_id in
-            <foreach collection="activityIds" item="value" open="(" close=")" separator=",">
-                #{value}
-            </foreach>
-            <if test="startDate != null and startDate != ''">
-                and stat_date &gt;= #{startDate}
-            </if>
-            <if test="endDate != null and endDate != ''">
-                and stat_date &lt;= #{endDate}
-            </if>
-        </where>
-        GROUP BY activity_id
-        ) a
+                 SELECT activity_id, max(stat_date) as stat_date, sum(pv) as pv
+                 FROM t_activity_stat
+                 <where>
+                     activity_id in
+                     <foreach collection="activityIds" item="value" open="(" close=")" separator=",">
+                         #{value}
+                     </foreach>
+                 </where>
+                 GROUP BY activity_id
+             ) a
         INNER JOIN t_activity_stat t ON t.activity_id = a.activity_id and t.stat_date = a.stat_date
-        ORDER BY t.stat_date
+        LEFT JOIN t_activity ta ON ta.id = t.activity_id
+        ORDER BY t.${sortField} DESC
+        LIMIT 0, 10
     </select>
 </mapper>
