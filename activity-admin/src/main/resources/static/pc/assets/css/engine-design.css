@@ -249,7 +249,7 @@
   font-size: 14px;
   line-height: 20px;
   color: #333333;
-  margin-right: 16px;
+  margin-right: 15px;
 }
 
 .dailog .body .switch-box .switch {
@@ -431,9 +431,17 @@
   line-height: 20px;
 }
 
+.dailog.choose-field {
+  width: 498px;
+}
+
 .dailog.choose-field .body {
   max-height: 561px;
   overflow: auto;
+}
+
+.dailog.choose-field .body .label {
+  width: 45px;
 }
 
 .dailog.delete-dailog {
