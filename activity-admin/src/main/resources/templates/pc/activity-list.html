@@ -114,6 +114,8 @@
     <script src="/static/pc/assets/component/confirm.js" th:src="@{/pc/assets/component/confirm.js}"></script>
     <script src="/static/pc/assets/component/activity-scope.js" th:src="@{/pc/assets/component/activity-scope.js}"></script>
     <script src="/static/pc/assets/lib/jqthumb.min.js" th:src="@{/pc/assets/lib/jqthumb.min.js}"></script>
+    <script src="/static/pc/assets/lib/set-iframe-height-child.js" th:src="@{/pc/assets/lib/set-iframe-height-child.js}"></script>
+    <script src="/static/pc/assets/lib/jquery.mCustomScrollbar.concat.min.js" th:src="@{/pc/assets/lib/jquery.mCustomScrollbar.concat.min.js}"></script>
     <script th:inline="javascript">
         activityVue = new Vue({
             el: "#activity-vue",
@@ -157,6 +159,8 @@
             },
             created: function () {
                 var $this = this;
+                // 解决跨域
+                document.domain = "chaoxing.com";
                 $this.filterStatus = [
                     {name: "全部", value: "", selected: true},
                     {name: "未发布", value: "1", selected: false},
