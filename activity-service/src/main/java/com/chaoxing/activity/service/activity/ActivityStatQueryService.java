@@ -245,11 +245,8 @@ public class ActivityStatQueryService {
 		result.setClassifyStatList(activityClassifyList);
 
 		// 获取机构下的activityIds
-		List<Integer> activityIds = activityMapper.selectList(new QueryWrapper<Activity>()
-				.lambda().select(Activity::getId)
-				.eq(Activity::getCreateFid, fid))
-				.stream().map(Activity::getId)
-				.collect(Collectors.toList());
+		List<Integer> activityIds = activityQueryService.listActivityIdsByFid(fid);
+		result.setActivityIds(activityIds);
 
 		boolean timeScopeQuery = StringUtils.isBlank(startDate) || StringUtils.isBlank(endDate);
 		// 查询结果根据statDate升序排列
@@ -337,5 +334,21 @@ public class ActivityStatQueryService {
 			result.add(dailyStat);
 		}
 		return result;
+	}
+
+	public List<ActivityStat> listTopActivity(List<Integer> activityIds) {
+		return listTopActivity(null, null, null, activityIds);
+	}
+
+	public List<ActivityStat> listTopActivity(String startDate, String endDate, String sortField, List<Integer> activityIds) {
+		if (CollectionUtils.isEmpty(activityIds)) {
+			return new ArrayList<>();
+		}
+		List<ActivityStat> topActivityList = activityStatMapper.listTopActivity(startDate, endDate, Optional.ofNullable(sortField).orElse("pv"), activityIds);
+		int rank = 0;
+		for (ActivityStat item : topActivityList) {
+			item.setRank(++rank);
+		}
+		return topActivityList;
 	}
 }
