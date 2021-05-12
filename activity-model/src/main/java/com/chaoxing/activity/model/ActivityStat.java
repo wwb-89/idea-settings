@@ -26,7 +26,6 @@ import java.time.LocalDateTime;
 public class ActivityStat {
 
     /** 活动id; column: activity_id*/
-    @TableId(type = IdType.AUTO)
     private Integer activityId;
     /** 统计日期; column: stat_date*/
     private LocalDate statDate;

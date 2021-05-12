@@ -421,4 +421,13 @@
         WHERE t.start_date &lt;= #{activityDate} and t.end_date &gt;= #{activityDate}
     </select>
 
+    <select id="listActivityGroupByClassifyId" resultType="com.chaoxing.activity.dto.stat.ActivityClassifyDTO">
+        SELECT t.activity_classify_id as classifyId, tac.name as typeName, count(t.activity_classify_id) as typeNum
+        FROM t_activity t
+        LEFT JOIN t_activity_classify tac on t.activity_classify_id = tac.id
+        WHERE t.create_fid = #{fid}
+        GROUP BY t.activity_classify_id
+    </select>
+
+
 </mapper>
