@@ -126,5 +126,36 @@ public class SignIn {
 
     }
 
+    public static SignIn buildDefaultSignIn() {
+        SignIn signIn = buildDefault();
+        signIn.setName("签到");
+        signIn.setType("sign_in");
+        signIn.setBtnName("签到");
+        return signIn;
+    }
+
+    public static SignIn buildDefaultSignOut() {
+        SignIn signIn = buildDefault();
+        signIn.setName("签退");
+        signIn.setType("sign_out");
+        signIn.setBtnName("签退");
+        return signIn;
+    }
+
+    private static SignIn buildDefault() {
+        LocalDateTime now = LocalDateTime.now();
+        return SignIn.builder()
+                .name("签到")
+                .startTime(now)
+                .endTime(now.plusHours(2))
+                .way(1)
+                .address("")
+                .detailAddress("")
+                .scanCodeWay(1)
+                .fillInfo(false)
+                .publicList(false)
+                .deleted(true)
+                .build();
+    }
 
 }

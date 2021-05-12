@@ -42,7 +42,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
-import javax.servlet.http.HttpServletRequest;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -112,13 +111,13 @@ public class ActivityHandleService {
 	 * @return void
 	*/
 	@Transactional(rollbackFor = Exception.class)
-	public void add(Activity activity, SignAddEditDTO signAddEdit, List<WfwRegionalArchitectureDTO> wfwRegionalArchitectures, LoginUserDTO loginUser, HttpServletRequest request) {
+	public void add(Activity activity, SignAddEditDTO signAddEdit, List<WfwRegionalArchitectureDTO> wfwRegionalArchitectures, LoginUserDTO loginUser) {
 		// 新增活动输入验证
 		activityValidationService.addInputValidate(activity);
 		// 处理活动类型
 		handleActivityType(activity);
 		// 添加报名签到
-		SignAddEditResultDTO signAddEditResult = handleSign(activity, signAddEdit, loginUser, request);
+		SignAddEditResultDTO signAddEditResult = handleSign(activity, signAddEdit, loginUser);
 		activity.setSignId(signAddEditResult.getSignId());
 		// 添加作品征集
 		handleWork(activity, loginUser);
@@ -251,10 +250,9 @@ public class ActivityHandleService {
 	 * @param activity
 	 * @param signAddEdit
 	 * @param loginUser
-	 * @param request
 	 * @return com.chaoxing.activity.dto.module.SignAddEditResultDTO
 	*/
-	private SignAddEditResultDTO handleSign(Activity activity, SignAddEditDTO signAddEdit, LoginUserDTO loginUser, HttpServletRequest request) {
+	private SignAddEditResultDTO handleSign(Activity activity, SignAddEditDTO signAddEdit, LoginUserDTO loginUser) {
 		Integer signId = signAddEdit.getId();
 		List<SignUp> signUps = signAddEdit.getSignUps();
 		if (CollectionUtils.isNotEmpty(signUps)) {
@@ -275,12 +273,12 @@ public class ActivityHandleService {
 			signAddEdit.setCreateFid(loginUser.getFid());
 			signAddEdit.setCreateOrgName(loginUser.getOrgName());
 			signAddEdit.setUpdateUid(loginUser.getUid());
-			return signApiService.create(signAddEdit, request);
+			return signApiService.create(signAddEdit);
 		} else {
 			// 修改报名签到
 			signAddEdit.setUpdateUid(loginUser.getUid());
 			signAddEdit.setName(activity.getName());
-			return signApiService.update(signAddEdit, request);
+			return signApiService.update(signAddEdit);
 		}
 	}
 
@@ -375,7 +373,7 @@ public class ActivityHandleService {
 	 * @return void
 	*/
 	@Transactional(rollbackFor = Exception.class)
-	public void edit(Activity activity, SignAddEditDTO signAddEdit, final List<WfwRegionalArchitectureDTO> wfwRegionalArchitectures, LoginUserDTO loginUser, HttpServletRequest request) {
+	public void edit(Activity activity, SignAddEditDTO signAddEdit, final List<WfwRegionalArchitectureDTO> wfwRegionalArchitectures, LoginUserDTO loginUser) {
 		Integer activityId = activity.getId();
 		String activityEditLockKey = getActivityEditLockKey(activityId);
 		distributedLock.lock(activityEditLockKey, () -> {
@@ -387,7 +385,7 @@ public class ActivityHandleService {
 			// 更新报名签到
 			Integer signId = existActivity.getSignId();
 			signAddEdit.setId(signId);
-			SignAddEditResultDTO signAddEditResult = handleSign(activity, signAddEdit, loginUser, request);
+			SignAddEditResultDTO signAddEditResult = handleSign(activity, signAddEdit, loginUser);
 			handleActivitySignModule(activity.getId(), signAddEditResult);
 			// 征集相关
 			handleWork(activity, loginUser);

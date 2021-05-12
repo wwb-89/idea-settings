@@ -25,6 +25,8 @@ public class FormDataDTO {
 	private Integer id;
 	private String label;
 	private String compt;
+	private String alias;
 	private List<JSONObject> values;
+	private List<FormDataDTO> compts;
 
 }

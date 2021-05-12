@@ -22,6 +22,8 @@ import java.util.List;
 public class FormDTO {
 
 	private Integer formId;
+	private String appName;
+	private Integer aprvStatusTypeId;
 	private String formName;
 	private Integer aprvStatus;
 	private Integer formUserId;
@@ -29,6 +31,7 @@ public class FormDTO {
 	private String organize;
 	private Integer uid;
 	private String uname;
+	private Integer fid;
 	private Long inserttime;
 	private Long updatetime;
 	private List<FormDataDTO> formData;

@@ -94,6 +94,7 @@ public class IndexController {
 			// 使用通用的活动广场
 			return "redirect:/?flag=" + flag;
 		}
+		code = "zjlib";
 		return handleData(request, model, code, realFid, pageId, banner, style, flag);
 	}
 

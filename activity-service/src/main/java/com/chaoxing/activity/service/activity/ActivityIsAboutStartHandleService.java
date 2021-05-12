@@ -198,7 +198,7 @@ public class ActivityIsAboutStartHandleService {
 	}
 
 	private String generateSignedUpNoticeTitle(Activity activity) {
-		return activity.getName() + "即将开始！";
+		return "您报名的" + activity.getName() + "即将开始！";
 	}
 
 	private String generateSignedUpNoticeContent(Activity activity) {

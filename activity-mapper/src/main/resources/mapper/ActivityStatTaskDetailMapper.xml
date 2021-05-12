@@ -8,4 +8,17 @@
         <result column="error_message" jdbcType="VARCHAR" property="errorMessage" />
         <result column="status" jdbcType="INTEGER" property="status" />
     </resultMap>
+
+
+    <insert id="batchAdd">
+        INSERT INTO t_activity_stat_task_detail ( task_id, activity_id )
+        VALUES
+        <foreach collection="activityStatTaskDetails" index="key" item="value" open="" close="" separator=",">
+            (
+            #{value.taskId},
+            #{value.activityId}
+            )
+        </foreach>
+
+    </insert>
 </mapper>
