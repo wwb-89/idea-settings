@@ -27,32 +27,21 @@ public class ActivityStatApiController {
 
     @Resource
     private ActivityStatQueryService activityStatQueryService;
-
-    /**
-     * @Description
-     * @author huxiaolong
-     * @Date 2021-05-11 16:53:12
-     * @param fid
-     * @param timeScopeQueryStr
-     * @return com.chaoxing.activity.dto.RestRespDTO
-     */
-    @RequestMapping("/org/{fid}/query")
-    public RestRespDTO getOrgActivityStatInfo(@PathVariable Integer fid, String timeScopeQueryStr) {
-//        JSONObject jsonObject = JSON.parseObject(timeScopeQueryStr);
-//        ActivityOrgStatDTO activityOrgStat = activityStatQueryService.orgActivityStat(activityIds,
-//                jsonObject.getString("startDate"),
-//                jsonObject.getString("endDate"));
-        return RestRespDTO.success();
-    }
-
+    
+    /**活动TOP榜数据查询
+    * @Description 
+    * @author huxiaolong
+    * @Date 2021-05-12 17:17:56
+    * @param fid
+* @param queryParamsStr
+    * @return com.chaoxing.activity.dto.RestRespDTO
+    */
     @PostMapping("/org/{fid}/top-activity")
     public RestRespDTO listTopActivity(@PathVariable Integer fid, String queryParamsStr) {
         JSONObject jsonObject = JSON.parseObject(queryParamsStr);
         List<Integer> activityIds = jsonObject.getJSONArray("activityIds").toJavaList(Integer.class);
-        String startDate = jsonObject.getString("startDate");
-        String endDate = jsonObject.getString("endDate");
         String sortField = jsonObject.getString("sortField");
-        List<ActivityStat> topActivityStat = activityStatQueryService.listTopActivity(startDate, endDate, sortField, activityIds);
+        List<ActivityStat> topActivityStat = activityStatQueryService.listTopActivity(sortField, activityIds);
 
         return RestRespDTO.success(topActivityStat);
     }
