@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 import java.util.Objects;
 import java.util.Optional;
 
@@ -36,16 +37,19 @@ public class ActivityChangeEventService {
 	private SecondClassroomActivityPushQueueService secondClassroomActivityPushQueueService;
 	@Resource
 	private ActivityIntegralChangeQueueService activityIntegralChangeQueueService;
+	@Resource
+	private ActivityDataChangeQueueService activityDataChangeQueueService;
 
 	/**活动数据改变
 	 * @Description 
 	 * @author wwb
 	 * @Date 2021-03-26 14:54:18
 	 * @param activity
+	 * @param oldActivity 原活动
 	 * @param oldIntegralValue 原积分
 	 * @return void
 	*/
-	public void dataChange(Activity activity, BigDecimal oldIntegralValue) {
+	public void dataChange(Activity activity, Activity oldActivity, BigDecimal oldIntegralValue) {
 		// 往表单推送数据
 		secondClassroomActivityPushQueueService.update(activity);
 		// 订阅活动状态处理
@@ -66,6 +70,23 @@ public class ActivityChangeEventService {
 			oldIntegralValue = Optional.ofNullable(oldIntegralValue).orElse(BigDecimal.valueOf(0));
 			if (integralValue.compareTo(oldIntegralValue) != 0) {
 				activityIntegralChangeQueueService.add(signId);
+			}
+		}
+		if (oldActivity != null) {
+			// 提醒已收藏、已报名的用户活动的变更，需要判断的变更内容：活动地点、活动时间
+			boolean activityDataChange = false;
+			if (!Objects.equals(activity.getAddress(), oldActivity.getAddress()) || !Objects.equals(activity.getDetailAddress(), oldActivity.getDetailAddress())) {
+				activityDataChange = true;
+			}
+			LocalDateTime now = LocalDateTime.now();
+			if ((activity.getStartTime().compareTo(oldActivity.getStartTime()) != 0
+					|| activity.getEndTime().compareTo(oldActivity.getEndTime()) != 0)
+					&& activity.getEndTime().isAfter(now)) {
+				activityDataChange = true;
+			}
+			if (activityDataChange) {
+				// 给收藏活动和报名活动的用户发送通知
+				activityDataChangeQueueService.add(activity.getId());
 			}
 		}
 	}

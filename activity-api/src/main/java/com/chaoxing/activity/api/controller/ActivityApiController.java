@@ -277,14 +277,7 @@ public class ActivityApiController {
 	*/
 	@RequestMapping("{activityId}/participated-uid")
 	public RestRespDTO participatedUid(@PathVariable Integer activityId) {
-		Activity activity = activityQueryService.getById(activityId);
-		List<Integer> uids = Lists.newArrayList();
-		if (activity != null) {
-			Integer signId = activity.getSignId();
-			if (signId != null) {
-				uids = signApiService.listSignedUpUid(signId);
-			}
-		}
+		List<Integer> uids = activityQueryService.listSignedUpUid(activityId);
 		return RestRespDTO.success(uids);
 	}
 

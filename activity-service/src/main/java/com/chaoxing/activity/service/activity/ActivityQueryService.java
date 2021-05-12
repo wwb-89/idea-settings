@@ -521,4 +521,35 @@ public class ActivityQueryService {
 		return null;
 	}
 
+	/**查询活动已报名用户id列表
+	 * @Description 
+	 * @author wwb
+	 * @Date 2021-05-12 18:09:16
+	 * @param activityId
+	 * @return java.util.List<java.lang.Integer>
+	*/
+	public List<Integer> listSignedUpUid(Integer activityId) {
+		Activity activity = getById(activityId);
+		return listSignedUpUid(activity);
+	}
+
+	/**查询活动已报名用户id列表
+	 * @Description 
+	 * @author wwb
+	 * @Date 2021-05-12 18:16:06
+	 * @param activity
+	 * @return java.util.List<java.lang.Integer>
+	*/
+	public List<Integer> listSignedUpUid(Activity activity) {
+		List<Integer> uids = Lists.newArrayList();
+		if (activity != null) {
+			Integer signId = activity.getSignId();
+			if (signId != null) {
+				// 报名的uid列表
+				uids = signApiService.listSignedUpUid(signId);
+			}
+		}
+		return uids;
+	}
+
 }

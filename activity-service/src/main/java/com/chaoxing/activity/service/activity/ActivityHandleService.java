@@ -38,6 +38,7 @@ import com.google.common.collect.Lists;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -158,7 +159,7 @@ public class ActivityHandleService {
 		// 处理活动的所属区域
 		handleActivityArea(activity, loginUser);
 		// 活动改变
-		activityChangeEventService.dataChange(activity, activity.getIntegralValue());
+		activityChangeEventService.dataChange(activity, null, activity.getIntegralValue());
 	}
 
 	/**处理参与范围
@@ -381,6 +382,9 @@ public class ActivityHandleService {
 			// 处理活动类型
 			handleActivityType(activity);
 			Activity existActivity = activityValidationService.editAble(activityId, loginUser);
+			// 克隆
+			Activity oldActivity = new Activity();
+			BeanUtils.copyProperties(existActivity, oldActivity);
 			BigDecimal oldIntegralValue = existActivity.getIntegralValue();
 			// 更新报名签到
 			Integer signId = existActivity.getSignId();
@@ -440,7 +444,7 @@ public class ActivityHandleService {
 			// 新增参与范围
 			activityScopeService.batchAdd(activityScopes);
 			// 活动改变
-			activityChangeEventService.dataChange(activity, oldIntegralValue);
+			activityChangeEventService.dataChange(activity, oldActivity, oldIntegralValue);
 			return null;
 		}, e -> {
 			log.error("更新活动:{} error:{}", JSON.toJSONString(activity), e.getMessage());
