@@ -2,6 +2,7 @@ package com.chaoxing.activity.dto.module;
 
 import com.chaoxing.activity.dto.manager.sign.SignIn;
 import com.chaoxing.activity.dto.manager.sign.SignUp;
+import com.google.common.collect.Lists;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -46,5 +47,15 @@ public class SignAddEditDTO {
 	private List<SignUp> signUps;
 	/** 签到列表 */
 	private List<SignIn> signIns;
+
+	public static SignAddEditDTO buildDefault() {
+		SignUp signUp = SignUp.buildDefault();
+		SignIn signIn = SignIn.buildDefaultSignIn();
+		SignIn signOut = SignIn.buildDefaultSignOut();
+		return SignAddEditDTO.builder()
+				.signUps(Lists.newArrayList(signUp))
+				.signIns(Lists.newArrayList(signIn, signOut))
+				.build();
+	}
 
 }

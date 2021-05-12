@@ -499,8 +499,26 @@ public class ActivityQueryService {
 		return activityMapper.listOrgCreated(fid, activityFlag);
 	}
 
-
-    public List<Integer> listByActivityDate(LocalDate date) {
+	public List<Integer> listByActivityDate(LocalDate date) {
 		return activityMapper.listByActivityDate(date.format(DateTimeFormatter.ofPattern("yyyy-MM-dd")));
-    }
+	}
+
+	/**根据来源的表单审批记录行id查询
+	 * @Description
+	 * @author wwb
+	 * @Date 2021-05-11 16:13:28
+	 * @param originFormUserId
+	 * @return com.chaoxing.activity.model.Activity
+	 */
+	public Activity getByOriginFormUserId(Integer originFormUserId) {
+		List<Activity> activities = activityMapper.selectList(new QueryWrapper<Activity>()
+				.lambda()
+				.eq(Activity::getOriginFormUserId, originFormUserId)
+		);
+		if (CollectionUtils.isNotEmpty(activities)) {
+			return activities.get(0);
+		}
+		return null;
+	}
+
 }

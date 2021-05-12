@@ -7,6 +7,7 @@ import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import com.chaoxing.activity.util.LocalDateTimeDeserializer;
 import com.chaoxing.activity.util.LocalDateTimeSerializer;
+import com.chaoxing.activity.util.constant.CommonConstant;
 import com.chaoxing.activity.util.exception.BusinessException;
 import lombok.*;
 
@@ -122,6 +123,8 @@ public class Activity {
     private Boolean openWork;
     /** 作品征集id; column: work_id*/
     private Integer workId;
+    /** 来源表单记录id; column: origin_form_user_id*/
+    private Integer originFormUserId;
     /** 状态。0：已删除，1：待发布，2：已发布，3：进行中，4：已结束; column: status*/
     private Integer status;
     /** 创建时间; column: create_time*/
@@ -246,6 +249,19 @@ public class Activity {
             return null;
         }
 
+    }
+
+    public static Activity buildDefault() {
+        return Activity.builder()
+                .name("")
+                .coverCloudId(CommonConstant.ACTIVITY_DEFAULT_COVER_CLOUD_ID)
+                .organisers("")
+                .address("")
+                .detailAddress("")
+                .enableSign(true)
+                .openWork(false)
+                .openAudit(false)
+                .build();
     }
 
 }

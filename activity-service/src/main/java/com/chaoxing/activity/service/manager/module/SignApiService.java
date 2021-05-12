@@ -14,7 +14,6 @@ import com.chaoxing.activity.dto.sign.SignActivityManageIndexDTO;
 import com.chaoxing.activity.dto.stat.SignActivityStatDTO;
 import com.chaoxing.activity.util.CookieUtils;
 import com.chaoxing.activity.util.DateUtils;
-import com.chaoxing.activity.util.RestTemplateUtils;
 import com.chaoxing.activity.util.exception.BusinessException;
 import com.google.common.collect.Lists;
 import lombok.extern.slf4j.Slf4j;
@@ -109,14 +108,11 @@ public class SignApiService {
 	 * @author wwb
 	 * @Date 2020-11-11 14:26:33
 	 * @param signAddEdit
-	 * @param request
 	 * @return com.chaoxing.activity.dto.module.SignAddEditResultDTO
 	*/
-	public SignAddEditResultDTO create(SignAddEditDTO signAddEdit, HttpServletRequest request) {
+	public SignAddEditResultDTO create(SignAddEditDTO signAddEdit) {
 		HttpHeaders httpHeaders = new HttpHeaders();
 		httpHeaders.setContentType(MediaType.APPLICATION_JSON);
-		List<String> cookies = RestTemplateUtils.getCookies(request);
-		httpHeaders.put("Cookie", cookies);
 		HttpEntity<String> httpEntity = new HttpEntity<>(JSON.toJSONString(signAddEdit), httpHeaders);
 		String result = restTemplate.postForObject(CREATE_URL, httpEntity, String.class);
 		JSONObject jsonObject = JSON.parseObject(result);
@@ -138,11 +134,9 @@ public class SignApiService {
 	 * @param signAddEdit
 	 * @return com.chaoxing.activity.dto.module.SignAddEditResultDTO
 	*/
-	public SignAddEditResultDTO update(SignAddEditDTO signAddEdit, HttpServletRequest request) {
+	public SignAddEditResultDTO update(SignAddEditDTO signAddEdit) {
 		HttpHeaders httpHeaders = new HttpHeaders();
 		httpHeaders.setContentType(MediaType.APPLICATION_JSON);
-		List<String> cookies = RestTemplateUtils.getCookies(request);
-		httpHeaders.put("Cookie", cookies);
 		HttpEntity<String> httpEntity = new HttpEntity<>(JSON.toJSONString(signAddEdit), httpHeaders);
 		String result = restTemplate.postForObject(UPDATE_URL, httpEntity, String.class);
 		JSONObject jsonObject = JSON.parseObject(result);

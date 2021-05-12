@@ -37,4 +37,13 @@ public class LoginUserDTO {
 	/** 所属机构列表 */
 	private List<OrgDTO> affiliations;
 
+	public static LoginUserDTO buildDefault(Integer uid, String realName, Integer fid, String orgName) {
+		return LoginUserDTO.builder()
+				.uid(uid)
+				.realName(realName)
+				.fid(fid)
+				.orgName(orgName)
+				.build();
+	}
+
 }

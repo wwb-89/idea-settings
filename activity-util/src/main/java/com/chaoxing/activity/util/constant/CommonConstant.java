@@ -48,4 +48,11 @@ public class CommonConstant {
 	/** 最大失败次数 */
 	public static final Integer MAX_ERROR_TIMES = 5;
 
+	/** 默认封面云盘id */
+	public static final String ACTIVITY_DEFAULT_COVER_CLOUD_ID = "ce257d8a6c546bcedcc7f415dd504296";
+
+	// 表单相关
+	/** 表单审批同意 */
+	public static final Integer FORM_APPROVAL_AGREE_VALUE = 2;
+
 }

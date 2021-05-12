@@ -139,4 +139,5 @@ public class ActivityClassifyQueryService {
 				.lambda()
 				.eq(ActivityClassify::getId, id));
 	}
+
 }
