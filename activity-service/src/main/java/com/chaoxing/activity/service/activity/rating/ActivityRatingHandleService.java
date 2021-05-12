@@ -259,6 +259,24 @@ public class ActivityRatingHandleService {
 		);
 	}
 
+	/**管理员删除评价
+	 * @Description
+	 * @author wwb
+	 * @Date 2021-03-17 19:50:55
+	 * @param activityId
+	 * @param activityRatingDetailId
+	 * @return void
+	 */
+	@Transactional(rollbackFor = Exception.class)
+	public void reject(Integer activityId, Integer activityRatingDetailId){
+		activityRatingDetailMapper.update(null, new UpdateWrapper<ActivityRatingDetail>()
+				.lambda()
+				.eq(ActivityRatingDetail::getId, activityRatingDetailId)
+				.eq(ActivityRatingDetail::getActivityId, activityId)
+				.set(ActivityRatingDetail::getAuditStatus, ActivityRatingDetail.AuditStatus.REJECT.getValue())
+		);
+	}
+
 	/**批量通过评价
 	 * @Description 
 	 * @author wwb

@@ -102,4 +102,19 @@ public class ActivityRatingApiController {
         return RestRespDTO.success();
     }
 
+    /**管理员删除评价，审核不通过
+    * @Description
+    * @author huxiaolong
+    * @Date 2021-05-12 16:17:00
+    * @param request
+    * @param activityId
+    * @param activityRatingDetailId
+    * @return com.chaoxing.activity.dto.RestRespDTO
+    */
+    @PostMapping("{ratingId}/reject")
+    public RestRespDTO reject(HttpServletRequest request, @RequestParam Integer activityId, @RequestParam Integer activityRatingDetailId){
+        activityRatingHandleService.reject(activityId, activityRatingDetailId);
+        return RestRespDTO.success();
+    }
+
 }

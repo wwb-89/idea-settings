@@ -17,7 +17,7 @@
             </div>
             <div class="assess-header-set">
                 <a href="javascript:" @click="toRatingSetting">评价设置</a>
-                <a href="javascript:" @click="toRatingAudit">评价审核</a>
+                <a href="javascript:" @click="toRatingAudit" v-show="activity.ratingNeedAudit">评价审核</a>
             </div>
             <div class="assess-header-right">
                 <div class="login-container">
