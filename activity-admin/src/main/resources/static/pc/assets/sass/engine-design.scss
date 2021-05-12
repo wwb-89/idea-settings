@@ -222,7 +222,7 @@
                 display: inline-block;
                 vertical-align: top;
                 background-image: url(../images/yq-design/minus-circle.png);
-                margin-left: 8px;
+                margin-left: 7px;
                 margin-top: 8px;
                 cursor: pointer;
                 &:hover{
@@ -251,6 +251,9 @@
                 background-image: url(../images/yq-design/plus-circle-16.png);
                 margin-top: 2px;
                 margin-right: 4px;
+            }
+            &:hover{
+                opacity: 0.8;
             }
         }
     }
@@ -301,10 +304,10 @@
             }
             &:hover{
                 background: #F8F8F8;
-                .aready-add{
-                    color: #FF666D;
-                    cursor: pointer;
-                }
+                // .aready-add{
+                //     color: #FF666D;
+                //     cursor: pointer;
+                // }
             }
             .field{
                 display: inline-block;
@@ -334,9 +337,14 @@
                 background-image: url(../images/yq-design/plus-circle.png);
                 cursor: pointer;
             }
-            .aready-add{
+            .aready{
                 font-size: 12px;
                 color: #999999;
+                line-height: 20px;
+            }
+            .remove{
+                font-size: 12px;
+                color: #FF666D;
                 line-height: 20px;
             }
         }
@@ -446,6 +454,25 @@
     height: 32px;
     border: 1px solid #E9E9E9;
     border-radius: 2px;
+    padding: 0 11px;
+}
+.el-radio__input.is-checked .el-radio__inner{
+    border-color: #0084FF;
+    background: #0084FF;
+}
+.el-radio__input.is-checked+.el-radio__label {
+    color: #333333;
+}
+.el-switch.is-checked .el-switch__core{
+    border-color: #0084FF;
+    background: #0084FF;
+}
+.el-checkbox__input.is-checked .el-checkbox__inner{
+    border-color: #0084FF;
+    background: #0084FF;
+}
+.el-checkbox__input.is-checked+.el-checkbox__label{
+    color: #333333;
 }
 .content{
     margin-top: 60px;
@@ -453,6 +480,7 @@
     padding-bottom: 50px;
 }
 .field-setting{
+    min-width: 1280px;
     .choose-mould{
         min-height: 600px;
         padding: 32px;
@@ -461,7 +489,7 @@
             font-size: 18px;
             line-height: 25px;
             color: #333333;
-            margin-bottom: 22px;
+            margin-bottom: 12px;
         }
         .mould{
             font-size: 0;
@@ -479,8 +507,18 @@
                 .img-box{
                     width: 100%;
                     border-radius: 4px;
+                    box-sizing: border-box;
+                    border: 1px solid transparent;
+                    img{
+                        width: 192px;
+                    }
                 }
                 &.active{
+                    .img-box{
+                        border: 1px solid #0084FF;
+                    }
+                }
+                &:hover{
                     .img-box{
                         border: 1px solid #0084FF;
                     }
@@ -499,9 +537,25 @@
         padding: 24px 48px 60px;
         form{
             position: relative;
+            .el-input__inner:hover {
+                border-color: #E9E9E9;
+            }
+            .el-range-editor.is-active,.el-range-editor.is-active:hover,
+            .el-input.is-active .el-input__inner, .el-input__inner:focus {
+                border-color: #E9E9E9;
+            }
+            .el-switch.is-disabled .el-switch__core, .el-switch.is-disabled .el-switch__label{
+                cursor: default;
+            }
+            .el-radio__inner:hover {
+                border-color: #DCDFE6;
+            }
+            .el-date-editor .el-range-input{
+                text-align: left;
+            }
         }
         .title{
-            padding: 18px 24px;
+            padding: 12px 24px;
             color: #333333;
             border-radius: 4px;
             line-height: 20px;
@@ -514,6 +568,7 @@
                 width: 98px;
                 margin-right: 24px;
                 font-weight: 500;
+                padding: 6px 0;
             }
         }
         .el-input .el-input__count{
@@ -544,8 +599,9 @@
             width: 582px;
             .tips{
                 font-size: 13px;
-                line-height: 32px;
+                line-height: 20px;
                 color: #999999;
+                padding: 6px 0;
                 &.first{
                     width: 582px;
                     margin-top: 4px;
@@ -678,6 +734,9 @@
                 margin-top: 16px;
                 text-align: center;
                 line-height: 15px;
+                &:hover{
+                    background: #ffffff;
+                }
             }
             .radio-item{
                 margin-bottom: 8px;
@@ -697,7 +756,7 @@
                 .address-icon{
                     position: absolute;
                     left: 294px;
-                    top: 25%;
+                    top: 8px;
                     width: 16px;
                 }
             }
@@ -766,9 +825,8 @@
             }
         }
         .add-circle{
-            position: absolute;
-            right: 50px;
-            bottom: 0;
+            position: fixed;
+            bottom: 50px;
             width: 50px;
             height: 50px;
             background: #0084FF;
@@ -785,10 +843,26 @@
                 height: 24px;
                 background-image: url(../images/yq-design/add-circle.png);
             }
+            &:hover{
+                opacity: 0.8;
+            }
         }
+    }
+    .bubble{
+        position: absolute;
+        z-index: 5;
+        padding: 6px 12px;
+        background: rgba(0, 0, 0, 0.7);
+        border-radius: 4px;
+        font-size: 14px;
+        line-height: 20px;
+        text-align: center;
+        color: #FFFFFF;
+        display: none;
     }
 }
 .basic-setting{
+    min-width: 1280px;
     .basic-con{
         padding: 96px 163px;
         min-height: 600px;
@@ -865,6 +939,7 @@
     clear: both;
 }
 .show-setting{
+    min-width: 1280px;
     .left-tab{
         width: 220px;
         height: 790px;
