@@ -5,6 +5,7 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.chaoxing.activity.dto.query.ActivityManageQueryDTO;
 import com.chaoxing.activity.dto.query.ActivityQueryDTO;
 import com.chaoxing.activity.dto.query.MhActivityCalendarQueryDTO;
+import com.chaoxing.activity.dto.stat.ActivityClassifyDTO;
 import com.chaoxing.activity.model.Activity;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
@@ -192,4 +193,13 @@ public interface ActivityMapper extends BaseMapper<Activity> {
 	* @return java.util.List<java.lang.Integer>
 	*/
 	List<Integer> listByActivityDate(@Param("activityDate") String activityDate);
+
+	/**查询机构fid下的活动，并按照类型进行分组
+	* @Description 
+	* @author huxiaolong
+	* @Date 2021-05-11 15:27:37
+	* @param fid
+	* @return java.util.List<java.lang.Integer>
+	*/
+	List<ActivityClassifyDTO> listActivityGroupByClassifyId(@Param("fid") Integer fid);
 }

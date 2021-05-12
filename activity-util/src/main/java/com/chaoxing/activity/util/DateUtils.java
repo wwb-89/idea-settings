@@ -57,9 +57,19 @@ public class DateUtils {
 	 * @return java.util.List<java.lang.String>
 	*/
 	public static List<String> listEveryDay(LocalDateTime startTime, LocalDateTime endTime) {
+		return listEveryDay(startTime.toLocalDate(), endTime.toLocalDate());
+	}
+
+	/**列出每一天
+	* @Description
+	* @author huxiaolong
+	* @Date 2021-05-11 16:10:05
+	* @param startDate
+	* @param endDate
+	* @return java.util.List<java.lang.String>
+	*/
+	public static List<String> listEveryDay(LocalDate startDate, LocalDate endDate) {
 		List<String> result = Lists.newArrayList();
-		LocalDate startDate = startTime.toLocalDate();
-		LocalDate endDate = endTime.toLocalDate();
 		while (endDate.compareTo(startDate) >= 0) {
 			result.add(startDate.format(DAY_DATE_TIME_FORMATTER));
 			startDate = startDate.plusDays(1);

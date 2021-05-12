@@ -1,12 +1,16 @@
 package com.chaoxing.activity.api.controller;
 
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONObject;
 import com.chaoxing.activity.dto.RestRespDTO;
+import com.chaoxing.activity.dto.stat.ActivityOrgStatDTO;
 import com.chaoxing.activity.service.activity.ActivityStatQueryService;
 import com.chaoxing.activity.service.activity.module.ActivityModuleQueryService;
 import com.chaoxing.activity.service.activity.scope.ActivityScopeQueryService;
 import com.chaoxing.activity.service.manager.module.SignApiService;
 import com.chaoxing.activity.service.manager.module.WorkApiService;
 import org.apache.commons.collections4.CollectionUtils;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -94,5 +98,26 @@ public class ActivityStatApiController {
 		List<Integer> pageIds = activityStatQueryService.listOrgParticipatedActivityPageId(fids);
 		return RestRespDTO.success(pageIds);
 	}
+
+	/**
+	* @Description
+	* @author huxiaolong
+	* @Date 2021-05-11 16:53:12
+	* @param fid
+	* @param timeScopeQueryStr
+	* @return com.chaoxing.activity.dto.RestRespDTO
+	*/
+	@RequestMapping("/org/query/{fid}")
+	public RestRespDTO getOrgActivityStatInfo(@PathVariable Integer fid, String timeScopeQueryStr) {
+		JSONObject jsonObject = JSON.parseObject(timeScopeQueryStr);
+		ActivityOrgStatDTO activityOrgStat = activityStatQueryService.orgActivityStat(fid,
+				jsonObject.getString("startDate"),
+				jsonObject.getString("endDate"));
+		return RestRespDTO.success(activityOrgStat);
+	}
+
+
+
+
 
 }
