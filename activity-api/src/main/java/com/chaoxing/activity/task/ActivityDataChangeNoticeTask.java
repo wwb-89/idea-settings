@@ -32,6 +32,7 @@ public class ActivityDataChangeNoticeTask {
         try {
             activityDataChangeNoticeService.sendToCollected(activityId);
         } catch (Exception e) {
+            e.printStackTrace();
             activityDataChangeQueueService.addColleced(activityId);
         }
     }

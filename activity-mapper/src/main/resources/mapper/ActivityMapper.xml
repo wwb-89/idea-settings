@@ -356,7 +356,7 @@
             </foreach>
             AND t.`status` IN (1, 2, 3, 4)
         ORDER BY
-            FIELD( t.`status`, 3, 2, 4 )
+            FIELD( t.`status`, 3, 2, 1, 4 )
             ,t.start_time DESC
     </select>
 

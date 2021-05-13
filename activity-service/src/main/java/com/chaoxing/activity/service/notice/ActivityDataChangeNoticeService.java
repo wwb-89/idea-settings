@@ -70,16 +70,16 @@ public class ActivityDataChangeNoticeService {
 
     private String getActivityAddress(Activity activity) {
         String address = activity.getAddress();
-        address = Optional.of(address).orElse("");
+        address = Optional.ofNullable(address).orElse("");
         String detailAddress = activity.getDetailAddress();
-        detailAddress = Optional.of(detailAddress).orElse("");
+        detailAddress = Optional.ofNullable(detailAddress).orElse("");
         return address + detailAddress;
     }
 
     private void sendNotice(Activity activity, List<Integer> uids) {
         String title = "活动提醒：" + activity.getName();
         String content = "您好，活动信息有调整，请合理安排时间\n";
-        content += "活动名称：成都市青羊区少儿阅读活动\n";
+        content += "活动名称："+ activity.getName() +"\n";
         // 活动地点
         String address = getActivityAddress(activity);
         if (StringUtils.isNotBlank(address)) {

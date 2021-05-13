@@ -8,6 +8,7 @@ import com.chaoxing.activity.service.GroupRegionFilterService;
 import com.chaoxing.activity.service.GroupService;
 import com.chaoxing.activity.service.activity.classify.ActivityClassifyQueryService;
 import com.chaoxing.activity.util.UserAgentUtils;
+import com.chaoxing.activity.util.annotation.LoginRequired;
 import com.chaoxing.activity.web.util.LoginUtils;
 import com.google.common.collect.Lists;
 import lombok.extern.slf4j.Slf4j;
@@ -195,6 +196,7 @@ public class IndexController {
 	 * @param flag 活动标示：双选会、第二课堂等
 	 * @return java.lang.String
 	 */
+	@LoginRequired
 	@RequestMapping("my")
 	public String my(HttpServletRequest request, Model model, @RequestParam(defaultValue = "") String areaCode, @RequestParam(defaultValue = "") String flag) {
 		model.addAttribute("areaCode", areaCode);
