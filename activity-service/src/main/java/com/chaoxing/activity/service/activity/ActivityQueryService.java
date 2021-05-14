@@ -12,13 +12,8 @@ import com.chaoxing.activity.dto.query.ActivityManageQueryDTO;
 import com.chaoxing.activity.dto.query.ActivityQueryDTO;
 import com.chaoxing.activity.dto.query.MhActivityCalendarQueryDTO;
 import com.chaoxing.activity.dto.sign.UserSignUpStatusStatDTO;
-import com.chaoxing.activity.mapper.ActivityFlagSignModuleMapper;
-import com.chaoxing.activity.mapper.ActivityMapper;
-import com.chaoxing.activity.mapper.ActivitySignModuleMapper;
-import com.chaoxing.activity.model.Activity;
-import com.chaoxing.activity.model.ActivityFlagSignModule;
-import com.chaoxing.activity.model.ActivityManager;
-import com.chaoxing.activity.model.ActivitySignModule;
+import com.chaoxing.activity.mapper.*;
+import com.chaoxing.activity.model.*;
 import com.chaoxing.activity.service.activity.manager.ActivityManagerQueryService;
 import com.chaoxing.activity.service.manager.WfwRegionalArchitectureApiService;
 import com.chaoxing.activity.service.manager.module.SignApiService;
@@ -30,6 +25,7 @@ import com.chaoxing.activity.util.enums.ActivityQueryDateEnum;
 import com.chaoxing.activity.util.enums.ActivityTypeEnum;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
+import io.swagger.models.auth.In;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -58,6 +54,8 @@ public class ActivityQueryService {
 
 	@Resource
 	private ActivityMapper activityMapper;
+	@Resource
+	private ActivityRatingDetailMapper activityRatingDetailMapper;
 	@Resource
 	private ActivityFlagSignModuleMapper activityFlagSignModuleMapper;
 	@Resource
@@ -567,4 +565,39 @@ public class ActivityQueryService {
 		return uids;
 	}
 
+
+	/**根据活动id，查询已报名却未评价的用户id
+	 * @Description
+	 * @author huxiaolong
+	 * @Date 2021-05-14 10:50:04
+	 * @param activity
+	 * @return java.util.List<java.lang.Integer>
+	 */
+	public List<Integer> listNoRateSignedUpUid(Activity activity) {
+		List<Integer> signedUpUids = listSignedUpUid(activity);
+		return listNoRatingUid(activity.getId(), signedUpUids);
+	}
+
+	/**根据活动id，用户ids，过滤出未评价用户id
+	 * @Description
+	 * @author huxiaolong
+	 * @Date 2021-05-14 10:50:04
+	 * @param activityId
+	 * @param uids
+	 * @return java.util.List<java.lang.Integer>
+	 */
+	public List<Integer> listNoRatingUid(Integer activityId, List<Integer> uids) {
+		if (CollectionUtils.isEmpty(uids)) {
+			return new ArrayList<>();
+		}
+		List<Integer> ratedUids = activityRatingDetailMapper.selectList(new QueryWrapper<ActivityRatingDetail>().lambda()
+				.eq(ActivityRatingDetail::getActivityId, activityId)
+				.in(ActivityRatingDetail::getScorerUid, uids))
+				.stream()
+				.map(ActivityRatingDetail::getScorerUid)
+				.collect(Collectors.toList());
+
+		uids.removeAll(ratedUids);
+		return uids;
+	}
 }

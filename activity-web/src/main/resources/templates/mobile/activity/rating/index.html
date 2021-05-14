@@ -133,7 +133,7 @@
                             app.customMenu("", app.menu_icon_url, {
                                 children: [
                                     {menu: "评价设置", option: "ratingVue.ratingSetting()"},
-                                    {menu: "评价审核", option: "ratingVue.ratingAudit()"}
+                                    {menu: "评价审核", option: "ratingVue.ratingAudit()", show: $this.activity.ratingNeedAudit}
                                 ]
                             });
                         }
