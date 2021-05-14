@@ -586,12 +586,14 @@ public class ActivityQueryService {
 	 * @param uids
 	 * @return java.util.List<java.lang.Integer>
 	 */
-	public List<Integer> listNoRatingUid(Integer activityId, List<Integer> uids) {
+	private List<Integer> listNoRatingUid(Integer activityId, List<Integer> uids) {
 		if (CollectionUtils.isEmpty(uids)) {
 			return new ArrayList<>();
 		}
 		List<Integer> ratedUids = activityRatingDetailMapper.selectList(new QueryWrapper<ActivityRatingDetail>().lambda()
 				.eq(ActivityRatingDetail::getActivityId, activityId)
+				// 未删除的评论
+				.eq(ActivityRatingDetail::getDeleted, Boolean.FALSE)
 				.in(ActivityRatingDetail::getScorerUid, uids))
 				.stream()
 				.map(ActivityRatingDetail::getScorerUid)

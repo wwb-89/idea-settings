@@ -98,7 +98,6 @@ public class ActivityIsAboutEndHandleService {
 	private String generateActivityEndNoticeContent(Activity activity) {
 		return "你好，感谢参与，请给本次活动评分" + "\n" +
 				"活动名称：" + activity.getName() + "\n" +
-				"活动时间：" + activity.getStartTime().format(ACTIVITY_TIME_FORMATTER) + "- " + activity.getEndTime().format(ACTIVITY_TIME_FORMATTER) + "\n" +
-				"【评价入口卡片，标题为：去评价】" + "\n";
+				"活动时间：" + activity.getStartTime().format(ACTIVITY_TIME_FORMATTER) + "- " + activity.getEndTime().format(ACTIVITY_TIME_FORMATTER) + "\n";
 	}
 }
