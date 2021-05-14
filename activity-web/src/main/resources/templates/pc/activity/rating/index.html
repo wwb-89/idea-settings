@@ -57,7 +57,7 @@
                 <div class="fr btn-addassess" v-if="isCanRating()" @click="toAdd">
                     <img src="/static/pc/assets/images/icon-assess.png" th:src="@{/pc/assets/images/icon-assess.png}"> 写评价
                 </div>
-                <div v-else class="fr">
+                <div v-else-if="activity.openRating" class="fr">
                     报名后可参与评价
                 </div>
                 <div class="clear"></div>
