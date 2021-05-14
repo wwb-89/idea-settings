@@ -26,6 +26,7 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.function.Consumer;
 
 /**
@@ -149,6 +150,7 @@ public class ActivityStatHandleService {
                     } catch (Exception e) {
                         // 其他异常应是插入活动统计记录或更新任务详情信息错误
                         result = Boolean.FALSE;
+                        log.error("活动:" + detail.getActivityId() + "统计失败！异常信息:" + e.getMessage());
                     }
                     if (result) {
                         execSuccessNum++;
@@ -181,7 +183,7 @@ public class ActivityStatHandleService {
     @Transactional(rollbackFor = Exception.class)
     public boolean handleActivityStatItem(ActivityStatTaskDetail detail, LocalDate statDate) {
         Integer activityId = detail.getActivityId();
-        Integer errorTimes = detail.getErrorTimes();
+        Integer errorTimes = Optional.ofNullable(detail.getErrorTimes()).orElse(0);
         String errorMsg = "";
         ActivityStatDTO activityStatDTO = null;
         Integer status = ActivityStatTask.Status.WAIT_HANDLE.getValue();
@@ -198,7 +200,8 @@ public class ActivityStatHandleService {
         }
 
         if (activityStatDTO != null) {
-            ActivityStat activityStat = ActivityStat.builder().activityId(detail.getActivityId())
+            ActivityStat activityStat = ActivityStat.builder()
+                    .activityId(detail.getActivityId())
                     .pv(activityStatDTO.getPv())
                     .signedInNum(activityStatDTO.getSignedInNum())
                     .signedUpNum(activityStatDTO.getSignedUpNum())
