@@ -22,7 +22,6 @@ import org.springframework.stereotype.Service;
 import javax.annotation.Resource;
 import java.util.List;
 import java.util.Objects;
-import java.util.function.Consumer;
 
 /**活动表单记录服务
  * @author wwb
@@ -198,60 +197,62 @@ public class ActivityFormRecordService {
 		List<FormStructureDTO> formInfo = formApiService.getFormInfo(createFid, formId);
 		JSONArray result = new JSONArray();
 		for (FormStructureDTO formStructure : formInfo) {
-			String label = formStructure.getLabel();
+			String alias = formStructure.getAlias();
 			JSONObject item = new JSONObject();
 			item.put("compt", formStructure.getCompt());
 			item.put("comptId", formStructure.getId());
 			JSONArray data = new JSONArray();
 			result.add(item);
-			if ("活动ID".equals(label)) {
+			// 活动id
+			if ("activity_id".equals(alias)) {
 				data.add(activity.getId());
 				item.put("val", data);
 				continue;
 			}
-			if ("活动名称".equals(label)) {
+			// 活动名称
+			if ("activity_name".equals(alias)) {
 				data.add(activity.getName());
 				item.put("val", data);
 				continue;
 			}
-			if ("待审核数量".equals(label)) {
-				item.put("val", new JSONArray());
-				continue;
-			}
-			if ("参与范围".equals(label)) {
-				// 获取报名的参与范围
+			// 报名参与范围
+			if ("sign_up_participate_scope".equals(alias)) {
 				data.add(signApiService.getActivitySignParticipateScopeDescribe(activity.getSignId()));
 				item.put("val", data);
 				continue;
 			}
-			if ("活动分类".equals(label)) {
+			// 创建单位
+			if ("create_org".equals(alias)) {
+				data.add(activity.getCreateOrgName());
+				item.put("val", data);
+				continue;
+			}
+			// 活动分类
+			if ("activity_classify".equals(alias)) {
 				data.add(activity.getActivityClassifyName());
 				item.put("val", data);
 				continue;
 			}
-			if ("活动积分".equals(label)) {
+			// 活动积分
+			if ("activity_integral".equals(alias)) {
 				data.add(activity.getIntegralValue());
 				item.put("val", data);
 				continue;
 			}
-			if ("单位".equals(label)) {
+			// 单位
+			if ("unit".equals(alias)) {
 				data.add("积分");
 				item.put("val", data);
 				continue;
 			}
-			if ("活动预览".equals(label)) {
+			// 活动预览
+			if ("preview_url".equals(alias)) {
 				data.add(activity.getPreviewUrl());
 				item.put("val", data);
 				continue;
 			}
-			if ("发起人".equals(label)) {
-				JSONObject user = new JSONObject();
-				user.put("id", activity.getCreateUid());
-				user.put("name", activity.getCreateUserName());
-				data.add(user);
-				continue;
-			}
-			if ("创建者".equals(label)) {
+			// 发起人
+			if ("create_user".equals(alias)) {
 				JSONObject user = new JSONObject();
 				user.put("id", activity.getCreateUid());
 				user.put("name", activity.getCreateUserName());
@@ -259,7 +260,8 @@ public class ActivityFormRecordService {
 				item.put("idNames", data);
 				continue;
 			}
-			if ("活动状态".equals(label)) {
+			// 活动状态
+			if ("activity_status".equals(alias)) {
 				Integer status = activity.getStatus();
 				Activity.StatusEnum statusEnum = Activity.StatusEnum.fromValue(status);
 				data.add(statusEnum.getName());
