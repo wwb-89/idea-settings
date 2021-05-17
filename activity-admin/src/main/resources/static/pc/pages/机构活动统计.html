@@ -17,7 +17,9 @@
         <div class="white-part title-box">
             <div class="clear name-box">
                 <span class="title fl">机构活动统计</span>
-                <span class="tip fr">统计数据每天更新一次</span>
+                <span class="tip fr">
+                    <el-button class="btn-customize" round>导出</el-button>
+                </span>
             </div>
             <div class="date-box">
                 <el-date-picker v-model="time" type="daterange" range-separator="" start-placeholder="开始日期"
@@ -86,10 +88,6 @@
         <div class="white-part">
             <div class="clear">
                 <p class="title fl">TOP活动榜</p>
-                <div class="export-date fr">
-                    <i class="export"></i>
-                    导出数据
-                </div>
             </div>
             <div class="table-box">
                 <el-table :data="tableData" style="width: 100%">
