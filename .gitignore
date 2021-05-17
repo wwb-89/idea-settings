@@ -39,3 +39,7 @@ mvnw
 mvnw.cmd
 .DS_Store
 .mvn
+### node_modules ###
+node_modules
+package-lock.json
+rebel.xml
