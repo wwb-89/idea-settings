@@ -16,6 +16,7 @@ import com.chaoxing.activity.service.manager.module.SignApiService;
 import com.chaoxing.activity.util.DistributedLock;
 import com.chaoxing.activity.util.exception.BusinessException;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
@@ -173,6 +174,24 @@ public class ActivityFormRecordService {
 				.lambda()
 				.eq(ActivityFormRecord::getId, activityFormRecord.getActivityId())
 		);
+	}
+
+	/**根据表单行id查询活动id
+	 * @Description 
+	 * @author wwb
+	 * @Date 2021-05-17 15:09:52
+	 * @param formUserId
+	 * @return java.lang.Integer
+	*/
+	public Integer getActivityIdByFormUserId(Integer formUserId) {
+		List<ActivityFormRecord> activityFormRecords = activityFormRecordMapper.selectList(new QueryWrapper<ActivityFormRecord>()
+				.lambda()
+				.eq(ActivityFormRecord::getFormUserId, formUserId)
+		);
+		if (CollectionUtils.isNotEmpty(activityFormRecords)) {
+			return activityFormRecords.get(0).getActivityId();
+		}
+		return null;
 	}
 
 	private String packageFormData(Activity activity, Integer formId, Integer createFid) {
