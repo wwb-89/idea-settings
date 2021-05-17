@@ -33,6 +33,8 @@ public class SignIn {
     private String name;
     /** 签到类型：签到、签退 */
     private String type;
+    /** 签退关联的签到id， 当类型是签退时有效 */
+    private String signInId;
     /** 签到码 */
     private String code;
     /** 开始时间 */
