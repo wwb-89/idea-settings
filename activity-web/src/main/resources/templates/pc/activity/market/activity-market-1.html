@@ -67,7 +67,7 @@
 							<p class="tips color1" v-if="item.status == 3">进行中</p>
 							<p class="tips color3" v-if="item.status == 4">已结束</p>
 							<p class="tips color5" v-if="item.status == 2">活动预告</p>
-							<div class="js-crop-img">
+							<div class="js-crop-img" @click="detail(index)">
 								<img :src="item | getCloudImgUrl">
 							</div>
 						</div>
