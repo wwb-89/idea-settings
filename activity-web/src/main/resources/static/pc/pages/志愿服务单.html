@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>志愿服务单</title>
+    <link rel="stylesheet" href="../assets/css/public.css">
+    <link rel="stylesheet" href="../assets/css/service-list.css">
+</head>
+<body>
+    <div class="service-list">
+        <div class="item-box title clear">
+            <p class="fl name">许一帆的第二课堂成绩</p>
+            <div class="fr">
+                <div class="btn-border-80 btn">申诉</div>
+            </div>
+        </div>
+        <div class="item-box score-box">
+            <p class="bold">总得分</p>
+            <p class="score">87<span class="fine">小时</span>26<span class="fine">分钟</span></p>
+            <div class="load-div" style="display: none;"><img src="../assets/images/Spinner-1s-200px.svg">加载中…</div>
+        </div>
+        <div class="item-box score-detailed">
+            <div class="top clear">
+                <p class="bold fl">得分明细</p>
+                <div class="fr">
+                    <div class="down-menu">
+                        <span class="overHidden1">全部类型</span><i class="icon-down"></i>
+                        <ul class="menu">
+                            <li class="menu-item">可选</li>
+                            <li class="menu-item">悬浮</li>
+                            <li class="menu-item">可选</li>
+                            <li class="menu-item">可选</li>
+                            <li class="menu-item">可选</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            <ul>
+                <li class="item">
+                    <p class="name">【书香浙江 云享阅读】2020浙江省云阅读计划之“晒书房</p>
+                    <p class="classify">文化艺术 · 社会实践</p>
+                    <p class="time clear">2020.12.20 12:34 - 2021.05.10 05:01<span class="fr"><span class="score">1</span>&nbsp;小时&nbsp;<span class="score">2</span>&nbsp;分钟</span></p>
+                </li>
+                <li class="item">
+                    <p class="name">暑期教师共读活动</p>
+                    <p class="classify">文化艺术 · 社会实践</p>
+                    <p class="time clear">2020.12.20 12:34 - 2021.05.10 05:01<span class="fr"><span class="score">59</span>&nbsp;分钟</span></p>
+                </li>
+                <li class="item">
+                    <p class="name">“博阅锦绣”2020寒假星阅读</p>
+                    <p class="classify">文化艺术 · 社会实践</p>
+                    <p class="time clear">2020.12.20 12:34 - 2021.05.10 05:01<span class="fr"><span class="score">1</span>&nbsp;小时&nbsp;<span class="score">2</span>&nbsp;分钟</span></p>
+                </li>
+                <li class="item">
+                    <p class="name">中国梦·中华颂</p>
+                    <p class="classify">文化艺术 · 社会实践</p>
+                    <p class="time clear">2020.12.20 12:34 - 2021.05.10 05:01<span class="fr"><span class="score">1</span>&nbsp;小时&nbsp;<span class="score">2</span>&nbsp;分钟</span></p>
+                </li>
+                <li class="item">
+                    <p class="name">阅往昔·致未来</p>
+                    <p class="classify">文化艺术 · 社会实践</p>
+                    <p class="time clear">2020.12.20 12:34 - 2021.05.10 05:01<span class="fr"><span class="score">1</span>&nbsp;小时&nbsp;<span class="score">2</span>&nbsp;分钟</span></p>
+                </li>
+            </ul>
+            <!--  加载中  -->
+            <div class="load-div"><img src="../assets/images/Spinner-1s-200px.svg">加载中…</div>
+            <div class="no-content" style="display: none;">暂无内容</div>
+        </div>
+    </div>
+    <script src="../assets/lib/jquery.1.8.2.min.js"></script>
+    <script>
+        // 下拉选择
+        $('.select').click(function(){
+            $('.select-box').slideToggle(200)
+        })
+        $('.select-item').click(function(){
+            $(this).addClass('active')
+            $(this).siblings().removeClass('active')
+            $('.select').val($(this).html())
+            $('.select-box').slideToggle(200)
+        })
+        $('.down-menu').on('mouseenter mouseleave',function(){
+            $(this).find('.menu').toggle()
+            $(this).find('.icon-down').toggleClass('active')
+        })
+    </script>
+</body>
+</html>

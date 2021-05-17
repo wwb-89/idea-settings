@@ -1,0 +1,308 @@
+body {
+  background: #F6F7FB;
+}
+
+.clear::after {
+  content: "";
+  clear: both;
+  display: block;
+}
+
+.input-box {
+  position: relative;
+  font-size: 0;
+  height: 32px;
+  margin-top: 21px;
+}
+
+.input-box .select {
+  width: 240px;
+  height: 32px;
+  line-height: 22px;
+  border: 1px solid #E9E9E9;
+  -webkit-box-sizing: border-box;
+     -moz-box-sizing: border-box;
+          box-sizing: border-box;
+  border-radius: 2px;
+  padding: 5px 12px;
+  padding-right: 40px;
+  font-size: 14px;
+  cursor: pointer;
+}
+
+.input-box .icon-down {
+  position: absolute;
+  right: 8px;
+  top: 8px;
+  width: 16px;
+  height: 16px;
+  background-image: url(../images/down.png);
+  background-repeat: no-repeat;
+  background-size: cover;
+  background-position: center center;
+}
+
+.input-box .select-box {
+  position: absolute;
+  z-index: 2;
+  top: 38px;
+  width: 100%;
+  max-height: 240px;
+  background: #FFFFFF;
+  -webkit-box-shadow: 0px 6px 16px -8px rgba(0, 0, 0, 0.08), 0px 9px 28px rgba(0, 0, 0, 0.05), 0px 12px 48px 16px rgba(0, 0, 0, 0.03);
+          box-shadow: 0px 6px 16px -8px rgba(0, 0, 0, 0.08), 0px 9px 28px rgba(0, 0, 0, 0.05), 0px 12px 48px 16px rgba(0, 0, 0, 0.03);
+  border-radius: 2px;
+  display: none;
+  padding-top: 2px;
+}
+
+.input-box .select-box li {
+  padding: 8px 16px;
+  font-size: 14px;
+  line-height: 20px;
+  color: #333333;
+  cursor: pointer;
+}
+
+.input-box .select-box li:hover {
+  background: #F8F8F8;
+  color: #0084FF;
+}
+
+.input-box .select-box li.active {
+  color: #0084FF;
+}
+
+.btn-border-80 {
+  width: 80px;
+  height: 30px;
+  border: 1px solid #82C3FF;
+  -webkit-box-sizing: border-box;
+     -moz-box-sizing: border-box;
+          box-sizing: border-box;
+  border-radius: 30px;
+  line-height: 30px;
+  text-align: center;
+  font-size: 13px;
+  color: #0084FF;
+  cursor: pointer;
+}
+
+.btn-border-80:hover {
+  background: #EBF5FF;
+}
+
+.load-div {
+  text-align: center;
+  line-height: 32px;
+  margin: 16px 0;
+}
+
+.load-div img {
+  display: inline-block;
+  vertical-align: top;
+  width: 32px;
+  height: 32px;
+  margin-right: 0;
+}
+
+.service-list {
+  width: 1000px;
+  margin: 0 auto 50px;
+}
+
+.service-list .item-box {
+  position: relative;
+  background: #FFFFFF;
+  border-radius: 8px;
+  -webkit-box-sizing: border-box;
+     -moz-box-sizing: border-box;
+          box-sizing: border-box;
+  margin-top: 16px;
+}
+
+.service-list .item-box .bold {
+  font-size: 18px;
+  line-height: 20px;
+  color: #333333;
+  font-weight: 500;
+}
+
+.service-list .item-box.title {
+  padding: 19px 24px;
+}
+
+.service-list .item-box.title .name {
+  font-weight: 600;
+  font-size: 20px;
+  color: #333333;
+}
+
+.service-list .item-box.title .right {
+  font-weight: normal;
+  font-size: 14px;
+  color: #999999;
+  line-height: 30px;
+}
+
+.service-list .item-box.title .right:hover {
+  color: #0084FF;
+}
+
+.service-list .item-box.title .btn {
+  display: inline-block;
+  vertical-align: top;
+  margin-left: 20px;
+}
+
+.service-list .score-box {
+  padding: 24px 32px;
+}
+
+.service-list .score-box .score {
+  font-family: DIN Next LT W23;
+  font-weight: 500;
+  font-size: 36px;
+  line-height: 53px;
+  letter-spacing: -2px;
+  color: #FB7B33;
+  margin-top: 16px;
+}
+
+.service-list .score-box .score .fine {
+  display: inline-block;
+  vertical-align: top;
+  margin-left: 8px;
+  margin-right: 8px;
+  font-weight: 300;
+  font-size: 20px;
+  line-height: 28px;
+  vertical-align: middle;
+}
+
+.service-list .score-box .load-div {
+  margin: 24px 0;
+}
+
+.service-list .score-detailed {
+  padding: 24px 32px;
+  min-height: 326px;
+  -webkit-box-sizing: border-box;
+     -moz-box-sizing: border-box;
+          box-sizing: border-box;
+}
+
+.service-list .score-detailed .top {
+  margin-bottom: 6px;
+}
+
+.service-list .score-detailed .top .down-menu {
+  position: relative;
+  display: inline-block;
+  vertical-align: top;
+  color: #666666;
+  font-size: 14px;
+  line-height: 20px;
+  margin-left: 20px;
+  cursor: pointer;
+  height: 30px;
+}
+
+.service-list .score-detailed .top .down-menu .text {
+  display: inline-block;
+  vertical-align: top;
+}
+
+.service-list .score-detailed .top .down-menu .icon-down {
+  display: inline-block;
+  vertical-align: middle;
+  width: 16px;
+  height: 16px;
+  background-image: url(../images/down.png);
+  background-repeat: no-repeat;
+  background-size: cover;
+  background-position: center center;
+  margin-left: 4px;
+}
+
+.service-list .score-detailed .top .down-menu .icon-down.active {
+  -webkit-transform: rotate(180deg);
+      -ms-transform: rotate(180deg);
+          transform: rotate(180deg);
+}
+
+.service-list .score-detailed .top .down-menu .menu {
+  position: absolute;
+  left: 50%;
+  -webkit-transform: translateX(-50%);
+      -ms-transform: translateX(-50%);
+          transform: translateX(-50%);
+  min-width: 74px;
+  background: #FFFFFF;
+  -webkit-box-shadow: 0px 6px 16px -8px rgba(0, 0, 0, 0.08), 0px 9px 28px rgba(0, 0, 0, 0.05), 0px 12px 48px 16px rgba(0, 0, 0, 0.03);
+          box-shadow: 0px 6px 16px -8px rgba(0, 0, 0, 0.08), 0px 9px 28px rgba(0, 0, 0, 0.05), 0px 12px 48px 16px rgba(0, 0, 0, 0.03);
+  border-radius: 2px;
+  font-size: 14px;
+  color: #333333;
+  margin-top: 6px;
+  display: none;
+  padding: 2px 0;
+}
+
+.service-list .score-detailed .top .down-menu .menu-item {
+  padding: 8px 16px;
+  -webkit-box-sizing: border-box;
+     -moz-box-sizing: border-box;
+          box-sizing: border-box;
+  text-align: left;
+  white-space: nowrap;
+}
+
+.service-list .score-detailed .top .down-menu .menu-item:hover {
+  background: #F8F8F8;
+  color: #0084FF;
+}
+
+.service-list .score-detailed .no-content {
+  padding: 110px 0;
+  text-align: center;
+  color: #999999;
+  font-size: 14px;
+}
+
+.service-list .score-detailed .load-div {
+  margin-bottom: 0;
+}
+
+.service-list .score-detailed .item {
+  padding: 17px 0 11px;
+  border-bottom: 1px solid #E9E9E9;
+}
+
+.service-list .score-detailed .item .name {
+  font-size: 15px;
+  line-height: 18px;
+  color: #333333;
+}
+
+.service-list .score-detailed .item .classify {
+  font-size: 14px;
+  line-height: 16px;
+  color: #666666;
+  margin-top: 8px;
+}
+
+.service-list .score-detailed .item .time {
+  font-size: 14px;
+  height: 32px;
+  line-height: 32px;
+  color: #999999;
+  margin-top: 8px;
+}
+
+.service-list .score-detailed .item .score {
+  font-family: DIN Next LT W23;
+  font-weight: 300;
+  font-size: 24px;
+  color: #FB7B33;
+}
