@@ -12,7 +12,7 @@
 <body>
     <div class="assess-container" id="vue" v-cloak>
         <div class="assess-header">
-            <div class="assess-title">
+            <div class="assess-title" style="cursor: pointer" @click="activityDetail">
                 {{activity.name}}
             </div>
             <div class="assess-header-set">
@@ -48,7 +48,7 @@
             <div class="set-item" v-show="activity.openRating">
                 <span class="set-title">评价需审核</span>
                 <el-switch v-model="activity.ratingNeedAudit" @change="upSet()"></el-switch>
-                <span class="set-detail">开启后，审核后的评论才能展示在评论列表</span>
+                <span class="set-detail">开启后，审核后的评价才能展示在评价列表</span>
             </div>
         </div>
     </div>
@@ -120,6 +120,13 @@
                     var $this = this;
                     var url = "http://manage.hd.chaoxing.com/activity/" + $this.activity.id + "/rating/audit";
                     window.location.href = url;
+                },
+                activityDetail: function () {
+                    var $this = this;
+                    var previewUrl = $this.activity.previewUrl;
+                    if (!activityApp.isEmpty(previewUrl)) {
+                        window.open(previewUrl);
+                    }
                 }
             }
         });

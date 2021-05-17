@@ -52,7 +52,7 @@
                 <div class="fl inall-assess" v-if="activityRating != null">
                     <span class="inall-value" v-text="formatScore()"></span>
                     <div id="test"></div>
-                    <span class="inall-number">{{activityRating.scoreNum}}人评论</span>
+                    <span class="inall-number">{{activityRating.scoreNum}}人评价</span>
                 </div>
                 <div class="fr btn-addassess" v-if="isCanRating()" @click="toAdd">
                     <img src="/static/pc/assets/images/icon-assess.png" th:src="@{/pc/assets/images/icon-assess.png}"> 写评价
@@ -77,7 +77,7 @@
                         <div class="fr icon-assess-more" v-if="isSelfRating(rating) || isManager ">
                             <div class="assess-img-more"></div>
                             <ul class="nav-down-more">
-                                <li @click="toEdit(index)" v-if="isSelfRating(rating)">编辑</li>
+<!--                                <li @click="toEdit(index)" v-if="isSelfRating(rating)">编辑</li>-->
                                 <li @click="toDelete(index)">删除</li>
                             </ul>
                         </div>
@@ -398,8 +398,8 @@
                     var url = ctx + "/api/activity/rating/" + $this.ratings[$this.activeIndex].id + "/delete";
                     var params = {}
 
-                    // 是否是自己的评论
-                    if ($this.isManager && !$this.isSelfRating(this.ratings[$this.activeIndex])) {     // 是管理员，但是处理非自己的评论
+                    // 是否是自己的评价
+                    if ($this.isManager && !$this.isSelfRating(this.ratings[$this.activeIndex])) {     // 是管理员，但是处理非自己的评价
                         url = ctx + "/api/activity/rating/" + $this.ratings[$this.activeIndex].id + "/reject";
                         params = {
                             activityId: $this.activity.id,
