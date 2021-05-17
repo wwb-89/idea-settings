@@ -18,7 +18,7 @@
 <body>
 <div class="assess-container" id="rating-vue" v-cloak>
     <div class="assess-header">
-        <div class="assess-title">
+        <div class="assess-title" style="cursor: pointer" @click="activityDetail">
             {{activity.name}}
         </div>
         <div class="assess-header-set">
@@ -403,6 +403,13 @@
                     var $this = this;
                     var url = "http://manage.hd.chaoxing.com/activity/" + $this.activity.id + "/rating/audit";
                     window.location.href = url;
+                },
+                activityDetail: function () {
+                    var $this = this;
+                    var previewUrl = $this.activity.previewUrl;
+                    if (!activityApp.isEmpty(previewUrl)) {
+                        window.open(previewUrl);
+                    }
                 }
             }
         });

@@ -15,6 +15,7 @@ import com.chaoxing.activity.dto.sign.UserSignUpStatusStatDTO;
 import com.chaoxing.activity.mapper.*;
 import com.chaoxing.activity.model.*;
 import com.chaoxing.activity.service.activity.manager.ActivityManagerQueryService;
+import com.chaoxing.activity.service.form.ActivityFormRecordService;
 import com.chaoxing.activity.service.manager.WfwRegionalArchitectureApiService;
 import com.chaoxing.activity.service.manager.module.SignApiService;
 import com.chaoxing.activity.util.DateUtils;
@@ -25,7 +26,6 @@ import com.chaoxing.activity.util.enums.ActivityQueryDateEnum;
 import com.chaoxing.activity.util.enums.ActivityTypeEnum;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
-import io.swagger.models.auth.In;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -67,6 +67,8 @@ public class ActivityQueryService {
 	private SignApiService signApiService;
 	@Resource
 	private ActivityManagerQueryService activityManagerQueryService;
+	@Resource
+	private ActivityFormRecordService activityFormRecordService;
 
 	/**查询参与的活动
 	 * @Description 
@@ -249,7 +251,7 @@ public class ActivityQueryService {
 				}
 			}
 			List<SignStatDTO> signStats = signApiService.statSignSignedUpNum(signIds);
-			Map<Integer, Integer> signIdSignedUpNumMap = signStats.stream().collect(Collectors.toMap(v -> v.getId(), v -> v.getSignedUpNum(), (v1, v2) -> v2));
+			Map<Integer, Integer> signIdSignedUpNumMap = signStats.stream().collect(Collectors.toMap(SignStatDTO::getId, SignStatDTO::getSignedUpNum, (v1, v2) -> v2));
 			for (Activity activity : activities) {
 				Integer signId = activity.getSignId();
 				Integer signedUpNum = 0;
@@ -601,5 +603,20 @@ public class ActivityQueryService {
 
 		uids.removeAll(ratedUids);
 		return uids;
+	}
+
+	/**根据表单记录id查询
+	 * @Description 
+	 * @author wwb
+	 * @Date 2021-05-17 15:13:58
+	 * @param formUserId
+	 * @return com.chaoxing.activity.model.Activity
+	*/
+	public Activity getByFormUserId(Integer formUserId) {
+		Integer activityId = activityFormRecordService.getActivityIdByFormUserId(formUserId);
+		if (activityId != null) {
+			return getById(activityId);
+		}
+		return null;
 	}
 }

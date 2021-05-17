@@ -25,7 +25,7 @@
                 <div class="title" v-if="activityRating" >
                     <span class="score">{{activityRating.score.toFixed(1)}}</span>
                     <div class="star-box" id="m-total-star-box"></div>
-                    <span class="people">{{activityRating.scoreNum}}人评价</span>
+                    <span class="people">{{activityRating.scoreNum}}人评论</span>
                 </div>
                 <div class="comment-list">
                     <div class="list clear" v-for="(rating, index) of ratings" :key="'rating-' + index">
@@ -74,7 +74,7 @@
             <div class="dialog-overlay">
                 <div class="content">
                     <div class="sure">
-                        <p class="blue" @click="modifyRate(true)">编辑</p>
+<!--                        <p class="blue" @click="modifyRate(true)">编辑</p>-->
                         <p class="blue sure-btn" @click="deleteRate">删除</p>
                     </div>
                     <div class="blue cancle" @click="cancelOpt">取消</div>
@@ -239,7 +239,9 @@
                         // 删除评价
                         deleteRate: function () {
                             var $this = this;
-                            app.confirm("", "确认删除评价?", function () {
+                            app.confirm("", "确定删除评价?", function () {
+
+                            }, function () {
                                 var url = ctx + "/api/activity/rating/" + $this.ratings[$this.activeIndex].id + "/delete";
                                 app.ajaxPostLoading(url, {}, function (data) {
                                     if (data.success) {
@@ -255,9 +257,7 @@
                                 }, function () {
                                     app.showMsg("删除评价失败");
                                 });
-                            }, function () {
-
-                            });
+                            }, "保留", "删除");
                         },
                         showDetailComment: function (e) {
                             var rateDom = e.target
