@@ -18,6 +18,7 @@ import com.chaoxing.activity.util.constant.DateFormatConstant;
 import com.chaoxing.activity.util.constant.DateTimeFormatterConstant;
 import com.chaoxing.activity.util.exception.BusinessException;
 import com.google.common.collect.Lists;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.http.HttpEntity;
@@ -42,6 +43,7 @@ import java.util.stream.Collectors;
  * @blame wwb
  * @date 2020-11-24 17:35:03
  */
+@Slf4j
 @RestController
 @RequestMapping("mh")
 @CrossOrigin
@@ -294,11 +296,15 @@ public class ActivityMhAppController {
 		areaCode = null;
 		Optional.ofNullable(wfwfid).orElseThrow(() -> new BusinessException("wfwfid不能为空"));
 		List<Integer> fids = Lists.newArrayList();
-		List<WfwRegionalArchitectureDTO> wfwRegionalArchitectures;
-		if (StringUtils.isNotBlank(areaCode)) {
-			wfwRegionalArchitectures = wfwRegionalArchitectureApiService.listByCode(areaCode);
-		} else {
-			wfwRegionalArchitectures = wfwRegionalArchitectureApiService.listByFid(wfwfid);
+		List<WfwRegionalArchitectureDTO> wfwRegionalArchitectures = Lists.newArrayList();
+		try {
+			if (StringUtils.isNotBlank(areaCode)) {
+				wfwRegionalArchitectures = wfwRegionalArchitectureApiService.listByCode(areaCode);
+			} else {
+				wfwRegionalArchitectures = wfwRegionalArchitectureApiService.listByFid(wfwfid);
+			}
+		} catch (Exception e) {
+			log.error("活动日历error: {}", e.getMessage());
 		}
 		if (CollectionUtils.isNotEmpty(wfwRegionalArchitectures)) {
 			List<Integer> subFids = wfwRegionalArchitectures.stream().map(WfwRegionalArchitectureDTO::getFid).collect(Collectors.toList());
