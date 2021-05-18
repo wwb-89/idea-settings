@@ -1312,12 +1312,14 @@
                                     this.isParent = this.soncount > 0;
                                 })
                                 var treeObj = $.fn.zTree.getZTreeObj("sign-up-participate-scope-tree");
-                                var myNode = {
+                                // 支持只选择节点数据，so新增一个节点的叶子数据
+                                var cloneNode = {
                                     id: parentNode.id,
-                                    gid: parentNode.gid,
-                                    groupname: parentNode.groupname
+                                    groupname: parentNode.groupname,
+                                    soncount: 0,
+                                    isParent: false
                                 }
-                                treeObj.addNodes(parentNode, 0, myNode, false);
+                                treeObj.addNodes(parentNode, 0, cloneNode, false);
                                 treeObj.addNodes(parentNode, 1, newNodes, false);
                             }
                         } else {
@@ -1368,52 +1370,20 @@
                     var $this = this;
                     var zTree = $.fn.zTree.getZTreeObj("sign-up-participate-scope-tree");
                     var nodeArr = zTree.getCheckedNodes(true);
-                    var parentGroups = [];
-                    var childGroups = [];
+                    var participateScopes = [];
                     //首先保存 搜索父节点被全选的，在看非父节点被选中的(非父节点的父节点被全选，则不保存该条记录)
                     $(nodeArr).each(function () {
-                        if(this.isParent && this.check_Child_State == 2){
-                            this.leaf = true;
-                            parentGroups.push(this);
-                        }else if(this.isParent && this.check_Child_State == -1){
-                            this.leaf = true;
-                            parentGroups.push(this);
+                        // 半选状态
+                        var half = this.getCheckStatus().half;
+                        if (!half) {
+                            // 只记录全选的
+                            participateScopes.push({
+                                externalId: this.id,
+                                externalPid: this.gid == this.id ? null : this.gid,
+                                externalName: this.groupname,
+                                leaf: !this.isParent
+                            });
                         }
-                    })
-                    $(nodeArr).each(function () {
-                        if (!this.isParent && this.check_Child_State == -1) {
-                            var isFind = false;
-                            $.each(parentGroups, function (i, parentItem) {
-                                if (this.gid != null && parentItem.id == this.gid) {
-                                    isFind = true;
-                                    return false;
-                                } else if (parentItem.id == this.id) {
-                                    isFind = true;
-                                    return false;
-                                }
-                            })
-                            if (!isFind) {
-                                this.leaf = false;
-                                childGroups.push(this);
-                            }
-                        }
-                    });
-                    var participateScopes = [];
-                    $(parentGroups).each(function () {
-                        participateScopes.push({
-                            externalId: this.id,
-                            externalPid: this.gid,
-                            externalName: this.groupname,
-                            leaf:this.leaf
-                        });
-                    });
-                    $(childGroups).each(function () {
-                        participateScopes.push({
-                            externalId: this.id,
-                            externalPid: this.gid,
-                            externalName: this.groupname,
-                            leaf:this.leaf
-                        });
                     });
                     $this.$set($this.sign.signUps[$this.operateSignUpIndex], "participateScopes", participateScopes);
                     $this.signUpParticipateWindowShow = false;
