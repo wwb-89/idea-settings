@@ -54,9 +54,6 @@ Vue.component('vue-sign-map', {
         var $this = this;
         $this.loadHistory();
     },
-    mounted: function () {
-        var $this = this;
-    },
     watch: {
         "show": function () {
             var $this = this;
@@ -64,12 +61,14 @@ Vue.component('vue-sign-map', {
                 $this.address = "";
                 $this.longitude = null;
                 $this.dimension = null;
+                activityApp.resetScroll();
             } else {
                 if (!$this.inited) {
                     $this.$nextTick(function () {
                         $this.initMap();
                     });
                 }
+                activityApp.initScroll();
             }
         }
     },

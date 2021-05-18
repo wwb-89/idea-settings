@@ -282,6 +282,36 @@
     activityApp.prototype.generateDualSelectStatExportUrl = function (activityId, fid) {
         return "http://appcd.chaoxing.com/form-employment/export/double/selection/statistics?activityId=" + activityId + "&wfwfid=" + fid;
     };
+    /**
+     * 禁用滚动
+     */
+    activityApp.prototype.disableScroll = function () {
+        var scrollTop = $(document).scrollTop();
+        $(document).on('scroll.unable', function (e) {
+            $(document).scrollTop(scrollTop);
+        });
+    };
+    /**
+     * 启用滚动
+     */
+    activityApp.prototype.enableScroll = function () {
+        $(document).unbind("scroll.unable");
+    };
+    /**
+     * 初始化滚动条
+     */
+    activityApp.prototype.initScroll = function () {
+        this.scrollTop = $(document).scrollTop();
+        $(document).scrollTop(0);
+        this.disableScroll();
+    };
+    /**
+     * 重置滚动条
+     */
+    activityApp.prototype.resetScroll = function () {
+        this.enableScroll();
+        $(document).scrollTop(this.scrollTop);
+    };
     W['activityApp'] = new activityApp();
 })(window, jQuery, JSON);
 Array.prototype.remove = function (val) {
