@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org/">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>志愿服务单</title>
+    <link rel="stylesheet" href="/static/pc/assets/css/public.css" th:href="@{/pc/assets/css/public.css}">
+    <link rel="stylesheet" href="/static/pc/assets/css/service-list.css" th:href="@{/pc/assets/css/service-list.css}">
+</head>
+<body>
+    <div id="volunteerService" class="service-list" v-cloak>
+        <div class="item-box title clear">
+            <p class="fl name">{{loginUser.realName}}的服务时长记录</p>
+            <div class="fr">
+                <div class="btn-border-80 btn">申诉</div>
+            </div>
+        </div>
+        <div class="item-box score-box">
+            <p class="bold">总时长</p>
+            <p class="score" v-if="volunteerList">
+                <template v-if="totalTimeLength >= hourMinutes">
+                    {{totalTimeLength | hourFormat}}<span class="fine">小时</span>
+                </template>
+                {{totalTimeLength | minuteFormat}}<span class="fine">分钟</span>
+            </p>
+            <div class="load-div" v-else><img src="/static/pc/assets/images/Spinner-1s-200px.svg" th:src="@{/pc/assets/images/Spinner-1s-200px.svg}">加载中…</div>
+        </div>
+        <div class="item-box score-detailed">
+            <div class="top clear">
+                <p class="bold fl">得分明细</p>
+                <div class="fr">
+                    <div class="down-menu">
+                        <span class="overHidden1">{{ selectedType.name || '全部类型'}}</span><i class="icon-down"></i>
+                        <ul class="menu">
+                            <li class="menu-item" v-for="serviceType in serviceTypeList" @click="chooseServiceType(serviceType)">{{serviceType.name}}</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            <ul v-if="volunteerList">
+                <li class="item" v-for="record in volunteerList">
+                    <p class="name">{{record.name}}</p>
+                    <p class="classify">{{record.type}}</p>
+                    <p class="time clear">{{record.serviceDate}}
+                        <span class="fr">
+                            <template v-if="record.timeLength >= hourMinutes">
+                                <span class="score">{{record.timeLength | hourFormat}}</span>&nbsp;小时&nbsp;
+                            </template>
+                            <span class="score">{{record.timeLength | minuteFormat}}</span>&nbsp;分钟
+                        </span>
+                    </p>
+                </li>
+            </ul>
+            <!--  加载中  -->
+            <div class="load-div" v-else><img src="/static/pc/assets/images/Spinner-1s-200px.svg" th:src="@{/pc/assets/images/Spinner-1s-200px.svg}">加载中…</div>
+            <div class="no-content" v-show="volunteerList && volunteerList.length === 0">暂无内容</div>
+        </div>
+    </div>
+    <div th:replace="pc/include/common_js :: common_js(~{::script})">
+        <script th:inline="javascript">
+            Vue.filter("hourFormat", function (timeLength) {
+                var hours = 0;
+                if (timeLength) {
+                    var length = parseInt(timeLength);
+                    hours = parseInt(length / 60);
+                }
+                return hours;
+            });
+            Vue.filter("minuteFormat", function (timeLength) {
+                var minutes = 0;
+                if (timeLength) {
+                    var length = parseInt(timeLength);
+                    minutes = length % 60;
+                }
+                return minutes;
+            });
+
+            serviceListVue = new Vue({
+                el: "#volunteerService",
+                data: {
+                    loginUser: [[${session._login_user_}]],
+                    volunteerList: [[${volunteerList}]],
+                    serviceTypeList: [[${serviceTypeList}]],
+                    selectedType: {},
+                    hourMinutes: 60,
+                },
+                computed: {
+                    totalTimeLength: function () {
+                        var $this = this;
+                        var totalLength = 0;
+                        if ($this.volunteerList) {
+                            $this.volunteerList.forEach(item => {
+                                totalLength += item.timeLength;
+                            });
+                        }
+                        return totalLength;
+                    }
+                },
+                mounted: function() {
+                    var $this = this;
+                    $('.down-menu').on('mouseenter mouseleave',function(){
+                        $(this).find('.menu').toggle()
+                        $(this).find('.icon-down').toggleClass('active')
+                    });
+                    $this.initData()
+                },
+                methods: {
+                    initData: function () {
+                        var $this = this;
+                        var list = [
+                            {name: '全部类型', type: ''}
+                        ];
+                        $this.serviceTypeList.forEach(type => {
+                            list.push({ name: type, type: type });
+                        });
+
+                        $this.serviceTypeList = list;
+                    },
+                    chooseServiceType: function (serviceType) {
+                        var $this = this;
+                        $this.selectedType = serviceType;
+
+                        $this.loadServiceList();
+                    },
+                    loadServiceList: function () {
+                        var $this = this;
+
+                        var url = ctx + "/api/activity/volunteer/query?serviceType" + $this.selectedType.type;
+                        app.ajaxGet(url, function (data) {
+                            if (data.success) {
+                                $this.loaded = true;
+                                $this.volunteerList = data.data;
+                            } else {
+                                var errorMessage = data.message;
+                                if (activityApp.isEmpty(errorMessage)) {
+                                    errorMessage = "加载志愿服务时长列表失败";
+                                }
+                                app.showMsg(errorMessage);
+                            }
+                        }, function () {
+                            app.showMsg("加载志愿服务时长列表失败");
+                        });
+                    },
+                }
+            });
+        </script>
+    </div>
+</body>
+</html>

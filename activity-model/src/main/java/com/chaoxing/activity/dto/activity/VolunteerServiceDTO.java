@@ -21,10 +21,22 @@ import java.util.List;
 @AllArgsConstructor
 public class VolunteerServiceDTO {
 
+
+    /**
+     * uid
+     */
+    private Integer uid;
+
+    /**
+     * 用户名
+     */
+    private String uname;
+
     /**
      * 记录ID
      */
-    private String formUserId;
+    private Integer formUserId;
+
     /**
      * 服务名称
      */
@@ -38,7 +50,7 @@ public class VolunteerServiceDTO {
     /**
      * 所属组织
      */
-    private List<String> affiliations;
+    private String affiliations;
 
     /**
      * 服务日期

@@ -1,19 +1,21 @@
-package com.chaoxing.activity.web.controller.pc;
+package com.chaoxing.activity.web.controller.api;
 
 import com.chaoxing.activity.dto.LoginUserDTO;
-import com.chaoxing.activity.dto.activity.VolunteerServiceDTO;
+import com.chaoxing.activity.dto.RestRespDTO;
 import com.chaoxing.activity.service.volunteer.VolunteerService;
 import com.chaoxing.activity.web.util.LoginUtils;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
-import java.util.List;
+import java.util.ArrayList;
 
-/**志愿服务单前端控制器
+/**志愿服务单api前端控制器
  * @author huxiaolong
  * <p>
  * @version 1.0
@@ -22,7 +24,7 @@ import java.util.List;
  */
 @Controller
 @RequestMapping("api/activity/volunteer")
-public class ActivityVolunteerController {
+public class VolunteerApiController {
 
     @Resource
     private VolunteerService volunteerService;
@@ -36,15 +38,17 @@ public class ActivityVolunteerController {
     * @param model
     * @return java.lang.String
     */
-    @GetMapping("")
-    public String index(HttpServletRequest request, Model model, Integer fid) {
-
+    @GetMapping("{fid}/query")
+    public RestRespDTO index(HttpServletRequest request, Model model,
+                             @PathVariable Integer fid,
+                             @RequestParam("serviceType") String serviceType) {
         LoginUserDTO loginUser = LoginUtils.getLoginUser(request);
         if (loginUser != null) {
-            List<VolunteerServiceDTO> volunteerServiceDTOList = volunteerService.listServiceTimeLength(loginUser.getUid(), fid);
+            // todo
+//            List<VolunteerServiceDTO> volunteerServiceDTOList = volunteerService.listServiceTimeLength(22651866, fid);
+//            model.addAttribute("volunteerList", volunteerServiceDTOList);
         }
-
-        return "pc/activity/volunteer";
+        return RestRespDTO.success(new ArrayList<>());
     }
 
 }
