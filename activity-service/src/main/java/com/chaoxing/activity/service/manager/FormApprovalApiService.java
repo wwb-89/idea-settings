@@ -187,7 +187,7 @@ public class FormApprovalApiService {
             return null;
         }
         // 是否已经创建了活动，根据formUserId来判断
-        Activity existActivity = activityQueryService.getByOriginFormUserId(formUserId);
+        Activity existActivity = activityQueryService.getByOriginTypeAndOrigin(Activity.OriginTypeEnum.ACTIVITY_DECLARATION, String.valueOf(formUserId));
         if (existActivity != null) {
             return null;
         }
@@ -225,7 +225,8 @@ public class FormApprovalApiService {
         String orgName = passportApiService.getOrgName(fid);
         activity.setCreateOrgName(orgName);
         activity.setOrganisers(orgName);
-        activity.setOriginFormUserId(formUserId);
+        activity.setOriginType(Activity.OriginTypeEnum.ACTIVITY_DECLARATION.getValue());
+        activity.setOriginType(String.valueOf(formUserId));
         return activity;
     }
 

@@ -140,6 +140,10 @@ public class ActivityHandleService {
 		activity.setCreateOrgName(loginUser.getOrgName());
 		activity.setStartDate(activity.getStartTime().toLocalDate());
 		activity.setEndDate(activity.getEndTime().toLocalDate());
+		String originType = activity.getOriginType();
+		if (StringUtils.isBlank(originType)) {
+			activity.setOriginType(Activity.OriginTypeEnum.NORMAL.getValue());
+		}
 		activityMapper.insert(activity);
 		// 添加管理员
 		ActivityManager activityManager = new ActivityManager();

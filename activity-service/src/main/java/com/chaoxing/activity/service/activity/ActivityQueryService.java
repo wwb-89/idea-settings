@@ -506,13 +506,15 @@ public class ActivityQueryService {
 	 * @Description
 	 * @author wwb
 	 * @Date 2021-05-11 16:13:28
-	 * @param originFormUserId
+	 * @param originTypeEnum
+	 * @param origin
 	 * @return com.chaoxing.activity.model.Activity
 	 */
-	public Activity getByOriginFormUserId(Integer originFormUserId) {
+	public Activity getByOriginTypeAndOrigin(Activity.OriginTypeEnum originTypeEnum, String origin) {
 		List<Activity> activities = activityMapper.selectList(new QueryWrapper<Activity>()
 				.lambda()
-				.eq(Activity::getOriginFormUserId, originFormUserId)
+				.eq(Activity::getOriginType, originTypeEnum.getValue())
+				.eq(Activity::getOrigin, origin)
 		);
 		if (CollectionUtils.isNotEmpty(activities)) {
 			return activities.get(0);

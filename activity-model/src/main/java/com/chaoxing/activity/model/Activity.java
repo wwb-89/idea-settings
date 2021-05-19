@@ -123,8 +123,10 @@ public class Activity {
     private Boolean openWork;
     /** 作品征集id; column: work_id*/
     private Integer workId;
-    /** 来源表单记录id; column: origin_form_user_id*/
-    private Integer originFormUserId;
+    /** 来源类型; column: origin_type*/
+    private String originType;
+    /** 来源值; column: origin*/
+    private String origin;
     /** 状态。0：已删除，1：待发布，2：已发布，3：进行中，4：已结束; column: status*/
     private Integer status;
     /** 创建时间; column: create_time*/
@@ -152,14 +154,41 @@ public class Activity {
     private List<Integer> managerUids;
 
     @Getter
+    public enum OriginTypeEnum {
+
+        /** 通用 */
+        NORMAL("通用", "normal"),
+        ACTIVITY_DECLARATION("活动申报", "activity_declaration");
+
+        private final String name;
+        private final String value;
+
+        OriginTypeEnum(String name, String value) {
+            this.name = name;
+            this.value = value;
+        }
+
+        public static OriginTypeEnum fromValue(String value) {
+            OriginTypeEnum[] values = OriginTypeEnum.values();
+            for (OriginTypeEnum originTypeEnum : values) {
+                if (Objects.equals(originTypeEnum.getValue(), value)) {
+                    return originTypeEnum;
+                }
+            }
+            return null;
+        }
+
+    }
+
+    @Getter
     public enum ActivityTypeEnum {
 
         /** 线上举办 */
         ONLINE("线上举办", "online"),
         OFFLINE("线下举办", "offline");
 
-        private String name;
-        private String value;
+        private final String name;
+        private final String value;
 
         ActivityTypeEnum(String name, String value) {
             this.name = name;
@@ -187,8 +216,8 @@ public class Activity {
         ONGOING("进行中", 3),
         ENDED("已结束", 4);
 
-        private String name;
-        private Integer value;
+        private final String name;
+        private final Integer value;
 
         StatusEnum(String name, Integer value) {
             this.name = name;
@@ -221,8 +250,8 @@ public class Activity {
         PASSED("已通过", 1),
         WAIT_AUDIT("待审核", 2);
 
-        private String name;
-        private Integer value;
+        private final String name;
+        private final Integer value;
 
         AuditStatusEnum(String name, Integer value) {
             this.name = name;
