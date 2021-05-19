@@ -32,7 +32,8 @@ public class FormCreateActivityTask {
         }
         formApprovalApiService.addActivity(formCreateActivity.getFid(),
                 formCreateActivity.getFormId(),
-                formCreateActivity.getFormUserId());
+                formCreateActivity.getFormUserId(),
+                formCreateActivity.getFlag());
     }
 
 }

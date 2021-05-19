@@ -230,7 +230,7 @@ public class FormApprovalApiService {
      * @param formUserId
      * @return void
     */
-    public void addActivity(Integer fid, Integer formId, Integer formUserId) {
+    public void addActivity(Integer fid, Integer formId, Integer formUserId, String flag) {
         try {
             Activity activity = getNeedCreateActivity(fid, formId, formUserId);
             if (activity == null) {

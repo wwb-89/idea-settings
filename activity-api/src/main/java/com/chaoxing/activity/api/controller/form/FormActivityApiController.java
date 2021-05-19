@@ -35,8 +35,8 @@ public class FormActivityApiController {
      * @return com.chaoxing.activity.dto.RestRespDTO
      */
     @RequestMapping("create")
-    public RestRespDTO formCreateActivity(@RequestParam Integer deptId, Integer formId, Integer indexID) {
-        formApprovalApiService.addActivity(deptId, formId, indexID);
+    public RestRespDTO formCreateActivity(@RequestParam Integer deptId, Integer formId, Integer indexID, String flag) {
+        formApprovalApiService.addActivity(deptId, formId, indexID, flag);
         return RestRespDTO.success();
     }
 
