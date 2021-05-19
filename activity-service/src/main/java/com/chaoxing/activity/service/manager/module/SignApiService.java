@@ -14,7 +14,6 @@ import com.chaoxing.activity.dto.sign.SignActivityManageIndexDTO;
 import com.chaoxing.activity.dto.stat.SignActivityStatDTO;
 import com.chaoxing.activity.util.CookieUtils;
 import com.chaoxing.activity.util.DateUtils;
-import com.chaoxing.activity.util.RestTemplateUtils;
 import com.chaoxing.activity.util.exception.BusinessException;
 import com.google.common.collect.Lists;
 import lombok.extern.slf4j.Slf4j;
@@ -69,7 +68,9 @@ public class SignApiService {
 	private static final String USER_SIGNED_UP_URL = SIGN_API_DOMAIN + "/stat/sign/user-signed-up/%d";
 	/** 通知已收藏url */
 	private static final String NOTICE_COLLECTED_URL = SIGN_API_DOMAIN + "/sign/%d/notice/collected";
-	
+	/** 报名签到参与范围描述yrl */
+	private static final String SIGN_PARTICIPATE_SCOPE_DESCRIBE_URL = SIGN_API_DOMAIN + "/sign/%d/scope/describe";
+
 	/** 取消报名 */
 	private static final String CANCEL_SIGN_UP_URL = SIGN_API_DOMAIN + "/sign-up/%d/cancel";
 	/** 撤销报名 */
@@ -107,15 +108,11 @@ public class SignApiService {
 	 * @author wwb
 	 * @Date 2020-11-11 14:26:33
 	 * @param signAddEdit
-	 * @param request
 	 * @return com.chaoxing.activity.dto.module.SignAddEditResultDTO
 	*/
-	public SignAddEditResultDTO create(SignAddEditDTO signAddEdit, HttpServletRequest request) {
-		createPretreatment(signAddEdit);
+	public SignAddEditResultDTO create(SignAddEditDTO signAddEdit) {
 		HttpHeaders httpHeaders = new HttpHeaders();
 		httpHeaders.setContentType(MediaType.APPLICATION_JSON);
-		List<String> cookies = RestTemplateUtils.getCookies(request);
-		httpHeaders.put("Cookie", cookies);
 		HttpEntity<String> httpEntity = new HttpEntity<>(JSON.toJSONString(signAddEdit), httpHeaders);
 		String result = restTemplate.postForObject(CREATE_URL, httpEntity, String.class);
 		JSONObject jsonObject = JSON.parseObject(result);
@@ -130,27 +127,6 @@ public class SignApiService {
 		}
 	}
 
-	private void createPretreatment(SignAddEditDTO signAddEdit) {
-		List<SignIn> signIns = signAddEdit.getSignIns();
-		if (CollectionUtils.isNotEmpty(signIns)) {
-			for (SignIn signIn : signIns) {
-				SignIn.Way way = SignIn.Way.fromValue(signIn.getWay());
-				switch (way) {
-					case DIRECT:
-						signIn.setName("签到");
-						break;
-					case POSITION:
-						signIn.setName("位置签到");
-						break;
-					case QR_CODE:
-						signIn.setName("扫码签到");
-						break;
-					default:
-				}
-			}
-		}
-	}
-
 	/**更新报名签到
 	 * @Description 
 	 * @author wwb
@@ -158,11 +134,9 @@ public class SignApiService {
 	 * @param signAddEdit
 	 * @return com.chaoxing.activity.dto.module.SignAddEditResultDTO
 	*/
-	public SignAddEditResultDTO update(SignAddEditDTO signAddEdit, HttpServletRequest request) {
+	public SignAddEditResultDTO update(SignAddEditDTO signAddEdit) {
 		HttpHeaders httpHeaders = new HttpHeaders();
 		httpHeaders.setContentType(MediaType.APPLICATION_JSON);
-		List<String> cookies = RestTemplateUtils.getCookies(request);
-		httpHeaders.put("Cookie", cookies);
 		HttpEntity<String> httpEntity = new HttpEntity<>(JSON.toJSONString(signAddEdit), httpHeaders);
 		String result = restTemplate.postForObject(UPDATE_URL, httpEntity, String.class);
 		JSONObject jsonObject = JSON.parseObject(result);
@@ -696,6 +670,27 @@ public class SignApiService {
 		success = Optional.ofNullable(success).orElse(Boolean.FALSE);
 		if (success) {
 			return JSON.parseObject(jsonObject.getString("data"), SignActivityStatDTO.class);
+		} else {
+			String errorMessage = jsonObject.getString("message");
+			throw new BusinessException(errorMessage);
+		}
+	}
+
+	/**获取活动报名签到参与范围描述
+	 * @Description 
+	 * @author wwb
+	 * @Date 2021-04-20 10:16:17
+	 * @param signId
+	 * @return java.lang.String
+	*/
+	public String getActivitySignParticipateScopeDescribe(Integer signId) {
+		String url = String.format(SIGN_PARTICIPATE_SCOPE_DESCRIBE_URL, signId);
+		String result = restTemplate.getForObject(url, String.class);
+		JSONObject jsonObject = JSON.parseObject(result);
+		Boolean success = jsonObject.getBoolean("success");
+		success = Optional.ofNullable(success).orElse(Boolean.FALSE);
+		if (success) {
+			return jsonObject.getString("data");
 		} else {
 			String errorMessage = jsonObject.getString("message");
 			throw new BusinessException(errorMessage);

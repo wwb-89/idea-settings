@@ -264,7 +264,7 @@
                     <label class="label">报名需审核</label>
                     <div class="input-box">
                         <el-switch v-model="signUp.openAudit"></el-switch>
-                        <span class="tips">报名需管理员审核</span>
+                        <span class="tips">报名需活动管理员审核</span>
                     </div>
                 </div>
                 <div class="form-item">
@@ -272,6 +272,13 @@
                     <div class="input-box">
                         <el-switch v-model="signUp.publicList"></el-switch>
                         <span class="tips">开启后，所有人都能看到报名人员名单</span>
+                    </div>
+                </div>
+                <div class="form-item">
+                    <label class="label">取消报名限制</label>
+                    <div class="input-box">
+                        <el-switch v-model="signUp.endNotAllowCancel"></el-switch>
+                        <span class="tips">开启后，报名结束后参与者不能取消报名</span>
                     </div>
                 </div>
                 <div class="form-item" v-if="false">
@@ -381,7 +388,7 @@
                     <label class="label">评价需审核</label>
                     <div class="input-box">
                         <el-switch v-model="activity.ratingNeedAudit" class="examine-switch"></el-switch>
-                        <span>开启后，审核后的评论才能展示在评论列表</span>
+                        <span>开启后，审核后的评价才能展示在评价列表</span>
                     </div>
                 </div>
             </form>
@@ -668,13 +675,14 @@
                     $this.sign.createTime = "";
                     $this.sign.updateTime = "";
                     // 报名
-                    $($this.sign.signUps).each(function () {
+                    $($this.sign.signUps).each(function (i) {
                         if (!activityApp.isEmpty(this.id)) {
                             this.startTime = this.startTimestamp;
                             this.endTime = this.endTimestamp;
                             this.createTime = "";
                             this.updateTime = "";
                         }
+                        $this.$set($this.sign.signUps[i], "endNotAllowCancel", !this.endAllowCancel);
                     });
                     // 签到、签退
                     $($this.sign.signIns).each(function () {
@@ -1023,6 +1031,8 @@
                                     return false;
                                 }
                             }
+                            // 取消报名限制
+                            signUp.endAllowCancel = !signUp.endNotAllowCancel;
                             if (activityApp.isEmpty(signUp.btnName)) {
                                 app.showMsg(signUp.name + "按钮名称不能为空");
                                 return false;
@@ -1293,21 +1303,23 @@
                     }
                 },
                 loadFidGroup: function (gid, parentNode){
-                    var url = ctx + "/api/wfw/org/groups?gid="+gid;
+                    var url = ctx + "/api/wfw/org/groups?gid=" + gid;
                     app.ajaxPostWithLoading(url, {}, function (data) {
                         if (data.success) {
                             var newNodes = data.data;
                             if (newNodes.length > 0) {
                                 $(newNodes).each(function () {
-                                    this.isParent = true;
+                                    this.isParent = this.soncount > 0;
                                 })
                                 var treeObj = $.fn.zTree.getZTreeObj("sign-up-participate-scope-tree");
-                                var myNode = {
+                                // 支持只选择节点数据，so新增一个节点的叶子数据
+                                var cloneNode = {
                                     id: parentNode.id,
-                                    gid: parentNode.gid,
-                                    groupname: parentNode.groupname
+                                    groupname: parentNode.groupname,
+                                    soncount: 0,
+                                    isParent: false
                                 }
-                                treeObj.addNodes(parentNode, 0, myNode, false);
+                                treeObj.addNodes(parentNode, 0, cloneNode, false);
                                 treeObj.addNodes(parentNode, 1, newNodes, false);
                             }
                         } else {
@@ -1324,7 +1336,7 @@
                 initGroupTree: function () {
                     var $this = this;
                     $($this.wfwGroups).each(function () {
-                        this.isParent = true;
+                        this.isParent = this.soncount > 0;
                     })
                     var setting = {
                         check: {
@@ -1344,12 +1356,11 @@
                             }
                         },
                         callback: {
-                            onExpand: expandNode
-                        }
-                    };
-                    function expandNode(e, b, node) {
-                        if(node.children==null || node.children.length<=0){
-                            $this.loadFidGroup(node.id, node);
+                            onExpand: function (e, b, node) {
+                                if (node.children == null || node.children.length <= 0) {
+                                    $this.loadFidGroup(node.id, node);
+                                }
+                            }
                         }
                     };
                     $this.signUpParticipateScopeTreeObj = $.fn.zTree.init($("#sign-up-participate-scope-tree"), setting, $this.wfwGroups);
@@ -1359,52 +1370,20 @@
                     var $this = this;
                     var zTree = $.fn.zTree.getZTreeObj("sign-up-participate-scope-tree");
                     var nodeArr = zTree.getCheckedNodes(true);
-                    var parentGroups = [];
-                    var childGroups = [];
+                    var participateScopes = [];
                     //首先保存 搜索父节点被全选的，在看非父节点被选中的(非父节点的父节点被全选，则不保存该条记录)
                     $(nodeArr).each(function () {
-                        if(this.isParent && this.check_Child_State == 2){
-                            this.leaf = true;
-                            parentGroups.push(this);
-                        }else if(this.isParent && this.check_Child_State == -1){
-                            this.leaf = true;
-                            parentGroups.push(this);
+                        // 半选状态
+                        var half = this.getCheckStatus().half;
+                        if (!half) {
+                            // 只记录全选的
+                            participateScopes.push({
+                                externalId: this.id,
+                                externalPid: this.gid == this.id ? null : this.gid,
+                                externalName: this.groupname,
+                                leaf: !this.isParent
+                            });
                         }
-                    })
-                    $(nodeArr).each(function () {
-                        if (!this.isParent && this.check_Child_State == -1) {
-                            var isFind = false;
-                            $.each(parentGroups, function (i, parentItem) {
-                                if (this.gid != null && parentItem.id == this.gid) {
-                                    isFind = true;
-                                    return false;
-                                } else if (parentItem.id == this.id) {
-                                    isFind = true;
-                                    return false;
-                                }
-                            })
-                            if (!isFind) {
-                                this.leaf = false;
-                                childGroups.push(this);
-                            }
-                        }
-                    });
-                    var participateScopes = [];
-                    $(parentGroups).each(function () {
-                        participateScopes.push({
-                            externalId: this.id,
-                            externalPid: this.gid,
-                            externalName: this.groupname,
-                            leaf:this.leaf
-                        });
-                    });
-                    $(childGroups).each(function () {
-                        participateScopes.push({
-                            externalId: this.id,
-                            externalPid: this.gid,
-                            externalName: this.groupname,
-                            leaf:this.leaf
-                        });
                     });
                     $this.$set($this.sign.signUps[$this.operateSignUpIndex], "participateScopes", participateScopes);
                     $this.signUpParticipateWindowShow = false;

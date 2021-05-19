@@ -1,15 +1,22 @@
 package com.chaoxing.activity.service.activity.classify;
 
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.chaoxing.activity.dto.LoginUserDTO;
 import com.chaoxing.activity.mapper.ActivityClassifyMapper;
 import com.chaoxing.activity.model.ActivityClassify;
 import com.chaoxing.activity.util.exception.BusinessException;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.compress.utils.Lists;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 /**活动分类处理服务
  * @author wwb
@@ -28,6 +35,8 @@ public class ActivityClassifyHandleService {
 
 	@Resource
 	private ActivityClassifyValidationService activityClassifyValidationService;
+	@Resource
+	private ActivityClassifyQueryService activityClassifyQueryService;
 
 	/**新增
 	 * @Description 
@@ -38,11 +47,14 @@ public class ActivityClassifyHandleService {
 	 * @return com.chaoxing.activity.model.ActivityClassify
 	*/
 	public ActivityClassify add(ActivityClassify activityClassify, LoginUserDTO loginUser) {
+		return add(activityClassify, loginUser.getFid());
+	}
+
+	public ActivityClassify add(ActivityClassify activityClassify, Integer fid) {
 		String name = activityClassify.getName();
 		if (StringUtils.isEmpty(name)) {
 			throw new BusinessException("分类名称不能为空");
 		}
-		Integer fid = loginUser.getFid();
 		activityClassifyValidationService.nameNotExist(name, null, fid);
 		activityClassify.setAffiliationFid(fid);
 		activityClassify.setSequence(activityClassifyMapper.getMaxSequence(fid));
@@ -87,6 +99,76 @@ public class ActivityClassifyHandleService {
 		activityClassifyValidationService.deleteAble(id, loginUser.getFid());
 		activityClassifyMapper.deleteById(id);
 
+	}
+
+	/**克隆系统分类
+	 * @Description 
+	 * @author wwb
+	 * @Date 2021-04-23 18:31:44
+	 * @param targetFid
+	 * @return void
+	*/
+	public void cloneSystemClassify(Integer targetFid) {
+		// 没有分类才添加
+		Integer count = activityClassifyMapper.selectCount(new QueryWrapper<ActivityClassify>()
+				.lambda()
+				.eq(ActivityClassify::getAffiliationFid, targetFid)
+		);
+		if (count.compareTo(0) > 0) {
+			return;
+		}
+		List<ActivityClassify> activityClassifies = activityClassifyQueryService.listSystem();
+		if (CollectionUtils.isNotEmpty(activityClassifies)) {
+			for (ActivityClassify activityClassify : activityClassifies) {
+				activityClassify.setSystem(false);
+				activityClassify.setAffiliationFid(targetFid);
+			}
+			activityClassifyMapper.batchAdd(activityClassifies);
+		}
+	}
+
+	public void cloneSystemClassifyNoCheck(Integer targetFid) {
+		List<ActivityClassify> existActivityClassifies = activityClassifyQueryService.listOrgOptional(targetFid);
+		List<String> existActivityClassifyNames = existActivityClassifies.stream().map(ActivityClassify::getName).collect(Collectors.toList());
+		Set<String> existActivityClassifyNameSet = new HashSet<>(existActivityClassifyNames);
+		List<ActivityClassify> activityClassifies = activityClassifyQueryService.listSystem();
+		List<ActivityClassify> adds = Lists.newArrayList();
+		if (CollectionUtils.isNotEmpty(activityClassifies)) {
+			for (ActivityClassify activityClassify : activityClassifies) {
+				if (existActivityClassifyNameSet.contains(activityClassify.getName())) {
+					continue;
+				}
+				activityClassify.setSystem(false);
+				activityClassify.setAffiliationFid(targetFid);
+				adds.add(activityClassify);
+			}
+			activityClassifyMapper.batchAdd(activityClassifies);
+		}
+	}
+
+	/**新增并返回
+	 * @Description
+	 * @author wwb
+	 * @Date 2021-05-11 15:58:51
+	 * @param activityClassifyName
+	 * @param fid
+	 * @return com.chaoxing.activity.model.ActivityClassify
+	 */
+	public ActivityClassify addAndGet(String activityClassifyName, Integer fid) {
+		List<ActivityClassify> activityClassifies = activityClassifyMapper.selectList(new QueryWrapper<ActivityClassify>()
+				.lambda()
+				.eq(ActivityClassify::getAffiliationFid, fid)
+				.eq(ActivityClassify::getName, activityClassifyName)
+		);
+		if (CollectionUtils.isNotEmpty(activityClassifies)) {
+			return activityClassifies.get(0);
+		}
+		// 新增
+		ActivityClassify activityClassify = ActivityClassify.builder()
+				.affiliationFid(fid)
+				.name(activityClassifyName)
+				.build();
+		return add(activityClassify, fid);
 	}
 
 }

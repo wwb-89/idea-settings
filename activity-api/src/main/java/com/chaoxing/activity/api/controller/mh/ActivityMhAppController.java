@@ -18,6 +18,7 @@ import com.chaoxing.activity.util.constant.DateFormatConstant;
 import com.chaoxing.activity.util.constant.DateTimeFormatterConstant;
 import com.chaoxing.activity.util.exception.BusinessException;
 import com.google.common.collect.Lists;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.http.HttpEntity;
@@ -42,6 +43,7 @@ import java.util.stream.Collectors;
  * @blame wwb
  * @date 2020-11-24 17:35:03
  */
+@Slf4j
 @RestController
 @RequestMapping("mh")
 @CrossOrigin
@@ -223,7 +225,7 @@ public class ActivityMhAppController {
 		Integer createFid = activity.getCreateFid();
 		// 查询机构下的活动列表
 		Page<Activity> page = new Page(pageNum, pageSize);
-		page = activityQueryService.listCreated(page, createFid);
+		page = activityQueryService.listOrgParticipatedOrCreated(page, createFid);
 		JSONObject result = new JSONObject();
 		result.put("curPage", pageNum);
 		result.put("totalPages", page.getPages());
@@ -283,7 +285,7 @@ public class ActivityMhAppController {
 	 * @return com.chaoxing.activity.dto.RestRespDTO
 	*/
 	@RequestMapping("activity/calendar")
-	public RestRespDTO activityCalendar(String areaCode, @RequestBody String data) throws ParseException {
+	public RestRespDTO activityCalendar(String areaCode, @RequestParam(defaultValue = "0") Integer strict, String activityFlag, @RequestBody String data) throws ParseException {
 		JSONObject jsonObject = JSON.parseObject(data);
 		// 获取参数
 		Integer wfwfid = jsonObject.getInteger("wfwfid");
@@ -294,11 +296,15 @@ public class ActivityMhAppController {
 		areaCode = null;
 		Optional.ofNullable(wfwfid).orElseThrow(() -> new BusinessException("wfwfid不能为空"));
 		List<Integer> fids = Lists.newArrayList();
-		List<WfwRegionalArchitectureDTO> wfwRegionalArchitectures;
-		if (StringUtils.isNotBlank(areaCode)) {
-			wfwRegionalArchitectures = wfwRegionalArchitectureApiService.listByCode(areaCode);
-		} else {
-			wfwRegionalArchitectures = wfwRegionalArchitectureApiService.listByFid(wfwfid);
+		List<WfwRegionalArchitectureDTO> wfwRegionalArchitectures = Lists.newArrayList();
+		try {
+			if (StringUtils.isNotBlank(areaCode)) {
+				wfwRegionalArchitectures = wfwRegionalArchitectureApiService.listByCode(areaCode);
+			} else {
+				wfwRegionalArchitectures = wfwRegionalArchitectureApiService.listByFid(wfwfid);
+			}
+		} catch (Exception e) {
+			log.error("活动日历error: {}", e.getMessage());
 		}
 		if (CollectionUtils.isNotEmpty(wfwRegionalArchitectures)) {
 			List<Integer> subFids = wfwRegionalArchitectures.stream().map(WfwRegionalArchitectureDTO::getFid).collect(Collectors.toList());
@@ -312,6 +318,8 @@ public class ActivityMhAppController {
 		MhActivityCalendarQueryDTO mhActivityCalendarQuery = MhActivityCalendarQueryDTO.builder()
 				.fids(fids)
 				.topFid(wfwfid)
+				.strict(strict)
+				.activityFlag(activityFlag)
 				.build();
 		String year = jsonObject.getString("year");
 		String month = jsonObject.getString("month");
@@ -326,7 +334,7 @@ public class ActivityMhAppController {
 		if (StringUtils.isNotBlank(date)) {
 			mhActivityCalendarQuery.setDate(date);
 		}
-		page = activityQueryService.listActivityCalendarParticipate(page, mhActivityCalendarQuery);
+		page = activityQueryService.listActivityCalendar(page, mhActivityCalendarQuery);
 		JSONObject result = new JSONObject();
 		result.put("curPage", pageNum);
 		result.put("totalPages", page.getPages());
@@ -342,6 +350,11 @@ public class ActivityMhAppController {
 			mhGeneralAppResultDataFields.add(MhGeneralAppResultDataDTO.MhGeneralAppResultDataFieldDTO.builder()
 					.value(record.getName())
 					.flag("1")
+					.build());
+			// 活动分类
+			mhGeneralAppResultDataFields.add(MhGeneralAppResultDataDTO.MhGeneralAppResultDataFieldDTO.builder()
+					.value(record.getActivityClassifyName())
+					.flag("2")
 					.build());
 			// 作者
 			mhGeneralAppResultDataFields.add(MhGeneralAppResultDataDTO.MhGeneralAppResultDataFieldDTO.builder()

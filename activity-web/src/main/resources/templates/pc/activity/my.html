@@ -53,7 +53,7 @@
 							</div>
 							<div class="card-info">
 								<h2 class="title overHidden1" @click="signedupDetail(index)">{{activity.name}}</h2>
-								<p class="time">{{activity.startTime | activityTimeFormatter}} ～ {{activity.endTime | activityTimeFormatter}}</p>
+								<p class="time">{{activity.startTime | timestampScopeFormat(activity.endTime)}}</p>
 								<p class="address">{{activity.address}}{{activity.detailAddress ? activity.detailAddress : ''}}</p>
 							</div>
 						</div>
@@ -78,7 +78,7 @@
 							</div>
 							<div class="card-info">
 								<h2 class="title overHidden1" @click="collectedDetail(index)">{{activity.name}}</h2>
-								<p class="time">{{activity.startTime | activityTimeFormatter}} ～ {{activity.endTime | activityTimeFormatter}}</p>
+								<p class="time">{{activity.startTime | timestampScopeFormat(activity.endTime)}}</p>
 								<p class="address">{{activity.address}}{{activity.detailAddress ? activity.detailAddress : ''}}</p>
 							</div>
 						</div>
@@ -102,7 +102,7 @@
 							</div>
 							<div class="card-info">
 								<h2 class="title overHidden1" @click="activityManageIndex(index)">{{activity.name}}</h2>
-								<p class="time">{{activity.startTime | activityTimeFormatter}} ～ {{activity.endTime | activityTimeFormatter}}</p>
+								<p class="time">{{activity.startTime | timestampScopeFormat(activity.endTime)}}</p>
 								<p class="address">{{activity.address}}{{activity.detailAddress ? activity.detailAddress : ''}}</p>
 							</div>
 						</div>
@@ -118,7 +118,7 @@
 			<p>暂无内容</p>
 		</div>
 		<div class="load-div loading" v-show="signedUpLoading || collectedLoading || managingLoading"><img src="/static/pc/assets/images/Spinner-1s-200px.svg" th:src="@{/pc/assets/images/Spinner-1s-200px.svg}">加载中…</div>
-		<div class="load-div no-more" v-show="(signedUpNoMore && signedUps.length > 0 && activeTabIndex == 0) || (collectedNoMore && collecteds.length > 0 && activeTabIndex == 1) || (managingNoMore && managings.length > 0 && activeTabIndex == 2)">没有更多了</div>
+		<div class="load-div no-more" v-show="(signedUpNoMore && signedUps.length > 10 && activeTabIndex == 0) || (collectedNoMore && collecteds.length > 10 && activeTabIndex == 1) || (managingNoMore && managings.length > 10 && activeTabIndex == 2)">没有更多了</div>
 	</div>
 	<!--取消报名-->
 	<vue-confirm ref="cancelSignUp" :message="'取消报名后需要重新报名才能参与活动'" @callback="cancelSignUpSubmit"></vue-confirm>
@@ -138,11 +138,9 @@
 	<script src="/static/pc/assets/js/common.js" th:src="@{/pc/assets/js/common.js}"></script>
 	<script src="/static/pc/assets/lib/jqthumb.min.js" th:src="@{/pc/assets/lib/jqthumb.min.js}"></script>
 	<script src="/static/pc/assets/component/confirm.js" th:src="@{/pc/assets/component/confirm.js}"></script>
+	<script src="/static/pc/assets/lib/set-iframe-height-child.js" th:src="@{/pc/assets/lib/set-iframe-height-child.js}"></script>
+	<script src="/static/pc/assets/lib/jquery.mCustomScrollbar.concat.min.js" th:src="@{/pc/assets/lib/jquery.mCustomScrollbar.concat.min.js}"></script>
 	<script th:inline="javascript">
-		Vue.filter("activityTimeFormatter", function (timestamp) {
-			var dateObj = activityApp.millisecond2DateObj(timestamp);
-			return dateObj.year + "." + dateObj.month + "." + dateObj.day + " " + dateObj.hour + ":" + dateObj.minute;
-		});
 		Vue.filter("calSignedUpStatusDescription", function (activity) {
 			var userSignUpStatus = activity.userSignUpStatus;
 			if (1 != userSignUpStatus) {
@@ -195,6 +193,10 @@
 				// 操作的活动下标
 				operateIndex: ""
 			},
+            created: function () {
+                // 解决跨域
+                document.domain = "chaoxing.com";
+            },
 			mounted: function () {
 				var $this = this;
 				$this.loadCollected();

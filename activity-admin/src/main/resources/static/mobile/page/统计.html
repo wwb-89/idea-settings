@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>统计</title>
+    <meta http-equiv="Content-type" content="text/html; charset=utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, minimal-ui" />
+    <meta name="format-detection" content="telephone=no, email=no">
+    <meta http-equiv="Pragma" content="no-cache" />
+    <meta http-equiv="cache-control" content="no-cache" />
+    <link rel="stylesheet" href="../assets/css/public.css" />
+    <link rel="stylesheet" href="../assets/css/dialog.css">
+    <link rel="stylesheet" href="../assets/css/manage.css">
+</head>
+<style>
+    body {
+        background: #F6F7FB;
+    }
+</style>
+<body>
+    <div class="statistics">
+        <div class="white-con survey">
+            <p class="title">概况</p>
+            <div class="item-list">
+                <div class="item">
+                    <p class="view">浏览量(pv)</p>
+                    <p class="number">1207</p>
+                </div>
+                <div class="item">
+                    <p class="view">浏览人数(pv)</p>
+                    <p class="number">3260</p>
+                </div>
+                <div class="item">
+                    <p class="view">报名人数(人)</p>
+                    <p class="number">120</p>
+                </div>
+                <div class="item">
+                    <p class="view">签到数(人·次)</p>
+                    <p class="number">332</p>
+                </div>
+            </div>
+            <!--  加载中  -->
+            <div class="loading" style="display: none;"><img src="../assets/images/Spinner-1s-200px.svg">加载中…</div>
+        </div>
+        <div class="white-con activity-trends">
+            <p class="title">活动参与趋势</p>
+            <div class="echart-box" id="line-aqxec"></div>
+            <!--  加载中  -->
+            <div class="loading" style="display: none;"><img src="../assets/images/Spinner-1s-200px.svg">加载中…</div>
+        </div>
+        <p class="tips">统计数据每小时更新一次</p>
+    </div>
+    <script src="../assets/lib/jquery.1.8.2.min.js"></script>
+    <script src="../assets/lib/echarts@4.1.0/echarts.js"></script>
+    <script>
+        var myChart = echarts.init(document.getElementById('line-aqxec'));
+        option = {
+            color: ['#3A8BFF', '#9FE6B8', '#52BAFF', '#FF9F7F'],
+            legend: {
+                itemWidth: 8,
+                itemHeight: 8,
+                itemGap: 16,
+                textStyle: {
+                    fontSize: 13,
+                    color: '#91A0B5'
+                },
+                y: '92%',
+                x: 'center',
+                icon: 'circle',
+                data: ['报名人数', '浏览量', '数据3', '数据4']
+            },
+            grid: {
+                bottom: '18%',
+                top: 40,
+                left: 0,
+                right: 18,
+                containLabel: true,
+            },
+            tooltip: {
+                trigger: 'axis',
+                backgroundColor: 'rgba(0,0,0,0.7)',
+                padding: [12, 16],
+                axisPointer: {
+                    type: 'line',
+                    lineStyle: {
+                        color: 'rgba(0, 0, 0, 0.1)'
+                    }
+                }
+            },
+            xAxis: {
+                type: 'category',
+                boundaryGap: false,
+                data: ['05-01', '05-07', '05-14', '05-21', '05-28'],
+                axisLine: {
+                    show: true,
+                    lineStyle: {
+                        color: '#E3ECFB',
+                    }
+                },
+                axisTick: {
+                    show: false
+                },
+                splitLine: {
+                    lineStyle: {
+                        color: '#f8f8f8',
+                    },
+                },
+                axisLabel: {
+                    lineHeight: 40,
+                    textStyle: {
+                        color: '#767690'
+                    }
+                },
+                offset: 10
+            },
+            yAxis: {
+                type: 'value',
+                name: '',
+                axisLine: {
+                    show: false
+                },
+                axisTick: {
+                    show: false
+                },
+                splitLine: {
+                    lineStyle: {
+                        type: 'dashed',
+                        color: '#E3ECFB',
+                    },
+                },
+                min: 0,
+                max: 120
+            },
+            series: [{
+                name: '报名人数',
+                data: [70, 60, 80, 70, 12],
+                type: 'line',
+                itemStyle: {
+                    normal: {
+                        opacity: 0,
+                    },
+                },
+                smooth: true,
+                lineStyle: {
+                    normal: {
+                        color: '#3A8BFF',
+                        width: 2,
+                    }
+                },
+                areaStyle: {
+                    normal: {
+                        color: {
+                            type: 'linear',
+                            x: 0,
+                            y: 0,
+                            x2: 0,
+                            y2: 1,
+                            colorStops: [{
+                                offset: 0,
+                                color: 'rgba(58,139,255,0.3)' // 0% 处的颜色
+                            }, {
+                                offset: 1,
+                                color: 'rgba(58,139,255,0)' // 100% 处的颜色
+                            }],
+                            global: false // 缺省为 false
+                        },
+                    },
+                },
+            },
+            {
+                name: '浏览量',
+                data: [80, 70, 90, 120, 5],
+                type: 'line',
+                itemStyle: {
+                    normal: {
+                        opacity: 0,
+                    },
+                },
+                smooth: true,
+                lineStyle: {
+                    normal: {
+                        color: '#9FE6B8',
+                        width: 2,
+                    }
+                },
+                areaStyle: {
+                    normal: {
+                        color: {
+                            type: 'linear',
+                            x: 0,
+                            y: 0,
+                            x2: 0,
+                            y2: 1,
+                            colorStops: [{
+                                offset: 0,
+                                color: 'rgba(159,230,184,0.3)' // 0% 处的颜色
+                            }, {
+                                offset: 1,
+                                color: 'rgba(159,230,184,0)' // 100% 处的颜色
+                            }],
+                            global: false // 缺省为 false
+                        },
+                    },
+                },
+            },
+            {
+                name: '数据3',
+                data: [40, 20, 40, 60, 10],
+                type: 'line',
+                itemStyle: {
+                    normal: {
+                        opacity: 0,
+                    },
+                },
+                smooth: true,
+                lineStyle: {
+                    normal: {
+                        color: '#52BAFF',
+                        width: 2,
+                    }
+                },
+                areaStyle: {
+                    normal: {
+                        color: {
+                            type: 'linear',
+                            x: 0,
+                            y: 0,
+                            x2: 0,
+                            y2: 1,
+                            colorStops: [{
+                                offset: 0,
+                                color: 'rgba(82,186,255,0.3)' // 0% 处的颜色
+                            }, {
+                                offset: 1,
+                                color: 'rgba(82,186,255,0)' // 100% 处的颜色
+                            }],
+                            global: false // 缺省为 false
+                        },
+                    },
+                },
+            },
+            {
+                name: '数据4',
+                data: [10, 20, 30, 40, 10],
+                type: 'line',
+                itemStyle: {
+                    normal: {
+                        opacity: 0,
+                    },
+                },
+                smooth: true,
+                lineStyle: {
+                    normal: {
+                        color: '#FF9F7F',
+                        width: 2,
+                    }
+                },
+                areaStyle: {
+                    normal: {
+                        color: {
+                            type: 'linear',
+                            x: 0,
+                            y: 0,
+                            x2: 0,
+                            y2: 1,
+                            colorStops: [{
+                                offset: 0,
+                                color: 'rgba(255, 159, 127, 0.2)' // 0% 处的颜色
+                            }, {
+                                offset: 1,
+                                color: 'rgba(255, 159, 127, 0)' // 100% 处的颜色
+                            }],
+                            global: false // 缺省为 false
+                        },
+                    },
+                },
+            }
+            ]
+        };
+        myChart.setOption(option);
+    </script>
+</body>
+</html>

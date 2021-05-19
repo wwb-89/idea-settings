@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.chaoxing.activity.mapper.ActivityStatTaskDetailMapper">
+    <resultMap id="BaseResultMap" type="com.chaoxing.activity.model.ActivityStatTaskDetail">
+        <result column="task_id" jdbcType="INTEGER" property="taskId" />
+        <result column="activity_id" jdbcType="INTEGER" property="activityId" />
+        <result column="error_times" jdbcType="INTEGER" property="errorTimes" />
+        <result column="error_message" jdbcType="VARCHAR" property="errorMessage" />
+        <result column="status" jdbcType="INTEGER" property="status" />
+    </resultMap>
+
+
+    <insert id="batchAdd">
+        INSERT INTO t_activity_stat_task_detail ( task_id, activity_id )
+        VALUES
+        <foreach collection="activityStatTaskDetails" index="key" item="value" open="" close="" separator=",">
+            (
+            #{value.taskId},
+            #{value.activityId}
+            )
+        </foreach>
+
+    </insert>
+</mapper>

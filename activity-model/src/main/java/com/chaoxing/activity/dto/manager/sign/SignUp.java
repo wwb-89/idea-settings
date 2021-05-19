@@ -1,6 +1,7 @@
 package com.chaoxing.activity.dto.manager.sign;
 
 import com.alibaba.fastjson.annotation.JSONField;
+import com.chaoxing.activity.model.Activity;
 import com.chaoxing.activity.util.LocalDateTime2TimestampDeserializer;
 import com.chaoxing.activity.util.LocalDateTimeSerializer;
 import lombok.AllArgsConstructor;
@@ -61,6 +62,8 @@ public class SignUp {
     private String limitParticipateScopeType;
     /** 活动标示 */
     private String activityFlag;
+    /** 定制报名类型*/
+    private String customSignUpType;
     /** 状态。1：未开始，2：进行中，3：已结束 */
     private Integer status;
     /** 是否被删除 */
@@ -89,5 +92,25 @@ public class SignUp {
     private Long endTimestamp;
     /** 参与范围 */
     private List<SignUpParticipateScope> participateScopes;
+
+    public static SignUp buildDefault() {
+        LocalDateTime now = LocalDateTime.now();
+        return SignUp.builder()
+                .name("报名")
+                .openAudit(false)
+                .startTime(now)
+                .endTime(now.plusMonths(1))
+                .limitPerson(false)
+                .personLimit(100)
+                .fillInfo(false)
+                .publicList(false)
+                .btnName("报名参与")
+                .endAllowCancel(true)
+                .enableLimitParticipateScope(false)
+                .limitParticipateScope(false)
+                .activityFlag(Activity.ActivityFlag.NORMAL.getValue())
+                .deleted(true)
+                .build();
+    }
 
 }

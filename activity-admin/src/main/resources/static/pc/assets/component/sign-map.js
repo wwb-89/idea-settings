@@ -11,13 +11,13 @@ Vue.component('vue-sign-map', {
         "        <div class='body'>\n" +
         "            <div class='body-head'>\n" +
         "                <div class='input-addr'>\n" +
-        "                    <el-autocomplete style='width:100%;' popper-class='autoAddressClass' v-model.trim='address' :fetch-suggestions='querySearchAsync' :trigger-on-focus='true' placeholder='请输入地址' @select='handleSelect' clearable>\n" +
+        "                    <el-autocomplete style='width:100%;' popper-class='autoAddressClass' v-model.trim='address' :fetch-suggestions='querySearchAsync' :trigger-on-focus='false' placeholder='请输入地址' @select='handleSelect' clearable>\n" +
         "                        <template slot-scope='scope'> <i class='el-icon-search fl mgr10'></i>\n" +
         "                            <div class='address-box'>\n" +
         "                                <div class='title1'>{{ scope.item.title }}</div>\n" +
         "                                --\n" +
         "                                <span class='address ellipsis'>{{ scope.item.address }}</span>\n" +
-        "                            </div>" +
+        "                            </div>\n" +
         "                            <i class='el-icon-close' @click='deleteHistory(scope.item, $event)'></i>\n" +
         "                        </template>\n" +
         "                    </el-autocomplete>\n" +
@@ -54,9 +54,6 @@ Vue.component('vue-sign-map', {
         var $this = this;
         $this.loadHistory();
     },
-    mounted: function () {
-        var $this = this;
-    },
     watch: {
         "show": function () {
             var $this = this;
@@ -64,12 +61,14 @@ Vue.component('vue-sign-map', {
                 $this.address = "";
                 $this.longitude = null;
                 $this.dimension = null;
+                activityApp.resetScroll();
             } else {
                 if (!$this.inited) {
                     $this.$nextTick(function () {
                         $this.initMap();
                     });
                 }
+                activityApp.initScroll();
             }
         }
     },

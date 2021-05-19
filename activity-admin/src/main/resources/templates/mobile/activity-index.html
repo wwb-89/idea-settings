@@ -41,6 +41,11 @@
             <p class="flTxt">管理员</p>
             <i class="icon-arrow-r marginAuto"></i>
         </div>
+        <div class="item" th:if="${isCreator}" @click="stat">
+            <img src="/static/mobile/assets/images/admin/statistics.png" th:src="@{/mobile/assets/images/admin/statistics.png}">
+            <p class="flTxt">统计</p>
+            <i class="icon-arrow-r marginAuto"></i>
+        </div>
         <div class="item" v-if="signActivityManageIndex.signUpExist" @click="sendNotice">
             <img src="/static/mobile/assets/images/admin/notice.png" th:src="@{/mobile/assets/images/admin/notice.png}">
             <p class="flTxt">发通知</p>
@@ -99,6 +104,12 @@
                     manager: function () {
                         var $this = this;
                         var url = ctx + "/activity/" + $this.activity.id + "/manager"
+                        app.openUrl(url);
+                    },
+                    // 统计
+                    stat: function () {
+                        var $this = this;
+                        var url = ctx + "/activity/" + $this.activity.id + "/stat"
                         app.openUrl(url);
                     },
                     // 发通知

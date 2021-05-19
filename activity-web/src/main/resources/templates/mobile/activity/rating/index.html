@@ -25,7 +25,7 @@
                 <div class="title" v-if="activityRating" >
                     <span class="score">{{activityRating.score.toFixed(1)}}</span>
                     <div class="star-box" id="m-total-star-box"></div>
-                    <span class="people">{{activityRating.scoreNum}}人评价</span>
+                    <span class="people">{{activityRating.scoreNum}}人评论</span>
                 </div>
                 <div class="comment-list">
                     <div class="list clear" v-for="(rating, index) of ratings" :key="'rating-' + index">
@@ -39,7 +39,7 @@
                             <div class="head">
                                 <span class="name" v-if="isAnonymousShow(index)">匿名</span>
                                 <span class="name" v-else>{{rating.scorerUserName}}</span>
-                                <span class="time">{{ rating.createTime | timestampMDH}}</span>
+                                <span class="time">{{ rating.createTime | timestampFormat}}</span>
                                 <span class="state blue" v-if="rating.auditStatus == '2'">审核中</span>
                                 <span class="state red" v-if="rating.auditStatus == '0'">已被管理员删除</span>
                             </div>
@@ -74,7 +74,7 @@
             <div class="dialog-overlay">
                 <div class="content">
                     <div class="sure">
-                        <p class="blue" @click="modifyRate(true)">编辑</p>
+<!--                        <p class="blue" @click="modifyRate(true)">编辑</p>-->
                         <p class="blue sure-btn" @click="deleteRate">删除</p>
                     </div>
                     <div class="blue cancle" @click="cancelOpt">取消</div>
@@ -100,10 +100,6 @@
         <script src="/static/mobile/assets/lib/mescroll/mescroll.js" th:src="@{/mobile/assets/lib/mescroll/mescroll.js}"></script>
         <script src="/static/mobile/assets/js/common.js" th:src="@{/mobile/assets/js/common.js}"></script>
         <script th:inline="javascript">
-            Vue.filter("timestampMDH", function (timestamp) {
-                var dateObj = activityApp.millisecond2DateObj(timestamp);
-                return `${dateObj.month}-${dateObj.day} ${dateObj.hour}:${dateObj.minute}`;
-            });
             function ready() {
                 ratingVue = new Vue({
                     el: "#rating-vue",
@@ -137,7 +133,7 @@
                             app.customMenu("", app.menu_icon_url, {
                                 children: [
                                     {menu: "评价设置", option: "ratingVue.ratingSetting()"},
-                                    {menu: "评价审核", option: "ratingVue.ratingAudit()"}
+                                    {menu: "评价审核", option: "ratingVue.ratingAudit()", show: $this.activity.ratingNeedAudit}
                                 ]
                             });
                         }
@@ -243,7 +239,9 @@
                         // 删除评价
                         deleteRate: function () {
                             var $this = this;
-                            app.confirm("", "确认删除评价?", function () {
+                            app.confirm("", "确定删除评价?", function () {
+
+                            }, function () {
                                 var url = ctx + "/api/activity/rating/" + $this.ratings[$this.activeIndex].id + "/delete";
                                 app.ajaxPostLoading(url, {}, function (data) {
                                     if (data.success) {
@@ -259,9 +257,7 @@
                                 }, function () {
                                     app.showMsg("删除评价失败");
                                 });
-                            }, function () {
-
-                            });
+                            }, "保留", "删除");
                         },
                         showDetailComment: function (e) {
                             var rateDom = e.target

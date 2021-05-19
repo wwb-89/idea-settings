@@ -20,6 +20,7 @@
         <result column="is_enable_sign" jdbcType="BIT" property="enableSign" />
         <result column="sign_id" jdbcType="INTEGER" property="signId" />
         <result column="web_template_id" jdbcType="INTEGER" property="webTemplateId" />
+        <result column="website_id" jdbcType="INTEGER" property="websiteId" />
         <result column="page_id" jdbcType="INTEGER" property="pageId" />
         <result column="preview_url" jdbcType="VARCHAR" property="previewUrl" />
         <result column="edit_url" jdbcType="VARCHAR" property="editUrl" />
@@ -41,15 +42,16 @@
         <result column="activity_flag" jdbcType="VARCHAR" property="activityFlag" />
         <result column="is_open_work" jdbcType="VARCHAR" property="openWork" />
         <result column="work_id" jdbcType="VARCHAR" property="workId" />
+        <result column="origin_form_user_id" jdbcType="INTEGER" property="originFormUserId" />
         <result column="status" jdbcType="INTEGER" property="status" />
         <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
         <result column="update_time" jdbcType="TIMESTAMP" property="updateTime" />
     </resultMap>
     <sql id="Base_Column_List">
         t.id, t.name, t.start_time, t.end_time, t.start_date, t.end_date, t.cover_cloud_id, t.cover_url, t.organisers, t.activity_type, t.address, t.detail_address,
-        t.longitude, t.dimension, t.activity_classify_id, t.is_enable_sign, t.sign_id, t.web_template_id, t.page_id, t.preview_url, t.edit_url,
+        t.longitude, t.dimension, t.activity_classify_id, t.is_enable_sign, t.sign_id, t.web_template_id, t.website_id, t.page_id, t.preview_url, t.edit_url,
         t.is_released, t.release_time, t.release_uid, t.is_open_audit, t.audit_status, t.create_uid, t.create_user_name, t.create_fid, t.create_area_code,
-        t.create_org_name, t.tags, t.is_open_rating, t.is_rating_need_audit, t.is_open_integral, t.activity_flag, t.integral_value, t.is_open_work, t.work_id,
+        t.create_org_name, t.tags, t.is_open_rating, t.is_rating_need_audit, t.is_open_integral, t.activity_flag, t.integral_value, t.is_open_work, t.work_id, t.origin_form_user_id,
         t.status, t.create_time, t.update_time
     </sql>
 
@@ -85,7 +87,17 @@
                     t.`status` = #{params.status}
                 </when>
                 <otherwise>
-                    t.`status` IN ( 2, 3, 4 )
+                    <choose>
+                        <when test="params.statusList != null and params.statusList.size() != 0">
+                            t.`status` IN
+                            <foreach collection="params.statusList" index="key" item="value" open="(" close=")" separator=",">
+                                #{value}
+                            </foreach>
+                        </when>
+                        <otherwise>
+                            t.`status` IN ( 2, 3, 4 )
+                        </otherwise>
+                    </choose>
                 </otherwise>
             </choose>
             <if test="params.flag != null and params.flag != ''">
@@ -196,7 +208,7 @@
     </select>
 
     <!--查询机构创建的-->
-    <select id="pageOrgCreated" resultMap="BaseResultMap">
+    <select id="listOrgParticipatedOrCreated" resultMap="BaseResultMap">
         SELECT
             <include refid="Base_Column_List"></include>
         FROM
@@ -251,7 +263,8 @@
 
     <select id="pageActivityCalendarParticipate" resultMap="BaseResultMap">
         SELECT
-            <include refid="Base_Column_List"></include>
+            <include refid="Base_Column_List"></include>,
+            t2.`name` activityClassifyName
         FROM
             t_activity t
             INNER JOIN t_activity_scope t1 ON t.id = t1.activity_id
@@ -259,6 +272,7 @@
             <foreach collection="params.fids" index="key" item="value" open="(" close=")" separator=",">
                 #{value}
             </foreach>
+            LEFT JOIN t_activity_classify t2 ON t.activity_classify_id = t2.id
         WHERE
             <!--状态-->
             t.`status` IN ( 2, 3, 4 )
@@ -272,6 +286,9 @@
                     OR ( #{params.startDate} <![CDATA[<=]]> t.start_date AND #{params.endDate} >= t.end_date )
                 )
             </if>
+            <if test="params.activityFlag != null and params.activityFlag != ''">
+                AND t.activity_flag = #{params.activityFlag}
+            </if>
         GROUP BY
             t.id
         ORDER BY
@@ -279,6 +296,37 @@
             <if test="params.topFid != null">
                 , t1.fid <![CDATA[<>]]> #{params.topFid}
             </if>
+            ,t.start_time DESC
+    </select>
+
+    <select id="pageActivityCalendarCreated" resultMap="BaseResultMap">
+        SELECT
+            <include refid="Base_Column_List"></include>,
+            t1.`name` activityClassifyName
+        FROM
+            t_activity t
+            LEFT JOIN t_activity_classify t1 ON t.activity_classify_id = t1.id
+        WHERE
+            <!--状态-->
+            t.create_fid = #{params.topFid}
+            AND t.`status` IN ( 2, 3, 4 )
+            <if test="params.date != null and params.date != ''">
+                AND #{params.date} BETWEEN t.start_date AND t.end_date
+            </if>
+            <if test="params.startDate != null and params.startDate != ''">
+                AND (
+                ( #{params.startDate} BETWEEN t.start_date AND t.end_date )
+                OR (#{params.endDate} BETWEEN t.start_date AND t.end_date )
+                OR ( #{params.startDate} <![CDATA[<=]]> t.start_date AND #{params.endDate} >= t.end_date )
+                )
+            </if>
+            <if test="params.activityFlag != null and params.activityFlag != ''">
+                AND t.activity_flag = #{params.activityFlag}
+            </if>
+        GROUP BY
+            t.id
+        ORDER BY
+            FIELD( t.`status`, 3, 2, 4 )
             ,t.start_time DESC
     </select>
 
@@ -308,11 +356,8 @@
             </foreach>
             AND t.`status` IN (1, 2, 3, 4)
         ORDER BY
-            FIELD('t.sign_id',
-            <foreach collection="signIds" index="key" item="value" open="" close="" separator=",">
-                #{value}
-            </foreach>
-            )
+            FIELD( t.`status`, 3, 2, 1, 4 )
+            ,t.start_time DESC
     </select>
 
     <select id="pageCollectedActivityId" resultMap="BaseResultMap">
@@ -353,5 +398,36 @@
             t.id = #{id}
         LIMIT 1
     </select>
+
+    <select id="listOrgCreated" resultMap="BaseResultMap">
+        SELECT
+            <include refid="Base_Column_List"></include>
+        FROM
+            t_activity t
+        WHERE
+            t.create_fid = #{fid}
+            <if test="activityFlag != null and activityFlag != ''">
+                AND t.activity_flag = #{activityFlag}
+            </if>
+            AND t.`status` IN ( 2, 3, 4 )
+        ORDER BY
+            FIELD( t.`status`, 3, 2, 4 ),
+            t.start_time DESC
+    </select>
+
+    <select id="listByActivityDate" resultType="java.lang.Integer">
+        SELECT t.id
+        FROM t_activity t
+        WHERE t.start_date &lt;= #{activityDate} and t.end_date &gt;= #{activityDate}
+    </select>
+
+    <select id="listActivityGroupByClassifyId" resultType="com.chaoxing.activity.dto.stat.ActivityClassifyDTO">
+        SELECT t.activity_classify_id as classifyId, tac.name as typeName, count(t.activity_classify_id) as typeNum
+        FROM t_activity t
+        LEFT JOIN t_activity_classify tac on t.activity_classify_id = tac.id
+        WHERE t.create_fid = #{fid}
+        GROUP BY t.activity_classify_id
+    </select>
+
 
 </mapper>

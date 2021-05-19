@@ -5,6 +5,8 @@ import com.chaoxing.activity.model.ActivityClassify;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
+import java.util.List;
+
 /**
  * @className: ActivityClassifyMapper
  * @Description:
@@ -15,13 +17,24 @@ import org.apache.ibatis.annotations.Param;
 @Mapper
 public interface ActivityClassifyMapper extends BaseMapper<ActivityClassify> {
 
-	/**查询最大顺序
-	 * @Description 
-	 * @author wwb
-	 * @Date 2020-11-10 17:55:17
+	/**
+	 * 查询最大顺序
+	 *
 	 * @param fid
 	 * @return java.lang.Integer
-	*/
+	 * @Description
+	 * @author wwb
+	 * @Date 2020-11-10 17:55:17
+	 */
 	Integer getMaxSequence(@Param("fid") Integer fid);
+
+	/**批量新增
+	 * @Description 
+	 * @author wwb
+	 * @Date 2021-04-23 18:29:37
+	 * @param activityClassifies
+	 * @return int
+	*/
+	int batchAdd(@Param("activityClassifies") List<ActivityClassify> activityClassifies);
 
 }

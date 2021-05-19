@@ -65,12 +65,8 @@ public class ActivityIsAboutStartHandleService {
 		if (noticeTimestamp <= nowTimestamp) {
 			// 处理通知， 已报名的和已收藏（活动不需要报名的）
 			Activity activity = activityQueryService.getById(activityId);
-			Integer signId = activity.getSignId();
-			if (signId != null) {
-				// 报名的uid列表
-				List<Integer> signedUpUids = signApiService.listSignedUpUid(signId);
-				generateSignedUpNotice(activity, signedUpUids);
-			}
+			List<Integer> signedUpUids = activityQueryService.listSignedUpUid(activity);
+			generateSignedUpNotice(activity, signedUpUids);
 			// 收藏的uid列表
 			List<Integer> collectedUids = activityCollectionQueryService.listCollectedUid(activityId);
 			generateCollectNotice(activity, collectedUids);
@@ -198,12 +194,12 @@ public class ActivityIsAboutStartHandleService {
 	}
 
 	private String generateSignedUpNoticeTitle(Activity activity) {
-		return activity.getName() + "即将开始！";
+		return "您报名的" + activity.getName() + "即将开始！";
 	}
 
 	private String generateSignedUpNoticeContent(Activity activity) {
 		String content = "活动名称：" + activity.getName() + "\n" +
-				"活动时间："+ activity.getStartTime().format(ACTIVITY_TIME_FORMATTER) +"- "+ activity.getEndTime().format(ACTIVITY_TIME_FORMATTER) + "\n";
+				"活动时间：" + activity.getStartTime().format(ACTIVITY_TIME_FORMATTER) + "- " + activity.getEndTime().format(ACTIVITY_TIME_FORMATTER) + "\n";
 		return content;
 	}
 
@@ -213,9 +209,9 @@ public class ActivityIsAboutStartHandleService {
 
 	private String generateCollectedNoticeContent(Activity activity, SignUp signUp) {
 		String content = "活动名称：" + activity.getName() + "\n" +
-				"活动时间："+ activity.getStartTime().format(ACTIVITY_TIME_FORMATTER) +"- "+ activity.getEndTime().format(ACTIVITY_TIME_FORMATTER) + "\n";
+				"活动时间：" + activity.getStartTime().format(ACTIVITY_TIME_FORMATTER) + "- " + activity.getEndTime().format(ACTIVITY_TIME_FORMATTER) + "\n";
 		if (signUp != null) {
-			content += "报名时间："+ signUp.getStartTime().format(SIGN_UP_TIME_FORMATTER) +"- "+ signUp.getEndTime().format(SIGN_UP_TIME_FORMATTER) + "\n";
+			content += "报名时间：" + signUp.getStartTime().format(SIGN_UP_TIME_FORMATTER) + "- " + signUp.getEndTime().format(SIGN_UP_TIME_FORMATTER) + "\n";
 		}
 		return content;
 	}

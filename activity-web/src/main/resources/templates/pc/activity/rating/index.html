@@ -20,12 +20,12 @@
 <body>
     <div class="assess-container" id="rating-vue" v-cloak>
         <div class="assess-header">
-            <div class="assess-title">
+            <div class="assess-title" style="cursor: pointer" @click="activityDetail">
                 {{activity.name}}
             </div>
             <div class="assess-header-set" v-if="isCreator()">
                 <a href="javascript:" @click="toRatingSetting">评价设置</a>
-                <a href="javascript:" @click="toRatingAudit">评价审核</a>
+                <a href="javascript:" @click="toRatingAudit" v-show="activity.ratingNeedAudit">评价审核</a>
             </div>
             <div class="assess-header-right">
                 <div class="login-container" v-if="loginUser != null">
@@ -52,10 +52,13 @@
                 <div class="fl inall-assess" v-if="activityRating != null">
                     <span class="inall-value" v-text="formatScore()"></span>
                     <div id="test"></div>
-                    <span class="inall-number">{{activityRating.scoreNum}}人评论</span>
+                    <span class="inall-number">{{activityRating.scoreNum}}人评价</span>
                 </div>
                 <div class="fr btn-addassess" v-if="isCanRating()" @click="toAdd">
                     <img src="/static/pc/assets/images/icon-assess.png" th:src="@{/pc/assets/images/icon-assess.png}"> 写评价
+                </div>
+                <div v-else-if="activity.openRating" class="fr">
+                    报名后可参与评价
                 </div>
                 <div class="clear"></div>
             </div>
@@ -66,15 +69,15 @@
                     <img class="fl" v-else :src="'http://photo.chaoxing.com/p/'+rating.scorerUid+'_80'">
                     <div class="item-content fl">
                         <span class="item-name" v-if="isAnonymousShow(index)">匿名</span>
-                        <span class="item-name" v-else>{{rating.scorerUserName}}</span>
-                        <span class="item-time">{{rating.createTime}}</span>
+                        <span class="item-name" v-else>{{rating.scorerUserName}}{{rating.anonymous ? '(匿名)' : ''}}</span>
+                        <span class="item-time">{{rating.createTime | timestampFormat}}</span>
                         <span class="item-checking" v-if="rating.auditStatus=='2'">审核中</span>
                         <span class="item-deleted" v-if="rating.auditStatus=='0'">已被管理员删除</span>
                         <!--操作菜单-->
-                        <div class="fr icon-assess-more" v-if="loginUser && rating.createUid == loginUser.uid">
+                        <div class="fr icon-assess-more" v-if="isSelfRating(rating) || isManager ">
                             <div class="assess-img-more"></div>
                             <ul class="nav-down-more">
-                                <li @click="toEdit(index)">编辑</li>
+<!--                                <li @click="toEdit(index)" v-if="isSelfRating(rating)">编辑</li>-->
                                 <li @click="toDelete(index)">删除</li>
                             </ul>
                         </div>
@@ -109,7 +112,7 @@
             <div></div>
         </el-dialog>
         <!--取消报名-->
-        <vue-confirm ref="deleteWindow" :message="'确认删除'" @callback="deleteSubmit"></vue-confirm>
+        <vue-confirm ref="deleteWindow" :message="'删除后，无法恢复。确认删除？'" @callback="deleteSubmit"></vue-confirm>
     </div>
 </body>
 <div th:replace="pc/include/common_js :: common_js(~{::script})">
@@ -125,6 +128,7 @@
                 activityRating: [[${activityRating}]],
                 loginUser: [[${session._login_user_}]],
                 canRating: [[${canRating}]],
+                isManager: [[${isManager}]],
                 ratings: [],
                 loaded: false,
                 total: 0,
@@ -218,6 +222,10 @@
                     }, function () {
                         app.showMsg("加载评价列表失败");
                     });
+                },
+                isSelfRating: function (rating) {
+                    var $this = this;
+                    return $this.loginUser && rating.createUid == $this.loginUser.uid;
                 },
                 isCreator: function () {
                     var $this = this;
@@ -388,7 +396,17 @@
                 deleteSubmit: function () {
                     var $this = this;
                     var url = ctx + "/api/activity/rating/" + $this.ratings[$this.activeIndex].id + "/delete";
-                    app.ajaxPostWithLoading(url, {}, function (data) {
+                    var params = {}
+
+                    // 是否是自己的评价
+                    if ($this.isManager && !$this.isSelfRating(this.ratings[$this.activeIndex])) {     // 是管理员，但是处理非自己的评价
+                        url = ctx + "/api/activity/rating/" + $this.ratings[$this.activeIndex].id + "/reject";
+                        params = {
+                            activityId: $this.activity.id,
+                            activityRatingDetailId: $this.ratings[$this.activeIndex].id
+                        };
+                    }
+                    app.ajaxPostWithLoading(url, params, function (data) {
                         if (data.success) {
                             window.location.reload();
                         } else {
@@ -413,6 +431,13 @@
                     var $this = this;
                     var url = "http://manage.hd.chaoxing.com/activity/" + $this.activity.id + "/rating/audit";
                     window.open(url);
+                },
+                activityDetail: function () {
+                    var $this = this;
+                    var previewUrl = $this.activity.previewUrl;
+                    if (!activityApp.isEmpty(previewUrl)) {
+                        window.open(previewUrl);
+                    }
                 }
             }
         });

@@ -56,7 +56,7 @@ public class ActivityApiController {
 		// 本期不开启审核
 		activity.setOpenAudit(false);
 		SignAddEditDTO signAddEdit = JSON.parseObject(signJsonStr, SignAddEditDTO.class);
-		activityHandleService.add(activity, signAddEdit, wfwRegionalArchitectures, loginUser, request);
+		activityHandleService.add(activity, signAddEdit, wfwRegionalArchitectures, loginUser);
 		return RestRespDTO.success(activity);
 	}
 
@@ -78,7 +78,7 @@ public class ActivityApiController {
 		List<WfwRegionalArchitectureDTO> wfwRegionalArchitectures = JSON.parseArray(participateScopeJsonStr, WfwRegionalArchitectureDTO.class);
 		// 本期不开启审核
 		SignAddEditDTO signAddEdit = JSON.parseObject(signJsonStr, SignAddEditDTO.class);
-		activityHandleService.edit(activity, signAddEdit, wfwRegionalArchitectures, loginUser, request);
+		activityHandleService.edit(activity, signAddEdit, wfwRegionalArchitectures, loginUser);
 		return RestRespDTO.success(activity);
 	}
 

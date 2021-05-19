@@ -32,7 +32,7 @@ public class SignUpParticipateScope {
     private Integer externalPid;
     /** 外部资源名称 */
     private String externalName;
-    /** 是不是叶子结点 */
+    /** 是不是叶子结点(非叶子结点没有选中所有也当作叶子结点) */
     private Boolean leaf;
     /** 创建时间 */
     private LocalDateTime createTime;

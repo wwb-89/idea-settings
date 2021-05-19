@@ -3,24 +3,25 @@ package com.chaoxing.activity.api.controller;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
-import com.chaoxing.activity.model.LoginCustom;
-import com.chaoxing.activity.service.LoginService;
-import com.chaoxing.activity.service.activity.ActivityValidationService;
-import com.chaoxing.activity.service.activity.collection.ActivityCollectionQueryService;
-import com.chaoxing.activity.service.activity.ActivityIsAboutStartHandleService;
-import com.chaoxing.activity.service.activity.manager.ActivityManagerValidationService;
-import com.chaoxing.activity.service.util.Model2DtoService;
 import com.chaoxing.activity.dto.RestRespDTO;
 import com.chaoxing.activity.dto.activity.ActivityExternalDTO;
 import com.chaoxing.activity.dto.manager.WfwRegionalArchitectureDTO;
 import com.chaoxing.activity.dto.query.ActivityQueryDTO;
 import com.chaoxing.activity.model.Activity;
 import com.chaoxing.activity.model.Group;
+import com.chaoxing.activity.model.LoginCustom;
 import com.chaoxing.activity.service.GroupService;
+import com.chaoxing.activity.service.LoginService;
+import com.chaoxing.activity.service.activity.ActivityIsAboutStartHandleService;
 import com.chaoxing.activity.service.activity.ActivityQueryService;
+import com.chaoxing.activity.service.activity.ActivityValidationService;
+import com.chaoxing.activity.service.activity.collection.ActivityCollectionHandleService;
+import com.chaoxing.activity.service.activity.collection.ActivityCollectionQueryService;
 import com.chaoxing.activity.service.manager.WfwCoordinateApiService;
 import com.chaoxing.activity.service.manager.WfwRegionalArchitectureApiService;
+import com.chaoxing.activity.service.util.Model2DtoService;
 import com.chaoxing.activity.util.HttpServletRequestUtils;
+import com.chaoxing.activity.util.constant.CookieConstant;
 import com.google.common.collect.Lists;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -68,9 +69,9 @@ public class ActivityApiController {
 	@Resource
 	private ActivityIsAboutStartHandleService activityStartNoticeHandleService;
 	@Resource
-	private ActivityManagerValidationService activityManagerValidationService;
-	@Resource
 	private ActivityValidationService activityValidationService;
+	@Resource
+	private ActivityCollectionHandleService activityCollectionHandleService;
 
 	/**组活动推荐
 	 * @Description 
@@ -253,6 +254,60 @@ public class ActivityApiController {
 		Activity activity = activityQueryService.getBySignId(signId);
 		boolean manager = activityValidationService.isManageAble(activity.getId(), uid);
 		return RestRespDTO.success(manager);
+	}
+
+	/**机构创建的活动列表
+	 * @Description 
+	 * @author wwb
+	 * @Date 2021-04-19 10:12:18
+	 * @param fid
+	 * @param activityFlag
+	 * @return com.chaoxing.activity.dto.RestRespDTO
+	*/
+	@RequestMapping("org/{fid}/created")
+	public RestRespDTO listOrgCreated(@PathVariable Integer fid, @RequestParam(defaultValue = "") String activityFlag) {
+		return RestRespDTO.success(activityQueryService.listOrgCreated(fid, activityFlag));
+	}
+
+	/**活动参与的用户uid
+	 * @Description
+	 * @author wwb
+	 * @Date 2021-04-19 10:14:24
+	 * @param activityId
+	 * @return com.chaoxing.activity.dto.RestRespDTO
+	*/
+	@RequestMapping("{activityId}/participated-uid")
+	public RestRespDTO participatedUid(@PathVariable Integer activityId) {
+		List<Integer> uids = activityQueryService.listSignedUpUid(activityId);
+		return RestRespDTO.success(uids);
+	}
+
+	/**收藏活动
+	 * @Description 
+	 * @author wwb
+	 * @Date 2021-05-13 15:10:26
+	 * @param activityId
+	 * @param uid
+	 * @return com.chaoxing.activity.dto.RestRespDTO
+	*/
+	@RequestMapping("{activityId}/collect")
+	public RestRespDTO collect(@PathVariable Integer activityId, @CookieValue(name = CookieConstant.UID) Integer uid) {
+		activityCollectionHandleService.collect(activityId, uid);
+		return RestRespDTO.success();
+	}
+
+	/**取消收藏活动
+	 * @Description 
+	 * @author wwb
+	 * @Date 2021-05-13 15:12:56
+	 * @param activityId
+	 * @param uid
+	 * @return com.chaoxing.activity.dto.RestRespDTO
+	*/
+	@RequestMapping("{activityId}/collect/cancel")
+	public RestRespDTO cancelCollect(@PathVariable Integer activityId, @CookieValue(name = CookieConstant.UID) Integer uid) {
+		activityCollectionHandleService.cancelCollect(activityId, uid);
+		return RestRespDTO.success();
 	}
 
 }

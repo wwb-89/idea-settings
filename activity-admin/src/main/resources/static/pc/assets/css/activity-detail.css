@@ -1,4 +1,5 @@
-html,body{
+html,body,
+button,input{
     font-family: "SF Pro Display","Helvetica Neue",Helvetica,Tahoma,Arial,"PingFang SC","Hiragino Sans GB","Microsoft YaHei",sans-serif,'Apple Color Emoji','Segoe UI Emoji','Segoe UI Symbol','Noto Color Emoji';
 }
 .block {
@@ -101,7 +102,7 @@ html,body{
     margin: 4px 10px 4px 16px;
     line-height: 22px;
     width: 154px;
-    overflow: hidden; 
+    overflow: hidden;
     white-space: nowrap;
     text-overflow: ellipsis;
     -o-text-overflow: ellipsis;
@@ -206,12 +207,12 @@ html,body{
 .el-date-editor .el-range__icon {
     position: absolute;
     right: 2px;
-    line-height: 28px;
+    line-height: 30px;
 }
 
 .el-input__inner {
-    height: 30px;
-    line-height: 30px;
+    height: 32px;
+    line-height: 32px;
 }
 
 .el-date-editor .el-range__close-icon {
@@ -226,7 +227,7 @@ html,body{
 
 .table-content thead th,
 .table-content tbody td {
-    overflow: hidden; 
+    overflow: hidden;
     white-space: nowrap;
     text-overflow: ellipsis;
     -o-text-overflow: ellipsis;
@@ -289,7 +290,7 @@ html,body{
 
 .showTable td:nth-child(2){
     padding-left: 32px;
-} 
+}
 
 .table-content tbody .table-header td,
 .table-content tbody .sign-details td {
@@ -310,7 +311,8 @@ html,body{
 .activity-statistics{
     /* width: 1000px; */
     min-width: 820px;
-    margin: 16px auto 50px;
+    /*margin: 16px auto 50px;*/
+    margin: 20px;
 }
 .activity-statistics .white-part{
     padding: 24px 32px;
@@ -320,13 +322,14 @@ html,body{
     padding: 24px;
 }
 .activity-statistics .white-part.title-box .name-box{
-    margin-bottom: 24px;
+    margin-bottom: 16px;
 }
 .activity-statistics .white-part.title-box .name-box .title{
     font-weight: 600;
     font-size: 20px;
     line-height: 20px;
     color: #333333;
+    margin: 5px 0;
 }
 .activity-statistics .white-part.title-box .name-box .tip{
     font-size: 12px;
@@ -572,3 +575,50 @@ html,body{
   .page-container .layui-form-checkbox {
       display: none;
   }
+
+  .marginl16{
+      margin-left: 16px;
+  }
+  .fs0{
+      font-size: 0;
+  }
+/* 区域活动统计的级联选择器 */
+
+.el-cascader{
+    line-height: 30px;
+    vertical-align: top;
+    width: 248px;
+}
+.el-cascader .el-input__suffix,
+.el-cascader .el-input .el-icon-arrow-down{
+    line-height: 32px;
+}
+.el-cascader-node:not(.is-disabled):focus,
+.el-cascader-node:not(.is-disabled):hover{
+    background-color: #F8F8F8;
+}
+.el-cascader-node.in-active-path,
+.el-cascader-node.is-active,
+.el-cascader-node.is-selectable.in-checked-path{
+    color: #0084FF;
+    font-weight: 600;
+}
+.el-cascader__dropdown .el-cascader-node.is-active,
+.el-cascader__dropdown .el-cascader-node.in-active-path{
+    background: rgba(0, 132, 255, 0.04);
+}
+.el-cascader__dropdown .el-cascader-node__label{
+    padding: 0;
+}
+.el-cascader__dropdown .el-cascader-node{
+    padding-left: 16px;
+}
+.el-cascader__dropdown .el-cascader-node__prefix{
+    display: none;
+}
+.el-cascader__dropdown .el-cascader-menu:last-child .el-cascader-node{
+    padding-left: 16px;
+}
+.el-cascader__dropdown .el-cascader-node__postfix{
+    right: 8px;
+}

@@ -35,7 +35,7 @@ public class NoticeDTO {
 	private List<Integer> receiverUids;
 
 	public static String generateAttachment(String title, String url) {
-		return "{'attachmentType':25,'att_web':{'showContent':1,'logo':'" + UrlConstant.NOTICE_LOGO_URL + "','title':'" + title + "','content':'','url':'" + url + "'}}";
+		return "[{'attachmentType':25,'att_web':{'showContent':1,'logo':'" + UrlConstant.NOTICE_LOGO_URL + "','title':'" + title + "','content':'','url':'" + url + "'}}]";
 	}
 
 }

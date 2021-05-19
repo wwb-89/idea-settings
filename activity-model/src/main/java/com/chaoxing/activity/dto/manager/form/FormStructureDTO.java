@@ -25,6 +25,8 @@ public class FormStructureDTO {
 	private Integer id;
 	/** 字段名称 */
 	private String label;
+	/** 别名 */
+	private String alias;
 	private String compt;
 	private List<FormStructureDTO> compts;
 

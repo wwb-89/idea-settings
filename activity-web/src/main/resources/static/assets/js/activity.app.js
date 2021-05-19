@@ -350,19 +350,43 @@ Vue.filter("activityStatusInstructions", function (status) {
 Vue.filter("myActivityStatusInstructions", function (status) {
     return activityApp.getMyActivityStatusInstructions(status);
 });
-Vue.filter("timestamp2ChineseYMD", function (timestamp) {
-    var dateObj = activityApp.millisecond2DateObj(timestamp);
-    return dateObj.year + "年" + dateObj.month + "月" + dateObj.day + "日";
+Vue.filter("timestampFormat", function (timestamp) {
+    if (activityApp.isEmpty(timestamp)) {
+        return "";
+    }
+    var dateObj = moment(timestamp);
+    var year = dateObj.year();
+    if (year == new Date().getFullYear()) {
+        return dateObj.format("MM.DD HH:mm");
+    } else {
+        return dateObj.format("YYYY.MM.DD HH:mm");
+    }
+
 });
-Vue.filter("timestamp2YMD", function (timestamp) {
-    var dateObj = activityApp.millisecond2DateObj(timestamp);
-    return dateObj.year + "-" + dateObj.month + "-" + dateObj.day;
-});
-Vue.filter("timestamp2YMDH", function (timestamp) {
-    var dateObj = activityApp.millisecond2DateObj(timestamp);
-    return dateObj.year + "-" + dateObj.month + "-" + dateObj.day + " " + dateObj.hour;
-});
-Vue.filter("timestamp2YMDHM", function (timestamp) {
-    var dateObj = activityApp.millisecond2DateObj(timestamp);
-    return dateObj.year + "-" + dateObj.month + "-" + dateObj.day + " " + dateObj.hour + ":" + dateObj.minute;
+Vue.filter("timestampScopeFormat", function (startTimestamp, endTimestamp) {
+    var thisYear = new Date().getFullYear();
+    var start = "";
+    var startDateObj = null;
+    var end = "";
+    var endDateObj = null;
+    if (!activityApp.isEmpty(startTimestamp)) {
+        startDateObj = moment(startTimestamp);
+    }
+    if (!activityApp.isEmpty(endTimestamp)) {
+        endDateObj = moment(endTimestamp);
+    }
+    var isThisYear = (!startDateObj || startDateObj.year() == thisYear) && (!endDateObj || endDateObj.year() == thisYear);
+    if (isThisYear) {
+        start = startDateObj ? startDateObj.format("MM.DD HH:mm") : "";
+        end = endDateObj ? endDateObj.format("MM.DD HH:mm") : "";
+    } else {
+        start = startDateObj ? startDateObj.format("YYYY.MM.DD HH:mm") : "";
+        end = endDateObj ? endDateObj.format("YYYY.MM.DD HH:mm") : "";
+    }
+    var result = start;
+    if (!activityApp.isEmpty(start) && !activityApp.isEmpty(end)) {
+        result += " ~ ";
+    }
+    result += end;
+    return result;
 });

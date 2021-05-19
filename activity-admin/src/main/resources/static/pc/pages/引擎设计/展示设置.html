@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>展示设置</title>
+    <link rel="stylesheet" href="../../assets/lib/element-ui/lib/theme-chalk/index.css">
+    <link rel="stylesheet" href="../../assets/css/public.css">
+    <link rel="stylesheet" href="../../assets/css/engine-design.css">
+</head>
+<body>
+    <div class="show-setting" id="show-setting">
+        <div class="top-con">
+            <div class="go-back white-border-btn"><i></i><span>返回</span></div>
+            <div class="step-box">
+                <img src="../../assets/images/yq-design/step1-normal.png" alt="">
+                <img src="../../assets/images/yq-design/step2-nomarl.png" alt="">
+                <img src="../../assets/images/yq-design/step3-active.png" alt="">
+            </div>
+            <div class="look-div fr">
+                <div class="btn-width80px-color1">预览</div>
+                <div class="btn-width80px-color2">发布</div>
+            </div>
+            <div class="step-div fr">
+                <div class="prev-step white-border-btn">上一步</div>
+            </div>
+        </div>
+        <div class="content">
+            <div class="w-1000px clear">
+                <div class="left-tab fl">
+                    <div class="tab active">活动列表界面</div>
+                    <div class="tab">活动详情信息</div>
+                </div>
+                <div class="tab-content fr">
+                    <div class="content1">
+                        <p class="title">活动列表界面</p>
+                        <div class="config-box">
+                            <div class="field-config">
+                                <p class="name">字段显示配置</p>
+                                <el-checkbox-group v-model="checkList" class="checkbox-box">
+                                    <el-checkbox label="名称" disabled></el-checkbox>
+                                    <el-checkbox label="时间"></el-checkbox>
+                                    <el-checkbox label="封面"></el-checkbox>
+                                    <el-checkbox label="主办方"></el-checkbox>
+                                    <el-checkbox label="主讲人"></el-checkbox>
+                                    <el-checkbox label="活动积分"></el-checkbox>
+                                    <el-checkbox label="参与形式"></el-checkbox>
+                                    <el-checkbox label="标签"></el-checkbox>
+                                    <el-checkbox label="活动说明"></el-checkbox>
+                                </el-checkbox-group>
+                            </div>
+                            <div class="preview">
+                                <p class="name">预览</p>
+                                <p class="tips">如果字段数据为空界面不会展示，展示界面为样例界面</p>
+                                <div class="info-box">
+                                    <p class="cover-box"><img src="../../assets/images/yq-design/img-cover.png" alt=""></p>
+                                    <p class="name">“牛”转乾坤贺新年春节主题活动 | 送你幸福小月历</p>
+                                    <p class="time">2020.10.10 9:00 ～ 2028.10.1 16:00</p>
+                                    <p class="desc">活动说明大家好这个是活动说明</p>
+                                    <p class="">超星图书馆</p>
+                                    <p class="">浙江省杭州市西湖区曙光路73号</p>
+                                    <p class="">剩余名额：26</p>
+                                    <p class="integral">活动积分：23</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="content2" style="display: none;">
+                        <p class="title">活动详情界面</p>
+                        <div class="config-box">
+                            <div class="field-config">
+                                <p class="name">字段显示配置</p>
+                                <el-checkbox-group v-model="checkList" class="checkbox-box">
+                                    <el-checkbox label="名称" disabled></el-checkbox>
+                                    <el-checkbox label="时间"></el-checkbox>
+                                    <el-checkbox label="封面"></el-checkbox>
+                                    <el-checkbox label="主办方"></el-checkbox>
+                                    <el-checkbox label="主讲人"></el-checkbox>
+                                    <el-checkbox label="活动积分"></el-checkbox>
+                                    <el-checkbox label="参与形式"></el-checkbox>
+                                    <el-checkbox label="标签"></el-checkbox>
+                                    <el-checkbox label="活动说明"></el-checkbox>
+                                </el-checkbox-group>
+                            </div>
+                            <div class="preview">
+                                <p class="name">预览</p>
+                                <p class="tips">如果字段数据为空界面不会展示，展示界面为样例界面</p>
+                                <div class="info-box">
+                                    <p class="cover-box fl"><img src="../../assets/images/yq-design/img-cover.png" alt=""></p>
+                                    <div class="right-text">
+                                        <p class="name">“牛”转乾坤贺新年春节主题活动 | 送你幸福小月历送你幸福小月历</p>
+                                        <p class="time">2020.10.10 9:00 ～ 2028.10.1 16:00</p>
+                                        <p class="">超星图书馆</p>
+                                        <p class="">浙江省杭州市西湖区曙光路73号</p>
+                                        <p class="">剩余名额：26</p>
+                                        <p class="integral">活动积分：23</p>
+                                        <div class="btn">去报名</div>
+                                    </div>
+                                </div>
+                                <p class="desc">活动说明大家好这个是活动说明</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script src="../../assets/lib/jquery.min.js"></script>
+    <script src="../../assets/lib/vue.js"></script>
+    <script src="../../assets/lib/element-ui/lib/index.js"></script>
+    <script src="../../assets/lib/jqthumb.min.js"></script>
+    <script>
+        var app = new Vue({
+            el: '#show-setting',
+            data: {
+                checkList:['名称','时间','封面','主办方'],
+            }
+        })
+    </script>
+    <script>
+        $('.tab').click(function(){
+            $(this).addClass('active')
+            $(this).siblings().removeClass('active')
+            $('.tab-content').children().hide()
+            $('.tab-content').children().eq($(this).index()).show()
+        })
+    </script>
+</body>
+</html>

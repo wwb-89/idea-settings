@@ -1539,3 +1539,27 @@ body .layui-laydate .layui-this {
 body .layui-laydate-footer span:hover {
     color: #658DFF;
 }
+/* 公共按钮样式 */
+.btn-customize {
+    padding: 5px 13px !important;
+    border: 1px solid #82C3FF;
+    font-size: 13px;
+    color: #0084FF;
+    line-height: 18px;
+    display: inline-block;
+    vertical-align: middle;
+}
+.el-button:active {
+    color: #0084FF;
+    border-color: #82C3FF;
+}
+.el-button:focus{
+    color: #0084FF;
+    border-color: #82C3FF;
+    background-color: #fff;
+}
+.el-button:hover {
+    color: #0084FF;
+    border-color: #82C3FF;
+    background-color: #EBF5FF;
+}

@@ -22,6 +22,8 @@ public class ActivityMhUrlConstant {
 	public static final String ACTIVITY_SIGN_INFO_URL = UrlConstant.API_DOMAIN + "/mh/v2/activity/%d/info";
 	/** 推荐活动外部数据源url */
 	public static final String ACTIVITY_RECOMMEND_URL = UrlConstant.API_DOMAIN + "/mh/activity/%d/recommend";
+	/** 双选会外部数据源url */
+	public static final String DUAL_SELECT_URL = "http://appcd.chaoxing.com/form-employment/portal/api/org/double/selection/statistics?activityId=%d";
 	/** 报名签到外部数据源url */
 	public static final String ACTIVITY_SIGN_URL = UrlConstant.API_DOMAIN + "/mh/activity/%d/sign/btn";
 	/** 门户域名 */

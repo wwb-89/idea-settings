@@ -118,12 +118,12 @@ public class ActivityMhV2ApiController {
 			if (activityValidationService.isCreator(activity, uid)) {
 				mhGeneralAppResultDataFields.addAll(buildBtnField("管理", getFlag(availableFlags), activityQueryService.getActivityManageUrl(activity.getId()), "2"));
 			}
-		}
-		// 评价
-		Boolean openRating = activity.getOpenRating();
-		openRating = Optional.ofNullable(openRating).orElse(Boolean.FALSE);
-		if (openRating) {
-			mhGeneralAppResultDataFields.addAll(buildBtnField("评价", getFlag(availableFlags), activityQueryService.getActivityRatingUrl(activity.getId()), "2"));
+			// 评价
+			Boolean openRating = activity.getOpenRating();
+			openRating = Optional.ofNullable(openRating).orElse(Boolean.FALSE);
+			if (openRating) {
+				mhGeneralAppResultDataFields.addAll(buildBtnField("评价", getFlag(availableFlags), activityQueryService.getActivityRatingUrl(activity.getId()), "2"));
+			}
 		}
 		// 活动地点
 		String activityAddress = "";
@@ -168,25 +168,27 @@ public class ActivityMhV2ApiController {
 		Boolean openWork = activity.getOpenWork();
 		openWork = Optional.ofNullable(openWork).orElse(Boolean.FALSE);
 		Integer workId = activity.getWorkId();
+		boolean isManager = activityValidationService.isCreator(activity, uid);
 		// 报名信息
 		boolean existSignUp = CollectionUtils.isNotEmpty(signUpIds);
+		boolean existSignUpInfo = false;
 		if (existSignUp) {
 			if (userSignParticipationStat.getSignedUp()) {
 				// 已报名
 				if (activityFlagValidateService.isDualSelect(activity)) {
 					result.addAll(buildBtnField("进入会场", getFlag(availableFlags), getDualSelectIndexUrl(activity), "1"));
 				}
-				if (openWork && workId != null) {
-					result.addAll(buildBtnField("提交作品", getFlag(availableFlags), getWorkIndexUrl(workId), "1"));
-				}
 				if (CollectionUtils.isNotEmpty(signInIds)) {
 					result.addAll(buildBtnField("去签到", getFlag(availableFlags), userSignParticipationStat.getSignInUrl(), "1"));
 				}
-				result.addAll(buildBtnField("报名信息", getFlag(availableFlags), userSignParticipationStat.getSignUpResultUrl(), "2"));
+				if (openWork && workId != null && !isManager) {
+					result.addAll(buildBtnField("提交作品", getFlag(availableFlags), getWorkIndexUrl(workId), "1"));
+				}
+				existSignUpInfo = true;
 			} else if (userSignParticipationStat.getSignUpAudit()) {
 				// 审核中
 				result.addAll(buildBtnField("报名审核中", getFlag(availableFlags), "", "0"));
-				result.addAll(buildBtnField("报名信息", getFlag(availableFlags), userSignParticipationStat.getSignUpResultUrl(), "2"));
+				existSignUpInfo = true;
 			} else if (activityEnded && userSignParticipationStat.getSignUpEnded()) {
 				// 活动和报名都结束的情况显示活动已结束
 				result.addAll(buildBtnField("活动已结束", getFlag(availableFlags), "", "0"));
@@ -213,25 +215,32 @@ public class ActivityMhV2ApiController {
 			if (activityFlagValidateService.isDualSelect(activity)) {
 				result.addAll(buildBtnField("进入会场", getFlag(availableFlags), getDualSelectIndexUrl(activity), "1"));
 			}
-			if (openWork && workId != null) {
-				result.addAll(buildBtnField("提交作品", getFlag(availableFlags), getWorkIndexUrl(workId), "1"));
-			}
 			if (CollectionUtils.isNotEmpty(signInIds)) {
 				result.addAll(buildBtnField("去签到", getFlag(availableFlags), userSignParticipationStat.getSignInUrl(), "1"));
 			}
+			if (openWork && workId != null && !isManager) {
+				result.addAll(buildBtnField("提交作品", getFlag(availableFlags), getWorkIndexUrl(workId), "1"));
+			}
 		}
 		// 是不是管理员
-		if (activityValidationService.isCreator(activity, uid)) {
-			List<MhGeneralAppResultDataDTO.MhGeneralAppResultDataFieldDTO> btns = buildBtnField("管理", getFlag(availableFlags), activityQueryService.getActivityManageUrl(activity.getId()), "2");
-			if (existSignUp || CollectionUtils.isNotEmpty(signInIds)) {
-				for (int i = 0; i < btns.size(); i++) {
-					result.add(i + 2, btns.get(i));
-				}
-			} else {
-				for (MhGeneralAppResultDataDTO.MhGeneralAppResultDataFieldDTO btn : btns) {
-					result.add(btn);
-				}
+		if (isManager) {
+			List<MhGeneralAppResultDataDTO.MhGeneralAppResultDataFieldDTO> btns = Lists.newArrayList();
+			if (openWork && workId != null) {
+				btns.addAll(buildBtnField("提交作品", getFlag(availableFlags), getWorkIndexUrl(workId), "1"));
 			}
+			btns.addAll(buildBtnField("管理", getFlag(availableFlags), activityQueryService.getActivityManageUrl(activity.getId()), "2"));
+			for (MhGeneralAppResultDataDTO.MhGeneralAppResultDataFieldDTO btn : btns) {
+				result.add(btn);
+			}
+		}
+		// 评价
+		Boolean openRating = activity.getOpenRating();
+		openRating = Optional.ofNullable(openRating).orElse(Boolean.FALSE);
+		if (openRating) {
+			result.addAll(buildBtnField("评价", getFlag(availableFlags), activityQueryService.getActivityRatingUrl(activity.getId()), "2"));
+		}
+		if (existSignUpInfo) {
+			result.addAll(buildBtnField("报名信息", getFlag(availableFlags), userSignParticipationStat.getSignUpResultUrl(), "2"));
 		}
 		return result;
 	}

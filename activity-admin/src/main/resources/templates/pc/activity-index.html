@@ -15,7 +15,7 @@
 <div class="container" id="activity-vue" v-cloak>
     <div class="slider">
         <div class="title">
-            <span th:text="${activity.name}">成都少儿阅读活动</span>
+            <span th:text="${activity.name}" style="cursor: pointer;" @click="activityHome">成都少儿阅读活动</span>
         </div>
         <div class="menu">
             <div class="entry menu-item">
@@ -90,7 +90,7 @@
                     // 通知
                     notice: {name: "发通知", defaultIconUrl: ctx + "/pc/assets/images/icon-notice-default.png", activeIconUrl: ctx + "/pc/assets/images/icon-notice-active.png", url: "//reading.chaoxing.com/qd/manage/notice/add?signId=" + [[${signActivityManageIndex.signId}]], selected: false},
                     // 统计
-                    stat: {name: "统计", defaultIconUrl: ctx + "/pc/assets/images/icon-statistics-default.png", activeIconUrl: ctx + "/pc/assets/images/icon-statistics-active.png", url: ctx + "/stat/activity/" + [[${activity.id}]], selected: false}
+                    stat: {name: "统计", defaultIconUrl: ctx + "/pc/assets/images/icon-statistics-default.png", activeIconUrl: ctx + "/pc/assets/images/icon-statistics-active.png", url: ctx + "/activity/" + [[${activity.id}]] + "/stat", selected: false}
                 },
                 iframeUrl: ""
             },
@@ -121,6 +121,14 @@
                 }
             },
             methods: {
+                // 活动首页
+                activityHome: function () {
+                    var $this = this;
+                    var home = $this.activity.previewUrl;
+                    if (!activityApp.isEmpty(home)) {
+                        window.open(home);
+                    }
+                },
                 resizePageHeight: function () {
                     // container的最小高度
                     var containerMinHeight = $(".container").css("min-height");

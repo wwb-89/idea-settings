@@ -8,7 +8,7 @@ import org.springframework.stereotype.Component;
 
 import javax.annotation.Resource;
 
-/**第二课堂活动推送任务
+/**活动表单推送任务
  * @author wwb
  * @version ver 1.0
  * @className SecondClassroomActivityPushTask
@@ -18,7 +18,7 @@ import javax.annotation.Resource;
  */
 @Slf4j
 @Component
-public class SecondClassroomActivityPushTask {
+public class ActivityFormPushTask {
 
 	@Resource
 	private SecondClassroomActivityPushQueueService secondClassroomActivityPushQueueService;
