@@ -46,22 +46,22 @@ public class WebTemplateService {
 	 * @Description 
 	 * @author wwb
 	 * @Date 2020-11-23 23:06:47
-	 * @param webTemplateId
+	 * @param id
 	 * @return com.chaoxing.activity.model.WebTemplate
 	*/
-	public WebTemplate getById(Integer webTemplateId) {
-		return webTemplateMapper.selectById(webTemplateId);
+	public WebTemplate getById(Integer id) {
+		return webTemplateMapper.selectById(id);
 	}
 
 	/**活动模板一定存在
 	 * @Description 
 	 * @author wwb
 	 * @Date 2020-11-25 15:28:53
-	 * @param webTemplateId
+	 * @param id
 	 * @return com.chaoxing.activity.model.WebTemplate
 	*/
-	public WebTemplate webTemplateExist(Integer webTemplateId) {
-		WebTemplate webTemplate = getById(webTemplateId);
+	public WebTemplate webTemplateExist(Integer id) {
+		WebTemplate webTemplate = getById(id);
 		Optional.ofNullable(webTemplate).orElseThrow(() -> new BusinessException("网页模板不存在"));
 		return webTemplate;
 	}

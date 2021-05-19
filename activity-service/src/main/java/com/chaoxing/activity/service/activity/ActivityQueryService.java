@@ -23,7 +23,6 @@ import com.chaoxing.activity.util.constant.DateFormatConstant;
 import com.chaoxing.activity.util.constant.DateTimeFormatterConstant;
 import com.chaoxing.activity.util.constant.UrlConstant;
 import com.chaoxing.activity.util.enums.ActivityQueryDateEnum;
-import com.chaoxing.activity.util.enums.ActivityTypeEnum;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import lombok.extern.slf4j.Slf4j;
@@ -199,8 +198,8 @@ public class ActivityQueryService {
 	*/
 	public List<ActivityTypeDTO> listActivityType() {
 		List<ActivityTypeDTO> result = new ArrayList<>();
-		ActivityTypeEnum[] values = ActivityTypeEnum.values();
-		for (ActivityTypeEnum value : values) {
+		Activity.ActivityTypeEnum[] values = Activity.ActivityTypeEnum.values();
+		for (Activity.ActivityTypeEnum value : values) {
 			ActivityTypeDTO activityType = ActivityTypeDTO.builder()
 					.name(value.getName())
 					.value(value.getValue())

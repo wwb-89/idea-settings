@@ -19,8 +19,13 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class FormCreateActivity {
 
+    /** 创建机构id */
     private Integer fid;
+    /** 表单id */
     private Integer formId;
+    /** 表单记录id */
     private Integer formUserId;
+    /** 活动标识 */
+    private String flag;
 
 }

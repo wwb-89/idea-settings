@@ -40,6 +40,7 @@ import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
@@ -237,8 +238,8 @@ public class ActivityHandleService {
 	*/
 	private void handleActivityType(Activity activity) {
 		String activityType = activity.getActivityType();
-		ActivityTypeEnum activityTypeEnum = ActivityTypeEnum.fromValue(activityType);
-		if (ActivityTypeEnum.ONLINE.equals(activityTypeEnum)) {
+		Activity.ActivityTypeEnum activityTypeEnum = Activity.ActivityTypeEnum.fromValue(activityType);
+		if (Activity.ActivityTypeEnum.ONLINE.equals(activityTypeEnum)) {
 			activity.setAddress(null);
 			activity.setLongitude(null);
 			activity.setDimension(null);
@@ -539,7 +540,7 @@ public class ActivityHandleService {
 	 * @param loginUser
 	 * @return com.chaoxing.activity.dto.mh.MhCloneResultDTO
 	*/
-	@Transactional(rollbackFor = Exception.class)
+	@Transactional(rollbackFor = Exception.class, propagation = Propagation.REQUIRED)
 	public MhCloneResultDTO bindWebTemplate(Integer activityId, Integer webTemplateId, LoginUserDTO loginUser) {
 		Activity activity = activityValidationService.activityExist(activityId);
 		// 如果已经选择了模板就不能再选择
@@ -646,7 +647,7 @@ public class ActivityHandleService {
 	 * @param loginUser
 	 * @return com.chaoxing.activity.dto.mh.MhCloneParamDTO
 	*/
-	private MhCloneParamDTO packageMhCloneParam(Activity activity, Integer webTemplateId, LoginUserDTO loginUser) {
+	public MhCloneParamDTO packageMhCloneParam(Activity activity, Integer webTemplateId, LoginUserDTO loginUser) {
 		WebTemplate webTemplate = webTemplateService.webTemplateExist(webTemplateId);
 		MhCloneParamDTO mhCloneParam = new MhCloneParamDTO();
 		mhCloneParam.setTemplateId(webTemplate.getTemplateId());
