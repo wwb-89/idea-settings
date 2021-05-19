@@ -1548,6 +1548,7 @@ body .layui-laydate-footer span:hover {
     line-height: 18px;
     display: inline-block;
     vertical-align: middle;
+    font-weight: 400;
 }
 .el-button:active {
     color: #0084FF;
