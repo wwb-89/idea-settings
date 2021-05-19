@@ -3,7 +3,9 @@ package com.chaoxing.activity.api.controller;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.chaoxing.activity.dto.RestRespDTO;
+import com.chaoxing.activity.model.ActivityClassify;
 import com.chaoxing.activity.service.activity.classify.ActivityClassifyHandleService;
+import com.chaoxing.activity.service.activity.classify.ActivityClassifyQueryService;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -21,11 +23,20 @@ import java.util.List;
  */
 @RestController
 @RequestMapping("activity/classify")
-public class ActivityClassifyController {
+public class ActivityClassifyApiController {
 
     @Resource
     private ActivityClassifyHandleService activityClassifyHandleService;
+    @Resource
+    private ActivityClassifyQueryService activityClassifyQueryService;
 
+    /**给指定的机构克隆系统活动类型
+     * @Description 
+     * @author wwb
+     * @Date 2021-05-19 11:48:28
+     * @param data
+     * @return com.chaoxing.activity.dto.RestRespDTO
+    */
     @RequestMapping("clone")
     public RestRespDTO cloneSystem(@RequestBody String data) {
         JSONObject jsonObject = JSON.parseObject(data);
@@ -34,6 +45,20 @@ public class ActivityClassifyController {
             activityClassifyHandleService.cloneSystemClassifyNoCheck(fid);
         }
         return RestRespDTO.success();
+    }
+
+    /**查询机构可选的活动分类列表
+     * @Description 
+     * @author wwb
+     * @Date 2021-05-19 11:54:17
+     * @param fid
+     * @return com.chaoxing.activity.dto.RestRespDTO
+    */
+    @RequestMapping("list")
+    public RestRespDTO listOrgClassify(Integer fid) {
+        activityClassifyHandleService.cloneSystemClassify(fid);
+        List<ActivityClassify> activityClassifies = activityClassifyQueryService.listOrgOptional(fid);
+        return RestRespDTO.success(activityClassifies);
     }
 
 }

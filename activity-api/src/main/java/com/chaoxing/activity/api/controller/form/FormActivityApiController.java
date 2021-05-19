@@ -1,7 +1,8 @@
 package com.chaoxing.activity.api.controller.form;
 
 import com.chaoxing.activity.dto.RestRespDTO;
-import com.chaoxing.activity.service.manager.FormApprovalApiService;
+import com.chaoxing.activity.dto.manager.form.FormCreateActivity;
+import com.chaoxing.activity.service.queue.FormActivityCreateQueueService;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -21,7 +22,7 @@ import javax.annotation.Resource;
 public class FormActivityApiController {
 
     @Resource
-    private FormApprovalApiService formApprovalApiService;
+    private FormActivityCreateQueueService formActivityCreateQueueService;
 
     /**创建活动
      * @Description
@@ -36,7 +37,13 @@ public class FormActivityApiController {
      */
     @RequestMapping("create")
     public RestRespDTO formCreateActivity(@RequestParam Integer deptId, Integer formId, Integer indexID, String flag) {
-        formApprovalApiService.addActivity(deptId, formId, indexID, flag);
+        FormCreateActivity formCreateActivity = FormCreateActivity.builder()
+                .fid(deptId)
+                .formId(formId)
+                .formUserId(indexID)
+                .flag(flag)
+                .build();
+        formActivityCreateQueueService.add(formCreateActivity);
         return RestRespDTO.success();
     }
 

@@ -15,7 +15,6 @@ import com.chaoxing.activity.service.manager.module.SignApiService;
 import com.chaoxing.activity.util.BaiduMapUtils;
 import com.chaoxing.activity.util.constant.DateTimeFormatterConstant;
 import com.chaoxing.activity.util.constant.UrlConstant;
-import com.chaoxing.activity.util.enums.ActivityTypeEnum;
 import com.google.common.collect.Lists;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -129,8 +128,8 @@ public class ActivityMhV2ApiController {
 		String activityAddress = "";
 		String activityAddressLink = "";
 		String activityType = activity.getActivityType();
-		ActivityTypeEnum activityTypeEnum = ActivityTypeEnum.fromValue(activityType);
-		if (ActivityTypeEnum.OFFLINE.equals(activityTypeEnum)) {
+		Activity.ActivityTypeEnum activityTypeEnum = Activity.ActivityTypeEnum.fromValue(activityType);
+		if (Activity.ActivityTypeEnum.OFFLINE.equals(activityTypeEnum)) {
 			// 线下活动才有活动地点
 			activityAddress = Optional.ofNullable(activity.getAddress()).orElse("") + Optional.ofNullable(activity.getDetailAddress()).orElse("");
 			activityAddressLink = BaiduMapUtils.generateAddressUrl(activity.getLongitude(), activity.getDimension(), activity.getName(), activityAddress);

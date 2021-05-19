@@ -63,11 +63,13 @@ public class ActivityFormRecordService {
 		String activityEditLockKey = activityHandleService.getActivityEditLockKey(activityId);
 		distributedLock.lock(activityEditLockKey, () -> {
 			Activity activity = activityQueryService.getById(activityId);
-			ActivityFormRecord existActivityFormRecord = activityFormRecordMapper.selectOne(new QueryWrapper<ActivityFormRecord>()
-					.lambda()
-					.eq(ActivityFormRecord::getActivityId, activity.getId())
-			);
-			addOrUpdate(activity, existActivityFormRecord);
+			if (activity != null) {
+				ActivityFormRecord existActivityFormRecord = activityFormRecordMapper.selectOne(new QueryWrapper<ActivityFormRecord>()
+						.lambda()
+						.eq(ActivityFormRecord::getActivityId, activity.getId())
+				);
+				addOrUpdate(activity, existActivityFormRecord);
+			}
 			return null;
 		}, e -> {
 			throw new BusinessException("处理活动推送失败");
@@ -85,12 +87,14 @@ public class ActivityFormRecordService {
 		String activityEditLockKey = activityHandleService.getActivityEditLockKey(activityId);
 		distributedLock.lock(activityEditLockKey, () -> {
 			Activity activity = activityQueryService.getById(activityId);
-			ActivityFormRecord existActivityFormRecord = activityFormRecordMapper.selectOne(new QueryWrapper<ActivityFormRecord>()
-					.lambda()
-					.eq(ActivityFormRecord::getActivityId, activity.getId())
-			);
-			if (existActivityFormRecord != null) {
-				addOrUpdate(activity, existActivityFormRecord);
+			if (activity != null) {
+				ActivityFormRecord existActivityFormRecord = activityFormRecordMapper.selectOne(new QueryWrapper<ActivityFormRecord>()
+						.lambda()
+						.eq(ActivityFormRecord::getActivityId, activity.getId())
+				);
+				if (existActivityFormRecord != null) {
+					addOrUpdate(activity, existActivityFormRecord);
+				}
 			}
 			return null;
 		}, e -> {
@@ -146,7 +150,9 @@ public class ActivityFormRecordService {
 	 */
 	public void delete(Integer activityId) {
 		Activity activity = activityQueryService.getById(activityId);
-		delete(activity);
+		if (activity != null) {
+			delete(activity);
+		}
 	}
 
 	/**删除

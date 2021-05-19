@@ -5,7 +5,6 @@ import com.chaoxing.activity.model.Activity;
 import com.chaoxing.activity.model.ActivityClassify;
 import com.chaoxing.activity.service.activity.ActivityCoverUrlSyncService;
 import com.chaoxing.activity.service.activity.classify.ActivityClassifyQueryService;
-import com.chaoxing.activity.util.enums.ActivityTypeEnum;
 import com.google.common.collect.Maps;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
@@ -61,8 +60,8 @@ public class Model2DtoService {
 				Integer activityClassifyId = activityExternal.getActivityClassifyId();
 				// 处理活动形式
 				String activityType = activityExternal.getActivityType();
-				ActivityTypeEnum activityTypeEnum = ActivityTypeEnum.fromValue(activityType);
-				activityExternal.setActivityType(Optional.ofNullable(activityTypeEnum).map(ActivityTypeEnum::getName).orElse(""));
+				Activity.ActivityTypeEnum activityTypeEnum = Activity.ActivityTypeEnum.fromValue(activityType);
+				activityExternal.setActivityType(Optional.ofNullable(activityTypeEnum).map(Activity.ActivityTypeEnum::getName).orElse(""));
 				// 处理活动分类名
 				ActivityClassify activityClassify = idActivityClassifyMap.get(activityClassifyId);
 				activityExternal.setActivityClassify(Optional.ofNullable(activityClassify).map(ActivityClassify::getName).orElse(""));
@@ -88,11 +87,10 @@ public class Model2DtoService {
 		ActivityClassify activityClassify = activityClassifyQueryService.getById(activity.getActivityClassifyId());
 		ActivityExternalDTO activityExternal = new ActivityExternalDTO();
 		BeanUtils.copyProperties(activity, activityExternal);
-		Integer activityClassifyId = activityExternal.getActivityClassifyId();
 		// 处理活动形式
 		String activityType = activityExternal.getActivityType();
-		ActivityTypeEnum activityTypeEnum = ActivityTypeEnum.fromValue(activityType);
-		activityExternal.setActivityType(Optional.ofNullable(activityTypeEnum).map(ActivityTypeEnum::getName).orElse(""));
+		Activity.ActivityTypeEnum activityTypeEnum = Activity.ActivityTypeEnum.fromValue(activityType);
+		activityExternal.setActivityType(Optional.ofNullable(activityTypeEnum).map(Activity.ActivityTypeEnum::getName).orElse(""));
 		// 处理活动分类名
 		activityExternal.setActivityClassify(Optional.ofNullable(activityClassify).map(ActivityClassify::getName).orElse(""));
 		// 封面地址

@@ -5,12 +5,13 @@ import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.chaoxing.activity.dto.LoginUserDTO;
 import com.chaoxing.activity.dto.manager.WfwRegionalArchitectureDTO;
-import com.chaoxing.activity.dto.manager.form.FormCreateActivity;
 import com.chaoxing.activity.dto.manager.form.FormDTO;
 import com.chaoxing.activity.dto.manager.form.FormDataDTO;
 import com.chaoxing.activity.dto.module.SignAddEditDTO;
 import com.chaoxing.activity.model.Activity;
 import com.chaoxing.activity.model.ActivityClassify;
+import com.chaoxing.activity.model.WebTemplate;
+import com.chaoxing.activity.service.WebTemplateService;
 import com.chaoxing.activity.service.activity.ActivityHandleService;
 import com.chaoxing.activity.service.activity.ActivityQueryService;
 import com.chaoxing.activity.service.activity.classify.ActivityClassifyHandleService;
@@ -25,6 +26,7 @@ import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
@@ -74,6 +76,10 @@ public class FormApprovalApiService {
     private ActivityHandleService activityHandleService;
     @Resource
     private WfwRegionalArchitectureApiService wfwRegionalArchitectureApiService;
+    @Resource
+    private WebTemplateService webTemplateService;
+    @Resource
+    private MhApiService mhApiService;
 
     @Resource(name = "restTemplateProxy")
     private RestTemplate restTemplate;
@@ -210,6 +216,7 @@ public class FormApprovalApiService {
             activity.setStartTime(LocalDateTime.parse(startTimeStr, DATA_DATE_TIME_FORMATTER));
             activity.setEndTime(LocalDateTime.parse(endTimeStr, DATA_DATE_TIME_FORMATTER));
         }
+        activity.setActivityType(Activity.ActivityTypeEnum.ONLINE.getValue());
         activity.setName(activityName);
         activity.setActivityClassifyId(activityClassify.getId());
         activity.setCreateUid(formData.getUid());
@@ -217,6 +224,7 @@ public class FormApprovalApiService {
         activity.setCreateFid(fid);
         String orgName = passportApiService.getOrgName(fid);
         activity.setCreateOrgName(orgName);
+        activity.setOrganisers(orgName);
         activity.setOriginFormUserId(formUserId);
         return activity;
     }
@@ -230,27 +238,33 @@ public class FormApprovalApiService {
      * @param formUserId
      * @return void
     */
+    @Transactional
     public void addActivity(Integer fid, Integer formId, Integer formUserId, String flag) {
-        try {
-            Activity activity = getNeedCreateActivity(fid, formId, formUserId);
-            if (activity == null) {
-                return;
-            }
-            SignAddEditDTO signAddEditDTO = SignAddEditDTO.buildDefault();
-            WfwRegionalArchitectureDTO wfwRegionalArchitecture = wfwRegionalArchitectureApiService.buildWfwRegionalArchitecture(fid);
-            LoginUserDTO loginUser = LoginUserDTO.buildDefault(activity.getCreateUid(), activity.getCreateUserName(), activity.getCreateFid(), activity.getCreateOrgName());
-            activityHandleService.add(activity, signAddEditDTO, Lists.newArrayList(wfwRegionalArchitecture), loginUser);
-            // 发布
-            activityHandleService.release(activity.getId(), loginUser);
-        } catch (Exception e) {
-            e.printStackTrace();
-            FormCreateActivity formCreateActivity = FormCreateActivity.builder()
-                    .fid(fid)
-                    .formId(formId)
-                    .formUserId(formUserId)
-                    .build();
-            formActivityCreateQueueService.add(formCreateActivity);
+        Activity activity = getNeedCreateActivity(fid, formId, formUserId);
+        if (activity == null) {
+            return;
         }
+        // 设置活动标识
+        Activity.ActivityFlag activityFlag = Activity.ActivityFlag.fromValue(flag);
+        if (activityFlag == null) {
+            activityFlag = Activity.ActivityFlag.NORMAL;
+        }
+        activity.setActivityFlag(activityFlag.getValue());
+        // 设置活动关联的模板id
+        List<WebTemplate> webTemplates = webTemplateService.listAvailable(fid);
+        if (CollectionUtils.isEmpty(webTemplates)) {
+            throw new BusinessException("没有可用的门户模版");
+        }
+        // 取最后一个模版
+        WebTemplate webTemplate = webTemplates.get(0);
+        SignAddEditDTO signAddEditDTO = SignAddEditDTO.buildDefault();
+        WfwRegionalArchitectureDTO wfwRegionalArchitecture = wfwRegionalArchitectureApiService.buildWfwRegionalArchitecture(fid);
+        LoginUserDTO loginUser = LoginUserDTO.buildDefault(activity.getCreateUid(), activity.getCreateUserName(), activity.getCreateFid(), activity.getCreateOrgName());
+        activityHandleService.add(activity, signAddEditDTO, Lists.newArrayList(wfwRegionalArchitecture), loginUser);
+        // 门户克隆模版
+        activityHandleService.bindWebTemplate(activity.getId(), webTemplate.getId(), loginUser);
+        // 发布
+        activityHandleService.release(activity.getId(), loginUser);
     }
 
 }
