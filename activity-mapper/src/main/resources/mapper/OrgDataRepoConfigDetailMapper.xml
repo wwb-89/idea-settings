@@ -15,4 +15,13 @@
         t.id, t.config_id, t.repo_type, t.repo, t.data_type, t.is_deleted, t.create_time, 
         t.update_time
     </sql>
+    <select id="listParticipateTimeConfigDetail"
+            resultType="com.chaoxing.activity.model.OrgDataRepoConfigDetail">
+        SELECT
+            <include refid="Base_Column_List"/>
+        FORM t_org_data_repo_config_detail t
+        LEFT JOIN t_org_data_repo_config a ON t.config_id = a.id
+        WHERE a.fid = #{fid}
+        and t.data_type = #{dataType}
+    </select>
 </mapper>

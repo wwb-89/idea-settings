@@ -3,6 +3,9 @@ package com.chaoxing.activity.mapper;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.chaoxing.activity.model.OrgDataRepoConfigDetail;
 import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Param;
+
+import java.util.List;
 
 /**
  * @className: TOrgDataRepoConfigDetailMapper
@@ -13,4 +16,14 @@ import org.apache.ibatis.annotations.Mapper;
  */
 @Mapper
 public interface OrgDataRepoConfigDetailMapper extends BaseMapper<OrgDataRepoConfigDetail> {
+
+    /***根据机构fid和数据类型type查找对应的数据仓库配置详情
+    * @Description
+    * @author huxiaolong
+    * @Date 2021-05-19 14:20:41
+    * @param fid
+    * @return java.util.List<com.chaoxing.activity.model.OrgDataRepoConfigDetail>
+    */
+    List<OrgDataRepoConfigDetail> listParticipateTimeConfigDetail(@Param("fid") Integer fid,
+                                                                  @Param("dataType") String dataType);
 }
