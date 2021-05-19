@@ -1,14 +1,11 @@
 package com.chaoxing.activity.service.repoconfig;
 
-import com.chaoxing.activity.dto.activity.VolunteerServiceDTO;
 import com.chaoxing.activity.mapper.OrgDataRepoConfigDetailMapper;
 import com.chaoxing.activity.model.OrgDataRepoConfigDetail;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
-import java.util.ArrayList;
 import java.util.List;
 
 /**机构数据仓库配置查询service

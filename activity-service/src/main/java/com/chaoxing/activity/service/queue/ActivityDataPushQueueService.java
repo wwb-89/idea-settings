@@ -1,17 +1,20 @@
 package com.chaoxing.activity.service.queue;
 
 import com.chaoxing.activity.model.Activity;
+import com.chaoxing.activity.model.OrgDataRepoConfigDetail;
+import com.chaoxing.activity.service.repoconfig.OrgDataRepoConfigQueryService;
 import com.chaoxing.activity.util.constant.CacheConstant;
 import com.chaoxing.activity.util.constant.CommonConstant;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.data.redis.core.ListOperations;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
-import java.util.Objects;
+import java.util.List;
 
-/**第二课堂活动推送队列服务
+/**活动数据推送队列服务
  * @author wwb
  * @version ver 1.0
  * @className SecondClassroomActivityPushQueueService
@@ -21,17 +24,19 @@ import java.util.Objects;
  */
 @Slf4j
 @Service
-public class SecondClassroomActivityPushQueueService {
+public class ActivityDataPushQueueService {
 
 	/** 新增队列缓存key */
-	private static final String ADD_QUEUE_CACHE_KEY = CacheConstant.QUEUE_CACHE_KEY_PREFIX + "second_classroom_activity_push" + CacheConstant.CACHE_KEY_SEPARATOR + "add";
+	private static final String ADD_QUEUE_CACHE_KEY = CacheConstant.QUEUE_CACHE_KEY_PREFIX + "activity_push" + CacheConstant.CACHE_KEY_SEPARATOR + "add";
 	/** 修改队列缓存key */
-	private static final String UPDATE_QUEUE_CACHE_KEY = CacheConstant.QUEUE_CACHE_KEY_PREFIX + "second_classroom_activity_push" + CacheConstant.CACHE_KEY_SEPARATOR + "update";
+	private static final String UPDATE_QUEUE_CACHE_KEY = CacheConstant.QUEUE_CACHE_KEY_PREFIX + "activity_push" + CacheConstant.CACHE_KEY_SEPARATOR + "update";
 	/** 修改队列缓存key */
-	private static final String DELETE_QUEUE_CACHE_KEY = CacheConstant.QUEUE_CACHE_KEY_PREFIX + "second_classroom_activity_push" + CacheConstant.CACHE_KEY_SEPARATOR + "delete";
+	private static final String DELETE_QUEUE_CACHE_KEY = CacheConstant.QUEUE_CACHE_KEY_PREFIX + "activity_push" + CacheConstant.CACHE_KEY_SEPARATOR + "delete";
 
 	@Resource
 	private RedisTemplate redisTemplate;
+	@Resource
+	private OrgDataRepoConfigQueryService orgDataRepoConfigQueryService;
 
 	/**往队列中添加数据
 	 * @Description 
@@ -41,7 +46,7 @@ public class SecondClassroomActivityPushQueueService {
 	 * @return void
 	*/
 	public void add(Activity activity) {
-		if (isSecondClassroomActivity(activity)) {
+		if (configuredActivityDataRepo(activity)) {
 			add(activity.getId());
 		}
 	}
@@ -66,7 +71,7 @@ public class SecondClassroomActivityPushQueueService {
 	 * @return void
 	*/
 	public void update(Activity activity) {
-		if (isSecondClassroomActivity(activity)) {
+		if (configuredActivityDataRepo(activity)) {
 			update(activity.getId());
 		}
 	}
@@ -91,7 +96,7 @@ public class SecondClassroomActivityPushQueueService {
 	 * @return void
 	 */
 	public void delete(Activity activity) {
-		if (isSecondClassroomActivity(activity)) {
+		if (configuredActivityDataRepo(activity)) {
 			delete(activity.getId());
 		}
 	}
@@ -145,16 +150,16 @@ public class SecondClassroomActivityPushQueueService {
 		return listOperations.rightPop(DELETE_QUEUE_CACHE_KEY, CommonConstant.QUEUE_GET_WAIT_TIME);
 	}
 
-	/**是不是第二课堂活动
+	/**配置了活动数据仓库
 	 * @Description 
 	 * @author wwb
-	 * @Date 2021-04-09 14:16:39
+	 * @Date 2021-05-19 15:12:39
 	 * @param activity
 	 * @return boolean
 	*/
-	private boolean isSecondClassroomActivity(Activity activity) {
-		String activityFlag = activity.getActivityFlag();
-		return Objects.equals(activityFlag, Activity.ActivityFlag.SECOND_CLASSROOM.getValue());
+	public boolean configuredActivityDataRepo(Activity activity) {
+		List<OrgDataRepoConfigDetail> orgDataRepoConfigDetails = orgDataRepoConfigQueryService.listParticipateTimeConfigDetail(activity.getCreateFid(), OrgDataRepoConfigDetail.DataTypeEnum.ACTIVITY.getValue());
+		return CollectionUtils.isNotEmpty(orgDataRepoConfigDetails);
 	}
 
 }

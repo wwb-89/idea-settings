@@ -1,14 +1,14 @@
 package com.chaoxing.activity.task;
 
 import com.chaoxing.activity.service.form.ActivityFormRecordService;
-import com.chaoxing.activity.service.queue.SecondClassroomActivityPushQueueService;
+import com.chaoxing.activity.service.queue.ActivityDataPushQueueService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.Resource;
 
-/**活动表单推送任务
+/**活动数据推送任务
  * @author wwb
  * @version ver 1.0
  * @className SecondClassroomActivityPushTask
@@ -18,10 +18,10 @@ import javax.annotation.Resource;
  */
 @Slf4j
 @Component
-public class ActivityFormPushTask {
+public class ActivityDataPushTask {
 
 	@Resource
-	private SecondClassroomActivityPushQueueService secondClassroomActivityPushQueueService;
+	private ActivityDataPushQueueService activityDataPushQueueService;
 	@Resource
 	private ActivityFormRecordService activityFormRecordService;
 
@@ -34,7 +34,7 @@ public class ActivityFormPushTask {
 	*/
 	@Scheduled(fixedDelay = 1L)
 	public void add() {
-		Integer activityId = secondClassroomActivityPushQueueService.getAdd();
+		Integer activityId = activityDataPushQueueService.getAdd();
 		if (activityId == null) {
 			return;
 		}
@@ -43,7 +43,7 @@ public class ActivityFormPushTask {
 		} catch (Exception e) {
 			e.printStackTrace();
 			log.error("第二课堂活动:{} 推送error:{}", activityId, e.getMessage());
-			secondClassroomActivityPushQueueService.add(activityId);
+			activityDataPushQueueService.add(activityId);
 		}
 	}
 
@@ -56,7 +56,7 @@ public class ActivityFormPushTask {
 	*/
 	@Scheduled(fixedDelay = 1L)
 	public void update() {
-		Integer activityId = secondClassroomActivityPushQueueService.getUpdate();
+		Integer activityId = activityDataPushQueueService.getUpdate();
 		if (activityId == null) {
 			return;
 		}
@@ -65,7 +65,7 @@ public class ActivityFormPushTask {
 		} catch (Exception e) {
 			e.printStackTrace();
 			log.error("第二课堂活动:{} 推送error:{}", activityId, e.getMessage());
-			secondClassroomActivityPushQueueService.add(activityId);
+			activityDataPushQueueService.add(activityId);
 		}
 	}
 
@@ -78,7 +78,7 @@ public class ActivityFormPushTask {
 	*/
 	@Scheduled(fixedDelay = 1L)
 	public void delete() {
-		Integer activityId = secondClassroomActivityPushQueueService.getDelete();
+		Integer activityId = activityDataPushQueueService.getDelete();
 		if (activityId == null) {
 			return;
 		}
@@ -87,7 +87,7 @@ public class ActivityFormPushTask {
 		} catch (Exception e) {
 			e.printStackTrace();
 			log.error("第二课堂活动:{} 推送error:{}", activityId, e.getMessage());
-			secondClassroomActivityPushQueueService.delete(activityId);
+			activityDataPushQueueService.delete(activityId);
 		}
 	}
 
