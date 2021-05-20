@@ -3,6 +3,7 @@ package com.chaoxing.activity.web.controller.pc;
 import com.chaoxing.activity.dto.LoginUserDTO;
 import com.chaoxing.activity.dto.activity.VolunteerServiceDTO;
 import com.chaoxing.activity.service.volunteer.VolunteerService;
+import com.chaoxing.activity.util.UserAgentUtils;
 import com.chaoxing.activity.web.util.LoginUtils;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -44,8 +45,12 @@ public class VolunteerController {
         if (loginUser != null) {
             List<VolunteerServiceDTO> volunteerServiceDTOList = volunteerService.listServiceTimeLength(loginUser.getUid(), fid);
             List<String> serviceTypeList = volunteerService.listVolunteerServiceType(fid);
+            model.addAttribute("fid", fid);
             model.addAttribute("volunteerList", volunteerServiceDTOList);
             model.addAttribute("serviceTypeList", serviceTypeList);
+        }
+        if (UserAgentUtils.isMobileAccess(request)) {
+            return "mobile/volunteer/service-list";
         }
         return "pc/volunteer/service-list";
     }

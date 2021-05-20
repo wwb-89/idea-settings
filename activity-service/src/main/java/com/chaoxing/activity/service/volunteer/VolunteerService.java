@@ -42,7 +42,7 @@ public class VolunteerService {
      * @param fid
      * @return void
      */
-    public List<VolunteerServiceDTO> listServiceTimeLength(Integer uid, Integer fid) {
+    public List<VolunteerServiceDTO> listServiceTimeLength(Integer uid, Integer fid, String serviceType) {
         List<VolunteerServiceDTO> volunteerServiceList = new ArrayList<>();
         String formType = OrgDataRepoConfigDetail.RepoTypeEnum.FORM.getValue();
         String dataType = OrgDataRepoConfigDetail.DataTypeEnum.PARTICIPATE_TIME_LENGTH.getValue();
@@ -56,7 +56,7 @@ public class VolunteerService {
                     // 查出来的repo值应为formId
                     Integer formId = Integer.valueOf(configDetail.getRepo());
                     while (true) {
-                        page = formApiService.pageVolunteerRecord(page, fid, uid, formId);
+                        page = formApiService.pageVolunteerRecord(page, fid, uid, formId, serviceType);
                         if (CollectionUtils.isEmpty(page.getRecords())) {
                             break;
                         }
@@ -68,7 +68,10 @@ public class VolunteerService {
         }
         return volunteerServiceList;
 
-
+    }
+    
+    public List<VolunteerServiceDTO> listServiceTimeLength(Integer uid, Integer fid) {
+        return listServiceTimeLength(uid, fid, null);
     }
 
     public List<String> listVolunteerServiceType(Integer fid) {
