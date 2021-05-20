@@ -584,7 +584,9 @@
                 operateSignUpIndex: -1,
                 operateSignInIndex: -1,
                 signInMapTitleKey: "签到",
-                strict: [[${strict}]]
+                strict: [[${strict}]],
+                // 活动封面上传中
+                activityCoverUploading: false
             },
             created: function () {
                 var $this = this;
@@ -764,6 +766,10 @@
                             mimeTypes: 'image/*'
                         }
                     });
+                    $this.uploader.on("startUpload", function (file, response) {
+                        // 上传完成
+                        $this.activityCoverUploading = true;
+                    });
                     $this.uploader.on("uploadSuccess", function (file, response) {
                         if (response.success) {
                             var data = response.data;
@@ -786,6 +792,10 @@
                             }
                             app.showMsg(errorMessage);
                         }
+                    });
+                    $this.uploader.on("uploadComplete", function (file, response) {
+                        // 上传完成
+                        $this.activityCoverUploading = false;
                     });
                     $this.uploader.on("uploadError", function (file, reason) {
                         app.showMsg(reason);
@@ -1143,6 +1153,10 @@
                 save: function () {
                     var $this = this;
                     if (!$this.validateForm()) {
+                        return;
+                    }
+                    if ($this.activityCoverUploading) {
+                        app.showMsg("正在上传封面");
                         return;
                     }
                     var url = ctx + "/api/activity/edit";
