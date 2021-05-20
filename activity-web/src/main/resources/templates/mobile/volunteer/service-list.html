@@ -90,21 +90,17 @@
                     selectedType: {},
                     typeSelectShow: false,
                     hourMinutes: 60,
-                },
-                computed: {
-                    totalTimeLength: function () {
-                        var $this = this;
-                        var totalLength = 0;
-                        if ($this.volunteerList) {
-                            $this.volunteerList.forEach(item => {
-                                totalLength += item.timeLength;
-                            });
-                        }
-                        return totalLength;
-                    }
+                    totalTimeLength: 0
                 },
                 mounted: function() {
                     var $this = this;
+                    var totalTimeLength = 0;
+                    if ($this.volunteerList) {
+                        $this.volunteerList.forEach(item => {
+                            totalTimeLength += item.timeLength;
+                        });
+                    };
+                    $this.totalTimeLength =  totalTimeLength
                     $this.initData()
                 },
                 methods: {
