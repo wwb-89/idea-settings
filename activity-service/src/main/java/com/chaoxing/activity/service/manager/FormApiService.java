@@ -5,11 +5,12 @@ import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.chaoxing.activity.dto.activity.VolunteerServiceDTO;
+import com.chaoxing.activity.dto.manager.form.FilterItemDTO;
 import com.chaoxing.activity.dto.manager.form.FormDTO;
 import com.chaoxing.activity.dto.manager.form.FormStructureDTO;
-import com.chaoxing.activity.util.DateUtils;
 import com.chaoxing.activity.util.exception.BusinessException;
 import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.collections4.CollectionUtils;
@@ -20,7 +21,6 @@ import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
 
 import javax.annotation.Resource;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
@@ -353,9 +353,10 @@ public class FormApiService {
 	* @param fid
 	* @param uid
 	* @param formId
-	* @return com.baomidou.mybatisplus.extension.plugins.pagination.Page<com.chaoxing.activity.dto.activity.VolunteerServiceDTO>
+	* @param serviceType
+	 * @return com.baomidou.mybatisplus.extension.plugins.pagination.Page<com.chaoxing.activity.dto.activity.VolunteerServiceDTO>
 	*/
-	public Page<VolunteerServiceDTO> pageVolunteerRecord(Page<VolunteerServiceDTO> page, Integer fid, Integer uid, Integer formId) {
+	public Page<VolunteerServiceDTO> pageVolunteerRecord(Page<VolunteerServiceDTO> page, Integer fid, Integer uid, Integer formId, String serviceType) {
 		// 创建encParamMap, 存储enc加密所需内容
 		TreeMap<String, Object> encParamMap = new TreeMap<>();
 		LocalDateTime now = LocalDateTime.now();
@@ -372,6 +373,11 @@ public class FormApiService {
 		MultiValueMap<String, Object> paramMap = new LinkedMultiValueMap();
 		paramMap.setAll(encParamMap);
 		paramMap.add("enc", enc);
+		if (StringUtils.isNotBlank(serviceType)) {
+			List<FormStructureDTO> structureList = getFormInfo(fid, formId);
+			String searchStr = buildSearchStr("type", "match", Collections.singleton(serviceType), structureList);
+			paramMap.add("searchStr", searchStr);
+		}
 
 		String result = restTemplate.postForObject(ADVANCED_SEARCH_URL, paramMap, String.class);
 		JSONObject resultObj = JSON.parseObject(result);
@@ -400,30 +406,29 @@ public class FormApiService {
 						JSONArray groupValues = itemJsonObj.getJSONArray("groupValues");
 						JSONArray values = (JSONArray) JSON.parseObject(JSON.toJSONString(groupValues.get(0))).getJSONArray("values").get(0);
 						String val = "";
+						String alias = itemJsonObj.getString("alias");
 						if (!values.isEmpty()) {
 							JSONObject value = JSON.parseObject(JSON.toJSONString(values.get(0)));
 							val = value.getString("val");
 						}
-						if ("name".equals(entry.getKey())) {
+						if ("name".equals(alias)) {
 							volunteerDTO.setName(val);
-						} else if ("type".equals(entry.getKey())) {
+						} else if ("type".equals(alias)) {
 							volunteerDTO.setType(val);
-						}  else if ("department".equals(entry.getKey())) {
+						}  else if ("department".equals(alias)) {
 							volunteerDTO.setDepartment(val);
-						} else if ("date".equals(entry.getKey())) {
-							if (StringUtils.isNotBlank(val)) {
-								volunteerDTO.setServiceDate(LocalDate.parse(val, DateUtils.DAY_DATE_TIME_FORMATTER));
-							}
-						} else if ("time_length".equals(entry.getKey())) {
+						} else if ("date".equals(alias)) {
+							volunteerDTO.setServiceDate(val);
+						} else if ("time_length".equals(alias)) {
 							Long timeLength = StringUtils.isBlank(val)? 0L : Long.parseLong(val);
 							volunteerDTO.setTimeLength(timeLength);
-						} else if ("no".equals(entry.getKey())) {
+						} else if ("no".equals(alias)) {
 							volunteerDTO.setNo(val);
-						} else if ("level".equals(entry.getKey())) {
+						} else if ("level".equals(alias)) {
 							volunteerDTO.setLevel(val);
-						} else if ("17".equals(entry.getKey())) {
+						} /*else if ("17".equals(alias)) {
 							volunteerDTO.setAffiliations(val);
-						}
+						}*/
 
 					}
 
@@ -443,6 +448,38 @@ public class FormApiService {
 			throw new BusinessException(errorMessage);
 		}
 
+	}
+
+	/**构建搜索查询条件字符串
+	* @Description
+	* @author huxiaolong
+	* @Date 2021-05-20 11:18:52
+	* @param alias
+	* @param express
+	* @param value
+	* @param structureList
+	* @return java.lang.String
+	*/
+	private String buildSearchStr(String alias, String express, Object value, List<FormStructureDTO> structureList) {
+		List<List<FilterItemDTO>> filters = new ArrayList<>();
+		for (FormStructureDTO searchInfo : structureList) {
+			if (alias.equals(searchInfo.getAlias())) {
+				List<FilterItemDTO> condition = new ArrayList<>();
+				FilterItemDTO item = new FilterItemDTO();
+				item.setCompt(searchInfo.getCompt());
+				item.setId(searchInfo.getId());
+				item.setExpress(express);
+				item.setVal(JSON.toJSONString(value));
+				condition.add(item);
+				filters.add(condition);
+				break;
+			}
+		}
+		Map<String, Object> searchMap = Maps.newHashMap();
+		searchMap.put("model", 0);
+		searchMap.put("filters", filters);
+
+		return JSONObject.toJSONString(searchMap);
 	}
 
 	private String calAdvanceSearchEnc(TreeMap<String, Object> encParamMap) {

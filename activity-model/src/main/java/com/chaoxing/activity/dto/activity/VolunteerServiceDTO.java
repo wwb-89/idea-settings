@@ -5,9 +5,6 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.time.LocalDate;
-import java.util.List;
-
 /**志愿服务时长记录
  * @author huxiaolong
  * <p>
@@ -55,7 +52,7 @@ public class VolunteerServiceDTO {
     /**
      * 服务日期
      */
-    private LocalDate serviceDate;
+    private String serviceDate;
 
     /**
      * 类型

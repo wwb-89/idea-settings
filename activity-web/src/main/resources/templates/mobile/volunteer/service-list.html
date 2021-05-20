@@ -1,63 +1,68 @@
 <!DOCTYPE html>
 <html lang="en" xmlns:th="http://www.thymeleaf.org/">
 <head>
-    <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>志愿服务单</title>
-    <link rel="stylesheet" href="/static/pc/assets/css/public.css" th:href="@{/pc/assets/css/public.css}">
-    <link rel="stylesheet" href="/static/pc/assets/css/service-list.css" th:href="@{/pc/assets/css/service-list.css}">
+    <meta http-equiv="Content-type" content="text/html; charset=utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, minimal-ui" />
+    <meta name="format-detection" content="telephone=no, email=no">
+    <meta http-equiv="Pragma" content="no-cache" />
+    <meta http-equiv="cache-control" content="no-cache" />
+    <link rel="stylesheet" href="/static/mobile/assets/css/public.css" th:href="@{/mobile/assets/css/public.css}" />
+    <link rel="stylesheet" href="/static/mobile/assets/css/service-list.css" th:href="@{/mobile/assets/css/service-list.css}">
 </head>
 <body>
-    <div id="volunteerService" class="service-list" v-cloak>
-        <div class="item-box title clear">
-            <p class="fl name">{{loginUser.realName}}的服务时长记录</p>
-            <div class="fr">
-                <div class="btn-border-80 btn" @click="toAppeal">申诉</div>
-            </div>
-        </div>
-        <div class="item-box score-box">
-            <p class="bold">总时长</p>
+    <div id="mVolunteerService" class="service-list" v-cloak>
+        <p class="tips">{{loginUser.realName}}的服务时长记录</p>
+        <div class="score-box">
+            <p class="title">总得分</p>
             <p class="score" v-if="volunteerList">
                 <template v-if="totalTimeLength >= hourMinutes">
                     {{totalTimeLength | hourFormat}}<span class="fine">小时</span>
                 </template>
                 {{totalTimeLength | minuteFormat}}<span class="fine">分钟</span>
             </p>
-            <div class="load-div" v-else><img src="/static/pc/assets/images/Spinner-1s-200px.svg" th:src="@{/pc/assets/images/Spinner-1s-200px.svg}">加载中…</div>
+            <div class="loading" v-else><img src="/static/mobile/assets/images/Spinner-1s-200px.svg" th:src="@{/mobile/assets/images/Spinner-1s-200px.svg}">加载中…</div>
         </div>
-        <div class="item-box score-detailed">
-            <div class="top clear">
-                <p class="bold fl">得分明细</p>
-                <div class="fr">
-                    <div class="down-menu">
-                        <span class="overHidden1">{{ selectedType.name || '全部类型'}}</span><i class="icon-down"></i>
-                        <ul class="menu">
-                            <li class="menu-item" v-for="serviceType in serviceTypeList" @click="chooseServiceType(serviceType)">{{serviceType.name}}</li>
-                        </ul>
-                    </div>
-                </div>
-            </div>
-            <ul v-if="volunteerList">
-                <li class="item" v-for="record in volunteerList">
+        <div class="select-btn" @click="typeSelectShow = true">
+            <span class="select overHidden1">{{ selectedType.name || '全部类型'}}</span><i class="icon-down"></i>
+        </div>
+        <div class="detaile-box">
+            <p class="no-content" v-show="volunteerList && volunteerList.length === 0">暂无内容</p>
+            <div v-if="volunteerList">
+                <div class="item" v-for="record in volunteerList">
                     <p class="name">{{record.name}}</p>
                     <p class="classify">{{record.type}}</p>
                     <p class="time clear">{{record.serviceDate}}
-                        <span class="fr">
-                            <template v-if="record.timeLength >= hourMinutes">
-                                <span class="score">{{record.timeLength | hourFormat}}</span>&nbsp;小时&nbsp;
-                            </template>
-                            <span class="score">{{record.timeLength | minuteFormat}}</span>&nbsp;分钟
-                        </span>
+                        <span class="red fr">
+                        <template v-if="record.timeLength >= hourMinutes">
+                            {{record.timeLength | hourFormat}}<span class="fine">&nbsp;小时&nbsp;</span>
+                        </template>
+                        {{record.timeLength | minuteFormat}}<span class="fine">&nbsp;分钟</span>
+                    </span>
                     </p>
-                </li>
-            </ul>
+                </div>
+            </div>
             <!--  加载中  -->
-            <div class="load-div" v-else><img src="/static/pc/assets/images/Spinner-1s-200px.svg" th:src="@{/pc/assets/images/Spinner-1s-200px.svg}">加载中…</div>
-            <div class="no-content" v-show="volunteerList && volunteerList.length === 0">暂无内容</div>
+            <div class="loading" v-else><img src="/static/mobile/assets/images/Spinner-1s-200px.svg" th:src="@{/mobile/assets/images/Spinner-1s-200px.svg}">加载中…</div>
+        </div>
+
+        <div class="dialog select-dialog" v-show="typeSelectShow" @click="typeSelectShow = false">
+            <div class="select-box">
+                <ul>
+                    <li class="select-item"
+                        :class="{'active': serviceType.type === selectedType.type}"
+                        v-for="serviceType in serviceTypeList"
+                        @click.stop="chooseServiceType(serviceType)"
+                    >
+                        <p>{{serviceType.name}}</p>
+                        <i class="gou"></i>
+                    </li>
+                </ul>
+            </div>
         </div>
     </div>
-    <div th:replace="pc/include/common_js :: common_js(~{::script})">
+
+    <div th:replace="mobile/include/common_js :: common_js(~{::script})">
         <script th:inline="javascript">
             Vue.filter("hourFormat", function (timeLength) {
                 var hours = 0;
@@ -75,17 +80,16 @@
                 }
                 return minutes;
             });
-
             serviceListVue = new Vue({
-                el: "#volunteerService",
+                el: "#mVolunteerService",
                 data: {
                     fid: [[${fid}]],
                     loginUser: [[${session._login_user_}]],
                     volunteerList: [[${volunteerList}]],
                     serviceTypeList: [[${serviceTypeList}]],
                     selectedType: {},
+                    typeSelectShow: false,
                     hourMinutes: 60,
-                    appealUrl: 'http://office.chaoxing.com/front/third/approve/apps/forms/fore/apply?pageEnc=441acab58f8f550ca89785b55b283d15&aprvAppId=17185&id=17185&fidEnc=03603594820a2427'
                 },
                 computed: {
                     totalTimeLength: function () {
@@ -101,10 +105,6 @@
                 },
                 mounted: function() {
                     var $this = this;
-                    $('.down-menu').on('mouseenter mouseleave',function(){
-                        $(this).find('.menu').toggle()
-                        $(this).find('.icon-down').toggleClass('active')
-                    });
                     $this.initData()
                 },
                 methods: {
@@ -127,6 +127,8 @@
                         $this.selectedType = serviceType;
 
                         $this.loadServiceList();
+                        $this.typeSelectShow = false;
+
                     },
                     loadServiceList: function () {
                         var $this = this;
@@ -150,14 +152,11 @@
                             app.showMsg("加载志愿服务时长列表失败");
                         });
                     },
-                    // 申诉
-                    toAppeal: function () {
-                        var $this = this;
-                        window.open($this.appealUrl);
-                    }
                 }
             });
+
         </script>
     </div>
+
 </body>
 </html>
