@@ -28,7 +28,7 @@
         </div>
         <div class="item-box score-detailed">
             <div class="top clear">
-                <p class="bold fl">得分明细</p>
+                <p class="bold fl">服务时长明细</p>
                 <div class="fr">
                     <div class="down-menu">
                         <span class="overHidden1">{{ selectedType.name || '全部类型'}}</span><i class="icon-down"></i>
@@ -83,21 +83,10 @@
                     loginUser: [[${session._login_user_}]],
                     volunteerList: [[${volunteerList}]],
                     serviceTypeList: [[${serviceTypeList}]],
+                    appealUrl: 'http://office.chaoxing.com/front/third/approve/apps/forms/fore/apply?pageEnc=441acab58f8f550ca89785b55b283d15&aprvAppId=17185&id=17185&fidEnc=03603594820a2427',
                     selectedType: {},
                     hourMinutes: 60,
-                    appealUrl: 'http://office.chaoxing.com/front/third/approve/apps/forms/fore/apply?pageEnc=441acab58f8f550ca89785b55b283d15&aprvAppId=17185&id=17185&fidEnc=03603594820a2427'
-                },
-                computed: {
-                    totalTimeLength: function () {
-                        var $this = this;
-                        var totalLength = 0;
-                        if ($this.volunteerList) {
-                            $this.volunteerList.forEach(item => {
-                                totalLength += item.timeLength;
-                            });
-                        }
-                        return totalLength;
-                    }
+                    totalTimeLength: 0
                 },
                 mounted: function() {
                     var $this = this;
@@ -105,6 +94,14 @@
                         $(this).find('.menu').toggle()
                         $(this).find('.icon-down').toggleClass('active')
                     });
+
+                    var totalTimeLength = 0;
+                    if ($this.volunteerList) {
+                        $this.volunteerList.forEach(item => {
+                            totalTimeLength += item.timeLength;
+                        });
+                    };
+                    $this.totalTimeLength =  totalTimeLength
                     $this.initData()
                 },
                 methods: {
