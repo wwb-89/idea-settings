@@ -109,7 +109,7 @@ public class SignUp {
                 .enableLimitParticipateScope(false)
                 .limitParticipateScope(false)
                 .activityFlag(Activity.ActivityFlag.NORMAL.getValue())
-                .deleted(true)
+                .deleted(false)
                 .build();
     }
 

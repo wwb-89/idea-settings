@@ -156,7 +156,7 @@ public class SignIn {
                 .scanCodeWay(1)
                 .fillInfo(false)
                 .publicList(false)
-                .deleted(true)
+                .deleted(false)
                 .build();
     }
 

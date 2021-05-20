@@ -206,9 +206,7 @@
                                     activity.operations.push($this.operations.release);
                                     if (manager || isCurrentOrgCreated) {
                                         if (manager) {
-                                            if (!$this.isActivityDeclaration(activity)) {
-                                                activity.operations.push($this.operations.edit);
-                                            }
+                                            activity.operations.push($this.operations.edit);
                                             activity.operations.push($this.operations.manage);
                                             if (isDualSelect) {
                                                 activity.operations.push($this.operations.dualSelectStatExport);
@@ -222,9 +220,7 @@
                                     activity.operations.push($this.operations.cancelRelease);
                                     if (manager || isCurrentOrgCreated) {
                                         if (manager) {
-                                            if (!$this.isActivityDeclaration(activity)) {
-                                                activity.operations.push($this.operations.edit);
-                                            }
+                                            activity.operations.push($this.operations.edit);
                                             activity.operations.push($this.operations.manage);
                                             if (isDualSelect) {
                                                 activity.operations.push($this.operations.dualSelectStatExport);
@@ -242,9 +238,7 @@
                                             activity.operations.push($this.operations.release);
                                         }
                                         if (manager) {
-                                            if (!$this.isActivityDeclaration(activity)) {
-                                                activity.operations.push($this.operations.edit);
-                                            }
+                                            activity.operations.push($this.operations.edit);
                                             activity.operations.push($this.operations.manage);
                                             if (isDualSelect) {
                                                 activity.operations.push($this.operations.dualSelectStatExport);
