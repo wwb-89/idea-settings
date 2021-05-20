@@ -43,13 +43,11 @@ public class VolunteerController {
     public String index(HttpServletRequest request, Model model, Integer state, Integer fid) {
         Integer realFid = Optional.ofNullable(state).orElse(fid);
         LoginUserDTO loginUser = LoginUtils.getLoginUser(request);
-        if (loginUser != null) {
-            List<VolunteerServiceDTO> volunteerServiceDTOList = volunteerService.listServiceTimeLength(loginUser.getUid(), realFid);
-            List<String> serviceTypeList = volunteerService.listVolunteerServiceType(realFid);
-            model.addAttribute("fid", realFid);
-            model.addAttribute("volunteerList", volunteerServiceDTOList);
-            model.addAttribute("serviceTypeList", serviceTypeList);
-        }
+        List<VolunteerServiceDTO> volunteerServiceDTOList = volunteerService.listServiceTimeLength(loginUser.getUid(), realFid);
+        List<String> serviceTypeList = volunteerService.listVolunteerServiceType(realFid);
+        model.addAttribute("fid", realFid);
+        model.addAttribute("volunteerList", volunteerServiceDTOList);
+        model.addAttribute("serviceTypeList", serviceTypeList);
         if (UserAgentUtils.isMobileAccess(request)) {
             return "mobile/volunteer/service-list";
         }
