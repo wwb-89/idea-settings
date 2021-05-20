@@ -14,7 +14,7 @@
     <div id="mVolunteerService" class="service-list" v-cloak>
         <p class="tips">{{loginUser.realName}}的服务时长记录</p>
         <div class="score-box">
-            <p class="title">总得分</p>
+            <p class="title">总时长</p>
             <p class="score" v-if="volunteerList">
                 <template v-if="totalTimeLength >= hourMinutes">
                     {{totalTimeLength | hourFormat}}<span class="fine">小时</span>
