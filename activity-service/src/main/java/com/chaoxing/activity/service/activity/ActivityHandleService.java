@@ -154,11 +154,11 @@ public class ActivityHandleService {
 		activityManagerService.add(activityManager, loginUser);
 		// 活动报名签到模块
 		handleActivitySignModule(activity.getId(), signAddEditResult);
-		// 处理参与范围
+		// 处理发布范围
 		wfwRegionalArchitectures = handleParticipateScope(activity, wfwRegionalArchitectures);
 		Integer activityId = activity.getId();
 		List<ActivityScope> activityScopes = WfwRegionalArchitectureDTO.convert2ActivityScopes(activityId, wfwRegionalArchitectures);
-		// 新增参与范围
+		// 新增发布范围
 		activityScopeService.batchAdd(activityScopes);
 
 		// 处理活动的所属区域
@@ -167,7 +167,7 @@ public class ActivityHandleService {
 		activityChangeEventService.dataChange(activity, null, activity.getIntegralValue());
 	}
 
-	/**处理参与范围
+	/**处理发布范围
 	 * @Description 
 	 * @author wwb
 	 * @Date 2021-03-30 19:49:43
@@ -184,7 +184,7 @@ public class ActivityHandleService {
 				WfwRegionalArchitectureDTO wfwRegionalArchitecture = wfwRegionalArchitectureApiService.buildWfwRegionalArchitecture(activity.getCreateFid());
 				wfwRegionalArchitectures = Lists.newArrayList(wfwRegionalArchitecture);
 			} else {
-				throw new BusinessException("请选择参与范围");
+				throw new BusinessException("请选择发布范围");
 			}
 		}
 		return wfwRegionalArchitectures;
@@ -441,12 +441,12 @@ public class ActivityHandleService {
 				existActivity.setCoverUrl("");
 			}
 			List<WfwRegionalArchitectureDTO> itemWfwRegionalArchitectures = wfwRegionalArchitectures;
-			// 处理参与范围
+			// 处理发布范围
 			itemWfwRegionalArchitectures = handleParticipateScope(activity, itemWfwRegionalArchitectures);
 			List<ActivityScope> activityScopes = WfwRegionalArchitectureDTO.convert2ActivityScopes(activityId, itemWfwRegionalArchitectures);
-			// 删除以前发布的参与范围
+			// 删除以前发布的发布范围
 			activityScopeService.deleteByActivityId(activityId);
-			// 新增参与范围
+			// 新增活动发布范围
 			activityScopeService.batchAdd(activityScopes);
 			// 活动改变
 			activityChangeEventService.dataChange(activity, oldActivity, oldIntegralValue);

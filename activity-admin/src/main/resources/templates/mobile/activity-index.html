@@ -33,7 +33,7 @@
         </div>
         <div class="item" v-if="(signActivityManageIndex.signUpExist || signActivityManageIndex.signInExist)" @click="resultsManage">
             <img src="/static/mobile/assets/images/admin/score-icon.png" th:src="@{/mobile/assets/images/admin/score-icon.png}">
-            <p class="flTxt">成绩管理</p>
+            <p class="flTxt">考核管理</p>
             <i class="icon-arrow-r marginAuto"></i>
         </div>
         <div class="item" th:if="${isCreator}" @click="manager">
@@ -94,7 +94,7 @@
                         var url = "https://reading.chaoxing.com/qd/m/manage/sign/" + $this.signActivityManageIndex.signId + "/sign-in-list";
                         app.openUrl(url);
                     },
-                    // 成绩管理
+                    // 考核管理
                     resultsManage: function () {
                         var $this = this;
                         var url = "https://reading.chaoxing.com/qd/m/manage/results?signId=" + $this.signActivityManageIndex.signId;

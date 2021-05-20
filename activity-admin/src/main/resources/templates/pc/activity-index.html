@@ -33,7 +33,7 @@
                 </div>
             </div>
             <div class="entry menu-item">
-                <!--成绩管理-->
+                <!--考核管理-->
                 <div :class="{'item': true, 'active': menus.resultsManage.selected}" v-if="signActivityManageIndex.signUpExist || signActivityManageIndex.signInExist" @click="toResultsManage">
                     <img :src="menus.resultsManage.activeIconUrl" v-if="menus.resultsManage.selected">
                     <img :src="menus.resultsManage.defaultIconUrl" v-else>
@@ -85,7 +85,7 @@
                     // 报名签到
                     signUpList: {name: "报名名单", defaultIconUrl: ctx + "/pc/assets/images/icon-name-list-default.png", activeIconUrl: ctx + "/pc/assets/images/icon-name-list-active.png", url: "//reading.chaoxing.com/qd/manage/sign-up?signId=" + [[${signActivityManageIndex.signId}]], selected: false},
                     signInManage: {name: "签到管理", defaultIconUrl: ctx + "/pc/assets/images/icon-sign-in-default.png", activeIconUrl: ctx + "/pc/assets/images/icon-sign-in-active.png", url: "//reading.chaoxing.com/qd/manage/sign-in/list?signId=" + [[${signActivityManageIndex.signId}]], selected: false},
-                    resultsManage: {name: "成绩管理", defaultIconUrl: ctx + "/pc/assets/images/icon-grade-manage-default.png", activeIconUrl: ctx + "/pc/assets/images/icon-grade-manage-active.png", url: "//reading.chaoxing.com/qd/manage/results?signId=" + [[${signActivityManageIndex.signId}]], selected: false},
+                    resultsManage: {name: "考核管理", defaultIconUrl: ctx + "/pc/assets/images/icon-grade-manage-default.png", activeIconUrl: ctx + "/pc/assets/images/icon-grade-manage-active.png", url: "//reading.chaoxing.com/qd/manage/results?signId=" + [[${signActivityManageIndex.signId}]], selected: false},
                     managerManage: {name: "管理员", defaultIconUrl: ctx + "/pc/assets/images/icon-organizer-default.png", activeIconUrl: ctx + "/pc/assets/images/icon-organizer-active.png", url: ctx + "/activity/" + [[${activity.id}]] + "/manager", selected: false},
                     // 通知
                     notice: {name: "发通知", defaultIconUrl: ctx + "/pc/assets/images/icon-notice-default.png", activeIconUrl: ctx + "/pc/assets/images/icon-notice-active.png", url: "//reading.chaoxing.com/qd/manage/notice/add?signId=" + [[${signActivityManageIndex.signId}]], selected: false},
@@ -183,7 +183,7 @@
                     var $this = this;
                     $this.selectMenu("signInManage");
                 },
-                // 成绩管理
+                // 考核管理
                 toResultsManage: function () {
                     var $this = this;
                     $this.selectMenu("resultsManage");

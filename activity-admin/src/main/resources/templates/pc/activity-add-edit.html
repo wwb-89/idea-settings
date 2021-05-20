@@ -172,7 +172,7 @@
                     </div>
                 </div>
                 <div class="form-item last marginTop16" v-show="isShowActivityParticipateScope()">
-                    <label class="label"><img src="/static/pc/assets/images/required.png" th:src="@{/pc/assets/images/required.png}" class="required-img">参与范围</label>
+                    <label class="label"><img src="/static/pc/assets/images/required.png" th:src="@{/pc/assets/images/required.png}" class="required-img">发布范围</label>
                     <div class="input-box wrap">
                         <!--添加范围后显示后面这项-->
                         <div v-show="participatedOrgs.length < 1">
@@ -275,7 +275,7 @@
                     </div>
                 </div>
                 <div class="form-item">
-                    <label class="label">取消报名限制</label>
+                    <label class="label">取消报名设置</label>
                     <div class="input-box">
                         <el-switch v-model="signUp.endNotAllowCancel"></el-switch>
                         <span class="tips">开启后，报名结束后参与者不能取消报名</span>
@@ -488,7 +488,7 @@
     <vue-map ref="activityMap" :map-dom-id="'activity-map'" :title="'设置地点'" @callback="activityAddressSure"></vue-map>
     <!--签到-->
     <vue-sign-map ref="signInMap" :map-dom-id="'sign-in-map'" :title="'设置'+ signInMapTitleKey +'地点'" th:uid="${session._login_user_.uid}" th:fid="${session._login_user_.fid}" @callback="signInAddressSure"></vue-sign-map>
-    <!-- 活动参与范围弹窗 -->
+    <!-- 活动发布范围弹窗 -->
     <vue-activity-participate-scope :fid="fid" ref="activityParticipateScopeWindow" @callback="updateParticipatedOrgs"></vue-activity-participate-scope>
     <!--预览url复制容器-->
     <input type="text" id="template-preview-url-input" v-model.trim="activity.previewUrl" style="position: absolute; top: -100px; height: 1px;">
@@ -794,12 +794,12 @@
                     var activityType = $this.activityTypes[index];
                     $this.activity.activityType = activityType.value;
                 },
-                // 显示参与范围弹窗
+                // 显示发布范围弹窗
                 toAddParticipateScope: function () {
                     var $this = this;
                     $this.$refs.activityParticipateScopeWindow.showWindow($this.participatedOrgs);
                 },
-                // 更新参与范围的机构
+                // 更新发布范围的机构
                 updateParticipatedOrgs: function () {
                     var $this = this;
                     $this.participatedOrgs = $this.$refs.activityParticipateScopeWindow.selectedOrgs;
@@ -991,9 +991,9 @@
                         app.showMsg("分类不能为空");
                         return false;
                     }
-                    // 参与范围
+                    // 发布范围
                     if ($this.isShowActivityParticipateScope() && (activityApp.isEmpty($this.participatedOrgs) || $this.participatedOrgs.length < 1)) {
-                        app.showMsg("请选择参与范围");
+                        app.showMsg("请选择发布范围");
                         return false;
                     }
                     // 报名验证
@@ -1031,7 +1031,7 @@
                                     return false;
                                 }
                             }
-                            // 取消报名限制
+                            // 取消报名设置
                             signUp.endAllowCancel = !signUp.endNotAllowCancel;
                             if (activityApp.isEmpty(signUp.btnName)) {
                                 app.showMsg(signUp.name + "按钮名称不能为空");
@@ -1398,7 +1398,7 @@
                     var hides = ["dual_select"];
                     return hides.indexOf($this.activity.activityFlag) == -1;
                 },
-                // 活动是否显示参与范围
+                // 活动是否显示发布范围
                 isShowActivityParticipateScope: function () {
                     var $this = this;
                     var hides = ["second_classroom", "dual_select"];

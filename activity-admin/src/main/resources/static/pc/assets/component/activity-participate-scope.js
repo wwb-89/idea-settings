@@ -1,12 +1,12 @@
 /**
- * 活动参与范围弹窗
+ * 活动发布范围弹窗
  */
 Vue.component('vue-activity-participate-scope', {
     props: ["fid"],
     template: "<div class='dailog-box1' v-show='show'>\n" +
         "    <div class='dailog'>\n" +
         "        <div class='header'>\n" +
-        "            <span>参与范围</span>\n" +
+        "            <span>发布范围</span>\n" +
         "            <div @click='show = false'>\n" +
         "                <img :src='closeImgUrl' class='close'>\n" +
         "            </div>\n" +
@@ -14,7 +14,7 @@ Vue.component('vue-activity-participate-scope', {
         "        <div class='body'>\n" +
         "            <div class='tree'>\n" +
         "                <div class='tree-head'>\n" +
-        "                    <span>选择参与的范围</span>\n" +
+        "                    <span>选择发布的范围</span>\n" +
         "                    <div class='already'>已选<span style='margin-left: 5px;'>{{selectedOrgs.length}}</span></div>\n" +
         "                </div>\n" +
         "                <div class='tree-box'>\n" +
@@ -182,7 +182,7 @@ Vue.component('vue-activity-participate-scope', {
             });
             $this.selectedOrgs = selectedOrgs;
             if ($this.selectedOrgs.length < 1) {
-                app.showMsg("请选择参与范围");
+                app.showMsg("请选择发布范围");
                 $this.show = true;
             } else {
                 $this.$emit("callback");

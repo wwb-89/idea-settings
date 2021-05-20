@@ -35,7 +35,7 @@ public class WorkApiService {
 
 	/** 创建作品征集地址 */
 	private static final String CREATE_URL = "http://api.reading.chaoxing.com/activity/engine/create";
-	/** 清空活动参与范围 */
+	/** 清空活动发布范围 */
 	private static final String CLEAR_ACTIVITY_PARTICIPATE_SCOPE_URL = "http://api.reading.chaoxing.com/cache/activity/clear/participate-fid";
 	/** 统计活动提交作品数量url */
 	private static final String ACTIVITY_SUBMITED_WORK_NUM_URL = "http://api.reading.chaoxing.com/activity/stat/submited-work-num";
@@ -75,7 +75,7 @@ public class WorkApiService {
 		}
 	}
 
-	/**清空活动参与范围缓存
+	/**清空活动发布范围缓存
 	 * @Description
 	 * @author wwb
 	 * @Date 2020-09-16 14:42:59

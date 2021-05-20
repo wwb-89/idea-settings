@@ -13,7 +13,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * 活动参与范围
+ * 活动发布范围
  * @className: ActivityScope, table_name: t_activity_scope
  * @Description: 
  * @author: mybatis generator

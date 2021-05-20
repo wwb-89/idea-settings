@@ -114,7 +114,7 @@ public class ActivityManageController {
 		List<WebTemplate> webTemplates = webTemplateService.listAvailable(loginUser.getFid());
 		model.addAttribute("webTemplates", webTemplates);
 		model.addAttribute("step", step);
-		// 活动参与范围
+		// 活动发布范围
 		List<WfwRegionalArchitectureDTO> wfwRegionalArchitectures = activityScopeQueryService.listByActivityId(activityId);
 		model.addAttribute("participatedOrgs", wfwRegionalArchitectures);
 		// 报名范围
