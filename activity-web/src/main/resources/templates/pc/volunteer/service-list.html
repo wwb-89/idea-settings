@@ -13,7 +13,7 @@
         <div class="item-box title clear">
             <p class="fl name">{{loginUser.realName}}的服务时长记录</p>
             <div class="fr">
-                <div class="btn-border-80 btn">申诉</div>
+                <div class="btn-border-80 btn" @click="toAppeal">申诉</div>
             </div>
         </div>
         <div class="item-box score-box">
@@ -85,6 +85,7 @@
                     serviceTypeList: [[${serviceTypeList}]],
                     selectedType: {},
                     hourMinutes: 60,
+                    appealUrl: 'http://office.chaoxing.com/front/third/approve/apps/forms/fore/apply?pageEnc=441acab58f8f550ca89785b55b283d15&aprvAppId=17185&id=17185&fidEnc=03603594820a2427'
                 },
                 computed: {
                     totalTimeLength: function () {
@@ -149,6 +150,11 @@
                             app.showMsg("加载志愿服务时长列表失败");
                         });
                     },
+                    // 申诉
+                    toAppeal: function () {
+                        var $this = this;
+                        window.open($this.appealUrl);
+                    }
                 }
             });
         </script>
