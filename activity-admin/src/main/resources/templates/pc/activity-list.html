@@ -150,8 +150,7 @@
                     manage: {name: "管理", value: "manage"},
                     release: {name: "发布", value: "release"},
                     cancelRelease: {name: "下架", value: "cancelRelease"},
-                    exhibitionArrangement: {name: "展会安排", value: "exhibitionArrangement"},
-                    dualSelectStatExport: {name: "统计导出", value: "dualSelectStatExport"}
+                    dualSelectStatExport: {name: "导出投递数据", value: "dualSelectStatExport"}
                 },
                 code: [[${code}]],
                 // 活动标示
@@ -212,7 +211,6 @@
                                             }
                                             activity.operations.push($this.operations.manage);
                                             if (isDualSelect) {
-                                                activity.operations.push($this.operations.exhibitionArrangement);
                                                 activity.operations.push($this.operations.dualSelectStatExport);
                                             }
                                             activity.operations.push($this.operations.delete);
@@ -229,7 +227,6 @@
                                             }
                                             activity.operations.push($this.operations.manage);
                                             if (isDualSelect) {
-                                                activity.operations.push($this.operations.exhibitionArrangement);
                                                 activity.operations.push($this.operations.dualSelectStatExport);
                                             }
                                             activity.operations.push($this.operations.delete);
@@ -250,7 +247,6 @@
                                             }
                                             activity.operations.push($this.operations.manage);
                                             if (isDualSelect) {
-                                                activity.operations.push($this.operations.exhibitionArrangement);
                                                 activity.operations.push($this.operations.dualSelectStatExport);
                                             }
                                             activity.operations.push($this.operations.delete);
@@ -359,8 +355,8 @@
                         case "cancelRelease":
                             $this.toCancelRelease(id);
                             break;
-                        case "exhibitionArrangement":
-                            $this.toExhibitionArrangement(id, activity.createFid);
+                        case "dualSelectStatExport":
+                            $this.toDualSelectStatExport(id, activity.createFid);
                             break;
                         default:
                     }
@@ -474,10 +470,6 @@
                     }, function () {
                         app.showMsg("下架失败");
                     });
-                },
-                toExhibitionArrangement: function (activityId, fid) {
-                    var url = activityApp.generateDualSelectIndexUrl(activityId, fid);
-                    window.open(url);
                 },
                 toDualSelectStatExport: function (activityId, fid) {
                     var url = activityApp.generateDualSelectStatExportUrl(activityId, fid);

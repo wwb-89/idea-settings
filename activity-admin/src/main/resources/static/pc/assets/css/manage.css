@@ -230,7 +230,7 @@ table {
 }
 
 .manage-more-btn .more {
-    width: 74px;
+    min-width: 74px;
     position: absolute;
     top: 35px;
     right: -50px;
