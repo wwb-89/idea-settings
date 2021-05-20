@@ -1,6 +1,7 @@
 package com.chaoxing.activity.web.controller;
 
 import com.chaoxing.activity.dto.ActivityQueryDateDTO;
+import com.chaoxing.activity.dto.LoginUserDTO;
 import com.chaoxing.activity.model.Group;
 import com.chaoxing.activity.model.GroupRegionFilter;
 import com.chaoxing.activity.service.ActivityQueryDateService;
@@ -9,6 +10,7 @@ import com.chaoxing.activity.service.GroupService;
 import com.chaoxing.activity.service.activity.classify.ActivityClassifyQueryService;
 import com.chaoxing.activity.util.UserAgentUtils;
 import com.chaoxing.activity.util.annotation.LoginRequired;
+import com.chaoxing.activity.util.exception.LoginRequiredException;
 import com.chaoxing.activity.web.util.LoginUtils;
 import com.google.common.collect.Lists;
 import lombok.extern.slf4j.Slf4j;
@@ -91,10 +93,6 @@ public class IndexController {
 	@GetMapping("lib")
 	public String libIndex(HttpServletRequest request, Model model, String code, Integer wfwfid, Integer unitId, Integer state, Integer fid, Integer pageId, Integer banner, String style, @RequestParam(defaultValue = "") String flag) {
 		Integer realFid = Optional.ofNullable(wfwfid).orElse(Optional.ofNullable(unitId).orElse(Optional.ofNullable(state).orElse(fid)));
-		if (realFid == null) {
-			// 使用通用的活动广场
-			return "redirect:/?flag=" + flag;
-		}
 		return handleData(request, model, code, realFid, pageId, banner, style, flag);
 	}
 
@@ -148,7 +146,8 @@ public class IndexController {
 
 	private String handleData(HttpServletRequest request, Model model, String code, Integer fid, Integer pageId, Integer banner, String style, String flag) {
 		if (fid == null) {
-			fid = LoginUtils.getLoginUser(request).getFid();
+			LoginUserDTO loginUser = LoginUtils.getLoginUser(request);
+			Optional.ofNullable(loginUser).orElseThrow(() -> new LoginRequiredException());
 		}
 		List<String> activityClassifyNames = activityClassifyQueryService.listOrgsOptionalName(Lists.newArrayList(fid));
 		model.addAttribute("activityClassifyNames", activityClassifyNames);
