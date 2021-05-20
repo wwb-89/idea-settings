@@ -22,6 +22,7 @@ public interface OrgDataRepoConfigDetailMapper extends BaseMapper<OrgDataRepoCon
     * @author huxiaolong
     * @Date 2021-05-19 14:20:41
     * @param fid
+    * @param dataType
     * @return java.util.List<com.chaoxing.activity.model.OrgDataRepoConfigDetail>
     */
     List<OrgDataRepoConfigDetail> listParticipateTimeConfigDetail(@Param("fid") Integer fid,

@@ -287,8 +287,8 @@ public class Activity {
         /** 双选会 */
         DUAL_SELECT("双选会", "dual_select");
 
-        private String name;
-        private String value;
+        private final String name;
+        private final String value;
 
         ActivityFlag(String name, String value) {
             this.name = name;

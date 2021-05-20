@@ -21,10 +21,9 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 public class ActivityOrgStatDTO {
+
     /** 活动个数 */
     private Integer activityNum;
-    /** 浏览人数 */
-    /** private Integer uv;*/
     /** 访问量 */
     private Integer pv;
     /** 报名数 */
