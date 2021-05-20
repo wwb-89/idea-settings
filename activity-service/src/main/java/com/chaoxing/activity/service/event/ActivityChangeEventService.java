@@ -2,7 +2,6 @@ package com.chaoxing.activity.service.event;
 
 import com.chaoxing.activity.model.Activity;
 import com.chaoxing.activity.service.queue.*;
-import com.chaoxing.activity.service.repoconfig.OrgDataRepoConfigQueryService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
@@ -40,8 +39,6 @@ public class ActivityChangeEventService {
 	private ActivityIntegralChangeQueueService activityIntegralChangeQueueService;
 	@Resource
 	private ActivityDataChangeQueueService activityDataChangeQueueService;
-	@Resource
-	private OrgDataRepoConfigQueryService orgDataRepoConfigQueryService;
 
 	/**活动数据改变
 	 * @Description 
@@ -79,9 +76,13 @@ public class ActivityChangeEventService {
 			// 提醒已收藏、已报名的用户活动的变更，需要判断的变更内容：活动地点、活动时间
 			boolean activityDataChange = !Objects.equals(activity.getAddress(), oldActivity.getAddress()) || !Objects.equals(activity.getDetailAddress(), oldActivity.getDetailAddress());
 			LocalDateTime now = LocalDateTime.now();
-			if ((activity.getStartTime().compareTo(oldActivity.getStartTime()) != 0
-					|| activity.getEndTime().compareTo(oldActivity.getEndTime()) != 0)
-					&& activity.getEndTime().isAfter(now)) {
+			// 时间是否改变
+			boolean timeChanged = activity.getStartTime().compareTo(oldActivity.getStartTime()) != 0;
+			if (!timeChanged) {
+				timeChanged = activity.getEndTime().compareTo(oldActivity.getEndTime()) != 0;
+			}
+			boolean activityEnded = activity.getEndTime().isBefore(now);
+			if (timeChanged && !activityEnded) {
 				activityDataChange = true;
 			}
 			if (activityDataChange) {

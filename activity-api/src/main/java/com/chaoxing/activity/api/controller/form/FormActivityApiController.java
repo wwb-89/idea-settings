@@ -32,15 +32,15 @@ public class FormActivityApiController {
      * @Date 2021-05-10 16:26:47
      * @param deptId
      * @param formId
-     * @param indexID
+     * @param formUserId
      * @return com.chaoxing.activity.dto.RestRespDTO
      */
     @RequestMapping("create")
-    public RestRespDTO formCreateActivity(@RequestParam Integer deptId, Integer formId, Integer indexID, String flag) {
+    public RestRespDTO formCreateActivity(@RequestParam Integer deptId, Integer formId, @RequestParam(value = "indexID") Integer formUserId, String flag) {
         FormCreateActivity formCreateActivity = FormCreateActivity.builder()
                 .fid(deptId)
                 .formId(formId)
-                .formUserId(indexID)
+                .formUserId(formUserId)
                 .flag(flag)
                 .build();
         formActivityCreateQueueService.add(formCreateActivity);

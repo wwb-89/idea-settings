@@ -47,6 +47,7 @@ public class OrgDataRepoConfigDetail {
     @Getter
     public enum RepoTypeEnum {
 
+        /** 表单 */
         FORM("表单", "form");
 
         private String name;
@@ -72,6 +73,7 @@ public class OrgDataRepoConfigDetail {
     @Getter
     public enum DataTypeEnum {
 
+        /** 活动 */
         ACTIVITY("活动", "activity"),
         PARTICIPATE_TIME_LENGTH("参与时长", "participate_time_length");
 

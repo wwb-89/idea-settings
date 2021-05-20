@@ -239,7 +239,7 @@ public class FormApprovalApiService {
      * @param formUserId
      * @return void
     */
-    @Transactional
+    @Transactional(rollbackFor = Exception.class)
     public void addActivity(Integer fid, Integer formId, Integer formUserId, String flag) {
         Activity activity = getNeedCreateActivity(fid, formId, formUserId);
         if (activity == null) {
