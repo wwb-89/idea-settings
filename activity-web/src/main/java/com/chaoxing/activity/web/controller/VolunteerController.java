@@ -1,19 +1,20 @@
-package com.chaoxing.activity.web.controller.pc;
+package com.chaoxing.activity.web.controller;
 
 import com.chaoxing.activity.dto.LoginUserDTO;
 import com.chaoxing.activity.dto.activity.VolunteerServiceDTO;
 import com.chaoxing.activity.service.volunteer.VolunteerService;
 import com.chaoxing.activity.util.UserAgentUtils;
+import com.chaoxing.activity.util.annotation.LoginRequired;
 import com.chaoxing.activity.web.util.LoginUtils;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import java.util.List;
+import java.util.Optional;
 
 /**志愿服务单前端控制器
  * @author huxiaolong
@@ -23,12 +24,11 @@ import java.util.List;
  * <p>
  */
 @Controller
-@RequestMapping("activity/volunteer")
+@RequestMapping("volunteer")
 public class VolunteerController {
 
     @Resource
     private VolunteerService volunteerService;
-
 
     /***志愿服务单首页
     * @Description
@@ -38,14 +38,15 @@ public class VolunteerController {
     * @param model
     * @return java.lang.String
     */
-    @GetMapping("{fid}")
-    public String index(HttpServletRequest request, Model model, @PathVariable Integer fid) {
-
+    @LoginRequired
+    @GetMapping
+    public String index(HttpServletRequest request, Model model, Integer state, Integer fid) {
+        Integer realFid = Optional.ofNullable(state).orElse(fid);
         LoginUserDTO loginUser = LoginUtils.getLoginUser(request);
         if (loginUser != null) {
-            List<VolunteerServiceDTO> volunteerServiceDTOList = volunteerService.listServiceTimeLength(loginUser.getUid(), fid);
-            List<String> serviceTypeList = volunteerService.listVolunteerServiceType(fid);
-            model.addAttribute("fid", fid);
+            List<VolunteerServiceDTO> volunteerServiceDTOList = volunteerService.listServiceTimeLength(loginUser.getUid(), realFid);
+            List<String> serviceTypeList = volunteerService.listVolunteerServiceType(realFid);
+            model.addAttribute("fid", realFid);
             model.addAttribute("volunteerList", volunteerServiceDTOList);
             model.addAttribute("serviceTypeList", serviceTypeList);
         }
