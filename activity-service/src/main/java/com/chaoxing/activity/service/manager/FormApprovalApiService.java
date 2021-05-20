@@ -226,7 +226,7 @@ public class FormApprovalApiService {
         activity.setCreateOrgName(orgName);
         activity.setOrganisers(orgName);
         activity.setOriginType(Activity.OriginTypeEnum.ACTIVITY_DECLARATION.getValue());
-        activity.setOriginType(String.valueOf(formUserId));
+        activity.setOrigin(String.valueOf(formUserId));
         return activity;
     }
 

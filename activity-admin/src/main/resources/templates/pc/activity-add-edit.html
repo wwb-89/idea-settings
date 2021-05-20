@@ -299,8 +299,11 @@
             <form action="" onsubmit="return false;" class="setForm" v-show="!signIn.deleted">
                 <div class="form-item">
                     <label class="label">{{signIn.typeName}}方式</label>
-                    <div class="input-box">
+                    <div class="input-box" v-if="signIn.type == 'sign_in'">
                         <el-radio v-for="(signInWay, index) of signInWays" :key="'sign-in-way-' + index" v-model="signIn.way" :label="signInWay.value" name="signInWay">{{signInWay.name}}</el-radio>
+                    </div>
+                    <div class="input-box" v-else>
+                        <el-radio v-for="(signInWay, index) of signOutWays" :key="'sign-in-way-' + index" v-model="signIn.way" :label="signInWay.value" name="signInWay">{{signInWay.name}}</el-radio>
                     </div>
                 </div>
                 <div class="form-item" v-show="signIn.way == 2">
