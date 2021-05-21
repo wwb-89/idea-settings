@@ -4,13 +4,11 @@ import com.alibaba.fastjson.annotation.JSONField;
 import com.chaoxing.activity.model.Activity;
 import com.chaoxing.activity.util.LocalDateTime2TimestampDeserializer;
 import com.chaoxing.activity.util.LocalDateTimeSerializer;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Objects;
 
 /**
  * 报名
@@ -92,6 +90,144 @@ public class SignUp {
     private Long endTimestamp;
     /** 参与范围 */
     private List<SignUpParticipateScope> participateScopes;
+
+    /** 状态枚举
+     * @className SignUp
+     * @description
+     * @author wwb
+     * @blame wwb
+     * @date 2021-03-29 11:33:26
+     * @version ver 1.0
+     */
+    @Getter
+    public enum StatusEnum {
+
+        /** 未开始 */
+        NOT_STARTED("未开始", 1),
+        ONGOING("进行中", 2),
+        ENDED("已结束", 3);
+
+        private String name;
+        private Integer value;
+
+        StatusEnum(String name, Integer value) {
+            this.name = name;
+            this.value = value;
+        }
+
+        public static StatusEnum fromValue(Integer value) {
+            StatusEnum[] values = StatusEnum.values();
+            for (StatusEnum statusEnum : values) {
+                if (Objects.equals(statusEnum.getValue(), value)) {
+                    return statusEnum;
+                }
+            }
+            return null;
+        }
+    }
+
+    /** 限制参与范围类型枚举
+     * @className SignUp
+     * @description
+     * @author wwb
+     * @blame wwb
+     * @date 2021-03-29 15:46:32
+     * @version ver 1.0
+     */
+    @Getter
+    public enum LimitParticipateScopeType {
+
+        /** 微服务组织架构 */
+        WFW_ORGANIZATIONAL_STRUCTURE("微服务组织架构", "wfw_organizational_structure");
+
+        private String name;
+        private String value;
+
+        LimitParticipateScopeType(String name, String value) {
+            this.name = name;
+            this.value = value;
+        }
+
+        public static LimitParticipateScopeType fromValue(String value) {
+            LimitParticipateScopeType[] values = LimitParticipateScopeType.values();
+            for (LimitParticipateScopeType limitParticipateScopeType : values) {
+                if (Objects.equals(limitParticipateScopeType.getValue(), value)) {
+                    return limitParticipateScopeType;
+                }
+            }
+            return null;
+        }
+    }
+
+    /** 活动标示枚举
+     * @className SignUp
+     * @description
+     * @author wwb
+     * @blame wwb
+     * @date 2021-04-01 13:07:46
+     * @version ver 1.0
+     */
+    @Getter
+    public enum ActivityFlag {
+
+        /** 通用 */
+        NORMAL("通用", "normal"),
+        /** 第二课堂 */
+        SECOND_CLASSROOM("第二课堂", "second_classroom"),
+        /** 双选会 */
+        DUAL_SELECT("双选会", "dual_select");
+
+        private String name;
+        private String value;
+
+        ActivityFlag(String name, String value) {
+            this.name = name;
+            this.value = value;
+        }
+
+        public static ActivityFlag fromValue(String value) {
+            ActivityFlag[] values = ActivityFlag.values();
+            for (ActivityFlag activityFlag : values) {
+                if (Objects.equals(activityFlag.getValue(), value)) {
+                    return activityFlag;
+                }
+            }
+            return null;
+        }
+    }
+
+    /**报名类型
+     * @Description
+     * @author wwb
+     * @Date 2021-04-30 17:30:57
+     * @param null
+     * @return
+     */
+    @Getter
+    public enum CustomSignUpTypeEnum {
+
+        /** 双选会公司报名 */
+        DUAL_SELECT_COMPANY("公司报名", "company");
+
+        private String name;
+        private String value;
+
+        CustomSignUpTypeEnum(String name, String value) {
+            this.name = name;
+            this.value = value;
+        }
+
+        public static CustomSignUpTypeEnum fromValue(String value) {
+            CustomSignUpTypeEnum[] values = CustomSignUpTypeEnum.values();
+            for (CustomSignUpTypeEnum customSignUpTypeEnum : values) {
+                if (Objects.equals(customSignUpTypeEnum.getValue(), value)) {
+                    return customSignUpTypeEnum;
+                }
+            }
+            return null;
+        }
+
+    }
 
     public static SignUp buildDefault() {
         LocalDateTime now = LocalDateTime.now();
