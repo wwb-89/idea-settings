@@ -191,7 +191,7 @@ public class ActivityApiController {
 				}
 			}
 		}
-		refer = Optional.ofNullable(refer).filter(v -> StringUtils.isNotBlank(v)).orElse("");
+		refer = Optional.ofNullable(refer).filter(StringUtils::isNotBlank).orElse("");
 		loginUrl = loginUrl.replace(LOGIN_URL_PLACEHOLDER, refer);
 		return RestRespDTO.success(loginUrl);
 	}
@@ -320,6 +320,18 @@ public class ActivityApiController {
 	@RequestMapping("from/page/{pageId}")
 	public RestRespDTO getByPageId(@PathVariable Integer pageId) {
 		return RestRespDTO.success(activityQueryService.getByPageId(pageId));
+	}
+
+	/**根据门户网站websiteId查询活动
+	 * @Description 
+	 * @author wwb
+	 * @Date 2021-05-21 16:05:43
+	 * @param websiteId
+	 * @return com.chaoxing.activity.dto.RestRespDTO
+	*/
+	@RequestMapping("from/website/{websiteId}")
+	public RestRespDTO getByWebsiteId(@PathVariable Integer websiteId) {
+		return RestRespDTO.success(activityQueryService.getByWebsiteId(websiteId));
 	}
 
 }

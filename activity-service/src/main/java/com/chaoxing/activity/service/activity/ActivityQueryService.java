@@ -342,6 +342,20 @@ public class ActivityQueryService {
 		);
 	}
 
+	/**根据门户websiteId查询活动
+	 * @Description 
+	 * @author wwb
+	 * @Date 2021-05-21 16:05:17
+	 * @param websiteId
+	 * @return com.chaoxing.activity.model.Activity
+	*/
+	public Activity getByWebsiteId(Integer websiteId) {
+		return activityMapper.selectOne(new QueryWrapper<Activity>()
+				.lambda()
+				.eq(Activity::getWebsiteId, websiteId)
+		);
+	}
+
 	/**根据报名签到id查询活动
 	 * @Description 
 	 * @author wwb
