@@ -65,6 +65,10 @@ public class Activity {
     private BigDecimal dimension;
     /** 活动分类id; column: activity_classify_id*/
     private Integer activityClassifyId;
+    /** 学时; column: period*/
+    private BigDecimal period;
+    /** 学分; column: credit*/
+    private BigDecimal credit;
     /** 是否启用签到报名; column: is_enable_sign*/
     @TableField(value = "is_enable_sign")
     private Boolean enableSign;
@@ -285,7 +289,9 @@ public class Activity {
         /** 第二课堂 */
         SECOND_CLASSROOM("第二课堂", "second_classroom"),
         /** 双选会 */
-        DUAL_SELECT("双选会", "dual_select");
+        DUAL_SELECT("双选会", "dual_select"),
+        /** 教师发展 */
+        TEACHER("教师发展", "teacher");
 
         private final String name;
         private final String value;

@@ -419,6 +419,8 @@ public class ActivityHandleService {
 			existActivity.setLongitude(activity.getLongitude());
 			existActivity.setDimension(activity.getDimension());
 			existActivity.setActivityClassifyId(activity.getActivityClassifyId());
+			existActivity.setPeriod(activity.getPeriod());
+			existActivity.setCredit(activity.getCredit());
 			existActivity.setEnableSign(activity.getEnableSign());
 			existActivity.setSignId(activity.getSignId());
 			existActivity.setWebTemplateId(activity.getWebTemplateId());

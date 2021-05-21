@@ -17,6 +17,8 @@
         <result column="longitude" jdbcType="DECIMAL" property="longitude" />
         <result column="dimension" jdbcType="DECIMAL" property="dimension" />
         <result column="activity_classify_id" jdbcType="INTEGER" property="activityClassifyId" />
+        <result column="period" jdbcType="DECIMAL" property="period" />
+        <result column="credit" jdbcType="DECIMAL" property="credit" />
         <result column="is_enable_sign" jdbcType="BIT" property="enableSign" />
         <result column="sign_id" jdbcType="INTEGER" property="signId" />
         <result column="web_template_id" jdbcType="INTEGER" property="webTemplateId" />
@@ -50,7 +52,7 @@
     </resultMap>
     <sql id="Base_Column_List">
         t.id, t.name, t.start_time, t.end_time, t.start_date, t.end_date, t.cover_cloud_id, t.cover_url, t.organisers, t.activity_type, t.address, t.detail_address,
-        t.longitude, t.dimension, t.activity_classify_id, t.is_enable_sign, t.sign_id, t.web_template_id, t.website_id, t.page_id, t.preview_url, t.edit_url,
+        t.longitude, t.dimension, t.activity_classify_id, t.period, t.credit ,t.is_enable_sign, t.sign_id, t.web_template_id, t.website_id, t.page_id, t.preview_url, t.edit_url,
         t.is_released, t.release_time, t.release_uid, t.is_open_audit, t.audit_status, t.create_uid, t.create_user_name, t.create_fid, t.create_area_code,
         t.create_org_name, t.tags, t.is_open_rating, t.is_rating_need_audit, t.is_open_integral, t.activity_flag, t.integral_value, t.is_open_work, t.work_id,
         t.origin_type, t.origin, t.status, t.create_time, t.update_time

@@ -160,6 +160,24 @@
                         </div>
                     </div>
                 </div>
+                <!--学时-->
+                <div class="form-item" v-show="isShowPeriodCredit()">
+                    <label class="label">学时</label>
+                    <div class="input-box setForm">
+                        <input type="number" min="0" step="0.1" v-model.trim="activity.period" @blur="periodChange" placeholder="请输入" class="score-input">
+                        <span class="score">学时</span>
+                        <span>参与者成绩合格时，即可获取相应学时</span>
+                    </div>
+                </div>
+                <!--学分-->
+                <div class="form-item" v-show="isShowPeriodCredit()">
+                    <label class="label">学分</label>
+                    <div class="input-box setForm">
+                        <input type="number" min="0" step="0.1" v-model.trim="activity.credit" @blur="creditChange" placeholder="请输入" class="score-input">
+                        <span class="score">学分</span>
+                        <span>参与者成绩合格时，即可获取相应学分</span>
+                    </div>
+                </div>
                 <div class="form-item cancel-margin marginTop16" v-show="isShowActivityFlag()">
                     <label class="label">标签</label>
                     <div class="input-box wrap">
@@ -397,7 +415,7 @@
             </form>
         </div>
         <!--征集设置-->
-        <div class="info box">
+        <div class="info box" v-show="!isShowPeriodCredit()">
             <div class="set-box">
                 <div class="title set">作品征集</div>
             </div>
@@ -616,6 +634,8 @@
                         longitude: "",
                         dimension: "",
                         activityClassifyId: firstActivityClassifyId,
+                        period: 0.0,
+                        credit: 0.0,
                         enableSign: true,
                         createAreaCode: $this.areaCode,
                         tags: "",
@@ -730,6 +750,26 @@
                 }
             },
             methods: {
+                periodChange: function () {
+                    var $this = this;
+                    var period = $this.activity.period;
+                    if (activityApp.isEmpty(period)) {
+                        period = 0;
+                    } else {
+                        period = parseFloat(period).toFixed(1);
+                    }
+                    $this.$set($this.activity, "period", period);
+                },
+                creditChange: function () {
+                    var $this = this;
+                    var credit = $this.activity.credit;
+                    if (activityApp.isEmpty(credit)) {
+                        credit = 0;
+                    } else {
+                        credit = parseFloat(credit).toFixed(1);
+                    }
+                    $this.$set($this.activity, "credit", credit);
+                },
                 signUpEnableChanged: function (index) {
                     var $this = this;
                     $this.$set($this.sign.signUps[index], "deleted", !$this.sign.signUps[index].enable);
@@ -1420,6 +1460,12 @@
                     var $this = this;
                     var hides = ["second_classroom", "dual_select"];
                     return hides.indexOf($this.activity.activityFlag) == -1;
+                },
+                // 是否显示学时、学分
+                isShowPeriodCredit: function () {
+                    var $this = this;
+                    var shows = ["teacher"];
+                    return shows.indexOf($this.activity.activityFlag) != -1;
                 }
             }
         });
