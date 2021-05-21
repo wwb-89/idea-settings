@@ -310,4 +310,16 @@ public class ActivityApiController {
 		return RestRespDTO.success();
 	}
 
+	/**根据门户pageId查询活动id
+	 * @Description 
+	 * @author wwb
+	 * @Date 2021-05-21 15:46:11
+	 * @param pageId
+	 * @return com.chaoxing.activity.dto.RestRespDTO
+	*/
+	@RequestMapping("from/page/{pageId}")
+	public RestRespDTO getByPageId(@PathVariable Integer pageId) {
+		return RestRespDTO.success(activityQueryService.getByPageId(pageId));
+	}
+
 }
