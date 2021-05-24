@@ -20,6 +20,8 @@ public class CommonConstant {
 
 	/** 默认的文件路径分隔符 */
 	public static final String DEFAULT_FILE_SEPARATOR = "/";
+	/** groupName分隔符 */
+	public static final String GROUP_NAME_SEPARATOR = "/";
 	/** 默认的分隔符 */
 	public static final String DEFAULT_SEPARATOR = ",";
 	/** 登录认证密钥 */
