@@ -33,6 +33,8 @@ public class TableFieldDetail {
     private Integer tableFieldId;
     /** 名称; column: name*/
     private String name;
+    /** 编码; column: code*/
+    private String code;
     /** 是否默认选中; column: is_default_checked*/
     @TableField(value = "is_default_checked")
     private Boolean defaultChecked;
