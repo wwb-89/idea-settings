@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.chaoxing.activity.mapper.OrgTableFieldMapper">
+    <resultMap id="BaseResultMap" type="com.chaoxing.activity.model.OrgTableField">
+        <result column="fid" jdbcType="INTEGER" property="fid" />
+        <result column="table_field_id" jdbcType="INTEGER" property="tableFieldId" />
+        <result column="table_field_detail_id" jdbcType="INTEGER" property="tableFieldDetailId" />
+        <result column="is_top" jdbcType="BIT" property="top" />
+        <result column="sequence" jdbcType="INTEGER" property="sequence" />
+        <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
+        <result column="create_uid" jdbcType="INTEGER" property="createUid" />
+        <result column="update_time" jdbcType="TIMESTAMP" property="updateTime" />
+        <result column="update_uid" jdbcType="INTEGER" property="updateUid" />
+    </resultMap>
+    <sql id="Base_Column_List">
+        t.fid, t.table_field_id, t.table_field_detail_id, t.is_top, t.sequence, t.create_time, t.create_uid, t.update_time, t.update_uid
+    </sql>
+</mapper>
