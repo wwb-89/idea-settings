@@ -13,11 +13,13 @@ import javax.annotation.Resource;
  * @version ver 1.0
  * @className DualSelectApiController
  * @description
+ * @Deprecated 请使用 /redirect/dual-select/** 来替换，所有的重定向工作都迁移到 /redirect/**中
  * @blame wwb
  * @date 2021-04-08 17:22:37
  */
 @Controller
 @RequestMapping("dual-select")
+@Deprecated
 public class DualSelectApiController {
 
 	@Resource
