@@ -2,6 +2,7 @@ package com.chaoxing.activity.service.activity;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.chaoxing.activity.dto.LoginUserDTO;
@@ -633,5 +634,28 @@ public class ActivityQueryService {
 			return getById(activityId);
 		}
 		return null;
+	}
+
+	/**针对创建机构、时间范围，对活动进行分页查询
+	* @Description
+	* @author huxiaolong
+	* @Date 2021-05-25 16:31:54
+	* @param page
+	* @param fid
+	* @param startTimeStr
+	* @param endTimeStr
+	* @return com.baomidou.mybatisplus.extension.plugins.pagination.Page<com.chaoxing.activity.model.Activity>
+	*/
+	public Page<Activity> activityPage(Page<Activity> page, Integer fid, String startTimeStr, String endTimeStr) {
+		LambdaQueryWrapper<Activity> wrapper = new QueryWrapper<Activity>().lambda().eq(Activity::getCreateFid, fid);
+		if (StringUtils.isNotBlank(startTimeStr)) {
+			LocalDateTime startTime = LocalDateTime.parse(startTimeStr);
+			wrapper.gt(Activity::getStartTime, startTime);
+		}
+		if (StringUtils.isNotBlank(endTimeStr)) {
+			LocalDateTime endTime = LocalDateTime.parse(endTimeStr);
+			wrapper.lt(Activity::getStartTime, endTime);
+		}
+		return activityMapper.selectPage(page, wrapper);
 	}
 }

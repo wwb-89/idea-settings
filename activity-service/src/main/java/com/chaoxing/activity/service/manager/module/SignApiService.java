@@ -30,6 +30,7 @@ import org.springframework.web.client.RestTemplate;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
+import java.math.BigDecimal;
 import java.time.ZoneOffset;
 import java.util.List;
 import java.util.Optional;
@@ -66,6 +67,12 @@ public class SignApiService {
 	private static final String ACTIVITY_BLOCK_DETAIL_STAT_URL = SIGN_API_DOMAIN + "/stat/sign/activity-block-detail?signId=%s&uid=%s";
 	/** 用户已报名的报名签到列表url */
 	private static final String USER_SIGNED_UP_URL = SIGN_API_DOMAIN + "/stat/sign/user-signed-up/%d";
+	/** 统计活动报名签到对应的签到数url */
+	private static final String STAT_ACTIVITY_SIGNED_NUM_URL = SIGN_API_DOMAIN + "/stat/sign/%d/signed-in-nums";
+	/** 统计活动报名签到对应的签到率url */
+	private static final String STAT_ACTIVITY_SIGNED_RATE_URL = SIGN_API_DOMAIN + "/stat/sign/%d/sign-in-rate";
+	/** 统计活动报名签到对应的合格人数url */
+	private static final String STAT_ACTIVITY_QUALIFIED_NUMS_URL = SIGN_API_DOMAIN + "/stat/sign/%d/qualified-nums";
 	/** 通知已收藏url */
 	private static final String NOTICE_COLLECTED_URL = SIGN_API_DOMAIN + "/sign/%d/notice/collected";
 	/** 报名签到参与范围描述yrl */
@@ -697,4 +704,66 @@ public class SignApiService {
 		}
 	}
 
+	/**获取活动报名签到签到数
+	* @Description
+	* @author huxiaolong
+	* @Date 2021-05-25 15:42:02
+	* @param signId
+	* @return java.lang.Integer
+	*/
+	public Integer getActivitySignedInNums(Integer signId) {
+		String url = String.format(STAT_ACTIVITY_SIGNED_NUM_URL, signId);
+		String result = restTemplate.getForObject(url, String.class);
+		JSONObject jsonObject = JSON.parseObject(result);
+		Boolean success = jsonObject.getBoolean("success");
+		success = Optional.ofNullable(success).orElse(Boolean.FALSE);
+		if (success) {
+			return jsonObject.getInteger("data");
+		} else {
+
+			String errorMessage = jsonObject.getString("message");
+			throw new BusinessException(errorMessage);
+		}
+	}
+
+	/**获取活动报名签到签到率
+	 * @Description
+	 * @author huxiaolong
+	 * @Date 2021-05-25 15:42:02
+	 * @param signId
+	 * @return java.lang.Integer
+	 */
+	public BigDecimal getActivitySignInRate(Integer signId) {
+		String url = String.format(STAT_ACTIVITY_SIGNED_RATE_URL, signId);
+		String result = restTemplate.getForObject(url, String.class);
+		JSONObject jsonObject = JSON.parseObject(result);
+		Boolean success = jsonObject.getBoolean("success");
+		success = Optional.ofNullable(success).orElse(Boolean.FALSE);
+		if (success) {
+			return jsonObject.getBigDecimal("data");
+		} else {
+			String errorMessage = jsonObject.getString("message");
+			throw new BusinessException(errorMessage);
+		}
+	}
+	/**获取活动报名签到合格人数
+	 * @Description
+	 * @author huxiaolong
+	 * @Date 2021-05-25 15:42:02
+	 * @param signId
+	 * @return java.lang.Integer
+	 */
+	public Integer getActivityQualifiedNums(Integer signId) {
+		String url = String.format(STAT_ACTIVITY_QUALIFIED_NUMS_URL, signId);
+		String result = restTemplate.getForObject(url, String.class);
+		JSONObject jsonObject = JSON.parseObject(result);
+		Boolean success = jsonObject.getBoolean("success");
+		success = Optional.ofNullable(success).orElse(Boolean.FALSE);
+		if (success) {
+			return jsonObject.getInteger("data");
+		} else {
+			String errorMessage = jsonObject.getString("message");
+			throw new BusinessException(errorMessage);
+		}
+	}
 }
