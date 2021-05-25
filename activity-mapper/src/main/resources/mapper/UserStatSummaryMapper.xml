@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.chaoxing.activity.mapper.UserStatSummaryMapper">
+    <resultMap id="BaseResultMap" type="com.chaoxing.activity.model.UserStatSummary">
+        <result column="uid" jdbcType="INTEGER" property="uid" />
+        <result column="uname" jdbcType="VARCHAR" property="uname" />
+        <result column="mobile" jdbcType="VARCHAR" property="mobile" />
+        <result column="participate_activity_num" jdbcType="INTEGER" property="participateActivityNum" />
+        <result column="signed_in_num" jdbcType="INTEGER" property="signedInNum" />
+        <result column="sign_in_rate" jdbcType="DECIMAL" property="signInRate" />
+        <result column="rating_num" jdbcType="INTEGER" property="ratingNum" />
+        <result column="qualified_num" jdbcType="INTEGER" property="qualifiedNum" />
+        <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
+        <result column="update_time" jdbcType="TIMESTAMP" property="updateTime" />
+    </resultMap>
+    <sql id="Base_Column_List">
+        t.uid, t.uname, t.mobile, t.participate_activity_num, t.signed_in_num, t.sign_in_rate, t.rating_num, t.qualified_num, t.create_time, t.update_time
+    </sql>
+</mapper>
