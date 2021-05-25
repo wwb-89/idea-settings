@@ -1,5 +1,6 @@
 package com.chaoxing.activity.task;
 
+import com.chaoxing.activity.service.activity.ActivityIsAboutEndHandleService;
 import com.chaoxing.activity.service.activity.ActivityStatusUpdateService;
 import com.chaoxing.activity.service.queue.ActivityStatusUpdateQueueService;
 import org.springframework.data.redis.core.ZSetOperations;
@@ -23,6 +24,8 @@ public class ActivityStatusUpdateTask {
 	private ActivityStatusUpdateQueueService activityStatusUpdateQueueService;
 	@Resource
 	private ActivityStatusUpdateService activityStatusUpdateService;
+	@Resource
+	private ActivityIsAboutEndHandleService activityEndNoticeService;
 
 	/**每秒执行一次
 	 * @Description 
@@ -31,7 +34,7 @@ public class ActivityStatusUpdateTask {
 	 * @param 
 	 * @return void
 	*/
-	@Scheduled(fixedDelay = 1000L)
+	@Scheduled(fixedDelay = 100L)
 	public void syncStartTimeStatus() {
 		ZSetOperations.TypedTuple<Integer> startTimeQueueData = activityStatusUpdateQueueService.getStartTimeQueueData();
 		if (startTimeQueueData == null) {
@@ -53,7 +56,7 @@ public class ActivityStatusUpdateTask {
 	 * @param
 	 * @return void
 	 */
-	@Scheduled(fixedDelay = 1000L)
+	@Scheduled(fixedDelay = 100L)
 	public void syncEndTimeStatus() {
 		ZSetOperations.TypedTuple<Integer> endTimeQueueData = activityStatusUpdateQueueService.getEndTimeQueueData();
 		if (endTimeQueueData == null) {
@@ -64,7 +67,10 @@ public class ActivityStatusUpdateTask {
 		long l = endTime.longValue();
 		Integer activityId = endTimeQueueData.getValue();
 		if (activityStatusUpdateService.statusUpdate(activityId, l)) {
-			activityStatusUpdateQueueService.removeEndTime(activityId);
+			// 活动结束发通知
+			if (activityEndNoticeService.sendActivityIsAboutEndNotice(activityId)) {
+				activityStatusUpdateQueueService.removeEndTime(activityId);
+			}
 		}
 	}
 

@@ -1,0 +1,410 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="../../assets/lib/element-ui/lib/theme-chalk/index.css">
+    <link rel="stylesheet" href="../../assets/lib/zTree_v3/css/zTreeStyle/zTreeStyle.css" type="text/css">
+    <link rel="stylesheet" href="../../assets/css/public.css">
+    <link rel="stylesheet" href="../../assets/css/dialog.css">
+    <link rel="stylesheet" href="../../assets/css/limits-manage.css">
+    <title>权限管理-默认-已添加</title>
+</head>
+
+<body>
+    <div class="limits-manage" id="limits-manage" v-cloak>
+        <div class="manage-content">
+            <div class="clear">
+                <div class="normal-btn marginRigth24 fl" @click="addDialog = true">
+                    <i class="add-icon"></i>
+                    <span>添加</span>
+                </div>
+                <div v-show="!checkAllStatus" class="border-btn disable fl">批量删除</div>
+                <div v-show="checkAllStatus" class="border-btn fl">批量删除</div>
+            </div>
+            <table class="table-box">
+                <thead>
+                    <tr>
+                        <th class="check-box">
+                            <el-checkbox v-model="checkAllStatus" class="check-item-checkbox fl"
+                                @change="checkAllChange">
+                            </el-checkbox>
+                        </th>
+                        <th>角色名称</th>
+                        <th>成员数</th>
+                        <th>操作</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <th class="check-box">
+                            <el-checkbox v-model="checkedStatus[0]" class="check-item-checkbox fl" @change="checkChangeHandle" disabled></el-checkbox>
+                        </th>
+                        <th>全部</th>
+                        <th>-</th>
+                        <th>
+                           <span @click="settingDialog=true">权限配置</span>
+                        </th>
+                    </tr>
+                    <tr>
+                        <th class="check-box">
+                            <el-checkbox v-model="checkedStatus[1]" class="check-item-checkbox fl" @change="checkChangeHandle"></el-checkbox>
+                        </th>
+                        <th>院系管理员</th>
+                        <th>0</th>
+                        <th>
+                            <span @click="settingDialog=true">权限配置</span>
+                            <span>成员管理</span>
+                            <span @click="delDialog=true">删除</span>
+                        </th>
+                    </tr>
+                    <tr>
+                        <th class="check-box">
+                            <el-checkbox v-model="checkedStatus[2]" class="check-item-checkbox fl" @change="checkChangeHandle"></el-checkbox>
+                        </th>
+                        <th>超级管理员</th>
+                        <th>1</th>
+                        <th>
+                            <span @click="settingDialog=true">权限配置</span>
+                            <span>成员管理</span>
+                            <span @click="delDialog=true">删除</span>
+                        </th>
+                    </tr>
+                    <tr>
+                        <th class="check-box">
+                            <el-checkbox v-model="checkedStatus[3]" class="check-item-checkbox fl" @change="checkChangeHandle"></el-checkbox>
+                        </th>
+                        <th>ABC管理员</th>
+                        <th>3</th>
+                        <th>
+                            <span @click="settingDialog=true">权限配置</span>
+                            <span>成员管理</span>
+                            <span @click="delDialog=true">删除</span>
+                        </th>
+                    </tr>
+                    <tr>
+                        <th class="check-box">
+                            <el-checkbox v-model="checkedStatus[4]" class="check-item-checkbox fl" disabled></el-checkbox>
+                        </th>
+                        <th>其他</th>
+                        <th>-</th>
+                        <th>
+                            <span @click="settingDialog=true">权限配置</span>
+                        </th>
+                    </tr>
+                    <tr style="display: none;">
+                        <th class="no-content">暂无内容</th>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- 确认删除模块弹框 -->
+        <div class="dialog-mask" v-show="delDialog">
+            <div class="dailog delete-dailog">
+                <img src="../../assets/images/yq-design/warn.png" alt="">
+                <p class="text">确定删除吗？</p>
+                <div class="btn-box">
+                    <div class="border-btn" @click="delDialog=false">保留</div>
+                    <div class="normal-btn" @click="handleSure">删除</div>
+                </div>
+            </div>
+        </div>
+        <!-- 新增弹窗 -->
+        <div class="dialog-mask" v-show="addDialog">
+            <div class="dailog add-dailog">
+                <div class="header">
+                    <span>角色名称</span>
+                    <i class="close" @click="addDialog=false"></i>
+                </div>
+                <div class="body">
+                   <div class="edit-input">
+                        <el-input type="text" placeholder="请输入" maxlength="12" show-word-limit v-model="addDialogIpt"></el-input>
+                   </div>
+                </div>
+                <div class="footer">
+                    <div class="btn-box">
+                        <div class="border-btn">取消</div>
+                        <div class="normal-btn disable">确定</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- 编辑弹窗 -->
+        <div class="dialog-mask" v-show="editDialog">
+            <div class="dailog add-dailog">
+                <div class="header">
+                    <span>角色名称</span>
+                    <i class="close" @click="editDialog=false"></i>
+                </div>
+                <div class="body">
+                   <div class="edit-input">
+                        <el-input type="text" placeholder="请输入" maxlength="12" show-word-limit v-model="editDialogIpt"></el-input>
+                   </div>
+                </div>
+                <div class="footer">
+                    <div class="btn-box">
+                        <div class="border-btn">取消</div>
+                        <div class="normal-btn">确定</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- 配置权限弹窗 -->
+        <div class="dialog-mask" v-show="settingDialog">
+            <div class="dailog setting-dailog">
+                <div class="header">
+                    <span>配置权限</span>
+                    <i class="close" @click="settingDialog=false"></i>
+                </div>
+                <div class="body">
+                    <form action="">
+                        <div class="form-item">
+                            <label for="" class="label">活动类型</label>
+                            <div class="input-box">
+                                <el-checkbox-group v-model="checkbox">
+                                    <el-checkbox label="全部"></el-checkbox>
+                                    <el-checkbox label="社会实践"></el-checkbox>
+                                    <el-checkbox label="工作履历"></el-checkbox>
+                                    <el-checkbox label="思想成长"></el-checkbox>
+                                    <el-checkbox label="体育活动"></el-checkbox>
+                                    <el-checkbox label="志愿公益"></el-checkbox>
+                                    <el-checkbox label="创新创业"></el-checkbox>
+                                </el-checkbox-group>
+                            </div>
+                        </div>
+                        <div class="form-item">
+                            <label for="" class="label">发布范围</label>
+                            <div class="input-box">
+                                <el-radio v-model="radio" label="1" class="radio-item">不限</el-radio>
+                                <el-radio v-model="radio" label="2" class="radio-item">角色管理的范围</el-radio>
+                                <el-radio v-model="radio" label="3" class="radio-item">自定义</el-radio>
+                                <div class="select-box">
+                                    <p class="tips" v-show="radio==1">可以选择本单位下的所有组织架构</p>
+                                    <p class="tips" v-show="radio==2">用户在组织架构中作为部门主管的管理范围，可以在“人员管理/组织架构”中进行设置</p>
+                                    <div class="add-scope" v-show="radio==3">
+                                        <p class="text" style="display: none;">请选择</p>
+                                        <i class="add-circle" @click="releaseDialog=true"></i>
+                                        <div class="add-tags">
+                                            <span class="item">产品研发部<i class="del-btn"></i></span>
+                                            <span class="item">基础教育研发部<i class="del-btn"></i></span>
+                                            <span class="item">市场部<i class="del-btn"></i></span>
+                                            <span class="item">内容部<i class="del-btn"></i></span>
+                                            <span class="item">后勤部<i class="del-btn"></i></span>
+                                            <span class="item">行政部<i class="del-btn"></i></span>
+                                            <span class="item">小学教育产品部<i class="del-btn"></i></span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                <div class="footer">
+                    <div class="btn-box">
+                        <div class="border-btn" @click="settingDialog=false">取消</div>
+                        <div class="normal-btn">确定</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- 选择范围弹窗 -->
+        <div class="dialog-mask" v-show="releaseDialog">
+            <div class="dailog release-dialog">
+                <div class="header">
+                    <span>选择范围</span>
+                    <i class="close" @click="releaseDialog=false"></i>
+                </div>
+                <div class="body">
+                    <div class="tree">
+                        <div class="tree-head">
+                            <p class="fl">选择发布的范围</p>
+                            <p class="already fr">已选<span style="margin-left: 5px;">0</span></p>
+                        </div>
+                        <div class="tree-box">
+                            <div id="organizationTree" class="ztree"></div>
+                        </div>
+                    </div>
+                </div>
+                <div class="footer">
+                    <div class="btn-box">
+                        <div class="border-btn" @click="releaseDialog=false">取消</div>
+                        <div class="normal-btn">确定</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="toast" v-show="delSuccess">删除成功</div>
+        <div class="toast" style="display: none;">添加成功</div>
+    </div>
+</body>
+
+
+</html>
+<script type="text/javascript" src="../../assets/lib/vue.js"></script>
+<script type="text/javascript" src="../../assets/lib/jquery.min.js"></script>
+<script type="text/javascript" src="../../assets/lib/element-ui/lib/index.js"></script>
+<script type="text/javascript" src="../../assets/lib/zTree_v3/js/jquery.ztree.core.js"></script>
+<script type="text/javascript" src="../../assets/lib/zTree_v3/js/jquery.ztree.excheck.min.js"></script>
+<script type="text/javascript" src="../../assets/lib/zTree_v3/js/jquery.ztree.exedit.js"></script>
+<script>
+    var vm = new Vue({
+        el: '#limits-manage',
+        data: function () {
+            return {
+                checkAllStatus: false,
+                checkedStatus: [false, false, false, false],
+                delDialog: false,
+                addDialog: false,
+                addDialogIpt: "",
+                editDialog: false,
+                editDialogIpt: "自定义输入",
+                settingDialog: false,
+                releaseDialog: false,
+                checkbox:['全部','社会实践','工作履历','思想成长'],
+                radio:'1',
+                delSuccess:false,
+            }
+        },
+        created: function () {
+            
+        },
+        mounted: function () {
+            this.organizationTreeFun();
+        },
+        methods: {
+            checkChangeHandle: function () {
+                if (this.checkedStatus.indexOf(true) >= 0) {
+                    this.checkAllStatus = true;
+                } else {
+                    this.checkAllStatus = false;
+                }
+            },
+            checkAllChange: function () {
+                for (var i = 0; i < this.checkedStatus.length; i++) {
+                    this.checkedStatus[i] = this.checkAllStatus
+                }
+            },
+            handleSure: function () {
+                var that = this
+                this.delSuccess = true
+                this.delDialog = false
+                setTimeout(function(){
+                    that.delSuccess = false
+                }, 3000);
+            },
+            /* 渲染z-tree */
+            organizationTreeFun() {
+                var setting = {
+                    check: {
+                        enable: true
+                    },
+                    data: {
+                        simpleData: {
+                            enable: true
+                        }
+                    },
+                    callback: {
+                        onCheck: zTreeOnCheck
+                    },
+                    view: {
+                        // showIcon: false,
+                        addDiyDom: addDiyDom
+                    }
+                };
+                var zNodes = [
+                    {
+                        id: 1,
+                        pId: 0,
+                        name: "一级",
+                        open: true
+                    },
+                    {
+                        id: 2,
+                        pId: 0,
+                        name: "一级",
+                        open: true
+                    },
+                    {
+                        id: 3,
+                        pId: 0,
+                        name: "一级",
+                        open: false
+                    },
+                    {
+                        id: 10,
+                        pId: 1,
+                        name: "二级"
+                    },
+                    {
+                        id: 10,
+                        pId: 1,
+                        name: "二级"
+                    }, {
+                        id: 13,
+                        pId: 10,
+                        name: "二级"
+                    }, {
+                        id: 14,
+                        pId: 11,
+                        name: "二级"
+                    },
+                    {
+                        id: 12,
+                        pId: 1,
+                        name: "二级"
+                    },
+                    {
+                        id: 4,
+                        pId: 2,
+                        name: "二级"
+                    },
+                    {
+                        id: 5,
+                        pId: 2,
+                        name: "二级"
+                    },
+                    {
+                        id: 6,
+                        pId: 2,
+                        name: "二级"
+                    },
+                    {
+                        id: 7,
+                        pId: 3,
+                        name: "二级"
+                    }
+                ];
+
+                function zTreeOnCheck(event, treeId, treeNode) {
+                    clearCheckedOldNodes();
+                };
+                // 清理善后工作
+                function clearCheckedOldNodes() {
+                    var zTree = $.fn.zTree.getZTreeObj("organizationTree"),
+                        nodes = zTree.getChangeCheckedNodes();
+                    for (var i = 0, l = nodes.length; i < l; i++) {
+                        nodes[i].checkedOld = nodes[i].checked;
+                        console.log(nodes)
+                    }
+                };
+                // 显示子节点数量
+                function addDiyDom(treeId, treeNode){
+                    var count;
+                    if(treeNode.isParent) {
+                        count = treeNode.children.length ;
+                    } else {
+                        count = 0;
+                    }
+                    var aObj = $("#" + treeNode.tId + "_span");
+                    if(count>0){
+                        var editStr = "<span id='repairtypelist_" +treeNode.tId+ "_count' >("+count+")</span>";
+                        aObj.after(editStr);
+                    }
+                }
+                $.fn.zTree.init($("#organizationTree"), setting, zNodes);
+            },
+        }
+    });
+</script>

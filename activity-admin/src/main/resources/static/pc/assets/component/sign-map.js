@@ -11,13 +11,13 @@ Vue.component('vue-sign-map', {
         "        <div class='body'>\n" +
         "            <div class='body-head'>\n" +
         "                <div class='input-addr'>\n" +
-        "                    <el-autocomplete style='width:100%;' popper-class='autoAddressClass' v-model.trim='address' :fetch-suggestions='querySearchAsync' :trigger-on-focus='true' placeholder='请输入地址' @select='handleSelect' clearable>\n" +
+        "                    <el-autocomplete style='width:100%;' popper-class='autoAddressClass' v-model.trim='address' :fetch-suggestions='querySearchAsync' :trigger-on-focus='false' placeholder='请输入地址' @select='handleSelect' clearable>\n" +
         "                        <template slot-scope='scope'> <i class='el-icon-search fl mgr10'></i>\n" +
         "                            <div class='address-box'>\n" +
         "                                <div class='title1'>{{ scope.item.title }}</div>\n" +
         "                                --\n" +
         "                                <span class='address ellipsis'>{{ scope.item.address }}</span>\n" +
-        "                            </div>" +
+        "                            </div>\n" +
         "                            <i class='el-icon-close' @click='deleteHistory(scope.item, $event)'></i>\n" +
         "                        </template>\n" +
         "                    </el-autocomplete>\n" +
@@ -46,16 +46,13 @@ Vue.component('vue-sign-map', {
             mk: '',
             // 历史记录
             histories: [],
-            cb: null
+            cb: null,
+            inited: false
         }
     },
     created: function () {
         var $this = this;
         $this.loadHistory();
-    },
-    mounted: function () {
-        var $this = this;
-        $this.initMap();
     },
     watch: {
         "show": function () {
@@ -64,6 +61,14 @@ Vue.component('vue-sign-map', {
                 $this.address = "";
                 $this.longitude = null;
                 $this.dimension = null;
+                activityApp.resetScroll();
+            } else {
+                if (!$this.inited) {
+                    $this.$nextTick(function () {
+                        $this.initMap();
+                    });
+                }
+                activityApp.initScroll();
             }
         }
     },
@@ -85,6 +90,12 @@ Vue.component('vue-sign-map', {
                                 $this.histories.push(activityApp.getJsonObject(this));
                             }
                         });
+                        // 选中第一个
+                        var item = activityApp.getJsonObject(histories[0]);
+                        $this.address = item.address + item.title;
+                        $this.longitude = item.point.lng;
+                        $this.dimension = item.point.lat;
+                        $this.selectedItem = item;
                     }
                     $this.querySearchAsync("", $this.cb);
                 }
@@ -132,8 +143,8 @@ Vue.component('vue-sign-map', {
             this.map = new BMap.Map($this.mapDomId, {
                 enableMapClick: false
             });
-            var point = new BMap.Point(104.07073444090588, 30.575041234923084);
-            this.map.centerAndZoom(point, 19);
+            var point = new BMap.Point(116.41338729034514000, 39.91092364795759600);
+            this.map.centerAndZoom(point, 11);
             // 启用滚轮放大缩小，默认禁用
             this.map.enableScrollWheelZoom(true);
             this.mk = new BMap.Marker(point);
@@ -143,6 +154,7 @@ Vue.component('vue-sign-map', {
                 // 点击后调用逆地址解析函数
                 $this.getAddrByPoint(e.point);
             });
+            $this.inited = true;
         },
         //逆地址解析
         getAddrByPoint: function (point) {

@@ -7,8 +7,8 @@ import com.chaoxing.activity.dto.RestRespDTO;
 import com.chaoxing.activity.dto.manager.WfwRegionalArchitectureDTO;
 import com.chaoxing.activity.dto.query.ActivityQueryDTO;
 import com.chaoxing.activity.model.Activity;
-import com.chaoxing.activity.service.activity.collection.ActivityCollectionHandleService;
 import com.chaoxing.activity.service.activity.ActivityQueryService;
+import com.chaoxing.activity.service.activity.collection.ActivityCollectionHandleService;
 import com.chaoxing.activity.service.manager.WfwRegionalArchitectureApiService;
 import com.chaoxing.activity.util.HttpServletRequestUtils;
 import com.chaoxing.activity.util.annotation.LoginRequired;
@@ -27,7 +27,6 @@ import javax.servlet.http.HttpServletRequest;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -65,17 +64,16 @@ public class ActivityApiController {
 		String areaCode = activityQuery.getAreaCode();
 		List<Integer> fids = new ArrayList<>();
 		List<WfwRegionalArchitectureDTO> wfwRegionalArchitectures;
-		LoginUserDTO loginUser = LoginUtils.getLoginUser(request);
 		Integer topFid = activityQuery.getTopFid();
 		if (StringUtils.isNotBlank(areaCode)) {
+			// 区域的
 			wfwRegionalArchitectures = wfwRegionalArchitectureApiService.listByCode(areaCode);
 		} else {
-			Integer fid = loginUser.getFid();
-			if (!Objects.equals(topFid, fid)) {
-				wfwRegionalArchitectures = wfwRegionalArchitectureApiService.listByFid(topFid);
-			} else {
-				wfwRegionalArchitectures = wfwRegionalArchitectureApiService.listByFid(fid);
+			if (topFid == null) {
+				LoginUserDTO loginUser = LoginUtils.getLoginUser(request);
+				topFid = loginUser.getFid();
 			}
+			wfwRegionalArchitectures = wfwRegionalArchitectureApiService.listByFid(topFid);
 		}
 		if (CollectionUtils.isNotEmpty(wfwRegionalArchitectures)) {
 			List<Integer> subFids = wfwRegionalArchitectures.stream().map(WfwRegionalArchitectureDTO::getFid).collect(Collectors.toList());

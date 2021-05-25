@@ -30,11 +30,11 @@
         <div class="btn-del-disable btn-size fl" v-show="!batchEnable">批量移除</div>
         <div class="btn-del btn-size fl" v-show="batchEnable" @click="toBatchDelete">批量移除</div>
         <div class="clear"></div>
-        <table class="table-box">
+        <table class="table-box table-th-three">
             <thead>
             <tr>
                 <th class="check-box">
-                    <el-checkbox v-model="allChecked" class="check-item-checkbox fl" @change="changeAllChecked"></el-checkbox>
+                    <el-checkbox v-model="allChecked" :disabled="!allCheckEnable" class="check-item-checkbox fl" @change="changeAllChecked"></el-checkbox>
                 </th>
                 <th>姓名</th>
                 <th>操作</th>
@@ -43,13 +43,13 @@
             <tbody>
             <tr v-for="(manager, index) of managers" :key="'manager-' + index">
                 <th class="check-box">
-                    <el-checkbox v-model="manager.checked" class="check-item-checkbox fl" @change="changeChecked"></el-checkbox>
+                    <el-checkbox class="check-item-checkbox fl" :disabled="isCreator(manager.uid)" v-model="manager.checked" @change="changeChecked"></el-checkbox>
                 </th>
                 <th>{{manager.userName}}</th>
                 <th>
                     <span v-if="false">权限设置</span>
                     <!--活动创建者不显示移除按钮-->
-                    <span v-if="activity.createUid != manager.uid" @click="toDelete(index)">移除</span>
+                    <span v-if="!isCreator(manager.uid)" @click="toDelete(index)">移除</span>
                     <span v-else>-</span>
                 </th>
             </tr>
@@ -70,7 +70,7 @@
                 <div class="choose-list fl mescroll" id="mescroll-container" >
                     <div>
                         <div class="search">
-                            <input class="search-ipt" type="text" placeholder="姓名" v-model.trim="sw" @keyup.enter="search">
+                            <input class="search-ipt" type="text" placeholder="姓名" v-model.trim="sw" @focus="swFocus" @blur="swBlur" @keyup.enter="search">
                             <i class="icon close" v-show="sw" @click="clearSearch"></i>
                             <i class="icon search-icon" @click="search"></i>
                         </div>
@@ -79,7 +79,7 @@
                                 <li :class="{'back-item': (index < crumbs.length - 1)}" v-for="(crumb, index) of crumbs" :key="'crumb-' + index" @click="expandCrumb(index)">{{crumb.name}}{{index < crumbs.length - 1 ? ' > ' : ''}}</li>
                             </ul>
                         </div>
-                        <template v-if="!sw">
+                        <template v-if="!inSearch">
                             <div class="catalog-list">
                                 <!--机构-->
                                 <template v-if="crumbs[crumbs.length - 1].type == 'all'">
@@ -114,7 +114,7 @@
                                         <div class="catalog-title">
                                             {{user.name}}
                                         </div>
-                                        <el-checkbox class="right-check" v-model="user.checked" @change="changeDepartmentUserCheck(index)"></el-checkbox>
+                                        <el-checkbox class="right-check" v-model="user.checked" :disabled="isCreator(user.puid)" @change="changeDepartmentUserCheck(index)"></el-checkbox>
                                     </div>
                                 </template>
                             </div>
@@ -129,7 +129,7 @@
                                     <div class="catalog-title">
                                         {{user.name}}
                                     </div>
-                                    <el-checkbox class="right-check" v-model="user.checked" @change="changeSearchUserChecked(index)"></el-checkbox>
+                                    <el-checkbox class="right-check" v-model="user.checked" :disabled="isCreator(user.puid)" @change="changeSearchUserChecked(index)"></el-checkbox>
                                 </div>
                             </div>
                         </template>
@@ -206,6 +206,8 @@
                 },
                 searchUsers: [],
                 searchLoaded: false,
+                //输入框获取了焦点获赞sw不为空则认为在搜索
+                inSearch: false,
 
                 // 组织架构通讯录相关
                 departmentUserMescroll: null,
@@ -236,12 +238,23 @@
                     var $this = this;
                     var existChecked = false;
                     $($this.managers).each(function () {
-                        if (this.checked) {
+                        if (this.checked && !$this.isCreator(this.uid)) {
                             existChecked = true;
                             return false;
                         }
                     });
                     return existChecked;
+                },
+                "allCheckEnable": function () {
+                    var $this = this;
+                    var allCheckEnable = false;
+                    $($this.managers).each(function () {
+                        if (!$this.isCreator(this.uid)) {
+                            allCheckEnable = true;
+                            return false;
+                        }
+                    });
+                    return allCheckEnable;
                 }
             },
             watch: {
@@ -249,6 +262,8 @@
                     var $this = this;
                     if (activityApp.isEmpty($this.sw)) {
                         $this.searchLoaded = false;
+                    } else {
+                        $this.inSearch = true;
                     }
                 }
             },
@@ -275,17 +290,24 @@
                         app.showMsg("加载管理员失败");
                     });
                 },
+                // 是不是创建者
+                isCreator: function (uid) {
+                    var $this = this;
+                    return $this.activity.createUid == uid;
+                },
                 changeAllChecked: function () {
                     var $this = this;
                     $($this.managers).each(function (i) {
-                        $this.$set($this.managers[i], "checked", $this.allChecked);
+                        if (!$this.isCreator(this.uid)) {
+                            $this.$set($this.managers[i], "checked", $this.allChecked);
+                        }
                     });
                 },
                 changeChecked: function () {
                     var $this = this;
                     var allChecked = true;
                     $($this.managers).each(function () {
-                        if (!this.checked) {
+                        if (!this.checked && !$this.isCreator(this.uid)) {
                             allChecked = false;
                             return false;
                         }
@@ -315,11 +337,21 @@
                         $this.departmentUserMescroll.resetUpScroll();
                     }
                 },
+                swFocus: function () {
+                    var $this = this;
+                    $this.inSearch = true;
+                },
+                swBlur: function () {
+                    var $this = this;
+                    if (activityApp.isEmpty($this.sw)) {
+                        $this.inSearch = false;
+                    }
+                },
                 search: function () {
                     var $this = this;
                     var url = ctx + "/api/wfw/contacter/search";
                     $this.searchUserQueryParams.sw = $this.sw;
-                    app.ajaxPost(url, $this.searchUserQueryParams, function (data) {
+                    app.ajaxPostWithLoading(url, $this.searchUserQueryParams, function (data) {
                         if (data.success) {
                             $this.searchLoaded = true;
                             var searchUsers = data.data.records;
@@ -347,6 +379,7 @@
                     } else {
                         $this.search();
                     }
+                    $this.inSearch = false;
                 },
                 batchAddSubmit: function () {
                     var $this = this;

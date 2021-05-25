@@ -15,7 +15,6 @@ import com.chaoxing.activity.service.manager.module.SignApiService;
 import com.chaoxing.activity.util.BaiduMapUtils;
 import com.chaoxing.activity.util.constant.DateTimeFormatterConstant;
 import com.chaoxing.activity.util.constant.UrlConstant;
-import com.chaoxing.activity.util.enums.ActivityTypeEnum;
 import com.google.common.collect.Lists;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -118,19 +117,19 @@ public class ActivityMhV2ApiController {
 			if (activityValidationService.isCreator(activity, uid)) {
 				mhGeneralAppResultDataFields.addAll(buildBtnField("管理", getFlag(availableFlags), activityQueryService.getActivityManageUrl(activity.getId()), "2"));
 			}
-		}
-		// 评价
-		Boolean openRating = activity.getOpenRating();
-		openRating = Optional.ofNullable(openRating).orElse(Boolean.FALSE);
-		if (openRating) {
-			mhGeneralAppResultDataFields.addAll(buildBtnField("评价", getFlag(availableFlags), activityQueryService.getActivityRatingUrl(activity.getId()), "2"));
+			// 评价
+			Boolean openRating = activity.getOpenRating();
+			openRating = Optional.ofNullable(openRating).orElse(Boolean.FALSE);
+			if (openRating) {
+				mhGeneralAppResultDataFields.addAll(buildBtnField("评价", getFlag(availableFlags), activityQueryService.getActivityRatingUrl(activity.getId()), "2"));
+			}
 		}
 		// 活动地点
 		String activityAddress = "";
 		String activityAddressLink = "";
 		String activityType = activity.getActivityType();
-		ActivityTypeEnum activityTypeEnum = ActivityTypeEnum.fromValue(activityType);
-		if (ActivityTypeEnum.OFFLINE.equals(activityTypeEnum)) {
+		Activity.ActivityTypeEnum activityTypeEnum = Activity.ActivityTypeEnum.fromValue(activityType);
+		if (Activity.ActivityTypeEnum.OFFLINE.equals(activityTypeEnum)) {
 			// 线下活动才有活动地点
 			activityAddress = Optional.ofNullable(activity.getAddress()).orElse("") + Optional.ofNullable(activity.getDetailAddress()).orElse("");
 			activityAddressLink = BaiduMapUtils.generateAddressUrl(activity.getLongitude(), activity.getDimension(), activity.getName(), activityAddress);
@@ -168,25 +167,46 @@ public class ActivityMhV2ApiController {
 		Boolean openWork = activity.getOpenWork();
 		openWork = Optional.ofNullable(openWork).orElse(Boolean.FALSE);
 		Integer workId = activity.getWorkId();
+		boolean isManager = activityValidationService.isCreator(activity, uid);
 		// 报名信息
 		boolean existSignUp = CollectionUtils.isNotEmpty(signUpIds);
+		boolean existSignUpInfo = false;
 		if (existSignUp) {
-			if (userSignParticipationStat.getSignedUp()) {
-				// 已报名
-				if (activityFlagValidateService.isDualSelect(activity)) {
+			// 如果开启了学生报名则需要报名（报名任意一个报名）才能看见"进入会场"
+			if (activityFlagValidateService.isDualSelect(activity)) {
+				// 双选会
+				List<SignUp> signUps = userSignParticipationStat.getSignUps();
+				boolean openedStudengSignUp = false;
+				if (CollectionUtils.isNotEmpty(signUps)) {
+					for (SignUp signUp : signUps) {
+						if (!Objects.equals(SignUp.CustomSignUpTypeEnum.DUAL_SELECT_COMPANY.getValue(), signUp.getCustomSignUpType())) {
+							openedStudengSignUp = true;
+							break;
+						}
+					}
+				}
+				if (openedStudengSignUp) {
+					// 必须要报名
+					if (userSignParticipationStat.getSignedUp()) {
+						result.addAll(buildBtnField("进入会场", getFlag(availableFlags), getDualSelectIndexUrl(activity), "1"));
+					}
+				} else {
 					result.addAll(buildBtnField("进入会场", getFlag(availableFlags), getDualSelectIndexUrl(activity), "1"));
 				}
-				if (openWork && workId != null) {
-					result.addAll(buildBtnField("提交作品", getFlag(availableFlags), getWorkIndexUrl(workId), "1"));
-				}
+			}
+			if (userSignParticipationStat.getSignedUp()) {
+				// 已报名
 				if (CollectionUtils.isNotEmpty(signInIds)) {
 					result.addAll(buildBtnField("去签到", getFlag(availableFlags), userSignParticipationStat.getSignInUrl(), "1"));
 				}
-				result.addAll(buildBtnField("报名信息", getFlag(availableFlags), userSignParticipationStat.getSignUpResultUrl(), "2"));
+				if (openWork && workId != null && !isManager) {
+					result.addAll(buildBtnField("提交作品", getFlag(availableFlags), getWorkIndexUrl(workId), "1"));
+				}
+				existSignUpInfo = true;
 			} else if (userSignParticipationStat.getSignUpAudit()) {
 				// 审核中
 				result.addAll(buildBtnField("报名审核中", getFlag(availableFlags), "", "0"));
-				result.addAll(buildBtnField("报名信息", getFlag(availableFlags), userSignParticipationStat.getSignUpResultUrl(), "2"));
+				existSignUpInfo = true;
 			} else if (activityEnded && userSignParticipationStat.getSignUpEnded()) {
 				// 活动和报名都结束的情况显示活动已结束
 				result.addAll(buildBtnField("活动已结束", getFlag(availableFlags), "", "0"));
@@ -200,8 +220,9 @@ public class ActivityMhV2ApiController {
 				result.addAll(buildBtnField("名额已满", getFlag(availableFlags), "", "0"));
 			} else {
 				String showName = "报名参加";
+				List<SignUp> signUps = userSignParticipationStat.getSignUps();
 				if (signUpIds.size() == 1) {
-					SignUp signUp = userSignParticipationStat.getSignUp();
+					SignUp signUp = signUps.get(0);
 					String btnName = signUp.getBtnName();
 					if (StringUtils.isNotBlank(btnName)) {
 						showName = btnName;
@@ -213,25 +234,32 @@ public class ActivityMhV2ApiController {
 			if (activityFlagValidateService.isDualSelect(activity)) {
 				result.addAll(buildBtnField("进入会场", getFlag(availableFlags), getDualSelectIndexUrl(activity), "1"));
 			}
-			if (openWork && workId != null) {
-				result.addAll(buildBtnField("提交作品", getFlag(availableFlags), getWorkIndexUrl(workId), "1"));
-			}
 			if (CollectionUtils.isNotEmpty(signInIds)) {
 				result.addAll(buildBtnField("去签到", getFlag(availableFlags), userSignParticipationStat.getSignInUrl(), "1"));
 			}
+			if (openWork && workId != null && !isManager) {
+				result.addAll(buildBtnField("提交作品", getFlag(availableFlags), getWorkIndexUrl(workId), "1"));
+			}
 		}
 		// 是不是管理员
-		if (activityValidationService.isCreator(activity, uid)) {
-			List<MhGeneralAppResultDataDTO.MhGeneralAppResultDataFieldDTO> btns = buildBtnField("管理", getFlag(availableFlags), activityQueryService.getActivityManageUrl(activity.getId()), "2");
-			if (existSignUp || CollectionUtils.isNotEmpty(signInIds)) {
-				for (int i = 0; i < btns.size(); i++) {
-					result.add(i + 2, btns.get(i));
-				}
-			} else {
-				for (MhGeneralAppResultDataDTO.MhGeneralAppResultDataFieldDTO btn : btns) {
-					result.add(btn);
-				}
+		if (isManager) {
+			List<MhGeneralAppResultDataDTO.MhGeneralAppResultDataFieldDTO> btns = Lists.newArrayList();
+			if (openWork && workId != null) {
+				btns.addAll(buildBtnField("提交作品", getFlag(availableFlags), getWorkIndexUrl(workId), "1"));
 			}
+			btns.addAll(buildBtnField("管理", getFlag(availableFlags), activityQueryService.getActivityManageUrl(activity.getId()), "2"));
+			for (MhGeneralAppResultDataDTO.MhGeneralAppResultDataFieldDTO btn : btns) {
+				result.add(btn);
+			}
+		}
+		// 评价
+		Boolean openRating = activity.getOpenRating();
+		openRating = Optional.ofNullable(openRating).orElse(Boolean.FALSE);
+		if (openRating) {
+			result.addAll(buildBtnField("评价", getFlag(availableFlags), activityQueryService.getActivityRatingUrl(activity.getId()), "2"));
+		}
+		if (existSignUpInfo) {
+			result.addAll(buildBtnField("报名信息", getFlag(availableFlags), userSignParticipationStat.getSignUpResultUrl(), "2"));
 		}
 		return result;
 	}

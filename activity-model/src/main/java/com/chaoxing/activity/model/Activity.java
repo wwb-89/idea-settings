@@ -7,6 +7,7 @@ import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import com.chaoxing.activity.util.LocalDateTimeDeserializer;
 import com.chaoxing.activity.util.LocalDateTimeSerializer;
+import com.chaoxing.activity.util.constant.CommonConstant;
 import com.chaoxing.activity.util.exception.BusinessException;
 import lombok.*;
 
@@ -64,6 +65,10 @@ public class Activity {
     private BigDecimal dimension;
     /** 活动分类id; column: activity_classify_id*/
     private Integer activityClassifyId;
+    /** 学时; column: period*/
+    private BigDecimal period;
+    /** 学分; column: credit*/
+    private BigDecimal credit;
     /** 是否启用签到报名; column: is_enable_sign*/
     @TableField(value = "is_enable_sign")
     private Boolean enableSign;
@@ -71,6 +76,8 @@ public class Activity {
     private Integer signId;
     /** 网页模板id; column: web_template_id*/
     private Integer webTemplateId;
+    /** 门户网站id; column: website_id*/
+    private Integer websiteId;
     /** 门户网页id; column: page_id*/
     private Integer pageId;
     /** 门户预览地址; column: preview_url*/
@@ -120,6 +127,10 @@ public class Activity {
     private Boolean openWork;
     /** 作品征集id; column: work_id*/
     private Integer workId;
+    /** 来源类型; column: origin_type*/
+    private String originType;
+    /** 来源值; column: origin*/
+    private String origin;
     /** 状态。0：已删除，1：待发布，2：已发布，3：进行中，4：已结束; column: status*/
     private Integer status;
     /** 创建时间; column: create_time*/
@@ -147,6 +158,60 @@ public class Activity {
     private List<Integer> managerUids;
 
     @Getter
+    public enum OriginTypeEnum {
+
+        /** 通用 */
+        NORMAL("通用", "normal"),
+        ACTIVITY_DECLARATION("活动申报", "activity_declaration");
+
+        private final String name;
+        private final String value;
+
+        OriginTypeEnum(String name, String value) {
+            this.name = name;
+            this.value = value;
+        }
+
+        public static OriginTypeEnum fromValue(String value) {
+            OriginTypeEnum[] values = OriginTypeEnum.values();
+            for (OriginTypeEnum originTypeEnum : values) {
+                if (Objects.equals(originTypeEnum.getValue(), value)) {
+                    return originTypeEnum;
+                }
+            }
+            return null;
+        }
+
+    }
+
+    @Getter
+    public enum ActivityTypeEnum {
+
+        /** 线上举办 */
+        ONLINE("线上举办", "online"),
+        OFFLINE("线下举办", "offline");
+
+        private final String name;
+        private final String value;
+
+        ActivityTypeEnum(String name, String value) {
+            this.name = name;
+            this.value = value;
+        }
+
+        public static ActivityTypeEnum fromValue(String value) {
+            ActivityTypeEnum[] values = ActivityTypeEnum.values();
+            for (ActivityTypeEnum activityTypeEnum : values) {
+                if (Objects.equals(activityTypeEnum.getValue(), value)) {
+                    return activityTypeEnum;
+                }
+            }
+            return null;
+        }
+
+    }
+
+    @Getter
     public enum StatusEnum {
         /** 已删除 */
         DELETED("已删除", 0),
@@ -155,8 +220,8 @@ public class Activity {
         ONGOING("进行中", 3),
         ENDED("已结束", 4);
 
-        private String name;
-        private Integer value;
+        private final String name;
+        private final Integer value;
 
         StatusEnum(String name, Integer value) {
             this.name = name;
@@ -189,8 +254,8 @@ public class Activity {
         PASSED("已通过", 1),
         WAIT_AUDIT("待审核", 2);
 
-        private String name;
-        private Integer value;
+        private final String name;
+        private final Integer value;
 
         AuditStatusEnum(String name, Integer value) {
             this.name = name;
@@ -224,10 +289,12 @@ public class Activity {
         /** 第二课堂 */
         SECOND_CLASSROOM("第二课堂", "second_classroom"),
         /** 双选会 */
-        DUAL_SELECT("双选会", "dual_select");
+        DUAL_SELECT("双选会", "dual_select"),
+        /** 教师发展 */
+        TEACHER("教师发展", "teacher");
 
-        private String name;
-        private String value;
+        private final String name;
+        private final String value;
 
         ActivityFlag(String name, String value) {
             this.name = name;
@@ -244,6 +311,19 @@ public class Activity {
             return null;
         }
 
+    }
+
+    public static Activity buildDefault() {
+        return Activity.builder()
+                .name("")
+                .coverCloudId(CommonConstant.ACTIVITY_DEFAULT_COVER_CLOUD_ID)
+                .organisers("")
+                .address("")
+                .detailAddress("")
+                .enableSign(true)
+                .openWork(false)
+                .openAudit(false)
+                .build();
     }
 
 }

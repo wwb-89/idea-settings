@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org/">
+<head>
+	<title>活动统计</title>
+	<meta http-equiv="Content-type" content="text/html; charset=utf-8" />
+	<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, minimal-ui" />
+	<meta name="format-detection" content="telephone=no, email=no">
+	<meta http-equiv="Pragma" content="no-cache" />
+	<meta http-equiv="cache-control" content="no-cache" />
+	<link rel="stylesheet" href="/static/mobile/assets/css/public.css" th:href="@{/mobile/assets/css/public.css}" />
+	<link rel="stylesheet" href="/static/mobile/assets/css/dialog.css" th:href="@{/mobile/assets/css/dialog.css}">
+	<link rel="stylesheet" href="/static/mobile/assets/css/manage.css" th:href="@{/mobile/assets/css/manage.css}">
+	<style>
+        body {
+            background: #F6F7FB;
+        }
+        [v-cloak] {
+            display: none;
+        }
+	</style>
+</head>
+<body>
+<div class="statistics" id="activity-vue" v-cloak>
+	<div class="white-con survey">
+		<p class="title">概况</p>
+		<div class="item-list">
+			<div class="item">
+				<p class="view">浏览量(pv)</p>
+				<p class="number">{{activityStat.pv}}</p>
+			</div>
+			<div class="item">
+				<p class="view">报名人数(人)</p>
+				<p class="number">{{activityStat.signedUpNum}}</p>
+			</div>
+			<div class="item">
+				<p class="view">签到数(人·次)</p>
+				<p class="number">{{activityStat.signedInNum}}</p>
+			</div>
+		</div>
+	</div>
+	<div class="white-con activity-trends">
+		<p class="title">活动参与趋势</p>
+		<div class="echart-box" id="line-aqxec"></div>
+	</div>
+	<!--<p class="tips">统计数据每小时更新一次</p>-->
+</div>
+<div th:replace="mobile/include/common_js :: common_js(~{::script})">
+	<script src="/static/mobile/assets/lib/echarts@4.1.0/echarts.js" th:src="@{/mobile/assets/lib/echarts@4.1.0/echarts.js}"></script>
+	<script th:inline="javascript">
+        activityVue = new Vue({
+            el: "#activity-vue",
+            data: {
+                activityStat: [[${activityStat}]],
+                myChart: null
+            },
+            mounted: function () {
+                var $this = this;
+                $this.initTrend();
+            },
+            methods: {
+                initTrend: function () {
+                    var $this = this;
+                    var maxValue = 5;
+                    var daily = [];
+                    $($this.activityStat.daily).each(function () {
+                        daily.push(this.substring(5));
+                    });
+                    var data2 = [];
+                    $($this.activityStat.signUpTrend).each(function () {
+                        var value = parseInt(this.value);
+                        if (maxValue < value) {
+                            maxValue = value;
+                        }
+                        data2.push(value);
+                    });
+                    var data3 = [];
+                    $($this.activityStat.signInTrend).each(function () {
+                        var value = parseInt(this.value);
+                        if (maxValue < value) {
+                            maxValue = value;
+                        }
+                        data3.push(value);
+                    });
+                    var data4 = [];
+                    $($this.activityStat.pvTrend).each(function () {
+                        var value = parseInt(this.value);
+                        if (maxValue < value) {
+                            maxValue = value;
+                        }
+                        data4.push(value);
+                    });
+                    $this.myChart = echarts.init(document.getElementById('line-aqxec'));
+                    option = {
+                        color: ['#3A8BFF', '#9FE6B8', '#52BAFF', '#FF9F7F'],
+                        legend: {
+                            itemWidth: 8,
+                            itemHeight: 8,
+                            itemGap: 16,
+                            textStyle: {
+                                fontSize: 13,
+                                color: '#91A0B5'
+                            },
+                            y: '95%',
+                            x: 'center',
+                            icon: 'circle',
+                            data: ['报名人数', '浏览量', '数据3', '数据4']
+                        },
+                        grid: {
+                            bottom: '10%',
+                            top: 40,
+                            left: 0,
+                            right: 18,
+                            containLabel: true,
+                        },
+                        tooltip: {
+                            trigger: 'axis',
+                            backgroundColor: 'rgba(0,0,0,0.7)',
+                            padding: [12, 16],
+                            axisPointer: {
+                                type: 'line',
+                                lineStyle: {
+                                    color: 'rgba(0, 0, 0, 0.1)'
+                                }
+                            }
+                        },
+                        xAxis: {
+                            type: 'category',
+                            boundaryGap: false,
+                            data: daily,
+                            axisLine: {
+                                show: true,
+                                lineStyle: {
+                                    color: '#E3ECFB',
+                                }
+                            },
+                            axisTick: {
+                                show: false
+                            },
+                            splitLine: {
+                                lineStyle: {
+                                    color: '#f8f8f8',
+                                },
+                            },
+                            axisLabel: {
+                                lineHeight: 40,
+                                textStyle: {
+                                    color: '#767690'
+                                }
+                            },
+                            offset: 10
+                        },
+                        yAxis: {
+                            type: 'value',
+                            name: '',
+                            axisLine: {
+                                show: false
+                            },
+                            axisTick: {
+                                show: false
+                            },
+                            splitLine: {
+                                lineStyle: {
+                                    type: 'dashed',
+                                    color: '#E3ECFB',
+                                },
+                            },
+                            min: 0,
+                            max: 120
+                        },
+                        series: [{
+                            name: '报名人数',
+                            data: data2,
+                            type: 'line',
+                            itemStyle: {
+                                normal: {
+                                    opacity: 0,
+                                },
+                            },
+                            smooth: true,
+                            lineStyle: {
+                                normal: {
+                                    color: '#3A8BFF',
+                                    width: 2,
+                                }
+                            },
+                            areaStyle: {
+                                normal: {
+                                    color: {
+                                        type: 'linear',
+                                        x: 0,
+                                        y: 0,
+                                        x2: 0,
+                                        y2: 1,
+                                        colorStops: [{
+                                            offset: 0,
+                                            color: 'rgba(58,139,255,0.3)' // 0% 处的颜色
+                                        }, {
+                                            offset: 1,
+                                            color: 'rgba(58,139,255,0)' // 100% 处的颜色
+                                        }],
+                                        global: false // 缺省为 false
+                                    },
+                                },
+                            },
+                        },
+                            {
+                                name: '签到人数',
+                                data: data3,
+                                type: 'line',
+                                itemStyle: {
+                                    normal: {
+                                        opacity: 0,
+                                    },
+                                },
+                                smooth: true,
+                                lineStyle: {
+                                    normal: {
+                                        color: '#9FE6B8',
+                                        width: 2,
+                                    }
+                                },
+                                areaStyle: {
+                                    normal: {
+                                        color: {
+                                            type: 'linear',
+                                            x: 0,
+                                            y: 0,
+                                            x2: 0,
+                                            y2: 1,
+                                            colorStops: [{
+                                                offset: 0,
+                                                color: 'rgba(159,230,184,0.3)' // 0% 处的颜色
+                                            }, {
+                                                offset: 1,
+                                                color: 'rgba(159,230,184,0)' // 100% 处的颜色
+                                            }],
+                                            global: false // 缺省为 false
+                                        },
+                                    },
+                                },
+                            },
+                            {
+                                name: '浏览量',
+                                data: data4,
+                                type: 'line',
+                                itemStyle: {
+                                    normal: {
+                                        opacity: 0,
+                                    },
+                                },
+                                smooth: true,
+                                lineStyle: {
+                                    normal: {
+                                        color: '#52BAFF',
+                                        width: 2,
+                                    }
+                                },
+                                areaStyle: {
+                                    normal: {
+                                        color: {
+                                            type: 'linear',
+                                            x: 0,
+                                            y: 0,
+                                            x2: 0,
+                                            y2: 1,
+                                            colorStops: [{
+                                                offset: 0,
+                                                color: 'rgba(82,186,255,0.3)' // 0% 处的颜色
+                                            }, {
+                                                offset: 1,
+                                                color: 'rgba(82,186,255,0)' // 100% 处的颜色
+                                            }],
+                                            global: false // 缺省为 false
+                                        },
+                                    },
+                                },
+                            }
+                        ]
+                    };
+                    $this.myChart.setOption(option);
+                }
+            }
+        });
+	</script>
+</div>
+</body>
+</html>

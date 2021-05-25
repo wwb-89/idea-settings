@@ -21,28 +21,35 @@
 <div class="index" id="activity-vue" v-cloak>
     <!-- 搜索 -->
     <div class="topFixed">
-        <div class="searchDiv searchDivFocus">
+        <div class="searchbefore" v-show="!searchShow" @click="showSearchInput"><i></i><span>搜索</span></div>
+        <div class="searchDiv inputShow" v-show="searchShow">
             <i class="searchIcon"></i>
-            <input id="search-input" type="text" placeholder="搜索" v-model.trim="sw" @focus="searchShow = true" @keyup.enter="search">
+            <i class="delete" v-show="sw" @click="clearSearch"></i>
+            <input id="search" type="text" placeholder="搜索"  v-model.trim="sw" @focus="searchShow = true" @keyup.enter="search">
         </div>
-        <div class="filter active" v-show="!searchShow" @click="toFilter">
+        <!-- 已选状态 添加active -->
+        <div :class="{'filter': true, 'active': haveFilter}" v-show="!searchShow" @click="toFilter">
             <i class="filterIcon"></i>筛选
         </div>
-        <span class="Scancel" v-show="searchShow" @click="searchCancel">取消</span>
+        <span class="Scancel" v-show="searchShow" @click="hideSearchInput">取消</span>
     </div>
     <div class="activity-list">
         <ul>
-            <li v-for="(activity, index) of activities" :key="'activity-' + index" @click="detail(index)">
-                <img :src="activity | getCloudImgUrl">
+            <li v-for="(activity, index) of activities" :key="'activity-' + activity.id" @click="detail(index)">
+                <div class="img-box">
+                    <div class="mask"></div>
+                    <img :src="activity | getCloudImgUrl">
+                    <span :class="{'status': true, 'status1': (activity.status == 1), 'status2': (activity.status == 2), 'status3': (activity.status == 3), 'status4': (activity.status == 4)}">{{activity.status | activityStatusInstructions}}</span>
+                    <!--<p class="num"><i></i>1028</p>-->
+                </div>
                 <div class="info">
                     <h2 class="title">{{activity.name}}</h2>
                     <div class="time">
-                        <span :class="{'status': true, 'status2': (activity.status == 2), 'status3': (activity.status == 3), 'status4': (activity.status == 4)}">{{activity.status | activityStatusInstructions}}</span>
-                        <span>{{activity.startTime | timestamp2YMD}} ～ {{activity.endTime | timestamp2YMD}}</span>
+                        <span>{{activity.startTime | timestampScopeFormat(activity.endTime)}}</span>
                         <div class="clear"></div>
                     </div>
                     <p class="dec">{{activity.organisers}}</p>
-                    <p class="address">{{activity.address}}{{activity.detailAddress ? activity.detailAddress : ''}}</p>
+                    <p class="address" >{{activity.address}}{{activity.detailAddress ? activity.detailAddress : ''}}</p>
                 </div>
             </li>
         </ul>
@@ -51,8 +58,6 @@
     <div class="noContent" v-show="loaded && activities.length < 1">
         <p>无结果</p>
     </div>
-    <!-- 遮盖层 -->
-    <div class="fixedBg" v-show="searchShadeShow"></div>
     <!-- 弹出层 -->
     <div class="pop" v-show="filterWindowShow">
         <div class="popInner">
@@ -99,10 +104,6 @@
     <script src="/static/pc/assets/lib/set-iframe-height-child.js" th:src="@{/pc/assets/lib/set-iframe-height-child.js}"></script>
     <script src="/static/mobile/assets/lib/mescroll/mescroll.js" th:src="@{/mobile/assets/lib/mescroll/mescroll.js}"></script>
     <script th:inline="javascript">
-        Vue.filter("timestamp2YMD", function (timestamp) {
-            var dateObj = activityApp.millisecond2DateObj(timestamp);
-            return dateObj.year + "-" + dateObj.month + "-" + dateObj.day;
-        });
         function ready() {
             activityVue = new Vue({
                 el: "#activity-vue",
@@ -121,13 +122,12 @@
                     mescroll: null,
 
                     filterWindowShow: false,
-                    searchShadeShow: false,
                     searchShow: false
                 },
                 created: function () {
                     var $this = this;
                     // 定制右上角菜单
-                    app.customMenu("我的", "", {
+                    app.customMenu("", app.my_icon_url, {
                         option: "activityVue.my();"
                     });
                     // 活动分类列表
@@ -171,7 +171,37 @@
                     var $this = this;
                     $this.initMescroll();
                 },
+                computed: {
+                    // 是否筛选了条件
+                    haveFilter: function () {
+                        var $this = this;
+                        return !activityApp.isEmpty($this.queryParams.activityClassifyName) ||
+                                !activityApp.isEmpty($this.queryParams.date) ||
+                                !activityApp.isEmpty($this.queryParams.status);
+                    }
+                },
                 methods: {
+                    // 显示搜索输入框
+                    showSearchInput: function () {
+                        var $this = this;
+                        $this.searchShow = true;
+                        $this.$nextTick(function () {
+                            $("#search").focus();
+                        });
+                    },
+                    // 隐藏搜索输入框
+                    hideSearchInput: function () {
+                        var $this = this;
+                        $this.searchShow = false;
+                        $this.sw = "";
+                        if ($this.sw != $this.queryParams.sw) {
+                            $this.search();
+                        }
+                    },
+                    clearSearch: function () {
+                        var $this = this;
+                        $this.sw = "";
+                    },
                     // 重置查询条件
                     restQueryParams: function () {
                         var $this = this;
@@ -212,7 +242,6 @@
                         var url = ctx + "/api/activity/list/participate";
                         var params = $this.queryParams;
                         $this.loaded = false;
-                        $this.searchShow = false;
                         var params = {
                             data: activityApp.getJsonStr(params),
                             pageNum: $this.queryParams.pageNum,
@@ -337,11 +366,6 @@
                         $this.hideFilterWindow();
                         // 查询
                         $this.loadData();
-                    },
-                    searchCancel: function () {
-                        var $this = this;
-                        $this.searchShow = false;
-                        $this.sw = $this.queryParams.sw;
                     },
                     search: function () {
                         var $this = this;

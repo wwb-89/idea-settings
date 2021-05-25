@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org/">
+<head>
+    <title>志愿服务单</title>
+    <meta http-equiv="Content-type" content="text/html; charset=utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, minimal-ui" />
+    <meta name="format-detection" content="telephone=no, email=no">
+    <meta http-equiv="Pragma" content="no-cache" />
+    <meta http-equiv="cache-control" content="no-cache" />
+    <link rel="stylesheet" href="/static/mobile/assets/css/public.css" th:href="@{/mobile/assets/css/public.css}" />
+    <link rel="stylesheet" href="/static/mobile/assets/css/service-list.css" th:href="@{/mobile/assets/css/service-list.css}">
+</head>
+<body>
+    <div id="mVolunteerService" class="service-list" v-cloak>
+        <p class="tips">{{loginUser.realName}}的服务时长记录</p>
+        <div class="score-box">
+            <p class="title">总时长</p>
+            <p class="score" v-if="volunteerList">
+                <template v-if="totalTimeLength >= hourMinutes">
+                    {{totalTimeLength | hourFormat}}<span class="fine">小时</span>
+                </template>
+                {{totalTimeLength | minuteFormat}}<span class="fine">分钟</span>
+            </p>
+            <div class="loading" v-else><img src="/static/mobile/assets/images/Spinner-1s-200px.svg" th:src="@{/mobile/assets/images/Spinner-1s-200px.svg}">加载中…</div>
+        </div>
+        <div class="select-btn" @click="typeSelectShow = true">
+            <span class="select overHidden1">{{ selectedType.name || '全部类型'}}</span><i class="icon-down"></i>
+        </div>
+        <div class="detaile-box">
+            <p class="no-content" v-show="volunteerList && volunteerList.length === 0">暂无内容</p>
+            <div v-if="volunteerList">
+                <div class="item" v-for="record in volunteerList">
+                    <p class="name">{{record.name}}</p>
+                    <p class="classify">{{record.type}}</p>
+                    <p class="time clear">{{record.serviceDate}}
+                        <span class="red fr">
+                        <template v-if="record.timeLength >= hourMinutes">
+                            {{record.timeLength | hourFormat}}<span class="fine">&nbsp;小时&nbsp;</span>
+                        </template>
+                        {{record.timeLength | minuteFormat}}<span class="fine">&nbsp;分钟</span>
+                    </span>
+                    </p>
+                </div>
+            </div>
+            <!--  加载中  -->
+            <div class="loading" v-else><img src="/static/mobile/assets/images/Spinner-1s-200px.svg" th:src="@{/mobile/assets/images/Spinner-1s-200px.svg}">加载中…</div>
+        </div>
+
+        <div class="dialog select-dialog" v-show="typeSelectShow" @click="typeSelectShow = false">
+            <div class="select-box">
+                <ul>
+                    <li class="select-item"
+                        :class="{'active': serviceType.type === selectedType.type}"
+                        v-for="serviceType in serviceTypeList"
+                        @click.stop="chooseServiceType(serviceType)"
+                    >
+                        <p>{{serviceType.name}}</p>
+                        <i class="gou"></i>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <div th:replace="mobile/include/common_js :: common_js(~{::script})">
+        <script th:inline="javascript">
+            Vue.filter("hourFormat", function (timeLength) {
+                var hours = 0;
+                if (timeLength) {
+                    var length = parseInt(timeLength);
+                    hours = parseInt(length / 60);
+                }
+                return hours;
+            });
+            Vue.filter("minuteFormat", function (timeLength) {
+                var minutes = 0;
+                if (timeLength) {
+                    var length = parseInt(timeLength);
+                    minutes = length % 60;
+                }
+                return minutes;
+            });
+            serviceListVue = new Vue({
+                el: "#mVolunteerService",
+                data: {
+                    fid: [[${fid}]],
+                    loginUser: [[${session._login_user_}]],
+                    volunteerList: [[${volunteerList}]],
+                    serviceTypeList: [[${serviceTypeList}]],
+                    selectedType: {},
+                    typeSelectShow: false,
+                    hourMinutes: 60,
+                    totalTimeLength: 0
+                },
+                mounted: function() {
+                    var $this = this;
+                    var totalTimeLength = 0;
+                    if ($this.volunteerList) {
+                        $this.volunteerList.forEach(item => {
+                            totalTimeLength += item.timeLength;
+                        });
+                    };
+                    $this.totalTimeLength =  totalTimeLength
+                    $this.initData()
+                },
+                methods: {
+                    initData: function () {
+                        var $this = this;
+                        var list = [
+                            {name: '全部类型', type: ''}
+                        ];
+                        $this.serviceTypeList.forEach(type => {
+                            list.push({ name: type, type: type });
+                        });
+
+                        $this.serviceTypeList = list;
+                    },
+                    chooseServiceType: function (serviceType) {
+                        var $this = this;
+                        if (serviceType.type === $this.selectedType.type) {
+                            return;
+                        }
+                        $this.selectedType = serviceType;
+
+                        $this.loadServiceList();
+                        $this.typeSelectShow = false;
+
+                    },
+                    loadServiceList: function () {
+                        var $this = this;
+
+                        var url = ctx + "/api/activity/volunteer/" + $this.fid + "/query";
+                        var params = {
+                            serviceType: $this.selectedType.type
+                        };
+                        app.ajaxPost(url, params, function (data) {
+                            if (data.success) {
+                                $this.loaded = true;
+                                $this.volunteerList = data.data;
+                            } else {
+                                var errorMessage = data.message;
+                                if (activityApp.isEmpty(errorMessage)) {
+                                    errorMessage = "加载志愿服务时长列表失败";
+                                }
+                                app.showMsg(errorMessage);
+                            }
+                        }, function () {
+                            app.showMsg("加载志愿服务时长列表失败");
+                        });
+                    },
+                }
+            });
+
+        </script>
+    </div>
+
+</body>
+</html>

@@ -1,0 +1,631 @@
+/* 需要同步sass */
+html,body{
+    height: 100%;
+    overflow: hidden;
+}
+.clear::after{
+    content: "";
+    display: inline-block;
+    clear: both;
+}
+.marginRigth24{
+    margin-right: 24px;
+}
+.border-btn{
+    box-sizing: border-box;
+    height: 30px;
+    line-height: 30px;
+    padding: 0 14px;
+    border: 1px solid #82c3ff;
+    border-radius: 15px;
+    font-size: 13px;
+    font-weight: 400;
+    color: #0084ff;
+    cursor: pointer;
+    &:hover {
+        background: #EBF5FF;
+    }
+    &.disable{
+        opacity: 0.3;
+    }
+}
+.normal-btn{
+    box-sizing: border-box;
+    height: 30px;
+    line-height: 30px;
+    padding: 0 14px;
+    border-radius: 15px;
+    font-size: 13px;
+    font-weight: 400;
+    cursor: pointer;
+    background: #0084ff;
+    color: #ffffff;
+    border: none;
+    &.disable{
+        opacity: 0.3;
+        &:hover{
+            opacity: 0.3;
+        }
+    }
+    &:hover{
+        opacity: 0.8;
+    }
+    .add-icon{
+        display: inline-block;
+        vertical-align: top;
+        margin-right: 5px;
+        width: 13px;
+        height: 13px;
+        background-image: url(../../assets/images/add-small.png);
+    }
+}
+.dialog-mask{
+    height: 100%;
+    position: fixed;
+    z-index: 3;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.3);
+}
+.dailog {
+    position: absolute;
+    z-index: 4;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: #ffffff;
+    border-radius: 8px;
+    box-shadow: 0px 6px 16px -8px rgba(0, 0, 0, 0.08), 0px 9px 28px rgba(0, 0, 0, 0.05), 0px 12px 48px 16px rgba(0, 0, 0, 0.03);
+    box-sizing: border-box;
+    .header {
+        position: relative;
+        height: 58px;
+        background: #ffffff;
+        border-radius: 10px 10px 0px 0px;
+        border-bottom: 1px solid #f0f2f7;
+        font-size: 18px;
+        font-weight: 600;
+        text-align: center;
+        color: #333333;
+        line-height: 58px;
+        box-sizing: border-box;
+        .close {
+            position: absolute;
+            right: 12px;
+            top: 12px;
+            width: 16px;
+            height: 16px;
+            cursor: pointer;
+            background-image: url('../images/yq-design/close-default.png');
+            background-size: cover;
+            &:hover{
+                background-image: url('../images/yq-design/close-hover.png');
+            }
+        }
+    }
+    .body {
+        position: relative;
+        padding: 32px;
+        font-size: 0;
+        box-sizing: border-box;
+        .edit-input{
+            .el-input__inner{
+                height: 32px;
+                line-height: 32px;
+                border: 1px solid #E9E9E9;
+            }
+        }
+    }
+    .footer {
+        height: 58px;
+        background: #ffffff;
+        border-radius: 0px 0px 10px 10px;
+        border-top: 1px solid #f0f2f7;
+        box-sizing: border-box;
+        padding: 14px 0;
+        .btn-box{
+            text-align: center;
+            font-size: 0;
+        }
+        .border-btn{
+            display: inline-block;
+            vertical-align: top;
+            margin-right: 24px;
+        }
+        .normal-btn{
+            display: inline-block;
+            vertical-align: top;
+        }
+    }
+    &.delete-dailog{
+        width: 300px;
+        height: 192px;
+        border-radius: 10px;
+        padding: 30px;
+        text-align: center;
+        font-size: 0;
+        .text{
+            font-size: 16px;
+            line-height: 24px;
+            font-weight: normal;
+            margin: 24px 0;
+            text-align: center;
+            padding: 0 16px;
+            color: #333333;
+        }
+        .btn-box{
+            text-align: center;
+            font-size: 0;
+            margin-top: 0;
+        }
+        .border-btn{
+            display: inline-block;
+            vertical-align: top;
+            margin-right: 24px;
+        }
+        .normal-btn{
+            display: inline-block;
+            vertical-align: top;
+        }
+    }
+    &.add-dailog{
+        width: 440px;
+    }
+    &.setting-dailog{
+        width: 552px;
+        .body{
+            padding: 10px 32px;
+            .form-item{
+                margin: 10px 0;
+                .label{
+                    display: inline-block;
+                    vertical-align: top;
+                    width: 84px;
+                    font-size: 14px;
+                    line-height: 20px;
+                    color: #666666;
+                    padding: 6px 0 6px 8px;
+                    margin-right: 24px;
+                    margin-top: 4px;
+                    box-sizing: border-box;
+                }
+                .input-box{
+                    display: inline-block;
+                    vertical-align: top;
+                    width: 380px;
+                    .el-checkbox {
+                        width: 83px;
+                        margin: 4px 0;
+                        margin-right: 16px;
+                        color: #333333;
+                        &:nth-child(4n){
+                            margin-right: 0;
+                        }
+                    }
+                    .el-radio {
+                        line-height: 32px;
+                        margin: 4px 0;
+                        margin-right: 24px;
+                        color: #333333;
+                        font-weight: normal;
+                    }
+                    .tips{
+                        padding: 6px 0;
+                        font-size: 14px;
+                        line-height: 20px;
+                        color: #999999;
+                    }
+                    .add-scope{
+                        position: relative;
+                        padding: 2px;
+                        padding-right: 34px;
+                        font-size: 14px;
+                        color: #CCCCCC;
+                        background: #FFFFFF;
+                        border: 1px solid #E9E9E9;
+                        box-sizing: border-box;
+                        border-radius: 2px;
+                        .text{
+                            line-height: 28px;
+                            padding-left: 6px;
+                        }
+                        .add-circle{
+                            position: absolute;
+                            right: 8px;
+                            top: 6px;
+                            width: 20px;
+                            height: 20px;
+                            background-image: url(../images/add-circle.png);
+                            cursor: pointer;
+                        }
+                        .add-tags{
+                            .item{
+                                display: inline-block;
+                                vertical-align: top;
+                                font-size: 14px;
+                                line-height: 20px;
+                                color: #333333;
+                                margin: 2px;
+                                padding: 2px 0;
+                                padding-left: 6px;
+                                background: #F2F4F7;
+                                border-radius: 2px;
+                                .del-btn{
+                                    display: inline-block;
+                                    vertical-align: top;
+                                    margin-top: 2px;
+                                    width: 16px;
+                                    height: 16px;
+                                    background-image: url(../images/del-little.png);
+                                    cursor: pointer;
+                                    &:hover{
+                                        background-image: url(../images/icon-del-active1.png);
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+    &.release-dialog{
+        .body{
+            padding: 24px 32px;
+        }
+    }
+    &.choose-dialog{
+        width: 660px;
+        .body{
+            padding: 0;
+        }
+        .loading{
+            line-height: unset;
+            margin-top: 0;
+            padding: 8px 0;
+            img{
+                width: 32px;
+                height: 32px;
+                display: inline-block;
+                vertical-align: top;
+            }
+            span{
+                line-height: 32px;
+            }
+        }
+        .catalog-list {
+            .catalog-item {
+                height: unset;
+                min-height: 48px;
+                padding: 8px 0;
+                box-sizing: border-box;
+                .right-img {
+                    top: 50%;
+                    right: 16px;
+                    transform: translateY(-50%);
+                }
+                .right-check {
+                    top: 50%;
+                    transform: translateY(-50%);
+                }
+                .catalog-photo{
+                    top: 50%;
+                    transform: translateY(-50%);
+                }
+                .catalog-title{
+                    position: relative;
+                    transform: translateY(0);
+                    line-height: 32px;
+                    &.lineH20{
+                        line-height: 20px;
+                    }
+                }
+            }
+        }
+        .crumb {
+            .back-item{
+                .icon-right{
+                    display: inline-block;
+                    vertical-align: top;
+                    width: 16px;
+                    height: 16px;
+                    background-image: url(../images/chevron-right.png);
+                }
+            }
+            ul{
+                li{
+                    margin-right: 0;
+                }
+            }
+        }
+        .search{
+            .search-ipt{
+                .el-input__inner{
+                    border: none;
+                    height: 22px;
+                    line-height: 22px;
+                    padding: 0;
+                }
+            }
+        }
+    }
+}
+.toast{
+    position: fixed;
+    z-index: 3;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%,-50%);
+    background: rgba(0, 0, 0, 0.7);
+    border-radius: 4px;
+    padding: 9px 20px;
+    font-size: 16px;
+    color: #FFFFFF;
+}
+.el-checkbox__label{
+    line-height: 32px;
+    font-weight: normal;
+}
+.el-checkbox__input.is-checked .el-checkbox__inner{
+    border-color: #0084FF;
+    background: #0084FF;
+}
+.el-checkbox__input.is-checked+.el-checkbox__label{
+    color: #333333;
+}
+.el-radio__input.is-checked + .el-radio__label {
+    color: #333333;
+}
+.limits-manage {
+    background: #FFFFFF;
+    border-radius: 8px;
+    margin: 20px;
+    height: calc(100% - 40px);
+    .manage-content {
+        padding: 16px 24px;
+        box-sizing: border-box;
+    }
+    .breadcrumb-box{
+        font-size: 0;
+        margin-bottom: 16px;
+        .item{
+            display: inline-block;
+            vertical-align: top;
+            font-size: 13px;
+            line-height: 18px;
+            color: #999999;
+        }
+        .icon-arrow{
+            display: inline-block;
+            vertical-align: top;
+            width: 16px;
+            height: 16px;
+            background-image: url(../images/chevron-right.png);
+            margin: 0 4px;
+        }
+    }
+    .btn-size {
+        cursor: pointer;
+        height: 30px;
+        line-height: 30px;
+        border-radius: 15px;
+        font-size: 13px;
+        text-align: center;
+        padding: 0 14px;
+        * {
+            display: inline-block;
+            vertical-align: middle;
+        }
+    }
+    .btn-add {
+        margin-right: 24px;
+        background-color:  #0084FF;
+        color: #FFFFFF;
+        img {
+            margin-right: 3px;
+        }
+        &:hover{
+            opacity: 0.8;
+        }
+    }
+    .btn-del {
+        height: 28px;
+        color:  #0084FF;
+        border: 1px solid  #0084FF;
+        &:hover{
+            background: #EBF5FF;
+        }
+    }
+    .btn-del-disable {
+        height: 28px;
+        color: rgba(0, 132, 255, 0.3);
+        border: 1px solid rgba(0, 132, 255, 0.3);
+    }
+    .table-box {
+        width: 100%;
+        margin-top: 16px;
+        .check-box {
+            width: 14px;
+            padding: 0 8px;
+            line-height: 40px;
+        }
+        thead {
+            th {
+                background: #FAFAFA;
+                font-size: 14px;
+                color: #999;
+                font-weight: normal;
+                height: 40px;
+                &:nth-child(2){
+                    width: 24%;
+                }
+                &:last-child{
+                    width: 30%;
+                }
+            }
+        }
+        tr {
+            border-bottom: 1px solid #E9E9E9;
+        }
+        tbody {
+            tr{
+                th {
+                    background: #FFFFFF;
+                    font-size: 14px;
+                    color: #333333;
+                    font-weight: normal !important;
+                    height: 51px;
+                    &>span {
+                        cursor: pointer;
+                        color: #0084FF;
+                        margin-right: 16px;
+                        &:hover{
+                            color: rgba(0, 132, 255, 0.8);
+                        }
+                    }
+                    &.no-content{
+                        position: absolute;
+                        width: 100%;
+                        color: #999999;
+                    }
+                }
+            }
+        }
+        &.member-table{
+            thead{
+                th {
+                    &:nth-child(2){
+                        width: 70%;
+                    }
+                }
+            }
+        }
+    }
+}
+/* 暂无内容 */
+.no-content {
+    font-size: 14px;
+    line-height: 720px;
+    text-align: center;
+    color: #999999;
+}
+/* tree */
+.tree {
+    width: 400px;
+    height: 300px;
+    background: #ffffff;
+    border: 1px solid #f0f0f0;
+    border-radius: 2px;
+    box-sizing: border-box;
+}
+
+.tree-head {
+    width: 400px;
+    height: 40px;
+    line-height: 40px;
+    background: #f8f8f8;
+    border-radius: 2px 2px 0px 0px;
+    font-size: 14px;
+    color: #666666;
+    padding: 0 10px;
+    box-sizing: border-box;
+    .already {
+        color: #0084FF;
+    }
+}
+.tree-box{
+    height: 259px;
+    padding: 10px 0px;
+    box-sizing: border-box;
+    overflow-y: auto;
+    font-size: 13px;
+}
+.ztree li span.button.root_open ,
+.ztree li span.button.roots_open,
+.ztree li span.button.bottom_open,
+.ztree li span.button.center_open {
+
+    background: url(../images/triangle2.png) center center no-repeat;
+}
+.ztree li span.button.root_close,
+.ztree li span.button.roots_close,
+.ztree li span.button.bottom_close,
+.ztree li span.button.center_close {
+    background: url(../images/triangle1.png) center center no-repeat;
+}
+.ztree li span.button.chk.checkbox_false_full,
+.ztree li span.button.chk.checkbox_false_full_focus{
+    width: 15px;
+    height: 15px;
+    background: url(../images/radio_normal1.png) no-repeat;
+    position: relative;
+    z-index: 2;
+}
+.ztree li span.button.chk.checkbox_true_full,
+.ztree li span.button.chk.checkbox_true_full_focus{
+    width: 15px;
+    height: 15px;
+    background: url(../images/radio_normal3.png) no-repeat;
+}
+
+.ztree li span.button.chk.checkbox_false_part,
+.ztree li span.button.chk.checkbox_false_part_focus {
+    width: 15px;
+    height: 15px;
+    background: url(../images/radio_normal2.png) no-repeat;
+    position: relative;
+    z-index: 2;
+}
+.ztree li span.button.chk.checkbox_true_part,
+.ztree li span.button.chk.checkbox_true_part_focus{
+    width: 15px;
+    height: 15px;
+    background: url(../images/radio_normal2.png) no-repeat;
+    position: relative;
+    z-index: 2;
+}
+.ztree li {
+    position: relative;
+    line-height: 30px;
+}
+.ztree li a {
+    height: 30px;
+    border: none;
+    padding: 0;
+    background-color: transparent;
+    text-decoration: none;
+    cursor: auto;
+}
+.ztree .node_name{
+    font-size: 13px;
+    color: #333333;
+    margin-left: 6px;
+}
+.ztree li a.curSelectedNode {
+    background: none;
+    border: none;
+    opacity: 1;
+}
+.ztree li span.button.center_docu,
+.ztree li span.button.bottom_docu,
+.ztree li ul.line {
+    background: none;
+}
+.ztree li span.button.ico_open {
+    vertical-align: middle;
+    background-image: url(../images/icon-file.png);
+    background-position: unset;
+}
+.ztree li span.button.ico_docu {
+    vertical-align: middle;
+    /* background-image: url(../images/icon-shcool.png); */
+    background-image: url(../images/icon-file.png);
+    background-position: unset;
+}
+.ztree li span.button.ico_close {
+    vertical-align: middle;
+    background-image: url(../images/icon-file.png);
+    background-position: unset;
+}

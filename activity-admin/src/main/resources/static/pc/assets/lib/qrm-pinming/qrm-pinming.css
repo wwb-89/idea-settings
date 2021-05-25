@@ -1,0 +1,150 @@
+.clearfix:after {
+    display: block;
+    clear: both;
+    content: "";
+    visibility: hidden;
+    height: 0;
+}
+
+.clearfix {
+    zoom: 1;
+}
+
+ul, li {
+    list-style: none;
+}
+
+.qrm-input {
+    outline: none;
+    border: none;
+    height: 100%;
+    position: absolute;
+    top: 0;
+    padding: 0 10px;
+    width: 90%;
+    box-sizing: border-box;
+    border-radius: 4px;
+}
+
+.qrm-input-border {
+    position: relative;
+    height: 100%;
+    width: 100%;
+}
+
+.qrm-pinming {
+    height: 32px;
+    line-height: 32px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    position: relative;
+    width: 204px;
+    background-image: url(./images/qrm-arrow-down.png);
+    background-repeat: no-repeat;
+    background-position: 180px center;
+}
+
+.qrm-pinming:hover {
+    cursor: pointer;
+}
+.qrm-pinming.qrm-active{
+    background-image: url(./images/qrm-arrow-top.png);
+    border: 1px solid #409EFF;
+}
+.qrm-pinming input:hover {
+    cursor: pointer;
+}
+
+.qrm-pinming-panel {
+    position: absolute;
+    top: 52px;
+    left: -1px;
+    z-index: 99999;
+    width: 350px;
+    height: 210px;
+    background: #fff;
+}
+
+.qrm-border{
+    max-height: 300px;
+    overflow: auto;
+    background: #ffffff;
+    border-radius: 6px 0px 0px 6px;
+    box-shadow: 0 0 10px 1px rgba(0, 0, 0, 0.1);
+    z-index: 1;
+}
+.qrm-border1 {
+    float: left;
+    width: 100%;
+    height: auto;
+    position: absolute;
+    top: 50px;
+}
+
+.qrm-border2 {
+    float: left;
+    width: 100%;
+    position: absolute;
+    top: 50px;
+    left: 100%;
+}
+
+.qrm-border3 {
+    float: left;
+    width: 100%;
+    position: absolute;
+    top: 50px;
+    left: 200%;
+}
+
+.qrm-lev {
+    float: left;
+    width: 100%;
+    margin: 0;
+    padding: 0;
+    font-size: 14px;
+}
+
+.qrm-lev > li {
+    width: 100%;
+    position: relative;
+    display: block;
+    line-height: 20px;
+    padding: 10px 16px;
+    box-sizing: border-box;
+}
+
+.qrm-lev > li:hover {
+    background: #F5F8FB;
+    color: #3A8BFF;
+}
+
+.qrm-arrow-right {
+    display: inline-block;
+    width: 20px;
+    height: 20px;
+    background: url(./images/qrm-arrow-right.png) no-repeat;
+    position: absolute;
+    right: 7px;
+    top: 14px;
+}
+
+.qrm-lev-1 > li.active {
+    background: #F5F8FB;
+    color: #3A8BFF;
+}
+
+.qrm-lev-2 > li.active {
+    background: #F5F8FB;
+    color: #3A8BFF;
+}
+
+.qrm-lev-3 > li.active {
+    background: #F5F8FB;
+    color: #3A8BFF;
+}
+
+.qrm-lev-4 > li.active {
+    background: #F5F8FB;
+    color: #3A8BFF;
+}

@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 import java.util.Objects;
 import java.util.Optional;
 
@@ -33,21 +34,24 @@ public class ActivityChangeEventService {
 	@Resource
 	private ActivityReleaseScopeChangeQueueService activityReleaseScopeChangeQueueService;
 	@Resource
-	private SecondClassroomActivityPushQueueService secondClassroomActivityPushQueueService;
+	private ActivityDataPushQueueService activityDataPushQueueService;
 	@Resource
 	private ActivityIntegralChangeQueueService activityIntegralChangeQueueService;
+	@Resource
+	private ActivityDataChangeQueueService activityDataChangeQueueService;
 
 	/**活动数据改变
 	 * @Description 
 	 * @author wwb
 	 * @Date 2021-03-26 14:54:18
 	 * @param activity
+	 * @param oldActivity 原活动
 	 * @param oldIntegralValue 原积分
 	 * @return void
 	*/
-	public void dataChange(Activity activity, BigDecimal oldIntegralValue) {
+	public void dataChange(Activity activity, Activity oldActivity, BigDecimal oldIntegralValue) {
 		// 往表单推送数据
-		secondClassroomActivityPushQueueService.update(activity);
+		activityDataPushQueueService.update(activity);
 		// 订阅活动状态处理
 		activityStatusUpdateQueueService.addTime(activity);
 		// 通知门户修改网站的title
@@ -68,6 +72,24 @@ public class ActivityChangeEventService {
 				activityIntegralChangeQueueService.add(signId);
 			}
 		}
+		if (oldActivity != null) {
+			// 提醒已收藏、已报名的用户活动的变更，需要判断的变更内容：活动地点、活动时间
+			boolean activityDataChange = !Objects.equals(activity.getAddress(), oldActivity.getAddress()) || !Objects.equals(activity.getDetailAddress(), oldActivity.getDetailAddress());
+			LocalDateTime now = LocalDateTime.now();
+			// 时间是否改变
+			boolean timeChanged = activity.getStartTime().compareTo(oldActivity.getStartTime()) != 0;
+			if (!timeChanged) {
+				timeChanged = activity.getEndTime().compareTo(oldActivity.getEndTime()) != 0;
+			}
+			boolean activityEnded = activity.getEndTime().isBefore(now);
+			if (timeChanged && !activityEnded) {
+				activityDataChange = true;
+			}
+			if (activityDataChange) {
+				// 给收藏活动和报名活动的用户发送通知
+				activityDataChangeQueueService.add(activity.getId());
+			}
+		}
 	}
 
 	/**活动状态变更
@@ -83,10 +105,8 @@ public class ActivityChangeEventService {
 		if (Objects.equals(Activity.StatusEnum.DELETED, statusEnum)) {
 			// 活动被删除
 			activityIsAboutToStartQueueService.remove(activity.getId());
-			// 删除表单记录
-			secondClassroomActivityPushQueueService.add(activity);
 			// 删除表单推送的数据
-			secondClassroomActivityPushQueueService.delete(activity);
+			activityDataPushQueueService.delete(activity);
 		}
 
 	}
@@ -102,10 +122,11 @@ public class ActivityChangeEventService {
 		Boolean released = activity.getReleased();
 		if (released) {
 			// 往表单推送数据
-			secondClassroomActivityPushQueueService.add(activity);
+			activityDataPushQueueService.add(activity);
 		} else {
+			// 删除记录
 			// 删除表单推送的数据
-			secondClassroomActivityPushQueueService.delete(activity);
+			activityDataPushQueueService.delete(activity);
 		}
 		// 活动发布范围改变
 		activityReleaseScopeChangeQueueService.add(activity.getId());

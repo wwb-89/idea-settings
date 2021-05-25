@@ -3,13 +3,18 @@ package com.chaoxing.activity.service.manager;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.chaoxing.activity.dto.activity.VolunteerServiceDTO;
+import com.chaoxing.activity.dto.manager.form.FilterItemDTO;
 import com.chaoxing.activity.dto.manager.form.FormDTO;
 import com.chaoxing.activity.dto.manager.form.FormStructureDTO;
 import com.chaoxing.activity.util.exception.BusinessException;
 import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
@@ -18,8 +23,7 @@ import org.springframework.web.client.RestTemplate;
 import javax.annotation.Resource;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 /**表单api服务
  * @author wwb
@@ -58,6 +62,9 @@ public class FormApiService {
 	private static final String UPDATE_FORM_URL = FORM_API_DOMAIN + "/api/apps/forms/user/edit";
 	/** 删除表单记录url */
 	private static final String DELETE_FORM_RECORD_URL = FORM_API_DOMAIN + "/api/apps/forms/user/del?formId=%d&formUserId=%d&datetime=%s&sign=%s&enc=%s";
+
+	/** 高级检索 */
+	private static final String ADVANCED_SEARCH_URL = FORM_API_DOMAIN + "/api/apps/forms/user/advanced/search/list";
 
 	@Resource(name = "restTemplateProxy")
 	private RestTemplate restTemplate;
@@ -108,6 +115,23 @@ public class FormApiService {
 	 * @return java.util.List<com.chaoxing.secondclassroom.dto.manager.form.FormStructureDTO>
 	 */
 	public List<FormStructureDTO> getFormInfo(Integer fid, Integer formId) {
+		JSONArray data = getFormInfoData(fid, formId);
+		if (data.size() > 0) {
+			return JSON.parseArray(data.toJSONString(), FormStructureDTO.class);
+		} else {
+			return null;
+		}
+	}
+
+	/**获取表单结构信息
+	* @Description
+	* @author huxiaolong
+	* @Date 2021-05-19 18:16:39
+	* @param fid
+	* @param formId
+	* @return com.alibaba.fastjson.JSONArray
+	*/
+	public JSONArray getFormInfoData(Integer fid, Integer formId) {
 		LocalDateTime now = LocalDateTime.now();
 		String formatDateStr = now.format(DATE_TIME_FORMATTER);
 		String enc = calGetOrgFormEnc(fid, formId, formatDateStr);
@@ -117,12 +141,7 @@ public class FormApiService {
 		Boolean success = jsonObject.getBoolean("success");
 		success = Optional.ofNullable(success).orElse(Boolean.FALSE);
 		if (success) {
-			JSONArray data = jsonObject.getJSONArray("data");
-			if (data.size() > 0) {
-				return JSON.parseArray(data.toJSONString(), FormStructureDTO.class);
-			} else {
-				return null;
-			}
+			return jsonObject.getJSONArray("data");
 		} else {
 			String errorMessage = jsonObject.getString("msg");
 			log.error("根据fid:{},表单id:{} 获取表单信息error:{}", fid, formId, errorMessage);
@@ -324,4 +343,151 @@ public class FormApiService {
 		return DigestUtils.md5Hex(enc);
 	}
 
+
+
+	/**调用高级检索接口，分页查询用户的服务时长记录
+	* @Description
+	* @author huxiaolong
+	* @Date 2021-05-19 15:24:38
+	* @param page
+	* @param fid
+	* @param uid
+	* @param formId
+	* @param serviceType
+	 * @return com.baomidou.mybatisplus.extension.plugins.pagination.Page<com.chaoxing.activity.dto.activity.VolunteerServiceDTO>
+	*/
+	public Page<VolunteerServiceDTO> pageVolunteerRecord(Page<VolunteerServiceDTO> page, Integer fid, Integer uid, Integer formId, String serviceType) {
+		// 创建encParamMap, 存储enc加密所需内容
+		TreeMap<String, Object> encParamMap = new TreeMap<>();
+		LocalDateTime now = LocalDateTime.now();
+		String dateFormatStr = now.format(DATE_TIME_FORMATTER);
+		encParamMap.put("deptId", fid);
+		encParamMap.put("uids", uid);
+		encParamMap.put("cpage", page.getCurrent());
+		encParamMap.put("pageSize", page.getSize());
+		encParamMap.put("formId", formId);
+		encParamMap.put("datetime", dateFormatStr);
+		encParamMap.put("sign", SIGN);
+
+		String enc = calAdvanceSearchEnc(encParamMap);
+		MultiValueMap<String, Object> paramMap = new LinkedMultiValueMap();
+		paramMap.setAll(encParamMap);
+		paramMap.add("enc", enc);
+		if (StringUtils.isNotBlank(serviceType)) {
+			List<FormStructureDTO> structureList = getFormInfo(fid, formId);
+			String searchStr = buildSearchStr("type", "match", Collections.singleton(serviceType), structureList);
+			paramMap.add("searchStr", searchStr);
+		}
+
+		String result = restTemplate.postForObject(ADVANCED_SEARCH_URL, paramMap, String.class);
+		JSONObject resultObj = JSON.parseObject(result);
+
+		Boolean success = resultObj.getBoolean("success");
+		success = Optional.ofNullable(success).orElse(Boolean.FALSE);
+
+		if (success) {
+			resultObj = resultObj.getJSONObject("data");
+			JSONArray dataList = resultObj.getJSONArray("dataList");
+
+			int totalRow = Integer.parseInt(resultObj.getString("totalRow"));
+			int totalPage = Integer.parseInt(resultObj.getString("totalPage"));
+
+			List<VolunteerServiceDTO> records = new ArrayList<>();
+			if (dataList.size() > 0) {
+				for (Object obj : dataList) {
+					JSONObject item = (JSONObject) obj;
+					VolunteerServiceDTO volunteerDTO = new VolunteerServiceDTO();
+					volunteerDTO.setUid(Integer.valueOf(item.getString("uid")));
+					volunteerDTO.setFormUserId(Integer.valueOf(item.getString("id")));
+
+					JSONObject valueData = (JSONObject) item.get("formIdValueData");
+					for (Map.Entry<String, Object> entry : valueData.entrySet()) {
+						JSONObject itemJsonObj = JSON.parseObject(JSON.toJSONString(entry.getValue()));
+						JSONArray groupValues = itemJsonObj.getJSONArray("groupValues");
+						JSONArray values = (JSONArray) JSON.parseObject(JSON.toJSONString(groupValues.get(0))).getJSONArray("values").get(0);
+						String val = "";
+						String alias = itemJsonObj.getString("alias");
+						if (!values.isEmpty()) {
+							JSONObject value = JSON.parseObject(JSON.toJSONString(values.get(0)));
+							val = value.getString("val");
+						}
+						if ("name".equals(alias)) {
+							volunteerDTO.setName(val);
+						} else if ("type".equals(alias)) {
+							volunteerDTO.setType(val);
+						}  else if ("department".equals(alias)) {
+							volunteerDTO.setDepartment(val);
+						} else if ("date".equals(alias)) {
+							volunteerDTO.setServiceDate(val);
+						} else if ("time_length".equals(alias)) {
+							Long timeLength = StringUtils.isBlank(val)? 0L : Long.parseLong(val);
+							volunteerDTO.setTimeLength(timeLength);
+						} else if ("no".equals(alias)) {
+							volunteerDTO.setNo(val);
+						} else if ("level".equals(alias)) {
+							volunteerDTO.setLevel(val);
+						} /*else if ("17".equals(alias)) {
+							volunteerDTO.setAffiliations(val);
+						}*/
+
+					}
+
+					records.add(volunteerDTO);
+				}
+			}
+			Page<VolunteerServiceDTO> resPage = new Page<>();
+			resPage.setCurrent(page.getCurrent());
+			resPage.setSize(page.getSize());
+			resPage.setTotal(totalRow);
+			resPage.setPages(totalPage);
+			resPage.setRecords(records);
+			return resPage;
+		} else {
+			String errorMessage = resultObj.getString("msg");
+			log.error("获取用户:{}在机构:{}下的表单:{}数据error:{}, url:{}", uid, fid, formId, errorMessage, ADVANCED_SEARCH_URL);
+			throw new BusinessException(errorMessage);
+		}
+
+	}
+
+	/**构建搜索查询条件字符串
+	* @Description
+	* @author huxiaolong
+	* @Date 2021-05-20 11:18:52
+	* @param alias
+	* @param express
+	* @param value
+	* @param structureList
+	* @return java.lang.String
+	*/
+	private String buildSearchStr(String alias, String express, Object value, List<FormStructureDTO> structureList) {
+		List<List<FilterItemDTO>> filters = new ArrayList<>();
+		for (FormStructureDTO searchInfo : structureList) {
+			if (alias.equals(searchInfo.getAlias())) {
+				List<FilterItemDTO> condition = new ArrayList<>();
+				FilterItemDTO item = new FilterItemDTO();
+				item.setCompt(searchInfo.getCompt());
+				item.setId(searchInfo.getId());
+				item.setExpress(express);
+				item.setVal(JSON.toJSONString(value));
+				condition.add(item);
+				filters.add(condition);
+				break;
+			}
+		}
+		Map<String, Object> searchMap = Maps.newHashMap();
+		searchMap.put("model", 0);
+		searchMap.put("filters", filters);
+
+		return JSONObject.toJSONString(searchMap);
+	}
+
+	private String calAdvanceSearchEnc(TreeMap<String, Object> encParamMap) {
+		StringBuilder enc = new StringBuilder();
+		for (Map.Entry<String, Object> entry : encParamMap.entrySet()) {
+			enc.append("[").append(entry.getKey()).append("=")
+					.append(entry.getValue()).append("]");
+		}
+		return DigestUtils.md5Hex(enc + "[" + KEY + "]");
+	}
 }

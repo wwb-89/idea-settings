@@ -24,4 +24,6 @@ public class WfwGroupDTO {
     private String gid;
     /** 名称*/
     private String groupname;
+    /** 子结点个数 */
+    private Integer soncount;
 }

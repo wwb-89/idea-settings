@@ -1,5 +1,6 @@
 package com.chaoxing.activity.model;
 
+import com.alibaba.fastjson.annotation.JSONField;
 import com.baomidou.mybatisplus.annotation.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -39,8 +40,10 @@ public class ActivityClassify {
     @TableLogic
     private Integer status;
     /** 创建时间; column: create_time*/
+    @JSONField(serialize = false)
     private LocalDateTime createTime;
     /** 更新时间; column: update_time*/
+    @JSONField(serialize = false)
     private LocalDateTime updateTime;
 
 }

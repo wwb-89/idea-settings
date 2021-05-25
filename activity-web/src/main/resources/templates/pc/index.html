@@ -75,7 +75,7 @@
                             </div>
                             <div class="font-box">
                                 <p class="title1" >{{item.name}}</p>
-                                <p>活动时间：{{item.startTime | timestamp2YMD}} ～ {{item.endTime | timestamp2YMD}}</p>
+                                <p>活动时间：{{item.startTime | timestampScopeFormat(item.endTime)}}</p>
                                 <p>主办单位：{{item.organisers}}</p>
                                 <p v-show="item.address">活动地点：{{item.address}}{{item.detailAddress ? item.detailAddress : ''}}</p>
                             </div>
@@ -98,10 +98,6 @@
     <script src="/static/pc/assets/lib/set-iframe-height-child.js" th:src="@{/pc/assets/lib/set-iframe-height-child.js}"></script>
     <script src="/static/pc/assets/lib/jquery.mCustomScrollbar.concat.min.js" th:src="@{/pc/assets/lib/jquery.mCustomScrollbar.concat.min.js}"></script>
     <script th:inline="javascript">
-        Vue.filter("timestamp2YMD", function (timestamp) {
-            var dateObj = activityApp.millisecond2DateObj(timestamp);
-            return dateObj.year + "-" + dateObj.month + "-" + dateObj.day;
-        });
         activityVue = new Vue({
             el: '#activity-vue',
             data: {
@@ -249,8 +245,8 @@
                     var params = $this.queryParams;
                     $this.loaded = false;
                     $this.searchShow = false;
-                    $this.activities = [];
                     app.ajaxPost(url, {data: activityApp.getJsonStr(params), pageNum: params.pageNum, pageSize: params.pageSize}, function (data) {
+                        $this.activities = [];
                         $this.loaded = true;
                         if (data.success) {
                             $this.loaded = true;
@@ -271,6 +267,7 @@
                             app.showMsg(errorMessage);
                         }
                     }, function () {
+                        $this.activities = [];
                         $this.loaded = true;
                         app.showMsg("加载活动列表失败");
                     });

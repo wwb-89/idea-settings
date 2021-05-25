@@ -1,6 +1,7 @@
 package com.chaoxing.activity.web.controller;
 
 import com.chaoxing.activity.dto.ActivityQueryDateDTO;
+import com.chaoxing.activity.dto.LoginUserDTO;
 import com.chaoxing.activity.model.Group;
 import com.chaoxing.activity.model.GroupRegionFilter;
 import com.chaoxing.activity.service.ActivityQueryDateService;
@@ -8,6 +9,8 @@ import com.chaoxing.activity.service.GroupRegionFilterService;
 import com.chaoxing.activity.service.GroupService;
 import com.chaoxing.activity.service.activity.classify.ActivityClassifyQueryService;
 import com.chaoxing.activity.util.UserAgentUtils;
+import com.chaoxing.activity.util.annotation.LoginRequired;
+import com.chaoxing.activity.util.exception.LoginRequiredException;
 import com.chaoxing.activity.web.util.LoginUtils;
 import com.google.common.collect.Lists;
 import lombok.extern.slf4j.Slf4j;
@@ -54,6 +57,7 @@ public class IndexController {
 	 * @Date 2020-12-09 10:22:16
 	 * @param request
 	 * @param model
+	 * @param wfwfid
 	 * @param unitId
 	 * @param state
 	 * @param fid
@@ -63,8 +67,8 @@ public class IndexController {
 	 * @return java.lang.String
 	 */
 	@GetMapping("")
-	public String index(HttpServletRequest request, Model model, Integer unitId, Integer state, Integer fid, Integer banner, String style, @RequestParam(defaultValue = "") String flag) {
-		Integer realFid = Optional.ofNullable(unitId).orElse(Optional.ofNullable(state).orElse(fid));
+	public String index(HttpServletRequest request, Model model, Integer wfwfid, Integer unitId, Integer state, Integer fid, Integer banner, String style, @RequestParam(defaultValue = "") String flag) {
+		Integer realFid = Optional.ofNullable(wfwfid).orElse(Optional.ofNullable(unitId).orElse(Optional.ofNullable(state).orElse(fid)));
 		style = Optional.ofNullable(style).filter(StringUtils::isNotBlank).orElse(DEFAULT_STYLE);
 		return handleData(request, model, null, realFid, null, banner, style, flag);
 	}
@@ -76,6 +80,7 @@ public class IndexController {
 	 * @param request
 	 * @param model
 	 * @param code
+	 * @param wfwfid
 	 * @param unitId 门户封装的fid
 	 * @param state 微服务封装的fid
 	 * @param pageId
@@ -86,12 +91,8 @@ public class IndexController {
 	 * @return java.lang.String
 	 */
 	@GetMapping("lib")
-	public String libIndex(HttpServletRequest request, Model model, String code, Integer unitId, Integer state, Integer fid, Integer pageId, Integer banner, String style, @RequestParam(defaultValue = "") String flag) {
-		Integer realFid = Optional.ofNullable(unitId).orElse(Optional.ofNullable(state).orElse(fid));
-		if (realFid == null) {
-			// 使用通用的活动广场
-			return "redirect:/?flag=" + flag;
-		}
+	public String libIndex(HttpServletRequest request, Model model, String code, Integer wfwfid, Integer unitId, Integer state, Integer fid, Integer pageId, Integer banner, String style, @RequestParam(defaultValue = "") String flag) {
+		Integer realFid = Optional.ofNullable(wfwfid).orElse(Optional.ofNullable(unitId).orElse(Optional.ofNullable(state).orElse(fid)));
 		return handleData(request, model, code, realFid, pageId, banner, style, flag);
 	}
 
@@ -102,6 +103,7 @@ public class IndexController {
 	 * @param request
 	 * @param model
 	 * @param code
+	 * @param wfwfid
 	 * @param unitId
 	 * @param state
 	 * @param fid
@@ -112,8 +114,8 @@ public class IndexController {
 	 * @return java.lang.String
 	 */
 	@GetMapping("bas")
-	public String basIndex(HttpServletRequest request, Model model, String code, Integer unitId, Integer state, Integer fid, Integer pageId, Integer banner, String style, @RequestParam(defaultValue = "") String flag) {
-		Integer realFid = Optional.ofNullable(unitId).orElse(Optional.ofNullable(state).orElse(fid));
+	public String basIndex(HttpServletRequest request, Model model, String code, Integer wfwfid, Integer unitId, Integer state, Integer fid, Integer pageId, Integer banner, String style, @RequestParam(defaultValue = "") String flag) {
+		Integer realFid = Optional.ofNullable(wfwfid).orElse(Optional.ofNullable(unitId).orElse(Optional.ofNullable(state).orElse(fid)));
 		style = Optional.ofNullable(style).filter(StringUtils::isNotBlank).orElse(DEFAULT_STYLE);
 		return handleData(request, model, code, realFid, pageId, banner, style, flag);
 	}
@@ -125,6 +127,7 @@ public class IndexController {
 	 * @param request
 	 * @param model
 	 * @param code
+	 * @param wfwfid
 	 * @param unitId
 	 * @param state
 	 * @param fid
@@ -135,15 +138,16 @@ public class IndexController {
 	 * @return java.lang.String
 	 */
 	@GetMapping("edu")
-	public String eduIndex(HttpServletRequest request, Model model, String code, Integer unitId, Integer state, Integer fid, Integer pageId, Integer banner, String style, @RequestParam(defaultValue = "") String flag) {
-		Integer realFid = Optional.ofNullable(unitId).orElse(Optional.ofNullable(state).orElse(fid));
+	public String eduIndex(HttpServletRequest request, Model model, String code, Integer wfwfid, Integer unitId, Integer state, Integer fid, Integer pageId, Integer banner, String style, @RequestParam(defaultValue = "") String flag) {
+		Integer realFid = Optional.ofNullable(wfwfid).orElse(Optional.ofNullable(unitId).orElse(Optional.ofNullable(state).orElse(fid)));
 		style = Optional.ofNullable(style).filter(StringUtils::isNotBlank).orElse(DEFAULT_STYLE);
 		return handleData(request, model, code, realFid, pageId, banner, style, flag);
 	}
 
 	private String handleData(HttpServletRequest request, Model model, String code, Integer fid, Integer pageId, Integer banner, String style, String flag) {
 		if (fid == null) {
-			fid = LoginUtils.getLoginUser(request).getFid();
+			LoginUserDTO loginUser = LoginUtils.getLoginUser(request);
+			Optional.ofNullable(loginUser).orElseThrow(() -> new LoginRequiredException());
 		}
 		List<String> activityClassifyNames = activityClassifyQueryService.listOrgsOptionalName(Lists.newArrayList(fid));
 		model.addAttribute("activityClassifyNames", activityClassifyNames);
@@ -168,17 +172,16 @@ public class IndexController {
 		banner = Optional.ofNullable(banner).orElse(0);
 		model.addAttribute("banner", banner);
 		model.addAttribute("flag", flag);
-		if (StringUtils.isEmpty(style)) {
-			if (UserAgentUtils.isMobileAccess(request)) {
-				return "mobile/index-new";
-			}
-			return "pc/index";
+		if (UserAgentUtils.isMobileAccess(request)) {
+			return "mobile/index";
 		}else {
-			if (UserAgentUtils.isMobileAccess(request)) {
-				return "mobile/index-new";
+			if (StringUtils.isEmpty(style)) {
+				return "pc/index";
+			}else {
+				return "pc/activity/market/activity-market-" + style;
 			}
-			return "pc/activity/market/activity-market-" + style;
 		}
+
 	}
 
 	/**我的活动
@@ -191,6 +194,7 @@ public class IndexController {
 	 * @param flag 活动标示：双选会、第二课堂等
 	 * @return java.lang.String
 	 */
+	@LoginRequired
 	@RequestMapping("my")
 	public String my(HttpServletRequest request, Model model, @RequestParam(defaultValue = "") String areaCode, @RequestParam(defaultValue = "") String flag) {
 		model.addAttribute("areaCode", areaCode);

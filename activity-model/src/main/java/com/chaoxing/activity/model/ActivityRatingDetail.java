@@ -5,6 +5,8 @@ import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
+import com.chaoxing.activity.util.LocalDateTime2TimestampDeserializer;
+import com.chaoxing.activity.util.LocalDateTimeSerializer;
 import lombok.*;
 
 import java.math.BigDecimal;
@@ -51,11 +53,12 @@ public class ActivityRatingDetail {
     /** 审核状态。0：拒绝，1:通过，2:待审核; column: audit_status*/
     private Integer auditStatus;
     /** 创建时间; column: create_time*/
-    @JSONField(format = "yyyy-MM-dd HH:mm:ss")
+    @JSONField(serializeUsing = LocalDateTimeSerializer.class, deserializeUsing = LocalDateTime2TimestampDeserializer.class)
     private LocalDateTime createTime;
     /** 创建人uid; column: create_uid*/
     private Integer createUid;
     /** 更新时间; column: update_time*/
+    @JSONField(serializeUsing = LocalDateTimeSerializer.class, deserializeUsing = LocalDateTime2TimestampDeserializer.class)
     private LocalDateTime updateTime;
     /** 更新人uid; column: update_uid*/
     private Integer updateUid;

@@ -4,6 +4,7 @@ import com.chaoxing.activity.dto.RestRespDTO;
 import com.chaoxing.activity.model.Activity;
 import com.chaoxing.activity.service.activity.ActivityQueryService;
 import com.chaoxing.activity.service.queue.ActivityIsAboutToStartQueueService;
+import com.chaoxing.activity.service.queue.ActivityStatusUpdateQueueService;
 import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -26,6 +27,8 @@ public class QueueApiController {
 	@Resource
 	private ActivityIsAboutToStartQueueService activityIsAboutToStartQueueService;
 	@Resource
+	private ActivityStatusUpdateQueueService activityStatusUpdateQueueService;
+	@Resource
 	private ActivityQueryService activityQueryService;
 
 	/**初始化签到的开始结束时间队列
@@ -41,6 +44,24 @@ public class QueueApiController {
 		if (CollectionUtils.isNotEmpty(activities)) {
 			for (Activity activity : activities) {
 				activityIsAboutToStartQueueService.add(activity);
+			}
+		}
+		return RestRespDTO.success();
+	}
+
+	/**初始化活动的状态队列
+	 * @Description 
+	 * @author wwb
+	 * @Date 2021-04-21 15:31:45
+	 * @param 
+	 * @return com.chaoxing.activity.dto.RestRespDTO
+	*/
+	@RequestMapping("init/activity-status")
+	public RestRespDTO initActivityStatusQueue() {
+		List<Activity> activities = activityQueryService.list();
+		if (CollectionUtils.isNotEmpty(activities)) {
+			for (Activity activity : activities) {
+				activityStatusUpdateQueueService.addTime(activity);
 			}
 		}
 		return RestRespDTO.success();

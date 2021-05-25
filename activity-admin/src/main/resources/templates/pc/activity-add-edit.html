@@ -134,21 +134,48 @@
                     </div>
                 </div>
                 <div class="form-item cancel-margin">
-                    <label class="label">分类</label>
+                    <label class="label">活动类型</label>
                     <div class="input-box wrap">
-                        <div :class="{'type-item': true, 'paddingR0': (!activityClassify.system), 'active': activityClassify.selected}" v-for="(activityClassify, index) of activityClassifies" :key="'activity-classify-' + index" @click="selectActivityClassify(index)">{{activityClassify.name}}
-                            <div class="more-box" v-if="!activityClassify.system">
-                                <div class="more-btn"></div>
-                                <div class="edit-box">
-                                    <div @click="toEditActivityClassify(index, $event)">编辑</div>
-                                    <div @click="toDeleteActivityClassify(index, $event)">删除</div>
+                        <template v-if="strict != 1">
+                            <div :class="{'type-item': true, 'paddingR0': (!activityClassify.system), 'active': activityClassify.selected}" v-for="(activityClassify, index) of activityClassifies" :key="'activity-classify-' + index" @click="selectActivityClassify(index)">{{activityClassify.name}}
+                                <div class="more-box" v-if="!activityClassify.system">
+                                    <div class="more-btn"></div>
+                                    <div class="edit-box">
+                                        <div @click="toEditActivityClassify(index, $event)">编辑</div>
+                                        <div @click="toDeleteActivityClassify(index, $event)">删除</div>
+                                    </div>
                                 </div>
                             </div>
+                            <div class="type-item add" @click="toAddActivityClassify">
+                                <div class="add_btn"></div>
+                                新增
+                            </div>
+                        </template>
+                        <div class="select-activity" v-if="strict == 1">
+                            <el-select v-model="activity.activityClassifyId" placeholder="请选择">
+                                <el-option v-for="item in activityClassifies" :key="item.id" :label="item.name"
+                                           :value="item.id">
+                                </el-option>
+                            </el-select>
                         </div>
-                        <div class="type-item add" @click="toAddActivityClassify">
-                            <div class="add_btn"></div>
-                            新增
-                        </div>
+                    </div>
+                </div>
+                <!--学时-->
+                <div class="form-item" v-show="isShowPeriodCredit()">
+                    <label class="label">学时</label>
+                    <div class="input-box setForm">
+                        <input type="number" min="0" step="0.1" v-model.trim="activity.period" @blur="periodChange" placeholder="请输入" class="score-input">
+                        <span class="score">学时</span>
+                        <span>参与者成绩合格时，即可获取相应学时</span>
+                    </div>
+                </div>
+                <!--学分-->
+                <div class="form-item" v-show="isShowPeriodCredit()">
+                    <label class="label">学分</label>
+                    <div class="input-box setForm">
+                        <input type="number" min="0" step="0.1" v-model.trim="activity.credit" @blur="creditChange" placeholder="请输入" class="score-input">
+                        <span class="score">学分</span>
+                        <span>参与者成绩合格时，即可获取相应学分</span>
                     </div>
                 </div>
                 <div class="form-item cancel-margin marginTop16" v-show="isShowActivityFlag()">
@@ -163,7 +190,7 @@
                     </div>
                 </div>
                 <div class="form-item last marginTop16" v-show="isShowActivityParticipateScope()">
-                    <label class="label"><img src="/static/pc/assets/images/required.png" th:src="@{/pc/assets/images/required.png}" class="required-img">参与范围</label>
+                    <label class="label"><img src="/static/pc/assets/images/required.png" th:src="@{/pc/assets/images/required.png}" class="required-img">发布范围</label>
                     <div class="input-box wrap">
                         <!--添加范围后显示后面这项-->
                         <div v-show="participatedOrgs.length < 1">
@@ -231,11 +258,9 @@
                 <div class="form-item">
                     <label class="label">人数限制</label>
                     <div class="input-box">
-                        <div class="select-person">
-                            <el-select v-model="signUp.limitPerson" value-key="id" placeholder="请选择">
-                                <el-option label="不限" :value="false"></el-option>
-                                <el-option label="自定义人数" :value="true"></el-option>
-                            </el-select>
+                        <div class="select-person-radio">
+                            <el-radio v-model="signUp.limitPerson" :label="false" name="active-type">不限</el-radio>
+                            <el-radio v-model="signUp.limitPerson" :label="true" name="active-type">自定义</el-radio>
                         </div>
                         <input v-show="signUp.limitPerson" v-model="signUp.personLimit" type="number" min="1" step="1" maxlength="10" placeholder="请输入正整数" class="person"><span class="person-span" v-show="signUp.limitPerson">人</span>
                     </div>
@@ -257,7 +282,7 @@
                     <label class="label">报名需审核</label>
                     <div class="input-box">
                         <el-switch v-model="signUp.openAudit"></el-switch>
-                        <span class="tips">报名需管理员审核</span>
+                        <span class="tips">报名需活动管理员审核</span>
                     </div>
                 </div>
                 <div class="form-item">
@@ -265,6 +290,13 @@
                     <div class="input-box">
                         <el-switch v-model="signUp.publicList"></el-switch>
                         <span class="tips">开启后，所有人都能看到报名人员名单</span>
+                    </div>
+                </div>
+                <div class="form-item">
+                    <label class="label">取消报名设置</label>
+                    <div class="input-box">
+                        <el-switch v-model="signUp.endNotAllowCancel"></el-switch>
+                        <span class="tips">开启后，报名结束后参与者不能取消报名</span>
                     </div>
                 </div>
                 <div class="form-item" v-if="false">
@@ -285,8 +317,11 @@
             <form action="" onsubmit="return false;" class="setForm" v-show="!signIn.deleted">
                 <div class="form-item">
                     <label class="label">{{signIn.typeName}}方式</label>
-                    <div class="input-box">
+                    <div class="input-box" v-if="signIn.type == 'sign_in'">
                         <el-radio v-for="(signInWay, index) of signInWays" :key="'sign-in-way-' + index" v-model="signIn.way" :label="signInWay.value" name="signInWay">{{signInWay.name}}</el-radio>
+                    </div>
+                    <div class="input-box" v-else>
+                        <el-radio v-for="(signInWay, index) of signOutWays" :key="'sign-in-way-' + index" v-model="signIn.way" :label="signInWay.value" name="signInWay">{{signInWay.name}}</el-radio>
                     </div>
                 </div>
                 <div class="form-item" v-show="signIn.way == 2">
@@ -374,13 +409,13 @@
                     <label class="label">评价需审核</label>
                     <div class="input-box">
                         <el-switch v-model="activity.ratingNeedAudit" class="examine-switch"></el-switch>
-                        <span>开启后，审核后的评论才能展示在评论列表</span>
+                        <span>开启后，审核后的评价才能展示在评价列表</span>
                     </div>
                 </div>
             </form>
         </div>
         <!--征集设置-->
-        <div class="info box">
+        <div class="info box" v-show="!isShowPeriodCredit()">
             <div class="set-box">
                 <div class="title set">作品征集</div>
             </div>
@@ -474,7 +509,7 @@
     <vue-map ref="activityMap" :map-dom-id="'activity-map'" :title="'设置地点'" @callback="activityAddressSure"></vue-map>
     <!--签到-->
     <vue-sign-map ref="signInMap" :map-dom-id="'sign-in-map'" :title="'设置'+ signInMapTitleKey +'地点'" th:uid="${session._login_user_.uid}" th:fid="${session._login_user_.fid}" @callback="signInAddressSure"></vue-sign-map>
-    <!-- 活动参与范围弹窗 -->
+    <!-- 活动发布范围弹窗 -->
     <vue-activity-participate-scope :fid="fid" ref="activityParticipateScopeWindow" @callback="updateParticipatedOrgs"></vue-activity-participate-scope>
     <!--预览url复制容器-->
     <input type="text" id="template-preview-url-input" v-model.trim="activity.previewUrl" style="position: absolute; top: -100px; height: 1px;">
@@ -566,7 +601,10 @@
                 // 当前操作的对象
                 operateSignUpIndex: -1,
                 operateSignInIndex: -1,
-                signInMapTitleKey: "签到"
+                signInMapTitleKey: "签到",
+                strict: [[${strict}]],
+                // 活动封面上传中
+                activityCoverUploading: false
             },
             created: function () {
                 var $this = this;
@@ -596,6 +634,8 @@
                         longitude: "",
                         dimension: "",
                         activityClassifyId: firstActivityClassifyId,
+                        period: 0.0,
+                        credit: 0.0,
                         enableSign: true,
                         createAreaCode: $this.areaCode,
                         tags: "",
@@ -612,7 +652,7 @@
                     // 报名签到永远是启用的
                     $this.activity.enableSign = true;
                 }
-                $this.activity.timeScope = [$this.activity.startTime, $this.activity.endTime];
+                $this.$set($this.activity, "timeScope", [$this.activity.startTime, $this.activity.endTime]);
                 // 标签
                 var tags = $this.activity.tags;
                 if (activityApp.isEmpty(tags)) {
@@ -660,13 +700,14 @@
                     $this.sign.createTime = "";
                     $this.sign.updateTime = "";
                     // 报名
-                    $($this.sign.signUps).each(function () {
+                    $($this.sign.signUps).each(function (i) {
                         if (!activityApp.isEmpty(this.id)) {
                             this.startTime = this.startTimestamp;
                             this.endTime = this.endTimestamp;
                             this.createTime = "";
                             this.updateTime = "";
                         }
+                        $this.$set($this.sign.signUps[i], "endNotAllowCancel", !this.endAllowCancel);
                     });
                     // 签到、签退
                     $($this.sign.signIns).each(function () {
@@ -678,14 +719,14 @@
                         }
                     });
                 }
-                $($this.sign.signUps).each(function () {
+                $($this.sign.signUps).each(function (i) {
                     if (!activityApp.isEmpty(this.startTime)) {
-                        this.timeScope = [this.startTime, this.endTime];
+                        $this.$set($this.sign.signUps[i], "timeScope", [this.startTime, this.endTime]);
                     }
                 });
-                $($this.sign.signIns).each(function () {
+                $($this.sign.signIns).each(function (i) {
                     if (!activityApp.isEmpty(this.startTime)) {
-                        this.timeScope = [this.startTime, this.endTime];
+                        $this.$set($this.sign.signIns[i], "timeScope", [this.startTime, this.endTime]);
                     }
                 });
                 if (activityApp.isEmpty($this.participatedOrgs)) {
@@ -709,6 +750,26 @@
                 }
             },
             methods: {
+                periodChange: function () {
+                    var $this = this;
+                    var period = $this.activity.period;
+                    if (activityApp.isEmpty(period)) {
+                        period = 0;
+                    } else {
+                        period = parseFloat(period).toFixed(1);
+                    }
+                    $this.$set($this.activity, "period", period);
+                },
+                creditChange: function () {
+                    var $this = this;
+                    var credit = $this.activity.credit;
+                    if (activityApp.isEmpty(credit)) {
+                        credit = 0;
+                    } else {
+                        credit = parseFloat(credit).toFixed(1);
+                    }
+                    $this.$set($this.activity, "credit", credit);
+                },
                 signUpEnableChanged: function (index) {
                     var $this = this;
                     $this.$set($this.sign.signUps[index], "deleted", !$this.sign.signUps[index].enable);
@@ -745,6 +806,10 @@
                             mimeTypes: 'image/*'
                         }
                     });
+                    $this.uploader.on("startUpload", function (file, response) {
+                        // 上传完成
+                        $this.activityCoverUploading = true;
+                    });
                     $this.uploader.on("uploadSuccess", function (file, response) {
                         if (response.success) {
                             var data = response.data;
@@ -768,6 +833,10 @@
                             app.showMsg(errorMessage);
                         }
                     });
+                    $this.uploader.on("uploadComplete", function (file, response) {
+                        // 上传完成
+                        $this.activityCoverUploading = false;
+                    });
                     $this.uploader.on("uploadError", function (file, reason) {
                         app.showMsg(reason);
                     });
@@ -778,12 +847,12 @@
                     var activityType = $this.activityTypes[index];
                     $this.activity.activityType = activityType.value;
                 },
-                // 显示参与范围弹窗
+                // 显示发布范围弹窗
                 toAddParticipateScope: function () {
                     var $this = this;
                     $this.$refs.activityParticipateScopeWindow.showWindow($this.participatedOrgs);
                 },
-                // 更新参与范围的机构
+                // 更新发布范围的机构
                 updateParticipatedOrgs: function () {
                     var $this = this;
                     $this.participatedOrgs = $this.$refs.activityParticipateScopeWindow.selectedOrgs;
@@ -975,9 +1044,9 @@
                         app.showMsg("分类不能为空");
                         return false;
                     }
-                    // 参与范围
+                    // 发布范围
                     if ($this.isShowActivityParticipateScope() && (activityApp.isEmpty($this.participatedOrgs) || $this.participatedOrgs.length < 1)) {
-                        app.showMsg("请选择参与范围");
+                        app.showMsg("请选择发布范围");
                         return false;
                     }
                     // 报名验证
@@ -1015,6 +1084,8 @@
                                     return false;
                                 }
                             }
+                            // 取消报名设置
+                            signUp.endAllowCancel = !signUp.endNotAllowCancel;
                             if (activityApp.isEmpty(signUp.btnName)) {
                                 app.showMsg(signUp.name + "按钮名称不能为空");
                                 return false;
@@ -1025,7 +1096,7 @@
                     for (var i = 0; i < $this.sign.signIns.length; i++) {
                         var signIn = $this.sign.signIns[i];
                         // 签到方式
-                        if (signIn.way == 2) {
+                        if (signIn.way == 2 && !signIn.deleted) {
                             // 位置签到
                             if (activityApp.isEmpty(signIn.address)) {
                                 app.showMsg(signIn.name + "位置不能为空");
@@ -1122,6 +1193,10 @@
                 save: function () {
                     var $this = this;
                     if (!$this.validateForm()) {
+                        return;
+                    }
+                    if ($this.activityCoverUploading) {
+                        app.showMsg("正在上传封面");
                         return;
                     }
                     var url = ctx + "/api/activity/edit";
@@ -1285,21 +1360,23 @@
                     }
                 },
                 loadFidGroup: function (gid, parentNode){
-                    var url = ctx + "/api/wfw/org/groups?gid="+gid;
+                    var url = ctx + "/api/wfw/org/groups?gid=" + gid;
                     app.ajaxPostWithLoading(url, {}, function (data) {
                         if (data.success) {
                             var newNodes = data.data;
                             if (newNodes.length > 0) {
                                 $(newNodes).each(function () {
-                                    this.isParent = true;
+                                    this.isParent = this.soncount > 0;
                                 })
                                 var treeObj = $.fn.zTree.getZTreeObj("sign-up-participate-scope-tree");
-                                var myNode = {
+                                // 支持只选择节点数据，so新增一个节点的叶子数据
+                                var cloneNode = {
                                     id: parentNode.id,
-                                    gid: parentNode.gid,
-                                    groupname: parentNode.groupname
+                                    groupname: parentNode.groupname,
+                                    soncount: 0,
+                                    isParent: false
                                 }
-                                treeObj.addNodes(parentNode, 0, myNode, false);
+                                treeObj.addNodes(parentNode, 0, cloneNode, false);
                                 treeObj.addNodes(parentNode, 1, newNodes, false);
                             }
                         } else {
@@ -1316,7 +1393,7 @@
                 initGroupTree: function () {
                     var $this = this;
                     $($this.wfwGroups).each(function () {
-                        this.isParent = true;
+                        this.isParent = this.soncount > 0;
                     })
                     var setting = {
                         check: {
@@ -1336,12 +1413,11 @@
                             }
                         },
                         callback: {
-                            onExpand: expandNode
-                        }
-                    };
-                    function expandNode(e, b, node) {
-                        if(node.children==null || node.children.length<=0){
-                            $this.loadFidGroup(node.id, node);
+                            onExpand: function (e, b, node) {
+                                if (node.children == null || node.children.length <= 0) {
+                                    $this.loadFidGroup(node.id, node);
+                                }
+                            }
                         }
                     };
                     $this.signUpParticipateScopeTreeObj = $.fn.zTree.init($("#sign-up-participate-scope-tree"), setting, $this.wfwGroups);
@@ -1351,52 +1427,20 @@
                     var $this = this;
                     var zTree = $.fn.zTree.getZTreeObj("sign-up-participate-scope-tree");
                     var nodeArr = zTree.getCheckedNodes(true);
-                    var parentGroups = [];
-                    var childGroups = [];
+                    var participateScopes = [];
                     //首先保存 搜索父节点被全选的，在看非父节点被选中的(非父节点的父节点被全选，则不保存该条记录)
                     $(nodeArr).each(function () {
-                        if(this.isParent && this.check_Child_State == 2){
-                            this.leaf = true;
-                            parentGroups.push(this);
-                        }else if(this.isParent && this.check_Child_State == -1){
-                            this.leaf = true;
-                            parentGroups.push(this);
+                        // 半选状态
+                        var half = this.getCheckStatus().half;
+                        if (!half) {
+                            // 只记录全选的
+                            participateScopes.push({
+                                externalId: this.id,
+                                externalPid: this.gid == this.id ? null : this.gid,
+                                externalName: this.groupname,
+                                leaf: !this.isParent
+                            });
                         }
-                    })
-                    $(nodeArr).each(function () {
-                        if (!this.isParent && this.check_Child_State == -1) {
-                            var isFind = false;
-                            $.each(parentGroups, function (i, parentItem) {
-                                if (this.gid != null && parentItem.id == this.gid) {
-                                    isFind = true;
-                                    return false;
-                                } else if (parentItem.id == this.id) {
-                                    isFind = true;
-                                    return false;
-                                }
-                            })
-                            if (!isFind) {
-                                this.leaf = false;
-                                childGroups.push(this);
-                            }
-                        }
-                    });
-                    var participateScopes = [];
-                    $(parentGroups).each(function () {
-                        participateScopes.push({
-                            externalId: this.id,
-                            externalPid: this.gid,
-                            externalName: this.groupname,
-                            leaf:this.leaf
-                        });
-                    });
-                    $(childGroups).each(function () {
-                        participateScopes.push({
-                            externalId: this.id,
-                            externalPid: this.gid,
-                            externalName: this.groupname,
-                            leaf:this.leaf
-                        });
                     });
                     $this.$set($this.sign.signUps[$this.operateSignUpIndex], "participateScopes", participateScopes);
                     $this.signUpParticipateWindowShow = false;
@@ -1408,14 +1452,20 @@
                 // 活动是否显示标签
                 isShowActivityFlag: function () {
                     var $this = this;
-                    var hides = ["second_classroom", "dual_select"];
+                    var hides = ["dual_select"];
                     return hides.indexOf($this.activity.activityFlag) == -1;
                 },
-                // 活动是否显示参与范围
+                // 活动是否显示发布范围
                 isShowActivityParticipateScope: function () {
                     var $this = this;
                     var hides = ["second_classroom", "dual_select"];
                     return hides.indexOf($this.activity.activityFlag) == -1;
+                },
+                // 是否显示学时、学分
+                isShowPeriodCredit: function () {
+                    var $this = this;
+                    var shows = ["teacher"];
+                    return shows.indexOf($this.activity.activityFlag) != -1;
                 }
             }
         });

@@ -12,7 +12,7 @@ import org.springframework.stereotype.Service;
 import javax.annotation.Resource;
 import java.util.List;
 
-/**活动参与范围查询服务
+/**活动发布范围查询服务
  * @author wwb
  * @version ver 1.0
  * @className ActivityScopeQueryService

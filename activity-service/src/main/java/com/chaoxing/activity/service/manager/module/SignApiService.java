@@ -11,9 +11,9 @@ import com.chaoxing.activity.dto.module.SignAddEditDTO;
 import com.chaoxing.activity.dto.module.SignAddEditResultDTO;
 import com.chaoxing.activity.dto.sign.ActivityBlockDetailSignStatDTO;
 import com.chaoxing.activity.dto.sign.SignActivityManageIndexDTO;
+import com.chaoxing.activity.dto.stat.SignActivityStatDTO;
 import com.chaoxing.activity.util.CookieUtils;
 import com.chaoxing.activity.util.DateUtils;
-import com.chaoxing.activity.util.RestTemplateUtils;
 import com.chaoxing.activity.util.exception.BusinessException;
 import com.google.common.collect.Lists;
 import lombok.extern.slf4j.Slf4j;
@@ -30,6 +30,7 @@ import org.springframework.web.client.RestTemplate;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
+import java.math.BigDecimal;
 import java.time.ZoneOffset;
 import java.util.List;
 import java.util.Optional;
@@ -59,16 +60,24 @@ public class SignApiService {
 	/** 参与情况 */
 	private static final String PARTICIPATION_URL = SIGN_API_DOMAIN + "/sign/%d/signed-up";
 	/** 统计报名签到在活动管理首页需要的信息 */
-	private static final String STAT_SIGN_ACTIVITY_MANAGE_INDEX_URL = SIGN_API_DOMAIN + "/sign/%d/stat/activity-index";
+	private static final String STAT_SIGN_ACTIVITY_MANAGE_INDEX_URL = SIGN_API_DOMAIN + "/stat/sign/%d/activity-index";
 	/** 统计报名签到报名成功数量url */
-	private static final String STAT_SIGNED_UP_NUM = SIGN_API_DOMAIN + "/sign/stat/signed-up-num";
+	private static final String STAT_SIGNED_UP_NUM = SIGN_API_DOMAIN + "/stat/sign/signed-up-num";
 	/** 活动块详情统计信息url */
-	private static final String ACTIVITY_BLOCK_DETAIL_STAT_URL = SIGN_API_DOMAIN + "/sign/stat/activity-block-detail?signId=%s&uid=%s";
+	private static final String ACTIVITY_BLOCK_DETAIL_STAT_URL = SIGN_API_DOMAIN + "/stat/sign/activity-block-detail?signId=%s&uid=%s";
 	/** 用户已报名的报名签到列表url */
-	private static final String USER_SIGNED_UP_URL = SIGN_API_DOMAIN + "/sign/stat/sign/user-signed-up/%d";
+	private static final String USER_SIGNED_UP_URL = SIGN_API_DOMAIN + "/stat/sign/user-signed-up/%d";
+	/** 统计活动报名签到对应的签到数url */
+	private static final String STAT_ACTIVITY_SIGNED_NUM_URL = SIGN_API_DOMAIN + "/stat/sign/%d/signed-in-nums";
+	/** 统计活动报名签到对应的签到率url */
+	private static final String STAT_ACTIVITY_SIGNED_RATE_URL = SIGN_API_DOMAIN + "/stat/sign/%d/sign-in-rate";
+	/** 统计活动报名签到对应的合格人数url */
+	private static final String STAT_ACTIVITY_QUALIFIED_NUMS_URL = SIGN_API_DOMAIN + "/stat/sign/%d/qualified-nums";
 	/** 通知已收藏url */
 	private static final String NOTICE_COLLECTED_URL = SIGN_API_DOMAIN + "/sign/%d/notice/collected";
-	
+	/** 报名签到参与范围描述yrl */
+	private static final String SIGN_PARTICIPATE_SCOPE_DESCRIBE_URL = SIGN_API_DOMAIN + "/sign/%d/scope/describe";
+
 	/** 取消报名 */
 	private static final String CANCEL_SIGN_UP_URL = SIGN_API_DOMAIN + "/sign-up/%d/cancel";
 	/** 撤销报名 */
@@ -77,14 +86,16 @@ public class SignApiService {
 	/** 查询报名成功的uid列表url */
 	private static final String SIGNED_UP_UIDS_URL = SIGN_API_DOMAIN + "/sign/%s/uid/signed-up";
 	/** 用户是否已报名（报名成功）url */
-	private static final String USER_SIGNED_UP_SUCCESS_URL = SIGN_API_DOMAIN + "/sign-up/signed-up-success?signId=%d&uid=%d";
+	private static final String USER_IS_SIGNED_UP_URL = SIGN_API_DOMAIN + "/sign/%d/is-signed-up?uid=%d";
 
 	/** 报名名单url */
 	private static final String SIGN_UP_USER_LIST_URL = SIGN_WEB_DOMAIN + "/sign-up/%d/user-list";
 	/** 用户报名签到参与情况url */
-	private static final String USER_SIGN_PARTICIPATION_URL = SIGN_API_DOMAIN + "/sign/%d/stat/user-participation?uid=%s";
+	private static final String USER_SIGN_PARTICIPATION_URL = SIGN_API_DOMAIN + "/stat/sign/%d/user-participation?uid=%s";
 	/** 根据signId列表查询报名的人数 */
-	private static final String STAT_SIGN_SIGNED_UP_NUM_URL = SIGN_API_DOMAIN + "/sign/stat/sign/signed-up-num";
+	private static final String STAT_SIGN_SIGNED_UP_INFO_URL = SIGN_API_DOMAIN + "/stat/signs";
+	/** 单活动统计 */
+	public static final String STAT_SINGLE_ACTIVITY_URL = SIGN_API_DOMAIN + "/stat/sign/%d/single-activity?startTime=%s&endTime=%s";
 
 	/** 通知活动已评价 */
 	private static final String NOTICE_HAVE_RATING_URL = SIGN_API_DOMAIN + "/sign/%d/notice/rating?uid=%d";
@@ -104,15 +115,11 @@ public class SignApiService {
 	 * @author wwb
 	 * @Date 2020-11-11 14:26:33
 	 * @param signAddEdit
-	 * @param request
 	 * @return com.chaoxing.activity.dto.module.SignAddEditResultDTO
 	*/
-	public SignAddEditResultDTO create(SignAddEditDTO signAddEdit, HttpServletRequest request) {
-		createPretreatment(signAddEdit);
+	public SignAddEditResultDTO create(SignAddEditDTO signAddEdit) {
 		HttpHeaders httpHeaders = new HttpHeaders();
 		httpHeaders.setContentType(MediaType.APPLICATION_JSON);
-		List<String> cookies = RestTemplateUtils.getCookies(request);
-		httpHeaders.put("Cookie", cookies);
 		HttpEntity<String> httpEntity = new HttpEntity<>(JSON.toJSONString(signAddEdit), httpHeaders);
 		String result = restTemplate.postForObject(CREATE_URL, httpEntity, String.class);
 		JSONObject jsonObject = JSON.parseObject(result);
@@ -127,27 +134,6 @@ public class SignApiService {
 		}
 	}
 
-	private void createPretreatment(SignAddEditDTO signAddEdit) {
-		List<SignIn> signIns = signAddEdit.getSignIns();
-		if (CollectionUtils.isNotEmpty(signIns)) {
-			for (SignIn signIn : signIns) {
-				SignIn.Way way = SignIn.Way.fromValue(signIn.getWay());
-				switch (way) {
-					case DIRECT:
-						signIn.setName("签到");
-						break;
-					case POSITION:
-						signIn.setName("位置签到");
-						break;
-					case QR_CODE:
-						signIn.setName("扫码签到");
-						break;
-					default:
-				}
-			}
-		}
-	}
-
 	/**更新报名签到
 	 * @Description 
 	 * @author wwb
@@ -155,11 +141,9 @@ public class SignApiService {
 	 * @param signAddEdit
 	 * @return com.chaoxing.activity.dto.module.SignAddEditResultDTO
 	*/
-	public SignAddEditResultDTO update(SignAddEditDTO signAddEdit, HttpServletRequest request) {
+	public SignAddEditResultDTO update(SignAddEditDTO signAddEdit) {
 		HttpHeaders httpHeaders = new HttpHeaders();
 		httpHeaders.setContentType(MediaType.APPLICATION_JSON);
-		List<String> cookies = RestTemplateUtils.getCookies(request);
-		httpHeaders.put("Cookie", cookies);
 		HttpEntity<String> httpEntity = new HttpEntity<>(JSON.toJSONString(signAddEdit), httpHeaders);
 		String result = restTemplate.postForObject(UPDATE_URL, httpEntity, String.class);
 		JSONObject jsonObject = JSON.parseObject(result);
@@ -483,8 +467,8 @@ public class SignApiService {
 	 * @param uid
 	 * @return boolean
 	*/
-	public boolean isSignedUpSuccess(Integer signId, Integer uid) {
-		String url = String.format(USER_SIGNED_UP_SUCCESS_URL, signId, uid);
+	public boolean isSignedUp(Integer signId, Integer uid) {
+		String url = String.format(USER_IS_SIGNED_UP_URL, signId, uid);
 		String result = restTemplate.getForObject(url, String.class);
 		JSONObject jsonObject = JSON.parseObject(result);
 		Boolean success = jsonObject.getBoolean("success");
@@ -579,7 +563,7 @@ public class SignApiService {
 		JSONObject params = new JSONObject();
 		params.put("signIds", signIds);
 		HttpEntity<String> httpEntity = new HttpEntity(params.toJSONString(), httpHeaders);
-		String result = restTemplate.postForObject(STAT_SIGN_SIGNED_UP_NUM_URL, httpEntity, String.class);
+		String result = restTemplate.postForObject(STAT_SIGN_SIGNED_UP_INFO_URL, httpEntity, String.class);
 		JSONObject jsonObject = JSON.parseObject(result);
 		Boolean success = jsonObject.getBoolean("success");
 		success = Optional.ofNullable(success).orElse(Boolean.FALSE);
@@ -676,4 +660,110 @@ public class SignApiService {
 		restTemplate.postForObject(SIGN_IN_POSITION_HISTORY_DELETE_URL, httpEntity, String.class);
 	}
 
+	/**报名签到每日统计
+	 * @Description 
+	 * @author wwb
+	 * @Date 2021-04-16 14:15:00
+	 * @param signId
+	 * @param startTime
+	 * @param endTime
+	 * @return com.chaoxing.activity.dto.stat.SignActivityStatDTO
+	*/
+	public SignActivityStatDTO singleActivityStat(Integer signId, String startTime, String endTime) {
+		String url = String.format(STAT_SINGLE_ACTIVITY_URL, signId, startTime, endTime);
+		String result = restTemplate.getForObject(url, String.class);
+		JSONObject jsonObject = JSON.parseObject(result);
+		Boolean success = jsonObject.getBoolean("success");
+		success = Optional.ofNullable(success).orElse(Boolean.FALSE);
+		if (success) {
+			return JSON.parseObject(jsonObject.getString("data"), SignActivityStatDTO.class);
+		} else {
+			String errorMessage = jsonObject.getString("message");
+			throw new BusinessException(errorMessage);
+		}
+	}
+
+	/**获取活动报名签到参与范围描述
+	 * @Description 
+	 * @author wwb
+	 * @Date 2021-04-20 10:16:17
+	 * @param signId
+	 * @return java.lang.String
+	*/
+	public String getActivitySignParticipateScopeDescribe(Integer signId) {
+		String url = String.format(SIGN_PARTICIPATE_SCOPE_DESCRIBE_URL, signId);
+		String result = restTemplate.getForObject(url, String.class);
+		JSONObject jsonObject = JSON.parseObject(result);
+		Boolean success = jsonObject.getBoolean("success");
+		success = Optional.ofNullable(success).orElse(Boolean.FALSE);
+		if (success) {
+			return jsonObject.getString("data");
+		} else {
+			String errorMessage = jsonObject.getString("message");
+			throw new BusinessException(errorMessage);
+		}
+	}
+
+	/**获取活动报名签到签到数
+	* @Description
+	* @author huxiaolong
+	* @Date 2021-05-25 15:42:02
+	* @param signId
+	* @return java.lang.Integer
+	*/
+	public Integer getActivitySignedInNums(Integer signId) {
+		String url = String.format(STAT_ACTIVITY_SIGNED_NUM_URL, signId);
+		String result = restTemplate.getForObject(url, String.class);
+		JSONObject jsonObject = JSON.parseObject(result);
+		Boolean success = jsonObject.getBoolean("success");
+		success = Optional.ofNullable(success).orElse(Boolean.FALSE);
+		if (success) {
+			return jsonObject.getInteger("data");
+		} else {
+
+			String errorMessage = jsonObject.getString("message");
+			throw new BusinessException(errorMessage);
+		}
+	}
+
+	/**获取活动报名签到签到率
+	 * @Description
+	 * @author huxiaolong
+	 * @Date 2021-05-25 15:42:02
+	 * @param signId
+	 * @return java.lang.Integer
+	 */
+	public BigDecimal getActivitySignInRate(Integer signId) {
+		String url = String.format(STAT_ACTIVITY_SIGNED_RATE_URL, signId);
+		String result = restTemplate.getForObject(url, String.class);
+		JSONObject jsonObject = JSON.parseObject(result);
+		Boolean success = jsonObject.getBoolean("success");
+		success = Optional.ofNullable(success).orElse(Boolean.FALSE);
+		if (success) {
+			return jsonObject.getBigDecimal("data");
+		} else {
+			String errorMessage = jsonObject.getString("message");
+			throw new BusinessException(errorMessage);
+		}
+	}
+	/**获取活动报名签到合格人数
+	 * @Description
+	 * @author huxiaolong
+	 * @Date 2021-05-25 15:42:02
+	 * @param signId
+	 * @return java.lang.Integer
+	 */
+	public Integer getActivityQualifiedNums(Integer signId) {
+		String url = String.format(STAT_ACTIVITY_QUALIFIED_NUMS_URL, signId);
+		String result = restTemplate.getForObject(url, String.class);
+		JSONObject jsonObject = JSON.parseObject(result);
+		Boolean success = jsonObject.getBoolean("success");
+		success = Optional.ofNullable(success).orElse(Boolean.FALSE);
+		if (success) {
+			return jsonObject.getInteger("data");
+		} else {
+			String errorMessage = jsonObject.getString("message");
+			throw new BusinessException(errorMessage);
+		}
+	}
 }

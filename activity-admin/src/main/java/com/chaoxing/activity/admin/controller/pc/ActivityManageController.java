@@ -12,6 +12,7 @@ import com.chaoxing.activity.model.WebTemplate;
 import com.chaoxing.activity.service.GroupService;
 import com.chaoxing.activity.service.WebTemplateService;
 import com.chaoxing.activity.service.activity.ActivityQueryService;
+import com.chaoxing.activity.service.activity.classify.ActivityClassifyHandleService;
 import com.chaoxing.activity.service.activity.classify.ActivityClassifyQueryService;
 import com.chaoxing.activity.service.manager.WfwGroupApiService;
 import com.chaoxing.activity.util.constant.CommonConstant;
@@ -46,6 +47,8 @@ public class ActivityManageController {
 	private GroupService groupService;
 	@Resource
 	private WfwGroupApiService wfwGroupApiService;
+	@Resource
+	private ActivityClassifyHandleService activityClassifyHandleService;
 
 	/**活动管理主页
 	 * @Description 
@@ -106,7 +109,7 @@ public class ActivityManageController {
 	 * @param flag
 	 * @return java.lang.String
 	*/
-	public String add(Model model, HttpServletRequest request, String code, Integer secondClassroomFlag, String flag) {
+	public String add(Model model, HttpServletRequest request, String code, Integer secondClassroomFlag, String flag, Integer strict) {
 		String areaCode = "";
 		if (StringUtils.isNotBlank(code)) {
 			// 根据code查询areaCode
@@ -120,6 +123,8 @@ public class ActivityManageController {
 		List<ActivityTypeDTO> activityTypes = activityQueryService.listActivityType();
 		model.addAttribute("activityTypes", activityTypes);
 		// 活动分类列表
+		// 先克隆
+		activityClassifyHandleService.cloneSystemClassify(loginUser.getFid());
 		model.addAttribute("activityClassifies", activityClassifyQueryService.listOrgOptional(loginUser.getFid()));
 		// 报名签到
 		model.addAttribute("sign", SignAddEditDTO.builder().build());
@@ -135,6 +140,7 @@ public class ActivityManageController {
 		// flag配置的报名签到的模块
 		List<ActivityFlagSignModule> activityFlagSignModules = activityQueryService.listSignModuleByFlag(flag);
 		model.addAttribute("activityFlagSignModules", activityFlagSignModules);
+		model.addAttribute("strict", strict);
 		return "pc/activity-add-edit";
 	}
 }

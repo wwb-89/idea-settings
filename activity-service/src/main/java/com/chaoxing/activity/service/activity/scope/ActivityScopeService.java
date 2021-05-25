@@ -9,7 +9,7 @@ import org.springframework.stereotype.Service;
 import javax.annotation.Resource;
 import java.util.List;
 
-/**活动参与范围服务
+/**活动发布范围服务
  * @author wwb
  * @version ver 1.0
  * @className ActivityScopeService
@@ -24,7 +24,7 @@ public class ActivityScopeService {
 	@Resource
 	private ActivityScopeMapper activityScopeMapper;
 
-	/**根据活动id删除参与范围
+	/**根据活动id删除发布范围
 	 * @Description 
 	 * @author wwb
 	 * @Date 2020-11-12 16:12:00

@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.chaoxing.activity.mapper.TableFieldDetailMapper">
+    <resultMap id="BaseResultMap" type="com.chaoxing.activity.model.TableFieldDetail">
+        <id column="id" jdbcType="INTEGER" property="id" />
+        <result column="table_field_id" jdbcType="INTEGER" property="tableFieldId" />
+        <result column="name" jdbcType="VARCHAR" property="name" />
+        <result column="code" jdbcType="VARCHAR" property="code" />
+        <result column="is_default_checked" jdbcType="BIT" property="defaultChecked" />
+        <result column="is_allow_uncheck" jdbcType="BIT" property="allowUncheck" />
+        <result column="is_default_top" jdbcType="BIT" property="defaultTop" />
+        <result column="is_allow_top" jdbcType="BIT" property="allowTop" />
+        <result column="is_sortable" jdbcType="BIT" property="sortable" />
+        <result column="sequence" jdbcType="INTEGER" property="sequence" />
+        <result column="is_deleted" jdbcType="BIT" property="deleted" />
+        <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
+        <result column="update_time" jdbcType="TIMESTAMP" property="updateTime" />
+    </resultMap>
+    <sql id="Base_Column_List">
+        t.id, t.table_field_id, t.name, t.code, t.is_default_checked, t.is_allow_uncheck, t.is_default_top,
+        t.is_allow_top, t.is_sortable, t.sequence, t.is_deleted, t.create_time, t.update_time
+    </sql>
+</mapper>

@@ -5,6 +5,7 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.chaoxing.activity.dto.query.ActivityManageQueryDTO;
 import com.chaoxing.activity.dto.query.ActivityQueryDTO;
 import com.chaoxing.activity.dto.query.MhActivityCalendarQueryDTO;
+import com.chaoxing.activity.dto.stat.ActivityClassifyDTO;
 import com.chaoxing.activity.model.Activity;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
@@ -45,18 +46,20 @@ public interface ActivityMapper extends BaseMapper<Activity> {
 	 */
 	Page<Activity> pageManaging(@Param("page") Page<?> page, @Param("params") ActivityManageQueryDTO activityManageQuery);
 
-	/**查询创建的活动
-	 * @Description 
-	 * @author wwb
-	 * @Date 2021-03-17 16:11:49
+	/**
+	 * 查询创建的活动
+	 *
 	 * @param page
 	 * @param activityManageQuery
 	 * @return com.baomidou.mybatisplus.extension.plugins.pagination.Page<com.chaoxing.activity.model.Activity>
-	*/
+	 * @Description
+	 * @author wwb
+	 * @Date 2021-03-17 16:11:49
+	 */
 	Page<Activity> pageCreated(@Param("page") Page<?> page, @Param("params") ActivityManageQueryDTO activityManageQuery);
 
 	/**
-	 * 查询机构创建的
+	 * 查询机构创建的或能参与的
 	 *
 	 * @param page
 	 * @param fid
@@ -65,7 +68,7 @@ public interface ActivityMapper extends BaseMapper<Activity> {
 	 * @author wwb
 	 * @Date 2020-11-24 21:49:48
 	 */
-	Page<Activity> pageOrgCreated(@Param("page") Page<?> page, @Param("fid") Integer fid);
+	Page<Activity> listOrgParticipatedOrCreated(@Param("page") Page<?> page, @Param("fid") Integer fid);
 
 	/**
 	 * 分页查询用户创建的
@@ -80,15 +83,17 @@ public interface ActivityMapper extends BaseMapper<Activity> {
 	 */
 	Page<Activity> pageUserCreated(@Param("page") Page<?> page, @Param("uid") Integer uid, @Param("sw") String sw);
 
-	/**分页查询用户管理的
-	 * @Description 
-	 * @author wwb
-	 * @Date 2021-04-08 18:01:23
+	/**
+	 * 分页查询用户管理的
+	 *
 	 * @param page
 	 * @param uid
 	 * @param sw
 	 * @return com.baomidou.mybatisplus.extension.plugins.pagination.Page<com.chaoxing.activity.model.Activity>
-	*/
+	 * @Description
+	 * @author wwb
+	 * @Date 2021-04-08 18:01:23
+	 */
 	Page<Activity> pageUserManaged(@Param("page") Page<?> page, @Param("uid") Integer uid, @Param("sw") String sw);
 
 	/**
@@ -102,6 +107,16 @@ public interface ActivityMapper extends BaseMapper<Activity> {
 	 * @Date 2020-12-03 15:59:54
 	 */
 	Page<Activity> pageActivityCalendarParticipate(@Param("page") Page<?> page, @Param("params") MhActivityCalendarQueryDTO activityCalendarQuery);
+
+	/**活动日历查询（创建的活动）
+	 * @Description 
+	 * @author wwb
+	 * @Date 2021-04-21 17:10:04
+	 * @param page
+	 * @param activityCalendarQuery
+	 * @return com.baomidou.mybatisplus.extension.plugins.pagination.Page<com.chaoxing.activity.model.Activity>
+	*/
+	Page<Activity> pageActivityCalendarCreated(@Param("page") Page<?> page, @Param("params") MhActivityCalendarQueryDTO activityCalendarQuery);
 
 	/**
 	 * 机构参与的活动的pageId列表
@@ -149,13 +164,42 @@ public interface ActivityMapper extends BaseMapper<Activity> {
 	 */
 	Activity getBySignId(@Param("signId") Integer signId);
 
-	/**根据id查询活动
-	 * @Description 
-	 * @author wwb
-	 * @Date 2021-03-10 20:30:11
+	/**
+	 * 根据id查询活动
+	 *
 	 * @param id
 	 * @return com.chaoxing.activity.model.Activity
-	*/
+	 * @Description
+	 * @author wwb
+	 * @Date 2021-03-10 20:30:11
+	 */
 	Activity getById(@Param("id") Integer id);
 
+	/**查询机构创建的
+	 * @Description 
+	 * @author wwb
+	 * @Date 2021-04-19 10:41:04
+	 * @param fid
+	 * @param activityFlag
+	 * @return java.util.List<com.chaoxing.activity.model.Activity>
+	*/
+	List<Activity> listOrgCreated(@Param("fid") Integer fid, @Param("activityFlag") String activityFlag);
+
+	/**查询活动进行日期范围中含activityDate的活动id
+	* @Description
+	* @author huxiaolong
+	* @Date 2021-05-10 17:24:10
+	* @param activityDate
+	* @return java.util.List<java.lang.Integer>
+	*/
+	List<Integer> listByActivityDate(@Param("activityDate") String activityDate);
+
+	/**查询机构fid下的活动，并按照类型进行分组
+	* @Description 
+	* @author huxiaolong
+	* @Date 2021-05-11 15:27:37
+	* @param fid
+	* @return java.util.List<java.lang.Integer>
+	*/
+	List<ActivityClassifyDTO> listActivityGroupByClassifyId(@Param("fid") Integer fid);
 }

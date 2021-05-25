@@ -1,0 +1,694 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>阅读活动统计-活动概况/用户数据</title>
+    <link rel="stylesheet" href="../assets/lib/layui/css/layui.css">
+    <link rel="stylesheet" href="../assets/lib/element-ui/lib/theme-chalk/index.css">
+    <link rel="stylesheet" href="../assets/icomoon/style.css">
+    <link rel="stylesheet" href="../assets/css/reset-tongji.css">
+    <link rel="stylesheet" href="../assets/lib/qrm-pinming/qrm-pinming.css">
+    <link rel="stylesheet" href="../assets/css/common.css">
+    <link rel="stylesheet" href="../assets/css/activity-detail.css">
+    <!--引入js-->
+    <script type="text/javascript" src="../assets/lib/jquery.min.js"></script>
+    <script src="../assets/lib/echarts.min.js"></script>
+</head>
+
+<body>
+    <div class="block" id="vue">
+        <section>
+            <div class="page-container">
+                <div class="activity-tab flex">
+                    <ul class="tabs font16 flex" id="tabA">
+                        <li class="tab-i current">
+                            <a href="javascript:;" class="">活动概况</a>
+                        </li>
+                        <li class="tab-i">
+                            <a href="javascript:;" class="">用户数据</a>
+                        </li>
+                    </ul>
+                </div>
+                <div id="tabB">
+                    <div class="tab-c">
+                        <!--使用概况-->
+                        <div class="white-part" style="margin-bottom: 0;">
+                            <div class="part-title">
+                                <div class="more-info-content">
+                                    <span class="font16 fontbold colorDeep inlinemiddle more-info">活动参与趋势图</span>
+                                </div>
+                            </div>
+                            <div class="content1">
+                                <ul class="count-ul clearfix">
+                                    <li class="count-li fl">
+                                        <img class="count-img" src="../assets/images/yd-icon/icon-eye.png" alt="">
+                                        <div>
+                                            <p>
+                                                <span class="count-num">1207</span>
+                                            </p>
+                                            <p class="count-name">浏览量(pv)</p>
+                                        </div>
+                                    </li>
+                                    <li class="count-li fl">
+                                        <img class="count-img" src="../assets/images/yd-icon/icon-shi2.png" alt="">
+                                        <div>
+                                            <p>
+                                                <span class="count-num">3260</span>
+                                            </p>
+                                            <p class="count-name">浏览人数(uv)</p>
+                                        </div>
+                                    </li>
+                                    <li class="count-li fl">
+                                        <img class="count-img" src="../assets/images/yd-icon/icon-shi2.png" alt="">
+                                        <div>
+                                            <p>
+                                                <span class="count-num">120</span>
+                                            </p>
+                                            <p class="count-name">报名人数(人)</p>
+                                        </div>
+                                    </li>
+                                    <li class="count-li fl">
+                                        <img class="count-img" src="../assets/images/yd-icon/icon-sign-number.png"
+                                            alt="">
+                                        <div>
+                                            <p>
+                                                <span class="count-num">332</span>
+                                            </p>
+                                            <p class="count-name">签到数(人·次)</p>
+                                        </div>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                        <div class="white-part white-part1">
+                            <div class="height515px" id="line-aqxec"></div>
+                            <div class="tooltips">* 统计数据每小时更新一次</div>
+                        </div>
+                    </div>
+                    <div class="tab-c">
+                        <div class="white-part1">
+                            <div class="user-detail">
+                                <div class="layui-form">
+                                    <div class="layui-form-item">
+                                        <div class="layui-inline">
+                                            <div class="layui-input-inline">
+                                                <el-date-picker v-model="value1" type="daterange" range-separator=" "
+                                                    start-placeholder="开始日期" end-placeholder="结束日期" unlink-panels>
+                                                </el-date-picker>
+                                            </div>
+                                        </div>
+                                        <div class="fr">
+                                            <div class="search-content fl">
+                                                <input class="search-ipt" name="" id="" placeholder="搜索">
+                                                <span class="icon-icon-cancel close"></span>
+                                                <span class="search-icon icon-icon-search"></span>
+                                            </div>
+                                            <div class="btn-output fl">导出</div>
+                                        </div>
+                                    </div>
+                                    <div class="list-box">
+                                        <div class="t-head clear">
+                                            <div class="td row1">
+                                                <el-checkbox :indeterminate="isIndeterminate" v-model="checkAll"
+                                                    @change="handleCheckAllChange">
+                                                </el-checkbox>
+                                                姓名
+                                            </div>
+                                            <div class="td row3">签到率</div>
+                                            <div class="td row3">评价</div>
+                                        </div>
+                                        <el-checkbox-group v-model="checkedLists" @change="handleCheckedChange">
+                                            <div class="t-body">
+                                                <div class="list-item " v-for="(item,index) in lists">
+                                                    <div class="item-title clear">
+                                                        <div class="row1">
+                                                            <span class="icon-info item-down icon-plus-square"></span>
+                                                            <el-checkbox :key="index" :label="item.name"
+                                                                :checked="isIndeterminate"></el-checkbox>
+                                                        </div>
+                                                        <div class="row3">{{item.sign}}</div>
+                                                        <div class="row3">已评价</div>
+
+                                                    </div>
+                                                    <ul class="item-info">
+                                                        <li class="clear li-head">
+                                                            <div class="row1">名称</div>
+                                                            <div class="row3">时间</div>
+                                                            <div class="row3">状态</div>
+                                                        </li>
+                                                        <li class="clear li-body">
+                                                            <div class="row1 overHidden1">教学会议现场签到教学会议现场签到教学会议现场签到教学
+                                                            </div>
+                                                            <div class="row3">10-17 16:32</div>
+                                                            <div class="row3">已签到</div>
+                                                        </li>
+                                                        <li class="clear li-body">
+                                                            <div class="row1 overHidden1">教学会议现场签到教学会议现场签到教学会议现场签到教学
+                                                            </div>
+                                                            <div class="row3">10-17 16:32</div>
+                                                            <div class="row3">已签到</div>
+                                                        </li>
+                                                        <li class="clear li-body">
+                                                            <div class="row1 overHidden1">教学会议现场签到教学会议现场签到教学会议现场签到教学
+                                                            </div>
+                                                            <div class="row3">10-17 16:32</div>
+                                                            <div class="row3">已签到</div>
+
+                                                        </li>
+                                                        <li class="clear li-body">
+                                                            <div class="row1 overHidden1">教学会议现场签到教学会议现场签到教学会议现场签到教学
+                                                            </div>
+                                                            <div class="row3">10-17 16:32</div>
+                                                            <div class="row3">已签到</div>
+                                                        </li>
+                                                    </ul>
+                                                </div>
+                                                <!--空数据-->
+                                                <div class="null-date">暂无内容</div>
+                                            </div>
+                                        </el-checkbox-group>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        </section>
+    </div>
+</body>
+<script src="../assets/lib/vue.js"></script>
+<script src="../assets/lib/layui/layui.js"></script>
+<script src="../assets/lib/element-ui/lib/index.js"></script>
+<script src="../assets/lib/qrm-pinming/qrm-pinming.js"></script>
+<script src="../assets/lib/jquery.nicescroll.min.js"></script>
+<script src="../assets/js/main.js"></script>
+
+
+<script>
+    var vm = new Vue({
+        el: '#vue',
+        data: function () {
+            return {
+                value1: '',
+                checkAll: false,
+                lists: [{
+                    name: '张三',
+                    sign: '50%'
+                }, {
+                    name: '李四',
+                    sign: '50%'
+                }, {
+                    name: '王胖子',
+                    sign: '50%'
+                }],
+                isIndeterminate: false,
+                checkedLists: [],
+                checkedKeyLists: ['张三', '李四', '王胖子']
+            }
+        },
+        created: function () {
+
+
+        },
+        mounted: function () {
+            var data1 = ['03-01', '03-26', '04-03', '04-18', '05-13', '05-15', '05-29', '05-30', '05-31',
+                '06-01', '06-08', '06-15', '06-22'
+            ];
+            var data2 = [70, 60, 80, 70, 90, 70, 90, 60, 50, 60, 80, 70, 90, ];
+            var data3 = [80, 70, 90, 120, 50, 40, 60, 20, 80, 70, 90, 120, 50];
+            var data4 = [40, 20, 40, 60, 80, 90, 30, 80, 80, 70, 90, 120, 50];
+            // 活动参与趋势
+            var myChart1 = echarts.init(document.getElementById('line-aqxec'));
+            var option1 = [];
+            if (data1.length > 1) {
+                option1 = {
+                    title: {
+                        text: '活动参与趋势图',
+                        textStyle: {
+                            fontWeight: 'bold',
+                            fontSize: 16,
+                            color: '#454548',
+                        },
+                        left: 0,
+                        top: 0,
+                    },
+                    color: ['#3A8BFF', '#9FE6B8', '#52BAFF'],
+                    legend: {
+                        top: 0,
+                        right: 20,
+                        itemWidth: 8,
+                        itemHeight: 8,
+                        itemGap: 16,
+                        textStyle: {
+                            fontSize: 13,
+                            color: '#91A0B5'
+                        },
+                        icon: 'circle',
+                        data: ['报名人数', '浏览量', '数据3']
+                    },
+                    grid: {
+                        bottom: 30,
+                        top: 70,
+                        left: 0,
+                        right: 30,
+                        containLabel: true,
+                    },
+                    tooltip: {
+                        trigger: 'axis',
+                        backgroundColor: 'rgba(0,0,0,0.7)',
+                        padding: [12, 16],
+                        axisPointer: {
+                            type: 'line',
+                            lineStyle: {
+                                color: 'rgba(0, 0, 0, 0.1)'
+                            }
+                        }
+                    },
+                    xAxis: {
+                        type: 'category',
+                        boundaryGap: false,
+                        data: data1,
+                        axisLine: {
+                            show: true,
+                            lineStyle: {
+                                color: '#E3ECFB',
+                            }
+                        },
+                        axisTick: {
+                            show: false
+                        },
+                        splitLine: {
+                            lineStyle: {
+                                color: '#f8f8f8',
+                            },
+                        },
+                        axisLabel: {
+                            lineHeight: 40,
+                            textStyle: {
+                                color: '#767690'
+                            }
+                        },
+                        offset: 10
+                    },
+                    yAxis: {
+                        type: 'value',
+                        name: '',
+                        axisLine: {
+                            show: false
+                        },
+                        axisTick: {
+                            show: false
+                        },
+                        splitLine: {
+                            lineStyle: {
+                                type: 'dashed',
+                                color: '#E3ECFB',
+                            },
+                        },
+                        min: 0,
+                        max: 120
+                    },
+                    series: [{
+                            name: '报名人数',
+                            data: data2,
+                            type: 'line',
+                            itemStyle: {
+                                normal: {
+                                    opacity: 0,
+                                },
+                            },
+                            smooth: true,
+                            lineStyle: {
+                                normal: {
+                                    color: '#3A8BFF',
+                                    width: 2,
+                                }
+                            },
+                            areaStyle: {
+                                normal: {
+                                    color: {
+                                        type: 'linear',
+                                        x: 0,
+                                        y: 0,
+                                        x2: 0,
+                                        y2: 1,
+                                        colorStops: [{
+                                            offset: 0,
+                                            color: 'rgba(58,139,255,0.3)' // 0% 处的颜色
+                                        }, {
+                                            offset: 1,
+                                            color: 'rgba(58,139,255,0)' // 100% 处的颜色
+                                        }],
+                                        global: false // 缺省为 false
+                                    },
+                                },
+                            },
+                        },
+                        {
+                            name: '浏览量',
+                            data: data3,
+                            type: 'line',
+                            itemStyle: {
+                                normal: {
+                                    opacity: 0,
+                                },
+                            },
+                            smooth: true,
+                            lineStyle: {
+                                normal: {
+                                    color: '#9FE6B8',
+                                    width: 2,
+                                }
+                            },
+                            areaStyle: {
+                                normal: {
+                                    color: {
+                                        type: 'linear',
+                                        x: 0,
+                                        y: 0,
+                                        x2: 0,
+                                        y2: 1,
+                                        colorStops: [{
+                                            offset: 0,
+                                            color: 'rgba(159,230,184,0.3)' // 0% 处的颜色
+                                        }, {
+                                            offset: 1,
+                                            color: 'rgba(159,230,184,0)' // 100% 处的颜色
+                                        }],
+                                        global: false // 缺省为 false
+                                    },
+                                },
+                            },
+                        },
+                        {
+                            name: '数据3',
+                            data: data4,
+                            type: 'line',
+                            itemStyle: {
+                                normal: {
+                                    opacity: 0,
+                                },
+                            },
+                            smooth: true,
+                            lineStyle: {
+                                normal: {
+                                    color: '#52BAFF',
+                                    width: 2,
+                                }
+                            },
+                            areaStyle: {
+                                normal: {
+                                    color: {
+                                        type: 'linear',
+                                        x: 0,
+                                        y: 0,
+                                        x2: 0,
+                                        y2: 1,
+                                        colorStops: [{
+                                            offset: 0,
+                                            color: 'rgba(82,186,255,0.3)' // 0% 处的颜色
+                                        }, {
+                                            offset: 1,
+                                            color: 'rgba(82,186,255,0)' // 100% 处的颜色
+                                        }],
+                                        global: false // 缺省为 false
+                                    },
+                                },
+                            },
+                        }
+                    ]
+                };
+            } else {
+                option1 = {
+                    title: {
+                        text: '活动参与趋势图',
+                        textStyle: {
+                            fontWeight: 'bold',
+                            fontSize: 16,
+                            color: '#454548',
+                        },
+                        left: 0,
+                        top: 0,
+                    },
+                    color: ['#3A8BFF', '#9FE6B8'],
+                    legend: {
+                        top: 0,
+                        right: 20,
+                        itemWidth: 8,
+                        itemHeight: 8,
+                        itemGap: 16,
+                        textStyle: {
+                            fontSize: 13,
+                            color: '#91A0B5'
+                        },
+                        icon: 'circle',
+                        data: ['报名人数', '浏览量']
+                    },
+                    grid: {
+                        bottom: 30,
+                        top: 70,
+                        left: 0,
+                        right: 30,
+                        containLabel: true,
+                    },
+                    tooltip: {
+                        trigger: 'axis',
+                        backgroundColor: 'rgba(0,0,0,0.7)',
+                        padding: [12, 16],
+                        axisPointer: {
+                            type: 'line',
+                            lineStyle: {
+                                color: 'rgba(0, 0, 0, 0.1)'
+                            }
+                        }
+                    },
+                    xAxis: {
+                        type: 'category',
+                        boundaryGap: false,
+                        data: ['03-01'],
+                        axisLine: {
+                            show: true,
+                            lineStyle: {
+                                color: '#E3ECFB',
+                            }
+                        },
+                        axisTick: {
+                            show: false
+                        },
+                        splitLine: {
+                            lineStyle: {
+                                color: '#f8f8f8',
+                            },
+                        },
+                        axisLabel: {
+                            lineHeight: 40,
+                            textStyle: {
+                                color: '#767690'
+                            }
+                        },
+                    },
+                    yAxis: {
+                        type: 'value',
+                        name: '',
+                        axisLine: {
+                            show: false
+                        },
+                        axisTick: {
+                            show: false
+                        },
+                        splitLine: {
+                            lineStyle: {
+                                type: 'dashed',
+                                color: '#E3ECFB',
+                            },
+                        },
+                        min: 0,
+                        max: 120
+                    },
+                    series: [{
+                            name: '报名人数',
+                            data: [5],
+                            type: 'line',
+                            lineStyle: {
+                                normal: {
+                                    color: '#3A8BFF',
+                                    width: 2,
+                                }
+                            },
+                            areaStyle: {
+                                normal: {
+                                    color: {
+                                        type: 'linear',
+                                        x: 0,
+                                        y: 0,
+                                        x2: 0,
+                                        y2: 1,
+                                        colorStops: [{
+                                            offset: 0,
+                                            color: 'rgba(58,139,255,0.3)' // 0% 处的颜色
+                                        }, {
+                                            offset: 1,
+                                            color: 'rgba(58,139,255,0)' // 100% 处的颜色
+                                        }],
+                                        global: false // 缺省为 false
+                                    },
+                                },
+                            },
+                        },
+                        {
+                            name: '浏览量',
+                            data: [3],
+                            type: 'line',
+                            lineStyle: {
+                                normal: {
+                                    color: '#9FE6B8',
+                                    width: 2,
+                                }
+                            },
+                            areaStyle: {
+                                normal: {
+                                    color: {
+                                        type: 'linear',
+                                        x: 0,
+                                        y: 0,
+                                        x2: 0,
+                                        y2: 1,
+                                        colorStops: [{
+                                            offset: 0,
+                                            color: 'rgba(159,230,184,0.3)' // 0% 处的颜色
+                                        }, {
+                                            offset: 1,
+                                            color: 'rgba(159,230,184,0)' // 100% 处的颜色
+                                        }],
+                                        global: false // 缺省为 false
+                                    },
+                                },
+                            },
+                        }
+                    ]
+                };
+            }
+            myChart1.setOption(option1);
+
+            window.onload = function () {
+                myChart1.resize();
+            }
+            window.onresize = function () {
+                myChart1.resize();
+            }
+        },
+        methods: {
+
+            handleCheckAllChange: function (val) {
+                this.checkedLists = val ? this.checkedKeyLists : [];
+                this.isIndeterminate = false;
+            },
+            handleCheckedChange: function (value) {
+                var checkedCount = value.length;
+                this.checkAll = checkedCount === this.lists.length;
+                this.isIndeterminate = checkedCount > 0 && checkedCount < this.lists.length;
+            }
+        }
+    });
+    $(function () {
+        initForm();
+        searchClose();
+        initSearchBorder();
+        enterSearch();
+        initDownUp();
+        new EW_tab({
+            'tabBtn': '#tabA .tab-i',
+            'tabCon': '#tabB .tab-c',
+            'cur': 'current'
+        });
+        new EW_tab({
+            'tabBtn': '#tabEchartsA .tab-i',
+            'tabCon': '#tabEchartsB .tab-c',
+            'cur': 'current'
+        });
+        $($('.more-info-pop')[0]).niceScroll(customScroll);
+
+    })
+    $('.activity-tab .tab-i').click(function () {
+        var index = $(this).index();
+        setTimeout(function () {
+            $($('.more-info-pop')[index]).niceScroll(customScroll);
+        }, 10)
+    })
+
+    function initSearchBorder() {
+        $(".search-ipt").focus(function () {
+            $(this).parent(".search-content").addClass("ipt-blu")
+        })
+        $(".search-ipt").blur(function () {
+            $(this).parent(".search-content").removeClass("ipt-blu")
+        })
+    }
+
+    function initForm() {
+        layui.use(['form', 'laydate'], function () {
+            var form = layui.form;
+            var laydate = layui.laydate;
+
+            laydate.render({
+                elem: '#test6',
+                range: '→',
+                // format: 'yyyy年MM月dd日'
+                change: function (value, date, endDate) {
+                    return false;
+                }
+            });
+
+            form.on('checkbox(allChoose)', function (data) {
+                var child = $("input[type='checkbox']");
+                child.each(function (index, item) {
+                    item.checked = data.elem.checked
+                });
+                form.render('checkbox')
+            })
+        })
+    }
+    //    展开收起
+    function initDownUp() {
+        $('.page-container').on('click', '.list-box .icon-info', function () {
+            $(this).parents('.list-item').toggleClass('item-down').siblings().removeClass(
+                'item-down');
+            $(this).parents('.list-item').siblings().find('.item-info').slideUp();
+            $(this).parents('.list-item').find('.item-info').slideToggle();
+            $('.grade-manage-container .list-box .icon-info').removeClass(
+                'icon-minus-square').addClass('icon-plus-square');
+            $(this).toggleClass('icon-minus-square').toggleClass('icon-plus-square');
+        })
+    }
+
+    function searchClose() {
+        $('.search-ipt').on('input propertychange', function () {
+            var value = $(this).val()
+            if (value.trim() !== "") {
+                $('.close').show()
+            } else {
+                $('.close').hide()
+            }
+        })
+
+        $('.close').on('click', function () {
+            $('.search-ipt').val("")
+            $(this).hide()
+        })
+    }
+    // 回车触发事件 需要 input获取焦点
+    function enterSearch() {
+        var input = document.getElementsByClassName("search-ipt")
+        input[0].addEventListener("keyup", function (event) {
+            event.preventDefault();
+            if (event.keyCode === 13) {
+                console.log(123);
+            }
+        });
+    }
+</script>
+
+</html>

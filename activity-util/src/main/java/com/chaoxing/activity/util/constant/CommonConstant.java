@@ -20,6 +20,8 @@ public class CommonConstant {
 
 	/** 默认的文件路径分隔符 */
 	public static final String DEFAULT_FILE_SEPARATOR = "/";
+	/** groupName分隔符 */
+	public static final String GROUP_NAME_SEPARATOR = "/";
 	/** 默认的分隔符 */
 	public static final String DEFAULT_SEPARATOR = ",";
 	/** 登录认证密钥 */
@@ -45,5 +47,14 @@ public class CommonConstant {
 	public static final Integer CX_NETWORK_FID = 0;
 	/** 队列获取数据等待时间 */
 	public static final Duration QUEUE_GET_WAIT_TIME = Duration.ofMinutes(1);
+	/** 最大失败次数 */
+	public static final Integer MAX_ERROR_TIMES = 5;
+
+	/** 默认封面云盘id */
+	public static final String ACTIVITY_DEFAULT_COVER_CLOUD_ID = "ce257d8a6c546bcedcc7f415dd504296";
+
+	// 表单相关
+	/** 表单审批同意 */
+	public static final Integer FORM_APPROVAL_AGREE_VALUE = 2;
 
 }

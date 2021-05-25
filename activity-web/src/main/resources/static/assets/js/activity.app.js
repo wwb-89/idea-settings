@@ -12,8 +12,15 @@
         activityApp.prototype.origin = W.location.origin;
     }
 
+    /** 活动管理的域名 */
+    activityApp.prototype.manage_domain = "http://manage.hd.chaoxing.com";
+
     /** 新增图标的地址 */
     activityApp.prototype.add_icon_url = "http://p.ananas.chaoxing.com/star3/origin/1424584b7802e81c1e2db2e89b855c4f";
+    /** "我的"图标的地址 */
+    activityApp.prototype.my_icon_url = "http://p.ananas.chaoxing.com/star3/origin/ce27315ad48158b1df8fba285eb9f1d4";
+    /** 更多图标的地址 */
+    activityApp.prototype.more_icon_url = "http://p.ananas.chaoxing.com/star3/origin/4e462ff961ef7f94dfb02b2d301a8b7a";
 
     /**
      * 字符串是否为空
@@ -343,19 +350,43 @@ Vue.filter("activityStatusInstructions", function (status) {
 Vue.filter("myActivityStatusInstructions", function (status) {
     return activityApp.getMyActivityStatusInstructions(status);
 });
-Vue.filter("timestamp2ChineseYMD", function (timestamp) {
-    var dateObj = activityApp.millisecond2DateObj(timestamp);
-    return dateObj.year + "年" + dateObj.month + "月" + dateObj.day + "日";
+Vue.filter("timestampFormat", function (timestamp) {
+    if (activityApp.isEmpty(timestamp)) {
+        return "";
+    }
+    var dateObj = moment(timestamp);
+    var year = dateObj.year();
+    if (year == new Date().getFullYear()) {
+        return dateObj.format("MM.DD HH:mm");
+    } else {
+        return dateObj.format("YYYY.MM.DD HH:mm");
+    }
+
 });
-Vue.filter("timestamp2YMD", function (timestamp) {
-    var dateObj = activityApp.millisecond2DateObj(timestamp);
-    return dateObj.year + "-" + dateObj.month + "-" + dateObj.day;
-});
-Vue.filter("timestamp2YMDH", function (timestamp) {
-    var dateObj = activityApp.millisecond2DateObj(timestamp);
-    return dateObj.year + "-" + dateObj.month + "-" + dateObj.day + " " + dateObj.hour;
-});
-Vue.filter("timestamp2YMDHM", function (timestamp) {
-    var dateObj = activityApp.millisecond2DateObj(timestamp);
-    return dateObj.year + "-" + dateObj.month + "-" + dateObj.day + " " + dateObj.hour + ":" + dateObj.minute;
+Vue.filter("timestampScopeFormat", function (startTimestamp, endTimestamp) {
+    var thisYear = new Date().getFullYear();
+    var start = "";
+    var startDateObj = null;
+    var end = "";
+    var endDateObj = null;
+    if (!activityApp.isEmpty(startTimestamp)) {
+        startDateObj = moment(startTimestamp);
+    }
+    if (!activityApp.isEmpty(endTimestamp)) {
+        endDateObj = moment(endTimestamp);
+    }
+    var isThisYear = (!startDateObj || startDateObj.year() == thisYear) && (!endDateObj || endDateObj.year() == thisYear);
+    if (isThisYear) {
+        start = startDateObj ? startDateObj.format("MM.DD HH:mm") : "";
+        end = endDateObj ? endDateObj.format("MM.DD HH:mm") : "";
+    } else {
+        start = startDateObj ? startDateObj.format("YYYY.MM.DD HH:mm") : "";
+        end = endDateObj ? endDateObj.format("YYYY.MM.DD HH:mm") : "";
+    }
+    var result = start;
+    if (!activityApp.isEmpty(start) && !activityApp.isEmpty(end)) {
+        result += " ~ ";
+    }
+    result += end;
+    return result;
 });

@@ -4,6 +4,7 @@ import com.chaoxing.activity.dto.LoginUserDTO;
 import com.chaoxing.activity.model.Activity;
 import com.chaoxing.activity.model.ActivityRating;
 import com.chaoxing.activity.service.activity.ActivityQueryService;
+import com.chaoxing.activity.service.activity.ActivityValidationService;
 import com.chaoxing.activity.service.activity.rating.ActivityRatingQueryService;
 import com.chaoxing.activity.service.activity.rating.ActivityRatingValidateService;
 import com.chaoxing.activity.util.UserAgentUtils;
@@ -35,6 +36,8 @@ public class ActivityRatingController {
     private ActivityRatingValidateService activityRatingValidateService;
     @Resource
     private ActivityQueryService activityQueryService;
+    @Resource
+    private ActivityValidationService activityValidationService;
 
     /**
      * 活动评价首页
@@ -44,15 +47,19 @@ public class ActivityRatingController {
     @GetMapping("")
     public String index(HttpServletRequest request, Model model, @PathVariable Integer activityId) {
         LoginUserDTO loginUser = LoginUtils.getLoginUser(request);
-        Boolean canRating = false;
-        if (loginUser != null) {
-            canRating = activityRatingValidateService.submitRatingAble(activityId, loginUser.getUid());
-        }
         Activity activity = activityQueryService.getById(activityId);
+        boolean canRating = false;
+        boolean isManager = false;
+        if (loginUser != null) {
+            Integer uid = loginUser.getUid();
+            canRating = activityRatingValidateService.submitRatingAble(activityId, uid);
+            isManager = activityValidationService.isManageAble(activity, uid);
+        }
         ActivityRating activityRating = activityRatingQueryService.getByActivityId(activityId);
         model.addAttribute("activity", activity);
         model.addAttribute("activityRating", activityRating);
         model.addAttribute("canRating", canRating);
+        model.addAttribute("isManager", isManager);
         if (UserAgentUtils.isMobileAccess(request)) {
             return "mobile/activity/rating/index";
         }

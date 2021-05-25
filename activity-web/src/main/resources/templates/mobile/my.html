@@ -30,9 +30,9 @@
 	</div>
 	<div class="tab" id="road-tab">
 		<ul>
-			<li :class="{'active': (activeTabIndex == 0)}" @click="changeTab(0)">我报名的</li>
-			<li :class="{'active': (activeTabIndex == 1)}" @click="changeTab(1)">我收藏的</li>
-			<li :class="{'active': (activeTabIndex == 2)}" @click="changeTab(2)">我管理的</li>
+			<li :class="{'active': (activeTabIndex == 0)}" @click="changeTab(0)">报名</li>
+			<li :class="{'active': (activeTabIndex == 1)}" @click="changeTab(1)">收藏</li>
+			<li :class="{'active': (activeTabIndex == 2)}" @click="changeTab(2)">管理</li>
 		</ul>
 		<div class="clear"></div>
 	</div>
@@ -49,7 +49,7 @@
 						</div>
 						<div class="card-info">
 							<h2 class="title overHidden2">{{activity.name}}</h2>
-							<p class="time">{{activity.startTime | activityTimeFormatter}} ～ {{activity.endTime | activityTimeFormatter}}</p>
+							<p class="time">{{activity.startTime | timestampScopeFormat(activity.endTime)}}</p>
 							<p class="address">{{activity.address}}{{activity.detailAddress ? activity.detailAddress : ''}}</p>
 						</div>
 					</div>
@@ -67,14 +67,14 @@
 				<li v-for="(activity, index) of collecteds" :key="'activity-' + index" class="list-item" data-type="0" @touchstart.capture="touchStart" @touchend.capture="touchEnd" @click="collectedDetail(index)">
 					<div class="inner">
 						<div class="img-box border">
-							<p :class="{'tips': true, 'color1': (activity.status == 3), 'color2': (activity.status == 2), 'color3': (activity.status == 4)}">{{activity.status | myActivityStatusInstructions}}</p>
+							<p :class="calCollectedClass(activity)">{{activity.status | myActivityStatusInstructions}}</p>
 							<div class="js-crop-img">
 								<img :src="activity | getCloudImgUrl">
 							</div>
 						</div>
 						<div class="card-info">
 							<h2 class="title overHidden2">{{activity.name}}</h2>
-							<p class="time">{{activity.startTime | activityTimeFormatter}} ～ {{activity.endTime | activityTimeFormatter}}</p>
+							<p class="time">{{activity.startTime | timestampScopeFormat(activity.endTime)}}</p>
 							<p class="address">{{activity.address}}{{activity.detailAddress ? activity.detailAddress : ''}}</p>
 						</div>
 					</div>
@@ -91,19 +91,19 @@
 				<li v-for="(activity, index) of managings" :key="'activity-' + index" class="list-item" data-type="0" @touchstart.capture="touchStart" @touchend.capture="touchEnd" @click="managingDetail(index)">
 					<div class="inner">
 						<div class="img-box border">
-							<p :class="{'tips': true, 'color1': (activity.status == 3), 'color2': (activity.status == 2), 'color3': (activity.status == 4)}">{{activity.status | myActivityStatusInstructions}}</p>
+							<p :class="calManageClass(activity)">{{activity.status | myActivityStatusInstructions}}</p>
 							<div class="js-crop-img">
 								<img :src="activity | getCloudImgUrl">
 							</div>
 						</div>
 						<div class="card-info">
 							<h2 class="title overHidden2">{{activity.name}}</h2>
-							<p class="time">{{activity.startTime | activityTimeFormatter}} ～ {{activity.endTime | activityTimeFormatter}}</p>
+							<p class="time">{{activity.startTime | timestampScopeFormat(activity.endTime)}}</p>
 							<p class="address">{{activity.address}}{{activity.detailAddress ? activity.detailAddress : ''}}</p>
 						</div>
 					</div>
 					<div class="handel numTotal2">
-						<a class="delete" v-if="activity.status != 1" @click="toDelete(index, $event)">下架</a>
+						<a class="delete" @click="toDelete(index, $event)">删除</a>
 					</div>
 				</li>
 			</ul>
@@ -125,10 +125,6 @@
 	<script src="/static/mobile/assets/lib/jqthumb.min.js" th:src="@{/mobile/assets/lib/jqthumb.min.js}"></script>
 	<script src="/static/mobile/assets/js/common.js" th:src="@{/mobile/assets/js/common.js}"></script>
 	<script th:inline="javascript">
-		Vue.filter("activityTimeFormatter", function (timestamp) {
-			var dateObj = activityApp.millisecond2DateObj(timestamp);
-			return dateObj.year + "." + dateObj.month + "." + dateObj.day + " " + dateObj.hour + ":" + dateObj.minute;
-		});
 		Vue.filter("calSignedUpStatusDescription", function (activity) {
 			var userSignUpStatus = activity.userSignUpStatus;
 			if (1 != userSignUpStatus) {
@@ -229,6 +225,26 @@
 							return "tips color2";
 						}
 					},
+                    calCollectedClass: function (activity) {
+                        var status = activity.status;
+                        if (3 == status) {
+                            return "tips color1";
+                        }else if (4 == status) {
+                            return "tips color3";
+                        } else {
+                            return "tips color2";
+                        }
+                    },
+                    calManageClass: function (activity) {
+                        var status = activity.status;
+                        if (3 == status) {
+                            return "tips color1";
+                        }else if (4 == status) {
+                            return "tips color3";
+                        } else {
+                            return "tips color2";
+                        }
+                    },
 					changeTab: function (index) {
 						var $this = this;
 						$this.activeTabIndex = index;

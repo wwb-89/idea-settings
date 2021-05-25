@@ -1,0 +1,791 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>区域活动统计</title>
+    <link rel="stylesheet" href="../assets/lib/element-ui/lib/theme-chalk/index.css">
+    <link rel="stylesheet" href="../assets/css/reset-tongji.css">
+    <link rel="stylesheet" href="../assets/css/common.css">
+    <link rel="stylesheet" href="../assets/css/activity-detail.css">
+    <link rel="stylesheet" href="../assets/fontDIN/DINNextLTW23Medium.ttf">
+</head>
+
+<body>
+    <div class="activity-statistics" id="activity-statistics">
+        <div class="white-part title-box">
+            <div class="clear name-box">
+                <span class="title fl">区域活动统计</span>
+                <span class="tip fr">
+                    <el-button class="btn-customize" round>导出</el-button>
+                </span>
+            </div>
+            <div class="date-box fs0">
+                <el-date-picker v-model="time" type="daterange" range-separator="" start-placeholder="开始日期"
+                    end-placeholder="结束日期">
+                </el-date-picker>
+                <el-cascader
+                        class="marginl16"
+                        v-model="valueCascader"
+                        :options="optionsCas"
+                        @change="handleChange"></el-cascader>
+            </div>
+        </div>
+        <div class="white-part paddingb12">
+            <p class="title">概况</p>
+            <div class="content1">
+                <ul class="count-ul clearfix">
+                    <li class="count-li fl">
+                        <img class="count-img" src="../assets/images/yd-icon/icon-activity.png" alt="">
+                        <div class="text-box">
+                            <p>
+                                <span class="count-num">200</span>
+                            </p>
+                            <p class="count-name">活动个数(个)</p>
+                        </div>
+                    </li>
+                    <li class="count-li fl">
+                        <img class="count-img" src="../assets/images/yd-icon/icon-eye.png" alt="">
+                        <div class="text-box">
+                            <p>
+                                <span class="count-num">1207</span>
+                            </p>
+                            <p class="count-name">浏览量(pv)</p>
+                        </div>
+                    </li>
+                    <li class="count-li fl">
+                        <img class="count-img" src="../assets/images/yd-icon/icon-shi2.png" alt="">
+                        <div class="text-box">
+                            <p>
+                                <span class="count-num">3260</span>
+                            </p>
+                            <p class="count-name">浏览人数(uv)</p>
+                        </div>
+                    </li>
+                    <li class="count-li fl">
+                        <img class="count-img" src="../assets/images/yd-icon/icon-shi2.png" alt="">
+                        <div class="text-box">
+                            <p>
+                                <span class="count-num">120</span>
+                            </p>
+                            <p class="count-name">报名人数(人)</p>
+                        </div>
+                    </li>
+                    <li class="count-li fl">
+                        <img class="count-img" src="../assets/images/yd-icon/icon-sign-number.png" alt="">
+                        <div class="text-box">
+                            <p>
+                                <span class="count-num">332</span>
+                            </p>
+                            <p class="count-name">签到数(人·次)</p>
+                        </div>
+                    </li>
+                    <li class="count-li fl">
+                        <img class="count-img" src="../assets/images/yd-icon/icon-jg.png" alt="">
+                        <div class="text-box">
+                            <p>
+                                <span class="count-num">96</span>
+                            </p>
+                            <p class="count-name">机构数(所)</p>
+                        </div>
+                    </li>
+                </ul>
+            </div>
+        </div>
+        <div class="white-part line-box">
+            <div class="height417px" id="line-aqxec"></div>
+        </div>
+        <div class="white-part">
+            <div class="clear">
+                <div class="activity-tab flex fl">
+                    <ul class="tabs font16 flex" id="tabA">
+                        <li class="tab-i current">
+                            <a href="javascript:;" class="">按区域</a>
+                        </li>
+                        <li class="tab-i">
+                            <a href="javascript:;" class="">按机构</a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+            <div id="tabB">
+                <div class="tab-c" style="display: block;">
+                    <div class="table-box">
+                        <el-table :data="tableData" style="width: 100%">
+                            <el-table-column prop="name" label="区域名称"></el-table-column>
+                            <el-table-column prop="activityNum" label="活动数" width="140" align="center">
+                                <template #header>
+                                    <div class="number active"> 活动数<i class="down-icon"></i></div>
+                                </template>
+                                <template slot-scope="scope">
+                                    <span class="color">{{scope.row.activityNum}}</span>
+                                </template>
+                            </el-table-column>
+                            <el-table-column prop="view" label="浏览量" width="140" align="center">
+                                <template #header>
+                                    <div class="number"> 浏览量<i class="down-icon"></i></div>
+                                </template>
+                                <template slot-scope="scope">
+                                    <span class="color">{{scope.row.view}}</span>
+                                </template>
+                            </el-table-column>
+                            <el-table-column prop="userNum" label="用户活跃量" align="center" width="140">
+                                <template #header>
+                                    <div class="number">用户活跃量<i class="down-icon"></i></div>
+                                </template>
+                                <template slot-scope="scope">
+                                    <span class="color">{{scope.row.userNum}}</span>
+                                </template>
+                            </el-table-column>
+                            <el-table-column prop="" label="查看" align="center" width="94">
+                                <template slot-scope="scope">
+                                    <span class="blue">详情</span>
+                                </template>
+                            </el-table-column>
+                        </el-table>
+                    </div>
+                </div>
+                <div class="tab-c">
+                    <div class="table-box">
+                        <el-table :data="tableData" style="width: 100%">
+                            <el-table-column prop="name" label="机构名称"></el-table-column>
+                            <el-table-column prop="activityNum" label="活动数" width="140" align="center">
+                                <template #header>
+                                    <div class="number active"> 活动数<i class="down-icon"></i></div>
+                                </template>
+                                <template slot-scope="scope">
+                                    <span class="color">{{scope.row.activityNum}}</span>
+                                </template>
+                            </el-table-column>
+                            <el-table-column prop="view" label="浏览量" width="140" align="center">
+                                <template #header>
+                                    <div class="number"> 浏览量<i class="down-icon"></i></div>
+                                </template>
+                                <template slot-scope="scope">
+                                    <span class="color">{{scope.row.view}}</span>
+                                </template>
+                            </el-table-column>
+                            <el-table-column prop="userNum" label="用户活跃量" align="center" width="140">
+                                <template #header>
+                                    <div class="number">用户活跃量<i class="down-icon"></i></div>
+                                </template>
+                                <template slot-scope="scope">
+                                    <span class="color">{{scope.row.userNum}}</span>
+                                </template>
+                            </el-table-column>
+                            <el-table-column prop="" label="查看" align="center" width="94">
+                                <template slot-scope="scope">
+                                    <span class="blue">详情</span>
+                                </template>
+                            </el-table-column>
+                        </el-table>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</body>
+<script type="text/javascript" src="../assets/lib/jquery.min.js"></script>
+<script src="../assets/lib/echarts4.min.js"></script>
+<script src="../assets/lib/vue.js"></script>
+<script src="../assets/lib/element-ui/lib/index.js"></script>
+<script src="../assets/lib/jquery.nicescroll.min.js"></script>
+<script src="../assets/js/main.js"></script>
+<script>
+    $(function () {
+        new EW_tab({
+            'tabBtn': '#tabA .tab-i',
+            'tabCon': '#tabB .tab-c',
+            'cur': 'current'
+        });
+        $('.el-table .number').click(function () {
+            $(this).parents('.el-table').find($(' .number')).removeClass('active')
+            $(this).addClass('active')
+        })
+    })
+    var vm = new Vue({
+        el: '#activity-statistics',
+        data: function () {
+            return {
+                time: '',
+                value: '',
+                options: [{
+                    value: '选项1',
+                    label: '温州市'
+                }, {
+                    value: '选项2',
+                    label: '南充市'
+                }, {
+                    value: '选项3',
+                    label: '成都市'
+                }, {
+                    value: '选项4',
+                    label: '绵阳市'
+                }, {
+                    value: '选项5',
+                    label: '九龙'
+                }],
+                tableData: [{
+                    name: '荆门市',
+                    activityNum: 996,
+                    view: 123,
+                    userNum: 4704
+                }, {
+                    name: '荆门市',
+                    activityNum: 996,
+                    view: 123,
+                    userNum: 4704
+                }, {
+                    name: '荆门市',
+                    activityNum: 996,
+                    view: 123,
+                    userNum: 4704
+                }, {
+                    name: '荆门市',
+                    activityNum: 996,
+                    view: 123,
+                    userNum: 4704
+                }],
+                valueCascader: [],//Cascader 级联选择器的值
+                optionsCas: [
+                    {
+                    value: 'zhinan',
+                    label: '指南',
+                    children: [{
+                        value: 'shejiyuanze',
+                        label: '设计原则',
+                        children: [{
+                            value: 'yizhi',
+                            label: '一致'
+                        }, {
+                            value: 'fankui',
+                            label: '反馈'
+                        }, {
+                            value: 'xiaolv',
+                            label: '效率'
+                        }, {
+                            value: 'kekong',
+                            label: '可控'
+                        }]
+                    }, {
+                        value: 'daohang',
+                        label: '导航',
+                        children: [{
+                            value: 'cexiangdaohang',
+                            label: '侧向导航'
+                        }, {
+                            value: 'dingbudaohang',
+                            label: '顶部导航'
+                        }]
+                    }]
+                }, {
+                    value: 'zujian',
+                    label: '组件',
+                    children: [{
+                        value: 'basic',
+                        label: 'Basic',
+                        children: [{
+                            value: 'layout',
+                            label: 'Layout 布局'
+                        }, {
+                            value: 'color',
+                            label: 'Color 色彩'
+                        }, {
+                            value: 'typography',
+                            label: 'Typography 字体'
+                        }, {
+                            value: 'icon',
+                            label: 'Icon 图标'
+                        }, {
+                            value: 'button',
+                            label: 'Button 按钮'
+                        }]
+                    }, {
+                        value: 'form',
+                        label: 'Form',
+                        children: [{
+                            value: 'radio',
+                            label: 'Radio 单选框'
+                        }, {
+                            value: 'checkbox',
+                            label: 'Checkbox 多选框'
+                        }, {
+                            value: 'input',
+                            label: 'Input 输入框'
+                        }, {
+                            value: 'input-number',
+                            label: 'InputNumber 计数器'
+                        }, {
+                            value: 'select',
+                            label: 'Select 选择器'
+                        }, {
+                            value: 'cascader',
+                            label: 'Cascader 级联选择器'
+                        }, {
+                            value: 'switch',
+                            label: 'Switch 开关'
+                        }, {
+                            value: 'slider',
+                            label: 'Slider 滑块'
+                        }, {
+                            value: 'time-picker',
+                            label: 'TimePicker 时间选择器'
+                        }, {
+                            value: 'date-picker',
+                            label: 'DatePicker 日期选择器'
+                        }, {
+                            value: 'datetime-picker',
+                            label: 'DateTimePicker 日期时间选择器'
+                        }, {
+                            value: 'upload',
+                            label: 'Upload 上传'
+                        }, {
+                            value: 'rate',
+                            label: 'Rate 评分'
+                        }, {
+                            value: 'form',
+                            label: 'Form 表单'
+                        }]
+                    }, {
+                        value: 'data',
+                        label: 'Data',
+                        children: [{
+                            value: 'table',
+                            label: 'Table 表格'
+                        }, {
+                            value: 'tag',
+                            label: 'Tag 标签'
+                        }, {
+                            value: 'progress',
+                            label: 'Progress 进度条'
+                        }, {
+                            value: 'tree',
+                            label: 'Tree 树形控件'
+                        }, {
+                            value: 'pagination',
+                            label: 'Pagination 分页'
+                        }, {
+                            value: 'badge',
+                            label: 'Badge 标记'
+                        }]
+                    }, {
+                        value: 'notice',
+                        label: 'Notice',
+                        children: [{
+                            value: 'alert',
+                            label: 'Alert 警告'
+                        }, {
+                            value: 'loading',
+                            label: 'Loading 加载'
+                        }, {
+                            value: 'message',
+                            label: 'Message 消息提示'
+                        }, {
+                            value: 'message-box',
+                            label: 'MessageBox 弹框'
+                        }, {
+                            value: 'notification',
+                            label: 'Notification 通知'
+                        }]
+                    }, {
+                        value: 'navigation',
+                        label: 'Navigation',
+                        children: [{
+                            value: 'menu',
+                            label: 'NavMenu 导航菜单'
+                        }, {
+                            value: 'tabs',
+                            label: 'Tabs 标签页'
+                        }, {
+                            value: 'breadcrumb',
+                            label: 'Breadcrumb 面包屑'
+                        }, {
+                            value: 'dropdown',
+                            label: 'Dropdown 下拉菜单'
+                        }, {
+                            value: 'steps',
+                            label: 'Steps 步骤条'
+                        }]
+                    }, {
+                        value: 'others',
+                        label: 'Others',
+                        children: [{
+                            value: 'dialog',
+                            label: 'Dialog 对话框'
+                        }, {
+                            value: 'tooltip',
+                            label: 'Tooltip 文字提示'
+                        }, {
+                            value: 'popover',
+                            label: 'Popover 弹出框'
+                        }, {
+                            value: 'card',
+                            label: 'Card 卡片'
+                        }, {
+                            value: 'carousel',
+                            label: 'Carousel 走马灯'
+                        }, {
+                            value: 'collapse',
+                            label: 'Collapse 折叠面板'
+                        }]
+                    }]
+                }, {
+                    value: 'ziyuan',
+                    label: '资源',
+                    children: [{
+                        value: 'axure',
+                        label: 'Axure Components'
+                    }, {
+                        value: 'sketch',
+                        label: 'Sketch Templates'
+                    }, {
+                        value: 'jiaohu',
+                        label: '组件交互文档'
+                    }]
+                }
+                ],
+            }
+        },
+        mounted: function () {
+            /* 条形图 */
+            var data1 = ['03-01', '03-26', '04-03', '04-18', '05-13', '05-15', '05-29', '05-30', '05-31',
+                '06-01', '06-08', '06-15', '06-22'
+            ];
+            var data2 = [70, 60, 80, 70, 90, 70, 90, 60, 50, 60, 80, 70, 90, ];
+            var data3 = [80, 70, 90, 120, 50, 40, 60, 20, 80, 70, 90, 120, 50];
+            // 活动参与趋势
+            var myChart1 = echarts.init(document.getElementById('line-aqxec'));
+            var option1 = [];
+            if (data1.length > 1) {
+                option1 = {
+                    title: {
+                        text: '活动参与趋势图',
+                        textStyle: {
+                            fontWeight: 500,
+                            fontSize: 16,
+                            color: '#333333',
+                        },
+                        left: 0,
+                        top: 0,
+                    },
+                    color: ['#3A8BFF', '#9FE6B8'],
+                    legend: {
+                        top: 0,
+                        right: 00,
+                        itemWidth: 8,
+                        itemHeight: 8,
+                        itemGap: 16,
+                        textStyle: {
+                            fontWeight: 500,
+                            fontSize: 12,
+                            color: '#666666'
+                        },
+                        icon: 'circle',
+                        data: ['报名人数', '浏览量']
+                    },
+                    grid: {
+                        bottom: 10,
+                        top: 70,
+                        left: 0,
+                        right: 20,
+                        containLabel: true,
+                    },
+                    tooltip: {
+                        trigger: 'axis',
+                        backgroundColor: 'rgba(0,0,0,0.7)',
+                        padding: [12, 16],
+                        axisPointer: {
+                            type: 'line',
+                            lineStyle: {
+                                color: 'rgba(0, 0, 0, 0.1)'
+                            }
+                        }
+                    },
+                    xAxis: {
+                        type: 'category',
+                        boundaryGap: false,
+                        data: data1,
+                        axisLine: {
+                            show: true,
+                            lineStyle: {
+                                color: '#E3ECFB',
+                            }
+                        },
+                        axisTick: {
+                            show: false
+                        },
+                        splitLine: {
+                            lineStyle: {
+                                color: '#f8f8f8',
+                            },
+                        },
+                        axisLabel: {
+                            lineHeight: 40,
+                            textStyle: {
+                                color: '#767690'
+                            }
+                        },
+                        offset: 10
+                    },
+                    yAxis: {
+                        type: 'value',
+                        name: '',
+                        axisLine: {
+                            show: false
+                        },
+                        axisTick: {
+                            show: false
+                        },
+                        splitLine: {
+                            lineStyle: {
+                                type: 'dashed',
+                                color: '#E3ECFB',
+                            },
+                        },
+                        min: 0,
+                        max: 120
+                    },
+                    series: [{
+                            name: '报名人数',
+                            data: data2,
+                            type: 'line',
+                            itemStyle: {
+                                normal: {
+                                    opacity: 0,
+                                },
+                            },
+                            smooth: true,
+                            lineStyle: {
+                                normal: {
+                                    color: '#3A8BFF',
+                                    width: 2,
+                                }
+                            },
+                            areaStyle: {
+                                normal: {
+                                    color: {
+                                        type: 'linear',
+                                        x: 0,
+                                        y: 0,
+                                        x2: 0,
+                                        y2: 1,
+                                        colorStops: [{
+                                            offset: 0,
+                                            color: 'rgba(58,139,255,0.3)' // 0% 处的颜色
+                                        }, {
+                                            offset: 1,
+                                            color: 'rgba(58,139,255,0)' // 100% 处的颜色
+                                        }],
+                                        global: false // 缺省为 false
+                                    },
+                                },
+                            },
+                        },
+                        {
+                            name: '浏览量',
+                            data: data3,
+                            type: 'line',
+                            itemStyle: {
+                                normal: {
+                                    opacity: 0,
+                                },
+                            },
+                            smooth: true,
+                            lineStyle: {
+                                normal: {
+                                    color: '#9FE6B8',
+                                    width: 2,
+                                }
+                            },
+                            areaStyle: {
+                                normal: {
+                                    color: {
+                                        type: 'linear',
+                                        x: 0,
+                                        y: 0,
+                                        x2: 0,
+                                        y2: 1,
+                                        colorStops: [{
+                                            offset: 0,
+                                            color: 'rgba(159,230,184,0.3)' // 0% 处的颜色
+                                        }, {
+                                            offset: 1,
+                                            color: 'rgba(159,230,184,0)' // 100% 处的颜色
+                                        }],
+                                        global: false // 缺省为 false
+                                    },
+                                },
+                            },
+                        }
+                    ]
+                };
+            } else {
+                option1 = {
+                    title: {
+                        text: '活动参与趋势图',
+                        textStyle: {
+                            fontSize: 16,
+                            color: '#333333',
+                        },
+                        left: 0,
+                        top: 0,
+                    },
+                    color: ['#3A8BFF', '#9FE6B8'],
+                    legend: {
+                        top: 0,
+                        right: 20,
+                        itemWidth: 8,
+                        itemHeight: 8,
+                        itemGap: 16,
+                        textStyle: {
+                            fontSize: 12,
+                            color: '#666666'
+                        },
+                        icon: 'circle',
+                        data: ['报名人数', '浏览量']
+                    },
+                    grid: {
+                        bottom: 10,
+                        top: 70,
+                        left: 0,
+                        right: 20,
+                        containLabel: true,
+                    },
+                    tooltip: {
+                        trigger: 'axis',
+                        backgroundColor: 'rgba(0,0,0,0.7)',
+                        padding: [12, 16],
+                        axisPointer: {
+                            type: 'line',
+                            lineStyle: {
+                                color: 'rgba(0, 0, 0, 0.1)'
+                            }
+                        }
+                    },
+                    xAxis: {
+                        type: 'category',
+                        boundaryGap: false,
+                        data: ['03-01'],
+                        axisLine: {
+                            show: true,
+                            lineStyle: {
+                                color: '#E3ECFB',
+                            }
+                        },
+                        axisTick: {
+                            show: false
+                        },
+                        splitLine: {
+                            lineStyle: {
+                                color: '#f8f8f8',
+                            },
+                        },
+                        axisLabel: {
+                            lineHeight: 40,
+                            textStyle: {
+                                color: '#767690'
+                            }
+                        },
+                    },
+                    yAxis: {
+                        type: 'value',
+                        name: '',
+                        axisLine: {
+                            show: false
+                        },
+                        axisTick: {
+                            show: false
+                        },
+                        splitLine: {
+                            lineStyle: {
+                                type: 'dashed',
+                                color: '#E3ECFB',
+                            },
+                        },
+                        min: 0,
+                        max: 120
+                    },
+                    series: [{
+                            name: '报名人数',
+                            data: [5],
+                            type: 'line',
+                            lineStyle: {
+                                normal: {
+                                    color: '#3A8BFF',
+                                    width: 2,
+                                }
+                            },
+                            areaStyle: {
+                                normal: {
+                                    color: {
+                                        type: 'linear',
+                                        x: 0,
+                                        y: 0,
+                                        x2: 0,
+                                        y2: 1,
+                                        colorStops: [{
+                                            offset: 0,
+                                            color: 'rgba(58,139,255,0.3)' // 0% 处的颜色
+                                        }, {
+                                            offset: 1,
+                                            color: 'rgba(58,139,255,0)' // 100% 处的颜色
+                                        }],
+                                        global: false // 缺省为 false
+                                    },
+                                },
+                            },
+                        },
+                        {
+                            name: '浏览量',
+                            data: [3],
+                            type: 'line',
+                            lineStyle: {
+                                normal: {
+                                    color: '#9FE6B8',
+                                    width: 2,
+                                }
+                            },
+                            areaStyle: {
+                                normal: {
+                                    color: {
+                                        type: 'linear',
+                                        x: 0,
+                                        y: 0,
+                                        x2: 0,
+                                        y2: 1,
+                                        colorStops: [{
+                                            offset: 0,
+                                            color: 'rgba(159,230,184,0.3)' // 0% 处的颜色
+                                        }, {
+                                            offset: 1,
+                                            color: 'rgba(159,230,184,0)' // 100% 处的颜色
+                                        }],
+                                        global: false // 缺省为 false
+                                    },
+                                },
+                            },
+                        }
+                    ]
+                };
+            }
+            myChart1.setOption(option1);
+
+            window.onload = function () {
+                myChart1.resize();
+            }
+            window.onresize = function () {
+                myChart1.resize();
+            }
+        },
+        methods: {
+            handleChange(value) {
+                console.log(value);
+            },
+        }
+    })
+</script>
+
+</html>

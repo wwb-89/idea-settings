@@ -46,4 +46,24 @@ public class LoginProxyApiController {
 		return new RedirectView(refer);
 	}
 
+	/**代理等了
+	 * @Description 
+	 * @author wwb
+	 * @Date 2021-04-25 14:56:50
+	 * @param response
+	 * @param uid
+	 * @param fid
+	 * @param enc
+	 * @param date
+	 * @param refer
+	 * @return java.lang.Object
+	*/
+	@RequestMapping("v2")
+	public Object loginv2(HttpServletResponse response, @RequestParam Integer uid, @RequestParam Integer fid, @RequestParam String enc, @RequestParam String date, @RequestParam String refer) {
+		// 验证
+		apiParamAuthService.loginProxyAuth(uid, fid, date, enc);
+		passportApiService.avoidCloseLogin(uid, fid, response);
+		return new RedirectView(refer);
+	}
+
 }

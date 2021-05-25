@@ -12,9 +12,6 @@
         activityApp.prototype.origin = W.location.origin;
     }
 
-    /** 新增图标的地址 */
-    activityApp.prototype.add_icon_url = "http://p.ananas.chaoxing.com/star3/origin/1424584b7802e81c1e2db2e89b855c4f";
-
     /**
      * 字符串是否为空
      * @param str
@@ -276,6 +273,45 @@
     activityApp.prototype.generateDualSelectIndexUrl = function (activityId, fid) {
         return "http://appcd.chaoxing.com/form-employment/pc/double/election?activityId=" + activityId + "&wfwfid=" + fid;
     };
+    /**
+     * 双选会统计导出地址
+     * @param activityId
+     * @param fid
+     * @returns {string}
+     */
+    activityApp.prototype.generateDualSelectStatExportUrl = function (activityId, fid) {
+        return "http://appcd.chaoxing.com/form-employment/export/double/selection/statistics?activityId=" + activityId + "&wfwfid=" + fid;
+    };
+    /**
+     * 禁用滚动
+     */
+    activityApp.prototype.disableScroll = function () {
+        var scrollTop = $(document).scrollTop();
+        $(document).on('scroll.unable', function (e) {
+            $(document).scrollTop(scrollTop);
+        });
+    };
+    /**
+     * 启用滚动
+     */
+    activityApp.prototype.enableScroll = function () {
+        $(document).unbind("scroll.unable");
+    };
+    /**
+     * 初始化滚动条
+     */
+    activityApp.prototype.initScroll = function () {
+        this.scrollTop = $(document).scrollTop();
+        $(document).scrollTop(0);
+        this.disableScroll();
+    };
+    /**
+     * 重置滚动条
+     */
+    activityApp.prototype.resetScroll = function () {
+        this.enableScroll();
+        $(document).scrollTop(this.scrollTop);
+    };
     W['activityApp'] = new activityApp();
 })(window, jQuery, JSON);
 Array.prototype.remove = function (val) {
@@ -296,26 +332,6 @@ Vue.filter("getCloudImgUrl", function (activity) {
 Vue.filter("activityStatusInstructions", function (status) {
     return activityApp.getActivityStatusInstructions(status);
 });
-Vue.filter("timestamp2ChineseYMD", function (timestamp) {
-    var dateObj = activityApp.millisecond2DateObj(timestamp);
-    return dateObj.year + "年" + dateObj.month + "月" + dateObj.day + "日";
-});
-Vue.filter("timestamp2ChineseYMDHM", function (timestamp) {
-    var dateObj = activityApp.millisecond2DateObj(timestamp);
-    return dateObj.year + "年" + dateObj.month + "月" + dateObj.day + "日" + " " + dateObj.hour + ":" + dateObj.minute;
-});
-Vue.filter("timestamp2ChineseYMDHMS", function (timestamp) {
-    var dateObj = activityApp.millisecond2DateObj(timestamp);
-    return dateObj.year + "年" + dateObj.month + "月" + dateObj.day + "日" + " " + dateObj.hour + ":" + dateObj.minute + ":" + dateObj.second;
-});
-Vue.filter("timestamp2YMD", function (timestamp) {
-    var dateObj = activityApp.millisecond2DateObj(timestamp);
-    return dateObj.year + "-" + dateObj.month + "-" + dateObj.day;
-});
-Vue.filter("timestamp2YMDH", function (timestamp) {
-    var dateObj = activityApp.millisecond2DateObj(timestamp);
-    return dateObj.year + "-" + dateObj.month + "-" + dateObj.day +" "+dateObj.hour;
-});
 Vue.filter("activityStatusDescribe", function (status) {
     if (activityApp.isEmpty(status)) {
         return "";
@@ -334,4 +350,44 @@ Vue.filter("activityStatusDescribe", function (status) {
         default:
             return "";
     }
+});
+Vue.filter("timestampFormat", function (timestamp) {
+    if (activityApp.isEmpty(timestamp)) {
+        return "";
+    }
+    var dateObj = moment(timestamp);
+    var year = dateObj.year();
+    if (year == new Date().getFullYear()) {
+        return dateObj.format("MM.DD HH:mm");
+    } else {
+        return dateObj.format("YYYY.MM.DD HH:mm");
+    }
+
+});
+Vue.filter("timestampScopeFormat", function (startTimestamp, endTimestamp) {
+    var thisYear = new Date().getFullYear();
+    var start = "";
+    var startDateObj = null;
+    var end = "";
+    var endDateObj = null;
+    if (!activityApp.isEmpty(startTimestamp)) {
+        startDateObj = moment(startTimestamp);
+    }
+    if (!activityApp.isEmpty(endTimestamp)) {
+        endDateObj = moment(endTimestamp);
+    }
+    var isThisYear = (!startDateObj || startDateObj.year() == thisYear) && (!endDateObj || endDateObj.year() == thisYear);
+    if (isThisYear) {
+        start = startDateObj ? startDateObj.format("MM.DD HH:mm") : "";
+        end = endDateObj ? endDateObj.format("MM.DD HH:mm") : "";
+    } else {
+        start = startDateObj ? startDateObj.format("YYYY.MM.DD HH:mm") : "";
+        end = endDateObj ? endDateObj.format("YYYY.MM.DD HH:mm") : "";
+    }
+    var result = start;
+    if (!activityApp.isEmpty(start) && !activityApp.isEmpty(end)) {
+        result += " ~ ";
+    }
+    result += end;
+    return result;
 });

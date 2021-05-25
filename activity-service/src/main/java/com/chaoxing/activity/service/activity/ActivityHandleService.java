@@ -26,6 +26,7 @@ import com.chaoxing.activity.service.manager.MhApiService;
 import com.chaoxing.activity.service.manager.WfwRegionalArchitectureApiService;
 import com.chaoxing.activity.service.manager.module.SignApiService;
 import com.chaoxing.activity.service.manager.module.WorkApiService;
+import com.chaoxing.activity.service.queue.ActivityWebsiteIdSyncQueueService;
 import com.chaoxing.activity.util.DateUtils;
 import com.chaoxing.activity.util.DistributedLock;
 import com.chaoxing.activity.util.constant.ActivityMhUrlConstant;
@@ -37,18 +38,18 @@ import com.google.common.collect.Lists;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
-import javax.servlet.http.HttpServletRequest;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
-import java.util.function.Consumer;
 
 /**数据处理服务
  * @author wwb
@@ -70,6 +71,8 @@ public class ActivityHandleService {
 	private ActivitySignModuleMapper activitySignModuleMapper;
 
 	@Resource
+	private ActivityQueryService activityQueryService;
+	@Resource
 	private ActivityValidationService activityValidationService;
 	@Resource
 	private ActivityModuleService activityModuleService;
@@ -87,6 +90,8 @@ public class ActivityHandleService {
 	private ActivityManagerService activityManagerService;
 	@Resource
 	private WorkApiService workApiService;
+	@Resource
+	private ActivityWebsiteIdSyncQueueService activityWebsiteIdSyncQueueService;
 
 	@Resource
 	private SignApiService signApiService;
@@ -108,13 +113,13 @@ public class ActivityHandleService {
 	 * @return void
 	*/
 	@Transactional(rollbackFor = Exception.class)
-	public void add(Activity activity, SignAddEditDTO signAddEdit, List<WfwRegionalArchitectureDTO> wfwRegionalArchitectures, LoginUserDTO loginUser, HttpServletRequest request) {
+	public void add(Activity activity, SignAddEditDTO signAddEdit, List<WfwRegionalArchitectureDTO> wfwRegionalArchitectures, LoginUserDTO loginUser) {
 		// 新增活动输入验证
 		activityValidationService.addInputValidate(activity);
 		// 处理活动类型
 		handleActivityType(activity);
 		// 添加报名签到
-		SignAddEditResultDTO signAddEditResult = handleSign(activity, signAddEdit, loginUser, request);
+		SignAddEditResultDTO signAddEditResult = handleSign(activity, signAddEdit, loginUser);
 		activity.setSignId(signAddEditResult.getSignId());
 		// 添加作品征集
 		handleWork(activity, loginUser);
@@ -135,6 +140,10 @@ public class ActivityHandleService {
 		activity.setCreateOrgName(loginUser.getOrgName());
 		activity.setStartDate(activity.getStartTime().toLocalDate());
 		activity.setEndDate(activity.getEndTime().toLocalDate());
+		String originType = activity.getOriginType();
+		if (StringUtils.isBlank(originType)) {
+			activity.setOriginType(Activity.OriginTypeEnum.NORMAL.getValue());
+		}
 		activityMapper.insert(activity);
 		// 添加管理员
 		ActivityManager activityManager = new ActivityManager();
@@ -145,20 +154,20 @@ public class ActivityHandleService {
 		activityManagerService.add(activityManager, loginUser);
 		// 活动报名签到模块
 		handleActivitySignModule(activity.getId(), signAddEditResult);
-		// 处理参与范围
+		// 处理发布范围
 		wfwRegionalArchitectures = handleParticipateScope(activity, wfwRegionalArchitectures);
 		Integer activityId = activity.getId();
 		List<ActivityScope> activityScopes = WfwRegionalArchitectureDTO.convert2ActivityScopes(activityId, wfwRegionalArchitectures);
-		// 新增参与范围
+		// 新增发布范围
 		activityScopeService.batchAdd(activityScopes);
 
 		// 处理活动的所属区域
 		handleActivityArea(activity, loginUser);
 		// 活动改变
-		activityChangeEventService.dataChange(activity, activity.getIntegralValue());
+		activityChangeEventService.dataChange(activity, null, activity.getIntegralValue());
 	}
 
-	/**处理参与范围
+	/**处理发布范围
 	 * @Description 
 	 * @author wwb
 	 * @Date 2021-03-30 19:49:43
@@ -175,7 +184,7 @@ public class ActivityHandleService {
 				WfwRegionalArchitectureDTO wfwRegionalArchitecture = wfwRegionalArchitectureApiService.buildWfwRegionalArchitecture(activity.getCreateFid());
 				wfwRegionalArchitectures = Lists.newArrayList(wfwRegionalArchitecture);
 			} else {
-				throw new BusinessException("请选择参与范围");
+				throw new BusinessException("请选择发布范围");
 			}
 		}
 		return wfwRegionalArchitectures;
@@ -233,8 +242,8 @@ public class ActivityHandleService {
 	*/
 	private void handleActivityType(Activity activity) {
 		String activityType = activity.getActivityType();
-		ActivityTypeEnum activityTypeEnum = ActivityTypeEnum.fromValue(activityType);
-		if (ActivityTypeEnum.ONLINE.equals(activityTypeEnum)) {
+		Activity.ActivityTypeEnum activityTypeEnum = Activity.ActivityTypeEnum.fromValue(activityType);
+		if (Activity.ActivityTypeEnum.ONLINE.equals(activityTypeEnum)) {
 			activity.setAddress(null);
 			activity.setLongitude(null);
 			activity.setDimension(null);
@@ -247,10 +256,9 @@ public class ActivityHandleService {
 	 * @param activity
 	 * @param signAddEdit
 	 * @param loginUser
-	 * @param request
 	 * @return com.chaoxing.activity.dto.module.SignAddEditResultDTO
 	*/
-	private SignAddEditResultDTO handleSign(Activity activity, SignAddEditDTO signAddEdit, LoginUserDTO loginUser, HttpServletRequest request) {
+	private SignAddEditResultDTO handleSign(Activity activity, SignAddEditDTO signAddEdit, LoginUserDTO loginUser) {
 		Integer signId = signAddEdit.getId();
 		List<SignUp> signUps = signAddEdit.getSignUps();
 		if (CollectionUtils.isNotEmpty(signUps)) {
@@ -271,12 +279,12 @@ public class ActivityHandleService {
 			signAddEdit.setCreateFid(loginUser.getFid());
 			signAddEdit.setCreateOrgName(loginUser.getOrgName());
 			signAddEdit.setUpdateUid(loginUser.getUid());
-			return signApiService.create(signAddEdit, request);
+			return signApiService.create(signAddEdit);
 		} else {
 			// 修改报名签到
 			signAddEdit.setUpdateUid(loginUser.getUid());
 			signAddEdit.setName(activity.getName());
-			return signApiService.update(signAddEdit, request);
+			return signApiService.update(signAddEdit);
 		}
 	}
 
@@ -296,7 +304,7 @@ public class ActivityHandleService {
 			if (workId == null) {
 				// 创建作品征集
 				WorkFormDTO workForm = WorkFormDTO.builder()
-						.name("作品征集")
+						.name(activity.getName())
 						.wfwfid(loginUser.getFid())
 						.uid(loginUser.getUid())
 						.startTime(DateUtils.date2Timestamp(activity.getStartTime()))
@@ -371,23 +379,22 @@ public class ActivityHandleService {
 	 * @return void
 	*/
 	@Transactional(rollbackFor = Exception.class)
-	public void edit(Activity activity, SignAddEditDTO signAddEdit, final List<WfwRegionalArchitectureDTO> wfwRegionalArchitectures, LoginUserDTO loginUser, HttpServletRequest request) {
+	public void edit(Activity activity, SignAddEditDTO signAddEdit, final List<WfwRegionalArchitectureDTO> wfwRegionalArchitectures, LoginUserDTO loginUser) {
 		Integer activityId = activity.getId();
 		String activityEditLockKey = getActivityEditLockKey(activityId);
-		Consumer<Exception> fail = (e) -> {
-			log.error("更新活动:{} error:{}", JSON.toJSONString(activity), e.getMessage());
-			throw new BusinessException("更新活动失败");
-		};
 		distributedLock.lock(activityEditLockKey, () -> {
 			activityValidationService.addInputValidate(activity);
 			// 处理活动类型
 			handleActivityType(activity);
 			Activity existActivity = activityValidationService.editAble(activityId, loginUser);
+			// 克隆
+			Activity oldActivity = new Activity();
+			BeanUtils.copyProperties(existActivity, oldActivity);
 			BigDecimal oldIntegralValue = existActivity.getIntegralValue();
 			// 更新报名签到
 			Integer signId = existActivity.getSignId();
 			signAddEdit.setId(signId);
-			SignAddEditResultDTO signAddEditResult = handleSign(activity, signAddEdit, loginUser, request);
+			SignAddEditResultDTO signAddEditResult = handleSign(activity, signAddEdit, loginUser);
 			handleActivitySignModule(activity.getId(), signAddEditResult);
 			// 征集相关
 			handleWork(activity, loginUser);
@@ -412,6 +419,8 @@ public class ActivityHandleService {
 			existActivity.setLongitude(activity.getLongitude());
 			existActivity.setDimension(activity.getDimension());
 			existActivity.setActivityClassifyId(activity.getActivityClassifyId());
+			existActivity.setPeriod(activity.getPeriod());
+			existActivity.setCredit(activity.getCredit());
 			existActivity.setEnableSign(activity.getEnableSign());
 			existActivity.setSignId(activity.getSignId());
 			existActivity.setWebTemplateId(activity.getWebTemplateId());
@@ -434,17 +443,20 @@ public class ActivityHandleService {
 				existActivity.setCoverUrl("");
 			}
 			List<WfwRegionalArchitectureDTO> itemWfwRegionalArchitectures = wfwRegionalArchitectures;
-			// 处理参与范围
+			// 处理发布范围
 			itemWfwRegionalArchitectures = handleParticipateScope(activity, itemWfwRegionalArchitectures);
 			List<ActivityScope> activityScopes = WfwRegionalArchitectureDTO.convert2ActivityScopes(activityId, itemWfwRegionalArchitectures);
-			// 删除以前发布的参与范围
+			// 删除以前发布的发布范围
 			activityScopeService.deleteByActivityId(activityId);
-			// 新增参与范围
+			// 新增活动发布范围
 			activityScopeService.batchAdd(activityScopes);
 			// 活动改变
-			activityChangeEventService.dataChange(activity, oldIntegralValue);
+			activityChangeEventService.dataChange(activity, oldActivity, oldIntegralValue);
 			return null;
-		}, fail);
+		}, e -> {
+			log.error("更新活动:{} error:{}", JSON.toJSONString(activity), e.getMessage());
+			throw new BusinessException("更新活动失败");
+		});
 	}
 
 	/**发布活动
@@ -534,7 +546,7 @@ public class ActivityHandleService {
 	 * @param loginUser
 	 * @return com.chaoxing.activity.dto.mh.MhCloneResultDTO
 	*/
-	@Transactional(rollbackFor = Exception.class)
+	@Transactional(rollbackFor = Exception.class, propagation = Propagation.REQUIRED)
 	public MhCloneResultDTO bindWebTemplate(Integer activityId, Integer webTemplateId, LoginUserDTO loginUser) {
 		Activity activity = activityValidationService.activityExist(activityId);
 		// 如果已经选择了模板就不能再选择
@@ -555,6 +567,7 @@ public class ActivityHandleService {
 				.set(Activity::getPreviewUrl, mhCloneResult.getPreviewUrl())
 				.set(Activity::getEditUrl, mhCloneResult.getEditUrl())
 		);
+		activityWebsiteIdSyncQueueService.add(activityId);
 		return mhCloneResult;
 	}
 
@@ -640,7 +653,7 @@ public class ActivityHandleService {
 	 * @param loginUser
 	 * @return com.chaoxing.activity.dto.mh.MhCloneParamDTO
 	*/
-	private MhCloneParamDTO packageMhCloneParam(Activity activity, Integer webTemplateId, LoginUserDTO loginUser) {
+	public MhCloneParamDTO packageMhCloneParam(Activity activity, Integer webTemplateId, LoginUserDTO loginUser) {
 		WebTemplate webTemplate = webTemplateService.webTemplateExist(webTemplateId);
 		MhCloneParamDTO mhCloneParam = new MhCloneParamDTO();
 		mhCloneParam.setTemplateId(webTemplate.getTemplateId());
@@ -752,6 +765,8 @@ public class ActivityHandleService {
 				return String.format(ActivityMhUrlConstant.ACTIVITY_SIGN_URL, activityId);
 			case ACTIVITY_LIST:
 				return String.format(ActivityMhUrlConstant.ACTIVITY_RECOMMEND_URL, activityId);
+			case DUAL_SELECT:
+				return String.format(ActivityMhUrlConstant.DUAL_SELECT_URL, activityId);
 			default:
 
 		}
@@ -819,6 +834,28 @@ public class ActivityHandleService {
 	*/
 	public String getActivityEditLockKey(Integer activityId) {
 		return CacheConstant.LOCK_CACHE_KEY_PREFIX + "activity" + CacheConstant.CACHE_KEY_SEPARATOR + activityId;
+	}
+
+	/**同步活动websiteId
+	 * @Description 
+	 * @author wwb
+	 * @Date 2021-05-10 15:28:53
+	 * @param activityId
+	 * @return void
+	*/
+	public void syncActivityWebsiteId(Integer activityId) {
+		Activity activity = activityQueryService.getById(activityId);
+		if (activity != null) {
+			Integer pageId = activity.getPageId();
+			if (pageId != null) {
+				Integer websiteId = mhApiService.getWebsiteIdByPageId(pageId);
+				activityMapper.update(null, new UpdateWrapper<Activity>()
+						.lambda()
+						.eq(Activity::getId, activityId)
+						.set(Activity::getWebsiteId, websiteId)
+				);
+			}
+		}
 	}
 
 }
