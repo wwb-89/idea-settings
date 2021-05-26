@@ -64,6 +64,7 @@ public class ActivityStatSummaryHandlerService {
         Integer signedInNums = signApiService.getActivitySignedInNums(signId);
         BigDecimal signInRate = signApiService.getActivitySignInRate(signId);
         Integer qualifiedNums = signApiService.getActivityQualifiedNums(signId);
+        Integer avgParticipateTimeLength = signApiService.getActivityAvgParticipateTimeLength(signId);
         boolean isNew = Boolean.FALSE;
         if (statSummary == null) {
             isNew = Boolean.TRUE;
@@ -74,6 +75,7 @@ public class ActivityStatSummaryHandlerService {
         statSummary.setSignedInNum(signedInNums);
         statSummary.setSignInRate(signInRate);
         statSummary.setQualifiedNum(qualifiedNums);
+        statSummary.setAvgParticipateInLength(avgParticipateTimeLength);
         statSummary.setUpdateTime(LocalDateTime.now());
         if (isNew) {
             activityStatSummaryMapper.insert(statSummary);

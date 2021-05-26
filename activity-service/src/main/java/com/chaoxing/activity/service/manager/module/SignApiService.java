@@ -75,6 +75,10 @@ public class SignApiService {
 	private static final String STAT_ACTIVITY_SIGNED_RATE_URL = SIGN_API_DOMAIN + "/stat/sign/%d/sign-in-rate";
 	/** 统计活动报名签到对应的合格人数url */
 	private static final String STAT_ACTIVITY_QUALIFIED_NUMS_URL = SIGN_API_DOMAIN + "/stat/sign/%d/qualified-nums";
+	/** 统计活动平均参与时长url */
+	private static final String STAT_ACTIVITY_AVERAGE_PARTICIPATE_TIME_LENGTH_URL = SIGN_API_DOMAIN + "/stat/sign/%d/average/participate-time-length";
+	/** 统计用户总的参与时长url */
+	private static final String STAT_USER_TOTAL_PARTICIPATE_TIME_LENGTH_URL = SIGN_API_DOMAIN + "/stat/sign/%d/user/total-participate-time-length";
 	/** 通知已收藏url */
 	private static final String NOTICE_COLLECTED_URL = SIGN_API_DOMAIN + "/sign/%d/notice/collected";
 	/** 报名签到参与范围描述yrl */
@@ -684,6 +688,38 @@ public class SignApiService {
 	 */
 	public Integer getActivityQualifiedNums(Integer signId) {
 		String url = String.format(STAT_ACTIVITY_QUALIFIED_NUMS_URL, signId);
+		String result = restTemplate.getForObject(url, String.class);
+		JSONObject jsonObject = JSON.parseObject(result);
+		return resultHandle(jsonObject, () -> jsonObject.getInteger("data"), (message) -> {
+			throw new BusinessException(message);
+		});
+	}
+
+	/**获取活动平均参与时长
+	 * @Description
+	 * @author huxiaolong
+	 * @Date 2021-05-25 15:42:02
+	 * @param signId
+	 * @return java.lang.Integer
+	 */
+	public Integer getActivityAvgParticipateTimeLength(Integer signId) {
+		String url = String.format(STAT_ACTIVITY_AVERAGE_PARTICIPATE_TIME_LENGTH_URL, signId);
+		String result = restTemplate.getForObject(url, String.class);
+		JSONObject jsonObject = JSON.parseObject(result);
+		return resultHandle(jsonObject, () -> jsonObject.getInteger("data"), (message) -> {
+			throw new BusinessException(message);
+		});
+	}
+
+	/**获取用户总的参与时长
+	 * @Description
+	 * @author huxiaolong
+	 * @Date 2021-05-25 15:42:02
+	 * @param uid
+	 * @return java.lang.Integer
+	 */
+	public Integer getUserTotalParticipateTimeLength(Integer uid) {
+		String url = String.format(STAT_USER_TOTAL_PARTICIPATE_TIME_LENGTH_URL, uid);
 		String result = restTemplate.getForObject(url, String.class);
 		JSONObject jsonObject = JSON.parseObject(result);
 		return resultHandle(jsonObject, () -> jsonObject.getInteger("data"), (message) -> {
