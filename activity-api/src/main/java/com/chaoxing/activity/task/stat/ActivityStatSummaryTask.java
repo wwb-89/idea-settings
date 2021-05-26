@@ -32,7 +32,13 @@ public class ActivityStatSummaryTask {
         if (activityId == null) {
             return;
         }
-        activityStatSummaryHandlerService.activityStatSummaryCalByActivity(activityId);
+        try {
+            activityStatSummaryHandlerService.activityStatSummaryCalByActivity(activityId);
+        } catch (Exception e) {
+            e.printStackTrace();
+            log.error("活动 :{} 的活动统计汇总计算error:{}", activityId, e.getMessage());
+            activityStatSummaryQueueService.addSignInStat(activityId);
+        }
     }
 
     @Scheduled(fixedDelay = 1L)
@@ -41,7 +47,13 @@ public class ActivityStatSummaryTask {
         if (activityId == null) {
             return;
         }
-        activityStatSummaryHandlerService.activityStatSummaryCalByActivity(activityId);
+        try {
+            activityStatSummaryHandlerService.activityStatSummaryCalByActivity(activityId);
+        } catch (Exception e) {
+            e.printStackTrace();
+            log.error("活动 :{} 的活动统计汇总计算error:{}", activityId, e.getMessage());
+            activityStatSummaryQueueService.addResultStat(activityId);
+        }
     }
 
 }
