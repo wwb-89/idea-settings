@@ -40,6 +40,8 @@ public class UserStatSummary {
     private Integer ratingNum;
     /** 合格的数量; column: qualified_num*/
     private Integer qualifiedNum;
+    /** 总参与时长; column: total_participate_in_length*/
+    private Integer totalParticipateInLength;
     /** 创建时间; column: create_time*/
     private LocalDateTime createTime;
     /** 更新时间; column: update_time*/
