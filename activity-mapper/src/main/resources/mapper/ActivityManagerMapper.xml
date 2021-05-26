@@ -19,6 +19,8 @@
             t_activity_manager t
         WHERE
             t.activity_id = #{activityId}
+        ORDER BY
+            t.create_time ASC
     </select>
 
     <insert id="batchAdd">

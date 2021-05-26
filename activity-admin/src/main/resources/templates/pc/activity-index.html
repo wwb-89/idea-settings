@@ -63,7 +63,7 @@
                 </div>
             </div>
         </div>
-        <div class="edit" v-if="!isActivityDeclaration()">
+        <div class="edit" v-if="!isActivityDeclaration() && isActivityCreator()">
             <div class="item" @click="toEdit">
                 <img src="/static/pc/assets/images/icon-edit-default.png" th:src="@{/pc/assets/images/icon-edit-default.png}">
                 <span>编辑活动</span>
@@ -80,6 +80,7 @@
             el: "#activity-vue",
             data: {
                 activity: [[${activity}]],
+                loginUser: [[${session._login_user_}]],
                 signActivityManageIndex: [[${signActivityManageIndex}]],
                 menus: {
                     // 报名签到
@@ -213,6 +214,11 @@
                 isActivityDeclaration: function () {
                     var $this = this;
                     return "activity_declaration" == $this.activity.originType;
+                },
+                // 是活动创建者
+                isActivityCreator: function () {
+                    var $this = this;
+                    return $this.loginUser.uid == $this.activity.createUid;
                 }
             }
         });
