@@ -41,9 +41,25 @@ public class ActivityStatSummaryHandlerService {
     * @return void
     */
     @Transactional(rollbackFor = Exception.class)
-    public void calActivityStatSummary(Integer signId) {
-        Activity activity = activityQueryService.getById(signId);
-        Integer activityId = activity.getId();
+    public void activityStatSummaryCalBySign(Integer signId) {
+        Activity activity = activityQueryService.getBySignId(signId);
+        handleActivityStatSummaryCal(activity.getId(), signId);
+    }
+
+    /**根据activityId进行对应的数据报名签到数据汇总计算
+     * @Description
+     * @author huxiaolong
+     * @Date 2021-05-25 16:32:41
+     * @param activityId
+     * @return void
+     */
+    @Transactional(rollbackFor = Exception.class)
+    public void activityStatSummaryCalByActivity(Integer activityId) {
+        Activity activity = activityQueryService.getById(activityId);
+        handleActivityStatSummaryCal(activityId, activity.getSignId());
+    }
+
+    private void handleActivityStatSummaryCal(Integer activityId, Integer signId) {
         ActivityStatSummary statSummary = activityStatSummaryMapper.selectById(activityId);
         Integer signedInNums = signApiService.getActivitySignedInNums(signId);
         BigDecimal signInRate = signApiService.getActivitySignInRate(signId);

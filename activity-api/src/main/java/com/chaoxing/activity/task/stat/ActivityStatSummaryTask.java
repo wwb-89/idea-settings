@@ -1,5 +1,6 @@
 package com.chaoxing.activity.task.stat;
 
+import com.chaoxing.activity.service.activity.ActivityStatSummaryHandlerService;
 import com.chaoxing.activity.service.queue.ActivityStatSummaryQueueService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -22,13 +23,16 @@ public class ActivityStatSummaryTask {
     @Resource
     private ActivityStatSummaryQueueService activityStatSummaryQueueService;
 
+    @Resource
+    private ActivityStatSummaryHandlerService activityStatSummaryHandlerService;
+
     @Scheduled(fixedDelay = 1L)
-    public void handleSIgnInStat() {
+    public void handleSignInStat() {
         Integer activityId = activityStatSummaryQueueService.getSignInStat();
         if (activityId == null) {
             return;
         }
-        // TODO
+        activityStatSummaryHandlerService.activityStatSummaryCalByActivity(activityId);
     }
 
     @Scheduled(fixedDelay = 1L)
@@ -37,7 +41,7 @@ public class ActivityStatSummaryTask {
         if (activityId == null) {
             return;
         }
-        // TODO
+        activityStatSummaryHandlerService.activityStatSummaryCalByActivity(activityId);
     }
 
 }
