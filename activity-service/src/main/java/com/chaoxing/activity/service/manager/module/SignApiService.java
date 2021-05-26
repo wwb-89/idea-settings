@@ -34,6 +34,8 @@ import java.math.BigDecimal;
 import java.time.ZoneOffset;
 import java.util.List;
 import java.util.Optional;
+import java.util.function.Consumer;
+import java.util.function.Supplier;
 
 /**报名签到服务
  * @author wwb
@@ -110,6 +112,25 @@ public class SignApiService {
 	@Resource
 	private RestTemplate restTemplate;
 
+	/**结果处理
+	 * @Description 
+	 * @author wwb
+	 * @Date 2021-05-26 11:18:14
+	 * @param jsonObject
+	 * @param successCallback
+	 * @param errorCallback
+	 * @return T
+	*/
+	private <T> T resultHandle(JSONObject jsonObject, Supplier<T> successCallback, Consumer<String> errorCallback) {
+		Boolean success = jsonObject.getBoolean("success");
+		success = Optional.ofNullable(success).orElse(Boolean.FALSE);
+		if (success) {
+			return successCallback.get();
+		} else {
+			errorCallback.accept(jsonObject.getString("message"));
+			return null;
+		}
+	}
 	/**创建报名签到
 	 * @Description 
 	 * @author wwb
@@ -123,15 +144,10 @@ public class SignApiService {
 		HttpEntity<String> httpEntity = new HttpEntity<>(JSON.toJSONString(signAddEdit), httpHeaders);
 		String result = restTemplate.postForObject(CREATE_URL, httpEntity, String.class);
 		JSONObject jsonObject = JSON.parseObject(result);
-		Boolean success = jsonObject.getBoolean("success");
-		success = Optional.ofNullable(success).orElse(Boolean.FALSE);
-		if (success) {
-			return JSON.parseObject(jsonObject.getString("data"), SignAddEditResultDTO.class);
-		} else {
-			String errorMessage = jsonObject.getString("message");
-			log.error("创建报名报名:{}失败:{}", JSON.toJSONString(signAddEdit), errorMessage);
-			throw new BusinessException(errorMessage);
-		}
+		return resultHandle(jsonObject, () -> JSON.parseObject(jsonObject.getString("data"), SignAddEditResultDTO.class), (message) -> {
+			log.error("创建报名报名:{}失败:{}", JSON.toJSONString(signAddEdit), message);
+			throw new BusinessException(message);
+		});
 	}
 
 	/**更新报名签到
@@ -147,15 +163,10 @@ public class SignApiService {
 		HttpEntity<String> httpEntity = new HttpEntity<>(JSON.toJSONString(signAddEdit), httpHeaders);
 		String result = restTemplate.postForObject(UPDATE_URL, httpEntity, String.class);
 		JSONObject jsonObject = JSON.parseObject(result);
-		Boolean success = jsonObject.getBoolean("success");
-		success = Optional.ofNullable(success).orElse(Boolean.FALSE);
-		if (success) {
-			return JSON.parseObject(jsonObject.getString("data"), SignAddEditResultDTO.class);
-		} else {
-			String errorMessage = jsonObject.getString("message");
-			log.error("修改签到报名:{}失败:{}", JSON.toJSONString(signAddEdit), errorMessage);
-			throw new BusinessException(errorMessage);
-		}
+		return resultHandle(jsonObject, () -> JSON.parseObject(jsonObject.getString("data"), SignAddEditResultDTO.class), (message) -> {
+			log.error("修改签到报名:{}失败:{}", JSON.toJSONString(signAddEdit), message);
+			throw new BusinessException(message);
+		});
 	}
 
 	/**获取签到报名信息
@@ -169,9 +180,7 @@ public class SignApiService {
 		String url = String.format(DETAIL_URL, signId);
 		String result = restTemplate.getForObject(url, String.class);
 		JSONObject jsonObject = JSON.parseObject(result);
-		Boolean success = jsonObject.getBoolean("success");
-		success = Optional.ofNullable(success).orElse(Boolean.FALSE);
-		if (success) {
+		return resultHandle(jsonObject, () -> {
 			String data = jsonObject.getString("data");
 			SignAddEditDTO signAddEdit = JSON.parseObject(data, SignAddEditDTO.class);
 			List<SignUp> signUps = signAddEdit.getSignUps();
@@ -189,11 +198,10 @@ public class SignApiService {
 				}
 			}
 			return signAddEdit;
-		} else {
-			String errorMessage = jsonObject.getString("message");
-			log.error("根据签到报名id:{}查询签到报名失败:{}", signId, errorMessage);
-			throw new BusinessException(errorMessage);
-		}
+		}, (message) -> {
+			log.error("根据签到报名id:{}查询签到报名失败:{}", signId, message);
+			throw new BusinessException(message);
+		});
 	}
 
 	/**查询报名签到的参与情况
@@ -204,18 +212,10 @@ public class SignApiService {
 	 * @return com.chaoxing.activity.dto.manager.SignStatDTO
 	*/
 	public SignStatDTO getSignParticipation(Integer signId) {
-		SignStatDTO signStat = null;
-		if (signId != null) {
-			String url = String.format(PARTICIPATION_URL, signId);
-			String result = restTemplate.getForObject(url, String.class);
-			JSONObject jsonObject = JSON.parseObject(result);
-			Boolean success = jsonObject.getBoolean("success");
-			success = Optional.ofNullable(success).orElse(Boolean.FALSE);
-			if (success) {
-				signStat = JSON.parseObject(jsonObject.getString("data"), SignStatDTO.class);
-			}
-		}
-		return signStat;
+		String url = String.format(PARTICIPATION_URL, signId);
+		String result = restTemplate.getForObject(url, String.class);
+		JSONObject jsonObject = JSON.parseObject(result);
+		return resultHandle(jsonObject, () -> JSON.parseObject(jsonObject.getString("data"), SignStatDTO.class), (message) -> log.error("根据signId:{}查询报名签到的参与情况error:{}", signId, message));
 	}
 
 	/**统计报名签到在活动管理首页需要的信息
@@ -231,14 +231,7 @@ public class SignApiService {
 			try {
 				String result = restTemplate.getForObject(url, String.class);
 				JSONObject jsonObject = JSON.parseObject(result);
-				Boolean success = jsonObject.getBoolean("success");
-				success = Optional.ofNullable(success).orElse(Boolean.FALSE);
-				if (success) {
-					return JSON.parseObject(jsonObject.getString("data"), SignActivityManageIndexDTO.class);
-				} else {
-					String errorMessage = jsonObject.getString("message");
-					log.error("根据报名签到id:{}统计报名签到在活动管理首页需要的信息error:{}", signId, errorMessage);
-				}
+				return resultHandle(jsonObject, () -> JSON.parseObject(jsonObject.getString("data"), SignActivityManageIndexDTO.class), (message) -> log.error("根据报名签到id:{}统计报名签到在活动管理首页需要的信息error:{}", signId, message));
 			} catch (RestClientException e) {
 				e.printStackTrace();
 				log.error("根据报名签到id:{}统计报名签到在活动管理首页需要的信息error:{}", signId, e.getMessage());
@@ -261,19 +254,17 @@ public class SignApiService {
 	 * @return java.lang.Integer
 	*/
 	public Integer statSignedUpNum(List<Integer> signIds) {
+		Integer signedUpNum = 0;
 		if (CollectionUtils.isNotEmpty(signIds)) {
 			HttpHeaders httpHeaders = new HttpHeaders();
 			httpHeaders.setContentType(MediaType.APPLICATION_JSON);
 			HttpEntity<String> httpEntity = new HttpEntity<>(JSON.toJSONString(signIds), httpHeaders);
 			String result = restTemplate.postForObject(STAT_SIGNED_UP_NUM, httpEntity, String.class);
 			JSONObject jsonObject = JSON.parseObject(result);
-			Boolean success = jsonObject.getBoolean("success");
-			success = Optional.ofNullable(success).orElse(Boolean.FALSE);
-			if (success) {
-				return jsonObject.getInteger("data");
-			}
+			signedUpNum = resultHandle(jsonObject, () -> jsonObject.getInteger("data"), (message) -> {});
+			return Optional.ofNullable(signedUpNum).orElse(0);
 		}
-		return 0;
+		return signedUpNum;
 	}
 
 	/**活动块详情统计信息
@@ -288,9 +279,7 @@ public class SignApiService {
 		String url = String.format(ACTIVITY_BLOCK_DETAIL_STAT_URL, signId, uid == null ? "" : uid);
 		String result = restTemplate.getForObject(url, String.class);
 		JSONObject jsonObject = JSON.parseObject(result);
-		Boolean success = jsonObject.getBoolean("success");
-		Optional.ofNullable(success).orElse(Boolean.FALSE);
-		if (success) {
+		return resultHandle(jsonObject, () -> {
 			ActivityBlockDetailSignStatDTO activityBlockDetailSignStat = JSON.parseObject(jsonObject.getString("data"), ActivityBlockDetailSignStatDTO.class);
 			SignUp signUp = activityBlockDetailSignStat.getSignUp();
 			if (signUp != null) {
@@ -298,10 +287,9 @@ public class SignApiService {
 				signUp.setEndTimestamp(DateUtils.date2Timestamp(signUp.getEndTime()));
 			}
 			return activityBlockDetailSignStat;
-		} else {
-			String errorMessage = jsonObject.getString("message");
-			throw new BusinessException(errorMessage);
-		}
+		}, (message) -> {
+			throw new BusinessException(message);
+		});
 	}
 
 	/**分页查询用户报名的报名签到
@@ -324,15 +312,10 @@ public class SignApiService {
 		HttpEntity<MultiValueMap> httpEntity = new HttpEntity<>(httpHeaders);
 		String result = restTemplate.postForObject(url, httpEntity, String.class);
 		JSONObject jsonObject = JSON.parseObject(result);
-		Boolean success = jsonObject.getBoolean("success");
-		success = Optional.ofNullable(success).orElse(Boolean.FALSE);
-		if (success) {
-			return JSON.parseObject(jsonObject.getString("data"), Page.class);
-		} else {
-			String errorMessage = jsonObject.getString("message");
-			log.error("查询用户报名的报名签到error:{}", errorMessage);
-			throw new BusinessException(errorMessage);
-		}
+		return resultHandle(jsonObject, () -> JSON.parseObject(jsonObject.getString("data"), Page.class), (message) -> {
+			log.error("查询用户报名的报名签到error:{}", message);
+			throw new BusinessException(message);
+		});
 	}
 
 	/**取消报名
@@ -351,12 +334,9 @@ public class SignApiService {
 		HttpEntity<String> httpEntity = new HttpEntity<>(null, headers);
 		String result = restTemplate.postForObject(url, httpEntity, String.class);
 		JSONObject jsonObject = JSON.parseObject(result);
-		Boolean success = jsonObject.getBoolean("success");
-		success = Optional.ofNullable(success).orElse(Boolean.FALSE);
-		if (!success) {
-			String errorMessage = jsonObject.getString("message");
-			throw new BusinessException(errorMessage);
-		}
+		resultHandle(jsonObject, () -> null, (message) -> {
+			throw new BusinessException(message);
+		});
 	}
 
 	/**撤销报名
@@ -375,12 +355,9 @@ public class SignApiService {
 		HttpEntity<String> httpEntity = new HttpEntity<>(null, headers);
 		String result = restTemplate.postForObject(url, httpEntity, String.class);
 		JSONObject jsonObject = JSON.parseObject(result);
-		Boolean success = jsonObject.getBoolean("success");
-		success = Optional.ofNullable(success).orElse(Boolean.FALSE);
-		if (!success) {
-			String errorMessage = jsonObject.getString("message");
-			throw new BusinessException(errorMessage);
-		}
+		resultHandle(jsonObject, () -> null, (message) -> {
+			throw new BusinessException(message);
+		});
 	}
 
 	/**根据报名签到id查询已报名的用户id列表
@@ -394,16 +371,10 @@ public class SignApiService {
 		String url = String.format(SIGNED_UP_UIDS_URL, signId);
 		String result = restTemplate.getForObject(url, String.class);
 		JSONObject jsonObject = JSON.parseObject(result);
-		Boolean success = jsonObject.getBoolean("success");
-		success = Optional.ofNullable(success).orElse(Boolean.FALSE);
-		if (success) {
-			return JSON.parseArray(jsonObject.getString("data"), Integer.class);
-		} else {
-			String errorMessage = jsonObject.getString("message");
-			log.error("根据报名签到id:{} 查询已报名的用户id列表error:{}", signId, errorMessage);
-			throw new BusinessException(errorMessage);
-		}
-
+		return resultHandle(jsonObject, () -> JSON.parseArray(jsonObject.getString("data"), Integer.class), (message) -> {
+			log.error("根据报名签到id:{} 查询已报名的用户id列表error:{}", signId, message);
+			throw new BusinessException(message);
+		});
 	}
 
 	/**通知已收藏
@@ -426,13 +397,10 @@ public class SignApiService {
 		HttpEntity<String> httpEntity = new HttpEntity<>(params.toJSONString(), httpHeaders);
 		String result = restTemplate.postForObject(url, httpEntity, String.class);
 		JSONObject jsonObject = JSON.parseObject(result);
-		Boolean success = jsonObject.getBoolean("success");
-		success = Optional.ofNullable(success).orElse(Boolean.FALSE);
-		if (!success) {
-			String errorMessage = jsonObject.getString("message");
-			log.error("通知已收藏, 报名签到id:{}, error:{}", signId, errorMessage);
-			throw new BusinessException(errorMessage);
-		}
+		resultHandle(jsonObject, () -> null, (message) -> {
+			log.error("通知已收藏, 报名签到id:{}, error:{}", signId, message);
+			throw new BusinessException(message);
+		});
 	}
 
 	/**是否开启了报名
@@ -471,14 +439,10 @@ public class SignApiService {
 		String url = String.format(USER_IS_SIGNED_UP_URL, signId, uid);
 		String result = restTemplate.getForObject(url, String.class);
 		JSONObject jsonObject = JSON.parseObject(result);
-		Boolean success = jsonObject.getBoolean("success");
-		success = Optional.ofNullable(success).orElse(Boolean.FALSE);
-		if (success) {
-			return jsonObject.getBoolean("data");
-		}
-		String message = jsonObject.getString("message");
-		log.error("获取用户:{} 报名签到id:{} 获取用户是否报名成功error:{}", uid, signId, message);
-		throw new BusinessException(message);
+		return resultHandle(jsonObject, () -> jsonObject.getBoolean("data"), (message) -> {
+			log.error("获取用户:{} 报名签到id:{} 获取用户是否报名成功error:{}", uid, signId, message);
+			throw new BusinessException(message);
+		});
 	}
 
 	/**获取报名名单的url
@@ -508,20 +472,17 @@ public class SignApiService {
 		String url = String.format(USER_SIGN_PARTICIPATION_URL, signId, uidStr);
 		String result = restTemplate.getForObject(url, String.class);
 		JSONObject jsonObject = JSON.parseObject(result);
-		Boolean success = jsonObject.getBoolean("success");
-		success = Optional.ofNullable(success).orElse(Boolean.FALSE);
-		if (success) {
+		return resultHandle(jsonObject, () -> {
 			String data = jsonObject.getString("data");
 			if (StringUtils.isNotBlank(data)) {
 				return JSON.parseObject(data, UserSignParticipationStatDTO.class);
 			} else {
 				return null;
 			}
-		} else {
-			String errorMessage = jsonObject.getString("message");
-			log.error("获取用户:{} 报名签到id:{} 获取用户报名签到参与情况 error:{}", uid, signId, errorMessage);
-			throw new BusinessException(errorMessage);
-		}
+		}, (message) -> {
+			log.error("获取用户:{} 报名签到id:{} 获取用户报名签到参与情况 error:{}", uid, signId, message);
+			throw new BusinessException(message);
+		});
 	}
 
 	/**处理通知评价
@@ -539,12 +500,9 @@ public class SignApiService {
 		HttpEntity httpEntity = new HttpEntity(httpHeaders);
 		String result = restTemplate.postForObject(url, httpEntity, String.class);
 		JSONObject jsonObject = JSON.parseObject(result);
-		Boolean success = jsonObject.getBoolean("success");
-		success = Optional.ofNullable(success).orElse(Boolean.FALSE);
-		if (!success) {
-			String errorMessage = jsonObject.getString("message");
-			throw new BusinessException(errorMessage);
-		}
+		resultHandle(jsonObject, () -> null, (message) -> {
+			throw new BusinessException(message);
+		});
 	}
 
 	/**根据signId列表查询报名的人数
@@ -565,15 +523,12 @@ public class SignApiService {
 		HttpEntity<String> httpEntity = new HttpEntity(params.toJSONString(), httpHeaders);
 		String result = restTemplate.postForObject(STAT_SIGN_SIGNED_UP_INFO_URL, httpEntity, String.class);
 		JSONObject jsonObject = JSON.parseObject(result);
-		Boolean success = jsonObject.getBoolean("success");
-		success = Optional.ofNullable(success).orElse(Boolean.FALSE);
-		if (success) {
+		return resultHandle(jsonObject, () -> {
 			String data = jsonObject.getString("data");
 			return JSON.parseArray(data, SignStatDTO.class);
-		} else {
-			String errorMessage = jsonObject.getString("message");
-			throw new BusinessException(errorMessage);
-		}
+		}, (message) -> {
+			throw new BusinessException(message);
+		});
 	}
 
 	/**通知第二课堂积分已变更
@@ -587,12 +542,9 @@ public class SignApiService {
 		String url = String.format(NOTICE_SECOND_CLASSROOM_INTEGRAL_CHANGE_URL, signId);
 		String result = restTemplate.getForObject(url, String.class);
 		JSONObject jsonObject = JSON.parseObject(result);
-		Boolean success = jsonObject.getBoolean("success");
-		success = Optional.ofNullable(success).orElse(Boolean.FALSE);
-		if (!success) {
-			String errorMessage = jsonObject.getString("message");
-			throw new BusinessException(errorMessage);
-		}
+		resultHandle(jsonObject, () -> null, (message) -> {
+			throw new BusinessException(message);
+		});
 	}
 
 	/**查询签到位置历史记录
@@ -612,12 +564,10 @@ public class SignApiService {
 		HttpEntity<LinkedMultiValueMap<String, Object>> httpEntity = new HttpEntity(params, httpHeaders);
 		String result = restTemplate.postForObject(SIGN_IN_POSITION_HISTORY_LIST_URL, httpEntity, String.class);
 		JSONObject jsonObject = JSON.parseObject(result);
-		Boolean success = jsonObject.getBoolean("success");
-		success = Optional.ofNullable(success).orElse(Boolean.FALSE);
-		if (success) {
-			return JSON.parseArray(jsonObject.getString("data"), String.class);
-		}
-		return Lists.newArrayList();
+		List<String> positions = resultHandle(jsonObject, () -> JSON.parseArray(jsonObject.getString("data"), String.class), (message) -> {
+
+		});
+		return Optional.ofNullable(positions).orElse(Lists.newArrayList());
 	}
 
 	/**新增签到位置历史记录
@@ -673,14 +623,9 @@ public class SignApiService {
 		String url = String.format(STAT_SINGLE_ACTIVITY_URL, signId, startTime, endTime);
 		String result = restTemplate.getForObject(url, String.class);
 		JSONObject jsonObject = JSON.parseObject(result);
-		Boolean success = jsonObject.getBoolean("success");
-		success = Optional.ofNullable(success).orElse(Boolean.FALSE);
-		if (success) {
-			return JSON.parseObject(jsonObject.getString("data"), SignActivityStatDTO.class);
-		} else {
-			String errorMessage = jsonObject.getString("message");
-			throw new BusinessException(errorMessage);
-		}
+		return resultHandle(jsonObject, () -> JSON.parseObject(jsonObject.getString("data"), SignActivityStatDTO.class), (message) -> {
+			throw new BusinessException(message);
+		});
 	}
 
 	/**获取活动报名签到参与范围描述
@@ -694,14 +639,9 @@ public class SignApiService {
 		String url = String.format(SIGN_PARTICIPATE_SCOPE_DESCRIBE_URL, signId);
 		String result = restTemplate.getForObject(url, String.class);
 		JSONObject jsonObject = JSON.parseObject(result);
-		Boolean success = jsonObject.getBoolean("success");
-		success = Optional.ofNullable(success).orElse(Boolean.FALSE);
-		if (success) {
-			return jsonObject.getString("data");
-		} else {
-			String errorMessage = jsonObject.getString("message");
-			throw new BusinessException(errorMessage);
-		}
+		return resultHandle(jsonObject, () -> jsonObject.getString("data"), (message) -> {
+			throw new BusinessException(message);
+		});
 	}
 
 	/**获取活动报名签到签到数
@@ -715,15 +655,9 @@ public class SignApiService {
 		String url = String.format(STAT_ACTIVITY_SIGNED_NUM_URL, signId);
 		String result = restTemplate.getForObject(url, String.class);
 		JSONObject jsonObject = JSON.parseObject(result);
-		Boolean success = jsonObject.getBoolean("success");
-		success = Optional.ofNullable(success).orElse(Boolean.FALSE);
-		if (success) {
-			return jsonObject.getInteger("data");
-		} else {
-
-			String errorMessage = jsonObject.getString("message");
-			throw new BusinessException(errorMessage);
-		}
+		return resultHandle(jsonObject, () -> jsonObject.getInteger("data"), (message) -> {
+			throw new BusinessException(message);
+		});
 	}
 
 	/**获取活动报名签到签到率
@@ -737,14 +671,9 @@ public class SignApiService {
 		String url = String.format(STAT_ACTIVITY_SIGNED_RATE_URL, signId);
 		String result = restTemplate.getForObject(url, String.class);
 		JSONObject jsonObject = JSON.parseObject(result);
-		Boolean success = jsonObject.getBoolean("success");
-		success = Optional.ofNullable(success).orElse(Boolean.FALSE);
-		if (success) {
-			return jsonObject.getBigDecimal("data");
-		} else {
-			String errorMessage = jsonObject.getString("message");
-			throw new BusinessException(errorMessage);
-		}
+		return resultHandle(jsonObject, () -> jsonObject.getBigDecimal("data"), (message) -> {
+			throw new BusinessException(message);
+		});
 	}
 	/**获取活动报名签到合格人数
 	 * @Description
@@ -757,13 +686,8 @@ public class SignApiService {
 		String url = String.format(STAT_ACTIVITY_QUALIFIED_NUMS_URL, signId);
 		String result = restTemplate.getForObject(url, String.class);
 		JSONObject jsonObject = JSON.parseObject(result);
-		Boolean success = jsonObject.getBoolean("success");
-		success = Optional.ofNullable(success).orElse(Boolean.FALSE);
-		if (success) {
-			return jsonObject.getInteger("data");
-		} else {
-			String errorMessage = jsonObject.getString("message");
-			throw new BusinessException(errorMessage);
-		}
+		return resultHandle(jsonObject, () -> jsonObject.getInteger("data"), (message) -> {
+			throw new BusinessException(message);
+		});
 	}
 }
