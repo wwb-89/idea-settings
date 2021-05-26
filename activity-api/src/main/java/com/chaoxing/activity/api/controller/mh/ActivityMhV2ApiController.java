@@ -114,7 +114,7 @@ public class ActivityMhV2ApiController {
 			mhGeneralAppResultDataFields.addAll(btns);
 		}else{
 			// 是不是管理员
-			if (activityValidationService.isCreator(activity, uid)) {
+			if (activityValidationService.isManageAble(activity, uid)) {
 				mhGeneralAppResultDataFields.addAll(buildBtnField("管理", getFlag(availableFlags), activityQueryService.getActivityManageUrl(activity.getId()), "2"));
 			}
 			// 评价
@@ -167,7 +167,7 @@ public class ActivityMhV2ApiController {
 		Boolean openWork = activity.getOpenWork();
 		openWork = Optional.ofNullable(openWork).orElse(Boolean.FALSE);
 		Integer workId = activity.getWorkId();
-		boolean isManager = activityValidationService.isCreator(activity, uid);
+		boolean isManager = activityValidationService.isManageAble(activity, uid);
 		// 报名信息
 		boolean existSignUp = CollectionUtils.isNotEmpty(signUpIds);
 		boolean existSignUpInfo = false;
