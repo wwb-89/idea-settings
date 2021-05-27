@@ -100,8 +100,6 @@ body.overhidden {
 
 .index .activity-list ul li {
   border-radius: 0.3125rem;
-  /* -webkit-box-shadow: 0px 0.3125rem 0.9375rem 0px rgba(0, 0, 0, 0.07);
-          box-shadow: 0px 0.3125rem 0.9375rem 0px rgba(0, 0, 0, 0.07); */
   background: #FFFFFF;
   overflow: hidden;
   margin-bottom: 0.9375rem;
@@ -312,11 +310,12 @@ body.overhidden {
   font-size: 0.9375rem;
 }
 
-.index .activity-list .img-box{
+.index .activity-list .img-box {
   position: relative;
   width: 100%;
   height: 8.875rem;
 }
+
 .index .activity-list .img-box .num {
   position: absolute;
   left: 0;
@@ -341,16 +340,21 @@ body.overhidden {
   margin-left: .75rem;
   margin-right: .375rem;
 }
-.index .activity-list .mask{
+
+.index .activity-list .mask {
   position: absolute;
   top: 0;
   left: 0;
   bottom: 0;
   right: 0;
   z-index: 1;
+  background: -webkit-gradient(linear, left top, left bottom, from(rgba(0, 0, 0, 0)), to(rgba(0, 0, 0, 0.4)));
+  background: -webkit-linear-gradient(top, rgba(0, 0, 0, 0) 0%, rgba(0, 0, 0, 0.4) 100%);
+  background: -o-linear-gradient(top, rgba(0, 0, 0, 0) 0%, rgba(0, 0, 0, 0.4) 100%);
   background: linear-gradient(180deg, rgba(0, 0, 0, 0) 0%, rgba(0, 0, 0, 0.4) 100%);
 }
-.index .activity-list .img-box .status{
+
+.index .activity-list .img-box .status {
   position: absolute;
   right: 0;
   top: 0;
@@ -361,18 +365,31 @@ body.overhidden {
   color: #ffffff;
   border-radius: 0px .28125rem 0px .3125rem;
 }
-.index .activity-list .img-box .status.status1{
+
+.index .activity-list .img-box .status.status1 {
+  background: -webkit-linear-gradient(350.6deg, #91D3FF -0.2%, #51B9FF 99.8%);
+  background: -o-linear-gradient(350.6deg, #91D3FF -0.2%, #51B9FF 99.8%);
   background: linear-gradient(99.4deg, #91D3FF -0.2%, #51B9FF 99.8%);
 }
-.index .activity-list .img-box .status.status2{
+
+.index .activity-list .img-box .status.status2 {
+  background: -webkit-linear-gradient(353.32deg, #FFB763 1.14%, #FF8B20 98.13%);
+  background: -o-linear-gradient(353.32deg, #FFB763 1.14%, #FF8B20 98.13%);
   background: linear-gradient(96.68deg, #FFB763 1.14%, #FF8B20 98.13%);
 }
-.index .activity-list .img-box .status.status3{
+
+.index .activity-list .img-box .status.status3 {
+  background: -webkit-linear-gradient(170.6deg, #24BB1D 0.2%, #48DF4E 100.2%);
+  background: -o-linear-gradient(170.6deg, #24BB1D 0.2%, #48DF4E 100.2%);
   background: linear-gradient(279.4deg, #24BB1D 0.2%, #48DF4E 100.2%);
 }
-.index .activity-list .img-box .status.status4{
+
+.index .activity-list .img-box .status.status4 {
+  background: -webkit-linear-gradient(350.6deg, #ACB8BF -0.2%, #7F8E98 99.8%);
+  background: -o-linear-gradient(350.6deg, #ACB8BF -0.2%, #7F8E98 99.8%);
   background: linear-gradient(99.4deg, #ACB8BF -0.2%, #7F8E98 99.8%);
 }
+
 .index .searchbefore {
   width: 100%;
   display: -webkit-box;
@@ -397,8 +414,11 @@ body.overhidden {
   border-radius: .9375rem;
   font-size: .8125rem;
   color: #999999;
+  -webkit-transition: all 200ms ease-in-out;
+  -o-transition: all 200ms ease-in-out;
   transition: all 200ms ease-in-out;
 }
+
 .index .searchbefore i {
   display: inline-block;
   width: .96875rem;
@@ -409,7 +429,8 @@ body.overhidden {
   position: relative;
   top: -0.0625rem;
 }
-.index .searchDiv .delete{
+
+.index .searchDiv .delete {
   position: absolute;
   right: .9375rem;
   top: 0;

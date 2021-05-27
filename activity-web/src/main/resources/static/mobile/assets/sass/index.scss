@@ -21,11 +21,11 @@ body{
           display: inline-block;
           width: 1rem;
           height: 1rem;
-          background: url("../images/searchIcon.png") no-repeat;
+          background: url("../images/icon-30-search.png") no-repeat;
           background-size: 100%;
       }
       input {
-      width: 100%; 
+      width: 100%;
       border: none;
       line-height: 1.25rem;
       padding: 0.3125rem 0;
@@ -77,7 +77,7 @@ body{
         height: 1.25rem;
         line-height: 1.25rem;
         color: #0084FF;
-        font-size: 0.875rem;
+        font-size: 1rem;
     }
   }
   .activity-list {
@@ -85,7 +85,6 @@ body{
     ul {
       li {
         border-radius: 0.3125rem;
-            // box-shadow: 0px 0.3125rem 0.9375rem 0px rgba(0,0,0,0.07); 
             background: #FFFFFF;
             overflow: hidden;
             margin-bottom: 0.9375rem;
@@ -173,6 +172,7 @@ body{
   left: 0;
   right: 0;
   bottom: 0;
+  z-index: 10;
   .popInner {
     position: absolute;
     width: 100%;
@@ -343,6 +343,7 @@ body{
   border-radius: .9375rem;
   font-size: .8125rem;
   color: #999999;
+  transition: all 200ms ease-in-out;
 }
 .index .searchbefore i {
   display: inline-block;
