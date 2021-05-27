@@ -277,4 +277,16 @@ public class PassportApiService {
 		return result;
 	}
 
+	/**根据uid查询用户真实姓名
+	 * @Description 
+	 * @author wwb
+	 * @Date 2021-05-27 23:17:43
+	 * @param uid
+	 * @return java.lang.String
+	*/
+	public String getUserRealName(Integer uid) {
+		PassportUserDTO passportUser = getByUid(uid);
+		return passportUser.getRealName();
+	}
+
 }

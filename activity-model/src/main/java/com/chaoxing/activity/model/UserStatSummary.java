@@ -28,6 +28,8 @@ public class UserStatSummary {
     private Integer uid;
     /** 登录名; column: uname*/
     private String uname;
+    /** 真实姓名; column: real_name*/
+    private String realName;
     /** 手机号; column: mobile*/
     private String mobile;
     /** 参与的活动数; column: participate_activity_num*/

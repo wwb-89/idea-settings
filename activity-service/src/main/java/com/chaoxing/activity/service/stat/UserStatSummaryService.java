@@ -6,6 +6,7 @@ import com.chaoxing.activity.dto.sign.UserSignStatSummaryDTO;
 import com.chaoxing.activity.mapper.UserStatSummaryMapper;
 import com.chaoxing.activity.model.UserStatSummary;
 import com.chaoxing.activity.service.activity.ActivityStatQueryService;
+import com.chaoxing.activity.service.manager.PassportApiService;
 import com.chaoxing.activity.service.manager.module.SignApiService;
 import com.chaoxing.activity.service.user.UserStatService;
 import lombok.extern.slf4j.Slf4j;
@@ -36,6 +37,8 @@ public class UserStatSummaryService {
     private ActivityStatQueryService activityStatQueryService;
     @Resource
     private UserStatService userStatService;
+    @Resource
+    private PassportApiService passportApiService;
 
     /**更新用户签到数
      * @Description 
@@ -70,6 +73,7 @@ public class UserStatSummaryService {
             // 新增用户数据
             UserStatSummary userStatSummary = UserStatSummary.builder()
                     .uid(uid)
+                    .realName(passportApiService.getUserRealName(uid))
                     .signedInNum(userSignStatSummary.getValidSignedInNum())
                     .signInRate(userSignStatSummary.getSignedInRate())
                     .totalParticipateInLength(userSignStatSummary.getParticipateTimeLength())
@@ -104,6 +108,7 @@ public class UserStatSummaryService {
             // 新增用户数据
             UserStatSummary userStatSummary = UserStatSummary.builder()
                     .uid(uid)
+                    .realName(passportApiService.getUserRealName(uid))
                     .qualifiedNum(qualifiedResultNum)
                     .build();
             userStatSummaryMapper.insert(userStatSummary);
@@ -134,6 +139,7 @@ public class UserStatSummaryService {
             // 新增
             UserStatSummary userStatSummary = UserStatSummary.builder()
                     .uid(uid)
+                    .realName(passportApiService.getUserRealName(uid))
                     .ratingNum(ratingNum)
                     .build();
             userStatSummaryMapper.insert(userStatSummary);
