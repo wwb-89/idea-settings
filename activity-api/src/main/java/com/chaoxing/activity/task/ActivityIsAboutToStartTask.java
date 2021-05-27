@@ -33,7 +33,7 @@ public class ActivityIsAboutToStartTask {
 	 * @param 
 	 * @return void
 	*/
-	@Scheduled(fixedDelay = 1L)
+	@Scheduled(fixedDelay = 100L)
 	public void handle() {
 		ZSetOperations.TypedTuple<Integer> integerTypedTuple = activityIsAboutToStartQueueService.get();
 		if (integerTypedTuple == null) {

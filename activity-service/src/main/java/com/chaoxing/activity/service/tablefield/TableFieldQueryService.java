@@ -8,6 +8,7 @@ import com.chaoxing.activity.mapper.TableFieldMapper;
 import com.chaoxing.activity.model.OrgTableField;
 import com.chaoxing.activity.model.TableField;
 import com.chaoxing.activity.model.TableFieldDetail;
+import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
@@ -122,12 +123,79 @@ public class TableFieldQueryService {
     * @return com.chaoxing.activity.model.TableField
     */
     private TableField getOrgActivityStatTableField() {
-        return tableFieldMapper.selectOne(new QueryWrapper<TableField>()
-                .lambda()
-                .eq(TableField::getAssociatedType, TableField.AssociatedType.ORG)
-                .eq(TableField::getType, TableField.Type.ACTIVITY_STAT)
-                .eq(TableField::getDeleted, Boolean.FALSE));
+        return getTableField(TableField.Type.ACTIVITY_STAT, TableField.AssociatedType.ORG);
     }
 
+    /**根据类型和关联的类型查询TableField
+     * @Description 
+     * @author wwb
+     * @Date 2021-05-27 17:40:46
+     * @param type
+     * @param associatedType
+     * @return com.chaoxing.activity.model.TableField
+    */
+    public TableField getTableField(TableField.Type type, TableField.AssociatedType associatedType) {
+        List<TableField> tableFields = tableFieldMapper.selectList(new QueryWrapper<TableField>()
+                .lambda()
+                .eq(TableField::getAssociatedType, type.getValue())
+                .eq(TableField::getType, associatedType.getValue())
+                .eq(TableField::getDeleted, Boolean.FALSE));
+        if (CollectionUtils.isNotEmpty(tableFields)) {
+            return tableFields.get(0);
+        }
+        return null;
+    }
+
+    /**根据tableFieldId查询tableFieldDetail列表
+     * @Description 
+     * @author wwb
+     * @Date 2021-05-27 18:05:35
+     * @param tableFieldId
+     * @return java.util.List<com.chaoxing.activity.model.TableFieldDetail>
+    */
+    public List<TableFieldDetail> listByTableFieldId(Integer tableFieldId) {
+        return tableFieldDetailMapper.selectList(new QueryWrapper<TableFieldDetail>()
+                .lambda()
+                .eq(TableFieldDetail::getTableFieldId, tableFieldId)
+                .eq(TableFieldDetail::getDeleted, false)
+        );
+    }
+
+    /**查询机构配置的tableFieldDetail
+     * @Description 
+     * @author wwb
+     * @Date 2021-05-27 18:09:10
+     * @param fid
+     * @param type
+     * @param associatedType
+     * @return java.util.List<com.chaoxing.activity.model.OrgTableField>
+    */
+    public List<OrgTableField> listOrgTableField(Integer fid, TableField.Type type, TableField.AssociatedType associatedType) {
+        List<OrgTableField> result = Lists.newArrayList();
+        // 根据type和associatedType查询TableField
+        TableField tableField = getTableField(type, associatedType);
+        if (tableField == null) {
+            return result;
+        }
+        Integer tableFieldId = tableField.getId();
+        return listOrgTableField(fid, tableFieldId);
+    }
+
+    /**根据类型和关联类型查询tableFieldDetail列表
+     * @Description 
+     * @author wwb
+     * @Date 2021-05-27 18:11:14
+     * @param type
+     * @param associatedType
+     * @return java.util.List<com.chaoxing.activity.model.TableFieldDetail>
+    */
+    public List<TableFieldDetail> listTableFieldDetail(TableField.Type type, TableField.AssociatedType associatedType) {
+        List<TableFieldDetail> tableFieldDetails = Lists.newArrayList();
+        TableField tableField = getTableField(type, associatedType);
+        if (tableField == null) {
+            return tableFieldDetails;
+        }
+        return listByTableFieldId(tableField.getId());
+    }
 
 }
