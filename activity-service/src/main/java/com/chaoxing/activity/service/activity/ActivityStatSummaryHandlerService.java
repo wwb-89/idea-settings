@@ -1,5 +1,7 @@
 package com.chaoxing.activity.service.activity;
 
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.chaoxing.activity.mapper.ActivityStatSummaryMapper;
 import com.chaoxing.activity.model.Activity;
 import com.chaoxing.activity.model.ActivityStatSummary;
@@ -60,7 +62,9 @@ public class ActivityStatSummaryHandlerService {
     }
 
     private void handleActivityStatSummaryCal(Integer activityId, Integer signId) {
-        ActivityStatSummary statSummary = activityStatSummaryMapper.selectById(activityId);
+        ActivityStatSummary statSummary = activityStatSummaryMapper.selectOne(new QueryWrapper<ActivityStatSummary>()
+                .lambda()
+                .eq(ActivityStatSummary::getActivityId, activityId));
         Integer signedInNums = signApiService.getActivitySignedInNums(signId);
         BigDecimal signInRate = signApiService.getActivitySignInRate(signId);
         Integer qualifiedNums = signApiService.getActivityQualifiedNums(signId);
@@ -80,7 +84,9 @@ public class ActivityStatSummaryHandlerService {
         if (isNew) {
             activityStatSummaryMapper.insert(statSummary);
         } else {
-            activityStatSummaryMapper.updateById(statSummary);
+            activityStatSummaryMapper.update(statSummary, new UpdateWrapper<ActivityStatSummary>()
+                    .lambda()
+                    .eq(ActivityStatSummary::getActivityId, statSummary.getActivityId()));
         }
     }
 }
