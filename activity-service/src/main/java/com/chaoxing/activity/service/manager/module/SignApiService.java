@@ -13,6 +13,7 @@ import com.chaoxing.activity.dto.sign.ActivityBlockDetailSignStatDTO;
 import com.chaoxing.activity.dto.sign.SignActivityManageIndexDTO;
 import com.chaoxing.activity.dto.sign.UserSignStatSummaryDTO;
 import com.chaoxing.activity.dto.stat.SignActivityStatDTO;
+import com.chaoxing.activity.model.ActivityStatSummary;
 import com.chaoxing.activity.util.CookieUtils;
 import com.chaoxing.activity.util.DateUtils;
 import com.chaoxing.activity.util.exception.BusinessException;
@@ -31,7 +32,6 @@ import org.springframework.web.client.RestTemplate;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
-import java.math.BigDecimal;
 import java.time.ZoneOffset;
 import java.util.List;
 import java.util.Optional;
@@ -70,14 +70,6 @@ public class SignApiService {
 	private static final String ACTIVITY_BLOCK_DETAIL_STAT_URL = SIGN_API_DOMAIN + "/stat/sign/activity-block-detail?signId=%s&uid=%s";
 	/** 用户已报名的报名签到列表url */
 	private static final String USER_SIGNED_UP_URL = SIGN_API_DOMAIN + "/stat/sign/user-signed-up/%d";
-	/** 统计活动报名签到对应的签到数url */
-	private static final String STAT_ACTIVITY_SIGNED_NUM_URL = SIGN_API_DOMAIN + "/stat/sign/%d/signed-in-nums";
-	/** 统计活动报名签到对应的签到率url */
-	private static final String STAT_ACTIVITY_SIGNED_RATE_URL = SIGN_API_DOMAIN + "/stat/sign/%d/sign-in-rate";
-	/** 统计活动报名签到对应的合格人数url */
-	private static final String STAT_ACTIVITY_QUALIFIED_NUMS_URL = SIGN_API_DOMAIN + "/stat/sign/%d/qualified-nums";
-	/** 统计活动平均参与时长url */
-	private static final String STAT_ACTIVITY_AVERAGE_PARTICIPATE_TIME_LENGTH_URL = SIGN_API_DOMAIN + "/stat/sign/%d/average/participate-time-length";
 	/** 通知已收藏url */
 	private static final String NOTICE_COLLECTED_URL = SIGN_API_DOMAIN + "/sign/%d/notice/collected";
 	/** 报名签到参与范围描述yrl */
@@ -88,6 +80,8 @@ public class SignApiService {
 	/** 撤销报名 */
 	private static final String REVOCATION_SIGN_UP_URL = SIGN_API_DOMAIN + "/sign-up/%d/revocation";
 
+	/** 统计活动报名签到对应的活动统计汇总记录url */
+	private static final String STAT_ACTIVITY_SUMMARY_URL = SIGN_API_DOMAIN + "/stat/sign/%d/activity-stat-summary";
 	/** 报名签到报名成功的uid列表url */
 	private static final String SIGN_SIGNED_UP_UIDS_URL = SIGN_API_DOMAIN + "/sign/%s/uid/signed-up";
 	/** 用户是否已报名（报名成功）url */
@@ -651,69 +645,18 @@ public class SignApiService {
 		});
 	}
 
-	/**获取活动报名签到签到数
-	* @Description
-	* @author huxiaolong
-	* @Date 2021-05-25 15:42:02
-	* @param signId
-	* @return java.lang.Integer
-	*/
-	public Integer getActivitySignedInNums(Integer signId) {
-		String url = String.format(STAT_ACTIVITY_SIGNED_NUM_URL, signId);
-		String result = restTemplate.getForObject(url, String.class);
-		JSONObject jsonObject = JSON.parseObject(result);
-		return resultHandle(jsonObject, () -> jsonObject.getInteger("data"), (message) -> {
-			log.error("获取报名签到:{}签到数:{}", signId, message);
-			throw new BusinessException(message);
-		});
-	}
-
-	/**获取活动报名签到签到率
+	/**获取活动统计汇总记录
 	 * @Description
 	 * @author huxiaolong
 	 * @Date 2021-05-25 15:42:02
 	 * @param signId
 	 * @return java.lang.Integer
 	 */
-	public BigDecimal getActivitySignInRate(Integer signId) {
-		String url = String.format(STAT_ACTIVITY_SIGNED_RATE_URL, signId);
+	public ActivityStatSummary getActivityStatSummary(Integer signId) {
+		String url = String.format(STAT_ACTIVITY_SUMMARY_URL, signId);
 		String result = restTemplate.getForObject(url, String.class);
 		JSONObject jsonObject = JSON.parseObject(result);
-		return resultHandle(jsonObject, () -> jsonObject.getBigDecimal("data"), (message) -> {
-			log.error("获取报名签到:{}签到率:{}", signId, message);
-			throw new BusinessException(message);
-		});
-	}
-	/**获取活动报名签到合格人数
-	 * @Description
-	 * @author huxiaolong
-	 * @Date 2021-05-25 15:42:02
-	 * @param signId
-	 * @return java.lang.Integer
-	 */
-	public Integer getActivityQualifiedNums(Integer signId) {
-		String url = String.format(STAT_ACTIVITY_QUALIFIED_NUMS_URL, signId);
-		String result = restTemplate.getForObject(url, String.class);
-		JSONObject jsonObject = JSON.parseObject(result);
-		return resultHandle(jsonObject, () -> jsonObject.getInteger("data"), (message) -> {
-			log.error("获取报名签到:{}合格人数:{}", signId, message);
-			throw new BusinessException(message);
-		});
-	}
-
-	/**获取活动平均参与时长
-	 * @Description
-	 * @author huxiaolong
-	 * @Date 2021-05-25 15:42:02
-	 * @param signId
-	 * @return java.lang.Integer
-	 */
-	public Integer getActivityAvgParticipateTimeLength(Integer signId) {
-		String url = String.format(STAT_ACTIVITY_AVERAGE_PARTICIPATE_TIME_LENGTH_URL, signId);
-		String result = restTemplate.getForObject(url, String.class);
-		JSONObject jsonObject = JSON.parseObject(result);
-		return resultHandle(jsonObject, () -> jsonObject.getInteger("data"), (message) -> {
-			log.error("获取报名签到:{}平均参与时长:{}", signId, message);
+		return resultHandle(jsonObject, () -> jsonObject.getJSONObject("data").toJavaObject(ActivityStatSummary.class), (message) -> {
 			throw new BusinessException(message);
 		});
 	}

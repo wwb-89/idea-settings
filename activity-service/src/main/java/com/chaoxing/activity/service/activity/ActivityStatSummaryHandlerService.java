@@ -12,7 +12,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
-import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 /**
@@ -65,10 +64,7 @@ public class ActivityStatSummaryHandlerService {
         ActivityStatSummary statSummary = activityStatSummaryMapper.selectOne(new QueryWrapper<ActivityStatSummary>()
                 .lambda()
                 .eq(ActivityStatSummary::getActivityId, activityId));
-        Integer signedInNums = signApiService.getActivitySignedInNums(signId);
-        BigDecimal signInRate = signApiService.getActivitySignInRate(signId);
-        Integer qualifiedNums = signApiService.getActivityQualifiedNums(signId);
-        Integer avgParticipateTimeLength = signApiService.getActivityAvgParticipateTimeLength(signId);
+        ActivityStatSummary latestStatSummary = signApiService.getActivityStatSummary(signId);
         boolean isNew = Boolean.FALSE;
         if (statSummary == null) {
             isNew = Boolean.TRUE;
@@ -76,10 +72,10 @@ public class ActivityStatSummaryHandlerService {
                     .activityId(activityId)
                     .createTime(LocalDateTime.now()).build();
         }
-        statSummary.setSignedInNum(signedInNums);
-        statSummary.setSignInRate(signInRate);
-        statSummary.setQualifiedNum(qualifiedNums);
-        statSummary.setAvgParticipateInLength(avgParticipateTimeLength);
+        statSummary.setSignedInNum(latestStatSummary.getSignedInNum());
+        statSummary.setSignInRate(latestStatSummary.getSignInRate());
+        statSummary.setQualifiedNum(latestStatSummary.getQualifiedNum());
+        statSummary.setAvgParticipateInLength(latestStatSummary.getAvgParticipateInLength());
         statSummary.setUpdateTime(LocalDateTime.now());
         if (isNew) {
             activityStatSummaryMapper.insert(statSummary);

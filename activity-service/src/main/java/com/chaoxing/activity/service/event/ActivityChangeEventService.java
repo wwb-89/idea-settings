@@ -39,6 +39,8 @@ public class ActivityChangeEventService {
 	private ActivityIntegralChangeQueueService activityIntegralChangeQueueService;
 	@Resource
 	private ActivityDataChangeQueueService activityDataChangeQueueService;
+	@Resource
+	private ActivityStatSummaryQueueService activityStatSummaryQueueService;
 
 	/**活动数据改变
 	 * @Description 
@@ -50,6 +52,8 @@ public class ActivityChangeEventService {
 	 * @return void
 	*/
 	public void dataChange(Activity activity, Activity oldActivity, BigDecimal oldIntegralValue) {
+		// 通知活动统计表单新建统计记录
+		activityStatSummaryQueueService.addSignInStat(activity.getId());
 		// 往表单推送数据
 		activityDataPushQueueService.update(activity);
 		// 订阅活动状态处理
