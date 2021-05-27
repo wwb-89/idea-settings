@@ -105,8 +105,8 @@ public class SignApiService {
 
 	/** 通知活动已评价 */
 	private static final String NOTICE_HAVE_RATING_URL = SIGN_API_DOMAIN + "/sign/%d/notice/rating?uid=%d";
-	/** 通知第二课堂积分已变更 */
-	private static final String NOTICE_SECOND_CLASSROOM_INTEGRAL_CHANGE_URL = SIGN_API_DOMAIN + "/sign/%d/notice/second-classroom-integral-change";
+	/** 通知报名签到活动积分已变更 */
+	private static final String NOTICE_ACTIVITY_INTEGRAL_CHANGE_URL = SIGN_API_DOMAIN + "/sign/%d/notice/second-classroom-integral-change";
 	
 	/** 签到位置搜索缓存 */
 	private static final String SIGN_IN_POSITION_HISTORY_LIST_URL = SIGN_API_DOMAIN + "/sign-in/position-history";
@@ -535,7 +535,7 @@ public class SignApiService {
 		});
 	}
 
-	/**通知第二课堂积分已变更
+	/**通知报名签到活动积分已修改
 	 * @Description 
 	 * @author wwb
 	 * @Date 2021-03-26 21:50:30
@@ -543,7 +543,7 @@ public class SignApiService {
 	 * @return void
 	*/
 	public void noticeSecondClassroomIntegralChange(Integer signId) {
-		String url = String.format(NOTICE_SECOND_CLASSROOM_INTEGRAL_CHANGE_URL, signId);
+		String url = String.format(NOTICE_ACTIVITY_INTEGRAL_CHANGE_URL, signId);
 		String result = restTemplate.getForObject(url, String.class);
 		JSONObject jsonObject = JSON.parseObject(result);
 		resultHandle(jsonObject, () -> null, (message) -> {
