@@ -7,6 +7,7 @@ import com.chaoxing.activity.mapper.UserStatSummaryMapper;
 import com.chaoxing.activity.model.UserStatSummary;
 import com.chaoxing.activity.service.activity.ActivityStatQueryService;
 import com.chaoxing.activity.service.manager.module.SignApiService;
+import com.chaoxing.activity.service.user.UserStatService;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.stereotype.Service;
@@ -33,6 +34,8 @@ public class UserStatSummaryService {
     private SignApiService signApiService;
     @Resource
     private ActivityStatQueryService activityStatQueryService;
+    @Resource
+    private UserStatService userStatService;
 
     /**更新用户签到数
      * @Description 
@@ -102,6 +105,36 @@ public class UserStatSummaryService {
             UserStatSummary userStatSummary = UserStatSummary.builder()
                     .uid(uid)
                     .qualifiedNum(qualifiedResultNum)
+                    .build();
+            userStatSummaryMapper.insert(userStatSummary);
+        }
+    }
+
+    /**更新用户评价数
+     * @Description 
+     * @author wwb
+     * @Date 2021-05-27 23:07:47
+     * @param uid
+     * @return void
+    */
+    public void updateUserRatingNum(Integer uid) {
+        Integer ratingNum = userStatService.countUserRatingNum(uid);
+        List<UserStatSummary> userStatSummaries = userStatSummaryMapper.selectList(new QueryWrapper<UserStatSummary>()
+                .lambda()
+                .eq(UserStatSummary::getUid, uid)
+        );
+        if (CollectionUtils.isNotEmpty(userStatSummaries)) {
+            // 更新
+            userStatSummaryMapper.update(null, new UpdateWrapper<UserStatSummary>()
+                    .lambda()
+                    .eq(UserStatSummary::getUid, uid)
+                    .set(UserStatSummary::getRatingNum, ratingNum)
+            );
+        } else {
+            // 新增
+            UserStatSummary userStatSummary = UserStatSummary.builder()
+                    .uid(uid)
+                    .ratingNum(ratingNum)
                     .build();
             userStatSummaryMapper.insert(userStatSummary);
         }

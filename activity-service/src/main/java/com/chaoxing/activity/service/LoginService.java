@@ -8,7 +8,7 @@ import com.chaoxing.activity.model.Activity;
 import com.chaoxing.activity.model.LoginCustom;
 import com.chaoxing.activity.model.User;
 import com.chaoxing.activity.service.manager.PassportApiService;
-import com.chaoxing.activity.service.manager.UcApiService;
+import com.chaoxing.activity.service.user.UserService;
 import com.chaoxing.activity.util.constant.CacheConstant;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
@@ -39,8 +39,6 @@ public class LoginService {
 	private UserService userService;
 	@Resource
 	private PassportApiService passportApiService;
-	@Resource
-	private UcApiService ucApiService;
 	@Resource
 	private LoginCustomMapper loginCustomMapper;
 

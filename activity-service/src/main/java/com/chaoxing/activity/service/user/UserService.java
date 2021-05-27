@@ -1,4 +1,4 @@
-package com.chaoxing.activity.service;
+package com.chaoxing.activity.service.user;
 
 import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;

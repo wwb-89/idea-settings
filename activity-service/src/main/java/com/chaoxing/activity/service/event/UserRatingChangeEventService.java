@@ -1,6 +1,7 @@
 package com.chaoxing.activity.service.event;
 
 import com.chaoxing.activity.service.queue.UserRatingQueueService;
+import com.chaoxing.activity.service.stat.UserStatSummaryService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
@@ -20,6 +21,8 @@ public class UserRatingChangeEventService {
 
 	@Resource
 	private UserRatingQueueService userRatingQueueService;
+	@Resource
+	private UserStatSummaryService userStatSummaryService;
 
 	/**用户评价变更
 	 * @Description 
@@ -30,6 +33,8 @@ public class UserRatingChangeEventService {
 	 * @return void
 	*/
 	public void change(Integer uid, Integer signId) {
+		// 更新用户的评价数量
+		userStatSummaryService.updateUserRatingNum(uid);
 		userRatingQueueService.add(uid, signId);
 	}
 
