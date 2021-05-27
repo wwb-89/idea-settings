@@ -658,4 +658,25 @@ public class ActivityQueryService {
 		}
 		return activityMapper.selectPage(page, wrapper);
 	}
+
+	/**查询pageId不为空websiteId为空的活动id列表
+	 * @Description 
+	 * @author wwb
+	 * @Date 2021-05-27 10:39:40
+	 * @param 
+	 * @return java.util.List<java.lang.Integer>
+	*/
+	public List<Integer> listEmptyWebsiteIdActivityId() {
+		List<Activity> activities = activityMapper.selectList(new QueryWrapper<Activity>()
+				.lambda()
+				.isNotNull(Activity::getPageId)
+				.isNull(Activity::getWebsiteId)
+				.select(Activity::getId)
+		);
+		if (CollectionUtils.isNotEmpty(activities)) {
+			return activities.stream().map(Activity::getId).collect(Collectors.toList());
+		}
+		return Lists.newArrayList();
+	}
+
 }

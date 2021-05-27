@@ -31,7 +31,7 @@ public class ActivityWebSiteIdSyncTask {
      * @param 
      * @return void
     */
-    @Scheduled(fixedDelay = 1000L)
+    @Scheduled(fixedDelay = 100L)
     public void sync() {
         Integer activityId = activityWebsiteIdSyncQueueService.get();
         if (activityId == null) {

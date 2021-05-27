@@ -11,6 +11,7 @@ import com.chaoxing.activity.dto.module.SignAddEditDTO;
 import com.chaoxing.activity.dto.module.SignAddEditResultDTO;
 import com.chaoxing.activity.dto.sign.ActivityBlockDetailSignStatDTO;
 import com.chaoxing.activity.dto.sign.SignActivityManageIndexDTO;
+import com.chaoxing.activity.dto.sign.UserSignStatSummaryDTO;
 import com.chaoxing.activity.dto.stat.SignActivityStatDTO;
 import com.chaoxing.activity.util.CookieUtils;
 import com.chaoxing.activity.util.DateUtils;
@@ -77,8 +78,6 @@ public class SignApiService {
 	private static final String STAT_ACTIVITY_QUALIFIED_NUMS_URL = SIGN_API_DOMAIN + "/stat/sign/%d/qualified-nums";
 	/** 统计活动平均参与时长url */
 	private static final String STAT_ACTIVITY_AVERAGE_PARTICIPATE_TIME_LENGTH_URL = SIGN_API_DOMAIN + "/stat/sign/%d/average/participate-time-length";
-	/** 统计用户总的参与时长url */
-	private static final String STAT_USER_TOTAL_PARTICIPATE_TIME_LENGTH_URL = SIGN_API_DOMAIN + "/stat/sign/%d/user/total-participate-time-length";
 	/** 通知已收藏url */
 	private static final String NOTICE_COLLECTED_URL = SIGN_API_DOMAIN + "/sign/%d/notice/collected";
 	/** 报名签到参与范围描述yrl */
@@ -89,10 +88,14 @@ public class SignApiService {
 	/** 撤销报名 */
 	private static final String REVOCATION_SIGN_UP_URL = SIGN_API_DOMAIN + "/sign-up/%d/revocation";
 
-	/** 查询报名成功的uid列表url */
-	private static final String SIGNED_UP_UIDS_URL = SIGN_API_DOMAIN + "/sign/%s/uid/signed-up";
+	/** 报名签到报名成功的uid列表url */
+	private static final String SIGN_SIGNED_UP_UIDS_URL = SIGN_API_DOMAIN + "/sign/%s/uid/signed-up";
 	/** 用户是否已报名（报名成功）url */
 	private static final String USER_IS_SIGNED_UP_URL = SIGN_API_DOMAIN + "/sign/%d/is-signed-up?uid=%d";
+	/** 用户报名签到统计汇总 */
+	private static final String USER_SIGN_STAT_SUMMARY_URL = SIGN_API_DOMAIN + "/stat/user/%d/sign-stat-summary";
+	/** 用户合格的成绩数量 */
+	private static final String USER_QUALIFIED_RESULT_NUM_URL = SIGN_API_DOMAIN + "/stat/user/%d/qualified_result_num";
 
 	/** 报名名单url */
 	private static final String SIGN_UP_USER_LIST_URL = SIGN_WEB_DOMAIN + "/sign-up/%d/user-list";
@@ -372,7 +375,7 @@ public class SignApiService {
 	 * @return java.util.List<java.lang.Integer>
 	*/
 	public List<Integer> listSignedUpUid(Integer signId) {
-		String url = String.format(SIGNED_UP_UIDS_URL, signId);
+		String url = String.format(SIGN_SIGNED_UP_UIDS_URL, signId);
 		String result = restTemplate.getForObject(url, String.class);
 		JSONObject jsonObject = JSON.parseObject(result);
 		return resultHandle(jsonObject, () -> JSON.parseArray(jsonObject.getString("data"), Integer.class), (message) -> {
@@ -660,6 +663,7 @@ public class SignApiService {
 		String result = restTemplate.getForObject(url, String.class);
 		JSONObject jsonObject = JSON.parseObject(result);
 		return resultHandle(jsonObject, () -> jsonObject.getInteger("data"), (message) -> {
+			log.error("获取报名签到:{}签到数:{}", signId, message);
 			throw new BusinessException(message);
 		});
 	}
@@ -676,6 +680,7 @@ public class SignApiService {
 		String result = restTemplate.getForObject(url, String.class);
 		JSONObject jsonObject = JSON.parseObject(result);
 		return resultHandle(jsonObject, () -> jsonObject.getBigDecimal("data"), (message) -> {
+			log.error("获取报名签到:{}签到率:{}", signId, message);
 			throw new BusinessException(message);
 		});
 	}
@@ -691,6 +696,7 @@ public class SignApiService {
 		String result = restTemplate.getForObject(url, String.class);
 		JSONObject jsonObject = JSON.parseObject(result);
 		return resultHandle(jsonObject, () -> jsonObject.getInteger("data"), (message) -> {
+			log.error("获取报名签到:{}合格人数:{}", signId, message);
 			throw new BusinessException(message);
 		});
 	}
@@ -707,23 +713,43 @@ public class SignApiService {
 		String result = restTemplate.getForObject(url, String.class);
 		JSONObject jsonObject = JSON.parseObject(result);
 		return resultHandle(jsonObject, () -> jsonObject.getInteger("data"), (message) -> {
+			log.error("获取报名签到:{}平均参与时长:{}", signId, message);
 			throw new BusinessException(message);
 		});
 	}
 
-	/**获取用户总的参与时长
-	 * @Description
-	 * @author huxiaolong
-	 * @Date 2021-05-25 15:42:02
+	/**用户报名签到统计汇总
+	 * @Description 
+	 * @author wwb
+	 * @Date 2021-05-27 14:13:30
 	 * @param uid
-	 * @return java.lang.Integer
-	 */
-	public Integer getUserTotalParticipateTimeLength(Integer uid) {
-		String url = String.format(STAT_USER_TOTAL_PARTICIPATE_TIME_LENGTH_URL, uid);
+	 * @return com.chaoxing.activity.dto.sign.UserSignStatSummaryDTO
+	*/
+	public UserSignStatSummaryDTO userSignStatSummary(Integer uid) {
+		String url = String.format(USER_SIGN_STAT_SUMMARY_URL, uid);
 		String result = restTemplate.getForObject(url, String.class);
 		JSONObject jsonObject = JSON.parseObject(result);
-		return resultHandle(jsonObject, () -> jsonObject.getInteger("data"), (message) -> {
+		return resultHandle(jsonObject, () -> JSON.parseObject(jsonObject.getString("data"), UserSignStatSummaryDTO.class), (message) -> {
+			log.error("获取用户:{}报名签到统计汇总error:{}", uid, message);
 			throw new BusinessException(message);
 		});
 	}
+
+	/**用户合格的成绩数量
+	 * @Description 
+	 * @author wwb
+	 * @Date 2021-05-27 15:05:44
+	 * @param uid
+	 * @return java.lang.Integer
+	*/
+	public Integer userQualifiedResultNum(Integer uid) {
+		String url = String.format(USER_QUALIFIED_RESULT_NUM_URL, uid);
+		String result = restTemplate.getForObject(url, String.class);
+		JSONObject jsonObject = JSON.parseObject(result);
+		return resultHandle(jsonObject, () -> jsonObject.getInteger("data"), (message) -> {
+			log.error("获取用户:{}合格的成绩数量error:{}", uid, message);
+			throw new BusinessException(message);
+		});
+	}
+
 }

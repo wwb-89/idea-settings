@@ -1,0 +1,100 @@
+package com.chaoxing.activity.service.stat;
+
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
+import com.chaoxing.activity.dto.sign.UserSignStatSummaryDTO;
+import com.chaoxing.activity.mapper.UserStatSummaryMapper;
+import com.chaoxing.activity.model.UserStatSummary;
+import com.chaoxing.activity.service.manager.module.SignApiService;
+import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.collections4.CollectionUtils;
+import org.springframework.stereotype.Service;
+
+import javax.annotation.Resource;
+import java.util.List;
+
+/**用户统计汇总服务
+ * @author wwb
+ * @version ver 1.0
+ * @className UserStatSummaryService
+ * @description
+ * @blame wwb
+ * @date 2021-05-26 14:37:21
+ */
+@Slf4j
+@Service
+public class UserStatSummaryService {
+
+    @Resource
+    private UserStatSummaryMapper userStatSummaryMapper;
+
+    @Resource
+    private SignApiService signApiService;
+
+    /**更新用户签到数
+     * @Description 
+     * @author wwb
+     * @Date 2021-05-26 14:39:27
+     * @param uid
+     * @return void
+    */
+    public void updateUserSignInData(Integer uid) {
+        // 查询签到数、签到率、参与时长
+        UserSignStatSummaryDTO userSignStatSummary = signApiService.userSignStatSummary(uid);
+        List<UserStatSummary> userStatSummaries = userStatSummaryMapper.selectList(new QueryWrapper<UserStatSummary>()
+                .lambda()
+                .eq(UserStatSummary::getUid, uid)
+        );
+        if (CollectionUtils.isNotEmpty(userStatSummaries)) {
+            // 更新用户数据
+            userStatSummaryMapper.update(null, new UpdateWrapper<UserStatSummary>()
+                .lambda()
+                    .eq(UserStatSummary::getUid, uid)
+                    .set(UserStatSummary::getSignedInNum, userSignStatSummary.getValidSignedInNum())
+                    .set(UserStatSummary::getSignInRate, userSignStatSummary.getSignedInRate())
+                    .set(UserStatSummary::getTotalParticipateInLength, userSignStatSummary.getParticipateTimeLength())
+            );
+        } else {
+            // 新增用户数据
+            UserStatSummary userStatSummary = UserStatSummary.builder()
+                    .uid(uid)
+                    .signedInNum(userSignStatSummary.getValidSignedInNum())
+                    .signInRate(userSignStatSummary.getSignedInRate())
+                    .totalParticipateInLength(userSignStatSummary.getParticipateTimeLength())
+                    .build();
+            userStatSummaryMapper.insert(userStatSummary);
+        }
+    }
+
+    /**更新用户成绩合格数
+     * @Description 
+     * @author wwb
+     * @Date 2021-05-26 14:39:57
+     * @param uid
+     * @return void
+    */
+    public void updateUserResultData(Integer uid) {
+        // 查询合格数
+        Integer qualifiedResultNum = signApiService.userQualifiedResultNum(uid);
+        List<UserStatSummary> userStatSummaries = userStatSummaryMapper.selectList(new QueryWrapper<UserStatSummary>()
+                .lambda()
+                .eq(UserStatSummary::getUid, uid)
+        );
+        if (CollectionUtils.isNotEmpty(userStatSummaries)) {
+            // 更新用户数据
+            userStatSummaryMapper.update(null, new UpdateWrapper<UserStatSummary>()
+                    .lambda()
+                    .eq(UserStatSummary::getUid, uid)
+                    .set(UserStatSummary::getQualifiedNum, qualifiedResultNum)
+            );
+        } else {
+            // 新增用户数据
+            UserStatSummary userStatSummary = UserStatSummary.builder()
+                    .uid(uid)
+                    .qualifiedNum(qualifiedResultNum)
+                    .build();
+            userStatSummaryMapper.insert(userStatSummary);
+        }
+    }
+
+}
