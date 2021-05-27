@@ -33,13 +33,15 @@ public class UserActionTask {
     @Resource
     private ActivityQueryService activityQueryService;
 
+    @Scheduled(fixedDelay = 1L)
     public void userSignUpActionHandle() {
         UserActionQueueService.UserActionDTO userAction = userSignActionQueueService.getUserSignUpAction();
         if (userAction == null) {
             return;
         }
-        // 分发到活动统计和用户统计
-
+        // 用户统计（用户参与的活动数）
+        Integer uid = userAction.getUid();
+        userStatSummaryQueueService.addUserSignInStat(uid);
     }
 
     @Scheduled(fixedDelay = 1L)

@@ -6,6 +6,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.math.BigDecimal;
+import java.util.List;
 
 /**用户报名签到统计汇总
  * @author wwb
@@ -35,5 +36,7 @@ public class UserSignStatSummaryDTO {
 	private BigDecimal signedInRate;
 	/** 参数时长 */
 	private Integer participateTimeLength;
+	/** 参与的报名签到id列表 */
+	private List<Integer> participatedSignIds;
 
 }

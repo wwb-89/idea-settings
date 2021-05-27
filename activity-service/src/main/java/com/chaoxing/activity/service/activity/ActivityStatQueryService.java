@@ -20,9 +20,7 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -330,4 +328,20 @@ public class ActivityStatQueryService {
 		}
 		return topActivityList;
 	}
+
+	/**根据报名签到id列表统计活动数量
+	 * @Description 
+	 * @author wwb
+	 * @Date 2021-05-27 16:20:13
+	 * @param signIds
+	 * @return java.lang.Integer
+	*/
+	public Integer countActivityNumBySignIds(List<Integer> signIds) {
+		return activityMapper.selectCount(new QueryWrapper<Activity>()
+				.lambda()
+				.in(Activity::getSignId, signIds)
+				.ne(Activity::getStatus, Activity.StatusEnum.DELETED.getValue())
+		);
+	}
+
 }

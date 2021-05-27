@@ -5,6 +5,7 @@ import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.chaoxing.activity.dto.sign.UserSignStatSummaryDTO;
 import com.chaoxing.activity.mapper.UserStatSummaryMapper;
 import com.chaoxing.activity.model.UserStatSummary;
+import com.chaoxing.activity.service.activity.ActivityStatQueryService;
 import com.chaoxing.activity.service.manager.module.SignApiService;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
@@ -30,6 +31,8 @@ public class UserStatSummaryService {
 
     @Resource
     private SignApiService signApiService;
+    @Resource
+    private ActivityStatQueryService activityStatQueryService;
 
     /**更新用户签到数
      * @Description 
@@ -45,6 +48,11 @@ public class UserStatSummaryService {
                 .lambda()
                 .eq(UserStatSummary::getUid, uid)
         );
+        Integer participatedActivityNum = 0;
+        List<Integer> participatedSignIds = userSignStatSummary.getParticipatedSignIds();
+        if (CollectionUtils.isNotEmpty(participatedSignIds)) {
+            participatedActivityNum = activityStatQueryService.countActivityNumBySignIds(participatedSignIds);
+        }
         if (CollectionUtils.isNotEmpty(userStatSummaries)) {
             // 更新用户数据
             userStatSummaryMapper.update(null, new UpdateWrapper<UserStatSummary>()
@@ -53,6 +61,7 @@ public class UserStatSummaryService {
                     .set(UserStatSummary::getSignedInNum, userSignStatSummary.getValidSignedInNum())
                     .set(UserStatSummary::getSignInRate, userSignStatSummary.getSignedInRate())
                     .set(UserStatSummary::getTotalParticipateInLength, userSignStatSummary.getParticipateTimeLength())
+                    .set(UserStatSummary::getParticipateActivityNum, participatedActivityNum)
             );
         } else {
             // 新增用户数据
@@ -61,6 +70,7 @@ public class UserStatSummaryService {
                     .signedInNum(userSignStatSummary.getValidSignedInNum())
                     .signInRate(userSignStatSummary.getSignedInRate())
                     .totalParticipateInLength(userSignStatSummary.getParticipateTimeLength())
+                    .participateActivityNum(participatedActivityNum)
                     .build();
             userStatSummaryMapper.insert(userStatSummary);
         }
