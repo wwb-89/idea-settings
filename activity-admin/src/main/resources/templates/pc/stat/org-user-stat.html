@@ -67,7 +67,7 @@
 					</el-table-column>
 				</el-table>
 				<!--分页-->
-				<el-pagination v-show="loaded && total > queryParams.pageSize" background layout="prev, pager, next" :total="total"></el-pagination>
+				<el-pagination v-show="loaded && total > queryParams.pageSize" background layout="prev, pager, next" :total="total" :page-size="queryParams.pageSize" :current-page="queryParams.pageNum" @current-change="changePage"></el-pagination>
 			</div>
 		</div>
 	</div>
@@ -238,6 +238,8 @@
                 loadData: function () {
 					var $this = this;
                     var url = ctx + "/api/stat/org/user-stat-summary/list";
+                    $this.loaded = false;
+                    $this.orgUserStats = [];
                     app.ajaxPostWithLoading(url, $this.queryParams, function (data) {
                         if (data.success) {
                             $this.loaded = true;
@@ -344,6 +346,11 @@
                 search: function () {
                     var $this = this;
 					$this.queryParams.pageNum = 1;
+                    $this.loadData();
+                },
+                changePage: function (pageNum) {
+                    var $this = this;
+                    $this.queryParams.pageNum = pageNum;
                     $this.loadData();
                 }
             }
