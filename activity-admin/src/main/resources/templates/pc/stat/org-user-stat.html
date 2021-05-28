@@ -46,10 +46,10 @@
 									<el-dropdown-item v-for="(field, index) of configTableFieldDetails" :key="'field-' + field.id">
 										<el-checkbox v-model="field.defaultChecked" :disabled="!field.allowUncheck"> {{field.name}}</el-checkbox>
 										<el-tooltip v-if="field.defaultTop" class="item" effect="dark" content="取消固定列" placement="top">
-											<i class="btn-fix icon-pinned fs16" @click="field.defaultTop = false"></i>
+											<i class="btn-fix icon-pinned fs16" @click="untop(index)"></i>
 										</el-tooltip>
 										<el-tooltip v-else class="item" effect="dark" content="固定列" placement="top">
-											<i class="btn-fix icon-pin fs16" @click="field.defaultTop = true"></i>
+											<i class="btn-fix icon-pin fs16" @click="top(index)"></i>
 										</el-tooltip>
 									</el-dropdown-item>
 								</div>
@@ -352,7 +352,39 @@
                     var $this = this;
                     $this.queryParams.pageNum = pageNum;
                     $this.loadData();
-                }
+                },
+	            // 置顶
+	            top: function (index) {
+		            var $this = this;
+		            $this.topHandle(index, true);
+	            },
+	            // 取消置顶
+	            unTop: function (index) {
+		            var $this = this;
+		            $this.topHandle(index, false);
+	            },
+	            topHandle: function (index, top) {
+		            var $this = this;
+		            var configTableFieldDetails = [];
+		            $($this.configTableFieldDetails).each(function () {
+			            configTableFieldDetails.push(this);
+		            });
+		            var configTableFieldDetail = configTableFieldDetails[index];
+		            // 移除index的元素
+		            configTableFieldDetails.splice(index, 1);
+		            var lastTopIndex = -1;
+		            $(configTableFieldDetails).each(function (i) {
+			            if (this.defaultTop) {
+				            lastTopIndex = i;
+			            }
+		            });
+		            configTableFieldDetail.defaultTop = top;
+		            if (lastTopIndex > -1) {
+			            lastTopIndex++;
+		            }
+		            configTableFieldDetails.splice(lastTopIndex, 0, configTableFieldDetail);
+		            $this.configTableFieldDetails = configTableFieldDetails;
+	            }
             }
         })
 	</script>
