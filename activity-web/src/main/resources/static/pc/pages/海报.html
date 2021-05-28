@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="../assets/css/public.css">
+    <link rel="stylesheet" href="../assets/css/poster.css">
+    <title>海报pc</title>
+
+</head>
+
+<body>
+    <div class="poster-pc">
+        <div class="btn-download">下载</div>
+        <div id="capture">
+            <div class="poster-box">
+                <div class="img-box">
+                    <img src="../assets/images/default-cover.png" alt="">
+                </div>
+                <div class="text-box">
+                    <p class="text-title marginb6">书香浙江 云享阅读2020浙江省云阅读计划之“晒书房·荐图书云享阅读2020浙江省云阅读计划之云享阅读2020浙江省云阅读计划之</p>
+                   <dl class="text-list marginb6">
+                       <dt class="label">活动时间：</dt>
+                       <dd class="info"> 2021.03.29 00:00 ~ 2021.03.31 23:59</dd>
+                   </dl>
+                    <dl class="text-list marginb6">
+                        <dt class="label">活动地点：</dt>
+                        <dd class="info">上海市浦东新区金桥经济技术开发区宁桥路188号上海市浦东新区金桥经济技术开发区宁桥路188号上海市浦东新区金桥经济技术开发区宁桥路188号</dd>
+                    </dl>
+                    <dl class="text-list marginb6">
+                        <dt class="label">主办方：</dt>
+                        <dd class="info">浙江图书馆</dd>
+                    </dl>
+                    <dl class="text-list marginb6">
+                        <dt class="label">报名人数：</dt>
+                        <dd class="info">200人</dd>
+                    </dl>
+                </div>
+                <div class="qrcode-box">
+                    <img src="../assets/images/qrcode.png" alt="">
+                </div>
+                <div class="text-tip">扫码访问活动</div>
+            </div>
+        </div>
+    </div>
+    <script src="../assets/lib/jquery.min.js"></script>
+    <script src="../assets/lib/html2canvas.min.js"></script>
+    <script>
+        $('.btn-download').click(function () {
+            html2canvas(document.querySelector("#capture")).then(canvas => {
+                document.body.appendChild(canvas)
+            });
+        })
+        /*多行省略  start*/
+        function getHeight(el,lineheight){
+            var heightSome = el.clientHeight;
+            var wareNameText = el.innerHTML;//获取内容
+            console.log(heightSome)
+            if(heightSome>lineheight){ //这个数字是两行的时候的高度，根据你设定的字体大小有关
+                for(var i=0;heightSome>lineheight;i++){
+                    //每次删掉最后一个然后返回
+                    wareNameText = wareNameText.substring(0,wareNameText.length-1);
+                    //重新返回的字符在写在span里面 ，计算新的高度
+                    el.innerHTML = wareNameText;
+                    heightSome = el.clientHeight;
+                }
+                //得到正好符合高度的字符，删除最后一个变为省略号 填充在页面里
+                el.innerHTML = wareNameText.substring(0,wareNameText.length-1)+'...';
+            }
+        }
+        /*多行省略  end*/
+
+        var text = $(".text-list .info");
+        for (var i = 0; i < text.length; i++) {
+            getHeight(text[i], 40);
+        };
+        getHeight($('.text-title')[0], 60);
+    </script>
+</body>
+</html>
