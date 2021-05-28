@@ -6,11 +6,11 @@
         <result column="signed_in_num" jdbcType="INTEGER" property="signedInNum" />
         <result column="sign_in_rate" jdbcType="DECIMAL" property="signInRate" />
         <result column="qualified_num" jdbcType="INTEGER" property="qualifiedNum" />
-        <result column="avg_participate_in_length" jdbcType="INTEGER" property="avgParticipateInLength" />
+        <result column="avg_participate_time_length" jdbcType="INTEGER" property="avgParticipateTimeLength" />
         <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
         <result column="update_time" jdbcType="TIMESTAMP" property="updateTime" />
     </resultMap>
     <sql id="Base_Column_List">
-        t.activity_id, t.signed_in_num, t.sign_in_rate, t.qualified_num, t.avg_participate_in_length, t.create_time, t.update_time
+        t.activity_id, t.signed_in_num, t.sign_in_rate, t.qualified_num, t.avg_participate_time_length, t.create_time, t.update_time
     </sql>
 </mapper>

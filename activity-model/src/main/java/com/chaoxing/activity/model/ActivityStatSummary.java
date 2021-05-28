@@ -32,8 +32,8 @@ public class ActivityStatSummary {
     private BigDecimal signInRate;
     /** 合格数量; column: qualified_num*/
     private Integer qualifiedNum;
-    /** 平均参与时长; column: avg_participate_in_length*/
-    private Integer avgParticipateInLength;
+    /** 平均参与时长; column: avg_participate_time_length*/
+    private Integer avgParticipateTimeLength;
     /** 创建时间; column: create_time*/
     private LocalDateTime createTime;
     /** 更新时间; column: update_time*/

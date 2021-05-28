@@ -1,97 +1,29 @@
 <!DOCTYPE html>
 <html lang="en" xmlns:th="http://www.thymeleaf.org/">
 <head>
+	<title>用户统计</title>
 	<meta charset="UTF-8">
 	<meta name="renderer" content="webkit">
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
 	<link rel="stylesheet" href="/static/pc/assets/table-icomoon/style.css" th:href="@{/pc/assets/table-icomoon/style.css}">
 	<link rel="stylesheet" href="/static/pc/assets/lib/element-ui/lib/theme-chalk/index.css" th:href="@{/pc/assets/lib/element-ui/lib/theme-chalk/index.css}">
-	<link rel="stylesheet" href="/static/pc/assets/lib/zTree_v3/css/zTreeStyle/zTreeStyle.css" th:href="@{/pc/assets/lib/zTree_v3/css/zTreeStyle/zTreeStyle.css}">
+	<link rel="stylesheet" href="/static/pc/assets/lib/zTree_v3_table/css/zTreeStyle/zTreeStyle.css" th:href="@{/pc/assets/lib/zTree_v3_table/css/zTreeStyle/zTreeStyle.css}" type="text/css">
 	<link rel="stylesheet" href="/static/pc/assets/css/commonTable.css" th:href="@{/pc/assets/css/commonTable.css}">
 	<link rel="stylesheet" href="/static/pc/assets/css/confirm_dialog.css" th:href="@{/pc/assets/css/confirm_dialog.css}">
-	<title>复杂表格</title>
+	<style type="text/css">
+		[v-cloak] {
+			display: none;
+        }
+	</style>
 </head>
 
 <body>
-<div id="app">
-	<div style="display: block">
-		<!-- 头部2-面包屑 -->
-		<div class="header header-type-2" v-if="titleType === 2">
-			<el-breadcrumb separator-class="el-icon-arrow-right">
-				<el-breadcrumb-item>首页</el-breadcrumb-item>
-				<el-breadcrumb-item>活动管理</el-breadcrumb-item>
-				<el-breadcrumb-item>活动列表</el-breadcrumb-item>
-				<el-breadcrumb-item>活动详情</el-breadcrumb-item>
-			</el-breadcrumb>
-			<div class="top-btns">
-				<el-button class="btn-customize export-btn" round><i class="icon-add-thin inlineMiddle"></i><span class="inlineMiddle">带图标按钮</span></el-button>
-				<el-button class="btn-customize export-btn" round>常规按钮</el-button>
-			</div>
-		</div>
-		<!-- 头部3-仅标题（数字支持显示和不显示） -->
-		<div class="header header-type-3" v-if="titleType === 3">
-            <span slot="label" class="menu-item-customize registered_title">
-                <span class="title">已报名</span><span class="num">8</span>
-            </span>
-			<div class="top-btns">
-				<el-button class="btn-customize export-btn" round><i class="icon-add-thin inlineMiddle"></i><span class="inlineMiddle">带图标按钮</span></el-button>
-				<el-button class="btn-customize export-btn" round>常规按钮</el-button>
-			</div>
-		</div>
-		<!--头部1-tabs （数字支持显示和不显示）-->
-		<div class="header header-type-1" v-if="titleType === 1">
-			<!-- 选项卡 -->
-			<div class="tabs-box">
-				<ul class="tab-lists">
-					<li v-for="(item,index) in tablist" :key="index" class="tab-list" :class="{'active':tabIndex === index}" @click="tabIndex = index">
-						<span class="title fs16">{{item.name}}</span><span class="num fs14">{{item.num}}</span>
-					</li>
-				</ul>
-			</div>
-			<div class="top-btns">
-				<el-button class="btn-customize export-btn" round><i class="icon-code inlineMiddle"></i><span class="inlineMiddle">带图标按钮</span></el-button>
-				<el-button class="btn-customize export-btn" round>常规按钮</el-button>
-			</div>
-		</div>
-
-		<!-- 选项卡内容 -->
+<div id="stat-vue" v-cloak>
+	<div>
 		<div class="tab-content-box">
-			<div class="tab-item" v-if="tabIndex === 0">
-				<!-- 操作栏 -->
-				<div class="table-operate-box fs0">
-					<el-button class="btn-customize" round>批量通过</el-button>
-					<el-button class="btn-customize" round>批量不通过</el-button>
-					<el-button class="btn-customize disabled" round disabled="disabled">批量不通过</el-button>
-					<div class="search-Box">
-						<el-input placeholder="搜索"
-						          icon="search"
-						          class="search"
-						          v-model="search1"
-						          @input="inputFunc"
-						          suffix-icon="el-icon-search">
-						</el-input>
-						<i class="icon-cancel btn-cancel fs16" v-show="inputlen" @click="clearInput"></i>
-					</div>
-				</div>
+			<div class="tab-item">
 				<!-- 查询栏 -->
 				<div class="table-search-box fs0">
-					<el-date-picker
-							v-model="dateValue1"
-							range-separator=""
-							type="daterange"
-							prefix-icon="el-icon-time"
-							start-placeholder="开始日期"
-							end-placeholder="结束日期">
-					</el-date-picker>
-					<el-select v-model="selectValue" placeholder="全部参与范围">
-						<el-option
-								v-for="item in selectOptions"
-								:key="item.value"
-								:label="item.label"
-								:value="item.value"
-								:disabled="item.disabled">
-						</el-option>
-					</el-select>
 					<div class="popbtnInput">
 						<input type="text" autocomplete="off" class="layui-input" readonly value="全部参与范围" @click="selectPopFunc">
 					</div>
@@ -130,70 +62,8 @@
 					<div class="clear"></div>
 				</div>
 				<el-table class="table-box" :data="tableTestData1" >
-					<el-table-column
-							:align="ifCenter"
-							fixed
-							type="selection"
-							width="24">
-					</el-table-column>
-					<el-table-column
-							:align="ifCenter"
-							fixed
-							prop="name"
-							label="姓名"
-							min-width="82">
-					</el-table-column>
-					<el-table-column
-							:align="ifCenter"
-							prop="account"
-							label="账号"
-							min-width="120">
-					</el-table-column>
-					<!-- 可编辑时间的表格td -->
-					<el-table-column
-							:align="ifCenter"
-							label="可编辑时间"
-							min-width="172">
-						<template slot-scope="scope">
-							<el-date-picker
-									v-model="scope.row.time"
-									type="datetime"
-									size="small"
-									:clearable="false"
-									@change="datetimeClick(scope.row)"
-									@focus="datetimeFocus"
-									@blur="datetimeBlur"
-									placeholder="选择日期">
-							</el-date-picker>
-						</template>
-					</el-table-column>
-					<el-table-column
-							:align="ifCenter"
-							class-name="th-dropdwon"
-							prop="applyType"
-							label="报名项目"
-							width="342"
-							:filters="filterLists"
-							:filter-method="filterTag"
-							filter-placement="bottom">
-					</el-table-column>
-					<el-table-column
-							:align="ifCenter"
-							prop="time"
-							sortable
-							label="申报时间"
-							min-width="163">
-					</el-table-column>
-					<el-table-column
-							:align="ifCenter"
-							label="图片"
-							min-width="142">
-						<template slot-scope="scope">
-							<!--<div class="table-img">-->
-							<!--<div class="bg-img" :style="{backgroundImage:scope.row.img}"></div>-->
-							<!--</div>-->
-							<el-image class="table-img" :src="scope.row.img" fit="cover"></el-image>
-						</template>
+					<el-table-column :align="ifCenter" fixed prop="name" label="姓名" min-width="82"></el-table-column>
+					<el-table-column :align="ifCenter" prop="account" label="账号" min-width="120">
 					</el-table-column>
 					<el-table-column
 							:align="ifCenter"
@@ -269,164 +139,9 @@
 						:total="200">
 				</el-pagination>
 			</div>
-			<div class="tab-item" v-if="tabIndex === 1">
-				<div class="paddingb16">
-					<el-button class="btn-customize" round>取消报名</el-button>
-					<div class="search-Box">
-						<el-input placeholder="搜索"
-						          icon="search"
-						          class="search"
-						          v-model="search1"
-						          @input="inputFunc"
-						          suffix-icon="el-icon-search">
-						</el-input>
-						<i class="icon-cancel btn-cancel fs16" v-show="inputlen" @click="clearInput"></i>
-					</div>
-				</div>
-				<el-table class="table-box" :data="tableTestData2">
-					<el-table-column
-							fixed
-							type="selection"
-							width="24">
-					</el-table-column>
-					<el-table-column
-							fixed
-							prop="name"
-							label="姓名"
-							min-width="82">
-					</el-table-column>
-					<el-table-column
-							prop="account"
-							label="账号"
-							min-width="120">
-					</el-table-column>
-					<el-table-column
-							prop="time"
-							label="报名时间"
-							min-width="163">
-					</el-table-column>
-					<el-table-column
-							prop="applyType"
-							label="报名项目"
-							width="342"
-							:filters="filterLists"
-							:filter-method="filterTag"
-							filter-placement="bottom-end">
-						<template slot-scope="scope">
-							<span>{{scope.row.applyType}}</span>
-						</template>
-					</el-table-column>
-					<el-table-column
-							prop="time"
-							sortable
-							label="申报时间"
-							min-width="163">
-					</el-table-column>
-					<el-table-column
-							prop="account"
-							label="账号"
-							min-width="120">
-					</el-table-column>
-					<el-table-column
-							prop="time"
-							label="报名时间"
-							min-width="163">
-					</el-table-column>
-					<el-table-column
-							prop="account"
-							label="账号"
-							min-width="120">
-					</el-table-column>
-					<el-table-column
-							prop="time"
-							label="报名时间"
-							min-width="163">
-					</el-table-column>
-					<el-table-column
-							prop="account"
-							label="账号"
-							min-width="120">
-					</el-table-column>
-					<el-table-column
-							prop="time"
-							label="报名时间"
-							min-width="163">
-					</el-table-column>
-					<el-table-column
-							prop="account"
-							label="账号"
-							min-width="120">
-					</el-table-column>
-					<el-table-column
-							prop="time"
-							label="报名时间"
-							min-width="163">
-					</el-table-column>
-					<el-table-column
-							prop="account"
-							label="账号"
-							min-width="120">
-					</el-table-column>
-					<el-table-column
-							prop="time"
-							label="报名时间"
-							min-width="163">
-					</el-table-column>
-					<el-table-column
-							fixed="right"
-							label="查看"
-							min-width="120">
-						<template slot-scope="scope">
-							<el-button type="text" size="middle" class="td-cell-2">填报信息</el-button>
-						</template>
-					</el-table-column>
-					<el-table-column
-							fixed="right"
-							label="操作"
-							min-width="120">
-						<template slot-scope="scope">
-							<div v-if="scope.row.status === 0">
-								<el-button type="text" size="middle">通过</el-button>
-								<el-button type="text" size="middle">不通过</el-button>
-							</div>
-							<div v-if="scope.row.status === 1">
-								<el-dropdown class="status-dropdown">
-                                      <span class="el-dropdown-link">
-                                        通过<i class="el-icon-arrow-down el-icon--right"></i>
-                                      </span>
-									<el-dropdown-menu slot="dropdown">
-										<el-dropdown-item>通过</el-dropdown-item>
-										<el-dropdown-item>不通过</el-dropdown-item>
-									</el-dropdown-menu>
-								</el-dropdown>
-							</div>
-						</template>
-					</el-table-column>
-				</el-table>
-				<el-pagination
-						background
-						layout="prev, pager, next"
-						:total="200">
-				</el-pagination>
-			</div>
-		</div>
-		<!-- 表格内容 -->
-	</div>
-
-	<!-------------------------------------------------分割线------------------------------------------------>
-
-	<!--确认取消报名弹窗-->
-	<div class="dialog-box" v-if="ifCancelPop">
-		<div class="confirm_dialog">
-			<span class="icon"><img src="/static/pc/assets/images/icon-warning.png" th:src="@{/pc/assets/images/icon-warning.png}"></span>
-			<span class="text">确定取消报名吗？</span>
-			<div class="btn">
-				<span class="cancel" @click="ifCancelPop = false">取消</span>
-				<span class="ok">确定</span>
-			</div>
 		</div>
 	</div>
-	<!-- 参与范围 -->
+	<!-- 组织架构 -->
 	<div class="dialog-box selectPop" v-show="ifSelectPop">
 		<div class="dialog-wrap">
 			<div class="header">
@@ -452,390 +167,134 @@
 			</div>
 		</div>
 	</div>
-
-	<!-- toast提示 -->
-	<div class="toast-box">
-		toast提示，停留3s，自动消失，句末不加标点
-	</div>
-	<!--遮罩-->
 </div>
-
-<script src="/static/pc/assets/lib/jquery.min.js" th:src="@{/pc/assets/lib/jquery.min.js}"></script>
-<script src="/static/pc/assets/lib/vue.js" th:src="@{/pc/assets/lib/vue.js}"></script>
-<script src="/static/pc/assets/lib/element-ui/lib/index.js" th:src="@{/pc/assets/lib/element-ui/lib/index.js}"></script>
-<script type="text/javascript" src="/static/pc/assets/lib/zTree_v3/js/jquery.ztree.core.js" th:src="@{/pc/assets/lib/zTree_v3/js/jquery.ztree.core.js}"></script>
-<script type="text/javascript" src="/static/pc/assets/lib/zTree_v3/js/jquery.ztree.excheck.js" th:src="@{/pc/assets/lib/zTree_v3/js/jquery.ztree.excheck.js}"></script>
-<script>
-    var app = new Vue({
-        el: '#app',
-        data: {
-            titleType: 1,  //标题的类型   总计有3中类型：1，2，3，可修改类型查看区别
-            tablist:[
-                {
-                    name:'待审核',
-                    num:20
-                },
-                {
-                    name:'已报名',
-                    num:8
-                },
-            ],
-            tabIndex: 0,  //选项卡选中
-            tableTestData1: [
-                {
-                    name: '吴立',
-                    account: '18272676793',
-                    time: '2020-03-27 13:02',
-                    applyType:'全部',
-                    status: 0,
-                    img: 'http://file.m.superlib.com/C/GEDEbook/cover/190801/TSYJ031442.jpg',
-                }, {
-                    name: '吴立',
-                    account: '18272676793',
-                    time: '2020-03-27 13:02',
-                    applyType:'“博阅锦绣”2020寒假星阅读',
-                    status: 0,
-                    img: 'http://117813nj.portal.chaoxing.com/engine/upload/engine/2019-12/20191209114751024v.png',
-                }, {
-                    name: '吴立',
-                    account: '18272676793',
-                    time: '2020-03-27 13:02',
-                    applyType:'可选项',
-                    status: 2,
-                    img: '/static/pc/assets/images/img1.png',
-                }, {
-                    name: '吴立',
-                    account: '18272676793',
-                    time: '2020-03-27 13:02',
-                    applyType:'可选项',
-                    status: 0,
-                    img: '/static/pc/assets/images/img1.png',
-                }, {
-                    name: '吴立',
-                    account: '18272676793',
-                    time: '2020-03-27 13:02',
-                    applyType:'可选项',
-                    status: 1,
-                    img: '/static/pc/assets/images/img1.png',
-                }, {
-                    name: '吴立',
-                    account: '18272676793',
-                    time: '2020-03-27 13:02',
-                    applyType:'可选项',
-                    status: 1,
-                    img: '/static/pc/assets/images/img1.png',
-                }, {
-                    name: '吴立',
-                    account: '18272676793',
-                    time: '2020-03-27 13:02',
-                    applyType:'可选项',
-                    status: 1,
-                    img: '/static/pc/assets/images/img1.png',
-                }, {
-                    name: '吴立',
-                    account: '18272676793',
-                    time: '2020-03-27 13:02',
-                    applyType:'可选项',
-                    status: 1,
-                    img: '/static/pc/assets/images/img1.png',
-                }, {
-                    name: '吴立',
-                    account: '18272676793',
-                    time: '2020-03-27 13:02',
-                    applyType:'可选项',
-                    status: 1,
-                    img: '/static/pc/assets/images/img1.png',
-                }, {
-                    name: '吴立',
-                    account: '18272676793',
-                    time: '2020-03-27 13:02',
-                    applyType:'可选项',
-                    status: 1,
-                    img: '/static/pc/assets/images/img1.png',
-                }, {
-                    name: '吴立',
-                    account: '18272676793',
-                    time: '2020-03-27 13:02',
-                    applyType:'可选项',
-                    status: 1,
-                    img: '/static/pc/assets/images/img1.png',
-                }, {
-                    name: '吴立',
-                    account: '18272676793',
-                    time: '2020-03-27 13:02',
-                    applyType:'可选项',
-                    status: 1,
-                    img: '/static/pc/assets/images/img1.png',
-                }, {
-                    name: '吴立',
-                    account: '18272676793',
-                    time: '2020-03-27 13:02',
-                    applyType:'2020浙江省云阅读计划之“晒书房',
-                    status: 1,
-                    img: '/static/pc/assets/images/img1.png',
-                }, {
-                    name: '吴立',
-                    account: '18272676793',
-                    time: '2020-03-27 13:02',
-                    applyType:'可选项',
-                    status: 1,
-                    img: '/static/pc/assets/images/img1.png',
-                }, {
-                    name: '吴立',
-                    account: '18272676793',
-                    time: '2020-03-27 13:02',
-                    applyType:'仲夏奇阅记',
-                    status: 1,
-                    img: '/static/pc/assets/images/img1.png',
-                }, {
-                    name: '吴立',
-                    account: '18272676793',
-                    time: '2020-03-27 13:02',
-                    applyType:'环保公益课堂2021年1月“垃圾分分乐”宣讲活动预告环保公益课堂2021年1月“垃圾分分乐”宣讲活动预告',
-                    status: 1,
-                    img: '/static/pc/assets/images/img1.png',
-                }, {
-                    name: '吴立',
-                    account: '18272676793',
-                    time: '2020-03-27 13:02',
-                    applyType:'可选项',
-                    status: 1,
-                    img: '/static/pc/assets/images/img1.png',
-                }, {
-                    name: '吴立',
-                    account: '18272676793',
-                    time: '2020-03-27 13:02',
-                    applyType:'可选项',
-                    status: 1,
-                    img: '/static/pc/assets/images/img1.png',
-                }, {
-                    name: '吴立',
-                    account: '18272676793',
-                    time: '2020-03-27 13:02',
-                    applyType:'可选项',
-                    status: 1,
-                    img: '/static/pc/assets/images/img1.png',
-                }, {
-                    name: '吴立',
-                    account: '18272676793',
-                    time: '2020-03-27 13:02',
-                    applyType:'可选项',
-                    status: 1,
-                    img: '/static/pc/assets/images/img1.png',
-                }, {
-                    name: '吴立',
-                    account: '18272676793',
-                    time: '2020-03-27 13:02',
-                    applyType:'可选项',
-                    status: 1,
-                    img: '/static/pc/assets/images/img1.png',
-                }
-            ],
-            tableTestData2: [],
-            activeName: 'pending',
-            search1: '',
-            search: '',
-            centerDialogVisible: false,
-            dateValue1:'',  //日期范围选择值
-            selectValue:'',  //select选择器
-            selectOptions: [
-                {
-                    value: '选项1',
-                    label: '黄金糕'
-                }, {
-                    value: '选项2',
-                    label: '双皮奶',
-                }, {
-                    value: '选项3',
-                    label: '蚵仔煎'
-                }, {
-                    value: '选项4',
-                    label: '龙须面'
-                }, {
-                    value: '选项5',
-                    label: '北京烤鸭'
-                }
-            ],
-            selectNumber:0, //表格选中的人数
-            dropdwonLists:[
-                {
-                    name:'选中项',
-                    flag: true,
-                    disabled: false,
-                    show: true,
-                },
-                {
-                    name:'未选项',
-                    flag: false,
-                    disabled: false,
-                    show: false,
-                },
-                {
-                    name:'禁用项',
-                    flag: false,
-                    disabled: true,
-                    show: true,
-                },
-                {
-                    name:'文字选项超长文字选项超长文字选项超长文字选项超长文字选项超长文字选项超长',
-                    flag: false,
-                    disabled: false,
-                    show: false,
-                },
-            ],
-            filterLists:[
-                {
-                    text: '全部',
-                    value: '全部'
-                },
-                {
-                    text: '可选项',
-                    value: '可选项'
-                },
-                {
-                    text: '可选项文字超长可选项文字超长可选项文字超长可选项文字超长',
-                    value: '可选项文字超长可选项文字超长可选项文字超长可选项文字超长'
-                },
-                {
-                    text: '“博阅锦绣”2020寒假星阅读',
-                    value: '“博阅锦绣”2020寒假星阅读'
-                },
-                {
-                    text: '2020浙江省云阅读计划之“晒书房',
-                    value: '2020浙江省云阅读计划之“晒书房'
-                },
-                {
-                    text: '仲夏奇阅记',
-                    value: '仲夏奇阅记'
-                },
-                {
-                    text: '环保公益课堂2021年1月“垃圾分分乐”宣讲活动预告',
-                    value: '环保公益课堂2021年1月“垃圾分分乐”宣讲活动预告'
-                },
-            ],   //报名项目下拉
-            datetimefoc:false, //日期时间的输入框是否聚焦
-            ifCancelPop: false,
-            inputlen: false, //输入框的清空按钮
-            ifCenter: 'left',  //表格是否居中
-            ifSelectPop: false, //参与范围的弹窗展示
-            setting: {
-                view: {
-                    showLine: false
-                },
-                check: {
-                    enable: true
-                },
-                data: {
-                    simpleData: {
+<div th:replace="pc/include/common_js :: common_js(~{::script})">
+	<script src="/static/pc/assets/lib/element-ui/lib/index.js" th:src="@{/pc/assets/lib/element-ui/lib/index.js}"></script>
+	<script type="text/javascript" src="/static/pc/assets/lib/zTree_v3/js/jquery.ztree.core.js" th:src="@{/pc/assets/lib/zTree_v3/js/jquery.ztree.core.js}"></script>
+	<script type="text/javascript" src="/static/pc/assets/lib/zTree_v3/js/jquery.ztree.excheck.js" th:src="@{/pc/assets/lib/zTree_v3/js/jquery.ztree.excheck.js}"></script>
+	<script th:inline="javascript">
+        vm = new Vue({
+            el: "#stat-vue",
+            data: {
+                tableFieldDetails: [[${tableFieldDetails}]],
+                orgTableFields: [[${orgTableFields}]],
+	            // 表格显示的字段列表
+	            showTableFieldDetails: [],
+                tableTestData1: [
+                    {
+                        name: '吴立',
+                        account: '18272676793',
+                        time: '2020-03-27 13:02',
+                        applyType:'全部',
+                        status: 0,
+                        img: 'http://file.m.superlib.com/C/GEDEbook/cover/190801/TSYJ031442.jpg',
+                    }
+                ],
+                search1: '',
+                search: '',
+                centerDialogVisible: false,
+                selectNumber:0, //表格选中的人数
+                dropdwonLists:[
+                    {
+                        name:'选中项',
+                        flag: true,
+                        disabled: false,
+                        show: true,
+                    },
+                ],
+                inputlen: false, //输入框的清空按钮
+                ifCenter: 'left',  //表格是否居中
+                ifSelectPop: false, //参与范围的弹窗展示
+                setting: {
+                    view: {
+                        showLine: false
+                    },
+                    check: {
                         enable: true
+                    },
+                    data: {
+                        simpleData: {
+                            enable: true
+                        }
+                    },
+                    callback: {
+                        onClick:  (e, treeId, treeNode)=> app.zTreeOnClick(e, treeId, treeNode),
+                        onCheck: (e, treeId, treeNode)=> app.zTreeOnCheck(e, treeId, treeNode)
                     }
                 },
-                callback: {
-                    onClick:  (e, treeId, treeNode)=> app.zTreeOnClick(e, treeId, treeNode),
-                    onCheck: (e, treeId, treeNode)=> app.zTreeOnCheck(e, treeId, treeNode)
+                zNodes: [
+                    { id:1, pId:0, name:"天津教育局天津教育局天津教育局（12）", open:true},
+                    { id:11, pId:1, name:"二级二级二级", open:true},
+                    { id:111, pId:11, name:"can check 1-1-1"},
+                    { id:112, pId:11, name:"can check 1-1-2"},
+                    { id:12, pId:1, name:"can check 1-2", open:true},
+                    { id:121, pId:12, name:"can check 1-2-1"},
+                    { id:122, pId:12, name:"can check 1-2-2"},
+                    { id:2, pId:0, name:"can check 2", checked:true, open:true},
+                    { id:21, pId:2, name:"can check 2-1"},
+                    { id:22, pId:2, name:"can check 2-2", open:true},
+                    { id:221, pId:22, name:"can check 2-2-1", checked:true},
+                    { id:222, pId:22, name:"can check 2-2-2"},
+                    { id:23, pId:2, name:"can check 2-3"}
+                ],
+                clearFlag: false,
+            },
+            created: function () {
+				var $this = this;
+				// 计算表格显示的字段列表
+                if ($this.orgTableFields.length < 1) {
+                    // 机构没有配置显示的字段。使用默认的
+                    $.extend($this.showTableFieldDetails, $this.tableFieldDetails);
                 }
             },
-            zNodes: [
-                { id:1, pId:0, name:"天津教育局天津教育局天津教育局（12）", open:true},
-                { id:11, pId:1, name:"二级二级二级", open:true},
-                { id:111, pId:11, name:"can check 1-1-1"},
-                { id:112, pId:11, name:"can check 1-1-2"},
-                { id:12, pId:1, name:"can check 1-2", open:true},
-                { id:121, pId:12, name:"can check 1-2-1"},
-                { id:122, pId:12, name:"can check 1-2-2"},
-                { id:2, pId:0, name:"can check 2", checked:true, open:true},
-                { id:21, pId:2, name:"can check 2-1"},
-                { id:22, pId:2, name:"can check 2-2", open:true},
-                { id:221, pId:22, name:"can check 2-2-1", checked:true},
-                { id:222, pId:22, name:"can check 2-2-2"},
-                { id:23, pId:2, name:"can check 2-3"}
-            ],
-            clearFlag: false,
-        },
-        created: function () {
-
-        },
-        mounted: function () {
-            var _this = this;
-            $(document).ready(()=>{
-                $.fn.zTree.init($("#treeList"), _this.setting, _this.zNodes);
-            });
-        },
-        methods: {
-            resetCheckFunc () {
-                var _this = this;
-                _this.dropdwonLists.filter(function (item) {
-                    item.show = false;
-                })
+            mounted: function () {
+                var $this = this;
+                $(document).ready(()=>{
+                    $.fn.zTree.init($("#treeList"), $this.setting, $this.zNodes);
+                });
             },
-            // 报名项目
-            filterTag(value, row) {
-                console.log(value)
-                console.log(row)
-                return row.tag === value;
-            },
-            datetimeClick(value){
-                console.log('点击确定')
-                console.log(value)
-            },
-            datetimeFocus(e){
-                console.log('focus')
-                var event = e||e.target;
-                var thisinput = event.$el;
-                $(thisinput).addClass('datetime-focus')
-            },
-            datetimeBlur(){
-                console.log('blur')
-                $('.el-date-editor').removeClass('datetime-focus')
-            },
-            inputFunc(value){
-                console.log(value)
-                if(value.length>0){
-                    this.inputlen = true;
-                }else{
+            methods: {
+                resetCheckFunc () {
+                    var $this = this;
+                    $this.dropdwonLists.filter(function (item) {
+                        item.show = false;
+                    })
+                },
+                clearInput(){
+                    this.search1='';
                     this.inputlen = false;
-                }
-            },
-            showToast(){
-                $('.toast-box').fadeIn();
-                setTimeout(function () {
-                    $('.toast-box').fadeOut();
-                },2000)
-            },
-            clearInput(){
-                this.search1='';
-                this.inputlen = false;
-            },
-            selectPopFunc(){
-                this.ifSelectPop = true;
-                var _this = this;
-                $.fn.zTree.init($("#treeList"), _this.setting, _this.zNodes);
-                this.count();
-            },
-            zTreeOnClick: function(event, treeId, treeNode) {
-                console.log(treeNode.tId + ", " + treeNode.name);
-            },
-            zTreeOnCheck: function(e, treeId, treeNode) {
-                this.count();
-                if (this.clearFlag) {
-                    this.clearCheckedOldNodes();
-                }
-            },
-            clearCheckedOldNodes() {
-                var zTree = $.fn.zTree.getZTreeObj("treeList"),
-                    nodes = zTree.getChangeCheckedNodes();
-                for (var i=0, l=nodes.length; i<l; i++) {
-                    nodes[i].checkedOld = nodes[i].checked;
-                }
-            },
-            count() {
-                var zTree = $.fn.zTree.getZTreeObj("treeList");
-                var checkCount = zTree.getCheckedNodes(true).length;
-                $("#checkCount").text(checkCount);
+                },
+                selectPopFunc(){
+                    this.ifSelectPop = true;
+                    var $this = this;
+                    $.fn.zTree.init($("#treeList"), $this.setting, $this.zNodes);
+                    this.count();
+                },
+                zTreeOnClick: function(event, treeId, treeNode) {
+                    console.log(treeNode.tId + ", " + treeNode.name);
+                },
+                zTreeOnCheck: function(e, treeId, treeNode) {
+                    this.count();
+                    if (this.clearFlag) {
+                        this.clearCheckedOldNodes();
+                    }
+                },
+                clearCheckedOldNodes() {
+                    var zTree = $.fn.zTree.getZTreeObj("treeList"),
+                        nodes = zTree.getChangeCheckedNodes();
+                    for (var i=0, l=nodes.length; i<l; i++) {
+                        nodes[i].checkedOld = nodes[i].checked;
+                    }
+                },
+                count() {
+                    var zTree = $.fn.zTree.getZTreeObj("treeList");
+                    var checkCount = zTree.getCheckedNodes(true).length;
+                    $("#checkCount").text(checkCount);
 
-            },
-        }
-    })
-</script>
+                },
+            }
+        })
+	</script>
+</div>
 </body>
 </html>
