@@ -33,6 +33,10 @@
         FROM t_activity_stat_summary t
         INNER JOIN t_activity t1 ON t1.id = t.activity_id
         AND t1.create_fid = #{fid}
+        <if test="activityName != null and activityName != ''">
+            <bind name="activityNameBind" value="'%' + activityName + '%'"/>
+            AND t1.name like #{activityNameBind}
+        </if>
         <if test="startTime != null and startTime != ''">
             AND t1.start_time &gt;= #{startTime}
         </if>

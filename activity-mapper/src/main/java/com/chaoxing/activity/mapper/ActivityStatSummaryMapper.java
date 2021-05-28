@@ -23,6 +23,7 @@ public interface ActivityStatSummaryMapper extends BaseMapper<ActivityStatSummar
     * @Date 2021-05-27 18:23:18
     * @param page
     * @param fid
+    * @param activityName
     * @param startTime
     * @param endTime
     * @param orderField
@@ -31,6 +32,7 @@ public interface ActivityStatSummaryMapper extends BaseMapper<ActivityStatSummar
     */
     Page<ActivityStatSummaryDTO> activityStatSummaryPage(@Param("page") Page<ActivityStatSummaryDTO> page,
                                                          @Param("fid") Integer fid,
+                                                         @Param("activityName") String activityName,
                                                          @Param("startTime") String startTime,
                                                          @Param("endTime") String endTime,
                                                          @Param("orderField") String orderField,

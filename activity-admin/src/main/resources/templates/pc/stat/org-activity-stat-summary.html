@@ -51,7 +51,7 @@
                     <div class="popbtnInput">
                         <input type="text" autocomplete="off" class="layui-input" readonly value="全部参与范围" @click="selectPopFunc">
                     </div>
-                    <el-button class="btn-customize" round>查询</el-button>
+                    <el-button class="btn-customize" round @click="search">查询</el-button>
                 </div>
                 <!-- 计数栏 -->
                 <div class="table-count-box fs12">
@@ -83,7 +83,7 @@
                     <div class="clear"></div>
                 </div>
 
-                <el-table class="table-box" :data="tableData" >
+                <el-table class="table-box" :data="tableData" @sort-change="sortChange">
                     <template v-for="item in showTableFieldDetails" v-if="item.defaultChecked">
                         <el-table-column
                                 v-if="item.code === 'activityName'"
@@ -91,7 +91,7 @@
                                 :label="item.name"
                                 :ifCenter="item.align"
                                 :min-width="item.minWidth || 120"
-                                :sortable="item.sortable"
+                                :sortable="item.sortable ? 'custom' : item.sortable"
                         >
                             <template slot-scope="scope">
                                 <div style="cursor: pointer" @click="toActivityDetail(scope.row.activityPreviewUrl)">
@@ -106,7 +106,7 @@
                                 :label="item.name"
                                 :ifCenter="item.align"
                                 :min-width="item.minWidth || 120"
-                                :sortable="item.sortable"
+                                :sortable="item.sortable ? 'custom' : item.sortable"
                         >
                         </el-table-column>
                     </template>
@@ -194,7 +194,7 @@
                     activityName: '',
                     startTime: '',
                     endTime: '',
-                    orderField: '',
+                    orderFieldId: null,
                     orderType: 'asc'
                 },
                 // 配置项源数据
@@ -336,10 +336,30 @@
                         app.showMsg("加载活动统计汇总数据失败");
                     });
                 },
+                search: function () {
+                    var $this = this;
+                    $this.pageNum = 1;
+                    $this.pageSize = 10;
+                    $this.loadData();
+                },
                 // 下一页或上一页
                 changePage: function (pageNum) {
                     var $this = this;
                     $this.pageNum = pageNum;
+                    $this.loadData();
+                },
+                sortChange: function (column) {
+                    var $this = this;
+                    var sortFieldItem = $this.showTableFieldDetails.filter(item => item.code === column.prop)[0];
+                    $this.queryParams.orderFieldId = sortFieldItem ? sortFieldItem.id : null;
+
+                    if (column.order === 'descending') {
+                        $this.queryParams.orderType = 'desc';
+                    } else if (column.order === 'ascending'){
+                        $this.queryParams.orderType = 'asc';
+                    } else {
+                        $this.queryParams.orderType = null;
+                    }
                     $this.loadData();
                 },
                 // 跳转活动详情页
