@@ -42,6 +42,8 @@ public class OrgStatController {
 
     @Resource
     private ActivityStatSummaryQueryService activityStatSummaryQueryService;
+    @Resource
+    private WfwGroupApiService wfwGroupApiService;
 
     /**机构下的用户统计
      * @Description 
@@ -73,6 +75,14 @@ public class OrgStatController {
             tableFieldId = tableFieldDetails.get(0).getTableFieldId();
         }
         model.addAttribute("tableFieldId", tableFieldId);
+        // 机构的组织架构
+        List<WfwGroupDTO> groups = wfwGroupApiService.getGroupByGid(realFid, 0);
+        if (CollectionUtils.isNotEmpty(groups)) {
+            for (WfwGroupDTO group : groups) {
+                group.setGroupLevel(1);
+            }
+        }
+        model.addAttribute("groups", groups);
         return "pc/stat/org-user-stat";
     }
 

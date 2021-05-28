@@ -2,11 +2,17 @@ package com.chaoxing.activity.service.stat;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.chaoxing.activity.dto.query.admin.UserStatSummaryQueryDTO;
 import com.chaoxing.activity.dto.sign.UserSignStatSummaryDTO;
+import com.chaoxing.activity.mapper.TableFieldDetailMapper;
 import com.chaoxing.activity.mapper.UserStatSummaryMapper;
+import com.chaoxing.activity.model.TableFieldDetail;
 import com.chaoxing.activity.model.UserStatSummary;
 import com.chaoxing.activity.service.activity.ActivityStatQueryService;
+import com.chaoxing.activity.service.manager.OrganizationalStructureApiService;
 import com.chaoxing.activity.service.manager.PassportApiService;
+import com.chaoxing.activity.service.manager.WfwContactApiService;
 import com.chaoxing.activity.service.manager.module.SignApiService;
 import com.chaoxing.activity.service.user.UserStatService;
 import lombok.extern.slf4j.Slf4j;
@@ -30,6 +36,8 @@ public class UserStatSummaryService {
 
     @Resource
     private UserStatSummaryMapper userStatSummaryMapper;
+    @Resource
+    private TableFieldDetailMapper tableFieldDetailMapper;
 
     @Resource
     private SignApiService signApiService;
@@ -39,6 +47,10 @@ public class UserStatSummaryService {
     private UserStatService userStatService;
     @Resource
     private PassportApiService passportApiService;
+    @Resource
+    private WfwContactApiService wfwContactApiService;
+    @Resource
+    private OrganizationalStructureApiService organizationalStructureApiService;
 
     /**更新用户签到数
      * @Description 
@@ -144,6 +156,39 @@ public class UserStatSummaryService {
                     .build();
             userStatSummaryMapper.insert(userStatSummary);
         }
+    }
+
+    /**分页查询用户统计
+     * @Description 
+     * @author wwb
+     * @Date 2021-05-28 15:57:41
+     * @param page
+     * @param userStatSummaryQuery
+     * @return com.baomidou.mybatisplus.extension.plugins.pagination.Page
+    */
+    public Page paging(Page page, UserStatSummaryQueryDTO userStatSummaryQuery) {
+        Integer groupId = userStatSummaryQuery.getGroupId();
+        List<Integer> uids;
+        Integer fid = userStatSummaryQuery.getFid();
+        if (groupId == null) {
+            uids = organizationalStructureApiService.listOrgUid(fid);
+        } else {
+            uids = organizationalStructureApiService.listOrgGroupUid(fid, groupId, userStatSummaryQuery.getGroupLevel());
+        }
+        if (CollectionUtils.isEmpty(uids)) {
+            // 给一个不存在的uid
+            uids.add(-1);
+        }
+        userStatSummaryQuery.setUids(uids);
+        Integer orderTableFieldId = userStatSummaryQuery.getOrderTableFieldId();
+        if (orderTableFieldId == null) {
+            userStatSummaryQuery.setOrderField("");
+        } else {
+            TableFieldDetail tableFieldDetail = tableFieldDetailMapper.selectById(orderTableFieldId);
+            userStatSummaryQuery.setOrderField(tableFieldDetail.getCode());
+        }
+        page = userStatSummaryMapper.paging(page, userStatSummaryQuery);
+        return page;
     }
 
 }

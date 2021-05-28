@@ -18,4 +18,33 @@
     <sql id="Base_Column_List">
         t.uid, t.uname, t.real_name, t.mobile, t.participate_activity_num, t.signed_in_num, t.signed_in_rate, t.rating_num, t.qualified_num, t.total_participate_time_length, t.create_time, t.update_time
     </sql>
+    <select id="paging" resultType="com.chaoxing.activity.model.UserStatSummary">
+        SELECT
+            t.uid uid,
+            t.uname uname,
+            t.real_name,
+            t.mobile mobile,
+            t.participate_activity_num participateActivityNum,
+            t.signed_in_num signedInNum,
+            t.signed_in_rate signedInRate,
+            t.rating_num ratingNum,
+            t.qualified_num qualifiedNum,
+            t.total_participate_time_length totalParticipateTimeLength,
+            t.create_time createTime,
+            t.update_time updateTime
+        FROM
+            t_user_stat_summary t
+        WHERE
+            t.uid IN
+            <foreach collection="userStatSummaryQuery.uids" index="key" item="value" open="(" close=")" separator=",">
+                #{value}
+            </foreach>
+            <if test="userStatSummaryQuery.realName != null and userStatSummaryQuery.realName != ''">
+                AND t.real_name LIKE CONCAT('%', #{userStatSummaryQuery.realName}, '%')
+            </if>
+        <if test="userStatSummaryQuery.orderField != null and userStatSummaryQuery.orderField != ''">
+            ORDER BY
+                ${userStatSummaryQuery.orderField} ${userStatSummaryQuery.orderType}
+        </if>
+    </select>
 </mapper>
