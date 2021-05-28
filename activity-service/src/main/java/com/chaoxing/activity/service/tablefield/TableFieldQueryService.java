@@ -137,8 +137,8 @@ public class TableFieldQueryService {
     public TableField getTableField(TableField.Type type, TableField.AssociatedType associatedType) {
         List<TableField> tableFields = tableFieldMapper.selectList(new QueryWrapper<TableField>()
                 .lambda()
-                .eq(TableField::getAssociatedType, type.getValue())
-                .eq(TableField::getType, associatedType.getValue())
+                .eq(TableField::getType, type.getValue())
+                .eq(TableField::getAssociatedType, associatedType.getValue())
                 .eq(TableField::getDeleted, Boolean.FALSE));
         if (CollectionUtils.isNotEmpty(tableFields)) {
             return tableFields.get(0);
