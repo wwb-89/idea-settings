@@ -615,6 +615,7 @@ body {
   padding-left: 11px;
   font-size: 14px;
   color: #333333;
+  margin-right: 20px;
 }
 
 .table-search-box .el-input__inner input {
@@ -647,7 +648,7 @@ body {
 }
 
 .table-search-box .el-select {
-  margin-left: 20px;
+  margin-right: 20px;
   width: 240px;
 }
 
@@ -656,13 +657,12 @@ body {
 }
 
 .table-search-box .btn-customize {
-  margin-left: 20px;
   display: inline-block;
   vertical-align: top;
 }
 
 .table-search-box .popbtnInput {
-  margin-left: 20px;
+  margin-right: 20px;
   display: inline-block;
   vertical-align: top;
 }
@@ -918,8 +918,16 @@ body {
   height: 465px;
 }
 
+.dialog-box.selectPop .dialog-wrap .dialog-content {
+  padding: 25px 33px;
+  width: 100%;
+  -webkit-box-sizing: border-box;
+  -moz-box-sizing: border-box;
+  box-sizing: border-box;
+  overflow-x: hidden;
+}
+
 .dialog-box.selectPop .dialog-wrap .dialog-content .ztree-box {
-  margin: 25px 33px;
   -webkit-box-sizing: border-box;
      -moz-box-sizing: border-box;
           box-sizing: border-box;
