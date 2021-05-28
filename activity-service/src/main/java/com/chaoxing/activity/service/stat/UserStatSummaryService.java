@@ -65,7 +65,7 @@ public class UserStatSummaryService {
                 .lambda()
                     .eq(UserStatSummary::getUid, uid)
                     .set(UserStatSummary::getSignedInNum, userSignStatSummary.getValidSignedInNum())
-                    .set(UserStatSummary::getSignInRate, userSignStatSummary.getSignedInRate())
+                    .set(UserStatSummary::getSignedInRate, userSignStatSummary.getSignedInRate())
                     .set(UserStatSummary::getTotalParticipateTimeLength, userSignStatSummary.getParticipateTimeLength())
                     .set(UserStatSummary::getParticipateActivityNum, participatedActivityNum)
             );
@@ -75,7 +75,7 @@ public class UserStatSummaryService {
                     .uid(uid)
                     .realName(passportApiService.getUserRealName(uid))
                     .signedInNum(userSignStatSummary.getValidSignedInNum())
-                    .signInRate(userSignStatSummary.getSignedInRate())
+                    .signedInRate(userSignStatSummary.getSignedInRate())
                     .totalParticipateTimeLength(userSignStatSummary.getParticipateTimeLength())
                     .participateActivityNum(participatedActivityNum)
                     .build();

@@ -36,8 +36,8 @@ public class UserStatSummary {
     private Integer participateActivityNum;
     /** 签到数量; column: signed_in_num*/
     private Integer signedInNum;
-    /** 签到率; column: sign_in_rate*/
-    private BigDecimal signInRate;
+    /** 签到率; column: signed_in_rate*/
+    private BigDecimal signedInRate;
     /** 评价数量; column: rating_num*/
     private Integer ratingNum;
     /** 合格的数量; column: qualified_num*/

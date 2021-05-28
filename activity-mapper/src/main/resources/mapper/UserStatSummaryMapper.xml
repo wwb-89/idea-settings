@@ -8,7 +8,7 @@
         <result column="mobile" jdbcType="VARCHAR" property="mobile" />
         <result column="participate_activity_num" jdbcType="INTEGER" property="participateActivityNum" />
         <result column="signed_in_num" jdbcType="INTEGER" property="signedInNum" />
-        <result column="sign_in_rate" jdbcType="DECIMAL" property="signInRate" />
+        <result column="signed_in_rate" jdbcType="DECIMAL" property="signedInRate" />
         <result column="rating_num" jdbcType="INTEGER" property="ratingNum" />
         <result column="qualified_num" jdbcType="INTEGER" property="qualifiedNum" />
         <result column="total_participate_time_length" jdbcType="INTEGER" property="totalParticipateTimeLength" />
@@ -16,6 +16,6 @@
         <result column="update_time" jdbcType="TIMESTAMP" property="updateTime" />
     </resultMap>
     <sql id="Base_Column_List">
-        t.uid, t.uname, t.real_name, t.mobile, t.participate_activity_num, t.signed_in_num, t.sign_in_rate, t.rating_num, t.qualified_num, t.total_participate_time_length, t.create_time, t.update_time
+        t.uid, t.uname, t.real_name, t.mobile, t.participate_activity_num, t.signed_in_num, t.signed_in_rate, t.rating_num, t.qualified_num, t.total_participate_time_length, t.create_time, t.update_time
     </sql>
 </mapper>
