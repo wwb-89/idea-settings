@@ -15,4 +15,19 @@
     <sql id="Base_Column_List">
         t.fid, t.table_field_id, t.table_field_detail_id, t.is_top, t.sequence, t.create_time, t.create_uid, t.update_time, t.update_uid
     </sql>
+    <insert id="batchAdd">
+        INSERT INTO t_org_table_field ( fid, table_field_id, table_field_detail_id, is_top, sequence, create_uid, update_uid )
+        VALUES
+            <foreach collection="orgTableFields" index="key" item="value" open="" close="" separator=",">
+                (
+                    #{value.fid},
+                    #{value.tableFieldId},
+                    #{value.tableFieldDetailId},
+                    #{value.top},
+                    #{value.sequence},
+                    #{value.createUid},
+                    #{value.updateUid}
+                )
+            </foreach>
+    </insert>
 </mapper>

@@ -7,6 +7,7 @@ import com.chaoxing.activity.model.TableField;
 import com.chaoxing.activity.model.TableFieldDetail;
 import com.chaoxing.activity.service.tablefield.TableFieldQueryService;
 import com.chaoxing.activity.util.annotation.LoginRequired;
+import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -55,6 +56,12 @@ public class OrgStatController {
         model.addAttribute("tableFieldDetails", tableFieldDetails);
         List<OrgTableField> orgTableFields = tableFieldQueryService.listOrgTableField(realFid, TableField.Type.USER_STAT, TableField.AssociatedType.ORG);
         model.addAttribute("orgTableFields", orgTableFields);
+        model.addAttribute("fid", realFid);
+        Integer tableFieldId = null;
+        if (CollectionUtils.isNotEmpty(tableFieldDetails)) {
+            tableFieldId = tableFieldDetails.get(0).getTableFieldId();
+        }
+        model.addAttribute("tableFieldId", tableFieldId);
         return "pc/stat/org-user-stat";
     }
 
