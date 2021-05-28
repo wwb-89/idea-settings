@@ -11,8 +11,8 @@
         <result column="is_default_top" jdbcType="BIT" property="defaultTop" />
         <result column="is_allow_top" jdbcType="BIT" property="allowTop" />
         <result column="is_sortable" jdbcType="BIT" property="sortable" />
-        <result column="min_width" jdbcType="BIT" property="minWidth" />
-        <result column="align" jdbcType="BIT" property="align" />
+        <result column="min_width" jdbcType="INTEGER" property="minWidth" />
+        <result column="align" jdbcType="VARCHAR" property="align" />
         <result column="sequence" jdbcType="INTEGER" property="sequence" />
         <result column="is_deleted" jdbcType="BIT" property="deleted" />
         <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />

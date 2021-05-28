@@ -53,7 +53,7 @@ public class TableFieldDetail {
     /** 最小宽度; column: min_width*/
     private Integer minWidth;
     /** 对齐方式; column: align*/
-    private Integer align;
+    private String align;
     /** 顺序; column: sequence*/
     private Integer sequence;
     /** 是否被删除; column: is_deleted*/
