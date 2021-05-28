@@ -23,6 +23,14 @@
         WHERE
             t.affiliation_fid = #{fid}
     </select>
+    <select id="listByIds" resultType="com.chaoxing.activity.model.ActivityClassify">
+        SELECT *
+        FROM t_activity_classify
+        WHERE id in
+        <foreach collection="ids" item="id" open="(" close=")" separator=",">
+            #{id}
+        </foreach>
+    </select>
 
     <insert id="batchAdd">
         INSERT INTO t_activity_classify ( `name`, is_system, affiliation_fid, sequence )

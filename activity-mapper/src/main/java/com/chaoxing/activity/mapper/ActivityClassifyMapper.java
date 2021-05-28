@@ -5,6 +5,7 @@ import com.chaoxing.activity.model.ActivityClassify;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
+import java.util.Collection;
 import java.util.List;
 
 /**
@@ -37,4 +38,12 @@ public interface ActivityClassifyMapper extends BaseMapper<ActivityClassify> {
 	*/
 	int batchAdd(@Param("activityClassifies") List<ActivityClassify> activityClassifies);
 
+	/**根据ids批量查询
+	* @Description 
+	* @author huxiaolong
+	* @Date 2021-05-28 22:07:02
+	* @param ids
+	* @return java.util.List<com.chaoxing.activity.model.ActivityClassify>
+	*/
+    List<ActivityClassify> listByIds(@Param("ids") Collection<Integer> ids);
 }

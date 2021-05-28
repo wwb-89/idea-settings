@@ -24,6 +24,8 @@ public class ActivityStatSummaryDTO {
 
     /** 活动id; */
     private Integer activityId;
+    /** 报名签到id; */
+    private Integer signId;
     /** 活动名称; */
     private String activityName;
     /** 活动门户地址 */
@@ -62,8 +64,8 @@ public class ActivityStatSummaryDTO {
     /** 起止时间 */
     public String getActivityStartEndTime() {
         if (this.startTime != null && this.endTime != null) {
-            String startTimeStr = startTime.format(DateUtils.FULL_TIME_FORMATTER);
-            String endTimeStr = endTime.format(DateUtils.FULL_TIME_FORMATTER);
+            String startTimeStr = startTime.format(DateUtils.DATE_MINUTE_TIME_FORMATTER);
+            String endTimeStr = endTime.format(DateUtils.DATE_MINUTE_TIME_FORMATTER);
             return startTimeStr + "~" + endTimeStr;
         }
         return "";

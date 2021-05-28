@@ -16,6 +16,7 @@
     <select id="activityStatSummaryPage" resultType="com.chaoxing.activity.dto.stat.ActivityStatSummaryDTO">
         SELECT
             t1.id as activityId,
+            t1.sign_id as signId,
             t1.name as activityName,
             t1.preview_url as activityPreviewUrl,
             t1.status as activityStatus,
@@ -33,6 +34,12 @@
         FROM t_activity_stat_summary t
         INNER JOIN t_activity t1 ON t1.id = t.activity_id
         AND t1.create_fid = #{fid}
+        <if test="signIds != null and signIds.size() > 0">
+            AND t1.sign_id IN
+            <foreach collection="signIds" item="signId" open="(" close=")" separator=",">
+                #{signId}
+            </foreach>
+        </if>
         <if test="activityName != null and activityName != ''">
             <bind name="activityNameBind" value="'%' + activityName + '%'"/>
             AND t1.name like #{activityNameBind}

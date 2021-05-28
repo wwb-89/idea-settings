@@ -7,6 +7,8 @@ import com.chaoxing.activity.model.ActivityStatSummary;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
+import java.util.List;
+
 /**
  * @className: TActivityStatSummaryMapper
  * @Description: 
@@ -36,5 +38,7 @@ public interface ActivityStatSummaryMapper extends BaseMapper<ActivityStatSummar
                                                          @Param("startTime") String startTime,
                                                          @Param("endTime") String endTime,
                                                          @Param("orderField") String orderField,
-                                                         @Param("orderType") String orderType);
+                                                         @Param("orderType") String orderType,
+                                                         @Param("signIds") List<Integer> signIds
+    );
 }

@@ -3,11 +3,13 @@ package com.chaoxing.activity.admin.controller.general;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.chaoxing.activity.admin.util.LoginUtils;
 import com.chaoxing.activity.dto.LoginUserDTO;
+import com.chaoxing.activity.dto.manager.WfwGroupDTO;
 import com.chaoxing.activity.dto.stat.ActivityStatSummaryDTO;
 import com.chaoxing.activity.model.OrgTableField;
 import com.chaoxing.activity.model.TableField;
 import com.chaoxing.activity.model.TableFieldDetail;
 import com.chaoxing.activity.service.activity.stat.ActivityStatSummaryQueryService;
+import com.chaoxing.activity.service.manager.WfwGroupApiService;
 import com.chaoxing.activity.service.tablefield.TableFieldQueryService;
 import com.chaoxing.activity.util.annotation.LoginRequired;
 import org.apache.commons.collections4.CollectionUtils;
@@ -31,6 +33,9 @@ import java.util.Optional;
 @Controller
 @RequestMapping("stat/org")
 public class OrgStatController {
+
+    @Resource
+    private WfwGroupApiService wfwGroupApiService;
 
     @Resource
     private TableFieldQueryService tableFieldQueryService;
@@ -98,6 +103,9 @@ public class OrgStatController {
         if (CollectionUtils.isNotEmpty(tableFieldDetails)) {
             tableFieldId = tableFieldDetails.get(0).getTableFieldId();
         }
+        // 微服务组织架构
+        List<WfwGroupDTO> wfwGroups = wfwGroupApiService.getGroupByFid(realFid);
+        model.addAttribute("wfwGroups", wfwGroups);
         model.addAttribute("fid", realFid);
         model.addAttribute("tableFieldId", tableFieldId);
         model.addAttribute("tableFieldDetails", tableFieldDetails);

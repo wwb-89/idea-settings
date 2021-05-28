@@ -2,15 +2,20 @@
 <html lang="en" xmlns:th="http://www.thymeleaf.org/">
 
 <head>
+    <title>活动统计</title>
     <meta charset="UTF-8">
     <meta name="renderer" content="webkit">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="/static/pc/assets/table-icomoon/style.css" th:href="@{/pc/assets/table-icomoon/style.css}">
     <link rel="stylesheet" href="/static/pc/assets/lib/element-ui/lib/theme-chalk/index.css" th:href="@{/pc/assets/lib/element-ui/lib/theme-chalk/index.css}">
-    <link rel="stylesheet" href="/static/pc/assets/lib/zTree_v3/css/zTreeStyle/zTreeStyle.css" th:href="@{/pc/assets/lib/zTree_v3/css/zTreeStyle/zTreeStyle.css}" type="text/css">
+    <link rel="stylesheet" href="/static/pc/assets/lib/zTree_v3_table/css/zTreeStyle/zTreeStyle.css" th:href="@{/pc/assets/lib/zTree_v3_table/css/zTreeStyle/zTreeStyle.css}" type="text/css">
     <link rel="stylesheet" href="/static/pc/assets/css/commonTable.css" th:href="@{/pc/assets/css/commonTable.css}">
     <link rel="stylesheet" href="/static/pc/assets/css/confirm_dialog.css" th:href="@{/pc/assets/css/confirm_dialog.css}">
-    <title>复杂表格</title>
+    <style>
+        [v-cloak] {
+            display: none;
+        }
+    </style>
 </head>
 
 <body>
@@ -20,36 +25,37 @@
         <div class="tab-content-box">
             <div class="tab-item">
                 <!-- 操作栏 -->
-                <div class="table-operate-box fs0">
-                    <el-button class="btn-customize" round>导出</el-button>
-                    <el-button class="btn-customize" round>导出记录</el-button>
-                    <div class="search-Box">
-                        <el-input placeholder="活动名称"
-                                  icon="search"
-                                  class="search"
-                                  v-model="queryParams.activityName"
-                                  suffix-icon="el-icon-search">
-                        </el-input>
-                        <i class="icon-cancel btn-cancel fs16"
-                            v-show="queryParams.activityName && queryParams.activityName.length > 0"
-                            @click="queryParams.activityName = ''"></i>
-                    </div>
-                </div>
+<!--                <div class="table-operate-box fs0">-->
+<!--                    <el-button class="btn-customize" round>导出</el-button>-->
+<!--                    <el-button class="btn-customize" round>导出记录</el-button>-->
+<!--                    <div class="search-Box">-->
+<!--                        <el-input placeholder="活动名称"-->
+<!--                                  icon="search"-->
+<!--                                  class="search"-->
+<!--                                  v-model="queryParams.activityName"-->
+<!--                                  suffix-icon="el-icon-search">-->
+<!--                        </el-input>-->
+<!--                        <i class="icon-cancel btn-cancel fs16"-->
+<!--                            v-show="queryParams.activityName && queryParams.activityName.length > 0"-->
+<!--                            @click="queryParams.activityName = ''"></i>-->
+<!--                    </div>-->
+<!--                </div>-->
                 <!-- 查询栏 -->
                 <div class="table-search-box fs0">
                     <el-date-picker
                             v-model="dateValue1"
                             range-separator=""
-                            type="daterange"
+                            type="datetimerange"
                             prefix-icon="el-icon-time"
                             start-placeholder="开始日期"
                             end-placeholder="结束日期"
+                            format="yyyy-MM-dd HH:mm"
                             value-format="yyyy-MM-dd HH:mm:ss"
                             @change="dateRangeChange"
                     >
                     </el-date-picker>
                     <div class="popbtnInput">
-                        <input type="text" autocomplete="off" class="layui-input" readonly value="全部参与范围" @click="selectPopFunc">
+                        <input type="text" autocomplete="off" class="layui-input" readonly :value="participateScopeNames" placeholder="参与范围" @click="selectPopFunc">
                     </div>
                     <el-button class="btn-customize" round @click="search">查询</el-button>
                 </div>
@@ -90,8 +96,7 @@
                                 :fixed="item.defaultTop"
                                 :label="item.name"
                                 :ifCenter="item.align"
-                                :min-width="item.minWidth || 120"
-                                :sortable="item.sortable ? 'custom' : item.sortable"
+                                :min-width="item.minWidth"
                         >
                             <template slot-scope="scope">
                                 <div style="cursor: pointer" @click="toActivityDetail(scope.row.activityPreviewUrl)">
@@ -100,12 +105,23 @@
                             </template>
                         </el-table-column>
                         <el-table-column
+                                v-else-if="item.code === 'activityStatus'"
+                                :fixed="item.defaultTop"
+                                :label="item.name"
+                                :ifCenter="item.align"
+                                :min-width="item.minWidth"
+                        >
+                            <template slot-scope="scope">
+                                {{scope.row.activityStatus | activityStatusFilter}}
+                            </template>
+                        </el-table-column>
+                        <el-table-column
                                 v-else
                                 :prop="item.code"
                                 :fixed="item.defaultTop"
                                 :label="item.name"
                                 :ifCenter="item.align"
-                                :min-width="item.minWidth || 120"
+                                :min-width="item.minWidth"
                                 :sortable="item.sortable ? 'custom' : item.sortable"
                         >
                         </el-table-column>
@@ -137,25 +153,25 @@
                <div class="ztree-box">
                    <div class="count-box fs14">
                        <span class="color666">选择活动参与范围 </span>
-                       <div class="fr colorBlue">
-                           <span>已选</span>
-                           <span id="checkCount"></span>
-                       </div>
+<!--                       <div class="fr colorBlue">-->
+<!--                           <span>已选</span>-->
+<!--                           <span id="checkCount"></span>-->
+<!--                       </div>-->
                    </div>
                    <ul id="treeList" class="ztree"></ul>
                </div>
            </div>
             <div class="btns">
                 <span class="btn inlineMiddle btn-border" @click="ifSelectPop = false">取消</span>
-                <span class="btn inlineMiddle btn-normal">确定</span>
+                <span class="btn inlineMiddle btn-normal" @click="participateScopeChange">确定</span>
             </div>
         </div>
     </div>
 
-    <!-- toast提示 -->
-    <div class="toast-box">
-        toast提示，停留3s，自动消失，句末不加标点
-    </div>
+<!--    &lt;!&ndash; toast提示 &ndash;&gt;-->
+<!--    <div class="toast-box">-->
+<!--        toast提示，停留3s，自动消失，句末不加标点-->
+<!--    </div>-->
     <!--遮罩-->
 </div>
 <div th:replace="pc/include/common_js :: common_js(~{::script})">
@@ -163,25 +179,6 @@
     <script type="text/javascript" src="/static/pc/assets/lib/zTree_v3/js/jquery.ztree.core.js" th:src="@{/pc/assets/lib/zTree_v3/js/jquery.ztree.core.js}"></script>
     <script type="text/javascript" src="/static/pc/assets/lib/zTree_v3/js/jquery.ztree.excheck.js" th:src="@{/pc/assets/lib/zTree_v3/js/jquery.ztree.excheck.js}"></script>
     <script th:inline="javascript">
-        Vue.filter("statusFormat", function (status) {
-            if (status !== 0 && !status) {
-                return '未知状态';
-            }
-            switch (status) {
-                case 0:
-                    return '已删除';
-                case 1:
-                    return '待发布';
-                case 2:
-                    return '已发布';
-                case 3:
-                    return '进行中';
-                case 4:
-                    return '已结束';
-                default:
-                    return '未知状态';
-            }
-        });
         var orgActivityStatVue = new Vue({
             el: '#orgActivityStatVue',
             data: {
@@ -190,7 +187,9 @@
                 tableFieldId: [[${tableFieldId}]],
                 pageNum: 1,
                 pageSize: 10,
+                participateScopeNames: '',
                 queryParams: {
+                    externalIds: [],
                     activityName: '',
                     startTime: '',
                     endTime: '',
@@ -213,38 +212,8 @@
                 pages: [[${activityStatSummaryPage.pages}]],
                 dateValue1:'',  //日期范围选择值
                 ifSelectPop: false, //参与范围的弹窗展示
-                setting: {
-                    view: {
-                        showLine: false
-                    },
-                    check: {
-                        enable: true
-                    },
-                    data: {
-                        simpleData: {
-                            enable: true
-                        }
-                    },
-                    callback: {
-                        onClick:  (e, treeId, treeNode)=> app.zTreeOnClick(e, treeId, treeNode),
-                        onCheck: (e, treeId, treeNode)=> app.zTreeOnCheck(e, treeId, treeNode)
-                    }
-                },
-                zNodes: [
-                    { id:1, pId:0, name:"天津教育局天津教育局天津教育局（12）", open:true},
-                    { id:11, pId:1, name:"二级二级二级", open:true},
-                    { id:111, pId:11, name:"can check 1-1-1"},
-                    { id:112, pId:11, name:"can check 1-1-2"},
-                    { id:12, pId:1, name:"can check 1-2", open:true},
-                    { id:121, pId:12, name:"can check 1-2-1"},
-                    { id:122, pId:12, name:"can check 1-2-2"},
-                    { id:2, pId:0, name:"can check 2", checked:true, open:true},
-                    { id:21, pId:2, name:"can check 2-1"},
-                    { id:22, pId:2, name:"can check 2-2", open:true},
-                    { id:221, pId:22, name:"can check 2-2-1", checked:true},
-                    { id:222, pId:22, name:"can check 2-2-2"},
-                    { id:23, pId:2, name:"can check 2-3"}
-                ],
+                wfwGroups: [[${wfwGroups}]],
+                participateScopeTreeObj: null,
                 clearFlag: false,
             },
             created: function () {
@@ -254,12 +223,81 @@
             },
             mounted: function () {
                 var $this = this;
-                $(document).ready(()=>{
-                    $.fn.zTree.init($("#treeList"), $this.setting, $this.zNodes);
-                });
                 $this.reSortSettingData()
+                console.log($this.wfwGroups)
             },
             methods: {
+                initGroupTree: function () {
+                    var $this = this;
+                    $($this.wfwGroups).each(function () {
+                        this.isParent = this.soncount > 0;
+                    });
+                    var setting = {
+                        view: {
+                            showLine: false
+                        },
+                        check: {
+                            enable: true
+                        },
+                        data: {
+                            simpleData: {
+                                enable: true,
+                                idKey: "id",
+                                pIdKey: "gid",
+                            },
+                            key: {
+                                name: "groupname"
+                            },
+                            keep: {
+                                parent: true
+                            }
+                        },
+                        callback: {
+                            onExpand: function (e, b, node) {
+                                if (node.children == null || node.children.length <= 0) {
+                                    // $this.loadFidGroup(node.id, node);
+                                }
+                            }
+                        }
+                    };
+                    $this.participateScopeTreeObj = $.fn.zTree.init($("#treeList"), setting, $this.wfwGroups);
+                },
+                participateScopeChange: function () {
+                    var $this = this;
+                    var zTree = $.fn.zTree.getZTreeObj("treeList");
+                    var nodeArr = zTree.getCheckedNodes(true);
+                    var participateScopes = [];
+                    //首先保存 搜索父节点被全选的，在看非父节点被选中的(非父节点的父节点被全选，则不保存该条记录)
+                    $(nodeArr).each(function () {
+                        // 半选状态
+                        var half = this.getCheckStatus().half;
+                        if (!half) {
+                            // 只记录全选的
+                            participateScopes.push({
+                                externalId: this.id,
+                                externalPid: this.gid == this.id ? null : this.gid,
+                                externalName: this.groupname,
+                                leaf: !this.isParent
+                            });
+                        }
+                    });
+
+                    var participateScopeNames = '';
+                    var externalIds = []
+                    if (participateScopes) {
+                        $(participateScopes).each(function (i) {
+                            participateScopeNames += this.externalName;
+                            externalIds.push(this.externalId);
+                            if (participateScopes.length - 1 !== i) {
+                                participateScopeNames += ','
+                            }
+                        })
+                    }
+                    $this.participateScopeNames = participateScopeNames;
+                    $this.queryParams.externalIds = externalIds;
+
+                    $this.ifSelectPop = false;
+                },
                 calShowTableFieldDetails: function () {
                     var $this = this;
                     // 计算表格显示的字段列表
@@ -350,7 +388,9 @@
                 },
                 sortChange: function (column) {
                     var $this = this;
-                    var sortFieldItem = $this.showTableFieldDetails.filter(item => item.code === column.prop)[0];
+                    var sortFieldItem = $($this.showTableFieldDetails).filter(function() {
+                        return this.code === column.prop
+                    })[0];
                     $this.queryParams.orderFieldId = sortFieldItem ? sortFieldItem.id : null;
 
                     if (column.order === 'descending') {
@@ -444,31 +484,33 @@
                 selectPopFunc(){
                     this.ifSelectPop = true;
                     var $this = this;
-                    $.fn.zTree.init($("#treeList"), $this.setting, $this.zNodes);
-                    this.count();
-                },
-                zTreeOnClick: function(event, treeId, treeNode) {
-                    console.log(treeNode.tId + ", " + treeNode.name);
-                },
-                zTreeOnCheck: function(e, treeId, treeNode) {
-                    this.count();
-                    if (this.clearFlag) {
-                        this.clearCheckedOldNodes();
+                    if(!$this.participateScopeTreeObj){
+                        $this.initGroupTree();
                     }
+                    // this.count();
                 },
-                clearCheckedOldNodes() {
-                    var zTree = $.fn.zTree.getZTreeObj("treeList"),
-                        nodes = zTree.getChangeCheckedNodes();
-                    for (var i=0, l=nodes.length; i<l; i++) {
-                        nodes[i].checkedOld = nodes[i].checked;
-                    }
-                },
-                count() {
-                    var zTree = $.fn.zTree.getZTreeObj("treeList");
-                    var checkCount = zTree.getCheckedNodes(true).length;
-                    $("#checkCount").text(checkCount);
-
-                },
+                // zTreeOnClick: function(event, treeId, treeNode) {
+                //     console.log(treeNode.tId + ", " + treeNode.name);
+                // },
+                // zTreeOnCheck: function(e, treeId, treeNode) {
+                //     this.count();
+                //     if (this.clearFlag) {
+                //         this.clearCheckedOldNodes();
+                //     }
+                // },
+                // clearCheckedOldNodes() {
+                //     var zTree = $.fn.zTree.getZTreeObj("treeList"),
+                //         nodes = zTree.getChangeCheckedNodes();
+                //     for (var i=0, l=nodes.length; i<l; i++) {
+                //         nodes[i].checkedOld = nodes[i].checked;
+                //     }
+                // },
+                // count() {
+                //     var zTree = $.fn.zTree.getZTreeObj("treeList");
+                //     var checkCount = zTree.getCheckedNodes(true).length;
+                //     $("#checkCount").text(checkCount);
+                //
+                // },
             }
         })
     </script>

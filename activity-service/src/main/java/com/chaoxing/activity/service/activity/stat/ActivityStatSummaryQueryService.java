@@ -2,7 +2,9 @@ package com.chaoxing.activity.service.activity.stat;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.chaoxing.activity.dto.sign.SignParticipateScopeDTO;
 import com.chaoxing.activity.dto.stat.ActivityStatSummaryDTO;
 import com.chaoxing.activity.mapper.ActivityClassifyMapper;
 import com.chaoxing.activity.mapper.ActivityRatingMapper;
@@ -11,6 +13,7 @@ import com.chaoxing.activity.mapper.TableFieldDetailMapper;
 import com.chaoxing.activity.model.ActivityClassify;
 import com.chaoxing.activity.model.ActivityRating;
 import com.chaoxing.activity.model.TableFieldDetail;
+import com.chaoxing.activity.service.manager.module.SignApiService;
 import com.chaoxing.activity.util.enums.OrderTypeEnum;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
@@ -21,10 +24,8 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * @author huxiaolong
@@ -48,6 +49,9 @@ public class ActivityStatSummaryQueryService {
 
     @Autowired
     private TableFieldDetailMapper tableFieldDetailMapper;
+
+    @Autowired
+    private SignApiService signApiService;
 
     /**对活动统计汇总进行分页查询
     * @Description
@@ -79,6 +83,13 @@ public class ActivityStatSummaryQueryService {
         String startTime = jsonObject.getString("startTime");
         String endTime = jsonObject.getString("endTime");
         Integer orderFieldId = jsonObject.getInteger("orderFieldId");
+        String externalIdsStr = jsonObject.getString("externalIds");
+        List<Integer> externalIds = new ArrayList<>();
+        List<Integer> searchSignIds = new ArrayList<>();
+        if (StringUtils.isNotBlank(externalIdsStr)) {
+            externalIds = JSON.parseArray(externalIdsStr, Integer.class);
+            searchSignIds = signApiService.listSignIdsByExternalIds(externalIds);
+        }
         String orderType = jsonObject.getString("orderType");
         String orderField = null;
         if (orderFieldId != null) {
@@ -94,38 +105,57 @@ public class ActivityStatSummaryQueryService {
             }
         }
 
-        page = activityStatSummaryMapper.activityStatSummaryPage(page, fid, activityName, startTime, endTime, orderField, orderType);
+        // 传递了参与范围的组织架构id集，报名签到id却为空，则返回空
+        if (CollectionUtils.isNotEmpty(externalIds) && CollectionUtils.isEmpty(searchSignIds)) {
+            return page;
+        }
+        page = activityStatSummaryMapper.activityStatSummaryPage(page, fid, activityName, startTime, endTime, orderField,
+                orderType, searchSignIds);
         if (CollectionUtils.isEmpty(page.getRecords())) {
             return page;
         }
         List<Integer> activityIds = Lists.newArrayList();
+        List<Integer> signIds = Lists.newArrayList();
         Set<Integer> classifyIds = Sets.newHashSet();
         for (ActivityStatSummaryDTO record : page.getRecords()) {
             activityIds.add(record.getActivityId());
-            classifyIds.add(record.getActivityClassifyId());
+            if (record.getSignId() != null) {
+                signIds.add(record.getSignId());
+            }
+            if (record.getActivityClassifyId() != null) {
+                classifyIds.add(record.getActivityClassifyId());
+            }
         }
+
+        List<SignParticipateScopeDTO> signParticipateScopes = signApiService.listSignParticipateScopeBySignIds(signIds);
+        Map<Integer, String> signParticipateScopeMap = new HashMap<>();
+        for (SignParticipateScopeDTO item : signParticipateScopes) {
+            signParticipateScopeMap.put(item.getSignId(), item.getExternalName());
+        }
+
 
         Map<Integer, String> classifyMap = Maps.newHashMap();
-        Map<Integer, Integer> ratingMap = Maps.newHashMap();
         if (CollectionUtils.isNotEmpty(classifyIds)) {
-            List<ActivityClassify> classifies = activityClassifyMapper.selectBatchIds(classifyIds);
-            classifies.forEach(classify -> {
-                classifyMap.put(classify.getId(), classify.getName());
-            });
+            List<ActivityClassify> classifies = activityClassifyMapper.listByIds(classifyIds);
+            classifyMap = classifies.stream().collect(Collectors.toMap(ActivityClassify::getId, ActivityClassify::getName, (v1, v2) -> v2));
         }
-        List<ActivityRating> ratings = activityRatingMapper.selectBatchIds(activityIds);
-        ratings.forEach(rating -> {
-            ratingMap.put(rating.getActivityId(), rating.getScoreNum());
-        });
+        List<ActivityRating> ratings = activityRatingMapper.selectList(new QueryWrapper<ActivityRating>()
+                .lambda()
+                .in(ActivityRating::getActivityId, activityIds));
+        Map<Integer, Integer> ratingMap = ratings.stream().collect(Collectors.toMap(ActivityRating::getActivityId, ActivityRating::getScoreNum, (v1, v2) -> v2));
 
-        page.getRecords().forEach(record -> {
+        for (ActivityStatSummaryDTO record : page.getRecords()) {
             Integer classifyId = record.getActivityClassifyId();
+            Integer signId = record.getSignId();
             if (classifyId != null) {
                 record.setActivityClassify(classifyMap.get(classifyId));
             }
+            if (signId != null) {
+                record.setParticipateScope(signParticipateScopeMap.get(signId));
+            }
             Integer ratingNum = Optional.ofNullable(ratingMap.get(record.getActivityId())).orElse(0);
             record.setRateNum(ratingNum);
-        });
+        }
 
         return page;
     }

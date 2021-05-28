@@ -11,6 +11,7 @@ import com.chaoxing.activity.dto.module.SignAddEditDTO;
 import com.chaoxing.activity.dto.module.SignAddEditResultDTO;
 import com.chaoxing.activity.dto.sign.ActivityBlockDetailSignStatDTO;
 import com.chaoxing.activity.dto.sign.SignActivityManageIndexDTO;
+import com.chaoxing.activity.dto.sign.SignParticipateScopeDTO;
 import com.chaoxing.activity.dto.sign.UserSignStatSummaryDTO;
 import com.chaoxing.activity.dto.stat.SignActivityStatDTO;
 import com.chaoxing.activity.model.ActivityStatSummary;
@@ -82,6 +83,12 @@ public class SignApiService {
 
 	/** 统计活动报名签到对应的活动统计汇总记录url */
 	private static final String STAT_ACTIVITY_SUMMARY_URL = SIGN_API_DOMAIN + "/stat/sign/%d/activity-stat-summary";
+
+	/** 根据外资源部externalIds查询报名签到signIds集合url  */
+	private static final String LIST_SIGN_ID_BY_PARTICIPATE_SCOPES_URL = SIGN_API_DOMAIN + "/sign/list/signIds/by-participate-scope";
+	/** 根据signIds获取报名参与范围url */
+	private static final String LIST_PARTICIPATE_SCOPE_BY_SIGNS_URL = SIGN_API_DOMAIN + "/sign/list/sign-participate-scope";
+
 	/** 报名签到报名成功的uid列表url */
 	private static final String SIGN_SIGNED_UP_UIDS_URL = SIGN_API_DOMAIN + "/sign/%s/uid/signed-up";
 	/** 用户是否已报名（报名成功）url */
@@ -695,4 +702,28 @@ public class SignApiService {
 		});
 	}
 
+	public List<SignParticipateScopeDTO> listSignParticipateScopeBySignIds(List<Integer> signIds) {
+		HttpHeaders httpHeaders = new HttpHeaders();
+		httpHeaders.setContentType(MediaType.APPLICATION_JSON);
+		HttpEntity<String> httpEntity = new HttpEntity<>(JSON.toJSONString(signIds), httpHeaders);
+		String result = restTemplate.postForObject(LIST_PARTICIPATE_SCOPE_BY_SIGNS_URL, httpEntity, String.class);
+
+		JSONObject jsonObject = JSON.parseObject(result);
+		return resultHandle(jsonObject, () -> JSON.parseArray(jsonObject.getString("data"), SignParticipateScopeDTO.class), (message) -> {
+//			log.error("获取用户:{}合格的成绩数量error:{}", uid, message);
+			throw new BusinessException(message);
+		});
+	}
+
+	public List<Integer> listSignIdsByExternalIds(List<Integer> externalIds) {
+		HttpHeaders httpHeaders = new HttpHeaders();
+		httpHeaders.setContentType(MediaType.APPLICATION_JSON);
+		HttpEntity<String> httpEntity = new HttpEntity<>(JSON.toJSONString(externalIds), httpHeaders);
+		String result = restTemplate.postForObject(LIST_SIGN_ID_BY_PARTICIPATE_SCOPES_URL, httpEntity, String.class);
+
+		JSONObject jsonObject = JSON.parseObject(result);
+		return resultHandle(jsonObject, () -> JSON.parseArray(jsonObject.getString("data"), Integer.class), (message) -> {
+			throw new BusinessException(message);
+		});
+	}
 }
