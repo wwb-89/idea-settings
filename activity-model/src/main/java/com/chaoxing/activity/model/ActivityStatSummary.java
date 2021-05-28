@@ -1,5 +1,6 @@
 package com.chaoxing.activity.model;
 
+import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -38,5 +39,19 @@ public class ActivityStatSummary {
     private LocalDateTime createTime;
     /** 更新时间; column: update_time*/
     private LocalDateTime updateTime;
+
+    /** 活动对应的报名签到Id */
+    @TableField(exist = false)
+    private Integer signId;
+
+    public static ActivityStatSummary buildDefault() {
+        return ActivityStatSummary.builder()
+                .signedInNum(0)
+                .signInRate(BigDecimal.valueOf(0))
+                .qualifiedNum(0)
+                .avgParticipateTimeLength(0)
+                .updateTime(LocalDateTime.now())
+                .build();
+    }
 
 }

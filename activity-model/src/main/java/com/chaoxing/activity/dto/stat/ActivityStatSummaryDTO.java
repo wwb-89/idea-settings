@@ -1,5 +1,6 @@
 package com.chaoxing.activity.dto.stat;
 
+import com.chaoxing.activity.util.DateUtils;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -25,8 +26,14 @@ public class ActivityStatSummaryDTO {
     private Integer activityId;
     /** 活动名称; */
     private String activityName;
+    /** 活动门户地址 */
+    private String activityPreviewUrl;
     /** 活动状态; */
     private Integer activityStatus;
+    /** 活动分类; */
+    private String activityClassify;
+    /** 活动分类; */
+    private Integer activityClassifyId;
     /** 创建者; */
     private String activityCreator;
     /** 创建者; */
@@ -39,6 +46,8 @@ public class ActivityStatSummaryDTO {
     private LocalDateTime startTime;
     /** 结束时间; */
     private LocalDateTime endTime;
+    /** 评价数; */
+    private Integer rateNum;
     /** 签到数量; */
     private Integer signedInNum;
     /** 签到率; */
@@ -49,4 +58,14 @@ public class ActivityStatSummaryDTO {
     private LocalDateTime createTime;
     /** 更新时间; */
     private LocalDateTime updateTime;
+
+    /** 起止时间 */
+    public String getActivityStartEndTime() {
+        if (this.startTime != null && this.endTime != null) {
+            String startTimeStr = startTime.format(DateUtils.FULL_TIME_FORMATTER);
+            String endTimeStr = endTime.format(DateUtils.FULL_TIME_FORMATTER);
+            return startTimeStr + "~" + endTimeStr;
+        }
+        return "";
+    }
 }

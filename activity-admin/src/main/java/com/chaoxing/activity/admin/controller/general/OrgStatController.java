@@ -1,10 +1,13 @@
 package com.chaoxing.activity.admin.controller.general;
 
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.chaoxing.activity.admin.util.LoginUtils;
 import com.chaoxing.activity.dto.LoginUserDTO;
+import com.chaoxing.activity.dto.stat.ActivityStatSummaryDTO;
 import com.chaoxing.activity.model.OrgTableField;
 import com.chaoxing.activity.model.TableField;
 import com.chaoxing.activity.model.TableFieldDetail;
+import com.chaoxing.activity.service.activity.stat.ActivityStatSummaryQueryService;
 import com.chaoxing.activity.service.tablefield.TableFieldQueryService;
 import com.chaoxing.activity.util.annotation.LoginRequired;
 import org.apache.commons.collections4.CollectionUtils;
@@ -31,6 +34,9 @@ public class OrgStatController {
 
     @Resource
     private TableFieldQueryService tableFieldQueryService;
+
+    @Resource
+    private ActivityStatSummaryQueryService activityStatSummaryQueryService;
 
     /**机构下的用户统计
      * @Description 
@@ -63,6 +69,41 @@ public class OrgStatController {
         }
         model.addAttribute("tableFieldId", tableFieldId);
         return "pc/stat/org-user-stat";
+    }
+
+    /**机构下的活动统计
+    * @Description
+    * @author huxiaolong
+    * @Date 2021-05-28 16:23:12
+    * @param request
+    * @param model
+    * @param wfwfid
+    * @param unitId
+    * @param state
+    * @param fid
+    * @return java.lang.String
+    */
+    @LoginRequired
+    @RequestMapping("activity")
+    public String activityStatIndex(HttpServletRequest request, Model model, Integer wfwfid, Integer unitId, Integer state, Integer fid) {
+        Integer realFid = Optional.ofNullable(wfwfid).orElse(Optional.ofNullable(unitId).orElse(Optional.ofNullable(state).orElse(fid)));
+        if (realFid == null) {
+            LoginUserDTO loginUser = LoginUtils.getLoginUser(request);
+            realFid = loginUser.getFid();
+        }
+        List<TableFieldDetail> tableFieldDetails = tableFieldQueryService.listTableFieldDetail(TableField.Type.ACTIVITY_STAT, TableField.AssociatedType.ORG);
+        List<OrgTableField> orgTableFields = tableFieldQueryService.listOrgTableField(realFid, TableField.Type.ACTIVITY_STAT, TableField.AssociatedType.ORG);
+        Page<ActivityStatSummaryDTO> activityStatSummaryPage = activityStatSummaryQueryService.activityStatSummaryPage(new Page<>(), realFid);
+        Integer tableFieldId = null;
+        if (CollectionUtils.isNotEmpty(tableFieldDetails)) {
+            tableFieldId = tableFieldDetails.get(0).getTableFieldId();
+        }
+        model.addAttribute("fid", realFid);
+        model.addAttribute("tableFieldId", tableFieldId);
+        model.addAttribute("tableFieldDetails", tableFieldDetails);
+        model.addAttribute("orgTableFields", orgTableFields);
+        model.addAttribute("activityStatSummaryPage", activityStatSummaryPage);
+        return "pc/stat/org-activity-stat-summary";
     }
 
 }
