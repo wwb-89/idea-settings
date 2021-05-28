@@ -42,8 +42,7 @@ public class OrgStatController {
 
     @Resource
     private ActivityStatSummaryQueryService activityStatSummaryQueryService;
-    @Resource
-    private WfwGroupApiService wfwGroupApiService;
+
 
     /**机构下的用户统计
      * @Description 

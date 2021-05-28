@@ -4,14 +4,18 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.chaoxing.activity.admin.vo.stat.OrgUserStatVO;
 import com.chaoxing.activity.dto.RestRespDTO;
 import com.chaoxing.activity.dto.query.admin.UserStatSummaryQueryDTO;
+import com.chaoxing.activity.dto.stat.ActivityStatSummaryDTO;
 import com.chaoxing.activity.model.UserStatSummary;
+import com.chaoxing.activity.service.activity.stat.ActivityStatSummaryQueryService;
 import com.chaoxing.activity.service.manager.OrganizationalStructureApiService;
 import com.chaoxing.activity.service.stat.UserStatSummaryService;
 import com.chaoxing.activity.util.HttpServletRequestUtils;
 import com.google.common.collect.Lists;
 import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.beans.BeanUtils;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.annotation.Resource;
@@ -34,7 +38,8 @@ public class OrgStatApiController {
     private UserStatSummaryService userStatSummaryService;
     @Resource
     private OrganizationalStructureApiService organizationalStructureApiService;
-
+    @Resource
+    private ActivityStatSummaryQueryService activityStatSummaryQueryService;
 
     /**用户统计
      * @Description 
@@ -65,6 +70,13 @@ public class OrgStatApiController {
             }
             page.setRecords(orgUserStats);
         }
+        return RestRespDTO.success(page);
+    }
+
+    @PostMapping("activity/page")
+    public RestRespDTO activitStatSummaryPage(HttpServletRequest request, @RequestParam("fid") Integer fid, String queryParamStr) {
+        Page<ActivityStatSummaryDTO> page = HttpServletRequestUtils.buid(request);
+        page = activityStatSummaryQueryService.activityStatSummaryPage(page, fid, queryParamStr);
         return RestRespDTO.success(page);
     }
 

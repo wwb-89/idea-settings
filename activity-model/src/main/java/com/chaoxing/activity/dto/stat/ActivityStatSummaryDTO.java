@@ -66,7 +66,7 @@ public class ActivityStatSummaryDTO {
         if (this.startTime != null && this.endTime != null) {
             String startTimeStr = startTime.format(DateUtils.DATE_MINUTE_TIME_FORMATTER);
             String endTimeStr = endTime.format(DateUtils.DATE_MINUTE_TIME_FORMATTER);
-            return startTimeStr + "~" + endTimeStr;
+            return startTimeStr + " ~ " + endTimeStr;
         }
         return "";
     }
