@@ -14,9 +14,11 @@
 		[v-cloak] {
 			display: none;
         }
+        .ztree li a.curSelectedNode {
+	        background-color: #F8F8F8;
+        }
 	</style>
 </head>
-
 <body>
 <div id="stat-vue" v-cloak>
 	<div>
@@ -25,14 +27,14 @@
 				<!-- 查询栏 -->
 				<div class="table-search-box fs0">
 					<div class="popbtnInput">
-						<input type="text" autocomplete="off" class="layui-input" readonly value="全部参与范围" @click="selectPopFunc">
+						<input type="text" autocomplete="off" class="layui-input" style="cursor: pointer;" readonly placeholder="组织架构" v-model.trim="selectedGroupName" @click="groupPopupShow = true">
 					</div>
-					<el-button class="btn-customize" round>查询</el-button>
+					<el-button class="btn-customize" round @click="search">查询</el-button>
 				</div>
 				<!-- 计数栏 -->
 				<div class="table-count-box fs12">
 					<div class="count-info fl">
-						<span class="color999">共 100 人</span>
+						<span class="color999">共 {{total}} 人</span>
 					</div>
 					<div class="setting-box">
 						<el-dropdown :hide-on-click="false" trigger="click">
@@ -60,24 +62,21 @@
 					</div>
 					<div class="clear"></div>
 				</div>
-				<el-table class="table-box" :data="tableTestData1" >
-					<el-table-column v-for="(field, index) of showTableFieldDetails" :key="'filed-' + field.id" :align="field.align" :fixed="field.top" :sortable="field.sortable" :label="field.name" :min-width="field.minWidth">
-						<template slot-scope="scope">
-							<span>{{scope.row[field.code]}}</span>
-						</template>
+				<el-table class="table-box" :data="orgUserStats" @sort-change="changeOrderField">
+					<el-table-column v-for="(field, index) of showTableFieldDetails" :key="'filed-' + field.id" :align="field.align" :fixed="field.top" :sortable="field.sortable" :label="field.name" :prop="field.code" :min-width="field.minWidth">
 					</el-table-column>
 				</el-table>
 				<!--分页-->
-				<el-pagination background layout="prev, pager, next" :total="200"></el-pagination>
+				<el-pagination v-show="loaded && total > queryParams.pageSize" background layout="prev, pager, next" :total="total"></el-pagination>
 			</div>
 		</div>
 	</div>
 	<!-- 组织架构 -->
-	<div class="dialog-box selectPop" v-show="ifSelectPop">
+	<div class="dialog-box selectPop" v-show="groupPopupShow">
 		<div class="dialog-wrap">
 			<div class="header">
 				<span class="color333">组织架构</span>
-				<img src="/static/pc/assets/images/close.png" th:src="@{/pc/assets/images/close.png}" @click="ifSelectPop = false">
+				<img src="/static/pc/assets/images/close.png" th:src="@{/pc/assets/images/close.png}" @click="groupPopupShow = false">
 			</div>
 			<div class="dialog-content">
 				<!-- ztree内容 -->
@@ -85,12 +84,12 @@
 					<div class="count-box fs14">
 						<span class="color666">选择组织架构 </span>
 					</div>
-					<ul id="treeList" class="ztree"></ul>
+					<ul id="tree-node" class="ztree"></ul>
 				</div>
 			</div>
 			<div class="btns">
-				<span class="btn inlineMiddle btn-border" @click="ifSelectPop = false">取消</span>
-				<span class="btn inlineMiddle btn-normal">确定</span>
+				<span class="btn inlineMiddle btn-border" @click="groupPopupShow = false">取消</span>
+				<span class="btn inlineMiddle btn-normal" @click="selectGroupSure">确定</span>
 			</div>
 		</div>
 	</div>
@@ -111,56 +110,24 @@
 	            showTableFieldDetails: [],
 	            // 配置使用的字段列表
 	            configTableFieldDetails: [],
-                tableTestData1: [
-                    {
-                        name: '吴立',
-                        account: '18272676793',
-                        time: '2020-03-27 13:02',
-                        applyType:'全部',
-                        status: 0,
-                        img: 'http://file.m.superlib.com/C/GEDEbook/cover/190801/TSYJ031442.jpg',
-                    }
-                ],
-                search1: '',
-                search: '',
-                centerDialogVisible: false,
-                selectNumber:0, //表格选中的人数
-                inputlen: false, //输入框的清空按钮
-                ifCenter: 'left',  //表格是否居中
-                ifSelectPop: false, //参与范围的弹窗展示
-                setting: {
-                    view: {
-                        showLine: false
-                    },
-                    check: {
-                        enable: true
-                    },
-                    data: {
-                        simpleData: {
-                            enable: true
-                        }
-                    },
-                    callback: {
-                        onClick:  (e, treeId, treeNode)=> app.zTreeOnClick(e, treeId, treeNode),
-                        onCheck: (e, treeId, treeNode)=> app.zTreeOnCheck(e, treeId, treeNode)
-                    }
-                },
-                zNodes: [
-                    { id:1, pId:0, name:"天津教育局天津教育局天津教育局（12）", open:true},
-                    { id:11, pId:1, name:"二级二级二级", open:true},
-                    { id:111, pId:11, name:"can check 1-1-1"},
-                    { id:112, pId:11, name:"can check 1-1-2"},
-                    { id:12, pId:1, name:"can check 1-2", open:true},
-                    { id:121, pId:12, name:"can check 1-2-1"},
-                    { id:122, pId:12, name:"can check 1-2-2"},
-                    { id:2, pId:0, name:"can check 2", checked:true, open:true},
-                    { id:21, pId:2, name:"can check 2-1"},
-                    { id:22, pId:2, name:"can check 2-2", open:true},
-                    { id:221, pId:22, name:"can check 2-2-1", checked:true},
-                    { id:222, pId:22, name:"can check 2-2-2"},
-                    { id:23, pId:2, name:"can check 2-3"}
-                ],
-                clearFlag: false,
+                // 组织架构
+                groups: [[${groups}]],
+	            treeObj: null,
+	            orgUserStats: [],
+	            loaded: false,
+	            queryParams: {
+                    fid: [[${fid}]],
+					pageNum: 1,
+		            pageSize: 10,
+                    groupId: null,
+                    groupLevel: null,
+                    realName: "",
+                    orderTableFieldId: null,
+                    orderType: "DESC"
+	            },
+                total: 0,
+	            groupPopupShow: false,
+	            selectedGroupName: ""
             },
             created: function () {
 				var $this = this;
@@ -191,7 +158,17 @@
             },
             mounted: function () {
                 var $this = this;
-                $.fn.zTree.init($("#treeList"), $this.setting, $this.zNodes);
+                $this.loadData();
+            },
+            watch: {
+                "groupPopupShow": function () {
+                    var $this = this;
+                    if ($this.groupPopupShow && activityApp.isEmpty($this.treeObj)) {
+                        $this.$nextTick(function () {
+                            $this.initGroupTree();
+                        });
+                    }
+                }
             },
             methods: {
                 calConfigTableFieldDetails: function () {
@@ -232,7 +209,6 @@
 	                            sequence: sequence++
                             }
                             orgTableFieldDetails.push(orgTableFieldDetail);
-
                         }
                     });
                     return orgTableFieldDetails;
@@ -246,43 +222,130 @@
                         orgTableFieldsStr: activityApp.getJsonStr(orgTableFieldDetails)
                     };
                     app.ajaxPostWithLoading(url, params, function (data) {
-	                    window.location.reload();
+                        if (data.success) {
+                            window.location.reload();
+                        } else {
+							var message = data.message;
+                            if (activityApp.isEmpty(message)) {
+                                message = "处理失败";
+                            }
+                            app.showMsg(message);
+                        }
                     }, function () {
-
+                        app.showMsg("处理失败");
                     });
                 },
-                clearInput(){
-                    this.search1='';
-                    this.inputlen = false;
+                loadData: function () {
+					var $this = this;
+                    var url = ctx + "/api/stat/org/user-stat-summary/list";
+                    app.ajaxPostWithLoading(url, $this.queryParams, function (data) {
+                        if (data.success) {
+                            $this.loaded = true;
+							$this.orgUserStats = data.data.records;
+							$this.total = data.data.total;
+                        } else {
+                            var message = data.message;
+                            if (activityApp.isEmpty(message)) {
+                                message = "加载数据失败";
+                            }
+                            app.showMsg(message);
+                        }
+                    }, function () {
+                        app.showMsg("加载数据失败");
+                    });
                 },
-                selectPopFunc(){
-                    this.ifSelectPop = true;
+	            // 改变排序字段
+                changeOrderField: function (column) {
                     var $this = this;
-                    $.fn.zTree.init($("#treeList"), $this.setting, $this.zNodes);
-                    this.count();
-                },
-                zTreeOnClick: function(event, treeId, treeNode) {
-                    console.log(treeNode.tId + ", " + treeNode.name);
-                },
-                zTreeOnCheck: function(e, treeId, treeNode) {
-                    this.count();
-                    if (this.clearFlag) {
-                        this.clearCheckedOldNodes();
+                    $($this.tableFieldDetails).each(function () {
+                        if (column.prop == this.code) {
+                            $this.queryParams.orderTableFieldId = this.id;
+                            return false;
+                        }
+                    });
+                    if ("descending" == column.order) {
+                        $this.queryParams.orderType = "DESC";
+                    } else {
+                        $this.queryParams.orderType = "ASC";
                     }
+                    $this.loadData();
                 },
-                clearCheckedOldNodes() {
-                    var zTree = $.fn.zTree.getZTreeObj("treeList"),
-                        nodes = zTree.getChangeCheckedNodes();
-                    for (var i=0, l=nodes.length; i<l; i++) {
-                        nodes[i].checkedOld = nodes[i].checked;
+	            // 初始化组织架构的组
+                initGroupTree: function () {
+                    var $this = this;
+                    $($this.groups).each(function () {
+                        this.isParent = this.soncount > 0;
+                    });
+                    var setting = {
+                        view: {
+                            showLine: false,
+                            selectedMulti: false
+                        },
+                        data: {
+                            simpleData: {
+                                enable: true,
+                                idKey: "id",
+                                pIdKey: "gid",
+                            },
+                            key: {
+                                name: "groupname"
+                            },
+                            keep: {
+                                parent: true
+                            }
+                        },
+                        callback: {
+                            onExpand: function (e, b, node) {
+                                if (node.children == null || node.children.length < 1) {
+                                    $this.loadOrgGroup(node.id, node);
+                                }
+                            }
+                        }
+                    };
+                    $this.treeObj = $.fn.zTree.init($("#tree-node"), setting, $this.groups);
+                },
+                loadOrgGroup: function (gid, parentNode){
+                    var $this = this;
+                    var url = ctx + "/api/wfw/org/groups?gid=" + gid;
+                    app.ajaxPostWithLoading(url, {}, function (data) {
+                        if (data.success) {
+                            var newNodes = data.data;
+                            if (newNodes.length > 0) {
+                                $(newNodes).each(function () {
+                                    this.isParent = this.soncount > 0;
+                                    this.groupLevel = parentNode.groupLevel + 1;
+                                });
+                                $this.treeObj.addNodes(parentNode, 0, newNodes, false);
+                            }
+                        } else {
+                            var message = data.message;
+                            if (activityApp.isEmpty(message)) {
+                                message = "获取机构组织架构失败";
+                            }
+                            app.showMsg(message);
+                        }
+                    }, function () {
+                        app.showMsg("获取机构组织架构失败");
+                    });
+                },
+                selectGroupSure: function () {
+					var $this = this;
+                    var nodes = $this.treeObj.getSelectedNodes();
+                    if (nodes.length < 1) {
+                        app.showMsg("请选择组织架构");
+                        return false;
                     }
+                    var node = nodes[0];
+                    $this.selectedGroupName = node.groupname;
+                    $this.queryParams.groupId = node.id;
+                    $this.queryParams.groupLevel = node.groupLevel;
+	                $this.groupPopupShow = false;
                 },
-                count() {
-                    var zTree = $.fn.zTree.getZTreeObj("treeList");
-                    var checkCount = zTree.getCheckedNodes(true).length;
-                    $("#checkCount").text(checkCount);
-
-                },
+                search: function () {
+                    var $this = this;
+					$this.queryParams.pageNum = 1;
+                    $this.loadData();
+                }
             }
         })
 	</script>
