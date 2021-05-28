@@ -50,6 +50,8 @@ public class TableFieldDetail {
     /** 是否可排序; column: is_sortable*/
     @TableField(value = "is_sortable")
     private Boolean sortable;
+    /** 最小宽度; column: min_width*/
+    private Integer minWidth;
     /** 顺序; column: sequence*/
     private Integer sequence;
     /** 是否被删除; column: is_deleted*/

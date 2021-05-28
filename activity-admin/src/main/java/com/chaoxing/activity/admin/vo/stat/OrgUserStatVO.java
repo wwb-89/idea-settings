@@ -1,5 +1,10 @@
 package com.chaoxing.activity.admin.vo.stat;
 
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
 import java.math.BigDecimal;
 
 /**机构用户统计视图对象
@@ -10,6 +15,10 @@ import java.math.BigDecimal;
  * @blame wwb
  * @date 2021-05-28 10:36:45
  */
+@Data
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 public class OrgUserStatVO {
 
     /** 用户uid */
@@ -29,7 +38,7 @@ public class OrgUserStatVO {
     /** 签到数量 */
     private Integer signedInNum;
     /** 签到率 */
-    private BigDecimal signInRate;
+    private BigDecimal signedInRate;
     /** 评价数量 */
     private Integer ratingNum;
     /** 合格的数量 */
