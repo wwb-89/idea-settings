@@ -66,7 +66,7 @@ public class UserStatSummaryService {
                     .eq(UserStatSummary::getUid, uid)
                     .set(UserStatSummary::getSignedInNum, userSignStatSummary.getValidSignedInNum())
                     .set(UserStatSummary::getSignInRate, userSignStatSummary.getSignedInRate())
-                    .set(UserStatSummary::getTotalParticipateInLength, userSignStatSummary.getParticipateTimeLength())
+                    .set(UserStatSummary::getTotalParticipateTimeLength, userSignStatSummary.getParticipateTimeLength())
                     .set(UserStatSummary::getParticipateActivityNum, participatedActivityNum)
             );
         } else {
@@ -76,7 +76,7 @@ public class UserStatSummaryService {
                     .realName(passportApiService.getUserRealName(uid))
                     .signedInNum(userSignStatSummary.getValidSignedInNum())
                     .signInRate(userSignStatSummary.getSignedInRate())
-                    .totalParticipateInLength(userSignStatSummary.getParticipateTimeLength())
+                    .totalParticipateTimeLength(userSignStatSummary.getParticipateTimeLength())
                     .participateActivityNum(participatedActivityNum)
                     .build();
             userStatSummaryMapper.insert(userStatSummary);

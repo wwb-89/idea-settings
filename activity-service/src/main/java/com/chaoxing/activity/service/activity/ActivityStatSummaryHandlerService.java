@@ -75,7 +75,7 @@ public class ActivityStatSummaryHandlerService {
         statSummary.setSignedInNum(latestStatSummary.getSignedInNum());
         statSummary.setSignInRate(latestStatSummary.getSignInRate());
         statSummary.setQualifiedNum(latestStatSummary.getQualifiedNum());
-        statSummary.setAvgParticipateInLength(latestStatSummary.getAvgParticipateInLength());
+        statSummary.setAvgParticipateTimeLength(latestStatSummary.getAvgParticipateTimeLength());
         statSummary.setUpdateTime(LocalDateTime.now());
         if (isNew) {
             activityStatSummaryMapper.insert(statSummary);
