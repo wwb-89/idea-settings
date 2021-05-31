@@ -31,8 +31,8 @@ public class ActivityCoverUrlSyncTask {
 	 * @return void
 	*/
 	@Scheduled(fixedDelay = 1L)
-	public void syncActivityCoverUrl() {
-		Integer activityId = activityCoverUrlSyncQueueService.get();
+	public void syncActivityCoverUrl() throws InterruptedException {
+		Integer activityId = activityCoverUrlSyncQueueService.pop();
 		if (activityId == null) {
 			return;
 		}

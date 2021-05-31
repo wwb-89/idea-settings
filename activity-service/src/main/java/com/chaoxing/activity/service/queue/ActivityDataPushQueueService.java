@@ -4,10 +4,9 @@ import com.chaoxing.activity.model.Activity;
 import com.chaoxing.activity.model.OrgDataRepoConfigDetail;
 import com.chaoxing.activity.service.repoconfig.OrgDataRepoConfigQueryService;
 import com.chaoxing.activity.util.constant.CacheConstant;
-import com.chaoxing.activity.util.constant.CommonConstant;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
-import org.springframework.data.redis.core.ListOperations;
+import org.redisson.api.RedissonClient;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 
@@ -24,7 +23,7 @@ import java.util.List;
  */
 @Slf4j
 @Service
-public class ActivityDataPushQueueService {
+public class ActivityDataPushQueueService implements IQueueService<Integer> {
 
 	/** 新增队列缓存key */
 	private static final String ADD_QUEUE_CACHE_KEY = CacheConstant.QUEUE_CACHE_KEY_PREFIX + "activity_push" + CacheConstant.CACHE_KEY_SEPARATOR + "add";
@@ -35,6 +34,8 @@ public class ActivityDataPushQueueService {
 
 	@Resource
 	private RedisTemplate redisTemplate;
+	@Resource
+	private RedissonClient redissonClient;
 	@Resource
 	private OrgDataRepoConfigQueryService orgDataRepoConfigQueryService;
 
@@ -59,8 +60,7 @@ public class ActivityDataPushQueueService {
 	 * @return void
 	 */
 	public void add(Integer activityId) {
-		ListOperations<String, Integer> listOperations = redisTemplate.opsForList();
-		listOperations.leftPush(ADD_QUEUE_CACHE_KEY, activityId);
+		push(redissonClient, ADD_QUEUE_CACHE_KEY, activityId);
 	}
 
 	/**往队列中添加数据
@@ -84,8 +84,7 @@ public class ActivityDataPushQueueService {
 	 * @return void
 	*/
 	public void update(Integer activityId) {
-		ListOperations<String, Integer> listOperations = redisTemplate.opsForList();
-		listOperations.leftPush(UPDATE_QUEUE_CACHE_KEY, activityId);
+		push(redissonClient, UPDATE_QUEUE_CACHE_KEY, activityId);
 	}
 
 	/**往队列中添加数据
@@ -109,8 +108,7 @@ public class ActivityDataPushQueueService {
 	 * @return void
 	 */
 	public void delete(Integer activityId) {
-		ListOperations<String, Integer> listOperations = redisTemplate.opsForList();
-		listOperations.leftPush(DELETE_QUEUE_CACHE_KEY, activityId);
+		push(redissonClient, DELETE_QUEUE_CACHE_KEY, activityId);
 	}
 
 
@@ -121,9 +119,8 @@ public class ActivityDataPushQueueService {
 	 * @param 
 	 * @return java.lang.Integer
 	*/
-	public Integer getAdd() {
-		ListOperations<String, Integer> listOperations = redisTemplate.opsForList();
-		return listOperations.rightPop(ADD_QUEUE_CACHE_KEY, CommonConstant.QUEUE_GET_WAIT_TIME);
+	public Integer getAdd() throws InterruptedException {
+		return pop(redissonClient, ADD_QUEUE_CACHE_KEY);
 	}
 
 	/**从队列中获取数据
@@ -133,9 +130,8 @@ public class ActivityDataPushQueueService {
 	 * @param 
 	 * @return java.lang.Integer
 	*/
-	public Integer getUpdate() {
-		ListOperations<String, Integer> listOperations = redisTemplate.opsForList();
-		return listOperations.rightPop(UPDATE_QUEUE_CACHE_KEY, CommonConstant.QUEUE_GET_WAIT_TIME);
+	public Integer getUpdate() throws InterruptedException {
+		return pop(redissonClient, UPDATE_QUEUE_CACHE_KEY);
 	}
 
 	/**从队列中获取数据
@@ -145,9 +141,8 @@ public class ActivityDataPushQueueService {
 	 * @param
 	 * @return java.lang.Integer
 	 */
-	public Integer getDelete() {
-		ListOperations<String, Integer> listOperations = redisTemplate.opsForList();
-		return listOperations.rightPop(DELETE_QUEUE_CACHE_KEY, CommonConstant.QUEUE_GET_WAIT_TIME);
+	public Integer getDelete() throws InterruptedException {
+		return pop(redissonClient, DELETE_QUEUE_CACHE_KEY);
 	}
 
 	/**配置了活动数据仓库

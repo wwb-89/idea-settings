@@ -97,7 +97,7 @@ public class QueueApiController {
 		List<Activity> activities = activityQueryService.listEmptyCoverUrl();
 		if (CollectionUtils.isNotEmpty(activities)) {
 			for (Activity activity : activities) {
-				activityCoverUrlSyncQueueService.add(activity.getId());
+				activityCoverUrlSyncQueueService.push(activity.getId());
 			}
 		}
 		return RestRespDTO.success();

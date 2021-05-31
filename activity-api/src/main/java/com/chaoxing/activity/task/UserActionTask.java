@@ -34,45 +34,45 @@ public class UserActionTask {
     private ActivityQueryService activityQueryService;
 
     @Scheduled(fixedDelay = 1L)
-    public void userSignUpActionHandle() {
-        UserActionQueueService.UserActionDTO userAction = userSignActionQueueService.getUserSignUpAction();
-        if (userAction == null) {
+    public void userSignUpActionHandle() throws InterruptedException {
+        UserActionQueueService.QueueParamDTO queueParam = userSignActionQueueService.getUserSignUpAction();
+        if (queueParam == null) {
             return;
         }
         // 用户统计（用户参与的活动数）
-        Integer uid = userAction.getUid();
+        Integer uid = queueParam.getUid();
         userStatSummaryQueueService.addUserSignInStat(uid);
     }
 
     @Scheduled(fixedDelay = 1L)
-    public void userSignInActionHandle() {
-        UserActionQueueService.UserActionDTO userAction = userSignActionQueueService.getUserSignInAction();
-        if (userAction == null) {
+    public void userSignInActionHandle() throws InterruptedException {
+        UserActionQueueService.QueueParamDTO queueParam = userSignActionQueueService.getUserSignInAction();
+        if (queueParam == null) {
             return;
         }
         // 分发到活动统计和用户统计
-        Integer signId = userAction.getSignId();
+        Integer signId = queueParam.getSignId();
         Activity activity = activityQueryService.getBySignId(signId);
         if (activity != null) {
             activityStatSummaryQueueService.addSignInStat(activity.getId());
         }
-        Integer uid = userAction.getUid();
+        Integer uid = queueParam.getUid();
         userStatSummaryQueueService.addUserSignInStat(uid);
     }
 
     @Scheduled(fixedDelay = 1L)
-    public void userResultActionHandle() {
-        UserActionQueueService.UserActionDTO userAction = userSignActionQueueService.getUserResultAction();
-        if (userAction == null) {
+    public void userResultActionHandle() throws InterruptedException {
+        UserActionQueueService.QueueParamDTO queueParam = userSignActionQueueService.getUserResultAction();
+        if (queueParam == null) {
             return;
         }
         // 分发到活动统计和用户统计
-        Integer signId = userAction.getSignId();
+        Integer signId = queueParam.getSignId();
         Activity activity = activityQueryService.getBySignId(signId);
         if (activity != null) {
             activityStatSummaryQueueService.addResultStat(activity.getId());
         }
-        Integer uid = userAction.getUid();
+        Integer uid = queueParam.getUid();
         userStatSummaryQueueService.addUserResultStat(uid);
     }
 

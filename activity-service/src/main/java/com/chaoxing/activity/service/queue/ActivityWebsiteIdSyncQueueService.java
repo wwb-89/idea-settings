@@ -3,6 +3,7 @@ package com.chaoxing.activity.service.queue;
 import com.chaoxing.activity.util.constant.CacheConstant;
 import com.chaoxing.activity.util.constant.CommonConstant;
 import lombok.extern.slf4j.Slf4j;
+import org.redisson.api.RedissonClient;
 import org.springframework.data.redis.core.ListOperations;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
@@ -19,21 +20,19 @@ import javax.annotation.Resource;
  */
 @Slf4j
 @Service
-public class ActivityWebsiteIdSyncQueueService {
+public class ActivityWebsiteIdSyncQueueService implements IQueueService<Integer> {
 
     private static final String CACHE_KEY = CacheConstant.QUEUE_CACHE_KEY_PREFIX + "website_id_sync";
 
     @Resource
-    private RedisTemplate redisTemplate;
+    private RedissonClient redissonClient;
 
     public void add(Integer activityId) {
-        ListOperations<String, Integer> listOperations = redisTemplate.opsForList();
-        listOperations.leftPush(CACHE_KEY, activityId);
+        push(redissonClient, CACHE_KEY, activityId);
     }
 
-    public Integer get() {
-        ListOperations<String, Integer> listOperations = redisTemplate.opsForList();
-        return listOperations.rightPop(CACHE_KEY, CommonConstant.QUEUE_GET_WAIT_TIME);
+    public Integer get() throws InterruptedException {
+        return pop(redissonClient, CACHE_KEY);
     }
 
 }

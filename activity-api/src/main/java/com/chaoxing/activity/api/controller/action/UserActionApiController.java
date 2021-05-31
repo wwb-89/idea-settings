@@ -24,19 +24,19 @@ public class UserActionApiController {
 
     @RequestMapping("sign-up-change")
     public RestRespDTO signUpChange(Integer uid, Integer signId) {
-        userSignActionQueueService.addUserSignUpAction(uid, signId);
+        userSignActionQueueService.addUserSignUpAction(UserActionQueueService.QueueParamDTO.builder().uid(uid).signId(signId).build());
         return RestRespDTO.success();
     }
 
     @RequestMapping("sign-in-change")
     public RestRespDTO signedIn(Integer uid, Integer signId) {
-        userSignActionQueueService.addUserSignInAction(uid, signId);
+        userSignActionQueueService.addUserSignInAction(UserActionQueueService.QueueParamDTO.builder().uid(uid).signId(signId).build());
         return RestRespDTO.success();
     }
 
     @RequestMapping("result-change")
     public RestRespDTO result(Integer uid, Integer signId) {
-        userSignActionQueueService.addUserResultAction(uid, signId);
+        userSignActionQueueService.addUserResultAction(UserActionQueueService.QueueParamDTO.builder().uid(uid).signId(signId).build());
         return RestRespDTO.success();
     }
 

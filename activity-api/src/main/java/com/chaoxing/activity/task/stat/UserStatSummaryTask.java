@@ -26,7 +26,7 @@ public class UserStatSummaryTask {
     private UserStatSummaryService userStatSummaryService;
 
     @Scheduled(fixedDelay = 1L)
-    public void handleUserSignInStat() {
+    public void handleUserSignInStat() throws InterruptedException {
         Integer uid = userStatSummaryQueueService.getUserSignInStat();
         if (uid == null) {
             return;
@@ -39,7 +39,7 @@ public class UserStatSummaryTask {
     }
 
     @Scheduled(fixedDelay = 1L)
-    public void handleUserResultStat() {
+    public void handleUserResultStat() throws InterruptedException {
         Integer uid = userStatSummaryQueueService.getUserResultStata();
         if (uid == null) {
             return;

@@ -66,7 +66,7 @@ public class ActivityChangeEventService {
 		// 订阅活动通知发送
 		activityIsAboutToStartQueueService.add(activity);
 		// 活动封面url同步
-		activityCoverUrlSyncQueueService.add(activity.getId());
+		activityCoverUrlSyncQueueService.push(activity.getId());
 		Integer signId = activity.getSignId();
 		if (signId != null) {
 			BigDecimal integralValue = activity.getIntegralValue();

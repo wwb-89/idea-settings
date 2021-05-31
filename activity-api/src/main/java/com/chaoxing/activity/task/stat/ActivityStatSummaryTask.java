@@ -27,7 +27,7 @@ public class ActivityStatSummaryTask {
     private ActivityStatSummaryHandlerService activityStatSummaryHandlerService;
 
     @Scheduled(fixedDelay = 1L)
-    public void handleSignInStat() {
+    public void handleSignInStat() throws InterruptedException {
         Integer activityId = activityStatSummaryQueueService.getSignInStat();
         if (activityId == null) {
             return;
@@ -42,7 +42,7 @@ public class ActivityStatSummaryTask {
     }
 
     @Scheduled(fixedDelay = 1L)
-    public void handleResultStat() {
+    public void handleResultStat() throws InterruptedException {
         Integer activityId = activityStatSummaryQueueService.getResultStat();
         if (activityId == null) {
             return;

@@ -3,6 +3,7 @@ package com.chaoxing.activity.service.queue;
 import com.chaoxing.activity.util.constant.CacheConstant;
 import com.chaoxing.activity.util.constant.CommonConstant;
 import lombok.extern.slf4j.Slf4j;
+import org.redisson.api.RedissonClient;
 import org.springframework.data.redis.core.ListOperations;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
@@ -19,7 +20,7 @@ import javax.annotation.Resource;
  */
 @Slf4j
 @Service
-public class UserStatSummaryQueueService {
+public class UserStatSummaryQueueService implements IQueueService<Integer> {
 
     /** 用户签到队列缓存key */
     private static final String USER_SIGN_IN_CACHE_KEY = CacheConstant.QUEUE_CACHE_KEY_PREFIX + "user_stat_summary" + CacheConstant.CACHE_KEY_SEPARATOR + "sign_in";
@@ -27,26 +28,22 @@ public class UserStatSummaryQueueService {
     private static final String USER_RESULT_CACHE_KEY = CacheConstant.QUEUE_CACHE_KEY_PREFIX + "user_stat_summary" + CacheConstant.CACHE_KEY_SEPARATOR + "result";
 
     @Resource
-    private RedisTemplate redisTemplate;
+    private RedissonClient redissonClient;
 
     public void addUserSignInStat(Integer uid) {
-        ListOperations listOperations = redisTemplate.opsForList();
-        listOperations.leftPush(USER_SIGN_IN_CACHE_KEY, uid);
+        push(redissonClient, USER_SIGN_IN_CACHE_KEY, uid);
     }
 
-    public Integer getUserSignInStat() {
-        ListOperations<String, Integer> listOperations = redisTemplate.opsForList();
-        return listOperations.rightPop(USER_SIGN_IN_CACHE_KEY, CommonConstant.QUEUE_GET_WAIT_TIME);
+    public Integer getUserSignInStat() throws InterruptedException {
+        return pop(redissonClient, USER_SIGN_IN_CACHE_KEY);
     }
 
     public void addUserResultStat(Integer uid) {
-        ListOperations listOperations = redisTemplate.opsForList();
-        listOperations.leftPush(USER_RESULT_CACHE_KEY, uid);
+        push(redissonClient, USER_RESULT_CACHE_KEY, uid);
     }
 
-    public Integer getUserResultStata() {
-        ListOperations<String, Integer> listOperations = redisTemplate.opsForList();
-        return listOperations.rightPop(USER_RESULT_CACHE_KEY, CommonConstant.QUEUE_GET_WAIT_TIME);
+    public Integer getUserResultStata() throws InterruptedException {
+        return pop(redissonClient, USER_RESULT_CACHE_KEY);
     }
 
 }

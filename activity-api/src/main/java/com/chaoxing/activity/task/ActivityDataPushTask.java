@@ -33,7 +33,7 @@ public class ActivityDataPushTask {
 	 * @return void
 	*/
 	@Scheduled(fixedDelay = 1L)
-	public void add() {
+	public void add() throws InterruptedException {
 		Integer activityId = activityDataPushQueueService.getAdd();
 		if (activityId == null) {
 			return;
@@ -55,7 +55,7 @@ public class ActivityDataPushTask {
 	 * @return void
 	*/
 	@Scheduled(fixedDelay = 1L)
-	public void update() {
+	public void update() throws InterruptedException {
 		Integer activityId = activityDataPushQueueService.getUpdate();
 		if (activityId == null) {
 			return;
@@ -77,7 +77,7 @@ public class ActivityDataPushTask {
 	 * @return void
 	*/
 	@Scheduled(fixedDelay = 1L)
-	public void delete() {
+	public void delete() throws InterruptedException {
 		Integer activityId = activityDataPushQueueService.getDelete();
 		if (activityId == null) {
 			return;

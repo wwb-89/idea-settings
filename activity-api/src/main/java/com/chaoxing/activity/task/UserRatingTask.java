@@ -33,20 +33,19 @@ public class UserRatingTask {
 	 * @return void
 	*/
 	@Scheduled(fixedDelay = 1L)
-	public void notice() {
-		String value = userRatingQueueService.get();
-		Integer signId = userRatingQueueService.getSignIdFromValue(value);
-		if (signId != null) {
-			Integer uid = userRatingQueueService.getUidFromValue(value);
-			if (uid != null) {
-				try {
-					signApiService.handleNoticeRating(signId, uid);
-				} catch (Exception e) {
-					e.printStackTrace();
-					log.error("通知报名签到用户评价变更signId:{} uid:{} error:{}", signId, uid, e.getMessage());
-					userRatingQueueService.add(uid, signId);
-				}
-			}
+	public void notice() throws InterruptedException {
+		UserRatingQueueService.QueueParamDTO queueParam = userRatingQueueService.get();
+		if (queueParam == null) {
+			return;
+		}
+		Integer signId = queueParam.getSignId();
+		Integer uid = queueParam.getUid();
+		try {
+			signApiService.handleNoticeRating(queueParam.getSignId(), queueParam.getUid());
+		} catch (Exception e) {
+			e.printStackTrace();
+			log.error("通知报名签到用户评价变更signId:{} uid:{} error:{}", signId, uid, e.getMessage());
+			userRatingQueueService.add(queueParam);
 		}
 	}
 
