@@ -378,7 +378,7 @@ public class ActivityQueryService {
 	public List<Activity> listEmptyCoverUrl() {
 		return activityMapper.selectList(new QueryWrapper<Activity>()
 				.lambda()
-				.and(wrapper -> wrapper.isNull(Activity::getCoverUrl).or().ne(Activity::getCoverUrl, ""))
+				.and(wrapper -> wrapper.isNull(Activity::getCoverUrl).or().eq(Activity::getCoverUrl, ""))
 		);
 	}
 

@@ -19,6 +19,7 @@ import java.util.List;
  * @blame wwb
  * @date 2021-01-20 11:30:35
  */
+@Deprecated
 @RestController
 @RequestMapping("task")
 public class TaskApiController {
