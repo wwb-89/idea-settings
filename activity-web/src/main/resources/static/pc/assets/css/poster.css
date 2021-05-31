@@ -112,7 +112,7 @@ body {
   border-top: 1px solid #E9E9E9;
 }
 
-canvas {
+canvas.captureImg {
   position: absolute;
   top: 50%;
   left: 50%;
