@@ -61,7 +61,8 @@ public class WfwContactApiService {
 			return JSON.parseArray(jsonObject.getString("msg"), OrgDTO.class);
 		} else {
 			String errorMessage = jsonObject.getString("errorMsg");
-			throw new BusinessException(errorMessage);
+			log.error("根据uid:{} 查询有通讯录的机构列表error:{}", uid, errorMessage);
+			return Lists.newArrayList();
 		}
 	}
 	/**搜索联系人
