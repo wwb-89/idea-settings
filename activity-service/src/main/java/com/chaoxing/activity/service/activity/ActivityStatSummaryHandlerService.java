@@ -6,13 +6,15 @@ import com.chaoxing.activity.mapper.ActivityStatSummaryMapper;
 import com.chaoxing.activity.model.Activity;
 import com.chaoxing.activity.model.ActivityStatSummary;
 import com.chaoxing.activity.service.manager.module.SignApiService;
+import com.chaoxing.activity.service.queue.ActivityStatSummaryQueueService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
-import java.time.LocalDateTime;
+import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * @author huxiaolong
@@ -30,6 +32,9 @@ public class ActivityStatSummaryHandlerService {
 
     @Resource
     private ActivityQueryService activityQueryService;
+
+    @Resource
+    private ActivityStatSummaryQueueService activityStatSummaryQueueService;
 
     @Autowired
     private ActivityStatSummaryMapper activityStatSummaryMapper;
@@ -61,28 +66,42 @@ public class ActivityStatSummaryHandlerService {
     }
 
     private void handleActivityStatSummaryCal(Integer activityId, Integer signId) {
+        // 默认活动统计汇总
+        ActivityStatSummary defaultStatSummary = ActivityStatSummary.buildDefault();
+        defaultStatSummary.setActivityId(activityId);
+
         ActivityStatSummary statSummary = activityStatSummaryMapper.selectOne(new QueryWrapper<ActivityStatSummary>()
                 .lambda()
                 .eq(ActivityStatSummary::getActivityId, activityId));
-        ActivityStatSummary latestStatSummary = signApiService.getActivityStatSummary(signId);
-        boolean isNew = Boolean.FALSE;
-        if (statSummary == null) {
-            isNew = Boolean.TRUE;
-            statSummary = ActivityStatSummary.builder()
-                    .activityId(activityId)
-                    .createTime(LocalDateTime.now()).build();
+        if (signId != null) {
+            // 获取最新的活动统计汇总数据
+            ActivityStatSummary latestStatSummary = signApiService.getActivityStatSummary(signId);
+
+            defaultStatSummary.setSignedInNum(latestStatSummary.getSignedInNum());
+            defaultStatSummary.setSignInRate(latestStatSummary.getSignInRate());
+            defaultStatSummary.setQualifiedNum(latestStatSummary.getQualifiedNum());
+            defaultStatSummary.setAvgParticipateTimeLength(latestStatSummary.getAvgParticipateTimeLength());
         }
-        statSummary.setSignedInNum(latestStatSummary.getSignedInNum());
-        statSummary.setSignInRate(latestStatSummary.getSignInRate());
-        statSummary.setQualifiedNum(latestStatSummary.getQualifiedNum());
-        statSummary.setAvgParticipateTimeLength(latestStatSummary.getAvgParticipateTimeLength());
-        statSummary.setUpdateTime(LocalDateTime.now());
-        if (isNew) {
-            activityStatSummaryMapper.insert(statSummary);
+        if (statSummary == null) {
+            activityStatSummaryMapper.insert(defaultStatSummary);
         } else {
-            activityStatSummaryMapper.update(statSummary, new UpdateWrapper<ActivityStatSummary>()
+            activityStatSummaryMapper.update(defaultStatSummary, new UpdateWrapper<ActivityStatSummary>()
                     .lambda()
-                    .eq(ActivityStatSummary::getActivityId, statSummary.getActivityId()));
+                    .eq(ActivityStatSummary::getActivityId, defaultStatSummary.getActivityId()));
+        }
+    }
+
+    /**针对所有活动，对其活动统计记录进行计算新增或更新
+    * @Description
+    * @author huxiaolong
+    * @Date 2021-05-27 17:07:27
+    * @param
+    * @return void
+    */
+    public void addOrUpdateAllActivityStatSummary() {
+        List<Integer> activityIds = activityQueryService.list().stream().map(Activity::getId).collect(Collectors.toList());
+        for (Integer activityId : activityIds) {
+            activityStatSummaryQueueService.addSignInStat(activityId);
         }
     }
 }

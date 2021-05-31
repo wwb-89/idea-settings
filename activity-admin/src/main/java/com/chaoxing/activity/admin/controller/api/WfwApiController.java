@@ -51,6 +51,19 @@ public class WfwApiController {
 		return RestRespDTO.success(wfwGroups);
 	}
 
+	/**查询机构下的组
+	 * @Description 
+	 * @author wwb
+	 * @Date 2021-05-28 18:55:31
+	 * @param gid
+	 * @return com.chaoxing.activity.dto.RestRespDTO
+	*/
+	@RequestMapping("org/{fid}/groups")
+	public RestRespDTO listOrgGroup(@PathVariable Integer fid, Integer gid) {
+		List<WfwGroupDTO> wfwGroups = wfwGroupApiService.getGroupByGid(fid, gid);
+		return RestRespDTO.success(wfwGroups);
+	}
+
 	/**搜索联系人
 	 * @Description 
 	 * @author wwb

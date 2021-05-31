@@ -1,6 +1,7 @@
 package com.chaoxing.activity.service.manager;
 
 import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.chaoxing.activity.dto.uc.UserOrganizationalStructureDTO;
 import com.chaoxing.activity.util.constant.CacheConstant;
@@ -32,8 +33,10 @@ import java.util.stream.Collectors;
 @Service
 public class OrganizationalStructureApiService {
 
-	/** 用户组织架构url */
-	private static final String USER_ORGANIZATIONAL_STRUCTURE_URL = "http://uc1-ans.chaoxing.com/apis/user/getperson?fid=%d&userids=%d&enc=%s";
+	/** 机构下用户列表 */
+	private static final String ORG_USERS_URL = "http://uc1-ans.chaoxing.com/apis/user/getperson?fid=%d&limit=%d&enc=%s";
+	/** 机构group下用户列表 */
+	private static final String ORG_GROUP_USERS_URL = "http://uc1-ans.chaoxing.com/apis/user/getperson?fid=%d&%s=%d&limit=%d&enc=%s";
 	/** 用户组织架构url（新） */
 	private static final String USER_ORGANIZATIONAL_STRUCTURE_NEW_URL = "http://uc1-ans.chaoxing.com/apis/getuserbyuidfid?fid=%d&uid=%d&showdept=true&enc=%s";
 	/** 用户组织架构url（新）key */
@@ -278,6 +281,77 @@ public class OrganizationalStructureApiService {
 	private String getUserOrganizationalStructureEnc(Integer uid, Integer fid) {
 		LocalDate now = LocalDate.now();
 		return DigestUtils.md5Hex("" + fid + uid + ENC_KEY + now.format(DATE_TIME_FORMATTER));
+	}
+
+	private String getOrgUsersEnc(Integer fid, Integer limit) {
+		return DigestUtils.md5Hex("fid=" + fid + "&limit=" + limit + "mic^ro&deke@y");
+	}
+
+	private String getOrgGroupUsersEnc(Integer fid, String key, Integer value, Integer limit) {
+		return DigestUtils.md5Hex("fid=" + fid + "&" + key + "=" + value + "&limit=" + limit + "mic^ro&deke@y");
+	}
+
+	/**查询机构下的uid列表
+	 * @Description 
+	 * @author wwb
+	 * @Date 2021-05-28 16:49:23
+	 * @param fid
+	 * @return java.util.List<java.lang.Integer>
+	*/
+	public List<Integer> listOrgUid(Integer fid) {
+		List<Integer> uids =Lists.newArrayList();
+		String enc = getOrgUsersEnc(fid, Integer.MAX_VALUE);
+		String url = String.format(ORG_USERS_URL, fid, Integer.MAX_VALUE, enc);
+		String result = restTemplate.getForObject(url, String.class);
+		JSONObject jsonObject = JSON.parseObject(result);
+		Boolean status = jsonObject.getBoolean("status");
+		status = Optional.ofNullable(status).orElse(false);
+		if (status) {
+			JSONArray json = jsonObject.getJSONArray("json");
+			int size = json.size();
+			if (size > 0) {
+				Set<Integer> uidSet = new HashSet<>();
+				for (int i = 0; i < size; i++) {
+					JSONObject user = json.getJSONObject(i);
+					uidSet.add(user.getInteger("userid"));
+				}
+				uids = new ArrayList<>(uidSet);
+			}
+		}
+		return uids;
+	}
+
+	public List<Integer> listOrgGroupUid(Integer fid, Integer groupId, Integer groupLevel) {
+		List<Integer> uids =Lists.newArrayList();
+		String key = "group5";
+		if (Objects.equals(1, groupLevel)) {
+			key = "group1";
+		} else if (Objects.equals(2, groupLevel)) {
+			key = "group2";
+		} else if (Objects.equals(3, groupLevel)) {
+			key = "group3";
+		} else if (Objects.equals(4, groupLevel)) {
+			key = "group4";
+		}
+		String enc = getOrgGroupUsersEnc(fid, key, groupId, Integer.MAX_VALUE);
+		String url = String.format(ORG_GROUP_USERS_URL, fid, key, groupId, Integer.MAX_VALUE, enc);
+		String result = restTemplate.getForObject(url, String.class);
+		JSONObject jsonObject = JSON.parseObject(result);
+		Boolean status = jsonObject.getBoolean("status");
+		status = Optional.ofNullable(status).orElse(false);
+		if (status) {
+			JSONArray json = jsonObject.getJSONArray("json");
+			int size = json.size();
+			if (size > 0) {
+				Set<Integer> uidSet = new HashSet<>();
+				for (int i = 0; i < size; i++) {
+					JSONObject user = json.getJSONObject(i);
+					uidSet.add(user.getInteger("userid"));
+				}
+				uids = new ArrayList<>(uidSet);
+			}
+		}
+		return uids;
 	}
 
 }
