@@ -9,6 +9,7 @@ import com.chaoxing.activity.dto.RestRespDTO;
 import com.chaoxing.activity.dto.query.ActivityQueryDTO;
 import com.chaoxing.activity.model.Activity;
 import com.chaoxing.activity.model.ActivityClassify;
+import com.chaoxing.activity.service.activity.ActivityCoverUrlSyncService;
 import com.chaoxing.activity.service.activity.ActivityQueryService;
 import com.chaoxing.activity.service.activity.classify.ActivityClassifyQueryService;
 import com.chaoxing.activity.service.manager.WfwRegionalArchitectureApiService;
@@ -43,6 +44,8 @@ public class ActivityMarketApiController {
 	private ActivityClassifyQueryService activityClassifyQueryService;
 	@Resource
 	private WfwRegionalArchitectureApiService wfwRegionalArchitectureApiService;
+	@Resource
+	private ActivityCoverUrlSyncService activityCoverUrlSyncService;
 
 	/**活动市场数据源
 	 * @Description 
@@ -98,7 +101,7 @@ public class ActivityMarketApiController {
 				JSONObject activity = new JSONObject();
 				activity.put("id", record.getId());
 				activity.put("type", 3);
-				activity.put("orsUrl", record.getPreviewUrl());
+				activity.put("orsUrl", activityCoverUrlSyncService.getCoverUrl(record));
 				JSONArray fields = new JSONArray();
 				activity.put("fields", fields);
 				// 封面
