@@ -1,9 +1,8 @@
 package com.chaoxing.activity.service.activity.stat;
 
-import com.alibaba.fastjson.JSON;
-import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.chaoxing.activity.dto.query.admin.ActivityStatSummaryQueryDTO;
 import com.chaoxing.activity.dto.sign.SignParticipateScopeDTO;
 import com.chaoxing.activity.dto.stat.ActivityStatSummaryDTO;
 import com.chaoxing.activity.mapper.ActivityClassifyMapper;
@@ -14,13 +13,11 @@ import com.chaoxing.activity.model.ActivityClassify;
 import com.chaoxing.activity.model.ActivityRating;
 import com.chaoxing.activity.model.TableFieldDetail;
 import com.chaoxing.activity.service.manager.module.SignApiService;
-import com.chaoxing.activity.util.enums.OrderTypeEnum;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.compress.utils.Lists;
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -58,53 +55,23 @@ public class ActivityStatSummaryQueryService {
     * @author huxiaolong
     * @Date 2021-05-25 16:32:27
     * @param page
-    * @param fid
     * @return com.baomidou.mybatisplus.extension.plugins.pagination.Page<com.chaoxing.activity.dto.stat.ActivityStatSummaryDTO>
     */
-    public Page<ActivityStatSummaryDTO> activityStatSummaryPage(Page<ActivityStatSummaryDTO> page, Integer fid) {
-        return activityStatSummaryPage(page, fid, null);
-    }
+    public Page<ActivityStatSummaryDTO> activityStatSummaryPage(Page<ActivityStatSummaryDTO> page, ActivityStatSummaryQueryDTO queryParam) {
 
-    /**对活动统计汇总进行分页查询
-    * @Description
-    * @author huxiaolong
-    * @Date 2021-05-25 16:32:27
-    * @param page
-    * @param fid
-    * @param queryParamStr
-    * @return com.baomidou.mybatisplus.extension.plugins.pagination.Page<com.chaoxing.activity.dto.stat.ActivityStatSummaryDTO>
-    */
-    public Page<ActivityStatSummaryDTO> activityStatSummaryPage(Page<ActivityStatSummaryDTO> page, Integer fid, String queryParamStr) {
-        JSONObject jsonObject = new JSONObject();
-        if (StringUtils.isNotBlank(queryParamStr)) {
-            jsonObject = JSON.parseObject(queryParamStr);
-        }
-        String activityName = jsonObject.getString("activityName");
-        String startTime = jsonObject.getString("startTime");
-        String endTime = jsonObject.getString("endTime");
-        Integer orderFieldId = jsonObject.getInteger("orderFieldId");
-        String externalIdsStr = jsonObject.getString("externalIds");
-        List<Integer> externalIds = new ArrayList<>();
-        List<Integer> searchSignIds = new ArrayList<>();
-        if (StringUtils.isNotBlank(externalIdsStr)) {
-            externalIds = JSON.parseArray(externalIdsStr, Integer.class);
-            searchSignIds = signApiService.listSignIdsByExternalIds(externalIds);
-        }
-        String orderType = jsonObject.getString("orderType");
+        Integer fid = queryParam.getFid();
+        String activityName = queryParam.getActivityName();
+        String startTime = queryParam.getStartTime();
+        String endTime = queryParam.getEndTime();
+        Integer orderFieldId = queryParam.getOrderFieldId();
+        String orderType = queryParam.getOrderType() == null ? null : queryParam.getOrderType().getValue();
+        List<Integer> externalIds = queryParam.getExternalIds();
+        List<Integer> searchSignIds = signApiService.listSignIdsByExternalIds(externalIds);
         String orderField = null;
         if (orderFieldId != null) {
             TableFieldDetail field = tableFieldDetailMapper.selectById(orderFieldId);
-            if (field != null) {
-                orderField = field.getCode();
-            }
+            orderField = field == null ? null : field.getCode();
         }
-        if (orderType != null) {
-            OrderTypeEnum typeEnum = OrderTypeEnum.fromValue(orderType);
-            if (typeEnum == null) {
-                orderType = null;
-            }
-        }
-
         // 传递了参与范围的组织架构id集，报名签到id却为空，则返回空
         if (CollectionUtils.isNotEmpty(externalIds) && CollectionUtils.isEmpty(searchSignIds)) {
             return page;
@@ -114,6 +81,19 @@ public class ActivityStatSummaryQueryService {
         if (CollectionUtils.isEmpty(page.getRecords())) {
             return page;
         }
+
+        packagePageData(page);
+        return page;
+    }
+
+    /**对page里面的数据进行封装和转换
+    * @Description
+    * @author huxiaolong
+    * @Date 2021-05-31 10:33:53
+    * @param page
+    * @return void
+    */
+    private void packagePageData(Page<ActivityStatSummaryDTO> page) {
         List<Integer> activityIds = Lists.newArrayList();
         List<Integer> signIds = Lists.newArrayList();
         Set<Integer> classifyIds = Sets.newHashSet();
@@ -132,7 +112,6 @@ public class ActivityStatSummaryQueryService {
         for (SignParticipateScopeDTO item : signParticipateScopes) {
             signParticipateScopeMap.put(item.getSignId(), item.getExternalName());
         }
-
 
         Map<Integer, String> classifyMap = Maps.newHashMap();
         if (CollectionUtils.isNotEmpty(classifyIds)) {
@@ -156,7 +135,5 @@ public class ActivityStatSummaryQueryService {
             Integer ratingNum = Optional.ofNullable(ratingMap.get(record.getActivityId())).orElse(0);
             record.setRateNum(ratingNum);
         }
-
-        return page;
     }
 }

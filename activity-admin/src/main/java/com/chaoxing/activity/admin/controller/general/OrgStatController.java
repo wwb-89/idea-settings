@@ -1,10 +1,8 @@
 package com.chaoxing.activity.admin.controller.general;
 
-import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.chaoxing.activity.admin.util.LoginUtils;
 import com.chaoxing.activity.dto.LoginUserDTO;
 import com.chaoxing.activity.dto.manager.WfwGroupDTO;
-import com.chaoxing.activity.dto.stat.ActivityStatSummaryDTO;
 import com.chaoxing.activity.model.OrgTableField;
 import com.chaoxing.activity.model.TableField;
 import com.chaoxing.activity.model.TableFieldDetail;
@@ -107,7 +105,7 @@ public class OrgStatController {
         }
         List<TableFieldDetail> tableFieldDetails = tableFieldQueryService.listTableFieldDetail(TableField.Type.ACTIVITY_STAT, TableField.AssociatedType.ORG);
         List<OrgTableField> orgTableFields = tableFieldQueryService.listOrgTableField(realFid, TableField.Type.ACTIVITY_STAT, TableField.AssociatedType.ORG);
-        Page<ActivityStatSummaryDTO> activityStatSummaryPage = activityStatSummaryQueryService.activityStatSummaryPage(new Page<>(), realFid);
+//        Page<ActivityStatSummaryDTO> activityStatSummaryPage = activityStatSummaryQueryService.activityStatSummaryPage(new Page<>(), realFid);
         Integer tableFieldId = null;
         if (CollectionUtils.isNotEmpty(tableFieldDetails)) {
             tableFieldId = tableFieldDetails.get(0).getTableFieldId();
@@ -119,7 +117,7 @@ public class OrgStatController {
         model.addAttribute("tableFieldId", tableFieldId);
         model.addAttribute("tableFieldDetails", tableFieldDetails);
         model.addAttribute("orgTableFields", orgTableFields);
-        model.addAttribute("activityStatSummaryPage", activityStatSummaryPage);
+//        model.addAttribute("activityStatSummaryPage", activityStatSummaryPage);
         return "pc/stat/org-activity-stat-summary";
     }
 

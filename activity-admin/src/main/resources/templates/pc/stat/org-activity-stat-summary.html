@@ -131,8 +131,8 @@
                         background
                         layout="prev, pager, next"
                         :total="total"
-                        :page-size="pageSize"
-                        :current-page="pageNum"
+                        :page-size="queryParams.pageSize"
+                        :current-page="queryParams.pageNum"
                         @current-change="changePage">
                 </el-pagination>
             </div>
@@ -185,16 +185,17 @@
                 loaded: false,
                 fid: [[${fid}]],
                 tableFieldId: [[${tableFieldId}]],
-                pageNum: 1,
-                pageSize: 10,
                 participateScopeNames: '',
                 queryParams: {
+                    fid: [[${fid}]],
+                    pageNum: 1,
+                    pageSize: 10,
                     externalIds: [],
                     activityName: '',
                     startTime: '',
                     endTime: '',
                     orderFieldId: null,
-                    orderType: 'asc'
+                    orderType: 'DESC'
                 },
                 // 配置项源数据
                 tableFieldDetails: [[${tableFieldDetails}]],
@@ -205,11 +206,11 @@
                 // 表格显示的字段列表
                 showTableFieldDetails: [],
                 // 页面数据
-                tableData: [[${activityStatSummaryPage.records}]],
+                tableData: [],
                 // 总记录数
-                total: [[${activityStatSummaryPage.total}]],
+                total: 0,
                 // 总页数
-                pages: [[${activityStatSummaryPage.pages}]],
+                pages: 1,
                 dateValue1:'',  //日期范围选择值
                 ifSelectPop: false, //参与范围的弹窗展示
                 wfwGroups: [[${wfwGroups}]],
@@ -223,8 +224,8 @@
             },
             mounted: function () {
                 var $this = this;
+                $this.loadData();
                 $this.reSortSettingData()
-                console.log($this.wfwGroups)
             },
             methods: {
                 initGroupTree: function () {
@@ -287,7 +288,9 @@
                     if (participateScopes) {
                         $(participateScopes).each(function (i) {
                             participateScopeNames += this.externalName;
-                            externalIds.push(this.externalId);
+                            if (activityApp.isEmpty(this.externalId)) {
+                                externalIds.push(parseInt(this.externalId));
+                            }
                             if (participateScopes.length - 1 !== i) {
                                 participateScopeNames += ','
                             }
@@ -349,14 +352,7 @@
                     var $this = this;
                     var url = ctx + "/api/stat/org/activity/page";
                     $this.loaded = false;
-                    var params = {
-                        pageNum: $this.pageNum,
-                        pageSize: $this.pageSize,
-                        fid: $this.fid,
-                        queryParamStr: activityApp.getJsonStr($this.queryParams)
-                    }
-
-                    app.ajaxPostWithLoading(url, params, function (data) {
+                    app.ajaxPostWithLoading(url, $this.queryParams, function (data) {
                         $this.loaded = true;
                         if (data.success) {
                             $this.tableData = data.data.records;
@@ -376,14 +372,14 @@
                 },
                 search: function () {
                     var $this = this;
-                    $this.pageNum = 1;
-                    $this.pageSize = 10;
+                    $this.queryParams.pageNum = 1;
+                    $this.queryParams.pageSize = 10;
                     $this.loadData();
                 },
                 // 下一页或上一页
                 changePage: function (pageNum) {
                     var $this = this;
-                    $this.pageNum = pageNum;
+                    $this.queryParams.pageNum = pageNum;
                     $this.loadData();
                 },
                 sortChange: function (column) {
@@ -394,9 +390,9 @@
                     $this.queryParams.orderFieldId = sortFieldItem ? sortFieldItem.id : null;
 
                     if (column.order === 'descending') {
-                        $this.queryParams.orderType = 'desc';
+                        $this.queryParams.orderType = 'DESC';
                     } else if (column.order === 'ascending'){
-                        $this.queryParams.orderType = 'asc';
+                        $this.queryParams.orderType = 'ASC';
                     } else {
                         $this.queryParams.orderType = null;
                     }
