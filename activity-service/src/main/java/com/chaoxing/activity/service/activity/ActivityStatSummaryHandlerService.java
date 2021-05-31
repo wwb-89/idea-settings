@@ -8,6 +8,7 @@ import com.chaoxing.activity.model.ActivityStatSummary;
 import com.chaoxing.activity.service.manager.module.SignApiService;
 import com.chaoxing.activity.service.queue.ActivityStatSummaryQueueService;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -70,7 +71,7 @@ public class ActivityStatSummaryHandlerService {
         ActivityStatSummary defaultStatSummary = ActivityStatSummary.buildDefault();
         defaultStatSummary.setActivityId(activityId);
 
-        ActivityStatSummary statSummary = activityStatSummaryMapper.selectOne(new QueryWrapper<ActivityStatSummary>()
+        List<ActivityStatSummary> statSummaryList = activityStatSummaryMapper.selectList(new QueryWrapper<ActivityStatSummary>()
                 .lambda()
                 .eq(ActivityStatSummary::getActivityId, activityId));
         if (signId != null) {
@@ -82,7 +83,7 @@ public class ActivityStatSummaryHandlerService {
             defaultStatSummary.setQualifiedNum(latestStatSummary.getQualifiedNum());
             defaultStatSummary.setAvgParticipateTimeLength(latestStatSummary.getAvgParticipateTimeLength());
         }
-        if (statSummary == null) {
+        if (CollectionUtils.isEmpty(statSummaryList)) {
             activityStatSummaryMapper.insert(defaultStatSummary);
         } else {
             activityStatSummaryMapper.update(defaultStatSummary, new UpdateWrapper<ActivityStatSummary>()

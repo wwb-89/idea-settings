@@ -716,6 +716,9 @@ public class SignApiService {
 	}
 
 	public List<Integer> listSignIdsByExternalIds(List<Integer> externalIds) {
+		if (CollectionUtils.isEmpty(externalIds)) {
+			return Lists.newArrayList();
+		}
 		HttpHeaders httpHeaders = new HttpHeaders();
 		httpHeaders.setContentType(MediaType.APPLICATION_JSON);
 		HttpEntity<String> httpEntity = new HttpEntity<>(JSON.toJSONString(externalIds), httpHeaders);

@@ -3,6 +3,7 @@ package com.chaoxing.activity.admin.controller.api.stat;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.chaoxing.activity.admin.vo.stat.OrgUserStatVO;
 import com.chaoxing.activity.dto.RestRespDTO;
+import com.chaoxing.activity.dto.query.admin.ActivityStatSummaryQueryDTO;
 import com.chaoxing.activity.dto.query.admin.UserStatSummaryQueryDTO;
 import com.chaoxing.activity.dto.stat.ActivityStatSummaryDTO;
 import com.chaoxing.activity.model.UserStatSummary;
@@ -15,7 +16,6 @@ import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.annotation.Resource;
@@ -74,9 +74,9 @@ public class OrgStatApiController {
     }
 
     @PostMapping("activity/page")
-    public RestRespDTO activitStatSummaryPage(HttpServletRequest request, @RequestParam("fid") Integer fid, String queryParamStr) {
+    public RestRespDTO activitStatSummaryPage(HttpServletRequest request, ActivityStatSummaryQueryDTO queryParam) {
         Page<ActivityStatSummaryDTO> page = HttpServletRequestUtils.buid(request);
-        page = activityStatSummaryQueryService.activityStatSummaryPage(page, fid, queryParamStr);
+        page = activityStatSummaryQueryService.activityStatSummaryPage(page, queryParam);
         return RestRespDTO.success(page);
     }
 
