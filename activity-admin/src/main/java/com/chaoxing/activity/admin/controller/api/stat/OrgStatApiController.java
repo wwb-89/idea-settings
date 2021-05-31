@@ -1,13 +1,16 @@
 package com.chaoxing.activity.admin.controller.api.stat;
 
+import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.chaoxing.activity.admin.vo.stat.OrgUserStatVO;
 import com.chaoxing.activity.dto.RestRespDTO;
+import com.chaoxing.activity.dto.export.ExportDataDTO;
 import com.chaoxing.activity.dto.query.admin.ActivityStatSummaryQueryDTO;
 import com.chaoxing.activity.dto.query.admin.UserStatSummaryQueryDTO;
 import com.chaoxing.activity.dto.stat.ActivityStatSummaryDTO;
 import com.chaoxing.activity.model.UserStatSummary;
 import com.chaoxing.activity.service.activity.stat.ActivityStatSummaryQueryService;
+import com.chaoxing.activity.service.export.ExportService;
 import com.chaoxing.activity.service.manager.OrganizationalStructureApiService;
 import com.chaoxing.activity.service.stat.UserStatSummaryService;
 import com.chaoxing.activity.util.HttpServletRequestUtils;
@@ -20,6 +23,8 @@ import org.springframework.web.bind.annotation.RestController;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
 import java.util.List;
 
 /**
@@ -40,6 +45,8 @@ public class OrgStatApiController {
     private OrganizationalStructureApiService organizationalStructureApiService;
     @Resource
     private ActivityStatSummaryQueryService activityStatSummaryQueryService;
+    @Resource
+    private ExportService exportService;
 
     /**用户统计
      * @Description 
@@ -73,11 +80,37 @@ public class OrgStatApiController {
         return RestRespDTO.success(page);
     }
 
+    /**分页查询活动统计数据
+    * @Description
+    * @author huxiaolong
+    * @Date 2021-05-31 17:21:00
+    * @param request
+    * @param queryParamStr
+    * @return com.chaoxing.activity.dto.RestRespDTO
+    */
     @PostMapping("activity/page")
-    public RestRespDTO activitStatSummaryPage(HttpServletRequest request, ActivityStatSummaryQueryDTO queryParam) {
+    public RestRespDTO activityStatSummaryPage(HttpServletRequest request, String queryParamStr) {
+        ActivityStatSummaryQueryDTO queryParam = JSON.parseObject(queryParamStr, ActivityStatSummaryQueryDTO.class);
         Page<ActivityStatSummaryDTO> page = HttpServletRequestUtils.buid(request);
         page = activityStatSummaryQueryService.activityStatSummaryPage(page, queryParam);
         return RestRespDTO.success(page);
+    }
+
+
+    /**导出活动统计数据
+    * @Description
+    * @author huxiaolong
+    * @Date 2021-05-31 17:21:10
+    * @param response
+    * @param queryParam
+    * @return com.chaoxing.activity.dto.RestRespDTO
+    */
+    @RequestMapping("activity/export/data")
+    public void exportActivityStatSummary(HttpServletResponse response, ActivityStatSummaryQueryDTO queryParam) throws IOException {
+        ExportDataDTO exportData = activityStatSummaryQueryService.getExportData(queryParam);
+        exportData.setFileName("活动统计汇总");
+        exportData.setSheetName("活动统计汇总数据");
+        exportService.export(exportData, response);
     }
 
 }

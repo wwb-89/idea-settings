@@ -1,6 +1,7 @@
 package com.chaoxing.activity.service.activity.classify;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.chaoxing.activity.dto.FilterDTO;
 import com.chaoxing.activity.mapper.ActivityClassifyMapper;
 import com.chaoxing.activity.model.ActivityClassify;
 import com.google.common.collect.Lists;
@@ -9,6 +10,7 @@ import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
+import java.util.ArrayList;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -30,6 +32,24 @@ public class ActivityClassifyQueryService {
 
 	/**查询机构可选的活动分类列表
 	 * @Description 
+	 * @author wwb
+	 * @Date 2020-11-10 19:36:37
+	 * @param fid
+	 * @return java.util.List<com.chaoxing.activity.model.ActivityClassify>
+	*/
+	public List<FilterDTO> listOrgOptions(Integer fid) {
+		List<FilterDTO> result = new ArrayList<>();
+		CollectionUtils.collect(activityClassifyMapper.listByFid(fid), o -> {
+			FilterDTO item = new FilterDTO();
+			item.setText(((ActivityClassify) o).getName());
+			item.setValue(String.valueOf(((ActivityClassify) o).getId()));
+			return item;
+		}, result);
+		return result;
+	}
+
+	/**查询机构可选的活动分类列表
+	 * @Description
 	 * @author wwb
 	 * @Date 2020-11-10 19:36:37
 	 * @param fid

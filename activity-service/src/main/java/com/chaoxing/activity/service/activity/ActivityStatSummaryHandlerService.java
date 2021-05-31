@@ -79,6 +79,7 @@ public class ActivityStatSummaryHandlerService {
             ActivityStatSummary latestStatSummary = signApiService.getActivityStatSummary(signId);
 
             defaultStatSummary.setSignedInNum(latestStatSummary.getSignedInNum());
+            defaultStatSummary.setSignedUpNum(latestStatSummary.getSignedUpNum());
             defaultStatSummary.setSignInRate(latestStatSummary.getSignInRate());
             defaultStatSummary.setQualifiedNum(latestStatSummary.getQualifiedNum());
             defaultStatSummary.setAvgParticipateTimeLength(latestStatSummary.getAvgParticipateTimeLength());

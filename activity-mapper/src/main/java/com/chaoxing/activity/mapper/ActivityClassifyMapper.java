@@ -46,4 +46,13 @@ public interface ActivityClassifyMapper extends BaseMapper<ActivityClassify> {
 	* @return java.util.List<com.chaoxing.activity.model.ActivityClassify>
 	*/
     List<ActivityClassify> listByIds(@Param("ids") Collection<Integer> ids);
+
+    /**根据fid查询活动类型
+    * @Description 
+    * @author huxiaolong
+    * @Date 2021-05-31 16:50:51
+    * @param fid
+    * @return java.util.List<com.chaoxing.activity.model.ActivityClassify>
+    */
+	List<ActivityClassify> listByFid(@Param("fid") Integer fid);
 }

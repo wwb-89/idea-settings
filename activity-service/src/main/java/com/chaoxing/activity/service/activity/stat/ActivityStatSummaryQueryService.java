@@ -2,6 +2,7 @@ package com.chaoxing.activity.service.activity.stat;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.chaoxing.activity.dto.export.ExportDataDTO;
 import com.chaoxing.activity.dto.query.admin.ActivityStatSummaryQueryDTO;
 import com.chaoxing.activity.dto.sign.SignParticipateScopeDTO;
 import com.chaoxing.activity.dto.stat.ActivityStatSummaryDTO;
@@ -13,11 +14,12 @@ import com.chaoxing.activity.model.ActivityClassify;
 import com.chaoxing.activity.model.ActivityRating;
 import com.chaoxing.activity.model.TableFieldDetail;
 import com.chaoxing.activity.service.manager.module.SignApiService;
+import com.chaoxing.activity.util.DateUtils;
+import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
-import org.apache.commons.compress.utils.Lists;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -59,25 +61,20 @@ public class ActivityStatSummaryQueryService {
     */
     public Page<ActivityStatSummaryDTO> activityStatSummaryPage(Page<ActivityStatSummaryDTO> page, ActivityStatSummaryQueryDTO queryParam) {
 
-        Integer fid = queryParam.getFid();
-        String activityName = queryParam.getActivityName();
-        String startTime = queryParam.getStartTime();
-        String endTime = queryParam.getEndTime();
-        Integer orderFieldId = queryParam.getOrderFieldId();
-        String orderType = queryParam.getOrderType() == null ? null : queryParam.getOrderType().getValue();
         List<Integer> externalIds = queryParam.getExternalIds();
         List<Integer> searchSignIds = signApiService.listSignIdsByExternalIds(externalIds);
-        String orderField = null;
-        if (orderFieldId != null) {
-            TableFieldDetail field = tableFieldDetailMapper.selectById(orderFieldId);
-            orderField = field == null ? null : field.getCode();
+        if (queryParam.getOrderFieldId() != null) {
+            TableFieldDetail field = tableFieldDetailMapper.selectById(queryParam.getOrderFieldId());
+            if (field != null) {
+                queryParam.setOrderField(field.getCode());
+            }
         }
         // 传递了参与范围的组织架构id集，报名签到id却为空，则返回空
         if (CollectionUtils.isNotEmpty(externalIds) && CollectionUtils.isEmpty(searchSignIds)) {
             return page;
         }
-        page = activityStatSummaryMapper.activityStatSummaryPage(page, fid, activityName, startTime, endTime, orderField,
-                orderType, searchSignIds);
+        String orderType = queryParam.getOrderType() == null ? null : queryParam.getOrderType().getValue();
+        page = activityStatSummaryMapper.activityStatSummaryPage(page, queryParam, orderType, searchSignIds);
         if (CollectionUtils.isEmpty(page.getRecords())) {
             return page;
         }
@@ -135,5 +132,60 @@ public class ActivityStatSummaryQueryService {
             Integer ratingNum = Optional.ofNullable(ratingMap.get(record.getActivityId())).orElse(0);
             record.setRateNum(ratingNum);
         }
+    }
+
+    private List<List<String>> listActivityStatHeader() {
+        List<List<String>> headers = Lists.newArrayList();
+        headers.add(Collections.singletonList("活动名称"));
+        headers.add(Collections.singletonList("创建者"));
+        headers.add(Collections.singletonList("开始时间"));
+        headers.add(Collections.singletonList("结束时间"));
+        headers.add(Collections.singletonList("活动分类"));
+        headers.add(Collections.singletonList("活动积分"));
+        headers.add(Collections.singletonList("参与范围"));
+        headers.add(Collections.singletonList("报名人数"));
+        headers.add(Collections.singletonList("签到数"));
+        headers.add(Collections.singletonList("签到率"));
+        headers.add(Collections.singletonList("评价数"));
+        headers.add(Collections.singletonList("合格数"));
+        headers.add(Collections.singletonList("人均参与时长(分钟)"));
+        return headers;
+    }
+
+    private String valueToString(Object value) {
+        return value == null ? "" : String.valueOf(value);
+    }
+    private List<List<String>> listData(ActivityStatSummaryQueryDTO queryParam) {
+        List<List<String>> data = Lists.newArrayList();
+        Page<ActivityStatSummaryDTO> page = new Page<>(1, Integer.MAX_VALUE);
+        page = activityStatSummaryPage(page, queryParam);
+        List<ActivityStatSummaryDTO> records = page.getRecords();
+        if (CollectionUtils.isNotEmpty(records)) {
+            for (ActivityStatSummaryDTO record : records) {
+                List<String> itemData = Lists.newArrayList();
+                itemData.add(record.getActivityName());
+                itemData.add(record.getActivityCreator());
+                itemData.add(record.getStartTime() == null ? null : record.getStartTime().format(DateUtils.FULL_TIME_FORMATTER));
+                itemData.add(record.getEndTime() == null ? null : record.getEndTime().format(DateUtils.FULL_TIME_FORMATTER));
+                itemData.add(record.getActivityClassify());
+                itemData.add(valueToString(record.getIntegral()));
+                itemData.add(record.getParticipateScope());
+                itemData.add(valueToString(record.getSignedUpNum()));
+                itemData.add(valueToString(record.getSignedInNum()));
+                itemData.add(valueToString(record.getSignInRate()));
+                itemData.add(valueToString(record.getRateNum()));
+                itemData.add(valueToString(record.getQualifiedNum()));
+                itemData.add(valueToString(record.getAvgParticipateTimeLength()));
+                data.add(itemData);
+            }
+        }
+        return data;
+    }
+
+    public ExportDataDTO getExportData(ActivityStatSummaryQueryDTO queryParam) {
+        ExportDataDTO exportData = new ExportDataDTO();
+        exportData.setHeaders(listActivityStatHeader());
+        exportData.setData(listData(queryParam));
+        return exportData;
     }
 }

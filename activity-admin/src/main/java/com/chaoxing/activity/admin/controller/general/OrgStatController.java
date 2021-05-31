@@ -1,14 +1,17 @@
 package com.chaoxing.activity.admin.controller.general;
 
 import com.chaoxing.activity.admin.util.LoginUtils;
+import com.chaoxing.activity.dto.FilterDTO;
 import com.chaoxing.activity.dto.LoginUserDTO;
 import com.chaoxing.activity.dto.manager.WfwGroupDTO;
 import com.chaoxing.activity.model.OrgTableField;
 import com.chaoxing.activity.model.TableField;
 import com.chaoxing.activity.model.TableFieldDetail;
-import com.chaoxing.activity.service.activity.stat.ActivityStatSummaryQueryService;
+import com.chaoxing.activity.service.activity.classify.ActivityClassifyQueryService;
 import com.chaoxing.activity.service.manager.WfwGroupApiService;
 import com.chaoxing.activity.service.tablefield.TableFieldQueryService;
+import com.chaoxing.activity.util.DateUtils;
+import com.chaoxing.activity.util.SchoolYearSemesterUtils;
 import com.chaoxing.activity.util.annotation.LoginRequired;
 import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.stereotype.Controller;
@@ -17,6 +20,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -39,7 +43,7 @@ public class OrgStatController {
     private TableFieldQueryService tableFieldQueryService;
 
     @Resource
-    private ActivityStatSummaryQueryService activityStatSummaryQueryService;
+    private ActivityClassifyQueryService activityClassifyQueryService;
 
 
     /**机构下的用户统计
@@ -105,13 +109,18 @@ public class OrgStatController {
         }
         List<TableFieldDetail> tableFieldDetails = tableFieldQueryService.listTableFieldDetail(TableField.Type.ACTIVITY_STAT, TableField.AssociatedType.ORG);
         List<OrgTableField> orgTableFields = tableFieldQueryService.listOrgTableField(realFid, TableField.Type.ACTIVITY_STAT, TableField.AssociatedType.ORG);
-//        Page<ActivityStatSummaryDTO> activityStatSummaryPage = activityStatSummaryQueryService.activityStatSummaryPage(new Page<>(), realFid);
+        List<FilterDTO> classifyOptions = activityClassifyQueryService.listOrgOptions(realFid);
         Integer tableFieldId = null;
         if (CollectionUtils.isNotEmpty(tableFieldDetails)) {
             tableFieldId = tableFieldDetails.get(0).getTableFieldId();
         }
         // 微服务组织架构
         List<WfwGroupDTO> wfwGroups = wfwGroupApiService.getGroupByFid(realFid);
+
+        model.addAttribute("startTime", SchoolYearSemesterUtils.currentSemesterStartTime().format(DateUtils.FULL_TIME_FORMATTER));
+        model.addAttribute("endTime", LocalDateTime.now().format(DateUtils.FULL_TIME_FORMATTER));
+        model.addAttribute("classifyOptions", classifyOptions);
+        model.addAttribute("classifyOptions", classifyOptions);
         model.addAttribute("wfwGroups", wfwGroups);
         model.addAttribute("fid", realFid);
         model.addAttribute("tableFieldId", tableFieldId);

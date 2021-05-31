@@ -23,9 +23,11 @@ public class ActivityStatSummaryQueryDTO {
 
     private Integer fid;
 
-    private String activityName;
+    private String name;
 
     private Integer orderFieldId;
+
+    private String orderField;
 
     private OrderTypeEnum orderType;
 
@@ -34,6 +36,10 @@ public class ActivityStatSummaryQueryDTO {
     private String startTime;
 
     private String endTime;
+
+    private Integer activityStatus;
+
+    private Integer activityClassifyId;
 
 
 }
