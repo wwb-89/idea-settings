@@ -1,6 +1,6 @@
 package com.chaoxing.activity.task;
 
-import com.chaoxing.activity.service.export.ExportRecordService;
+import com.chaoxing.activity.service.export.ExportRecordHandleService;
 import com.chaoxing.activity.service.queue.ExportQueueService;
 import com.chaoxing.activity.util.PathUtils;
 import lombok.extern.slf4j.Slf4j;
@@ -21,7 +21,7 @@ import javax.annotation.Resource;
 public class ExportQueueTask {
 
     @Resource
-    private ExportRecordService exportRecordService;
+    private ExportRecordHandleService exportRecordService;
 
     @Resource
     private ExportQueueService exportQueueService;

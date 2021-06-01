@@ -506,7 +506,6 @@
                     $($this.configTableFieldDetails).each(function(i) {
                        this.sequence = i;
                     });
-                    console.log($this.configTableFieldDetails)
                 },
                 // 重置配置
                 resetConfig: function () {
@@ -568,6 +567,9 @@
                         $this.loaded = true;
                         if (data.success) {
                             app.showMsg("活动统计数据导出成功");
+                            // window.open(activityApp.getRelativeUrl("/activity/add?code=" + $this.code + "&flag=" + $this.activityFlag + "&strict=" + $this.strict));
+                            window.open('/activity/export-record');
+
                         } else {
                             var errorMessage = data.message;
                             if (activityApp.isEmpty(errorMessage)) {

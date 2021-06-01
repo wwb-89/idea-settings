@@ -12,7 +12,7 @@ import com.chaoxing.activity.dto.stat.ActivityStatSummaryDTO;
 import com.chaoxing.activity.model.ExportRecord;
 import com.chaoxing.activity.model.UserStatSummary;
 import com.chaoxing.activity.service.activity.stat.ActivityStatSummaryQueryService;
-import com.chaoxing.activity.service.export.ExportRecordService;
+import com.chaoxing.activity.service.export.ExportRecordHandleService;
 import com.chaoxing.activity.service.manager.OrganizationalStructureApiService;
 import com.chaoxing.activity.service.stat.UserStatSummaryService;
 import com.chaoxing.activity.util.HttpServletRequestUtils;
@@ -98,7 +98,7 @@ public class OrgStatApiController {
 
 
     @Resource
-    private ExportRecordService exportRecordService;
+    private ExportRecordHandleService exportRecordService;
     /**导出活动统计数据
     * @Description
     * @author huxiaolong

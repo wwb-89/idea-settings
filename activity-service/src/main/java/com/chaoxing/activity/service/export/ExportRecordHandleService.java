@@ -38,7 +38,7 @@ import java.util.Optional;
  */
 @Slf4j
 @Service
-public class ExportRecordService {
+public class ExportRecordHandleService {
 
     @Autowired
     private ExportRecordMapper exportRecordMapper;
@@ -148,7 +148,10 @@ public class ExportRecordService {
             }
             // 上传成功或失败后均删除文件
             deleteFile(fileName);
-            if (!uploadFlag) {
+            if (uploadFlag) {
+                // 在外面处理获取下载地址，防止获取下载地址的时候异常导致文件重试上传重复文件
+                exportRecord.setDownloadUrl(cloudApiService.getFileDownloadUrl(exportRecord.getCloudId()));
+            } else {
                 throw new BusinessException("上传文件:" + fileName + " 失败！异常信息:" + errorMsg);
             }
         } catch (Exception e) {
