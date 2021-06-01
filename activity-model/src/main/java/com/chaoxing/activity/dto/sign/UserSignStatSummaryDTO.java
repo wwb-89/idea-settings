@@ -5,9 +5,6 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.math.BigDecimal;
-import java.util.List;
-
 /**用户报名签到统计汇总
  * @author wwb
  * @version ver 1.0
@@ -24,19 +21,17 @@ public class UserSignStatSummaryDTO {
 
 	/** 用户id */
 	private Integer uid;
-	/** 有效的（报名有效）报名数 */
-	private Integer validSignUpNum;
-	/** 报名数 */
+	/** 报名签到id */
+	private Integer signId;
+	/** 报名数量 */
+	private Integer signUpNum;
+	/** 报名成功数量 */
 	private Integer signedUpNum;
-	/** 有效的（签到有效）签到数 */
-	private Integer validSignedInNum;
-	/** 签到数 */
+	/** 签到数量 */
+	private Integer signInNum;
+	/** 签到成功数量 */
 	private Integer signedInNum;
-	/** 签到率 */
-	private BigDecimal signedInRate;
 	/** 参数时长 */
 	private Integer participateTimeLength;
-	/** 参与的报名签到id列表 */
-	private List<Integer> participatedSignIds;
 
 }

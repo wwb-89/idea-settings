@@ -3,16 +3,18 @@ package com.chaoxing.activity.service.stat;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.chaoxing.activity.dto.manager.PassportUserDTO;
 import com.chaoxing.activity.dto.query.admin.UserStatSummaryQueryDTO;
 import com.chaoxing.activity.dto.sign.UserSignStatSummaryDTO;
 import com.chaoxing.activity.mapper.TableFieldDetailMapper;
 import com.chaoxing.activity.mapper.UserStatSummaryMapper;
+import com.chaoxing.activity.model.Activity;
 import com.chaoxing.activity.model.TableFieldDetail;
 import com.chaoxing.activity.model.UserStatSummary;
+import com.chaoxing.activity.service.activity.ActivityQueryService;
 import com.chaoxing.activity.service.activity.ActivityStatQueryService;
 import com.chaoxing.activity.service.manager.OrganizationalStructureApiService;
 import com.chaoxing.activity.service.manager.PassportApiService;
-import com.chaoxing.activity.service.manager.WfwContactApiService;
 import com.chaoxing.activity.service.manager.module.SignApiService;
 import com.chaoxing.activity.service.user.UserStatService;
 import lombok.extern.slf4j.Slf4j;
@@ -20,7 +22,9 @@ import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
+import java.math.BigDecimal;
 import java.util.List;
+import java.util.Optional;
 
 /**用户统计汇总服务
  * @author wwb
@@ -48,81 +52,120 @@ public class UserStatSummaryService {
     @Resource
     private PassportApiService passportApiService;
     @Resource
-    private WfwContactApiService wfwContactApiService;
-    @Resource
     private OrganizationalStructureApiService organizationalStructureApiService;
+    @Resource
+    private ActivityQueryService activityQueryService;
 
-    /**更新用户签到数
+    /**更新用户报名签到信息
      * @Description 
      * @author wwb
      * @Date 2021-05-26 14:39:27
      * @param uid
+     * @param activityId
      * @return void
     */
-    public void updateUserSignInData(Integer uid) {
-        // 查询签到数、签到率、参与时长
-        UserSignStatSummaryDTO userSignStatSummary = signApiService.userSignStatSummary(uid);
+    public void updateUserSignUpInData(Integer uid, Integer activityId) {
+        Activity activity = activityQueryService.getById(activityId);
+        Integer signId = activity.getSignId();
+        if (signId == null) {
+            return;
+        }
+        // 查询用户在报名签到下的统计信息
+        UserSignStatSummaryDTO userSignStatSummary = signApiService.userSignStatSummary(uid, signId);
         List<UserStatSummary> userStatSummaries = userStatSummaryMapper.selectList(new QueryWrapper<UserStatSummary>()
                 .lambda()
                 .eq(UserStatSummary::getUid, uid)
+                .eq(UserStatSummary::getActivityId, activityId)
         );
-        Integer participatedActivityNum = 0;
-        List<Integer> participatedSignIds = userSignStatSummary.getParticipatedSignIds();
-        if (CollectionUtils.isNotEmpty(participatedSignIds)) {
-            participatedActivityNum = activityStatQueryService.countActivityNumBySignIds(participatedSignIds);
+        // 是否有效, 报名数>0的时候报名成功数必须>0 否则签到成功数必须>0
+        boolean isValid;
+        if (userSignStatSummary.getSignUpNum() > 0) {
+            isValid = userSignStatSummary.getSignedUpNum() > 0;
+        }else {
+            isValid = userSignStatSummary.getSignedInNum() > 0;
         }
         if (CollectionUtils.isNotEmpty(userStatSummaries)) {
             // 更新用户数据
             userStatSummaryMapper.update(null, new UpdateWrapper<UserStatSummary>()
                 .lambda()
                     .eq(UserStatSummary::getUid, uid)
-                    .set(UserStatSummary::getSignedInNum, userSignStatSummary.getValidSignedInNum())
-                    .set(UserStatSummary::getSignedInRate, userSignStatSummary.getSignedInRate())
-                    .set(UserStatSummary::getTotalParticipateTimeLength, userSignStatSummary.getParticipateTimeLength())
-                    .set(UserStatSummary::getParticipateActivityNum, participatedActivityNum)
+                    .eq(UserStatSummary::getActivityId, activityId)
+                    .set(UserStatSummary::getSignUpNum, userSignStatSummary.getSignUpNum())
+                    .set(UserStatSummary::getSignedUpNum, userSignStatSummary.getSignedUpNum())
+                    .set(UserStatSummary::getSignInNum, userSignStatSummary.getSignInNum())
+                    .set(UserStatSummary::getSignedInNum, userSignStatSummary.getSignedInNum())
+                    .set(UserStatSummary::getParticipateTimeLength, userSignStatSummary.getParticipateTimeLength())
+                    .set(UserStatSummary::getValid, isValid)
             );
         } else {
             // 新增用户数据
-            UserStatSummary userStatSummary = UserStatSummary.builder()
-                    .uid(uid)
-                    .realName(passportApiService.getUserRealName(uid))
-                    .signedInNum(userSignStatSummary.getValidSignedInNum())
-                    .signedInRate(userSignStatSummary.getSignedInRate())
-                    .totalParticipateTimeLength(userSignStatSummary.getParticipateTimeLength())
-                    .participateActivityNum(participatedActivityNum)
-                    .build();
+            UserStatSummary userStatSummary = buildDefault(uid);
+            userStatSummary.setActivityId(activityId);
+            userStatSummary.setSignUpNum(userSignStatSummary.getSignUpNum());
+            userStatSummary.setSignedUpNum(userSignStatSummary.getSignedUpNum());
+            userStatSummary.setSignInNum(userSignStatSummary.getSignInNum());
+            userStatSummary.setSignedInNum(userSignStatSummary.getSignedInNum());
+            userStatSummary.setParticipateTimeLength(userSignStatSummary.getParticipateTimeLength());
+            userStatSummary.setValid(isValid);
             userStatSummaryMapper.insert(userStatSummary);
         }
     }
 
-    /**更新用户成绩合格数
+    private UserStatSummary buildDefault(Integer uid) {
+        String realName = "";
+        String mobile = "";
+        try {
+            PassportUserDTO passportUser = passportApiService.getByUid(uid);
+            realName = passportUser.getRealName();
+            mobile = passportUser.getMobile();
+        } catch (Exception e) {}
+        return UserStatSummary.builder()
+                .uid(uid)
+                .realName(realName)
+                .mobile(mobile)
+                .build();
+    }
+
+    /**更新用户成绩合格
      * @Description 
      * @author wwb
      * @Date 2021-05-26 14:39:57
      * @param uid
+     * @param activityId
      * @return void
     */
-    public void updateUserResultData(Integer uid) {
-        // 查询合格数
-        Integer qualifiedResultNum = signApiService.userQualifiedResultNum(uid);
+    public void updateUserResult(Integer uid, Integer activityId) {
+        Activity activity = activityQueryService.getById(activityId);
+        Integer signId = activity.getSignId();
+        if (signId == null) {
+            return;
+        }
+        boolean isQualified = signApiService.userIsQualified(uid, activityId);
         List<UserStatSummary> userStatSummaries = userStatSummaryMapper.selectList(new QueryWrapper<UserStatSummary>()
                 .lambda()
                 .eq(UserStatSummary::getUid, uid)
+                .eq(UserStatSummary::getActivityId, activityId)
         );
+        BigDecimal integral = activity.getIntegralValue();
+        integral = Optional.ofNullable(integral).orElse(BigDecimal.ZERO);
+        if (!isQualified) {
+            integral = BigDecimal.ZERO;
+        }
         if (CollectionUtils.isNotEmpty(userStatSummaries)) {
             // 更新用户数据
             userStatSummaryMapper.update(null, new UpdateWrapper<UserStatSummary>()
                     .lambda()
                     .eq(UserStatSummary::getUid, uid)
-                    .set(UserStatSummary::getQualifiedNum, qualifiedResultNum)
+                    .eq(UserStatSummary::getActivityId, activityId)
+                    .set(UserStatSummary::getQualified, isQualified)
+                    .set(UserStatSummary::getIntegral, integral)
             );
         } else {
             // 新增用户数据
-            UserStatSummary userStatSummary = UserStatSummary.builder()
-                    .uid(uid)
-                    .realName(passportApiService.getUserRealName(uid))
-                    .qualifiedNum(qualifiedResultNum)
-                    .build();
+            UserStatSummary userStatSummary = buildDefault(uid);
+            userStatSummary.setActivityId(activityId);
+            userStatSummary.setQualified(isQualified);
+            userStatSummary.setIntegral(integral);
             userStatSummaryMapper.insert(userStatSummary);
         }
     }

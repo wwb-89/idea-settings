@@ -94,9 +94,9 @@ public class SignApiService {
 	/** 用户是否已报名（报名成功）url */
 	private static final String USER_IS_SIGNED_UP_URL = SIGN_API_DOMAIN + "/sign/%d/is-signed-up?uid=%d";
 	/** 用户报名签到统计汇总 */
-	private static final String USER_SIGN_STAT_SUMMARY_URL = SIGN_API_DOMAIN + "/stat/user/%d/sign-stat-summary";
-	/** 用户合格的成绩数量 */
-	private static final String USER_QUALIFIED_RESULT_NUM_URL = SIGN_API_DOMAIN + "/stat/user/%d/qualified_result_num";
+	private static final String USER_SIGN_STAT_SUMMARY_URL = SIGN_API_DOMAIN + "/stat/user/%d/sign/%d/sign-stat-summary";
+	/** 用户报名签到是否合格 */
+	private static final String USER_IS_QUALIFIED_URL = SIGN_API_DOMAIN + "/stat/user/%d/sign/%d/qualified";
 
 	/** 报名名单url */
 	private static final String SIGN_UP_USER_LIST_URL = SIGN_WEB_DOMAIN + "/sign-up/%d/user-list";
@@ -675,8 +675,8 @@ public class SignApiService {
 	 * @param uid
 	 * @return com.chaoxing.activity.dto.sign.UserSignStatSummaryDTO
 	*/
-	public UserSignStatSummaryDTO userSignStatSummary(Integer uid) {
-		String url = String.format(USER_SIGN_STAT_SUMMARY_URL, uid);
+	public UserSignStatSummaryDTO userSignStatSummary(Integer uid, Integer signId) {
+		String url = String.format(USER_SIGN_STAT_SUMMARY_URL, uid, signId);
 		String result = restTemplate.getForObject(url, String.class);
 		JSONObject jsonObject = JSON.parseObject(result);
 		return resultHandle(jsonObject, () -> JSON.parseObject(jsonObject.getString("data"), UserSignStatSummaryDTO.class), (message) -> {
@@ -690,13 +690,14 @@ public class SignApiService {
 	 * @author wwb
 	 * @Date 2021-05-27 15:05:44
 	 * @param uid
+	 * @param signId
 	 * @return java.lang.Integer
 	*/
-	public Integer userQualifiedResultNum(Integer uid) {
-		String url = String.format(USER_QUALIFIED_RESULT_NUM_URL, uid);
+	public boolean userIsQualified(Integer uid, Integer signId) {
+		String url = String.format(USER_IS_QUALIFIED_URL, uid);
 		String result = restTemplate.getForObject(url, String.class);
 		JSONObject jsonObject = JSON.parseObject(result);
-		return resultHandle(jsonObject, () -> jsonObject.getInteger("data"), (message) -> {
+		return resultHandle(jsonObject, () -> jsonObject.getBoolean("data"), (message) -> {
 			log.error("获取用户:{}合格的成绩数量error:{}", uid, message);
 			throw new BusinessException(message);
 		});
