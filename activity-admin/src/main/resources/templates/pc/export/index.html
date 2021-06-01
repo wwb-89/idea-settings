@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org/">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>导出记录</title>
+    <link rel="stylesheet" href="/static/pc/assets/css/export-record/index.css" th:href="@{/pc/assets/css/export-record/index.css}">
+    <link rel="stylesheet" href="/static/pc/assets/css/export-record/public.css" th:href="@{/pc/assets/css/export-record/public.css}">
+    <link rel="stylesheet" href="/static/pc/assets/css/export-record/export.css" th:href="@{/pc/assets/css/export-record/export.css}">
+    <style>
+        .no-content {
+            position: absolute;
+            width: 100%;
+            color: #999999;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="export" id="export" v-cloak>
+        <div class="content">
+            <div class="item-block clear">
+                <div class="fl">
+                    <p class="title">导出记录</p>
+                </div>
+            </div>
+            <div class="item-block minheight600">
+                <div class="table-box">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th class="width1">
+                                    <div class="cell">导出时间</div>
+                                </th>
+                                <th class="width2">
+                                    <div class="cell">状态</div>
+                                </th>
+                                <th class="width3">
+                                    <div class="cell">操作</div>
+                                </th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr v-for="record in exportRecordData">
+                                <td class="width1">
+                                    <div class="cell">{{record.createTime | timeStampFormat}}</div>
+                                </td>
+                                <td class="width2">
+                                    <div :class="cellState(record.status)">{{cellMsg(record)}}</div>
+                                </td>
+                                <td class="width3">
+                                    <div class="cell txt-blue-hover" v-if="record.status === 1" @click="download(record)">下载</div>
+                                    <div class="cell" v-else>-</div>
+                                </td>
+                            </tr>
+                            <tr v-if="!exportRecordData || exportRecordData.length === 0">
+                                <th class="no-content">暂无内容</th>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div th:replace="pc/include/common_js :: common_js(~{::script})">
+        <script th:inline="javascript">
+            Vue.filter("timeStampFormat", function (timestamp) {
+                if (activityApp.isEmpty(timestamp)) {
+                    return "";
+                }
+                var dateObj = moment(timestamp);
+                return dateObj.format("YYYY-MM-DD HH:mm");
+            });
+            exportVue = new Vue({
+                el: '#export',
+                data: {
+                    exportRecordData: [[${exportRecordData}]]
+                },
+                methods: {
+                    cellState: function (state) {
+                        if (state === 0) {
+                            return 'cell state2'
+                        } else if (state === 1) {
+                            return 'cell state1'
+                        } else {
+                            return 'cell'
+                        }
+                    },
+                    cellMsg: function (record) {
+                        if (record.status === 0) {
+                            var msg = '导出失败'
+                            if (record.message) {
+                                msg += ', ' + record.message;
+                            }
+                            return msg
+                        } else if (record.status === 1) {
+                            return '已完成'
+                        } else {
+                            return '数据准备中，刷新页面查看状态';
+                        }
+                    },
+                    download: function (record) {
+                        if (!record || !record.downloadUrl) {
+                            app.showMsg('下载链接不存在！');
+                            return;
+                        }
+                        window.open(record.downloadUrl);
+                    }
+                }
+            });
+        </script>
+    </div>
+</body>
+
+
+</html>
