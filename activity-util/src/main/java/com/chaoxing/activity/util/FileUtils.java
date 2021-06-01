@@ -40,4 +40,33 @@ public class FileUtils {
 		return getFileDirectory(file);
 	}
 
+	/** 获取文件的目录
+	 * @Description
+	 * @author
+	 * @Date 2018-04-28 14:36:33
+	 * @param filePath
+	 * @return java.lang.String
+	 */
+	public static String getFileDir(String filePath) {
+		if (!org.springframework.util.StringUtils.isEmpty(filePath)) {
+			filePath = filePath.replaceAll("%20", " ");
+		}
+		File file = new File(filePath);
+		return getFileDir(file);
+	}
+
+	/** 获取文件的目录
+	 * @Description
+	 * @author
+	 * @Date 2018-04-28 14:35:42
+	 * @param file
+	 * @return java.lang.String
+	 */
+	public static String getFileDir(File file) {
+		if (file.isDirectory()) {
+			return file.getPath();
+		}
+		return file.getParent();
+	}
+
 }
