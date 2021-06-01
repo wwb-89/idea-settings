@@ -51,7 +51,7 @@
     <script src="../assets/lib/html2canvas.min.js"></script>
     <script>
         $('.btn-download').click(function () {
-            html2canvas(document.querySelector("#capture")).then(canvas => {
+            html2canvas(document.querySelector("#capture"),{useCORS: true}).then(canvas => {
                 $(canvas).addClass('captureImg');
                 document.body.appendChild(canvas)
             });
