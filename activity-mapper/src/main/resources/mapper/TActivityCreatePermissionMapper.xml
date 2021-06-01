@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.chaoxing.activity.mapper.TActivityCreatePermissionMapper">
+    <resultMap id="BaseResultMap" type="com.chaoxing.activity.model.ActivityCreatePermission">
+        <id column="id" jdbcType="INTEGER" property="id" />
+        <result column="fid" jdbcType="INTEGER" property="fid" />
+        <result column="role_id" jdbcType="INTEGER" property="roleId" />
+        <result column="is_all_activity_classify" jdbcType="BIT" property="isAllActivityClassify" />
+        <result column="activity_classify_scope" jdbcType="VARCHAR" property="activityClassifyScope" />
+        <result column="sign_up_scope_type" jdbcType="INTEGER" property="signUpScopeType" />
+        <result column="is_deleted" jdbcType="BIT" property="isDeleted" />
+        <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
+        <result column="create_uid" jdbcType="INTEGER" property="createUid" />
+        <result column="update_time" jdbcType="TIMESTAMP" property="updateTime" />
+        <result column="update_uid" jdbcType="INTEGER" property="updateUid" />
+    </resultMap>
+    <resultMap extends="BaseResultMap" id="ResultMapWithBLOBs" type="com.chaoxing.activity.model.ActivityCreatePermission">
+        <result column="sign_up_scope" jdbcType="LONGVARCHAR" property="signUpScope" />
+    </resultMap>
+    <sql id="Base_Column_List">
+        t.id, t.fid, t.role_id, t.is_all_activity_classify, t.activity_classify_scope, t.sign_up_scope_type, 
+        t.is_deleted, t.create_time, t.create_uid, t.update_time, t.update_uid
+    </sql>
+    <sql id="Blob_Column_List">
+        t.sign_up_scope
+    </sql>
+</mapper>
