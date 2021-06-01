@@ -30,7 +30,7 @@
             <div class="tab-item">
                 <!-- 操作栏 -->
                 <div class="table-operate-box fs0">
-<!--                    <el-button class="btn-customize" round @click="exportExcel">导出</el-button>-->
+                    <el-button class="btn-customize" round @click="exportExcel">导出</el-button>
 <!--                    <el-button class="btn-customize" round>导出记录</el-button>-->
                     <div class="search-Box">
                         <el-input placeholder="活动名称/发起人"
@@ -562,23 +562,22 @@
                 // 导出excel
                 exportExcel: function () {
                     var $this = this;
-                    //params是post请求需要的参数，url是请求url地址
-                    var form = document.createElement("form");
-                    form.style.display = "none";
-                    form.action = ctx + "/api/stat/org/activity/export/data";
-                    form.method = "post";
-                    document.body.appendChild(form);
-                    // 动态创建input并给value赋值
-                    for (var key in $this.queryParams) {
-                        var input = document.createElement("input");
-                        input.type = "hidden";
-                        input.name = key;
-                        input.value = $this.queryParams[key];
-                        form.appendChild(input);
-                    }
-
-                    form.submit();
-                    form.remove();
+                    var url = ctx + "/api/stat/org/activity/export/data";
+                    $this.loaded = false;
+                    app.ajaxPostWithLoading(url, { queryParamStr: activityApp.getJsonStr($this.queryParams) }, function (data) {
+                        $this.loaded = true;
+                        if (data.success) {
+                            app.showMsg("活动统计数据导出成功");
+                        } else {
+                            var errorMessage = data.message;
+                            if (activityApp.isEmpty(errorMessage)) {
+                                errorMessage = "活动统计数据导出失败";
+                            }
+                            app.showMsg(errorMessage);
+                        }
+                    }, function () {
+                        app.showMsg("活动统计数据导出失败");
+                    });
                 }
             }
         })

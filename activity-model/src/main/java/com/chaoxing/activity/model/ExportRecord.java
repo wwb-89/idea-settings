@@ -79,7 +79,37 @@ public class ExportRecord {
             }
             return null;
         }
+    }
 
+    /**
+    * @Description
+    * @author huxiaolong
+    * @Date 2021-06-01 15:09:08
+    * @return
+    */
+    @Getter
+    public enum StatusEnum {
+        FAIL("失败", 0),
+        SUCCESS("成功", 1),
+        WAIT_HANDLE("待处理", 2);
+
+        private String name;
+        private Integer value;
+
+        StatusEnum(String name, Integer value) {
+            this.name = name;
+            this.value = value;
+        }
+
+        public static StatusEnum fromValue(Integer value) {
+            StatusEnum[] values = StatusEnum.values();
+            for (StatusEnum status : values) {
+                if (Objects.equals(status.getValue(), value)) {
+                    return status;
+                }
+            }
+            return null;
+        }
     }
 
 }

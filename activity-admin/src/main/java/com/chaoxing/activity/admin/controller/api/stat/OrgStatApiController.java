@@ -2,18 +2,21 @@ package com.chaoxing.activity.admin.controller.api.stat;
 
 import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.chaoxing.activity.admin.util.LoginUtils;
 import com.chaoxing.activity.admin.vo.stat.OrgUserStatVO;
+import com.chaoxing.activity.dto.LoginUserDTO;
 import com.chaoxing.activity.dto.RestRespDTO;
-import com.chaoxing.activity.dto.export.ExportDataDTO;
 import com.chaoxing.activity.dto.query.admin.ActivityStatSummaryQueryDTO;
 import com.chaoxing.activity.dto.query.admin.UserStatSummaryQueryDTO;
 import com.chaoxing.activity.dto.stat.ActivityStatSummaryDTO;
+import com.chaoxing.activity.model.ExportRecord;
 import com.chaoxing.activity.model.UserStatSummary;
 import com.chaoxing.activity.service.activity.stat.ActivityStatSummaryQueryService;
-import com.chaoxing.activity.service.export.ExportService;
+import com.chaoxing.activity.service.export.ExportRecordService;
 import com.chaoxing.activity.service.manager.OrganizationalStructureApiService;
 import com.chaoxing.activity.service.stat.UserStatSummaryService;
 import com.chaoxing.activity.util.HttpServletRequestUtils;
+import com.chaoxing.activity.util.annotation.LoginRequired;
 import com.google.common.collect.Lists;
 import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.beans.BeanUtils;
@@ -23,7 +26,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.List;
 
@@ -45,8 +47,6 @@ public class OrgStatApiController {
     private OrganizationalStructureApiService organizationalStructureApiService;
     @Resource
     private ActivityStatSummaryQueryService activityStatSummaryQueryService;
-    @Resource
-    private ExportService exportService;
 
     /**用户统计
      * @Description 
@@ -97,20 +97,23 @@ public class OrgStatApiController {
     }
 
 
+    @Resource
+    private ExportRecordService exportRecordService;
     /**导出活动统计数据
     * @Description
     * @author huxiaolong
     * @Date 2021-05-31 17:21:10
-    * @param response
-    * @param queryParam
+    * @param request
     * @return com.chaoxing.activity.dto.RestRespDTO
     */
+    @LoginRequired
     @RequestMapping("activity/export/data")
-    public void exportActivityStatSummary(HttpServletResponse response, ActivityStatSummaryQueryDTO queryParam) throws IOException {
-        ExportDataDTO exportData = activityStatSummaryQueryService.getExportData(queryParam);
-        exportData.setFileName("活动统计汇总");
-        exportData.setSheetName("活动统计汇总数据");
-        exportService.export(exportData, response);
+    public RestRespDTO exportActivityStatSummary(HttpServletRequest request, String queryParamStr) throws IOException {
+        LoginUserDTO loginUser = LoginUtils.getLoginUser(request);
+        String fileName = "活动统计汇总记录";
+        String createIp = HttpServletRequestUtils.getClientIp(request);
+        exportRecordService.add(fileName, queryParamStr, loginUser.getUid(), createIp, ExportRecord.ExportTypeEnum.ORG_ACTIVITY_STAT);
+        return RestRespDTO.success();
     }
 
 }

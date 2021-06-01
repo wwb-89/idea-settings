@@ -134,6 +134,13 @@ public class ActivityStatSummaryQueryService {
         }
     }
 
+    /**获取excel表头
+    * @Description 
+    * @author huxiaolong
+    * @Date 2021-06-01 16:20:48
+    * @param 
+    * @return java.util.List<java.util.List<java.lang.String>>
+    */
     private List<List<String>> listActivityStatHeader() {
         List<List<String>> headers = Lists.newArrayList();
         headers.add(Collections.singletonList("活动名称"));
@@ -155,6 +162,14 @@ public class ActivityStatSummaryQueryService {
     private String valueToString(Object value) {
         return value == null ? "" : String.valueOf(value);
     }
+
+    /**获取数据
+    * @Description 
+    * @author huxiaolong
+    * @Date 2021-06-01 16:19:14
+    * @param queryParam
+    * @return java.util.List<java.util.List<java.lang.String>>
+    */
     private List<List<String>> listData(ActivityStatSummaryQueryDTO queryParam) {
         List<List<String>> data = Lists.newArrayList();
         Page<ActivityStatSummaryDTO> page = new Page<>(1, Integer.MAX_VALUE);
@@ -182,7 +197,14 @@ public class ActivityStatSummaryQueryService {
         return data;
     }
 
-    public ExportDataDTO getExportData(ActivityStatSummaryQueryDTO queryParam) {
+    /**封装easyexcel导出所需导出实体
+    * @Description
+    * @author huxiaolong
+    * @Date 2021-06-01 16:18:42
+    * @param queryParam
+    * @return com.chaoxing.activity.dto.export.ExportDataDTO
+    */
+    public ExportDataDTO packageExportData(ActivityStatSummaryQueryDTO queryParam) {
         ExportDataDTO exportData = new ExportDataDTO();
         exportData.setHeaders(listActivityStatHeader());
         exportData.setData(listData(queryParam));

@@ -16,6 +16,7 @@ import org.apache.poi.ss.usermodel.Sheet;
 import org.springframework.stereotype.Service;
 
 import javax.servlet.http.HttpServletResponse;
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
@@ -61,5 +62,37 @@ public class ExportService {
 				.registerWriteHandler(horizontalCellStyleStrategy)
 				.registerWriteHandler(new ExcelWidthStyleStrategy())
 				.doWrite(exportData.getData());
+	}
+
+	/**导出数据，获取输出流
+	* @Description
+	* @author huxiaolong
+	* @Date 2021-06-01 16:28:10
+	* @param exportData
+	* @return java.io.ByteArrayOutputStream
+	*/
+	public ByteArrayOutputStream export(ExportDataDTO exportData) throws IOException {
+		// 头的策略
+		WriteCellStyle headWriteCellStyle = new WriteCellStyle();
+		// 背景设置为红色
+		headWriteCellStyle.setFillForegroundColor(IndexedColors.ROYAL_BLUE.getIndex());
+		WriteFont headWriteFont = new WriteFont();
+		headWriteFont.setColor(IndexedColors.WHITE.getIndex());
+		headWriteCellStyle.setWriteFont(headWriteFont);
+		// 内容的策略
+		WriteCellStyle contentWriteCellStyle = new WriteCellStyle();
+		// 这个策略是 头是头的样式 内容是内容的样式 其他的策略可以自己实现
+		HorizontalCellStyleStrategy horizontalCellStyleStrategy = new HorizontalCellStyleStrategy(headWriteCellStyle, contentWriteCellStyle);
+
+		ByteArrayOutputStream os = new ByteArrayOutputStream();
+
+		EasyExcel.write(os)
+				.sheet(exportData.getSheetName())
+				.head(exportData.getHeaders())
+				.registerWriteHandler(horizontalCellStyleStrategy)
+				.registerWriteHandler(new ExcelWidthStyleStrategy())
+				.doWrite(exportData.getData());
+
+		return os;
 	}
 }
