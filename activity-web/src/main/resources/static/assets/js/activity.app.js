@@ -363,7 +363,7 @@ Vue.filter("timestampFormat", function (timestamp) {
     }
 
 });
-Vue.filter("timestampScopeFormat", function (startTimestamp, endTimestamp) {
+Vue.filter("timestampScopeFormat", function (startTimestamp, endTimestamp, format) {
     var thisYear = new Date().getFullYear();
     var start = "";
     var startDateObj = null;
@@ -376,7 +376,10 @@ Vue.filter("timestampScopeFormat", function (startTimestamp, endTimestamp) {
         endDateObj = moment(endTimestamp);
     }
     var isThisYear = (!startDateObj || startDateObj.year() == thisYear) && (!endDateObj || endDateObj.year() == thisYear);
-    if (isThisYear) {
+    if (format) {
+        start = startDateObj ? startDateObj.format(format) : "";
+        end = endDateObj ? endDateObj.format(format) : "";
+    } else if (isThisYear) {
         start = startDateObj ? startDateObj.format("MM.DD HH:mm") : "";
         end = endDateObj ? endDateObj.format("MM.DD HH:mm") : "";
     } else {

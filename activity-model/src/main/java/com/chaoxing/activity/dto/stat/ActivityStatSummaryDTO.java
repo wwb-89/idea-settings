@@ -56,6 +56,10 @@ public class ActivityStatSummaryDTO {
     private BigDecimal signInRate;
     /** 合格数量; */
     private Integer qualifiedNum;
+    /** 报名人数; */
+    private Integer signedUpNum;
+    /** 平均参与时长(分钟); */
+    private Integer avgParticipateTimeLength;
     /** 创建时间; */
     private LocalDateTime createTime;
     /** 更新时间; */

@@ -19,6 +19,7 @@ import java.util.List;
  * @blame wwb
  * @date 2021-01-20 11:30:35
  */
+@Deprecated
 @RestController
 @RequestMapping("task")
 public class TaskApiController {
@@ -39,7 +40,7 @@ public class TaskApiController {
 		List<Activity> activities = activityQueryService.listEmptyCoverUrl();
 		if (CollectionUtils.isNotEmpty(activities)) {
 			for (Activity activity : activities) {
-				activityCoverUrlSyncQueueService.add(activity.getId());
+				activityCoverUrlSyncQueueService.push(activity.getId());
 			}
 		}
 		return RestRespDTO.success();

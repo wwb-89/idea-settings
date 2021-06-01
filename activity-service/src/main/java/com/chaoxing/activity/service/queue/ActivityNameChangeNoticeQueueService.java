@@ -3,6 +3,7 @@ package com.chaoxing.activity.service.queue;
 import com.chaoxing.activity.util.constant.CacheConstant;
 import com.chaoxing.activity.util.constant.CommonConstant;
 import lombok.extern.slf4j.Slf4j;
+import org.redisson.api.RedissonClient;
 import org.springframework.data.redis.core.ListOperations;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
@@ -19,13 +20,13 @@ import javax.annotation.Resource;
  */
 @Slf4j
 @Service
-public class ActivityNameChangeNoticeQueueService {
+public class ActivityNameChangeNoticeQueueService implements IQueueService<Integer> {
 
 	/** 队列缓存key */
 	private static final String QUEUE_CACHE_KEY = CacheConstant.QUEUE_CACHE_KEY_PREFIX + "activity_name_change";
 
 	@Resource
-	private RedisTemplate redisTemplate;
+	private RedissonClient redissonClient;
 
 	/**新增队列数据
 	 * @Description 
@@ -35,8 +36,7 @@ public class ActivityNameChangeNoticeQueueService {
 	 * @return void
 	*/
 	public void addActivityId(Integer activityId) {
-		ListOperations<String, Integer> listOperations = redisTemplate.opsForList();
-		listOperations.leftPush(QUEUE_CACHE_KEY, activityId);
+		push(redissonClient, QUEUE_CACHE_KEY, activityId);
 	}
 
 	/**从队列中获取数据
@@ -46,9 +46,8 @@ public class ActivityNameChangeNoticeQueueService {
 	 * @param 
 	 * @return java.lang.Integer
 	*/
-	public Integer getActivityId() {
-		ListOperations<String, Integer> listOperations = redisTemplate.opsForList();
-		return listOperations.rightPop(QUEUE_CACHE_KEY, CommonConstant.QUEUE_GET_WAIT_TIME);
+	public Integer getActivityId() throws InterruptedException {
+		return pop(redissonClient, QUEUE_CACHE_KEY);
 	}
 
 }

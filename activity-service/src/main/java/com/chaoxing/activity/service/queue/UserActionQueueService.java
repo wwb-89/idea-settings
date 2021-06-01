@@ -1,14 +1,12 @@
 package com.chaoxing.activity.service.queue;
 
 import com.chaoxing.activity.util.constant.CacheConstant;
-import com.chaoxing.activity.util.constant.CommonConstant;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.data.redis.core.ListOperations;
-import org.springframework.data.redis.core.RedisTemplate;
+import org.redisson.api.RedissonClient;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
@@ -23,7 +21,7 @@ import javax.annotation.Resource;
  */
 @Slf4j
 @Service
-public class UserActionQueueService {
+public class UserActionQueueService implements IQueueService<UserActionQueueService.QueueParamDTO> {
 
     /** 报名行为 */
     private static final String USER_SIGN_UP_ACTION_CACHE_KEY = CacheConstant.QUEUE_CACHE_KEY_PREFIX + "user_sign_up_action";
@@ -33,54 +31,39 @@ public class UserActionQueueService {
     private static final String USER_RESULT_ACTION_CACHE_KEY = CacheConstant.QUEUE_CACHE_KEY_PREFIX + "user_result_action";
 
     @Resource
-    private RedisTemplate redisTemplate;
+    private RedissonClient redissonClient;
 
-    public void addUserSignUpAction(Integer uid, Integer signId) {
-        ListOperations listOperations = redisTemplate.opsForList();
-        listOperations.leftPush(USER_SIGN_UP_ACTION_CACHE_KEY, UserActionDTO.builder()
-                .uid(uid)
-                .signId(signId)
-                .build());
+    public void addUserSignUpAction(QueueParamDTO queueParam) {
+        push(redissonClient, USER_SIGN_UP_ACTION_CACHE_KEY, queueParam);
     }
 
-    public UserActionDTO getUserSignUpAction() {
-        ListOperations<String, UserActionDTO> listOperations = redisTemplate.opsForList();
-        return listOperations.rightPop(USER_SIGN_UP_ACTION_CACHE_KEY, CommonConstant.QUEUE_GET_WAIT_TIME);
+    public QueueParamDTO getUserSignUpAction() throws InterruptedException {
+        return pop(redissonClient, USER_SIGN_UP_ACTION_CACHE_KEY);
     }
 
-    public void addUserSignInAction(Integer uid, Integer signId) {
-        ListOperations listOperations = redisTemplate.opsForList();
-        listOperations.leftPush(USER_SIGN_IN_ACTION_CACHE_KEY, UserActionDTO.builder()
-                .uid(uid)
-                .signId(signId)
-                .build());
+    public void addUserSignInAction(QueueParamDTO queueParam) {
+        push(redissonClient, USER_SIGN_IN_ACTION_CACHE_KEY, queueParam);
     }
 
-    public UserActionDTO getUserSignInAction() {
-        ListOperations<String, UserActionDTO> listOperations = redisTemplate.opsForList();
-        return listOperations.rightPop(USER_SIGN_IN_ACTION_CACHE_KEY, CommonConstant.QUEUE_GET_WAIT_TIME);
+    public QueueParamDTO getUserSignInAction() throws InterruptedException {
+        return pop(redissonClient, USER_SIGN_IN_ACTION_CACHE_KEY);
     }
 
-    public void addUserResultAction(Integer uid, Integer signId) {
-        ListOperations listOperations = redisTemplate.opsForList();
-        listOperations.leftPush(USER_RESULT_ACTION_CACHE_KEY, UserActionDTO.builder()
-                .uid(uid)
-                .signId(signId)
-                .build());
+    public void addUserResultAction(QueueParamDTO queueParam) {
+        push(redissonClient, USER_RESULT_ACTION_CACHE_KEY, queueParam);
     }
 
-    public UserActionDTO getUserResultAction() {
-        ListOperations<String, UserActionDTO> listOperations = redisTemplate.opsForList();
-        return listOperations.rightPop(USER_RESULT_ACTION_CACHE_KEY, CommonConstant.QUEUE_GET_WAIT_TIME);
+    public QueueParamDTO getUserResultAction() throws InterruptedException {
+        return pop(redissonClient, USER_RESULT_ACTION_CACHE_KEY);
     }
 
     @Data
     @Builder
     @NoArgsConstructor
     @AllArgsConstructor
-    public static class UserActionDTO {
+    public static class QueueParamDTO {
 
-        /** uid */
+        /** 用户id */
         private Integer uid;
         /** 报名签到id */
         private Integer signId;

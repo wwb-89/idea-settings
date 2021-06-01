@@ -1,10 +1,8 @@
 package com.chaoxing.activity.service.queue;
 
 import com.chaoxing.activity.util.constant.CacheConstant;
-import com.chaoxing.activity.util.constant.CommonConstant;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.data.redis.core.ListOperations;
-import org.springframework.data.redis.core.RedisTemplate;
+import org.redisson.api.RedissonClient;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
@@ -20,13 +18,13 @@ import javax.validation.constraints.NotNull;
  */
 @Slf4j
 @Service
-public class ActivityCoverUrlSyncQueueService {
+public class ActivityCoverUrlSyncQueueService implements IQueueService<Integer> {
 
 	/** 队列缓存key */
 	private static final String QUEUE_CACHE_KEY = CacheConstant.QUEUE_CACHE_KEY_PREFIX + "activity_cover_url_sync";
 
 	@Resource
-	private RedisTemplate redisTemplate;
+	private RedissonClient redissonClient;
 
 	/**新增队列数据
 	 * @Description 
@@ -35,9 +33,8 @@ public class ActivityCoverUrlSyncQueueService {
 	 * @param activityId
 	 * @return void
 	*/
-	public void add(@NotNull Integer activityId) {
-		ListOperations<String, Integer> listOperations = redisTemplate.opsForList();
-		listOperations.leftPush(QUEUE_CACHE_KEY, activityId);
+	public void push(@NotNull Integer activityId) {
+		push(redissonClient, QUEUE_CACHE_KEY, activityId);
 	}
 
 	/**获取队列数据
@@ -47,9 +44,8 @@ public class ActivityCoverUrlSyncQueueService {
 	 * @param 
 	 * @return java.lang.Integer 活动id
 	*/
-	public Integer get() {
-		ListOperations<String, Integer> listOperations = redisTemplate.opsForList();
-		return listOperations.rightPop(QUEUE_CACHE_KEY, CommonConstant.QUEUE_GET_WAIT_TIME);
+	public Integer pop() throws InterruptedException {
+		return pop(redissonClient, QUEUE_CACHE_KEY);
 	}
 
 }

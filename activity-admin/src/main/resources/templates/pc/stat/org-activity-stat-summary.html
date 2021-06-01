@@ -15,6 +15,10 @@
         [v-cloak] {
             display: none;
         }
+        .el-table-filter .el-table-filter__list {
+            max-height: 300px;
+            overflow: auto;
+        }
     </style>
 </head>
 
@@ -25,21 +29,23 @@
         <div class="tab-content-box">
             <div class="tab-item">
                 <!-- 操作栏 -->
-<!--                <div class="table-operate-box fs0">-->
-<!--                    <el-button class="btn-customize" round>导出</el-button>-->
+                <div class="table-operate-box fs0">
+<!--                    <el-button class="btn-customize" round @click="exportExcel">导出</el-button>-->
 <!--                    <el-button class="btn-customize" round>导出记录</el-button>-->
-<!--                    <div class="search-Box">-->
-<!--                        <el-input placeholder="活动名称"-->
-<!--                                  icon="search"-->
-<!--                                  class="search"-->
-<!--                                  v-model="queryParams.activityName"-->
-<!--                                  suffix-icon="el-icon-search">-->
-<!--                        </el-input>-->
-<!--                        <i class="icon-cancel btn-cancel fs16"-->
-<!--                            v-show="queryParams.activityName && queryParams.activityName.length > 0"-->
-<!--                            @click="queryParams.activityName = ''"></i>-->
-<!--                    </div>-->
-<!--                </div>-->
+                    <div class="search-Box">
+                        <el-input placeholder="活动名称/发起人"
+                                  icon="search"
+                                  class="search"
+                                  v-model="queryParams.name"
+                                  suffix-icon="el-icon-search"
+                                  @keydown.enter.native="search"
+                        >
+                        </el-input>
+                        <i class="icon-cancel btn-cancel fs16"
+                            v-show="queryParams.name && queryParams.name.length > 0"
+                            @click="queryParams.name = ''"></i>
+                    </div>
+                </div>
                 <!-- 查询栏 -->
                 <div class="table-search-box fs0">
                     <el-date-picker
@@ -89,7 +95,7 @@
                     <div class="clear"></div>
                 </div>
 
-                <el-table class="table-box" :data="tableData" @sort-change="sortChange">
+                <el-table class="table-box" :data="tableData" @sort-change="sortChange" @filter-change="filterChange">
                     <template v-for="item in showTableFieldDetails" v-if="item.defaultChecked">
                         <el-table-column
                                 v-if="item.code === 'activityName'"
@@ -99,7 +105,7 @@
                                 :min-width="item.minWidth"
                         >
                             <template slot-scope="scope">
-                                <div style="cursor: pointer" @click="toActivityDetail(scope.row.activityPreviewUrl)">
+                                <div style="cursor: pointer; color: #0084FF" @click="toActivityDetail(scope.row.activityPreviewUrl)">
                                     {{scope.row.activityName}}
                                 </div>
                             </template>
@@ -107,12 +113,39 @@
                         <el-table-column
                                 v-else-if="item.code === 'activityStatus'"
                                 :fixed="item.defaultTop"
+                                :column-key="item.code"
                                 :label="item.name"
                                 :ifCenter="item.align"
                                 :min-width="item.minWidth"
+                                :filters="statusOptions"
+                                :filter-multiple="false"
                         >
                             <template slot-scope="scope">
                                 {{scope.row.activityStatus | activityStatusFilter}}
+                            </template>
+                        </el-table-column>
+                        <el-table-column
+                                v-else-if="item.code === 'activityClassify'"
+                                :prop="item.code"
+                                column-key="activityClassifyId"
+                                :fixed="item.defaultTop"
+                                :label="item.name"
+                                :ifCenter="item.align"
+                                :min-width="item.minWidth"
+                                :filters="classifyOptions"
+                                :filter-multiple="false"
+                        >
+                        </el-table-column>
+                        <el-table-column
+                                v-else-if="item.code === 'signInRate'"
+                                :fixed="item.defaultTop"
+                                :label="item.name"
+                                :ifCenter="item.align"
+                                :min-width="item.minWidth"
+                                :sortable="item.sortable ? 'custom' : item.sortable"
+                        >
+                            <template slot-scope="scope">
+                                {{scope.row.signInRate | percentConversion}}
                             </template>
                         </el-table-column>
                         <el-table-column
@@ -179,21 +212,47 @@
     <script type="text/javascript" src="/static/pc/assets/lib/zTree_v3/js/jquery.ztree.core.js" th:src="@{/pc/assets/lib/zTree_v3/js/jquery.ztree.core.js}"></script>
     <script type="text/javascript" src="/static/pc/assets/lib/zTree_v3/js/jquery.ztree.excheck.js" th:src="@{/pc/assets/lib/zTree_v3/js/jquery.ztree.excheck.js}"></script>
     <script th:inline="javascript">
+        Vue.filter("percentConversion", function (value) {
+            if (!value) {
+                return '0';
+            }
+            var str = Number(value * 100).toFixed(2);
+            str += "%";
+            return str;
+        });
+        var startTime = [[${startTime}]];
+        var endTime = [[${endTime}]];
         var orgActivityStatVue = new Vue({
             el: '#orgActivityStatVue',
             data: {
                 loaded: false,
                 fid: [[${fid}]],
                 tableFieldId: [[${tableFieldId}]],
+                classifyOptions: [[${classifyOptions}]],
+                statusOptions: [{
+                    text: '已删除',
+                    value: 0
+                }, {
+                    text: '未开始',
+                    value: 1
+                }, {
+                    text: '进行中',
+                    value: 3
+                }, {
+                    text: '已结束',
+                    value: 4
+                }],
                 participateScopeNames: '',
                 queryParams: {
                     fid: [[${fid}]],
                     pageNum: 1,
                     pageSize: 10,
                     externalIds: [],
-                    activityName: '',
-                    startTime: '',
-                    endTime: '',
+                    name: '',
+                    activityStatus: null,
+                    activityClassifyId: null,
+                    startTime: startTime,
+                    endTime: endTime,
                     orderFieldId: null,
                     orderType: 'DESC'
                 },
@@ -211,7 +270,7 @@
                 total: 0,
                 // 总页数
                 pages: 1,
-                dateValue1:'',  //日期范围选择值
+                dateValue1: [startTime, endTime],  //日期范围选择值
                 ifSelectPop: false, //参与范围的弹窗展示
                 wfwGroups: [[${wfwGroups}]],
                 participateScopeTreeObj: null,
@@ -228,6 +287,14 @@
                 $this.reSortSettingData()
             },
             methods: {
+                filterChange: function (filterItem) {
+                    var $this = this;
+                    var key = Object.keys(filterItem)[0]
+                    // 单选过滤取第一个
+                    var value = filterItem[key][0];
+                    $this.queryParams[key] = activityApp.isEmpty(value) ? null : parseInt(value);
+                    $this.loadData();
+                },
                 initGroupTree: function () {
                     var $this = this;
                     $($this.wfwGroups).each(function () {
@@ -288,7 +355,7 @@
                     if (participateScopes) {
                         $(participateScopes).each(function (i) {
                             participateScopeNames += this.externalName;
-                            if (activityApp.isEmpty(this.externalId)) {
+                            if (!activityApp.isEmpty(this.externalId)) {
                                 externalIds.push(parseInt(this.externalId));
                             }
                             if (participateScopes.length - 1 !== i) {
@@ -352,7 +419,10 @@
                     var $this = this;
                     var url = ctx + "/api/stat/org/activity/page";
                     $this.loaded = false;
-                    app.ajaxPostWithLoading(url, $this.queryParams, function (data) {
+                    console.log($this.queryParams)
+                    // app.ajaxPostWithLoading(url, $this.queryParams, function (data) {
+                    app.ajaxPostWithLoading(url, { queryParamStr: activityApp.getJsonStr($this.queryParams) }, function (data) {
+
                         $this.loaded = true;
                         if (data.success) {
                             $this.tableData = data.data.records;
@@ -408,8 +478,13 @@
                 // 日期范围查询改变
                 dateRangeChange: function (range) {
                     var $this = this;
-                    $this.queryParams.startTime = range[0];
-                    $this.queryParams.endTime = range[1];
+                    if (range && range.length > 0) {
+                        $this.queryParams.startTime = range[0];
+                        $this.queryParams.endTime = range[1];
+                    } else {
+                        $this.queryParams.startTime = null;
+                        $this.queryParams.endTime = null;
+                    }
                 },
                 // 取消置顶配置
                 topConfigChange: function(item) {
@@ -483,30 +558,28 @@
                     if(!$this.participateScopeTreeObj){
                         $this.initGroupTree();
                     }
-                    // this.count();
                 },
-                // zTreeOnClick: function(event, treeId, treeNode) {
-                //     console.log(treeNode.tId + ", " + treeNode.name);
-                // },
-                // zTreeOnCheck: function(e, treeId, treeNode) {
-                //     this.count();
-                //     if (this.clearFlag) {
-                //         this.clearCheckedOldNodes();
-                //     }
-                // },
-                // clearCheckedOldNodes() {
-                //     var zTree = $.fn.zTree.getZTreeObj("treeList"),
-                //         nodes = zTree.getChangeCheckedNodes();
-                //     for (var i=0, l=nodes.length; i<l; i++) {
-                //         nodes[i].checkedOld = nodes[i].checked;
-                //     }
-                // },
-                // count() {
-                //     var zTree = $.fn.zTree.getZTreeObj("treeList");
-                //     var checkCount = zTree.getCheckedNodes(true).length;
-                //     $("#checkCount").text(checkCount);
-                //
-                // },
+                // 导出excel
+                exportExcel: function () {
+                    var $this = this;
+                    //params是post请求需要的参数，url是请求url地址
+                    var form = document.createElement("form");
+                    form.style.display = "none";
+                    form.action = ctx + "/api/stat/org/activity/export/data";
+                    form.method = "post";
+                    document.body.appendChild(form);
+                    // 动态创建input并给value赋值
+                    for (var key in $this.queryParams) {
+                        var input = document.createElement("input");
+                        input.type = "hidden";
+                        input.name = key;
+                        input.value = $this.queryParams[key];
+                        form.appendChild(input);
+                    }
+
+                    form.submit();
+                    form.remove();
+                }
             }
         })
     </script>

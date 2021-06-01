@@ -9,6 +9,8 @@ import com.chaoxing.activity.dto.LoginUserDTO;
 import com.chaoxing.activity.dto.activity.ActivitySignedUpDTO;
 import com.chaoxing.activity.dto.activity.ActivityTypeDTO;
 import com.chaoxing.activity.dto.manager.sign.SignStatDTO;
+import com.chaoxing.activity.dto.manager.sign.SignUp;
+import com.chaoxing.activity.dto.module.SignAddEditDTO;
 import com.chaoxing.activity.dto.query.ActivityManageQueryDTO;
 import com.chaoxing.activity.dto.query.ActivityQueryDTO;
 import com.chaoxing.activity.dto.query.MhActivityCalendarQueryDTO;
@@ -378,7 +380,7 @@ public class ActivityQueryService {
 	public List<Activity> listEmptyCoverUrl() {
 		return activityMapper.selectList(new QueryWrapper<Activity>()
 				.lambda()
-				.and(wrapper -> wrapper.isNull(Activity::getCoverUrl).or().ne(Activity::getCoverUrl, ""))
+				.and(wrapper -> wrapper.isNull(Activity::getCoverUrl).or().eq(Activity::getCoverUrl, ""))
 		);
 	}
 
@@ -677,6 +679,24 @@ public class ActivityQueryService {
 			return activities.stream().map(Activity::getId).collect(Collectors.toList());
 		}
 		return Lists.newArrayList();
+	}
+
+	/**
+	* @Description 
+	* @author huxiaolong
+	* @Date 2021-05-31 11:25:37
+	* @param signId
+	* @return com.chaoxing.activity.dto.manager.sign.SignUp
+	*/
+	public SignUp getActivitySignUp(Integer signId) {
+		if (signId == null) {
+			return null;
+		}
+		SignAddEditDTO signAddEditDTO = signApiService.getById(signId);
+		if (signAddEditDTO == null || CollectionUtils.isEmpty(signAddEditDTO.getSignUps())) {
+			return null;
+		}
+		return signAddEditDTO.getSignUps().get(0);
 	}
 
 }

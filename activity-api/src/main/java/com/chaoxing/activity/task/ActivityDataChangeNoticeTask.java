@@ -24,7 +24,7 @@ public class ActivityDataChangeNoticeTask {
     private ActivityDataChangeNoticeService activityDataChangeNoticeService;
 
     @Scheduled(fixedDelay = 1L)
-    public void handleCollectedNotice() {
+    public void handleCollectedNotice() throws InterruptedException {
         Integer activityId = activityDataChangeQueueService.getCollected();
         if (activityId == null) {
             return;
@@ -38,7 +38,7 @@ public class ActivityDataChangeNoticeTask {
     }
 
     @Scheduled(fixedDelay = 1L)
-    public void handleSignedUpNotice() {
+    public void handleSignedUpNotice() throws InterruptedException {
         Integer activityId = activityDataChangeQueueService.getSignedUp();
         if (activityId == null) {
             return;

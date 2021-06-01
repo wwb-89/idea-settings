@@ -35,7 +35,7 @@ public class UserRatingChangeEventService {
 	public void change(Integer uid, Integer signId) {
 		// 更新用户的评价数量
 		userStatSummaryService.updateUserRatingNum(uid);
-		userRatingQueueService.add(uid, signId);
+		userRatingQueueService.add(UserRatingQueueService.QueueParamDTO.builder().uid(uid).signId(signId).build());
 	}
 
 }

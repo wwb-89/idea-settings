@@ -4,6 +4,7 @@ import com.chaoxing.activity.service.ActivityStatHandleService;
 import com.chaoxing.activity.util.constant.CacheConstant;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
+import org.redisson.api.RedissonClient;
 import org.springframework.data.redis.core.ListOperations;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
@@ -22,7 +23,7 @@ import java.time.Duration;
 
 @Slf4j
 @Service
-public class ActivityStatQueueService {
+public class ActivityStatQueueService implements IQueueService<Integer> {
 
     /** 队列缓存key */
     private static final String QUEUE_ACTIVITY_STAT_CACHE_KEY = CacheConstant.QUEUE_CACHE_KEY_PREFIX + "activity_stat";
@@ -31,7 +32,7 @@ public class ActivityStatQueueService {
     private ActivityStatHandleService activityStatHandleService;
 
     @Resource
-    private RedisTemplate redisTemplate;
+    private RedissonClient redissonClient;
 
 
     /**新增活动统计任务
@@ -51,9 +52,7 @@ public class ActivityStatQueueService {
         if (taskId == null) {
             return;
         }
-
-        ListOperations<String, String> listOperations = redisTemplate.opsForList();
-        listOperations.leftPush(QUEUE_ACTIVITY_STAT_CACHE_KEY, String.valueOf(taskId));
+        push(redissonClient, QUEUE_ACTIVITY_STAT_CACHE_KEY, taskId);
     }
 
 
@@ -64,13 +63,7 @@ public class ActivityStatQueueService {
      * @param
      * @return java.lang.Integer
      */
-    public Integer getActivityStatTask() {
-        Integer taskId = null;
-        ListOperations<String, String> listOperations = redisTemplate.opsForList();
-        String taskIdStr = listOperations.rightPop(QUEUE_ACTIVITY_STAT_CACHE_KEY, Duration.ofMinutes(1));
-        if (StringUtils.isNotBlank(taskIdStr)) {
-            taskId = Integer.parseInt(taskIdStr);
-        }
-        return taskId;
+    public Integer getActivityStatTask() throws InterruptedException {
+        return pop(redissonClient, QUEUE_ACTIVITY_STAT_CACHE_KEY);
     }
 }

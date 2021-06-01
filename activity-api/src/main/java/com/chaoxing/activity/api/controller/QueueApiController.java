@@ -4,6 +4,7 @@ import com.chaoxing.activity.dto.RestRespDTO;
 import com.chaoxing.activity.model.Activity;
 import com.chaoxing.activity.service.activity.ActivityQueryService;
 import com.chaoxing.activity.service.activity.ActivityStatSummaryHandlerService;
+import com.chaoxing.activity.service.queue.ActivityCoverUrlSyncQueueService;
 import com.chaoxing.activity.service.queue.ActivityIsAboutToStartQueueService;
 import com.chaoxing.activity.service.queue.ActivityStatusUpdateQueueService;
 import org.apache.commons.collections4.CollectionUtils;
@@ -33,6 +34,8 @@ public class QueueApiController {
 	private ActivityQueryService activityQueryService;
 	@Resource
 	private ActivityStatSummaryHandlerService activityStatSummaryHandlerService;
+	@Resource
+	private ActivityCoverUrlSyncQueueService activityCoverUrlSyncQueueService;
 
 	/**初始化签到的开始结束时间队列
 	 * @Description
@@ -69,7 +72,7 @@ public class QueueApiController {
 		}
 		return RestRespDTO.success();
 	}
-	/**初始化活动的状态队列
+	/**初始化活动的统计队列
 	 * @Description
 	 * @author wwb
 	 * @Date 2021-04-21 15:31:45
@@ -79,6 +82,24 @@ public class QueueApiController {
 	@RequestMapping("init/activity-stat")
 	public RestRespDTO initActivityStatQueue() {
 		activityStatSummaryHandlerService.addOrUpdateAllActivityStatSummary();
+		return RestRespDTO.success();
+	}
+
+	/**初始化活动封面队列
+	 * @Description 
+	 * @author wwb
+	 * @Date 2021-05-31 14:31:54
+	 * @param 
+	 * @return com.chaoxing.activity.dto.RestRespDTO
+	*/
+	@RequestMapping("init/activity-cover")
+	public RestRespDTO initActivityCoverQueue() {
+		List<Activity> activities = activityQueryService.listEmptyCoverUrl();
+		if (CollectionUtils.isNotEmpty(activities)) {
+			for (Activity activity : activities) {
+				activityCoverUrlSyncQueueService.push(activity.getId());
+			}
+		}
 		return RestRespDTO.success();
 	}
 
