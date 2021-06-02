@@ -155,12 +155,11 @@ public class ExportRecordHandleService {
                 throw new BusinessException("上传文件:" + fileName + " 失败！异常信息:" + errorMsg);
             }
         } catch (Exception e) {
-            errorTimes++;
             errorMsg = e.getMessage();
+            exportRecord.setHandleTimes(++errorTimes);
+            exportRecord.setMessage(errorMsg);
             result = Boolean.FALSE;
             if (errorTimes >= CommonConstant.MAX_ERROR_TIMES) {
-                exportRecord.setHandleTimes(errorTimes);
-                exportRecord.setMessage(errorMsg);
                 throw new BusinessException("导出任务:" + exportRecord.getId() + "失败！异常信息:" + errorMsg);
             }
         }

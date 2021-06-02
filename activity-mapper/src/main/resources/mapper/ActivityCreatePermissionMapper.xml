@@ -1,14 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="com.chaoxing.activity.mapper.TActivityCreatePermissionMapper">
+<mapper namespace="com.chaoxing.activity.mapper.ActivityCreatePermissionMapper">
     <resultMap id="BaseResultMap" type="com.chaoxing.activity.model.ActivityCreatePermission">
         <id column="id" jdbcType="INTEGER" property="id" />
         <result column="fid" jdbcType="INTEGER" property="fid" />
         <result column="role_id" jdbcType="INTEGER" property="roleId" />
-        <result column="is_all_activity_classify" jdbcType="BIT" property="isAllActivityClassify" />
+        <result column="is_all_activity_classify" jdbcType="BIT" property="allActivityClassify" />
         <result column="activity_classify_scope" jdbcType="VARCHAR" property="activityClassifyScope" />
         <result column="sign_up_scope_type" jdbcType="INTEGER" property="signUpScopeType" />
-        <result column="is_deleted" jdbcType="BIT" property="isDeleted" />
+        <result column="is_deleted" jdbcType="BIT" property="deleted" />
         <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
         <result column="create_uid" jdbcType="INTEGER" property="createUid" />
         <result column="update_time" jdbcType="TIMESTAMP" property="updateTime" />
@@ -24,4 +24,23 @@
     <sql id="Blob_Column_List">
         t.sign_up_scope
     </sql>
+    <insert id="batchAdd">
+        INSERT INTO t_activity_create_permission (
+                fid, role_id, is_all_activity_classify, activity_classify_scope, sign_up_scope_type,sign_up_scope, create_uid, update_uid
+                )
+        VALUES
+        <foreach collection="permissions" item="item" open="" close="" separator=",">
+            (
+                #{item.fid},
+                #{item.roleId},
+                #{item.allActivityClassify},
+                #{item.activityClassifyScope},
+                #{item.signUpScopeType},
+                #{item.signUpScope},
+                #{item.createUid},
+                #{item.updateUid}
+            )
+        </foreach>
+
+    </insert>
 </mapper>

@@ -1,0 +1,426 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org/">
+
+<head>
+    <title>权限管理</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="/static/pc/assets/lib/element-ui/lib/theme-chalk/index.css" th:href="@{/pc/assets/lib/element-ui/lib/theme-chalk/index.css}">
+    <link rel="stylesheet" href="/static/pc/assets/lib/zTree_v3/css/zTreeStyle/zTreeStyle.css" th:href="@{/pc/assets/lib/zTree_v3/css/zTreeStyle/zTreeStyle.css}" type="text/css">
+    <link rel="stylesheet" href="/static/pc/assets/css/public.css" th:href="@{/pc/assets/css/public.css}">
+    <link rel="stylesheet" href="/static/pc/assets/css/dialog.css" th:href="@{/pc/assets/css/dialog.css}">
+    <link rel="stylesheet" href="/static/pc/assets/css/limits-manage.css" th:href="@{/pc/assets/css/limits-manage.css}">
+</head>
+
+<body>
+    <div class="limits-manage" id="limits-manage" v-cloak>
+        <div class="manage-content">
+            <div class="clear">
+                <div v-show="!multipleChecked" class="border-btn disable fl">批量配置</div>
+                <div v-show="multipleChecked" class="border-btn fl" @click="batchConfig">批量配置</div>
+            </div>
+            <table class="table-box">
+                <thead>
+                    <tr>
+                        <th class="check-box" style="width: 3%">
+                            <el-checkbox v-model="checkAllStatus" class="check-item-checkbox fl" @change="checkAllChange" />
+                        </th>
+                        <th>角色名称</th>
+<!--                        <th>成员数</th>-->
+                        <th>操作</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr v-if="roleList && roleList.length > 0" v-for="role in roleList">
+                        <th class="check-box" style="width: 3%">
+                            <el-checkbox v-model="role.checked" class="check-item-checkbox fl" @change="roleCheckChange" />
+                        </th>
+                        <th>{{role.roleName}}</th>
+<!--                        <th>{{role.memberNum}}</th>-->
+                        <th>
+                            <span @click="singleConfig(role)">权限配置</span>
+                        </th>
+                    </tr>
+                    <tr v-else>
+                        <th class="no-content">暂无内容</th>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- 配置权限弹窗 -->
+        <div class="dialog-mask" v-show="settingDialog">
+            <div class="dailog setting-dailog">
+                <div class="header">
+                    <span>配置权限</span>
+                    <i class="close" @click="settingDialog=false"></i>
+                </div>
+                <div class="body" v-loading="loading">
+                    <form action="">
+                        <div class="form-item">
+                            <label for="" class="label">活动类型</label>
+                            <div class="input-box">
+                                <el-checkbox label="全部" v-model="config.allActivityClassify"></el-checkbox>
+                                <el-checkbox-group v-model="config.activityClassifyScope">
+                                    <el-checkbox v-for="classify in classifyList"
+                                                 :label="classify.id" :key="classify.id">{{classify.name}}</el-checkbox>
+                                </el-checkbox-group>
+                            </div>
+                        </div>
+                        <div class="form-item">
+                            <label for="" class="label">发布范围</label>
+                            <div class="input-box">
+                                <el-radio v-model="config.signUpScopeType" :label="1" class="radio-item">不限</el-radio>
+                                <el-radio v-model="config.signUpScopeType" :label="2" class="radio-item">角色管理的范围</el-radio>
+                                <el-radio v-model="config.signUpScopeType" :label="3" class="radio-item">自定义</el-radio>
+                                <div class="select-box">
+                                    <p class="tips" v-show="config.signUpScopeType == 1">可以选择本单位下的所有组织架构</p>
+                                    <p class="tips" v-show="config.signUpScopeType == 2">用户在组织架构中作为部门主管的管理范围，可以在“人员管理/组织架构”中进行设置</p>
+                                    <div class="add-scope" v-show="config.signUpScopeType == 3">
+                                        <p class="text" style="display: none;">请选择</p>
+                                        <i class="add-circle" @click="releaseDialog = true"></i>
+                                        <div class="add-tags" style="min-height: 30px">
+                                            <span class="item" v-for="(group, index) in releaseScopes">{{group.externalName}}<i class="del-btn" @click="removeReleaseScope(index)"></i></span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                <div class="footer">
+                    <div class="btn-box">
+                        <div class="border-btn" @click="settingDialog = false">取消</div>
+                        <div class="normal-btn" @click="submitPermissionConfig">确定</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- 选择范围弹窗 -->
+        <div class="dialog-mask" v-show="releaseDialog">
+            <div class="dailog release-dialog">
+                <div class="header">
+                    <span>选择范围</span>
+                    <i class="close" @click="releaseDialog = false"></i>
+                </div>
+                <div class="body">
+                    <div class="tree">
+                        <div class="tree-head">
+                            <p class="fl">选择发布的范围</p>
+<!--                            <p class="already fr">已选<span style="margin-left: 5px;">0</span></p>-->
+                        </div>
+                        <div class="tree-box">
+                            <div id="organizationTree" class="ztree"></div>
+                        </div>
+                    </div>
+                </div>
+                <div class="footer">
+                    <div class="btn-box">
+                        <div class="border-btn" @click="releaseDialog=false">取消</div>
+                        <div class="normal-btn" @click="confirmReleaseScopeChange">确定</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div th:replace="pc/include/common_js :: common_js(~{::script})">
+        <script type="text/javascript" src="/static/pc/assets/lib/element-ui/lib/index.js" th:src="@{/pc/assets/lib/element-ui/lib/index.js}"></script>
+        <script type="text/javascript" src="/static/pc/assets/lib/zTree_v3/js/jquery.ztree.core.js" th:src="@{/pc/assets/lib/zTree_v3/js/jquery.ztree.core.js}"></script>
+        <script type="text/javascript" src="/static/pc/assets/lib/zTree_v3/js/jquery.ztree.excheck.min.js" th:src="@{/pc/assets/lib/zTree_v3/js/jquery.ztree.excheck.min.js}"></script>
+        <script type="text/javascript" src="/static/pc/assets/lib/zTree_v3/js/jquery.ztree.exedit.js" th:src="@{/pc/assets/lib/zTree_v3/js/jquery.ztree.exedit.js}"></script>
+        <script th:inline="javascript">
+            var vm = new Vue({
+                el: '#limits-manage',
+                data: function () {
+                    return {
+                        fid: [[${fid}]],
+                        roleList: [[${roleList}]],
+                        classifyList: [[${classifyList}]],
+                        wfwGroups: [[${wfwGroups}]],
+                        config: {
+                            fid: [[${fid}]],
+                            allActivityClassify: true,
+                            activityClassifyScope: [],
+                            signUpScopeType: 1,
+                            signUpScope: ''
+                        },
+                        releaseScopes: [],
+                        organizationTreeObj: null,
+                        isBatch: false,
+                        multipleChecked: false,
+                        checkAllStatus: false,
+                        loading: false,
+                        settingDialog: false,
+                        releaseDialog: false,
+                    }
+                },
+                created: function () {
+                    var $this = this;
+                },
+                mounted: function () {
+                    var $this = this;
+                    if(!$this.organizationTreeObj){
+                        $this.organizationTreeFun();
+                    }
+                },
+                computed: {
+                    classifyIds: function () {
+                        var $this = this;
+                        var ids = [];
+                        if ($this.classifyList) {
+                            $($this.classifyList).each(function () {
+                                ids.push(this.id);
+                            });
+                        }
+                        return ids;
+                    },
+                    releaseScopeIds: function () {
+                        var $this = this;
+                        var ids = [];
+                        if ($this.releaseScopes) {
+                            $($this.releaseScopes).each(function () {
+                                ids.push(this.externalId);
+                            });
+                        }
+                        return ids;
+                    }
+                },
+                methods: {
+                    checkAllChange: function (value) {
+                        var $this = this;
+                        $this.multipleChecked = value;
+                        $($this.roleList).each(function () {
+                            this.checked = value
+                        })
+                    },
+                    roleCheckChange: function () {
+                        var $this = this;
+                        var checkedCount = 0;
+                        $($this.roleList).each(function () {
+                            if (this.checked) {
+                                checkedCount++;
+                            }
+                        });
+                        $this.multipleChecked = checkedCount > 0;
+                    },
+                    batchConfig: function () {
+                        var $this = this;
+                        $this.settingDialog = true;
+                        $this.isBatch = true;
+                        $this.config = {
+                            fid: $this.fid,
+                            signUpScopeType: 1,
+                            signUpScope: '',
+                            allActivityClassify: true,
+                            activityClassifyScope: $this.classifyIds
+                        };
+                    },
+                    singleConfig: function (role) {
+                        var $this = this;
+                        $this.isBatch = false;
+                        $this.loading = true;
+                        $this.settingDialog = true;
+                        // 初始化已选发布范围
+                        $this.releaseScopes = [];
+
+                        var url = ctx + '/api/activity/create/permission/' + role.roleid;
+                        app.ajaxPostWithLoading(url, { fid: $this.fid }, function (data) {
+                            if (data.success) {
+                                var record = data.data;
+                                if (record) {
+                                    var activityClassifyScope = record.activityClassifyScope;
+                                    var signUpScope = record.signUpScope;
+                                    var scopeArr;
+                                    if (!activityApp.isEmpty(activityClassifyScope)) {
+                                        scopeArr = activityClassifyScope.split(',');
+                                        $(scopeArr).each(function (i) { scopeArr[i] = parseInt(this); });
+                                        record.activityClassifyScope = scopeArr;
+                                    } else {
+                                        record.activityClassifyScope = [];
+                                    }
+                                    if (!activityApp.isEmpty(signUpScope)) {
+                                        scopeArr = signUpScope.split(',');
+                                        $($this.wfwGroups).each(function () {
+                                            if (scopeArr.indexOf(this.id) !== -1) {
+                                                $this.releaseScopes.push($.extend({}, {externalId: this.id, externalName: this.groupname}));
+                                            }
+                                        });
+                                    }
+                                    $this.config = record;
+                                } else {
+                                    var defaultAllPermission = {
+                                        fid: $this.fid,
+                                        roleId: role.roleid,
+                                        signUpScopeType: 1,
+                                        signUpScope: '',
+                                        allActivityClassify: true,
+                                        activityClassifyScope: $this.classifyIds
+                                    }
+                                    $this.config = $.extend({}, defaultAllPermission)
+                                }
+                            } else {
+                                var errorMessage = data.message;
+                                if (activityApp.isEmpty(errorMessage)) {
+                                    errorMessage = "加载角色: " + role.roleName + "权限配置失败";
+                                }
+                                app.showMsg(errorMessage);
+                            }
+                            $this.loading = false
+                        }, function () {
+                            app.showMsg("加载角色: " + role.roleName + "权限配置失败");
+                            $this.loading = false
+                        });
+                    },
+                    submitPermissionConfig: function () {
+                        var $this = this;
+                        var config = $this.config;
+                        config.signUpScope = $this.releaseScopeIds.join(',');
+                        if (config.activityClassifyScope) {
+                            config.activityClassifyScope = config.activityClassifyScope.join(',');
+                        }
+                        if ($this.isBatch) {
+                            var submitData = [];
+                            $($this.roleList).each(function () {
+                                if (this.checked) {
+                                    submitData.push($.extend({}, config, { roleId: this.roleid }));
+                                }
+                            });
+                            $this.batchConfigSubmit(submitData)
+                        } else {
+                            $this.singleConfigSubmit(config)
+                        }
+                        $this.settingDialog = false
+                    },
+                    singleConfigSubmit: function (config) {
+                        var addUrl = ctx + '/api/activity/create/permission/add';
+                        var editUrl = ctx + '/api/activity/create/permission/edit';
+                        var url = !config.id ? addUrl : editUrl;
+                        app.ajaxPostWithLoading(url, config, function (data) {
+                            if (data.success) {
+                                app.showMsg("权限配置成功");
+                            } else {
+                                var errorMessage = data.message;
+                                if (activityApp.isEmpty(errorMessage)) {
+                                    errorMessage = "权限配置失败";
+                                }
+                                app.showMsg(errorMessage);
+                            }
+                        }, function () {
+                            app.showMsg("权限配置失败");
+                        });
+                    },
+                    batchConfigSubmit: function (submitData) {
+                        var url = ctx + '/api/activity/create/permission/batchConfig';
+                        app.ajaxPostWithPayload(url, JSON.stringify(submitData), function (data) {
+                            if (data.success) {
+                                app.showMsg("权限配置成功");
+                            } else {
+                                var errorMessage = data.message;
+                                if (activityApp.isEmpty(errorMessage)) {
+                                    errorMessage = "权限配置失败";
+                                }
+                                app.showMsg(errorMessage);
+                            }
+                        }, function () {
+                            app.showMsg("权限配置失败");
+                        });
+                    },
+                    /* 渲染z-tree */
+                    organizationTreeFun() {
+                        var $this = this;
+                        $($this.wfwGroups).each(function () {
+                            this.isParent = this.soncount > 0;
+                        });
+                        var setting = {
+                            check: {
+                                enable: true
+                            },
+                            data: {
+                                simpleData: {
+                                    enable: true,
+                                    idKey: "id",
+                                    pIdKey: "gid",
+                                },
+                                key: {
+                                    name: "groupname"
+                                },
+                                keep: {
+                                    parent: true
+                                }
+                            },
+                            callback: {
+                                onExpand: function (e, b, node) {
+                                    if (node.children == null || node.children.length <= 0) {
+                                        $this.loadFidGroup(node.id, node);
+                                    }
+                                }
+                            },
+                            view: {}
+                        };
+                        $this.organizationTreeObj = $.fn.zTree.init($("#organizationTree"), setting, $this.wfwGroups);
+                    },
+                    loadFidGroup: function (gid, parentNode){
+                        var url = ctx + "/api/wfw/org/groups?gid=" + gid;
+                        app.ajaxPostWithLoading(url, {}, function (data) {
+                            if (data.success) {
+                                var newNodes = data.data;
+                                if (newNodes.length > 0) {
+                                    $(newNodes).each(function () {
+                                        this.isParent = this.soncount > 0;
+                                    })
+                                    var treeObj = $.fn.zTree.getZTreeObj("organizationTree");
+                                    // 支持只选择节点数据，so新增一个节点的叶子数据
+                                    var cloneNode = {
+                                        id: parentNode.id,
+                                        groupname: parentNode.groupname,
+                                        soncount: 0,
+                                        isParent: false
+                                    }
+                                    treeObj.addNodes(parentNode, 0, cloneNode, false);
+                                    treeObj.addNodes(parentNode, 1, newNodes, false);
+                                }
+                            } else {
+                                var errorMessage = data.message;
+                                if (activityApp.isEmpty(errorMessage)) {
+                                    errorMessage = "获取机构组织架构失败";
+                                }
+                                app.showMsg(errorMessage);
+                            }
+                        }, function () {
+                            app.showMsg("获取机构组织架构失败");
+                        });
+                    },
+                    confirmReleaseScopeChange: function () {
+                        var $this = this;
+                        var zTree = $.fn.zTree.getZTreeObj("organizationTree");
+                        var nodeArr = zTree.getCheckedNodes(true);
+                        var scopes = [];
+                        //首先保存 搜索父节点被全选的，在看非父节点被选中的(非父节点的父节点被全选，则不保存该条记录)
+                        $(nodeArr).each(function () {
+                            // 半选状态
+                            var half = this.getCheckStatus().half;
+                            if (!half) {
+                                // 只记录全选的
+                                scopes.push({
+                                    externalId: this.id,
+                                    externalPid: this.gid == this.id ? null : this.gid,
+                                    externalName: this.groupname,
+                                    leaf: !this.isParent
+                                });
+                            }
+                        });
+                        $this.releaseScopes = scopes;
+                        $this.releaseDialog = false;
+                    },
+                    removeReleaseScope: function (index) {
+                        var $this = this;
+                        $this.releaseScopes.splice(index, 1);
+                    }
+                }
+            });
+        </script>
+    </div>
+
+</body>
+</html>
