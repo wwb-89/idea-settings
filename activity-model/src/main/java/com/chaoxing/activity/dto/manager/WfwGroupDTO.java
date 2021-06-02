@@ -5,6 +5,8 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.List;
+
 /**
  * @author xhl
  * @version ver 1.0
@@ -28,4 +30,6 @@ public class WfwGroupDTO {
     private Integer soncount;
     /** level */
     private Integer groupLevel;
+    /** 下级 */
+    private List<WfwGroupDTO> children;
 }

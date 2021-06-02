@@ -110,7 +110,7 @@ public class SignApiService {
 	/** 通知活动已评价 */
 	private static final String NOTICE_HAVE_RATING_URL = SIGN_API_DOMAIN + "/sign/%d/notice/rating?uid=%d";
 	/** 通知报名签到活动积分已变更 */
-	private static final String NOTICE_ACTIVITY_INTEGRAL_CHANGE_URL = SIGN_API_DOMAIN + "/sign/%d/notice/second-classroom-integral-change";
+	private static final String NOTICE_ACTIVITY_INTEGRAL_CHANGE_URL = SIGN_API_DOMAIN + "/sign/%d/notice/activity-integral-change";
 	
 	/** 签到位置搜索缓存 */
 	private static final String SIGN_IN_POSITION_HISTORY_LIST_URL = SIGN_API_DOMAIN + "/sign-in/position-history";

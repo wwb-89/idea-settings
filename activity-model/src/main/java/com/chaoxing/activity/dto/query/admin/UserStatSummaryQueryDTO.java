@@ -36,7 +36,8 @@ public class UserStatSummaryQueryDTO {
     private String orderField;
     /** 排序方式 */
     private OrderTypeEnum orderType;
-    /** 用户uid列表 */
-    private List<Integer> uids;
-
+    /** 部门用户uid列表 */
+    private List<Integer> groupUids;
+    /** 机构用户uid列表 */
+    private List<Integer> orgUids;
 }

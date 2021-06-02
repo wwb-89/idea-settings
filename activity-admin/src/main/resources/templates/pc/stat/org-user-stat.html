@@ -26,9 +26,7 @@
 			<div class="tab-item">
 				<!-- 查询栏 -->
 				<div class="table-search-box fs0">
-					<div class="popbtnInput">
-						<input type="text" autocomplete="off" class="layui-input" style="cursor: pointer;" readonly placeholder="组织架构" v-model.trim="selectedGroupName" @click="groupPopupShow = true">
-					</div>
+					<el-cascader :options="groups" :props="groupPops" clearable placeholder="组织架构" @change="groupChange"></el-cascader>
 					<el-button class="btn-customize" round @click="search">查询</el-button>
 				</div>
 				<!-- 计数栏 -->
@@ -71,28 +69,6 @@
 			</div>
 		</div>
 	</div>
-	<!-- 组织架构 -->
-	<div class="dialog-box selectPop" v-show="groupPopupShow">
-		<div class="dialog-wrap">
-			<div class="header">
-				<span class="color333">组织架构</span>
-				<img src="/static/pc/assets/images/close.png" th:src="@{/pc/assets/images/close.png}" @click="groupPopupShow = false">
-			</div>
-			<div class="dialog-content">
-				<!-- ztree内容 -->
-				<div class="ztree-box">
-					<div class="count-box fs14">
-						<span class="color666">选择组织架构 </span>
-					</div>
-					<ul id="tree-node" class="ztree"></ul>
-				</div>
-			</div>
-			<div class="btns">
-				<span class="btn inlineMiddle btn-border" @click="groupPopupShow = false">取消</span>
-				<span class="btn inlineMiddle btn-normal" @click="selectGroupSure">确定</span>
-			</div>
-		</div>
-	</div>
 </div>
 <div th:replace="pc/include/common_js :: common_js(~{::script})">
 	<script src="/static/pc/assets/lib/element-ui/lib/index.js" th:src="@{/pc/assets/lib/element-ui/lib/index.js}"></script>
@@ -111,8 +87,13 @@
 	            // 配置使用的字段列表
 	            configTableFieldDetails: [],
                 // 组织架构
+                allWfwGroups: [[${allWfwGroups}]],
                 groups: [[${groups}]],
-	            treeObj: null,
+	            groupPops: {
+                    checkStrictly: true,
+                    value: "id",
+		            label: "groupname"
+	            },
 	            orgUserStats: [],
 	            loaded: false,
 	            queryParams: {
@@ -126,8 +107,7 @@
                     orderType: "DESC"
 	            },
                 total: 0,
-	            groupPopupShow: false,
-	            selectedGroupName: ""
+
             },
             created: function () {
 				var $this = this;
@@ -160,17 +140,19 @@
                 var $this = this;
                 $this.loadData();
             },
-            watch: {
-                "groupPopupShow": function () {
-                    var $this = this;
-                    if ($this.groupPopupShow && activityApp.isEmpty($this.treeObj)) {
-                        $this.$nextTick(function () {
-                            $this.initGroupTree();
-                        });
-                    }
-                }
-            },
             methods: {
+                groupChange: function (value) {
+                    var $this = this;
+                    var groupLevel = 1;
+                    $($this.allWfwGroups).each(function () {
+                        if (value == this.id) {
+                            groupLevel = this.groupLevel;
+                            return false;
+                        }
+                    });
+                    $this.queryParams.groupId = value;
+                    $this.queryParams.groupLevel = groupLevel;
+                },
                 calConfigTableFieldDetails: function () {
                     var $this = this;
                     var configTableFieldDetails = [];
@@ -272,53 +254,13 @@
                     }
                     $this.loadData();
                 },
-	            // 初始化组织架构的组
-                initGroupTree: function () {
-                    var $this = this;
-                    $($this.groups).each(function () {
-                        this.isParent = this.soncount > 0;
-                    });
-                    var setting = {
-                        view: {
-                            showLine: false,
-                            selectedMulti: false
-                        },
-                        data: {
-                            simpleData: {
-                                enable: true,
-                                idKey: "id",
-                                pIdKey: "gid",
-                            },
-                            key: {
-                                name: "groupname"
-                            },
-                            keep: {
-                                parent: true
-                            }
-                        },
-                        callback: {
-                            onExpand: function (e, b, node) {
-                                if (node.children == null || node.children.length < 1) {
-                                    $this.loadOrgGroup(node.id, node);
-                                }
-                            }
-                        }
-                    };
-                    $this.treeObj = $.fn.zTree.init($("#tree-node"), setting, $this.groups);
-                },
                 loadOrgGroup: function (gid, parentNode){
                     var $this = this;
                     var url = ctx + "/api/wfw/org/groups?gid=" + gid;
                     app.ajaxPostWithLoading(url, {}, function (data) {
                         if (data.success) {
                             var newNodes = data.data;
-                            if (newNodes.length > 0) {
-                                $(newNodes).each(function () {
-                                    this.isParent = this.soncount > 0;
-                                    this.groupLevel = parentNode.groupLevel + 1;
-                                });
-                                $this.treeObj.addNodes(parentNode, 0, newNodes, false);
-                            }
+
                         } else {
                             var message = data.message;
                             if (activityApp.isEmpty(message)) {
@@ -329,19 +271,6 @@
                     }, function () {
                         app.showMsg("获取机构组织架构失败");
                     });
-                },
-                selectGroupSure: function () {
-					var $this = this;
-                    var nodes = $this.treeObj.getSelectedNodes();
-                    if (nodes.length < 1) {
-                        app.showMsg("请选择组织架构");
-                        return false;
-                    }
-                    var node = nodes[0];
-                    $this.selectedGroupName = node.groupname;
-                    $this.queryParams.groupId = node.id;
-                    $this.queryParams.groupLevel = node.groupLevel;
-	                $this.groupPopupShow = false;
                 },
                 search: function () {
                     var $this = this;

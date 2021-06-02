@@ -50,11 +50,17 @@
                 GROUP BY
                     t.uid
             ) t
-        <where>
-            <if test="userStatSummaryQuery.realName != null and userStatSummaryQuery.realName != ''">
-                t.real_name LIKE CONCAT('%', #{userStatSummaryQuery.realName}, '%')
+        WHERE
+            1 = 1
+            <if test="userStatSummaryQuery.groupUids != null and userStatSummaryQuery.groupUids.size() != 0">
+                AND t.uid IN
+                <foreach collection="userStatSummaryQuery.groupUids" index="key" item="value" open="(" close=")" separator=",">
+                    #{value}
+                </foreach>
             </if>
-        </where>
+            <if test="userStatSummaryQuery.realName != null and userStatSummaryQuery.realName != ''">
+                AND t.real_name LIKE CONCAT('%', #{userStatSummaryQuery.realName}, '%')
+            </if>
         <if test="userStatSummaryQuery.orderField != null and userStatSummaryQuery.orderField != ''">
             ORDER BY
                 ${userStatSummaryQuery.orderField} ${userStatSummaryQuery.orderType}

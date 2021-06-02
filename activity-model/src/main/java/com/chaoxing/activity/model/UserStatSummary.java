@@ -59,5 +59,16 @@ public class UserStatSummary {
     private LocalDateTime createTime;
     /** 更新时间; column: update_time*/
     private LocalDateTime updateTime;
-
+    
+    // 附加
+    /** 合格数量（汇总多个活动时使用） */
+    @TableField(exist = false)
+    private Integer qualifiedNum;
+    /** 参与活动数量 */
+    @TableField(exist = false)
+    private Integer participateActivityNum;
+    /** 签到率 */
+    @TableField(exist = false)
+    private BigDecimal signedInRate;
+    
 }

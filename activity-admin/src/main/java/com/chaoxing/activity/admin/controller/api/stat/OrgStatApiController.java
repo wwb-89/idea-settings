@@ -68,12 +68,19 @@ public class OrgStatApiController {
                 OrgUserStatVO orgUserStat = new OrgUserStatVO();
                 BeanUtils.copyProperties(record, orgUserStat);
                 orgUserStats.add(orgUserStat);
-                // 封装学号和组织架构
                 Integer uid = record.getUid();
-                String studentNo = organizationalStructureApiService.getUserStudentNo(uid, fid);
-                orgUserStat.setStudentNo(studentNo);
-                String userFirstGroupName = organizationalStructureApiService.getUserFirstGroupName(uid, fid);
-                orgUserStat.setOrganizationStructure(userFirstGroupName);
+                // 是否在机构内
+                List<Integer> uids = userStatSummaryQuery.getOrgUids();
+                if (uids.contains(uid)) {
+                    orgUserStat.setWithinTheOrg(true);
+                    // 封装学号和组织架构
+                    String studentNo = organizationalStructureApiService.getUserStudentNo(uid, fid);
+                    orgUserStat.setStudentNo(studentNo);
+                    String userFirstGroupName = organizationalStructureApiService.getUserFirstGroupName(uid, fid);
+                    orgUserStat.setOrganizationStructure(userFirstGroupName);
+                } else {
+                    orgUserStat.setWithinTheOrg(false);
+                }
             }
             page.setRecords(orgUserStats);
         }

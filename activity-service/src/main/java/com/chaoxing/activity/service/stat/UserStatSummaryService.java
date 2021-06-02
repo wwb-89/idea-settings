@@ -12,11 +12,11 @@ import com.chaoxing.activity.model.Activity;
 import com.chaoxing.activity.model.TableFieldDetail;
 import com.chaoxing.activity.model.UserStatSummary;
 import com.chaoxing.activity.service.activity.ActivityQueryService;
-import com.chaoxing.activity.service.activity.ActivityStatQueryService;
 import com.chaoxing.activity.service.manager.OrganizationalStructureApiService;
 import com.chaoxing.activity.service.manager.PassportApiService;
 import com.chaoxing.activity.service.manager.module.SignApiService;
 import com.chaoxing.activity.service.user.UserStatService;
+import com.google.common.collect.Lists;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.stereotype.Service;
@@ -45,8 +45,6 @@ public class UserStatSummaryService {
 
     @Resource
     private SignApiService signApiService;
-    @Resource
-    private ActivityStatQueryService activityStatQueryService;
     @Resource
     private UserStatService userStatService;
     @Resource
@@ -211,18 +209,18 @@ public class UserStatSummaryService {
     */
     public Page paging(Page page, UserStatSummaryQueryDTO userStatSummaryQuery) {
         Integer groupId = userStatSummaryQuery.getGroupId();
-        List<Integer> uids;
         Integer fid = userStatSummaryQuery.getFid();
-        if (groupId == null) {
-            uids = organizationalStructureApiService.listOrgUid(fid);
-        } else {
-            uids = organizationalStructureApiService.listOrgGroupUid(fid, groupId, userStatSummaryQuery.getGroupLevel());
+        List<Integer> orgUids = organizationalStructureApiService.listOrgUid(fid);
+        userStatSummaryQuery.setOrgUids(orgUids);
+        List<Integer> groupUids = Lists.newArrayList();
+        if (groupId != null) {
+            groupUids = organizationalStructureApiService.listOrgGroupUid(fid, groupId, userStatSummaryQuery.getGroupLevel());
         }
-        if (CollectionUtils.isEmpty(uids)) {
+        if (CollectionUtils.isEmpty(groupUids)) {
             // 给一个不存在的uid
-            uids.add(-1);
+            groupUids.add(-1);
         }
-        userStatSummaryQuery.setUids(uids);
+        userStatSummaryQuery.setGroupUids(groupUids);
         Integer orderTableFieldId = userStatSummaryQuery.getOrderTableFieldId();
         if (orderTableFieldId == null) {
             userStatSummaryQuery.setOrderField("");
@@ -232,6 +230,24 @@ public class UserStatSummaryService {
         }
         page = userStatSummaryMapper.paging(page, userStatSummaryQuery);
         return page;
+    }
+
+    /**更新活动下用户获得的积分
+     * @Description 只有合格的才更新
+     * @author wwb
+     * @Date 2021-06-02 10:07:10
+     * @param activityId
+     * @param integral
+     * @return void
+    */
+    public void updateActivityUserIntegral(Integer activityId, BigDecimal integral) {
+        integral = Optional.ofNullable(integral).orElse(BigDecimal.ZERO);
+        userStatSummaryMapper.update(null, new UpdateWrapper<UserStatSummary>()
+            .lambda()
+                .eq(UserStatSummary::getActivityId, activityId)
+                .eq(UserStatSummary::getQualified, true)
+                .set(UserStatSummary::getIntegral, integral)
+        );
     }
 
 }

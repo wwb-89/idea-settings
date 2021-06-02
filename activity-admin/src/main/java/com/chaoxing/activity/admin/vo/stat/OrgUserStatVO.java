@@ -43,7 +43,11 @@ public class OrgUserStatVO {
     private Integer ratingNum;
     /** 合格的数量 */
     private Integer qualifiedNum;
+    /** 获得的积分 */
+    private BigDecimal integral;
     /** 总参与时长 */
-    private Integer totalParticipateTimeLength;
+    private Integer participateTimeLength;
+    /** 是否是机构内用户 */
+    private Boolean withinTheOrg;
 
 }

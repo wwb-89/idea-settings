@@ -2,6 +2,7 @@ package com.chaoxing.activity.service.event;
 
 import com.chaoxing.activity.model.Activity;
 import com.chaoxing.activity.service.queue.*;
+import com.chaoxing.activity.service.stat.UserStatSummaryService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
@@ -41,6 +42,8 @@ public class ActivityChangeEventService {
 	private ActivityDataChangeQueueService activityDataChangeQueueService;
 	@Resource
 	private ActivityStatSummaryQueueService activityStatSummaryQueueService;
+	@Resource
+	private UserStatSummaryService userStatSummaryService;
 
 	/**活动数据改变
 	 * @Description 
@@ -74,6 +77,8 @@ public class ActivityChangeEventService {
 			oldIntegralValue = Optional.ofNullable(oldIntegralValue).orElse(BigDecimal.valueOf(0));
 			if (integralValue.compareTo(oldIntegralValue) != 0) {
 				activityIntegralChangeQueueService.add(signId);
+				// 机构用户统计中用户获得的积分更新
+				userStatSummaryService.updateActivityUserIntegral(activity.getId(), activity.getIntegralValue());
 			}
 		}
 		if (oldActivity != null) {
