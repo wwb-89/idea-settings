@@ -3,10 +3,12 @@ package com.chaoxing.activity.service.export;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.chaoxing.activity.mapper.ExportRecordMapper;
 import com.chaoxing.activity.model.ExportRecord;
+import com.google.common.collect.Lists;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import javax.annotation.Resource;
 import java.util.List;
 
 /**
@@ -20,9 +22,8 @@ import java.util.List;
 @Service
 public class ExportRecordQueryService {
 
-    @Autowired
+    @Resource
     private ExportRecordMapper exportRecordMapper;
-
 
     /**根据用户id，查询用户导出记录
      * @Description
@@ -31,7 +32,15 @@ public class ExportRecordQueryService {
      * @param uid
      * @return void
      */
-    public List<ExportRecord> listRecordByUid(Integer uid) {
-        return exportRecordMapper.selectList(new QueryWrapper<ExportRecord>().lambda().eq(ExportRecord::getCreateUid, uid));
+    public List<ExportRecord> listRecord(Integer uid, String exportType) {
+        ExportRecord.ExportTypeEnum exportTypeEnum = ExportRecord.ExportTypeEnum.fromValue(exportType);
+        if (exportTypeEnum == null) {
+            return Lists.newArrayList();
+        }
+        return exportRecordMapper.selectList(new QueryWrapper<ExportRecord>()
+                .lambda()
+                .eq(ExportRecord::getCreateUid, uid)
+                .eq(ExportRecord::getExportType, exportType)
+        );
     }
 }

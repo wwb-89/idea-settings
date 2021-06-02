@@ -40,26 +40,22 @@ import java.util.Optional;
 @Service
 public class ExportRecordHandleService {
 
-    @Autowired
+    @Resource
     private ExportRecordMapper exportRecordMapper;
 
     @Resource
     private ExportService exportService;
-
     @Resource
     private ExportQueueService exportQueueService;
-
     @Resource
     private ActivityStatSummaryQueryService activityStatSummaryQueryService;
-
     @Resource
     private CloudApiService cloudApiService;
 
-
     @Transactional(rollbackFor = Exception.class)
-    public void add(String fileName, String params, Integer createUid, String createIp, ExportRecord.ExportTypeEnum exportTypeEnum) {
+    public void add(String params, Integer createUid, String createIp, String exportType) {
+        ExportRecord.ExportTypeEnum exportTypeEnum = ExportRecord.ExportTypeEnum.fromValue(exportType);
         ExportRecord exportRecord = ExportRecord.builder()
-                .fileName(fileName)
                 .exportType(exportTypeEnum.getValue())
                 .params(params)
                 .createUid(createUid)

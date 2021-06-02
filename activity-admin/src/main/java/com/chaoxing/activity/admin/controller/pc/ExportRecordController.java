@@ -21,18 +21,17 @@ import java.util.List;
  * <p>
  */
 @Controller
-@RequestMapping("activity/export-record")
+@RequestMapping("export-record")
 public class ExportRecordController {
 
     @Resource
     private ExportRecordQueryService exportRecordQueryService;
 
-
     @LoginRequired
     @RequestMapping("")
-    public String activityStatIndex(HttpServletRequest request, Model model) {
+    public String activityStatIndex(HttpServletRequest request, Model model, String exportType) {
         LoginUserDTO loginUser = LoginUtils.getLoginUser(request);
-        List<ExportRecord> recordList = exportRecordQueryService.listRecordByUid(loginUser.getUid());
+        List<ExportRecord> recordList = exportRecordQueryService.listRecord(loginUser.getUid(), exportType);
         model.addAttribute("exportRecordData", recordList);
         return "pc/export/index";
     }

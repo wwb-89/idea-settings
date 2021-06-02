@@ -124,13 +124,11 @@ public class OrgStatController {
         model.addAttribute("startTime", SchoolYearSemesterUtils.currentSemesterStartTime().format(DateUtils.FULL_TIME_FORMATTER));
         model.addAttribute("endTime", LocalDateTime.now().format(DateUtils.FULL_TIME_FORMATTER));
         model.addAttribute("classifyOptions", classifyOptions);
-        model.addAttribute("classifyOptions", classifyOptions);
         model.addAttribute("wfwGroups", wfwGroups);
         model.addAttribute("fid", realFid);
         model.addAttribute("tableFieldId", tableFieldId);
         model.addAttribute("tableFieldDetails", tableFieldDetails);
         model.addAttribute("orgTableFields", orgTableFields);
-//        model.addAttribute("activityStatSummaryPage", activityStatSummaryPage);
         return "pc/stat/org-activity-stat-summary";
     }
 

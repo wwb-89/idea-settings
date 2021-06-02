@@ -26,8 +26,8 @@
 			<div class="tab-item">
 				<!-- 操作栏 -->
 				<div class="table-operate-box fs0">
-					<el-button class="btn-customize" round>导出</el-button>
-					<el-button class="btn-customize" round>导出记录</el-button>
+					<el-button class="btn-customize" round @click="exportData">导出</el-button>
+					<el-button class="btn-customize" round @click="exportRecord">导出记录</el-button>
 					<div class="search-Box">
 						<el-input placeholder="姓名"
 						          v-model.trim="sw"
@@ -95,11 +95,14 @@
 			</div>
 		</div>
 	</div>
+	<!--导出成功弹窗-->
+	<vue-confirm-common ref="exportSuccessWindow" :message="'数据准备中，导出完成的数据会保存在“导出记录”中，请稍后下载'" :cancel="'完成'" :sure="'导出记录'" @callback="exportRecord"></vue-confirm-common>
 </div>
 <div th:replace="pc/include/common_js :: common_js(~{::script})">
 	<script src="/static/pc/assets/lib/element-ui/lib/index.js" th:src="@{/pc/assets/lib/element-ui/lib/index.js}"></script>
 	<script type="text/javascript" src="/static/pc/assets/lib/zTree_v3/js/jquery.ztree.core.js" th:src="@{/pc/assets/lib/zTree_v3/js/jquery.ztree.core.js}"></script>
 	<script type="text/javascript" src="/static/pc/assets/lib/zTree_v3/js/jquery.ztree.excheck.js" th:src="@{/pc/assets/lib/zTree_v3/js/jquery.ztree.excheck.js}"></script>
+	<script src="/static/pc/assets/component/confirm-common.js" th:src="@{/pc/assets/component/confirm-common.js}"></script>
 	<script th:inline="javascript">
         vm = new Vue({
             el: "#stat-vue",
@@ -355,6 +358,34 @@
 		            }
 		            configTableFieldDetails.splice(lastTopIndex, 0, configTableFieldDetail);
 		            $this.configTableFieldDetails = configTableFieldDetails;
+	            },
+	            // 导出
+	            exportData: function () {
+		            var $this = this;
+		            var url = ctx + "/api/export";
+		            $this.loaded = false;
+		            var params = {
+			            queryParamStr: activityApp.getJsonStr($this.queryParams),
+			            exportType: "org_user_stat"
+		            };
+		            app.ajaxPostWithLoading(url, params, function (data) {
+			            $this.loaded = true;
+			            if (data.success) {
+				            $this.$refs.exportSuccessWindow.show = true;
+			            } else {
+				            var errorMessage = data.message;
+				            if (activityApp.isEmpty(errorMessage)) {
+					            errorMessage = "导出失败";
+				            }
+				            app.showMsg(errorMessage);
+			            }
+		            }, function () {
+			            app.showMsg("导出失败");
+		            });
+	            },
+	            // 导出记录
+	            exportRecord: function () {
+		            window.open(ctx + '/export-record?exportType=org_user_stat');
 	            }
             }
         })

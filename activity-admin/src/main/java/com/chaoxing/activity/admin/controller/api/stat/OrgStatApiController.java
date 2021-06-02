@@ -95,24 +95,4 @@ public class OrgStatApiController {
         return RestRespDTO.success(page);
     }
 
-
-    @Resource
-    private ExportRecordHandleService exportRecordService;
-    /**导出活动统计数据
-    * @Description
-    * @author huxiaolong
-    * @Date 2021-05-31 17:21:10
-    * @param request
-    * @return com.chaoxing.activity.dto.RestRespDTO
-    */
-    @LoginRequired
-    @RequestMapping("activity/export/data")
-    public RestRespDTO exportActivityStatSummary(HttpServletRequest request, String queryParamStr) throws IOException {
-        LoginUserDTO loginUser = LoginUtils.getLoginUser(request);
-        String fileName = "活动统计汇总记录";
-        String createIp = HttpServletRequestUtils.getClientIp(request);
-        exportRecordService.add(fileName, queryParamStr, loginUser.getUid(), createIp, ExportRecord.ExportTypeEnum.ORG_ACTIVITY_STAT);
-        return RestRespDTO.success();
-    }
-
 }
