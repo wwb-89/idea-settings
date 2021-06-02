@@ -44,8 +44,6 @@ public class OrgStatApiController {
     @Resource
     private UserStatSummaryService userStatSummaryService;
     @Resource
-    private OrganizationalStructureApiService organizationalStructureApiService;
-    @Resource
     private ActivityStatSummaryQueryService activityStatSummaryQueryService;
 
     /**用户统计
@@ -62,7 +60,6 @@ public class OrgStatApiController {
         page = userStatSummaryService.paging(page, userStatSummaryQuery);
         List<UserStatSummary> records = page.getRecords();
         List<OrgUserStatVO> orgUserStats = Lists.newArrayList();
-        Integer fid = userStatSummaryQuery.getFid();
         if (CollectionUtils.isNotEmpty(records)) {
             for (UserStatSummary record : records) {
                 OrgUserStatVO orgUserStat = new OrgUserStatVO();
@@ -73,11 +70,6 @@ public class OrgStatApiController {
                 List<Integer> uids = userStatSummaryQuery.getOrgUids();
                 if (uids.contains(uid)) {
                     orgUserStat.setWithinTheOrg(true);
-                    // 封装学号和组织架构
-                    String studentNo = organizationalStructureApiService.getUserStudentNo(uid, fid);
-                    orgUserStat.setStudentNo(studentNo);
-                    String userFirstGroupName = organizationalStructureApiService.getUserFirstGroupName(uid, fid);
-                    orgUserStat.setOrganizationStructure(userFirstGroupName);
                 } else {
                     orgUserStat.setWithinTheOrg(false);
                 }

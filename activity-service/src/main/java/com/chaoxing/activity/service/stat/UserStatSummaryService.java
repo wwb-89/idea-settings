@@ -97,7 +97,7 @@ public class UserStatSummaryService {
             );
         } else {
             // 新增用户数据
-            UserStatSummary userStatSummary = buildDefault(uid);
+            UserStatSummary userStatSummary = buildDefault(uid, activity.getCreateFid());
             userStatSummary.setActivityId(activityId);
             userStatSummary.setSignUpNum(userSignStatSummary.getSignUpNum());
             userStatSummary.setSignedUpNum(userSignStatSummary.getSignedUpNum());
@@ -109,7 +109,7 @@ public class UserStatSummaryService {
         }
     }
 
-    private UserStatSummary buildDefault(Integer uid) {
+    private UserStatSummary buildDefault(Integer uid, Integer activityCreateFid) {
         String realName = "";
         String mobile = "";
         try {
@@ -117,10 +117,14 @@ public class UserStatSummaryService {
             realName = passportUser.getRealName();
             mobile = passportUser.getMobile();
         } catch (Exception e) {}
+        String studentNo = organizationalStructureApiService.getUserStudentNo(uid, activityCreateFid);
+        String userFirstGroupName = organizationalStructureApiService.getUserFirstGroupName(uid, activityCreateFid);
         return UserStatSummary.builder()
                 .uid(uid)
                 .realName(realName)
                 .mobile(mobile)
+                .studentNo(studentNo)
+                .organizationStructure(userFirstGroupName)
                 .build();
     }
 
@@ -160,7 +164,7 @@ public class UserStatSummaryService {
             );
         } else {
             // 新增用户数据
-            UserStatSummary userStatSummary = buildDefault(uid);
+            UserStatSummary userStatSummary = buildDefault(uid, activity.getCreateFid());
             userStatSummary.setActivityId(activityId);
             userStatSummary.setQualified(isQualified);
             userStatSummary.setIntegral(integral);
@@ -215,10 +219,10 @@ public class UserStatSummaryService {
         List<Integer> groupUids = Lists.newArrayList();
         if (groupId != null) {
             groupUids = organizationalStructureApiService.listOrgGroupUid(fid, groupId, userStatSummaryQuery.getGroupLevel());
-        }
-        if (CollectionUtils.isEmpty(groupUids)) {
-            // 给一个不存在的uid
-            groupUids.add(-1);
+            if (CollectionUtils.isEmpty(groupUids)) {
+                // 给一个不存在的uid
+                groupUids.add(-1);
+            }
         }
         userStatSummaryQuery.setGroupUids(groupUids);
         Integer orderTableFieldId = userStatSummaryQuery.getOrderTableFieldId();

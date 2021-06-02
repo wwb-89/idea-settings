@@ -28,8 +28,8 @@ public class UserStatSummaryQueryDTO {
     private Integer groupLevel;
     /** 组织架构id */
     private Integer groupId;
-    /** 真实姓名 */
-    private String realName;
+    /** 关键字 */
+    private String sw;
     /** 排序字段id */
     private Integer orderTableFieldId;
     /** 排序字段 */

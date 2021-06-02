@@ -84,6 +84,7 @@ public class TableFieldQueryService {
                 .lambda()
                 .eq(TableFieldDetail::getTableFieldId, tableFieldId)
                 .eq(TableFieldDetail::getDeleted, false)
+                .orderByAsc(TableFieldDetail::getSequence)
         );
     }
 

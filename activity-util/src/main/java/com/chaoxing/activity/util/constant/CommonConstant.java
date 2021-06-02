@@ -50,7 +50,7 @@ public class CommonConstant {
 	/** 最大失败次数 */
 	public static final Integer MAX_ERROR_TIMES = 5;
 	/** 延时队列时间 */
-	public static final Duration DELAYED_QUEUE_DURATION = Duration.ofSeconds(5);
+	public static final Duration DELAYED_QUEUE_DURATION = Duration.ofSeconds(2);
 
 	/** 默认封面云盘id */
 	public static final String ACTIVITY_DEFAULT_COVER_CLOUD_ID = "ce257d8a6c546bcedcc7f415dd504296";

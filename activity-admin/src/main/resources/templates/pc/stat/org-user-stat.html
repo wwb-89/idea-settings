@@ -24,6 +24,21 @@
 	<div>
 		<div class="tab-content-box">
 			<div class="tab-item">
+				<!-- 操作栏 -->
+				<div class="table-operate-box fs0">
+					<el-button class="btn-customize" round>导出</el-button>
+					<el-button class="btn-customize" round>导出记录</el-button>
+					<div class="search-Box">
+						<el-input placeholder="姓名"
+						          v-model.trim="sw"
+						          icon="search"
+						          class="search"
+						          suffix-icon="el-icon-search"
+									@keyup.enter.native="search">
+						</el-input>
+						<i class="icon-cancel btn-cancel fs16" v-show="sw" @click="clearSw"></i>
+					</div>
+				</div>
 				<!-- 查询栏 -->
 				<div class="table-search-box fs0">
 					<el-cascader :options="groups" :props="groupPops" clearable placeholder="组织架构" @change="groupChange"></el-cascader>
@@ -61,8 +76,19 @@
 					<div class="clear"></div>
 				</div>
 				<el-table class="table-box" :data="orgUserStats" @sort-change="changeOrderField">
-					<el-table-column v-for="(field, index) of showTableFieldDetails" :key="'filed-' + field.id" :align="field.align" :fixed="field.top" :sortable="field.sortable" :label="field.name" :prop="field.code" :min-width="field.minWidth">
-					</el-table-column>
+					<template v-for="(field, index) of showTableFieldDetails">
+						<el-table-column v-if="field.code == 'orgName'" :align="field.align" :fixed="field.top" :sortable="field.sortable" :label="field.name" :prop="field.code" :min-width="field.minWidth">
+							<template slot-scope="scope">
+								{{scope.row.withinTheOrg ? orgName : ''}}
+							</template>
+						</el-table-column>
+						<el-table-column v-else-if="field.code == 'signedInRate'" :align="field.align" :fixed="field.top" :sortable="field.sortable" :label="field.name" :prop="field.code" :min-width="field.minWidth">
+							<template slot-scope="scope">
+								{{scope.row.signedInRate > 0 ? scope.row.signedInRate + '%' : 0}}
+							</template>
+						</el-table-column>
+						<el-table-column v-else :align="field.align" :fixed="field.top" :sortable="field.sortable" :label="field.name" :prop="field.code" :min-width="field.minWidth"></el-table-column>
+					</template>
 				</el-table>
 				<!--分页-->
 				<el-pagination v-show="loaded && total > queryParams.pageSize" background layout="prev, pager, next" :total="total" :page-size="queryParams.pageSize" :current-page="queryParams.pageNum" @current-change="changePage"></el-pagination>
@@ -79,6 +105,7 @@
             el: "#stat-vue",
             data: {
                 fid: [[${fid}]],
+	            orgName: [[${orgName}]],
                 tableFieldId: [[${tableFieldId}]],
                 tableFieldDetails: [[${tableFieldDetails}]],
                 orgTableFields: [[${orgTableFields}]],
@@ -89,6 +116,7 @@
                 // 组织架构
                 allWfwGroups: [[${allWfwGroups}]],
                 groups: [[${groups}]],
+	            sw: "",
 	            groupPops: {
                     checkStrictly: true,
                     value: "id",
@@ -102,7 +130,7 @@
 		            pageSize: 10,
                     groupId: null,
                     groupLevel: null,
-                    realName: "",
+                    sw: "",
                     orderTableFieldId: null,
                     orderType: "DESC"
 	            },
@@ -143,14 +171,18 @@
             methods: {
                 groupChange: function (value) {
                     var $this = this;
-                    var groupLevel = 1;
-                    $($this.allWfwGroups).each(function () {
-                        if (value == this.id) {
-                            groupLevel = this.groupLevel;
-                            return false;
-                        }
-                    });
-                    $this.queryParams.groupId = value;
+	                var groupId = null;
+	                var groupLevel = null;
+	                if (value.length > 0) {
+		                groupId = value[value.length - 1];
+		                $($this.allWfwGroups).each(function () {
+			                if (groupId == this.id) {
+				                groupLevel = this.groupLevel;
+				                return false;
+			                }
+		                });
+	                }
+                    $this.queryParams.groupId = groupId;
                     $this.queryParams.groupLevel = groupLevel;
                 },
                 calConfigTableFieldDetails: function () {
@@ -272,9 +304,19 @@
                         app.showMsg("获取机构组织架构失败");
                     });
                 },
+	            clearSw: function () {
+                	var $this = this;
+		            $this.sw = "";
+		            if ($this.queryParams.sw != $this.sw) {
+			            // 已经搜索了
+			            $this.queryParams.sw = "";
+			            $this.search();
+		            }
+	            },
                 search: function () {
                     var $this = this;
 					$this.queryParams.pageNum = 1;
+					$this.queryParams.sw = $this.sw;
                     $this.loadData();
                 },
                 changePage: function (pageNum) {

@@ -694,7 +694,7 @@ public class SignApiService {
 	 * @return java.lang.Integer
 	*/
 	public boolean userIsQualified(Integer uid, Integer signId) {
-		String url = String.format(USER_IS_QUALIFIED_URL, uid);
+		String url = String.format(USER_IS_QUALIFIED_URL, uid, signId);
 		String result = restTemplate.getForObject(url, String.class);
 		JSONObject jsonObject = JSON.parseObject(result);
 		return resultHandle(jsonObject, () -> jsonObject.getBoolean("data"), (message) -> {

@@ -35,6 +35,10 @@ public class UserStatSummary {
     private String realName;
     /** 手机号; column: mobile*/
     private String mobile;
+    /** 学号; column: student_no*/
+    private String studentNo;
+    /** 组织架构; column: organization_structure*/
+    private String organizationStructure;
     /** 报名数量; column: sign_up_num*/
     private Integer signUpNum;
     /** 报名成功数量; column: signed_up_num*/
