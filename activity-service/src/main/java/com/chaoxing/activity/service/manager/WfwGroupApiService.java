@@ -4,7 +4,9 @@ import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.chaoxing.activity.dto.manager.WfwGroupDTO;
+import com.google.common.collect.Lists;
 import org.apache.commons.codec.digest.DigestUtils;
+import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
@@ -13,6 +15,8 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 /**
  * @author xhl
@@ -63,17 +67,36 @@ public class WfwGroupApiService {
      * @return java.util.List<com.chaoxing.activity.dto.manager.WfwGroupDTO>
     */
     public List<WfwGroupDTO> getGroupByFid(Integer fid){
+        List<WfwGroupDTO> wfwGroupResult = Lists.newArrayList();
         String enc = DigestUtils.md5Hex(fid + ENC_KEY + LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd")));
         String url = String.format(GET_ALL_GROUP_URL, fid, enc);
         String result = restTemplate.getForObject(url, String.class);
         JSONObject jsonObject = JSON.parseObject(result);
+        String rootId = jsonObject.getString("gid");
         JSONObject dataMap = jsonObject.getJSONObject("map");
-        List<WfwGroupDTO> wfwGroups = new ArrayList<>();
+        List<WfwGroupDTO> allWfwGroups = new ArrayList<>();
         for (String s : dataMap.keySet()) {
-            wfwGroups.addAll(JSONArray.parseArray(dataMap.getString(s), WfwGroupDTO.class));
+            allWfwGroups.addAll(JSONArray.parseArray(dataMap.getString(s), WfwGroupDTO.class));
         }
-//        List<WfwGroupDTO> wfwGroups = JSONArray.parseArray(arrStr, WfwGroupDTO.class);
-        return wfwGroups;
+        if (CollectionUtils.isNotEmpty(allWfwGroups)) {
+            Map<String, List<WfwGroupDTO>> gidGroups = allWfwGroups.stream().collect(Collectors.groupingBy(WfwGroupDTO::getGid));
+            wfwGroupResult = listSub(gidGroups, rootId);
+        }
+        return wfwGroupResult;
     }
 
+    private List<WfwGroupDTO> listSub(Map<String, List<WfwGroupDTO>> gidGroups, String gid) {
+        List<WfwGroupDTO> result = gidGroups.get(gid);
+        if (CollectionUtils.isNotEmpty(result)) {
+            List<WfwGroupDTO> children = Lists.newArrayList();
+            for (WfwGroupDTO wfwGroupDTO : result) {
+                String id = wfwGroupDTO.getId();
+                children.addAll(listSub(gidGroups, id));
+            }
+            result.addAll(children);
+        } else {
+            result = Lists.newArrayList();
+        }
+        return result;
+    }
 }

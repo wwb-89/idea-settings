@@ -24,28 +24,37 @@
     </sql>
     <select id="paging" resultType="com.chaoxing.activity.model.UserStatSummary">
         SELECT
-            t.uid uid,
-            t.activity_id activityId,
-            t.uname uname,
-            t.real_name realName,
-            t.mobile mobile,
-            t.signed_in_num signedInNum,
-            t.signed_in_rate signedInRate,
-            t.rating_num ratingNum,
-            t.qualified_num qualifiedNum,
-            t.total_participate_time_length totalParticipateTimeLength,
-            t.create_time createTime,
-            t.update_time updateTime
+            t.*,
+            ( CASE WHEN signInNum > 0 THEN ( CONVERT ( (signedInNum / signInNum) * 100, DECIMAL ( 10, 2 ))) ELSE 0 END ) signedInRate
         FROM
-            t_user_stat_summary t
-        WHERE
-            t.uid IN
-            <foreach collection="userStatSummaryQuery.uids" index="key" item="value" open="(" close=")" separator=",">
-                #{value}
-            </foreach>
+            (
+                SELECT
+                    t.uid uid,
+                    t.uname uname,
+                    t.real_name realName,
+                    t.mobile mobile,
+                    COUNT( 1 ) participateActivityNum,
+                    SUM( t.sign_up_num) signUpNum,
+                    SUM( t.signed_up_num) signedUpNum,
+                    SUM( t.sign_in_num ) signInNum,
+                    SUM( t.signed_in_num ) signedInNum,
+                    SUM( t.rating_num ) ratingNum,
+                    SUM( t.integral ) integral,
+                    COUNT( CASE WHEN t.is_qualified THEN 1 ELSE 0 END ) qualifiedNum,
+                    SUM( t.participate_time_length ) participateTimeLength
+                FROM
+                    t_user_stat_summary t
+                    INNER JOIN t_activity t1 ON t.activity_id = t1.id
+                    AND t1.create_fid = #{userStatSummaryQuery.fid}
+                    AND t1.`status` IN (1, 2, 3, 4)
+                GROUP BY
+                    t.uid
+            ) t
+        <where>
             <if test="userStatSummaryQuery.realName != null and userStatSummaryQuery.realName != ''">
-                AND t.real_name LIKE CONCAT('%', #{userStatSummaryQuery.realName}, '%')
+                t.real_name LIKE CONCAT('%', #{userStatSummaryQuery.realName}, '%')
             </if>
+        </where>
         <if test="userStatSummaryQuery.orderField != null and userStatSummaryQuery.orderField != ''">
             ORDER BY
                 ${userStatSummaryQuery.orderField} ${userStatSummaryQuery.orderType}
