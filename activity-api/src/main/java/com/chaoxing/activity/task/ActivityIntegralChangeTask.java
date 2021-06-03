@@ -33,7 +33,7 @@ public class ActivityIntegralChangeTask {
 	 * @return void
 	*/
 	@Scheduled(fixedDelay = 1L)
-	public void notice() {
+	public void notice() throws InterruptedException {
 		Integer signId = activityIntegralChangeQueueService.get();
 		if (signId == null) {
 			return;

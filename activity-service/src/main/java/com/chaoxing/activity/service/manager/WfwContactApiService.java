@@ -4,17 +4,19 @@ import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.chaoxing.activity.dto.OrgDTO;
-import com.chaoxing.activity.dto.manager.MoocUserOrgDTO;
 import com.chaoxing.activity.dto.manager.WfwContacterDTO;
 import com.chaoxing.activity.dto.manager.WfwDepartmentDTO;
 import com.chaoxing.activity.util.exception.BusinessException;
+import com.google.common.collect.Lists;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
 import javax.annotation.Resource;
 import java.util.List;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
 /**微服务通讯录api服务
  * @author wwb
@@ -59,7 +61,8 @@ public class WfwContactApiService {
 			return JSON.parseArray(jsonObject.getString("msg"), OrgDTO.class);
 		} else {
 			String errorMessage = jsonObject.getString("errorMsg");
-			throw new BusinessException(errorMessage);
+			log.error("根据uid:{} 查询有通讯录的机构列表error:{}", uid, errorMessage);
+			return Lists.newArrayList();
 		}
 	}
 	/**搜索联系人
@@ -134,6 +137,32 @@ public class WfwContactApiService {
 			log.error("departmentId:{}, 查询部门下的联系人error:{}", departmentId, errorMessage);
 			throw new BusinessException(errorMessage);
 		}
+	}
+
+	/**查询部门下的用户id列表
+	 * @Description 
+	 * @author wwb
+	 * @Date 2021-05-28 16:43:51
+	 * @param departmentId
+	 * @return java.util.List<java.lang.Integer>
+	*/
+	public List<Integer> listDepartmentUid(Integer departmentId) {
+		List<Integer> uids = Lists.newArrayList();
+		String forObject = restTemplate.getForObject(GET_DEPARTMENT_USER_URL, String.class, departmentId, 0, 1, Integer.MAX_VALUE);
+		JSONObject jsonObject = JSON.parseObject(forObject);
+		Integer result = jsonObject.getInteger("result");
+		if (Objects.equals(result, 1)) {
+			String wfwContactersJsonStr = jsonObject.getJSONObject("data").getString("list");
+			List<WfwContacterDTO> wfwContacters = JSON.parseArray(wfwContactersJsonStr, WfwContacterDTO.class);
+			if (CollectionUtils.isNotEmpty(wfwContacters)) {
+				uids = wfwContacters.stream().map(WfwContacterDTO::getPuid).collect(Collectors.toList());
+			}
+		} else {
+			String errorMessage = jsonObject.getString("errorMsg");
+			log.error("departmentId:{}, 查询部门下的联系人error:{}", departmentId, errorMessage);
+			throw new BusinessException(errorMessage);
+		}
+		return uids;
 	}
 
 }

@@ -37,7 +37,7 @@ public class MhWebTitleUpdateTask {
 	 * @return void
 	*/
 	@Scheduled(fixedDelay = 1L)
-	public void push() {
+	public void push() throws InterruptedException {
 		Integer activityId = activityNameChangeNoticeQueueService.getActivityId();
 		if (activityId == null) {
 			return;

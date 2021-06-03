@@ -26,8 +26,8 @@ public class FormCreateActivityTask {
     @Resource
     private FormApprovalApiService formApprovalApiService;
 
-    @Scheduled(fixedDelay = 1000L)
-    public void handle() {
+    @Scheduled(fixedDelay = 100L)
+    public void handle() throws InterruptedException {
         FormCreateActivity formCreateActivity = formActivityCreateQueueService.get();
         if (formCreateActivity == null) {
             return;

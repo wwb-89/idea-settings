@@ -38,17 +38,21 @@
                     </dl>
                 </div>
                 <div class="qrcode-box">
-                    <img src="../assets/images/qrcode.png" alt="">
+                    <!--<img src="../assets/images/qrcode.png" alt="">-->
+                    <!--<canvas id="canvas" class="qrcode" width="180" height="180"></canvas>-->
+                    <div id="canvas" class="qrcode"></div>
                 </div>
                 <div class="text-tip">扫码访问活动</div>
             </div>
         </div>
     </div>
     <script src="../assets/lib/jquery.min.js"></script>
+    <script src="../assets/lib/qrcode.min.js"></script>
     <script src="../assets/lib/html2canvas.min.js"></script>
     <script>
         $('.btn-download').click(function () {
-            html2canvas(document.querySelector("#capture")).then(canvas => {
+            html2canvas(document.querySelector("#capture"),{useCORS: true}).then(canvas => {
+                $(canvas).addClass('captureImg');
                 document.body.appendChild(canvas)
             });
         })
@@ -76,6 +80,19 @@
             getHeight(text[i], 40);
         };
         getHeight($('.text-title')[0], 60);
+
+
+
+
+
+    //    canvas
+        new QRCode(document.getElementById('canvas'),{
+            text: "http://www.runoob.com",
+            width: 128,
+            height: 128,
+            colorDark : "#000000",
+            colorLight : "#ffffff",
+        });
     </script>
 </body>
 </html>

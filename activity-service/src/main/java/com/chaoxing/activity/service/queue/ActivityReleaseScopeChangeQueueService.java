@@ -3,6 +3,7 @@ package com.chaoxing.activity.service.queue;
 import com.chaoxing.activity.util.constant.CacheConstant;
 import com.chaoxing.activity.util.constant.CommonConstant;
 import lombok.extern.slf4j.Slf4j;
+import org.redisson.api.RedissonClient;
 import org.springframework.data.redis.core.ListOperations;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
@@ -19,13 +20,13 @@ import javax.annotation.Resource;
  */
 @Slf4j
 @Service
-public class ActivityReleaseScopeChangeQueueService {
+public class ActivityReleaseScopeChangeQueueService implements IQueueService<Integer> {
 
 	/** 队列缓存key */
 	private static final String QUEUE_CACHE_KEY = CacheConstant.QUEUE_CACHE_KEY_PREFIX + "activity_release_scope_change";
 
 	@Resource
-	private RedisTemplate redisTemplate;
+	private RedissonClient redissonClient;
 
 	/**往队列中添加数据
 	 * @Description 
@@ -36,8 +37,7 @@ public class ActivityReleaseScopeChangeQueueService {
 	*/
 	public void add(Integer activityId) {
 		if (activityId != null) {
-			ListOperations<String, Integer> listOperations = redisTemplate.opsForList();
-			listOperations.leftPush(QUEUE_CACHE_KEY, activityId);
+			push(redissonClient, QUEUE_CACHE_KEY, activityId);
 		}
 	}
 
@@ -48,9 +48,8 @@ public class ActivityReleaseScopeChangeQueueService {
 	 * @param 
 	 * @return java.lang.Integer
 	*/
-	public Integer get() {
-		ListOperations<String, Integer> listOperations = redisTemplate.opsForList();
-		return listOperations.rightPop(QUEUE_CACHE_KEY, CommonConstant.QUEUE_GET_WAIT_TIME);
+	public Integer get() throws InterruptedException {
+		return pop(redissonClient, QUEUE_CACHE_KEY);
 	}
 
 }

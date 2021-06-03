@@ -3,7 +3,8 @@ package com.chaoxing.activity.admin.controller.pc;
 import com.chaoxing.activity.admin.util.LoginUtils;
 import com.chaoxing.activity.dto.LoginUserDTO;
 import com.chaoxing.activity.dto.activity.ActivityTypeDTO;
-import com.chaoxing.activity.dto.manager.WfwGroupDTO;
+import com.chaoxing.activity.dto.manager.ActivityCreatePermissionDTO;
+import com.chaoxing.activity.dto.manager.WfwRegionalArchitectureDTO;
 import com.chaoxing.activity.dto.module.SignAddEditDTO;
 import com.chaoxing.activity.model.Activity;
 import com.chaoxing.activity.model.ActivityFlagSignModule;
@@ -14,8 +15,11 @@ import com.chaoxing.activity.service.WebTemplateService;
 import com.chaoxing.activity.service.activity.ActivityQueryService;
 import com.chaoxing.activity.service.activity.classify.ActivityClassifyHandleService;
 import com.chaoxing.activity.service.activity.classify.ActivityClassifyQueryService;
-import com.chaoxing.activity.service.manager.WfwGroupApiService;
+import com.chaoxing.activity.service.activity.manager.ActivityCreatePermissionService;
+import com.chaoxing.activity.service.manager.WfwRegionalArchitectureApiService;
 import com.chaoxing.activity.util.constant.CommonConstant;
+import com.google.common.collect.Lists;
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Component;
 import org.springframework.ui.Model;
@@ -25,6 +29,7 @@ import javax.servlet.http.HttpServletRequest;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 /**
  * @author wwb
@@ -46,9 +51,11 @@ public class ActivityManageController {
 	@Resource
 	private GroupService groupService;
 	@Resource
-	private WfwGroupApiService wfwGroupApiService;
-	@Resource
 	private ActivityClassifyHandleService activityClassifyHandleService;
+	@Resource
+	private ActivityCreatePermissionService activityCreatePermissionService;
+	@Resource
+	private WfwRegionalArchitectureApiService wfwRegionalArchitectureApiService;
 
 	/**活动管理主页
 	 * @Description 
@@ -125,7 +132,12 @@ public class ActivityManageController {
 		// 活动分类列表
 		// 先克隆
 		activityClassifyHandleService.cloneSystemClassify(loginUser.getFid());
-		model.addAttribute("activityClassifies", activityClassifyQueryService.listOrgOptional(loginUser.getFid()));
+
+		ActivityCreatePermissionDTO activityCreatePermission = activityCreatePermissionService.getGroupClassifyByUserPermission(loginUser.getFid(), loginUser.getUid());
+		model.addAttribute("activityClassifies", activityCreatePermission.getActivityClassifies());
+		model.addAttribute("signUpParticipateScopeLimit", activityCreatePermission.getSignUpParticipateScopeLimit());
+//		model.addAttribute("activityClassifies", activityClassifyQueryService.listOrgOptional(loginUser.getFid()));
+
 		// 报名签到
 		model.addAttribute("sign", SignAddEditDTO.builder().build());
 		// 模板列表
@@ -133,14 +145,20 @@ public class ActivityManageController {
 		model.addAttribute("webTemplates", webTemplates);
 		model.addAttribute("areaCode", areaCode);
 		// 微服务组织架构
-		List<WfwGroupDTO> wfwGroups = wfwGroupApiService.getGroupByGid(loginUser.getFid(), 0);
-		model.addAttribute("wfwGroups", wfwGroups);
+		model.addAttribute("wfwGroups", activityCreatePermission.getWfwGroups());
 		flag = calActivityFlag(flag, secondClassroomFlag);
 		model.addAttribute("activityFlag", flag);
 		// flag配置的报名签到的模块
 		List<ActivityFlagSignModule> activityFlagSignModules = activityQueryService.listSignModuleByFlag(flag);
 		model.addAttribute("activityFlagSignModules", activityFlagSignModules);
 		model.addAttribute("strict", strict);
+		// 发布范围默认选中当前机构
+		List<WfwRegionalArchitectureDTO> wfwRegionalArchitectures = wfwRegionalArchitectureApiService.listByFid(loginUser.getFid());
+		List<WfwRegionalArchitectureDTO> participatedOrgs = Lists.newArrayList();
+		if (CollectionUtils.isNotEmpty(wfwRegionalArchitectures)) {
+			participatedOrgs = wfwRegionalArchitectures.stream().filter(v -> Objects.equals(v.getFid(), loginUser.getFid())).collect(Collectors.toList());
+		}
+		model.addAttribute("participatedOrgs", participatedOrgs);
 		return "pc/activity-add-edit";
 	}
 }

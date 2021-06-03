@@ -1,6 +1,7 @@
 package com.chaoxing.activity.service.activity.classify;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.chaoxing.activity.dto.FilterDTO;
 import com.chaoxing.activity.mapper.ActivityClassifyMapper;
 import com.chaoxing.activity.model.ActivityClassify;
 import com.google.common.collect.Lists;
@@ -9,6 +10,7 @@ import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
+import java.util.ArrayList;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -35,8 +37,37 @@ public class ActivityClassifyQueryService {
 	 * @param fid
 	 * @return java.util.List<com.chaoxing.activity.model.ActivityClassify>
 	*/
+	public List<FilterDTO> listOrgOptions(Integer fid) {
+		List<FilterDTO> result = new ArrayList<>();
+		CollectionUtils.collect(activityClassifyMapper.listByFid(fid), activityClassify -> {
+			FilterDTO item = new FilterDTO();
+			item.setText(activityClassify.getName());
+			item.setValue(String.valueOf(activityClassify.getId()));
+			return item;
+		}, result);
+		return result;
+	}
+
+	/**查询机构可选的活动分类列表
+	 * @Description
+	 * @author wwb
+	 * @Date 2020-11-10 19:36:37
+	 * @param fid
+	 * @return java.util.List<com.chaoxing.activity.model.ActivityClassify>
+	*/
 	public List<ActivityClassify> listOrgOptional(Integer fid) {
 		return listOrgAffiliation(fid);
+	}
+
+	/**根据fid查询活动分类列表(listOrgAffiliation查询数据少了)
+	* @Description
+	* @author huxiaolong
+	* @Date 2021-06-02 11:29:33
+	* @param fid
+	* @return java.util.List<com.chaoxing.activity.model.ActivityClassify>
+	*/
+	public List<ActivityClassify> listOrgOptionsByFid(Integer fid) {
+		return activityClassifyMapper.listByFid(fid);
 	}
 
 	/**查询机构列表所能筛选的活动分类名称列表

@@ -155,7 +155,9 @@ public class ActivityHandleService {
 		// 活动报名签到模块
 		handleActivitySignModule(activity.getId(), signAddEditResult);
 		// 处理发布范围
-		wfwRegionalArchitectures = handleParticipateScope(activity, wfwRegionalArchitectures);
+		if (CollectionUtils.isEmpty(wfwRegionalArchitectures)) {
+			throw new BusinessException("请选择发布范围");
+		}
 		Integer activityId = activity.getId();
 		List<ActivityScope> activityScopes = WfwRegionalArchitectureDTO.convert2ActivityScopes(activityId, wfwRegionalArchitectures);
 		// 新增发布范围
@@ -165,29 +167,6 @@ public class ActivityHandleService {
 		handleActivityArea(activity, loginUser);
 		// 活动改变
 		activityChangeEventService.dataChange(activity, null, activity.getIntegralValue());
-	}
-
-	/**处理发布范围
-	 * @Description 
-	 * @author wwb
-	 * @Date 2021-03-30 19:49:43
-	 * @param activity
-	 * @param wfwRegionalArchitectures
-	 * @return java.util.List<com.chaoxing.activity.dto.manager.WfwRegionalArchitectureDTO>
-	*/
-	private List<WfwRegionalArchitectureDTO> handleParticipateScope(Activity activity, List<WfwRegionalArchitectureDTO> wfwRegionalArchitectures) {
-		if (CollectionUtils.isEmpty(wfwRegionalArchitectures)) {
-			String activityFlag = activity.getActivityFlag();
-			if (Objects.equals(Activity.ActivityFlag.SECOND_CLASSROOM.getValue(), activityFlag) ||
-					Objects.equals(Activity.ActivityFlag.DUAL_SELECT.getValue(), activityFlag)) {
-				// 构建创建者机构的
-				WfwRegionalArchitectureDTO wfwRegionalArchitecture = wfwRegionalArchitectureApiService.buildWfwRegionalArchitecture(activity.getCreateFid());
-				wfwRegionalArchitectures = Lists.newArrayList(wfwRegionalArchitecture);
-			} else {
-				throw new BusinessException("请选择发布范围");
-			}
-		}
-		return wfwRegionalArchitectures;
 	}
 
 	/**处理活动与报名签到模块的关系
@@ -442,10 +421,11 @@ public class ActivityHandleService {
 				// 清空封面url
 				existActivity.setCoverUrl("");
 			}
-			List<WfwRegionalArchitectureDTO> itemWfwRegionalArchitectures = wfwRegionalArchitectures;
 			// 处理发布范围
-			itemWfwRegionalArchitectures = handleParticipateScope(activity, itemWfwRegionalArchitectures);
-			List<ActivityScope> activityScopes = WfwRegionalArchitectureDTO.convert2ActivityScopes(activityId, itemWfwRegionalArchitectures);
+			if (CollectionUtils.isEmpty(wfwRegionalArchitectures)) {
+				throw new BusinessException("请选择发布范围");
+			}
+			List<ActivityScope> activityScopes = WfwRegionalArchitectureDTO.convert2ActivityScopes(activityId, wfwRegionalArchitectures);
 			// 删除以前发布的发布范围
 			activityScopeService.deleteByActivityId(activityId);
 			// 新增活动发布范围

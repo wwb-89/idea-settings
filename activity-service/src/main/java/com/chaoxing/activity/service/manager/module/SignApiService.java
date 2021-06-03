@@ -11,6 +11,7 @@ import com.chaoxing.activity.dto.module.SignAddEditDTO;
 import com.chaoxing.activity.dto.module.SignAddEditResultDTO;
 import com.chaoxing.activity.dto.sign.ActivityBlockDetailSignStatDTO;
 import com.chaoxing.activity.dto.sign.SignActivityManageIndexDTO;
+import com.chaoxing.activity.dto.sign.SignParticipateScopeDTO;
 import com.chaoxing.activity.dto.sign.UserSignStatSummaryDTO;
 import com.chaoxing.activity.dto.stat.SignActivityStatDTO;
 import com.chaoxing.activity.model.ActivityStatSummary;
@@ -82,14 +83,20 @@ public class SignApiService {
 
 	/** 统计活动报名签到对应的活动统计汇总记录url */
 	private static final String STAT_ACTIVITY_SUMMARY_URL = SIGN_API_DOMAIN + "/stat/sign/%d/activity-stat-summary";
+
+	/** 根据外资源部externalIds查询报名签到signIds集合url  */
+	private static final String LIST_SIGN_ID_BY_PARTICIPATE_SCOPES_URL = SIGN_API_DOMAIN + "/sign/list/signIds/by-participate-scope";
+	/** 根据signIds获取报名参与范围url */
+	private static final String LIST_PARTICIPATE_SCOPE_BY_SIGNS_URL = SIGN_API_DOMAIN + "/sign/list/sign-participate-scope";
+
 	/** 报名签到报名成功的uid列表url */
 	private static final String SIGN_SIGNED_UP_UIDS_URL = SIGN_API_DOMAIN + "/sign/%s/uid/signed-up";
 	/** 用户是否已报名（报名成功）url */
 	private static final String USER_IS_SIGNED_UP_URL = SIGN_API_DOMAIN + "/sign/%d/is-signed-up?uid=%d";
 	/** 用户报名签到统计汇总 */
-	private static final String USER_SIGN_STAT_SUMMARY_URL = SIGN_API_DOMAIN + "/stat/user/%d/sign-stat-summary";
-	/** 用户合格的成绩数量 */
-	private static final String USER_QUALIFIED_RESULT_NUM_URL = SIGN_API_DOMAIN + "/stat/user/%d/qualified_result_num";
+	private static final String USER_SIGN_STAT_SUMMARY_URL = SIGN_API_DOMAIN + "/stat/user/%d/sign/%d/sign-stat-summary";
+	/** 用户报名签到是否合格 */
+	private static final String USER_IS_QUALIFIED_URL = SIGN_API_DOMAIN + "/stat/user/%d/sign/%d/qualified";
 
 	/** 报名名单url */
 	private static final String SIGN_UP_USER_LIST_URL = SIGN_WEB_DOMAIN + "/sign-up/%d/user-list";
@@ -103,7 +110,7 @@ public class SignApiService {
 	/** 通知活动已评价 */
 	private static final String NOTICE_HAVE_RATING_URL = SIGN_API_DOMAIN + "/sign/%d/notice/rating?uid=%d";
 	/** 通知报名签到活动积分已变更 */
-	private static final String NOTICE_ACTIVITY_INTEGRAL_CHANGE_URL = SIGN_API_DOMAIN + "/sign/%d/notice/second-classroom-integral-change";
+	private static final String NOTICE_ACTIVITY_INTEGRAL_CHANGE_URL = SIGN_API_DOMAIN + "/sign/%d/notice/activity-integral-change";
 	
 	/** 签到位置搜索缓存 */
 	private static final String SIGN_IN_POSITION_HISTORY_LIST_URL = SIGN_API_DOMAIN + "/sign-in/position-history";
@@ -668,8 +675,8 @@ public class SignApiService {
 	 * @param uid
 	 * @return com.chaoxing.activity.dto.sign.UserSignStatSummaryDTO
 	*/
-	public UserSignStatSummaryDTO userSignStatSummary(Integer uid) {
-		String url = String.format(USER_SIGN_STAT_SUMMARY_URL, uid);
+	public UserSignStatSummaryDTO userSignStatSummary(Integer uid, Integer signId) {
+		String url = String.format(USER_SIGN_STAT_SUMMARY_URL, uid, signId);
 		String result = restTemplate.getForObject(url, String.class);
 		JSONObject jsonObject = JSON.parseObject(result);
 		return resultHandle(jsonObject, () -> JSON.parseObject(jsonObject.getString("data"), UserSignStatSummaryDTO.class), (message) -> {
@@ -683,16 +690,44 @@ public class SignApiService {
 	 * @author wwb
 	 * @Date 2021-05-27 15:05:44
 	 * @param uid
+	 * @param signId
 	 * @return java.lang.Integer
 	*/
-	public Integer userQualifiedResultNum(Integer uid) {
-		String url = String.format(USER_QUALIFIED_RESULT_NUM_URL, uid);
+	public boolean userIsQualified(Integer uid, Integer signId) {
+		String url = String.format(USER_IS_QUALIFIED_URL, uid, signId);
 		String result = restTemplate.getForObject(url, String.class);
 		JSONObject jsonObject = JSON.parseObject(result);
-		return resultHandle(jsonObject, () -> jsonObject.getInteger("data"), (message) -> {
+		return resultHandle(jsonObject, () -> jsonObject.getBoolean("data"), (message) -> {
 			log.error("获取用户:{}合格的成绩数量error:{}", uid, message);
 			throw new BusinessException(message);
 		});
 	}
 
+	public List<SignParticipateScopeDTO> listSignParticipateScopeBySignIds(List<Integer> signIds) {
+		HttpHeaders httpHeaders = new HttpHeaders();
+		httpHeaders.setContentType(MediaType.APPLICATION_JSON);
+		HttpEntity<String> httpEntity = new HttpEntity<>(JSON.toJSONString(signIds), httpHeaders);
+		String result = restTemplate.postForObject(LIST_PARTICIPATE_SCOPE_BY_SIGNS_URL, httpEntity, String.class);
+
+		JSONObject jsonObject = JSON.parseObject(result);
+		return resultHandle(jsonObject, () -> JSON.parseArray(jsonObject.getString("data"), SignParticipateScopeDTO.class), (message) -> {
+//			log.error("获取用户:{}合格的成绩数量error:{}", uid, message);
+			throw new BusinessException(message);
+		});
+	}
+
+	public List<Integer> listSignIdsByExternalIds(List<Integer> externalIds) {
+		if (CollectionUtils.isEmpty(externalIds)) {
+			return Lists.newArrayList();
+		}
+		HttpHeaders httpHeaders = new HttpHeaders();
+		httpHeaders.setContentType(MediaType.APPLICATION_JSON);
+		HttpEntity<String> httpEntity = new HttpEntity<>(JSON.toJSONString(externalIds), httpHeaders);
+		String result = restTemplate.postForObject(LIST_SIGN_ID_BY_PARTICIPATE_SCOPES_URL, httpEntity, String.class);
+
+		JSONObject jsonObject = JSON.parseObject(result);
+		return resultHandle(jsonObject, () -> JSON.parseArray(jsonObject.getString("data"), Integer.class), (message) -> {
+			throw new BusinessException(message);
+		});
+	}
 }

@@ -1,10 +1,12 @@
 package com.chaoxing.activity.service.queue;
 
 import com.chaoxing.activity.util.constant.CacheConstant;
-import com.chaoxing.activity.util.constant.CommonConstant;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.data.redis.core.ListOperations;
-import org.springframework.data.redis.core.RedisTemplate;
+import org.redisson.api.RedissonClient;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
@@ -19,34 +21,43 @@ import javax.annotation.Resource;
  */
 @Slf4j
 @Service
-public class UserStatSummaryQueueService {
+public class UserStatSummaryQueueService implements IQueueService<UserStatSummaryQueueService.QueueParamDTO> {
 
     /** 用户签到队列缓存key */
-    private static final String USER_SIGN_IN_CACHE_KEY = CacheConstant.QUEUE_CACHE_KEY_PREFIX + "user_stat_summary" + CacheConstant.CACHE_KEY_SEPARATOR + "sign_in";
+    private static final String USER_SIGN_CACHE_KEY = CacheConstant.QUEUE_CACHE_KEY_PREFIX + "user_stat_summary" + CacheConstant.CACHE_KEY_SEPARATOR + "sign";
     /** 用户成绩队列缓存key */
     private static final String USER_RESULT_CACHE_KEY = CacheConstant.QUEUE_CACHE_KEY_PREFIX + "user_stat_summary" + CacheConstant.CACHE_KEY_SEPARATOR + "result";
 
     @Resource
-    private RedisTemplate redisTemplate;
+    private RedissonClient redissonClient;
 
-    public void addUserSignInStat(Integer uid) {
-        ListOperations listOperations = redisTemplate.opsForList();
-        listOperations.leftPush(USER_SIGN_IN_CACHE_KEY, uid);
+    public void addUserSignStat(QueueParamDTO queueParam) {
+        push(redissonClient, USER_SIGN_CACHE_KEY, queueParam);
     }
 
-    public Integer getUserSignInStat() {
-        ListOperations<String, Integer> listOperations = redisTemplate.opsForList();
-        return listOperations.rightPop(USER_SIGN_IN_CACHE_KEY, CommonConstant.QUEUE_GET_WAIT_TIME);
+    public QueueParamDTO getUserSignStat() throws InterruptedException {
+        return pop(redissonClient, USER_SIGN_CACHE_KEY);
     }
 
-    public void addUserResultStat(Integer uid) {
-        ListOperations listOperations = redisTemplate.opsForList();
-        listOperations.leftPush(USER_RESULT_CACHE_KEY, uid);
+    public void addUserResultStat(QueueParamDTO queueParam) {
+        push(redissonClient, USER_RESULT_CACHE_KEY, queueParam);
     }
 
-    public Integer getUserResultStata() {
-        ListOperations<String, Integer> listOperations = redisTemplate.opsForList();
-        return listOperations.rightPop(USER_RESULT_CACHE_KEY, CommonConstant.QUEUE_GET_WAIT_TIME);
+    public QueueParamDTO getUserResultStata() throws InterruptedException {
+        return pop(redissonClient, USER_RESULT_CACHE_KEY);
+    }
+
+    @Data
+    @Builder
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class QueueParamDTO {
+
+        /** 用户id */
+        private Integer uid;
+        /** 活动id */
+        private Integer activityId;
+
     }
 
 }

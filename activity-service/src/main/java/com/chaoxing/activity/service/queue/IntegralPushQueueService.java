@@ -3,10 +3,8 @@ package com.chaoxing.activity.service.queue;
 import com.chaoxing.activity.dto.manager.IntegralPushDTO;
 import com.chaoxing.activity.service.manager.IntegralApiService;
 import com.chaoxing.activity.util.constant.CacheConstant;
-import com.chaoxing.activity.util.constant.CommonConstant;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.data.redis.core.ListOperations;
-import org.springframework.data.redis.core.RedisTemplate;
+import org.redisson.api.RedissonClient;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
@@ -23,7 +21,7 @@ import java.util.List;
  */
 @Slf4j
 @Service
-public class IntegralPushQueueService {
+public class IntegralPushQueueService implements IQueueService<IntegralPushDTO> {
 
 	/** 队列缓存key */
 	private static final String QUEUE_CACHE_KEY = CacheConstant.QUEUE_CACHE_KEY_PREFIX + "integral_push";
@@ -32,7 +30,7 @@ public class IntegralPushQueueService {
 	private IntegralApiService integralApiService;
 
 	@Resource
-	private RedisTemplate redisTemplate;
+	private RedissonClient redissonClient;
 
 	/**新增
 	 * @Description 
@@ -47,8 +45,7 @@ public class IntegralPushQueueService {
 		if (!fids.contains(fid)) {
 			return;
 		}
-		ListOperations<String, IntegralPushDTO> listOperations = redisTemplate.opsForList();
-		listOperations.leftPush(QUEUE_CACHE_KEY, integralPush);
+		push(redissonClient, QUEUE_CACHE_KEY, integralPush);
 	}
 
 	/**获取
@@ -58,9 +55,8 @@ public class IntegralPushQueueService {
 	 * @param 
 	 * @return com.chaoxing.activity.dto.manager.IntegralPushDTO
 	*/
-	public IntegralPushDTO get() {
-		ListOperations<String, IntegralPushDTO> listOperations = redisTemplate.opsForList();
-		return listOperations.rightPop(QUEUE_CACHE_KEY, CommonConstant.QUEUE_GET_WAIT_TIME);
+	public IntegralPushDTO get() throws InterruptedException {
+		return pop(redissonClient, QUEUE_CACHE_KEY);
 	}
 
 }

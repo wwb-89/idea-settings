@@ -31,7 +31,7 @@ public class SignActionTask {
     private ActivityQueryService activityQueryService;
 
     @Scheduled(fixedDelay = 1L)
-    public void signInNumChangeActionHandle() {
+    public void signInNumChangeActionHandle() throws InterruptedException {
         Integer signId = signActionQueueService.getSignInNumChangeAction();
         if (signId == null) {
             return;

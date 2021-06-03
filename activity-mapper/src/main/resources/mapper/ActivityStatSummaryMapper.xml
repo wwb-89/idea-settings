@@ -6,11 +6,67 @@
         <result column="signed_in_num" jdbcType="INTEGER" property="signedInNum" />
         <result column="sign_in_rate" jdbcType="DECIMAL" property="signInRate" />
         <result column="qualified_num" jdbcType="INTEGER" property="qualifiedNum" />
+        <result column="signed_up_num" jdbcType="INTEGER" property="signedUpNum" />
         <result column="avg_participate_time_length" jdbcType="INTEGER" property="avgParticipateTimeLength" />
         <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
         <result column="update_time" jdbcType="TIMESTAMP" property="updateTime" />
     </resultMap>
     <sql id="Base_Column_List">
-        t.activity_id, t.signed_in_num, t.sign_in_rate, t.qualified_num, t.avg_participate_time_length, t.create_time, t.update_time
+        t.activity_id, t.signed_in_num, t.sign_in_rate, t.qualified_num,  t.signed_up_num, t.avg_participate_time_length, t.create_time, t.update_time
     </sql>
+
+    <select id="activityStatSummaryPage" resultType="com.chaoxing.activity.dto.stat.ActivityStatSummaryDTO">
+        SELECT
+            t1.id as activityId,
+            t1.sign_id as signId,
+            t1.name as activityName,
+            t1.preview_url as activityPreviewUrl,
+            t1.status as activityStatus,
+            t1.activity_classify_id as activityClassifyId,
+            t1.create_user_name as activityCreator,
+            t1.create_uid as activityCreateUid,
+            t1.integral_value as integral,
+            t1.start_time as startTime,
+            t1.end_time as endTime,
+            t.signed_in_num as signedInNum,
+            t.sign_in_rate as signInRate,
+            t.qualified_num as qualifiedNum,
+            t.signed_up_num as signedUpNum,
+            t.avg_participate_time_length as avgParticipateTimeLength,
+            t.create_time as createTime,
+            t.update_time as updateTime,
+            t2.score rateScore,
+            t2.score_num rateNum
+        FROM
+            t_activity_stat_summary t
+            INNER JOIN t_activity t1 ON t1.id = t.activity_id
+            LEFT JOIN t_activity_rating t2 ON t.activity_id = t2.activity_id
+            AND t1.create_fid = #{queryItem.fid}
+            <if test="queryItem.name != null and queryItem.name != ''">
+                <bind name="nameBind" value="'%' + queryItem.name + '%'"/>
+                AND (t1.name like #{nameBind} or t1.create_user_name like #{nameBind})
+            </if>
+            <if test="queryItem.startTime != null and queryItem.startTime != ''">
+                AND t1.start_time &gt;= #{queryItem.startTime}
+            </if>
+            <if test="queryItem.endTime != null and queryItem.endTime != ''">
+                AND t1.end_time &gt;= #{queryItem.endTime}
+            </if>
+            <if test="queryItem.activityStatus != null">
+                AND t1.status = #{queryItem.activityStatus}
+            </if>
+            <if test="queryItem.activityClassifyId != null">
+                AND t1.activity_classify_id = #{queryItem.activityClassifyId}
+            </if>
+            <if test="signIds != null and signIds.size() > 0">
+                AND t1.sign_id IN
+                <foreach collection="signIds" item="signId" open="(" close=")" separator=",">
+                    #{signId}
+                </foreach>
+            </if>
+        <if test="queryItem.orderField != null and queryItem.orderField != ''">
+            ORDER BY ${queryItem.orderField} <if test="orderType != null and orderType != ''">${orderType}</if>
+        </if>
+    </select>
+
 </mapper>

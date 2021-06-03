@@ -35,6 +35,8 @@ public class CloudApiService {
 	private static final String GET_CLOUD_RESOURCE_STATUS_URL = "http://cs.ananas.chaoxing.com/status/";
 	/** 云盘图片状态url key */
 	private static final String CLOUD_IMAGE_STATUS_URL_KEY = "http";
+	/** 下载url key */
+	private static final String DOWNLOAD_URL_KEY = "download";
 
 	@Resource(name = "restTemplateProxy")
 	private RestTemplate restTemplate;
@@ -92,6 +94,22 @@ public class CloudApiService {
 	private String getStatus(String cloudId) {
 		String urlStringBuilder = GET_CLOUD_RESOURCE_STATUS_URL + cloudId;
 		return restTemplate.getForObject(urlStringBuilder, String.class);
+	}
+
+	/**获取excel资源状态
+	 * @Description
+	 * @author wwb
+	 * @Date 2020-11-10 20:08:05
+	 * @param cloudId
+	 * @return java.lang.String
+	*/
+	public String getFileDownloadUrl(String cloudId) {
+		String result = getStatus(cloudId);
+		JSONObject jsonObject = JSON.parseObject(result);
+		if (jsonObject.containsKey(DOWNLOAD_URL_KEY)) {
+			return jsonObject.getString(DOWNLOAD_URL_KEY);
+		}
+		return null;
 	}
 
 	/**获取图片url

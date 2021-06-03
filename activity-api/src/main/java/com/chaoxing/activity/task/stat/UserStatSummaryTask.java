@@ -1,7 +1,7 @@
 package com.chaoxing.activity.task.stat;
 
 import com.chaoxing.activity.service.queue.UserStatSummaryQueueService;
-import com.chaoxing.activity.service.stat.UserStatSummaryService;
+import com.chaoxing.activity.service.stat.UserStatSummaryHandleService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
@@ -23,31 +23,31 @@ public class UserStatSummaryTask {
     @Resource
     private UserStatSummaryQueueService userStatSummaryQueueService;
     @Resource
-    private UserStatSummaryService userStatSummaryService;
+    private UserStatSummaryHandleService userStatSummaryService;
 
     @Scheduled(fixedDelay = 1L)
-    public void handleUserSignInStat() {
-        Integer uid = userStatSummaryQueueService.getUserSignInStat();
-        if (uid == null) {
+    public void handleUserSignInStat() throws InterruptedException {
+        UserStatSummaryQueueService.QueueParamDTO queueParam = userStatSummaryQueueService.getUserSignStat();
+        if (queueParam == null) {
             return;
         }
         try {
-            userStatSummaryService.updateUserSignInData(uid);
+            userStatSummaryService.updateUserSignUpInData(queueParam.getUid(), queueParam.getActivityId());
         } catch (Exception e) {
-            userStatSummaryQueueService.addUserSignInStat(uid);
+            userStatSummaryQueueService.addUserSignStat(queueParam);
         }
     }
 
     @Scheduled(fixedDelay = 1L)
-    public void handleUserResultStat() {
-        Integer uid = userStatSummaryQueueService.getUserResultStata();
-        if (uid == null) {
+    public void handleUserResultStat() throws InterruptedException {
+        UserStatSummaryQueueService.QueueParamDTO queueParam = userStatSummaryQueueService.getUserResultStata();
+        if (queueParam == null) {
             return;
         }
         try {
-            userStatSummaryService.updateUserResultData(uid);
+            userStatSummaryService.updateUserResult(queueParam.getUid(), queueParam.getActivityId());
         } catch (Exception e) {
-            userStatSummaryQueueService.addUserResultStat(uid);
+            userStatSummaryQueueService.addUserResultStat(queueParam);
         }
     }
 

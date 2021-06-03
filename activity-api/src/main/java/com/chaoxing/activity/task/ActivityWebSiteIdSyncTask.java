@@ -32,7 +32,7 @@ public class ActivityWebSiteIdSyncTask {
      * @return void
     */
     @Scheduled(fixedDelay = 100L)
-    public void sync() {
+    public void sync() throws InterruptedException {
         Integer activityId = activityWebsiteIdSyncQueueService.get();
         if (activityId == null) {
             return;

@@ -47,7 +47,7 @@ public class ActivityStatTask {
     * @return void
     */
     @Scheduled(cron = "0 0 1 * * ?")
-    public void handleActivityStatTask() {
+    public void handleActivityStatTask() throws InterruptedException {
         Integer taskId = activityStatQueueService.getActivityStatTask();
 
         if (taskId == null) {
@@ -65,8 +65,4 @@ public class ActivityStatTask {
 
     }
 
-
-    
-    
-    
 }

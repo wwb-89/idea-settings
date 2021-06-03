@@ -1,7 +1,6 @@
 package com.chaoxing.activity.service.tablefield;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
-import com.chaoxing.activity.dto.tablefield.TableFieldDTO;
 import com.chaoxing.activity.mapper.OrgTableFieldMapper;
 import com.chaoxing.activity.mapper.TableFieldDetailMapper;
 import com.chaoxing.activity.mapper.TableFieldMapper;
@@ -9,16 +8,15 @@ import com.chaoxing.activity.model.OrgTableField;
 import com.chaoxing.activity.model.TableField;
 import com.chaoxing.activity.model.TableFieldDetail;
 import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
-import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
+import javax.annotation.Resource;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 /**
  * @author huxiaolong
@@ -32,71 +30,12 @@ import java.util.Map;
 @Service
 public class TableFieldQueryService {
 
-    @Autowired
+    @Resource
     private TableFieldMapper tableFieldMapper;
-
-    @Autowired
+    @Resource
     private TableFieldDetailMapper tableFieldDetailMapper;
-
-    @Autowired
+    @Resource
     private OrgTableFieldMapper orgTableFieldMapper;
-
-    /**查询机构的字段配置
-     * @Description
-     * @author huxiaolong
-     * @Date 2021-05-25 10:42:32
-     * @param fid
-     * @return void
-     */
-    public Map<String, Object> searchActivityStatField(Integer fid) {
-        TableField tableField = getOrgActivityStatTableField();
-        // 获取tableField 对应的默认字段配置详情
-        List<TableFieldDetail> defaultTableFields = tableFieldDetailMapper.selectList(new QueryWrapper<TableFieldDetail>()
-                .lambda()
-                .eq(TableFieldDetail::getTableFieldId, tableField.getId()));
-        // 机构对应的字段配置列表
-        List<OrgTableField> orgFields = listOrgTableField(fid, tableField.getId());
-
-        List<TableFieldDTO> displayTableFields = new ArrayList<>();
-        Map<String, Object> result = Maps.newHashMap();
-        // 不存在机构对应的字段配置，则设置默认字段配置展示
-        if (CollectionUtils.isEmpty(orgFields)) {
-            for (TableFieldDetail detail : defaultTableFields) {
-                if (detail.getDefaultChecked()) {
-                    TableFieldDTO item = new TableFieldDTO();
-                    BeanUtils.copyProperties(detail, item);
-                    displayTableFields.add(item);
-                }
-            }
-
-            result.put("settingData", defaultTableFields);
-            result.put("tableFields", displayTableFields);
-            return result;
-        }
-        // list 转 map，便于查找对象是否存在
-        Map<Integer, OrgTableField> orgFieldMap = Maps.newHashMap();
-        for (OrgTableField field : orgFields) {
-            orgFieldMap.put(field.getTableFieldDetailId(), field);
-        }
-
-        for (TableFieldDetail detail : defaultTableFields) {
-            OrgTableField orgField = orgFieldMap.get(detail.getId());
-            if (orgField != null) {
-                detail.setDefaultChecked(Boolean.TRUE);
-                detail.setDefaultTop(orgField.getTop());
-
-                TableFieldDTO item = new TableFieldDTO();
-                BeanUtils.copyProperties(detail, item);
-                item.setSequence(orgField.getSequence());
-                displayTableFields.add(item);
-            }
-        }
-
-        result.put("settingData", defaultTableFields);
-        result.put("tableFields", displayTableFields);
-
-        return result;
-    }
 
     /**根据fid、tableFieldId查询机构对应的字段配置列表
      * @Description
@@ -113,17 +52,6 @@ public class TableFieldQueryService {
                 .eq(OrgTableField::getTableFieldId, tableFieldId)
                 .orderByAsc(OrgTableField::getSequence));
 
-    }
-
-    /**查询关联类型为机构、类型为活动统计的tableField
-    * @Description 
-    * @author huxiaolong
-    * @Date 2021-05-25 17:17:41
-    * @param 
-    * @return com.chaoxing.activity.model.TableField
-    */
-    private TableField getOrgActivityStatTableField() {
-        return getTableField(TableField.Type.ACTIVITY_STAT, TableField.AssociatedType.ORG);
     }
 
     /**根据类型和关联的类型查询TableField
@@ -158,6 +86,7 @@ public class TableFieldQueryService {
                 .lambda()
                 .eq(TableFieldDetail::getTableFieldId, tableFieldId)
                 .eq(TableFieldDetail::getDeleted, false)
+                .orderByAsc(TableFieldDetail::getSequence)
         );
     }
 
@@ -196,6 +125,44 @@ public class TableFieldQueryService {
             return tableFieldDetails;
         }
         return listByTableFieldId(tableField.getId());
+    }
+
+    /**查询出机构需要显示的table field detail列表
+     * @Description 
+     * @author wwb
+     * @Date 2021-06-03 13:23:43
+     * @param fid
+     * @param type
+     * @param associatedType
+     * @return java.util.List<com.chaoxing.activity.model.TableFieldDetail>
+    */
+    public List<TableFieldDetail> listOrgShowTableFieldDetail(Integer fid, TableField.Type type, TableField.AssociatedType associatedType) {
+        List<TableFieldDetail> result = Lists.newArrayList();
+        List<TableFieldDetail> tableFieldDetails = listTableFieldDetail(type, associatedType);
+        if (CollectionUtils.isEmpty(tableFieldDetails)) {
+            return result;
+        }
+        TableFieldDetail firstTableFieldDetail = tableFieldDetails.get(0);
+        Integer tableFieldId = firstTableFieldDetail.getTableFieldId();
+        List<OrgTableField> orgTableFields = listOrgTableField(fid, tableFieldId);
+        // 以orgTableFields作为排序依据
+        if (CollectionUtils.isEmpty(orgTableFields)) {
+            for (TableFieldDetail fieldDetail : tableFieldDetails) {
+                if (fieldDetail.getDefaultChecked()) {
+                    result.add(fieldDetail);
+                }
+            }
+        } else {
+            Map<Integer, TableFieldDetail> detailIdDetailMap = tableFieldDetails.stream().collect(Collectors.toMap(TableFieldDetail::getId, v -> v));
+            for (OrgTableField orgTableField : orgTableFields) {
+                Integer tableFieldDetailId = orgTableField.getTableFieldDetailId();
+                TableFieldDetail tableFieldDetail = detailIdDetailMap.get(tableFieldDetailId);
+                if (tableFieldDetail != null) {
+                    result.add(tableFieldDetail);
+                }
+            }
+        }
+        return result;
     }
 
 }

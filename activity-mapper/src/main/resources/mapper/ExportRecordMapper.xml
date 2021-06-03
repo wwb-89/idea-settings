@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.chaoxing.activity.mapper.ExportRecordMapper">
+    <resultMap id="BaseResultMap" type="com.chaoxing.activity.model.ExportRecord">
+        <id column="id" jdbcType="INTEGER" property="id" />
+        <result column="export_type" jdbcType="VARCHAR" property="exportType" />
+        <result column="params" jdbcType="VARCHAR" property="params" />
+        <result column="file_name" jdbcType="VARCHAR" property="fileName" />
+        <result column="file_size" jdbcType="BIGINT" property="fileSize" />
+        <result column="cloud_id" jdbcType="VARCHAR" property="cloudId" />
+        <result column="download_url" jdbcType="VARCHAR" property="downloadUrl" />
+        <result column="handle_times" jdbcType="INTEGER" property="handleTimes" />
+        <result column="status" jdbcType="INTEGER" property="status" />
+        <result column="message" jdbcType="VARCHAR" property="message" />
+        <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
+        <result column="create_uid" jdbcType="INTEGER" property="createUid" />
+        <result column="create_ip" jdbcType="VARCHAR" property="createIp" />
+        <result column="update_time" jdbcType="TIMESTAMP" property="updateTime" />
+    </resultMap>
+    <sql id="Base_Column_List">
+        t.id, t.export_type, t.params, t.file_name, t.file_size, t.cloud_id,
+        t.download_url, t.handle_times, t.status, t.message, t.create_time, t.create_uid, 
+        t.create_ip, t.update_time
+    </sql>
+</mapper>

@@ -1,0 +1,581 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org/">
+<head>
+    <title>活动统计</title>
+    <meta charset="UTF-8">
+    <meta name="renderer" content="webkit">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="/static/pc/assets/table-icomoon/style.css" th:href="@{/pc/assets/table-icomoon/style.css}">
+    <link rel="stylesheet" href="/static/pc/assets/lib/element-ui/lib/theme-chalk/index.css" th:href="@{/pc/assets/lib/element-ui/lib/theme-chalk/index.css}">
+    <link rel="stylesheet" href="/static/pc/assets/lib/zTree_v3_table/css/zTreeStyle/zTreeStyle.css" th:href="@{/pc/assets/lib/zTree_v3_table/css/zTreeStyle/zTreeStyle.css}" type="text/css">
+    <link rel="stylesheet" href="/static/pc/assets/css/commonTable.css" th:href="@{/pc/assets/css/commonTable.css}">
+    <link rel="stylesheet" href="/static/pc/assets/css/confirm_dialog.css" th:href="@{/pc/assets/css/confirm_dialog.css}">
+    <style>
+        [v-cloak] {
+            display: none;
+        }
+        .el-table-filter .el-table-filter__list {
+            max-height: 300px;
+            overflow: auto;
+        }
+    </style>
+</head>
+<body>
+<div id="orgActivityStatVue" v-cloak>
+    <div style="display: block">
+        <!-- 选项卡内容 -->
+        <div class="tab-content-box">
+            <div class="tab-item">
+                <!-- 操作栏 -->
+                <div class="table-operate-box fs0">
+                    <el-button class="btn-customize" round @click="exportData">导出</el-button>
+                    <el-button class="btn-customize" round @click="exportRecord">导出记录</el-button>
+                    <div class="search-Box">
+                        <el-input placeholder="活动名称/发起人"
+                                  icon="search"
+                                  class="search"
+                                  v-model="queryParams.name"
+                                  suffix-icon="el-icon-search"
+                                  @keydown.enter.native="search"
+                        >
+                        </el-input>
+                        <i class="icon-cancel btn-cancel fs16"
+                            v-show="queryParams.name && queryParams.name.length > 0"
+                            @click="queryParams.name = ''"></i>
+                    </div>
+                </div>
+                <!-- 查询栏 -->
+                <div class="table-search-box fs0">
+                    <el-date-picker
+                            v-model="dateValue1"
+                            range-separator=""
+                            type="datetimerange"
+                            prefix-icon="el-icon-time"
+                            start-placeholder="开始日期"
+                            end-placeholder="结束日期"
+                            format="yyyy-MM-dd HH:mm"
+                            value-format="yyyy-MM-dd HH:mm:ss"
+                            @change="dateRangeChange"
+                    >
+                    </el-date-picker>
+                    <div class="popbtnInput">
+                        <input type="text" autocomplete="off" class="layui-input" readonly :value="participateScopeNames" placeholder="参与范围" @click="selectPopFunc">
+                    </div>
+                    <el-button class="btn-customize" round @click="search">查询</el-button>
+                </div>
+                <!-- 计数栏 -->
+                <div class="table-count-box fs12">
+                    <div class="count-info fl">
+                        <span class="color999">共 {{total}} 条</span>
+                    </div>
+                    <div class="setting-box">
+                        <el-dropdown :hide-on-click="false" trigger="click">
+                            <el-tooltip class="item" effect="dark" content="显示字段" placement="top">
+                                <span class="icon-setting fs16"></span>
+                            </el-tooltip>
+                            <el-dropdown-menu slot="dropdown" class="set-dropdown">
+                                <div class="dropdown-lists">
+                                    <el-dropdown-item v-for="(item, index) in configTableFieldDetails" :key="'detail-' + item.id">
+                                        <el-checkbox v-model="item.defaultChecked" :disabled="item.allowUnchec" @change="reSortSettingData"> {{item.name}}</el-checkbox>
+                                        <el-tooltip v-if="item.allowTop" class="item" effect="dark" :content="item.defaultTop ? '取消置顶' : '置顶'" placement="top">
+                                            <i :class="`btn-fix icon-${item.defaultTop ? 'pinned' : 'pin'} fs16`" @click="topConfigChange(item)"></i>
+                                        </el-tooltip>
+                                        <i v-else :class="`btn-fix icon-${item.defaultTop ? 'pinned' : 'pin'} fs16`"></i>
+                                    </el-dropdown-item>
+                                </div>
+                                <div class="bottom-btns fs14 colorBlue">
+                                    <el-button type="text" class="btn-confirm" @click="configSubmit">确定</el-button>
+                                    <el-button type="text" class="btn-reset" @click="resetConfig">重置</el-button>
+                                </div>
+                            </el-dropdown-menu>
+                        </el-dropdown>
+                    </div>
+                    <div class="clear"></div>
+                </div>
+
+                <el-table class="table-box" :data="tableData" @sort-change="sortChange" @filter-change="filterChange">
+                    <template v-for="item in showTableFieldDetails" v-if="item.defaultChecked">
+                        <el-table-column
+                                v-if="item.code === 'activityName'"
+                                :fixed="item.defaultTop"
+                                :label="item.name"
+                                :ifCenter="item.align"
+                                :min-width="item.minWidth"
+                        >
+                            <template slot-scope="scope">
+                                <div style="cursor: pointer; color: #0084FF" @click="toActivityDetail(scope.row.activityPreviewUrl)">
+                                    {{scope.row.activityName}}
+                                </div>
+                            </template>
+                        </el-table-column>
+                        <el-table-column
+                                v-else-if="item.code === 'activityStatus'"
+                                :fixed="item.defaultTop"
+                                :column-key="item.code"
+                                :label="item.name"
+                                :ifCenter="item.align"
+                                :min-width="item.minWidth"
+                                :filters="statusOptions"
+                                :filter-multiple="false"
+                        >
+                            <template slot-scope="scope">
+                                {{scope.row.activityStatus | activityStatusFilter}}
+                            </template>
+                        </el-table-column>
+                        <el-table-column
+                                v-else-if="item.code === 'activityClassify'"
+                                :prop="item.code"
+                                column-key="activityClassifyId"
+                                :fixed="item.defaultTop"
+                                :label="item.name"
+                                :ifCenter="item.align"
+                                :min-width="item.minWidth"
+                                :filters="classifyOptions"
+                                :filter-multiple="false"
+                        >
+                        </el-table-column>
+                        <el-table-column
+                                v-else-if="item.code === 'signInRate'"
+                                :fixed="item.defaultTop"
+                                :label="item.name"
+                                :ifCenter="item.align"
+                                :min-width="item.minWidth"
+                                :sortable="item.sortable ? 'custom' : item.sortable"
+                        >
+                            <template slot-scope="scope">
+                                {{scope.row.signInRate | percentConversion}}
+                            </template>
+                        </el-table-column>
+                        <el-table-column
+                                v-else
+                                :prop="item.code"
+                                :fixed="item.defaultTop"
+                                :label="item.name"
+                                :ifCenter="item.align"
+                                :min-width="item.minWidth"
+                                :sortable="item.sortable ? 'custom' : item.sortable"
+                        >
+                        </el-table-column>
+                    </template>
+                </el-table>
+                <el-pagination
+                        v-show="loaded && total > queryParams.pageSize"
+                        background
+                        layout="prev, pager, next"
+                        :total="total"
+                        :page-size="queryParams.pageSize"
+                        :current-page="queryParams.pageNum"
+                        @current-change="changePage">
+                </el-pagination>
+            </div>
+        </div>
+        <!-- 表格内容 -->
+    </div>
+    <!-- 参与范围 -->
+    <div class="dialog-box selectPop" v-show="ifSelectPop">
+        <div class="dialog-wrap">
+            <div class="header">
+                <span class="color333">参与范围</span>
+                <img src="/static/pc/assets/images/close.png" th:src="@{/pc/assets/images/close.png}" @click="ifSelectPop = false">
+            </div>
+           <div class="dialog-content">
+                <!-- ztree内容 -->
+               <div class="ztree-box">
+                   <div class="count-box fs14">
+                       <span class="color666">选择活动参与范围 </span>
+                   </div>
+                   <ul id="treeList" class="ztree"></ul>
+               </div>
+           </div>
+            <div class="btns">
+                <span class="btn inlineMiddle btn-border" @click="ifSelectPop = false">取消</span>
+                <span class="btn inlineMiddle btn-normal" @click="participateScopeChange">确定</span>
+            </div>
+        </div>
+    </div>
+    <!--导出成功弹窗-->
+    <vue-confirm-common ref="exportSuccessWindow" :message="'数据准备中，导出完成的数据会保存在“导出记录”中，请稍后下载'" :cancel="'完成'" :sure="'导出记录'" @callback="exportRecord"></vue-confirm-common>
+</div>
+<div th:replace="pc/include/common_js :: common_js(~{::script})">
+    <script src="/static/pc/assets/lib/element-ui/lib/index.js" th:src="@{/pc/assets/lib/element-ui/lib/index.js}"></script>
+    <script type="text/javascript" src="/static/pc/assets/lib/zTree_v3/js/jquery.ztree.core.js" th:src="@{/pc/assets/lib/zTree_v3/js/jquery.ztree.core.js}"></script>
+    <script type="text/javascript" src="/static/pc/assets/lib/zTree_v3/js/jquery.ztree.excheck.js" th:src="@{/pc/assets/lib/zTree_v3/js/jquery.ztree.excheck.js}"></script>
+    <script src="/static/pc/assets/component/confirm-common.js" th:src="@{/pc/assets/component/confirm-common.js}"></script>
+    <script th:inline="javascript">
+        Vue.filter("percentConversion", function (value) {
+            if (!value) {
+                return '0';
+            }
+            var str = Number(value * 100).toFixed(2);
+            str += "%";
+            return str;
+        });
+        var startTime = [[${startTime}]];
+        var endTime = [[${endTime}]];
+        vm = new Vue({
+            el: '#orgActivityStatVue',
+            data: {
+                loaded: false,
+                fid: [[${fid}]],
+                tableFieldId: [[${tableFieldId}]],
+                classifyOptions: [[${classifyOptions}]],
+                statusOptions: [{
+                    text: '已删除',
+                    value: 0
+                }, {
+                    text: '未开始',
+                    value: 1
+                }, {
+                    text: '进行中',
+                    value: 3
+                }, {
+                    text: '已结束',
+                    value: 4
+                }],
+                participateScopeNames: '',
+                queryParams: {
+                    fid: [[${fid}]],
+                    pageNum: 1,
+                    pageSize: 10,
+                    externalIds: [],
+                    name: '',
+                    activityStatus: null,
+                    activityClassifyId: null,
+                    startTime: startTime,
+                    endTime: endTime,
+                    orderFieldId: null,
+                    orderType: 'DESC'
+                },
+                // 配置项源数据
+                tableFieldDetails: [[${tableFieldDetails}]],
+                // 配置项数据
+                configTableFieldDetails: [],
+                // 页面展示字段配置源数据
+                orgTableFields: [[${orgTableFields}]],
+                // 表格显示的字段列表
+                showTableFieldDetails: [],
+                // 页面数据
+                tableData: [],
+                // 总记录数
+                total: 0,
+                // 总页数
+                pages: 1,
+                dateValue1: [startTime, endTime],  //日期范围选择值
+                ifSelectPop: false, //参与范围的弹窗展示
+                wfwGroups: [[${wfwGroups}]],
+                participateScopeTreeObj: null,
+                clearFlag: false,
+            },
+            created: function () {
+                var $this = this;
+                $this.calShowTableFieldDetails();
+                $this.configTableFieldDetails = $this.calConfigTableFieldDetails();
+            },
+            mounted: function () {
+                var $this = this;
+                $this.loadData();
+                $this.reSortSettingData()
+            },
+            methods: {
+                filterChange: function (filterItem) {
+                    var $this = this;
+                    var key = Object.keys(filterItem)[0]
+                    // 单选过滤取第一个
+                    var value = filterItem[key][0];
+                    $this.queryParams[key] = activityApp.isEmpty(value) ? null : parseInt(value);
+                    $this.loadData();
+                },
+                initGroupTree: function () {
+                    var $this = this;
+                    $($this.wfwGroups).each(function () {
+                        this.isParent = this.soncount > 0;
+                    });
+                    var setting = {
+                        view: {
+                            showLine: false
+                        },
+                        check: {
+                            enable: true
+                        },
+                        data: {
+                            simpleData: {
+                                enable: true,
+                                idKey: "id",
+                                pIdKey: "gid",
+                            },
+                            key: {
+                                name: "groupname"
+                            },
+                            keep: {
+                                parent: true
+                            }
+                        },
+                        callback: {
+                            onExpand: function (e, b, node) {
+                                if (node.children == null || node.children.length <= 0) {
+                                    // $this.loadFidGroup(node.id, node);
+                                }
+                            }
+                        }
+                    };
+                    $this.participateScopeTreeObj = $.fn.zTree.init($("#treeList"), setting, $this.wfwGroups);
+                },
+                participateScopeChange: function () {
+                    var $this = this;
+                    var zTree = $.fn.zTree.getZTreeObj("treeList");
+                    var nodeArr = zTree.getCheckedNodes(true);
+                    var participateScopes = [];
+                    //首先保存 搜索父节点被全选的，在看非父节点被选中的(非父节点的父节点被全选，则不保存该条记录)
+                    $(nodeArr).each(function () {
+                        // 半选状态
+                        var half = this.getCheckStatus().half;
+                        if (!half) {
+                            // 只记录全选的
+                            participateScopes.push({
+                                externalId: this.id,
+                                externalPid: this.gid == this.id ? null : this.gid,
+                                externalName: this.groupname,
+                                leaf: !this.isParent
+                            });
+                        }
+                    });
+
+                    var participateScopeNames = '';
+                    var externalIds = []
+                    if (participateScopes) {
+                        $(participateScopes).each(function (i) {
+                            participateScopeNames += this.externalName;
+                            if (!activityApp.isEmpty(this.externalId)) {
+                                externalIds.push(parseInt(this.externalId));
+                            }
+                            if (participateScopes.length - 1 !== i) {
+                                participateScopeNames += ','
+                            }
+                        })
+                    }
+                    $this.participateScopeNames = participateScopeNames;
+                    $this.queryParams.externalIds = externalIds;
+
+                    $this.ifSelectPop = false;
+                },
+                calShowTableFieldDetails: function () {
+                    var $this = this;
+                    // 计算表格显示的字段列表
+                    if ($this.orgTableFields.length < 1) {
+                        // 机构没有配置显示的字段。使用默认的
+                        $($this.tableFieldDetails).each(function () {
+                            if (this.defaultChecked) {
+                                $this.showTableFieldDetails.push($.extend({}, this));
+                            }
+                        });
+                    } else {
+                        $($this.orgTableFields).each(function () {
+                            var orgTableField = this;
+                            var tableFieldDetailId = orgTableField.tableFieldDetailId;
+                            $($this.tableFieldDetails).each(function () {
+                                if (tableFieldDetailId === this.id) {
+                                    var tableFieldDetail = $.extend({}, this);
+                                    tableFieldDetail.defaultChecked = true;
+                                    tableFieldDetail.defaultTop = orgTableField.top;
+                                    $this.showTableFieldDetails.push(tableFieldDetail);
+                                    return false;
+                                }
+                            });
+                        });
+                    }
+                },
+                calConfigTableFieldDetails: function () {
+                    var $this = this;
+                    var configTableFieldDetails = [];
+                    $($this.tableFieldDetails).each(function () {
+                        configTableFieldDetails.push($.extend({}, this));
+                    });
+                    if ($this.orgTableFields.length > 0) {
+                        $(configTableFieldDetails).each(function () {
+                            var configTableFieldDetail = this;
+                            configTableFieldDetail.defaultChecked = false;
+                            $($this.orgTableFields).each(function () {
+                                if (configTableFieldDetail.id === this.tableFieldDetailId) {
+                                    configTableFieldDetail.defaultChecked = true;
+                                    configTableFieldDetail.defaultTop = this.top;
+                                }
+                            });
+                        });
+                    }
+                    return configTableFieldDetails;
+                },
+                // 重新加载数据
+                loadData: function() {
+                    var $this = this;
+                    var url = ctx + "/api/stat/org/activity/page";
+                    $this.loaded = false;
+                    app.ajaxPostWithLoading(url, { queryParamStr: activityApp.getJsonStr($this.queryParams) }, function (data) {
+
+                        $this.loaded = true;
+                        if (data.success) {
+                            $this.tableData = data.data.records;
+                            $this.total = data.data.total;
+                            $this.pages = data.data.pages;
+                        } else {
+                            var errorMessage = data.message;
+                            if (activityApp.isEmpty(errorMessage)) {
+                                errorMessage = "加载活动统计汇总数据失败";
+                            }
+                            app.showMsg(errorMessage);
+                        }
+                    }, function () {
+                        $this.loaded = true;
+                        app.showMsg("加载活动统计汇总数据失败");
+                    });
+                },
+                search: function () {
+                    var $this = this;
+                    $this.queryParams.pageNum = 1;
+                    $this.queryParams.pageSize = 10;
+                    $this.loadData();
+                },
+                // 下一页或上一页
+                changePage: function (pageNum) {
+                    var $this = this;
+                    $this.queryParams.pageNum = pageNum;
+                    $this.loadData();
+                },
+                sortChange: function (column) {
+                    var $this = this;
+                    var sortFieldItem = $($this.showTableFieldDetails).filter(function() {
+                        return this.code === column.prop
+                    })[0];
+                    $this.queryParams.orderFieldId = sortFieldItem ? sortFieldItem.id : null;
+                    if (column.order === 'descending') {
+                        $this.queryParams.orderType = 'DESC';
+                    } else if (column.order === 'ascending'){
+                        $this.queryParams.orderType = 'ASC';
+                    } else {
+                        $this.queryParams.orderType = null;
+                    }
+                    $this.loadData();
+                },
+                // 跳转活动详情页
+                toActivityDetail: function (previewUrl) {
+                    var $this = this;
+                    if (!activityApp.isEmpty(previewUrl)) {
+                        window.open(previewUrl);
+                    }
+                },
+                // 日期范围查询改变
+                dateRangeChange: function (range) {
+                    var $this = this;
+                    if (range && range.length > 0) {
+                        $this.queryParams.startTime = range[0];
+                        $this.queryParams.endTime = range[1];
+                    } else {
+                        $this.queryParams.startTime = null;
+                        $this.queryParams.endTime = null;
+                    }
+                },
+                // 取消置顶配置
+                topConfigChange: function(item) {
+                    item.defaultTop = !item.defaultTop;
+                    this.reSortSettingData();
+                },
+                // 对设置重排序
+                reSortSettingData: function() {
+                    var $this = this;
+                    $this.configTableFieldDetails.sort(function(a, b) {
+                        if (b.defaultChecked > a.defaultChecked) {
+                            return 1;
+                        } else if (b.defaultChecked < a.defaultChecked){
+                            return -1;
+                        } else {
+                            return b.defaultTop - a.defaultTop;
+                        }
+                    });
+                    $($this.configTableFieldDetails).each(function(i) {
+                       this.sequence = i;
+                    });
+                },
+                // 重置配置
+                resetConfig: function () {
+                    var $this = this;
+                    $this.configTableFieldDetails = $this.calConfigTableFieldDetails();
+                    $this.reSortSettingData();
+                },
+                // 封装提交的配置
+                packageSubmitTableFieldDetails: function () {
+                    var $this = this;
+                    var orgTableFieldDetails = [];
+                    var sequence = 1;
+                    $($this.configTableFieldDetails).each(function () {
+                        if (this.defaultChecked) {
+                            var orgTableFieldDetail = {
+                                tableFieldDetailId: this.id,
+                                top: this.defaultTop,
+                                sequence: sequence++
+                            }
+                            orgTableFieldDetails.push(orgTableFieldDetail);
+
+                        }
+                    });
+                    return orgTableFieldDetails;
+                },
+                // 配置提交
+                configSubmit: function () {
+                    var $this = this;
+                    var orgTableFieldDetails = $this.packageSubmitTableFieldDetails();
+                    var url = ctx + "/api/org/" + $this.fid + "/table-field/" + $this.tableFieldId + "/config";
+                    var params = {
+                        orgTableFieldsStr: activityApp.getJsonStr(orgTableFieldDetails)
+                    };
+                    app.ajaxPostWithLoading(url, params, function (data) {
+                        window.location.reload();
+                    }, function () {
+
+                    });
+                },
+                showToast(){
+                    $('.toast-box').fadeIn();
+                    setTimeout(function () {
+                        $('.toast-box').fadeOut();
+                    },2000)
+                },
+                selectPopFunc(){
+                    this.ifSelectPop = true;
+                    var $this = this;
+                    if(!$this.participateScopeTreeObj){
+                        $this.initGroupTree();
+                    }
+                },
+                // 导出
+                exportData: function () {
+                    var $this = this;
+                    var url = ctx + "/api/export";
+                    $this.loaded = false;
+                    var params = {
+                        queryParamStr: activityApp.getJsonStr($this.queryParams),
+                        exportType: "org_activity_stat"
+                    };
+                    app.ajaxPostWithLoading(url, params, function (data) {
+                        $this.loaded = true;
+                        if (data.success) {
+                            $this.$refs.exportSuccessWindow.show = true;
+                        } else {
+                            var errorMessage = data.message;
+                            if (activityApp.isEmpty(errorMessage)) {
+                                errorMessage = "导出失败";
+                            }
+                            app.showMsg(errorMessage);
+                        }
+                    }, function () {
+                        app.showMsg("导出失败");
+                    });
+                },
+                // 导出记录
+                exportRecord: function () {
+                    window.open(ctx + '/export-record?exportType=org_activity_stat');
+                }
+            }
+        })
+    </script>
+</div>
+</body>
+</html>

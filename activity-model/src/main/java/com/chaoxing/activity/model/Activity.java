@@ -326,4 +326,21 @@ public class Activity {
                 .build();
     }
 
+    public static String getStatusDescription(Integer status) {
+        StatusEnum statusEnum = StatusEnum.fromValue(status);
+        switch (statusEnum) {
+            case DELETED:
+                return "已删除";
+            case WAIT_RELEASE:
+            case RELEASED:
+                return "未开始";
+            case ONGOING:
+                return "进行中";
+            case ENDED:
+                return "已结束";
+            default:
+                return "";
+        }
+    }
+
 }

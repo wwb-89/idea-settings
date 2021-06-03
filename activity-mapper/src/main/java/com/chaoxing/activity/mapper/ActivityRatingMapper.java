@@ -4,6 +4,8 @@ import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.chaoxing.activity.model.ActivityRating;
 import org.apache.ibatis.annotations.Mapper;
 
+import java.util.List;
+
 /**
  * @className: TActivityRatingMapper
  * @Description: 

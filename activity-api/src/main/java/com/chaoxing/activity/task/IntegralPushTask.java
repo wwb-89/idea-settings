@@ -35,7 +35,7 @@ public class IntegralPushTask {
 	 * @return void
 	*/
 	@Scheduled(fixedDelay = 1L)
-	public void pushData() {
+	public void pushData() throws InterruptedException {
 		IntegralPushDTO integralPush = integralPushQueueService.get();
 		if (integralPush == null) {
 			return;

@@ -585,6 +585,12 @@ body {
       }
     }
   }
+  .el-cascader{
+    vertical-align: top;
+    margin-right: 20px;
+    line-height: 32px;
+    width: 240px;
+  }
 }
 .el-select-dropdown__item{
   color: #333333;

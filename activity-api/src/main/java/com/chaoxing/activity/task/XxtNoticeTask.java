@@ -35,7 +35,7 @@ public class XxtNoticeTask {
 	 * @return void
 	*/
 	@Scheduled(fixedDelay = 1L)
-	public void sendNotice() {
+	public void sendNotice() throws InterruptedException {
 		NoticeDTO notice = xxtNoticeQueueService.get();
 		if (notice == null) {
 			return;

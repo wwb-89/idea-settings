@@ -332,6 +332,8 @@ Vue.filter("getCloudImgUrl", function (activity) {
 Vue.filter("activityStatusInstructions", function (status) {
     return activityApp.getActivityStatusInstructions(status);
 });
+
+
 Vue.filter("activityStatusDescribe", function (status) {
     if (activityApp.isEmpty(status)) {
         return "";
@@ -351,6 +353,24 @@ Vue.filter("activityStatusDescribe", function (status) {
             return "";
     }
 });
+
+Vue.filter("activityStatusFilter", function (status) {
+    if (activityApp.isEmpty(status)) {
+        return status;
+    }
+    switch (status) {
+        case 0:
+            return "已删除";
+        case 1:
+        case 2:
+            return "未开始";
+        case 3:
+            return "进行中";
+        default:
+            return "已结束";
+    }
+});
+
 Vue.filter("timestampFormat", function (timestamp) {
     if (activityApp.isEmpty(timestamp)) {
         return "";

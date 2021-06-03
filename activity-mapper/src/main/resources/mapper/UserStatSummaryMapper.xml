@@ -3,19 +3,75 @@
 <mapper namespace="com.chaoxing.activity.mapper.UserStatSummaryMapper">
     <resultMap id="BaseResultMap" type="com.chaoxing.activity.model.UserStatSummary">
         <result column="uid" jdbcType="INTEGER" property="uid" />
+        <result column="activity_id" jdbcType="INTEGER" property="activityId" />
         <result column="uname" jdbcType="VARCHAR" property="uname" />
         <result column="real_name" jdbcType="VARCHAR" property="realName" />
         <result column="mobile" jdbcType="VARCHAR" property="mobile" />
-        <result column="participate_activity_num" jdbcType="INTEGER" property="participateActivityNum" />
+        <result column="student_no" jdbcType="VARCHAR" property="studentNo" />
+        <result column="organization_structure" jdbcType="VARCHAR" property="organizationStructure" />
+        <result column="sign_up_num" jdbcType="INTEGER" property="signUpNum" />
+        <result column="signed_up_num" jdbcType="INTEGER" property="signedUpNum" />
+        <result column="sign_up_time" jdbcType="TIMESTAMP" property="signUpTime" />
+        <result column="sign_in_num" jdbcType="INTEGER" property="signInNum" />
         <result column="signed_in_num" jdbcType="INTEGER" property="signedInNum" />
-        <result column="signed_in_rate" jdbcType="DECIMAL" property="signedInRate" />
         <result column="rating_num" jdbcType="INTEGER" property="ratingNum" />
-        <result column="qualified_num" jdbcType="INTEGER" property="qualifiedNum" />
-        <result column="total_participate_time_length" jdbcType="INTEGER" property="totalParticipateTimeLength" />
+        <result column="is_qualified" jdbcType="BIT" property="qualified" />
+        <result column="integral" jdbcType="DECIMAL" property="integral" />
+        <result column="participate_time_length" jdbcType="INTEGER" property="participateTimeLength" />
+        <result column="is_valid" jdbcType="BIT" property="valid" />
         <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
         <result column="update_time" jdbcType="TIMESTAMP" property="updateTime" />
     </resultMap>
     <sql id="Base_Column_List">
-        t.uid, t.uname, t.real_name, t.mobile, t.participate_activity_num, t.signed_in_num, t.signed_in_rate, t.rating_num, t.qualified_num, t.total_participate_time_length, t.create_time, t.update_time
+        t.uid, t.activity_id, t.uname, t.real_name, t.mobile, t.student_no, t.organization_structure, t.sign_up_num, t.signed_up_num, t.sign_up_time, t.sign_in_num, t.signed_in_num, t.rating_num, t.is_qualified, t.integral, t.participate_time_length, t.is_valid, t.create_time, t.update_time
     </sql>
+    <select id="paging" resultType="com.chaoxing.activity.model.UserStatSummary">
+        SELECT
+            t.*,
+            ( CASE WHEN signInNum > 0 THEN ( CONVERT ( (signedInNum / signInNum) * 100, DECIMAL ( 10, 2 ))) ELSE 0 END ) signedInRate
+        FROM (
+                SELECT
+                    t.uid uid,
+                    t.uname uname,
+                    t.real_name realName,
+                    t.mobile mobile,
+                    t.student_no studentNo,
+                    t.organization_structure organizationStructure,
+                    COUNT( 1 ) participateActivityNum,
+                    SUM( t.sign_up_num) signUpNum,
+                    SUM( t.signed_up_num) signedUpNum,
+                    SUM( t.sign_in_num ) signInNum,
+                    SUM( t.signed_in_num ) signedInNum,
+                    SUM( t.rating_num ) ratingNum,
+                    SUM( t.integral ) integral,
+                    SUM( t.is_qualified ) qualifiedNum,
+                    SUM( t.participate_time_length ) participateTimeLength
+                FROM
+                    t_user_stat_summary t
+                    INNER JOIN t_activity t1 ON t.activity_id = t1.id
+                    AND t1.create_fid = #{userStatSummaryQuery.fid}
+                    AND t1.`status` IN (1, 2, 3, 4)
+                WHERE
+                    1 = 1
+                    <if test="userStatSummaryQuery.groupUids != null and userStatSummaryQuery.groupUids.size() != 0">
+                        AND t.uid IN
+                        <foreach collection="userStatSummaryQuery.groupUids" index="key" item="value" open="(" close=")" separator=",">
+                            #{value}
+                        </foreach>
+                    </if>
+                    <if test="userStatSummaryQuery.sw != null and userStatSummaryQuery.sw != ''">
+                        AND (
+                            t.real_name LIKE CONCAT('%', #{userStatSummaryQuery.sw}, '%')
+                        OR
+                            t.student_no LIKE CONCAT('%', #{userStatSummaryQuery.sw}, '%')
+                        )
+                    </if>
+                GROUP BY
+                    t.uid
+        ) t
+        <if test="userStatSummaryQuery.orderField != null and userStatSummaryQuery.orderField != ''">
+            ORDER BY
+                ${userStatSummaryQuery.orderField} ${userStatSummaryQuery.orderType}
+        </if>
+    </select>
 </mapper>
