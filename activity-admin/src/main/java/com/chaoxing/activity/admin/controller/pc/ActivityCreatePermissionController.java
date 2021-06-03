@@ -6,7 +6,6 @@ import com.chaoxing.activity.dto.OrgRoleDTO;
 import com.chaoxing.activity.dto.manager.WfwGroupDTO;
 import com.chaoxing.activity.model.ActivityClassify;
 import com.chaoxing.activity.service.activity.classify.ActivityClassifyQueryService;
-import com.chaoxing.activity.service.activity.manager.ActivityCreatePermissionService;
 import com.chaoxing.activity.service.manager.OrganizationalStructureApiService;
 import com.chaoxing.activity.service.manager.UcApiService;
 import com.chaoxing.activity.service.manager.WfwGroupApiService;
@@ -31,10 +30,6 @@ import java.util.Optional;
 @Controller
 @RequestMapping("activity/create/permission")
 public class ActivityCreatePermissionController {
-
-
-    @Resource
-    private ActivityCreatePermissionService activityCreatePermissionService;
     @Resource
     private OrganizationalStructureApiService organizationalStructureApiService;
     @Resource

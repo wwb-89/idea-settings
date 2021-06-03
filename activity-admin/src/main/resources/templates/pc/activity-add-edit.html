@@ -1402,7 +1402,7 @@
                         data: {
                             simpleData: {
                                 enable: true,
-                                idKey: "id",
+                                idKey: "virtualId",
                                 pIdKey: "gid",
                             },
                             key: {
@@ -1413,11 +1413,11 @@
                             }
                         },
                         callback: {
-                            onExpand: function (e, b, node) {
-                                if (node.children == null || node.children.length <= 0) {
-                                    $this.loadFidGroup(node.id, node);
-                                }
-                            }
+                            // onExpand: function (e, b, node) {
+                            //     if (node.children == null || node.children.length <= 0) {
+                            //         $this.loadFidGroup(node.id, node);
+                            //     }
+                            // }
                         }
                     };
                     $this.signUpParticipateScopeTreeObj = $.fn.zTree.init($("#sign-up-participate-scope-tree"), setting, $this.wfwGroups);

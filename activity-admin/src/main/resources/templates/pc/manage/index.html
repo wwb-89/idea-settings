@@ -174,16 +174,6 @@
                             });
                         }
                         return ids;
-                    },
-                    releaseScopeIds: function () {
-                        var $this = this;
-                        var ids = [];
-                        if ($this.releaseScopes) {
-                            $($this.releaseScopes).each(function () {
-                                ids.push(this.externalId);
-                            });
-                        }
-                        return ids;
                     }
                 },
                 methods: {
@@ -230,7 +220,7 @@
                                 var record = data.data;
                                 if (record) {
                                     var activityClassifyScope = record.activityClassifyScope;
-                                    var signUpScope = record.signUpScope;
+                                    $this.releaseScopes = activityApp.getJsonObject(record.signUpScope || '[]');
                                     var scopeArr;
                                     if (!activityApp.isEmpty(activityClassifyScope)) {
                                         scopeArr = activityClassifyScope.split(',');
@@ -238,14 +228,6 @@
                                         record.activityClassifyScope = scopeArr;
                                     } else {
                                         record.activityClassifyScope = [];
-                                    }
-                                    if (!activityApp.isEmpty(signUpScope)) {
-                                        scopeArr = signUpScope.split(',');
-                                        $($this.wfwGroups).each(function () {
-                                            if (scopeArr.indexOf(this.id) !== -1) {
-                                                $this.releaseScopes.push($.extend({}, {externalId: this.id, externalName: this.groupname}));
-                                            }
-                                        });
                                     }
                                     $this.config = record;
                                 } else {
@@ -272,10 +254,15 @@
                             $this.loading = false
                         });
                     },
+                    // 确定配置提交
                     submitPermissionConfig: function () {
                         var $this = this;
                         var config = $this.config;
-                        config.signUpScope = $this.releaseScopeIds.join(',');
+                        var signUpScope = []
+                        $($this.releaseScopes).each(function () {
+                            signUpScope.push({ externalId: this.externalId, externalName: this.externalName, leaf: this.leaf });
+                        });
+                        config.signUpScope = activityApp.getJsonStr(signUpScope);
                         if (config.activityClassifyScope) {
                             config.activityClassifyScope = config.activityClassifyScope.join(',');
                         }
@@ -292,6 +279,7 @@
                         }
                         $this.settingDialog = false
                     },
+                    // 单个配置保存
                     singleConfigSubmit: function (config) {
                         var addUrl = ctx + '/api/activity/create/permission/add';
                         var editUrl = ctx + '/api/activity/create/permission/edit';
@@ -310,6 +298,7 @@
                             app.showMsg("权限配置失败");
                         });
                     },
+                    // 批量配置保存
                     batchConfigSubmit: function (submitData) {
                         var url = ctx + '/api/activity/create/permission/batchConfig';
                         app.ajaxPostWithPayload(url, JSON.stringify(submitData), function (data) {
@@ -343,11 +332,12 @@
                                     pIdKey: "gid",
                                 },
                                 key: {
-                                    name: "groupname"
+                                    name: "groupname",
+                                    children: "xchildren"
                                 },
                                 keep: {
                                     parent: true
-                                }
+                                },
                             },
                             callback: {
                                 onExpand: function (e, b, node) {
@@ -356,10 +346,10 @@
                                     }
                                 }
                             },
-                            view: {}
                         };
                         $this.organizationTreeObj = $.fn.zTree.init($("#organizationTree"), setting, $this.wfwGroups);
                     },
+                    // 懒加载组织架构，点击展开加载
                     loadFidGroup: function (gid, parentNode){
                         var url = ctx + "/api/wfw/org/groups?gid=" + gid;
                         app.ajaxPostWithLoading(url, {}, function (data) {
@@ -391,6 +381,7 @@
                             app.showMsg("获取机构组织架构失败");
                         });
                     },
+                    // 确定发布范围改变事件
                     confirmReleaseScopeChange: function () {
                         var $this = this;
                         var zTree = $.fn.zTree.getZTreeObj("organizationTree");

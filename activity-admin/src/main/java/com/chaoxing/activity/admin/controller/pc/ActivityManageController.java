@@ -15,7 +15,7 @@ import com.chaoxing.activity.service.WebTemplateService;
 import com.chaoxing.activity.service.activity.ActivityQueryService;
 import com.chaoxing.activity.service.activity.classify.ActivityClassifyHandleService;
 import com.chaoxing.activity.service.activity.classify.ActivityClassifyQueryService;
-import com.chaoxing.activity.service.manager.WfwGroupApiService;
+import com.chaoxing.activity.service.activity.manager.ActivityCreatePermissionService;
 import com.chaoxing.activity.service.manager.WfwRegionalArchitectureApiService;
 import com.chaoxing.activity.util.constant.CommonConstant;
 import com.google.common.collect.Lists;
@@ -51,9 +51,9 @@ public class ActivityManageController {
 	@Resource
 	private GroupService groupService;
 	@Resource
-	private WfwGroupApiService wfwGroupApiService;
-	@Resource
 	private ActivityClassifyHandleService activityClassifyHandleService;
+	@Resource
+	private ActivityCreatePermissionService activityCreatePermissionService;
 	@Resource
 	private WfwRegionalArchitectureApiService wfwRegionalArchitectureApiService;
 
@@ -140,7 +140,7 @@ public class ActivityManageController {
 		model.addAttribute("webTemplates", webTemplates);
 		model.addAttribute("areaCode", areaCode);
 		// 微服务组织架构
-		List<WfwGroupDTO> wfwGroups = wfwGroupApiService.getGroupByGid(loginUser.getFid(), 0);
+		List<WfwGroupDTO> wfwGroups = activityCreatePermissionService.listGroupByFid(loginUser.getFid(), loginUser.getUid());
 		model.addAttribute("wfwGroups", wfwGroups);
 		flag = calActivityFlag(flag, secondClassroomFlag);
 		model.addAttribute("activityFlag", flag);

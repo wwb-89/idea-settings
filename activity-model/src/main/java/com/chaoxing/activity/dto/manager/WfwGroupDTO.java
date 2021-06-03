@@ -22,6 +22,8 @@ import java.util.List;
 public class WfwGroupDTO {
     /** 组id*/
     private String id;
+    /** 虚拟id，在活动创建时使用，相同节点会各自建立一个虚拟id, 其余节点均将真实id赋值虚拟id */
+    private String virtualId;
     /** 组上一级id*/
     private String gid;
     /** 名称*/
