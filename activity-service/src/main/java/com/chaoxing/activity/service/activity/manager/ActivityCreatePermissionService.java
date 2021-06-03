@@ -185,7 +185,7 @@ public class ActivityCreatePermissionService {
         // 若查出的角色配置权限数量少于userRoleIds的数量 证明有未配置权限的角色，则以该角色最大权限返回数据
         if (createPermissions.size() < userRoleIds.size()) {
             activityCreatePermission.setActivityClassifies(activityClassifies);
-            activityCreatePermission.setWfwGroups(buildWfwGroups(wfwGroups));
+            activityCreatePermission.setWfwGroups(wfwGroupApiService.buildWfwGroups(wfwGroups));
             return activityCreatePermission;
         }
 
@@ -201,7 +201,7 @@ public class ActivityCreatePermissionService {
             // 若有角色配置为不限，则以该配置返回角色权限数据
             if (!setReleaseScope) {
                 if (Objects.equals(permission.getSignUpScopeType(), ActivityCreatePermission.SignUpScopeType.NO_LIMIT.getValue())) {
-                    activityCreatePermission.setWfwGroups(buildWfwGroups(wfwGroups));
+                    activityCreatePermission.setWfwGroups(wfwGroupApiService.buildWfwGroups(wfwGroups));
                     setReleaseScope = Boolean.TRUE;
                 }
                 // 获取用户角色发布范围并集
@@ -229,6 +229,7 @@ public class ActivityCreatePermissionService {
         if (!setClassifyScope) {
             activityCreatePermission.setActivityClassifies(listActivityClassify(classifyIdSet, activityClassifies));
         }
+        activityCreatePermission.setSignUpParticipateScopeLimit(Boolean.TRUE);
         return activityCreatePermission;
     }
 
@@ -271,29 +272,6 @@ public class ActivityCreatePermissionService {
         return new ArrayList<>(result);
     }
 
-    /**全量返回组织架构列表前进行的处理
-    * @Description
-    * @author huxiaolong
-    * @Date 2021-06-03 14:49:07
-    * @param wfwGroups
-    * @return void
-    */
-    private List<WfwGroupDTO> buildWfwGroups(List<WfwGroupDTO> wfwGroups) {
-        List<WfwGroupDTO> result = Lists.newArrayList();
-        for (WfwGroupDTO group : wfwGroups) {
-            group.setVirtualId(group.getId());
-            result.add(group);
-            if (group.getGroupLevel() < wfwGroups.size()) {
-                WfwGroupDTO item = new WfwGroupDTO();
-                BeanUtils.copyProperties(group, item);
-                item.setVirtualId(UUID.randomUUID().toString().trim().replaceAll("-", ""));
-                item.setGid(item.getId());
-                result.add(item);
-            }
-        }
-        return result;
-    }
-
     /**递归查找已选发布范围的组织架构及其上级的组织架构
     * @Description
     * @author huxiaolong
@@ -322,6 +300,7 @@ public class ActivityCreatePermissionService {
             WfwGroupDTO item = new WfwGroupDTO();
             BeanUtils.copyProperties(group, item);
             item.setVirtualId(UUID.randomUUID().toString().trim().replaceAll("-", ""));
+            item.setSoncount(0);
             item.setGid(item.getId());
             result.add(item);
         }
@@ -330,7 +309,6 @@ public class ActivityCreatePermissionService {
         // 判断是否有pid, 有的话递归去查找
         groupId = StringUtils.isBlank(group.getGid()) ? null : Integer.valueOf(group.getGid());
         buildReleaseWfwGroups(groupId, wfwGroupMap, intersectionSet, result, resultIdSet);
-
     }
 
     /**根据权限中的活动类型范围并集，获取过滤权限下的活动类型列表

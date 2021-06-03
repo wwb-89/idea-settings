@@ -52,7 +52,7 @@
         <div class="dialog-mask" v-show="settingDialog">
             <div class="dailog setting-dailog">
                 <div class="header">
-                    <span>配置权限</span>
+                    <span>配置权限{{!activeRoleName ? '' : ` - ${activeRoleName}`}}</span>
                     <i class="close" @click="settingDialog=false"></i>
                 </div>
                 <div class="body" v-loading="loading">
@@ -60,10 +60,10 @@
                         <div class="form-item">
                             <label for="" class="label">活动类型</label>
                             <div class="input-box">
-                                <el-checkbox label="全部" v-model="config.allActivityClassify"></el-checkbox>
+                                <el-checkbox label="全部" v-model="config.allActivityClassify" @change="classifyAllChange"></el-checkbox>
                                 <el-checkbox-group v-model="config.activityClassifyScope">
                                     <el-checkbox v-for="classify in classifyList"
-                                                 :label="classify.id" :key="classify.id">{{classify.name}}</el-checkbox>
+                                                 :label="classify.id" :key="classify.id" @change="classifyChange">{{classify.name}}</el-checkbox>
                                 </el-checkbox-group>
                             </div>
                         </div>
@@ -90,7 +90,7 @@
                 </div>
                 <div class="footer">
                     <div class="btn-box">
-                        <div class="border-btn" @click="settingDialog = false">取消</div>
+                        <div class="border-btn" @click="cancelConfig">取消</div>
                         <div class="normal-btn" @click="submitPermissionConfig">确定</div>
                     </div>
                 </div>
@@ -138,6 +138,7 @@
                         roleList: [[${roleList}]],
                         classifyList: [[${classifyList}]],
                         wfwGroups: [[${wfwGroups}]],
+                        activeRoleName: '',
                         config: {
                             fid: [[${fid}]],
                             allActivityClassify: true,
@@ -156,13 +157,11 @@
                     }
                 },
                 created: function () {
-                    var $this = this;
                 },
                 mounted: function () {
                     var $this = this;
-                    if(!$this.organizationTreeObj){
-                        $this.organizationTreeFun();
-                    }
+                    $this.roleList.push({ roleid: -1, roleName: '其他', checked: false });
+                    $this.initTree();
                 },
                 computed: {
                     classifyIds: function () {
@@ -177,12 +176,18 @@
                     }
                 },
                 methods: {
+                    initTree: function () {
+                        var $this = this;
+                        if(!$this.organizationTreeObj){
+                            $this.organizationTreeFun();
+                        }
+                    },
                     checkAllChange: function (value) {
                         var $this = this;
                         $this.multipleChecked = value;
                         $($this.roleList).each(function () {
                             this.checked = value
-                        })
+                        });
                     },
                     roleCheckChange: function () {
                         var $this = this;
@@ -194,10 +199,20 @@
                         });
                         $this.multipleChecked = checkedCount > 0;
                     },
+                    classifyChange: function () {
+                        var $this = this;
+                        $this.config.allActivityClassify = $this.config.activityClassifyScope.length === $this.classifyIds.length;
+                    },
+                    classifyAllChange: function (value) {
+                        var $this = this;
+                        $this.config.activityClassifyScope = value ? $this.classifyIds : [];
+                    },
                     batchConfig: function () {
                         var $this = this;
                         $this.settingDialog = true;
                         $this.isBatch = true;
+                        $this.activeRoleName = '';
+                        $this.initTree();
                         $this.config = {
                             fid: $this.fid,
                             signUpScopeType: 1,
@@ -211,6 +226,8 @@
                         $this.isBatch = false;
                         $this.loading = true;
                         $this.settingDialog = true;
+                        $this.activeRoleName = role.roleName;
+                        $this.initTree();
                         // 初始化已选发布范围
                         $this.releaseScopes = [];
 
@@ -219,16 +236,19 @@
                             if (data.success) {
                                 var record = data.data;
                                 if (record) {
-                                    var activityClassifyScope = record.activityClassifyScope;
                                     $this.releaseScopes = activityApp.getJsonObject(record.signUpScope || '[]');
                                     var scopeArr;
-                                    if (!activityApp.isEmpty(activityClassifyScope)) {
-                                        scopeArr = activityClassifyScope.split(',');
-                                        $(scopeArr).each(function (i) { scopeArr[i] = parseInt(this); });
-                                        record.activityClassifyScope = scopeArr;
+                                    if (record.allActivityClassify) {
+                                        record.activityClassifyScope = $this.classifyIds;
                                     } else {
-                                        record.activityClassifyScope = [];
+                                        var activityClassifyScope = record.activityClassifyScope;
+                                        if (!activityApp.isEmpty(activityClassifyScope)) {
+                                            scopeArr = activityClassifyScope.split(',');
+                                            $(scopeArr).each(function (i) { scopeArr[i] = parseInt(this); });
+                                        }
+                                        record.activityClassifyScope = scopeArr || [];
                                     }
+
                                     $this.config = record;
                                 } else {
                                     var defaultAllPermission = {
@@ -263,8 +283,12 @@
                             signUpScope.push({ externalId: this.externalId, externalName: this.externalName, leaf: this.leaf });
                         });
                         config.signUpScope = activityApp.getJsonStr(signUpScope);
-                        if (config.activityClassifyScope) {
-                            config.activityClassifyScope = config.activityClassifyScope.join(',');
+                        if (config.allActivityClassify) {
+                            config.activityClassifyScope = '';
+                        } else {
+                            if (config.activityClassifyScope) {
+                                config.activityClassifyScope = config.activityClassifyScope.join(',');
+                            }
                         }
                         if ($this.isBatch) {
                             var submitData = [];
@@ -277,7 +301,7 @@
                         } else {
                             $this.singleConfigSubmit(config)
                         }
-                        $this.settingDialog = false
+                        $this.cancelConfig()
                     },
                     // 单个配置保存
                     singleConfigSubmit: function (config) {
@@ -315,6 +339,12 @@
                             app.showMsg("权限配置失败");
                         });
                     },
+                    cancelConfig: function () {
+                        var $this = this;
+                        $this.organizationTreeObj.destroy();
+                        $this.organizationTreeObj = null;
+                        $this.settingDialog = false;
+                    },
                     /* 渲染z-tree */
                     organizationTreeFun() {
                         var $this = this;
@@ -328,58 +358,20 @@
                             data: {
                                 simpleData: {
                                     enable: true,
-                                    idKey: "id",
+                                    idKey: "virtualId",
+                                    // idKey: "id",
                                     pIdKey: "gid",
                                 },
                                 key: {
-                                    name: "groupname",
-                                    children: "xchildren"
+                                    name: "groupname"
                                 },
                                 keep: {
                                     parent: true
                                 },
                             },
-                            callback: {
-                                onExpand: function (e, b, node) {
-                                    if (node.children == null || node.children.length <= 0) {
-                                        $this.loadFidGroup(node.id, node);
-                                    }
-                                }
-                            },
+                            callback: {},
                         };
                         $this.organizationTreeObj = $.fn.zTree.init($("#organizationTree"), setting, $this.wfwGroups);
-                    },
-                    // 懒加载组织架构，点击展开加载
-                    loadFidGroup: function (gid, parentNode){
-                        var url = ctx + "/api/wfw/org/groups?gid=" + gid;
-                        app.ajaxPostWithLoading(url, {}, function (data) {
-                            if (data.success) {
-                                var newNodes = data.data;
-                                if (newNodes.length > 0) {
-                                    $(newNodes).each(function () {
-                                        this.isParent = this.soncount > 0;
-                                    })
-                                    var treeObj = $.fn.zTree.getZTreeObj("organizationTree");
-                                    // 支持只选择节点数据，so新增一个节点的叶子数据
-                                    var cloneNode = {
-                                        id: parentNode.id,
-                                        groupname: parentNode.groupname,
-                                        soncount: 0,
-                                        isParent: false
-                                    }
-                                    treeObj.addNodes(parentNode, 0, cloneNode, false);
-                                    treeObj.addNodes(parentNode, 1, newNodes, false);
-                                }
-                            } else {
-                                var errorMessage = data.message;
-                                if (activityApp.isEmpty(errorMessage)) {
-                                    errorMessage = "获取机构组织架构失败";
-                                }
-                                app.showMsg(errorMessage);
-                            }
-                        }, function () {
-                            app.showMsg("获取机构组织架构失败");
-                        });
                     },
                     // 确定发布范围改变事件
                     confirmReleaseScopeChange: function () {

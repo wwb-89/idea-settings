@@ -5,17 +5,17 @@ import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.chaoxing.activity.dto.manager.WfwGroupDTO;
 import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
 import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.collections4.CollectionUtils;
+import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
 import javax.annotation.Resource;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -75,14 +75,49 @@ public class WfwGroupApiService {
         String rootId = jsonObject.getString("gid");
         JSONObject dataMap = jsonObject.getJSONObject("map");
         List<WfwGroupDTO> allWfwGroups = new ArrayList<>();
+        Map<String, Integer> idSonCountMap = Maps.newHashMap();
         for (String s : dataMap.keySet()) {
-            allWfwGroups.addAll(JSONArray.parseArray(dataMap.getString(s), WfwGroupDTO.class));
+            List<WfwGroupDTO> children = JSONArray.parseArray(dataMap.getString(s), WfwGroupDTO.class);
+            idSonCountMap.put(s, children.size());
+            allWfwGroups.addAll(children);
         }
         if (CollectionUtils.isNotEmpty(allWfwGroups)) {
             Map<String, List<WfwGroupDTO>> gidGroups = allWfwGroups.stream().collect(Collectors.groupingBy(WfwGroupDTO::getGid));
             wfwGroupResult = listSub(gidGroups, rootId, 1);
         }
+        for (WfwGroupDTO group : wfwGroupResult) {
+            String groupId = group.getId();
+            Integer count = Optional.ofNullable(idSonCountMap.get(groupId)).orElse(0);
+            group.setSoncount(count);
+        }
         return wfwGroupResult;
+    }
+
+    /**全量返回组织架构列表前进行的处理
+     * @Description
+     * @author huxiaolong
+     * @Date 2021-06-03 14:49:07
+     * @param wfwGroups
+     * @return void
+     */
+    public List<WfwGroupDTO> buildWfwGroups(List<WfwGroupDTO> wfwGroups) {
+        List<WfwGroupDTO> result = Lists.newArrayList();
+        if (CollectionUtils.isEmpty(wfwGroups)) {
+            return result;
+        }
+        for (WfwGroupDTO group : wfwGroups) {
+            group.setVirtualId(group.getId());
+            result.add(group);
+            if (group.getSoncount() > 0) {
+                WfwGroupDTO item = new WfwGroupDTO();
+                BeanUtils.copyProperties(group, item);
+                item.setVirtualId(UUID.randomUUID().toString().trim().replaceAll("-", ""));
+                item.setSoncount(0);
+                item.setGid(item.getId());
+                result.add(item);
+            }
+        }
+        return result;
     }
 
     private List<WfwGroupDTO> listSub(Map<String, List<WfwGroupDTO>> gidGroups, String gid, Integer level) {

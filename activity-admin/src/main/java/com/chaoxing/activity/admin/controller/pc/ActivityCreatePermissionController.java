@@ -48,16 +48,16 @@ public class ActivityCreatePermissionController {
         if (realFid == null) {
             realFid = loginUser.getFid();
         }
-        if (ucApiService.isManager(realFid, uid)) {
+//        if (ucApiService.isManager(realFid, uid)) {
             List<OrgRoleDTO> roleList = organizationalStructureApiService.listOrgRoles(realFid);
             List<ActivityClassify> classifyList = activityClassifyQueryService.listOrgOptionsByFid(realFid);
             // 微服务组织架构
-            List<WfwGroupDTO> wfwGroups = wfwGroupApiService.getGroupByGid(realFid, 0);
+            List<WfwGroupDTO> wfwGroups = wfwGroupApiService.listGroupByFid(realFid);
             model.addAttribute("fid", realFid);
-            model.addAttribute("wfwGroups", wfwGroups);
+            model.addAttribute("wfwGroups", wfwGroupApiService.buildWfwGroups(wfwGroups));
             model.addAttribute("classifyList", classifyList);
             model.addAttribute("roleList", roleList);
-        }
-        return "pc/manage/index";
+//        }
+        return "pc/permission/index";
     }
 }

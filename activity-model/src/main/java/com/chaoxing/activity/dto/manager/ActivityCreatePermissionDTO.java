@@ -1,7 +1,6 @@
 package com.chaoxing.activity.dto.manager;
 
 import com.chaoxing.activity.model.ActivityClassify;
-import com.chaoxing.activity.model.ActivityStatSummary;
 import com.google.common.collect.Lists;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -23,18 +22,20 @@ import java.util.List;
 @AllArgsConstructor
 public class ActivityCreatePermissionDTO {
 
+    private Boolean signUpParticipateScopeLimit;
     /**
      * 组织架构
      */
-    List<WfwGroupDTO> wfwGroups;
+    private List<WfwGroupDTO> wfwGroups;
 
     /**
      * 活动类型
      */
-    List<ActivityClassify> activityClassifies;
+    private List<ActivityClassify> activityClassifies;
 
     public static ActivityCreatePermissionDTO buildDefault() {
         return ActivityCreatePermissionDTO.builder()
+                .signUpParticipateScopeLimit(Boolean.FALSE)
                 .wfwGroups(Lists.newArrayList())
                 .activityClassifies(Lists.newArrayList())
                 .build();
