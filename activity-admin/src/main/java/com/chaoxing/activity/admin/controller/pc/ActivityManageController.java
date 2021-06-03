@@ -3,6 +3,7 @@ package com.chaoxing.activity.admin.controller.pc;
 import com.chaoxing.activity.admin.util.LoginUtils;
 import com.chaoxing.activity.dto.LoginUserDTO;
 import com.chaoxing.activity.dto.activity.ActivityTypeDTO;
+import com.chaoxing.activity.dto.manager.ActivityCreatePermissionDTO;
 import com.chaoxing.activity.dto.manager.WfwRegionalArchitectureDTO;
 import com.chaoxing.activity.dto.module.SignAddEditDTO;
 import com.chaoxing.activity.model.Activity;
@@ -131,6 +132,9 @@ public class ActivityManageController {
 		// 活动分类列表
 		// 先克隆
 		activityClassifyHandleService.cloneSystemClassify(loginUser.getFid());
+
+		ActivityCreatePermissionDTO activityCreatePermission = activityCreatePermissionService.getGroupClassifyByUserPermission(loginUser.getFid(), loginUser.getUid());
+		model.addAttribute("activityClassifies", activityCreatePermission.getActivityClassifies());
 //		model.addAttribute("activityClassifies", activityClassifyQueryService.listOrgOptional(loginUser.getFid()));
 
 		// 报名签到
@@ -139,10 +143,8 @@ public class ActivityManageController {
 		List<WebTemplate> webTemplates = webTemplateService.listAvailable(loginUser.getFid());
 		model.addAttribute("webTemplates", webTemplates);
 		model.addAttribute("areaCode", areaCode);
-		// 微服务组织架构 、活动分类列表
-		activityCreatePermissionService.getGroupClassifyByUserPermission(loginUser.getFid(), loginUser.getUid(), model);
-//		List<WfwGroupDTO> wfwGroups = activityCreatePermissionService.listGroupByFid(loginUser.getFid(), loginUser.getUid());
-//		model.addAttribute("wfwGroups", wfwGroups);
+		// 微服务组织架构
+		model.addAttribute("wfwGroups", activityCreatePermission.getWfwGroups());
 		flag = calActivityFlag(flag, secondClassroomFlag);
 		model.addAttribute("activityFlag", flag);
 		// flag配置的报名签到的模块

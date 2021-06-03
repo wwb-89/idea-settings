@@ -3,6 +3,7 @@ package com.chaoxing.activity.service.activity.manager;
 import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
+import com.chaoxing.activity.dto.manager.ActivityCreatePermissionDTO;
 import com.chaoxing.activity.dto.manager.WfwGroupDTO;
 import com.chaoxing.activity.dto.manager.sign.SignUpParticipateScope;
 import com.chaoxing.activity.mapper.ActivityCreatePermissionMapper;
@@ -21,7 +22,6 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.ui.Model;
 
 import javax.annotation.Resource;
 import java.time.LocalDateTime;
@@ -164,19 +164,15 @@ public class ActivityCreatePermissionService {
     * @Date 2021-06-03 15:40:25
     * @param fid
     * @param uid
-    * @param model
     * @return void
     */
-    public void getGroupClassifyByUserPermission(Integer fid, Integer uid, Model model) {
-        List<ActivityClassify> activityClassifyResult = Lists.newArrayList();
-        List<WfwGroupDTO> wfwGroupResult = Lists.newArrayList();
+    public ActivityCreatePermissionDTO getGroupClassifyByUserPermission(Integer fid, Integer uid) {
+        ActivityCreatePermissionDTO activityCreatePermission = ActivityCreatePermissionDTO.buildDefault();
         // 查询用户的角色id
         List<Integer> userRoleIds = moocApiService.getUserRoleIds(fid, uid);
         // 无角色返回空
         if (CollectionUtils.isEmpty(userRoleIds)) {
-            model.addAttribute("activityClassifies", activityClassifyResult);
-            model.addAttribute("wfwGroups", wfwGroupResult);
-            return;
+            return activityCreatePermission;
         }
         List<ActivityCreatePermission> createPermissions = activityCreatePermissionMapper.selectList(new QueryWrapper<ActivityCreatePermission>()
                 .lambda()
@@ -188,9 +184,9 @@ public class ActivityCreatePermissionService {
         List<ActivityClassify> activityClassifies = activityClassifyQueryService.listOrgOptional(fid);
         // 若查出的角色配置权限数量少于userRoleIds的数量 证明有未配置权限的角色，则以该角色最大权限返回数据
         if (createPermissions.size() < userRoleIds.size()) {
-            model.addAttribute("activityClassifies", activityClassifies);
-            model.addAttribute("wfwGroups", buildWfwGroups(wfwGroups));
-            return;
+            activityCreatePermission.setActivityClassifies(activityClassifies);
+            activityCreatePermission.setWfwGroups(buildWfwGroups(wfwGroups));
+            return activityCreatePermission;
         }
 
         // 标识，判断是否设置全量权限范围
@@ -200,12 +196,12 @@ public class ActivityCreatePermissionService {
         Set<Integer> classifyIdSet = Sets.newHashSet();
         for (ActivityCreatePermission permission : createPermissions) {
             if (setReleaseScope && setClassifyScope) {
-                return;
+                return activityCreatePermission;
             }
             // 若有角色配置为不限，则以该配置返回角色权限数据
             if (!setReleaseScope) {
                 if (Objects.equals(permission.getSignUpScopeType(), ActivityCreatePermission.SignUpScopeType.NO_LIMIT.getValue())) {
-                    model.addAttribute("wfwGroups", buildWfwGroups(wfwGroups));
+                    activityCreatePermission.setWfwGroups(buildWfwGroups(wfwGroups));
                     setReleaseScope = Boolean.TRUE;
                 }
                 // 获取用户角色发布范围并集
@@ -215,7 +211,7 @@ public class ActivityCreatePermissionService {
             }
             if (!setClassifyScope) {
                 if (permission.getAllActivityClassify()) {
-                    model.addAttribute("activityClassifies", activityClassifies);
+                    activityCreatePermission.setActivityClassifies(activityClassifies);
                     setClassifyScope = Boolean.TRUE;
                 }
                 // 获取用户角色活动类型范围并集
@@ -228,11 +224,12 @@ public class ActivityCreatePermissionService {
             }
         }
         if (!setReleaseScope) {
-            model.addAttribute("wfwGroups", buildWfwGroups(releaseScopes, wfwGroups));
+            activityCreatePermission.setWfwGroups(buildWfwGroups(releaseScopes, wfwGroups));
         }
         if (!setClassifyScope) {
-            model.addAttribute("activityClassifies", listActivityClassify(classifyIdSet, activityClassifies));
+            activityCreatePermission.setActivityClassifies(listActivityClassify(classifyIdSet, activityClassifies));
         }
+        return activityCreatePermission;
     }
 
     /**根据权限中的发布范围并集，获取过滤权限下的组织架构列表
