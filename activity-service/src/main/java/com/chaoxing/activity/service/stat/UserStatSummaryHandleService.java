@@ -88,6 +88,7 @@ public class UserStatSummaryHandleService {
                     .eq(UserStatSummary::getActivityId, activityId)
                     .set(UserStatSummary::getSignUpNum, userSignStatSummary.getSignUpNum())
                     .set(UserStatSummary::getSignedUpNum, userSignStatSummary.getSignedUpNum())
+                    .set(UserStatSummary::getSignUpTime, userSignStatSummary.getSignUpTime())
                     .set(UserStatSummary::getSignInNum, userSignStatSummary.getSignInNum())
                     .set(UserStatSummary::getSignedInNum, userSignStatSummary.getSignedInNum())
                     .set(UserStatSummary::getParticipateTimeLength, userSignStatSummary.getParticipateTimeLength())

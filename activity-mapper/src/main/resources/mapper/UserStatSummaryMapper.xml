@@ -11,6 +11,7 @@
         <result column="organization_structure" jdbcType="VARCHAR" property="organizationStructure" />
         <result column="sign_up_num" jdbcType="INTEGER" property="signUpNum" />
         <result column="signed_up_num" jdbcType="INTEGER" property="signedUpNum" />
+        <result column="sign_up_time" jdbcType="TIMESTAMP" property="signUpTime" />
         <result column="sign_in_num" jdbcType="INTEGER" property="signInNum" />
         <result column="signed_in_num" jdbcType="INTEGER" property="signedInNum" />
         <result column="rating_num" jdbcType="INTEGER" property="ratingNum" />
@@ -22,7 +23,7 @@
         <result column="update_time" jdbcType="TIMESTAMP" property="updateTime" />
     </resultMap>
     <sql id="Base_Column_List">
-        t.uid, t.activity_id, t.uname, t.real_name, t.mobile, t.student_no, t.organization_structure, t.sign_up_num, t.signed_up_num, t.sign_in_num, t.signed_in_num, t.rating_num, t.is_qualified, t.integral, t.participate_time_length, t.is_valid, t.create_time, t.update_time
+        t.uid, t.activity_id, t.uname, t.real_name, t.mobile, t.student_no, t.organization_structure, t.sign_up_num, t.signed_up_num, t.sign_up_time, t.sign_in_num, t.signed_in_num, t.rating_num, t.is_qualified, t.integral, t.participate_time_length, t.is_valid, t.create_time, t.update_time
     </sql>
     <select id="paging" resultType="com.chaoxing.activity.model.UserStatSummary">
         SELECT

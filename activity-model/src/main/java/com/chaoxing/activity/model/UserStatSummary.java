@@ -43,6 +43,8 @@ public class UserStatSummary {
     private Integer signUpNum;
     /** 报名成功数量; column: signed_up_num*/
     private Integer signedUpNum;
+    /** 报名时间; column: sign_up_time*/
+    private Integer signUpTime;
     /** 签到数量; column: sign_in_num*/
     private Integer signInNum;
     /** 签到成功数量; column: signed_in_num*/
