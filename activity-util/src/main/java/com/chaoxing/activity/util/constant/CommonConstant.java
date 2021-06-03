@@ -58,5 +58,7 @@ public class CommonConstant {
 	// 表单相关
 	/** 表单审批同意 */
 	public static final Integer FORM_APPROVAL_AGREE_VALUE = 2;
+	/** 表单创建活动选择的门户模版id */
+	public static final Integer DEFAULT_FROM_FORM_CREATE_ACTIVITY_TEMPLATE_ID = 16;
 
 }

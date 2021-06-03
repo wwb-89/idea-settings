@@ -251,13 +251,11 @@ public class FormApprovalApiService {
             activityFlag = Activity.ActivityFlag.NORMAL;
         }
         activity.setActivityFlag(activityFlag.getValue());
-        // 设置活动关联的模板id
-        List<WebTemplate> webTemplates = webTemplateService.listAvailable(fid);
-        if (CollectionUtils.isEmpty(webTemplates)) {
-            throw new BusinessException("没有可用的门户模版");
-        }
         // 取最后一个模版
-        WebTemplate webTemplate = webTemplates.get(0);
+        WebTemplate webTemplate = webTemplateService.getById(CommonConstant.DEFAULT_FROM_FORM_CREATE_ACTIVITY_TEMPLATE_ID);
+        if (webTemplate == null) {
+            throw new BusinessException("默认的模版不存在");
+        }
         SignAddEditDTO signAddEditDTO = SignAddEditDTO.buildDefault();
         WfwRegionalArchitectureDTO wfwRegionalArchitecture = wfwRegionalArchitectureApiService.buildWfwRegionalArchitecture(fid);
         LoginUserDTO loginUser = LoginUserDTO.buildDefault(activity.getCreateUid(), activity.getCreateUserName(), activity.getCreateFid(), activity.getCreateOrgName());

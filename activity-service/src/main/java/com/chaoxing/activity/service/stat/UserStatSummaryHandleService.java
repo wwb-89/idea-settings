@@ -100,6 +100,7 @@ public class UserStatSummaryHandleService {
             userStatSummary.setActivityId(activityId);
             userStatSummary.setSignUpNum(userSignStatSummary.getSignUpNum());
             userStatSummary.setSignedUpNum(userSignStatSummary.getSignedUpNum());
+            userStatSummary.setSignUpTime(userSignStatSummary.getSignUpTime());
             userStatSummary.setSignInNum(userSignStatSummary.getSignInNum());
             userStatSummary.setSignedInNum(userSignStatSummary.getSignedInNum());
             userStatSummary.setParticipateTimeLength(userSignStatSummary.getParticipateTimeLength());
