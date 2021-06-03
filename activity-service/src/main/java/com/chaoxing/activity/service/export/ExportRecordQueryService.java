@@ -37,10 +37,22 @@ public class ExportRecordQueryService {
         if (exportTypeEnum == null) {
             return Lists.newArrayList();
         }
-        return exportRecordMapper.selectList(new QueryWrapper<ExportRecord>()
+        List<ExportRecord> exportRecords = exportRecordMapper.selectList(new QueryWrapper<ExportRecord>()
                 .lambda()
                 .eq(ExportRecord::getCreateUid, uid)
                 .eq(ExportRecord::getExportType, exportType)
         );
+        return exportRecords;
+    }
+
+    /**根据id查询
+     * @Description 
+     * @author wwb
+     * @Date 2021-06-03 10:53:52
+     * @param id
+     * @return com.chaoxing.activity.model.ExportRecord
+    */
+    public ExportRecord getById(Integer id) {
+        return exportRecordMapper.selectById(id);
     }
 }

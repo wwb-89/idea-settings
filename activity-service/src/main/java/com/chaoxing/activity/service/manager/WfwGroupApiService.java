@@ -101,7 +101,7 @@ public class WfwGroupApiService {
         return result;
     }
 
-    /**获取有成绩的组织架构
+    /**获取有层级的组织架构
      * @Description 
      * @author wwb
      * @Date 2021-06-02 15:32:34

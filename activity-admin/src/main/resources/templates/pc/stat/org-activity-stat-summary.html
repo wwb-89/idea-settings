@@ -20,7 +20,6 @@
         }
     </style>
 </head>
-
 <body>
 <div id="orgActivityStatVue" v-cloak>
     <div style="display: block">
@@ -160,6 +159,7 @@
                     </template>
                 </el-table>
                 <el-pagination
+                        v-show="loaded && total > queryParams.pageSize"
                         background
                         layout="prev, pager, next"
                         :total="total"
@@ -171,8 +171,6 @@
         </div>
         <!-- 表格内容 -->
     </div>
-
-    <!-------------------------------------------------分割线------------------------------------------------>
     <!-- 参与范围 -->
     <div class="dialog-box selectPop" v-show="ifSelectPop">
         <div class="dialog-wrap">

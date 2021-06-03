@@ -69,4 +69,34 @@ public class FileUtils {
 		return file.getParent();
 	}
 
+	/**文件删除
+	 * @Description
+	 * @author huxiaolong
+	 * @Date 2021-06-01 16:18:22
+	 * @param fileName
+	 * @return void
+	 */
+	public static void deleteFile(String fileName) {
+		File file = new File(fileName);
+		if (file.exists() && file.isFile()) {
+			file.delete();
+		}
+	}
+
+	/**创建目录
+	 * @Description 
+	 * @author wwb
+	 * @Date 2021-06-03 15:05:14
+	 * @param fileName
+	 * @return void
+	*/
+	public static void createFolder(String fileName) {
+		File file = new File(fileName);
+		if (file.isDirectory()) {
+			file.mkdirs();
+		} else {
+			file.getParentFile().mkdirs();
+		}
+	}
+
 }

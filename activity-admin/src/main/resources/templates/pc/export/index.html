@@ -103,11 +103,12 @@
                         }
                     },
                     download: function (record) {
-                        if (!record || !record.downloadUrl) {
-                            app.showMsg('下载链接不存在！');
-                            return;
+                        var $this = this;
+                        var cloudId = record.cloudId;
+                        if (!activityApp.isEmpty(cloudId)) {
+                            var url = ctx + "/api/download/cloud/" + cloudId;
+                            window.open(url);
                         }
-                        window.open(record.downloadUrl);
                     }
                 }
             });

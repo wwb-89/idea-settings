@@ -1,7 +1,7 @@
 package com.chaoxing.activity.service.event;
 
 import com.chaoxing.activity.service.queue.UserRatingQueueService;
-import com.chaoxing.activity.service.stat.UserStatSummaryService;
+import com.chaoxing.activity.service.stat.UserStatSummaryHandleService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
@@ -22,7 +22,7 @@ public class UserRatingChangeEventService {
 	@Resource
 	private UserRatingQueueService userRatingQueueService;
 	@Resource
-	private UserStatSummaryService userStatSummaryService;
+	private UserStatSummaryHandleService userStatSummaryService;
 
 	/**用户评价变更
 	 * @Description 

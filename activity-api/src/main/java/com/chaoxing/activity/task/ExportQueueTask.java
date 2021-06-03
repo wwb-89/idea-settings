@@ -33,13 +33,9 @@ public class ExportQueueTask {
         if (taskId == null) {
             return;
         }
-        boolean result = false;
         try {
-            result = exportRecordService.handleExportTask(taskId, PathUtils.getUploadRootPath());
+            exportRecordService.exportHandle(taskId, PathUtils.getUploadRootPath());
         } catch (Exception e) {
-
-        }
-        if (!result) {
             exportQueueService.push(taskId);
         }
     }

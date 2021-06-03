@@ -29,19 +29,17 @@ import java.util.Optional;
 /**用户统计汇总服务
  * @author wwb
  * @version ver 1.0
- * @className UserStatSummaryService
+ * @className UserStatSummaryHandleService
  * @description
  * @blame wwb
  * @date 2021-05-26 14:37:21
  */
 @Slf4j
 @Service
-public class UserStatSummaryService {
+public class UserStatSummaryHandleService {
 
     @Resource
     private UserStatSummaryMapper userStatSummaryMapper;
-    @Resource
-    private TableFieldDetailMapper tableFieldDetailMapper;
 
     @Resource
     private SignApiService signApiService;
@@ -201,39 +199,6 @@ public class UserStatSummaryService {
                     .build();
             userStatSummaryMapper.insert(userStatSummary);
         }
-    }
-
-    /**分页查询用户统计
-     * @Description 
-     * @author wwb
-     * @Date 2021-05-28 15:57:41
-     * @param page
-     * @param userStatSummaryQuery
-     * @return com.baomidou.mybatisplus.extension.plugins.pagination.Page
-    */
-    public Page paging(Page page, UserStatSummaryQueryDTO userStatSummaryQuery) {
-        Integer groupId = userStatSummaryQuery.getGroupId();
-        Integer fid = userStatSummaryQuery.getFid();
-        List<Integer> orgUids = organizationalStructureApiService.listOrgUid(fid);
-        userStatSummaryQuery.setOrgUids(orgUids);
-        List<Integer> groupUids = Lists.newArrayList();
-        if (groupId != null) {
-            groupUids = organizationalStructureApiService.listOrgGroupUid(fid, groupId, userStatSummaryQuery.getGroupLevel());
-            if (CollectionUtils.isEmpty(groupUids)) {
-                // 给一个不存在的uid
-                groupUids.add(-1);
-            }
-        }
-        userStatSummaryQuery.setGroupUids(groupUids);
-        Integer orderTableFieldId = userStatSummaryQuery.getOrderTableFieldId();
-        if (orderTableFieldId == null) {
-            userStatSummaryQuery.setOrderField("");
-        } else {
-            TableFieldDetail tableFieldDetail = tableFieldDetailMapper.selectById(orderTableFieldId);
-            userStatSummaryQuery.setOrderField(tableFieldDetail.getCode());
-        }
-        page = userStatSummaryMapper.paging(page, userStatSummaryQuery);
-        return page;
     }
 
     /**更新活动下用户获得的积分

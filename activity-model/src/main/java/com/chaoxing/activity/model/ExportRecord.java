@@ -28,8 +28,6 @@ public class ExportRecord {
     private Integer id;
     /** 导出类型; column: export_type*/
     private String exportType;
-    /** 导出时间; column: export_time*/
-    private LocalDateTime exportTime;
     /** 参数; column: params*/
     private String params;
     /** 文件名; column: file_name*/

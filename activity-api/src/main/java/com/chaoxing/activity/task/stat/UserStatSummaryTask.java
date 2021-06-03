@@ -1,7 +1,7 @@
 package com.chaoxing.activity.task.stat;
 
 import com.chaoxing.activity.service.queue.UserStatSummaryQueueService;
-import com.chaoxing.activity.service.stat.UserStatSummaryService;
+import com.chaoxing.activity.service.stat.UserStatSummaryHandleService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
@@ -23,7 +23,7 @@ public class UserStatSummaryTask {
     @Resource
     private UserStatSummaryQueueService userStatSummaryQueueService;
     @Resource
-    private UserStatSummaryService userStatSummaryService;
+    private UserStatSummaryHandleService userStatSummaryService;
 
     @Scheduled(fixedDelay = 1L)
     public void handleUserSignInStat() throws InterruptedException {

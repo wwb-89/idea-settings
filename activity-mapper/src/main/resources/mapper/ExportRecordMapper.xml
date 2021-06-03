@@ -4,7 +4,6 @@
     <resultMap id="BaseResultMap" type="com.chaoxing.activity.model.ExportRecord">
         <id column="id" jdbcType="INTEGER" property="id" />
         <result column="export_type" jdbcType="VARCHAR" property="exportType" />
-        <result column="export_time" jdbcType="TIMESTAMP" property="exportTime" />
         <result column="params" jdbcType="VARCHAR" property="params" />
         <result column="file_name" jdbcType="VARCHAR" property="fileName" />
         <result column="file_size" jdbcType="BIGINT" property="fileSize" />
@@ -19,7 +18,7 @@
         <result column="update_time" jdbcType="TIMESTAMP" property="updateTime" />
     </resultMap>
     <sql id="Base_Column_List">
-        t.id, t.export_type, t.export_time, t.params, t.file_name, t.file_size, t.cloud_id, 
+        t.id, t.export_type, t.params, t.file_name, t.file_size, t.cloud_id,
         t.download_url, t.handle_times, t.status, t.message, t.create_time, t.create_uid, 
         t.create_ip, t.update_time
     </sql>

@@ -2,7 +2,7 @@ package com.chaoxing.activity.service.event;
 
 import com.chaoxing.activity.model.Activity;
 import com.chaoxing.activity.service.queue.*;
-import com.chaoxing.activity.service.stat.UserStatSummaryService;
+import com.chaoxing.activity.service.stat.UserStatSummaryHandleService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
@@ -43,7 +43,7 @@ public class ActivityChangeEventService {
 	@Resource
 	private ActivityStatSummaryQueueService activityStatSummaryQueueService;
 	@Resource
-	private UserStatSummaryService userStatSummaryService;
+	private UserStatSummaryHandleService userStatSummaryService;
 
 	/**活动数据改变
 	 * @Description 
