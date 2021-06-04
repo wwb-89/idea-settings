@@ -4,15 +4,13 @@ import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.chaoxing.activity.admin.vo.stat.OrgUserStatVO;
 import com.chaoxing.activity.dto.RestRespDTO;
-import com.chaoxing.activity.dto.export.ExportDataDTO;
 import com.chaoxing.activity.dto.query.admin.ActivityStatSummaryQueryDTO;
 import com.chaoxing.activity.dto.query.admin.UserStatSummaryQueryDTO;
 import com.chaoxing.activity.dto.stat.ActivityStatSummaryDTO;
 import com.chaoxing.activity.model.UserStatSummary;
 import com.chaoxing.activity.service.activity.stat.ActivityStatSummaryQueryService;
-import com.chaoxing.activity.service.export.ExportService;
-import com.chaoxing.activity.service.manager.OrganizationalStructureApiService;
-import com.chaoxing.activity.service.stat.UserStatSummaryService;
+import com.chaoxing.activity.service.stat.UserStatSummaryHandleService;
+import com.chaoxing.activity.service.stat.UserStatSummaryQueryService;
 import com.chaoxing.activity.util.HttpServletRequestUtils;
 import com.google.common.collect.Lists;
 import org.apache.commons.collections4.CollectionUtils;
@@ -23,8 +21,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import java.io.IOException;
 import java.util.List;
 
 /**
@@ -40,13 +36,9 @@ import java.util.List;
 public class OrgStatApiController {
 
     @Resource
-    private UserStatSummaryService userStatSummaryService;
-    @Resource
-    private OrganizationalStructureApiService organizationalStructureApiService;
+    private UserStatSummaryQueryService userStatSummaryQueryService;
     @Resource
     private ActivityStatSummaryQueryService activityStatSummaryQueryService;
-    @Resource
-    private ExportService exportService;
 
     /**用户统计
      * @Description 
@@ -59,21 +51,22 @@ public class OrgStatApiController {
     @RequestMapping("user-stat-summary/list")
     public RestRespDTO listUserStatSummary(HttpServletRequest request, UserStatSummaryQueryDTO userStatSummaryQuery) {
         Page page = HttpServletRequestUtils.buid(request);
-        page = userStatSummaryService.paging(page, userStatSummaryQuery);
+        page = userStatSummaryQueryService.paging(page, userStatSummaryQuery);
         List<UserStatSummary> records = page.getRecords();
         List<OrgUserStatVO> orgUserStats = Lists.newArrayList();
-        Integer fid = userStatSummaryQuery.getFid();
         if (CollectionUtils.isNotEmpty(records)) {
             for (UserStatSummary record : records) {
                 OrgUserStatVO orgUserStat = new OrgUserStatVO();
                 BeanUtils.copyProperties(record, orgUserStat);
                 orgUserStats.add(orgUserStat);
-                // 封装学号和组织架构
                 Integer uid = record.getUid();
-                String studentNo = organizationalStructureApiService.getUserStudentNo(uid, fid);
-                orgUserStat.setStudentNo(studentNo);
-                String userFirstGroupName = organizationalStructureApiService.getUserFirstGroupName(uid, fid);
-                orgUserStat.setOrganizationStructure(userFirstGroupName);
+                // 是否在机构内
+                List<Integer> uids = userStatSummaryQuery.getOrgUids();
+                if (uids.contains(uid)) {
+                    orgUserStat.setWithinTheOrg(true);
+                } else {
+                    orgUserStat.setWithinTheOrg(false);
+                }
             }
             page.setRecords(orgUserStats);
         }
@@ -94,23 +87,6 @@ public class OrgStatApiController {
         Page<ActivityStatSummaryDTO> page = HttpServletRequestUtils.buid(request);
         page = activityStatSummaryQueryService.activityStatSummaryPage(page, queryParam);
         return RestRespDTO.success(page);
-    }
-
-
-    /**导出活动统计数据
-    * @Description
-    * @author huxiaolong
-    * @Date 2021-05-31 17:21:10
-    * @param response
-    * @param queryParam
-    * @return com.chaoxing.activity.dto.RestRespDTO
-    */
-    @RequestMapping("activity/export/data")
-    public void exportActivityStatSummary(HttpServletResponse response, ActivityStatSummaryQueryDTO queryParam) throws IOException {
-        ExportDataDTO exportData = activityStatSummaryQueryService.getExportData(queryParam);
-        exportData.setFileName("活动统计汇总");
-        exportData.setSheetName("活动统计汇总数据");
-        exportService.export(exportData, response);
     }
 
 }

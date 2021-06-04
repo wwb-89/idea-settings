@@ -39,10 +39,10 @@ public class ActivityClassifyQueryService {
 	*/
 	public List<FilterDTO> listOrgOptions(Integer fid) {
 		List<FilterDTO> result = new ArrayList<>();
-		CollectionUtils.collect(activityClassifyMapper.listByFid(fid), o -> {
+		CollectionUtils.collect(activityClassifyMapper.listByFid(fid), activityClassify -> {
 			FilterDTO item = new FilterDTO();
-			item.setText(((ActivityClassify) o).getName());
-			item.setValue(String.valueOf(((ActivityClassify) o).getId()));
+			item.setText(activityClassify.getName());
+			item.setValue(String.valueOf(activityClassify.getId()));
 			return item;
 		}, result);
 		return result;
@@ -57,6 +57,17 @@ public class ActivityClassifyQueryService {
 	*/
 	public List<ActivityClassify> listOrgOptional(Integer fid) {
 		return listOrgAffiliation(fid);
+	}
+
+	/**根据fid查询活动分类列表(listOrgAffiliation查询数据少了)
+	* @Description
+	* @author huxiaolong
+	* @Date 2021-06-02 11:29:33
+	* @param fid
+	* @return java.util.List<com.chaoxing.activity.model.ActivityClassify>
+	*/
+	public List<ActivityClassify> listOrgOptionsByFid(Integer fid) {
+		return activityClassifyMapper.listByFid(fid);
 	}
 
 	/**查询机构列表所能筛选的活动分类名称列表

@@ -4,6 +4,7 @@ body {
   padding: 0;
   font-family: "SF Pro Display", "Helvetica Neue", Helvetica, Tahoma, Arial, "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
   -webkit-font-smoothing: antialiased;
+  background-color: white;
 }
 
 .el-button {
@@ -584,6 +585,12 @@ body {
         outline: none;
       }
     }
+  }
+  .el-cascader{
+    vertical-align: top;
+    margin-right: 20px;
+    line-height: 32px;
+    width: 240px;
   }
 }
 .el-select-dropdown__item{

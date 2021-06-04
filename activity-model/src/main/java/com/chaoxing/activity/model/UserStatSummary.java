@@ -1,5 +1,6 @@
 package com.chaoxing.activity.model;
 
+import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -26,27 +27,54 @@ public class UserStatSummary {
 
     /** 用户uid; column: uid*/
     private Integer uid;
+    /** 活动id; column: activity_id*/
+    private Integer activityId;
     /** 登录名; column: uname*/
     private String uname;
     /** 真实姓名; column: real_name*/
     private String realName;
     /** 手机号; column: mobile*/
     private String mobile;
-    /** 参与的活动数; column: participate_activity_num*/
-    private Integer participateActivityNum;
-    /** 签到数量; column: signed_in_num*/
+    /** 学号; column: student_no*/
+    private String studentNo;
+    /** 组织架构; column: organization_structure*/
+    private String organizationStructure;
+    /** 报名数量; column: sign_up_num*/
+    private Integer signUpNum;
+    /** 报名成功数量; column: signed_up_num*/
+    private Integer signedUpNum;
+    /** 报名时间; column: sign_up_time*/
+    private LocalDateTime signUpTime;
+    /** 签到数量; column: sign_in_num*/
+    private Integer signInNum;
+    /** 签到成功数量; column: signed_in_num*/
     private Integer signedInNum;
-    /** 签到率; column: signed_in_rate*/
-    private BigDecimal signedInRate;
     /** 评价数量; column: rating_num*/
     private Integer ratingNum;
-    /** 合格的数量; column: qualified_num*/
-    private Integer qualifiedNum;
-    /** 总参与时长; column: total_participate_time_length*/
-    private Integer totalParticipateTimeLength;
+    /** 是否合格; column: is_qualified*/
+    @TableField(value = "is_qualified")
+    private Boolean qualified;
+    /** 获得的积分; column: integral*/
+    private BigDecimal integral;
+    /** 参与时长; column: participate_time_length*/
+    private Integer participateTimeLength;
+    /** 是否可用; column: is_valid*/
+    @TableField(value = "is_valid")
+    private Boolean valid;
     /** 创建时间; column: create_time*/
     private LocalDateTime createTime;
     /** 更新时间; column: update_time*/
     private LocalDateTime updateTime;
-
+    
+    // 附加
+    /** 合格数量（汇总多个活动时使用） */
+    @TableField(exist = false)
+    private Integer qualifiedNum;
+    /** 参与活动数量 */
+    @TableField(exist = false)
+    private Integer participateActivityNum;
+    /** 签到率 */
+    @TableField(exist = false)
+    private BigDecimal signedInRate;
+    
 }

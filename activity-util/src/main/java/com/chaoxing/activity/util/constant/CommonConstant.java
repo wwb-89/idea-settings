@@ -50,7 +50,7 @@ public class CommonConstant {
 	/** 最大失败次数 */
 	public static final Integer MAX_ERROR_TIMES = 5;
 	/** 延时队列时间 */
-	public static final Duration DELAYED_QUEUE_DURATION = Duration.ofSeconds(5);
+	public static final Duration DELAYED_QUEUE_DURATION = Duration.ofSeconds(2);
 
 	/** 默认封面云盘id */
 	public static final String ACTIVITY_DEFAULT_COVER_CLOUD_ID = "ce257d8a6c546bcedcc7f415dd504296";
@@ -58,5 +58,7 @@ public class CommonConstant {
 	// 表单相关
 	/** 表单审批同意 */
 	public static final Integer FORM_APPROVAL_AGREE_VALUE = 2;
+	/** 表单创建活动选择的门户模版id */
+	public static final Integer DEFAULT_FROM_FORM_CREATE_ACTIVITY_TEMPLATE_ID = 16;
 
 }

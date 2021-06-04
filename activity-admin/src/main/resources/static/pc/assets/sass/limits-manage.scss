@@ -116,6 +116,9 @@ html,body{
                 line-height: 32px;
                 border: 1px solid #E9E9E9;
             }
+            .el-input__icon{
+                line-height: 32px;
+            }
         }
     }
     .footer {
@@ -227,6 +230,9 @@ html,body{
                         border: 1px solid #E9E9E9;
                         box-sizing: border-box;
                         border-radius: 2px;
+                        min-height: 34px;
+                        max-height: 174px;
+                        overflow: auto;
                         .text{
                             line-height: 28px;
                             padding-left: 6px;

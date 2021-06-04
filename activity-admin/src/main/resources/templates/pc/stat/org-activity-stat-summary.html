@@ -1,6 +1,5 @@
 <!DOCTYPE html>
 <html lang="en" xmlns:th="http://www.thymeleaf.org/">
-
 <head>
     <title>活动统计</title>
     <meta charset="UTF-8">
@@ -21,7 +20,6 @@
         }
     </style>
 </head>
-
 <body>
 <div id="orgActivityStatVue" v-cloak>
     <div style="display: block">
@@ -30,8 +28,8 @@
             <div class="tab-item">
                 <!-- 操作栏 -->
                 <div class="table-operate-box fs0">
-<!--                    <el-button class="btn-customize" round @click="exportExcel">导出</el-button>-->
-<!--                    <el-button class="btn-customize" round>导出记录</el-button>-->
+                    <el-button class="btn-customize" round @click="exportData">导出</el-button>
+                    <el-button class="btn-customize" round @click="exportRecord">导出记录</el-button>
                     <div class="search-Box">
                         <el-input placeholder="活动名称/发起人"
                                   icon="search"
@@ -77,7 +75,7 @@
                             </el-tooltip>
                             <el-dropdown-menu slot="dropdown" class="set-dropdown">
                                 <div class="dropdown-lists">
-                                    <el-dropdown-item v-for="(item, index) in configTableFieldDetails">
+                                    <el-dropdown-item v-for="(item, index) in configTableFieldDetails" :key="'detail-' + item.id">
                                         <el-checkbox v-model="item.defaultChecked" :disabled="item.allowUnchec" @change="reSortSettingData"> {{item.name}}</el-checkbox>
                                         <el-tooltip v-if="item.allowTop" class="item" effect="dark" :content="item.defaultTop ? '取消置顶' : '置顶'" placement="top">
                                             <i :class="`btn-fix icon-${item.defaultTop ? 'pinned' : 'pin'} fs16`" @click="topConfigChange(item)"></i>
@@ -138,6 +136,7 @@
                         </el-table-column>
                         <el-table-column
                                 v-else-if="item.code === 'signInRate'"
+                                :prop="item.code"
                                 :fixed="item.defaultTop"
                                 :label="item.name"
                                 :ifCenter="item.align"
@@ -161,6 +160,7 @@
                     </template>
                 </el-table>
                 <el-pagination
+                        v-show="loaded && total > queryParams.pageSize"
                         background
                         layout="prev, pager, next"
                         :total="total"
@@ -172,8 +172,6 @@
         </div>
         <!-- 表格内容 -->
     </div>
-
-    <!-------------------------------------------------分割线------------------------------------------------>
     <!-- 参与范围 -->
     <div class="dialog-box selectPop" v-show="ifSelectPop">
         <div class="dialog-wrap">
@@ -186,10 +184,6 @@
                <div class="ztree-box">
                    <div class="count-box fs14">
                        <span class="color666">选择活动参与范围 </span>
-<!--                       <div class="fr colorBlue">-->
-<!--                           <span>已选</span>-->
-<!--                           <span id="checkCount"></span>-->
-<!--                       </div>-->
                    </div>
                    <ul id="treeList" class="ztree"></ul>
                </div>
@@ -200,17 +194,14 @@
             </div>
         </div>
     </div>
-
-<!--    &lt;!&ndash; toast提示 &ndash;&gt;-->
-<!--    <div class="toast-box">-->
-<!--        toast提示，停留3s，自动消失，句末不加标点-->
-<!--    </div>-->
-    <!--遮罩-->
+    <!--导出成功弹窗-->
+    <vue-confirm-common ref="exportSuccessWindow" :message="'数据准备中，导出完成的数据会保存在“导出记录”中，请稍后下载'" :cancel="'完成'" :sure="'导出记录'" @callback="exportRecord"></vue-confirm-common>
 </div>
 <div th:replace="pc/include/common_js :: common_js(~{::script})">
     <script src="/static/pc/assets/lib/element-ui/lib/index.js" th:src="@{/pc/assets/lib/element-ui/lib/index.js}"></script>
     <script type="text/javascript" src="/static/pc/assets/lib/zTree_v3/js/jquery.ztree.core.js" th:src="@{/pc/assets/lib/zTree_v3/js/jquery.ztree.core.js}"></script>
     <script type="text/javascript" src="/static/pc/assets/lib/zTree_v3/js/jquery.ztree.excheck.js" th:src="@{/pc/assets/lib/zTree_v3/js/jquery.ztree.excheck.js}"></script>
+    <script src="/static/pc/assets/component/confirm-common.js" th:src="@{/pc/assets/component/confirm-common.js}"></script>
     <script th:inline="javascript">
         Vue.filter("percentConversion", function (value) {
             if (!value) {
@@ -222,7 +213,7 @@
         });
         var startTime = [[${startTime}]];
         var endTime = [[${endTime}]];
-        var orgActivityStatVue = new Vue({
+        vm = new Vue({
             el: '#orgActivityStatVue',
             data: {
                 loaded: false,
@@ -419,8 +410,6 @@
                     var $this = this;
                     var url = ctx + "/api/stat/org/activity/page";
                     $this.loaded = false;
-                    console.log($this.queryParams)
-                    // app.ajaxPostWithLoading(url, $this.queryParams, function (data) {
                     app.ajaxPostWithLoading(url, { queryParamStr: activityApp.getJsonStr($this.queryParams) }, function (data) {
 
                         $this.loaded = true;
@@ -458,7 +447,6 @@
                         return this.code === column.prop
                     })[0];
                     $this.queryParams.orderFieldId = sortFieldItem ? sortFieldItem.id : null;
-
                     if (column.order === 'descending') {
                         $this.queryParams.orderType = 'DESC';
                     } else if (column.order === 'ascending'){
@@ -506,7 +494,6 @@
                     $($this.configTableFieldDetails).each(function(i) {
                        this.sequence = i;
                     });
-                    console.log($this.configTableFieldDetails)
                 },
                 // 重置配置
                 resetConfig: function () {
@@ -559,32 +546,37 @@
                         $this.initGroupTree();
                     }
                 },
-                // 导出excel
-                exportExcel: function () {
+                // 导出
+                exportData: function () {
                     var $this = this;
-                    //params是post请求需要的参数，url是请求url地址
-                    var form = document.createElement("form");
-                    form.style.display = "none";
-                    form.action = ctx + "/api/stat/org/activity/export/data";
-                    form.method = "post";
-                    document.body.appendChild(form);
-                    // 动态创建input并给value赋值
-                    for (var key in $this.queryParams) {
-                        var input = document.createElement("input");
-                        input.type = "hidden";
-                        input.name = key;
-                        input.value = $this.queryParams[key];
-                        form.appendChild(input);
-                    }
-
-                    form.submit();
-                    form.remove();
+                    var url = ctx + "/api/export";
+                    $this.loaded = false;
+                    var params = {
+                        queryParamStr: activityApp.getJsonStr($this.queryParams),
+                        exportType: "org_activity_stat"
+                    };
+                    app.ajaxPostWithLoading(url, params, function (data) {
+                        $this.loaded = true;
+                        if (data.success) {
+                            $this.$refs.exportSuccessWindow.show = true;
+                        } else {
+                            var errorMessage = data.message;
+                            if (activityApp.isEmpty(errorMessage)) {
+                                errorMessage = "导出失败";
+                            }
+                            app.showMsg(errorMessage);
+                        }
+                    }, function () {
+                        app.showMsg("导出失败");
+                    });
+                },
+                // 导出记录
+                exportRecord: function () {
+                    window.open(ctx + '/export-record?exportType=org_activity_stat');
                 }
             }
         })
     </script>
 </div>
-
 </body>
-
 </html>

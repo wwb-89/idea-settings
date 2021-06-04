@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org/">
+
+<head>
+    <title>海报</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="/static/pc/assets/css/public.css" th:href="@{/pc/assets/css/public.css}">
+    <link rel="stylesheet" href="/static/pc/assets/css/poster.css" th:href="@{/pc/assets/css/poster.css}">
+</head>
+
+<body>
+    <div class="poster-pc" id="poster-pc" v-cloak>
+        <div class="btn-download" @click="download">下载</div>
+        <div id="capture">
+            <div class="poster-box">
+                <div class="img-box">
+                    <img :src="activity | getCloudImgUrl">
+<!--                    <img :src="`http://p.ananas.chaoxing.com/star3/origin/${activity.coverCloudId}`" th:src="|http://p.ananas.chaoxing.com/star3/origin/${activity.coverCloudId}|">-->
+                </div>
+                <div class="text-box">
+                    <p class="text-title marginb6">{{activity.name}}</p>
+                   <dl class="text-list marginb6">
+                       <dt class="label">活动时间：</dt>
+                       <dd class="info"> {{ activity.startTime | timestampScopeFormat(activity.endTime, 'YYYY-MM-DD HH:mm') }}</dd>
+                   </dl>
+                    <dl class="text-list marginb6">
+                        <dt class="label">活动地点：</dt>
+                        <dd class="info">{{activityAddress}}</dd>
+                    </dl>
+                    <dl class="text-list marginb6">
+                        <dt class="label">主办方：</dt>
+                        <dd class="info">{{activity.organisers}}</dd>
+                    </dl>
+                    <dl class="text-list marginb6" v-if="signUp">
+                        <dt class="label">报名容量：</dt>
+                        <dd class="info" v-if="signUp.limitPerson">{{signUp.personLimit}}人</dd>
+                        <dd class="info" v-else>无限制</dd>
+                    </dl>
+                </div>
+                <div class="qrcode-box">
+                    <div id="canvas" class="qrcode"></div>
+                </div>
+                <div class="text-tip">扫码访问活动</div>
+<!--                <a id="canvasDownload" :href="canvasUrl" :download="`${activity.name}海报`" style="display: none" />-->
+            </div>
+        </div>
+    </div>
+    <div th:replace="pc/include/common_js :: common_js(~{::script})">
+        <script src="/static/pc/assets/lib/qrcode.min.js"  th:src="@{/pc/assets/lib/qrcode.min.js}"></script>
+        <script src="/static/pc/assets/lib/html2canvas.min.js" th:src="@{/pc/assets/lib/html2canvas.min.js}"></script>
+        <script>
+
+        </script>
+        <script th:inline="javascript">
+            posterVue = new Vue({
+                el: "#poster-pc",
+                data: {
+                    activity: [[${activity}]],
+                    signUp: [[${signUp}]],
+                    canvasUrl: ''
+                },
+                created: function () {
+
+                },
+                computed: {
+                    activityAddress: function () {
+                        var $this = this;
+                        var address = '';
+                        if ($this.activity) {
+                            address += $this.activity.address || '';
+                            address += $this.activity.detailAddress || '';
+                        }
+                        return address;
+                    }
+                },
+                mounted: function () {
+                    var $this = this;
+                    $this.init();
+                },
+                methods: {
+                    init: function () {
+                        var $this = this;
+                        var text = $(".text-list .info");
+                        for (var i = 0; i < text.length; i++) {
+                            $this.getHeight(text[i], 40);
+                        }
+                        $this.getHeight($('.text-title')[0], 60);
+                        //    canvas
+                        new QRCode('canvas', {
+                            text: $this.activity.previewUrl,
+                            width: 128,
+                            height: 128,
+                            colorDark : "#000000",
+                            colorLight : "#ffffff",
+                        });
+                    },
+                    getHeight: function (el, lineHeight) {
+                        var heightSome = el.clientHeight;
+                        var wareNameText = el.innerHTML;//获取内容
+                        if(heightSome> lineHeight){ //这个数字是两行的时候的高度，根据你设定的字体大小有关
+                            for(var i = 0; heightSome > lineHeight; i++){
+                                //每次删掉最后一个然后返回
+                                wareNameText = wareNameText.substring(0,wareNameText.length-1);
+                                //重新返回的字符在写在span里面 ，计算新的高度
+                                el.innerHTML = wareNameText;
+                                heightSome = el.clientHeight;
+                            }
+                            //得到正好符合高度的字符，删除最后一个变为省略号 填充在页面里
+                            el.innerHTML = wareNameText.substring(0,wareNameText.length-1)+'...';
+                        }
+                    },
+                    download: function () {
+                        var $this = this;
+                        html2canvas(document.querySelector("#capture"), { useCORS: true } ).then(canvas => {
+                            $(canvas).addClass('captureImg');
+                            document.body.appendChild(canvas)
+                            var imageData =  canvas.toDataURL({ format: 'image/png', quality:1 }).replace(/^data:image\/[^;]/, 'data:application/octet-stream');
+                            window.open(imageData);
+                        });
+                    }
+                }
+            })
+        </script>
+    </div>
+</body>
+</html>

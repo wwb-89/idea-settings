@@ -243,7 +243,7 @@
                     <label class="label">参与范围</label>
                     <div class="join-box">
                         <div>
-                            <el-radio v-model="signUp.limitParticipateScope" :label="false" name="active-type">不限</el-radio>
+                            <el-radio v-if="!signUpParticipateScopeLimit" v-model="signUp.limitParticipateScope" :label="false" name="active-type">不限</el-radio>
                             <el-radio v-model="signUp.limitParticipateScope" :label="true" name="active-type">自定义</el-radio>
                         </div>
                         <div class="join-select" v-show="signUp.limitParticipateScope">
@@ -561,6 +561,8 @@
                 areaCode: [[${areaCode}]],
                 activityTypes: [[${activityTypes}]],
                 activityClassifies: [[${activityClassifies}]],
+                // 报名参与范围是否受限制
+                signUpParticipateScopeLimit: [[${signUpParticipateScopeLimit}]],
                 // 文件上传
                 uploader: null,
                 // 新增修改活动分类弹窗的显示
@@ -721,6 +723,8 @@
                 }
                 $($this.sign.signUps).each(function (i) {
                     if (!activityApp.isEmpty(this.startTime)) {
+                        // 若报名签到非不限制
+                        $this.$set($this.sign.signUps[i], "limitParticipateScope", $this.signUpParticipateScopeLimit);
                         $this.$set($this.sign.signUps[i], "timeScope", [this.startTime, this.endTime]);
                     }
                 });
@@ -1359,37 +1363,6 @@
                         $this.initGroupTree();
                     }
                 },
-                loadFidGroup: function (gid, parentNode){
-                    var url = ctx + "/api/wfw/org/groups?gid=" + gid;
-                    app.ajaxPostWithLoading(url, {}, function (data) {
-                        if (data.success) {
-                            var newNodes = data.data;
-                            if (newNodes.length > 0) {
-                                $(newNodes).each(function () {
-                                    this.isParent = this.soncount > 0;
-                                })
-                                var treeObj = $.fn.zTree.getZTreeObj("sign-up-participate-scope-tree");
-                                // 支持只选择节点数据，so新增一个节点的叶子数据
-                                var cloneNode = {
-                                    id: parentNode.id,
-                                    groupname: parentNode.groupname,
-                                    soncount: 0,
-                                    isParent: false
-                                }
-                                treeObj.addNodes(parentNode, 0, cloneNode, false);
-                                treeObj.addNodes(parentNode, 1, newNodes, false);
-                            }
-                        } else {
-                            var errorMessage = data.message;
-                            if (activityApp.isEmpty(errorMessage)) {
-                                errorMessage = "获取机构组织架构失败";
-                            }
-                            app.showMsg(errorMessage);
-                        }
-                    }, function () {
-                        app.showMsg("获取机构组织架构失败");
-                    });
-                },
                 initGroupTree: function () {
                     var $this = this;
                     $($this.wfwGroups).each(function () {
@@ -1402,7 +1375,7 @@
                         data: {
                             simpleData: {
                                 enable: true,
-                                idKey: "id",
+                                idKey: "virtualId",
                                 pIdKey: "gid",
                             },
                             key: {
@@ -1412,13 +1385,7 @@
                                 parent: true
                             }
                         },
-                        callback: {
-                            onExpand: function (e, b, node) {
-                                if (node.children == null || node.children.length <= 0) {
-                                    $this.loadFidGroup(node.id, node);
-                                }
-                            }
-                        }
+                        callback: {}
                     };
                     $this.signUpParticipateScopeTreeObj = $.fn.zTree.init($("#sign-up-participate-scope-tree"), setting, $this.wfwGroups);
                 },

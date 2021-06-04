@@ -50,6 +50,8 @@ public class ActivityStatSummaryDTO {
     private LocalDateTime endTime;
     /** 评价数; */
     private Integer rateNum;
+    /** 评分 */
+    private BigDecimal rateScore;
     /** 签到数量; */
     private Integer signedInNum;
     /** 签到率; */

@@ -1,28 +1,25 @@
 package com.chaoxing.activity.service.activity.stat;
 
-import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.chaoxing.activity.dto.export.ExportDataDTO;
 import com.chaoxing.activity.dto.query.admin.ActivityStatSummaryQueryDTO;
 import com.chaoxing.activity.dto.sign.SignParticipateScopeDTO;
 import com.chaoxing.activity.dto.stat.ActivityStatSummaryDTO;
 import com.chaoxing.activity.mapper.ActivityClassifyMapper;
-import com.chaoxing.activity.mapper.ActivityRatingMapper;
 import com.chaoxing.activity.mapper.ActivityStatSummaryMapper;
 import com.chaoxing.activity.mapper.TableFieldDetailMapper;
-import com.chaoxing.activity.model.ActivityClassify;
-import com.chaoxing.activity.model.ActivityRating;
-import com.chaoxing.activity.model.TableFieldDetail;
+import com.chaoxing.activity.model.*;
 import com.chaoxing.activity.service.manager.module.SignApiService;
+import com.chaoxing.activity.service.tablefield.TableFieldQueryService;
 import com.chaoxing.activity.util.DateUtils;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import javax.annotation.Resource;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -37,20 +34,16 @@ import java.util.stream.Collectors;
 @Service
 public class ActivityStatSummaryQueryService {
 
-    @Autowired
+    @Resource
     private ActivityClassifyMapper activityClassifyMapper;
-
-    @Autowired
-    private ActivityRatingMapper activityRatingMapper;
-
-    @Autowired
+    @Resource
     private ActivityStatSummaryMapper activityStatSummaryMapper;
-
-    @Autowired
+    @Resource
     private TableFieldDetailMapper tableFieldDetailMapper;
-
-    @Autowired
+    @Resource
     private SignApiService signApiService;
+    @Resource
+    private TableFieldQueryService tableFieldQueryService;
 
     /**对活动统计汇总进行分页查询
     * @Description
@@ -60,7 +53,6 @@ public class ActivityStatSummaryQueryService {
     * @return com.baomidou.mybatisplus.extension.plugins.pagination.Page<com.chaoxing.activity.dto.stat.ActivityStatSummaryDTO>
     */
     public Page<ActivityStatSummaryDTO> activityStatSummaryPage(Page<ActivityStatSummaryDTO> page, ActivityStatSummaryQueryDTO queryParam) {
-
         List<Integer> externalIds = queryParam.getExternalIds();
         List<Integer> searchSignIds = signApiService.listSignIdsByExternalIds(externalIds);
         if (queryParam.getOrderFieldId() != null) {
@@ -78,7 +70,6 @@ public class ActivityStatSummaryQueryService {
         if (CollectionUtils.isEmpty(page.getRecords())) {
             return page;
         }
-
         packagePageData(page);
         return page;
     }
@@ -115,11 +106,6 @@ public class ActivityStatSummaryQueryService {
             List<ActivityClassify> classifies = activityClassifyMapper.listByIds(classifyIds);
             classifyMap = classifies.stream().collect(Collectors.toMap(ActivityClassify::getId, ActivityClassify::getName, (v1, v2) -> v2));
         }
-        List<ActivityRating> ratings = activityRatingMapper.selectList(new QueryWrapper<ActivityRating>()
-                .lambda()
-                .in(ActivityRating::getActivityId, activityIds));
-        Map<Integer, Integer> ratingMap = ratings.stream().collect(Collectors.toMap(ActivityRating::getActivityId, ActivityRating::getScoreNum, (v1, v2) -> v2));
-
         for (ActivityStatSummaryDTO record : page.getRecords()) {
             Integer classifyId = record.getActivityClassifyId();
             Integer signId = record.getSignId();
@@ -129,63 +115,117 @@ public class ActivityStatSummaryQueryService {
             if (signId != null) {
                 record.setParticipateScope(signParticipateScopeMap.get(signId));
             }
-            Integer ratingNum = Optional.ofNullable(ratingMap.get(record.getActivityId())).orElse(0);
-            record.setRateNum(ratingNum);
         }
     }
 
-    private List<List<String>> listActivityStatHeader() {
+    /**获取excel表头
+    * @Description 
+    * @author huxiaolong
+    * @Date 2021-06-01 16:20:48
+    * @param tableFieldDetails
+    * @return java.util.List<java.util.List<java.lang.String>>
+    */
+    private List<List<String>> listActivityStatHeader(List<TableFieldDetail> tableFieldDetails) {
         List<List<String>> headers = Lists.newArrayList();
-        headers.add(Collections.singletonList("活动名称"));
-        headers.add(Collections.singletonList("创建者"));
-        headers.add(Collections.singletonList("开始时间"));
-        headers.add(Collections.singletonList("结束时间"));
-        headers.add(Collections.singletonList("活动分类"));
-        headers.add(Collections.singletonList("活动积分"));
-        headers.add(Collections.singletonList("参与范围"));
-        headers.add(Collections.singletonList("报名人数"));
-        headers.add(Collections.singletonList("签到数"));
-        headers.add(Collections.singletonList("签到率"));
-        headers.add(Collections.singletonList("评价数"));
-        headers.add(Collections.singletonList("合格数"));
-        headers.add(Collections.singletonList("人均参与时长(分钟)"));
+        for (TableFieldDetail tableFieldDetail : tableFieldDetails) {
+            List<String> header = Lists.newArrayList();
+            header.add(tableFieldDetail.getName());
+            headers.add(header);
+        }
         return headers;
     }
 
     private String valueToString(Object value) {
         return value == null ? "" : String.valueOf(value);
     }
-    private List<List<String>> listData(ActivityStatSummaryQueryDTO queryParam) {
+
+    /**获取数据
+    * @Description 
+    * @author huxiaolong
+    * @Date 2021-06-01 16:19:14
+    * @param records
+    * @param tableFieldDetails
+    * @return java.util.List<java.util.List<java.lang.String>>
+    */
+    private List<List<String>> listData(List<ActivityStatSummaryDTO> records, List<TableFieldDetail> tableFieldDetails) {
         List<List<String>> data = Lists.newArrayList();
-        Page<ActivityStatSummaryDTO> page = new Page<>(1, Integer.MAX_VALUE);
-        page = activityStatSummaryPage(page, queryParam);
-        List<ActivityStatSummaryDTO> records = page.getRecords();
         if (CollectionUtils.isNotEmpty(records)) {
             for (ActivityStatSummaryDTO record : records) {
                 List<String> itemData = Lists.newArrayList();
-                itemData.add(record.getActivityName());
-                itemData.add(record.getActivityCreator());
-                itemData.add(record.getStartTime() == null ? null : record.getStartTime().format(DateUtils.FULL_TIME_FORMATTER));
-                itemData.add(record.getEndTime() == null ? null : record.getEndTime().format(DateUtils.FULL_TIME_FORMATTER));
-                itemData.add(record.getActivityClassify());
-                itemData.add(valueToString(record.getIntegral()));
-                itemData.add(record.getParticipateScope());
-                itemData.add(valueToString(record.getSignedUpNum()));
-                itemData.add(valueToString(record.getSignedInNum()));
-                itemData.add(valueToString(record.getSignInRate()));
-                itemData.add(valueToString(record.getRateNum()));
-                itemData.add(valueToString(record.getQualifiedNum()));
-                itemData.add(valueToString(record.getAvgParticipateTimeLength()));
+                for (TableFieldDetail tableFieldDetail : tableFieldDetails) {
+                    String code = tableFieldDetail.getCode();
+                    switch (code) {
+                        case "activityName":
+                            itemData.add(record.getActivityName());
+                            break;
+                        case "activityStatus":
+                            itemData.add(Activity.getStatusDescription(record.getActivityStatus()));
+                            break;
+                        case "activityClassify":
+                            itemData.add(record.getActivityClassify());
+                            break;
+                        case "activityCreator":
+                            itemData.add(record.getActivityCreator());
+                            break;
+                        case "participateScope":
+                            itemData.add(record.getParticipateScope());
+                            break;
+                        case "signedInNum":
+                            itemData.add(valueToString(record.getSignedInNum()));
+                            break;
+                        case "signInRate":
+                            itemData.add(valueToString(record.getSignInRate()));
+                            break;
+                        case "rateNum":
+                            itemData.add(valueToString(record.getRateNum()));
+                            break;
+                        case "rateScore":
+                            itemData.add(valueToString(record.getRateScore()));
+                            break;
+                        case "integral":
+                            itemData.add(valueToString(record.getIntegral()));
+                            break;
+                        case "activityStartEndTime":
+                            String startTimeStr = record.getStartTime() == null ? "" : record.getStartTime().format(DateUtils.FULL_TIME_FORMATTER);
+                            String endTimeStr = record.getEndTime() == null ? "" : record.getEndTime().format(DateUtils.FULL_TIME_FORMATTER);
+                            itemData.add(startTimeStr + " ~ " + endTimeStr);
+                            break;
+                        case "qualifiedNum":
+                            itemData.add(valueToString(record.getQualifiedNum()));
+                            break;
+                        case "signedUpNum":
+                            itemData.add(valueToString(record.getSignedUpNum()));
+                            break;
+                        case "avgParticipateTimeLength":
+                            itemData.add(valueToString(record.getAvgParticipateTimeLength()));
+                            break;
+                        default:
+
+                    }
+                }
                 data.add(itemData);
             }
         }
         return data;
     }
 
-    public ExportDataDTO getExportData(ActivityStatSummaryQueryDTO queryParam) {
+    /**封装easyexcel导出所需导出实体
+    * @Description
+    * @author huxiaolong
+    * @Date 2021-06-01 16:18:42
+    * @param queryParam
+    * @return com.chaoxing.activity.dto.export.ExportDataDTO
+    */
+    public ExportDataDTO packageExportData(ActivityStatSummaryQueryDTO queryParam) {
+        Integer fid = queryParam.getFid();
+        List<TableFieldDetail> tableFieldDetails = tableFieldQueryService.listOrgShowTableFieldDetail(fid, TableField.Type.ACTIVITY_STAT, TableField.AssociatedType.ORG);
         ExportDataDTO exportData = new ExportDataDTO();
-        exportData.setHeaders(listActivityStatHeader());
-        exportData.setData(listData(queryParam));
+        Page<ActivityStatSummaryDTO> page = new Page<>(1, Integer.MAX_VALUE);
+        page = activityStatSummaryPage(page, queryParam);
+        List<List<String>> headers = listActivityStatHeader(tableFieldDetails);
+        exportData.setHeaders(headers);
+        List<List<String>> data = listData(page.getRecords(), tableFieldDetails);
+        exportData.setData(data);
         return exportData;
     }
 }

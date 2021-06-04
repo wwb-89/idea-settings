@@ -8,6 +8,7 @@ import com.chaoxing.activity.model.OrgTableField;
 import com.chaoxing.activity.model.TableField;
 import com.chaoxing.activity.model.TableFieldDetail;
 import com.chaoxing.activity.service.activity.classify.ActivityClassifyQueryService;
+import com.chaoxing.activity.service.manager.PassportApiService;
 import com.chaoxing.activity.service.manager.WfwGroupApiService;
 import com.chaoxing.activity.service.tablefield.TableFieldQueryService;
 import com.chaoxing.activity.util.DateUtils;
@@ -44,6 +45,8 @@ public class OrgStatController {
 
     @Resource
     private ActivityClassifyQueryService activityClassifyQueryService;
+    @Resource
+    private PassportApiService passportApiService;
 
 
     /**机构下的用户统计
@@ -76,14 +79,15 @@ public class OrgStatController {
             tableFieldId = tableFieldDetails.get(0).getTableFieldId();
         }
         model.addAttribute("tableFieldId", tableFieldId);
-        // 机构的组织架构
-        List<WfwGroupDTO> groups = wfwGroupApiService.getGroupByGid(realFid, 0);
-        if (CollectionUtils.isNotEmpty(groups)) {
-            for (WfwGroupDTO group : groups) {
-                group.setGroupLevel(1);
-            }
-        }
+        // 带层级（children）组织架构
+        List<WfwGroupDTO> groups = wfwGroupApiService.listHierarchyGroupByFid(realFid);
         model.addAttribute("groups", groups);
+        // 所有的组织架构
+        List<WfwGroupDTO> allWfwGroups = wfwGroupApiService.listGroupByFid(realFid);
+        model.addAttribute("allWfwGroups", allWfwGroups);
+        // 机构名称
+        String orgName = passportApiService.getOrgName(realFid);
+        model.addAttribute("orgName", orgName);
         return "pc/stat/org-user-stat";
     }
 
@@ -115,18 +119,16 @@ public class OrgStatController {
             tableFieldId = tableFieldDetails.get(0).getTableFieldId();
         }
         // 微服务组织架构
-        List<WfwGroupDTO> wfwGroups = wfwGroupApiService.getGroupByFid(realFid);
+        List<WfwGroupDTO> wfwGroups = wfwGroupApiService.listGroupByFid(realFid);
 
         model.addAttribute("startTime", SchoolYearSemesterUtils.currentSemesterStartTime().format(DateUtils.FULL_TIME_FORMATTER));
         model.addAttribute("endTime", LocalDateTime.now().format(DateUtils.FULL_TIME_FORMATTER));
-        model.addAttribute("classifyOptions", classifyOptions);
         model.addAttribute("classifyOptions", classifyOptions);
         model.addAttribute("wfwGroups", wfwGroups);
         model.addAttribute("fid", realFid);
         model.addAttribute("tableFieldId", tableFieldId);
         model.addAttribute("tableFieldDetails", tableFieldDetails);
         model.addAttribute("orgTableFields", orgTableFields);
-//        model.addAttribute("activityStatSummaryPage", activityStatSummaryPage);
         return "pc/stat/org-activity-stat-summary";
     }
 

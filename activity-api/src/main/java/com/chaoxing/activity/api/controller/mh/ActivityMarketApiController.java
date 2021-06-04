@@ -101,14 +101,14 @@ public class ActivityMarketApiController {
 				JSONObject activity = new JSONObject();
 				activity.put("id", record.getId());
 				activity.put("type", 3);
-				activity.put("orsUrl", activityCoverUrlSyncService.getCoverUrl(record));
+				activity.put("orsUrl", record.getPreviewUrl());
 				JSONArray fields = new JSONArray();
 				activity.put("fields", fields);
 				// 封面
 				JSONObject cover = new JSONObject();
 				cover.put("flag", "0");
 				cover.put("key", "封面");
-				cover.put("value", record.getCoverUrl());
+				cover.put("value", activityCoverUrlSyncService.getCoverUrl(record));
 				fields.add(cover);
 				// 活动名称
 				JSONObject name = new JSONObject();

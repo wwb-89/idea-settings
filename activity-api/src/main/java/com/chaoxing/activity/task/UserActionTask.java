@@ -41,7 +41,11 @@ public class UserActionTask {
         }
         // 用户统计（用户参与的活动数）
         Integer uid = queueParam.getUid();
-        userStatSummaryQueueService.addUserSignInStat(uid);
+        Integer signId = queueParam.getSignId();
+        Activity activity = activityQueryService.getBySignId(signId);
+        if (activity != null) {
+            userStatSummaryQueueService.addUserSignStat(UserStatSummaryQueueService.QueueParamDTO.builder().uid(uid).activityId(activity.getId()).build());
+        }
     }
 
     @Scheduled(fixedDelay = 1L)
@@ -55,9 +59,9 @@ public class UserActionTask {
         Activity activity = activityQueryService.getBySignId(signId);
         if (activity != null) {
             activityStatSummaryQueueService.addSignInStat(activity.getId());
+            Integer uid = queueParam.getUid();
+            userStatSummaryQueueService.addUserSignStat(UserStatSummaryQueueService.QueueParamDTO.builder().uid(uid).activityId(activity.getId()).build());
         }
-        Integer uid = queueParam.getUid();
-        userStatSummaryQueueService.addUserSignInStat(uid);
     }
 
     @Scheduled(fixedDelay = 1L)
@@ -71,9 +75,9 @@ public class UserActionTask {
         Activity activity = activityQueryService.getBySignId(signId);
         if (activity != null) {
             activityStatSummaryQueueService.addResultStat(activity.getId());
+            Integer uid = queueParam.getUid();
+            userStatSummaryQueueService.addUserResultStat(UserStatSummaryQueueService.QueueParamDTO.builder().uid(uid).activityId(activity.getId()).build());
         }
-        Integer uid = queueParam.getUid();
-        userStatSummaryQueueService.addUserResultStat(uid);
     }
 
 }

@@ -40,19 +40,6 @@ public class ActivityStatSummaryHandlerService {
     @Autowired
     private ActivityStatSummaryMapper activityStatSummaryMapper;
 
-    /**根据signId进行对应的数据报名签到数据汇总计算
-    * @Description
-    * @author huxiaolong
-    * @Date 2021-05-25 16:32:41
-    * @param signId
-    * @return void
-    */
-    @Transactional(rollbackFor = Exception.class)
-    public void activityStatSummaryCalBySign(Integer signId) {
-        Activity activity = activityQueryService.getBySignId(signId);
-        handleActivityStatSummaryCal(activity.getId(), signId);
-    }
-
     /**根据activityId进行对应的数据报名签到数据汇总计算
      * @Description
      * @author huxiaolong

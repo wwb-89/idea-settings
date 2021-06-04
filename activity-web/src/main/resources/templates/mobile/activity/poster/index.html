@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org/">
+
+<head>
+    <title>海报</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="/static/mobile/assets/css/public.css" th:href="@{/mobile/assets/css/public.css}">
+    <link rel="stylesheet" href="/static/mobile/assets/css/poster.css" th:href="@{/mobile/assets/css/poster.css}">
+</head>
+
+<body>
+    <div class="poster-app" id="poster-app" v-cloak>
+        <div class="poster-box">
+            <div class="img-box">
+                <img :src="activity | getCloudImgUrl">
+            </div>
+            <div class="text-box">
+                <p class="text-title marginb6">{{activity.name}}</p>
+               <dl class="text-list">
+                   <dt class="label">活动时间：</dt>
+                   <dd class="info"> {{ activity.startTime | timestampScopeFormat(activity.endTime, 'YYYY-MM-DD HH:mm') }}</dd>
+               </dl>
+                <dl class="text-list">
+                    <dt class="label">活动地点：</dt>
+                    <dd class="info">{{activityAddress}}</dd>
+                </dl>
+                <dl class="text-list">
+                    <dt class="label">主办方：</dt>
+                    <dd class="info">{{activity.organisers}}</dd>
+                </dl>
+                <dl class="text-list" v-if="signUp">
+                    <dt class="label">报名容量：</dt>
+                    <dd class="info" v-if="signUp.limitPerson">{{signUp.personLimit}}人</dd>
+                    <dd class="info" v-else>无限制</dd>
+                </dl>
+            </div>
+            <div class="qrcode-box">
+                <!--<img src="/static/mobile/assets/images/qrcode.png" th:src="@{/mobile/assets/images/qrcode.png}" alt="">-->
+                <canvas id="canvas" class="qrcode" width="172" height="172"></canvas>
+            </div>
+            <div class="text-tip">扫码访问活动</div>
+        </div>
+        <div class="btn-download" @click="download">保存到本地</div>
+    </div>
+
+    <div th:replace="mobile/include/common_js :: common_js(~{::script})">
+        <script src="/static/mobile/assets/lib/qrcode.min.js"  th:src="@{/mobile/assets/lib/qrcode.min.js}"></script>
+        <script src="/static/mobile/assets/lib/html2canvas.min.js" th:src="@{/mobile/assets/lib/html2canvas.min.js}"></script>
+        <script th:inline="javascript">
+            posterVue = new Vue({
+                el: "#poster-app",
+                data: {
+                    activity: [[${activity}]],
+                    signUp: [[${signUp}]],
+                    canvasUrl: ''
+                },
+                created: function () {
+                },
+                computed: {
+                    activityAddress: function () {
+                        var $this = this;
+                        var address = '';
+                        if ($this.activity) {
+                            address += $this.activity.address || '';
+                            address += $this.activity.detailAddress || '';
+                        }
+                        return address;
+                    }
+                },
+                mounted: function () {
+                    var $this = this;
+                    $this.init();
+                },
+                methods: {
+                    init: function () {
+                        var $this = this;
+                        var text = $(".text-list .info");
+                        for (var i = 0; i < text.length; i++) {
+                            $this.getHeight(text[i], 40);
+                        }
+                        $this.getHeight($('.text-title')[0], 52);
+                        new QRCode(document.getElementById('canvas'),{
+                            text: $this.activity.previewUrl,
+                            width: 128,
+                            height: 128,
+                            colorDark : "#000000",
+                            colorLight : "#ffffff",
+                        });
+                    },
+                    getHeight: function (el, lineheight){
+                        var heightSome = el.clientHeight;
+                        var wareNameText = el.innerHTML;//获取内容
+                        console.log(heightSome)
+                        if(heightSome>lineheight){ //这个数字是两行的时候的高度，根据你设定的字体大小有关
+                            for(var i=0;heightSome>lineheight;i++){
+                                //每次删掉最后一个然后返回
+                                wareNameText = wareNameText.substring(0,wareNameText.length-1);
+                                //重新返回的字符在写在span里面 ，计算新的高度
+                                el.innerHTML = wareNameText;
+                                heightSome = el.clientHeight;
+                            }
+                            //得到正好符合高度的字符，删除最后一个变为省略号 填充在页面里
+                            el.innerHTML = wareNameText.substring(0,wareNameText.length-1)+'...';
+                        }
+                    },
+                    download: function () {
+                        var $this = this;
+                        html2canvas(document.querySelector(".poster-box"), { useCORS: true }).then(canvas => {
+                            $(canvas).addClass('captureImg');
+                            document.body.appendChild(canvas)
+                            var imageData =  canvas.toDataURL({ format: 'image/png', quality:1 }).replace(/^data:image\/[^;]/, 'data:application/octet-stream');
+                            app.openUrl(imageData, `${$this.activity.name}海报`)
+                            // window.open(imageData);
+                        });
+                    }
+                }
+            })
+        </script>
+    </div>
+</body>
+</html>

@@ -161,6 +161,20 @@
                 <div class="body">
                     <form action="">
                         <div class="form-item">
+                            <label for="" class="label">发布权限</label>
+                            <div class="input-box">
+                                <el-radio v-model="radio1" label="1" class="radio-item">直接发布</el-radio>
+                                <el-radio v-model="radio1" label="2" class="radio-item">需要审批</el-radio>
+                                <div class="edit-input" v-show="radio1==2">
+                                    <el-select v-model="verifyValue" class="width200" placeholder="请选择">
+                                        <el-option v-for="item in options" :key="item.value" :label="item.label"
+                                            :value="item.value">
+                                        </el-option>
+                                    </el-select>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-item">
                             <label for="" class="label">活动类型</label>
                             <div class="input-box">
                                 <el-checkbox-group v-model="checkbox">
@@ -264,7 +278,16 @@
                 releaseDialog: false,
                 checkbox:['全部','社会实践','工作履历','思想成长'],
                 radio:'1',
+                radio1:'1',
                 delSuccess:false,
+                verifyValue:'',
+                options: [{
+                    value: '1',
+                    label: '请选择审批模块'
+                }, {
+                    value: '2',
+                    label: '其他'
+                }],
             }
         },
         created: function () {

@@ -3,6 +3,7 @@ package com.chaoxing.activity.service.manager;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
+import com.chaoxing.activity.dto.OrgRoleDTO;
 import com.chaoxing.activity.dto.uc.UserOrganizationalStructureDTO;
 import com.chaoxing.activity.util.constant.CacheConstant;
 import com.chaoxing.activity.util.constant.CommonConstant;
@@ -33,6 +34,8 @@ import java.util.stream.Collectors;
 @Service
 public class OrganizationalStructureApiService {
 
+	/** 分页获取机构下角色URL */
+	private static final String ORG_ROLES_URL = "http://uc1-ans.chaoxing.com/apis/getrolebyfid?fid=%d&page=%d&pagesize=%d&enc=%s";
 	/** 机构下用户列表 */
 	private static final String ORG_USERS_URL = "http://uc1-ans.chaoxing.com/apis/user/getperson?fid=%d&limit=%d&enc=%s";
 	/** 机构group下用户列表 */
@@ -291,6 +294,10 @@ public class OrganizationalStructureApiService {
 		return DigestUtils.md5Hex("fid=" + fid + "&" + key + "=" + value + "&limit=" + limit + "mic^ro&deke@y");
 	}
 
+	private String getOrgRoleEnc(Integer fid) {
+		return DigestUtils.md5Hex(fid + ENC_KEY + LocalDate.now().format(DATE_TIME_FORMATTER));
+	}
+
 	/**查询机构下的uid列表
 	 * @Description 
 	 * @author wwb
@@ -352,6 +359,27 @@ public class OrganizationalStructureApiService {
 			}
 		}
 		return uids;
+	}
+
+	/**查询机构fid下的角色列表
+	* @Description 
+	* @author huxiaolong
+	* @Date 2021-06-02 11:34:06
+	* @param fid
+	* @return java.util.List<com.chaoxing.activity.dto.OrgRoleDTO>
+	*/
+	public List<OrgRoleDTO> listOrgRoles(Integer fid) {
+		String enc = getOrgRoleEnc(fid);
+		String url = String.format(ORG_ROLES_URL, fid, 1, Integer.MAX_VALUE, enc);
+		String result = restTemplate.getForObject(url, String.class);
+		JSONObject jsonObject = JSON.parseObject(result);
+		boolean status = jsonObject.getBoolean("status");
+		if (status) {
+			return JSON.parseArray(jsonObject.getString("data"), OrgRoleDTO.class);
+		} else {
+			log.error("根据fid:{}, url:{} 获取机构的角色信息error", fid, url);
+		}
+		return null;
 	}
 
 }

@@ -24,11 +24,24 @@
 	<div>
 		<div class="tab-content-box">
 			<div class="tab-item">
+				<!-- 操作栏 -->
+				<div class="table-operate-box fs0">
+					<el-button class="btn-customize" round @click="exportData">导出</el-button>
+					<el-button class="btn-customize" round @click="exportRecord">导出记录</el-button>
+					<div class="search-Box">
+						<el-input placeholder="姓名"
+						          v-model.trim="sw"
+						          icon="search"
+						          class="search"
+						          suffix-icon="el-icon-search"
+									@keyup.enter.native="search">
+						</el-input>
+						<i class="icon-cancel btn-cancel fs16" v-show="sw" @click="clearSw"></i>
+					</div>
+				</div>
 				<!-- 查询栏 -->
 				<div class="table-search-box fs0">
-					<div class="popbtnInput">
-						<input type="text" autocomplete="off" class="layui-input" style="cursor: pointer;" readonly placeholder="组织架构" v-model.trim="selectedGroupName" @click="groupPopupShow = true">
-					</div>
+					<el-cascader :options="groups" :props="groupPops" clearable placeholder="组织架构" @change="groupChange"></el-cascader>
 					<el-button class="btn-customize" round @click="search">查询</el-button>
 				</div>
 				<!-- 计数栏 -->
@@ -63,46 +76,39 @@
 					<div class="clear"></div>
 				</div>
 				<el-table class="table-box" :data="orgUserStats" @sort-change="changeOrderField">
-					<el-table-column v-for="(field, index) of showTableFieldDetails" :key="'filed-' + field.id" :align="field.align" :fixed="field.top" :sortable="field.sortable" :label="field.name" :prop="field.code" :min-width="field.minWidth">
-					</el-table-column>
+					<template v-for="(field, index) of showTableFieldDetails">
+						<el-table-column v-if="field.code == 'orgName'" :align="field.align" :fixed="field.top" :sortable="field.sortable" :label="field.name" :prop="field.code" :min-width="field.minWidth">
+							<template slot-scope="scope">
+								{{scope.row.withinTheOrg ? orgName : ''}}
+							</template>
+						</el-table-column>
+						<el-table-column v-else-if="field.code == 'signedInRate'" :align="field.align" :fixed="field.top" :sortable="field.sortable" :label="field.name" :prop="field.code" :min-width="field.minWidth">
+							<template slot-scope="scope">
+								{{scope.row.signedInRate > 0 ? scope.row.signedInRate + '%' : 0}}
+							</template>
+						</el-table-column>
+						<el-table-column v-else :align="field.align" :fixed="field.top" :sortable="field.sortable" :label="field.name" :prop="field.code" :min-width="field.minWidth"></el-table-column>
+					</template>
 				</el-table>
 				<!--分页-->
 				<el-pagination v-show="loaded && total > queryParams.pageSize" background layout="prev, pager, next" :total="total" :page-size="queryParams.pageSize" :current-page="queryParams.pageNum" @current-change="changePage"></el-pagination>
 			</div>
 		</div>
 	</div>
-	<!-- 组织架构 -->
-	<div class="dialog-box selectPop" v-show="groupPopupShow">
-		<div class="dialog-wrap">
-			<div class="header">
-				<span class="color333">组织架构</span>
-				<img src="/static/pc/assets/images/close.png" th:src="@{/pc/assets/images/close.png}" @click="groupPopupShow = false">
-			</div>
-			<div class="dialog-content">
-				<!-- ztree内容 -->
-				<div class="ztree-box">
-					<div class="count-box fs14">
-						<span class="color666">选择组织架构 </span>
-					</div>
-					<ul id="tree-node" class="ztree"></ul>
-				</div>
-			</div>
-			<div class="btns">
-				<span class="btn inlineMiddle btn-border" @click="groupPopupShow = false">取消</span>
-				<span class="btn inlineMiddle btn-normal" @click="selectGroupSure">确定</span>
-			</div>
-		</div>
-	</div>
+	<!--导出成功弹窗-->
+	<vue-confirm-common ref="exportSuccessWindow" :message="'数据准备中，导出完成的数据会保存在“导出记录”中，请稍后下载'" :cancel="'完成'" :sure="'导出记录'" @callback="exportRecord"></vue-confirm-common>
 </div>
 <div th:replace="pc/include/common_js :: common_js(~{::script})">
 	<script src="/static/pc/assets/lib/element-ui/lib/index.js" th:src="@{/pc/assets/lib/element-ui/lib/index.js}"></script>
 	<script type="text/javascript" src="/static/pc/assets/lib/zTree_v3/js/jquery.ztree.core.js" th:src="@{/pc/assets/lib/zTree_v3/js/jquery.ztree.core.js}"></script>
 	<script type="text/javascript" src="/static/pc/assets/lib/zTree_v3/js/jquery.ztree.excheck.js" th:src="@{/pc/assets/lib/zTree_v3/js/jquery.ztree.excheck.js}"></script>
+	<script src="/static/pc/assets/component/confirm-common.js" th:src="@{/pc/assets/component/confirm-common.js}"></script>
 	<script th:inline="javascript">
         vm = new Vue({
             el: "#stat-vue",
             data: {
                 fid: [[${fid}]],
+	            orgName: [[${orgName}]],
                 tableFieldId: [[${tableFieldId}]],
                 tableFieldDetails: [[${tableFieldDetails}]],
                 orgTableFields: [[${orgTableFields}]],
@@ -111,8 +117,14 @@
 	            // 配置使用的字段列表
 	            configTableFieldDetails: [],
                 // 组织架构
+                allWfwGroups: [[${allWfwGroups}]],
                 groups: [[${groups}]],
-	            treeObj: null,
+	            sw: "",
+	            groupPops: {
+                    checkStrictly: true,
+                    value: "id",
+		            label: "groupname"
+	            },
 	            orgUserStats: [],
 	            loaded: false,
 	            queryParams: {
@@ -121,13 +133,12 @@
 		            pageSize: 10,
                     groupId: null,
                     groupLevel: null,
-                    realName: "",
+                    sw: "",
                     orderTableFieldId: null,
                     orderType: "DESC"
 	            },
                 total: 0,
-	            groupPopupShow: false,
-	            selectedGroupName: ""
+
             },
             created: function () {
 				var $this = this;
@@ -160,17 +171,23 @@
                 var $this = this;
                 $this.loadData();
             },
-            watch: {
-                "groupPopupShow": function () {
-                    var $this = this;
-                    if ($this.groupPopupShow && activityApp.isEmpty($this.treeObj)) {
-                        $this.$nextTick(function () {
-                            $this.initGroupTree();
-                        });
-                    }
-                }
-            },
             methods: {
+                groupChange: function (value) {
+                    var $this = this;
+	                var groupId = null;
+	                var groupLevel = null;
+	                if (value.length > 0) {
+		                groupId = value[value.length - 1];
+		                $($this.allWfwGroups).each(function () {
+			                if (groupId == this.id) {
+				                groupLevel = this.groupLevel;
+				                return false;
+			                }
+		                });
+	                }
+                    $this.queryParams.groupId = groupId;
+                    $this.queryParams.groupLevel = groupLevel;
+                },
                 calConfigTableFieldDetails: function () {
                     var $this = this;
                     var configTableFieldDetails = [];
@@ -272,53 +289,13 @@
                     }
                     $this.loadData();
                 },
-	            // 初始化组织架构的组
-                initGroupTree: function () {
-                    var $this = this;
-                    $($this.groups).each(function () {
-                        this.isParent = this.soncount > 0;
-                    });
-                    var setting = {
-                        view: {
-                            showLine: false,
-                            selectedMulti: false
-                        },
-                        data: {
-                            simpleData: {
-                                enable: true,
-                                idKey: "id",
-                                pIdKey: "gid",
-                            },
-                            key: {
-                                name: "groupname"
-                            },
-                            keep: {
-                                parent: true
-                            }
-                        },
-                        callback: {
-                            onExpand: function (e, b, node) {
-                                if (node.children == null || node.children.length < 1) {
-                                    $this.loadOrgGroup(node.id, node);
-                                }
-                            }
-                        }
-                    };
-                    $this.treeObj = $.fn.zTree.init($("#tree-node"), setting, $this.groups);
-                },
                 loadOrgGroup: function (gid, parentNode){
                     var $this = this;
                     var url = ctx + "/api/wfw/org/groups?gid=" + gid;
                     app.ajaxPostWithLoading(url, {}, function (data) {
                         if (data.success) {
                             var newNodes = data.data;
-                            if (newNodes.length > 0) {
-                                $(newNodes).each(function () {
-                                    this.isParent = this.soncount > 0;
-                                    this.groupLevel = parentNode.groupLevel + 1;
-                                });
-                                $this.treeObj.addNodes(parentNode, 0, newNodes, false);
-                            }
+
                         } else {
                             var message = data.message;
                             if (activityApp.isEmpty(message)) {
@@ -330,22 +307,19 @@
                         app.showMsg("获取机构组织架构失败");
                     });
                 },
-                selectGroupSure: function () {
-					var $this = this;
-                    var nodes = $this.treeObj.getSelectedNodes();
-                    if (nodes.length < 1) {
-                        app.showMsg("请选择组织架构");
-                        return false;
-                    }
-                    var node = nodes[0];
-                    $this.selectedGroupName = node.groupname;
-                    $this.queryParams.groupId = node.id;
-                    $this.queryParams.groupLevel = node.groupLevel;
-	                $this.groupPopupShow = false;
-                },
+	            clearSw: function () {
+                	var $this = this;
+		            $this.sw = "";
+		            if ($this.queryParams.sw != $this.sw) {
+			            // 已经搜索了
+			            $this.queryParams.sw = "";
+			            $this.search();
+		            }
+	            },
                 search: function () {
                     var $this = this;
 					$this.queryParams.pageNum = 1;
+					$this.queryParams.sw = $this.sw;
                     $this.loadData();
                 },
                 changePage: function (pageNum) {
@@ -384,6 +358,34 @@
 		            }
 		            configTableFieldDetails.splice(lastTopIndex, 0, configTableFieldDetail);
 		            $this.configTableFieldDetails = configTableFieldDetails;
+	            },
+	            // 导出
+	            exportData: function () {
+		            var $this = this;
+		            var url = ctx + "/api/export";
+		            $this.loaded = false;
+		            var params = {
+			            queryParamStr: activityApp.getJsonStr($this.queryParams),
+			            exportType: "org_user_stat"
+		            };
+		            app.ajaxPostWithLoading(url, params, function (data) {
+			            $this.loaded = true;
+			            if (data.success) {
+				            $this.$refs.exportSuccessWindow.show = true;
+			            } else {
+				            var errorMessage = data.message;
+				            if (activityApp.isEmpty(errorMessage)) {
+					            errorMessage = "导出失败";
+				            }
+				            app.showMsg(errorMessage);
+			            }
+		            }, function () {
+			            app.showMsg("导出失败");
+		            });
+	            },
+	            // 导出记录
+	            exportRecord: function () {
+		            window.open(ctx + '/export-record?exportType=org_user_stat');
 	            }
             }
         })

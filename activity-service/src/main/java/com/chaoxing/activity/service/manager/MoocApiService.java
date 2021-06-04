@@ -5,11 +5,14 @@ import com.alibaba.fastjson.JSONObject;
 import com.chaoxing.activity.dto.manager.MoocUserOrgDTO;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.compress.utils.Lists;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
 import javax.annotation.Resource;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -28,6 +31,9 @@ public class MoocApiService {
 
 	/** 用户多机构信息url */
 	private static final String USER_MULTI_ORG_URL = "http://mooc1-api.chaoxing.com/gas/person?userid=%d&fields=id,group1,schoolid,roleids,loginname,username&selectuser=true";
+
+	/** 用户角色信息URL */
+	private static final String USER_ROLE_URL = "http://mooc1.chaoxing.com/gas/person?userid=%d&fields=schoolid,roleids,loginname,username,id,status,iscertify,aliasname,group1,group2,group3&fid=%d";
 
 	@Resource(name = "restTemplateProxy")
 	private RestTemplate restTemplateProxy;
@@ -71,6 +77,46 @@ public class MoocApiService {
 		JSONObject jsonObject = JSON.parseObject(result);
 		String data = jsonObject.getString("data");
 		return JSON.parseArray(data, MoocUserOrgDTO.class);
+	}
+
+	/**根据用户fid 、 uid 获取用户角色id集合
+	 * @Description
+	 * @author huxiaolong
+	 * @Date 2021-06-03 10:46:53
+	 * @param fid
+	 * @param uid
+	 * @return com.chaoxing.activity.dto.manager.MoocUserOrgDTO
+	 */
+	public List<Integer> getUserRoleIds(Integer fid, Integer uid) {
+		MoocUserOrgDTO moocUser = getUserRoleInfo(fid, uid);
+		if (moocUser == null || StringUtils.isEmpty(moocUser.getRoleIds())) {
+			return Lists.newArrayList();
+		}
+
+		List<String> roleIdSplits = Arrays.asList(moocUser.getRoleIds().split(","));
+		List<Integer> roleIds = Lists.newArrayList();
+		CollectionUtils.collect(roleIdSplits, Integer::valueOf, roleIds);
+		return roleIds;
+	}
+
+	/**根据uid、fid查询用户信息
+	* @Description
+	* @author huxiaolong
+	* @Date 2021-06-03 10:46:53
+	* @param fid
+	* @param uid
+	* @return com.chaoxing.activity.dto.manager.MoocUserOrgDTO
+	*/
+	private MoocUserOrgDTO getUserRoleInfo(Integer fid, Integer uid) {
+		String url = String.format(USER_ROLE_URL, uid, fid);
+		String result = restTemplateProxy.getForObject(url, String.class);
+		JSONObject jsonObject = JSON.parseObject(result);
+		String data = jsonObject.getString("data");
+		List<MoocUserOrgDTO> moocUserList = JSON.parseArray(data, MoocUserOrgDTO.class);
+		if (CollectionUtils.isNotEmpty(moocUserList)) {
+			return moocUserList.get(0);
+		}
+		return null;
 	}
 
 }

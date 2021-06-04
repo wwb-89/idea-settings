@@ -1,0 +1,43 @@
+package com.chaoxing.activity.dto.manager;
+
+import com.chaoxing.activity.model.ActivityClassify;
+import com.google.common.collect.Lists;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
+import java.util.List;
+
+/**
+ * @author huxiaolong
+ * <p>
+ * @version 1.0
+ * @date 2021/6/3 4:13 下午
+ * <p>
+ */
+@Data
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
+public class ActivityCreatePermissionDTO {
+
+    private Boolean signUpParticipateScopeLimit;
+    /**
+     * 组织架构
+     */
+    private List<WfwGroupDTO> wfwGroups;
+
+    /**
+     * 活动类型
+     */
+    private List<ActivityClassify> activityClassifies;
+
+    public static ActivityCreatePermissionDTO buildDefault() {
+        return ActivityCreatePermissionDTO.builder()
+                .signUpParticipateScopeLimit(Boolean.FALSE)
+                .wfwGroups(Lists.newArrayList())
+                .activityClassifies(Lists.newArrayList())
+                .build();
+    }
+}

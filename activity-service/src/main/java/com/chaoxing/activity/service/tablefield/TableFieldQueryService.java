@@ -13,7 +13,10 @@ import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import javax.annotation.Resource;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 /**
  * @author huxiaolong
@@ -27,14 +30,13 @@ import java.util.List;
 @Service
 public class TableFieldQueryService {
 
-    @Autowired
+    @Resource
     private TableFieldMapper tableFieldMapper;
-
-    @Autowired
+    @Resource
     private TableFieldDetailMapper tableFieldDetailMapper;
-
-    @Autowired
+    @Resource
     private OrgTableFieldMapper orgTableFieldMapper;
+
     /**根据fid、tableFieldId查询机构对应的字段配置列表
      * @Description
      * @author huxiaolong
@@ -84,6 +86,7 @@ public class TableFieldQueryService {
                 .lambda()
                 .eq(TableFieldDetail::getTableFieldId, tableFieldId)
                 .eq(TableFieldDetail::getDeleted, false)
+                .orderByAsc(TableFieldDetail::getSequence)
         );
     }
 
@@ -122,6 +125,44 @@ public class TableFieldQueryService {
             return tableFieldDetails;
         }
         return listByTableFieldId(tableField.getId());
+    }
+
+    /**查询出机构需要显示的table field detail列表
+     * @Description 
+     * @author wwb
+     * @Date 2021-06-03 13:23:43
+     * @param fid
+     * @param type
+     * @param associatedType
+     * @return java.util.List<com.chaoxing.activity.model.TableFieldDetail>
+    */
+    public List<TableFieldDetail> listOrgShowTableFieldDetail(Integer fid, TableField.Type type, TableField.AssociatedType associatedType) {
+        List<TableFieldDetail> result = Lists.newArrayList();
+        List<TableFieldDetail> tableFieldDetails = listTableFieldDetail(type, associatedType);
+        if (CollectionUtils.isEmpty(tableFieldDetails)) {
+            return result;
+        }
+        TableFieldDetail firstTableFieldDetail = tableFieldDetails.get(0);
+        Integer tableFieldId = firstTableFieldDetail.getTableFieldId();
+        List<OrgTableField> orgTableFields = listOrgTableField(fid, tableFieldId);
+        // 以orgTableFields作为排序依据
+        if (CollectionUtils.isEmpty(orgTableFields)) {
+            for (TableFieldDetail fieldDetail : tableFieldDetails) {
+                if (fieldDetail.getDefaultChecked()) {
+                    result.add(fieldDetail);
+                }
+            }
+        } else {
+            Map<Integer, TableFieldDetail> detailIdDetailMap = tableFieldDetails.stream().collect(Collectors.toMap(TableFieldDetail::getId, v -> v));
+            for (OrgTableField orgTableField : orgTableFields) {
+                Integer tableFieldDetailId = orgTableField.getTableFieldDetailId();
+                TableFieldDetail tableFieldDetail = detailIdDetailMap.get(tableFieldDetailId);
+                if (tableFieldDetail != null) {
+                    result.add(tableFieldDetail);
+                }
+            }
+        }
+        return result;
     }
 
 }
