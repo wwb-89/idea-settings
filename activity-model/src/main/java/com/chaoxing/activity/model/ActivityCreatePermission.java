@@ -64,7 +64,7 @@ public class ActivityCreatePermission {
     public enum SignUpScopeType {
 
         NO_LIMIT("不限", 1),
-        ROLE_MANAGE("角色管理的范围", 2),
+        COMPETENT_RANGE("作为主管的范围", 2),
         CUSTOM("自定义", 3);
 
         private String name;

@@ -242,8 +242,8 @@
                 <div class="form-item flexStart" v-show="signUp.enableLimitParticipateScope">
                     <label class="label">参与范围</label>
                     <div class="join-box">
-                        <div>
-                            <el-radio v-if="!signUpParticipateScopeLimit" v-model="signUp.limitParticipateScope" :label="false" name="active-type">不限</el-radio>
+                        <div v-show="!signUpParticipateScopeLimit">
+                            <el-radio v-model="signUp.limitParticipateScope" :label="false" name="active-type">不限</el-radio>
                             <el-radio v-model="signUp.limitParticipateScope" :label="true" name="active-type">自定义</el-radio>
                         </div>
                         <div class="join-select" v-show="signUp.limitParticipateScope">

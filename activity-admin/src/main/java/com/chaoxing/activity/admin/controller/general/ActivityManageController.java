@@ -2,6 +2,7 @@ package com.chaoxing.activity.admin.controller.general;
 
 import com.chaoxing.activity.admin.util.LoginUtils;
 import com.chaoxing.activity.dto.LoginUserDTO;
+import com.chaoxing.activity.dto.manager.ActivityCreatePermissionDTO;
 import com.chaoxing.activity.dto.manager.WfwGroupDTO;
 import com.chaoxing.activity.dto.manager.WfwRegionalArchitectureDTO;
 import com.chaoxing.activity.dto.module.SignAddEditDTO;
@@ -11,6 +12,7 @@ import com.chaoxing.activity.service.WebTemplateService;
 import com.chaoxing.activity.service.activity.ActivityQueryService;
 import com.chaoxing.activity.service.activity.ActivityValidationService;
 import com.chaoxing.activity.service.activity.classify.ActivityClassifyQueryService;
+import com.chaoxing.activity.service.activity.manager.ActivityCreatePermissionService;
 import com.chaoxing.activity.service.activity.scope.ActivityScopeQueryService;
 import com.chaoxing.activity.service.manager.WfwGroupApiService;
 import com.chaoxing.activity.service.manager.module.SignApiService;
@@ -41,7 +43,7 @@ public class ActivityManageController {
 	@Resource
 	private ActivityQueryService activityQueryService;
 	@Resource
-	private ActivityClassifyQueryService activityClassifyQueryService;
+	private ActivityCreatePermissionService activityCreatePermissionService;
 	@Resource
 	private SignApiService signApiService;
 	@Resource
@@ -100,9 +102,10 @@ public class ActivityManageController {
 		model.addAttribute("activity", activity);
 		// 活动类型列表
 		model.addAttribute("activityTypes", activityQueryService.listActivityType());
-		// 活动分类列表
-		List<ActivityClassify> activityClassifies = activityClassifyQueryService.listOrgOptional(loginUser.getFid());
-		model.addAttribute("activityClassifies", activityClassifies);
+		// 活动分类列表范围
+		ActivityCreatePermissionDTO activityCreatePermission = activityCreatePermissionService.getGroupClassifyByUserPermission(loginUser.getFid(), loginUser.getUid());
+		model.addAttribute("activityClassifies", activityCreatePermission.getActivityClassifies());
+		model.addAttribute("signUpParticipateScopeLimit", activityCreatePermission.getSignUpParticipateScopeLimit());
 		// 报名签到
 		Integer signId = activity.getSignId();
 		SignAddEditDTO sign = SignAddEditDTO.builder().build();
@@ -118,8 +121,7 @@ public class ActivityManageController {
 		List<WfwRegionalArchitectureDTO> wfwRegionalArchitectures = activityScopeQueryService.listByActivityId(activityId);
 		model.addAttribute("participatedOrgs", wfwRegionalArchitectures);
 		// 报名范围
-		List<WfwGroupDTO> wfwGroups = wfwGroupApiService.getGroupByGid(loginUser.getFid(), 0);
-		model.addAttribute("wfwGroups", wfwGroups);
+		model.addAttribute("wfwGroups", activityCreatePermission.getWfwGroups());
 		String activityFlag = activity.getActivityFlag();
 		model.addAttribute("activityFlag", activityFlag);
 		// flag配置的报名签到的模块

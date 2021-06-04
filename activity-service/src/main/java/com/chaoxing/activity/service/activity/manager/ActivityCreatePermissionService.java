@@ -269,7 +269,20 @@ public class ActivityCreatePermissionService {
         for (Integer groupId : scopeGroupIdSet) {
             buildReleaseWfwGroups(groupId, wfwGroupMap, intersectionSet, result, resultIdSet);
         }
-        return new ArrayList<>(result);
+        // 对result排序存放
+        List<WfwGroupDTO> resultWfwGroups = Lists.newArrayList();
+        if (result.size() > 0) {
+            for (WfwGroupDTO wfwGroup : wfwGroups) {
+                String groupId = wfwGroup.getId();
+                for (WfwGroupDTO wfwGroupDTO : result) {
+                    if (Objects.equals(groupId, wfwGroupDTO.getId())) {
+                        resultWfwGroups.add(wfwGroupDTO);
+                    }
+                }
+            }
+        }
+
+        return resultWfwGroups;
     }
 
     /**递归查找已选发布范围的组织架构及其上级的组织架构

@@ -38,7 +38,7 @@
                         <th>{{role.roleName}}</th>
 <!--                        <th>{{role.memberNum}}</th>-->
                         <th>
-                            <span @click="singleConfig(role)">权限配置</span>
+                            <span @click="singleConfig(role)">配置权限</span>
                         </th>
                     </tr>
                     <tr v-else>
@@ -52,7 +52,7 @@
         <div class="dialog-mask" v-show="settingDialog">
             <div class="dailog setting-dailog">
                 <div class="header">
-                    <span>配置权限{{!activeRoleName ? '' : ` - ${activeRoleName}`}}</span>
+                    <span>配置权限</span>
                     <i class="close" @click="settingDialog=false"></i>
                 </div>
                 <div class="body" v-loading="loading">
@@ -68,10 +68,10 @@
                             </div>
                         </div>
                         <div class="form-item">
-                            <label for="" class="label">发布范围</label>
+                            <label class="label">报名范围</label>
                             <div class="input-box">
                                 <el-radio v-model="config.signUpScopeType" :label="1" class="radio-item">不限</el-radio>
-                                <el-radio v-model="config.signUpScopeType" :label="2" class="radio-item">角色管理的范围</el-radio>
+                                <el-radio v-model="config.signUpScopeType" :label="2" class="radio-item">作为主管的范围</el-radio>
                                 <el-radio v-model="config.signUpScopeType" :label="3" class="radio-item">自定义</el-radio>
                                 <div class="select-box">
                                     <p class="tips" v-show="config.signUpScopeType == 1">可以选择本单位下的所有组织架构</p>
@@ -228,7 +228,7 @@
                         $this.settingDialog = true;
                         $this.activeRoleName = role.roleName;
                         $this.initTree();
-                        // 初始化已选发布范围
+                        // 初始化已选报名范围
                         $this.releaseScopes = [];
 
                         var url = ctx + '/api/activity/create/permission/' + role.roleid;
@@ -310,16 +310,16 @@
                         var url = !config.id ? addUrl : editUrl;
                         app.ajaxPostWithLoading(url, config, function (data) {
                             if (data.success) {
-                                app.showMsg("权限配置成功");
+                                app.showMsg("处理成功");
                             } else {
                                 var errorMessage = data.message;
                                 if (activityApp.isEmpty(errorMessage)) {
-                                    errorMessage = "权限配置失败";
+                                    errorMessage = "处理失败";
                                 }
                                 app.showMsg(errorMessage);
                             }
                         }, function () {
-                            app.showMsg("权限配置失败");
+                            app.showMsg("处理失败");
                         });
                     },
                     // 批量配置保存
@@ -327,16 +327,16 @@
                         var url = ctx + '/api/activity/create/permission/batchConfig';
                         app.ajaxPostWithPayload(url, JSON.stringify(submitData), function (data) {
                             if (data.success) {
-                                app.showMsg("权限配置成功");
+                                app.showMsg("处理成功");
                             } else {
                                 var errorMessage = data.message;
                                 if (activityApp.isEmpty(errorMessage)) {
-                                    errorMessage = "权限配置失败";
+                                    errorMessage = "处理失败";
                                 }
                                 app.showMsg(errorMessage);
                             }
                         }, function () {
-                            app.showMsg("权限配置失败");
+                            app.showMsg("处理失败");
                         });
                     },
                     cancelConfig: function () {
@@ -373,7 +373,7 @@
                         };
                         $this.organizationTreeObj = $.fn.zTree.init($("#organizationTree"), setting, $this.wfwGroups);
                     },
-                    // 确定发布范围改变事件
+                    // 确定报名范围改变事件
                     confirmReleaseScopeChange: function () {
                         var $this = this;
                         var zTree = $.fn.zTree.getZTreeObj("organizationTree");

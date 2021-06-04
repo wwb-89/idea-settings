@@ -59,7 +59,7 @@
                     >
                     </el-date-picker>
                     <div class="popbtnInput">
-                        <input type="text" autocomplete="off" class="layui-input" readonly :value="participateScopeNames" placeholder="参与范围" @click="selectPopFunc">
+                        <input type="text" autocomplete="off" class="layui-input" style="cursor: pointer;" readonly :value="participateScopeNames" placeholder="参与范围" @click="selectPopFunc">
                     </div>
                     <el-button class="btn-customize" round @click="search">查询</el-button>
                 </div>
@@ -202,12 +202,14 @@
     <script type="text/javascript" src="/static/pc/assets/lib/zTree_v3/js/jquery.ztree.core.js" th:src="@{/pc/assets/lib/zTree_v3/js/jquery.ztree.core.js}"></script>
     <script type="text/javascript" src="/static/pc/assets/lib/zTree_v3/js/jquery.ztree.excheck.js" th:src="@{/pc/assets/lib/zTree_v3/js/jquery.ztree.excheck.js}"></script>
     <script src="/static/pc/assets/component/confirm-common.js" th:src="@{/pc/assets/component/confirm-common.js}"></script>
+    <script src="/static/pc/assets/lib/set-iframe-height-child.js" th:src="@{/pc/assets/lib/set-iframe-height-child.js}"></script>
+    <script src="/static/pc/assets/lib/jquery.mCustomScrollbar.concat.min.js" th:src="@{/pc/assets/lib/jquery.mCustomScrollbar.concat.min.js}"></script>
     <script th:inline="javascript">
         Vue.filter("percentConversion", function (value) {
             if (!value) {
                 return '0';
             }
-            var str = Number(value * 100).toFixed(2);
+            var str = parseInt(value * 100);
             str += "%";
             return str;
         });
@@ -269,6 +271,8 @@
             },
             created: function () {
                 var $this = this;
+                // 解决跨域
+                document.domain = "chaoxing.com";
                 $this.calShowTableFieldDetails();
                 $this.configTableFieldDetails = $this.calConfigTableFieldDetails();
             },
@@ -411,7 +415,6 @@
                     var url = ctx + "/api/stat/org/activity/page";
                     $this.loaded = false;
                     app.ajaxPostWithLoading(url, { queryParamStr: activityApp.getJsonStr($this.queryParams) }, function (data) {
-
                         $this.loaded = true;
                         if (data.success) {
                             $this.tableData = data.data.records;
@@ -420,13 +423,13 @@
                         } else {
                             var errorMessage = data.message;
                             if (activityApp.isEmpty(errorMessage)) {
-                                errorMessage = "加载活动统计汇总数据失败";
+                                errorMessage = "加载数据失败";
                             }
                             app.showMsg(errorMessage);
                         }
                     }, function () {
                         $this.loaded = true;
-                        app.showMsg("加载活动统计汇总数据失败");
+                        app.showMsg("加载数据失败");
                     });
                 },
                 search: function () {
