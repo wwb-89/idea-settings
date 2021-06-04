@@ -7,10 +7,11 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="/static/mobile/assets/css/public.css" th:href="@{/mobile/assets/css/public.css}">
     <link rel="stylesheet" href="/static/mobile/assets/css/poster.css" th:href="@{/mobile/assets/css/poster.css}">
+
 </head>
 
 <body>
-    <div class="poster-app" id="poster-app" v-cloak>
+    <div class="poster-app" id="capture" v-cloak>
         <div class="poster-box">
             <div class="img-box">
                 <img :src="activity.coverCloudId | imgUrlFilter">
@@ -36,8 +37,7 @@
                 </dl>
             </div>
             <div class="qrcode-box">
-                <!--<img src="/static/mobile/assets/images/qrcode.png" th:src="@{/mobile/assets/images/qrcode.png}" alt="">-->
-                <canvas id="canvas" class="qrcode" width="172" height="172"></canvas>
+                <div id="canvas" class="qrcode"></div>
             </div>
             <div class="text-tip">扫码访问活动</div>
         </div>
@@ -52,7 +52,7 @@
                 return ctx + '/cloud-proxy/image/' + cloudId;
             });
             posterVue = new Vue({
-                el: "#poster-app",
+                el: "#capture",
                 data: {
                     activity: [[${activity}]],
                     signUp: [[${signUp}]],
