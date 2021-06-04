@@ -136,6 +136,7 @@
                         </el-table-column>
                         <el-table-column
                                 v-else-if="item.code === 'signInRate'"
+                                :prop="item.code"
                                 :fixed="item.defaultTop"
                                 :label="item.name"
                                 :ifCenter="item.align"
