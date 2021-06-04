@@ -23,7 +23,7 @@
                        <dt class="label">活动时间：</dt>
                        <dd class="info"> {{ activity.startTime | timestampScopeFormat(activity.endTime, 'YYYY-MM-DD HH:mm') }}</dd>
                    </dl>
-                    <dl class="text-list marginb6">
+                    <dl class="text-list marginb6" v-show="activityAddress">
                         <dt class="label">活动地点：</dt>
                         <dd class="info">{{activityAddress}}</dd>
                     </dl>

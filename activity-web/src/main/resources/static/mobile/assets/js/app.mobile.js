@@ -981,6 +981,19 @@
             }
         }
     };
+    /**
+     * 保存图片到系统相册
+     * @param imageUrl
+     * @param imageData
+     * @param suffix
+     */
+    app.prototype.savePicToSys = function (imageUrl, imageData, suffix){
+        B.postNotification('CLIENT_SAVE_IMAGE', {
+            // imageUrl: "",   //图片路径
+            imageData: imageData, //base64 data数据
+            suffix: suffix //后缀
+        });
+    }
     app.prototype.loadingEndError = function (object, tips, callback) {
         var $this = this;
         $this.loadingEndSuccess(object, tips, callback);

@@ -22,7 +22,7 @@
                    <dt class="label">活动时间：</dt>
                    <dd class="info"> {{ activity.startTime | timestampScopeFormat(activity.endTime, 'YYYY-MM-DD HH:mm') }}</dd>
                </dl>
-                <dl class="text-list">
+                <dl class="text-list" v-show="activityAddress">
                     <dt class="label">活动地点：</dt>
                     <dd class="info">{{activityAddress}}</dd>
                 </dl>
@@ -94,7 +94,6 @@
                     getHeight: function (el, lineheight){
                         var heightSome = el.clientHeight;
                         var wareNameText = el.innerHTML;//获取内容
-                        console.log(heightSome)
                         if(heightSome>lineheight){ //这个数字是两行的时候的高度，根据你设定的字体大小有关
                             for(var i=0;heightSome>lineheight;i++){
                                 //每次删掉最后一个然后返回
@@ -108,13 +107,10 @@
                         }
                     },
                     download: function () {
-                        var $this = this;
                         html2canvas(document.querySelector(".poster-box"), { useCORS: true }).then(canvas => {
-                            $(canvas).addClass('captureImg');
-                            document.body.appendChild(canvas)
-                            var imageData =  canvas.toDataURL({ format: 'image/png', quality:1 }).replace(/^data:image\/[^;]/, 'data:application/octet-stream');
-                            app.openUrl(imageData, `${$this.activity.name}海报`)
-                            // window.open(imageData);
+                            var base64str = canvas.toDataURL('image/jpeg');
+                            var base64str = base64str.replace(/^data:image\/\w+;base64,/, "");
+                            app.savePicToSys("", base64str, "png");
                         });
                     }
                 }

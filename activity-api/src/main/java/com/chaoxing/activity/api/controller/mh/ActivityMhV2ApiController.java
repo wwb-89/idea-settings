@@ -13,6 +13,7 @@ import com.chaoxing.activity.service.activity.ActivityValidationService;
 import com.chaoxing.activity.service.activity.activityflag.ActivityFlagValidateService;
 import com.chaoxing.activity.service.manager.module.SignApiService;
 import com.chaoxing.activity.util.BaiduMapUtils;
+import com.chaoxing.activity.util.constant.ActivityMhUrlConstant;
 import com.chaoxing.activity.util.constant.DateTimeFormatterConstant;
 import com.chaoxing.activity.util.constant.UrlConstant;
 import com.google.common.collect.Lists;
@@ -140,6 +141,9 @@ public class ActivityMhV2ApiController {
 		// 主办方
 		mhGeneralAppResultDataFields.add(buildField("主办方", activity.getOrganisers(), "105"));
 		mhGeneralAppResultDataFields.add(buildField("活动对象", "", "108"));
+		// 海报
+		mhGeneralAppResultDataFields.add(buildField("海报", "海报", "130"));
+		mhGeneralAppResultDataFields.add(buildField("海报", String.format(ActivityMhUrlConstant.ACTIVITY_POSTERS_URL, activity.getId()), "131"));
 		return RestRespDTO.success(jsonObject);
 	}
 
