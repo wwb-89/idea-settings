@@ -15,8 +15,7 @@
         <div id="capture">
             <div class="poster-box">
                 <div class="img-box">
-                    <img :src="activity | getCloudImgUrl">
-<!--                    <img :src="`http://p.ananas.chaoxing.com/star3/origin/${activity.coverCloudId}`" th:src="|http://p.ananas.chaoxing.com/star3/origin/${activity.coverCloudId}|">-->
+                    <img :src="activity.coverCloudId | imgUrlFilter">
                 </div>
                 <div class="text-box">
                     <p class="text-title marginb6">{{activity.name}}</p>
@@ -49,19 +48,20 @@
     <div th:replace="pc/include/common_js :: common_js(~{::script})">
         <script src="/static/pc/assets/lib/qrcode.min.js"  th:src="@{/pc/assets/lib/qrcode.min.js}"></script>
         <script src="/static/pc/assets/lib/html2canvas.min.js" th:src="@{/pc/assets/lib/html2canvas.min.js}"></script>
-        <script>
-
-        </script>
         <script th:inline="javascript">
+            Vue.filter("imgUrlFilter", function (cloudId) {
+                return ctx + '/cloud-proxy/image/' + cloudId;
+            });
             posterVue = new Vue({
                 el: "#poster-pc",
                 data: {
                     activity: [[${activity}]],
                     signUp: [[${signUp}]],
-                    canvasUrl: ''
+                    canvasUrl: '',
+                    ctx: ctx
                 },
                 created: function () {
-
+                    document.domain = 'chaoxing.com'
                 },
                 computed: {
                     activityAddress: function () {
