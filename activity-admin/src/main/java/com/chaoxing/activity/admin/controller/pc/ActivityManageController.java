@@ -134,7 +134,6 @@ public class ActivityManageController {
 		ActivityCreatePermissionDTO activityCreatePermission = activityCreatePermissionService.getGroupClassifyByUserPermission(loginUser.getFid(), loginUser.getUid());
 		model.addAttribute("activityClassifies", activityCreatePermission.getActivityClassifies());
 		model.addAttribute("signUpParticipateScopeLimit", activityCreatePermission.getSignUpParticipateScopeLimit());
-
 		// 报名签到
 		model.addAttribute("sign", SignAddEditDTO.builder().build());
 		// 模板列表

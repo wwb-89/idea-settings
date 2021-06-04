@@ -38,7 +38,7 @@
                         <th>{{role.roleName}}</th>
 <!--                        <th>{{role.memberNum}}</th>-->
                         <th>
-                            <span @click="singleConfig(role)">权限配置</span>
+                            <span @click="singleConfig(role)">配置权限</span>
                         </th>
                     </tr>
                     <tr v-else>
@@ -310,16 +310,16 @@
                         var url = !config.id ? addUrl : editUrl;
                         app.ajaxPostWithLoading(url, config, function (data) {
                             if (data.success) {
-                                app.showMsg("权限配置成功");
+                                app.showMsg("处理成功");
                             } else {
                                 var errorMessage = data.message;
                                 if (activityApp.isEmpty(errorMessage)) {
-                                    errorMessage = "权限配置失败";
+                                    errorMessage = "处理失败";
                                 }
                                 app.showMsg(errorMessage);
                             }
                         }, function () {
-                            app.showMsg("权限配置失败");
+                            app.showMsg("处理失败");
                         });
                     },
                     // 批量配置保存
@@ -327,16 +327,16 @@
                         var url = ctx + '/api/activity/create/permission/batchConfig';
                         app.ajaxPostWithPayload(url, JSON.stringify(submitData), function (data) {
                             if (data.success) {
-                                app.showMsg("权限配置成功");
+                                app.showMsg("处理成功");
                             } else {
                                 var errorMessage = data.message;
                                 if (activityApp.isEmpty(errorMessage)) {
-                                    errorMessage = "权限配置失败";
+                                    errorMessage = "处理失败";
                                 }
                                 app.showMsg(errorMessage);
                             }
                         }, function () {
-                            app.showMsg("权限配置失败");
+                            app.showMsg("处理失败");
                         });
                     },
                     cancelConfig: function () {
