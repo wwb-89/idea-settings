@@ -291,6 +291,9 @@ html, body {
      -moz-box-sizing: border-box;
           box-sizing: border-box;
   border-radius: 2px;
+  min-height: 34px;
+  max-height: 174px;
+  overflow: auto;
 }
 
 .dailog.setting-dailog .body .form-item .input-box .add-scope .text {
