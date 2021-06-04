@@ -35,12 +35,11 @@
             t.avg_participate_time_length as avgParticipateTimeLength,
             t.create_time as createTime,
             t.update_time as updateTime,
-            t2.score rateScore,
-            t2.score_num rateNum
+            (CASE WHEN ISNULL(t2.score) THEN 0 ELSE t2.score END) rateScore,
+            (CASE WHEN ISNULL(t2.score_num) THEN 0 ELSE t2.score_num END) rateNum
         FROM
             t_activity_stat_summary t
             INNER JOIN t_activity t1 ON t1.id = t.activity_id
-            LEFT JOIN t_activity_rating t2 ON t.activity_id = t2.activity_id
             AND t1.create_fid = #{queryItem.fid}
             <if test="queryItem.name != null and queryItem.name != ''">
                 <bind name="nameBind" value="'%' + queryItem.name + '%'"/>
@@ -64,6 +63,9 @@
                     #{signId}
                 </foreach>
             </if>
+            LEFT JOIN t_activity_rating t2 ON t.activity_id = t2.activity_id
+        GROUP BY
+            t1.id
         <if test="queryItem.orderField != null and queryItem.orderField != ''">
             ORDER BY ${queryItem.orderField} <if test="orderType != null and orderType != ''">${orderType}</if>
         </if>
