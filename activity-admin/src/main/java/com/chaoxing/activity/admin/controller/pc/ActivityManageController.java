@@ -129,14 +129,11 @@ public class ActivityManageController {
 		// 活动类型列表
 		List<ActivityTypeDTO> activityTypes = activityQueryService.listActivityType();
 		model.addAttribute("activityTypes", activityTypes);
-		// 活动分类列表
-		// 先克隆
+		// 活动分类列表范围
 		activityClassifyHandleService.cloneSystemClassify(loginUser.getFid());
-
 		ActivityCreatePermissionDTO activityCreatePermission = activityCreatePermissionService.getGroupClassifyByUserPermission(loginUser.getFid(), loginUser.getUid());
 		model.addAttribute("activityClassifies", activityCreatePermission.getActivityClassifies());
 		model.addAttribute("signUpParticipateScopeLimit", activityCreatePermission.getSignUpParticipateScopeLimit());
-//		model.addAttribute("activityClassifies", activityClassifyQueryService.listOrgOptional(loginUser.getFid()));
 
 		// 报名签到
 		model.addAttribute("sign", SignAddEditDTO.builder().build());

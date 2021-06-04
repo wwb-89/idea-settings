@@ -93,6 +93,8 @@ public class ActivityStatSummaryQueryService {
             if (record.getActivityClassifyId() != null) {
                 classifyIds.add(record.getActivityClassifyId());
             }
+            // 起止时间
+            record.setActivityStartEndTime(DateUtils.activityTimeScope(record.getStartTime(), record.getEndTime()));
         }
 
         List<SignParticipateScopeDTO> signParticipateScopes = signApiService.listSignParticipateScopeBySignIds(signIds);
@@ -186,9 +188,7 @@ public class ActivityStatSummaryQueryService {
                             itemData.add(valueToString(record.getIntegral()));
                             break;
                         case "activityStartEndTime":
-                            String startTimeStr = record.getStartTime() == null ? "" : record.getStartTime().format(DateUtils.FULL_TIME_FORMATTER);
-                            String endTimeStr = record.getEndTime() == null ? "" : record.getEndTime().format(DateUtils.FULL_TIME_FORMATTER);
-                            itemData.add(startTimeStr + " ~ " + endTimeStr);
+                            itemData.add(DateUtils.activityTimeScope(record.getStartTime(), record.getEndTime()));
                             break;
                         case "qualifiedNum":
                             itemData.add(valueToString(record.getQualifiedNum()));

@@ -66,14 +66,7 @@ public class ActivityStatSummaryDTO {
     private LocalDateTime createTime;
     /** 更新时间; */
     private LocalDateTime updateTime;
-
     /** 起止时间 */
-    public String getActivityStartEndTime() {
-        if (this.startTime != null && this.endTime != null) {
-            String startTimeStr = startTime.format(DateUtils.DATE_MINUTE_TIME_FORMATTER);
-            String endTimeStr = endTime.format(DateUtils.DATE_MINUTE_TIME_FORMATTER);
-            return startTimeStr + " ~ " + endTimeStr;
-        }
-        return "";
-    }
+    private String activityStartEndTime;
+
 }

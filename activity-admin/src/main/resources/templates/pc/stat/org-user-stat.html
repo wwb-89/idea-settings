@@ -29,12 +29,12 @@
 					<el-button class="btn-customize" round @click="exportData">导出</el-button>
 					<el-button class="btn-customize" round @click="exportRecord">导出记录</el-button>
 					<div class="search-Box">
-						<el-input placeholder="姓名"
+						<el-input placeholder="姓名/学号"
 						          v-model.trim="sw"
 						          icon="search"
 						          class="search"
 						          suffix-icon="el-icon-search"
-									@keyup.enter.native="search">
+						          @keyup.enter.native="search">
 						</el-input>
 						<i class="icon-cancel btn-cancel fs16" v-show="sw" @click="clearSw"></i>
 					</div>
@@ -84,7 +84,7 @@
 						</el-table-column>
 						<el-table-column v-else-if="field.code == 'signedInRate'" :align="field.align" :fixed="field.top" :sortable="field.sortable" :label="field.name" :prop="field.code" :min-width="field.minWidth">
 							<template slot-scope="scope">
-								{{scope.row.signedInRate > 0 ? scope.row.signedInRate + '%' : 0}}
+								{{scope.row.signedInRate | percentConversion}}
 							</template>
 						</el-table-column>
 						<el-table-column v-else :align="field.align" :fixed="field.top" :sortable="field.sortable" :label="field.name" :prop="field.code" :min-width="field.minWidth"></el-table-column>
@@ -103,7 +103,17 @@
 	<script type="text/javascript" src="/static/pc/assets/lib/zTree_v3/js/jquery.ztree.core.js" th:src="@{/pc/assets/lib/zTree_v3/js/jquery.ztree.core.js}"></script>
 	<script type="text/javascript" src="/static/pc/assets/lib/zTree_v3/js/jquery.ztree.excheck.js" th:src="@{/pc/assets/lib/zTree_v3/js/jquery.ztree.excheck.js}"></script>
 	<script src="/static/pc/assets/component/confirm-common.js" th:src="@{/pc/assets/component/confirm-common.js}"></script>
+	<script src="/static/pc/assets/lib/set-iframe-height-child.js" th:src="@{/pc/assets/lib/set-iframe-height-child.js}"></script>
+	<script src="/static/pc/assets/lib/jquery.mCustomScrollbar.concat.min.js" th:src="@{/pc/assets/lib/jquery.mCustomScrollbar.concat.min.js}"></script>
 	<script th:inline="javascript">
+		Vue.filter("percentConversion", function (value) {
+			if (!value) {
+				return '0';
+			}
+			var str = parseInt(value);
+			str += "%";
+			return str;
+		});
         vm = new Vue({
             el: "#stat-vue",
             data: {
@@ -142,6 +152,8 @@
             },
             created: function () {
 				var $this = this;
+	            // 解决跨域
+	            document.domain = "chaoxing.com";
 				// 计算表格显示的字段列表
                 if ($this.orgTableFields.length < 1) {
                     // 机构没有配置显示的字段。使用默认的
