@@ -17,6 +17,7 @@ import com.chaoxing.activity.dto.query.MhActivityCalendarQueryDTO;
 import com.chaoxing.activity.dto.sign.UserSignUpStatusStatDTO;
 import com.chaoxing.activity.mapper.*;
 import com.chaoxing.activity.model.*;
+import com.chaoxing.activity.service.activity.classify.ActivityClassifyQueryService;
 import com.chaoxing.activity.service.activity.manager.ActivityManagerQueryService;
 import com.chaoxing.activity.service.form.ActivityFormRecordService;
 import com.chaoxing.activity.service.manager.WfwRegionalArchitectureApiService;
@@ -71,6 +72,8 @@ public class ActivityQueryService {
 	private ActivityManagerQueryService activityManagerQueryService;
 	@Resource
 	private ActivityFormRecordService activityFormRecordService;
+	@Resource
+	private ActivityClassifyQueryService activityClassifyQueryService;
 
 	/**查询参与的活动
 	 * @Description 
@@ -699,4 +702,32 @@ public class ActivityQueryService {
 		return signAddEditDTO.getSignUps().get(0);
 	}
 
+	/**根据活动id列表查询活动列表
+	 * @Description 
+	 * @author wwb
+	 * @Date 2021-06-06 20:56:29
+	 * @param activityIds
+	 * @return java.util.List<com.chaoxing.activity.model.Activity>
+	*/
+	public List<Activity> listByIds(List<Integer> activityIds) {
+		List<Activity> activities = activityMapper.selectList(new QueryWrapper<Activity>()
+				.lambda()
+				.in(Activity::getId, activityIds)
+		);
+		if (CollectionUtils.isNotEmpty(activities)) {
+			List<Integer> activityClassifyIds = activities.stream().map(Activity::getActivityClassifyId).collect(Collectors.toList());
+			List<ActivityClassify> activityClassifies = activityClassifyQueryService.listByIds(activityClassifyIds);
+			if (CollectionUtils.isNotEmpty(activityClassifies)) {
+				Map<Integer, ActivityClassify> activityClassifyIdMap = activityClassifies.stream().collect(Collectors.toMap(ActivityClassify::getId, v -> v, (v1, v2) -> v2));
+				for (Activity activity : activities) {
+					Integer activityClassifyId = activity.getActivityClassifyId();
+					ActivityClassify activityClassify = activityClassifyIdMap.get(activityClassifyId);
+					if (activityClassify != null) {
+						activity.setActivityClassifyName(activityClassify.getName());
+					}
+				}
+			}
+		}
+		return activities;
+	}
 }

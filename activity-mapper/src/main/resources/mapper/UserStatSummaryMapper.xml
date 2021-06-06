@@ -74,4 +74,38 @@
                 ${userStatSummaryQuery.orderField} ${userStatSummaryQuery.orderType}
         </if>
     </select>
+
+     <select id="countUserParticipateActivityNum" resultType="java.lang.Integer">
+         SELECT
+            COUNT( 1 )
+         FROM
+             t_user_stat_summary t
+             INNER JOIN t_activity t1 ON t.activity_id = t1.id
+             AND t1.`status` > 0
+             <if test="fid != null">
+                 AND t1.create_fid = #{fid}
+             </if>
+         WHERE
+             t.uid = #{uid}
+            AND t.is_valid = 1
+     </select>
+
+    <select id="pagingUserParticipate" resultMap="BaseResultMap">
+        SELECT
+            <include refid="Base_Column_List"></include>
+        FROM
+            t_user_stat_summary t
+            INNER JOIN t_activity t1 ON t.activity_id = t1.id
+            AND t1.`status` > 0
+            <if test="fid != null">
+                AND t1.create_fid = #{fid}
+            </if>
+        WHERE
+            t.uid = #{uid}
+            AND t.is_valid = 1
+        ORDER BY
+            FIELD( t1.`status`, 2, 3, 4 ),
+            t1.start_time DESC
+    </select>
+
 </mapper>

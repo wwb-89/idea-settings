@@ -48,6 +48,9 @@ public class DateUtils {
 	 * @return long
 	*/
 	public static long date2Timestamp(LocalDateTime time) {
+		if (time == null) {
+			return 0;
+		}
 		return time.toInstant(CommonConstant.DEFAULT_ZONEOFFSET).toEpochMilli();
 	}
 

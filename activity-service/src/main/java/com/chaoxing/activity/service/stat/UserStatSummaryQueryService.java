@@ -1,17 +1,22 @@
 package com.chaoxing.activity.service.stat;
 
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.chaoxing.activity.dto.activity.UserParticipateActivityDTO;
 import com.chaoxing.activity.dto.export.ExportDataDTO;
 import com.chaoxing.activity.dto.query.admin.UserStatSummaryQueryDTO;
 import com.chaoxing.activity.mapper.TableFieldDetailMapper;
 import com.chaoxing.activity.mapper.UserStatSummaryMapper;
+import com.chaoxing.activity.model.Activity;
 import com.chaoxing.activity.model.TableField;
 import com.chaoxing.activity.model.TableFieldDetail;
 import com.chaoxing.activity.model.UserStatSummary;
+import com.chaoxing.activity.service.activity.ActivityQueryService;
 import com.chaoxing.activity.service.manager.OrganizationalStructureApiService;
 import com.chaoxing.activity.service.manager.PassportApiService;
 import com.chaoxing.activity.service.tablefield.TableFieldQueryService;
+import com.chaoxing.activity.util.DateUtils;
 import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.stereotype.Service;
@@ -19,6 +24,9 @@ import org.springframework.stereotype.Service;
 import javax.annotation.Resource;
 import java.math.BigDecimal;
 import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.stream.Collectors;
 
 /**
  * @author wwb
@@ -43,6 +51,8 @@ public class UserStatSummaryQueryService {
 	private TableFieldQueryService tableFieldQueryService;
 	@Resource
 	private PassportApiService passportApiService;
+	@Resource
+	private ActivityQueryService activityQueryService;
 
 	/**
 	 * 分页查询用户统计
@@ -187,6 +197,86 @@ public class UserStatSummaryQueryService {
 			data.add(dataItem);
 		}
 		return data;
+	}
+
+	/**统计用户参加的活动数量
+	 * @Description 
+	 * @author wwb
+	 * @Date 2021-06-06 20:34:05
+	 * @param uid
+	 * @param fid 不会空则为该机构创建的活动
+	 * @return java.lang.Integer
+	*/
+	public Integer countUserParticipateActivityNum(Integer uid, Integer fid) {
+		return userStatSummaryMapper.countUserParticipateActivityNum(uid, fid);
+	}
+
+	/**分页查询用户参与的活动列表
+	 * @Description 
+	 * @author wwb
+	 * @Date 2021-06-06 21:19:03
+	 * @param page
+	 * @param uid
+	 * @param fid
+	 * @return com.baomidou.mybatisplus.extension.plugins.pagination.Page
+	*/
+	public Page pagingUserParticipate(Page page, Integer uid, Integer fid) {
+		page = userStatSummaryMapper.pagingUserParticipate(page, uid, fid);
+		List<?> records = page.getRecords();
+		if (CollectionUtils.isNotEmpty(records)) {
+			List<Integer> activityIds = Lists.newArrayList();
+			for (Object record : records) {
+				UserStatSummary userStatSummary = (UserStatSummary) record;
+				activityIds.add(userStatSummary.getActivityId());
+			}
+			List<Activity> activities = activityQueryService.listByIds(activityIds);
+			Map<Integer, Activity> activityIdMap;
+			if (CollectionUtils.isNotEmpty(activities)) {
+				activityIdMap = activities.stream().collect(Collectors.toMap(Activity::getId, v -> v, (v1, v2) -> v2));
+			} else {
+				activityIdMap = Maps.newHashMap();
+			}
+			List<UserParticipateActivityDTO> userParticipateActivities = Lists.newArrayList();
+			for (Object record : records) {
+				UserStatSummary userStatSummary = (UserStatSummary) record;
+				UserParticipateActivityDTO userParticipateActivity = new UserParticipateActivityDTO();
+				Integer activityId = userStatSummary.getActivityId();
+				Activity activity = activityIdMap.get(activityId);
+				userParticipateActivity.setId(userStatSummary.getActivityId());
+				if (activity != null) {
+					userParticipateActivity.setName(activity.getName());
+					userParticipateActivity.setCoverCloudId(activity.getCoverCloudId());
+					userParticipateActivity.setCoverUrl(activity.getCoverUrl());
+					userParticipateActivity.setStartTime(DateUtils.date2Timestamp(activity.getStartTime()));
+					userParticipateActivity.setEndTime(DateUtils.date2Timestamp(activity.getEndTime()));
+					String activityType = activity.getActivityType();
+					Activity.ActivityTypeEnum activityTypeEnum = Activity.ActivityTypeEnum.fromValue(activityType);
+					if (activityTypeEnum != null) {
+						userParticipateActivity.setActivityType(activityTypeEnum.getName());
+					}
+					userParticipateActivity.setActivityClassify(activity.getActivityClassifyName());
+					String address = activity.getAddress();
+					address = Optional.ofNullable(address).orElse("");
+					String detailAddress = activity.getDetailAddress();
+					address += Optional.ofNullable(detailAddress).orElse("");
+					userParticipateActivity.setAddress(address);
+					userParticipateActivity.setUpdateTime(DateUtils.date2Timestamp(activity.getUpdateTime()));
+				}
+				Integer signedUpNum = userStatSummary.getSignedUpNum();
+				userParticipateActivity.setSignedUp(signedUpNum != null && signedUpNum > 0);
+				userParticipateActivity.setSignedUpTime(userParticipateActivity.getSignedUp() ? DateUtils.date2Timestamp(userStatSummary.getSignUpTime()) : null);
+				userParticipateActivity.setSignedInNum(userStatSummary.getSignedInNum());
+				userParticipateActivity.setSignedInRate(userStatSummary.getSignedInRate());
+				userParticipateActivity.setParticipateTimeLength(userStatSummary.getParticipateTimeLength());
+				Integer ratingNum = userStatSummary.getRatingNum();
+				userParticipateActivity.setHaveRating(ratingNum != null && ratingNum > 0);
+				userParticipateActivity.setQualified(userStatSummary.getQualified());
+				userParticipateActivity.setIntegral(userStatSummary.getIntegral());
+				userParticipateActivities.add(userParticipateActivity);
+			}
+			page.setRecords(userParticipateActivities);
+		}
+		return page;
 	}
 
 }
