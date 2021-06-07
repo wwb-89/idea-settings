@@ -3,6 +3,7 @@ package com.chaoxing.activity.service.export;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
+import com.chaoxing.activity.dto.LoginUserDTO;
 import com.chaoxing.activity.dto.export.ExportDataDTO;
 import com.chaoxing.activity.dto.query.admin.ActivityStatSummaryQueryDTO;
 import com.chaoxing.activity.dto.query.admin.UserStatSummaryQueryDTO;
@@ -61,12 +62,13 @@ public class ExportRecordHandleService {
     private CloudApiService cloudApiService;
 
     @Transactional(rollbackFor = Exception.class)
-    public void add(String params, Integer createUid, String createIp, String exportType) {
+    public void add(String params, String createIp, String exportType, LoginUserDTO loginUser) {
         ExportRecord.ExportTypeEnum exportTypeEnum = ExportRecord.ExportTypeEnum.fromValue(exportType);
         ExportRecord exportRecord = ExportRecord.builder()
                 .exportType(exportTypeEnum.getValue())
                 .params(params)
-                .createUid(createUid)
+                .createUid(loginUser.getUid())
+                .createFid(loginUser.getFid())
                 .createIp(createIp)
                 .build();
         exportRecordMapper.insert(exportRecord);

@@ -29,17 +29,17 @@ public class ExportRecordQueryService {
      * @Description
      * @author huxiaolong
      * @Date 2021-06-01 17:02:06
-     * @param uid
+     * @param fid
      * @return void
      */
-    public List<ExportRecord> listRecord(Integer uid, String exportType) {
+    public List<ExportRecord> listRecord(Integer fid, String exportType) {
         ExportRecord.ExportTypeEnum exportTypeEnum = ExportRecord.ExportTypeEnum.fromValue(exportType);
         if (exportTypeEnum == null) {
             return Lists.newArrayList();
         }
         List<ExportRecord> exportRecords = exportRecordMapper.selectList(new QueryWrapper<ExportRecord>()
                 .lambda()
-                .eq(ExportRecord::getCreateUid, uid)
+                .eq(ExportRecord::getCreateFid, fid)
                 .eq(ExportRecord::getExportType, exportType)
                 .orderByDesc(ExportRecord::getCreateTime)
         );

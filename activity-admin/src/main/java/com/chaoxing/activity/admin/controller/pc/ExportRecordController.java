@@ -31,7 +31,7 @@ public class ExportRecordController {
     @RequestMapping("")
     public String activityStatIndex(HttpServletRequest request, Model model, String exportType) {
         LoginUserDTO loginUser = LoginUtils.getLoginUser(request);
-        List<ExportRecord> recordList = exportRecordQueryService.listRecord(loginUser.getUid(), exportType);
+        List<ExportRecord> recordList = exportRecordQueryService.listRecord(loginUser.getFid(), exportType);
         model.addAttribute("exportRecordData", recordList);
         return "pc/export/index";
     }

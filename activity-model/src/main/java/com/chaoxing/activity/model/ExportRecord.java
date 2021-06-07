@@ -48,6 +48,8 @@ public class ExportRecord {
     private LocalDateTime createTime;
     /** 创建人id; column: create_uid*/
     private Integer createUid;
+    /** 创建人fid; column: create_fid*/
+    private Integer createFid;
     /** 创建人ip; column: create_ip*/
     private String createIp;
     /** 更新时间; column: update_time*/

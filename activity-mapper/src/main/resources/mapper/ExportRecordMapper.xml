@@ -14,12 +14,13 @@
         <result column="message" jdbcType="VARCHAR" property="message" />
         <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
         <result column="create_uid" jdbcType="INTEGER" property="createUid" />
+        <result column="create_fid" jdbcType="INTEGER" property="createFid" />
         <result column="create_ip" jdbcType="VARCHAR" property="createIp" />
         <result column="update_time" jdbcType="TIMESTAMP" property="updateTime" />
     </resultMap>
     <sql id="Base_Column_List">
         t.id, t.export_type, t.params, t.file_name, t.file_size, t.cloud_id,
-        t.download_url, t.handle_times, t.status, t.message, t.create_time, t.create_uid, 
+        t.download_url, t.handle_times, t.status, t.message, t.create_time, t.create_uid, t.create_fid,
         t.create_ip, t.update_time
     </sql>
 </mapper>

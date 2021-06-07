@@ -43,7 +43,7 @@ public class ExportApiController {
 	public RestRespDTO exportActivityStatSummary(HttpServletRequest request, String queryParamStr, String exportType) {
 		LoginUserDTO loginUser = LoginUtils.getLoginUser(request);
 		String createIp = HttpServletRequestUtils.getClientIp(request);
-		exportRecordService.add(queryParamStr, loginUser.getUid(), createIp, exportType);
+		exportRecordService.add(queryParamStr, createIp, exportType, loginUser);
 		return RestRespDTO.success();
 	}
 
