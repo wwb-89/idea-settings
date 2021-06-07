@@ -708,6 +708,13 @@
                             this.endTime = this.endTimestamp;
                             this.createTime = "";
                             this.updateTime = "";
+                            $(this.participateScopes).each(function () {
+                                if (this.leaf && $this.virtualNodeMap[this.externalId]) {
+                                    this.virtualId = $this.virtualNodeMap[this.externalId].virtualId;
+                                } else {
+                                    this.virtualId = this.externalId;
+                                }
+                            });
                         }
                         $this.$set($this.sign.signUps[i], "endNotAllowCancel", !this.endAllowCancel);
                     });
@@ -744,6 +751,20 @@
                 var $this = this;
                 $this.initUploader();
                 $this.handleImg();
+                $this.initWfwGroups();
+            },
+            computed: {
+                // 虚拟节点map，即非叶子节点复制本身作为其叶子节点，该叶子节点即为虚拟节点
+                virtualNodeMap: function () {
+                    var $this = this;
+                    var nodeMap = {};
+                    $($this.wfwGroups).each(function () {
+                        if (this.id !== this.virtualId) {
+                            nodeMap[this.id] = this;
+                        }
+                    });
+                    return nodeMap;
+                }
             },
             watch: {
                 "operateSignInIndex": function () {
@@ -754,6 +775,29 @@
                 }
             },
             methods: {
+                initWfwGroups: function () {
+                    var $this = this;
+                    var nodeSoncountMap = {}
+                    $($this.wfwGroups).each(function () {
+                        var _this = this;
+                        _this.chkDisabled = false;
+                        var actualSoncount = 0;
+                        $($this.wfwGroups).each(function () {
+                            if (_this.id !== this.id && _this.id === this.gid) {
+                                actualSoncount++;
+                            }
+                        });
+                        nodeSoncountMap[_this.id] = actualSoncount;
+                    });
+
+                    $($this.wfwGroups).each(function () {
+                        // 若一个非叶子节点无自身的虚拟叶子节点，则该节点不可选中
+                        var nonLeaf = this.soncount && this.soncount !== 0;
+                        if ((nonLeaf && !$this.virtualNodeMap[this.id]) || (this.id === this.virtualId && this.soncount !== nodeSoncountMap[this.id])) {
+                            this.chkDisabled = true;
+                        }
+                    });
+                },
                 periodChange: function () {
                     var $this = this;
                     var period = $this.activity.period;
@@ -1388,28 +1432,53 @@
                         callback: {}
                     };
                     $this.signUpParticipateScopeTreeObj = $.fn.zTree.init($("#sign-up-participate-scope-tree"), setting, $this.wfwGroups);
+
+                    var signUp = $this.sign.signUps[$this.operateSignUpIndex];
+                    var signUpParticipateScopes = (signUp && signUp.participateScopes) || [];
+                    // 获取所有父节点
+                    for(var i = 0; i < signUpParticipateScopes.length; i++) {
+                        var item = signUpParticipateScopes[i];
+                        $this.signUpParticipateScopeTreeObj.checkNode($this.signUpParticipateScopeTreeObj.getNodeByParam("virtualId", item.virtualId, null), true, !item.leaf);
+                    }
+
                 },
                 // 确认选择报名参与范围
                 sureSignUpParticipateScope: function () {
                     var $this = this;
                     var zTree = $.fn.zTree.getZTreeObj("sign-up-participate-scope-tree");
                     var nodeArr = zTree.getCheckedNodes(true);
-                    var participateScopes = [];
                     //首先保存 搜索父节点被全选的，在看非父节点被选中的(非父节点的父节点被全选，则不保存该条记录)
+                    var scopes = [];
+                    var pNodes = [];
+                    var pNodeMap = {};
+                    var cNodes = [];
                     $(nodeArr).each(function () {
                         // 半选状态
                         var half = this.getCheckStatus().half;
+                        // 只记录全选的
                         if (!half) {
-                            // 只记录全选的
-                            participateScopes.push({
-                                externalId: this.id,
-                                externalPid: this.gid == this.id ? null : this.gid,
-                                externalName: this.groupname,
-                                leaf: !this.isParent
-                            });
+                            var node = { externalId: this.id, virtualId: this.virtualId, externalPid: this.gid, externalName: this.groupname, leaf: !this.isParent };
+                            // 如果是非叶子结点节点
+                            if (this.isParent) {
+                                pNodes.push(node);
+                                pNodeMap[node.virtualId] = node;
+                            } else {
+                                cNodes.push(node);
+                            }
                         }
                     });
-                    $this.$set($this.sign.signUps[$this.operateSignUpIndex], "participateScopes", participateScopes);
+                    $(cNodes).each(function () {
+                        if (!this.externalPid || !pNodeMap[this.externalPid]) {
+                            pNodes.push(this);
+                            pNodeMap[this.virtualId] = this;
+                        }
+                    });
+                    $(pNodes).each(function () {
+                        if (!this.externalPid || !pNodeMap[this.externalPid]) {
+                            scopes.push(this);
+                        }
+                    });
+                    $this.$set($this.sign.signUps[$this.operateSignUpIndex], "participateScopes", scopes);
                     $this.signUpParticipateWindowShow = false;
                 },
                 deleteSignUpParticipateScope: function (signUpIndex, scopeIndex) {

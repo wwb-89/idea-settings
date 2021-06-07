@@ -78,7 +78,7 @@
                                     <p class="tips" v-show="config.signUpScopeType == 2">用户在组织架构中作为部门主管的管理范围，可以在“人员管理/组织架构”中进行设置</p>
                                     <div class="add-scope" v-show="config.signUpScopeType == 3">
                                         <p class="text" style="display: none;">请选择</p>
-                                        <i class="add-circle" @click="releaseDialog = true"></i>
+                                        <i class="add-circle" @click="openReleaseScopeDialog"></i>
                                         <div class="add-tags" style="min-height: 30px">
                                             <span class="item" v-for="(group, index) in releaseScopes">{{group.externalName}}<i class="del-btn" @click="removeReleaseScope(index)"></i></span>
                                         </div>
@@ -161,7 +161,6 @@
                 mounted: function () {
                     var $this = this;
                     $this.roleList.push({ roleid: -1, roleName: '其他', checked: false });
-                    $this.initTree();
                 },
                 computed: {
                     classifyIds: function () {
@@ -173,6 +172,17 @@
                             });
                         }
                         return ids;
+                    },
+                    // 虚拟节点map，即非叶子节点复制本身作为其叶子节点，该叶子节点即为虚拟节点
+                    virtualNodeMap: function () {
+                        var $this = this;
+                        var nodeMap = {};
+                        $($this.wfwGroups).each(function () {
+                            if (this.id !== this.virtualId) {
+                                nodeMap[this.id] = this;
+                            }
+                        });
+                        return nodeMap;
                     }
                 },
                 methods: {
@@ -207,12 +217,16 @@
                         var $this = this;
                         $this.config.activityClassifyScope = value ? $this.classifyIds : [];
                     },
+                    openReleaseScopeDialog: function () {
+                        var $this = this;
+                        $this.releaseDialog = true;
+                        $this.initTree();
+                    },
                     batchConfig: function () {
                         var $this = this;
                         $this.settingDialog = true;
                         $this.isBatch = true;
                         $this.activeRoleName = '';
-                        $this.initTree();
                         $this.config = {
                             fid: $this.fid,
                             signUpScopeType: 1,
@@ -227,16 +241,21 @@
                         $this.loading = true;
                         $this.settingDialog = true;
                         $this.activeRoleName = role.roleName;
-                        $this.initTree();
                         // 初始化已选报名范围
                         $this.releaseScopes = [];
-
                         var url = ctx + '/api/activity/create/permission/' + role.roleid;
                         app.ajaxPostWithLoading(url, { fid: $this.fid }, function (data) {
                             if (data.success) {
                                 var record = data.data;
                                 if (record) {
                                     $this.releaseScopes = activityApp.getJsonObject(record.signUpScope || '[]');
+                                    $($this.releaseScopes).each(function () {
+                                        if (this.leaf && $this.virtualNodeMap[this.externalId]) {
+                                            this.virtualId = $this.virtualNodeMap[this.externalId].virtualId;
+                                        } else {
+                                            this.virtualId = this.externalId;
+                                        }
+                                    });
                                     var scopeArr;
                                     if (record.allActivityClassify) {
                                         record.activityClassifyScope = $this.classifyIds;
@@ -374,11 +393,15 @@
                             callback: {},
                         };
                         $this.organizationTreeObj = $.fn.zTree.init($("#organizationTree"), setting, $this.wfwGroups);
+                        // 获取所有父节点
+                        for(var i = 0; i < $this.releaseScopes.length; i++) {
+                            var item = $this.releaseScopes[i];
+                            $this.organizationTreeObj.checkNode($this.organizationTreeObj.getNodeByParam("virtualId", item.virtualId, null), true, !item.leaf);
+                        }
                     },
                     // 确定报名范围改变事件
                     confirmReleaseScopeChange: function () {
                         var $this = this;
-                        console.log($this.wfwGroups);
                         var zTree = $.fn.zTree.getZTreeObj("organizationTree");
                         var nodeArr = zTree.getCheckedNodes(true);
                         //首先保存 搜索父节点被全选的，在看非父节点被选中的(非父节点的父节点被全选，则不保存该条记录)
