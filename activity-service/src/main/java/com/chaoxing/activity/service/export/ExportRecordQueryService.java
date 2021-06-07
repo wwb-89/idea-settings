@@ -41,6 +41,7 @@ public class ExportRecordQueryService {
                 .lambda()
                 .eq(ExportRecord::getCreateUid, uid)
                 .eq(ExportRecord::getExportType, exportType)
+                .orderByDesc(ExportRecord::getCreateTime)
         );
         return exportRecords;
     }
