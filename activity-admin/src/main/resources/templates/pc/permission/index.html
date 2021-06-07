@@ -279,9 +279,11 @@
                         var $this = this;
                         var config = $this.config;
                         var signUpScope = []
-                        $($this.releaseScopes).each(function () {
-                            signUpScope.push({ externalId: this.externalId, externalName: this.externalName, leaf: this.leaf });
-                        });
+                        if (config.signUpScopeType == 3) {
+                            $($this.releaseScopes).each(function () {
+                                signUpScope.push({ externalId: this.externalId, externalName: this.externalName, leaf: this.leaf });
+                            });
+                        }
                         config.signUpScope = activityApp.getJsonStr(signUpScope);
                         if (config.allActivityClassify) {
                             config.activityClassifyScope = '';
@@ -376,21 +378,38 @@
                     // 确定报名范围改变事件
                     confirmReleaseScopeChange: function () {
                         var $this = this;
+                        console.log($this.wfwGroups);
                         var zTree = $.fn.zTree.getZTreeObj("organizationTree");
                         var nodeArr = zTree.getCheckedNodes(true);
-                        var scopes = [];
                         //首先保存 搜索父节点被全选的，在看非父节点被选中的(非父节点的父节点被全选，则不保存该条记录)
+                        var scopes = [];
+                        var pNodes = [];
+                        var pNodeMap = {};
+                        var cNodes = [];
                         $(nodeArr).each(function () {
                             // 半选状态
                             var half = this.getCheckStatus().half;
+                            // 只记录全选的
                             if (!half) {
-                                // 只记录全选的
-                                scopes.push({
-                                    externalId: this.id,
-                                    externalPid: this.gid == this.id ? null : this.gid,
-                                    externalName: this.groupname,
-                                    leaf: !this.isParent
-                                });
+                                var node = { externalId: this.id, virtualId: this.virtualId, externalPid: this.gid, externalName: this.groupname, leaf: !this.isParent };
+                                // 如果是非叶子结点节点
+                                if (this.isParent) {
+                                    pNodes.push(node);
+                                    pNodeMap[node.virtualId] = node;
+                                } else {
+                                    cNodes.push(node);
+                                }
+                            }
+                        });
+                        $(cNodes).each(function () {
+                            if (!this.externalPid || !pNodeMap[this.externalPid]) {
+                                pNodes.push(this);
+                                pNodeMap[this.virtualId] = this;
+                            }
+                        });
+                        $(pNodes).each(function () {
+                            if (!this.externalPid || !pNodeMap[this.externalPid]) {
+                                scopes.push(this);
                             }
                         });
                         $this.releaseScopes = scopes;

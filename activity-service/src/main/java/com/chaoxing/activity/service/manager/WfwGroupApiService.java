@@ -6,6 +6,7 @@ import com.alibaba.fastjson.JSONObject;
 import com.chaoxing.activity.dto.manager.WfwGroupDTO;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.beans.BeanUtils;
@@ -13,6 +14,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
 import javax.annotation.Resource;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
@@ -26,18 +28,23 @@ import java.util.stream.Collectors;
  * @blame xhl
  * @date 2021-03-10 15:00:30
  */
+@Slf4j
 @Service
 public class WfwGroupApiService {
 
     /** 根据fid和父级id获取组织架构 */
     public static final String GET_GROUP_URL = "http://uc1-ans.chaoxing.com/gas/usergroup?fid=%d&gid=%d&fields=id,groupname,gid,soncount&offset=0&limit=1000";
 
-
     public static final String GET_ALL_GROUP_URL = "http://uc1-ans.chaoxing.com/apis/getallusergroup?fid=%d&enc=%s";
 
+    /** 获取用户管理的组织架构URL */
+    public static final String GET_USER_MANAGE_GROUP_URL = "http://uc1-ans.chaoxing.com/apis/getchargebyfiduid?fid=%d&uid=%d&enc=%s";
 
     /** key */
     private static final String ENC_KEY = "mic^ruso&ke@y";
+
+
+    private static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd");
 
     @Resource(name = "restTemplateProxy")
     private RestTemplate restTemplate;
@@ -68,7 +75,7 @@ public class WfwGroupApiService {
     */
     public List<WfwGroupDTO> listGroupByFid(Integer fid){
         List<WfwGroupDTO> wfwGroupResult = Lists.newArrayList();
-        String enc = DigestUtils.md5Hex(fid + ENC_KEY + LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd")));
+        String enc = DigestUtils.md5Hex(fid + ENC_KEY + LocalDateTime.now().format(DATE_FORMATTER));
         String url = String.format(GET_ALL_GROUP_URL, fid, enc);
         String result = restTemplate.getForObject(url, String.class);
         JSONObject jsonObject = JSON.parseObject(result);
@@ -145,7 +152,7 @@ public class WfwGroupApiService {
     */
     public List<WfwGroupDTO> listHierarchyGroupByFid(Integer fid){
         List<WfwGroupDTO> wfwGroupResult = Lists.newArrayList();
-        String enc = DigestUtils.md5Hex(fid + ENC_KEY + LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd")));
+        String enc = DigestUtils.md5Hex(fid + ENC_KEY + LocalDateTime.now().format(DATE_FORMATTER));
         String url = String.format(GET_ALL_GROUP_URL, fid, enc);
         String result = restTemplate.getForObject(url, String.class);
         JSONObject jsonObject = JSON.parseObject(result);
@@ -178,5 +185,35 @@ public class WfwGroupApiService {
             result = Lists.newArrayList();
         }
         return result;
+    }
+
+
+    /**获取用户管理的部门ids
+    * @Description
+    * @author huxiaolong
+    * @Date 2021-06-04 16:09:30
+    * @param fid
+    * @param uid
+    * @return
+    */
+    public List<Integer> listUserManageGroupIdByFid(Integer fid, Integer uid) {
+        List<Integer> groupIds = Lists.newArrayList();
+        String enc = DigestUtils.md5Hex(fid + "" + uid + ENC_KEY + LocalDate.now().format(DATE_FORMATTER));
+        String url = String.format(GET_USER_MANAGE_GROUP_URL, fid, uid, enc);
+        String result = restTemplate.getForObject(url, String.class);
+        JSONObject jsonObject = JSON.parseObject(result);
+        Boolean status = jsonObject.getBoolean("status");
+        if (status) {
+            JSONArray data = jsonObject.getJSONArray("data");
+            for (Object item : data) {
+                Integer groupId = ((JSONObject) item).getInteger("groupid");
+                if (groupId != null) {
+                    groupIds.add(groupId);
+                }
+            }
+        }  else {
+            log.error("根据fid:{}, uid:{} url:{} 获取用户管理的组织架构信息error", uid, fid, url);
+        }
+        return groupIds;
     }
 }

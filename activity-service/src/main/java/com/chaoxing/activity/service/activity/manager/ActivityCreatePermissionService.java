@@ -79,7 +79,7 @@ public class ActivityCreatePermissionService {
     */
     @Transactional(rollbackFor = Exception.class)
     public void add(ActivityCreatePermission activityCreatePermission) {
-        activityCreatePermissionMapper.insert(activityCreatePermission);
+            activityCreatePermissionMapper.insert(activityCreatePermission);
     }
 
     /**修改角色活动创建权限
@@ -189,24 +189,32 @@ public class ActivityCreatePermissionService {
             return activityCreatePermission;
         }
 
-        // 标识，判断是否设置全量权限范围
-        boolean setReleaseScope = Boolean.FALSE;
+        // 标识，判断是否设置全量权限范围, setManageGroupScope: 是否已经查找设置主管管理权限，若设置了置位true， 限制只查询一次
+        boolean setAllReleaseScope = Boolean.FALSE;
+        boolean setManageGroupScope = Boolean.FALSE;
         boolean setClassifyScope = Boolean.FALSE;
         Set<SignUpParticipateScope> releaseScopes = Sets.newHashSet();
+        List<Integer> manageGroupIds = Lists.newArrayList();
         Set<Integer> classifyIdSet = Sets.newHashSet();
         for (ActivityCreatePermission permission : createPermissions) {
-            if (setReleaseScope && setClassifyScope) {
+            if (setAllReleaseScope && setClassifyScope) {
                 return activityCreatePermission;
             }
             // 若有角色配置为不限，则以该配置返回角色权限数据
-            if (!setReleaseScope) {
+            if (!setAllReleaseScope) {
                 if (Objects.equals(permission.getSignUpScopeType(), ActivityCreatePermission.SignUpScopeType.NO_LIMIT.getValue())) {
                     activityCreatePermission.setWfwGroups(wfwGroupApiService.buildWfwGroups(wfwGroups));
-                    setReleaseScope = Boolean.TRUE;
+                    setAllReleaseScope = Boolean.TRUE;
                 }
-                // 获取用户角色发布范围并集
-                if (StringUtils.isNotBlank(permission.getSignUpScope())) {
-                    releaseScopes.addAll(JSON.parseArray(permission.getSignUpScope(), SignUpParticipateScope.class));
+                if (!setAllReleaseScope) {
+                    if (!setManageGroupScope && Objects.equals(permission.getSignUpScopeType(), ActivityCreatePermission.SignUpScopeType.COMPETENT_RANGE.getValue())) {
+                        manageGroupIds = wfwGroupApiService.listUserManageGroupIdByFid(fid, uid);
+                        setManageGroupScope = Boolean.TRUE;
+                    }
+                    // 获取用户角色发布范围并集
+                    if (StringUtils.isNotBlank(permission.getSignUpScope())) {
+                        releaseScopes.addAll(JSON.parseArray(permission.getSignUpScope(), SignUpParticipateScope.class));
+                    }
                 }
             }
             if (!setClassifyScope) {
@@ -223,7 +231,12 @@ public class ActivityCreatePermissionService {
                 }
             }
         }
-        if (!setReleaseScope) {
+        if (!setAllReleaseScope) {
+            // 基于不存在角色有不限的发布范围，若有设置基于管理的角色，查询管理的组织架构，构建和发布范围一致的实体
+            if (setManageGroupScope) {
+                List<SignUpParticipateScope> additionalReleaseScopes = packageReleaseScopes(manageGroupIds, wfwGroups);
+                releaseScopes.addAll(additionalReleaseScopes);
+            }
             activityCreatePermission.setWfwGroups(buildWfwGroups(releaseScopes, wfwGroups));
         }
         if (!setClassifyScope) {
@@ -232,6 +245,33 @@ public class ActivityCreatePermissionService {
         activityCreatePermission.setSignUpParticipateScopeLimit(Boolean.TRUE);
         return activityCreatePermission;
     }
+
+    /**根据管理的机构id，构建发布范围实体
+    * @Description
+    * @author huxiaolong
+    * @Date 2021-06-04 18:12:52
+    * @param manageGroupIds
+    * @param wfwGroups
+    * @return java.util.List<com.chaoxing.activity.dto.manager.sign.SignUpParticipateScope>
+    */
+    private List<SignUpParticipateScope> packageReleaseScopes(List<Integer> manageGroupIds, List<WfwGroupDTO> wfwGroups) {
+        List<SignUpParticipateScope> scopes = Lists.newArrayList();
+        for (WfwGroupDTO group : wfwGroups) {
+            Integer groupId = Integer.valueOf(group.getId());
+            Integer gid = StringUtils.isBlank(group.getGid()) ? null : Integer.valueOf(group.getGid());
+            Boolean isLeaf = group.getSoncount() == null || group.getSoncount() != 0;
+            if (manageGroupIds.contains(groupId)) {
+                scopes.add(SignUpParticipateScope.builder()
+                        .externalId(groupId)
+                        .externalPid(gid)
+                        .externalName(group.getGroupname())
+                        .leaf(isLeaf)
+                        .build());
+            }
+        }
+        return scopes;
+    }
+
 
     /**根据权限中的发布范围并集，获取过滤权限下的组织架构列表
     * @Description
@@ -249,26 +289,45 @@ public class ActivityCreatePermissionService {
             wfwGroupMap.put(Integer.valueOf(group.getId()), group);
         }
         // 对角色发布范围并集做处理，过滤筛选
-        // scopeGroupIdSet: 不重复的发布范围groupId集, leafGroupIdSet: 发布范围叶子节点groupId集， intersectionSet:发布范围groupId交集
+        // scopeGroupIdSet: 不重复的发布范围groupId集, leafGroupIdSet: 发布范围叶子节点groupId集， parentGroupIdSet:发布范围groupId交集
         Set<Integer> scopeGroupIdSet = Sets.newHashSet();
-        Set<Integer> leafGroupIdSet = Sets.newHashSet();
-        Set<Integer> intersectionSet = Sets.newHashSet();
+        Map<Integer, Boolean> scopeGroupMap = Maps.newHashMap();
+
         for (SignUpParticipateScope scope : releaseScopes) {
             Integer externalId = scope.getExternalId();
             scopeGroupIdSet.add(externalId);
-            if (scope.getLeaf()) {
-                leafGroupIdSet.add(externalId);
-            } else {
-                intersectionSet.add(externalId);
-            }
+            scopeGroupMap.put(externalId, scope.getLeaf());
         }
-        // 得到交集
-        intersectionSet.retainAll(leafGroupIdSet);
         Set<WfwGroupDTO> result = Sets.newHashSet();
         Set<Integer> resultIdSet = Sets.newHashSet();
+
         for (Integer groupId : scopeGroupIdSet) {
-            buildReleaseWfwGroups(groupId, wfwGroupMap, intersectionSet, result, resultIdSet);
+            WfwGroupDTO group = wfwGroupMap.get(groupId);
+            result.add(group);
+            resultIdSet.add(groupId);
+            // 递归查找父级节点
+            recursionSearchParentGroup(group, wfwGroups, result, resultIdSet);
+            // 递归查找子节点
+            recursionSearchChildGroup(group, wfwGroups, result, resultIdSet);
         }
+        List<WfwGroupDTO> additionalGroups = Lists.newArrayList();
+        for (WfwGroupDTO group : result) {
+            Integer groupId = Integer.valueOf(group.getId());
+            Boolean leaf = scopeGroupMap.get(groupId);
+            // 非叶子结点
+            if (leaf != null) {
+                if (!leaf || group.getSoncount() > 0) {
+                    // copy 本身作为叶子节点
+                    WfwGroupDTO item = new WfwGroupDTO();
+                    BeanUtils.copyProperties(group, item);
+                    item.setVirtualId(UUID.randomUUID().toString().trim().replaceAll("-", ""));
+                    item.setSoncount(0);
+                    item.setGid(item.getId());
+                    additionalGroups.add(item);
+                }
+            }
+        }
+        result.addAll(additionalGroups);
         // 对result排序存放
         List<WfwGroupDTO> resultWfwGroups = Lists.newArrayList();
         if (result.size() > 0) {
@@ -285,43 +344,47 @@ public class ActivityCreatePermissionService {
         return resultWfwGroups;
     }
 
-    /**递归查找已选发布范围的组织架构及其上级的组织架构
+    /**递归查找父级结果
     * @Description
     * @author huxiaolong
-    * @Date 2021-06-03 14:25:03
-    * @param groupId 当前需添加节点groupId
-    * @param wfwGroupMap { groupId: wfwGroup }Map映射
-    * @param intersectionSet 发布范围子节点和非子节点groupId交集部分
-    * @param result 结果集
-    * @param resultIdSet 结果集Id集合， 用于判断是否需要继续递归
+    * @Date 2021-06-07 11:53:09
+    * @param group
+    * @param wfwGroups
+    * @param result
+    * @param resultIdSet
     * @return void
     */
-    private void buildReleaseWfwGroups(Integer groupId, Map<Integer, WfwGroupDTO> wfwGroupMap, Set<Integer> intersectionSet,
-                                     Set<WfwGroupDTO> result, Set<Integer> resultIdSet) {
-        if (groupId == null) {
+    private void recursionSearchParentGroup(WfwGroupDTO group, List<WfwGroupDTO> wfwGroups, Set<WfwGroupDTO> result, Set<Integer> resultIdSet) {
+        if (StringUtils.isBlank(group.getGid()) || resultIdSet.contains(Integer.valueOf(group.getGid()))) {
             return;
         }
-        // 获取当前节点
-        WfwGroupDTO group = wfwGroupMap.get(groupId);
-        if (group == null) {
+        WfwGroupDTO pGroup = wfwGroups.stream().filter(x -> Objects.equals(x.getId(), group.getGid())).findFirst().orElse(null);
+        if (pGroup == null) {
             return;
         }
-        if (resultIdSet.contains(groupId)) {
+        result.add(pGroup);
+        resultIdSet.add(Integer.valueOf(pGroup.getId()));
+        recursionSearchParentGroup(pGroup, wfwGroups, result, resultIdSet);
+    }
+
+    /**递归查找子节点
+    * @Description
+    * @author huxiaolong
+    * @Date 2021-06-07 11:54:13
+    * @param group
+    * @param wfwGroups
+    * @param result
+    * @param resultIdSet
+    * @return void
+    */
+    private void recursionSearchChildGroup(WfwGroupDTO group, List<WfwGroupDTO> wfwGroups, Set<WfwGroupDTO> result, Set<Integer> resultIdSet) {
+        WfwGroupDTO pGroup = wfwGroups.stream().filter(x -> Objects.equals(x.getGid(), group.getId())).findFirst().orElse(null);
+        if (pGroup == null) {
             return;
         }
-        if (intersectionSet.contains(groupId)) {
-            WfwGroupDTO item = new WfwGroupDTO();
-            BeanUtils.copyProperties(group, item);
-            item.setVirtualId(UUID.randomUUID().toString().trim().replaceAll("-", ""));
-            item.setSoncount(0);
-            item.setGid(item.getId());
-            result.add(item);
-        }
-        result.add(group);
-        resultIdSet.add(groupId);
-        // 判断是否有pid, 有的话递归去查找
-        groupId = StringUtils.isBlank(group.getGid()) ? null : Integer.valueOf(group.getGid());
-        buildReleaseWfwGroups(groupId, wfwGroupMap, intersectionSet, result, resultIdSet);
+        result.add(pGroup);
+        resultIdSet.add(Integer.valueOf(pGroup.getId()));
+        recursionSearchChildGroup(pGroup, wfwGroups, result, resultIdSet);
     }
 
     /**根据权限中的活动类型范围并集，获取过滤权限下的活动类型列表
