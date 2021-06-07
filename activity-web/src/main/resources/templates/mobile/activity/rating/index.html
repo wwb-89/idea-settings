@@ -25,7 +25,7 @@
                 <div class="title" v-if="activityRating" >
                     <span class="score">{{activityRating.score.toFixed(1)}}</span>
                     <div class="star-box" id="m-total-star-box"></div>
-                    <span class="people">{{activityRating.scoreNum}}人评论</span>
+                    <span class="people">{{activityRating.scoreNum}}条评价</span>
                 </div>
                 <div class="comment-list">
                     <div class="list clear" v-for="(rating, index) of ratings" :key="'rating-' + index">
@@ -239,7 +239,7 @@
                         // 删除评价
                         deleteRate: function () {
                             var $this = this;
-                            app.confirm("", "确定删除评价?", function () {
+                            app.confirm("", "确定删除评价", function () {
 
                             }, function () {
                                 var url = ctx + "/api/activity/rating/" + $this.ratings[$this.activeIndex].id + "/delete";

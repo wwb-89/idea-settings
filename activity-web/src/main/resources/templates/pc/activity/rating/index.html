@@ -77,7 +77,6 @@
                         <div class="fr icon-assess-more" v-if="isSelfRating(rating) || isManager ">
                             <div class="assess-img-more"></div>
                             <ul class="nav-down-more">
-<!--                                <li @click="toEdit(index)" v-if="isSelfRating(rating)">编辑</li>-->
                                 <li @click="toDelete(index)">删除</li>
                             </ul>
                         </div>
@@ -270,7 +269,7 @@
                             elem: '#test5',
                             value: score,
                             text: true,
-                            setText: function (value) { //自定义文本的回调
+                            setText: function (value) {
                                 var arrs = {
                                     '0': " ",
                                     '1': '较差',
