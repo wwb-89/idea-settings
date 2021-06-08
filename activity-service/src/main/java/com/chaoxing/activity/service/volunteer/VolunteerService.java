@@ -45,9 +45,8 @@ public class VolunteerService {
     public List<VolunteerServiceDTO> listServiceTimeLength(Integer uid, Integer fid, String serviceType) {
         List<VolunteerServiceDTO> volunteerServiceList = new ArrayList<>();
         String formType = OrgDataRepoConfigDetail.RepoTypeEnum.FORM.getValue();
-        String dataType = OrgDataRepoConfigDetail.DataTypeEnum.PARTICIPATE_TIME_LENGTH.getValue();
         // 查找配置为表单类型且数据类型为参与时长的配置列表
-        List<OrgDataRepoConfigDetail> configDetailList = orgDataRepoConfigQueryService.listParticipateTimeConfigDetail(fid, dataType);
+        List<OrgDataRepoConfigDetail> configDetailList = orgDataRepoConfigQueryService.listOrgConfigDetail(fid, OrgDataRepoConfigDetail.DataTypeEnum.PARTICIPATE_TIME_LENGTH);
 
         if (CollectionUtils.isNotEmpty(configDetailList)) {
             Page<VolunteerServiceDTO> page = new Page<>();
@@ -75,8 +74,7 @@ public class VolunteerService {
     }
 
     public List<String> listVolunteerServiceType(Integer fid) {
-        String dataType = OrgDataRepoConfigDetail.DataTypeEnum.PARTICIPATE_TIME_LENGTH.getValue();
-        OrgDataRepoConfigDetail configDetail = orgDataRepoConfigQueryService.getFormParticipateTimeConfig(fid, dataType);
+        OrgDataRepoConfigDetail configDetail = orgDataRepoConfigQueryService.getOrgConfigDetail(fid, OrgDataRepoConfigDetail.DataTypeEnum.PARTICIPATE_TIME_LENGTH, OrgDataRepoConfigDetail.RepoTypeEnum.FORM);
         if (configDetail == null) {
             return new ArrayList<>();
         }

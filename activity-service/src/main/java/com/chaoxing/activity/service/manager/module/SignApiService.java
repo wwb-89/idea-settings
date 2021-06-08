@@ -3,6 +3,7 @@ package com.chaoxing.activity.service.manager.module;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.chaoxing.activity.dto.OrgFormConfigDTO;
 import com.chaoxing.activity.dto.manager.sign.SignIn;
 import com.chaoxing.activity.dto.manager.sign.SignStatDTO;
 import com.chaoxing.activity.dto.manager.sign.SignUp;
@@ -116,6 +117,11 @@ public class SignApiService {
 	private static final String SIGN_IN_POSITION_HISTORY_LIST_URL = SIGN_API_DOMAIN + "/sign-in/position-history";
 	private static final String SIGN_IN_POSITION_HISTORY_ADD_URL = SIGN_API_DOMAIN + "/sign-in/position-history/add";
 	private static final String SIGN_IN_POSITION_HISTORY_DELETE_URL = SIGN_API_DOMAIN + "/sign-in/position-history/delete";
+	
+	/** 获取机构配置的表单 */
+	private static final String GET_ORG_FORM_CONFIG_URL = SIGN_API_DOMAIN + "/org/%d/form";
+	/** 配置机构的表单 */
+	private static final String ORG_FORM_CONFIG_URL = SIGN_API_DOMAIN + "/org/form/config";
 
 	@Resource
 	private RestTemplate restTemplate;
@@ -711,7 +717,6 @@ public class SignApiService {
 
 		JSONObject jsonObject = JSON.parseObject(result);
 		return resultHandle(jsonObject, () -> JSON.parseArray(jsonObject.getString("data"), SignParticipateScopeDTO.class), (message) -> {
-//			log.error("获取用户:{}合格的成绩数量error:{}", uid, message);
 			throw new BusinessException(message);
 		});
 	}
@@ -727,6 +732,40 @@ public class SignApiService {
 
 		JSONObject jsonObject = JSON.parseObject(result);
 		return resultHandle(jsonObject, () -> JSON.parseArray(jsonObject.getString("data"), Integer.class), (message) -> {
+			throw new BusinessException(message);
+		});
+	}
+
+	/**获取机构表单配置
+	 * @Description
+	 * @author wwb
+	 * @Date 2021-06-08 16:10:50
+	 * @param fid
+	 * @return com.chaoxing.activity.dto.OrgFormConfigDTO
+	 */
+	public OrgFormConfigDTO getOrgFormConfig(Integer fid) {
+		String url = String.format(GET_ORG_FORM_CONFIG_URL, fid);
+		String result = restTemplate.getForObject(url, String.class);
+		JSONObject jsonObject = JSON.parseObject(result);
+		return resultHandle(jsonObject, () -> JSON.parseObject(jsonObject.getString("data"), OrgFormConfigDTO.class), (message) -> {
+			throw new BusinessException(message);
+		});
+	}
+
+	/**配置机构表单
+	 * @Description
+	 * @author wwb
+	 * @Date 2021-06-08 16:46:12
+	 * @param orgFormConfig
+	 * @return void
+	 */
+	public void configOrgForm(OrgFormConfigDTO orgFormConfig) {
+		HttpHeaders httpHeaders = new HttpHeaders();
+		httpHeaders.setContentType(MediaType.APPLICATION_JSON);
+		HttpEntity<String> httpEntity = new HttpEntity(JSON.toJSONString(orgFormConfig), httpHeaders);
+		String result = restTemplate.postForObject(ORG_FORM_CONFIG_URL, httpEntity, String.class);
+		JSONObject jsonObject = JSON.parseObject(result);
+		resultHandle(jsonObject, () -> JSON.parseObject(jsonObject.getString("data")), (message) -> {
 			throw new BusinessException(message);
 		});
 	}

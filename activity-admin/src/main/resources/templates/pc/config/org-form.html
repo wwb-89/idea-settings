@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org/">
+<head>
+	<title>表单配置</title>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+	<link rel="stylesheet" href="/static/pc/assets/lib/element-ui/lib/theme-chalk/index.css" th:href="@{/pc/assets/lib/element-ui/lib/theme-chalk/index.css}">
+	<link rel="stylesheet" href="/static/pc/assets/lib/zTree_v3/css/zTreeStyle/zTreeStyle.css" th:href="@{/pc/assets/lib/zTree_v3/css/zTreeStyle/zTreeStyle.css}">
+	<link rel="stylesheet" href="/static/pc/assets/css/reset.css" th:href="@{/pc/assets/css/reset.css}">
+	<link rel="stylesheet" href="/static/pc/assets/css/public.css" th:href="@{/pc/assets/css/public.css}">
+	<link rel="stylesheet" href="/static/pc/assets/css/create.css" th:href="@{/pc/assets/css/create.css}">
+	<style type="text/css">
+		[v-cloak] {
+			display: none;
+        }
+	</style>
+</head>
+<body>
+<div class="page" id="vm" v-cloak>
+	<div class="top flex box">
+		<a href="#" class="flex">
+			<span class="create">{{orgName}}</span>
+		</a>
+		<div>
+			<button type="button" class="create-btn" @click="save">保存</button>
+		</div>
+	</div>
+	<div class="info box">
+		<form action="">
+			<div class="form-item">
+				<label class="label">活动数据表单</label>
+				<div class="input-box">
+					<el-input type="number" placeholder="活动数据表单id" v-model.trim="orgFormConfig.activityDataFormId" oninput="if(value.length > 11) value=value.slice(0, 11)"></el-input>
+				</div>
+			</div>
+			<div class="form-item">
+				<label class="label">参与时长表单</label>
+				<div class="input-box">
+					<el-input type="number" placeholder="参与时长表单id" v-model.trim="orgFormConfig.participateTimeLengthFormId" oninput="if(value.length > 11) value=value.slice(0, 11)"></el-input>
+				</div>
+			</div>
+			<div class="form-item">
+				<label class="label">用户活动参与情况表单</label>
+				<div class="input-box">
+					<el-input type="number" placeholder="用户活动参与情况表单id" v-model.trim="orgFormConfig.userParticipateRecordFormId" oninput="if(value.length > 11) value=value.slice(0, 11)"></el-input>
+				</div>
+			</div>
+			<div class="form-item">
+				<label class="label">考核计划表单</label>
+				<div class="input-box">
+					<el-input type="number" placeholder="考核计划表单id" v-model.trim="orgFormConfig.inspectionPlanFormId" oninput="if(value.length > 11) value=value.slice(0, 11)"></el-input>
+				</div>
+			</div>
+			<div class="form-item">
+				<label class="label">考核计划规则配置表单</label>
+				<div class="input-box">
+					<el-input type="number" placeholder="考核计划规则配置表单id" v-model.trim="orgFormConfig.inspectionPlanRuleFormId" oninput="if(value.length > 11) value=value.slice(0, 11)"></el-input>
+				</div>
+			</div>
+			<div class="form-item">
+				<label class="label">学分项目类型关联表单</label>
+				<div class="input-box">
+					<el-input type="number" placeholder="学分项目类型关联表单id" v-model.trim="orgFormConfig.creditProjectFormId" oninput="if(value.length > 11) value=value.slice(0, 11)"></el-input>
+				</div>
+			</div>
+			<div class="form-item">
+				<label class="label">用户得分记录表单</label>
+				<div class="input-box">
+					<el-input type="number" placeholder="用户得分记录表单id" v-model.trim="orgFormConfig.userScoreFormId" oninput="if(value.length > 11) value=value.slice(0, 11)"></el-input>
+				</div>
+			</div>
+			<div class="form-item">
+				<label class="label">用户成绩表单</label>
+				<div class="input-box">
+					<el-input type="number" placeholder="用户成绩表单id" v-model.trim="orgFormConfig.userResultFormId" oninput="if(value.length > 11) value=value.slice(0, 11)"></el-input>
+				</div>
+			</div>
+		</form>
+	</div>
+</div>
+<div th:replace="pc/include/common_js :: common_js(~{::script})">
+	<script src="/static/pc/assets/lib/element-ui/lib/index.js" th:src="@{/pc/assets/lib/element-ui/lib/index.js}"></script>
+	<script src="/static/pc/assets/component/confirm.js" th:src="@{/pc/assets/component/confirm.js}"></script>
+	<script th:inline="javascript">
+		vm = new Vue({
+			el: "#vm",
+			data: {
+				orgName: [[${orgName}]],
+				orgFormConfig: [[${orgFormConfig}]]
+			},
+			methods: {
+				save: function () {
+					var $this = this;
+					var url = ctx + "/api/org/form/config";
+					app.ajaxPostWithLoading(url, $this.orgFormConfig, function (data) {
+						if (data.success) {
+							app.showMsg("保存成功", function () {
+								window.location.reload();
+							});
+						} else {
+							var message = data.message;
+							if (activityApp.isEmpty(message)) {
+								message = "保存失败";
+							}
+							app.showMsg(message);
+						}
+
+					}, function () {
+						app.showMsg("保存失败");
+					});
+				}
+			}
+		});
+	</script>
+</div>
+</body>
+</html>

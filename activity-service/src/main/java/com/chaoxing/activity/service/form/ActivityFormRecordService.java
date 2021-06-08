@@ -128,7 +128,7 @@ public class ActivityFormRecordService {
 		} else {
 			Integer createFid = activity.getCreateFid();
 			Integer createUid = activity.getCreateUid();
-			List<OrgDataRepoConfigDetail> orgDataRepoConfigDetails = orgDataRepoConfigQueryService.listParticipateTimeConfigDetail(createFid, OrgDataRepoConfigDetail.DataTypeEnum.ACTIVITY.getValue());
+			List<OrgDataRepoConfigDetail> orgDataRepoConfigDetails = orgDataRepoConfigQueryService.listOrgConfigDetail(createFid, OrgDataRepoConfigDetail.DataTypeEnum.ACTIVITY);
 			if (CollectionUtils.isEmpty(orgDataRepoConfigDetails)) {
 				return;
 			}

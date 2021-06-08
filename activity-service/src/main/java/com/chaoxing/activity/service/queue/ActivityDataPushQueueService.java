@@ -153,7 +153,7 @@ public class ActivityDataPushQueueService implements IQueueService<Integer> {
 	 * @return boolean
 	*/
 	public boolean configuredActivityDataRepo(Activity activity) {
-		List<OrgDataRepoConfigDetail> orgDataRepoConfigDetails = orgDataRepoConfigQueryService.listParticipateTimeConfigDetail(activity.getCreateFid(), OrgDataRepoConfigDetail.DataTypeEnum.ACTIVITY.getValue());
+		List<OrgDataRepoConfigDetail> orgDataRepoConfigDetails = orgDataRepoConfigQueryService.listOrgConfigDetail(activity.getCreateFid(), OrgDataRepoConfigDetail.DataTypeEnum.ACTIVITY);
 		return CollectionUtils.isNotEmpty(orgDataRepoConfigDetails);
 	}
 
