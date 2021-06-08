@@ -129,6 +129,9 @@ public class ActivityStatSummaryQueryService {
     */
     private List<List<String>> listActivityStatHeader(List<TableFieldDetail> tableFieldDetails) {
         List<List<String>> headers = Lists.newArrayList();
+        List<String> idHeader = Lists.newArrayList();
+        idHeader.add("活动id");
+        headers.add(idHeader);
         for (TableFieldDetail tableFieldDetail : tableFieldDetails) {
             List<String> header = Lists.newArrayList();
             header.add(tableFieldDetail.getName());
@@ -155,6 +158,7 @@ public class ActivityStatSummaryQueryService {
             for (ActivityStatSummaryDTO record : records) {
                 List<String> itemData = Lists.newArrayList();
                 for (TableFieldDetail tableFieldDetail : tableFieldDetails) {
+                    itemData.add(String.valueOf(record.getActivityId()));
                     String code = tableFieldDetail.getCode();
                     switch (code) {
                         case "activityName":
