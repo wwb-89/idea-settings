@@ -26,7 +26,7 @@
                     <dt class="label">活动地点：</dt>
                     <dd class="info">{{activityAddress}}</dd>
                 </dl>
-                <dl class="text-list">
+                <dl class="text-list" v-if="activity.organisers">
                     <dt class="label">主办方：</dt>
                     <dd class="info">{{activity.organisers}}</dd>
                 </dl>
@@ -41,7 +41,7 @@
             </div>
             <div class="text-tip">扫码访问活动</div>
         </div>
-        <div class="btn-download" @click="download">保存到本地</div>
+        <div class="btn-download" v-if="isShowDownloadBtn()" @click="download">保存到本地</div>
     </div>
 
     <div th:replace="mobile/include/common_js :: common_js(~{::script})">
@@ -55,10 +55,7 @@
                 el: "#capture",
                 data: {
                     activity: [[${activity}]],
-                    signUp: [[${signUp}]],
-                    canvasUrl: ''
-                },
-                created: function () {
+                    signUp: [[${signUp}]]
                 },
                 computed: {
                     activityAddress: function () {
@@ -112,6 +109,9 @@
                             var base64str = base64str.replace(/^data:image\/\w+;base64,/, "");
                             app.savePicToSys("", base64str, "png");
                         });
+                    },
+                    isShowDownloadBtn: function () {
+                        return !app.isWeixin();
                     }
                 }
             })
