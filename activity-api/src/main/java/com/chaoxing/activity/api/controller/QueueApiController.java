@@ -7,6 +7,7 @@ import com.chaoxing.activity.service.activity.ActivityStatSummaryHandlerService;
 import com.chaoxing.activity.service.queue.ActivityCoverUrlSyncQueueService;
 import com.chaoxing.activity.service.queue.ActivityIsAboutToStartQueueService;
 import com.chaoxing.activity.service.queue.ActivityStatusUpdateQueueService;
+import com.chaoxing.activity.service.queue.ActivityWebsiteIdSyncQueueService;
 import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -36,6 +37,8 @@ public class QueueApiController {
 	private ActivityStatSummaryHandlerService activityStatSummaryHandlerService;
 	@Resource
 	private ActivityCoverUrlSyncQueueService activityCoverUrlSyncQueueService;
+	@Resource
+	private ActivityWebsiteIdSyncQueueService activityWebsiteIdSyncQueueService;
 
 	/**初始化签到的开始结束时间队列
 	 * @Description
@@ -98,6 +101,24 @@ public class QueueApiController {
 		if (CollectionUtils.isNotEmpty(activities)) {
 			for (Activity activity : activities) {
 				activityCoverUrlSyncQueueService.push(activity.getId());
+			}
+		}
+		return RestRespDTO.success();
+	}
+
+	/**活动网站id同步
+	 * @Description 
+	 * @author wwb
+	 * @Date 2021-06-08 10:21:30
+	 * @param 
+	 * @return com.chaoxing.activity.dto.RestRespDTO
+	*/
+	@RequestMapping("activity-website-id-sync")
+	public RestRespDTO activityWebsiteIdSync() {
+		List<Integer> activityIds = activityQueryService.listEmptyWebsiteIdActivityId();
+		if (CollectionUtils.isNotEmpty(activityIds)) {
+			for (Integer activityId : activityIds) {
+				activityWebsiteIdSyncQueueService.add(activityId);
 			}
 		}
 		return RestRespDTO.success();
