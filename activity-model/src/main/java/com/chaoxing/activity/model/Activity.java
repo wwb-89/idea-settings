@@ -84,6 +84,12 @@ public class Activity {
     private String previewUrl;
     /** 门户编辑地址; column: edit_url*/
     private String editUrl;
+    /** 是否定时发布; column: is_timing_release*/
+    @TableField(value = "is_timing_release")
+    private Boolean timingRelease;
+    /** 定时发布时间; column: timingReleaseTime*/
+    @JSONField(serializeUsing = LocalDateTimeSerializer.class, deserializeUsing = LocalDateTimeDeserializer.class)
+    private LocalDateTime timingReleaseTime;
     /** 是否已发布; column: is_released*/
     @TableField(value = "is_released")
     private Boolean released;
@@ -147,6 +153,9 @@ public class Activity {
     /** 结束时间字符串 */
     @TableField(exist = false)
     private String endTimeStr;
+    /** 活动发布时间字符串 */
+    @TableField(exist = false)
+    private String timingReleaseTimeStr;
     /** 活动分类名称 */
     @TableField(exist = false)
     private String activityClassifyName;

@@ -207,6 +207,31 @@
                         </div>
                     </div>
                 </div>
+                <!--定时发布-->
+                <div class="form-item">
+                    <label class="label">定时发布</label>
+                    <div class="input-box">
+                        <el-switch v-model="activity.timingRelease" class="examine-switch"></el-switch>
+                        <span>开启后，可以按照设置的时间自动发布活动</span>
+                    </div>
+                </div>
+                <div class="form-item" v-show="activity.timingRelease">
+                    <label class="label"></label>
+                    <div class="input-box">
+                        <el-date-picker v-model="activity.timingReleaseTime"
+                                        type="datetime"
+                                        placeholder="发布时间"
+                                        format="yyyy-MM-dd HH:mm"
+                                        value-format="yyyy-MM-dd HH:mm:ss"
+                                        prefix-icon="disable"
+                                        :clearable="true"
+                                        :editable="false">
+                        </el-date-picker>
+                        <span class="date-piker-icon" style="left: 192px;">
+                            <img src="/static/pc/assets/images/calendar.png" th:src="@{/pc/assets/images/calendar.png}">
+                        </span>
+                    </div>
+                </div>
             </form>
         </div>
         <!--报名设置列表-->
@@ -642,7 +667,8 @@
                         createAreaCode: $this.areaCode,
                         tags: "",
                         activityFlag: $this.activityFlag,
-                        openWork: false
+                        openWork: false,
+                        timingRelease: false
                     };
                 } else {
                     // 修改活动
@@ -653,6 +679,11 @@
                     $this.activity.endTime = $this.activity.endTimeStr;
                     // 报名签到永远是启用的
                     $this.activity.enableSign = true;
+                }
+                if (activityApp.isEmpty($this.activity.timingReleaseTime)) {
+                    $this.activity.timingReleaseTime = "";
+                } else {
+                    $this.activity.timingReleaseTime = $this.activity.timingReleaseTimeStr;
                 }
                 $this.$set($this.activity, "timeScope", [$this.activity.startTime, $this.activity.endTime]);
                 // 标签
@@ -1095,6 +1126,11 @@
                     // 发布范围
                     if ($this.isShowActivityParticipateScope() && (activityApp.isEmpty($this.participatedOrgs) || $this.participatedOrgs.length < 1)) {
                         app.showMsg("请选择发布范围");
+                        return false;
+                    }
+                    // 定时发布
+                    if ($this.activity.timingRelease && activityApp.isEmpty($this.activity.timingReleaseTime)) {
+                        app.showMsg("请选择发布时间");
                         return false;
                     }
                     // 报名验证

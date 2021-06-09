@@ -166,7 +166,7 @@ public class ActivityHandleService {
 		// 处理活动的所属区域
 		handleActivityArea(activity, loginUser);
 		// 活动改变
-		activityChangeEventService.dataChange(activity, null, activity.getIntegralValue());
+		activityChangeEventService.dataChange(activity, null, activity.getIntegralValue(), loginUser);
 	}
 
 	/**处理活动与报名签到模块的关系
@@ -410,6 +410,8 @@ public class ActivityHandleService {
 			existActivity.setRatingNeedAudit(activity.getRatingNeedAudit());
 			existActivity.setOpenWork(activity.getOpenWork());
 			existActivity.setWorkId(activity.getWorkId());
+			existActivity.setTimingRelease(activity.getTimingRelease());
+			existActivity.setTimingReleaseTime(activity.getTimingReleaseTime());
 			// 根据活动时间判断状态
 			Integer status = activityStatusUpdateService.calActivityStatus(existActivity);
 			existActivity.setStatus(status);
@@ -431,7 +433,7 @@ public class ActivityHandleService {
 			// 新增活动发布范围
 			activityScopeService.batchAdd(activityScopes);
 			// 活动改变
-			activityChangeEventService.dataChange(activity, oldActivity, oldIntegralValue);
+			activityChangeEventService.dataChange(activity, oldActivity, oldIntegralValue, loginUser);
 			return null;
 		}, e -> {
 			log.error("更新活动:{} error:{}", JSON.toJSONString(activity), e.getMessage());
@@ -465,7 +467,7 @@ public class ActivityHandleService {
 				.set(Activity::getStatus, activity.getStatus())
 		);
 		// 活动状态改变
-		activityChangeEventService.releaseStatusChange(activity);
+		activityChangeEventService.releaseStatusChange(activity, loginUser);
 	}
 
 	/**取消发布（下架）
@@ -488,7 +490,7 @@ public class ActivityHandleService {
 				.set(Activity::getStatus, status)
 		);
 		// 活动状态改变
-		activityChangeEventService.releaseStatusChange(activity);
+		activityChangeEventService.releaseStatusChange(activity, loginUser);
 	}
 
 	/**删除活动

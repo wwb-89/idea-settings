@@ -5,6 +5,7 @@ import com.chaoxing.activity.model.Activity;
 import com.chaoxing.activity.service.activity.manager.ActivityManagerValidationService;
 import com.chaoxing.activity.service.manager.WfwRegionalArchitectureApiService;
 import com.chaoxing.activity.util.exception.ActivityNotExistException;
+import com.chaoxing.activity.util.exception.ActivityReleasedException;
 import com.chaoxing.activity.util.exception.BusinessException;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
@@ -66,6 +67,19 @@ public class ActivityValidationService {
 		if (activityClassifyId == null) {
 			throw new BusinessException("活动分类不能为空");
 		}
+		// 定时发布活动
+		Boolean timingRelease = activity.getTimingRelease();
+		timingRelease = Optional.ofNullable(timingRelease).orElse(false);
+		LocalDateTime timingReleaseTime = activity.getTimingReleaseTime();
+		if (timingRelease) {
+			if (timingReleaseTime == null) {
+				throw new BusinessException("活动发布时间不能为空");
+			}
+		} else {
+			timingReleaseTime = null;
+		}
+		activity.setTimingRelease(timingRelease);
+		activity.setTimingReleaseTime(timingReleaseTime);
 	}
 
 	/**活动必须存在
@@ -276,7 +290,7 @@ public class ActivityValidationService {
 		Activity activity = activityExist(activityId);
 		Boolean released = activity.getReleased();
 		if (released) {
-			throw new BusinessException("活动已发布");
+			throw new ActivityReleasedException(activityId);
 		}
 		Integer createFid = activity.getCreateFid();
 		// 是不是创建者

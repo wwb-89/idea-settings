@@ -35,7 +35,7 @@ public class ActivityNameChangeNoticeQueueService implements IQueueService<Integ
 	 * @param activityId
 	 * @return void
 	*/
-	public void addActivityId(Integer activityId) {
+	public void push(Integer activityId) {
 		push(redissonClient, QUEUE_CACHE_KEY, activityId);
 	}
 
@@ -46,7 +46,7 @@ public class ActivityNameChangeNoticeQueueService implements IQueueService<Integ
 	 * @param 
 	 * @return java.lang.Integer
 	*/
-	public Integer getActivityId() throws InterruptedException {
+	public Integer pop() throws InterruptedException {
 		return pop(redissonClient, QUEUE_CACHE_KEY);
 	}
 

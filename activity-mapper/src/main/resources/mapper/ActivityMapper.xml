@@ -26,6 +26,8 @@
         <result column="page_id" jdbcType="INTEGER" property="pageId" />
         <result column="preview_url" jdbcType="VARCHAR" property="previewUrl" />
         <result column="edit_url" jdbcType="VARCHAR" property="editUrl" />
+        <result column="is_timing_release" jdbcType="BIT" property="timingRelease" />
+        <result column="timing_release_time" jdbcType="TIMESTAMP" property="timingReleaseTime" />
         <result column="is_released" jdbcType="BIT" property="released" />
         <result column="release_time" jdbcType="TIMESTAMP" property="releaseTime" />
         <result column="release_uid" jdbcType="INTEGER" property="releaseUid" />
@@ -53,7 +55,7 @@
     <sql id="Base_Column_List">
         t.id, t.name, t.start_time, t.end_time, t.start_date, t.end_date, t.cover_cloud_id, t.cover_url, t.organisers, t.activity_type, t.address, t.detail_address,
         t.longitude, t.dimension, t.activity_classify_id, t.period, t.credit ,t.is_enable_sign, t.sign_id, t.web_template_id, t.website_id, t.page_id, t.preview_url, t.edit_url,
-        t.is_released, t.release_time, t.release_uid, t.is_open_audit, t.audit_status, t.create_uid, t.create_user_name, t.create_fid, t.create_area_code,
+        t.is_timing_release, t.timing_release_time, t.is_released, t.release_time, t.release_uid, t.is_open_audit, t.audit_status, t.create_uid, t.create_user_name, t.create_fid, t.create_area_code,
         t.create_org_name, t.tags, t.is_open_rating, t.is_rating_need_audit, t.is_open_integral, t.activity_flag, t.integral_value, t.is_open_work, t.work_id,
         t.origin_type, t.origin, t.status, t.create_time, t.update_time
     </sql>

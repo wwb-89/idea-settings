@@ -38,7 +38,7 @@ public class MhWebTitleUpdateTask {
 	*/
 	@Scheduled(fixedDelay = 1L)
 	public void push() throws InterruptedException {
-		Integer activityId = activityNameChangeNoticeQueueService.getActivityId();
+		Integer activityId = activityNameChangeNoticeQueueService.pop();
 		if (activityId == null) {
 			return;
 		}
@@ -53,7 +53,7 @@ public class MhWebTitleUpdateTask {
 				} catch (Exception e) {
 					e.printStackTrace();
 					log.error("更新门户网站title activityId:{} error:{}", activityId, e.getMessage());
-					activityNameChangeNoticeQueueService.addActivityId(activityId);
+					activityNameChangeNoticeQueueService.push(activityId);
 				}
 			}
 		}

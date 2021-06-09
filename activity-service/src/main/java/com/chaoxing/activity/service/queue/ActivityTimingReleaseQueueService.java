@@ -2,10 +2,7 @@ package com.chaoxing.activity.service.queue;
 
 import com.chaoxing.activity.dto.LoginUserDTO;
 import com.chaoxing.activity.util.constant.CacheConstant;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import lombok.extern.slf4j.Slf4j;
 import org.redisson.api.RedissonClient;
 import org.springframework.stereotype.Service;
@@ -38,13 +35,19 @@ public class ActivityTimingReleaseQueueService implements IDelayedQueueService<A
 		return pop(redissonClient, CACHE_KEY);
 	}
 
+	public void remove(QueueParamDTO queueParam) {
+		remove(redissonClient, CACHE_KEY, queueParam);
+	}
+
 	@Data
 	@Builder
 	@NoArgsConstructor
 	@AllArgsConstructor
+	@EqualsAndHashCode(onlyExplicitlyIncluded = true)
 	public static class QueueParamDTO {
 
 		/** 活动id */
+		@EqualsAndHashCode.Include
 		private Integer activityId;
 		/** 活动发布时间 */
 		private LocalDateTime releaseTime;

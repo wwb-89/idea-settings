@@ -331,6 +331,7 @@ public class ActivityQueryService {
 		Activity activity = activityMapper.getById(activityId);
 		Optional.ofNullable(activity).map(Activity::getStartTime).ifPresent(v -> activity.setStartTimeStr(v.format(DateTimeFormatterConstant.YYYY_MM_DD_HH_MM_SS)));
 		Optional.ofNullable(activity).map(Activity::getEndTime).ifPresent(v -> activity.setEndTimeStr(v.format(DateTimeFormatterConstant.YYYY_MM_DD_HH_MM_SS)));
+		Optional.ofNullable(activity).map(Activity::getTimingReleaseTime).ifPresent(v -> activity.setTimingReleaseTimeStr(v.format(DateTimeFormatterConstant.YYYY_MM_DD_HH_MM_SS)));
 		return activity;
 	}
 
