@@ -20,19 +20,19 @@
                 <div class="text-box">
                     <p class="text-title marginb6">{{activity.name}}</p>
                    <dl class="text-list marginb6">
-                       <dt class="label">活动时间：</dt>
+                       <dt class="label">活动时间&nbsp;&nbsp;&nbsp;&nbsp;</dt>
                        <dd class="info"> {{ activity.startTime | timestampScopeFormat(activity.endTime, 'YYYY-MM-DD HH:mm') }}</dd>
                    </dl>
                     <dl class="text-list marginb6" v-show="activityAddress">
-                        <dt class="label">活动地点：</dt>
+                        <dt class="label">活动地点&nbsp;&nbsp;&nbsp;&nbsp;</dt>
                         <dd class="info">{{activityAddress}}</dd>
                     </dl>
                     <dl class="text-list marginb6">
-                        <dt class="label">主办方：</dt>
+                        <dt class="label">主办方&nbsp;&nbsp;&nbsp;&nbsp;</dt>
                         <dd class="info">{{activity.organisers}}</dd>
                     </dl>
                     <dl class="text-list marginb6" v-if="signUp">
-                        <dt class="label">报名容量：</dt>
+                        <dt class="label">报名容量&nbsp;&nbsp;&nbsp;&nbsp;</dt>
                         <dd class="info" v-if="signUp.limitPerson">{{signUp.personLimit}}人</dd>
                         <dd class="info" v-else>无限制</dd>
                     </dl>
