@@ -20,6 +20,7 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -209,6 +210,19 @@ public class ActivityStatQueryService {
 
 	/**
 	 * 根据机构fid查询机构下的活动统计信息
+	 *
+	 * @param fid
+	 * @return com.chaoxing.activity.dto.stat.ActivityOrgStatDTO
+	 * @Description
+	 * @author huxiaolong
+	 * @Date 2021-05-11 15:21:34
+	 */
+	public ActivityOrgStatDTO orgActivityStat(Integer fid) {
+		return orgActivityStat(fid, null, null);
+	}
+
+	/**
+	 * 根据机构fid查询机构下的活动统计信息
 	 * 浏览量为所有统计记录pv总和，pv趋势为每日所有统计记录pv总和
 	 * 报名人数以所有活动最新统计记录的signedUpNum总和
 	 * 签到人数以所有活动最新统计记录的signedInNum总和
@@ -219,28 +233,28 @@ public class ActivityStatQueryService {
 	 * @author huxiaolong
 	 * @Date 2021-05-11 15:21:34
 	 */
-	public ActivityOrgStatDTO orgActivityStat(Integer fid) {
+	public ActivityOrgStatDTO orgActivityStat(Integer fid, String startDate, String endDate) {
 		ActivityOrgStatDTO result = ActivityOrgStatDTO.buildDefault();
-		// 根据fid查询机构下的活动，活动按照类型进行分组并统计数量
-		List<ActivityClassifyDTO> activityClassifyList = activityMapper.listActivityGroupByClassifyId(fid);
-		if (CollectionUtils.isEmpty(activityClassifyList)) {
+
+		// 根据机构id, 给定的活动时间范围，查询在此范围内进行中的活动id列表
+		List<Integer> activityIds = activityQueryService.listActivityIdsByFid(fid, startDate, endDate);
+		if (CollectionUtils.isEmpty(activityIds)) {
 			return result;
 		}
+		result.setActivityIds(activityIds);
+		result.setActivityNum(activityIds.size());
+
+		// 根据fid查询机构下的活动，活动按照类型进行分组并统计数量
+		List<ActivityClassifyDTO> activityClassifyList = activityMapper.listActivityGroupByClassifyId(activityIds);
 		result.setClassifyStatList(activityClassifyList);
 
-		// 获取机构下的activityIds
-		List<Integer> activityIds = activityQueryService.listActivityIdsByFid(fid);
-		result.setActivityIds(activityIds);
-
 		// 查询结果根据statDate升序排列
-		List<ActivityStat> activityStatList = activityStatMapper.listActivityStat(activityIds);
-
+		List<ActivityStat> activityStatList = activityStatMapper.listActivityStat(startDate, endDate, activityIds);
 		if (CollectionUtils.isNotEmpty(activityStatList)) {
 			int statSize = activityStatList.size();
 			Integer pvSum = 0, signedInNumSum = 0, signedUpNumSum = 0;
 			// key 为活动id， value 为统计记录，不重复且最新的记录map
 			Map<Integer, ActivityStat> activityStatMap = Maps.newHashMap();
-
 			// 统计日期-浏览量map
 			Map<String, Integer> datePvMap = Maps.newHashMap();
 			for (ActivityStat activityStat : activityStatList) {
@@ -254,11 +268,11 @@ public class ActivityStatQueryService {
 				String dateStr = activityStat.getStatDate().format(DateUtils.DAY_DATE_TIME_FORMATTER);
 				Integer pvVal = Optional.ofNullable(datePvMap.get(dateStr)).orElse(0);
 
-				pvVal += activityStat.getPv();
+				pvVal += activityStat.getPvIncrement();
 
 				datePvMap.put(dateStr, pvVal);
 				// 计算浏览量总数
-				pvSum += activityStat.getPv();
+				pvSum += activityStat.getPvIncrement();
 			}
 
 			// 统计日期-签到数和map
@@ -275,19 +289,26 @@ public class ActivityStatQueryService {
 				Integer signedUpVal = Optional.ofNullable(dateSignedUpNumMap.get(dateStr)).orElse(0);
 
 				// 更新当前统计日期的签到/报名数量
-				signedInVal += item.getSignedInNum();
-				signedUpVal += item.getSignedUpNum();
+				signedInVal += item.getSignedInIncrement();
+				signedUpVal += item.getSignedUpIncrement();
 
 				dateSignedInNumMap.put(dateStr, signedInVal);
 				dateSignedUpNumMap.put(dateStr, signedUpVal);
 
-				signedInNumSum += item.getSignedInNum();
-				signedUpNumSum += item.getSignedUpNum();
+				signedInNumSum += item.getSignedInIncrement();
+				signedUpNumSum += item.getSignedUpIncrement();
 			}
 
-			List<String> daily= DateUtils.listEveryDay(activityStatList.get(0).getStatDate(), activityStatList.get(statSize - 1).getStatDate());
+			LocalDate startDaily = activityStatList.get(0).getStatDate();
+			LocalDate endDaily = activityStatList.get(statSize - 1).getStatDate();
+			if (StringUtils.isNotBlank(startDate)) {
+				startDaily = LocalDate.parse(startDate);
+			}
+			if (StringUtils.isNotBlank(endDate)) {
+				endDaily = LocalDate.parse(endDate);
+			}
+			List<String> daily = DateUtils.listEveryDay(startDaily, endDaily);
 
-			result.setActivityNum(activityIds.size());
 			result.setPv(pvSum);
 			result.setPvTrend(fullConvert2(daily, datePvMap));
 			result.setSignedInNum(signedInNumSum);
@@ -314,14 +335,14 @@ public class ActivityStatQueryService {
 	}
 
 	public List<ActivityStat> listTopActivity(List<Integer> activityIds) {
-		return listTopActivity(null, activityIds);
+		return listTopActivity(null, null, null, activityIds);
 	}
 
-	public List<ActivityStat> listTopActivity(String sortField, List<Integer> activityIds) {
+	public List<ActivityStat> listTopActivity(String startDate, String endDate, String sortField, List<Integer> activityIds) {
 		if (CollectionUtils.isEmpty(activityIds)) {
 			return new ArrayList<>();
 		}
-		List<ActivityStat> topActivityList = activityStatMapper.listTopActivity(Optional.ofNullable(sortField).orElse("pv"), activityIds);
+		List<ActivityStat> topActivityList = activityStatMapper.listTopActivity(startDate, endDate, Optional.ofNullable(sortField).orElse("pv"), activityIds);
 		int rank = 0;
 		for (ActivityStat item : topActivityList) {
 			item.setRank(++rank);
@@ -344,4 +365,22 @@ public class ActivityStatQueryService {
 		);
 	}
 
+	/**根据统计日期，查询活动id的统计记录
+	* @Description
+	* @author huxiaolong
+	* @Date 2021-06-09 14:47:25
+	* @param activityId
+	* @param statDate
+	* @return com.chaoxing.activity.model.ActivityStat
+	*/
+	public ActivityStat getActivityStatByStatDate(Integer activityId, LocalDate statDate) {
+		List<ActivityStat> activityStatList = activityStatMapper.selectList(new QueryWrapper<ActivityStat>()
+				.lambda()
+				.eq(ActivityStat::getActivityId, activityId)
+				.eq(ActivityStat::getStatDate, statDate));
+		if (CollectionUtils.isEmpty(activityStatList)) {
+			return null;
+		}
+		return activityStatList.get(0);
+	}
 }

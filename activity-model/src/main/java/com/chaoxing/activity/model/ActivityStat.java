@@ -1,8 +1,6 @@
 package com.chaoxing.activity.model;
 
-import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableField;
-import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -32,10 +30,16 @@ public class ActivityStat {
     private LocalDate statDate;
     /** 浏览量; column: pv*/
     private Integer pv;
+    /** 浏览量增量; column: pv_increment*/
+    private Integer pvIncrement;
     /** 报名人数; column: signed_up_num*/
     private Integer signedUpNum;
+    /** 报名人数增量; column: signed_up_increment*/
+    private Integer signedUpIncrement;
     /** 签到人数; column: signed_in_num*/
     private Integer signedInNum;
+    /** 签到人数增量; column: signed_in_increment*/
+    private Integer signedInIncrement;
     /** 创建时间; column: create_time*/
     private LocalDateTime createTime;
 

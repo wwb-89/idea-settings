@@ -10,4 +10,14 @@
     <sql id="Base_Column_List">
         t.id, t.date, t.status, t.create_time
     </sql>
+    <insert id="batchAdd" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO t_activity_stat_task ( `date`, status )
+        VALUES
+            <foreach collection="activityStatTasks" item="item" open="" close="" separator=",">
+                (
+                   #{item.date},
+                   #{item.status}
+                )
+            </foreach>
+    </insert>
 </mapper>

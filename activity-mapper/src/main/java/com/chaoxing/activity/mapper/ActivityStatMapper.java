@@ -23,7 +23,9 @@ public interface ActivityStatMapper extends BaseMapper<ActivityStat> {
     * @param activityIds
     * @return java.util.List<com.chaoxing.activity.model.ActivityStat>
     */
-    List<ActivityStat> listActivityStat(@Param("activityIds") List<Integer> activityIds);
+    List<ActivityStat> listActivityStat(@Param("startDate") String startDate,
+                                        @Param("endDate") String endDate,
+                                        @Param("activityIds") List<Integer> activityIds);
 
     /**列出前十活动榜，默认浏览量排序
      * @Description
@@ -33,5 +35,8 @@ public interface ActivityStatMapper extends BaseMapper<ActivityStat> {
      * @param activityIds
      * @return java.util.List<com.chaoxing.activity.model.ActivityStat>
      */
-    List<ActivityStat> listTopActivity(@Param("sortField") String sortField, @Param("activityIds") List<Integer> activityIds);
+    List<ActivityStat> listTopActivity(@Param("startDate") String startDate,
+                                       @Param("endDate") String endDate,
+                                       @Param("sortField") String sortField,
+                                       @Param("activityIds") List<Integer> activityIds);
 }
