@@ -3,6 +3,7 @@ package com.chaoxing.activity.service.activity;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.chaoxing.activity.dto.LoginUserDTO;
 import com.chaoxing.activity.dto.TimeScopeDTO;
+import com.chaoxing.activity.dto.query.admin.ActivityStatQueryDTO;
 import com.chaoxing.activity.dto.stat.*;
 import com.chaoxing.activity.mapper.ActivityMapper;
 import com.chaoxing.activity.mapper.ActivityStatMapper;
@@ -334,15 +335,14 @@ public class ActivityStatQueryService {
 		return result;
 	}
 
-	public List<ActivityStat> listTopActivity(List<Integer> activityIds) {
-		return listTopActivity(null, null, null, activityIds);
-	}
-
-	public List<ActivityStat> listTopActivity(String startDate, String endDate, String sortField, List<Integer> activityIds) {
-		if (CollectionUtils.isEmpty(activityIds)) {
+	public List<ActivityStat> listTopActivity(ActivityStatQueryDTO statQueryParams) {
+		if (CollectionUtils.isEmpty(statQueryParams.getActivityIds())) {
 			return new ArrayList<>();
 		}
-		List<ActivityStat> topActivityList = activityStatMapper.listTopActivity(startDate, endDate, Optional.ofNullable(sortField).orElse("pv"), activityIds);
+
+		String orderField = statQueryParams.getOrderField() == null ? null : statQueryParams.getOrderField().getValue();
+		String orderType = statQueryParams.getOrderType() == null ? null : statQueryParams.getOrderType().getValue();
+		List<ActivityStat> topActivityList = activityStatMapper.listTopActivity(statQueryParams, orderField, orderType);
 		int rank = 0;
 		for (ActivityStat item : topActivityList) {
 			item.setRank(++rank);

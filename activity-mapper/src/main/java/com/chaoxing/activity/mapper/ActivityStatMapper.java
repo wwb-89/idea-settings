@@ -1,6 +1,7 @@
 package com.chaoxing.activity.mapper;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import com.chaoxing.activity.dto.query.admin.ActivityStatQueryDTO;
 import com.chaoxing.activity.model.ActivityStat;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
@@ -31,12 +32,10 @@ public interface ActivityStatMapper extends BaseMapper<ActivityStat> {
      * @Description
      * @author huxiaolong
      * @Date 2021-05-12 13:19:43
-     * @param sortField
-     * @param activityIds
+     * @param queryParams
      * @return java.util.List<com.chaoxing.activity.model.ActivityStat>
      */
-    List<ActivityStat> listTopActivity(@Param("startDate") String startDate,
-                                       @Param("endDate") String endDate,
-                                       @Param("sortField") String sortField,
-                                       @Param("activityIds") List<Integer> activityIds);
+    List<ActivityStat> listTopActivity(@Param("queryParams") ActivityStatQueryDTO queryParams,
+                                       @Param("orderField") String orderField,
+                                       @Param("orderType") String orderType);
 }
