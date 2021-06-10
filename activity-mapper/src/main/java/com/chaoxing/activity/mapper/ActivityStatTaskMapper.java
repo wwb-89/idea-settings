@@ -3,6 +3,9 @@ package com.chaoxing.activity.mapper;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.chaoxing.activity.model.ActivityStatTask;
 import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Param;
+
+import java.util.List;
 
 /**
  * @className: TActivityStatTaskMapper
@@ -13,4 +16,13 @@ import org.apache.ibatis.annotations.Mapper;
  */
 @Mapper
 public interface ActivityStatTaskMapper extends BaseMapper<ActivityStatTask> {
+
+    /**批量添加任务
+    * @Description 
+    * @author huxiaolong
+    * @Date 2021-06-09 17:21:32
+    * @param activityStatTasks
+    * @return void
+    */
+    void batchAdd(@Param("activityStatTasks") List<ActivityStatTask> activityStatTasks);
 }

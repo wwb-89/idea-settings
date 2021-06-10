@@ -427,11 +427,41 @@
     </select>
 
     <select id="listActivityGroupByClassifyId" resultType="com.chaoxing.activity.dto.stat.ActivityClassifyDTO">
-        SELECT t.activity_classify_id as classifyId, tac.name as typeName, count(t.activity_classify_id) as typeNum
-        FROM t_activity t
-        LEFT JOIN t_activity_classify tac on t.activity_classify_id = tac.id
-        WHERE t.create_fid = #{fid}
-        GROUP BY t.activity_classify_id
+        SELECT
+            t.activity_classify_id AS classifyId,
+            tac.NAME AS typeName,
+            count( 1 ) AS typeNum
+        FROM
+            t_activity t
+            LEFT JOIN t_activity_classify tac ON t.activity_classify_id = tac.id
+        WHERE
+            t.id in
+            <foreach collection="activityIds" item="activityId" open="(" close=")" separator=",">
+                #{activityId}
+            </foreach>
+        GROUP BY
+            t.activity_classify_id
+    </select>
+
+    <select id="listActivityIds" resultType="java.lang.Integer">
+        SELECT
+            t.id
+        FROM
+            t_activity t
+        <trim prefix="WHERE" prefixOverrides="AND | OR" suffixOverrides="AND | OR">
+            t.create_fid = #{fid}
+            <if test="(startDate != null and startDate != '') or (endDate != null and endDate != '')">
+                AND
+                <trim prefix="(" suffix=")" prefixOverrides="OR">
+                    <if test="startDate != null and startDate != ''">
+                        OR ( t.start_date &gt;= #{startDate} AND t.start_date &lt;= #{endDate} )
+                    </if>
+                    <if test="endDate != null and endDate != ''">
+                        OR (t.end_date &gt;= #{startDate} AND t.end_date &lt;= #{endDate})
+                    </if>
+                </trim>
+            </if>
+        </trim>
     </select>
 
 

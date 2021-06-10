@@ -5,13 +5,16 @@
         <result column="activity_id" jdbcType="INTEGER" property="activityId" />
         <result column="stat_date" jdbcType="DATE" property="statDate" />
         <result column="pv" jdbcType="INTEGER" property="pv" />
+        <result column="pv_increment" jdbcType="INTEGER" property="pvIncrement" />
         <result column="signed_up_num" jdbcType="INTEGER" property="signedUpNum" />
+        <result column="signed_up_increment" jdbcType="INTEGER" property="signedUpIncrement" />
         <result column="signed_in_num" jdbcType="INTEGER" property="signedInNum" />
+        <result column="signed_in_increment" jdbcType="INTEGER" property="signedInIncrement" />
         <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
     </resultMap>
 
     <sql id="Base_Column_List">
-        t.activity_id, t.stat_date, t.pv, t.signed_up_num, t.signed_in_num, t.create_time
+        t.activity_id, t.stat_date, t.pv, t.pv_increment, t.signed_up_num, t.signed_up_increment, t.signed_in_num, t.signed_in_increment, t.create_time
     </sql>
 
     <select id="listActivityStat" resultType="com.chaoxing.activity.model.ActivityStat">
@@ -23,6 +26,12 @@
             <foreach collection="activityIds" item="value" open="(" close=")" separator=",">
                 #{value}
             </foreach>
+            <if test="startDate != null and startDate != ''">
+                and t.stat_date &gt;= #{startDate}
+            </if>
+            <if test="endDate != null and endDate != ''">
+                and t.stat_date &lt;= #{endDate}
+            </if>
         </where>
         ORDER BY t.stat_date
     </select>
@@ -32,13 +41,19 @@
             ta.name as activityName, t.activity_id as activityId, t.stat_date as statDate, t.signed_up_num as signedUpNum,
             t.signed_in_num as signedInNum, t.create_time as createTime, a.pv as pv
         FROM (
-                 SELECT activity_id, max(stat_date) as stat_date, sum(pv) as pv
+                 SELECT activity_id, max(stat_date) as stat_date, sum(pv_increment) as pv
                  FROM t_activity_stat
                  <where>
                      activity_id in
                      <foreach collection="activityIds" item="value" open="(" close=")" separator=",">
                          #{value}
                      </foreach>
+                     <if test="startDate != null and startDate != ''">
+                         and stat_date &gt;= #{startDate}
+                     </if>
+                     <if test="endDate != null and endDate != ''">
+                         and stat_date &lt;= #{endDate}
+                     </if>
                  </where>
                  GROUP BY activity_id
              ) a

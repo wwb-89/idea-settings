@@ -543,19 +543,15 @@ public class ActivityQueryService {
 		return null;
 	}
 
-	/**根据fid查询活动ids
+	/**根据机构id, 给定的活动时间范围，查询在此范围内进行中的活动id列表
 	* @Description
 	* @author huxiaolong
 	* @Date 2021-05-12 15:26:37
 	* @param fid
 	* @return java.util.List<java.lang.Integer>
 	*/
-    public List<Integer> listActivityIdsByFid(Integer fid) {
-		return activityMapper.selectList(new QueryWrapper<Activity>().lambda()
-				.select(Activity::getId)
-				.eq(Activity::getCreateFid, fid))
-				.stream().map(Activity::getId)
-				.collect(Collectors.toList());
+    public List<Integer> listActivityIdsByFid(Integer fid, String startDate, String endDate) {
+		return activityMapper.listActivityIds(fid, startDate, endDate);
     }
 
 	/**查询活动已报名用户id列表

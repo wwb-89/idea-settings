@@ -2,32 +2,37 @@ package com.chaoxing.activity.service;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
+import com.chaoxing.activity.dto.TimeScopeDTO;
 import com.chaoxing.activity.dto.stat.ActivityStatDTO;
 import com.chaoxing.activity.mapper.ActivityStatMapper;
 import com.chaoxing.activity.mapper.ActivityStatTaskDetailMapper;
 import com.chaoxing.activity.mapper.ActivityStatTaskMapper;
+import com.chaoxing.activity.model.Activity;
 import com.chaoxing.activity.model.ActivityStat;
 import com.chaoxing.activity.model.ActivityStatTask;
 import com.chaoxing.activity.model.ActivityStatTaskDetail;
 import com.chaoxing.activity.service.activity.ActivityQueryService;
 import com.chaoxing.activity.service.activity.ActivityStatQueryService;
+import com.chaoxing.activity.util.CalculateUtils;
+import com.chaoxing.activity.util.DateUtils;
 import com.chaoxing.activity.util.DistributedLock;
 import com.chaoxing.activity.util.constant.CacheConstant;
 import com.chaoxing.activity.util.constant.CommonConstant;
 import com.chaoxing.activity.util.exception.BusinessException;
+import com.google.common.collect.Maps;
+import com.google.common.collect.Sets;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.compress.utils.Lists;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
+import java.util.*;
 import java.util.function.Consumer;
+import java.util.stream.Collectors;
 
 /**
  * @author huxiaolong
@@ -66,6 +71,60 @@ public class ActivityStatHandleService {
         return  ACTIVITY_STAT_LOCK_CACHE_KEY_PREFIX+ taskId;
     }
 
+    /**添加所有活动的统计任务, 返回任务id集合
+    * @Description 
+    * @author huxiaolong
+    * @Date 2021-06-09 17:29:53
+    * @param 
+    * @return void
+    */
+    @Transactional(rollbackFor = Exception.class)
+    public List<Integer> reAddAllActivityStat() {
+        List<Activity> activities = activityQueryService.list();
+        Map<String, List<Integer>> dailyActivityMap = Maps.newHashMap();
+        Set<String> dailySet = Sets.newHashSet();
+        // 遍历所有活动的起始时间，获取不重复的活动日期set、 活动日期下对应的活动id集
+        for (Activity activity : activities) {
+            TimeScopeDTO activityStatTimeScope = activityStatQueryService.getActivityStatTimeScope(activity);
+            List<String> daily = DateUtils.listEveryDay(activityStatTimeScope.getStartTime(), activityStatTimeScope.getEndTime());
+            dailySet.addAll(daily);
+            for (String s : daily) {
+                dailyActivityMap.computeIfAbsent(s, k -> Lists.newArrayList());
+                dailyActivityMap.get(s).add(activity.getId());
+            }
+        }
+        // 按日期进行排序，便于任务的生成
+        List<String> sortedDaily = dailySet.stream().sorted().collect(Collectors.toList());
+        List<ActivityStatTask> activityStatTasks = Lists.newArrayList();
+        for (String s : sortedDaily) {
+            LocalDate statDate = LocalDate.parse(s, DateUtils.DAY_DATE_TIME_FORMATTER);
+            activityStatTasks.add(ActivityStatTask.builder()
+                    .date(statDate)
+                    .status(ActivityStatTask.Status.WAIT_HANDLE.getValue())
+                    .build());
+        }
+        activityStatTaskMapper.batchAdd(activityStatTasks);
+
+        List<ActivityStatTaskDetail> activityStatTaskDetails = Lists.newArrayList();
+        List<Integer> taskIds = Lists.newArrayList();
+        for (ActivityStatTask task : activityStatTasks) {
+            taskIds.add(task.getId());
+            List<Integer> activityIds = dailyActivityMap.get(task.getDate().format(DateUtils.DAY_DATE_TIME_FORMATTER));
+            if (CollectionUtils.isNotEmpty(activityIds)) {
+                for (Integer activityId : activityIds) {
+                    activityStatTaskDetails.add(ActivityStatTaskDetail.builder()
+                            .activityId(activityId)
+                            .taskId(task.getId())
+                            .build());
+                }
+            }
+
+        }
+        activityStatTaskDetailMapper.batchAdd(activityStatTaskDetails);
+
+        return taskIds;
+    }
+
     public Integer addActivityStatTask() {
         // 获取前一天的日期作为活动统计日期
         LocalDate taskDate = LocalDate.now().plusDays(-1);
@@ -93,7 +152,6 @@ public class ActivityStatHandleService {
         return taskId;
     }
 
-
     public boolean handleTask(Integer taskId) {
         // 上锁、同一个任务同时只能一个线程处理
         String lockKey = getTaskExcuteLockKey(taskId);
@@ -115,9 +173,9 @@ public class ActivityStatHandleService {
     }
 
     private boolean handleActivityStat(ActivityStatTask statTask) {
+        Integer taskId = statTask.getId();
         // 默认初始待处理
         Integer status = ActivityStatTask.Status.WAIT_HANDLE.getValue();
-        Integer taskId = statTask.getId();
         try {
             // 根据任务id查询待处理任务详情
             List<ActivityStatTaskDetail> taskDetailList = activityStatTaskDetailMapper.selectList(
@@ -128,42 +186,44 @@ public class ActivityStatHandleService {
             );
             if (CollectionUtils.isNotEmpty(taskDetailList)) {
                 int execSuccessNum = 0;
-                // 任务异常标识，默认false
-                boolean taskFail = Boolean.FALSE;
                 for (ActivityStatTaskDetail detail : taskDetailList) {
-                    boolean result;
-                    try {
-                        // 获取任务详情处理结果
-                        result = handleActivityStatItem(detail, statTask.getDate());
-                    } catch (BusinessException e) {
-                        // 仅当任务详情5次处理失败时，产生业务异常
-                        activityStatTaskDetailMapper.update(null, new UpdateWrapper<ActivityStatTaskDetail>()
-                                .lambda()
-                                .eq(ActivityStatTaskDetail::getTaskId, detail.getTaskId())
-                                .eq(ActivityStatTaskDetail::getActivityId, detail.getActivityId())
-                                .set(ActivityStatTaskDetail::getStatus, ActivityStatTaskDetail.Status.FAIL.getValue())
-                                .set(ActivityStatTaskDetail::getErrorTimes, detail.getErrorTimes())
-                                .set(ActivityStatTaskDetail::getErrorMessage, detail.getErrorMessage())
-                        );
-                        result = Boolean.FALSE;
-                        taskFail = Boolean.TRUE;
-                    } catch (Exception e) {
-                        // 其他异常应是插入活动统计记录或更新任务详情信息错误
-                        result = Boolean.FALSE;
-                        log.error("活动:" + detail.getActivityId() + "统计失败！异常信息:" + e.getMessage());
+                    boolean result = false;
+                    int count = activityStatTaskDetailMapper.selectCount(new QueryWrapper<ActivityStatTaskDetail>()
+                            .lambda()
+                            .lt(ActivityStatTaskDetail::getTaskId, taskId)
+                            .eq(ActivityStatTaskDetail::getActivityId, detail.getActivityId())
+                            .ne(ActivityStatTaskDetail::getStatus, ActivityStatTaskDetail.Status.SUCCESS.getValue()));
+                    if (count == 0) {
+                        // 5次最大尝试处理，成功则跳出处理循环
+                        for (int i = 0; i < CommonConstant.MAX_ERROR_TIMES; i++) {
+                            result = handleActivityStatItem(detail, statTask.getDate());
+                            if (result) {
+                                execSuccessNum++;
+                                break;
+                            }
+                        }
+                        if (!result) {
+                            detail.setStatus(ActivityStatTaskDetail.Status.FAIL.getValue());
+                            log.error("活动:" + detail.getActivityId() + "统计失败！异常信息:" + detail.getErrorMessage());
+                        }
+                    } else {
+                        detail.setStatus(ActivityStatTaskDetail.Status.FAIL.getValue());
                     }
-                    if (result) {
-                        execSuccessNum++;
+                    // 更新统计任务状态
+                    activityStatTaskDetailMapper.update(null, new UpdateWrapper<ActivityStatTaskDetail>()
+                            .lambda()
+                            .eq(ActivityStatTaskDetail::getTaskId, detail.getTaskId())
+                            .eq(ActivityStatTaskDetail::getActivityId, detail.getActivityId())
+                            .set(ActivityStatTaskDetail::getStatus, detail.getStatus())
+                            .set(ActivityStatTaskDetail::getErrorMessage, detail.getErrorMessage())
+                    );
+                    if (taskDetailList.size() == execSuccessNum) {
+                        status = ActivityStatTask.Status.SUCCESS.getValue();
+                    } else {
+                        status = ActivityStatTask.Status.FAIL.getValue();
                     }
-                }
-
-                if (taskFail) {
-                    status = ActivityStatTask.Status.FAIL.getValue();
-                } else if (taskDetailList.size() == execSuccessNum) {
-                    status = ActivityStatTask.Status.SUCCESS.getValue();
                 }
             }
-
         } catch (BusinessException e) {
             log.error("活动:{}的统计error:{}", taskId, e.getMessage());
             e.printStackTrace();
@@ -177,29 +237,16 @@ public class ActivityStatHandleService {
                 .eq(ActivityStatTask::getId, taskId)
                 .set(ActivityStatTask::getStatus, status)
         );
-        return Objects.equals(ActivityStatTask.Status.SUCCESS.getValue(), status);
+        // 若程序不为待处理状态，即失败或成功，都不再重新加入任务队列
+        return !Objects.equals(ActivityStatTask.Status.WAIT_HANDLE.getValue(), status);
     }
 
     @Transactional(rollbackFor = Exception.class)
     public boolean handleActivityStatItem(ActivityStatTaskDetail detail, LocalDate statDate) {
-        Integer activityId = detail.getActivityId();
-        Integer errorTimes = Optional.ofNullable(detail.getErrorTimes()).orElse(0);
         String errorMsg = "";
-        ActivityStatDTO activityStatDTO = null;
-        Integer status = ActivityStatTask.Status.WAIT_HANDLE.getValue();
         try {
-            activityStatDTO = activityStatQueryService.activityStat(activityId);
-        } catch (Exception e) {
-            errorTimes++;
-            errorMsg = e.getMessage();
-            if (errorTimes >= CommonConstant.MAX_ERROR_TIMES) {
-                detail.setErrorTimes(errorTimes);
-                detail.setErrorMessage(errorMsg);
-                throw new BusinessException("活动:" + activityId + "统计失败！异常信息:" + errorMsg);
-            }
-        }
-
-        if (activityStatDTO != null) {
+            Integer activityId = detail.getActivityId();
+            ActivityStatDTO activityStatDTO = activityStatQueryService.activityStat(activityId);
             ActivityStat activityStat = ActivityStat.builder()
                     .activityId(detail.getActivityId())
                     .pv(activityStatDTO.getPv())
@@ -208,20 +255,29 @@ public class ActivityStatHandleService {
                     .statDate(statDate)
                     .build();
 
+            LocalDate yesterday = statDate.plusDays(-1);
+            ActivityStat yesterdayStat = activityStatQueryService.getActivityStatByStatDate(activityId, yesterday);
+            int pvIncrement = 0, signedUpIncrement = 0, signedInIncrement = 0;
+            if (yesterdayStat == null) {    //  若不存在之前的统计记录，则增量为本身
+                pvIncrement = activityStat.getPv();
+                signedUpIncrement = activityStat.getSignedUpNum();
+                signedInIncrement = activityStat.getSignedInNum();
+            } else {
+                pvIncrement = (int) CalculateUtils.sub(activityStat.getPv(), yesterdayStat.getPv());
+                signedUpIncrement = (int) CalculateUtils.sub(activityStat.getSignedUpNum(), yesterdayStat.getSignedUpNum());
+                signedInIncrement = (int) CalculateUtils.sub(activityStat.getSignedInNum(), yesterdayStat.getSignedInNum());
+            }
+            activityStat.setPvIncrement(pvIncrement);
+            activityStat.setSignedUpIncrement(signedUpIncrement);
+            activityStat.setSignedInIncrement(signedInIncrement);
+
             activityStatMapper.insert(activityStat);
-            status = ActivityStatTask.Status.SUCCESS.getValue();
+            // 统计成功，则给任务设置成功
+            detail.setStatus(ActivityStatTaskDetail.Status.SUCCESS.getValue());
+        } catch (Exception e) {
+            errorMsg = e.getMessage();
         }
-
-        // 更新任务详情状态信息
-        activityStatTaskDetailMapper.update(null, new UpdateWrapper<ActivityStatTaskDetail>()
-                .lambda()
-                .eq(ActivityStatTaskDetail::getTaskId, detail.getTaskId())
-                .eq(ActivityStatTaskDetail::getActivityId, detail.getActivityId())
-                .set(ActivityStatTaskDetail::getStatus, status)
-                .set(ActivityStatTaskDetail::getErrorTimes, errorTimes)
-                .set(ActivityStatTaskDetail::getErrorMessage, errorMsg)
-        );
-
-        return Objects.equals(ActivityStatTaskDetail.Status.SUCCESS.getValue(), status);
+        detail.setErrorMessage(errorMsg);
+        return Objects.equals(ActivityStatTaskDetail.Status.SUCCESS.getValue(), detail.getStatus());
     }
 }

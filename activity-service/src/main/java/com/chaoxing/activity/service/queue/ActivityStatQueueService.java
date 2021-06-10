@@ -3,15 +3,12 @@ package com.chaoxing.activity.service.queue;
 import com.chaoxing.activity.service.ActivityStatHandleService;
 import com.chaoxing.activity.util.constant.CacheConstant;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.StringUtils;
 import org.redisson.api.RedissonClient;
-import org.springframework.data.redis.core.ListOperations;
-import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
-import java.time.Duration;
+import java.util.List;
 
 /**活动统计队列服务
  * @author huxiaolong
@@ -34,6 +31,20 @@ public class ActivityStatQueueService implements IQueueService<Integer> {
     @Resource
     private RedissonClient redissonClient;
 
+
+    /**向队列批量新增统计任务
+    * @Description
+    * @author huxiaolong
+    * @Date 2021-06-09 17:35:34
+    * @param
+    * @return void
+    */
+    public void batchAddActivityStatTask() {
+        List<Integer> taskIds = activityStatHandleService.reAddAllActivityStat();
+        for (Integer taskId : taskIds) {
+            push(redissonClient, QUEUE_ACTIVITY_STAT_CACHE_KEY, taskId);
+        }
+    }
 
     /**新增活动统计任务
      *
