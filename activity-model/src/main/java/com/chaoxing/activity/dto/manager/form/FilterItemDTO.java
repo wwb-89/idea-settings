@@ -41,4 +41,5 @@ public class FilterItemDTO {
 
     /** 当express等于><时使用该参数, 针对数字字段和日期字段, 可以使用该参数设置查询的范围 */
     private List<Map<String, String>> range;
+
 }

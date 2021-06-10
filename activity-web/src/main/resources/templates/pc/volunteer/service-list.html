@@ -19,10 +19,12 @@
         <div class="item-box score-box">
             <p class="bold">总时长</p>
             <p class="score" v-if="volunteerList">
-                <template v-if="totalTimeLength >= hourMinutes">
-                    {{totalTimeLength | hourFormat}}<span class="fine">小时</span>
+                <template v-if="totalMinute >= hourMinutes">
+                    {{totalMinute | hourFormat}}<span class="fine">小时</span>
                 </template>
-                {{totalTimeLength | minuteFormat}}<span class="fine">分钟</span>
+                <template v-if="isShowMinute(totalMinute)">
+                    {{totalMinute | minuteFormat}}<span class="fine">分钟</span>
+                </template>
             </p>
             <div class="load-div" v-else><img src="/static/pc/assets/images/Spinner-1s-200px.svg" th:src="@{/pc/assets/images/Spinner-1s-200px.svg}">加载中…</div>
         </div>
@@ -47,7 +49,9 @@
                             <template v-if="record.timeLength >= hourMinutes">
                                 <span class="score">{{record.timeLength | hourFormat}}</span>&nbsp;小时&nbsp;
                             </template>
-                            <span class="score">{{record.timeLength | minuteFormat}}</span>&nbsp;分钟
+                            <template v-if="isShowMinute(record.timeLength)">
+                                <span class="score">{{record.timeLength | minuteFormat}}</span>&nbsp;分钟
+                            </template>
                         </span>
                     </p>
                 </li>
@@ -86,7 +90,7 @@
                     appealUrl: 'http://office.chaoxing.com/front/third/approve/apps/forms/fore/apply?pageEnc=441acab58f8f550ca89785b55b283d15&aprvAppId=17185&id=17185&fidEnc=03603594820a2427',
                     selectedType: {},
                     hourMinutes: 60,
-                    totalTimeLength: 0
+                    totalMinute: 0
                 },
                 mounted: function() {
                     var $this = this;
@@ -95,13 +99,13 @@
                         $(this).find('.icon-down').toggleClass('active')
                     });
 
-                    var totalTimeLength = 0;
+                    var totalMinute = 0;
                     if ($this.volunteerList) {
                         $this.volunteerList.forEach(item => {
-                            totalTimeLength += item.timeLength;
+                            totalMinute += item.timeLength;
                         });
                     };
-                    $this.totalTimeLength =  totalTimeLength
+                    $this.totalMinute =  totalMinute
                     $this.initData()
                 },
                 methods: {
@@ -151,6 +155,13 @@
                     toAppeal: function () {
                         var $this = this;
                         window.open($this.appealUrl);
+                    },
+                    // 是否限制分钟
+                    isShowMinute: function (totalMinute) {
+                        if (activityApp.isEmpty(totalMinute)) {
+                            return false;
+                        }
+                        return totalMinute % 60 != 0;
                     }
                 }
             });

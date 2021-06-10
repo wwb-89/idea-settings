@@ -38,7 +38,8 @@ public class VolunteerApiController {
     @PostMapping("{fid}/query")
     public RestRespDTO index(HttpServletRequest request, @PathVariable Integer fid, @RequestParam("serviceType") String serviceType) {
         LoginUserDTO loginUser = LoginUtils.getLoginUser(request);
-        List<VolunteerServiceDTO> volunteerServiceList = volunteerService.listServiceTimeLength(loginUser.getUid(), fid, serviceType);
+        Integer uid = loginUser.getUid();
+        List<VolunteerServiceDTO> volunteerServiceList = volunteerService.listServiceTimeLength(uid, fid, serviceType);
         return RestRespDTO.success(volunteerServiceList);
     }
 

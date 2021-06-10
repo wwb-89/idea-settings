@@ -353,16 +353,16 @@ public class FormApiService {
 	* @param fid
 	* @param uid
 	* @param formId
+	* @param formStructures
 	* @param serviceType
 	 * @return com.baomidou.mybatisplus.extension.plugins.pagination.Page<com.chaoxing.activity.dto.activity.VolunteerServiceDTO>
 	*/
-	public Page<VolunteerServiceDTO> pageVolunteerRecord(Page<VolunteerServiceDTO> page, Integer fid, Integer uid, Integer formId, String serviceType) {
+	public Page<VolunteerServiceDTO> pageVolunteerRecord(Page<VolunteerServiceDTO> page, Integer fid, Integer uid, Integer formId, List<FormStructureDTO> formStructures, String serviceType) {
 		// 创建encParamMap, 存储enc加密所需内容
 		TreeMap<String, Object> encParamMap = new TreeMap<>();
 		LocalDateTime now = LocalDateTime.now();
 		String dateFormatStr = now.format(DATE_TIME_FORMATTER);
 		encParamMap.put("deptId", fid);
-		encParamMap.put("uids", uid);
 		encParamMap.put("cpage", page.getCurrent());
 		encParamMap.put("pageSize", page.getSize());
 		encParamMap.put("formId", formId);
@@ -373,11 +373,15 @@ public class FormApiService {
 		MultiValueMap<String, Object> paramMap = new LinkedMultiValueMap();
 		paramMap.setAll(encParamMap);
 		paramMap.add("enc", enc);
+		List<List<FilterItemDTO>> filterItems = Lists.newArrayList();
+		FilterItemDTO uidFilterItem = FilterItemDTO.builder().alias("user").compt("belonger").val(JSON.toJSONString(Collections.singleton(uid))).express("===").build();
+		filterItems.add(Lists.newArrayList(uidFilterItem));
 		if (StringUtils.isNotBlank(serviceType)) {
-			List<FormStructureDTO> structureList = getFormInfo(fid, formId);
-			String searchStr = buildSearchStr("type", "match", Collections.singleton(serviceType), structureList);
-			paramMap.add("searchStr", searchStr);
+			FilterItemDTO searchTypeFilterItem = FilterItemDTO.builder().alias("type").compt("selectbox").val(JSON.toJSONString(Collections.singleton(serviceType))).express("match").build();
+			filterItems.add(Lists.newArrayList(searchTypeFilterItem));
 		}
+		String searchStr = buildSearchStr(filterItems);
+		paramMap.add("searchStr", searchStr);
 
 		String result = restTemplate.postForObject(ADVANCED_SEARCH_URL, paramMap, String.class);
 		JSONObject resultObj = JSON.parseObject(result);
@@ -426,22 +430,15 @@ public class FormApiService {
 							volunteerDTO.setNo(val);
 						} else if ("level".equals(alias)) {
 							volunteerDTO.setLevel(val);
-						} /*else if ("17".equals(alias)) {
-							volunteerDTO.setAffiliations(val);
-						}*/
-
+						}
 					}
-
 					records.add(volunteerDTO);
 				}
 			}
-			Page<VolunteerServiceDTO> resPage = new Page<>();
-			resPage.setCurrent(page.getCurrent());
-			resPage.setSize(page.getSize());
-			resPage.setTotal(totalRow);
-			resPage.setPages(totalPage);
-			resPage.setRecords(records);
-			return resPage;
+			page.setTotal(totalRow);
+			page.setPages(totalPage);
+			page.setRecords(records);
+			return page;
 		} else {
 			String errorMessage = resultObj.getString("msg");
 			log.error("获取用户:{}在机构:{}下的表单:{}数据error:{}, url:{}", uid, fid, formId, errorMessage, ADVANCED_SEARCH_URL);
@@ -454,31 +451,13 @@ public class FormApiService {
 	* @Description
 	* @author huxiaolong
 	* @Date 2021-05-20 11:18:52
-	* @param alias
-	* @param express
-	* @param value
-	* @param structureList
+	* @param filters
 	* @return java.lang.String
 	*/
-	private String buildSearchStr(String alias, String express, Object value, List<FormStructureDTO> structureList) {
-		List<List<FilterItemDTO>> filters = new ArrayList<>();
-		for (FormStructureDTO searchInfo : structureList) {
-			if (alias.equals(searchInfo.getAlias())) {
-				List<FilterItemDTO> condition = new ArrayList<>();
-				FilterItemDTO item = new FilterItemDTO();
-				item.setCompt(searchInfo.getCompt());
-				item.setId(searchInfo.getId());
-				item.setExpress(express);
-				item.setVal(JSON.toJSONString(value));
-				condition.add(item);
-				filters.add(condition);
-				break;
-			}
-		}
+	private String buildSearchStr(List<List<FilterItemDTO>> filters) {
 		Map<String, Object> searchMap = Maps.newHashMap();
 		searchMap.put("model", 0);
 		searchMap.put("filters", filters);
-
 		return JSONObject.toJSONString(searchMap);
 	}
 

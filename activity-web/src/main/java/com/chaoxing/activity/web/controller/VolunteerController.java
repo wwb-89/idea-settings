@@ -43,7 +43,8 @@ public class VolunteerController {
     public String index(HttpServletRequest request, Model model, Integer state, Integer fid) {
         Integer realFid = Optional.ofNullable(state).orElse(fid);
         LoginUserDTO loginUser = LoginUtils.getLoginUser(request);
-        List<VolunteerServiceDTO> volunteerServiceDTOList = volunteerService.listServiceTimeLength(loginUser.getUid(), realFid);
+        Integer uid = loginUser.getUid();
+        List<VolunteerServiceDTO> volunteerServiceDTOList = volunteerService.listServiceTimeLength(uid, realFid);
         List<String> serviceTypeList = volunteerService.listVolunteerServiceType(realFid);
         model.addAttribute("fid", realFid);
         model.addAttribute("volunteerList", volunteerServiceDTOList);

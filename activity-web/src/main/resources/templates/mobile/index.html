@@ -38,7 +38,7 @@
             <li v-for="(activity, index) of activities" :key="'activity-' + activity.id" @click="detail(index)">
                 <div class="img-box">
                     <div class="mask"></div>
-                    <img :src="activity | getCloudImgUrl">
+                    <img :src="activity | getCloudImgUrl" class="jqthumbImg">
                     <span :class="{'status': true, 'status1': (activity.status == 1), 'status2': (activity.status == 2), 'status3': (activity.status == 3), 'status4': (activity.status == 4)}">{{activity.status | activityStatusInstructions}}</span>
                     <!--<p class="num"><i></i>1028</p>-->
                 </div>
@@ -103,6 +103,7 @@
 <div th:replace="mobile/include/common_js :: common_js(~{::script})">
     <script src="/static/pc/assets/lib/set-iframe-height-child.js" th:src="@{/pc/assets/lib/set-iframe-height-child.js}"></script>
     <script src="/static/mobile/assets/lib/mescroll/mescroll.js" th:src="@{/mobile/assets/lib/mescroll/mescroll.js}"></script>
+    <script src="/static/mobile/assets/lib/jqthumb.min.js" th:src="@{/mobile/assets/lib/jqthumb.min.js}"></script>
     <script th:inline="javascript">
         function ready() {
             activityVue = new Vue({
@@ -252,6 +253,12 @@
                                 $this.loaded = true;
                                 $this.mescroll.endByPage(data.data.records.length, data.data.pages);
                                 $this.activities.pushArray(data.data.records);
+                                $this.$nextTick(function () {
+                                    $('.jqthumbImg').jqthumb({
+                                        width: '100%',
+                                        height: '100%'
+                                    });
+                                });
                                 $this.queryParams.pageNum++;
                             } else {
                                 var errorMessage = data.message;

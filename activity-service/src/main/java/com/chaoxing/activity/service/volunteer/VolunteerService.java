@@ -4,6 +4,7 @@ import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.chaoxing.activity.dto.activity.VolunteerServiceDTO;
+import com.chaoxing.activity.dto.manager.form.FormStructureDTO;
 import com.chaoxing.activity.model.OrgDataRepoConfigDetail;
 import com.chaoxing.activity.service.manager.FormApiService;
 import com.chaoxing.activity.service.repoconfig.OrgDataRepoConfigQueryService;
@@ -47,15 +48,15 @@ public class VolunteerService {
         String formType = OrgDataRepoConfigDetail.RepoTypeEnum.FORM.getValue();
         // 查找配置为表单类型且数据类型为参与时长的配置列表
         List<OrgDataRepoConfigDetail> configDetailList = orgDataRepoConfigQueryService.listOrgConfigDetail(fid, OrgDataRepoConfigDetail.DataTypeEnum.PARTICIPATE_TIME_LENGTH);
-
         if (CollectionUtils.isNotEmpty(configDetailList)) {
-            Page<VolunteerServiceDTO> page = new Page<>();
+            Page<VolunteerServiceDTO> page = new Page<>(1, 10);
             for (OrgDataRepoConfigDetail configDetail: configDetailList) {
                 if (Objects.equals(formType, configDetail.getRepoType())) {
                     // 查出来的repo值应为formId
                     Integer formId = Integer.valueOf(configDetail.getRepo());
+                    List<FormStructureDTO> formStructures = formApiService.getFormInfo(fid, formId);
                     while (true) {
-                        page = formApiService.pageVolunteerRecord(page, fid, uid, formId, serviceType);
+                        page = formApiService.pageVolunteerRecord(page, fid, uid, formId, formStructures, serviceType);
                         if (CollectionUtils.isEmpty(page.getRecords())) {
                             break;
                         }

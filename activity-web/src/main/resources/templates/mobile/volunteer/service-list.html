@@ -16,10 +16,12 @@
         <div class="score-box">
             <p class="title">总时长</p>
             <p class="score" v-if="volunteerList">
-                <template v-if="totalTimeLength >= hourMinutes">
-                    {{totalTimeLength | hourFormat}}<span class="fine">小时</span>
+                <template v-if="totalMinute >= hourMinutes">
+                    {{totalMinute | hourFormat}}<span class="fine">小时</span>
                 </template>
-                {{totalTimeLength | minuteFormat}}<span class="fine">分钟</span>
+                <template v-if="isShowMinute(totalMinute)">
+                    {{totalMinute | minuteFormat}}<span class="fine">分钟</span>
+                </template>
             </p>
             <div class="loading" v-else><img src="/static/mobile/assets/images/Spinner-1s-200px.svg" th:src="@{/mobile/assets/images/Spinner-1s-200px.svg}">加载中…</div>
         </div>
@@ -37,7 +39,9 @@
                         <template v-if="record.timeLength >= hourMinutes">
                             {{record.timeLength | hourFormat}}<span class="fine">&nbsp;小时&nbsp;</span>
                         </template>
-                        {{record.timeLength | minuteFormat}}<span class="fine">&nbsp;分钟</span>
+                        <template v-if="isShowMinute(record.timeLength)">
+                            {{record.timeLength | minuteFormat}}<span class="fine">&nbsp;分钟</span>
+                        </template>
                     </span>
                     </p>
                 </div>
@@ -90,17 +94,17 @@
                     selectedType: {},
                     typeSelectShow: false,
                     hourMinutes: 60,
-                    totalTimeLength: 0
+                    totalMinute: 0
                 },
                 mounted: function() {
                     var $this = this;
-                    var totalTimeLength = 0;
+                    var totalMinute = 0;
                     if ($this.volunteerList) {
                         $this.volunteerList.forEach(item => {
-                            totalTimeLength += item.timeLength;
+                            totalMinute += item.timeLength;
                         });
                     };
-                    $this.totalTimeLength =  totalTimeLength
+                    $this.totalMinute =  totalMinute
                     $this.initData()
                 },
                 methods: {
@@ -148,6 +152,13 @@
                             app.showMsg("加载志愿服务时长列表失败");
                         });
                     },
+                    // 是否限制分钟
+                    isShowMinute: function (totalMinute) {
+                        if (activityApp.isEmpty(totalMinute)) {
+                            return false;
+                        }
+                        return totalMinute % 60 != 0;
+                    }
                 }
             });
 
