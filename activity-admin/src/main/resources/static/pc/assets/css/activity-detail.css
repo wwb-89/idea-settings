@@ -622,3 +622,8 @@ button,input{
 .el-cascader__dropdown .el-cascader-node__postfix{
     right: 8px;
 }
+
+/* 旋转图标 */
+.rotate180 {
+    transform: rotate(180deg);
+}

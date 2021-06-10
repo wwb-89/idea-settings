@@ -83,10 +83,10 @@
         <div class="white-part">
             <div class="clear">
                 <p class="title fl">TOP活动榜</p>
-                <div class="export-date fr">
-                    <i class="export"></i>
-                    导出数据
-                </div>
+<!--                <div class="export-date fr">-->
+<!--                    <i class="export"></i>-->
+<!--                    导出数据-->
+<!--                </div>-->
             </div>
             <div class="table-box">
                 <el-table :data="topActivityStat" style="width: 100%">
@@ -103,7 +103,7 @@
                             <div class="number" :class="{'active': sortCol === 0}" @click="reloadTopActivity(0)"> 浏览量<i class="down-icon"></i></div>
                         </template>
                         <template slot-scope="scope">
-                            <span class="color">{{scope.row.pv}}</span>
+                            <span class="color">{{scope.row.pv || 0}}</span>
                         </template>
                     </el-table-column>
                     <el-table-column prop="signedUpNum" label="报名人数" align="center">
@@ -111,7 +111,7 @@
                             <div class="number" :class="{'active': sortCol === 1}" @click="reloadTopActivity(1)"> 报名人数<i class="down-icon"></i></div>
                         </template>
                         <template slot-scope="scope">
-                            <span class="color">{{scope.row.signedUpNum}}</span>
+                            <span class="color">{{scope.row.signedUpNum || 0}}</span>
                         </template>
                     </el-table-column>
                 </el-table>
@@ -140,7 +140,7 @@
                 sortCol: null,
                 sortField: {
                     0: 'pv',
-                    1: 'signed_up_num'
+                    1: 'signedUpNum'
                 },
                 time: []
             },
@@ -627,10 +627,7 @@
                 },
                 dateRangeChange: function (range) {
                     var $this = this;
-
                     $this.reloadActivityStat();
-                    // 重新获取top排行榜数据
-                    $this.reloadTopActivity()
                 },
                 reloadActivityStat: function () {
                     var $this = this;
@@ -644,6 +641,8 @@
                         if (res.success) {
                             $this.activityOrgStat = res.data;
                             $this.initChart();
+                            // 重新获取top排行榜数据
+                            $this.reloadTopActivity();
                         } else {
                             var errorMessage = res.message;
                             if (activityApp.isEmpty(errorMessage)) {

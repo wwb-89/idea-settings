@@ -38,10 +38,14 @@
 
     <select id="listTopActivity" resultType="com.chaoxing.activity.model.ActivityStat">
         SELECT
-            ta.name as activityName, t.activity_id as activityId, t.stat_date as statDate, t.signed_up_num as signedUpNum,
-            t.signed_in_num as signedInNum, t.create_time as createTime, a.pv as pv
-        FROM (
-                 SELECT activity_id, max(stat_date) as stat_date, sum(pv_increment) as pv
+            t.name AS activityName,
+            t.id AS activityId,
+            a.pv AS pv,
+            a.signedUpNum AS signedUpNum
+        FROM
+            t_activity t
+        LEFT JOIN (
+                 SELECT activity_id, sum(pv_increment) as pv, sum(signed_up_increment) as signedUpNum
                  FROM t_activity_stat
                  <where>
                      activity_id in
@@ -56,10 +60,13 @@
                      </if>
                  </where>
                  GROUP BY activity_id
-             ) a
-        INNER JOIN t_activity_stat t ON t.activity_id = a.activity_id and t.stat_date = a.stat_date
-        LEFT JOIN t_activity ta ON ta.id = t.activity_id
-        ORDER BY t.${sortField} DESC
+             ) a ON t.id = a.activity_id
+        WHERE
+            t.id IN
+            <foreach collection="activityIds" item="value" open="(" close=")" separator=",">
+                #{value}
+            </foreach>
+        ORDER BY a.${sortField} DESC
         LIMIT 0, 10
     </select>
 </mapper>
