@@ -312,6 +312,19 @@
         this.enableScroll();
         $(document).scrollTop(this.scrollTop);
     };
+    /**
+     * 是否在今天以前
+     * @param timestamp
+     */
+    activityApp.prototype.isBeforeToday = function (timestamp) {
+        var now = new Date();
+        var todayStr = now.getFullYear() + "-" + (now.getMonth() + 1) + "-" + now.getDate() + " 00:00:00";
+        var today = new Date(todayStr);
+        if (!isNaN(today)) {
+            today = new Date(Date.parse(todayStr.replace(/-/g, "/")));
+        }
+        return today.getTime() > timestamp;
+    };
     W['activityApp'] = new activityApp();
 })(window, jQuery, JSON);
 Array.prototype.remove = function (val) {

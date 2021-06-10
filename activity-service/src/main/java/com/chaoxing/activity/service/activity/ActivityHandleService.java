@@ -418,6 +418,7 @@ public class ActivityHandleService {
 			activityMapper.update(existActivity, new UpdateWrapper<Activity>()
 					.lambda()
 					.eq(Activity::getId, activity.getId())
+					.set(Activity::getTimingReleaseTime, existActivity.getTimingReleaseTime())
 			);
 			if (!Objects.equals(oldCoverCloudId, newCoverCloudId)) {
 				// 清空封面url

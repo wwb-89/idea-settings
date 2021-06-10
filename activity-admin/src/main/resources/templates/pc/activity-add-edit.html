@@ -224,8 +224,9 @@
                                         format="yyyy-MM-dd HH:mm"
                                         value-format="yyyy-MM-dd HH:mm:ss"
                                         prefix-icon="disable"
-                                        :clearable="true"
-                                        :editable="false">
+                                        :clearable="false"
+                                        :editable="false"
+                                        :picker-options="timingReleasePickerOption">
                         </el-date-picker>
                         <span class="date-piker-icon" style="left: 192px;">
                             <img src="/static/pc/assets/images/calendar.png" th:src="@{/pc/assets/images/calendar.png}">
@@ -631,7 +632,12 @@
                 signInMapTitleKey: "签到",
                 strict: [[${strict}]],
                 // 活动封面上传中
-                activityCoverUploading: false
+                activityCoverUploading: false,
+                timingReleasePickerOption: {
+                    disabledDate: function (time) {
+                        return activityApp.isBeforeToday(time.getTime());
+                    }
+                }
             },
             created: function () {
                 var $this = this;
@@ -668,7 +674,9 @@
                         tags: "",
                         activityFlag: $this.activityFlag,
                         openWork: false,
-                        timingRelease: false
+                        timingRelease: false,
+                        timingReleaseTime: "",
+                        timingReleaseTimeStr: ""
                     };
                 } else {
                     // 修改活动
