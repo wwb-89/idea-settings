@@ -1,8 +1,8 @@
 package com.chaoxing.activity.admin.controller.api;
 
 import com.alibaba.fastjson.JSON;
-import com.alibaba.fastjson.JSONObject;
 import com.chaoxing.activity.dto.RestRespDTO;
+import com.chaoxing.activity.dto.query.admin.ActivityStatQueryDTO;
 import com.chaoxing.activity.dto.stat.ActivityOrgStatDTO;
 import com.chaoxing.activity.model.ActivityStat;
 import com.chaoxing.activity.service.activity.ActivityStatQueryService;
@@ -48,19 +48,13 @@ public class ActivityStatApiController {
     * @Description 
     * @author huxiaolong
     * @Date 2021-05-12 17:17:56
-    * @param fid
-    * @param queryParamsStr
+    * @param queryParamStr
     * @return com.chaoxing.activity.dto.RestRespDTO
     */
-    @PostMapping("/org/{fid}/top-activity")
-    public RestRespDTO listTopActivity(@PathVariable Integer fid, String queryParamsStr) {
-        JSONObject jsonObject = JSON.parseObject(queryParamsStr);
-        List<Integer> activityIds = JSON.parseArray(jsonObject.getString("activityIds"), Integer.class);
-        String startDate = jsonObject.getString("startDate");
-        String endDate = jsonObject.getString("endDate");
-        String sortField = jsonObject.getString("sortField");
-        List<ActivityStat> topActivityStat = activityStatQueryService.listTopActivity(startDate, endDate, sortField, activityIds);
-
+    @PostMapping("/org/top-activity")
+    public RestRespDTO listTopActivity(String queryParamStr) {
+        ActivityStatQueryDTO statQueryParams = JSON.parseObject(queryParamStr, ActivityStatQueryDTO.class);
+        List<ActivityStat> topActivityStat = activityStatQueryService.listTopActivity(statQueryParams);
         return RestRespDTO.success(topActivityStat);
     }
 }

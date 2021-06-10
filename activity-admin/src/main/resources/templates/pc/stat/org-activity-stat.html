@@ -100,7 +100,7 @@
                     </el-table-column>
                     <el-table-column prop="pv" label="浏览量" width="234" align="center">
                         <template #header>
-                            <div class="number" :class="{'active': sortCol === 0}" @click="reloadTopActivity(0)"> 浏览量<i class="down-icon"></i></div>
+                            <div class="number" :class="{'active': sortCol && sortCol.field === 'pv'}" @click.stop="loadTopActivity(sortField.pv, $event)"> 浏览量<i class="down-icon"></i></div>
                         </template>
                         <template slot-scope="scope">
                             <span class="color">{{scope.row.pv || 0}}</span>
@@ -108,7 +108,7 @@
                     </el-table-column>
                     <el-table-column prop="signedUpNum" label="报名人数" align="center">
                         <template #header>
-                            <div class="number" :class="{'active': sortCol === 1}" @click="reloadTopActivity(1)"> 报名人数<i class="down-icon"></i></div>
+                            <div class="number" :class="{'active': sortCol && sortCol.field === 'signedUpNum'}" @click="loadTopActivity(sortField.signedUpNum, $event)"> 报名人数<i class="down-icon"></i></div>
                         </template>
                         <template slot-scope="scope">
                             <span class="color">{{scope.row.signedUpNum || 0}}</span>
@@ -139,14 +139,32 @@
                 // 排序列-> 0: 浏览量， 1: 报名人数
                 sortCol: null,
                 sortField: {
-                    0: 'pv',
-                    1: 'signedUpNum'
+                    pv: {
+                        desc: true,
+                        field: 'pv'
+                    },
+                    signedUpNum: {
+                        desc: true,
+                        field: 'signedUpNum'
+                    }
+                },
+                queryParams: {
+                    fid: [[${fid}]],
+                    startDate: null,
+                    endDate: null,
+                    orderField: 'pv',
+                    orderType: 'DESC',
+                    activityIds: [[${activityOrgStat.activityIds}]]
                 },
                 time: []
             },
             mounted: function () {
                 var $this = this;
-               $this.initChart();
+                $(".number.active").on("click", function (){
+                    $(this).find(".down-icon").toggleClass("rotate180")
+                })
+                $this.initChart();
+                $this.loadTopActivity();
             },
             methods: {
                 initChart: function () {
@@ -642,7 +660,8 @@
                             $this.activityOrgStat = res.data;
                             $this.initChart();
                             // 重新获取top排行榜数据
-                            $this.reloadTopActivity();
+                            $this.queryParams.activityIds = $this.activityOrgStat.activityIds;
+                            $this.loadTopActivity();
                         } else {
                             var errorMessage = res.message;
                             if (activityApp.isEmpty(errorMessage)) {
@@ -654,26 +673,27 @@
                         app.showMsg("获取机构统计数据失败!");
                     });
                 },
-                reloadTopActivity: function (sortCol) {
+                loadTopActivity: function (sortCol, e) {
                     var $this = this;
-
-                    if ($this.sortCol === sortCol) {
-                        return;
+                    if (sortCol) {
+                        if ($this.sortCol && $this.sortCol.field === sortCol.field) {
+                            $this.sortCol.desc = !this.sortCol.desc;
+                            if (e) {
+                                var iconClassName = $(e.target).get(0).className.indexOf('down-icon') !== -1;
+                                if (iconClassName) {
+                                    $(e.target).toggleClass("rotate180");
+                                } else {
+                                    $(e.target).find(".down-icon").toggleClass("rotate180");
+                                }
+                            }
+                        } else {
+                            $this.sortCol = sortCol;
+                        }
+                        $this.queryParams.orderField = $this.sortCol.field;
+                        $this.queryParams.orderType = $this.sortCol.desc ? 'DESC' : 'ASC';
                     }
-                    $this.sortCol = sortCol || 0;
-
-                    var queryParams = {
-                        activityIds: $this.activityOrgStat.activityIds,
-                        startDate: $this.time[0],
-                        endDate: $this.time[1],
-                        sortField: $this.sortField[sortCol]
-                    }
-
-                    var queryStr = activityApp.getJsonStr(queryParams);
-
-                    var url = ctx + "/api/activity/stat/org/" + $this.fid +"/top-activity";
-
-                    app.ajaxPost(url, {queryParamsStr: queryStr}, function (res) {
+                    var url = ctx + "/api/activity/stat/org/top-activity";
+                    app.ajaxPost(url, {queryParamStr: activityApp.getJsonStr($this.queryParams)}, function (res) {
                         if (res.success) {
                             $this.topActivityStat = res.data;
                         } else {

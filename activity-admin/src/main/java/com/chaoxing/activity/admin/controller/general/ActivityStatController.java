@@ -4,7 +4,6 @@ import com.chaoxing.activity.admin.util.LoginUtils;
 import com.chaoxing.activity.dto.LoginUserDTO;
 import com.chaoxing.activity.dto.stat.ActivityOrgStatDTO;
 import com.chaoxing.activity.dto.stat.ActivityStatDTO;
-import com.chaoxing.activity.model.ActivityStat;
 import com.chaoxing.activity.service.activity.ActivityQueryService;
 import com.chaoxing.activity.service.activity.ActivityStatQueryService;
 import com.chaoxing.activity.util.UserAgentUtils;
@@ -16,7 +15,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
-import java.util.List;
+import java.util.Optional;
 
 /**活动统计
  * @author wwb
@@ -67,13 +66,16 @@ public class ActivityStatController {
     * @return java.lang.String
     */
     @LoginRequired
-    @RequestMapping("org/{fid}/stat")
-    public String orgActivityStat(HttpServletRequest request, Model model, @PathVariable Integer fid) {
+    @RequestMapping("org/stat")
+    public String orgActivityStat(HttpServletRequest request, Model model, Integer wfwfid, Integer unitId, Integer state, Integer fid) {
+        Integer realFid = Optional.ofNullable(wfwfid).orElse(Optional.ofNullable(unitId).orElse(Optional.ofNullable(state).orElse(fid)));
+        if (realFid == null) {
+            LoginUserDTO loginUser = LoginUtils.getLoginUser(request);
+            realFid = loginUser.getFid();
+        }
         ActivityOrgStatDTO activityOrgStat = activityStatQueryService.orgActivityStat(fid);
-        List<ActivityStat> topActivityStat = activityStatQueryService.listTopActivity(activityOrgStat.getActivityIds());
-        model.addAttribute("fid", fid);
+        model.addAttribute("fid", realFid);
         model.addAttribute("activityOrgStat", activityOrgStat);
-        model.addAttribute("topActivityStat", topActivityStat);
         if (UserAgentUtils.isMobileAccess(request)) {
             return "mobile/stat/org-activity-stat";
         } else {
