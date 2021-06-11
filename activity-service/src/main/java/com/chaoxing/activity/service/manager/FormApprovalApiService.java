@@ -4,6 +4,7 @@ import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.chaoxing.activity.dto.LoginUserDTO;
+import com.chaoxing.activity.dto.TimeScopeDTO;
 import com.chaoxing.activity.dto.manager.WfwRegionalArchitectureDTO;
 import com.chaoxing.activity.dto.manager.form.FormDTO;
 import com.chaoxing.activity.dto.manager.form.FormDataDTO;
@@ -171,27 +172,75 @@ public class FormApprovalApiService {
         return DigestUtils.md5Hex(endBuilder.toString());
     }
 
-    /**获取需要创建的活动
+    /**创建活动
      * @Description 
      * @author wwb
-     * @Date 2021-05-11 16:14:37
+     * @Date 2021-05-11 16:28:51
      * @param fid
      * @param formId
      * @param formUserId
-     * @return com.chaoxing.activity.model.Activity
+     * @return void
     */
-    private Activity getNeedCreateActivity(Integer fid, Integer formId, Integer formUserId) {
-        Activity activity = Activity.buildDefault();
+    @Transactional(rollbackFor = Exception.class)
+    public void createActivity(Integer fid, Integer formId, Integer formUserId, String flag) {
+        // 获取表单数据
         FormDTO formData = getFormData(fid, formId, formUserId);
         if (!Objects.equals(formData.getAprvStatusTypeId(), CommonConstant.FORM_APPROVAL_AGREE_VALUE)) {
-            return null;
+            // 审批不通过的忽略
+            return;
         }
+        // 根据表单数据创建活动
+        Activity activity = buildActivityFromActivityApproval(formData);
+        if (activity == null) {
+            return;
+        }
+        // 根据表单数据创建报名签到
+        SignAddEditDTO signAddEditDTO = buildSignFromActivityApproval(formData);
+        // 设置活动标识
+        Activity.ActivityFlag activityFlag = Activity.ActivityFlag.fromValue(flag);
+        if (activityFlag == null) {
+            activityFlag = Activity.ActivityFlag.NORMAL;
+        }
+        activity.setActivityFlag(activityFlag.getValue());
+        // 使用指定的模板
+        WebTemplate webTemplate = webTemplateService.getById(CommonConstant.DEFAULT_FROM_FORM_CREATE_ACTIVITY_TEMPLATE_ID);
+        if (webTemplate == null) {
+            throw new BusinessException("通过活动申报创建活动指定的门户模版不存在");
+        }
+        WfwRegionalArchitectureDTO wfwRegionalArchitecture = wfwRegionalArchitectureApiService.buildWfwRegionalArchitecture(fid);
+        LoginUserDTO loginUser = LoginUserDTO.buildDefault(activity.getCreateUid(), activity.getCreateUserName(), activity.getCreateFid(), activity.getCreateOrgName());
+        activityHandleService.add(activity, signAddEditDTO, Lists.newArrayList(wfwRegionalArchitecture), loginUser);
+        // 门户克隆模版
+        activityHandleService.bindWebTemplate(activity.getId(), webTemplate.getId(), loginUser);
+        // 发布
+        activityHandleService.release(activity.getId(), loginUser);
+    }
+
+    /**获取需要创建的活动
+     * @Description
+     * @author wwb
+     * @Date 2021-05-11 16:14:37
+     * @param formData
+     * @return com.chaoxing.activity.model.Activity
+     */
+    private Activity buildActivityFromActivityApproval(FormDTO formData) {
+        Activity activity = Activity.buildDefault();
+        Integer fid = formData.getFid();
+        Integer formUserId = formData.getFormUserId();
         // 是否已经创建了活动，根据formUserId来判断
         Activity existActivity = activityQueryService.getByOriginTypeAndOrigin(Activity.OriginTypeEnum.ACTIVITY_DECLARATION, String.valueOf(formUserId));
         if (existActivity != null) {
             return null;
         }
+        // 活动名称
         String activityName = FormUtils.getValue(formData, "activity_name");
+        // 封面
+        String cover = FormUtils.getValue(formData, "cover");
+        // 开始时间、结束时间
+        TimeScopeDTO activityTimeScope = FormUtils.getTimeScope(formData, "activity_time");
+        activity.setStartTime(activityTimeScope.getStartTime());
+        activity.setEndTime(activityTimeScope.getEndTime());
+
         String activityClassifyName = FormUtils.getValue(formData, "activity_classify");
         ActivityClassify activityClassify = activityClassifyHandleService.addAndGet(activityClassifyName, fid);
         String integralStr = FormUtils.getValue(formData, "integral_value");
@@ -199,23 +248,7 @@ public class FormApprovalApiService {
             activity.setOpenIntegral(true);
             activity.setIntegralValue(BigDecimal.valueOf(Double.parseDouble(integralStr)));
         }
-        // 开始时间、结束时间
-        List<FormDataDTO> formDatas = formData.getFormData();
-        List<String> activityTimes = Lists.newArrayList();
-        if (CollectionUtils.isNotEmpty(formDatas)) {
-            for (FormDataDTO data : formDatas) {
-                String alias = data.getAlias();
-                if (Objects.equals("activity_time", alias)) {
-                    activityTimes.add(data.getValues().get(0).getString("val"));
-                }
-            }
-        }
-        if (activityTimes.size() > 1) {
-            String startTimeStr = activityTimes.get(0);
-            String endTimeStr = activityTimes.get(1);
-            activity.setStartTime(LocalDateTime.parse(startTimeStr, DATA_DATE_TIME_FORMATTER));
-            activity.setEndTime(LocalDateTime.parse(endTimeStr, DATA_DATE_TIME_FORMATTER));
-        }
+
         activity.setActivityType(Activity.ActivityTypeEnum.ONLINE.getValue());
         activity.setName(activityName);
         activity.setActivityClassifyId(activityClassify.getId());
@@ -230,40 +263,16 @@ public class FormApprovalApiService {
         return activity;
     }
 
-    /**新增活动
+    /**通过活动审批创建报名签到
      * @Description 
      * @author wwb
-     * @Date 2021-05-11 16:28:51
-     * @param fid
-     * @param formId
-     * @param formUserId
-     * @return void
+     * @Date 2021-06-11 17:49:43
+     * @param formData
+     * @return com.chaoxing.activity.dto.module.SignAddEditDTO
     */
-    @Transactional(rollbackFor = Exception.class)
-    public void addActivity(Integer fid, Integer formId, Integer formUserId, String flag) {
-        Activity activity = getNeedCreateActivity(fid, formId, formUserId);
-        if (activity == null) {
-            return;
-        }
-        // 设置活动标识
-        Activity.ActivityFlag activityFlag = Activity.ActivityFlag.fromValue(flag);
-        if (activityFlag == null) {
-            activityFlag = Activity.ActivityFlag.NORMAL;
-        }
-        activity.setActivityFlag(activityFlag.getValue());
-        // 取最后一个模版
-        WebTemplate webTemplate = webTemplateService.getById(CommonConstant.DEFAULT_FROM_FORM_CREATE_ACTIVITY_TEMPLATE_ID);
-        if (webTemplate == null) {
-            throw new BusinessException("默认的模版不存在");
-        }
-        SignAddEditDTO signAddEditDTO = SignAddEditDTO.buildDefault();
-        WfwRegionalArchitectureDTO wfwRegionalArchitecture = wfwRegionalArchitectureApiService.buildWfwRegionalArchitecture(fid);
-        LoginUserDTO loginUser = LoginUserDTO.buildDefault(activity.getCreateUid(), activity.getCreateUserName(), activity.getCreateFid(), activity.getCreateOrgName());
-        activityHandleService.add(activity, signAddEditDTO, Lists.newArrayList(wfwRegionalArchitecture), loginUser);
-        // 门户克隆模版
-        activityHandleService.bindWebTemplate(activity.getId(), webTemplate.getId(), loginUser);
-        // 发布
-        activityHandleService.release(activity.getId(), loginUser);
+    private SignAddEditDTO buildSignFromActivityApproval(FormDTO formData) {
+        SignAddEditDTO signAddEdit = SignAddEditDTO.buildDefault();
+        return signAddEdit;
     }
 
 }

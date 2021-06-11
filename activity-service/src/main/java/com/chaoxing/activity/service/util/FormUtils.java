@@ -1,6 +1,7 @@
 package com.chaoxing.activity.service.util;
 
 import com.alibaba.fastjson.JSONObject;
+import com.chaoxing.activity.dto.TimeScopeDTO;
 import com.chaoxing.activity.dto.manager.form.FormDTO;
 import com.chaoxing.activity.dto.manager.form.FormDataDTO;
 import com.chaoxing.activity.dto.manager.form.FormUserDTO;
@@ -56,12 +57,12 @@ public class FormUtils {
 	 * @author wwb
 	 * @Date 2021-03-11 15:10:15
 	 * @param formData
-	 * @param fieldCode
+	 * @param fieldAlias
 	 * @return java.lang.String
 	*/
-	public static String getValue(FormDTO formData, String fieldCode) {
+	public static String getValue(FormDTO formData, String fieldAlias) {
 		String value = "";
-		JSONObject jsonValue = getJsonValue(formData, fieldCode);
+		JSONObject jsonValue = getJsonValue(formData, fieldAlias);
 		if (jsonValue != null) {
 			value = jsonValue.getString(VAL_KEY);
 		}
@@ -91,12 +92,12 @@ public class FormUtils {
 		return null;
 	}
 
-	private static JSONObject getJsonValue(FormDTO formData, String fieldCode) {
+	private static JSONObject getJsonValue(FormDTO formData, String fieldAlias) {
 		List<FormDataDTO> items = formData.getFormData();
 		if (CollectionUtils.isNotEmpty(items)) {
 			for (FormDataDTO item : items) {
 				String alias = item.getAlias();
-				if (Objects.equals(fieldCode, alias)) {
+				if (Objects.equals(fieldAlias, alias)) {
 					List<JSONObject> values = item.getValues();
 					if (CollectionUtils.isNotEmpty(values)) {
 						return values.get(0);
@@ -112,12 +113,20 @@ public class FormUtils {
 	 * @author wwb
 	 * @Date 2021-03-12 11:35:12
 	 * @param formData
-	 * @param fieldCode
+	 * @param fieldAlias 字段别名
 	 * @return java.time.LocalDate
 	*/
-	public static LocalDate getDate(FormDTO formData, String fieldCode) {
+	public static LocalDate getDate(FormDTO formData, String fieldAlias) {
 		LocalDate result = null;
-		String value = getValue(formData, fieldCode);
+		String value = getValue(formData, fieldAlias);
+		if (StringUtils.isNotBlank(value)) {
+			result = getDate(value);
+		}
+		return result;
+	}
+
+	private static LocalDate getDate(String value) {
+		LocalDate result = null;
 		if (StringUtils.isNotBlank(value)) {
 			for (DateTimeFormatter dateTimeFormatter : FormUtils.FORM_DATE_TIME_FORMATTERS) {
 				try {
@@ -134,12 +143,20 @@ public class FormUtils {
 	 * @author wwb
 	 * @Date 2021-03-12 11:35:22
 	 * @param formData
-	 * @param fieldCode
+	 * @param fieldAlias 字段别名
 	 * @return java.time.LocalDateTime
 	*/
-	public static LocalDateTime getTime(FormDTO formData, String fieldCode) {
+	public static LocalDateTime getTime(FormDTO formData, String fieldAlias) {
 		LocalDateTime result = null;
-		String value = getValue(formData, fieldCode);
+		String value = getValue(formData, fieldAlias);
+		if (StringUtils.isNotBlank(value)) {
+			result = getTime(value);
+		}
+		return result;
+	}
+
+	private static LocalDateTime getTime(String value) {
+		LocalDateTime result = null;
 		if (StringUtils.isNotBlank(value)) {
 			for (DateTimeFormatter dateTimeFormatter : FormUtils.FORM_DATE_TIME_FORMATTERS) {
 				try {
@@ -149,6 +166,39 @@ public class FormUtils {
 			}
 		}
 		return result;
+	}
+
+	/**获取时间区间
+	 * @Description 
+	 * @author wwb
+	 * @Date 2021-06-11 18:15:41
+	 * @param formData
+	 * @param fieldAlias
+		 * @return com.chaoxing.activity.dto.TimeScopeDTO
+	*/
+	public static TimeScopeDTO getTimeScope(FormDTO formData, String fieldAlias) {
+		LocalDateTime startTime = null;
+		LocalDateTime endTime = null;
+		List<FormDataDTO> formDatas = formData.getFormData();
+		List<String> activityTimes = Lists.newArrayList();
+		if (CollectionUtils.isNotEmpty(formDatas)) {
+			for (FormDataDTO data : formDatas) {
+				String alias = data.getAlias();
+				if (Objects.equals(fieldAlias, alias)) {
+					activityTimes.add(data.getValues().get(0).getString("val"));
+				}
+			}
+		}
+		if (activityTimes.size() > 1) {
+			String startTimeStr = activityTimes.get(0);
+			String endTimeStr = activityTimes.get(1);
+			startTime = getTime(startTimeStr);
+			endTime = getTime(endTimeStr);
+		}
+		return TimeScopeDTO.builder()
+				.startTime(startTime)
+				.endTime(endTime)
+				.build();
 	}
 
 }

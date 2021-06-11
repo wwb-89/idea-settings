@@ -9,7 +9,7 @@ import org.springframework.stereotype.Component;
 
 import javax.annotation.Resource;
 
-/**
+/**通过审批创建活动任务
  * @author wwb
  * @version ver 1.0
  * @className FormCreateActivityTask
@@ -19,7 +19,7 @@ import javax.annotation.Resource;
  */
 @Slf4j
 @Component
-public class FormCreateActivityTask {
+public class ActivityCreateFromApprovalTask {
 
     @Resource
     private FormActivityCreateQueueService formActivityCreateQueueService;
@@ -28,19 +28,19 @@ public class FormCreateActivityTask {
 
     @Scheduled(fixedDelay = 100L)
     public void handle() throws InterruptedException {
-        FormCreateActivity formCreateActivity = formActivityCreateQueueService.get();
+        FormCreateActivity formCreateActivity = formActivityCreateQueueService.pop();
         if (formCreateActivity == null) {
             return;
         }
         try {
-            formApprovalApiService.addActivity(formCreateActivity.getFid(),
+            formApprovalApiService.createActivity(formCreateActivity.getFid(),
                     formCreateActivity.getFormId(),
                     formCreateActivity.getFormUserId(),
                     formCreateActivity.getFlag());
         } catch (Exception e) {
             e.printStackTrace();
             log.error("根据表单信息创建活动error:{}", e);
-            formActivityCreateQueueService.add(formCreateActivity);
+            formActivityCreateQueueService.push(formCreateActivity);
         }
     }
 

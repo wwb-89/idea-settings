@@ -25,7 +25,7 @@ public class FormActivityApiController {
     private FormActivityCreateQueueService formActivityCreateQueueService;
 
     /**创建活动
-     * @Description
+     * @Description 通过活动申报来创建活动
      * 根据fid、表单id、表单记录id查询表单的数据
      * 判断是审核通过则创建一个活动（当活动不存在的时候）
      * @author wwb
@@ -43,7 +43,7 @@ public class FormActivityApiController {
                 .formUserId(formUserId)
                 .flag(flag)
                 .build();
-        formActivityCreateQueueService.add(formCreateActivity);
+        formActivityCreateQueueService.push(formCreateActivity);
         return RestRespDTO.success();
     }
 
