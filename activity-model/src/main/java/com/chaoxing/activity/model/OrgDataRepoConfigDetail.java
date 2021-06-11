@@ -75,8 +75,7 @@ public class OrgDataRepoConfigDetail {
 
         /** 活动 */
         ACTIVITY("活动", "activity"),
-        PARTICIPATE_TIME_LENGTH("参与时长", "participate_time_length"),
-        PARTICIPATE_TOTAL_TIME_LENGTH("参与总时长", "participate_total_time_length");
+        PARTICIPATE_TIME_LENGTH("参与时长", "participate_time_length");
 
         private String name;
         private String value;
