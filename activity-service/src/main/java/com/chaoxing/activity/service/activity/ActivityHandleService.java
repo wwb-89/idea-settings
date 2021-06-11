@@ -412,6 +412,7 @@ public class ActivityHandleService {
 			existActivity.setWorkId(activity.getWorkId());
 			existActivity.setTimingRelease(activity.getTimingRelease());
 			existActivity.setTimingReleaseTime(activity.getTimingReleaseTime());
+			existActivity.setTimeLengthUpperLimit(activity.getTimeLengthUpperLimit());
 			// 根据活动时间判断状态
 			Integer status = activityStatusUpdateService.calActivityStatus(existActivity);
 			existActivity.setStatus(status);
@@ -419,6 +420,7 @@ public class ActivityHandleService {
 					.lambda()
 					.eq(Activity::getId, activity.getId())
 					.set(Activity::getTimingReleaseTime, existActivity.getTimingReleaseTime())
+					.set(Activity::getTimeLengthUpperLimit, existActivity.getTimeLengthUpperLimit())
 			);
 			if (!Objects.equals(oldCoverCloudId, newCoverCloudId)) {
 				// 清空封面url

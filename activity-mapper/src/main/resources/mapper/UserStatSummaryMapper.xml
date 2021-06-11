@@ -108,4 +108,14 @@
             t1.start_time DESC
     </select>
 
+    <select id="countUserTotalTimeLength" resultType="java.lang.Integer">
+        SELECT
+            SUM( t.participate_time_length )
+        FROM
+            t_user_stat_summary t
+        WHERE
+            t.uid = #{uid}
+            AND t.is_valid = 1
+    </select>
+
 </mapper>

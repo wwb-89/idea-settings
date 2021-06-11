@@ -69,6 +69,8 @@ public class Activity {
     private BigDecimal period;
     /** 学分; column: credit*/
     private BigDecimal credit;
+    /** 参与时长上限; column: time_length_upper_limit*/
+    private Integer timeLengthUpperLimit;
     /** 是否启用签到报名; column: is_enable_sign*/
     @TableField(value = "is_enable_sign")
     private Boolean enableSign;
@@ -300,7 +302,9 @@ public class Activity {
         /** 双选会 */
         DUAL_SELECT("双选会", "dual_select"),
         /** 教师发展 */
-        TEACHER("教师发展", "teacher");
+        TEACHER("教师发展", "teacher"),
+        /** 志愿者服务 */
+        VOLUNTEER("志愿者服务", "volunteer");
 
         private final String name;
         private final String value;

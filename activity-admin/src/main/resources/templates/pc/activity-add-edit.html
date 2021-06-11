@@ -178,6 +178,15 @@
                         <span>参与者成绩合格时，即可获取相应学分</span>
                     </div>
                 </div>
+                <!--参与时长上限-->
+                <div class="form-item" v-show="isShowTimeLengthUpperLimit()">
+                    <label class="label">最大参与时长</label>
+                    <div class="input-box setForm">
+                        <input type="number" min="1" step="1" v-model.trim="activity.timeLengthUpperLimit" placeholder="不限" class="score-input">
+                        <span class="score">小时</span>
+                        <span>参与者通过签到和签退获取的参与时长不会超过该数值</span>
+                    </div>
+                </div>
                 <div class="form-item cancel-margin marginTop16" v-show="isShowActivityFlag()">
                     <label class="label">标签</label>
                     <div class="input-box wrap">
@@ -441,7 +450,7 @@
             </form>
         </div>
         <!--征集设置-->
-        <div class="info box" v-show="!isShowPeriodCredit()">
+        <div class="info box" v-show="isShowWork()">
             <div class="set-box">
                 <div class="title set">作品征集</div>
             </div>
@@ -676,7 +685,8 @@
                         openWork: false,
                         timingRelease: false,
                         timingReleaseTime: "",
-                        timingReleaseTimeStr: ""
+                        timingReleaseTimeStr: "",
+                        timeLengthUpperLimit: null
                     };
                 } else {
                     // 修改活动
@@ -1545,6 +1555,18 @@
                 isShowPeriodCredit: function () {
                     var $this = this;
                     var shows = ["teacher"];
+                    return shows.indexOf($this.activity.activityFlag) != -1;
+                },
+                // 是否限制作品征集
+                isShowWork: function () {
+                    var $this = this;
+                    var shows = ["teacher", "volunteer"];
+                    return shows.indexOf($this.activity.activityFlag) == -1;
+                },
+                // 是否显示参与时长上限
+                isShowTimeLengthUpperLimit() {
+                    var $this = this;
+                    var shows = ["volunteer"];
                     return shows.indexOf($this.activity.activityFlag) != -1;
                 }
             }

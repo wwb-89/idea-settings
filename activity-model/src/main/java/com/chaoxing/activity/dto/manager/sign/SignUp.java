@@ -159,49 +159,13 @@ public class SignUp {
         }
     }
 
-    /** 活动标示枚举
+    /**
      * @className SignUp
-     * @description
+     * @description 
      * @author wwb
      * @blame wwb
-     * @date 2021-04-01 13:07:46
+     * @date 2021-06-11 10:18:15
      * @version ver 1.0
-     */
-    @Getter
-    public enum ActivityFlag {
-
-        /** 通用 */
-        NORMAL("通用", "normal"),
-        /** 第二课堂 */
-        SECOND_CLASSROOM("第二课堂", "second_classroom"),
-        /** 双选会 */
-        DUAL_SELECT("双选会", "dual_select");
-
-        private String name;
-        private String value;
-
-        ActivityFlag(String name, String value) {
-            this.name = name;
-            this.value = value;
-        }
-
-        public static ActivityFlag fromValue(String value) {
-            ActivityFlag[] values = ActivityFlag.values();
-            for (ActivityFlag activityFlag : values) {
-                if (Objects.equals(activityFlag.getValue(), value)) {
-                    return activityFlag;
-                }
-            }
-            return null;
-        }
-    }
-
-    /**报名类型
-     * @Description
-     * @author wwb
-     * @Date 2021-04-30 17:30:57
-     * @param null
-     * @return
      */
     @Getter
     public enum CustomSignUpTypeEnum {
