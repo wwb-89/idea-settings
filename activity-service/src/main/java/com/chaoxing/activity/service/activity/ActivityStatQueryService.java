@@ -2,7 +2,10 @@ package com.chaoxing.activity.service.activity;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.chaoxing.activity.dto.LoginUserDTO;
+import com.chaoxing.activity.dto.OrgDTO;
 import com.chaoxing.activity.dto.TimeScopeDTO;
+import com.chaoxing.activity.dto.manager.WfwRegionalArchitectureDTO;
+import com.chaoxing.activity.dto.query.admin.ActivityRegionStatQueryDTO;
 import com.chaoxing.activity.dto.query.admin.ActivityStatQueryDTO;
 import com.chaoxing.activity.dto.stat.*;
 import com.chaoxing.activity.mapper.ActivityMapper;
@@ -10,8 +13,10 @@ import com.chaoxing.activity.mapper.ActivityStatMapper;
 import com.chaoxing.activity.model.Activity;
 import com.chaoxing.activity.model.ActivityStat;
 import com.chaoxing.activity.service.manager.MhApiService;
+import com.chaoxing.activity.service.manager.WfwRegionalArchitectureApiService;
 import com.chaoxing.activity.service.manager.module.SignApiService;
 import com.chaoxing.activity.util.DateUtils;
+import com.chaoxing.activity.vo.stat.ActivityRegionalStatVo;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import lombok.extern.slf4j.Slf4j;
@@ -23,10 +28,7 @@ import org.springframework.stereotype.Service;
 import javax.annotation.Resource;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -54,6 +56,8 @@ public class ActivityStatQueryService {
 	private SignApiService signApiService;
 	@Resource
 	private ActivityStatMapper activityStatMapper;
+	@Resource
+	private WfwRegionalArchitectureApiService wfwRegionalArchitectureApiService;
 
 	/**机构参与的活动的pageId列表
 	 * @Description
@@ -224,10 +228,6 @@ public class ActivityStatQueryService {
 
 	/**
 	 * 根据机构fid查询机构下的活动统计信息
-	 * 浏览量为所有统计记录pv总和，pv趋势为每日所有统计记录pv总和
-	 * 报名人数以所有活动最新统计记录的signedUpNum总和
-	 * 签到人数以所有活动最新统计记录的signedInNum总和
-	 *
 	 * @param fid
 	 * @return com.chaoxing.activity.dto.stat.ActivityOrgStatDTO
 	 * @Description
@@ -235,10 +235,56 @@ public class ActivityStatQueryService {
 	 * @Date 2021-05-11 15:21:34
 	 */
 	public ActivityOrgStatDTO orgActivityStat(Integer fid, String startDate, String endDate) {
-		ActivityOrgStatDTO result = ActivityOrgStatDTO.buildDefault();
-
 		// 根据机构id, 给定的活动时间范围，查询在此范围内进行中的活动id列表
 		List<Integer> activityIds = activityQueryService.listActivityIdsByFid(fid, startDate, endDate);
+		return packageActivityStat(activityIds, startDate, endDate, null);
+	}
+
+	/**
+	 * @Description
+	 * @author huxiaolong
+	 * @Date 2021-06-11 14:29:49
+	 * @param fid
+	 * @return com.chaoxing.activity.dto.stat.ActivityOrgStatDTO
+	 */
+	public ActivityOrgStatDTO regionalActivityStat(Integer fid) {
+		return regionalActivityStat(fid, null, null);
+	}
+
+	/**
+	 * 根据机构fid查询机构下所有区域的机构的活动统计信息
+	 * @param fid
+	 * @param startDate
+	 * @param endDate
+	 * @return com.chaoxing.activity.dto.stat.ActivityOrgStatDTO
+	 * @Description
+	 * @author huxiaolong
+	 * @Date 2021-05-11 15:21:34
+	 */
+	public ActivityOrgStatDTO regionalActivityStat(Integer fid, String startDate, String endDate) {
+		List<WfwRegionalArchitectureDTO> regionalOrgList = wfwRegionalArchitectureApiService.listByFid(fid);
+		List<Integer> fids = regionalOrgList.stream().map(WfwRegionalArchitectureDTO::getFid).collect(Collectors.toList());
+		// 根据机构id集合, 给定的活动时间范围，查询在此范围内进行中的活动id列表
+		List<Integer> activityIds = activityQueryService.listActivityIdsByFids(fids, startDate, endDate);
+		return packageActivityStat(activityIds, startDate, endDate, fids.size());
+	}
+
+	/**
+	 * 根据活动id集合及时间范围，对活动进行统计
+	 * 浏览量为所有统计记录pv总和，pv趋势为每日所有统计记录pv总和
+	 * 报名人数以所有活动最新统计记录的signedUpNum总和
+	 * 签到人数以所有活动最新统计记录的signedInNum总和
+	 * @Description
+	 * @author huxiaolong
+	 * @Date 2021-06-11 14:10:32
+	 * @param activityIds
+	 * @param startDate
+	 * @param endDate
+	 * @return com.chaoxing.activity.dto.stat.ActivityOrgStatDTO
+	 */
+	private ActivityOrgStatDTO packageActivityStat(List<Integer> activityIds, String startDate, String endDate, Integer affiliationNum) {
+		ActivityOrgStatDTO result = ActivityOrgStatDTO.buildDefault();
+		result.setAffiliationNum(Optional.ofNullable(affiliationNum).orElse(0));
 		if (CollectionUtils.isEmpty(activityIds)) {
 			return result;
 		}
@@ -318,6 +364,9 @@ public class ActivityStatQueryService {
 			result.setSignInTrend(fullConvert2(daily, dateSignedInNumMap));
 			result.setSignUpTrend(fullConvert2(daily, dateSignedUpNumMap));
 		}
+		if (StringUtils.isNotBlank(startDate) && StringUtils.isNotBlank(endDate)) {
+			result.setDaily(DateUtils.listEveryDay(LocalDate.parse(startDate), LocalDate.parse(endDate)));
+		}
 		return result;
 	}
 
@@ -383,4 +432,190 @@ public class ActivityStatQueryService {
 		}
 		return activityStatList.get(0);
 	}
+	
+	/**区域排行榜查询(区域、机构、活动榜)
+	* @Description 
+	* @author huxiaolong
+	* @Date 2021-06-11 16:29:19
+	* @param queryParams
+	* @return com.chaoxing.activity.vo.stat.ActivityRegionalStatVo
+	*/
+	public ActivityRegionalStatVo getRegionalActivityStat(ActivityRegionStatQueryDTO queryParams) {
+		ActivityRegionalStatVo result = new ActivityRegionalStatVo();
+
+		Integer fid = queryParams.getFid();
+		String startDate = queryParams.getStartDate();
+		String endDate = queryParams.getEndDate();
+		List<OrgDTO> regions = queryParams.getRegions();
+		long time1 = System.currentTimeMillis();
+		if (CollectionUtils.isNotEmpty(regions)) {
+			// 区域查询
+			result.setRegionalActivityStats(regionalActivityStatsQuery(true, regions, startDate, endDate));
+		}
+		long time2 = System.currentTimeMillis();
+
+		// 机构查询
+		result.setOrgActivityStats(orgActivityStatsQuery(fid, startDate, endDate));
+		long time3 = System.currentTimeMillis();
+
+		long time12 = time2 - time1;
+		long time23 = time3 - time2;
+		// 活动榜查询
+		result.setTopActivityStats(new ArrayList<>());
+		return result;
+	}
+
+	// 活动榜 todo
+//	private List<ActivityStat> activityStatList(List<Integer> activityIds, String startDate, ) {
+//		// 根据fid查询下属所有机构
+//		List<WfwRegionalArchitectureDTO> regionalArchitectures = wfwRegionalArchitectureApiService.listByFid(fid);
+//		List<OrgDTO> orgList = regionalArchitectures.stream().map(x -> new OrgDTO(x.getFid(), x.getName())).collect(Collectors.toList());
+//		return regionalActivityStatsQuery(orgList, startDate, endDate);
+//	}
+
+	// 按机构查询
+	private List<ActivityRegionalStatDTO> orgActivityStatsQuery(Integer fid, String startDate, String endDate) {
+		// 根据fid查询下属所有机构
+		List<WfwRegionalArchitectureDTO> regionalArchitectures = wfwRegionalArchitectureApiService.listByFid(fid);
+		// 若当前机构没有下属机构，则返回空
+		if (regionalArchitectures.size() == 1 && Objects.equals(regionalArchitectures.get(0).getFid(), fid)) {
+			return null;
+		}
+		List<OrgDTO> orgList = Lists.newArrayList();
+		for (WfwRegionalArchitectureDTO region : regionalArchitectures) {
+			if (!Objects.equals(region.getFid(), fid)) {
+				orgList.add(OrgDTO.builder()
+						.fid(region.getFid())
+						.name(region.getName())
+						.build()) ;
+			}
+		}
+		return regionalActivityStatsQuery(false, orgList, startDate, endDate);
+	}
+
+	// 基于机构列表查询查询统计结果
+	private List<ActivityRegionalStatDTO> regionalActivityStatsQuery(boolean regionQuery, List<OrgDTO> regions, String startDate, String endDate) {
+		List<Integer> fids = Lists.newArrayList();
+		Map<Integer, ActivityRegionalStatDTO> resultMap = Maps.newHashMap();
+		Map<Integer, List<Integer>> regionOrgsMap = Maps.newHashMap();
+		for (OrgDTO region : regions) {
+			Integer fid = region.getFid();
+			String name = region.getName();
+			//
+			if (regionQuery) {
+				List<WfwRegionalArchitectureDTO> orgs = wfwRegionalArchitectureApiService.listByFid(fid);
+				List<Integer> affiliationIds = orgs.stream().map(WfwRegionalArchitectureDTO::getFid).collect(Collectors.toList());
+				fids.addAll(affiliationIds);
+				affiliationIds.remove(fid);
+				regionOrgsMap.put(fid, affiliationIds);
+			} else {
+				fids.add(fid);
+			}
+			resultMap.put(fid, ActivityRegionalStatDTO.buildDefault(fid, name));
+
+		}
+		List<ActivityStat> regionalActivityStats =  activityStatMapper.listActivityStatByFids(fids, startDate, endDate);
+		if (regionQuery) {
+			return convert2RegionalStat(resultMap, regionOrgsMap, regionalActivityStats);
+		}
+		return convert2RegionalStat(resultMap, regionalActivityStats);
+
+	}
+
+	private List<ActivityRegionalStatDTO> convert2RegionalStat(Map<Integer, ActivityRegionalStatDTO> resultMap, Map<Integer, List<Integer>> regionOrgsMap, List<ActivityStat> regionalActivityStats) {
+		for (Map.Entry<Integer, List<Integer>> entry : regionOrgsMap.entrySet()) {
+			Integer fid = entry.getKey();
+			List<Integer> affiliationIds = entry.getValue();
+
+			for (ActivityStat stat : regionalActivityStats) {
+				if (affiliationIds.contains(stat.getFid())) {
+					ActivityRegionalStatDTO item = resultMap.get(fid);
+					Integer pv = item.getPv();
+					Integer signedUpNum = item.getSignedUpNum();
+					Integer signedInNum = item.getSignedInNum();
+					Integer activityNum = item.getActivityNum();
+					pv += Optional.ofNullable(stat.getPv()).orElse(0);
+					signedUpNum += Optional.ofNullable(stat.getSignedUpNum()).orElse(0);
+					signedInNum += Optional.ofNullable(stat.getSignedInNum()).orElse(0);
+					++activityNum;
+
+					item.setActivityNum(activityNum);
+					item.setSignedInNum(signedInNum);
+					item.setSignedUpNum(signedUpNum);
+					item.setPv(pv);
+
+					resultMap.put(fid, item);
+				}
+			}
+		}
+		return Lists.newArrayList(resultMap.values());
+	}
+
+	private List<ActivityRegionalStatDTO> convert2RegionalStat(Map<Integer, ActivityRegionalStatDTO> resultMap, List<ActivityStat> regionalActivityStats) {
+		for (ActivityStat stat : regionalActivityStats) {
+			ActivityRegionalStatDTO item = resultMap.get(stat.getFid());
+			Integer pv = item.getPv();
+			Integer signedUpNum = item.getSignedUpNum();
+			Integer signedInNum = item.getSignedInNum();
+			Integer activityNum = item.getActivityNum();
+			pv += Optional.ofNullable(stat.getPv()).orElse(0);
+			signedUpNum += Optional.ofNullable(stat.getSignedUpNum()).orElse(0);
+			signedInNum += Optional.ofNullable(stat.getSignedInNum()).orElse(0);
+			++activityNum;
+
+			item.setActivityNum(activityNum);
+			item.setSignedInNum(signedInNum);
+			item.setSignedUpNum(signedUpNum);
+			item.setPv(pv);
+
+			resultMap.put(stat.getFid(), item);
+		}
+
+		return Lists.newArrayList(resultMap.values());
+	}
+
+	/**当前机构下区域活动统计
+	* @Description
+	* @author huxiaolong
+	* @Date 2021-06-11 18:14:25
+	* @param queryParams
+	* @return java.util.List<com.chaoxing.activity.dto.stat.ActivityRegionalStatDTO>
+	*/
+	public List<ActivityRegionalStatDTO> listRegionStatDetail(ActivityRegionStatQueryDTO queryParams) {
+		Integer fid = queryParams.getFid();
+		String startDate = queryParams.getStartDate();
+		String endDate = queryParams.getEndDate();
+		// 区域查询
+//		return regionalActivityStatsQuery(true, regions, startDate, endDate);
+		return null;
+	}
+	
+	/**当前机构下下属机构各自的活动统计汇总
+	* @Description 
+	* @author huxiaolong
+	* @Date 2021-06-11 18:14:42
+	* @param queryParams
+	* @return java.util.List<com.chaoxing.activity.dto.stat.ActivityRegionalStatDTO>
+	*/
+	public List<ActivityRegionalStatDTO> listRegionOrgStatDetail(ActivityRegionStatQueryDTO queryParams) {
+		Integer fid = queryParams.getFid();
+		String startDate = queryParams.getStartDate();
+		String endDate = queryParams.getEndDate();
+		return null;
+	}
+	
+	/**当前机构下下属机构所有的活动统计
+	* @Description
+	* @author huxiaolong
+	* @Date 2021-06-11 18:12:28
+	* @param queryParams
+	* @return java.util.List<com.chaoxing.activity.model.ActivityStat>
+	*/
+	public List<ActivityStat> listRegionActivityStatDetail(ActivityRegionStatQueryDTO queryParams) {
+		Integer fid = queryParams.getFid();
+		String startDate = queryParams.getStartDate();
+		String endDate = queryParams.getEndDate();
+		return null;
+	}
+
 }

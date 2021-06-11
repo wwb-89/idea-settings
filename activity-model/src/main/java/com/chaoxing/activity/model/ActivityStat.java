@@ -46,6 +46,8 @@ public class ActivityStat {
     /** 活动名称*/
     @TableField(exist = false)
     private String activityName;
+    @TableField(exist = false)
+    private Integer fid;
     /** 序号*/
     @TableField(exist = false)
     private Integer rank;

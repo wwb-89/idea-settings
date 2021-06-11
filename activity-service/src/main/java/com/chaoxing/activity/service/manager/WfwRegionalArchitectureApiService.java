@@ -13,6 +13,7 @@ import org.springframework.web.client.RestTemplate;
 import javax.annotation.Resource;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -62,6 +63,35 @@ public class WfwRegionalArchitectureApiService {
 		return result;
 	}
 
+	/**根据fid查询该机构下的层级机构，并以树结构返回结构
+	* @Description 
+	* @author huxiaolong
+	* @Date 2021-06-10 18:12:14
+	* @param fid
+	* @return java.util.List<com.chaoxing.activity.dto.manager.WfwRegionalArchitectureDTO>
+	*/
+	public List<WfwRegionalArchitectureDTO> listWfwRegionalTreesByFid(Integer fid) {
+		return buildTree(listByFid(fid));
+	}
+
+	private List<WfwRegionalArchitectureDTO> buildTree(List<WfwRegionalArchitectureDTO> regionalArchitectureList) {
+		List<WfwRegionalArchitectureDTO> trees = new ArrayList<>();
+		for (WfwRegionalArchitectureDTO treeNode : regionalArchitectureList) {
+			if (Objects.equals(treeNode.getPid(), 0)) {
+				trees.add(treeNode);
+			}
+			for (WfwRegionalArchitectureDTO it : regionalArchitectureList) {
+				if (it.getPid() != null && !Objects.equals(it.getPid(), 0) && Objects.equals(it.getPid(), treeNode.getId())) {
+					if (treeNode.getChildren() == null) {
+						treeNode.setChildren(new ArrayList<>());
+					}
+					treeNode.getChildren().add(it);
+				}
+			}
+		}
+		return trees;
+	}
+	
 	/**构建一个层级架构
 	 * @Description 
 	 * @author wwb

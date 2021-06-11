@@ -1,170 +1,308 @@
 <!DOCTYPE html>
-<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<html lang="en" xmlns:th="http://www.thymeleaf.org/">
 
 <head>
+    <title>区域活动统计</title>
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>机构活动统计</title>
     <link rel="stylesheet" href="/static/pc/assets/lib/element-ui/lib/theme-chalk/index.css" th:href="@{/pc/assets/lib/element-ui/lib/theme-chalk/index.css}">
     <link rel="stylesheet" href="/static/pc/assets/css/reset-tongji.css" th:href="@{/pc/assets/css/reset-tongji.css}">
     <link rel="stylesheet" href="/static/pc/assets/css/common.css" th:href="@{/pc/assets/css/common.css}">
     <link rel="stylesheet" href="/static/pc/assets/css/activity-detail.css" th:href="@{/pc/assets/css/activity-detail.css}">
+    <link rel="stylesheet" href="/static/pc/assets/fontDIN/DINNextLTW23Medium.ttf" th:href="@{/pc/assets/fontDIN/DINNextLTW23Medium.ttf}">
     <style>
-        [v-cloak] {
+        .el-cascader-menu .el-radio {
+            display: table;
+            vertical-align: middle;
+            width: 90%;
+            height: 100%;
+            position: absolute;
+            box-sizing: border-box;
+            margin-left:-20px;
+            padding-left:10px;
+        }
+        .el-cascader-menu .el-radio .el-radio__input {
+            display: table-cell;
+            vertical-align: middle;
+        }
+        .el-cascader-menu .el-radio .el-radio__input .el-radio__inner{
             display: none;
         }
     </style>
 </head>
 
 <body>
-    <div class="activity-statistics" id="activity-statistics" v-cloak>
-        <div class="white-part title-box">
-            <div class="clear name-box">
-                <span class="title fl">机构活动统计</span>
-                <span class="tip fr">统计数据每天更新一次</span>
-            </div>
-            <div class="date-box">
-                <el-date-picker v-model="time" type="daterange" range-separator=""
-                                start-placeholder="开始日期" end-placeholder="结束日期"
-                                format="yyyy-MM-dd" value-format="yyyy-MM-dd"
-                                @change="dateRangeChange" />
-            </div>
+<div class="activity-statistics" id="activity-statistics" v-cloak>
+    <div class="white-part title-box">
+        <div class="clear name-box">
+            <span class="title fl">区域活动统计</span>
+            <span class="tip fr">
+                    <el-button class="btn-customize" round>导出</el-button>
+                </span>
         </div>
-        <div class="white-part paddingb12">
-            <p class="title">概况</p>
-            <div class="content1">
-                <ul class="count-ul clearfix">
-                    <li class="count-li fl">
-                        <img class="count-img" src="/static/pc/assets/images/yd-icon/icon-activity.png" th:src="@{/pc/assets/images/yd-icon/icon-activity.png}" alt="">
-                        <div class="text-box">
-                            <p>
-                                <span class="count-num">{{activityOrgStat.activityNum}}</span>
-                            </p>
-                            <p class="count-name">活动个数(个)</p>
-                        </div>
+        <div class="date-box fs0">
+            <el-date-picker
+                    v-model="time"
+                    type="daterange"
+                    range-separator=""
+                    format="yyyy-MM-dd"
+                    value-format="yyyy-MM-dd"
+                    start-placeholder="开始日期"
+                    end-placeholder="结束日期"
+                    @change="dateRangeChange"
+            >
+            </el-date-picker>
+            <el-cascader
+                    ref="regionalCascaderRef"
+                    class="marginl16"
+                    v-model="cascaderValue"
+                    :props="cascaderProps"
+                    :show-all-levels="false"
+                    collapse-tags
+                    :options="wfwRegionalArchitectureTrees"
+                    @change="cascaderChange"></el-cascader>
+        </div>
+    </div>
+    <div class="white-part paddingb12">
+        <p class="title">概况</p>
+        <div class="content1">
+            <ul class="count-ul clearfix">
+                <li class="count-li fl">
+                    <img class="count-img" src="/static/pc/assets/images/yd-icon/icon-activity.png" th:src="@{/pc/assets/images/yd-icon/icon-activity.png}" alt="">
+                    <div class="text-box">
+                        <p>
+                            <span class="count-num">{{regionalActivityStat.activityNum}}</span>
+                        </p>
+                        <p class="count-name">活动个数(个)</p>
+                    </div>
+                </li>
+                <li class="count-li fl">
+                    <img class="count-img" src="/static/pc/assets/images/yd-icon/icon-eye.png" th:src="@{/pc/assets/images/yd-icon/icon-eye.png}" alt="">
+                    <div class="text-box">
+                        <p>
+                            <span class="count-num">{{regionalActivityStat.pv}}</span>
+                        </p>
+                        <p class="count-name">浏览量(pv)</p>
+                    </div>
+                </li>
+                <li class="count-li fl">
+                    <img class="count-img" src="/static/pc/assets/images/yd-icon/icon-shi2.png" th:src="@{/pc/assets/images/yd-icon/icon-shi2.png}" alt="">
+                    <div class="text-box">
+                        <p>
+                            <span class="count-num">{{regionalActivityStat.signedUpNum}}</span>
+                        </p>
+                        <p class="count-name">报名人数(人)</p>
+                    </div>
+                </li>
+                <li class="count-li fl">
+                    <img class="count-img" src="/static/pc/assets/images/yd-icon/icon-sign-number.png" th:src="@{/pc/assets/images/yd-icon/icon-sign-number.png}" alt="">
+                    <div class="text-box">
+                        <p>
+                            <span class="count-num">{{regionalActivityStat.signedInNum}}</span>
+                        </p>
+                        <p class="count-name">签到数(人·次)</p>
+                    </div>
+                </li>
+                <li class="count-li fl">
+                    <img class="count-img" src="/static/pc/assets/images/yd-icon/icon-jg.png" th:src="@{/pc/assets/images/yd-icon/icon-jg.png}" alt="">
+                    <div class="text-box">
+                        <p>
+                            <span class="count-num">{{regionalActivityStat.affiliationNum}}</span>
+                        </p>
+                        <p class="count-name">机构数(所)</p>
+                    </div>
+                </li>
+            </ul>
+        </div>
+    </div>
+    <div class="white-part line-box">
+        <div class="height417px" id="line-aqxec"></div>
+    </div>
+    <div class="white-part">
+        <div class="clear">
+            <div class="activity-tab flex fl">
+                <ul class="tabs font16 flex" id="tabA">
+                    <li class="tab-i current">
+                        <a href="javascript:;" class="">按区域</a>
                     </li>
-                    <li class="count-li fl">
-                        <img class="count-img" src="/static/pc/assets/images/yd-icon/icon-eye.png" th:src="@{/pc/assets/images/yd-icon/icon-eye.png}" alt="">
-                        <div class="text-box">
-                            <p>
-                                <span class="count-num">{{activityOrgStat.pv}}</span>
-                            </p>
-                            <p class="count-name">浏览量(pv)</p>
-                        </div>
+                    <li class="tab-i">
+                        <a href="javascript:;" class="">按机构</a>
                     </li>
-                    <li class="count-li fl">
-                        <img class="count-img" src="/static/pc/assets/images/yd-icon/icon-shi2.png" th:src="@{/pc/assets/images/yd-icon/icon-shi2.png}" alt="">
-                        <div class="text-box">
-                            <p>
-                                <span class="count-num">{{activityOrgStat.signedUpNum}}</span>
-                            </p>
-                            <p class="count-name">报名人数(人)</p>
-                        </div>
-                    </li>
-                    <li class="count-li fl">
-                        <img class="count-img" src="/static/pc/assets/images/yd-icon/icon-sign-number.png" th:src="@{/pc/assets/images/yd-icon/icon-sign-number.png}" alt="">
-                        <div class="text-box">
-                            <p>
-                                <span class="count-num">{{activityOrgStat.signedInNum}}</span>
-                            </p>
-                            <p class="count-name">签到数(人·次)</p>
-                        </div>
+                    <li class="tab-i">
+                        <a href="javascript:;" class="">活动榜</a>
                     </li>
                 </ul>
             </div>
         </div>
-        <div class="white-part line-box">
-            <div class="height417px" id="line-aqxec"></div>
-        </div>
-        <div class="white-part bar-box">
-            <div id="bar-aqxec" class="height336px"></div>
-        </div>
-        <div class="white-part">
-            <div class="clear">
-                <p class="title fl">TOP活动榜</p>
-<!--                <div class="export-date fr">-->
-<!--                    <i class="export"></i>-->
-<!--                    导出数据-->
-<!--                </div>-->
+
+        <div id="tabB">
+            <div class="tab-c" style="display: block;">
+                <div class="table-box">
+                    <el-table :data="tableData" style="width: 100%">
+                        <el-table-column prop="name" label="区域名称"></el-table-column>
+                        <el-table-column prop="activityNum" label="活动数" width="140" align="center">
+                            <template #header>
+                                <div class="number active"> 活动数<i class="down-icon"></i></div>
+                            </template>
+                            <template slot-scope="scope">
+                                <span class="color">{{scope.row.activityNum}}</span>
+                            </template>
+                        </el-table-column>
+                        <el-table-column prop="view" label="浏览量" width="140" align="center">
+                            <template #header>
+                                <div class="number"> 浏览量<i class="down-icon"></i></div>
+                            </template>
+                            <template slot-scope="scope">
+                                <span class="color">{{scope.row.view}}</span>
+                            </template>
+                        </el-table-column>
+                        <el-table-column prop="userNum" label="用户活跃量" align="center" width="140">
+                            <template #header>
+                                <div class="number">用户活跃量<i class="down-icon"></i></div>
+                            </template>
+                            <template slot-scope="scope">
+                                <span class="color">{{scope.row.userNum}}</span>
+                            </template>
+                        </el-table-column>
+                        <el-table-column prop="" label="查看" align="center" width="94">
+                            <template slot-scope="scope">
+                                <span class="blue">详情</span>
+                            </template>
+                        </el-table-column>
+                    </el-table>
+                </div>
             </div>
-            <div class="table-box">
-                <el-table :data="topActivityStat" style="width: 100%">
-                    <el-table-column prop="rank" label="排名" width="50" align="center">
-                        <template slot-scope="scope">
-                            <span
-                                :class="scope.row.rank == 1 ? 'rank one' : scope.row.rank == 2 ? 'rank two' : scope.row.rank == 3 ? 'rank three' : 'rank' ">{{scope.row.rank}}</span>
-                        </template>
-                    </el-table-column>
-                    <el-table-column prop="activityName" label="活动名称" width="421">
-                    </el-table-column>
-                    <el-table-column prop="pv" label="浏览量" width="234" align="center">
-                        <template #header>
-                            <div class="number" :class="{'active': sortCol && sortCol.field === 'pv'}" @click.stop="loadTopActivity(sortField.pv, $event)"> 浏览量<i class="down-icon"></i></div>
-                        </template>
-                        <template slot-scope="scope">
-                            <span class="color">{{scope.row.pv || 0}}</span>
-                        </template>
-                    </el-table-column>
-                    <el-table-column prop="signedUpNum" label="报名人数" align="center">
-                        <template #header>
-                            <div class="number" :class="{'active': sortCol && sortCol.field === 'signedUpNum'}" @click="loadTopActivity(sortField.signedUpNum, $event)"> 报名人数<i class="down-icon"></i></div>
-                        </template>
-                        <template slot-scope="scope">
-                            <span class="color">{{scope.row.signedUpNum || 0}}</span>
-                        </template>
-                    </el-table-column>
-                </el-table>
+
+            <div class="tab-c">
+                <div class="table-box">
+                    <el-table :data="tableData" style="width: 100%">
+                        <el-table-column prop="name" label="机构名称"></el-table-column>
+                        <el-table-column prop="activityNum" label="活动数" width="140" align="center">
+                            <template #header>
+                                <div class="number active"> 活动数<i class="down-icon"></i></div>
+                            </template>
+                            <template slot-scope="scope">
+                                <span class="color">{{scope.row.activityNum}}</span>
+                            </template>
+                        </el-table-column>
+                        <el-table-column prop="view" label="浏览量" width="140" align="center">
+                            <template #header>
+                                <div class="number"> 浏览量<i class="down-icon"></i></div>
+                            </template>
+                            <template slot-scope="scope">
+                                <span class="color">{{scope.row.view}}</span>
+                            </template>
+                        </el-table-column>
+                        <el-table-column prop="userNum" label="用户活跃量" align="center" width="140">
+                            <template #header>
+                                <div class="number">用户活跃量<i class="down-icon"></i></div>
+                            </template>
+                            <template slot-scope="scope">
+                                <span class="color">{{scope.row.userNum}}</span>
+                            </template>
+                        </el-table-column>
+                        <el-table-column prop="" label="查看" align="center" width="94">
+                            <template slot-scope="scope">
+                                <span class="blue">详情</span>
+                            </template>
+                        </el-table-column>
+                    </el-table>
+                </div>
             </div>
         </div>
+
     </div>
-</body>
+</div>
 <div th:replace="pc/include/common_js :: common_js(~{::script})">
     <script src="/static/pc/assets/lib/echarts4.min.js" th:src="@{/pc/assets/lib/echarts4.min.js}"></script>
     <script src="/static/pc/assets/lib/element-ui/lib/index.js" th:src="@{/pc/assets/lib/element-ui/lib/index.js}"></script>
     <script src="/static/pc/assets/lib/jquery.nicescroll.min.js" th:src="@{/pc/assets/lib/jquery.nicescroll.min.js}"></script>
+    <script src="/static/pc/assets/js/main.js" th:src="@{/pc/assets/js/main.js}"></script>
     <script th:inline="javascript">
-        // $(function () {
-        //     $('.el-table .number').click(function () {
-        //         $(this).parents('.el-table').find($(' .number')).removeClass('active')
-        //         $(this).addClass('active')
-        //     })
-        // })
+        $(function () {
+            new EW_tab({
+                'tabBtn': '#tabA .tab-i',
+                'tabCon': '#tabB .tab-c',
+                'cur': 'current'
+            });
+            $('.el-table .number').click(function () {
+                $(this).parents('.el-table').find($(' .number')).removeClass('active')
+                $(this).addClass('active')
+            })
+        })
         var vm = new Vue({
             el: '#activity-statistics',
-            data: {
-                fid: [[${fid}]],
-                activityOrgStat: [[${activityOrgStat}]],
-                topActivityStat: [[${topActivityStat}]],
-                // 排序列-> 0: 浏览量， 1: 报名人数
-                sortCol: null,
-                sortField: {
-                    pv: {
-                        desc: true,
-                        field: 'pv'
-                    },
-                    signedUpNum: {
-                        desc: true,
-                        field: 'signedUpNum'
-                    }
-                },
-                queryParams: {
+            data: function () {
+                return {
                     fid: [[${fid}]],
-                    startDate: null,
-                    endDate: null,
-                    orderField: 'pv',
-                    orderType: 'DESC',
-                    activityIds: [[${activityOrgStat.activityIds}]]
-                },
-                time: []
+                    regionalActivityStat: [[${regionalActivityStat}]],
+                    wfwRegionalArchitectureTrees: [[${wfwRegionalArchitectureTrees}]],
+                    regionalActivityStatDetail: {},
+                    treeNodeList: {},
+                    treeNodeMap: {},
+                    cascaderProps: {
+                        value: 'id',
+                        label: 'name',
+                        checkStrictly: true,
+                        emitPath: false,
+                        expandTrigger: 'hover'
+                    },
+                    cascaderValue: '',//Cascader 级联选择器的值
+                    queryParams: {
+                        fid: [[${fid}]],
+                        // 下属区域列表
+                        regions: null,
+                        startDate: null,
+                        endDate: null
+                    },
+                    time: '',
+                    value: '',
+                    options: [{
+                        value: '选项1',
+                        label: '温州市'
+                    }, {
+                        value: '选项2',
+                        label: '南充市'
+                    }, {
+                        value: '选项3',
+                        label: '成都市'
+                    }, {
+                        value: '选项4',
+                        label: '绵阳市'
+                    }, {
+                        value: '选项5',
+                        label: '九龙'
+                    }],
+                    tableData: [{
+                        name: '荆门市',
+                        activityNum: 996,
+                        view: 123,
+                        userNum: 4704
+                    }, {
+                        name: '荆门市',
+                        activityNum: 996,
+                        view: 123,
+                        userNum: 4704
+                    }, {
+                        name: '荆门市',
+                        activityNum: 996,
+                        view: 123,
+                        userNum: 4704
+                    }, {
+                        name: '荆门市',
+                        activityNum: 996,
+                        view: 123,
+                        userNum: 4704
+                    }],
+                    dddd: {},
+                }
             },
             mounted: function () {
                 var $this = this;
-                $(".number.active").on("click", function (){
-                    $(this).find(".down-icon").toggleClass("rotate180")
-                })
+                $this.recursionTree($this.wfwRegionalArchitectureTrees);
+                $this.cascaderChange($this.wfwRegionalArchitectureTrees[0].id)
                 $this.initChart();
-                $this.loadTopActivity();
             },
             methods: {
                 initChart: function () {
@@ -175,29 +313,25 @@
                     var data2 = [];
                     // 报名人数
                     var data3 = [];
-
                     var pvTrendObj = {};
                     var signUpTrendObj = {};
-                    var max = 0;
-                    $($this.activityOrgStat.pvTrend).each(function () {
+                    var max = 120;
+                    $($this.regionalActivityStat.pvTrend).each(function () {
                         var val = parseInt(this.value || '0');
                         max = val > max ? val : max;
                         pvTrendObj[this.dateStr] = this.value;
                     });
-
-                    $($this.activityOrgStat.signUpTrend).each(function () {
+                    $($this.regionalActivityStat.signUpTrend).each(function () {
                         var val = parseInt(this.value || '0');
                         max = val > max ? val : max;
                         signUpTrendObj[this.dateStr] = this.value;
                     });
-
                     max += 10;
-                    $this.activityOrgStat.daily.forEach(dateStr => {
+                    $this.regionalActivityStat.daily.forEach(dateStr => {
                         data1.push(dateStr);
                         data2.push(pvTrendObj[dateStr] || '0');
                         data3.push(signUpTrendObj[dateStr] || '0');
                     });
-
                     // 活动参与趋势
                     var myChart1 = echarts.init(document.getElementById('line-aqxec'));
                     var option1 = [];
@@ -292,7 +426,7 @@
                             },
                             series: [{
                                 name: '报名人数',
-                                data: data3,
+                                data: data2,
                                 type: 'line',
                                 itemStyle: {
                                     normal: {
@@ -328,7 +462,7 @@
                             },
                                 {
                                     name: '浏览量',
-                                    data: data2,
+                                    data: data3,
                                     type: 'line',
                                     itemStyle: {
                                         normal: {
@@ -410,7 +544,7 @@
                             xAxis: {
                                 type: 'category',
                                 boundaryGap: false,
-                                data: data1,
+                                data: ['03-01'],
                                 axisLine: {
                                     show: true,
                                     lineStyle: {
@@ -448,11 +582,11 @@
                                     },
                                 },
                                 min: 0,
-                                max: 120
+                                max: max
                             },
                             series: [{
                                 name: '报名人数',
-                                data: [5],
+                                data: data3,
                                 type: 'line',
                                 lineStyle: {
                                     normal: {
@@ -482,7 +616,7 @@
                             },
                                 {
                                     name: '浏览量',
-                                    data: [3],
+                                    data: data2,
                                     type: 'line',
                                     lineStyle: {
                                         normal: {
@@ -514,159 +648,41 @@
                         };
                     }
                     myChart1.setOption(option1);
-
                     window.onload = function () {
                         myChart1.resize();
                     }
                     window.onresize = function () {
                         myChart1.resize();
                     }
-
-                    /* 饼图 */
-                    var myChart2 = echarts.init(document.getElementById('bar-aqxec'));
-                    var pieData = [];
-                    var typeNameData = [];
-                    var totalActivity = 0;
-                    $($this.activityOrgStat.classifyStatList).each(function () {
-                        var obj = {
-                            value: this.typeNum || 0,
-                            name: this.typeName || '未知',
-                            itemStyle: {
-                                normal: {
-                                    color: $this.randomHexColor()
-                                }
-                            }
-                        };
-                        totalActivity += obj.value;
-                        pieData.push(obj);
-                        typeNameData.push(this.typeName || '未知');
+                },
+                recursionTree(trees) { //  递归 ，将tree 转换成map映射
+                    var $this = this;
+                    if (!trees) {
+                        return
+                    }
+                    $(trees).each(function () {
+                        if (this.children && this.children.length > 0) {
+                            $this.recursionTree(this.children)
+                        }
+                        $this.treeNodeMap[this.id] = this
+                        // $this.treeNodeList.push(this)
                     });
-                    var option2 = {
-                        title: {
-                            text: '活动类型分布',
-                            textStyle: {
-                                fontWeight: 500,
-                                fontSize: 16,
-                                color: '#333333',
-                            },
-                            left: 0,
-                            top: 0,
-                        },
-                        tooltip: {
-                            trigger: 'item',
-                            padding: [12, 16],
-                            formatter: function (param) {
-                                return param.name + "<br>" + param.marker + '占比：' + param.percent + '%'
-                            }
-                        },
-                        legend: {
-                            data: typeNameData,
-                            textStyle: {
-                                fontSize: 12,
-                                color: '#333'
-                            },
-                            formatter: function (name) {
-                                const val = pieData.filter(function (item) {
-                                    return item.name === name
-                                })
-                                return '{a|' + name + '}{b|' + val[0].value + '个}'
-                            },
-                            textStyle: {
-                                rich: {
-                                    a: {
-                                        fontSize: 12,
-                                        color: '#666666',
-                                        align: 'left',
-                                    },
-                                    b: {
-                                        width: 500,
-                                        fontSize: 12,
-                                        color: '#333333',
-                                        align: 'left',
-                                        padding: [0, 0, 0, 36]
-                                    },
-                                }
-                            },
-                            icon: 'circle',
-                            itemWidth: 8,
-                            itemHeight: 8,
-                            itemGap: 20,
-                            y: 'center',
-                            x: '60%'
-                        },
-                        series: [{
-                            type: 'pie',
-                            radius: '60%',
-                            radius: ['50%', '70%'],
-                            center: ['40%', '50%'],
-                            label: {
-                                normal: {
-                                    show: true,
-                                    position: 'center',
-                                    formatter: '{total|' + totalActivity + '}' + '\n\r' + '{active|活动数（个）}',
-                                    rich: {
-                                        total: {
-                                            fontSize: 32,
-                                            color: '#565E64'
-                                        },
-                                        active: {
-                                            fontSize: 14,
-                                            color: '#91A0B5',
-                                            lineHeight: 30,
-                                            fontWeight: 'normal'
-                                        },
-                                    }
-                                },
-
-                            },
-                            emphasis: {
-                                show: true,
-                            },
-                            labelLine: {
-                                normal: {
-                                    show: false
-                                }
-                            },
-                            data: pieData
-                        }]
-                    }
-                    myChart2.setOption(option2);
-                    window.onload = function () {
-                        myChart2.resize();
-                    }
-                    window.onresize = function () {
-                        myChart2.resize();
-                    }
                 },
-                randomHexColor: function () {
-                    return '#'+Math.floor(Math.random() * 0xffffff).toString(16).padEnd(6, '0');
-                },
-                dateRangeChange: function (range) {
+                // 当时间范围、机构发生变化时，重新请求当前机构的活动统计信息
+                loadAffiliationActivityStat: function () {
                     var $this = this;
-                    if (range && range.length > 0) {
-                        $this.queryParams.startDate = range[0];
-                        $this.queryParams.endDate = range[1];
-                    } else {
-                        $this.queryParams.startDate = null;
-                        $this.queryParams.endDate = null;
-                    }
-                    $this.reloadActivityStat();
-                },
-                reloadActivityStat: function () {
-                    var $this = this;
-                    var url = ctx + "/api/activity/stat/org/" + $this.fid +"/query";
+                    var url = ctx + "/api/activity/stat/regional/" + $this.queryParams.fid +"/query";
                     var params = {
                         startDate: $this.time[0],
                         endDate: $this.time[1],
                     };
-
                     app.ajaxPost(url, params, function (res) {
                         if (res.success) {
-                            $this.activityOrgStat = res.data;
+                            $this.regionalActivityStat = res.data;
                             $this.initChart();
                             // 重新获取top排行榜数据
-                            $this.queryParams.activityIds = $this.activityOrgStat.activityIds;
-                            $this.loadTopActivity();
+                            $this.queryParams.activityIds = $this.regionalActivityStat.activityIds;
+                            $this.loadRegionalActivityStatDetail();
                         } else {
                             var errorMessage = res.message;
                             if (activityApp.isEmpty(errorMessage)) {
@@ -678,29 +694,13 @@
                         app.showMsg("获取机构统计数据失败!");
                     });
                 },
-                loadTopActivity: function (sortCol, e) {
+                // 当时间范围、机构发生变化时，重新请求当前机构下的区域、机构、活动榜统计;
+                loadRegionalActivityStatDetail: function () {
                     var $this = this;
-                    if (sortCol) {
-                        if ($this.sortCol && $this.sortCol.field === sortCol.field) {
-                            $this.sortCol.desc = !this.sortCol.desc;
-                            if (e) {
-                                var iconClassName = $(e.target).get(0).className.indexOf('down-icon') !== -1;
-                                if (iconClassName) {
-                                    $(e.target).toggleClass("rotate180");
-                                } else {
-                                    $(e.target).find(".down-icon").toggleClass("rotate180");
-                                }
-                            }
-                        } else {
-                            $this.sortCol = sortCol;
-                        }
-                        $this.queryParams.orderField = $this.sortCol.field;
-                        $this.queryParams.orderType = $this.sortCol.desc ? 'DESC' : 'ASC';
-                    }
-                    var url = ctx + "/api/activity/stat/top-activity";
+                    var url = ctx + "/api/activity/stat/regional/activity-stat/detail";
                     app.ajaxPost(url, {queryParamStr: activityApp.getJsonStr($this.queryParams)}, function (res) {
                         if (res.success) {
-                            $this.topActivityStat = res.data;
+                            $this.regionalActivityStatDetail = res.data;
                         } else {
                             var errorMessage = res.message;
                             if (activityApp.isEmpty(errorMessage)) {
@@ -711,11 +711,47 @@
                     }, function () {
                         app.showMsg("获取TOP活动榜数据失败!");
                     });
+                },
+                // 日期选择范围改变
+                dateRangeChange: function () {
+                    var $this = this;
+                    if (range && range.length > 0) {
+                        $this.queryParams.startDate = range[0];
+                        $this.queryParams.endDate = range[1];
+                    } else {
+                        $this.queryParams.startDate = null;
+                        $this.queryParams.endDate = null;
+                    }
+                    $this.loadAffiliationActivityStat();
+                },
+                // 当前机构发生变化事件
+                cascaderChange: function (nodeId) {
+                    var $this = this;
+                    var currNode = $this.treeNodeMap[nodeId];
+                    $this.queryParams.regions = $this.getCurrNodeAffiliations(currNode);
+                    $this.queryParams.fid = currNode.fid;
+                    $this.loadAffiliationActivityStat();
+                },
+                // 获取当前节点下属机构列表
+                getCurrNodeAffiliations: function (currNode) {
+                    var regions = [];
+                    if (currNode.children) {
+                        $(currNode.children).each(function () {
+                            if (this.children) {
+                                regions.push({ fid: this.fid, name: this.name});
+                            }
+                        });
+                    }
+                    return regions;
+                },
+                filterOrgFid: function () {
+
                 }
             }
         })
     </script>
 </div>
 
+</body>
 
 </html>

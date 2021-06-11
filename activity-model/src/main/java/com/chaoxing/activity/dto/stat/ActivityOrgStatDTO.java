@@ -24,6 +24,8 @@ public class ActivityOrgStatDTO {
 
     /** 活动个数 */
     private Integer activityNum;
+    /** 机构数个数 */
+    private Integer affiliationNum;
     /** 访问量 */
     private Integer pv;
     /** 报名数 */
@@ -46,6 +48,7 @@ public class ActivityOrgStatDTO {
     public static ActivityOrgStatDTO buildDefault() {
         return ActivityOrgStatDTO.builder()
                 .activityNum(0)
+                .affiliationNum(0)
                 .pv(0)
                 .signedUpNum(0)
                 .signedInNum(0)

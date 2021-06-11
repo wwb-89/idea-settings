@@ -2,8 +2,10 @@ package com.chaoxing.activity.admin.controller.api;
 
 import com.alibaba.fastjson.JSON;
 import com.chaoxing.activity.dto.RestRespDTO;
+import com.chaoxing.activity.dto.query.admin.ActivityRegionStatQueryDTO;
 import com.chaoxing.activity.dto.query.admin.ActivityStatQueryDTO;
 import com.chaoxing.activity.dto.stat.ActivityOrgStatDTO;
+import com.chaoxing.activity.dto.stat.ActivityRegionalStatDTO;
 import com.chaoxing.activity.model.ActivityStat;
 import com.chaoxing.activity.service.activity.ActivityStatQueryService;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -28,13 +30,13 @@ public class ActivityStatApiController {
     @Resource
     private ActivityStatQueryService activityStatQueryService;
 
-    /**
+    /**机构活动统计查询
      * @Description
      * @author huxiaolong
      * @Date 2021-05-11 16:53:12
      * @param fid
-     * @param fid
-     * @param fid
+     * @param startDate
+     * @param endDate
      * @return com.chaoxing.activity.dto.RestRespDTO
      */
     @PostMapping("/org/{fid}/query")
@@ -43,18 +45,75 @@ public class ActivityStatApiController {
         return RestRespDTO.success(activityOrgStat);
     }
 
-
-    /**活动TOP榜数据查询
-    * @Description 
-    * @author huxiaolong
-    * @Date 2021-05-12 17:17:56
-    * @param queryParamStr
-    * @return com.chaoxing.activity.dto.RestRespDTO
-    */
-    @PostMapping("/org/top-activity")
+    /**机构活动TOP榜数据查询
+     * @Description
+     * @author huxiaolong
+     * @Date 2021-05-12 17:17:56
+     * @param queryParamStr
+     * @return com.chaoxing.activity.dto.RestRespDTO
+     */
+    @PostMapping("/top-activity")
     public RestRespDTO listTopActivity(String queryParamStr) {
         ActivityStatQueryDTO statQueryParams = JSON.parseObject(queryParamStr, ActivityStatQueryDTO.class);
         List<ActivityStat> topActivityStat = activityStatQueryService.listTopActivity(statQueryParams);
         return RestRespDTO.success(topActivityStat);
     }
+
+
+    /**区域活动统计查询
+     * @Description
+     * @author huxiaolong
+     * @Date 2021-05-11 16:53:12
+     * @param fid
+     * @param startDate
+     * @param endDate
+     * @return com.chaoxing.activity.dto.RestRespDTO
+     */
+    @PostMapping("/region/{fid}/query")
+    public RestRespDTO getRegionalActivityStatInfo(@PathVariable Integer fid, String startDate, String endDate) {
+        ActivityOrgStatDTO activityOrgStat = activityStatQueryService.regionalActivityStat(fid, startDate, endDate);
+        return RestRespDTO.success(activityOrgStat);
+    }
+
+    /**当前机构下区域活动统计
+    * @Description
+    * @author huxiaolong
+    * @Date 2021-05-12 17:17:56
+    * @param queryParamStr
+    * @return com.chaoxing.activity.dto.RestRespDTO
+    */
+    @PostMapping("/region/detail")
+    public RestRespDTO listRegionStatDetail(String queryParamStr) {
+        ActivityRegionStatQueryDTO queryParams = JSON.parseObject(queryParamStr, ActivityRegionStatQueryDTO.class);
+        List<ActivityRegionalStatDTO> regionalStats = activityStatQueryService.listRegionStatDetail(queryParams);
+        return RestRespDTO.success(regionalStats);
+    }
+
+    /**当前机构下下属机构各自的活动统计汇总
+    * @Description
+    * @author huxiaolong
+    * @Date 2021-05-12 17:17:56
+    * @param queryParamStr
+    * @return com.chaoxing.activity.dto.RestRespDTO
+    */
+    @PostMapping("/region/org/detail")
+    public RestRespDTO listRegionOrgStatDetail(String queryParamStr) {
+        ActivityRegionStatQueryDTO queryParams = JSON.parseObject(queryParamStr, ActivityRegionStatQueryDTO.class);
+        List<ActivityRegionalStatDTO> regionalOrgStats = activityStatQueryService.listRegionOrgStatDetail(queryParams);
+        return RestRespDTO.success(regionalOrgStats);
+    }
+    /**当前机构下下属机构所有的活动统计
+    * @Description
+    * @author huxiaolong
+    * @Date 2021-05-12 17:17:56
+    * @param queryParamStr
+    * @return com.chaoxing.activity.dto.RestRespDTO
+    */
+    @PostMapping("/region/activity-stat")
+    public RestRespDTO listRegionActivityStatDetail(String queryParamStr) {
+        ActivityRegionStatQueryDTO queryParams = JSON.parseObject(queryParamStr, ActivityRegionStatQueryDTO.class);
+        List<ActivityStat> activityStats = activityStatQueryService.listRegionActivityStatDetail(queryParams);
+        return RestRespDTO.success(activityStats);
+    }
+
 }

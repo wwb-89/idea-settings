@@ -40,35 +40,86 @@
         SELECT
             t.name AS activityName,
             t.id AS activityId,
-            a.pv AS pv,
-            a.signedUpNum AS signedUpNum
+            sum(t1.pv_increment) AS pv,
+            sum(t1.signed_up_increment) AS signedUpNum
         FROM
             t_activity t
-        LEFT JOIN (
-                 SELECT activity_id, sum(pv_increment) as pv, sum(signed_up_increment) as signedUpNum
-                 FROM t_activity_stat
-                 <where>
-                     activity_id in
-                     <foreach collection="queryParams.activityIds" item="value" open="(" close=")" separator=",">
-                         #{value}
-                     </foreach>
-                     <if test="queryParams.startDate != null and queryParams.startDate != ''">
-                         and stat_date &gt;= #{queryParams.startDate}
-                     </if>
-                     <if test="queryParams.endDate != null and queryParams.endDate != ''">
-                         and stat_date &lt;= #{queryParams.endDate}
-                     </if>
-                 </where>
-                 GROUP BY activity_id
-             ) a ON t.id = a.activity_id
+        LEFT JOIN t_activity_stat t1 ON t.id = t1.activity_id
+        AND t1.activity_id in
+        <foreach collection="queryParams.activityIds" item="value" open="(" close=")" separator=",">
+            #{value}
+        </foreach>
+        <if test="queryParams.startDate != null and queryParams.startDate != ''">
+            and t1.stat_date &gt;= #{queryParams.startDate}
+        </if>
+        <if test="queryParams.endDate != null and queryParams.endDate != ''">
+            and t1.stat_date &lt;= #{queryParams.endDate}
+        </if>
         WHERE
             t.id IN
             <foreach collection="queryParams.activityIds" item="value" open="(" close=")" separator=",">
                 #{value}
             </foreach>
+        GROUP BY t.id
         <if test="orderField != null and orderField != ''">
-            ORDER BY a.${orderField} <if test="orderType != null and orderType != ''">${orderType}</if>
+            ORDER BY ${orderField} <if test="orderType != null and orderType != ''">${orderType}</if>
         </if>
         LIMIT 0, 10
+    </select>
+
+    <select id="activityStatList" resultType="com.chaoxing.activity.model.ActivityStat">
+        SELECT
+            t.name AS activityName,
+            t.id AS activityId,
+            sum(t1.pv_increment) AS pv,
+            sum(t1.signed_up_increment) AS signedUpNum
+        FROM
+            t_activity t
+        LEFT JOIN t_activity_stat t1 ON t.id = t1.activity_id
+        AND t1.activity_id in
+        <foreach collection="queryParams.activityIds" item="value" open="(" close=")" separator=",">
+            #{value}
+        </foreach>
+        <if test="queryParams.startDate != null and queryParams.startDate != ''">
+            and t1.stat_date &gt;= #{queryParams.startDate}
+        </if>
+        <if test="queryParams.endDate != null and queryParams.endDate != ''">
+            and t1.stat_date &lt;= #{queryParams.endDate}
+        </if>
+        WHERE
+            t.id IN
+            <foreach collection="queryParams.activityIds" item="value" open="(" close=")" separator=",">
+                #{value}
+            </foreach>
+        GROUP BY t.id
+        <if test="orderField != null and orderField != ''">
+            ORDER BY ${orderField} <if test="orderType != null and orderType != ''">${orderType}</if>
+        </if>
+    </select>
+
+    <select id="listActivityStatByFids" resultType="com.chaoxing.activity.model.ActivityStat">
+        SELECT
+            t.id AS activityId,
+            t.name AS activityName,
+            t.create_fid AS fid,
+            sum(t1.pv_increment) AS pv,
+            sum(t1.signed_up_increment) AS signedUpNum,
+            sum(t1.signed_in_increment) AS signedInNum
+        FROM
+            t_activity t
+            LEFT JOIN t_activity_stat t1 ON t.id = t1.activity_id
+            <trim prefixOverrides="AND">
+                <if test="startDate != null and startDate != ''">
+                    and t1.stat_date &gt;= #{startDate}
+                </if>
+                <if test="endDate != null and endDate != ''">
+                    and t1.stat_date &lt;= #{endDate}
+                </if>
+            </trim>
+        WHERE t.create_fid IN
+        <foreach collection="fids" item="fid" open="(" close=")" separator=",">
+            #{fid}
+        </foreach>
+        GROUP BY t.id
     </select>
 </mapper>

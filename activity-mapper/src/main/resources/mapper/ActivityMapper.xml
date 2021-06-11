@@ -449,7 +449,7 @@
             t.id
         FROM
             t_activity t
-        <trim prefix="WHERE" prefixOverrides="AND | OR" suffixOverrides="AND | OR">
+        <where>
             t.create_fid = #{fid}
             <if test="(startDate != null and startDate != '') or (endDate != null and endDate != '')">
                 AND
@@ -462,7 +462,31 @@
                     </if>
                 </trim>
             </if>
-        </trim>
+        </where>
+    </select>
+
+    <select id="listActivityIdByFids" resultType="java.lang.Integer">
+        SELECT
+        t.id
+        FROM
+        t_activity t
+        <where>
+            t.create_fid in
+            <foreach collection="fids" item="fid" open="(" close=")" separator=",">
+                #{fid}
+            </foreach>
+            <if test="(startDate != null and startDate != '') or (endDate != null and endDate != '')">
+                AND
+                <trim prefix="(" suffix=")" prefixOverrides="OR">
+                    <if test="startDate != null and startDate != ''">
+                        OR ( t.start_date &gt;= #{startDate} AND t.start_date &lt;= #{endDate} )
+                    </if>
+                    <if test="endDate != null and endDate != ''">
+                        OR (t.end_date &gt;= #{startDate} AND t.end_date &lt;= #{endDate})
+                    </if>
+                </trim>
+            </if>
+        </where>
     </select>
 
 

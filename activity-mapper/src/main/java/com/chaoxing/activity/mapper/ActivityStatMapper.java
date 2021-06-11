@@ -38,4 +38,28 @@ public interface ActivityStatMapper extends BaseMapper<ActivityStat> {
     List<ActivityStat> listTopActivity(@Param("queryParams") ActivityStatQueryDTO queryParams,
                                        @Param("orderField") String orderField,
                                        @Param("orderType") String orderType);
+
+    /**列出活动榜
+     * @Description
+     * @author huxiaolong
+     * @Date 2021-05-12 13:19:43
+     * @param queryParams
+     * @return java.util.List<com.chaoxing.activity.model.ActivityStat>
+     */
+    List<ActivityStat> activityStatList(@Param("queryParams") ActivityStatQueryDTO queryParams,
+                                        @Param("orderField") String orderField,
+                                        @Param("orderType") String orderType);
+
+
+
+    /**根据机构查询活动统计结果
+    * @Description
+    * @author huxiaolong
+    * @Date 2021-06-11 15:45:52
+    * @param fids
+    * @param startDate
+    * @param endDate
+    * @return java.util.List<com.chaoxing.activity.model.ActivityStat>
+    */
+    List<ActivityStat> listActivityStatByFids(@Param("fids") List<Integer> fids, @Param("startDate") String startDate, @Param("endDate")String endDate);
 }
