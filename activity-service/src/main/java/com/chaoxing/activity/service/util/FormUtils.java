@@ -1,6 +1,7 @@
 package com.chaoxing.activity.service.util;
 
 import com.alibaba.fastjson.JSONObject;
+import com.chaoxing.activity.dto.AddressDTO;
 import com.chaoxing.activity.dto.TimeScopeDTO;
 import com.chaoxing.activity.dto.manager.form.FormDTO;
 import com.chaoxing.activity.dto.manager.form.FormDataDTO;
@@ -65,6 +66,45 @@ public class FormUtils {
 		JSONObject jsonValue = getJsonValue(formData, fieldAlias);
 		if (jsonValue != null) {
 			value = jsonValue.getString(VAL_KEY);
+		}
+		value = Optional.ofNullable(value).orElse("");
+		return value;
+	}
+
+	/**获取地址信息
+	 * @Description 
+	 * @author wwb
+	 * @Date 2021-06-15 01:43:33
+	 * @param formData
+	 * @param fieldAlias
+	 * @return com.chaoxing.activity.dto.AddressDTO
+	*/
+	public static AddressDTO getAddress(FormDTO formData, String fieldAlias) {
+		AddressDTO address = null;
+		JSONObject jsonValue = getJsonValue(formData, fieldAlias);
+		if (jsonValue != null) {
+			address = AddressDTO.builder()
+					.address(jsonValue.getString("address"))
+					.lat(jsonValue.getBigDecimal("lat"))
+					.lng(jsonValue.getBigDecimal("lng"))
+					.build();
+		}
+		return address;
+	}
+
+	/**获取云盘资源id
+	 * @Description 
+	 * @author wwb
+	 * @Date 2021-06-15 00:36:27
+	 * @param formData
+	 * @param fieldAlias
+	 * @return java.lang.String
+	*/
+	public static String getCloudId(FormDTO formData, String fieldAlias) {
+		String value = "";
+		JSONObject jsonValue = getJsonValue(formData, fieldAlias);
+		if (jsonValue != null) {
+			value = jsonValue.getString("objectId");
 		}
 		value = Optional.ofNullable(value).orElse("");
 		return value;
