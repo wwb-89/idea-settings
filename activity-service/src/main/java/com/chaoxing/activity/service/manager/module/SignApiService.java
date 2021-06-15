@@ -634,6 +634,9 @@ public class SignApiService {
 	 * @return com.chaoxing.activity.dto.stat.SignActivityStatDTO
 	*/
 	public SignActivityStatDTO singleActivityStat(Integer signId, String startTime, String endTime) {
+		if (signId == null) {
+			return SignActivityStatDTO.buildDefault();
+		}
 		String url = String.format(STAT_SINGLE_ACTIVITY_URL, signId, startTime, endTime);
 		String result = restTemplate.getForObject(url, String.class);
 		JSONObject jsonObject = JSON.parseObject(result);

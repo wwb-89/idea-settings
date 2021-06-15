@@ -75,7 +75,7 @@ public class ActivityStatController {
             LoginUserDTO loginUser = LoginUtils.getLoginUser(request);
             realFid = loginUser.getFid();
         }
-        ActivityOrgStatDTO activityOrgStat = activityStatQueryService.orgActivityStat(fid);
+        ActivityOrgStatDTO activityOrgStat = activityStatQueryService.orgActivityStat(realFid);
         model.addAttribute("fid", realFid);
         model.addAttribute("activityOrgStat", activityOrgStat);
         if (UserAgentUtils.isMobileAccess(request)) {

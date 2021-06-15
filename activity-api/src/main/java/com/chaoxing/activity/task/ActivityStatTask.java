@@ -46,7 +46,7 @@ public class ActivityStatTask {
     * @param
     * @return void
     */
-    @Scheduled(cron = "0 0 1 * * ?")
+    @Scheduled(fixedDelay = 1L)
     public void handleActivityStatTask() throws InterruptedException {
         Integer taskId = activityStatQueueService.getActivityStatTask();
 
