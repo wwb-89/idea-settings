@@ -71,12 +71,47 @@ public class WfwRegionalArchitectureApiService {
 	* @return java.util.List<com.chaoxing.activity.dto.manager.WfwRegionalArchitectureDTO>
 	*/
 	public List<WfwRegionalArchitectureDTO> listWfwRegionalTreesByFid(Integer fid) {
-		return buildTree(listByFid(fid));
+		List<WfwRegionalArchitectureDTO> wfwRegionalArchitectures = listByFid(fid);
+		List<WfwRegionalArchitectureDTO> trees = buildTree(fid, wfwRegionalArchitectures);
+
+		for (WfwRegionalArchitectureDTO item : wfwRegionalArchitectures) {
+			Boolean existChild = Optional.ofNullable(item.getExistChild()).orElse(Boolean.FALSE);
+			// 有父节点，且有子节点，那么当前节点一定为区域节点，其父节点存在区域
+			if (item.getPid() != null && existChild) {
+				handleExistAreaNode(item.getPid(), trees);
+			}
+		}
+		return trees;
 	}
 
-	private List<WfwRegionalArchitectureDTO> buildTree(List<WfwRegionalArchitectureDTO> regionalArchitectureList) {
+	/**给区域节点设置区域属性
+	* @Description
+	* @author huxiaolong
+	* @Date 2021-06-15 16:17:53
+	* @param pid
+	* @param trees
+	* @return void
+	*/
+	private void handleExistAreaNode(Integer pid, List<WfwRegionalArchitectureDTO> trees) {
+		for (WfwRegionalArchitectureDTO item : trees) {
+			if (Objects.equals(pid, item.getId())) {
+				item.setExistArea(Boolean.TRUE);
+				return;
+			}
+			if (CollectionUtils.isNotEmpty(item.getChildren())) {
+				handleExistAreaNode(pid, item.getChildren());
+			}
+		}
+
+	}
+
+	private List<WfwRegionalArchitectureDTO> buildTree(Integer fid, List<WfwRegionalArchitectureDTO> regionalArchitectureList) {
 		List<WfwRegionalArchitectureDTO> trees = new ArrayList<>();
 		for (WfwRegionalArchitectureDTO treeNode : regionalArchitectureList) {
+			// 将当前fid的机构节点父级设为0(无父级)，以便于构造树
+			if (Objects.equals(fid, treeNode.getFid())) {
+				treeNode.setPid(0);
+			}
 			if (Objects.equals(treeNode.getPid(), 0)) {
 				trees.add(treeNode);
 			}

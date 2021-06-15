@@ -1,12 +1,9 @@
 package com.chaoxing.activity.dto.query.admin;
 
-import com.chaoxing.activity.dto.OrgDTO;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-
-import java.util.List;
 
 /**
  * @author huxiaolong
@@ -22,15 +19,11 @@ import java.util.List;
 @AllArgsConstructor
 public class ActivityRegionStatQueryDTO {
 
+    private Integer regionId;
+
     private Integer fid;
-
-    private List<Integer> activityIds;
-
-    private List<OrgDTO> regions;
 
     private String startDate;
 
     private String endDate;
-
-
 }

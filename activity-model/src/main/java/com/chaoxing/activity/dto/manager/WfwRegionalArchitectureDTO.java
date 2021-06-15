@@ -44,6 +44,8 @@ public class WfwRegionalArchitectureDTO {
 	private Integer level;
 	private Integer fid;
 	private Boolean existChild;
+	// 是否存在区域
+	private Boolean existArea;
 	private Integer sort;
 	private List<WfwRegionalArchitectureDTO> children;
 

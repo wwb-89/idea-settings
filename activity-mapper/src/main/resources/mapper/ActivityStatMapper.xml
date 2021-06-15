@@ -108,7 +108,7 @@
         FROM
             t_activity t
             LEFT JOIN t_activity_stat t1 ON t.id = t1.activity_id
-            <trim prefixOverrides="AND">
+            <trim prefix="AND" prefixOverrides="AND">
                 <if test="startDate != null and startDate != ''">
                     and t1.stat_date &gt;= #{startDate}
                 </if>

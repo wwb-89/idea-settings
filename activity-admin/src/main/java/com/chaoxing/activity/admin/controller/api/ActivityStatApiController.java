@@ -102,18 +102,4 @@ public class ActivityStatApiController {
         List<ActivityRegionalStatDTO> regionalOrgStats = activityStatQueryService.listRegionOrgStatDetail(queryParams);
         return RestRespDTO.success(regionalOrgStats);
     }
-    /**当前机构下下属机构所有的活动统计
-    * @Description
-    * @author huxiaolong
-    * @Date 2021-05-12 17:17:56
-    * @param queryParamStr
-    * @return com.chaoxing.activity.dto.RestRespDTO
-    */
-    @PostMapping("/region/activity-stat")
-    public RestRespDTO listRegionActivityStatDetail(String queryParamStr) {
-        ActivityRegionStatQueryDTO queryParams = JSON.parseObject(queryParamStr, ActivityRegionStatQueryDTO.class);
-        List<ActivityStat> activityStats = activityStatQueryService.listRegionActivityStatDetail(queryParams);
-        return RestRespDTO.success(activityStats);
-    }
-
 }

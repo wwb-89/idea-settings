@@ -16,7 +16,6 @@ import com.chaoxing.activity.service.manager.MhApiService;
 import com.chaoxing.activity.service.manager.WfwRegionalArchitectureApiService;
 import com.chaoxing.activity.service.manager.module.SignApiService;
 import com.chaoxing.activity.util.DateUtils;
-import com.chaoxing.activity.vo.stat.ActivityRegionalStatVo;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import lombok.extern.slf4j.Slf4j;
@@ -432,95 +431,6 @@ public class ActivityStatQueryService {
 		}
 		return activityStatList.get(0);
 	}
-	
-	/**区域排行榜查询(区域、机构、活动榜)
-	* @Description 
-	* @author huxiaolong
-	* @Date 2021-06-11 16:29:19
-	* @param queryParams
-	* @return com.chaoxing.activity.vo.stat.ActivityRegionalStatVo
-	*/
-	public ActivityRegionalStatVo getRegionalActivityStat(ActivityRegionStatQueryDTO queryParams) {
-		ActivityRegionalStatVo result = new ActivityRegionalStatVo();
-
-		Integer fid = queryParams.getFid();
-		String startDate = queryParams.getStartDate();
-		String endDate = queryParams.getEndDate();
-		List<OrgDTO> regions = queryParams.getRegions();
-		long time1 = System.currentTimeMillis();
-		if (CollectionUtils.isNotEmpty(regions)) {
-			// 区域查询
-			result.setRegionalActivityStats(regionalActivityStatsQuery(true, regions, startDate, endDate));
-		}
-		long time2 = System.currentTimeMillis();
-
-		// 机构查询
-		result.setOrgActivityStats(orgActivityStatsQuery(fid, startDate, endDate));
-		long time3 = System.currentTimeMillis();
-
-		long time12 = time2 - time1;
-		long time23 = time3 - time2;
-		// 活动榜查询
-		result.setTopActivityStats(new ArrayList<>());
-		return result;
-	}
-
-	// 活动榜 todo
-//	private List<ActivityStat> activityStatList(List<Integer> activityIds, String startDate, ) {
-//		// 根据fid查询下属所有机构
-//		List<WfwRegionalArchitectureDTO> regionalArchitectures = wfwRegionalArchitectureApiService.listByFid(fid);
-//		List<OrgDTO> orgList = regionalArchitectures.stream().map(x -> new OrgDTO(x.getFid(), x.getName())).collect(Collectors.toList());
-//		return regionalActivityStatsQuery(orgList, startDate, endDate);
-//	}
-
-	// 按机构查询
-	private List<ActivityRegionalStatDTO> orgActivityStatsQuery(Integer fid, String startDate, String endDate) {
-		// 根据fid查询下属所有机构
-		List<WfwRegionalArchitectureDTO> regionalArchitectures = wfwRegionalArchitectureApiService.listByFid(fid);
-		// 若当前机构没有下属机构，则返回空
-		if (regionalArchitectures.size() == 1 && Objects.equals(regionalArchitectures.get(0).getFid(), fid)) {
-			return null;
-		}
-		List<OrgDTO> orgList = Lists.newArrayList();
-		for (WfwRegionalArchitectureDTO region : regionalArchitectures) {
-			if (!Objects.equals(region.getFid(), fid)) {
-				orgList.add(OrgDTO.builder()
-						.fid(region.getFid())
-						.name(region.getName())
-						.build()) ;
-			}
-		}
-		return regionalActivityStatsQuery(false, orgList, startDate, endDate);
-	}
-
-	// 基于机构列表查询查询统计结果
-	private List<ActivityRegionalStatDTO> regionalActivityStatsQuery(boolean regionQuery, List<OrgDTO> regions, String startDate, String endDate) {
-		List<Integer> fids = Lists.newArrayList();
-		Map<Integer, ActivityRegionalStatDTO> resultMap = Maps.newHashMap();
-		Map<Integer, List<Integer>> regionOrgsMap = Maps.newHashMap();
-		for (OrgDTO region : regions) {
-			Integer fid = region.getFid();
-			String name = region.getName();
-			//
-			if (regionQuery) {
-				List<WfwRegionalArchitectureDTO> orgs = wfwRegionalArchitectureApiService.listByFid(fid);
-				List<Integer> affiliationIds = orgs.stream().map(WfwRegionalArchitectureDTO::getFid).collect(Collectors.toList());
-				fids.addAll(affiliationIds);
-				affiliationIds.remove(fid);
-				regionOrgsMap.put(fid, affiliationIds);
-			} else {
-				fids.add(fid);
-			}
-			resultMap.put(fid, ActivityRegionalStatDTO.buildDefault(fid, name));
-
-		}
-		List<ActivityStat> regionalActivityStats =  activityStatMapper.listActivityStatByFids(fids, startDate, endDate);
-		if (regionQuery) {
-			return convert2RegionalStat(resultMap, regionOrgsMap, regionalActivityStats);
-		}
-		return convert2RegionalStat(resultMap, regionalActivityStats);
-
-	}
 
 	private List<ActivityRegionalStatDTO> convert2RegionalStat(Map<Integer, ActivityRegionalStatDTO> resultMap, Map<Integer, List<Integer>> regionOrgsMap, List<ActivityStat> regionalActivityStats) {
 		for (Map.Entry<Integer, List<Integer>> entry : regionOrgsMap.entrySet()) {
@@ -582,14 +492,80 @@ public class ActivityStatQueryService {
 	* @return java.util.List<com.chaoxing.activity.dto.stat.ActivityRegionalStatDTO>
 	*/
 	public List<ActivityRegionalStatDTO> listRegionStatDetail(ActivityRegionStatQueryDTO queryParams) {
+		Integer nodeId = queryParams.getRegionId();
 		Integer fid = queryParams.getFid();
 		String startDate = queryParams.getStartDate();
 		String endDate = queryParams.getEndDate();
 		// 区域查询
-//		return regionalActivityStatsQuery(true, regions, startDate, endDate);
-		return null;
+		return regionActivityStatQuery(nodeId, fid, startDate, endDate);
 	}
-	
+
+	/**当前机构下区域活动统计
+	* @Description
+	* @author huxiaolong
+	* @Date 2021-06-15 11:08:13
+	* @param nodeId
+	* @param startDate
+	* @param endDate
+	* @return java.util.List<com.chaoxing.activity.dto.stat.ActivityRegionalStatDTO>
+	*/
+	private List<ActivityRegionalStatDTO> regionActivityStatQuery(Integer nodeId, Integer fid, String startDate, String endDate) {
+		List<WfwRegionalArchitectureDTO> regionalArchitectures = wfwRegionalArchitectureApiService.listByFid(fid);
+		// 机构fid 对应着子节点的fid列表
+		Map<Integer, List<Integer>> wfwRegionChildrenFidMap = Maps.newHashMap();
+		// 区域fid 对应着对应的下属机构的fid列表
+		Map<Integer, List<Integer>> regionOrgsMap = Maps.newHashMap();
+		Map<Integer, ActivityRegionalStatDTO> resultMap = Maps.newHashMap();
+
+		for (WfwRegionalArchitectureDTO item : regionalArchitectures) {
+			wfwRegionChildrenFidMap.computeIfAbsent(item.getFid(), k -> Lists.newArrayList());
+			for (WfwRegionalArchitectureDTO it: regionalArchitectures) {
+				if (it.getPid() != null && Objects.equals(it.getPid(), item.getId())) {
+					wfwRegionChildrenFidMap.get(item.getFid()).add(it.getFid());
+				}
+			}
+			// 查找当前节点的区域节点
+			if (item.getPid() != null && Objects.equals(item.getPid(), nodeId)) {
+				Integer regionFid = item.getFid();
+				regionOrgsMap.put(regionFid, Lists.newArrayList());
+				resultMap.put(regionFid, ActivityRegionalStatDTO.buildDefault(regionFid, item.getName()));
+
+			}
+		}
+		List<Integer> fids = Lists.newArrayList();
+		// 从机构id 对应着子节点的fid列表 中， 获取区域id 对应着对应的下属机构的fid列表
+		for (Map.Entry<Integer, List<Integer>> entry : regionOrgsMap.entrySet()) {
+			Integer regionFid = entry.getKey();
+			List<Integer> values = entry.getValue();
+//			fids.add(regionFid);
+			searchRegionOrgFids(regionFid, values, wfwRegionChildrenFidMap);
+			fids.addAll(values);
+
+		}
+		List<ActivityStat> regionalActivityStats =  activityStatMapper.listActivityStatByFids(fids, startDate, endDate);
+		return convert2RegionalStat(resultMap, regionOrgsMap, regionalActivityStats);
+	}
+
+	/**根据区域fid查找下属机构的fid集合
+	* @Description
+	* @author huxiaolong
+	* @Date 2021-06-15 12:06:53
+	* @param regionFid
+	* @param values
+	* @param wfwRegionChildrenMap
+	* @return void
+	*/
+	private void searchRegionOrgFids(Integer regionFid, List<Integer> values, Map<Integer, List<Integer>> wfwRegionChildrenMap) {
+		List<Integer> childIds = wfwRegionChildrenMap.get(regionFid);
+		if (CollectionUtils.isNotEmpty(childIds)) {
+			values.addAll(childIds);
+			for (Integer childId : childIds) {
+				searchRegionOrgFids(childId, values, wfwRegionChildrenMap);
+			}
+			wfwRegionChildrenMap.get(regionFid);
+		}
+	}
+
 	/**当前机构下下属机构各自的活动统计汇总
 	* @Description 
 	* @author huxiaolong
@@ -601,21 +577,31 @@ public class ActivityStatQueryService {
 		Integer fid = queryParams.getFid();
 		String startDate = queryParams.getStartDate();
 		String endDate = queryParams.getEndDate();
-		return null;
-	}
-	
-	/**当前机构下下属机构所有的活动统计
-	* @Description
-	* @author huxiaolong
-	* @Date 2021-06-11 18:12:28
-	* @param queryParams
-	* @return java.util.List<com.chaoxing.activity.model.ActivityStat>
-	*/
-	public List<ActivityStat> listRegionActivityStatDetail(ActivityRegionStatQueryDTO queryParams) {
-		Integer fid = queryParams.getFid();
-		String startDate = queryParams.getStartDate();
-		String endDate = queryParams.getEndDate();
-		return null;
-	}
+		// 根据fid查询下属所有机构
+		List<WfwRegionalArchitectureDTO> regionalArchitectures = wfwRegionalArchitectureApiService.listByFid(fid);
+		// 若当前机构没有下属机构，则返回空
+		if (regionalArchitectures.size() == 1 && Objects.equals(regionalArchitectures.get(0).getFid(), fid)) {
+			return null;
+		}
 
+		List<OrgDTO> orgList = Lists.newArrayList();
+		for (WfwRegionalArchitectureDTO region : regionalArchitectures) {
+			if (!Objects.equals(region.getFid(), fid)) {
+				orgList.add(OrgDTO.builder()
+						.fid(region.getFid())
+						.name(region.getName())
+						.build()) ;
+			}
+		}
+		List<Integer> fids = Lists.newArrayList();
+		Map<Integer, ActivityRegionalStatDTO> resultMap = Maps.newHashMap();
+		for (OrgDTO region : orgList) {
+			Integer regionFid = region.getFid();
+			String name = region.getName();
+			fids.add(regionFid);
+			resultMap.put(regionFid, ActivityRegionalStatDTO.buildDefault(regionFid, name));
+		}
+		List<ActivityStat> regionalActivityStats =  activityStatMapper.listActivityStatByFids(fids, startDate, endDate);
+		return convert2RegionalStat(resultMap, regionalActivityStats);
+	}
 }
