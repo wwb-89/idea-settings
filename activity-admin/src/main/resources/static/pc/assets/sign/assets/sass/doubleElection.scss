@@ -1,0 +1,116 @@
+.double-election-div {
+  width: 545px;
+  height: 627px;
+  background: #ffffff;
+  border: 1px solid #e6edf2;
+  border-radius: 17px;
+  box-shadow: 0px 2px 21px 0px rgba(193,214,226,0.06);
+  margin: 0 auto;
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%,-50%);
+}
+.inner-content {
+  padding: 40px;
+  .top-con {
+    text-align: left;
+    padding-bottom: 24px;
+    border-bottom: 1px solid #eff2f4;
+    h2 {
+      font-weight: 500;
+      font-size: 24px;
+      color: #384449;
+      line-height: 33px;
+    }
+    .time {
+      font-size: 14px;
+      font-weight: 400;
+      text-align: left;
+      color: #7f878b;
+      line-height: 20px;
+      margin-top: 10px;
+    }
+  }
+  .bottom-con {
+    .txt {
+      font-size: 14px;
+      font-weight: 400;
+      text-align: left;
+      color: #7f878b;
+      line-height: 20px;
+      margin: 24px 0 16px;
+    }
+    .election-sign-list {
+      max-height: 400px;
+      overflow: auto;
+      ul {
+        li {
+          position: relative;
+          min-height: 65px;
+          background: rgba(255,255,255,0.75);
+          border: 1px solid #eff2f4;
+          border-radius: 9px;
+          padding: 16px 100px;
+          margin-bottom: 20px;
+          img {
+            position: absolute;
+            left: 16px;
+            width: 65px;
+            height: 65px;
+            border-radius: 8px;
+          }
+          .info {
+            position: relative;
+            height: 55px;
+              h2 {
+                font-size: 18px;
+                font-weight: 500;
+                text-align: left;
+                color: #384449;
+                line-height: 25px;
+                margin-bottom: 10px;
+                margin-top: 5px;
+                overflow: hidden;
+                text-overflow: ellipsis;
+                white-space: nowrap;
+                width: 196px;
+                &.position1{
+                  position: absolute;
+                  left: 0;
+                  top: 50%;
+                  transform: translateY(-50%);
+                }
+              }
+            p{
+              font-size: 14px;
+              font-weight: 400;
+              text-align: left;
+              color: #7f878b;
+              line-height: 20px;
+            }
+          }
+          .status {
+            font-size: 14px;
+            font-weight: 400;
+            text-align: left;
+            line-height: 20px;
+            position: absolute;
+            right: 16px;
+            top: 50%;
+            transform: translateY(-50%);
+            &.status1 {
+              color: #0084ff;
+            }
+            &.status2 {
+              color: #aaaaaa;
+            }
+            &.status3 {
+              color: rgba(0,132,255,0.48);
+            }
+          }
+        }
+      }
+    }
+  }
+}

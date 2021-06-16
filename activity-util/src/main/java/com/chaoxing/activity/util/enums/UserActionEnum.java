@@ -15,7 +15,7 @@ public enum UserActionEnum {
 
 	/** 签到 */
 	SIGNED_IN("签到", "signed_in", "每次签到获得", true, true),
-	RATING("评价", "rating", "提交评价获得", false, true),
+	RATING("评价", "rating", "提交评价获得", false, false),
 	PUBLISH("发帖", "publish", "每次发帖获得", true, true),
 	REPLY("回帖", "reply", "每次回帖获得", true, true),
 	WORK("提交作品", "work", "每次提交获得", true, true),

@@ -1,16 +1,16 @@
 package com.chaoxing.activity.model;
 
+import com.alibaba.fastjson.annotation.JSONField;
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.Date;
+import java.util.List;
+import java.util.Objects;
 
 /**
  * 考核配置
@@ -37,8 +37,39 @@ public class InspectionConfig {
     /** 判定值; column: decide_value*/
     private BigDecimal decideValue;
     /** 创建时间; column: create_time*/
+    @JSONField(serialize = false, deserialize = false)
     private LocalDateTime createTime;
     /** 更新时间; column: update_time*/
+    @JSONField(serialize = false, deserialize = false)
     private LocalDateTime updateTime;
+
+    @Getter
+    public enum PassDecideWayEnum {
+
+        /** 手动 */
+        MANUAL("手动评审", "manual"),
+        PLACES("按名额", "places"),
+        SCALE("按比例", "scale"),
+        SCORE("达到积分", "score");
+
+        private String name;
+        private String value;
+
+        PassDecideWayEnum(String name, String value) {
+            this.name = name;
+            this.value = value;
+        }
+
+        public static PassDecideWayEnum fromValue(String value) {
+            PassDecideWayEnum[] values = PassDecideWayEnum.values();
+            for (PassDecideWayEnum passDecideWayEnum : values) {
+                if (Objects.equals(passDecideWayEnum.getValue(), value)) {
+                    return passDecideWayEnum;
+                }
+            }
+            return null;
+        }
+
+    }
 
 }
