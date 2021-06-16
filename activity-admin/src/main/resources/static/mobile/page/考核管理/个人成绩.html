@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <title>活动</title>
+    <meta http-equiv="Content-type" content="text/html; charset=utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, minimal-ui" />
+    <meta name="format-detection" content="telephone=no, email=no">
+    <meta http-equiv="Pragma" content="no-cache" />
+    <meta http-equiv="cache-control" content="no-cache" />
+    <link rel="stylesheet" href="../../assets/sign/assets/icomoon/style.css" />
+    <link rel="stylesheet" href="../../assets/sign/assets/css/cssreset.css" />
+    <link rel="stylesheet" href="../../assets/sign/assets/css/public.css" />
+    <link rel="stylesheet" href="../../assets/sign/assets/css/person-list.css" />
+</head>
+<body>
+    <!-- 有底部按钮才添加 padding-bottom-->
+    <div class="single-score padding-bottom" id="vue">
+        <div class="modular">
+            <p class="title">活动积分</p>
+            <h2 class="integral">997</h2>
+        </div>
+        <div class="modular min-height">
+            <p class="title">全部记录</p>
+            <div class="timeline">
+                <ul>
+                    <li>
+                        <img class="left-icon" src="../../assets/images/icon-timeline1.png">
+                        <div class="left-line"></div>
+                        <div class="info">
+                            <p class="time">12.13 16:56 · 活动表现</p>
+                            <div class="name">
+                                <p>活动表现活动表现活动表现活动表现活动表现活动表现</p>
+                                <span class="color-yellow">签到 +4分</span>
+                            </div>
+                            <div class="star-box">
+                                <i class="icon-star-full"></i>
+                                <i class="icon-star-full"></i>
+                                <i class="icon-star-full"></i>
+                                <i class="icon-star-empty"></i>
+                                <i class="icon-star-empty"></i>
+                            </div>
+                            <p class="dec">表现良好表现良好表现良好表现良好表现良好表现良好表现良好表现良好表现良好表现良好表现良好表现良好表现良好表现良好表现良好表现良好表现良好表现良好表现良好表现良好表现良好表现良好表现良好表现良好表现良好表现良好表现良好表现良好表现良好表现良好表现良好表现良好表现良好表现良好表现良好表现良好表现良好表现良好表现良好，非常好</p>
+                            <span class="slide" style="display: none" v-on:click="showMore($event)">展开</span>
+                            <p class="delete" v-on:click="deleteStatus=true"><i class="icon-delete"></i><span>删除</span></p>
+                        </div>
+                    </li>
+                    <li>
+                        <img class="left-icon" src="../../assets/images/icon-timeline2.png">
+                        <div class="left-line"></div>
+                        <div class="info">
+                            <p class="time">12.13 16:56 · 普通签到</p>
+                            <div class="name">
+                                <p>活动表现活动表现活动表现活动表现活动表现活动表现</p>
+                                <span class="color-red">请假 -2分</span>
+                            </div>
+                            <p class="dec">表现良好，非常好</p>
+                            <span class="slide" style="display: none" v-on:click="showMore($event)">展开</span>
+                            <p class="delete" v-on:click="deleteStatus=true"><i class="icon-delete"></i><span>删除</span></p>
+                        </div>
+                    </li>
+                    <li>
+                        <img class="left-icon" src="../../assets/images/icon-timeline3.png">
+                        <div class="left-line"></div>
+                        <div class="info">
+                            <p class="time">12.13 16:56 · 位置签到</p>
+                            <div class="name">
+                                <p>活动表现</p>
+                                <span class="color-normal">未评价</span>
+                            </div>
+                            <p class="dec">表现良好，非常好</p>
+                            <span class="slide" style="display: none" v-on:click="showMore($event)">展开</span>
+                            <p class="delete" v-on:click="deleteStatus=true"><i class="icon-delete"></i><span>删除</span></p>
+                        </div>
+                    </li>
+                    <li>
+                        <img class="left-icon" src="../../assets/images/icon-timeline4.png">
+                        <div class="left-line"></div>
+                        <div class="info">
+                            <p class="time">12.13 16:56 · 报名</p>
+                            <div class="name">
+                                <p>活动表现</p>
+                                <span class="color-normal">未评价</span>
+                            </div>
+                            <p class="dec">表现良好，非常好</p>
+                            <span class="slide" style="display: none" v-on:click="showMore($event)">展开</span>
+                            <p class="delete" v-on:click="deleteStatus=true"><i class="icon-delete"></i><span>删除</span></p>
+                        </div>
+                    </li>
+                    <li>
+                        <img class="left-icon" src="../../assets/images/icon-timeline5.png">
+                        <div class="left-line"></div>
+                        <div class="info">
+                            <p class="time">12.13 16:56 · 获奖</p>
+                            <div class="name">
+                                <p>活动表现</p>
+                                <span class="color-normal">未评价</span>
+                            </div>
+                            <p class="dec">表现良好，非常好</p>
+                            <span class="slide" style="display: none" v-on:click="showMore($event)">展开</span>
+                            <p class="delete" v-on:click="deleteStatus=true"><i class="icon-delete"></i><span>删除</span></p>
+                        </div>
+                    </li>
+                </ul>
+            </div>
+            <!-- 无内容 -->
+            <div class="no-content">
+                暂无内容
+            </div>
+        </div>
+        <!--  加载中  -->
+        <div class="loading"><img src="../../assets/images/loading-icon.png">加载中…</div>
+        <div class="bottom-operation">
+            <button class="btn-secondary">添加活动表现</button>
+        </div>
+<!--        删除弹窗-->
+        <div class="model z-index-high" v-show="deleteStatus"></div>
+        <div class="my-dialog" v-show="deleteStatus">
+            <div class="list">
+                <h2 class="border-bottom">确定删除吗？</h2>
+                <ul class="delete">
+                    <li>删除</li>
+                </ul>
+            </div>
+            <div class="cancle" v-on:click="deleteStatus=false">取消</div>
+        </div>
+    </div>
+</body>
+
+</html>
+<script src="../../assets/lib/jquery.1.8.2.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+<script>
+    var vm = new Vue({
+        el: '#vue',
+        data: function () {
+            return {
+                deleteStatus:false,
+            }
+        },
+        created: function () {
+
+        },
+        mounted: function () {
+            this.decInit();
+        },
+        methods: {
+        //    超出高度计算
+            decInit:function (){
+                let winWidth = ($(document).width() / 750) * 32;
+                let dec_vh = winWidth*4*1.40625;
+                $(".dec").each(function (){
+                    let thisHight = $(this).height();
+                    if(thisHight>dec_vh){
+                        $(this).siblings(".slide").show();
+                        $(this).addClass("overHidden4")
+                    }
+                })
+            },
+        //    展开更多
+            showMore:function (obj){
+                $(obj.target).hide().siblings(".dec").removeClass("overHidden4");
+            },
+        }
+    });
+</script>

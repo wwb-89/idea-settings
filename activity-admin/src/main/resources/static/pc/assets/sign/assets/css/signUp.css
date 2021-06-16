@@ -1,0 +1,215 @@
+html ,
+body {
+    padding: 0;
+    margin: 0;
+    background: #F2F4F7;
+    height: 100%;
+    position:relative;
+}
+.review_fail {
+    display: block;
+}
+
+.container {
+    width: 360px;
+    padding: 44px 64px;
+    background: #FFFFFF;
+    box-shadow: 0px 8px 16px rgba(0, 0, 0, 0.02);
+    border-radius: 16px;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translateX(-50%)translateY(-50%);
+    text-align: center;
+}
+.container>img{
+    width: 48px;
+    height: 48px;
+}
+.container p {
+    font-size: 22px;
+    line-height: 31px;
+    text-align: center;
+    color: #333333;
+    margin-top: 16px;
+    margin-bottom: 0;
+}
+.container .description {
+    font-size: 14px;
+    line-height: 20px;
+    text-align: center;
+    color: #666666;
+    margin-top: 8px;
+    display: block;
+}
+.container .content {
+    margin-top: 24px;
+    padding: 24px;
+    width: 312px;
+    background: #FAFAFA;
+    border: 1px solid #F0F0F0;
+    border-radius: 8px;
+}
+.container .content .item {
+    text-align: left;
+    display: flex;
+    padding: 8px 0;
+}
+.container .content .item span {
+    font-size: 14px;
+    line-height: 20px;
+    color: #999999;
+}
+.container .content .item .title {
+    display: inline-block;
+    width: 88px;
+    margin-right: 16px;
+}
+.container .content .item .value {
+    display: inline-block;
+    font-size: 14px;
+    width: 208px;
+    line-height: 20px;
+    color: #333333;
+}
+.container .content .item .click_btn {
+    font-size: 14px;
+    line-height: 19px;
+    color: #0084FF;
+    cursor: pointer;
+}
+.container .content .item .click_btn:hover{
+    color: rgba(0, 132, 255, 0.8);
+}
+.container .footer {
+    margin-top: 32px;
+    margin-left: auto;
+    margin-right: auto;
+    width: 240px;
+    height: 40px;
+    line-height: 40px;
+    background: #FFFFFF;
+    border: 1px solid #DDDDDD;
+    box-sizing: border-box;
+    border-radius: 22px;
+    font-size: 14px;
+    color: #666666;
+    cursor: pointer;
+}
+.container .footer.blue {
+    border: 1px solid #0084FF;
+    color: #0084FF;
+}
+.container .footer.blue:hover{
+    background-color: rgba(235, 245, 255, 1);
+}
+.container .footer.bgblue {
+    border: 1px solid #0084FF;
+    color: #fff;
+    background-color: #0084FF;
+}
+.container .footer.bgblue:hover{
+    background-color: rgba(0, 132, 255, 0.8);
+}
+.container .greylink{
+    color: #999999;
+    font-size: 13px;
+    margin-top: 24px;
+    text-decoration: none;
+    display: inline-block;
+}
+
+.container .greylink:hover{
+    color: rgba(0, 132, 255, 1);
+}
+.container .footer.bordergrey:hover{
+    background-color: rgba(248, 248, 248, 1);
+}
+    /**
+    报名名单弹窗
+     */
+.registrationList {
+    z-index: 3;
+    position: absolute;
+    background: #FFFFFF;
+    box-shadow: 0px 6px 16px -8px rgba(0, 0, 0, 0.08), 0px 9px 28px rgba(0, 0, 0, 0.05), 0px 12px 48px 16px rgba(0, 0, 0, 0.03);
+    border-radius: 10px;
+    width: 510px;
+    height: 536px;
+    margin: auto;
+    left: 0;
+    top: calc(50% - 268px);
+    right: 0;
+}
+.registrationList .header {
+    text-align: center;
+    position: relative;
+    height: 42px;
+    padding-top: 16px;
+    border-bottom: 1px solid #E9E9E9;
+}
+.registrationList .header .title {
+    font-weight: 600;
+    font-size: 18px;
+    line-height: 25px;
+    color: #333333;
+}
+.registrationList .header img {
+    width: 12px;
+    height: 12px;
+    position: absolute;
+    right: 14px;
+    top: 14px;
+    cursor: pointer;
+}
+.registrationList .content_dialog {
+    width: 464px;
+    height: 448px;
+    padding: 0 16px 0 30px;
+    overflow-y: auto;
+}
+.person_item {
+    padding: 10px 0;
+    border-bottom: 1px solid #E9E9E9;
+    display: flex;
+    align-items: center;
+}
+.registrationList .content_dialog .person_item .namePhoto{
+    height: 36px;
+    width: 36px;
+    border-radius: 50%;
+}
+.registrationList .content_dialog .person_item .namePhoto img {
+    width: 36px;
+    height: 36px;
+}
+.registrationList .content_dialog .person_item .name {
+    font-size: 14px;
+    line-height: 16px;
+    color: #333333;
+    margin-left: 14px;
+}
+
+/*定义滚动条高宽及背景 高宽分别对应横竖滚动条的尺寸*/
+::-webkit-scrollbar
+{
+    width: 14px;
+    height: 14px;
+    background-color: #F5F5F5;
+}
+
+/*定义滚动条轨道 内阴影+圆角*/
+::-webkit-scrollbar-track
+{
+    padding: 3px;
+    -webkit-box-shadow: -1px 0px 0px #E9E9E9;
+    background: #FAFAFA;
+    border-radius: 0px 0px 2px 0px;
+}
+
+/*定义滑块 内阴影+圆角*/
+::-webkit-scrollbar-thumb
+{
+    border-radius: 4px;
+    background: #C1C1C1;
+}

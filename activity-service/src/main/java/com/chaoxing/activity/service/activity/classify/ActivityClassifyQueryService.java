@@ -1,7 +1,7 @@
 package com.chaoxing.activity.service.activity.classify;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
-import com.chaoxing.activity.dto.FilterDTO;
+import com.chaoxing.activity.dto.manager.form.FilterDTO;
 import com.chaoxing.activity.mapper.ActivityClassifyMapper;
 import com.chaoxing.activity.model.ActivityClassify;
 import com.google.common.collect.Lists;

@@ -1,0 +1,402 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>个人成绩</title>
+    <link rel="stylesheet" href="../../assets/sign/assets/css/public.css">
+    <link rel="stylesheet" href="../../assets/lib/element-ui/lib/theme-chalk/index.css">
+    <link rel="stylesheet" href="../../assets/css/confirm_dialog.css">
+    <link rel="stylesheet" href="../../assets/sign/assets/css/examineManage.css">
+</head>
+<body>
+    <div class="personGrade" id="personGrade" v-cloak>
+        <div class="content">
+            <div class="white-block header">
+                <div class="head-img">
+                    <img src="../../assets/images/photo.png" alt="">
+                </div>
+                <div class="head-right">
+                    <p class="name">何思颖</p>
+                    <p class="desc">趣自然 · 阅当夏</p>
+                </div>
+            </div>
+            <div class="white-block">
+                <p class="item-name padding0">活动积分</p>
+                <p class="integral">997</p>
+            </div>
+            <div class="white-block record-block">
+                <p class="item-name">全部记录</p>
+                <div class="btn-border add-performance" @click="addClick">添加活动表现</div>
+                <div class="record-list" style="display: block;">
+                    <div class="record">
+                        <div class="left">
+                            <hr>
+                            <div class="circle-box">
+                                <i class="circle"></i>
+                            </div>
+                        </div>
+                        <div class="right">
+                            <p class="title">2015.09.01 12:23&nbsp;&nbsp;·&nbsp;&nbsp;活动表现</p>
+                            <div class="item">
+                                <div class="item-img">
+                                    <img src="../../assets/images/recommend.png" alt="">
+                                </div>
+                                <div class="text-box">
+                                    <p class="name">活动表现</p>
+                                    <p class="desc">表现良好，非常好</p>
+                                </div>
+                                <p class="score plus">+5分</p>
+                            </div>
+                            <a href="JavaScript:;" class="text-blue" @click="ifCancelPop=true">删除</a>
+                        </div>
+                    </div>
+                    <div class="record">
+                        <div class="left">
+                            <hr>
+                            <div class="circle-box">
+                                <i class="circle"></i>
+                            </div>
+                        </div>
+                        <div class="right">
+                            <p class="title">2015.09.01 12:23&nbsp;&nbsp;·&nbsp;&nbsp;位置签到</p>
+                            <div class="item">
+                                <div class="item-img">
+                                    <img src="../../assets/images/sign-in.png" alt="">
+                                </div>
+                                <div class="text-box">
+                                    <p class="name lineh48">位置签到</p>
+                                </div>
+                                <p class="score under">缺勤 -5分</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="record">
+                        <div class="left">
+                            <hr>
+                            <div class="circle-box">
+                                <i class="circle"></i>
+                            </div>
+                        </div>
+                        <div class="right">
+                            <p class="title">2015.09.01 12:23&nbsp;&nbsp;·&nbsp;&nbsp;位置签到</p>
+                            <div class="item">
+                                <div class="item-img">
+                                    <img src="../../assets/images/sign-in.png" alt="">
+                                </div>
+                                <div class="text-box">
+                                    <p class="name lineh48">位置签到</p>
+                                </div>
+                                <p class="score under">请假 -2分</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="record">
+                        <div class="left">
+                            <hr>
+                            <div class="circle-box">
+                                <i class="circle"></i>
+                            </div>
+                        </div>
+                        <div class="right">
+                            <p class="title">2015.09.01 12:23&nbsp;&nbsp;·&nbsp;&nbsp;位置签到</p>
+                            <div class="item">
+                                <div class="item-img">
+                                    <img src="../../assets/images/sign-in.png" alt="">
+                                </div>
+                                <div class="text-box">
+                                    <p class="name lineh48">位置签到</p>
+                                </div>
+                                <p class="score under">迟到</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="record">
+                        <div class="left">
+                            <hr>
+                            <div class="circle-box">
+                                <i class="circle"></i>
+                            </div>
+                        </div>
+                        <div class="right">
+                            <p class="title">2015.09.01 12:23&nbsp;&nbsp;·&nbsp;&nbsp;普通签到</p>
+                            <div class="item">
+                                <div class="item-img">
+                                    <img src="../../assets/images/sign-in-normal.png" alt="">
+                                </div>
+                                <div class="text-box">
+                                    <p class="name lineh48">招就处活动现场签到</p>
+                                </div>
+                                <p class="score plus">签到 +5分</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="record">
+                        <div class="left">
+                            <hr>
+                            <div class="circle-box">
+                                <i class="circle"></i>
+                            </div>
+                        </div>
+                        <div class="right">
+                            <p class="title">2015.09.01 12:23&nbsp;&nbsp;·&nbsp;&nbsp;活动评价</p>
+                            <div class="item">
+                                <div class="item-img">
+                                    <img src="../../assets/images/evaluation.png" alt="">
+                                </div>
+                                <div class="text-box">
+                                    <p class="name">招就处活动现场签到</p>
+                                    <div class="rate-box">
+                                        <el-rate
+                                            v-model="rateValue"
+                                            disabled
+                                            text-color="#FFB503"
+                                            disabled-void-color="#E4E2DB">
+                                        </el-rate>
+                                    </div>
+                                    <p class="desc overHidden5">
+                                        教学要求、教学策略和活动组织，要有利于教学目标的实现，核心素养的落实可行且合理教学要求、教学策略和活动组织，要有利于教学目标的实现，核心素养的落实可行且合理教学要求、教学策略和活动组织，要有利于教学目标的实现，核心素养的落实可行且合理教学要求、教学策略和活动组织，要有利于教学目标的实现，核心素养的落实可行且合理。要有利于教学目标的实现，核心素养的落实可行且
+                                        素养的落实可行且合理教学要求、教学策略和活动组织，要有利于教学目标的实现，核心素养的落实可行且合理教学要求、教学策略和活动组织，要有利于教学目标的实现，核心素养的落实可行且合理教学要求、教学策略和活动组织，要有利于教学目标的实现，核心素养的落实可行且合理。要有利于教学目标的实现，核心素养的落实可行且
+                                    </p>
+                                    <a href="JavaScript:;" class="show-more">展开</a>
+                                </div>
+                                <p class="score plus">+5分</p>
+                            </div>
+                            <a href="JavaScript:;" class="text-blue">删除</a>
+                        </div>
+                    </div>
+                    <div class="record">
+                        <div class="left">
+                            <hr>
+                            <div class="circle-box">
+                                <i class="circle"></i>
+                            </div>
+                        </div>
+                        <div class="right">
+                            <p class="title">2015.09.01 12:23&nbsp;&nbsp;·&nbsp;&nbsp;活动评价</p>
+                            <div class="item">
+                                <div class="item-img">
+                                    <img src="../../assets/images/evaluation.png" alt="">
+                                </div>
+                                <div class="text-box">
+                                    <p class="name">活动评价</p>
+                                    <div class="rate-box">
+                                        <el-rate
+                                            v-model="rateValue"
+                                            disabled
+                                            text-color="#FFB503"
+                                            disabled-void-color="#E4E2DB">
+                                        </el-rate>
+                                    </div>
+                                </div>
+                                <p class="score plus">+5分</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="record">
+                        <div class="left">
+                            <hr>
+                            <div class="circle-box">
+                                <i class="circle"></i>
+                            </div>
+                        </div>
+                        <div class="right">
+                            <p class="title">2015.09.01 12:23&nbsp;&nbsp;·&nbsp;&nbsp;活动评价</p>
+                            <div class="item">
+                                <div class="item-img">
+                                    <img src="../../assets/images/evaluation.png" alt="">
+                                </div>
+                                <div class="text-box">
+                                    <p class="name lineh48">活动评价</p>
+                                </div>
+                                <p class="score">未评价</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="record">
+                        <div class="left">
+                            <hr>
+                            <div class="circle-box">
+                                <i class="circle"></i>
+                            </div>
+                        </div>
+                        <div class="right">
+                            <p class="title">2015.09.01 12:23&nbsp;&nbsp;·&nbsp;&nbsp;获奖</p>
+                            <div class="item">
+                                <div class="item-img">
+                                    <img src="../../assets/images/prize.png" alt="">
+                                </div>
+                                <div class="text-box">
+                                    <p class="name lineh48">星阅读获奖</p>
+                                </div>
+                                <p class="score plus"> +5分</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="record">
+                        <div class="left">
+                            <hr>
+                            <div class="circle-box">
+                                <i class="circle"></i>
+                            </div>
+                        </div>
+                        <div class="right">
+                            <p class="title">2015.09.01 12:23&nbsp;&nbsp;·&nbsp;&nbsp;报名</p>
+                            <div class="item">
+                                <div class="item-img">
+                                    <img src="../../assets/images/sign-up.png" alt="">
+                                </div>
+                                <div class="text-box">
+                                    <p class="name lineh48">报名</p>
+                                </div>
+                                <p class="score">报名成功</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="record">
+                        <div class="left">
+                            <hr>
+                            <div class="circle-box">
+                                <i class="circle"></i>
+                            </div>
+                        </div>
+                        <div class="right">
+                            <p class="title">2015.09.01 12:23&nbsp;&nbsp;·&nbsp;&nbsp;报名</p>
+                            <div class="item">
+                                <div class="item-img">
+                                    <img src="../../assets/images/sign-up.png" alt="">
+                                </div>
+                                <div class="text-box">
+                                    <p class="name lineh48">申报活动</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="loading" style="display: block;">
+                    <img src="../../assets/images/Spinner-1s-200px.svg" alt="">
+                    <span>加载中...</span>
+                </div>
+                <!-- 暂无内容 -->
+                <p class="no-content" style="display: none;">暂无内容</p>
+            </div>
+        </div>
+        <!--删除活动表现弹窗-->
+        <div class="dialog-box" v-if="ifCancelPop">
+            <div class="confirm_dialog">
+                <span class="icon"><img src="../../assets/images/icon-warning.png"></span>
+                <span class="text">确定删除吗？</span>
+                <div class="btn">
+                    <span class="cancel" @click="ifCancelPop = false">取消</span>
+                    <span class="ok">确定</span>
+                </div>
+            </div>
+        </div>
+        <!-- 添加活动表现弹窗 -->
+        <div class="dialog-box addPerfor-pop" v-if="addPerformancePop">
+            <div class="dialog-wrap">
+                <div class="header">
+                    何思颖的活动表现
+                    <img src="../../assets/images/close.png" @click="addPerformancePop=false">
+                </div>
+                <div class="dialog-content">
+                    <div class="form-item">
+                        <div class="input-box">
+                            <el-input type="text" placeholder="奖励分值" v-model="score" class="input" id="scoreInput"></el-input>
+                            <i class="arrow-down" id="arrow-down"></i>
+                        </div>
+                        <div class="score-box" id="score-box">
+                            <div class="score-item">
+                                <p class="title">奖励分值</p>
+                                <ul>
+                                    <li>1</li>
+                                    <li>2</li>
+                                    <li>3</li>
+                                    <li>4</li>
+                                    <li>5</li>
+                                </ul>
+                            </div>
+                            <div class="score-item">
+                                <p class="title">扣除分值</p>
+                                <ul>
+                                    <li>1</li>
+                                    <li>2</li>
+                                    <li>3</li>
+                                    <li>4</li>
+                                    <li>5</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-item">
+                        <el-input type="textarea" placeholder="输入评语..." v-model="info" resize="none" class="textarea" maxlength="200" show-word-limit></el-input>
+                    </div>
+                </div>
+                <div class="footer">
+                    <span class="btn btn-border" @click="addPerformancePop=false">取消</span>
+                    <span :class="info || score?'btn btn-normal':'btn btn-forbid'">完成</span>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script type="text/javascript" src="../../assets/lib/vue.js"></script>
+    <script type="text/javascript" src="../../assets/lib/element-ui/lib/index.js"></script>
+    <script type="text/javascript" src="../../assets/lib/jquery.min.js"></script>
+    <script>
+        var app = new Vue({
+            el: '#personGrade',
+            data: {
+                rateValue:4,
+                ifCancelPop:false,
+                score:'',
+                info:'',
+                addPerformancePop:false,
+            },
+            mounted: function(){
+                this.leftHeight()
+                this.showMoreClick()
+                this.scoreShowFun()
+            },
+            methods: {
+                leftHeight:function(){
+                    $('.record .left').each( function(i,n){
+                        var height = $(n).siblings('.right').height()
+                        $(n).height(height)
+                    })
+                },
+                showMoreClick:function(){
+                    $('.show-more').each(function (i, n) {
+                        $(n).on('click',function(){
+                            if($(this).text() == '展开'){
+                                $(this).text('收起')
+                                $(this).siblings('.desc').removeClass('overHidden5')
+                            }else{
+                                $(this).text('展开')
+                                $(this).siblings('.desc').addClass('overHidden5')
+                            }
+                        })
+                    })
+                },
+                addClick:function(){
+                    this.addPerformancePop = true
+                    this.$nextTick(function(){
+                        this.scoreShowFun()
+                    })
+                },
+                scoreShowFun:function(){
+                    var that = this
+                    $('#scoreInput').on('focus',function(){
+                        $('#arrow-down').addClass('rotate')
+                        $('#score-box').height(166)
+                    })
+                    $('#scoreInput').on('blur',function(){
+                        $('#arrow-down').removeClass('rotate')
+                        $('#score-box').height(0)
+                    })
+                }
+            }
+        })
+    </script>
+</body>
+</html>

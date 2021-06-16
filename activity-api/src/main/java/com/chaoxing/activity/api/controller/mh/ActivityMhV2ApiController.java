@@ -6,7 +6,7 @@ import com.chaoxing.activity.dto.RestRespDTO;
 import com.chaoxing.activity.dto.manager.sign.SignStatDTO;
 import com.chaoxing.activity.dto.manager.sign.SignUp;
 import com.chaoxing.activity.dto.manager.sign.UserSignParticipationStatDTO;
-import com.chaoxing.activity.dto.mh.MhGeneralAppResultDataDTO;
+import com.chaoxing.activity.dto.manager.mh.MhGeneralAppResultDataDTO;
 import com.chaoxing.activity.model.Activity;
 import com.chaoxing.activity.service.activity.ActivityQueryService;
 import com.chaoxing.activity.service.activity.ActivityValidationService;

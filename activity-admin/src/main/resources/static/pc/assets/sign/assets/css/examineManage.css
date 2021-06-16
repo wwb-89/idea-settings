@@ -1,0 +1,541 @@
+@charset "UTF-8";
+body {
+  margin: 0;
+  padding: 0;
+  text-align: left;
+  font-family: "SF Pro Display", "Helvetica Neue", Helvetica, Tahoma, Arial, "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
+  -webkit-font-smoothing: antialiased;
+  background: #F2F4F7;
+}
+
+.content {
+  width: 1000px;
+  margin: 0 auto;
+}
+
+.white-block {
+  background: #FFFFFF;
+  border-radius: 8px;
+  margin-top: 16px;
+  -webkit-box-sizing: border-box;
+     -moz-box-sizing: border-box;
+          box-sizing: border-box;
+  padding: 24px 30px;
+  font-size: 0;
+}
+
+.white-block .item-name {
+  display: inline-block;
+  font-weight: 500;
+  font-size: 16px;
+  line-height: 20px;
+  color: #333333;
+  padding: 6px 0;
+}
+
+.white-block .item-name.padding0 {
+  padding: 0;
+}
+
+.white-block.header {
+  padding: 19px 24px;
+  font-size: 0;
+}
+
+.white-block.header .title {
+  display: inline-block;
+  vertical-align: top;
+  font-weight: 600;
+  font-size: 20px;
+  line-height: 30px;
+  color: #333333;
+}
+
+.loading {
+  margin-top: 16px;
+}
+
+.no-content {
+  text-align: center;
+  margin-top: 16px;
+  padding: 239px 0;
+  font-size: 14px;
+  line-height: 20px;
+  text-align: center;
+  color: #999999;
+}
+
+/* 重写el样式 start*/
+.el-input__inner {
+  height: 32px;
+  line-height: 32px;
+  padding: 0 11px;
+  color: #333;
+  border-radius: 2px;
+}
+
+.el-radio {
+  height: 32px;
+  line-height: 32px;
+  color: #333333;
+  margin-right: 24px;
+  font-weight: normal;
+}
+
+.el-radio__input.is-checked + .el-radio__label {
+  color: #333333;
+}
+
+.el-textarea__inner {
+  border-radius: 2px;
+  padding: 11px;
+  font-size: 14px;
+  color: #333333;
+}
+
+.el-textarea .el-input__count {
+  font-size: 14px;
+}
+
+/* 重写el样式 end */
+.gradeWeight {
+  padding-bottom: 50px;
+}
+
+.gradeWeight .white-block .el-form .form-item {
+  margin-top: 24px;
+}
+
+.gradeWeight .white-block .el-form .form-item .label {
+  display: inline-block;
+  font-size: 14px;
+  line-height: 20px;
+  padding: 6px 0;
+  color: #666666;
+  margin-right: 24px;
+}
+
+.gradeWeight .white-block .el-form .form-item .input-box {
+  position: relative;
+  display: inline-block;
+  vertical-align: top;
+  color: #333;
+  font-size: 0px;
+}
+
+.gradeWeight .white-block .el-form .form-item .input-box .decTips {
+  display: block;
+  font-size: 14px;
+  line-height: 20px;
+  color: #999999;
+  padding: 6px 0;
+  margin-top: 8px;
+}
+
+.gradeWeight .white-block .el-form .form-item .input-box .radio-box {
+  margin-top: 8px;
+}
+
+.gradeWeight .white-block .el-form .form-item .input-box .short-input {
+  width: 112px;
+  line-height: 22px;
+  margin: 0 16px;
+  color: #333333;
+  font-size: 14px;
+}
+
+.gradeWeight .white-block .el-form .form-item .input-box .lineTips {
+  height: 32px;
+  line-height: 32px;
+  color: #333333;
+  font-size: 14px;
+}
+
+.gradeWeight .white-block .el-form .form-item .input-box .tips-box {
+  display: inline-block;
+  vertical-align: top;
+}
+
+.gradeWeight .white-block .el-form .form-item .input-box .flex-switch {
+  height: 32px;
+  margin-right: 16px;
+}
+
+.gradeWeight .white-block .el-form .form-item .input-box .input-width56 {
+  width: 56px;
+  line-height: 22px;
+  margin: 0 16px;
+  color: #333333;
+  font-size: 14px;
+}
+
+.gradeWeight .white-block .el-form .form-item .input-box .block-box {
+  display: block;
+  margin-bottom: 16px;
+}
+
+.gradeWeight .white-block .el-form .form-item .input-box .block-box:last-child {
+  margin-bottom: 0;
+}
+
+.personGrade {
+  padding-bottom: 50px;
+}
+
+.personGrade .white-block.header {
+  padding: 16px 32px;
+  font-size: 0;
+}
+
+.personGrade .white-block.header .head-img {
+  display: inline-block;
+  vertical-align: top;
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  overflow: hidden;
+}
+
+.personGrade .white-block.header .head-img img {
+  width: 100%;
+  height: 100%;
+}
+
+.personGrade .white-block.header .head-right {
+  display: inline-block;
+  margin-left: 10px;
+}
+
+.personGrade .white-block.header .head-right .name {
+  font-weight: 500;
+  font-size: 16px;
+  line-height: 22px;
+  color: #333333;
+  padding-top: 1px;
+}
+
+.personGrade .white-block.header .head-right .desc {
+  font-size: 14px;
+  line-height: 20px;
+  color: #999999;
+  margin-top: 4px;
+}
+
+.personGrade .white-block.record-block {
+  min-height: 600px;
+}
+
+.personGrade .white-block .integral {
+  margin-top: 16px;
+  font-weight: 500;
+  font-size: 36px;
+  line-height: 53px;
+  letter-spacing: -2px;
+  color: #FB7B33;
+}
+
+.personGrade .white-block .add-performance {
+  float: right;
+  margin-top: 1px;
+}
+
+.personGrade .white-block .record-list .record {
+  font-size: 0;
+}
+
+.personGrade .white-block .record-list .record .left {
+  position: relative;
+  display: inline-block;
+}
+
+.personGrade .white-block .record-list .record .left hr {
+  position: relative;
+  background-color: #E9E9E9;
+  border: 0;
+  width: 1px;
+  height: 100%;
+  left: 4.5px;
+}
+
+.personGrade .white-block .record-list .record .left .circle-box {
+  position: absolute;
+  padding: 6px 0;
+  background: #FFFFFF;
+  top: 12px;
+}
+
+.personGrade .white-block .record-list .record .left .circle-box .circle {
+  display: inline-block;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  border: 2px solid #0084FF;
+  -webkit-box-sizing: border-box;
+     -moz-box-sizing: border-box;
+          box-sizing: border-box;
+}
+
+.personGrade .white-block .record-list .record .right {
+  position: relative;
+  display: inline-block;
+  vertical-align: top;
+  margin-left: 22px;
+}
+
+.personGrade .white-block .record-list .record .right .title {
+  font-size: 14px;
+  line-height: 22px;
+  color: #999999;
+  margin-top: 12px;
+}
+
+.personGrade .white-block .record-list .record .right .item {
+  position: relative;
+  width: 778px;
+  margin-top: 12px;
+  background: #FBFBFB;
+  border: 1px solid #EFF2F4;
+  -webkit-box-sizing: border-box;
+     -moz-box-sizing: border-box;
+          box-sizing: border-box;
+  border-radius: 8px;
+  padding: 16px;
+}
+
+.personGrade .white-block .record-list .record .right .item .item-img {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  overflow: hidden;
+  display: inline-block;
+  vertical-align: top;
+}
+
+.personGrade .white-block .record-list .record .right .item .item-img img {
+  width: 100%;
+  height: 100%;
+}
+
+.personGrade .white-block .record-list .record .right .item .text-box {
+  display: inline-block;
+  vertical-align: top;
+  max-width: 570px;
+  margin-left: 16px;
+}
+
+.personGrade .white-block .record-list .record .right .item .text-box .name {
+  font-size: 16px;
+  line-height: 22px;
+  color: #333333;
+  margin-top: 1px;
+}
+
+.personGrade .white-block .record-list .record .right .item .text-box .name.lineh48 {
+  line-height: 48px;
+}
+
+.personGrade .white-block .record-list .record .right .item .text-box .desc {
+  font-size: 13px;
+  line-height: 18px;
+  color: #999999;
+  margin-top: 6px;
+}
+
+.personGrade .white-block .record-list .record .right .item .text-box .rate-box {
+  height: 12px;
+  margin-top: 6px;
+}
+
+.personGrade .white-block .record-list .record .right .item .text-box .rate-box .el-rate__icon {
+  font-size: 12px;
+  margin-right: 4px;
+}
+
+.personGrade .white-block .record-list .record .right .item .score {
+  position: absolute;
+  right: 24px;
+  top: 50%;
+  -webkit-transform: translateY(-50%);
+      -ms-transform: translateY(-50%);
+          transform: translateY(-50%);
+  text-align: right;
+  max-width: 80px;
+  font-size: 14px;
+  line-height: 20px;
+  text-align: right;
+  color: #999999;
+}
+
+.personGrade .white-block .record-list .record .right .item .score.plus {
+  color: #FBA233;
+}
+
+.personGrade .white-block .record-list .record .right .item .score.under {
+  color: #FF666D;
+}
+
+.personGrade .white-block .record-list .record .right .text-blue {
+  display: inline-block;
+  margin-top: 12px;
+  font-size: 14px;
+  line-height: 20px;
+  color: #0084FF;
+}
+
+.personGrade .white-block .record-list .record .right .text-blue:hover {
+  opacity: 0.8;
+}
+
+.personGrade .white-block .record-list .record .right .show-more {
+  display: inline-block;
+  font-size: 14px;
+  line-height: 20px;
+  color: #0084FF;
+}
+
+.personGrade .white-block .record-list .record .right .show-more:hover {
+  opacity: 0.8;
+}
+
+/* 添加活动表现弹窗 strat*/
+.dialog-box.addPerfor-pop .dialog-wrap {
+  width: 520px;
+}
+
+.dialog-box.addPerfor-pop .dialog-wrap .header {
+  line-height: 25px;
+}
+
+.dialog-box.addPerfor-pop .dialog-wrap .dialog-content {
+  padding: 24px 32px;
+  -webkit-box-sizing: border-box;
+     -moz-box-sizing: border-box;
+          box-sizing: border-box;
+}
+
+.dialog-box.addPerfor-pop .dialog-wrap .dialog-content .input .el-input__inner {
+  width: 160px;
+  padding-right: 40px;
+}
+
+.dialog-box.addPerfor-pop .dialog-wrap .dialog-content .textarea {
+  margin-top: 12px;
+}
+
+.dialog-box.addPerfor-pop .dialog-wrap .dialog-content .textarea .el-textarea__inner {
+  height: 132px;
+}
+
+.dialog-box.addPerfor-pop .dialog-wrap .dialog-content .form-item {
+  position: relative;
+}
+
+.dialog-box.addPerfor-pop .dialog-wrap .dialog-content .input-box {
+  position: relative;
+  width: 160px;
+}
+
+.dialog-box.addPerfor-pop .dialog-wrap .dialog-content .input-box .el-input {
+  vertical-align: top;
+}
+
+.dialog-box.addPerfor-pop .dialog-wrap .dialog-content .input-box .arrow-down {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  width: 16px;
+  height: 16px;
+  background-image: url(../../../images/arrow-down.png);
+  -webkit-transition: all 0.3s ease-in-out;
+  -o-transition: all 0.3s ease-in-out;
+  transition: all 0.3s ease-in-out;
+}
+
+.dialog-box.addPerfor-pop .dialog-wrap .dialog-content .input-box .arrow-down.rotate {
+  -webkit-transform: rotate(-180deg);
+      -ms-transform: rotate(-180deg);
+          transform: rotate(-180deg);
+}
+
+.dialog-box.addPerfor-pop .dialog-wrap .dialog-content .score-box {
+  position: absolute;
+  top: 36px;
+  z-index: 3;
+  width: 244px;
+  height: 166px;
+  height: 0;
+  background: #FFFFFF;
+  -webkit-box-shadow: 0px 6px 16px -8px rgba(0, 0, 0, 0.08), 0px 9px 28px rgba(0, 0, 0, 0.05), 0px 12px 48px 16px rgba(0, 0, 0, 0.03);
+          box-shadow: 0px 6px 16px -8px rgba(0, 0, 0, 0.08), 0px 9px 28px rgba(0, 0, 0, 0.05), 0px 12px 48px 16px rgba(0, 0, 0, 0.03);
+  border-radius: 2px;
+  padding: 0 12px;
+  -webkit-box-sizing: border-box;
+     -moz-box-sizing: border-box;
+          box-sizing: border-box;
+  overflow: hidden;
+  -webkit-transition: height 0.3s ease-in-out;
+  -o-transition: height 0.3s ease-in-out;
+  transition: height 0.3s ease-in-out;
+}
+
+.dialog-box.addPerfor-pop .dialog-wrap .dialog-content .score-box .score-item {
+  padding-top: 12px;
+}
+
+.dialog-box.addPerfor-pop .dialog-wrap .dialog-content .score-box .score-item .title {
+  font-size: 12px;
+  line-height: 17px;
+  color: #999999;
+}
+
+.dialog-box.addPerfor-pop .dialog-wrap .dialog-content .score-box .score-item ul {
+  font-size: 0;
+  margin-top: 12px;
+}
+
+.dialog-box.addPerfor-pop .dialog-wrap .dialog-content .score-box .score-item ul li {
+  display: inline-block;
+  vertical-align: top;
+  margin-right: 10px;
+  width: 36px;
+  height: 36px;
+  background: rgba(0, 0, 0, 0.04);
+  border-radius: 4px;
+  font-family: DIN Next LT W23;
+  font-weight: 500;
+  font-size: 16px;
+  line-height: 36px;
+  text-align: center;
+  color: #666666;
+  cursor: pointer;
+}
+
+.dialog-box.addPerfor-pop .dialog-wrap .dialog-content .score-box .score-item ul li:last-child {
+  margin-right: 0;
+}
+
+.dialog-box.addPerfor-pop .dialog-wrap .dialog-content .score-box .score-item ul li:hover {
+  color: #0084FF;
+  background: rgba(0, 132, 255, 0.06);
+}
+
+.dialog-box.addPerfor-pop .dialog-wrap .dialog-content .score-box .score-item ul li.active {
+  color: #0084FF;
+  background: rgba(0, 132, 255, 0.06);
+}
+
+.dialog-box.addPerfor-pop .dialog-wrap .footer {
+  text-align: center;
+  font-size: 0;
+}
+
+.dialog-box.addPerfor-pop .dialog-wrap .footer .btn {
+  display: inline-block;
+  vertical-align: top;
+}
+
+.dialog-box.addPerfor-pop .dialog-wrap .footer .btn:first-child {
+  margin-right: 24px;
+}
+
+/* 添加活动表现弹窗 end*/

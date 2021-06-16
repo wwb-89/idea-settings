@@ -1,0 +1,610 @@
+.clear:after {
+    content: '';
+    display: block;
+    clear: both;
+}
+
+body {
+    background: #F6F7FB;
+}
+
+.noContent {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    -webkit-transform: translate(-50%, -50%);
+    -ms-transform: translate(-50%, -50%);
+    transform: translate(-50%, -50%);
+    font-size: .875rem;
+    color: #999999;
+}
+
+/* 弹框 */
+.dialog {
+    position: fixed;
+    left: 0;
+    top: 0;
+    z-index: 10001;
+    width: 100%;
+    height: 100%;
+}
+
+.dialog-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    z-index: 10002;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+}
+
+/* 搜索框 */
+.result-manage .searchDiv {
+    background: #ffffff;
+    padding: .75rem 1rem .5rem;
+    position: relative;
+    z-index: 20;
+}
+
+.result-manage .searchDiv .searchbefore {
+    width: 100%;
+    display: -webkit-box;
+    display: -webkit-flex;
+    display: -moz-box;
+    display: -ms-flexbox;
+    display: flex;
+    -webkit-box-align: center;
+    -webkit-align-items: center;
+    -moz-box-align: center;
+    -ms-flex-align: center;
+    align-items: center;
+    -webkit-box-pack: center;
+    -webkit-justify-content: center;
+    -moz-box-pack: center;
+    -ms-flex-pack: center;
+    justify-content: center;
+    background: #F6F7FB;
+    height: 1.125rem;
+    line-height: 1.125rem;
+    padding: .375rem 0;
+    border-radius: .9375rem;
+    font-size: .8125rem;
+    color: #999999;
+}
+
+.result-manage .searchDiv .searchbefore i {
+    display: inline-block;
+    width: .96875rem;
+    height: .9375rem;
+    background: url("../images/icon-30-search.png") center center no-repeat;
+    background-size: 100%;
+    margin-right: .375rem;
+    position: relative;
+    top: -0.0625rem;
+}
+
+.result-manage .searchDiv .searchbefore span {
+    display: inline-block;
+    height: 1.125rem;
+    line-height: 1.125rem;
+    font-weight: 100;
+}
+
+.result-manage .searchDiv .searchafter {
+    position: relative;
+    background: #F6F7FB;
+    border-radius: .9375rem;
+    margin-right: 2.875rem;
+}
+
+.result-manage .searchDiv .searchafter .search {
+    position: absolute;
+    left: .9375rem;
+    top: 0;
+    display: inline-block;
+    width: .96875rem;
+    height: 1.875rem;
+    background: url("../images/icon-30-search.png") center center no-repeat;
+    background-size: 100%;
+}
+
+.result-manage .searchDiv .searchafter .delete {
+    position: absolute;
+    right: .9375rem;
+    top: 0;
+    display: inline-block;
+    width: 1rem;
+    height: 1.875rem;
+    background: url("../images/x-circle.png") center center no-repeat;
+    background-size: 100%;
+}
+
+.result-manage .searchDiv .searchafter .txt {
+    height: 1.875rem;
+    line-height: 1.875rem;
+    padding: .375rem 2.1875rem;
+    background: none;
+    font-size: .8125rem;
+    width: 100%;
+    border: none;
+    -webkit-box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    box-sizing: border-box;
+}
+
+.result-manage .searchDiv .searchafter .cancle {
+    position: absolute;
+    top: 0;
+    height: 1.875rem;
+    line-height: 1.875rem;
+    right: -2.875rem;
+    color: #0084FF;
+    font-size: .9375rem;
+}
+
+/* 待审核 */
+.result-manage .item-list .item {
+    padding: 1rem;
+    background: #ffffff;
+    border-bottom: 1px solid #E9E9E9;
+    text-align: left;
+}
+
+.result-manage .item .head-box {
+    display: inline-block;
+    width: 2.5rem;
+    height: 2.5rem;
+    border-radius: 50%;
+    overflow: hidden;
+    margin-right: .75rem;
+}
+
+.result-manage .item .text {
+    display: inline-block;
+    vertical-align: top;
+    font-size: .9375rem;
+    line-height: 1.09375rem;
+    color: #333333;
+}
+
+.result-manage .item .name {
+    line-height: 1.3125rem;
+}
+
+.result-manage .item .percent {
+    font-size: .8125rem;
+    line-height: 1.125rem;
+    color: #999999;
+    margin-top: .25rem;
+}
+
+.result-manage .item .icon-right {
+    display: inline-block;
+    vertical-align: top;
+    line-height: .5rem;
+    width: .25rem;
+    height: .4375rem;
+    background-image: url(../images/right.png);
+    background-repeat: no-repeat;
+    background-size: 100%;
+    background-position: center center;
+    margin-left: .5625rem;
+    margin-top: .25rem;
+}
+
+.result-manage .item-list .item .right {
+    font-size: .9375rem;
+    line-height: 2.5rem;
+    color: #0084FF;
+}
+
+.result-manage .item-list .item .right .line {
+    display: inline-block;
+    vertical-align: middle;
+    width: .03125rem;
+    height: 1rem;
+    background: #DDDDDD;
+    margin: 0 .75rem;
+}
+
+/* 下拉 */
+.drop-down .content {
+    position: absolute;
+    top: 0;
+    width: 100%;
+    background: #ffffff;
+    padding: .75rem .9375rem 1.875rem .9375rem;
+    box-sizing: border-box;
+}
+
+.drop-down .content .text {
+    text-align: left;
+    font-size: .6875rem;
+    line-height: .96875rem;
+    color: #BDBDBD;
+}
+
+.drop-down .content ul {
+    font-size: 0;
+    text-align: left;
+}
+
+.drop-down .content li {
+    display: inline-block;
+    margin-top: .75rem;
+    margin-right: .5rem;
+    width: 6.8125rem;
+    height: 2.25rem;
+    line-height: 2.25rem;
+    background: #F5F6F8;
+    border-radius: .25rem;
+    text-align: center;
+    font-size: .8125rem;
+    color: #373737;
+}
+
+.drop-down .content li:nth-child(3n) {
+    margin-right: 0;
+}
+
+.drop-down .content li.active {
+    color: #0099FF;
+}
+
+/* 批量审核 */
+.result-manage .examine-list .item {
+    padding: 1rem;
+    background: #ffffff;
+    text-align: left;
+    border-bottom: 1px solid#E9E9E9;
+}
+
+.result-manage .check-box {
+    display: inline-block;
+    vertical-align: top;
+    margin-top: .71875rem;
+    margin-right: 1rem;
+}
+
+.result-manage .bottom {
+    position: fixed;
+    bottom: 0;
+    width: 100%;
+    height: 3.4375rem;
+    background: #ffffff;
+    padding: .59375rem 1rem;
+    box-sizing: border-box;
+    text-align: left;
+}
+
+.result-manage .bottom .btn-box {
+    display: inline-block;
+    font-size: 0;
+}
+
+.result-manage .bottom .btn {
+    display: inline-block;
+    width: 6.875rem;
+    height: 2.25rem;
+    text-align: center;
+    line-height: 2.1875rem;
+    box-sizing: border-box;
+    border-radius: 1.25rem;
+    border: 1px solid rgba(0, 132, 255, 0.3);
+    color: rgba(0, 132, 255, 0.3);
+    margin-right: 1rem;
+    font-size: 1.0625rem;
+}
+
+.result-manage .bottom .btn.active {
+    border: 1px solid #0084FF;
+    color: #0084FF;
+}
+
+.result-manage .bottom .btn.marginr0 {
+    margin-right: 0;
+}
+.result-manage .bottom .text{
+    font-size: .9375rem;
+    line-height: 2.25rem;
+}
+/* 复选框 */
+.result-manage .el-checkbox{
+    vertical-align: top;
+    margin-right: 1rem !important;
+    margin-top: .625rem;
+}
+.result-manage .el-checkbox__label {
+    display: none;
+}
+.result-manage  .el-checkbox__inner {
+    width: 1.25rem;
+    height: 1.25rem;
+    border-radius: 50%;
+}
+.result-manage .el-checkbox__inner::after {
+    height: 9px;
+    left: 8px;
+    top: 4px;
+}
+.result-manage .el-checkbox__input.is-indeterminate .el-checkbox__inner::before {
+    top: 9px;
+}
+.result-manage .bottom .el-checkbox{
+    margin-top: .5rem;
+    margin-right: .25rem !important;
+}
+/* 签到详情 */
+.sign-details .sign-list .item {
+    padding: 1rem;
+    background: #ffffff;
+    border-bottom: 1px solid #E9E9E9;
+    box-sizing: border-box;
+    text-align: left;
+}
+
+.sign-details .sign-list .item .img-box {
+    display: inline-block;
+    width: 2.5rem;
+    height: 2.5rem;
+    border-radius: 50%;
+    overflow: hidden;
+    margin-right: 1rem;
+}
+
+.sign-details .sign-list .item .text-box {
+    width: 11.28125rem;
+    display: inline-block;
+    vertical-align: top;
+}
+
+.sign-details .sign-list .item .name {
+    font-size: .9375rem;
+    line-height: 1.3125rem;
+    color: #333333;
+}
+
+.sign-details .sign-list .item .name.lineh80 {
+    line-height: 2.5rem;
+}
+
+.sign-details .sign-list .item .state {
+    font-size: .8125rem;
+    line-height: 1.125rem;
+    color: #999999;
+    margin-top: .25rem;
+}
+
+.sign-details .sign-list .item .state.active {
+    color: #FBA233;
+}
+
+.sign-details .sign-list .item .time {
+    font-size: .8125rem;
+    line-height: 2.5rem;
+    color: #999999;
+}
+
+.sign-details .sign-list .item .time .icon-right {
+    display: inline-block;
+    width: .333437rem;
+    height: .583438rem;
+    background-image: url(../images/right.png);
+    background-repeat: no-repeat;
+    background-size: cover;
+    background-position: center center;
+    margin-left: .583438rem;
+}
+
+/* 报名详情 */
+.sign-up .top {
+    padding: 2.75rem;
+    background: #ffffff;
+    border-bottom: 1px solid #E9E9E9;
+}
+
+.sign-up .top .success-img {
+    width: 2.5rem;
+    height: 2.5rem;
+    margin-bottom: .75rem;
+}
+
+.sign-up .top p {
+    font-size: 1.25rem;
+    line-height: 1.75rem;
+    color: #333333;
+}
+
+.sign-up .cancle-btn {
+    display: inline-block;
+    width: 18.75rem;
+    height: 2.8125rem;
+    border: 1px solid #CCCCCC;
+    border-radius: 1.5625rem;
+    color: #999999;
+    font-size: 1.0625rem;
+    line-height: 2.8125rem;
+    margin-top: 2.5rem;
+}
+
+.sign-up .content {
+    padding: .5rem 0;
+    background: #ffffff;
+}
+
+.sign-up .content .item {
+    padding: .5rem 1rem;
+    font-size: .9375rem;
+    color: #333333;
+    line-height: 1.3125rem;
+}
+
+.sign-up .content .item .name {
+    color: #999999;
+}
+
+.sign-up .content .item .icon-right {
+    display: inline-block;
+    width: .333437rem;
+    height: .583438rem;
+    background-image: url(../images/right.png);
+    background-repeat: no-repeat;
+    background-size: cover;
+    background-position: center center;
+    margin-left: .583438rem;
+}
+
+.sign-up .content .item .look {
+    color: #0084FF;
+}
+
+.dialog-overlay {
+    background-color: rgba(0, 0, 0, 0.3);
+    padding: 0 .5rem;
+    box-sizing: border-box;
+}
+
+.dialog-overlay .content {
+    position: absolute;
+    left: .5rem;
+    right: .5rem;
+    bottom: 0;
+}
+
+.dialog-overlay .content>div {
+    width: 100%;
+    border-radius: .78125rem;
+    background-color: #ffffff;
+    box-sizing: border-box;
+    margin-bottom: .5rem;
+    overflow: hidden;
+}
+
+.dialog-overlay .content .sure p {
+    padding: 1rem;
+    line-height: 1.5625rem;
+}
+
+.dialog-overlay .content .sure p:first-child {
+    font-size: .9375rem;
+    color: #666666;
+    border-bottom: 1px solid #EEEEEE;
+}
+
+.dialog-overlay .content .blue {
+    font-size: 1.25rem;
+    color: #0084FF;
+}
+
+.dialog-overlay .content .cancle {
+    font-size: 1.25rem;
+    line-height: 1.5625rem;
+    padding: 1rem;
+}
+
+.toast {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    z-index: 10004;
+    transform: translate(-50%, -50%);
+    padding: 0 .9375rem;
+    height: 3.125rem;
+    background: rgba(0, 0, 0, 0.7);
+    border-radius: .375rem;
+    font-size: 1.125rem;
+    line-height: 3.125rem;
+    color: #ffffff;
+}
+/* 报名项目 */
+.signUp-item{
+    padding: 0 .75rem;
+}
+.signUp-item .item{
+    position: relative;
+    background: #FFFFFF;
+    box-shadow: 0px .375rem .75rem rgba(0, 0, 0, 0.04);
+    border-radius: .5rem;
+    padding: 1rem .75rem;
+    margin-top: .75rem;
+    text-align: left;
+}
+.signUp-item .item .icon-img{
+    float: left;
+    width: 2.75rem;
+    height: 2.75rem;
+    margin-right: .75rem;
+}
+.signUp-item .item .text-box{
+    margin-left: 3.5rem;
+    font-weight: 500;
+    font-size: 1rem;
+    line-height: 1.375rem;
+    color: #333333;
+    
+}
+.signUp-item .item .text-box.maxwidth{
+    max-width: 13.5rem;
+}
+.signUp-item .item .text-box .number{
+    font-size: .8125rem;
+    line-height: 1.03125rem;
+    color: #999999;
+    margin-top: .25rem;
+}
+.signUp-item .item .tip{
+    position: absolute;
+    top: 50%;
+    right: .75rem;
+    transform: translateY(-50%);
+    font-size: .8125rem;
+    line-height: 2.75rem;
+    color: #999999;
+}
+/* 报名入口 */
+.signUp-entry{
+    padding: 0;
+}
+.signUp-entry .header-item{
+    position: fixed;
+    top: 0;
+    z-index: 1;
+    width: 100%;
+    box-sizing: border-box;
+    padding: 1rem;
+    background: #ffffff;
+    font-weight: 500;
+    font-size: 1.125rem;
+    line-height: 1.40625rem;
+    color: #384449;
+    text-align: left;
+}
+.signUp-entry .time{
+    font-size: .875rem;
+    line-height: 1.09375rem;
+    color: #7F878B;
+    margin-top: .5rem;
+}
+.signUp-entry .list{
+    padding: .75rem;
+    padding-bottom: 3.125rem;
+    text-align: left;
+}
+.signUp-entry .list .title{
+    font-size: .8125rem;
+    line-height: 1.03125rem;
+    color: #A2A9AC;
+}
+.signUp-entry .item .text-box {
+    max-width: 9.6875rem;
+}
+.signUp-entry .item .tip.state1{
+    color: #0084FF;
+}
+.signUp-entry .item .tip.state2{
+    color: #73B3EE;
+}
+.lineh88{
+    line-height: 2.75rem;
+}

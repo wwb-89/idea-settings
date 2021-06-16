@@ -15,6 +15,7 @@ import java.util.Objects;
 @Getter
 public enum OrderTypeEnum {
 
+    /** 正序 */
     ASC("正序", "asc"),
     DESC("倒序", "desc");
 
