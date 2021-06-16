@@ -50,3 +50,36 @@ $.fn.extend({
         }
     }
 });
+/*页面图片裁剪*/
+function cropImgFun(elem) {
+    var imgs;
+    if (elem.length == 0) {
+        return
+    }
+    if (elem instanceof jQuery) {
+        imgs = elem.find('.js-crop-img img');
+    } else if (typeof(elem) == 'string') {
+        imgs = $(elem).find('.js-crop-img img');
+    }
+    if (imgs.length == 0) {
+        return
+    }
+    imgs.each(function () {
+        if ($(this).attr("src")) {
+            var image = new Image();
+            var $this = $(this);
+            image.src = $(this).attr("src");
+            image.onload = function () {
+                $this.jqthumb({
+                    width: '100%',
+                    height: '100%',
+                    before: function (img) {
+                        var imgUrl = $(img).attr('src');
+                        var newUrl = imgUrl.replace(/\\/g, "/");
+                        $(img).attr('src', newUrl);
+                    }
+                });
+            }
+        }
+    });
+}

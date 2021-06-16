@@ -257,3 +257,110 @@ input:-ms-input-placeholder, textarea:-ms-input-placeholder {
 [v-cloak] {
   display: none;
 }
+/* 公共按钮 */
+.border-btn {
+  -webkit-box-sizing: border-box;
+     -moz-box-sizing: border-box;
+          box-sizing: border-box;
+  height: 30px;
+  line-height: 30px;
+  padding: 0 13px;
+  border: 1px solid #82c3ff;
+  border-radius: 15px;
+  font-size: 13px;
+  font-weight: 400;
+  color: #0084ff;
+  cursor: pointer;
+  display: inline-block;
+  vertical-align: top;
+}
+
+.border-btn:hover {
+  background: #EBF5FF;
+}
+
+.border-btn.disable {
+  opacity: 0.3;
+}
+.normal-btn-blue {
+  -webkit-box-sizing: border-box;
+     -moz-box-sizing: border-box;
+          box-sizing: border-box;
+  height: 30px;
+  line-height: 30px;
+  padding: 0 14px;
+  border-radius: 15px;
+  font-size: 13px;
+  font-weight: 400;
+  cursor: pointer;
+  background: #0084ff;
+  color: #ffffff;
+  border: none;
+  display: inline-block;
+  vertical-align: top;
+}
+
+.normal-btn-blue.disable {
+  opacity: 0.3;
+}
+
+.normal-btn-blue.disable:hover {
+  opacity: 0.3;
+}
+
+.normal-btn-blue:hover {
+  opacity: 0.8;
+}
+
+.normal-btn-w80{
+  width: 80px;
+  box-sizing: border-box;
+  height: 30px;
+  line-height: 30px;
+  border-radius: 15px;
+  font-size: 13px;
+  font-weight: 400;
+  cursor: pointer;
+  background: #0084ff;
+  color: #ffffff;
+  border: none;
+  display: inline-block;
+  vertical-align: top;
+  text-align: center;
+}
+.normal-btn-w80:hover{
+  opacity: 0.8;
+}
+/* 公共toast */
+.toast{
+  position: absolute;
+  left: 50%;
+  top: 35%;
+  transform: translateX(-50%);
+  padding: 9px 20px;
+  background: rgba(0, 0, 0, 0.7);
+  border-radius: 4px;
+  font-size: 16px;
+  line-height: 22px;
+  text-align: center;
+  color: #FFFFFF;
+}
+/* el重写 */
+.el-radio{
+  margin-right: 24px;
+  font-weight: normal;
+}
+.el-radio:last-child{
+  margin-right: 0;
+}
+.el-radio__input.is-checked .el-radio__inner {
+  border-color: #0084FF;
+  background: #0084FF;
+}
+.el-radio .el-radio__label{
+  color: #333333 !important;
+}
+.el-checkbox__input.is-checked .el-checkbox__inner, .el-checkbox__input.is-indeterminate .el-checkbox__inner {
+  background-color: #0084FF;
+  border-color: #0084FF;
+}
