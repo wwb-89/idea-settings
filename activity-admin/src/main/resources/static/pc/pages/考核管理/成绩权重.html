@@ -61,9 +61,9 @@
                             <el-switch v-model="valueSwitch1" @change='changeSwitchStatus' class="flex-switch"></el-switch>
                             <div class="tips-box" v-if="valueSwitch1">
                                 <span class="lineTips">每次签到获得</span>
-                                <el-input type="text" class="input-width56" placeholder="整数" v-model="number2"></el-input>
+                                <el-input type="number" class="input-width80" placeholder="整数" v-model="number2"></el-input>
                                 <span class="lineTips">分，上限</span>
-                                <el-input type="text" class="input-width56" placeholder="无限" v-model="number3"></el-input>
+                                <el-input type="number" class="input-width80" placeholder="无限" v-model="number3"></el-input>
                                 <span class="lineTips">分</span>
                             </div>
                         </div>
@@ -120,7 +120,7 @@
                             <el-switch v-model="valueSwitch5" @change='changeSwitchStatus' class="flex-switch"></el-switch>
                             <div class="tips-box" v-if="valueSwitch5">
                                 <span class="lineTips">上限</span>
-                                <el-input type="text" class="input-width56" placeholder="整数" v-model="number2"></el-input>
+                                <el-input type="number" class="input-width56" placeholder="整数" v-model="number2"></el-input>
                                 <span class="lineTips">分</span>
                             </div>
                         </div>

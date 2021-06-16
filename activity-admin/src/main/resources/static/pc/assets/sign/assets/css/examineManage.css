@@ -169,6 +169,14 @@ body {
   font-size: 14px;
 }
 
+.gradeWeight .white-block .el-form .form-item .input-box .input-width80 {
+  width: 80px;
+  line-height: 22px;
+  margin: 0 16px;
+  color: #333333;
+  font-size: 14px;
+}
+
 .gradeWeight .white-block .el-form .form-item .input-box .block-box {
   display: block;
   margin-bottom: 16px;
