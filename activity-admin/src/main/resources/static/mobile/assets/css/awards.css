@@ -1,0 +1,273 @@
+body {
+    background: #F6F7FB;
+}
+
+.award-message .my-award {
+    width: 100%;
+    height: 3.0625rem;
+    line-height: 3.0625rem;
+    padding: 0 1rem;
+    box-sizing: border-box;
+    background: #FFFFFF;
+}
+
+.award-message .my-award .award-t {
+    float: left;
+    font-size: 1rem;
+    color: #333333;
+}
+
+.award-message .my-award .award-num {
+    cursor: pointer;
+    float: right;
+    font-size: .8125rem;
+    color: #0084FF;
+}
+
+.award-message .my-award .no-award {
+    float: right;
+    font-size: .875rem;
+    color: #999999;
+}
+
+.award-list {
+    padding: .75rem;
+    box-sizing: border-box;
+}
+
+.award-list .award-item {
+    position: relative;
+    margin-bottom: .75rem;
+    width: 100%;
+    padding: 1rem;
+    font-size: 0;
+    text-align: left;
+    background: #fff;
+    border-radius: .5rem;
+    box-sizing: border-box;
+}
+
+.award-list .award-item .img-box {
+    vertical-align: middle;
+    display: inline-block;
+    width: 2.5rem;
+    height: 2.5rem;
+}
+
+.award-list .award-item .img-box>img {
+    width: 2.5rem;
+    height: 2.5rem;
+}
+
+.award-list .award-item .award-detail {
+    display: inline-block;
+    vertical-align: middle;
+    padding-left: .5rem;
+    /* max-width: calc(100% - 6.59375rem); */
+    max-width: calc(100% - 6.625rem);
+    box-sizing: border-box;
+}
+
+.award-list .award-item .award-detail .detail-t {
+    font-weight: 500;
+    font-size: 1rem;
+    line-height: 1.40625rem;
+    color: #333333;
+    margin-bottom: .375rem;
+}
+
+.award-list .award-item .award-detail .detail-n {
+    font-size: .8125rem;
+    line-height: .9375rem;
+    color: #666666;
+}
+
+.award-list .award-item .item-num {
+    position: absolute;
+    right: 1rem;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 3.125rem;
+    display: inline-block;
+    text-align: right;
+    font-size: .8125rem;
+    line-height: 1.5625rem;
+    color: #999999;
+}
+
+
+/* 奖项详情页面 */
+.award-details .award-card{
+    position: relative;
+    text-align: left;
+    margin: 1rem;
+    background: linear-gradient(251.57deg, #D89300 1.03%, #DD6B3A 86.16%);
+    box-shadow: 0px 8px 32px rgba(201, 68, 11, 0.24);
+    border-radius: .5rem;
+}
+
+.award-details .award-card .card-title {
+    padding: 1rem;
+    padding-bottom: 0;
+    font-weight: 600;
+    font-size: 1.125rem;
+    line-height: 1.8125rem;
+    color: #FFFFFF;
+    margin-bottom: .5rem;
+}
+
+.award-details .award-card .card-second-t {
+    padding: 0 1rem;
+    font-size: .75rem;
+    line-height: .875rem;
+    color: rgba(255, 255, 255, 0.9);
+    padding-bottom: 1rem;
+}
+
+.award-details .award-card .card-msg {
+    padding: .75rem 1rem 0;
+    background: rgba(166, 60, 15, 0.08);
+}
+
+.award-details .award-card .card-msg .card-writing {
+    font-size: .8125rem;
+    line-height: 1.46875rem;      
+    color: rgba(255, 255, 255, 0.8);
+}
+
+.overHidden3 {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+}
+
+.award-details .award-card .btn-more {
+    width: 100%;
+    height: 2.21875rem;
+    line-height: 2.21875rem;
+    text-align: center;
+    font-size: .6875rem;
+    color: rgba(255, 255, 255, 0.8);
+}
+
+.award-details .award-card .btn-more>span {
+    font-size: .375rem;
+    margin-left: .28125rem;
+    transform: scale(.8);
+}
+
+.award-details .award-card .bg-prize {
+    position: absolute;
+    top: 0;
+    right: 1.375rem;
+    width: 3.59375rem;
+    height: 4.59375rem;
+}
+
+.award-details .award-card .bg-prize>img {
+    width: 3.59375rem;
+    height: 4.59375rem;
+}
+
+.winner-list {
+    text-align: left;
+    background: #fff;
+    padding: 1rem 0;
+}
+
+.winner-list .winner-num {
+    font-size: .8125rem;
+    line-height: 1.125rem;
+    color: #999999;
+    padding-left: 1rem;
+}
+
+.winner-list .winner-item {
+    height: 4.4375rem;
+    line-height: 4.4375rem;
+    font-size: 0;
+    padding-left: 1rem;
+}
+
+.winner-list .winner-item .img-box {
+    display: inline-block;
+    vertical-align: middle;
+    margin-right: .75rem;
+    width: 2.1875rem;
+    height: 2.1875rem;
+    border-radius: 1.09375rem;
+    overflow: hidden;
+}
+
+.winner-list .winner-item .img-box>img {
+    vertical-align: top;
+    width: 100%;
+    height: 100%;
+}
+
+.winner-list .winner-item .winner-name {
+    display: inline-block;
+    vertical-align: top;
+    width: calc(100% - 2.9375rem);
+    height: 100%;
+    font-size: .9375rem;
+    line-height: 4.4375rem;
+    color: #333333;
+    border-bottom: 1px solid #E9E9E9;
+}
+
+.winner-list .winner-item:last-child .winner-name {
+    border: none;
+}
+
+.winner-list .winner-empty {
+    width: 100%;
+    height: 23.25rem;
+    line-height: 23.25rem;
+    text-align: center;
+    font-size: .875rem;
+    color: #999999;
+}
+
+.loading-content {
+    width: 100%;
+    height: 3.125rem;
+    line-height: 3.125rem;
+}
+
+.loading-content * {
+    display: inline-block;
+    vertical-align: middle;
+}
+
+.loading-content>img {
+    width: 2rem;
+    height: 2rem;
+}
+
+.loading-content>span {
+    font-size: .84375rem;
+    color: #999999;
+}
+
+/* 我的获奖下载证书 */
+
+.load-certificate {
+    cursor: pointer;
+    position: absolute;
+    right: 1rem;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 3.25rem;
+    display: inline-block;
+    text-align: right;
+    font-size: .8125rem;
+    line-height: 1.5625rem;
+    color: #0084FF;
+}
+
+.arrow-right {
+    font-size: .375rem;
+}
