@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <title>奖项详情</title>
+    <meta http-equiv="Content-type" content="text/html; charset=utf-8" />
+    <meta name="viewport"
+        content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, minimal-ui" />
+    <meta name="format-detection" content="telephone=no, email=no">
+    <meta http-equiv="Pragma" content="no-cache" />
+    <meta http-equiv="cache-control" content="no-cache" />
+    <link rel="stylesheet" href="../assets/lib/layui/css/layui.css" />
+    <link rel="stylesheet" href="../assets/css/public.css" />
+    <link rel="stylesheet" href="../assets/css/dialog.css">
+    <link rel="stylesheet" href="../assets/css/awards.css">
+</head>
+
+<body>
+    <div class="award-details" id="award-detail">
+        <div class="award-card">
+            <div class="card-title overHidden2">书海拾贝·辰星领航-暑期星阅读领航-暑期星阅读领航-暑期星阅读书海拾贝·辰星书海一等奖</div>
+            <div class="card-second-t overHidden1">一等奖 · 书香浙江 云享阅读-2020浙江省云阅读计划之“享阅读-2020浙江省云阅读计</div>
+            <div class="card-msg">
+                <div class="card-writing overHidden3">
+                    本次活动以“趣自然 · 阅当‘夏’”为主题，旨在引领孩子们用心阅读自然，探寻四季晨昏，草木变化，
+                    欣赏大自然斑斓的色彩自然斑斓的阅读自然，探寻四季晨昏...
+                </div>
+                <div class="btn-more">展开 <span class="layui-icon layui-icon-down"></span></div>
+            </div>
+            <div class="bg-prize">
+                <img src="../assets/images/bg-prize.png" alt="">
+            </div>
+        </div>
+        <div class="winner-list">
+            <div class="winner-num">获奖名单 15</div>
+            <div class="winner-item">
+                <div class="img-box">
+                    <img src="../assets/images/head-img.png" alt="">
+                </div>
+                <div class="winner-name">
+                    李亦芮
+                </div>
+            </div>
+            <div class="winner-item">
+                <div class="img-box">
+                    <img src="../assets/images/head-img.png" alt="">
+                </div>
+                <div class="winner-name">
+                    李亦芮
+                </div>
+            </div>
+            <div class="winner-item">
+                <div class="img-box">
+                    <img src="../assets/images/head-img.png" alt="">
+                </div>
+                <div class="winner-name">
+                    李亦芮
+                </div>
+            </div>
+            <!-- <div class="winner-empty">
+                暂无数据
+            </div> -->
+        </div>
+        <div class="loading-content">
+            <img src="../assets/images/Spinner-1s-200px.svg" alt="">
+            <span>加载中...</span>
+        </div>
+    </div>
+
+    <script src="../assets/lib/jquery.1.8.2.min.js"></script>
+    <script src="../assets/lib/jqthumb.min.js"></script>
+    <script src="../assets/lib/vue.js"></script>
+    <script src="../assets/lib/layui/layui.js"></script>
+    <script>
+        $(function () {
+            $("#award-detail").find(".btn-more").on("click", function () {
+                $(this).siblings(".card-writing").toggleClass("overHidden3")
+            })
+        })
+    </script>
+</body>
+
+</html>
