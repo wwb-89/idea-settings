@@ -13,12 +13,14 @@ import com.google.common.collect.Maps;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
 import javax.annotation.Resource;
-import java.util.*;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 /**微服务通讯录api服务
@@ -131,14 +133,14 @@ public class WfwContactApiService {
 			Integer soncount = Optional.ofNullable(deptChildNumMap.get(group.getId())).orElse(0);
 			group.setSoncount(soncount);
 			result.add(group);
-			if (group.getSoncount() > 0) {
-				WfwGroupDTO item = new WfwGroupDTO();
-				BeanUtils.copyProperties(group, item);
-				item.setVirtualId(UUID.randomUUID().toString().trim().replaceAll("-", ""));
-				item.setSoncount(0);
-				item.setGid(item.getId());
-				result.add(item);
-			}
+//			if (group.getSoncount() > 0) {
+//				WfwGroupDTO item = new WfwGroupDTO();
+//				BeanUtils.copyProperties(group, item);
+//				item.setVirtualId(UUID.randomUUID().toString().trim().replaceAll("-", ""));
+//				item.setSoncount(0);
+//				item.setGid(item.getId());
+//				result.add(item);
+//			}
 		}
 		return result;
 	}

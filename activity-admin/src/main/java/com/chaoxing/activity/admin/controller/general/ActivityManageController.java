@@ -3,15 +3,16 @@ package com.chaoxing.activity.admin.controller.general;
 import com.chaoxing.activity.admin.util.LoginUtils;
 import com.chaoxing.activity.dto.LoginUserDTO;
 import com.chaoxing.activity.dto.manager.ActivityCreatePermissionDTO;
-import com.chaoxing.activity.dto.manager.WfwGroupDTO;
 import com.chaoxing.activity.dto.manager.WfwRegionalArchitectureDTO;
 import com.chaoxing.activity.dto.module.SignAddEditDTO;
 import com.chaoxing.activity.dto.sign.SignActivityManageIndexDTO;
-import com.chaoxing.activity.model.*;
+import com.chaoxing.activity.model.Activity;
+import com.chaoxing.activity.model.ActivityFlagSignModule;
+import com.chaoxing.activity.model.ActivitySignModule;
+import com.chaoxing.activity.model.WebTemplate;
 import com.chaoxing.activity.service.WebTemplateService;
 import com.chaoxing.activity.service.activity.ActivityQueryService;
 import com.chaoxing.activity.service.activity.ActivityValidationService;
-import com.chaoxing.activity.service.activity.classify.ActivityClassifyQueryService;
 import com.chaoxing.activity.service.activity.manager.ActivityCreatePermissionService;
 import com.chaoxing.activity.service.activity.scope.ActivityScopeQueryService;
 import com.chaoxing.activity.service.manager.WfwGroupApiService;
@@ -105,7 +106,7 @@ public class ActivityManageController {
 		// 活动分类列表范围
 		ActivityCreatePermissionDTO activityCreatePermission = activityCreatePermissionService.getGroupClassifyByUserPermission(loginUser.getFid(), loginUser.getUid());
 		model.addAttribute("activityClassifies", activityCreatePermission.getActivityClassifies());
-		model.addAttribute("signUpParticipateScopeLimit", activityCreatePermission.getSignUpParticipateScopeLimit());
+		model.addAttribute("existNoLimitPermission", activityCreatePermission.getExistNoLimitPermission());
 		// 报名签到
 		Integer signId = activity.getSignId();
 		SignAddEditDTO sign = SignAddEditDTO.builder().build();

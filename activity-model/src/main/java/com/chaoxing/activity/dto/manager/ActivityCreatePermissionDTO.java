@@ -22,7 +22,8 @@ import java.util.List;
 @AllArgsConstructor
 public class ActivityCreatePermissionDTO {
 
-    private Boolean signUpParticipateScopeLimit;
+    /** 是否存在不限的发布范围角色权限 */
+    private Boolean existNoLimitPermission;
     /**
      * 组织架构
      */
@@ -35,7 +36,7 @@ public class ActivityCreatePermissionDTO {
 
     public static ActivityCreatePermissionDTO buildDefault() {
         return ActivityCreatePermissionDTO.builder()
-                .signUpParticipateScopeLimit(Boolean.FALSE)
+                .existNoLimitPermission(Boolean.TRUE)
                 .wfwGroups(Lists.newArrayList())
                 .activityClassifies(Lists.newArrayList())
                 .build();

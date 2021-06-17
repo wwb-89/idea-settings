@@ -306,14 +306,15 @@
                         var diffGroupType = config.groupType && config.groupType != $this.groupType;
                         if (diffGroupType) {
                             config.groupType = $this.groupType;
-                            var confirmFlag = false;
-                            app.confirm("组织机构类型不一致，配置提交需清空其他不一致配置，是否确定提交？", function () {
-                                confirmFlag = true;
-                            }, function () {});
-
-                            if (confirmFlag) {
-                                return;
-                            }
+                            // app.showMsg("组织机构类型不一致，配置提交需清空其他不一致配置");
+                            // var confirmFlag = false;
+                            // app.confirm("组织机构类型不一致，配置提交需清空其他不一致配置，是否确定提交？", function () {
+                            //     confirmFlag = true;
+                            // }, function () {});
+                            //
+                            // if (confirmFlag) {
+                            //     return;
+                            // }
                         }
                         var signUpScope = []
                         if (config.signUpScopeType == 3) {

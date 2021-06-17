@@ -265,7 +265,7 @@ public class ActivityCreatePermissionService {
         if (!setClassifyScope) {
             activityCreatePermission.setActivityClassifies(listActivityClassify(classifyIdSet, activityClassifies));
         }
-        activityCreatePermission.setSignUpParticipateScopeLimit(Boolean.TRUE);
+        activityCreatePermission.setExistNoLimitPermission(Boolean.FALSE);
         return activityCreatePermission;
     }
 

@@ -277,7 +277,7 @@
                 <div class="form-item flexStart" v-show="signUp.enableLimitParticipateScope">
                     <label class="label">参与范围</label>
                     <div class="join-box">
-                        <div v-show="!signUpParticipateScopeLimit">
+                        <div v-show="existNoLimitPermission">
                             <el-radio v-model="signUp.limitParticipateScope" :label="false" name="active-type">不限</el-radio>
                             <el-radio v-model="signUp.limitParticipateScope" :label="true" name="active-type">自定义</el-radio>
                         </div>
@@ -597,7 +597,7 @@
                 activityTypes: [[${activityTypes}]],
                 activityClassifies: [[${activityClassifies}]],
                 // 报名参与范围是否受限制
-                signUpParticipateScopeLimit: [[${signUpParticipateScopeLimit}]],
+                existNoLimitPermission: [[${existNoLimitPermission}]],
                 // 文件上传
                 uploader: null,
                 // 新增修改活动分类弹窗的显示
@@ -780,7 +780,7 @@
                 $($this.sign.signUps).each(function (i) {
                     if (!activityApp.isEmpty(this.startTime)) {
                         // 若报名签到非不限制
-                        $this.$set($this.sign.signUps[i], "limitParticipateScope", $this.signUpParticipateScopeLimit);
+                        $this.$set($this.sign.signUps[i], "limitParticipateScope", !$this.existNoLimitPermission);
                         $this.$set($this.sign.signUps[i], "timeScope", [this.startTime, this.endTime]);
                     }
                 });

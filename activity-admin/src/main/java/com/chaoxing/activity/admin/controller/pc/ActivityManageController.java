@@ -133,7 +133,7 @@ public class ActivityManageController {
 		activityClassifyHandleService.cloneSystemClassify(loginUser.getFid());
 		ActivityCreatePermissionDTO activityCreatePermission = activityCreatePermissionService.getGroupClassifyByUserPermission(loginUser.getFid(), loginUser.getUid());
 		model.addAttribute("activityClassifies", activityCreatePermission.getActivityClassifies());
-		model.addAttribute("signUpParticipateScopeLimit", activityCreatePermission.getSignUpParticipateScopeLimit());
+		model.addAttribute("existNoLimitPermission", activityCreatePermission.getExistNoLimitPermission());
 		// 报名签到
 		model.addAttribute("sign", SignAddEditDTO.builder().build());
 		// 模板列表
