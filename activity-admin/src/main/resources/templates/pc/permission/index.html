@@ -91,7 +91,7 @@
                 <div class="footer">
                     <div class="btn-box">
                         <div class="border-btn" @click="cancelConfig">取消</div>
-                        <div class="normal-btn" @click="submitPermissionConfig">确定</div>
+                        <div class="normal-btn" @click="judgeSubmit">确定</div>
                     </div>
                 </div>
             </div>
@@ -122,6 +122,9 @@
                 </div>
             </div>
         </div>
+
+        <vue-confirm ref="updateWindow" message="组织机构类型不一致，配置提交需清空其他不一致配置，是否确认修改？" sure="确定" cancel="取消" @callback="submitPermissionConfig"></vue-confirm>
+
     </div>
 
     <div th:replace="pc/include/common_js :: common_js(~{::script})">
@@ -129,6 +132,7 @@
         <script type="text/javascript" src="/static/pc/assets/lib/zTree_v3/js/jquery.ztree.core.js" th:src="@{/pc/assets/lib/zTree_v3/js/jquery.ztree.core.js}"></script>
         <script type="text/javascript" src="/static/pc/assets/lib/zTree_v3/js/jquery.ztree.excheck.min.js" th:src="@{/pc/assets/lib/zTree_v3/js/jquery.ztree.excheck.min.js}"></script>
         <script type="text/javascript" src="/static/pc/assets/lib/zTree_v3/js/jquery.ztree.exedit.js" th:src="@{/pc/assets/lib/zTree_v3/js/jquery.ztree.exedit.js}"></script>
+        <script src="/static/pc/assets/component/confirm.js" th:src="@{/pc/assets/component/confirm.js}"></script>
         <script th:inline="javascript">
             var vm = new Vue({
                 el: '#limits-manage',
@@ -299,23 +303,24 @@
                         });
                     },
                     // 确定配置提交
-                    submitPermissionConfig: function () {
+                    judgeSubmit: function () {
                         var $this = this;
                         var config = $.extend({}, $this.config);
                         // 判断是否组织架构类型不同
                         var diffGroupType = config.groupType && config.groupType != $this.groupType;
                         if (diffGroupType) {
-                            config.groupType = $this.groupType;
-                            // app.showMsg("组织机构类型不一致，配置提交需清空其他不一致配置");
-                            // var confirmFlag = false;
-                            // app.confirm("组织机构类型不一致，配置提交需清空其他不一致配置，是否确定提交？", function () {
-                            //     confirmFlag = true;
-                            // }, function () {});
-                            //
-                            // if (confirmFlag) {
-                            //     return;
-                            // }
+                            $this.$refs.updateWindow.show = true;
+                            return;
                         }
+                        $this.submitPermissionConfig();
+                    },
+                    submitPermissionConfig: function () {
+                        var $this = this;
+                        var config = $.extend({}, $this.config);
+                        // 判断是否组织架构类型不同
+                        var diffGroupType = config.groupType && config.groupType != $this.groupType;
+                        // 将当前配置的机构类型设置为 机构的组织架构类型
+                        config.groupType = $this.groupType;
                         var signUpScope = []
                         if (config.signUpScopeType == 3) {
                             $($this.releaseScopes).each(function () {
@@ -337,7 +342,7 @@
                                     submitData.push($.extend({}, config, { roleId: this.roleid }));
                                 }
                             });
-                            $this.batchConfigSubmit(submitData, diffGroupType)
+                            $this.batchConfigSubmit(submitData)
                         } else {
                             $this.singleConfigSubmit(config, diffGroupType)
                         }
@@ -364,8 +369,8 @@
                         });
                     },
                     // 批量配置保存
-                    batchConfigSubmit: function (submitData, isDiffGroupType) {
-                        var url = ctx + '/api/activity/create/permission/batchConfig?clear=' + isDiffGroupType;
+                    batchConfigSubmit: function (submitData) {
+                        var url = ctx + '/api/activity/create/permission/batchConfig';
                         app.ajaxPostWithPayload(url, JSON.stringify(submitData), function (data) {
                             if (data.success) {
                                 app.showMsg("处理成功");

@@ -136,6 +136,12 @@ public class ActivityCreatePermissionService {
             existRoleIds.add(permission.getRoleId());
         }
 
+        OrgConfig orgConfig = orgConfigService.getByFid(fid);
+        int count = activityCreatePermissionMapper.selectCount(new QueryWrapper<ActivityCreatePermission>().lambda().ne(ActivityCreatePermission::getGroupType, orgConfig.getSignUpScopeType()));
+        // 若存在与机构类型不匹配的权限配置，则清空并修改机构类型
+        if (count != 0) {
+            clearOtherDiffGroupPermission(uid, fid);
+        }
         // 批量更新数据
         if (!existIds.isEmpty()) {
             activityCreatePermissionMapper.update(null, new UpdateWrapper<ActivityCreatePermission>()
