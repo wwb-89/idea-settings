@@ -1,6 +1,7 @@
 package com.chaoxing.activity.service.org;
 
 import com.chaoxing.activity.dto.OrgFormConfigDTO;
+import com.chaoxing.activity.model.OrgConfig;
 import com.chaoxing.activity.model.OrgDataRepoConfigDetail;
 import com.chaoxing.activity.service.manager.module.SecondClassroomApiService;
 import com.chaoxing.activity.service.manager.module.SignApiService;
@@ -33,6 +34,8 @@ public class OrgFormConfigService {
 	private SignApiService signApiService;
 	@Resource
 	private SecondClassroomApiService secondClassroomApiService;
+	@Resource
+	private OrgConfigService orgConfigService;
 
 	/**获取机构配置的表单
 	 * @Description 
@@ -50,6 +53,7 @@ public class OrgFormConfigService {
 		OrgFormConfigDTO signOrgFormConfig = signApiService.getOrgFormConfig(fid);
 		// 从第二课堂获取表单
 		OrgFormConfigDTO secondClassroomOrgFormConfig = secondClassroomApiService.getOrgFormConfig(fid);
+		OrgConfig orgConfig = orgConfigService.getByFid(fid);
 		return OrgFormConfigDTO.builder()
 				.activityDataFormId(Optional.ofNullable(activityConfig).map(v -> Integer.parseInt(v.getRepo())).orElse(null))
 				.participateTimeLengthFormId(Optional.ofNullable(participateTimeLengthConfig).map(v -> Integer.parseInt(v.getRepo())).orElse(null))
@@ -59,6 +63,7 @@ public class OrgFormConfigService {
 				.creditProjectFormId(Optional.ofNullable(secondClassroomOrgFormConfig).map(OrgFormConfigDTO::getCreditProjectFormId).orElse(null))
 				.userScoreFormId(Optional.ofNullable(secondClassroomOrgFormConfig).map(OrgFormConfigDTO::getUserScoreFormId).orElse(null))
 				.userResultFormId(Optional.ofNullable(secondClassroomOrgFormConfig).map(OrgFormConfigDTO::getUserResultFormId).orElse(null))
+				.signUpScopeType(Optional.ofNullable(orgConfig).map(OrgConfig::getSignUpScopeType).orElse(""))
 				.build();
 	}
 
@@ -72,9 +77,16 @@ public class OrgFormConfigService {
 	@Transactional(rollbackFor = Exception.class)
 	public void configOrgForm(OrgFormConfigDTO orgFormConfig) {
 		Integer fid = orgFormConfig.getFid();
-		orgDataRepoConfigHandleService.addOrUpdate(fid, String.valueOf(orgFormConfig.getActivityDataFormId()), OrgDataRepoConfigDetail.DataTypeEnum.ACTIVITY, OrgDataRepoConfigDetail.RepoTypeEnum.FORM);
-		orgDataRepoConfigHandleService.addOrUpdate(fid, String.valueOf(orgFormConfig.getParticipateTimeLengthFormId()), OrgDataRepoConfigDetail.DataTypeEnum.PARTICIPATE_TIME_LENGTH, OrgDataRepoConfigDetail.RepoTypeEnum.FORM);
+		Integer activityDataFormId = orgFormConfig.getActivityDataFormId();
+		orgDataRepoConfigHandleService.addOrUpdate(fid, activityDataFormId == null ? "" : String.valueOf(activityDataFormId), OrgDataRepoConfigDetail.DataTypeEnum.ACTIVITY, OrgDataRepoConfigDetail.RepoTypeEnum.FORM);
+		Integer participateTimeLengthFormId = orgFormConfig.getParticipateTimeLengthFormId();
+		orgDataRepoConfigHandleService.addOrUpdate(fid, participateTimeLengthFormId == null ? "" : String.valueOf(participateTimeLengthFormId), OrgDataRepoConfigDetail.DataTypeEnum.PARTICIPATE_TIME_LENGTH, OrgDataRepoConfigDetail.RepoTypeEnum.FORM);
 		signApiService.configOrgForm(orgFormConfig);
+		OrgConfig orgConfig = OrgConfig.builder()
+				.fid(orgFormConfig.getFid())
+				.signUpScopeType(orgFormConfig.getSignUpScopeType())
+				.build();
+		orgConfigService.config(orgConfig);
 		secondClassroomApiService.configOrgForm(orgFormConfig);
 	}
 

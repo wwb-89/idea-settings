@@ -1,5 +1,7 @@
 package com.chaoxing.activity.model;
 
+import com.baomidou.mybatisplus.annotation.IdType;
+import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.*;
 
@@ -23,6 +25,7 @@ import java.util.Objects;
 public class OrgConfig {
 
     /** 主键; column: id*/
+    @TableId(type = IdType.AUTO)
     private Integer id;
     /** fid; column: fid*/
     private Integer fid;

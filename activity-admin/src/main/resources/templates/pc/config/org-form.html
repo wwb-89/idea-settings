@@ -75,6 +75,16 @@
 					<el-input type="number" placeholder="用户成绩表单id" v-model.trim="orgFormConfig.userResultFormId" oninput="if(value.length > 11) value=value.slice(0, 11)"></el-input>
 				</div>
 			</div>
+			<div class="form-item">
+				<label class="label">报名使用的组织架构</label>
+				<div class="input-box">
+					<div>
+						<el-select v-model="orgFormConfig.signUpScopeType" placeholder="请选择">
+							<el-option v-for="(signUpScopeType, index) of signUpScopeTypes" :key="'sign-up-scope-type-' + index" :label="signUpScopeType.name" :value="signUpScopeType.value"></el-option>
+						</el-select>
+					</div>
+				</div>
+			</div>
 		</form>
 	</div>
 </div>
@@ -86,7 +96,8 @@
 			el: "#vm",
 			data: {
 				orgName: [[${orgName}]],
-				orgFormConfig: [[${orgFormConfig}]]
+				orgFormConfig: [[${orgFormConfig}]],
+				signUpScopeTypes: [[${signUpScopeTypes}]]
 			},
 			methods: {
 				save: function () {

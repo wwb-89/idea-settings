@@ -45,5 +45,7 @@ public class OrgFormConfigDTO {
 	private Integer userScoreFormId;
 	/** 用户成绩表单 */
 	private Integer userResultFormId;
+	/** 报名使用的组织架构 */
+	private String signUpScopeType;
 
 }

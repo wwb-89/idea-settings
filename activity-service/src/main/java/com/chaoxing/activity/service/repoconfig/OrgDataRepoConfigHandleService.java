@@ -6,6 +6,7 @@ import com.chaoxing.activity.mapper.OrgDataRepoConfigMapper;
 import com.chaoxing.activity.model.OrgDataRepoConfig;
 import com.chaoxing.activity.model.OrgDataRepoConfigDetail;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
@@ -47,22 +48,32 @@ public class OrgDataRepoConfigHandleService {
 			orgDataRepoConfig.setFid(fid);
 			orgDataRepoConfigMapper.insert(orgDataRepoConfig);
 		}
-		Integer configId = orgDataRepoConfig.getId();
-		OrgDataRepoConfigDetail orgDataRepoConfigDetail = orgDataRepoConfigQueryService.getOrgDataRepoConfigDetail(configId, dataType, repoType);
-		if (orgDataRepoConfigDetail == null) {
-			orgDataRepoConfigDetail = OrgDataRepoConfigDetail.builder()
-					.configId(configId)
-					.dataType(dataType.getValue())
-					.repoType(repoType.getValue())
-					.repo(repo)
-					.build();
-			orgDataRepoConfigDetailMapper.insert(orgDataRepoConfigDetail);
-		} else {
-			orgDataRepoConfigDetailMapper.update(null, new UpdateWrapper<OrgDataRepoConfigDetail>()
+		if (StringUtils.isBlank(repo)) {
+			// 删除配置详情
+			orgDataRepoConfigDetailMapper.delete(new UpdateWrapper<OrgDataRepoConfigDetail>()
 				.lambda()
-					.eq(OrgDataRepoConfigDetail::getId, orgDataRepoConfigDetail.getId())
-					.set(OrgDataRepoConfigDetail::getRepo, repo)
+					.eq(OrgDataRepoConfigDetail::getConfigId, orgDataRepoConfig.getId())
+					.eq(OrgDataRepoConfigDetail::getDataType, dataType.getValue())
+					.eq(OrgDataRepoConfigDetail::getRepoType, repoType.getValue())
 			);
+		} else {
+			Integer configId = orgDataRepoConfig.getId();
+			OrgDataRepoConfigDetail orgDataRepoConfigDetail = orgDataRepoConfigQueryService.getOrgDataRepoConfigDetail(configId, dataType, repoType);
+			if (orgDataRepoConfigDetail == null) {
+				orgDataRepoConfigDetail = OrgDataRepoConfigDetail.builder()
+						.configId(configId)
+						.dataType(dataType.getValue())
+						.repoType(repoType.getValue())
+						.repo(repo)
+						.build();
+				orgDataRepoConfigDetailMapper.insert(orgDataRepoConfigDetail);
+			} else {
+				orgDataRepoConfigDetailMapper.update(null, new UpdateWrapper<OrgDataRepoConfigDetail>()
+						.lambda()
+						.eq(OrgDataRepoConfigDetail::getId, orgDataRepoConfigDetail.getId())
+						.set(OrgDataRepoConfigDetail::getRepo, repo)
+				);
+			}
 		}
 	}
 

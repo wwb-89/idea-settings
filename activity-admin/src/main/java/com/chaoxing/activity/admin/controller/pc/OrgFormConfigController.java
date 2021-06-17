@@ -3,6 +3,7 @@ package com.chaoxing.activity.admin.controller.pc;
 import com.chaoxing.activity.admin.util.LoginUtils;
 import com.chaoxing.activity.dto.LoginUserDTO;
 import com.chaoxing.activity.dto.OrgFormConfigDTO;
+import com.chaoxing.activity.dto.sign.SignUpScopeTypeDTO;
 import com.chaoxing.activity.service.manager.PassportApiService;
 import com.chaoxing.activity.service.org.OrgFormConfigService;
 import com.chaoxing.activity.util.annotation.LoginRequired;
@@ -12,6 +13,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
+import java.util.List;
 
 /**机构表单配置服务
  * @author wwb
@@ -48,6 +50,9 @@ public class OrgFormConfigController {
 		// 查询机构配置的表单
 		OrgFormConfigDTO orgFormConfig = orgFormConfigService.getByFid(fid);
 		model.addAttribute("orgFormConfig", orgFormConfig);
+		// 报名使用的组织架构
+		List<SignUpScopeTypeDTO> signUpScopeTypes = SignUpScopeTypeDTO.fromSignUpScopeTypeEnum();
+		model.addAttribute("signUpScopeTypes", signUpScopeTypes);
 		return "pc/config/org-form";
 	}
 
