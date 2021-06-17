@@ -1,0 +1,527 @@
+.administrators .title {
+  position: relative;
+  padding: 1rem;
+  background: #ffffff;
+}
+
+.administrators .title .txt {
+  padding-right: 5.6875rem;
+  line-height: 1.5625rem;
+  height: 1.5625rem;
+  color: #333333;
+  font-size: .9375rem;
+  text-align: left;
+}
+
+.administrators .title .status {
+  position: absolute;
+  font-size: .8125rem;
+  right: 1rem;
+  top: 1rem;
+  line-height: 1.5625rem;
+  height: 1.5625rem;
+}
+
+.administrators .title .status.color0 {
+  color: #51B9FF;
+}
+
+.administrators .title .status.color1 {
+  color: #0084FF;
+}
+
+.administrators .title .status.color2 {
+  color: #999999;
+}
+
+.administrators .index-list {
+  padding: 0 .75rem;
+}
+
+.administrators .index-list .item {
+  display: -webkit-box;
+  display: -webkit-flex;
+  display: -moz-box;
+  display: -ms-flexbox;
+  display: flex;
+  background: #FFFFFF;
+  -webkit-box-shadow: 0px 0.375rem 0.75rem rgba(0, 0, 0, 0.04);
+          box-shadow: 0px 0.375rem 0.75rem rgba(0, 0, 0, 0.04);
+  border-radius: .5rem;
+  padding: 1rem;
+  margin-top: .75rem;
+}
+
+.administrators .index-list .item img {
+  width: 2.5rem;
+  height: 2.5rem;
+}
+
+.administrators .index-list .item .flTxt {
+  line-height: 2.5rem;
+  color: #333333;
+  font-size: .9375rem;
+  margin-left: .5rem;
+}
+
+.administrators .index-list .item .frTxt {
+  line-height: 2.5rem;
+  font-size: .8125rem;
+  color: #999999;
+  margin-left: auto;
+}
+
+.administrators .index-list .item .icon-arrow-r {
+  display: inline-block;
+  width: .375rem;
+  height: 2.5rem;
+  background: url("../images/right-arrow.png") center center no-repeat;
+  background-size: 100%;
+  margin-left: .5rem;
+}
+
+.administrators .index-list .item .marginAuto {
+  margin-left: auto;
+}
+
+.administrators .A-sign-list {
+  padding: 0 .75rem;
+}
+
+.administrators .A-sign-list ul {
+  overflow: hidden;
+}
+
+.administrators .A-sign-list ul li {
+  background: #ffffff;
+  margin-top: .75rem;
+  position: relative;
+  padding: 1rem;
+}
+
+.administrators .A-sign-list ul li img {
+  position: absolute;
+  left: 1rem;
+  top: 1rem;
+  width: 2.75rem;
+  height: 2.75rem;
+}
+
+.administrators .A-sign-list ul li .info {
+  padding: 0 3.1875rem 0 3.25rem;
+  text-align: left;
+}
+
+.administrators .A-sign-list ul li .info .titleTxt {
+  color: #333333;
+  font-size: 1rem;
+  font-weight: 500;
+}
+
+.administrators .A-sign-list ul li .info .time {
+  color: #999999;
+  font-size: .8125rem;
+  line-height: 1.125rem;
+  margin-top: .25rem;
+}
+
+.administrators .A-sign-list ul li .info .address {
+  color: #999999;
+  font-size: .8125rem;
+  line-height: 1.25rem;
+  margin-top: .25rem;
+}
+
+.administrators .A-sign-list ul li .status-no {
+  font-size: .8125rem;
+  color: #999999;
+  position: absolute;
+  right: 1rem;
+  top: 50%;
+  -webkit-transform: translateY(-50%);
+      -ms-transform: translateY(-50%);
+          transform: translateY(-50%);
+}
+
+.administrators .A-sign-list ul li .status-no.active {
+  color: #0084FF;
+}
+
+.administrators .A-sign-list ul li .handel {
+  position: absolute;
+  top: 0;
+  right: -7.5rem;
+  width: 7.5rem;
+  height: 100%;
+  font-size: 0;
+}
+
+.administrators .A-sign-list ul li .handel .edit {
+  display: inline-block;
+  width: 2.75rem;
+  height: 2.75rem;
+  background: #0084FF;
+  color: #FFFFFF;
+  font-size: .8125rem;
+  line-height: 2.75rem;
+  -webkit-box-shadow: 0px 0.375rem 0.75rem rgba(2, 111, 213, 0.1);
+          box-shadow: 0px 0.375rem 0.75rem rgba(2, 111, 213, 0.1);
+  border-radius: 1.375rem;
+  position: relative;
+  top: 50%;
+  -webkit-transform: translateY(-50%);
+      -ms-transform: translateY(-50%);
+          transform: translateY(-50%);
+  margin-right: 1rem;
+}
+
+.administrators .A-sign-list ul li .handel .delete {
+  display: inline-block;
+  width: 2.75rem;
+  height: 2.75rem;
+  background: #FF666D;
+  color: #FFFFFF;
+  font-size: .8125rem;
+  line-height: 2.75rem;
+  -webkit-box-shadow: 0px 0.375rem 0.75rem rgba(2, 111, 213, 0.1);
+          box-shadow: 0px 0.375rem 0.75rem rgba(2, 111, 213, 0.1);
+  border-radius: 1.375rem;
+  position: relative;
+  top: 50%;
+  -webkit-transform: translateY(-50%);
+      -ms-transform: translateY(-50%);
+          transform: translateY(-50%);
+}
+
+.administrators .A-sign-list ul li[data-type="0"] {
+  -webkit-transform: translate3d(0, 0, 0);
+          transform: translate3d(0, 0, 0);
+}
+
+.administrators .A-sign-list ul li[data-type="1"] {
+  -webkit-transform: translate3d(-7.5rem, 0, 0);
+          transform: translate3d(-7.5rem, 0, 0);
+}
+
+.administrators .searchDiv {
+  background: #ffffff;
+  padding: .75rem 1rem;
+  position: relative;
+  z-index: 20;
+}
+
+.administrators .searchDiv .searchbefore {
+  width: 100%;
+  display: -webkit-box;
+  display: -webkit-flex;
+  display: -moz-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-align: center;
+  -webkit-align-items: center;
+     -moz-box-align: center;
+      -ms-flex-align: center;
+          align-items: center;
+  -webkit-box-pack: center;
+  -webkit-justify-content: center;
+     -moz-box-pack: center;
+      -ms-flex-pack: center;
+          justify-content: center;
+  background: #F6F7FB;
+  height: 1.125rem;
+  line-height: 1.125rem;
+  padding: .375rem 0;
+  border-radius: .9375rem;
+  font-size: .8125rem;
+  color: #999999;
+}
+
+.administrators .searchDiv .searchbefore i {
+  display: inline-block;
+  width: .96875rem;
+  height: .9375rem;
+  background: url("../images//icon-30-search.png") center center no-repeat;
+  background-size: 100%;
+  margin-right: .375rem;
+  position: relative;
+  top: -0.0625rem;
+}
+
+.administrators .searchDiv .searchbefore span {
+  display: inline-block;
+  height: 1.125rem;
+  line-height: 1.125rem;
+}
+
+.administrators .searchDiv .searchafter {
+  position: relative;
+  background: #F6F7FB;
+  border-radius: .9375rem;
+  margin-right: 2.875rem;
+}
+
+.administrators .searchDiv .searchafter .search {
+  position: absolute;
+  left: .9375rem;
+  top: 0;
+  display: inline-block;
+  width: .96875rem;
+  height: 1.875rem;
+  background: url("../images/icon-30-search.png") center center no-repeat;
+  background-size: 100%;
+}
+
+.administrators .searchDiv .searchafter .delete {
+  position: absolute;
+  right: .9375rem;
+  top: 0;
+  display: inline-block;
+  width: 1rem;
+  height: 1.875rem;
+  background: url("../images/x-circle.png") center center no-repeat;
+  background-size: 100%;
+}
+
+.administrators .searchDiv .searchafter .txt {
+  height: 1.875rem;
+  line-height: 1.875rem;
+  padding: .375rem 2.1875rem;
+  background: none;
+  font-size: .8125rem;
+  width: 100%;
+  -webkit-box-sizing: border-box;
+     -moz-box-sizing: border-box;
+          box-sizing: border-box;
+}
+
+.administrators .searchDiv .searchafter .cancle {
+  position: absolute;
+  top: 0;
+  height: 1.875rem;
+  line-height: 1.875rem;
+  right: -2.875rem;
+  color: #0084FF;
+  font-size: .9375rem;
+}
+
+.administrators .tab {
+  padding: 0 .9375rem;
+  background: #ffffff;
+  border-bottom: 1px solid #DDDDDD;
+}
+
+.administrators .tab ul {
+  display: -webkit-box;
+  display: -webkit-flex;
+  display: -moz-box;
+  display: -ms-flexbox;
+  display: flex;
+}
+
+.administrators .tab ul li {
+  line-height: 1.3125rem;
+  color: #999999;
+  font-size: .9375rem;
+  margin-right: 1.5625rem;
+  padding-bottom: .75rem;
+}
+
+.administrators .tab ul li span {
+  margin-left: .25rem;
+}
+
+.administrators .tab ul li.active {
+  color: #0084FF;
+  font-weight: 600;
+  border-bottom: .125rem solid #0084FF;
+}
+
+.administrators .tab ul li.active span {
+  font-weight: 400;
+}
+
+.administrators .tabContent .tips {
+  line-height: .9375rem;
+  padding: .75rem 1rem;
+  text-align: left;
+  color: #999999;
+  font-size: .8125rem;
+}
+
+.administrators .tabContent .list {
+  background: #ffffff;
+}
+
+.administrators .tabContent .list ul li {
+  position: relative;
+  padding-left: 3.9375rem;
+}
+
+.administrators .tabContent .list ul li .checked {
+  position: absolute;
+  top: 50%;
+  -webkit-transform: translateY(-50%);
+      -ms-transform: translateY(-50%);
+          transform: translateY(-50%);
+  left: 1rem;
+}
+
+.administrators .tabContent .list ul li .img {
+  position: absolute;
+  top: 50%;
+  -webkit-transform: translateY(-50%);
+      -ms-transform: translateY(-50%);
+          transform: translateY(-50%);
+  left: 3.25rem;
+  width: 2.5rem;
+  height: 2.5rem;
+  border-radius: 50%;
+}
+
+.administrators .tabContent .list ul li .txt {
+  position: absolute;
+  top: 50%;
+  -webkit-transform: translateY(-50%);
+      -ms-transform: translateY(-50%);
+          transform: translateY(-50%);
+  right: 2rem;
+  color: #999999;
+  line-height: .9375rem;
+  font-size: .8125rem;
+}
+
+.administrators .tabContent .list ul li .icon-arrow-r {
+  position: absolute;
+  top: 50%;
+  -webkit-transform: translateY(-50%);
+      -ms-transform: translateY(-50%);
+          transform: translateY(-50%);
+  display: inline-block;
+  width: .375rem;
+  height: .625rem;
+  background: url("../images/right-arrow.png") center center no-repeat;
+  background-size: 100%;
+  right: 1rem;
+}
+
+.administrators .tabContent .list ul li .userInfo {
+  border-bottom: 1px solid #E9E9E9;
+  padding-right: 6.25rem;
+  text-align: left;
+  padding: 1rem 6.25rem 1rem 2.5rem;
+}
+
+.administrators .tabContent .list ul li .userInfo h2 {
+  color: #333333;
+  font-size: .9375rem;
+  line-height: 1.3125rem;
+  font-weight: normal;
+}
+
+.administrators .tabContent .list ul li .userInfo p {
+  color: #999999;
+  line-height: 1.125rem;
+  font-size: .8125rem;
+  font-weight: normal;
+}
+
+.administrators .tabContent .checked {
+  display: inline-block;
+  width: 1.25rem;
+  height: 1.25rem;
+  background: url("../images/admin/icon-check.png") center center no-repeat;
+  background-size: 100%;
+}
+
+.administrators .tabContent .checked.active {
+  background: url("../images/admin/icon-checked.png") center center no-repeat;
+  background-size: 100%;
+}
+
+.administrators .tabContent .fixedBottom {
+  position: fixed;
+  height: 3.40625rem;
+  background: #ffffff;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  padding: 0 1rem;
+  display: -webkit-box;
+  display: -webkit-flex;
+  display: -moz-box;
+  display: -ms-flexbox;
+  display: flex;
+}
+
+.administrators .tabContent .fixedBottom .allCheck {
+  display: -webkit-box;
+  display: -webkit-flex;
+  display: -moz-box;
+  display: -ms-flexbox;
+  display: flex;
+  margin-right: auto;
+}
+
+.administrators .tabContent .fixedBottom .allCheck .checked {
+  height: 3.40625rem;
+  margin-right: .5rem;
+}
+
+.administrators .tabContent .fixedBottom .allCheck span {
+  color: #333333;
+  font-size: .9375rem;
+  line-height: 3.40625rem;
+}
+
+.administrators .tabContent .fixedBottom .btn-normal {
+  margin-top: .5625rem;
+  margin-left: 1rem;
+}
+
+.administrators .tabContent .fixedBottom .btn-normal.disabled {
+  opacity: 0.3;
+}
+
+.paddingBottom {
+  padding-bottom: 3.40625rem;
+}
+
+.btn-normal {
+  color: #0084FF;
+  height: 2.25rem;
+  line-height: 2.25rem;
+  padding: 0 1.3125rem;
+  font-size: 1.0625rem;
+  border-radius: 1.125rem;
+  border: 1px solid  #0084FF;
+  background: #ffffff;
+}
+
+.btn-normal-height {
+  line-height: normal;
+}
+
+.model {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.3);
+}
+
+.noContent {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  -webkit-transform: translate(-50%, -50%);
+      -ms-transform: translate(-50%, -50%);
+          transform: translate(-50%, -50%);
+}
+
+.noContent p {
+  text-align: center;
+  color: #999999;
+  line-height: 1.25rem;
+  font-size: 0.9375rem;
+}

@@ -100,7 +100,7 @@
                     </el-table-column>
                     <el-table-column prop="pv" label="浏览量" width="234" align="center">
                         <template #header>
-                            <div class="number" :class="{'active': sortCol && sortCol.field === 'pv'}" @click.stop="loadTopActivity(sortField.pv, $event)"> 浏览量<i class="down-icon"></i></div>
+                            <div class="number" :class="{'active': sortCol && sortCol.field === 'PV'}" @click.stop="loadTopActivity(sortField.pv, $event)"> 浏览量<i class="down-icon"></i></div>
                         </template>
                         <template slot-scope="scope">
                             <span class="color">{{scope.row.pv || 0}}</span>
@@ -108,7 +108,7 @@
                     </el-table-column>
                     <el-table-column prop="signedUpNum" label="报名人数" align="center">
                         <template #header>
-                            <div class="number" :class="{'active': sortCol && sortCol.field === 'signedUpNum'}" @click="loadTopActivity(sortField.signedUpNum, $event)"> 报名人数<i class="down-icon"></i></div>
+                            <div class="number" :class="{'active': sortCol && sortCol.field === 'SIGNED_UP_NUM'}" @click="loadTopActivity(sortField.signedUpNum, $event)"> 报名人数<i class="down-icon"></i></div>
                         </template>
                         <template slot-scope="scope">
                             <span class="color">{{scope.row.signedUpNum || 0}}</span>
@@ -137,22 +137,25 @@
                 activityOrgStat: [[${activityOrgStat}]],
                 topActivityStat: [[${topActivityStat}]],
                 // 排序列-> 0: 浏览量， 1: 报名人数
-                sortCol: null,
+                sortCol: {
+                    desc: true,
+                    field: 'PV'
+                },
                 sortField: {
                     pv: {
                         desc: true,
-                        field: 'pv'
+                        field: 'PV'
                     },
                     signedUpNum: {
                         desc: true,
-                        field: 'signedUpNum'
+                        field: 'SIGNED_UP_NUM'
                     }
                 },
                 queryParams: {
                     fid: [[${fid}]],
                     startDate: null,
                     endDate: null,
-                    orderField: 'pv',
+                    orderField: 'PV',
                     orderType: 'DESC',
                     activityIds: [[${activityOrgStat.activityIds}]]
                 },
@@ -168,9 +171,7 @@
             },
             methods: {
                 initChart: function () {
-                    /* 条形图 */
                     var $this = this;
-
                     // 日期
                     var data1 = [];
                     // 浏览量趋势
@@ -645,6 +646,13 @@
                 },
                 dateRangeChange: function (range) {
                     var $this = this;
+                    if (range && range.length > 0) {
+                        $this.queryParams.startDate = range[0];
+                        $this.queryParams.endDate = range[1];
+                    } else {
+                        $this.queryParams.startDate = null;
+                        $this.queryParams.endDate = null;
+                    }
                     $this.reloadActivityStat();
                 },
                 reloadActivityStat: function () {
@@ -692,7 +700,7 @@
                         $this.queryParams.orderField = $this.sortCol.field;
                         $this.queryParams.orderType = $this.sortCol.desc ? 'DESC' : 'ASC';
                     }
-                    var url = ctx + "/api/activity/stat/org/top-activity";
+                    var url = ctx + "/api/activity/stat/top-activity";
                     app.ajaxPost(url, {queryParamStr: activityApp.getJsonStr($this.queryParams)}, function (res) {
                         if (res.success) {
                             $this.topActivityStat = res.data;

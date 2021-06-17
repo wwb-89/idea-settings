@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="../../assets/lib/element-ui/lib/theme-chalk/index.css">
+    <link rel="stylesheet" href="../../assets/css/public.css">
+    <link rel="stylesheet" href="../../assets/css/confirm_dialog.css">
+    <link rel="stylesheet" href="../../assets/css/prize-manage.css">
+    <title>奖项管理</title>
+</head>
+<body>
+    <div class="prize-manage" id="prize-manage" v-cloak>
+        <div class="normal-btn-blue" @click="addEditPrize('')"><i class="add-icon"></i><span>添加成员</span></div>
+        <div class="item-list">
+            <div class="item clear">
+                <div class="img-box fl">
+                    <img src="../../assets/images/yq-design/icon-cover.png" alt="">
+                </div>
+                <div class="right">
+                    <div class="text-box">
+                        <p class="title">趣自然 · 阅当夏一等奖(仅标题文字hover变色，不是整行)</p>
+                        <p class="prize">一等奖&nbsp;&nbsp;24人</p>
+                    </div>
+                    <span class="processing blue">发布</span>
+                    <div class="edit-box">
+                        <div class="edit-icon"></div>
+                        <div class="edit-pop">
+                            <div @click="addEditPrize('趣自然 · 阅当夏','选项2','本次活动以“趣自然 · 阅当‘夏’”为主题，')">编辑</div>
+                            <div @click="ifCancelPop=true">删除</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="item clear">
+                <div class="img-box fl">
+                    <img src="../../assets/images/yq-design/icon-cover.png" alt="">
+                </div>
+                <div class="right">
+                    <div class="text-box">
+                        <p class="title">趣自然 · 阅当夏一等奖</p>
+                        <p class="prize">一等奖&nbsp;&nbsp;24人</p>
+                    </div>
+                    <span class="processing">已发布</span>
+                    <div class="edit-box">
+                        <div class="edit-icon"></div>
+                        <div class="edit-pop">
+                            <div>编辑</div>
+                            <div>删除</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="item clear">
+                <div class="img-box fl">
+                    <img src="../../assets/images/yq-design/icon-cover.png" alt="">
+                </div>
+                <div class="right">
+                    <div class="text-box">
+                        <p class="title">趣自然 · 阅当夏一等奖</p>
+                        <p class="prize">一等奖&nbsp;&nbsp;24人</p>
+                    </div>
+                    <span class="processing">已发布</span>
+                    <div class="edit-box">
+                        <div class="edit-icon"></div>
+                        <div class="edit-pop">
+                            <div>编辑</div>
+                            <div>删除</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="item clear">
+                <div class="img-box fl">
+                    <img src="../../assets/images/yq-design/icon-cover.png" alt="">
+                </div>
+                <div class="right">
+                    <div class="text-box">
+                        <p class="title">趣自然 · 阅当夏一等奖</p>
+                        <p class="prize">一等奖&nbsp;&nbsp;24人</p>
+                    </div>
+                    <span class="processing">已发布</span>
+                    <div class="edit-box">
+                        <div class="edit-icon"></div>
+                        <div class="edit-pop">
+                            <div>编辑</div>
+                            <div>删除</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="item clear">
+                <div class="img-box fl">
+                    <img src="../../assets/images/yq-design/icon-cover.png" alt="">
+                </div>
+                <div class="right">
+                    <div class="text-box">
+                        <p class="title">趣自然 · 阅当夏一等奖</p>
+                        <p class="prize">一等奖&nbsp;&nbsp;24人</p>
+                    </div>
+                    <span class="processing">已发布</span>
+                    <div class="edit-box">
+                        <div class="edit-icon"></div>
+                        <div class="edit-pop">
+                            <div>编辑</div>
+                            <div>删除</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="item clear">
+                <div class="img-box fl">
+                    <img src="../../assets/images/yq-design/icon-cover.png" alt="">
+                </div>
+                <div class="right">
+                    <div class="text-box">
+                        <p class="title">趣自然 · 阅当夏一等奖</p>
+                        <p class="prize">一等奖&nbsp;&nbsp;24人</p>
+                    </div>
+                    <span class="processing">已发布</span>
+                    <div class="edit-box">
+                        <div class="edit-icon"></div>
+                        <div class="edit-pop">
+                            <div>编辑</div>
+                            <div>删除</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!--确认移除弹窗-->
+        <div class="dialog-box" v-if="ifCancelPop">
+            <div class="confirm_dialog">
+                <span class="icon"><img src="../../assets/images/warning.png"></span>
+                <span class="text">确定移除吗？</span>
+                <div class="btn">
+                    <span class="cancel" @click="ifCancelPop = false">保留</span>
+                    <span class="ok">移除</span>
+                </div>
+            </div>
+        </div>
+        <!-- 创建编辑奖项弹窗 -->
+        <div class="dialog-box" v-if="editPrizePop">
+            <div class="dialog-wrap edit-prize">
+                <div class="header">
+                    <span class="color333">创建奖项</span>
+                    <img src="../../assets/images/close.png" @click="editPrizePop = false">
+                </div>
+                <div class="dialog-content">
+                    <div class="form-item">
+                        <label class="label">名称</label>
+                        <div class="input-box name">
+                            <el-input type="text" size="small" placeholder="请输入" v-model="name" maxlength="20" show-word-limit class="width264"></el-input>
+                            <el-select v-model="value" size="small" placeholder="级别" class="width100">
+                                <el-option
+                                  v-for="item in options"
+                                  :key="item.value"
+                                  :label="item.label"
+                                  :value="item.value">
+                                </el-option>
+                            </el-select>
+                        </div>
+                    </div>
+                    <div class="form-item">
+                        <label class="label">说明</label>
+                        <div class="input-box explain">
+                            <el-input type="textarea" placeholder="请输入" :autosize="{ minRows: 5, maxRows: 5}" v-model="explain" resize="none" maxlength="100" show-word-limit></el-input>
+                        </div>
+                    </div>
+                </div>
+                <div class="footer">
+                    <span class="btn btn-border" @click="editPrizePop = false">取消</span>
+                    <span class="btn" :class="name ? 'btn-normal' : 'btn-forbid'">确定</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
+<script type="text/javascript" src="../../assets/lib/vue.js"></script>
+<script type="text/javascript" src="../../assets/lib/jquery.min.js"></script>
+<script type="text/javascript" src="../../assets/lib/jquery.nicescroll.min.js"></script>
+<script type="text/javascript" src="../../assets/lib/element-ui/lib/index.js"></script>
+<script>
+     var vm = new Vue({
+        el: '#prize-manage',
+        data: function () {
+            return {
+                ifCancelPop:false,
+                editPrizePop:false,
+                name:'',
+                explain:'',
+                value:'',
+                options: [{
+                    value: '选项1',
+                    label: '请选择'
+                    }, {
+                    value: '选项2',
+                    label: '一等奖'
+                    },{
+                    value: '选项3',
+                    label: '二等奖'
+                    },{
+                    value: '选项4',
+                    label: '三等奖'
+                    },{
+                    value: '选项5',
+                    label: '其他奖'
+                    },
+                ]
+            }
+        },
+        methods:{
+            addEditPrize:function(name,options,explain){
+                this.editPrizePop = !this.editPrizePop;
+                this.name = name;
+                this.value = options
+                this.explain = explain
+            }
+        }
+    })
+</script>

@@ -727,4 +727,19 @@ public class ActivityQueryService {
 		}
 		return activities;
 	}
+
+	/**根据机构id, 给定的活动时间范围，查询在此范围内进行中的活动id列表
+	 * @Description
+	 * @author huxiaolong
+	 * @Date 2021-05-12 15:26:37
+	 * @param fids
+	 * @return java.util.List<java.lang.Integer>
+	 */
+    public List<Integer> listActivityIdsByFids(List<Integer> fids, String startDate, String endDate) {
+    	if (CollectionUtils.isEmpty(fids)) {
+    		return Lists.newArrayList();
+		}
+		return activityMapper.listActivityIdByFids(fids, startDate, endDate);
+
+	}
 }

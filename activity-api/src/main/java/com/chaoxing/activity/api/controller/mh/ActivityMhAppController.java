@@ -6,7 +6,7 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.chaoxing.activity.dto.RestRespDTO;
 import com.chaoxing.activity.dto.manager.WfwRegionalArchitectureDTO;
 import com.chaoxing.activity.dto.manager.sign.SignStatDTO;
-import com.chaoxing.activity.dto.mh.MhGeneralAppResultDataDTO;
+import com.chaoxing.activity.dto.manager.mh.MhGeneralAppResultDataDTO;
 import com.chaoxing.activity.dto.query.MhActivityCalendarQueryDTO;
 import com.chaoxing.activity.model.Activity;
 import com.chaoxing.activity.service.activity.ActivityCoverUrlSyncService;

@@ -28,11 +28,11 @@ public class FormActivityCreateQueueService implements IQueueService<FormCreateA
     @Resource
     private RedissonClient redissonClient;
 
-    public void add(FormCreateActivity formCreateActivity) {
+    public void push(FormCreateActivity formCreateActivity) {
         push(redissonClient, CACHE_KEY, formCreateActivity);
     }
 
-    public FormCreateActivity get() throws InterruptedException {
+    public FormCreateActivity pop() throws InterruptedException {
         return pop(redissonClient, CACHE_KEY);
     }
 

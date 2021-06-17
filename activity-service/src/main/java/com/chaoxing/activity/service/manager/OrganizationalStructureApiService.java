@@ -4,7 +4,7 @@ import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.chaoxing.activity.dto.OrgRoleDTO;
-import com.chaoxing.activity.dto.uc.UserOrganizationalStructureDTO;
+import com.chaoxing.activity.dto.manager.uc.UserOrganizationalStructureDTO;
 import com.chaoxing.activity.util.constant.CacheConstant;
 import com.chaoxing.activity.util.constant.CommonConstant;
 import com.google.common.collect.Lists;

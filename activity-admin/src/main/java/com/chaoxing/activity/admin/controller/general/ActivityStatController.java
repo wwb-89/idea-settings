@@ -2,10 +2,11 @@ package com.chaoxing.activity.admin.controller.general;
 
 import com.chaoxing.activity.admin.util.LoginUtils;
 import com.chaoxing.activity.dto.LoginUserDTO;
+import com.chaoxing.activity.dto.manager.WfwRegionalArchitectureDTO;
 import com.chaoxing.activity.dto.stat.ActivityOrgStatDTO;
 import com.chaoxing.activity.dto.stat.ActivityStatDTO;
-import com.chaoxing.activity.service.activity.ActivityQueryService;
 import com.chaoxing.activity.service.activity.ActivityStatQueryService;
+import com.chaoxing.activity.service.manager.WfwRegionalArchitectureApiService;
 import com.chaoxing.activity.util.UserAgentUtils;
 import com.chaoxing.activity.util.annotation.LoginRequired;
 import org.springframework.stereotype.Controller;
@@ -15,6 +16,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
+import java.util.List;
 import java.util.Optional;
 
 /**活动统计
@@ -29,11 +31,11 @@ import java.util.Optional;
 @RequestMapping("activity")
 public class ActivityStatController {
 
-
-    @Resource
-    private ActivityQueryService activityQueryService;
     @Resource
     private ActivityStatQueryService activityStatQueryService;
+
+    @Resource
+    private WfwRegionalArchitectureApiService wfwRegionalArchitectureApiService;
 
     /**活动统计主页
      * @Description 
@@ -73,13 +75,44 @@ public class ActivityStatController {
             LoginUserDTO loginUser = LoginUtils.getLoginUser(request);
             realFid = loginUser.getFid();
         }
-        ActivityOrgStatDTO activityOrgStat = activityStatQueryService.orgActivityStat(fid);
+        ActivityOrgStatDTO activityOrgStat = activityStatQueryService.orgActivityStat(realFid);
         model.addAttribute("fid", realFid);
         model.addAttribute("activityOrgStat", activityOrgStat);
         if (UserAgentUtils.isMobileAccess(request)) {
+            // todo 移动端无机构统计前端
             return "mobile/stat/org-activity-stat";
         } else {
             return "pc/stat/org-activity-stat";
+        }
+    }
+
+    /**区域下活动统计主页
+    * @Description
+    * @author huxiaolong
+    * @Date 2021-05-11 15:19:55
+    * @param request
+    * @param model
+    * @param fid
+    * @return java.lang.String
+    */
+    @LoginRequired
+    @RequestMapping("region/stat")
+    public String regionActivityStat(HttpServletRequest request, Model model, Integer wfwfid, Integer unitId, Integer state, Integer fid) {
+        Integer realFid = Optional.ofNullable(wfwfid).orElse(Optional.ofNullable(unitId).orElse(Optional.ofNullable(state).orElse(fid)));
+        if (realFid == null) {
+            LoginUserDTO loginUser = LoginUtils.getLoginUser(request);
+            realFid = loginUser.getFid();
+        }
+        ActivityOrgStatDTO regionalActivityStat = activityStatQueryService.regionalActivityStat(realFid);
+        List<WfwRegionalArchitectureDTO> wfwRegionalArchitectureTrees = wfwRegionalArchitectureApiService.listWfwRegionalTreesByFid(realFid);
+        model.addAttribute("fid", realFid);
+        model.addAttribute("regionalActivityStat", regionalActivityStat);
+        model.addAttribute("wfwRegionalArchitectureTrees", wfwRegionalArchitectureTrees);
+        if (UserAgentUtils.isMobileAccess(request)) {
+            // todo 移动端无区域统计前端
+            return "mobile/stat/regional-activity-stat";
+        } else {
+            return "pc/stat/regional-activity-stat";
         }
     }
 

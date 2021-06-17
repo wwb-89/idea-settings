@@ -66,6 +66,7 @@ public class ActivityStatusUpdateService {
 		LocalDateTime time = DateUtils.timestamp2Date(l);
 		LocalDateTime now = LocalDateTime.now();
 		if (time.compareTo(now) <= 0) {
+			log.info("根据活动:{}的结束时间更新活动的状态", activityId);
 			// 更新活动状态
 			Activity activity = activityQueryService.getById(activityId);
 			if (activity != null) {

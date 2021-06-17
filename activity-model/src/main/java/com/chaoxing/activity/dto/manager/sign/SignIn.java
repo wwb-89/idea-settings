@@ -53,7 +53,7 @@ public class SignIn {
     private BigDecimal longitude;
     /** 签到维度 */
     private BigDecimal dimension;
-    /** 扫码方式。1：参与者扫码，2：参与者扫码 */
+    /** 扫码方式。1：参与者扫码，2：管理员扫码 */
     private Integer scanCodeWay;
     /** 是否填写信息 */
     private Boolean fillInfo;
@@ -122,8 +122,55 @@ public class SignIn {
             return null;
         }
 
+        public static Way fromName(String name) {
+            Way[] values = Way.values();
+            for (Way way : values) {
+                if (Objects.equals(way.getName(), name)) {
+                    return way;
+                }
+            }
+            return null;
+        }
+
         public static void notNull(Way way) {
             Optional.ofNullable(way).orElseThrow(() -> new BusinessException("未知的签到方式"));
+        }
+
+    }
+
+    @Getter
+    public enum ScanCodeWay {
+
+        /** 参与者扫码 */
+        PARTICIPATOR("参与者扫码", 1),
+        MANAGER("管理员扫码", 2);
+
+        private String name;
+        private Integer value;
+
+        ScanCodeWay(String name, Integer value) {
+            this.name = name;
+            this.value = value;
+        }
+
+        public static ScanCodeWay fromValue(Integer value) {
+            ScanCodeWay[] values = ScanCodeWay.values();
+            for (ScanCodeWay way : values) {
+                if (Objects.equals(way.getValue(), value)) {
+                    return way;
+                }
+            }
+            return null;
+        }
+
+        public static ScanCodeWay fromName(String name) {
+            ScanCodeWay[] values = ScanCodeWay.values();
+            for (ScanCodeWay way : values) {
+                if (Objects.equals(way.getName(), name)) {
+                    return way;
+                }
+            }
+            return null;
         }
 
     }

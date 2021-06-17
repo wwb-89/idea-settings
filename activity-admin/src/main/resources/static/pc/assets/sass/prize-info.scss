@@ -1,0 +1,325 @@
+body,html{
+    background: #F1F2F6;
+}
+.padding0{
+    padding: 0 !important;
+}
+/* 奖项信息 start */
+.info-box{
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%,-50%);
+    width: 544px;
+    height: 483px;
+    background: #FFFFFF;
+    border: 1px solid #E6EDF2;
+    box-shadow: 0px 2px 21px rgba(193, 214, 226, 0.0608064);
+    border-radius: 16px;
+    padding: 40px;
+    box-sizing: border-box;
+    .title{
+        height: 34px;
+        line-height: 34px;
+        margin-bottom: 16px;
+        .name{
+            float: left;
+            font-weight: 500;
+            font-size: 24px;
+            color: #384449;
+        }
+        .tips{
+            float: right;
+            font-size: 14px;
+            color: #999999;
+        }
+        .blue{
+            color: #0084FF;
+        }
+    }
+    .item-box{
+        border-top: 1px solid #EFF2F4;
+        max-height: 352px;
+        overflow: auto;
+        .item{
+            position: relative;
+            background: #FFFFFF;
+            border: 1px solid #EFF2F4;
+            box-sizing: border-box;
+            border-radius: 8px;
+            overflow: hidden;
+            padding: 15px;
+            margin-top: 16px;
+            cursor: pointer;
+            &:hover{
+                .text-box{
+                    .name{
+                        color: #0084FF;
+                    }
+                }
+            }
+            .img-box{
+                position: absolute;
+                left: 16px;
+                top: 50%;
+                transform: translateY(-50%);
+                width: 64px;
+                height: 64px;
+                border-radius: 50%;
+                img{
+                    width: 100%;
+                    height: 100%;
+                }
+            }
+            .text-box{
+                padding: 4px 0;
+                margin-left: 80px;
+                max-width: 277px;
+                .name{
+                    font-weight: 500;
+                    font-size: 18px;
+                    line-height: 24px; 
+                    color: #384449;                    
+                }
+                .level{
+                    font-size: 14px;
+                    line-height: 20px;
+                    color: #7F878B;
+                    margin-top: 12px;
+                }
+            }
+            .number{
+                position: absolute;
+                right: 20px;
+                top: 50%;
+                transform: translateY(-50%);
+                font-size: 14px;
+                line-height: 20px;      
+                color: #0084FF;
+                &.download{
+                    cursor: pointer;
+                    &:hover{
+                        opacity: 0.8;
+                    }
+                }
+            }
+        }
+    }
+}
+/* 奖项信息 end */
+
+/* 头部 start*/
+.assess-header {
+    position: relative;
+    background-color:#FFFFFF;
+    height: 40px;
+    line-height: 40px;
+    padding: 9px 20px;
+    box-sizing: border-box;
+    .assess-title {
+        font-size: 16px;
+        font-weight: 500;
+        line-height: 22px;
+        color: #333333;
+        max-width: 50%;
+    }
+    .assess-header-right {
+        position: absolute;
+        top: 0;
+        right: 32px;
+    }
+    .login-container {
+        .after-login {
+            cursor: pointer;
+            text-align: right;
+            box-sizing: border-box;
+            &:hover{
+                .login-downlist-info {
+                    display: block;
+                }
+            }
+            .user-name{
+                display: inline-block;
+                vertical-align: top;
+                font-size: 13px;
+                color: #666666;
+            }
+            .login-downlist-info {
+                box-shadow: 0px 6px 16px -8px rgba(0, 0, 0, 0.08), 0px 9px 28px rgba(0, 0, 0, 0.05), 0px 12px 48px 16px rgba(0, 0, 0, 0.03);
+                border-radius: 2px;
+                background-color: #FFFFFF;
+                padding: 2px 0;
+                display: none;
+                .login-downlist-item {
+                    padding: 8px 16px;
+                    color: #333333;
+                    line-height: 16px;
+                    font-size: 14px;
+                    text-align: center;
+                    a{
+                        color: #333;
+                    }
+                    &:hover {
+                        color: #0084FF;
+                        background-color: #F8F8F8;
+                        a {
+                            color: #0084FF;
+                        }
+                    }
+                }
+            }
+            .login-tx {
+                width: 24px;
+                height: 24px;
+                border-radius: 12px;
+                margin-right: 8px;
+            }
+            .icon-down{
+                display: inline-block;
+                vertical-align: top;
+                width: 16px;
+                height: 16px;
+                margin-top: 12px;
+                background: url(../images/yq-design/chevron-right.png) no-repeat;
+                transform: rotate(90deg);
+            }
+        }
+    }
+}
+/* 头部 end*/
+
+/* 奖项详情 start */
+.details-content{
+    width: 1000px;
+    margin: 16px auto 50px;
+    min-height: 680px;
+    background: #FFFFFF;
+    border-radius: 8px;
+    overflow: hidden;
+    padding: 24px 32px;
+    box-sizing: border-box;
+    .header{
+        width: 880px;
+        box-shadow: 0px 12px 24px rgba(201, 68, 11, 0.12);
+        border-radius: 8px;
+        overflow: hidden;
+        margin-bottom: 24px;
+        background: linear-gradient(251.57deg, #D89300 1.03%, #DD6B3A 86.16%);
+        .title{
+            position: relative;
+            height: 88px;
+            padding: 16px;
+            box-sizing: border-box;
+            .name{
+                font-weight: 600;
+                font-size: 20px;
+                line-height: 24px;
+                color: #FFFFFF;
+                margin-bottom: 8px;
+            }
+            .desc{
+                font-size: 13px;
+                line-height: 24px;
+                color: rgba(255, 255, 255, 0.9);
+                max-width: 768px;
+            }
+            .icon-medal{
+                position: absolute;
+                right: 46px;
+                top: -4px;
+                width: 58px;
+                height: 73px;
+                background: url(../images/yq-design/icon-medal.png) no-repeat;
+            }
+        }
+        .con-box{
+            position: relative;
+            background: rgba(166, 60, 15, 0.08);
+            padding: 16px;
+            box-sizing: border-box;
+            font-size: 13px;
+            line-height: 24px;
+            color: rgba(255, 255, 255, 0.8 );
+            .text{
+                max-width: 768px;
+            }
+        }
+    }
+    .content{
+        .prizer{
+            font-size: 14px;
+            line-height: 20px;
+            color: #999999;
+            margin-bottom: 16px;
+        }
+        .item-list{
+            font-size: 0;
+            .item{
+                display: inline-block;
+                vertical-align: top;
+                width: 160px;
+                height: 62px;
+                border: 1px solid #EFF2F4;
+                padding: 16px;
+                box-sizing: border-box;
+                border-radius: 8px;
+                overflow: hidden;
+                margin-right: 20px;
+                margin-bottom: 20px;
+                &:nth-child(5n){
+                    margin-right: 0;
+                }
+                &:nth-last-child(-n+5){
+                    margin-bottom: 0;
+                }
+                .avatar-img{
+                    width: 30px;
+                    height: 30px;
+                    border-radius: 50%;
+                    overflow: hidden;
+                    float: left;
+                    img{
+                        width: 100%;
+                        height: 100%;
+                    }
+                }
+                .name{
+                    font-size: 14px;
+                    line-height: 30px;
+                    color: #333333;
+                    margin-left: 38px;      
+                }
+            }
+        }
+    }
+}
+/* 奖项详情 end */
+
+/* 无数据 */
+.no-content{
+    font-size: 14px;
+    line-height: 20px;
+    text-align: center;
+    color: #999999;
+    margin: 232px 0;
+}
+
+/* 加载中 */
+.loading{
+    font-size: 0;
+    text-align: center;
+    margin-top: 16px;
+    img{
+        display: inline-block;
+        vertical-align: top;
+        width: 32px;
+        height: 32px;
+    }
+    span{
+        display: inline-block;
+        vertical-align: top;
+        font-size: 16px;
+        line-height: 32px;
+        color: #999999;
+    }
+}

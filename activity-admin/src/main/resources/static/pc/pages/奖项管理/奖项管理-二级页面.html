@@ -1,0 +1,338 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="../../assets/lib/element-ui/lib/theme-chalk/index.css">
+    <link rel="stylesheet" href="../../assets/lib/webuploader/webuploader.css">
+    <link rel="stylesheet" href="../../assets/table-icomoon/style.css">
+    <link rel="stylesheet" href="../../assets/css/public.css">
+    <link rel="stylesheet" href="../../assets/css/confirm_dialog.css">
+    <link rel="stylesheet" href="../../assets/css/commonTable.css">
+    <link rel="stylesheet" href="../../assets/css/prize-manage.css">
+    <title>奖项管理</title>
+</head>
+<body>
+    <div class="second-level" id="prize-manage" v-cloak>
+        <div class="crumb-box">
+            <div class="bread-crumb">
+                <a href="javascript:;">奖项管理</a>
+                <i class="right"></i>
+            </div>
+            <div class="bread-crumb">
+                <a href="javascript:;" class="active">趣自然 · 阅当夏一等奖</a>
+            </div>
+        </div>
+        <div class="content-box">
+            <!-- 操作栏 -->
+            <div class="table-operate-box fs0">
+                <div class="btn normal-btn-blue">添加获奖者</div>
+                <div class="btn border-btn" @click="noticeClick">发通知</div>
+                <div class="btn border-btn">导入</div>
+                <div class="btn border-btn">导出</div>
+                <div class="btn border-btn remove">移除</div>
+                <div class="search-box">
+                    <el-input placeholder="搜索"
+                              icon="search"
+                              class="search"
+                              v-model="search"
+                              @input="inputFunc"
+                              suffix-icon="el-icon-search">
+                    </el-input>
+                    <i class="icon-cancel btn-cancel" v-show="inputlen" @click="clearInput"></i>
+                </div>
+            </div>
+            <!-- 计数栏 -->
+            <div class="table-count-box fs12">
+                <div class="count-info fl">
+                    <span class="colorBlue marginr8">已选择 {{selectNumber}} 人</span>
+                    <span class="color999">共 100 人，剩余名额 20</span>
+                </div>
+                <div class="setting-box">
+                    <el-dropdown :hide-on-click="false" trigger="click">
+                        <el-tooltip class="item" effect="dark" content="显示字段" placement="top">
+                            <span class="icon-setting fs16"></span>
+                        </el-tooltip>
+                        <el-dropdown-menu slot="dropdown" class="set-dropdown">
+                            <div class="dropdown-lists">
+                                <el-dropdown-item v-for="(item, index) in dropdwonLists">
+                                    <el-checkbox v-model="item.show" :disabled="item.disabled"> {{item.name}}</el-checkbox>
+                                    <el-tooltip v-if="item.flag" class="item" effect="dark" content="取消固定列" placement="top">
+                                        <i class="btn-fix icon-pinned fs16" @click="item.flag = !item.flag"></i>
+                                    </el-tooltip>
+                                    <el-tooltip v-else class="item" effect="dark" content="固定列" placement="top">
+                                        <i class="btn-fix icon-pin fs16" @click="item.flag = !item.flag"></i>
+                                    </el-tooltip>
+                                </el-dropdown-item>
+                            </div>
+                            <div class="bottom-btns fs14 colorBlue">
+                                <el-button type="text" class="btn-confirm is-disabled">确定</el-button>
+                                <el-button type="text" class="btn-reset" @click="resetCheckFunc">重置</el-button>
+                            </div>
+                        </el-dropdown-menu>
+                    </el-dropdown>
+                </div>
+                <div class="clear"></div>
+            </div>
+            <el-table class="table-box" :data="tableTestData" >
+                <el-table-column
+                        :align="ifCenter"
+                        fixed
+                        type="selection"
+                        disabled="false"
+                        width="40">
+                </el-table-column>
+                <el-table-column
+                        type="index"
+                        align="center"
+                        fixed
+                        label="序号"
+                        width="50">
+                </el-table-column>
+                <el-table-column
+                        :align="ifCenter"
+                        fixed
+                        prop="name"
+                        label="姓名"
+                        width="82">
+                        <template slot-scope="scope">
+                            <span class="colorBlue">{{scope.row.name}}</span>
+                        </template>
+                </el-table-column>
+                <el-table-column
+                        :align="ifCenter"
+                        prop="account"
+                        label="账号"
+                        width="156">
+                </el-table-column>
+                <el-table-column
+                        :align="ifCenter"
+                        prop="time"
+                        sortable
+                        label="申报时间"
+                        min-width="163">
+                </el-table-column>
+                <el-table-column
+                        :align="ifCenter"
+                        fixed="right"
+                        label="操作"
+                        width="157">
+                    <template slot-scope="scope">
+                        <el-button type="text" size="middle" @click="">移除</el-button>
+                    </template>
+                </el-table-column>
+            </el-table>
+            <el-pagination
+                    background
+                    layout="prev, pager, next"
+                    :total="200">
+            </el-pagination>
+        </div>
+        <!-- 获奖通知弹窗 -->
+        <div class="dialog-box" v-if="prizeNoticePop">
+            <div class="dialog-wrap edit-prize">
+                <div class="header">
+                    <span class="color333">获奖通知</span>
+                    <img src="../../assets/images/close.png" @click="prizeNoticePop = false">
+                </div>
+                <div class="dialog-content">
+                    <div class="input-box notice">
+                        <el-input type="textarea" placeholder="请输入" :autosize="{ minRows: 5, maxRows: 5}" v-model="notice" resize="none" maxlength="100" show-word-limit></el-input>
+                    </div>
+                    <div class="uplode-list">
+                        <div class="uplode-img" id="upload-btn"></div>
+                        <div class="img-box js-crop-img">
+                            <img src="../../assets/images/example.jpg" alt="">
+                            <i class="delete"></i>
+                            <div class="hoverBg">
+                                <i class="icon-zoom"></i>
+                            </div>
+                        </div>
+                        <div class="img-box load-bg">
+                            <i class="loading"></i>
+                            <p class="text">上传中</p>
+                        </div>
+                        <div class="img-box fail-bg">
+                            <i class="fail-icon"></i>
+                            <p class="text red">上传失败</p>
+                            <i class="delete"></i>
+                            <div class="hoverBg">
+                                <i class="icon-zoom"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="footer">
+                    <span class="btn btn-border" @click="prizeNoticePop = false">取消</span>
+                    <span class="btn" :class="notice ? 'btn-normal' : 'btn-forbid'" @click="sendClick">发送</span>
+                </div>
+            </div>
+        </div>
+        <div class="toast successToast" style="display: none;">发送成功</div>
+    </div>
+</body>
+</html>
+<script type="text/javascript" src="../../assets/lib/vue.js"></script>
+<script type="text/javascript" src="../../assets/lib/jquery.min.js"></script>
+<script type="text/javascript" src="../../assets/js/common.js"></script>
+<script type="text/javascript" src="../../assets/lib/jquery.nicescroll.min.js"></script>
+<script type="text/javascript" src="../../assets/lib/webuploader/webuploader.min.js"></script>
+<script type="text/javascript" src="../../assets/lib/jqthumb.min.js"></script>
+<script type="text/javascript" src="../../assets/lib/element-ui/lib/index.js"></script>
+<script>
+     var vm = new Vue({
+        el: '#prize-manage',
+        data: function () {
+            return {
+                search:'',
+                inputlen:false,
+                selectNumber:0,
+                ifCenter: 'left',
+                prizeNoticePop: false,
+                notice:'',
+                dropdwonLists:[
+                    {
+                        name:'选中项',
+                        flag: true,
+                        disabled: false,
+                        show: true,
+                    },
+                    {
+                        name:'未选项',
+                        flag: false,
+                        disabled: false,
+                        show: false,
+                    },
+                    {
+                        name:'禁用项',
+                        flag: false,
+                        disabled: true,
+                        show: true,
+                    },
+                    {
+                        name:'文字选项超长文字选项超长文字选项超长文字选项超长文字选项超长文字选项超长',
+                        flag: false,
+                        disabled: false,
+                        show: false,
+                    },
+                ],
+                tableTestData: [
+                    {
+                        name: '吴立',
+                        account: '18272676793',
+                        time: '2020-03-27 13:02',
+                    }, {
+                        name: '吴立',
+                        account: '18272676793',
+                        time: '2020-03-27 13:02',
+                    }, {
+                        name: '吴立',
+                        account: '18272676793',
+                        time: '2020-03-27 13:02',
+                    }, {
+                        name: '吴立',
+                        account: '18272676793',
+                        time: '2020-03-27 13:02',
+                    }, {
+                        name: '吴立',
+                        account: '18272676793',
+                        time: '2020-03-27 13:02',
+                    }, {
+                        name: '吴立',
+                        account: '18272676793',
+                        time: '2020-03-27 13:02',
+                    }, {
+                        name: '吴立',
+                        account: '18272676793',
+                        time: '2020-03-27 13:02',
+                    }, {
+                        name: '吴立',
+                        account: '18272676793',
+                        time: '2020-03-27 13:02',
+                        applyType:'可选项',
+                        status: 1,
+                        img: '../../assets/images/img1.png',
+                    }, {
+                        name: '吴立',
+                        account: '18272676793',
+                        time: '2020-03-28 13:02',
+                        applyType:'可选项',
+                        status: 1,
+                        img: '../../assets/images/img1.png',
+                    }, {
+                        name: '吴立',
+                        account: '18272676793',
+                        time: '2020-03-25 13:02',
+                    }, {
+                        name: '吴立',
+                        account: '18272676793',
+                        time: '2020-03-22 13:02',
+                    }, {
+                        name: '吴立',
+                        account: '18272676793',
+                        time: '2020-03-21 13:02',
+                    }
+                ],
+            }
+        },
+        mounted: function () {
+            cropImgFun("body");
+            this.initUploader()
+        },
+        methods:{
+            inputFunc(value){
+                if(value.length>0){
+                    this.inputlen = true;
+                }else{
+                    this.inputlen = false;
+                }
+            },
+            clearInput(){
+                this.search='';
+                this.inputlen = false;
+            },
+            resetCheckFunc () {
+                var _this = this;
+                _this.dropdwonLists.filter(function (item) {
+                    item.show = false;
+                })
+            },
+            initUploader:function() {
+                var $this = this;
+                $this.uploader = WebUploader.create({
+                    // swf文件路径
+                    swf: "../../assets/lib/webuploader/Uploader.swf",
+                    // 文件接收服务端。
+                    server: "/api/upload/img",
+                    // 选择文件的按钮。可选。
+                    // 内部根据当前运行是创建，可能是input元素，也可能是flash.
+                    pick: "#upload-btn",
+                    // 不压缩image, 默认如果是jpeg，文件上传前会压缩一把再上传！
+                    resize: false,
+                    auto: true,
+                    // 只允许选择图片文件。
+                    accept: {
+                        title: 'work',
+                        extensions: 'doc,docx',
+                        mimeTypes: 'application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document'
+                    }
+                });
+            },
+            noticeClick:function(){
+                this.prizeNoticePop = true
+                this.$nextTick(function(){
+                    this.initUploader()
+                    cropImgFun("body");
+                })
+            },
+            sendClick:function(){
+                this.prizeNoticePop = false
+                $('.successToast').fadeIn()
+                setTimeout(function(){
+                    $('.successToast').fadeOut()
+                },2000)
+            }
+        }
+    })
+</script>

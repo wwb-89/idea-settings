@@ -35,4 +35,12 @@ public class FormApprovalApiServiceTests {
         formApprovalApiService.listFormData(fid, formId);
     }
 
+    @Test
+    public void createActivity() {
+        Integer fid = 139378;
+        Integer formId = 17251;
+        Integer formUserId = 1861393;
+        formApprovalApiService.createActivity(fid, formId, formUserId, null);
+    }
+
 }

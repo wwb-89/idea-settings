@@ -4,10 +4,7 @@ import com.chaoxing.activity.dto.RestRespDTO;
 import com.chaoxing.activity.model.Activity;
 import com.chaoxing.activity.service.activity.ActivityQueryService;
 import com.chaoxing.activity.service.activity.ActivityStatSummaryHandlerService;
-import com.chaoxing.activity.service.queue.ActivityCoverUrlSyncQueueService;
-import com.chaoxing.activity.service.queue.ActivityIsAboutToStartQueueService;
-import com.chaoxing.activity.service.queue.ActivityStatusUpdateQueueService;
-import com.chaoxing.activity.service.queue.ActivityWebsiteIdSyncQueueService;
+import com.chaoxing.activity.service.queue.*;
 import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -27,6 +24,8 @@ import java.util.List;
 @RequestMapping("queue")
 public class QueueApiController {
 
+	@Resource
+	private ActivityStatQueueService activityStatQueueService;
 	@Resource
 	private ActivityIsAboutToStartQueueService activityIsAboutToStartQueueService;
 	@Resource
@@ -75,7 +74,7 @@ public class QueueApiController {
 		}
 		return RestRespDTO.success();
 	}
-	/**初始化活动的统计队列
+	/**初始化活动的汇总统计队列
 	 * @Description
 	 * @author wwb
 	 * @Date 2021-04-21 15:31:45
@@ -85,6 +84,19 @@ public class QueueApiController {
 	@RequestMapping("init/activity-stat")
 	public RestRespDTO initActivityStatQueue() {
 		activityStatSummaryHandlerService.addOrUpdateAllActivityStatSummary();
+		return RestRespDTO.success();
+	}
+
+	/**初始化活动的统计队列
+	 * @Description
+	 * @author wwb
+	 * @Date 2021-04-21 15:31:45
+	 * @param
+	 * @return com.chaoxing.activity.dto.RestRespDTO
+	*/
+	@RequestMapping("init/activity/stat")
+	public RestRespDTO initStatActivityQueue() {
+		activityStatQueueService.batchAddActivityStatTask();
 		return RestRespDTO.success();
 	}
 
@@ -123,5 +135,7 @@ public class QueueApiController {
 		}
 		return RestRespDTO.success();
 	}
+
+
 
 }

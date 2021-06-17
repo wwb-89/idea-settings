@@ -3,10 +3,14 @@ package com.chaoxing.activity.service.manager;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
+import com.chaoxing.activity.dto.AddressDTO;
 import com.chaoxing.activity.dto.LoginUserDTO;
+import com.chaoxing.activity.dto.TimeScopeDTO;
 import com.chaoxing.activity.dto.manager.WfwRegionalArchitectureDTO;
 import com.chaoxing.activity.dto.manager.form.FormDTO;
 import com.chaoxing.activity.dto.manager.form.FormDataDTO;
+import com.chaoxing.activity.dto.manager.sign.SignIn;
+import com.chaoxing.activity.dto.manager.sign.SignUp;
 import com.chaoxing.activity.dto.module.SignAddEditDTO;
 import com.chaoxing.activity.model.Activity;
 import com.chaoxing.activity.model.ActivityClassify;
@@ -136,6 +140,7 @@ public class FormApprovalApiService {
         treeMap.put("deptId", fid);
         treeMap.put("formId", formId);
         treeMap.put("datetime", dateStr);
+        treeMap.put("pageSize", 100);
         treeMap.put("sign", SIGN);
         String enc = calListFormDataEnc(treeMap);
         MultiValueMap<String, Object> params = new LinkedMultiValueMap<>();
@@ -171,54 +176,124 @@ public class FormApprovalApiService {
         return DigestUtils.md5Hex(endBuilder.toString());
     }
 
-    /**获取需要创建的活动
+    /**创建活动
      * @Description 
      * @author wwb
-     * @Date 2021-05-11 16:14:37
+     * @Date 2021-05-11 16:28:51
      * @param fid
      * @param formId
      * @param formUserId
-     * @return com.chaoxing.activity.model.Activity
+     * @return void
     */
-    private Activity getNeedCreateActivity(Integer fid, Integer formId, Integer formUserId) {
-        Activity activity = Activity.buildDefault();
+    @Transactional(rollbackFor = Exception.class)
+    public void createActivity(Integer fid, Integer formId, Integer formUserId, String flag) {
+        // 获取表单数据
         FormDTO formData = getFormData(fid, formId, formUserId);
         if (!Objects.equals(formData.getAprvStatusTypeId(), CommonConstant.FORM_APPROVAL_AGREE_VALUE)) {
-            return null;
+            // 审批不通过的忽略
+            return;
         }
+        // 根据表单数据创建活动
+        Activity activity = buildActivityFromActivityApproval(formData);
+        if (activity == null) {
+            return;
+        }
+        // 根据表单数据创建报名签到
+        SignAddEditDTO signAddEditDTO = buildSignFromActivityApproval(formData);
+        // 设置活动标识
+        Activity.ActivityFlag activityFlag = Activity.ActivityFlag.fromValue(flag);
+        if (activityFlag == null) {
+            activityFlag = Activity.ActivityFlag.NORMAL;
+        }
+        activity.setActivityFlag(activityFlag.getValue());
+        // 使用指定的模板
+        WebTemplate webTemplate = webTemplateService.getById(CommonConstant.DEFAULT_FROM_FORM_CREATE_ACTIVITY_TEMPLATE_ID);
+        if (webTemplate == null) {
+            throw new BusinessException("通过活动申报创建活动指定的门户模版不存在");
+        }
+        WfwRegionalArchitectureDTO wfwRegionalArchitecture = wfwRegionalArchitectureApiService.buildWfwRegionalArchitecture(fid);
+        LoginUserDTO loginUser = LoginUserDTO.buildDefault(activity.getCreateUid(), activity.getCreateUserName(), activity.getCreateFid(), activity.getCreateOrgName());
+        activityHandleService.add(activity, signAddEditDTO, Lists.newArrayList(wfwRegionalArchitecture), loginUser);
+        // 门户克隆模版
+        activityHandleService.bindWebTemplate(activity.getId(), webTemplate.getId(), loginUser);
+        // 发布
+        activityHandleService.release(activity.getId(), loginUser);
+    }
+
+    /**获取需要创建的活动
+     * @Description
+     * @author wwb
+     * @Date 2021-05-11 16:14:37
+     * @param formData
+     * @return com.chaoxing.activity.model.Activity
+     */
+    private Activity buildActivityFromActivityApproval(FormDTO formData) {
+        Activity activity = Activity.buildDefault();
+        Integer fid = formData.getFid();
+        Integer formUserId = formData.getFormUserId();
         // 是否已经创建了活动，根据formUserId来判断
         Activity existActivity = activityQueryService.getByOriginTypeAndOrigin(Activity.OriginTypeEnum.ACTIVITY_DECLARATION, String.valueOf(formUserId));
         if (existActivity != null) {
             return null;
         }
+        // 活动名称
         String activityName = FormUtils.getValue(formData, "activity_name");
+        activity.setName(activityName);
+        // 封面
+        String coverCloudId = FormUtils.getCloudId(formData, "cover");
+        if (StringUtils.isNotBlank(coverCloudId)) {
+            activity.setCoverCloudId(coverCloudId);
+        }
+        // 开始时间、结束时间
+        TimeScopeDTO activityTimeScope = FormUtils.getTimeScope(formData, "activity_time");
+        activity.setStartTime(activityTimeScope.getStartTime());
+        activity.setEndTime(activityTimeScope.getEndTime());
+        // 活动分类
         String activityClassifyName = FormUtils.getValue(formData, "activity_classify");
         ActivityClassify activityClassify = activityClassifyHandleService.addAndGet(activityClassifyName, fid);
+        activity.setActivityClassifyId(activityClassify.getId());
+        // 积分
         String integralStr = FormUtils.getValue(formData, "integral_value");
         if (StringUtils.isNotBlank(integralStr)) {
             activity.setOpenIntegral(true);
             activity.setIntegralValue(BigDecimal.valueOf(Double.parseDouble(integralStr)));
         }
-        // 开始时间、结束时间
-        List<FormDataDTO> formDatas = formData.getFormData();
-        List<String> activityTimes = Lists.newArrayList();
-        if (CollectionUtils.isNotEmpty(formDatas)) {
-            for (FormDataDTO data : formDatas) {
-                String alias = data.getAlias();
-                if (Objects.equals("activity_time", alias)) {
-                    activityTimes.add(data.getValues().get(0).getString("val"));
+        // 主办方
+        String organisers = FormUtils.getValue(formData, "organisers");
+        activity.setOrganisers(organisers);
+        // 是否开启评价
+        String openRating = FormUtils.getValue(formData, "is_open_rating");
+        activity.setOpenRating(Objects.equals("是", openRating));
+        // 活动类型
+        String activityType = FormUtils.getValue(formData, "activity_type");
+        if (StringUtils.isNotBlank(activityType)) {
+            Activity.ActivityTypeEnum activityTypeEnum = Activity.ActivityTypeEnum.fromName(activityType);
+            if (activityTypeEnum != null) {
+                activity.setActivityType(activityTypeEnum.getValue());
+                AddressDTO activity_address = FormUtils.getAddress(formData, "activity_address");
+                if (activity_address != null) {
+                    activity.setAddress(activity_address.getAddress());
+                    activity.setLongitude(activity_address.getLng());
+                    activity.setDimension(activity_address.getLat());
                 }
             }
+        } else {
+            activity.setActivityType(Activity.ActivityTypeEnum.ONLINE.getValue());
         }
-        if (activityTimes.size() > 1) {
-            String startTimeStr = activityTimes.get(0);
-            String endTimeStr = activityTimes.get(1);
-            activity.setStartTime(LocalDateTime.parse(startTimeStr, DATA_DATE_TIME_FORMATTER));
-            activity.setEndTime(LocalDateTime.parse(endTimeStr, DATA_DATE_TIME_FORMATTER));
+        // 是否开启作品征集
+        String openWork = FormUtils.getValue(formData, "is_open_work");
+        activity.setOpenWork(Objects.equals("是", openWork));
+        // 学分
+        String credit = FormUtils.getValue(formData, "credit");
+        if (StringUtils.isNotBlank(credit)) {
+            activity.setCredit(new BigDecimal(credit));
         }
-        activity.setActivityType(Activity.ActivityTypeEnum.ONLINE.getValue());
-        activity.setName(activityName);
-        activity.setActivityClassifyId(activityClassify.getId());
+        // 学时
+        String period = FormUtils.getValue(formData, "period");
+        if (StringUtils.isNotBlank(period)) {
+            activity.setPeriod(new BigDecimal(period));
+        }
+
         activity.setCreateUid(formData.getUid());
         activity.setCreateUserName(formData.getUname());
         activity.setCreateFid(fid);
@@ -230,40 +305,103 @@ public class FormApprovalApiService {
         return activity;
     }
 
-    /**新增活动
+    /**通过活动审批创建报名签到
      * @Description 
      * @author wwb
-     * @Date 2021-05-11 16:28:51
-     * @param fid
-     * @param formId
-     * @param formUserId
-     * @return void
+     * @Date 2021-06-11 17:49:43
+     * @param formData
+     * @return com.chaoxing.activity.dto.module.SignAddEditDTO
     */
-    @Transactional(rollbackFor = Exception.class)
-    public void addActivity(Integer fid, Integer formId, Integer formUserId, String flag) {
-        Activity activity = getNeedCreateActivity(fid, formId, formUserId);
-        if (activity == null) {
-            return;
+    private SignAddEditDTO buildSignFromActivityApproval(FormDTO formData) {
+        SignAddEditDTO signAddEdit = SignAddEditDTO.buildDefault();
+        // 报名
+        List<SignUp> signUps = signAddEdit.getSignUps();
+        SignUp signUp = signUps.get(0);
+        String is_open_sign_up = FormUtils.getValue(formData, "is_open_sign_up");
+        if (Objects.equals("是", is_open_sign_up)) {
+            signUp.setDeleted(false);
+            String sign_up_open_audit = FormUtils.getValue(formData, "sign_up_open_audit");
+            signUp.setOpenAudit(Objects.equals("是", sign_up_open_audit));
+            TimeScopeDTO signUpTimeScope = FormUtils.getTimeScope(formData, "sign_up_time");
+            signUp.setStartTime(signUpTimeScope.getStartTime());
+            signUp.setEndTime(signUpTimeScope.getEndTime());
+            String sign_up_end_allow_cancel = FormUtils.getValue(formData, "sign_up_end_allow_cancel");
+            signUp.setEndAllowCancel(Objects.equals("是", sign_up_end_allow_cancel));
+            String sign_up_public_list = FormUtils.getValue(formData, "sign_up_public_list");
+            signUp.setPublicList(Objects.equals("是", sign_up_public_list));
+            String sign_up_person_limit = FormUtils.getValue(formData, "sign_up_person_limit");
+            if (StringUtils.isNotBlank(sign_up_person_limit)) {
+                signUp.setLimitPerson(true);
+                signUp.setPersonLimit(Integer.parseInt(sign_up_person_limit));
+            }
         }
-        // 设置活动标识
-        Activity.ActivityFlag activityFlag = Activity.ActivityFlag.fromValue(flag);
-        if (activityFlag == null) {
-            activityFlag = Activity.ActivityFlag.NORMAL;
+
+        List<SignIn> signIns = signAddEdit.getSignIns();
+        // 签到
+        SignIn signIn = signIns.get(0);
+        String is_open_sign_in = FormUtils.getValue(formData, "is_open_sign_in");
+        if (Objects.equals("是", is_open_sign_in)) {
+            signIn.setDeleted(false);
+            String signInPublicList = FormUtils.getValue(formData, "sign_in_public_list");
+            signIn.setPublicList(Objects.equals("是", signInPublicList));
+            TimeScopeDTO signInTimeScope = FormUtils.getTimeScope(formData, "sign_in_time");
+            signIn.setStartTime(signInTimeScope.getStartTime());
+            signIn.setEndTime(signInTimeScope.getEndTime());
+            String sign_in_way = FormUtils.getValue(formData, "sign_in_way");
+            SignIn.Way way = SignIn.Way.fromName(sign_in_way);
+            if (way != null) {
+                signIn.setWay(way.getValue());
+                if (Objects.equals(SignIn.Way.POSITION, way)) {
+                    AddressDTO sign_in_address = FormUtils.getAddress(formData, "sign_in_address");
+                    if (sign_in_address != null) {
+                        signIn.setAddress(sign_in_address.getAddress());
+                        signIn.setLongitude(sign_in_address.getLng());
+                        signIn.setDimension(sign_in_address.getLat());
+                    }
+                }
+            } else {
+                signIn.setWay(SignIn.Way.QR_CODE.getValue());
+                SignIn.ScanCodeWay scanCodeWay = SignIn.ScanCodeWay.fromName(sign_in_way);
+                if (scanCodeWay != null) {
+                    signIn.setScanCodeWay(scanCodeWay.getValue());
+                } else {
+                    signIn.setScanCodeWay(SignIn.ScanCodeWay.PARTICIPATOR.getValue());
+                }
+            }
         }
-        activity.setActivityFlag(activityFlag.getValue());
-        // 取最后一个模版
-        WebTemplate webTemplate = webTemplateService.getById(CommonConstant.DEFAULT_FROM_FORM_CREATE_ACTIVITY_TEMPLATE_ID);
-        if (webTemplate == null) {
-            throw new BusinessException("默认的模版不存在");
+        // 签退
+        SignIn signOut = signIns.get(1);
+        String is_open_sign_out = FormUtils.getValue(formData, "is_open_sign_out");
+        if (Objects.equals("是", is_open_sign_out)) {
+            signOut.setDeleted(false);
+            String sign_out_public_list = FormUtils.getValue(formData, "sign_out_public_list");
+            signOut.setPublicList(Objects.equals("是", sign_out_public_list));
+            TimeScopeDTO signOutTimeScope = FormUtils.getTimeScope(formData, "sign_out_time");
+            signOut.setStartTime(signOutTimeScope.getStartTime());
+            signOut.setEndTime(signOutTimeScope.getEndTime());
+            String sign_out_way = FormUtils.getValue(formData, "sign_out_way");
+            SignIn.Way way = SignIn.Way.fromName(sign_out_way);
+            if (way != null) {
+                signOut.setWay(way.getValue());
+                if (Objects.equals(SignIn.Way.POSITION, way)) {
+                    AddressDTO sign_out_address = FormUtils.getAddress(formData, "sign_out_address");
+                    if (sign_out_address != null) {
+                        signOut.setAddress(sign_out_address.getAddress());
+                        signOut.setLongitude(sign_out_address.getLng());
+                        signOut.setDimension(sign_out_address.getLat());
+                    }
+                }
+            } else {
+                signOut.setWay(SignIn.Way.QR_CODE.getValue());
+                SignIn.ScanCodeWay scanCodeWay = SignIn.ScanCodeWay.fromName(sign_out_way);
+                if (scanCodeWay != null) {
+                    signOut.setScanCodeWay(scanCodeWay.getValue());
+                } else {
+                    signOut.setScanCodeWay(SignIn.ScanCodeWay.PARTICIPATOR.getValue());
+                }
+            }
         }
-        SignAddEditDTO signAddEditDTO = SignAddEditDTO.buildDefault();
-        WfwRegionalArchitectureDTO wfwRegionalArchitecture = wfwRegionalArchitectureApiService.buildWfwRegionalArchitecture(fid);
-        LoginUserDTO loginUser = LoginUserDTO.buildDefault(activity.getCreateUid(), activity.getCreateUserName(), activity.getCreateFid(), activity.getCreateOrgName());
-        activityHandleService.add(activity, signAddEditDTO, Lists.newArrayList(wfwRegionalArchitecture), loginUser);
-        // 门户克隆模版
-        activityHandleService.bindWebTemplate(activity.getId(), webTemplate.getId(), loginUser);
-        // 发布
-        activityHandleService.release(activity.getId(), loginUser);
+        return signAddEdit;
     }
 
 }

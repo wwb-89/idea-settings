@@ -1,0 +1,914 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org/">
+
+<head>
+    <title>区域活动统计</title>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="/static/pc/assets/lib/element-ui/lib/theme-chalk/index.css" th:href="@{/pc/assets/lib/element-ui/lib/theme-chalk/index.css}">
+    <link rel="stylesheet" href="/static/pc/assets/css/reset-tongji.css" th:href="@{/pc/assets/css/reset-tongji.css}">
+    <link rel="stylesheet" href="/static/pc/assets/css/common.css" th:href="@{/pc/assets/css/common.css}">
+    <link rel="stylesheet" href="/static/pc/assets/css/activity-detail.css" th:href="@{/pc/assets/css/activity-detail.css}">
+    <link rel="stylesheet" href="/static/pc/assets/fontDIN/DINNextLTW23Medium.ttf" th:href="@{/pc/assets/fontDIN/DINNextLTW23Medium.ttf}">
+    <style>
+        [v-cloak] {
+            display: none;
+        }
+        .el-cascader-menu .el-radio {
+            display: table;
+            vertical-align: middle;
+            width: 90%;
+            height: 100%;
+            position: absolute;
+            box-sizing: border-box;
+            margin-left:-20px;
+            padding-left:10px;
+        }
+        .el-cascader-menu .el-radio .el-radio__input {
+            display: table-cell;
+            vertical-align: middle;
+        }
+        .el-cascader-menu .el-radio .el-radio__input .el-radio__inner{
+            display: none;
+        }
+        .tab-c {
+            display: block;
+        }
+    </style>
+</head>
+
+<body>
+<div class="activity-statistics" id="activity-statistics" v-cloak>
+    <div class="white-part title-box">
+        <div class="clear name-box">
+            <span class="title fl">区域活动统计</span>
+            <span class="tip fr">
+                    <el-button class="btn-customize" round>导出</el-button>
+                </span>
+        </div>
+        <div class="date-box fs0">
+            <el-date-picker
+                    v-model="time"
+                    type="daterange"
+                    range-separator=""
+                    format="yyyy-MM-dd"
+                    value-format="yyyy-MM-dd"
+                    start-placeholder="开始日期"
+                    end-placeholder="结束日期"
+                    @change="dateRangeChange"
+            >
+            </el-date-picker>
+            <el-cascader
+                    ref="regionalCascaderRef"
+                    class="marginl16"
+                    v-model="queryParams.regionId"
+                    :props="cascaderProps"
+                    :show-all-levels="false"
+                    collapse-tags
+                    :options="wfwRegionalArchitectureTrees"
+                    @change="cascaderChange"></el-cascader>
+        </div>
+    </div>
+    <div class="white-part paddingb12">
+        <p class="title">概况</p>
+        <div class="content1">
+            <ul class="count-ul clearfix">
+                <li class="count-li fl">
+                    <img class="count-img" src="/static/pc/assets/images/yd-icon/icon-activity.png" th:src="@{/pc/assets/images/yd-icon/icon-activity.png}" alt="">
+                    <div class="text-box">
+                        <p>
+                            <span class="count-num">{{regionalActivityStat.activityNum}}</span>
+                        </p>
+                        <p class="count-name">活动个数(个)</p>
+                    </div>
+                </li>
+                <li class="count-li fl">
+                    <img class="count-img" src="/static/pc/assets/images/yd-icon/icon-eye.png" th:src="@{/pc/assets/images/yd-icon/icon-eye.png}" alt="">
+                    <div class="text-box">
+                        <p>
+                            <span class="count-num">{{regionalActivityStat.pv}}</span>
+                        </p>
+                        <p class="count-name">浏览量(pv)</p>
+                    </div>
+                </li>
+                <li class="count-li fl">
+                    <img class="count-img" src="/static/pc/assets/images/yd-icon/icon-shi2.png" th:src="@{/pc/assets/images/yd-icon/icon-shi2.png}" alt="">
+                    <div class="text-box">
+                        <p>
+                            <span class="count-num">{{regionalActivityStat.signedUpNum}}</span>
+                        </p>
+                        <p class="count-name">报名人数(人)</p>
+                    </div>
+                </li>
+                <li class="count-li fl">
+                    <img class="count-img" src="/static/pc/assets/images/yd-icon/icon-sign-number.png" th:src="@{/pc/assets/images/yd-icon/icon-sign-number.png}" alt="">
+                    <div class="text-box">
+                        <p>
+                            <span class="count-num">{{regionalActivityStat.signedInNum}}</span>
+                        </p>
+                        <p class="count-name">签到数(人·次)</p>
+                    </div>
+                </li>
+                <li class="count-li fl">
+                    <img class="count-img" src="/static/pc/assets/images/yd-icon/icon-jg.png" th:src="@{/pc/assets/images/yd-icon/icon-jg.png}" alt="">
+                    <div class="text-box">
+                        <p>
+                            <span class="count-num">{{regionalActivityStat.affiliationNum}}</span>
+                        </p>
+                        <p class="count-name">机构数(所)</p>
+                    </div>
+                </li>
+            </ul>
+        </div>
+    </div>
+    <div class="white-part line-box">
+        <div class="height417px" id="line-aqxec"></div>
+    </div>
+    <div class="white-part">
+        <div class="clear">
+            <div class="activity-tab flex fl">
+                <ul class="tabs font16 flex" id="tabA">
+                    <li :class="{'tab-i': true, 'current': currentRegion && currentRegion.existArea }" v-show="currentRegion && currentRegion.existArea">
+                        <a href="javascript:;" class="">按区域</a>
+                    </li>
+                    <li :class="{'tab-i': true, 'current': currentRegion && !currentRegion.existArea && currentRegion.existChild }" v-show="currentRegion && currentRegion.existChild">
+                        <a id="orgStatTab" href="javascript:;" class="">按机构</a>
+                    </li>
+                    <li :class="{'tab-i': true, 'current': currentRegion && !currentRegion.existChild && !currentRegion.existArea }" class="tab-i">
+                        <a href="javascript:;" class="">活动榜</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+
+        <div id="tabB">
+            <!-- 区域 -->
+            <div class="tab-c" style="display: block;" v-show="currentRegion && currentRegion.existArea">
+                <div class="table-box">
+                    <el-table :data="regionStatDetail" style="width: 100%">
+                        <el-table-column prop="name" label="区域名称"></el-table-column>
+                        <el-table-column prop="activityNum" label="活动数" width="140" align="center">
+                            <template #header>
+                                <div :class="{number: 'true', 'active': regionSortCol && regionSortCol.field === 'activityNum'}" @click="sortRegionStatDetail(sortField.activityNum, $event)"> 活动数<i class="down-icon"></i></div>
+                            </template>
+                            <template slot-scope="scope">
+                                <span class="color">{{scope.row.activityNum}}</span>
+                            </template>
+                        </el-table-column>
+                        <el-table-column prop="pv" label="浏览量" width="140" align="center">
+                            <template #header>
+                                <div :class="{number: 'true', 'active': regionSortCol && regionSortCol.field === 'pv'}" @click="sortRegionStatDetail(sortField.pv, $event)"> 浏览量<i class="down-icon"></i></div>
+                            </template>
+                            <template slot-scope="scope">
+                                <span class="color">{{scope.row.pv}}</span>
+                            </template>
+                        </el-table-column>
+                        <el-table-column prop="signedUpNum" label="报名数" width="140" align="center">
+                            <template #header>
+                                <div :class="{number: 'true', 'active': regionSortCol && regionSortCol.field === 'signedUpNum'}" @click="sortRegionStatDetail(sortField.signedUpNum, $event)"> 报名数<i class="down-icon"></i></div>
+                            </template>
+                            <template slot-scope="scope">
+                                <span class="color">{{scope.row.signedUpNum}}</span>
+                            </template>
+                        </el-table-column>
+                        <el-table-column prop="signedInNum" label="签到数" width="140" align="center">
+                            <template #header>
+                                <div :class="{number: 'true', 'active': regionSortCol && regionSortCol.field === 'signedInNum'}" @click="sortRegionStatDetail(sortField.signedInNum, $event)"> 签到数<i class="down-icon"></i></div>
+                            </template>
+                            <template slot-scope="scope">
+                                <span class="color">{{scope.row.signedInNum}}</span>
+                            </template>
+                        </el-table-column>
+                    </el-table>
+                </div>
+            </div>
+            <!-- 机构 -->
+            <div class="tab-c" v-show="currentRegion && !currentRegion.existArea && currentRegion.existChild">
+                <div class="table-box">
+                    <el-table :data="orgStatDetail" style="width: 100%">
+                        <el-table-column prop="name" label="机构名称"></el-table-column>
+                        <el-table-column prop="activityNum" label="活动数" width="140" align="center">
+                            <template #header>
+                                <div :class="{number: 'true', 'active': orgSortCol && orgSortCol.field === 'activityNum'}" @click="sortOrgStatDetail(sortField.activityNum, $event)"> 活动数<i class="down-icon"></i></div>
+                            </template>
+                            <template slot-scope="scope">
+                                <span class="color">{{scope.row.activityNum}}</span>
+                            </template>
+                        </el-table-column>
+                        <el-table-column prop="pv" label="浏览量" width="140" align="center">
+                            <template #header>
+                                <div :class="{number: 'true', 'active': orgSortCol && orgSortCol.field === 'pv'}" @click="sortOrgStatDetail(sortField.pv, $event)"> 浏览量<i class="down-icon"></i></div>
+                            </template>
+                            <template slot-scope="scope">
+                                <span class="color">{{scope.row.pv}}</span>
+                            </template>
+                        </el-table-column>
+                        <el-table-column prop="signedUpNum" label="报名数" width="140" align="center">
+                            <template #header>
+                                <div :class="{number: 'true', 'active': orgSortCol && orgSortCol.field === 'signedUpNum'}" @click="sortOrgStatDetail(sortField.signedUpNum, $event)"> 报名数<i class="down-icon"></i></div>
+                            </template>
+                            <template slot-scope="scope">
+                                <span class="color">{{scope.row.signedUpNum}}</span>
+                            </template>
+                        </el-table-column>
+                        <el-table-column prop="signedInNum" label="签到数" width="140" align="center">
+                            <template #header>
+                                <div :class="{number: 'true', 'active': orgSortCol && orgSortCol.field === 'signedInNum'}" @click="sortOrgStatDetail(sortField.signedInNum, $event)"> 签到数<i class="down-icon"></i></div>
+                            </template>
+                            <template slot-scope="scope">
+                                <span class="color">{{scope.row.signedInNum}}</span>
+                            </template>
+                        </el-table-column>
+                    </el-table>
+                </div>
+            </div>
+            <!-- 活动 -->
+            <div class="tab-c" v-show=" currentRegion && !currentRegion.existChild && !currentRegion.existArea">
+                <div class="table-box">
+                    <el-table :data="topActivityStat" style="width: 100%">
+                        <el-table-column prop="rank" label="排名" width="50" align="center">
+                            <template slot-scope="scope">
+                            <span
+                                    :class="scope.row.rank == 1 ? 'rank one' : scope.row.rank == 2 ? 'rank two' : scope.row.rank == 3 ? 'rank three' : 'rank' ">{{scope.row.rank}}</span>
+                            </template>
+                        </el-table-column>
+                        <el-table-column prop="activityName" label="活动名称" width="421">
+                        </el-table-column>
+                        <el-table-column prop="pv" label="浏览量" width="234" align="center">
+                            <template #header>
+                                <div :class="{number: 'true', 'active': sortCol && sortCol.field === 'pv'}" @click.stop="loadTopActivityStat(sortField.pv, $event)"> 浏览量<i class="down-icon"></i></div>
+                            </template>
+                            <template slot-scope="scope">
+                                <span class="color">{{scope.row.pv || 0}}</span>
+                            </template>
+                        </el-table-column>
+                        <el-table-column prop="signedUpNum" label="报名人数" align="center">
+                            <template #header>
+                                <div :class="{number: 'true', 'active': sortCol && sortCol.field === 'signedUpNum'}" @click="loadTopActivityStat(sortField.signedUpNum, $event)"> 报名人数<i class="down-icon"></i></div>
+                            </template>
+                            <template slot-scope="scope">
+                                <span class="color">{{scope.row.signedUpNum || 0}}</span>
+                            </template>
+                        </el-table-column>
+                    </el-table>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>
+<div th:replace="pc/include/common_js :: common_js(~{::script})">
+    <script src="/static/pc/assets/lib/echarts4.min.js" th:src="@{/pc/assets/lib/echarts4.min.js}"></script>
+    <script src="/static/pc/assets/lib/element-ui/lib/index.js" th:src="@{/pc/assets/lib/element-ui/lib/index.js}"></script>
+    <script src="/static/pc/assets/lib/jquery.nicescroll.min.js" th:src="@{/pc/assets/lib/jquery.nicescroll.min.js}"></script>
+    <script src="/static/pc/assets/js/main.js" th:src="@{/pc/assets/js/main.js}"></script>
+    <script th:inline="javascript">
+        // $(function () {
+        //
+        //     $('.el-table .number').click(function () {
+        //         $(this).parents('.el-table').find($(' .number')).removeClass('active')
+        //         $(this).addClass('active')
+        //     })
+        // })
+        var vm = new Vue({
+            el: '#activity-statistics',
+            data: function () {
+                return {
+                    fid: [[${fid}]],
+                    regionalActivityStat: [[${regionalActivityStat}]],
+                    wfwRegionalArchitectureTrees: [[${wfwRegionalArchitectureTrees}]],
+                    regionStatDetail: [],
+                    orgStatDetail: [],
+                    topActivityStat: [],
+                    treeNodeMap: {},
+                    cascaderProps: {
+                        value: 'id',
+                        label: 'name',
+                        checkStrictly: true,
+                        emitPath: false,
+                        expandTrigger: 'hover'
+                    },
+                    cascaderValue: '',//Cascader 级联选择器的值
+                    queryParams: {
+                        fid: [[${fid}]],
+                        regionId: '',
+                        startDate: null,
+                        endDate: null,
+                        orderField: 'pv',
+                        orderType: 'DESC',
+                        // 活动榜请求参数
+                        activityIds: [[${regionalActivityStat.activityIds}]]
+                    },
+                    regionSortCol: null,
+                    orgSortCol: null,
+                    sortCol: null,
+                    sortField: {
+                        activityNum: {
+                            desc: true,
+                            field: 'activityNum'
+                        },
+                        pv: {
+                            desc: true,
+                            field: 'pv'
+                        },
+                        signedUpNum: {
+                            desc: true,
+                            field: 'signedUpNum'
+                        },
+                        signedInNum: {
+                            desc: true,
+                            field: 'signedInNum'
+                        }
+                    },
+                    currentRegion: {},
+                    time: '',
+                    value: '',
+                    ewTab: null,
+                }
+            },
+            mounted: function () {
+                var $this = this;
+                $(".number.active").on("click", function (){
+                    $(this).find(".down-icon").toggleClass("rotate180")
+                })
+                if (!$this.ewTab) {
+                    $this.ewTab = new EW_tab({
+                        'tabBtn': '#tabA .tab-i',
+                        'tabCon': '#tabB .tab-c',
+                        'cur': 'current'
+                    });
+                    $this.ewTab.change()
+                }
+                $this.recursionTree($this.wfwRegionalArchitectureTrees);
+                $this.cascaderChange($this.wfwRegionalArchitectureTrees[0].id)
+                $this.initChart();
+            },
+            methods: {
+                initChart: function () {
+                    var $this = this;
+                    // 日期
+                    var data1 = [];
+                    // 浏览量趋势
+                    var data2 = [];
+                    // 报名人数
+                    var data3 = [];
+                    var pvTrendObj = {};
+                    var signUpTrendObj = {};
+                    var max = 120;
+                    $($this.regionalActivityStat.pvTrend).each(function () {
+                        var val = parseInt(this.value || '0');
+                        max = val > max ? val : max;
+                        pvTrendObj[this.dateStr] = this.value;
+                    });
+                    $($this.regionalActivityStat.signUpTrend).each(function () {
+                        var val = parseInt(this.value || '0');
+                        max = val > max ? val : max;
+                        signUpTrendObj[this.dateStr] = this.value;
+                    });
+                    max += 10;
+                    $($this.regionalActivityStat.daily).each(function () {
+                        var dateStr = this + '';
+                        data1.push(dateStr);
+                        data2.push(pvTrendObj[dateStr] || '0');
+                        data3.push(signUpTrendObj[dateStr] || '0');
+                    });
+                    // 活动参与趋势
+                    var myChart1 = echarts.init(document.getElementById('line-aqxec'));
+                    var option1 = [];
+                    if (data1.length > 1) {
+                        option1 = {
+                            title: {
+                                text: '活动参与趋势图',
+                                textStyle: {
+                                    fontWeight: 500,
+                                    fontSize: 16,
+                                    color: '#333333',
+                                },
+                                left: 0,
+                                top: 0,
+                            },
+                            color: ['#3A8BFF', '#9FE6B8'],
+                            legend: {
+                                top: 0,
+                                right: 0,
+                                itemWidth: 8,
+                                itemHeight: 8,
+                                itemGap: 16,
+                                textStyle: {
+                                    fontWeight: 500,
+                                    fontSize: 12,
+                                    color: '#666666'
+                                },
+                                icon: 'circle',
+                                data: ['报名人数', '浏览量']
+                            },
+                            grid: {
+                                bottom: 10,
+                                top: 70,
+                                left: 0,
+                                right: 20,
+                                containLabel: true,
+                            },
+                            tooltip: {
+                                trigger: 'axis',
+                                backgroundColor: 'rgba(0,0,0,0.7)',
+                                padding: [12, 16],
+                                axisPointer: {
+                                    type: 'line',
+                                    lineStyle: {
+                                        color: 'rgba(0, 0, 0, 0.1)'
+                                    }
+                                }
+                            },
+                            xAxis: {
+                                type: 'category',
+                                boundaryGap: false,
+                                data: data1,
+                                axisLine: {
+                                    show: true,
+                                    lineStyle: {
+                                        color: '#E3ECFB',
+                                    }
+                                },
+                                axisTick: {
+                                    show: false
+                                },
+                                splitLine: {
+                                    lineStyle: {
+                                        color: '#f8f8f8',
+                                    },
+                                },
+                                axisLabel: {
+                                    lineHeight: 40,
+                                    textStyle: {
+                                        color: '#767690'
+                                    }
+                                },
+                                offset: 10
+                            },
+                            yAxis: {
+                                type: 'value',
+                                name: '',
+                                axisLine: {
+                                    show: false
+                                },
+                                axisTick: {
+                                    show: false
+                                },
+                                splitLine: {
+                                    lineStyle: {
+                                        type: 'dashed',
+                                        color: '#E3ECFB',
+                                    },
+                                },
+                                min: 0,
+                                max: max
+                            },
+                            series: [{
+                                name: '报名人数',
+                                data: data2,
+                                type: 'line',
+                                itemStyle: {
+                                    normal: {
+                                        opacity: 0,
+                                    },
+                                },
+                                smooth: true,
+                                lineStyle: {
+                                    normal: {
+                                        color: '#3A8BFF',
+                                        width: 2,
+                                    }
+                                },
+                                areaStyle: {
+                                    normal: {
+                                        color: {
+                                            type: 'linear',
+                                            x: 0,
+                                            y: 0,
+                                            x2: 0,
+                                            y2: 1,
+                                            colorStops: [{
+                                                offset: 0,
+                                                color: 'rgba(58,139,255,0.3)' // 0% 处的颜色
+                                            }, {
+                                                offset: 1,
+                                                color: 'rgba(58,139,255,0)' // 100% 处的颜色
+                                            }],
+                                            global: false // 缺省为 false
+                                        },
+                                    },
+                                },
+                            },
+                                {
+                                    name: '浏览量',
+                                    data: data3,
+                                    type: 'line',
+                                    itemStyle: {
+                                        normal: {
+                                            opacity: 0,
+                                        },
+                                    },
+                                    smooth: true,
+                                    lineStyle: {
+                                        normal: {
+                                            color: '#9FE6B8',
+                                            width: 2,
+                                        }
+                                    },
+                                    areaStyle: {
+                                        normal: {
+                                            color: {
+                                                type: 'linear',
+                                                x: 0,
+                                                y: 0,
+                                                x2: 0,
+                                                y2: 1,
+                                                colorStops: [{
+                                                    offset: 0,
+                                                    color: 'rgba(159,230,184,0.3)' // 0% 处的颜色
+                                                }, {
+                                                    offset: 1,
+                                                    color: 'rgba(159,230,184,0)' // 100% 处的颜色
+                                                }],
+                                                global: false // 缺省为 false
+                                            },
+                                        },
+                                    },
+                                }
+                            ]
+                        };
+                    } else {
+                        option1 = {
+                            title: {
+                                text: '活动参与趋势图',
+                                textStyle: {
+                                    fontSize: 16,
+                                    color: '#333333',
+                                },
+                                left: 0,
+                                top: 0,
+                            },
+                            color: ['#3A8BFF', '#9FE6B8'],
+                            legend: {
+                                top: 0,
+                                right: 20,
+                                itemWidth: 8,
+                                itemHeight: 8,
+                                itemGap: 16,
+                                textStyle: {
+                                    fontSize: 12,
+                                    color: '#666666'
+                                },
+                                icon: 'circle',
+                                data: ['报名人数', '浏览量']
+                            },
+                            grid: {
+                                bottom: 10,
+                                top: 70,
+                                left: 0,
+                                right: 20,
+                                containLabel: true,
+                            },
+                            tooltip: {
+                                trigger: 'axis',
+                                backgroundColor: 'rgba(0,0,0,0.7)',
+                                padding: [12, 16],
+                                axisPointer: {
+                                    type: 'line',
+                                    lineStyle: {
+                                        color: 'rgba(0, 0, 0, 0.1)'
+                                    }
+                                }
+                            },
+                            xAxis: {
+                                type: 'category',
+                                boundaryGap: false,
+                                data: ['03-01'],
+                                axisLine: {
+                                    show: true,
+                                    lineStyle: {
+                                        color: '#E3ECFB',
+                                    }
+                                },
+                                axisTick: {
+                                    show: false
+                                },
+                                splitLine: {
+                                    lineStyle: {
+                                        color: '#f8f8f8',
+                                    },
+                                },
+                                axisLabel: {
+                                    lineHeight: 40,
+                                    textStyle: {
+                                        color: '#767690'
+                                    }
+                                },
+                            },
+                            yAxis: {
+                                type: 'value',
+                                name: '',
+                                axisLine: {
+                                    show: false
+                                },
+                                axisTick: {
+                                    show: false
+                                },
+                                splitLine: {
+                                    lineStyle: {
+                                        type: 'dashed',
+                                        color: '#E3ECFB',
+                                    },
+                                },
+                                min: 0,
+                                max: max
+                            },
+                            series: [{
+                                name: '报名人数',
+                                data: data3,
+                                type: 'line',
+                                lineStyle: {
+                                    normal: {
+                                        color: '#3A8BFF',
+                                        width: 2,
+                                    }
+                                },
+                                areaStyle: {
+                                    normal: {
+                                        color: {
+                                            type: 'linear',
+                                            x: 0,
+                                            y: 0,
+                                            x2: 0,
+                                            y2: 1,
+                                            colorStops: [{
+                                                offset: 0,
+                                                color: 'rgba(58,139,255,0.3)' // 0% 处的颜色
+                                            }, {
+                                                offset: 1,
+                                                color: 'rgba(58,139,255,0)' // 100% 处的颜色
+                                            }],
+                                            global: false // 缺省为 false
+                                        },
+                                    },
+                                },
+                            },
+                                {
+                                    name: '浏览量',
+                                    data: data2,
+                                    type: 'line',
+                                    lineStyle: {
+                                        normal: {
+                                            color: '#9FE6B8',
+                                            width: 2,
+                                        }
+                                    },
+                                    areaStyle: {
+                                        normal: {
+                                            color: {
+                                                type: 'linear',
+                                                x: 0,
+                                                y: 0,
+                                                x2: 0,
+                                                y2: 1,
+                                                colorStops: [{
+                                                    offset: 0,
+                                                    color: 'rgba(159,230,184,0.3)' // 0% 处的颜色
+                                                }, {
+                                                    offset: 1,
+                                                    color: 'rgba(159,230,184,0)' // 100% 处的颜色
+                                                }],
+                                                global: false // 缺省为 false
+                                            },
+                                        },
+                                    },
+                                }
+                            ]
+                        };
+                    }
+                    myChart1.setOption(option1);
+                    window.onload = function () {
+                        myChart1.resize();
+                    }
+                    window.onresize = function () {
+                        myChart1.resize();
+                    }
+                },
+                recursionTree(trees) { //  递归 ，将tree 转换成map映射
+                    var $this = this;
+                    if (!trees) {
+                        return
+                    }
+                    $(trees).each(function () {
+                        if (this.children && this.children.length > 0) {
+                            $this.recursionTree(this.children)
+                        }
+                        $this.treeNodeMap[this.id] = this
+                    });
+                },
+                // 当时间范围、机构发生变化时，重新请求当前机构的活动统计信息
+                loadCurrentRegionActivityStat: function () {
+                    var $this = this;
+                    var url = ctx + "/api/activity/stat/region/" + $this.queryParams.fid +"/query";
+                    var params = {
+                        startDate: $this.time[0],
+                        endDate: $this.time[1],
+                    };
+                    app.ajaxPost(url, params, function (res) {
+                        if (res.success) {
+                            $this.regionalActivityStat = res.data;
+                            $this.initChart();
+                            // 重新获取top排行榜数据
+                            $this.queryParams.activityIds = $this.regionalActivityStat.activityIds;
+                            $this.loadTopActivityStat();
+                        } else {
+                            var errorMessage = res.message;
+                            if (activityApp.isEmpty(errorMessage)) {
+                                errorMessage = "获取机构统计数据失败!";
+                            }
+                            app.showMsg(errorMessage);
+                        }
+                    }, function () {
+                        app.showMsg("获取机构统计数据失败!");
+                    });
+                },
+                loadRegionStatDetail: function () {
+                    var $this = this;
+                    var params  = {
+                        fid: $this.queryParams.fid,
+                        regionId: $this.queryParams.regionId,
+                        startDate: $this.queryParams.startDate,
+                        endDate: $this.queryParams.endDate
+                    }
+                    var url = ctx + "/api/activity/stat/region/detail";
+                    app.ajaxPost(url, {queryParamStr: activityApp.getJsonStr(params)}, function (res) {
+                        if (res.success) {
+                            $this.regionStatDetail = res.data;
+                        } else {
+                            var errorMessage = res.message;
+                            if (activityApp.isEmpty(errorMessage)) {
+                                errorMessage = "获取区域统计数据失败!";
+                            }
+                            app.showMsg(errorMessage);
+                        }
+                    }, function () {
+                        app.showMsg("获取区域统计数据失败!");
+                    });
+                },
+                loadRegionOrgStatDetail: function () {
+                    var $this = this;
+                    var params  = {
+                        fid: $this.queryParams.fid,
+                        regionId: $this.queryParams.regionId,
+                        startDate: $this.queryParams.startDate,
+                        endDate: $this.queryParams.endDate
+                    }
+                    var url = ctx + "/api/activity/stat/region/org/detail";
+                    app.ajaxPost(url, {queryParamStr: activityApp.getJsonStr(params)}, function (res) {
+                        if (res.success) {
+                            $this.orgStatDetail = res.data;
+                        } else {
+                            var errorMessage = res.message;
+                            if (activityApp.isEmpty(errorMessage)) {
+                                errorMessage = "获取机构统计数据失败!";
+                            }
+                            app.showMsg(errorMessage);
+                        }
+                    }, function () {
+                        app.showMsg("获取机构统计数据失败!");
+                    });
+                },
+                loadTopActivityStat: function (sortCol, e) {
+                    var $this = this;
+                    if (sortCol) {
+                        if ($this.sortCol && $this.sortCol.field === sortCol.field) {
+                            $this.sortCol.desc = !this.sortCol.desc;
+                            if (e) {
+                                var iconClassName = $(e.target).get(0).className.indexOf('down-icon') !== -1;
+                                if (iconClassName) {
+                                    $(e.target).toggleClass("rotate180");
+                                } else {
+                                    $(e.target).find(".down-icon").toggleClass("rotate180");
+                                }
+                            }
+                        } else {
+                            $this.sortCol = sortCol;
+                        }
+                        $this.queryParams.orderField = $this.sortCol.field;
+                        $this.queryParams.orderType = $this.sortCol.desc ? 'DESC' : 'ASC';
+                    }
+
+                    var params  = {
+                        activityIds: $this.queryParams.activityIds,
+                        orderField: $this.queryParams.orderField,
+                        orderType: $this.queryParams.orderType,
+                        startDate: $this.queryParams.startDate,
+                        endDate: $this.queryParams.endDate
+                    }
+                    var url = ctx + "/api/activity/stat/top-activity";
+                    app.ajaxPost(url, {queryParamStr: activityApp.getJsonStr(params)}, function (res) {
+                        if (res.success) {
+                            $this.topActivityStat = res.data;
+                        } else {
+                            var errorMessage = res.message;
+                            if (activityApp.isEmpty(errorMessage)) {
+                                errorMessage = "获取TOP活动榜数据失败!";
+                            }
+                            app.showMsg(errorMessage);
+                        }
+                    }, function () {
+                        app.showMsg("获取TOP活动榜数据失败!");
+                    });
+                },
+                // 日期选择范围改变
+                dateRangeChange: function (range) {
+                    var $this = this;
+                    if (range && range.length > 0) {
+                        $this.queryParams.startDate = range[0];
+                        $this.queryParams.endDate = range[1];
+                    } else {
+                        $this.queryParams.startDate = null;
+                        $this.queryParams.endDate = null;
+                    }
+                    $this.reloadDetails();
+                },
+                // 当前机构发生变化事件
+                cascaderChange: function (nodeId) {
+                    var $this = this;
+                    $this.currentRegion = $this.treeNodeMap[nodeId];
+                    $this.queryParams.regionId = $this.currentRegion.id;
+                    $this.queryParams.fid = $this.currentRegion.fid;
+                    $this.reloadDetails();
+                },
+                reloadDetails: function () {
+                    var $this = this;
+                    $this.regionStatDetail = [];
+                    $this.orgStatDetail = [];
+                    $this.topActivityStat = [];
+
+                    if ($this.currentRegion.existArea) {
+                        $this.loadRegionStatDetail();
+                    }
+                    if ($this.currentRegion.existChild) {
+                        $this.loadRegionOrgStatDetail();
+                    }
+                    $this.loadCurrentRegionActivityStat();
+                },
+                sortRegionStatDetail: function (sortCol, e) {
+                    var $this = this;
+                    if ($this.regionSortCol && $this.regionSortCol.field === sortCol.field) {
+                        $this.regionSortCol.desc = !$this.regionSortCol.desc;
+                        if (e) {
+                            var iconClassName = $(e.target).get(0).className.indexOf('down-icon') !== -1;
+                            if (iconClassName) {
+                                $(e.target).toggleClass("rotate180");
+                            } else {
+                                $(e.target).find(".down-icon").toggleClass("rotate180");
+                            }
+                        }
+                    } else {
+                        $this.regionSortCol = sortCol;
+                    }
+
+                    $this.regionStatDetail.sort(function(a, b) {
+                        if ($this.regionSortCol.desc) {
+                            return b[$this.regionSortCol.field] - a[$this.regionSortCol.field];
+                        } else {
+                            return a[$this.regionSortCol.field] - b[$this.regionSortCol.field];
+                        }
+                    });
+                },
+                sortOrgStatDetail: function (sortCol, e) {
+                    var $this = this;
+                    if ($this.orgSortCol && $this.orgSortCol.field === sortCol.field) {
+                        $this.orgSortCol.desc = !$this.orgSortCol.desc;
+                        if (e) {
+                            var iconClassName = $(e.target).get(0).className.indexOf('down-icon') !== -1;
+                            if (iconClassName) {
+                                $(e.target).toggleClass("rotate180");
+                            } else {
+                                $(e.target).find(".down-icon").toggleClass("rotate180");
+                            }
+                        }
+                    } else {
+                        $this.orgSortCol = sortCol;
+                    }
+
+                    $this.orgStatDetail.sort(function(a, b) {
+                        if ($this.orgSortCol.desc) {
+                            return b[$this.orgSortCol.field] - a[$this.orgSortCol.field];
+                        } else {
+                            return a[$this.orgSortCol.field] - b[$this.orgSortCol.field];
+                        }
+                    });
+                }
+            }
+        })
+    </script>
+</div>
+
+</body>
+
+</html>

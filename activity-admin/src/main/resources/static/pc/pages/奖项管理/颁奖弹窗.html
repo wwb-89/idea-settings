@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="../../assets/lib/element-ui/lib/theme-chalk/index.css">
+    <link rel="stylesheet" href="../../assets/css/public.css">
+    <link rel="stylesheet" href="../../assets/css/confirm_dialog.css">
+    <link rel="stylesheet" href="../../assets/css/prize-manage.css">
+    <title>颁奖弹窗</title>
+</head>
+<body>
+    <div class="dialog-box" id="prize-manage">
+        <div class="dialog-wrap award-dialog">
+            <div class="header">
+                <span class="color333">选择奖项</span>
+                <img src="../../assets/images/close.png">
+            </div>
+            <div class="dialog-content">
+                <ul>
+                    <li class="item" :class="checked1 ? 'active' : ''"> 
+                        <div class="img-box">
+                            <img src="../../assets/images/yq-design/prize.png" alt="">
+                        </div>
+                        <p class="text overHidden1">趣自然 · 阅当夏一等奖趣自然 · 阅当夏一等奖一等奖</p>
+                        <div class="checked-box">
+                            <el-checkbox v-model="checked1"></el-checkbox>
+                        </div>
+                    </li>
+                    <li class="item" :class="checked2 ? 'active' : ''"> 
+                        <div class="img-box">
+                            <img src="../../assets/images/yq-design/prize.png" alt="">
+                        </div>
+                        <p class="text overHidden1">一等奖</p>
+                        <div class="checked-box">
+                            <el-checkbox v-model="checked2"></el-checkbox>
+                        </div>
+                    </li>
+                    <li class="item"> 
+                        <div class="img-box">
+                            <img src="../../assets/images/yq-design/prize.png" alt="">
+                        </div>
+                        <p class="text overHidden1">二等奖</p>
+                        <div class="checked-box">
+                            <el-checkbox v-model="checked3"></el-checkbox>
+                        </div>
+                    </li>
+                    <li class="item"> 
+                        <div class="img-box">
+                            <img src="../../assets/images/yq-design/prize.png" alt="">
+                        </div>
+                        <p class="text overHidden1">三等奖</p>
+                        <div class="checked-box">
+                            <el-checkbox v-model="checked4"></el-checkbox>
+                        </div>
+                    </li>
+                    <li class="item"> 
+                        <div class="img-box">
+                            <img src="../../assets/images/yq-design/prize.png" alt="">
+                        </div>
+                        <p class="text overHidden1">来杭图看“初见”刘毅·鱼拓展</p>
+                        <div class="checked-box">
+                            <el-checkbox v-model="checked5"></el-checkbox>
+                        </div>
+                    </li>
+                    <li class="item"> 
+                        <div class="img-box">
+                            <img src="../../assets/images/yq-design/prize.png" alt="">
+                        </div>
+                        <p class="text overHidden1">静心止语 -醉墨龙华抄经活动</p>
+                        <div class="checked-box">
+                            <el-checkbox v-model="checked6"></el-checkbox>
+                        </div>
+                    </li>
+                </ul>
+            </div>
+            <div class="footer">
+                <span class="btn btn-border">取消</span>
+                <span class="btn" :class="checked1 ? 'btn-normal' : 'btn-forbid'">完成</span>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
+<script type="text/javascript" src="../../assets/lib/vue.js"></script>
+<script type="text/javascript" src="../../assets/lib/jquery.min.js"></script>
+<script type="text/javascript" src="../../assets/lib/element-ui/lib/index.js"></script>
+<script>
+     var vm = new Vue({
+        el: '#prize-manage',
+        data: function () {
+            return {
+                checked1:true,
+                checked2:'',
+                checked3:'',
+                checked4:'',
+                checked5:'',
+                checked6:'',
+            }
+        },
+    })
+</script>

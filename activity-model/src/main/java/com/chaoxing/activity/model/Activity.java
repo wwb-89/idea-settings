@@ -220,6 +220,16 @@ public class Activity {
             return null;
         }
 
+        public static ActivityTypeEnum fromName(String name) {
+            ActivityTypeEnum[] values = ActivityTypeEnum.values();
+            for (ActivityTypeEnum activityTypeEnum : values) {
+                if (Objects.equals(activityTypeEnum.getName(), name)) {
+                    return activityTypeEnum;
+                }
+            }
+            return null;
+        }
+
     }
 
     @Getter

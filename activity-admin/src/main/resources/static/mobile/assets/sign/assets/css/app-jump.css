@@ -1,0 +1,539 @@
+* {
+    margin: 0;
+    padding: 0
+}
+
+table {
+    border-collapse: collapse;
+    border-spacing: 0
+}
+
+fieldset,
+img {
+    border: 0 !important
+}
+
+address,
+caption,
+cite,
+code,
+dfn,
+em,
+strong,
+th,
+var {
+    font-style: normal
+}
+
+li {
+    list-style: none
+}
+
+caption,
+th {
+    text-align: left
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+    font-size: 100%
+}
+
+q:after,
+q:before {
+    content: ''
+}
+
+abbr,
+acronym {
+    border: 0;
+    font-variant: normal
+}
+
+sup {
+    vertical-align: text-top
+}
+
+sub {
+    vertical-align: text-bottom
+}
+
+input,
+select,
+textarea {
+    font-family: inherit;
+    font-size: inherit;
+    font-weight: inherit
+}
+
+button,
+input,
+select {
+    outline: medium none;
+    vertical-align: middle
+}
+
+input {
+    -webkit-appearance: none
+}
+
+legend {
+    color: #000
+}
+
+article,
+aside,
+dialog,
+figure,
+footer,
+header,
+hgroup,
+menu,
+nav,
+section {
+    display: block
+}
+
+body,
+html {
+    width: 100%;
+    text-align: center;
+    font-family: "Microsoft YaHei", Helvetica;
+    -webkit-text-size-adjust: 100%;
+    -ms-text-size-adjust: 100%;
+    -webkit-tap-highlight-color: transparent
+}
+
+a,
+a:hover,
+a:link,
+a:visited {
+    text-decoration: none
+}
+
+.clear {
+    clear: both;
+}
+
+/*媒体查询*/
+
+@media screen and (min-width: 212px) {
+    html {
+        font-size: 9.088px;
+    }
+}
+
+@media screen and (min-width: 319px) {
+    html {
+        font-size: 13.6533px;
+    }
+}
+
+@media screen and (min-width: 359px) {
+    html {
+        font-size: 15.36px;
+    }
+}
+
+@media screen and (min-width: 374px) {
+    html {
+        font-size: 16px;
+    }
+}
+
+@media screen and (min-width: 383px) {
+    html {
+        font-size: 16.384px;
+    }
+}
+
+@media screen and (min-width: 399px) {
+    html {
+        font-size: 17.0667px;
+    }
+}
+
+@media screen and (min-width: 414px) {
+    html {
+        font-size: 17.7067px;
+    }
+}
+
+@media screen and (min-width: 423px) {
+    html {
+        font-size: 18.0907px;
+    }
+}
+
+@media screen and (min-width: 479px) {
+    html {
+        font-size: 20.48px;
+    }
+}
+
+@media screen and (min-width: 539px) {
+    html {
+        font-size: 23.04px;
+    }
+}
+
+@media screen and (min-width: 639px) {
+    html {
+        font-size: 27.3067px;
+    }
+}
+
+
+/*public css --start*/
+.fontS26{
+    font-size: .8125rem;
+}
+.fontS30{
+    font-size: .9375rem;
+}
+.fontS34 {
+    font-size: 1.0625rem;
+}
+.colorCCC{
+    color: #ccc;
+}
+.color666{
+    color: #666;
+}
+
+.color333 {
+    color: #333;
+}
+
+.color15{
+    color: #151515;
+}
+.tl{
+    text-align: left;
+}
+.fl{
+    float: left;
+}
+.fr{
+    float: right;
+}
+.fontBold{
+    font-weight: bold;
+}
+.clear{
+    clear: both;
+}
+.clearfix {
+    overflow: auto;
+    zoom: 1;
+}
+.hide{
+    display: none;
+}
+/*public css --end*/
+/*首页*/
+#banner {
+    margin: 0em auto;
+    width: 100%;
+    height: 10.84375rem;
+}
+#banner a {
+    display: block;
+    width: 100%;
+    height: 100%;
+}
+#banner img {
+    width: 100%;
+    height: 100%;
+}
+#banner .swiper-pagination-bullet {
+    width: .4375rem;
+    height: .4375rem;
+    margin: 0 .3125rem;
+    opacity: 1;
+    background-color: rgb(255, 255, 255);
+}
+
+#banner .swiper-pagination-bullet-active {
+    background: #0099FF;
+}
+.menu ul{
+    width: 100%;
+    border-bottom: .625rem solid #F8F8F8;
+}
+.menu ul li{
+    float: left;
+    width: 25%;
+}
+
+.menu ul li a{
+    color: #000000;
+    text-align: center;
+    line-height: 1.25rem;
+    display: block;
+    padding: 1rem 0;
+}
+.menu .img_box{
+    margin: 0 auto;
+}
+
+.menu .img_box img{
+   width: 2.8125rem;
+   height: 2.375rem;
+}
+.index .title {
+    width: 94%;
+    height: 3em;    
+    line-height: 3em;
+    overflow: hidden;
+    color: #000;
+    padding: 0 3%;
+}
+.index_list li {
+    display: block;
+    width: 94%;
+    line-height: 1em;
+    border-radius: 4px;
+    margin: 0 3%;
+    margin-bottom: 1.25rem;
+    text-align: left;
+    overflow: hidden;
+    color: #a1a1a1;
+    background-color: #fff;
+}
+.index_list li a {
+    display: block;
+    width: 100%;
+    height: 100%;
+}
+.index_list li .img1 {
+    position: relative;
+    float: left;
+    margin-right: .9375rem;
+    text-align: center;
+    width: 5.5625rem;/*178px--148px*/
+    height: 7.5rem;
+    background-color: #eee;
+    border-radius: .1875rem;
+    border: .03125rem solid #e9e9e9;
+}
+.index_list li img {
+    width: 100%;
+    height: 100%;
+    border-radius: .1875rem;
+}
+.index_list li dl {
+    float: left;
+    width:70%;
+    margin: 0 auto;
+}
+.index_list li dt {
+    display: block;
+    width: 95%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+font-size: 1rem;
+color: #333333;
+line-height: 1.25rem;
+font-weight: bold;
+}
+.index_list li dd{
+    display: block;
+    width: 95%;
+}
+.index_list li dd.author{
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    margin: .625rem 0;
+    color: #999999;
+    line-height: .9375rem;
+}
+.index_list li dd.text {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    height: 2.5rem;
+    line-height: 1.125rem;
+    color: #666666;
+    text-align: justify;
+    line-height: 1.25rem;
+}
+.no_more {
+    height: 3.125rem;
+    line-height: 3.125rem;
+    background-color: #F8F8F8;
+}
+
+.no_more hr{
+    display: inline-block;
+    width: 2.5rem;
+    vertical-align: middle;
+    border: .03125rem solid #ddd;
+}
+/* 阅读列表 */
+.tab {
+    position: fixed;
+    left: 0;
+    right: 0;
+    top: 0;
+    background-color: white;
+    height: 2.8125rem;
+    line-height: 2.8125rem;
+    padding: 0 .9375rem;
+    overflow-x: scroll;
+    white-space: nowrap;
+    display: flex;
+   box-shadow: 0 .0625rem 0 0 #E9E9E9;   /* 2px */
+    z-index: 2;
+}
+
+.tab li{
+    float: left;
+    padding: 0 .78125rem;
+}
+
+.tab li.current{
+  color: #0099FF;
+
+}
+.tab_con{
+    padding-top: 2.8125rem;
+}
+/* 图书阅读 */
+.read_book .index_list {
+    padding-top: 1.5625rem;
+}
+.read_book .index_list li {
+margin-bottom: 1.5625rem;
+}
+/* 视频导读 */
+.read_video .index_list {
+    padding-top: 1.25rem;
+}
+.read_video .index_list li .img1 {
+    margin-right: .625rem;
+        width: 7.6875rem;/*246px--148px*/
+        height: 4.625rem;
+}
+
+.tab_con .index_list li .cover {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    -webkit-transform: translate(-50%, -50%);
+    -o-transform: translate(-50%, -50%);
+    -ms-transform: translate(-50%, -50%);
+    -moz-transform: translate(-50%, -50%);
+    transform: translate(-50%, -50%);
+    border-radius: 50%;
+    width: 1.5625rem;
+    height: 1.5625rem;
+}
+.read_video .index_list li dl {
+    width: 60%;
+}
+.read_video .index_list li dd.text {
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    display: block;
+    height: 1.25rem;
+}
+/* 更多 */
+.more .img_more {
+width: 100%;
+height: 21.875rem;
+}
+
+.more .img_more img{
+    width: 100%;
+    height: 100%;
+}
+.more article{
+    width: 94%;
+    margin: 1.5625rem 3%;
+    margin-bottom: 6rem;
+}
+.more article p {
+    margin-bottom: .625rem;
+    line-height: 1.5625rem;
+}
+.more .bottom{
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 5rem;
+    z-index: 2;
+    background-color: #F8F8F8;
+    padding: .9375rem 3%;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+.more .bottom .logo {
+    width: 3.125rem;
+    height: 3.125rem;
+    margin-right: .625rem;
+}
+.more .bottom .logo img{
+    width: 100%;
+    height: 100%;
+}
+.more .bottom .info{
+    width: 50%;
+    line-height: 1.5625rem;
+}
+
+.more .bottom .name {
+   font-size: 1.125rem;
+}
+
+.more .bottom .btn_open {
+    display: block;
+    border: .03125rem solid #0099FF;
+    border-radius: 1.0625rem;
+    font-size: .9375rem;
+    color: #0099FF;
+    width: 3.75rem;
+    height: 1.875rem;
+    line-height: 1.875rem;
+    text-align: center;
+    margin-top: .625rem;
+}
+
+.more .ui-dialog{
+    display: none;
+    position: fixed;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    z-index: 3;
+    background-color: rgba(0,0,0,0.3);
+}
+
+.more .ui-dialog>div{
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    z-index: 3;
+}
+
+.more .ui-dialog img{
+    width: 100%;
+    height: 100%;
+}
+
+[v-cloak] {
+    display: none;
+}

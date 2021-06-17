@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org/">
+<head>
+	<meta charset="UTF-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>成绩权重</title>
+	<link rel="stylesheet" href="/static/pc/assets/sign/assets/css/public.css" th:href="@{/pc/assets/sign/assets/css/public.css}">
+	<link rel="stylesheet" href="/static/pc/assets/lib/element-ui/lib/theme-chalk/index.css" th:href="@{/pc/assets/lib/element-ui/lib/theme-chalk/index.css}">
+	<link rel="stylesheet" href="/static/pc/assets/sign/assets/css/examineManage.css" th:href="@{/pc/assets/sign/assets/css/examineManage.css}">
+	<style>
+		[v-cloak] {
+			display: none;
+        }
+	</style>
+</head>
+<body>
+<div class="gradeWeight" id="vm" v-cloak>
+	<div class="content">
+		<div class="white-block header">
+			<p class="title">考核设置</p>
+			<div class="btn-box fr">
+				<div class="btn-normal-w80px" @click="save">保存</div>
+			</div>
+		</div>
+		<div class="white-block">
+			<p class="item-name">合格标准</p>
+			<form action="" class="el-form">
+				<div class="form-item">
+					<div class="input-box">
+						<el-radio-group v-model="inspectionConfig.passDecideWay">
+							<el-radio label="manual">手动评审</el-radio>
+							<el-radio label="places">按名额</el-radio>
+							<el-radio label="scale">按比例</el-radio>
+							<el-radio label="score">达到积分</el-radio>
+						</el-radio-group>
+						<p class="decTips" v-show="inspectionConfig.passDecideWay == 'manual'">管理员在成绩管理中手动评审合格状态</p>
+						<div class="radio-box" v-show="inspectionConfig.passDecideWay == 'places'">
+							<span class="lineTips">活动结束时，按得分从高到底排序的</span>
+							<el-input type="number" step="1" class="short-input" v-model="places"></el-input>
+							<span class="lineTips">人，判定为合格</span>
+							<p class="decTips">如果得分相同，则优先将先达到该分数者判定为合格</p>
+						</div>
+						<div class="radio-box" v-show="inspectionConfig.passDecideWay == 'scale'">
+							<span class="lineTips">活动结束时，按得分从高到底排序的前</span>
+							<el-input type="number" step="1" maxlength="10" class="short-input" v-model="scale"></el-input>
+							<span class="lineTips">%，判定为合格</span>
+							<p class="decTips">如果得分相同，则优先将先达到该分数者判定为合格</p>
+						</div>
+						<div class="radio-box" v-show="inspectionConfig.passDecideWay == 'score'">
+							<span class="lineTips">活动积分达到</span>
+							<el-input type="number" step="1" maxlength="10" class="short-input" v-model="score"></el-input>
+							<span class="lineTips">分，判定为合格</span>
+							<p class="decTips">如果得分相同，则优先将先达到该分数者判定为合格</p>
+						</div>
+					</div>
+				</div>
+			</form>
+		</div>
+		<div class="white-block">
+			<p class="item-name">积分规则</p>
+			<form action="" class="el-form" onsubmit="return false;">
+				<div class="form-item" v-for="(userActionType, index) of userActionTypes" :key="'user-action-type-' + index">
+					<label class="label">{{userActionType.name}}</label>
+					<div class="input-box">
+						<el-switch v-model="userActionType.enable" class="flex-switch"></el-switch>
+						<div class="tips-box" v-show="userActionType.enable">
+							<div class="block-box" v-for="(action, actionIndex) of userActionType.userActions" :key="'action-' + actionIndex">
+								<span class="lineTips">{{action.description}}</span>
+								<el-input type="number" step="1" class="input-width56" v-model="action.score"></el-input>
+								<span class="lineTips">分</span>
+								<template v-if="action.enableUpperLimit">
+									<span class="lineTips">，上限</span>
+									<el-input type="number" step="1" class="input-width56" placeholder="不限" v-model="action.upperLimit"></el-input>
+									<span class="lineTips">分</span>
+								</template>
+							</div>
+						</div>
+					</div>
+				</div>
+			</form>
+		</div>
+	</div>
+</div>
+<div th:replace="pc/include/common_js :: common_js(~{::script})">
+	<script type="text/javascript" src="/static/pc/assets/lib/element-ui/lib/index.js" th:src="@{/pc/assets/lib/element-ui/lib/index.js}"></script>
+	<script th:inline="javascript">
+		var inspectionConfigDetails = [[${inspectionConfigDetails}]];
+		var userActionTypes = [[${userActionTypes}]];
+		$(userActionTypes).each(function () {
+			var userActionType = this;
+			var userActions = this.userActions;
+			$(userActions).each(function () {
+				var userAction = this;
+				var inspectionConfigDetail = null;
+				$(inspectionConfigDetails).each(function () {
+					if (userActionType.value == this.actionType && userAction.value == this.action) {
+						inspectionConfigDetail = this;
+						return false;
+					}
+				});
+				if (inspectionConfigDetail != null) {
+					userAction.id = inspectionConfigDetail.id;
+					userAction.configId = inspectionConfigDetail.configId;
+					userAction.score = inspectionConfigDetail.score;
+					userAction.upperLimit = inspectionConfigDetail.upperLimit;
+					userActionType.enable = !inspectionConfigDetail.deleted;
+				} else {
+					userAction.id = null;
+					userAction.configId = null;
+					userAction.score = null;
+					userAction.upperLimit = null;
+					userActionType.enable = false;
+				}
+			});
+		});
+		vm = new Vue({
+			el: "#vm",
+			data: {
+				activity: [[${activity}]],
+				inspectionConfig: [[${inspectionConfig}]],
+				inspectionConfigDetails: inspectionConfigDetails,
+				userActionTypes: userActionTypes,
+				places: null,
+				scale: null,
+				score: null
+			},
+			beforeCreate: function () {
+
+			},
+			created: function () {
+				var $this = this;
+				if (activityApp.isEmpty($this.inspectionConfig)) {
+					$this.inspectionConfig = $this.newInspectionConfig();
+				}
+				$this.handlePassDecideWayValue();
+			},
+			methods: {
+				newInspectionConfig: function () {
+					var $this = this;
+					return {
+						id: null,
+						activityId: $this.activity.id,
+						passDecideWay: "manual",
+						decideValue: null
+					};
+				},
+				handlePassDecideWayValue: function () {
+					var $this = this;
+					var passDecideWay = $this.inspectionConfig.passDecideWay;
+					switch (passDecideWay) {
+						case "places":
+							$this.places = $this.inspectionConfig.decideValue;
+							break;
+						case "scale":
+							$this.scale = $this.inspectionConfig.decideValue;
+							break;
+						case "score":
+							$this.score = $this.inspectionConfig.decideValue;
+							break;
+						default:
+
+					}
+				},
+				packageInspectionConfig: function () {
+					var $this = this;
+					var passDecideWay = $this.inspectionConfig.passDecideWay;
+					switch (passDecideWay) {
+						case "places":
+							$this.inspectionConfig.decideValue = $this.places;
+							break;
+						case "scale":
+							$this.inspectionConfig.decideValue = $this.scale;
+							break;
+						case "score":
+							$this.inspectionConfig.decideValue = $this.score;
+							break;
+						default:
+							$this.inspectionConfig.decideValue = null;
+					}
+				},
+				// 封装考核配置详情
+				packageInspectionConfigDetails: function () {
+					var $this = this;
+					var inspectionConfigDetails = [];
+					$($this.userActionTypes).each(function () {
+						var userActionType = this;
+						var userActions = userActionType.userActions;
+						$(userActions).each(function () {
+							var inspectionConfigDetail = {
+								id: this.id,
+								configId: this.configId,
+								actionType: userActionType.value,
+								action: this.value,
+								score: this.score,
+								upperLimit: this.upperLimit,
+								deleted: !userActionType.enable
+							};
+							inspectionConfigDetails.push(inspectionConfigDetail);
+						});
+					});
+					return inspectionConfigDetails;
+				},
+				// 验证输入
+				validateInput: function () {
+					var $this = this;
+					// 验证合格标准
+					var passDecideWay = $this.inspectionConfig.passDecideWay;
+					$this.packageInspectionConfig();
+					if ("manual" != passDecideWay && activityApp.isEmpty($this.inspectionConfig.decideValue)) {
+						app.showMsg("请完善合格标准信息");
+						return false;
+					}
+					// 验证合格配置详情
+					var detailValidated = true;
+					$($this.userActionTypes).each(function () {
+						var userActionType = this;
+						var userActions = this.userActions;
+						$(userActions).each(function () {
+							if (userActionType.enable && activityApp.isEmpty(this.score)) {
+								detailValidated = false;
+								app.showMsg("请完善" + this.name + "积分规则");
+								return false;
+							}
+						});
+					});
+					return detailValidated;
+				},
+				save: function () {
+					var $this = this;
+					if (!$this.validateInput()) {
+						return;
+					}
+					var params = {
+						inspectionConfigStr: activityApp.getJsonStr($this.inspectionConfig),
+						inspectionConfigDetailsStr: activityApp.getJsonStr($this.packageInspectionConfigDetails())
+					};
+					var url = ctx + "/api/inspection/config";
+					app.ajaxPostWithLoading(url, params, function (data) {
+						if (data.success) {
+							app.showMsg("处理成功", function () {
+								window.location.reload();
+							});
+						} else {
+							var message = data.message;
+							if (activityApp.isEmpty(message)) {
+								message = "处理失败";
+							}
+							app.showMsg(message);
+						}
+					}, function () {
+						app.showMsg("处理失败");
+					});
+				}
+			}
+		})
+	</script>
+</div>
+</body>
+</html>

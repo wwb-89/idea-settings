@@ -1,0 +1,428 @@
+@charset "UTF-8";
+body {
+  margin: 0;
+  padding: 0;
+  background: #F2F4F7;
+}
+
+.color333 {
+  color: #333333;
+}
+
+.color999 {
+  color: #999999;
+}
+
+.fs14 {
+  font-size: 14px;
+}
+
+.fs16 {
+  font-size: 16px;
+}
+
+.font600 {
+  font-weight: 600;
+}
+
+.app {
+  z-index: 1;
+  width: 1000px;
+  margin: 16px auto 0 auto;
+}
+
+.app .header {
+  padding: 24px;
+  width: 952px;
+  background: #FFFFFF;
+  border-radius: 8px;
+  display: table-cell;
+  vertical-align: middle;
+}
+
+.app .header .left {
+  float: left;
+}
+
+.app .header .left .title {
+  display: block;
+  font-weight: 600;
+  font-size: 18px;
+  line-height: 25px;
+  color: #333333;
+}
+
+.app .header .left .header_title {
+  font-size: 14px;
+  line-height: 16px;
+  color: #999999;
+  margin-top: 4px;
+}
+
+.app .header .left .num {
+  font-size: 14px;
+  line-height: 16px;
+  color: #0084FF;
+  cursor: pointer;
+  margin-left: 8px;
+}
+
+.app .header .right {
+  float: right;
+  margin-top: 12px;
+}
+
+.app .header .right span {
+  font-size: 14px;
+  line-height: 16px;
+  color: #0084FF;
+  cursor: pointer;
+}
+
+.app .header .right span:nth-child(1) {
+  margin-right: 16px;
+}
+
+.app .content {
+  background: #ffffff;
+  margin-top: 16px;
+  border-radius: 8px;
+  min-height: 600px;
+}
+
+.app .signIn_title {
+  padding: 24px 32px 0;
+}
+
+.app .signIn_title .title {
+  font-size: 16px;
+  line-height: 30px;
+  color: #333333;
+}
+
+.app .signIn_title .num {
+  font-size: 16px;
+  line-height: 30px;
+  color: #999999;
+}
+
+.app .item {
+  display: block;
+  border-radius: 8px;
+  padding: 16px 0 0 32px;
+  background: #FFFFFF;
+  position: relative;
+  cursor: pointer;
+}
+
+.app .item:hover {
+  background: #F8F8F8;
+}
+
+.app .item:hover .title {
+  color: #0084FF;
+}
+
+.app .item img {
+  width: 48px;
+  height: 48px;
+  float: left;
+}
+
+.app .item div {
+  margin-left: 64px;
+  border-bottom: 1px solid #F0F0F0;
+  padding-bottom: 16px;
+  min-height: 48px;
+}
+
+.app .item div span {
+  display: block;
+  margin-bottom: 6px;
+}
+
+.app .item div span:last-child {
+  margin-bottom: 0;
+}
+
+.app .not-started {
+  float: right;
+  font-weight: normal;
+  font-size: 14px;
+  line-height: 20px;
+  color: #999999;
+  position: absolute;
+  right: 32px;
+  top: calc(50% - 10px);
+}
+
+.app .title {
+  font-size: 16px;
+  color: #333333;
+  line-height: 22px;
+  font-weight: 500;
+}
+
+.app .label {
+  font-size: 13px;
+  line-height: 18px;
+  color: #999999;
+  font-weight: normal;
+}
+
+/**
+报名名单弹窗
+ */
+.registrationList {
+  z-index: 3;
+  position: absolute;
+  background: #FFFFFF;
+  -webkit-box-shadow: 0px 6px 16px -8px rgba(0, 0, 0, 0.08), 0px 9px 28px rgba(0, 0, 0, 0.05), 0px 12px 48px 16px rgba(0, 0, 0, 0.03);
+          box-shadow: 0px 6px 16px -8px rgba(0, 0, 0, 0.08), 0px 9px 28px rgba(0, 0, 0, 0.05), 0px 12px 48px 16px rgba(0, 0, 0, 0.03);
+  border-radius: 10px;
+  width: 510px;
+  height: 536px;
+  margin: auto;
+  left: 0;
+  top: calc(50% - 268px);
+  right: 0;
+}
+
+.registrationList .header {
+  text-align: center;
+  position: relative;
+  height: 42px;
+  padding-top: 16px;
+  border-bottom: 1px solid #E9E9E9;
+}
+
+.registrationList .header .title {
+  font-weight: 600;
+  font-size: 18px;
+  line-height: 25px;
+  color: #333333;
+}
+
+.registrationList .header img {
+  width: 12px;
+  height: 12px;
+  position: absolute;
+  right: 14px;
+  top: 14px;
+  cursor: pointer;
+}
+
+.registrationList .content_dialog {
+  width: 464px;
+  height: 448px;
+  padding: 0 16px 0 30px;
+  overflow-y: auto;
+}
+
+.registrationList .content_dialog .person_item .namePhoto {
+  height: 36px;
+  width: 36px;
+  border-radius: 50%;
+}
+
+.registrationList .content_dialog .person_item .namePhoto img {
+  width: 36px;
+  height: 36px;
+}
+
+.registrationList .content_dialog .person_item .name {
+  font-size: 14px;
+  line-height: 16px;
+  color: #333333;
+  margin-left: 14px;
+}
+
+.person_item {
+  padding: 10px 0;
+  border-bottom: 1px solid #E9E9E9;
+  display: -webkit-box;
+  display: -moz-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-align: center;
+     -moz-box-align: center;
+      -ms-flex-align: center;
+          align-items: center;
+}
+
+/**
+二维码弹窗
+ */
+.qr_code_dialog {
+  z-index: 3;
+  width: 368px;
+  height: 253px;
+  background: #FFFFFF;
+  -webkit-box-shadow: 0px 6px 16px -8px rgba(0, 0, 0, 0.08), 0px 9px 28px rgba(0, 0, 0, 0.05), 0px 12px 48px 16px rgba(0, 0, 0, 0.03);
+          box-shadow: 0px 6px 16px -8px rgba(0, 0, 0, 0.08), 0px 9px 28px rgba(0, 0, 0, 0.05), 0px 12px 48px 16px rgba(0, 0, 0, 0.03);
+  border-radius: 10px;
+  padding: 40px 0;
+  text-align: center;
+  margin: auto;
+  position: absolute;
+  left: 0;
+  top: calc(50% - 126.5px);
+  right: 0;
+}
+
+.qr_code_dialog img {
+  position: absolute;
+  width: 12px;
+  height: 12px;
+  right: 14px;
+  top: 14px;
+  cursor: pointer;
+}
+
+.qr_code_dialog .text {
+  font-weight: 600;
+  font-size: 18px;
+  line-height: 25px;
+  color: #333333;
+  margin-bottom: 20px;
+}
+
+.qr_code_dialog #qrCode {
+  margin-top: 20px;
+}
+
+.qr_code_dialog .label {
+  font-size: 13px;
+  line-height: 15px;
+  color: #999999;
+  margin-top: 10px;
+}
+
+/**
+签到状态弹窗
+ */
+.sign-status-pop.confirm_dialog {
+  width: 440px;
+  padding: 44px 32px 32px;
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  -webkit-transform: translate(-50%, -50%);
+      -ms-transform: translate(-50%, -50%);
+          transform: translate(-50%, -50%);
+  right: auto;
+}
+
+.sign-status-pop.confirm_dialog p {
+  margin: 0;
+}
+
+.sign-status-pop.confirm_dialog .close {
+  width: 16px;
+  height: 16px;
+  background: url("../images/close16.png") no-repeat center center;
+}
+
+.sign-status-pop.confirm_dialog .close:hover {
+  background: url("../images/close16-hover.png") no-repeat center center;
+}
+
+.sign-status-pop.confirm_dialog .icon {
+  height: 40px;
+  margin-bottom: 16px;
+}
+
+.sign-status-pop.confirm_dialog .icon img {
+  width: 40px;
+  height: 40px;
+}
+
+.sign-status-pop.confirm_dialog .text1 {
+  margin-bottom: 8px;
+}
+
+.sign-status-pop.confirm_dialog .text2 {
+  margin-bottom: 32px;
+}
+
+.sign-status-pop.confirm_dialog .info-box {
+  margin-bottom: 32px;
+  margin-top: 32px;
+}
+
+.sign-status-pop.confirm_dialog .info-box .bggrey-box {
+  background: #FAFAFA;
+  border: 1px solid #F0F0F0;
+  -webkit-box-sizing: border-box;
+     -moz-box-sizing: border-box;
+          box-sizing: border-box;
+  border-radius: 8px;
+  padding: 16px 24px;
+}
+
+.sign-status-pop.confirm_dialog .info-box .bggrey-box .scroll-box {
+  overflow-y: auto;
+  max-height: 236px;
+}
+
+.sign-status-pop.confirm_dialog .info-box .bggrey-box .scroll-box dl {
+  text-align: left;
+  line-height: 20px;
+  padding: 8px 0;
+  font-size: 0;
+}
+
+.sign-status-pop.confirm_dialog .info-box .bggrey-box .scroll-box dl dt {
+  font-size: 14px;
+  width: 88px;
+  color: #999999;
+  display: inline-block;
+  vertical-align: top;
+  margin: 0;
+}
+
+.sign-status-pop.confirm_dialog .info-box .bggrey-box .scroll-box dl dd {
+  font-size: 14px;
+  width: calc(100% - 100px);
+  color: #333333;
+  display: inline-block;
+  vertical-align: top;
+  margin: 0;
+}
+
+.sign-status-pop.confirm_dialog .info-box .bggrey-box .scroll-box dl dd .link {
+  color: #0084FF;
+  text-decoration: none;
+}
+
+.sign-status-pop.confirm_dialog .info-box .bggrey-box .scroll-box dl dd .link:hover {
+  opacity: 0.8;
+}
+
+.sign-status-pop.confirm_dialog .qr-box {
+  border-top: 1px solid #E9E9E9;
+  padding-top: 32px;
+  text-align: left;
+  font-size: 0;
+  margin-top: 32px;
+  margin-bottom: 32px;
+}
+
+.sign-status-pop.confirm_dialog .qr-box dt {
+  font-size: 14px;
+  color: #999999;
+  line-height: 20px;
+  display: inline-block;
+  vertical-align: middle;
+  width: calc(100% - 80px);
+}
+
+.sign-status-pop.confirm_dialog .qr-box dd {
+  display: inline-block;
+  vertical-align: middle;
+  margin: 0;
+}
+
+.sign-status-pop.confirm_dialog .btn {
+  margin-top: 32px;
+}

@@ -1,0 +1,628 @@
+/* 报名表单 */
+.clear::after{
+    content: "";
+    display: block;
+    clear: both;
+}
+.siginIn-form .top-header{
+    position: fixed;
+    z-index: 2;
+    top: 0;
+    width: 100%;
+    height: 40px;
+    background: #FFFFFF;
+    padding: 0px 20px;
+    font-size: 14px;
+    color: #333333;
+    box-sizing: border-box;
+}
+.siginIn-form .top-header .title{
+    line-height: 40px;
+}
+.siginIn-form .head-box{
+    vertical-align: top;
+    font-size: 13px;
+    color: #666666;
+    cursor: pointer;
+}
+.siginIn-form .head-img{
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    overflow: hidden;
+    margin-right: 8px;
+    margin-top: 8px;
+}
+.siginIn-form .head-box span{
+    display: inline-block;
+    vertical-align: top;
+    line-height: 40px;
+}
+.siginIn-form .item-box{
+    position: relative;
+    padding: 24px 32px;
+    background: #FFFFFF;
+    border-radius: 8px;
+    text-align: left;
+    margin-top: 16px;
+}
+.siginIn-form .content{
+    width: 1000px;
+    margin: 40px auto 50px;
+    overflow: hidden;
+}
+.siginIn-form .item-box .title{
+    font-weight: 500;
+    font-size: 16px;
+    line-height: 20px;
+    color: #333333;
+}
+.siginIn-form .item-box.head-item .title{
+    font-weight: 600;
+    font-size: 20px;
+    color: #333333;
+    line-height: 30px;
+}
+.siginIn-form .form-item{
+    margin-top: 24px;
+}
+.siginIn-form .form-item .label{
+    position: relative;
+    font-size: 14px;
+    line-height: 16px;
+    color: #333333;
+}
+.siginIn-form .form-item .label img{
+    display: inline-block;
+    vertical-align: top;
+    margin-top: 2px;
+}
+.siginIn-form .form-item{
+    width: 536px;
+}
+.siginIn-form .form-item .el-input,
+.siginIn-form .form-item .el-textarea,
+.siginIn-form .form-item .input-box{
+    border-radius: 2px;
+    display: block;
+    margin-top: 10px;
+}
+.siginIn-form .form-item .el-input input,
+.siginIn-form .form-item .el-textarea textarea{
+    border-radius: 2px;
+    height: 32px;
+    border: 1px solid #E9E9E9;
+}
+.txt-blue-hover{
+    font-size: 14px;
+    line-height: 18px;
+    color: #0084FF;
+    cursor: pointer;
+}
+.txt-blue-hover.delete {
+    margin-left: 16px;
+}
+.txt-blue-hover:hover{
+    color: rgba(0, 132, 255, 0.8);
+}
+.txt-blue{
+    font-size: 14px;
+    line-height: 18px;
+    color: #0084FF;
+}
+.siginIn-form .uplode-img{
+    width: 76px;
+    height: 76px;
+    margin-right: 16px;
+    cursor: pointer;
+    /* background: url(../images/uplode.png);
+    background-size: 100% 100%;*/
+}
+.webuploader-pick{
+    width: 76px;
+    height: 76px;
+    background: url(../images/uplode.png);
+    background-size: 100% 100%;
+    padding: 0;
+}
+.siginIn-form .webuploader-pick:hover{
+    background: url(../images/uplode-hover.png);
+}
+.siginIn-form .uplode-box .tip{
+    font-size: 13px;
+    line-height: 18px;
+    color: #666666;
+}
+.siginIn-form .uplode-box .uplode{
+    display: inline-block;
+    vertical-align: top;
+    margin-top: 16px;
+}
+.siginIn-form .uplode-box .list{
+    position: relative;
+    width: 640px;
+    background: #F8F8F8;
+    border-radius: 4px;
+    margin-top: 24px;
+    padding: 12px 14px;
+    padding-right: 64px;
+    font-size: 14px;
+    color: #333333;
+    box-sizing: border-box;
+    cursor: pointer;
+}
+.siginIn-form .uplode-box .del-btn{
+    position: absolute;
+    right: 28px;
+    top: 50%;
+    transform: translateY(-50%);
+    display: block;
+    width: 16px;
+    height: 16px;
+    background: url(../images/icon-close.png);
+    background-size: 100% 100%;
+    cursor: pointer;
+}
+.siginIn-form .uplode-box .list .name{
+    margin-left: 48px;
+    line-height: 40px;
+}
+.siginIn-form .uplode-box .edit-box{
+    position: absolute;
+    right: 26px;
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: 0;
+}
+.siginIn-form .uplode-box .edit-box span:first-child{
+    display: inline-block;
+    margin-right: 16px;
+}
+.siginIn-form .table-box{
+    margin-top: 21px;
+}
+.el-table thead {
+    font-weight: normal;
+    color: #999999;
+}
+.el-table th>.cell {
+    font-weight: normal;
+}
+.el-table thead th {
+    background-color: #FAFAFA;
+}
+.el-table--enable-row-hover .el-table__body tr:hover>td {
+    background-color: #f8f8f8;
+}
+.siginIn-form .item-box .btn-border{
+    position: absolute;
+    right: 32px;
+    top: 24px;
+}
+.siginIn-form .item-box .btn-border img{
+    display: inline-block;
+    vertical-align: top;
+    margin-top: 2px;
+}
+.siginIn-form .item-box .title.lineh30{
+    line-height: 30px;
+}
+.siginIn-form .el-pagination {
+    text-align: center;
+    font-weight: 500;
+    height: 22px;
+    margin-top: 16px;
+}
+.siginIn-form .el-pagination button, .siginIn-form .el-pager li{
+    min-width: 24px;
+    height: 22px;
+    line-height: 22px;
+}
+.siginIn-form .el-table__empty-block {
+    min-height: 160px;
+}
+.siginIn-form .dialog-box .el-table__empty-block {
+    min-height: 396px;
+}
+.dialog-wrap.add-work {
+    width: 720px;
+    height: 560px;
+}
+.dialog-box .btn-box{
+    display: inline-block;
+    vertical-align: top;
+    height: 32px;
+    font-size: 0;
+}
+.dialog-box .btn-box div{
+    display: inline-block;
+    vertical-align: top;
+}
+.dialog-box .btn-box div:first-child{
+    margin-right: 24px;
+}
+.dialog-box .footer .txt-blue{
+    line-height: 30px;
+}
+.add-people .dialog-content{
+    padding: 24px 32px 0 32px;
+}
+.add-people .dialog-content .item {
+    margin-bottom: 24px;
+    display: flex;
+    align-items: center;
+}
+.add-people .dialog-content .item span {
+    display: block;
+    width: 60px;
+    color: #666666;
+    font-size: 14px;
+    line-height: 20px;
+    float: left;
+    text-align: left;
+}
+.add-people .dialog-content .item input {
+    width: 266px;
+    height: 18px;
+    margin-left: 24px;
+    font-size: 14px;
+    line-height: 22px;
+    color: #333333;
+    padding: 5px 12px;
+    border: 1px solid #E9E9E9;;
+}
+.add-people .dialog-content .item input:focus {
+    border: 1px solid #0084FF;
+}
+.add-people .dialog-content .item input::placeholder {
+    font-size: 14px;
+    line-height: 22px;
+    color: #CCCCCC;
+}
+.add-people .header img{
+    width: 12px;
+    height: 12px;
+    top: 14px;
+    right: 14px;
+}
+.edit-people .dialog-content{
+    padding: 24px 32px 0 32px;
+}
+.edit-people .dialog-content .item {
+    margin-bottom: 24px;
+    display: flex;
+    align-items: center;
+}
+.edit-people .dialog-content .item span {
+    display: block;
+    width: 60px;
+    color: #666666;
+    font-size: 14px;
+    line-height: 20px;
+    float: left;
+    text-align: left;
+}
+.edit-people .dialog-content .item input {
+    width: 266px;
+    height: 18px;
+    margin-left: 24px;
+    font-size: 14px;
+    line-height: 22px;
+    color: #333333;
+    padding: 5px 12px;
+    border: 1px solid #E9E9E9;;
+}
+.edit-people .dialog-content .item input:focus {
+    border: 1px solid #0084FF;
+}
+.edit-people .dialog-content .item input::placeholder {
+    font-size: 14px;
+    line-height: 22px;
+    color: #CCCCCC;
+}
+.edit-people .header img{
+    width: 12px;
+    height: 12px;
+    top: 14px;
+    right: 14px;
+}
+.el-checkbox__inner {
+    width: 16px;
+    height: 16px;
+}
+.dialog-box .el-checkbox:last-of-type {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+}
+.dialog-box .check-text{
+    display: inline-block;
+    padding-left: 24px;
+}
+.el-checkbox__inner::after {
+    top: 2px;
+    left: 5px;
+}
+.dialog-box .el-table thead th {
+    font-size: 13px;
+}
+.dialog-wrap.sure-delete{
+    width: 300px;
+    height: 216px;
+    padding: 30px;
+    box-sizing: border-box;
+    text-align: center;
+}
+.dialog-wrap.sure-delete .text{
+    font-size: 16px;
+    line-height: 24px;
+    margin: 24px 0;
+    padding: 0 10%;
+}
+.siginIn-form .item-box.look-info .text{
+    font-size: 14px;
+    line-height: 18px;
+    color: #333333;
+    margin-top: 8px;
+    max-width: 600px;
+}
+.siginIn-form .item-box.look-info .label{
+    font-size: 14px;
+    line-height: 18px;
+    color: #333333;
+    font-weight: 600;
+}
+.siginIn-form .form-item .description {
+    display: block;
+    font-size: 14px;
+    color: #999999;
+    line-height: 18px;
+    margin-top: 4px;
+}
+.siginIn-form .notice {
+    width: 536px;
+    padding: 8px;
+    background: #FEF8EE;
+    border-radius: 2px;
+    font-size: 14px;
+    line-height: 20px;
+    color: #FBA233;
+    position: relative;
+    margin-bottom: 24px;
+}
+.siginIn-form .notice img {
+    position: absolute;
+    top: 13.5px;
+    right: 13.5px;
+    width: 9px;
+    height: 9px;
+    cursor: pointer;
+}
+/**自定义radio样式*/
+ input[type="radio"] {
+    margin-left: 0 !important;
+}
+input[type="radio"] + label::before {
+    content: "\a0";
+    display: inline-block;
+    vertical-align: middle;
+    width: 14px;
+    height: 14px;
+    border-radius: 50%;
+    border: 1px solid #D9D9D9;
+    margin-right: 8px;
+}
+input[type="radio"]:checked + label::before {
+    width: 10px;
+    height: 10px;
+    background: #0084FF;
+    border: 1px solid #0084FF;
+    background-clip: content-box;
+    padding: 2px;
+}
+.radio-option {
+    display: flex;
+    margin-bottom: 12px;
+    height: 20px;
+}
+.radio-option:last-child {
+    margin-bottom: 0 !important;
+}
+.radio-option input {
+    width: 0 !important;
+    visibility: collapse !important;
+}
+.radio-option label {
+    font-size: 14px;
+    line-height: 16px;
+    color: #333333;
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+}
+/*自定义checkbox样式*/
+input[type="checkbox"] {
+    margin-left: 0 !important;
+}
+input[type="checkbox"] + label::before {
+    content: "\a0";
+    display: inline-block;
+    width: 14px;
+    height: 14px;
+    border: 1px solid #E5E5E5;
+    margin-right: 8px;
+    border-radius: 2px;
+}
+input[type="checkbox"]:checked + label::before {
+    width: 16px;
+    height: 16px;
+    border: none;
+    background: url("../images/icon-checked.png") no-repeat;
+    background-size: cover;
+}
+.checkbox-option {
+    display: flex;
+    margin-bottom: 12px;
+    height: 20px;
+}
+.checkbox-option:last-child {
+    margin-bottom: 0 !important;
+}
+.checkbox-option input {
+    width: 0 !important;
+    visibility: collapse !important;
+}
+.checkbox-option label {
+    font-size: 14px;
+    line-height: 16px;
+    color: #333333;
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+}
+.noborder .el-table::before {
+    height: 0px;
+}
+.siginIn-form .form-item .img-list{
+    font-size: 0;
+    margin-top: 8px;
+}
+.siginIn-form .form-item .img-list .uplode-img{
+    display: inline-block;
+    margin-right: 10px;
+}
+.siginIn-form .form-item .img-list .img-box{
+    position: relative;
+    display: inline-block;
+    vertical-align: top;
+    width: 76px;
+    height: 76px;
+    border: 1px solid #E9E9E9;
+    box-sizing: border-box;
+    border-radius: 4px;
+    overflow: hidden;
+    cursor: pointer;
+    margin-right: 10px;
+    margin-bottom: 10px;
+    text-align: center;
+}
+.siginIn-form .form-item .img-list .img-box.load-bg{
+    background: #F2F4F7;
+}
+.siginIn-form .form-item .img-list .img-box.fail-bg{
+    background: #FFFFFF;
+    border: 1px solid #FF666D;
+}
+.siginIn-form .form-item .img-list .img-box:hover .delete{
+    display: block;
+}
+.siginIn-form .form-item .img-list .img-box:hover .hoverBg{
+    display: block;
+}
+.siginIn-form .form-item .img-list .img-box img{
+    position: absolute;
+    width: 100%;
+    height: 100%;
+}
+.siginIn-form .form-item .img-list .img-box .delete{
+    position: absolute;
+    z-index: 4;
+    right: 0;
+    top: 0;
+    display: none;
+    width: 16px;
+    height: 16px;
+    background: url(../images/del.png) no-repeat;
+    background-size: 100%;
+    cursor: pointer;
+}
+.siginIn-form .form-item .img-list .hoverBg{
+    position: absolute;
+    z-index: 2;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    border: 2px solid #0084FF;
+    -webkit-box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    box-sizing: border-box;
+    border-radius: 4px;
+    background: rgba(0, 0, 0, 0.4);
+    display: none;
+}
+.siginIn-form .form-item .img-list .img-box .hoverBg .icon-zoom {
+    display: inline-block;
+    width: 24px;
+    height: 24px;
+    background: url(../images/zoom-in.png) no-repeat;
+    background-size: 100%;
+    margin: 24px;
+    cursor: pointer;
+}
+.siginIn-form .form-item .img-list .img-box i{
+    display: inline-block;
+    width: 20px;
+    height: 20px;
+    background-size: cover;
+}
+.siginIn-form .form-item .img-list .img-box i.loading{
+    background-image: url(../images/Spinner.png);
+    margin-top: 15px;
+}
+.siginIn-form .form-item .img-list .img-box i.fail-icon{
+    background-image: url(../images/fail-image.png);
+    margin-top: 15px;
+}
+.siginIn-form .form-item .img-list .img-box .text{
+    margin-top: 6px;
+    font-size: 14px;
+    line-height: 20px;
+    color: #999999;
+    text-align: center;
+}
+.siginIn-form .form-item .img-list .img-box .text.red{
+    color: #FF666D;
+}
+.dialog-box.look-img{
+    background: rgba(0, 0, 0, 0.5);
+}
+.dialog-box.look-img .swiper-container{
+    height: 100%;
+}
+.dialog-box.look-img .swiper-slide .img-box{
+    position: relative;
+    width: 1000px;
+    height: 100%;
+    padding: 36px 0;
+    box-sizing: border-box;
+    margin: 0 auto;
+}
+.dialog-box.look-img .swiper-slide .img-box img{
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%,-50%);
+    max-width: 100%;
+}
+.swiper-container .swiper-button-prev,.swiper-container .swiper-button-next{
+    width: 48px;
+    height: 48px;
+    background: rgba(0, 0, 0, 0.2);
+    border-radius: 24px;
+    background-image: none;
+}
+.swiper-container .swiper-button-prev i,.swiper-container .swiper-button-next i{
+    display: block;
+    width: 24px;
+    height: 24px;
+    background-image: url(../images/arrow-prev.png);
+    background-repeat: no-repeat;
+    margin: 12px;
+}
+.swiper-container .swiper-button-next i{
+    transform: rotate(180deg);
+}
+.swiper-container .swiper-button-prev:hover,.swiper-container .swiper-button-next:hover{
+    background: rgba(0, 0, 0, 0.3);
+}

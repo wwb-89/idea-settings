@@ -3,6 +3,8 @@ package com.chaoxing.activity.task;
 import com.chaoxing.activity.service.activity.ActivityIsAboutEndHandleService;
 import com.chaoxing.activity.service.activity.ActivityStatusUpdateService;
 import com.chaoxing.activity.service.queue.ActivityStatusUpdateQueueService;
+import com.chaoxing.activity.util.DateUtils;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.redis.core.ZSetOperations;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
@@ -17,6 +19,7 @@ import javax.annotation.Resource;
  * @blame wwb
  * @date 2020-12-05 15:17:38
  */
+@Slf4j
 @Component
 public class ActivityStatusUpdateTask {
 
@@ -68,9 +71,8 @@ public class ActivityStatusUpdateTask {
 		Integer activityId = endTimeQueueData.getValue();
 		if (activityStatusUpdateService.statusUpdate(activityId, l)) {
 			// 活动结束发通知
-			if (activityEndNoticeService.sendActivityIsAboutEndNotice(activityId)) {
-				activityStatusUpdateQueueService.removeEndTime(activityId);
-			}
+			activityEndNoticeService.sendActivityIsAboutEndNotice(activityId);
+			activityStatusUpdateQueueService.removeEndTime(activityId);
 		}
 	}
 

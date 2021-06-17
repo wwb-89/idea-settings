@@ -1,0 +1,551 @@
+body {
+    margin: 0;
+    padding: 0;
+}
+.app {
+    width: 100%;
+    /*min-height: 860px;*/
+    padding-top: 24px;
+}
+.signIn-btn {
+    width: 61px;
+    height: 18px;
+    padding: 6px 14px;
+    background: #0084FF;
+    border-radius: 15px;
+    text-align: center;
+    display: flex;
+    cursor: pointer;
+    margin: 0 0 0 24px;
+    align-items: center;
+}
+.signIn-btn:hover {
+    background: rgba(0, 132, 255, 0.8);;
+}
+.signIn-btn img {
+    width: 16px;
+    height: 16px;
+    margin-right: 4px;
+}
+.signIn-btn span {
+    color: #ffffff;
+    font-size: 13px;
+    line-height: 18px;
+}
+.item {
+    display: block;
+    width: calc(100% - 48px);
+    border: 1px solid #E9E9E9;
+    border-radius: 8px;
+    padding: 16px 24px 16px 16px;
+    background: #FFFFFF;
+    margin-top: 16px;
+    position: relative;
+    cursor: pointer;
+}
+.item:hover {
+    background: #F8F8F8;
+}
+.item:hover .title {
+    color: #0084FF;
+}
+.item .icon {
+    float: left;
+}
+.item .icon img {
+    width: 48px;
+    height: 48px;
+}
+.item .text {
+    margin-left: 61px;
+}
+.item .text span{
+    display: block;
+    margin-bottom: 6px;
+}
+.item .edit {
+    width: 16px;
+    height: 16px;
+    /* position: absolute;
+    top: calc(50% - 8px);
+    right: 24px; */
+    background: url("../images/more-vertical.png") no-repeat;
+}
+.item .edit.active {
+    background: url("../images/more-vertical-active.png") no-repeat;
+}
+.hide {
+    display: none;
+}
+.not-started {
+    float: right;
+    font-weight: normal;
+    font-size: 14px;
+    line-height: 20px;
+    color: #999999;
+    position: absolute;
+    right: 24px;
+    top: calc(50% - 9px);
+    margin-right: 32px;
+}
+.processing {
+    float: right;
+    font-weight: normal;
+    font-size: 14px;
+    line-height: 20px;
+    color: #0084FF;
+    position: absolute;
+    right: 24px;
+    top: calc(50% - 9px);
+    margin-right: 32px;
+}
+.title {
+    font-size: 16px;
+    color: #333333;
+    line-height: 22px;
+    font-weight: 500;
+}
+.label {
+    font-size: 13px;
+    line-height: 18px;
+    color: #999999;
+    font-weight: normal;
+}
+.content {
+    margin-left: 24px;
+    margin-right: 24px;
+    padding-bottom: 30px;
+}
+.content-noData {
+    min-height: 16px;
+    position: absolute;
+    left: 0;
+    top: 200px;
+    right: 0;
+    font-size: 14px;
+    color: #999999;
+    text-align: center;
+    display: inline-block;
+    vertical-align: middle;
+}
+.dialog-box {
+    height: 100%;
+    position: fixed;
+    z-index: 3;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.3);
+}
+.sign-dialog {
+    border-radius: 10px;
+    background: #FFFFFF;
+    width: 548px;
+    z-index: 3;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%,-50%);
+}
+.sign-dialog .header {
+    border-bottom: 1px solid #E9E9E9;
+    padding: 16px 30px;
+    position: relative;
+    text-align: center;
+}
+.sign-dialog .header span {
+    font-weight: 600;
+    font-size: 18px;
+    line-height: 25px;
+    color: #333333;
+}
+.sign-dialog .header img {
+    wdith: 16px;
+    height: 16px;
+    position: absolute;
+    top: 14px;
+    right: 14px;
+    cursor: pointer;
+}
+.sign-dialog .dialog-content {
+    padding: 32px 48px 32px 32px;
+}
+.form-item {
+    display: flex;
+    margin-bottom: 24px;
+    align-items: center;
+}
+.form-item:last-child {
+    margin-bottom: 0;
+}
+.required-img {
+    width: 8px;
+    height: 8px;
+    transform: translateY(-2px);
+}
+.form-item .label {
+    font-size: 14px;
+    line-height: 16px;
+    color: #666666;
+    margin-right: 24px;
+}
+.form-item .label .required {
+    width: 8px;
+    height: 16px;
+    display: inline-block;
+    float: left;
+}
+.form-item .label .label-title {
+    display: inline-block;
+    width: 90px;
+}
+.form-item .input-box {
+    width: 346px;
+    position: relative;
+}
+.form-item .input-box input {
+    width: 330px;
+    background: #FFFFFF;
+    border: 1px solid #E9E9E9;
+    border-radius: 2px;
+    height: 32px;
+    padding-left: 12px;
+    color: #333;
+}
+.form-item .input-box .el-input input {
+    width: 100%;
+    background: #FFFFFF;
+    border: 1px solid #E9E9E9;
+    border-radius: 2px;
+    height: 32px;
+    padding-left: 12px;
+}
+.form-item .input-box input:focus {
+    outline: none;
+}
+.form-item .input-box .el-radio__label {
+    padding-left: 8px;
+}
+.form-item .input-box label {
+    margin-right: 24px;
+}
+.form-item .input-box .el-range-editor.el-input__inner input {
+    width: 131px;
+    border: none;
+    height: 22px;
+    padding-left: 12px;
+}
+.el-date-editor .el-range-input, .el-date-editor .el-range-separator {
+    text-align: left;
+}
+.el-date-editor .el-range__icon {
+    display: none;
+}
+.el-range-editor.el-input__inner {
+    padding: 0;
+    height: 32px;
+    width: 346px;
+}
+.position .input-box {
+    position: relative;
+}
+.position .input-box img {
+    position: absolute;
+    width: 16px;
+    right: 12px;
+    top: 8px;
+}
+.position .input-box input:nth-child(1) {
+    margin-bottom: 16px;
+}
+.form-item .select-person {
+    margin-bottom: 16px;
+}
+.form-item .tips {
+    font-size: 14px;
+    line-height: 16px;
+    color: #999999;
+}
+.form-item .el-switch__input {
+    width: 0 !important;
+}
+.form-item .input-box .select-person .el-select input{
+    width: 346px;
+}
+.position {
+    align-items: start;
+}
+.position .label {
+    margin-top: 3px;
+}
+.scan {
+    align-items: start;
+}
+.scan .label {
+    margin-top: 3px;
+}
+.el-input__icon {
+    line-height: 32px;
+}
+.sign-dialog .footer {
+    height: 58px;
+    border-top: 1px solid #E9E9E9;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.sign-dialog .footer .cancel {
+    border: 1px solid #82C3FF;
+    border-radius: 15px;
+    padding: 6px 14px;
+    font-size: 13px;
+    line-height: 15px;
+    color: #0084FF;
+    background: #ffffff;
+     margin-right: 24px;
+    cursor: pointer;
+}
+.sign-dialog .footer .cancel:hover {
+    background: #EBF5FF;
+}
+
+.sign-dialog .footer .ok {
+    background: rgba(0, 132, 255, 0.3);
+    border-radius: 15px;
+    padding: 6px 14px;
+    font-size: 13px;
+    line-height: 15px;
+    color: #FFFFFF;
+    border: none;
+    cursor: pointer;
+}
+.sign-dialog .footer .ok.active:hover {
+    background: rgba(0, 132, 255, 0.8);
+}
+
+.sign-dialog .footer .ok.active {
+    background: #0084FF;
+}
+
+
+.map-dialog {
+    height: 622px;
+    position: absolute;
+    /* top: 50%;
+    left: 50%;
+    transform: translate(-50%,-50%); */
+    top: 146px;
+    left: calc(50% - 450px);
+    z-index: 5;
+    background: #ffffff;
+}
+.map-dialog .header {
+    text-align: center;
+    position: relative;
+    height: 42px;
+    padding-top: 16px;
+    border-bottom: 1px solid #E9E9E9;
+}
+
+.map-dialog .header span {
+    font-weight: 600;
+    font-size: 18px;
+    line-height: 25px;
+    color: #333333;
+}
+.map-dialog .header img {
+    width: 14px;
+    height: 14px;
+    position: absolute;
+    top: 14px;
+    right: 14px;
+    cursor: pointer;
+}
+
+.map-dialog .sure-btn {
+    height: 18px;
+    background: #0084ff;
+    border-radius: 15px;
+    color: #ffffff;
+    font-size: 13px;
+    cursor: pointer;
+    margin-left: 16px;
+    padding: 6px 14px;
+}
+
+.map-dialog .sure-btn:hover {
+    background: rgba(0, 132, 255, 0.8);
+}
+
+.map-dialog .body {
+    padding: 24px 32px;
+}
+.map-dialog .body-head {
+    display: flex;
+    align-items: center;
+}
+
+.map-dialog .body-head>.input-addr {
+    flex: 1;
+    font-size: 14px;
+    line-height: 16px;
+    color: #333333;
+}
+
+.map-dialog .el-input__inner {
+    height: 32px;
+    line-height: 32px;
+}
+
+.map-dialog .map {
+    width: 840px;
+    height: 438px;
+    margin-top: 30px;
+}
+
+.map-dialog .input-addr>.title1 {
+    text-overflow: ellipsis;
+    overflow: hidden;
+}
+
+.map-dialog .address-box {
+    display: flex;
+    align-items: center;
+    align-items: center;
+}
+
+.map-dialog .el-icon-search {
+    margin-right: 10px;
+}
+
+.scroll {
+    height: 100%;
+    overflow: hidden;
+}
+/**
+操作弹窗
+ */
+.edit-pop {
+    width: 60px;
+    height: 68px;
+    padding: 2px 0;
+    background: #FFFFFF;
+    box-shadow: 0px 6px 16px -8px rgba(0, 0, 0, 0.08), 0px 9px 28px rgba(0, 0, 0, 0.05), 0px 12px 48px 16px rgba(0, 0, 0, 0.03);
+    border-radius: 2px;
+    position: absolute;
+    z-index: 2;
+    /* top: calc(50% + 13px);
+    right: -23px; */
+    top: calc(50% + 8px)
+}
+.edit-pop ul {
+    padding: 0;
+    text-align: center;
+    margin: 0;
+}
+.edit-pop ul li {
+    width: 60px;
+    height: 34px;
+    list-style: none;
+    font-size: 14px;
+    line-height: 34px;
+    color: #333333;
+    cursor: pointer;
+}
+.edit-pop ul li:hover {
+    background: #F8F8F8;
+    color: #0084FF;
+}
+
+
+input::-webkit-input-placeholder {
+    color:#ccc !important;
+}
+input::-moz-placeholder {
+    color:#ccc !important;
+}
+input:-moz-placeholder {
+    color:#ccc !important;
+}
+input:-ms-input-placeholder {
+    color:#ccc !important;
+}
+.disable {
+    display: none;
+}
+
+.el-range-editor.el-input__inner {
+    padding: 5px 12px;
+    width: 346px;
+}
+
+.el-date-editor .el-range-input, .el-date-editor .el-range-separator {
+    text-align: left;
+}
+
+.el-date-editor .el-range-input {
+    font-size: 14px;
+    line-height: 22px;
+    color: #333333;
+    width: 131px;
+    padding-left: 0 !important;
+}
+.date-piker-icon {
+    display: grid;
+    position: absolute;
+    left: 319px;
+    top: 9px;
+}
+.date-piker-icon img {
+    width: 14px;
+    height: 14px;
+}
+/* 签到管理 */
+.signIn-management .top-title{
+    font-weight: 600;
+    font-size: 18px;
+    line-height: 30px;
+    color: #333333;
+    margin: 16px 24px;
+}
+.signIn-management .item .text {
+    margin-left: 64px;
+}
+.signIn-management .item .title {
+    font-weight: 600;
+}
+.signIn-management .not-started{
+    color: #999999;
+}
+.signIn-management .over{
+    color: #CCCCCC;
+}
+.edit-box{
+    position: absolute;
+    top: calc(50% - 8px);
+    right: 24px;
+    height: 30px;
+}
+.el-scrollbar li{
+    position: relative;
+    padding-right: 30px;
+}
+.el-scrollbar li,
+.address-box {
+    display: flex;
+    align-items: center;
+    overflow: hidden;
+}
+.el-autocomplete-suggestion li:hover .el-icon-close{
+    display: block;
+}
+.el-icon-search {
+    margin-right: 10px;
+}
+.autoAddressClass .el-icon-close{
+    position: absolute;
+    right: 10px;
+    color: #999999;
+    display: none;
+}

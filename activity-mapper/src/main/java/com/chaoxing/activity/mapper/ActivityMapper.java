@@ -213,4 +213,15 @@ public interface ActivityMapper extends BaseMapper<Activity> {
 	* @return java.util.List<java.lang.Integer>
 	*/
 	List<Integer> listActivityIds(@Param("fid") Integer fid, @Param("startDate") String startDate, @Param("endDate") String endDate);
+
+	/**根据机构ids, 给定的活动时间范围，查询在此范围内进行中的活动id列表
+	* @Description
+	* @author huxiaolong
+	* @Date 2021-06-11 14:02:14
+	* @param fids
+	* @param startDate
+	* @param endDate
+	* @return java.util.List<java.lang.Integer>
+	*/
+    List<Integer> listActivityIdByFids(@Param("fids") List<Integer> fids, @Param("startDate") String startDate, @Param("endDate") String endDate);
 }

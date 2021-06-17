@@ -1,0 +1,527 @@
+body,html{
+    background: #fff;
+}
+.dialog-box{
+    z-index: 4;
+}
+.fs0{
+    font-size: 0;
+}
+.colorBlue{
+    color: #0084FF;
+}
+.normal-btn-blue .add-icon{
+    display: inline-block;
+    vertical-align: top;
+    margin-top: 6px;
+    margin-right: 4px;
+    width: 16px;
+    height: 16px;
+    background-image: url(../images/yq-design/add-thin.png);
+}
+.prize-manage{
+    padding: 24px;
+    box-sizing: border-box;
+}
+.color333{
+    color: #333;
+}
+/* 奖项管理start */
+.item-list{
+    margin-top: 16px;
+    .item{
+        .img-box{
+            padding: 16px 0;
+            width: 48px;
+            font-size: 0;
+            img{
+                width: 48px;
+                height: 48px;
+                border-radius: 8px;
+                overflow: hidden;
+            }
+        }
+        .right{
+            position: relative;
+            margin-left: 64px;
+            padding: 16px 0;
+            border-bottom: 1px solid #F0F0F0;
+            .text-box{
+                display: inline-block;
+                vertical-align: top;
+                margin-right: 98px;
+                .title{
+                    font-weight: 500;
+                    font-size: 16px;
+                    line-height: 22px;
+                    color: #333333;
+                    cursor: pointer;
+                    &:hover{
+                        color: #0084FF;
+                    }
+                }
+                .prize{
+                    font-size: 13px;
+                    line-height: 18px;
+                    color: #999999;
+                    margin-top: 6px;
+                }
+            }
+            .processing{
+                position: absolute;
+                right: 32px;
+                top: 50%;
+                transform: translateY(-50%);
+                font-size: 14px;
+                line-height: 48px;
+                color: #999999;
+                &.blue{
+                    color: #0084FF;
+                    cursor: pointer;
+                    &:hover{
+                        opacity: 0.8;
+                    }
+                }
+            }
+            .edit-box{
+                position: absolute;
+                top: calc(50% - 8px);
+                right: 0px;
+                height: 30px;
+                cursor: pointer;
+                &:hover{
+                    .edit-icon{
+                        background: url(../images/icon-more-hover.png) no-repeat;
+                    }
+                    .edit-pop{
+                        display: block;
+                    }
+                }
+                .edit-icon{
+                    width: 16px;
+                    height: 16px;
+                    background: url(../images/icon-more1.png) no-repeat;
+                }
+                .edit-pop{
+                    position: absolute;
+                    z-index: 2;
+                    top: calc(50% + 6px);
+                    left: -35px;
+                    width: 60px;
+                    padding: 2px 0;
+                    background: #FFFFFF;
+                    box-shadow: 0px 6px 16px -8px rgba(0, 0, 0, 0.08), 0px 9px 28px rgba(0, 0, 0, 0.05), 0px 12px 48px 16px rgba(0, 0, 0, 0.03);
+                    border-radius: 2px;
+                    display: none;
+                    div{
+                        width: 60px;
+                        height: 34px;
+                        font-size: 14px;
+                        line-height: 34px;
+                        color: #333333;
+                        cursor: pointer;
+                        text-align: center;
+                        &:hover{
+                            background: #F8F8F8;
+                            color: #0084FF;
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+/* 奖项管理end */
+
+/* 编辑奖项弹窗 start */
+.dialog-wrap.edit-prize{
+    width: 520px;
+    .dialog-content{
+        padding: 24px 32px;
+        box-sizing: border-box;
+        height: auto;
+    }
+    .footer{
+        font-size: 0;
+        text-align: center;
+        .btn{
+            display: inline-block;
+            &:first-child{
+                margin-right: 24px;
+            }
+        }
+    }
+}
+/* 编辑奖项弹窗 end */
+
+/* 颁奖弹窗样式 start*/
+.dialog-wrap.award-dialog{
+    width: 456px;
+    .dialog-content{
+        padding: 16px 24px;
+        box-sizing: border-box;
+        height: auto;
+        max-height: 400px;
+        overflow: auto;
+        ul{
+            .item{
+                position: relative;
+                margin-bottom: 12px;
+                height: 56px;
+                background: #FFFFFF; 
+                border: 1px solid #E9E9E9;
+                box-sizing: border-box;
+                border-radius: 6px;
+                padding: 15px;
+                cursor: pointer;
+                &:last-child{
+                    margin-bottom: 0;
+                }
+                &:hover{
+                    background: #F8F8F8;
+                }
+                &.active{
+                    background: rgba(0, 132, 255, 0.08);
+                    border: 1px solid rgba(0, 132, 255, 0.8);
+                }
+                .img-box{
+                    width: 24px;
+                    height: 24px;
+                    float: left;
+                    img{
+                        width: 100%;
+                        height: 100%;
+                        vertical-align: top;
+                    }
+                }
+                .text{
+                    width: 298px;
+                    margin-left: 32px;
+                    font-size: 14px;
+                    line-height: 24px;
+                    color: rgba(0, 0, 0, 0.8);
+                }
+                .checked-box{
+                    position: absolute;
+                    right: 20px;
+                    top: 50%;
+                    width: 16px;
+                    height: 16px;
+                    transform: translateY(-50%);
+                    .el-checkbox, .el-checkbox__input{
+                        vertical-align: top;
+                    }
+                }
+            }
+        }
+    }
+    .footer{
+        font-size: 0;
+        text-align: center;
+        .btn{
+            display: inline-block;
+            &:first-child{
+                margin-right: 24px;
+            }
+        }
+    }
+}
+/* 颁奖弹窗样式 end*/
+.width264{
+    width: 264px;
+}
+.width100{
+    width: 100px;
+}
+.el-input__inner{
+    padding: 0 11px;
+    border-radius: 2px;
+}
+.el-input .el-input__count,
+.el-textarea .el-input__count{
+    font-size: 14px;
+    color: #999;
+}
+.el-textarea .el-textarea__inner{
+    padding: 11px;
+    color: #333;
+}
+.el-input__icon{
+    line-height: 30px !important;
+}
+.form-item{
+    font-size: 0;
+    margin-bottom: 24px;
+    &:last-child{
+        margin-bottom: 0;
+    }
+    .label{
+        display: inline-block;
+        vertical-align: top;
+        padding: 6px 0;
+        padding-left: 8px;
+        width: 68px;
+        box-sizing: border-box;
+        margin-right: 24px;
+        font-size: 14px;
+        line-height: 20px;
+        color: #666666;
+    }
+    .input-box{
+        display: inline-block;
+        vertical-align: top;
+        font-size: 0;
+        .el-input{
+            display: inline-block;
+            vertical-align: top;
+        }
+        &.name{
+            .el-input{
+                .el-input__inner{
+                    border-radius: 2px 0px 0px 2px;
+                }
+            }
+            .el-select{
+                .el-input__inner{
+                    border-radius: 0px 2px 2px 0px;
+                }
+                
+            }
+        }
+        &.explain{
+            .el-textarea{
+                width: 364px;
+                .el-textarea__inner{
+                    padding: 11px;
+                    color: #333;
+                }
+            }
+        }
+    }
+}
+/* 奖项管理二级页面 start*/
+.crumb-box{
+    padding: 16px 24px;
+    border-bottom: 1px solid #F0F0F0;
+    font-size: 0;
+    .bread-crumb{
+        font-size: 0;
+        display: inline-block;
+        vertical-align: top;
+        a{
+            display: inline-block;
+            vertical-align: top;
+            font-size: 16px;
+            line-height: 30px;
+            color: #666666;
+            &.active{
+                color: #999999;
+            }
+        }
+        .right{
+            display: inline-block;
+            vertical-align: top;
+            margin: 0 4px;
+            margin-top: 7px;
+            width: 16px;
+            height: 16px;
+            background: url(../images/yq-design/chevron-right.png) no-repeat;
+        }
+    }
+    .crumb-title{
+        font-size: 0;
+        display: inline-block;
+        vertical-align: top;
+        a{
+            display: inline-block;
+            vertical-align: top;
+            font-weight: 600;
+            font-size: 16px;
+            line-height: 30px;
+            color: #333333;
+        }
+        .left{
+            display: inline-block;
+            vertical-align: top;
+            transform: rotate(180deg);
+            margin-right: 8px;
+            margin-top: 7px;
+            width: 16px;
+            height: 16px;
+            background: url(../images/yq-design/chevron-right.png) no-repeat;
+            
+        }
+    }
+}
+.content-box{
+    padding: 16px 24px;
+    .table-operate-box{
+        .btn{
+            margin-right: 20px;
+        }
+        .remove{
+            margin-left: 20px;
+        }
+        .el-radio{
+            line-height: 30px;
+        }
+    }
+}
+.search-box {
+    float: right;
+    position: relative;
+
+    input {
+        width: 220px;
+        height: 30px;
+        border-radius: 25px;
+        font-size: 13px;
+        line-height: 15px;
+        color: #333333;
+    }
+
+    .el-input--suffix .el-input__inner {
+        padding-right: 60px;
+
+        &:focus {
+            border-color: #0084FF;
+        }
+    }
+
+    .btn-cancel {
+        cursor: pointer;
+        position: absolute;
+        top: 7px;
+        right: 36px;
+        font-size: 16px;
+        &:hover {
+            &:before {
+                color: #999999;
+            }
+        }
+    }
+}
+.webuploader-pick {
+    z-index: 2;
+    width: 76px;
+    height: 76px;
+    background: url(../images/yq-design/uplode.png);
+    background-size: 100% 100%;
+    padding: 0;
+    &:hover{
+        background: url(../images/yq-design/uplode-hover.png) !important;
+    }
+}
+.uplode-list{
+    font-size: 0;
+    .uplode-img{
+        display: inline-block;
+        vertical-align: top;
+        margin-top: 10px;
+        margin-right: 10px;
+        width: 76px;
+        height: 76px;
+    }
+    .img-box{
+        position: relative;
+        display: inline-block;
+        vertical-align: top;
+        margin-top: 10px;
+        margin-right: 10px;
+        width: 76px;
+        height: 76px;
+        border-radius: 4px;
+        overflow: hidden;
+        cursor: pointer;
+        text-align: center;
+        &.load-bg{
+            background: #F2F4F7;
+            border: 1px solid #E9E9E9;
+        }
+        &.fail-bg{
+            background: #FFFFFF;
+            border: 1px solid #FF666D;
+            .hoverBg{
+                border: none;
+                .icon-zoom {
+                    background: url(../images/yq-design/zoom-in-disable.png) no-repeat;
+                    cursor:not-allowed;
+                }
+            }
+        }
+        &:hover{
+            .delete{
+                display: block;
+            }
+            .hoverBg{
+                display: block;
+            }
+        }
+        img{
+            position: absolute;
+            width: 100%;
+            height: 100%;
+        }
+        .delete{
+            position: absolute;
+            z-index: 4;
+            right: 0;
+            top: 0;
+            display: none;
+            width: 16px;
+            height: 16px;
+            background: url(../images/yq-design/del.png) no-repeat;
+            background-size: 100%;
+            cursor: pointer;
+        }
+        .hoverBg{
+            position: absolute;
+            z-index: 2;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            border: 2px solid #0084FF;
+            box-sizing: border-box;
+            border-radius: 4px;
+            background: rgba(0, 0, 0, 0.4);
+            display: none;
+        }
+        .icon-zoom {
+            display: inline-block;
+            width: 24px;
+            height: 24px;
+            background: url(../images/yq-design/zoom-in.png) no-repeat;
+            background-size: 100%;
+            margin: 24px;
+            cursor: pointer;
+        }
+        i{
+            display: inline-block;
+            background-size: cover;
+            &.loading{
+                width: 40px;
+                height: 40px;
+                background-image: url(../images/Spinner-1s-200px-grey.svg);
+                margin-top: 6px;
+            }
+            &.fail-icon{
+                width: 20px;
+                height: 20px;
+                background-image: url(../images/yq-design/fail-image.png);
+                margin-top: 15px;
+            }
+        }
+        .text{
+            font-size: 14px;
+            line-height: 20px;
+            color: #999999;
+            text-align: center;
+            &.red{
+                color: #FF666D;
+                margin-top: 6px;
+            }
+        }
+    }
+}
+/* 奖项管理二级页面 end*/
