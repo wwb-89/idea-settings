@@ -4,14 +4,18 @@ import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.chaoxing.activity.dto.manager.ActivityCreatePermissionDTO;
+import com.chaoxing.activity.dto.manager.WfwDepartmentDTO;
 import com.chaoxing.activity.dto.manager.WfwGroupDTO;
 import com.chaoxing.activity.dto.manager.sign.SignUpParticipateScope;
 import com.chaoxing.activity.mapper.ActivityCreatePermissionMapper;
 import com.chaoxing.activity.model.ActivityClassify;
 import com.chaoxing.activity.model.ActivityCreatePermission;
+import com.chaoxing.activity.model.OrgConfig;
 import com.chaoxing.activity.service.activity.classify.ActivityClassifyQueryService;
 import com.chaoxing.activity.service.manager.MoocApiService;
+import com.chaoxing.activity.service.manager.WfwContactApiService;
 import com.chaoxing.activity.service.manager.WfwGroupApiService;
+import com.chaoxing.activity.service.org.OrgConfigService;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
@@ -43,6 +47,9 @@ public class ActivityCreatePermissionService {
     private WfwGroupApiService wfwGroupApiService;
 
     @Resource
+    private WfwContactApiService wfwContactApiService;
+
+    @Resource
     private ActivityClassifyQueryService activityClassifyQueryService;
 
     @Resource
@@ -50,6 +57,9 @@ public class ActivityCreatePermissionService {
 
     @Autowired
     private ActivityCreatePermissionMapper activityCreatePermissionMapper;
+
+    @Resource
+    private OrgConfigService orgConfigService;
 
     /**查询机构fid下roleId的角色权限
     * @Description
@@ -174,13 +184,21 @@ public class ActivityCreatePermissionService {
         if (CollectionUtils.isEmpty(userRoleIds)) {
             return activityCreatePermission;
         }
+        OrgConfig orgConfig = orgConfigService.getByFid(fid);
         List<ActivityCreatePermission> createPermissions = activityCreatePermissionMapper.selectList(new QueryWrapper<ActivityCreatePermission>()
                 .lambda()
                 .eq(ActivityCreatePermission::getFid, fid)
                 .in(ActivityCreatePermission::getRoleId, userRoleIds)
                 .eq(ActivityCreatePermission::getDeleted, Boolean.FALSE));
 
-        List<WfwGroupDTO> wfwGroups = wfwGroupApiService.listGroupByFid(fid);
+        String groupType = CollectionUtils.isNotEmpty(createPermissions) ? createPermissions.get(0).getGroupType() : orgConfig.getSignUpScopeType();
+        List<WfwGroupDTO> wfwGroups = Lists.newArrayList();
+        if (Objects.equals(OrgConfig.SignUpScopeType.WFW.getValue(), groupType)) {
+            wfwGroups = wfwGroupApiService.listGroupByFid(fid);
+        } else if (Objects.equals(OrgConfig.SignUpScopeType.CONTACTS.getValue(), groupType)) {
+            wfwGroups = wfwContactApiService.listUserContactOrgsByFid(uid, fid);
+        }
+
         List<ActivityClassify> activityClassifies = activityClassifyQueryService.listOrgOptional(fid);
         // 若查出的角色配置权限数量少于userRoleIds的数量 证明有未配置权限的角色，则以该角色最大权限返回数据
         if (createPermissions.size() < userRoleIds.size()) {
@@ -208,7 +226,12 @@ public class ActivityCreatePermissionService {
                 }
                 if (!setAllReleaseScope) {
                     if (!setManageGroupScope && Objects.equals(permission.getSignUpScopeType(), ActivityCreatePermission.SignUpScopeType.COMPETENT_RANGE.getValue())) {
-                        manageGroupIds = wfwGroupApiService.listUserManageGroupIdByFid(fid, uid);
+                        if (Objects.equals(permission.getGroupType(), OrgConfig.SignUpScopeType.WFW.getValue())) {
+                            manageGroupIds = wfwGroupApiService.listUserManageGroupIdByFid(fid, uid);
+                        } else if (Objects.equals(permission.getGroupType(), OrgConfig.SignUpScopeType.CONTACTS.getValue())) {
+                            List<WfwDepartmentDTO> departments = wfwContactApiService.listManagerDepartment(fid, uid);
+                            manageGroupIds = departments.stream().map(WfwDepartmentDTO::getId).collect(Collectors.toList());
+                        }
                         setManageGroupScope = Boolean.TRUE;
                     }
                     // 获取用户角色发布范围并集
@@ -403,5 +426,18 @@ public class ActivityCreatePermissionService {
             }
         }
         return result;
+    }
+
+    @Transactional(rollbackFor = Exception.class)
+    public void clearOtherDiffGroupPermission(Integer uid, Integer fid) {
+        OrgConfig orgConfig = orgConfigService.getByFid(fid);
+        activityCreatePermissionMapper.update(null, new UpdateWrapper<ActivityCreatePermission>()
+                .lambda()
+                .eq(ActivityCreatePermission::getFid, fid)
+                .set(ActivityCreatePermission::getGroupType, orgConfig.getSignUpScopeType())
+                .set(ActivityCreatePermission::getSignUpScopeType, ActivityCreatePermission.SignUpScopeType.NO_LIMIT.getValue())
+                .set(ActivityCreatePermission::getSignUpScope, null)
+                .set(ActivityCreatePermission::getUpdateUid, uid)
+                .set(ActivityCreatePermission::getUpdateTime, LocalDateTime.now()));
     }
 }

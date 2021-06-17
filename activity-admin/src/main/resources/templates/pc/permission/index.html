@@ -138,9 +138,11 @@
                         roleList: [[${roleList}]],
                         classifyList: [[${classifyList}]],
                         wfwGroups: [[${wfwGroups}]],
+                        groupType: [[${groupType}]],
                         activeRoleName: '',
                         config: {
                             fid: [[${fid}]],
+                            groupType: [[${groupType}]],
                             allActivityClassify: true,
                             activityClassifyScope: [],
                             signUpScopeType: 1,
@@ -227,8 +229,10 @@
                         $this.settingDialog = true;
                         $this.isBatch = true;
                         $this.activeRoleName = '';
+                        $this.releaseScopes = [];
                         $this.config = {
                             fid: $this.fid,
+                            groupType: $this.groupType,
                             signUpScopeType: 1,
                             signUpScope: '',
                             allActivityClassify: true,
@@ -274,6 +278,7 @@
                                         fid: $this.fid,
                                         roleId: role.roleid,
                                         signUpScopeType: 1,
+                                        groupType: $this.groupType,
                                         signUpScope: '',
                                         allActivityClassify: true,
                                         activityClassifyScope: $this.classifyIds
@@ -296,7 +301,20 @@
                     // 确定配置提交
                     submitPermissionConfig: function () {
                         var $this = this;
-                        var config = $this.config;
+                        var config = $.extend({}, $this.config);
+                        // 判断是否组织架构类型不同
+                        var diffGroupType = config.groupType && config.groupType != $this.groupType;
+                        if (diffGroupType) {
+                            config.groupType = $this.groupType;
+                            var confirmFlag = false;
+                            app.confirm("组织机构类型不一致，配置提交需清空其他不一致配置，是否确定提交？", function () {
+                                confirmFlag = true;
+                            }, function () {});
+
+                            if (confirmFlag) {
+                                return;
+                            }
+                        }
                         var signUpScope = []
                         if (config.signUpScopeType == 3) {
                             $($this.releaseScopes).each(function () {
@@ -318,16 +336,17 @@
                                     submitData.push($.extend({}, config, { roleId: this.roleid }));
                                 }
                             });
-                            $this.batchConfigSubmit(submitData)
+                            $this.batchConfigSubmit(submitData, diffGroupType)
                         } else {
-                            $this.singleConfigSubmit(config)
+                            $this.singleConfigSubmit(config, diffGroupType)
                         }
                         $this.cancelConfig()
                     },
                     // 单个配置保存
-                    singleConfigSubmit: function (config) {
+                    singleConfigSubmit: function (config, isDiffGroupType) {
+                        var $this = this;
                         var addUrl = ctx + '/api/activity/create/permission/add';
-                        var editUrl = ctx + '/api/activity/create/permission/edit';
+                        var editUrl = ctx + '/api/activity/create/permission/edit?clear=' + isDiffGroupType;
                         var url = !config.id ? addUrl : editUrl;
                         app.ajaxPostWithLoading(url, config, function (data) {
                             if (data.success) {
@@ -344,8 +363,8 @@
                         });
                     },
                     // 批量配置保存
-                    batchConfigSubmit: function (submitData) {
-                        var url = ctx + '/api/activity/create/permission/batchConfig';
+                    batchConfigSubmit: function (submitData, isDiffGroupType) {
+                        var url = ctx + '/api/activity/create/permission/batchConfig?clear=' + isDiffGroupType;
                         app.ajaxPostWithPayload(url, JSON.stringify(submitData), function (data) {
                             if (data.success) {
                                 app.showMsg("处理成功");
@@ -362,8 +381,10 @@
                     },
                     cancelConfig: function () {
                         var $this = this;
-                        $this.organizationTreeObj.destroy();
-                        $this.organizationTreeObj = null;
+                        if ($this.organizationTreeObj) {
+                            $this.organizationTreeObj.destroy();
+                            $this.organizationTreeObj = null;
+                        }
                         $this.settingDialog = false;
                     },
                     /* 渲染z-tree */
@@ -396,7 +417,10 @@
                         // 获取所有父节点
                         for(var i = 0; i < $this.releaseScopes.length; i++) {
                             var item = $this.releaseScopes[i];
-                            $this.organizationTreeObj.checkNode($this.organizationTreeObj.getNodeByParam("virtualId", item.virtualId, null), true, !item.leaf);
+                            var node = $this.organizationTreeObj.getNodeByParam("virtualId", item.virtualId, null);
+                            if (node) {
+                                $this.organizationTreeObj.checkNode(node, true, !item.leaf);
+                            }
                         }
                     },
                     // 确定报名范围改变事件

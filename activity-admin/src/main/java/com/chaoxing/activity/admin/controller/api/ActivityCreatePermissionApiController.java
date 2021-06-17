@@ -46,9 +46,12 @@ public class ActivityCreatePermissionApiController {
 
     @LoginRequired
     @PostMapping("/edit")
-    public RestRespDTO edit(HttpServletRequest request, ActivityCreatePermission activityCreatePermission) {
+    public RestRespDTO edit(HttpServletRequest request, ActivityCreatePermission activityCreatePermission, Boolean clear) {
         LoginUserDTO loginUser = LoginUtils.getLoginUser(request);
         activityCreatePermission.setUpdateUid(loginUser.getUid());
+        if (clear != null && clear) {
+            activityCreatePermissionService.clearOtherDiffGroupPermission(loginUser.getUid(), activityCreatePermission.getFid());
+        }
         activityCreatePermissionService.edit(activityCreatePermission);
         return RestRespDTO.success();
     }

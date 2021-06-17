@@ -5,11 +5,15 @@ import com.chaoxing.activity.dto.LoginUserDTO;
 import com.chaoxing.activity.dto.OrgRoleDTO;
 import com.chaoxing.activity.dto.manager.WfwGroupDTO;
 import com.chaoxing.activity.model.ActivityClassify;
+import com.chaoxing.activity.model.OrgConfig;
 import com.chaoxing.activity.service.activity.classify.ActivityClassifyQueryService;
 import com.chaoxing.activity.service.manager.OrganizationalStructureApiService;
 import com.chaoxing.activity.service.manager.UcApiService;
+import com.chaoxing.activity.service.manager.WfwContactApiService;
 import com.chaoxing.activity.service.manager.WfwGroupApiService;
+import com.chaoxing.activity.service.org.OrgConfigService;
 import com.chaoxing.activity.util.annotation.LoginRequired;
+import com.google.common.collect.Lists;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -17,6 +21,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 
 /**
@@ -37,7 +42,11 @@ public class ActivityCreatePermissionController {
     @Resource
     private WfwGroupApiService wfwGroupApiService;
     @Resource
+    private WfwContactApiService wfwContactApiService;
+    @Resource
     private UcApiService ucApiService;
+    @Resource
+    private OrgConfigService orgConfigService;
 
     @LoginRequired
     @RequestMapping("")
@@ -49,14 +58,22 @@ public class ActivityCreatePermissionController {
             realFid = loginUser.getFid();
         }
 //        if (ucApiService.isManager(realFid, uid)) {
-            List<OrgRoleDTO> roleList = organizationalStructureApiService.listOrgRoles(realFid);
-            List<ActivityClassify> classifyList = activityClassifyQueryService.listOrgOptionsByFid(realFid);
-            // 微服务组织架构
-            List<WfwGroupDTO> wfwGroups = wfwGroupApiService.listGroupByFid(realFid);
-            model.addAttribute("fid", realFid);
-            model.addAttribute("wfwGroups", wfwGroupApiService.buildWfwGroups(wfwGroups));
-            model.addAttribute("classifyList", classifyList);
-            model.addAttribute("roleList", roleList);
+        List<OrgRoleDTO> roleList = organizationalStructureApiService.listOrgRoles(realFid);
+        List<ActivityClassify> classifyList = activityClassifyQueryService.listOrgOptionsByFid(realFid);
+        OrgConfig orgConfig = orgConfigService.getByFid(realFid);
+        // 微服务组织架构
+        List<WfwGroupDTO> wfwGroups = Lists.newArrayList();
+        if (Objects.equals(orgConfig.getSignUpScopeType(), OrgConfig.SignUpScopeType.WFW.getValue())) {
+            wfwGroups = wfwGroupApiService.listGroupByFid(realFid);
+            wfwGroups = wfwGroupApiService.buildWfwGroups(wfwGroups);
+        } else if (Objects.equals(orgConfig.getSignUpScopeType(), OrgConfig.SignUpScopeType.CONTACTS.getValue())) {
+            wfwGroups = wfwContactApiService.listUserContactOrgsByFid(uid, realFid);
+        }
+        model.addAttribute("fid", realFid);
+        model.addAttribute("groupType", orgConfig.getSignUpScopeType());
+        model.addAttribute("wfwGroups", wfwGroups);
+        model.addAttribute("classifyList", classifyList);
+        model.addAttribute("roleList", roleList);
 //        }
         return "pc/permission/index";
     }

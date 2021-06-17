@@ -7,6 +7,7 @@
         <result column="role_id" jdbcType="INTEGER" property="roleId" />
         <result column="is_all_activity_classify" jdbcType="BIT" property="allActivityClassify" />
         <result column="activity_classify_scope" jdbcType="VARCHAR" property="activityClassifyScope" />
+        <result column="group_type" jdbcType="VARCHAR" property="groupType" />
         <result column="sign_up_scope_type" jdbcType="INTEGER" property="signUpScopeType" />
         <result column="is_deleted" jdbcType="BIT" property="deleted" />
         <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
@@ -18,7 +19,7 @@
         <result column="sign_up_scope" jdbcType="LONGVARCHAR" property="signUpScope" />
     </resultMap>
     <sql id="Base_Column_List">
-        t.id, t.fid, t.role_id, t.is_all_activity_classify, t.activity_classify_scope, t.sign_up_scope_type, 
+        t.id, t.fid, t.role_id, t.is_all_activity_classify, t.activity_classify_scope, t.group_type, t.sign_up_scope_type,
         t.is_deleted, t.create_time, t.create_uid, t.update_time, t.update_uid
     </sql>
     <sql id="Blob_Column_List">

@@ -37,6 +37,8 @@ public class ActivityCreatePermission {
     private Boolean allActivityClassify;
     /** 活动类型范围，以","分割的活动类型id列表; column: activity_classify_scope*/
     private String activityClassifyScope;
+    /** 组织机构类型; column: group_type*/
+    private String groupType;
     /** 报名范围类型; column: sign_up_scope_type*/
     private Integer signUpScopeType;
     /** 是否被删除; column: is_deleted*/

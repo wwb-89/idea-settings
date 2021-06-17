@@ -6,16 +6,19 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.chaoxing.activity.dto.OrgDTO;
 import com.chaoxing.activity.dto.manager.WfwContacterDTO;
 import com.chaoxing.activity.dto.manager.WfwDepartmentDTO;
+import com.chaoxing.activity.dto.manager.WfwGroupDTO;
 import com.chaoxing.activity.util.exception.BusinessException;
 import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
 import javax.annotation.Resource;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**微服务通讯录api服务
@@ -41,7 +44,8 @@ public class WfwContactApiService {
 	private static final String GET_DEPARTMENT_URL = DOMAIN + "/apis/dept/getDeptsByServer?type=unit&fid={fid}&puid={uid}&cpage={page}&pageSize={pageSize}";
 	/** 获取部门人员列表url */
 	private static final String GET_DEPARTMENT_USER_URL = DOMAIN + "/apis/user/getSubDeptUserInfinite?deptId={deptId}&includeSub={includeSub}&cpage={page}&pagesize={pageSize}";
-
+	/** 根据管理员puid获取管理员管理的部门 */
+	private static final String GET_DEPARTMENT_BY_MANAGER_URL = DOMAIN + "/apis/dept/getDeptsByManager?fid={fid}&puid={puid}";
 	@Resource(name = "restTemplateProxy")
 	private RestTemplate restTemplate;
 
@@ -57,13 +61,106 @@ public class WfwContactApiService {
 		String result = restTemplate.getForObject(url, String.class);
 		JSONObject jsonObject = JSON.parseObject(result);
 		Integer status = jsonObject.getInteger("result");
-		if (Objects.equals(status, 1)) {
+ 		if (Objects.equals(status, 1)) {
 			return JSON.parseArray(jsonObject.getString("msg"), OrgDTO.class);
 		} else {
 			String errorMessage = jsonObject.getString("errorMsg");
 			log.error("根据uid:{} 查询有通讯录的机构列表error:{}", uid, errorMessage);
 			return Lists.newArrayList();
 		}
+	}
+
+	/**用户通讯录在机构fid下的机构列表
+	* @Description
+	* @author huxiaolong
+	* @Date 2021-06-17 10:45:52
+	* @param uid
+	* @param fid
+	* @return java.util.List<com.chaoxing.activity.dto.OrgDTO>
+	*/
+	public List<WfwGroupDTO> listUserContactOrgsByFid(Integer uid, Integer fid) {
+		List<OrgDTO> userHaveContacts = listUserHaveContactsOrg(uid);
+		List<Integer> orgIds = userHaveContacts.stream().map(OrgDTO::getFid).collect(Collectors.toList());
+		if (!orgIds.contains(fid)) {
+			return Lists.newArrayList();
+		}
+		Page<WfwDepartmentDTO> page = new Page<>(1, 50);
+		List<WfwDepartmentDTO> result = Lists.newArrayList();
+		while (true) {
+			page = listOrgDepartment(page, fid, uid);
+			if (CollectionUtils.isEmpty(page.getRecords())) {
+				break;
+			}
+			result.addAll(page.getRecords());
+			page.setCurrent(page.getCurrent() + 1);
+		}
+		return convert2WfwGroup(result);
+	}
+
+	/**deptment转换成wfwGroup数据结构
+	* @Description 
+	* @author huxiaolong
+	* @Date 2021-06-17 11:45:28
+	* @param departments
+	* @return java.util.List<com.chaoxing.activity.dto.manager.WfwGroupDTO>
+	*/
+	private List<WfwGroupDTO> convert2WfwGroup(List<WfwDepartmentDTO> departments) {
+		List<WfwGroupDTO> result = Lists.newArrayList();
+		if (CollectionUtils.isEmpty(departments)) {
+			return result;
+		}
+		List<WfwGroupDTO> wfwGroups = Lists.newArrayList();
+		Map<String, Integer> deptChildNumMap = Maps.newHashMap();
+		for (WfwDepartmentDTO dept : departments) {
+			String groupId = dept.getId().toString();
+			String gid = dept.getPid() == null ? null : dept.getPid().toString();
+			wfwGroups.add(WfwGroupDTO.builder()
+					.id(groupId)
+					.gid(gid)
+					.virtualId(String.valueOf(dept.getId()))
+					.groupname(dept.getName())
+					.groupLevel(dept.getLevel())
+					.build());
+			if (StringUtils.isNotBlank(gid)) {
+				Integer soncount = Optional.ofNullable(deptChildNumMap.get(gid)).orElse(0);
+				deptChildNumMap.put(gid, soncount + 1);
+			}
+		}
+
+		for (WfwGroupDTO group : wfwGroups) {
+			Integer soncount = Optional.ofNullable(deptChildNumMap.get(group.getId())).orElse(0);
+			group.setSoncount(soncount);
+			result.add(group);
+			if (group.getSoncount() > 0) {
+				WfwGroupDTO item = new WfwGroupDTO();
+				BeanUtils.copyProperties(group, item);
+				item.setVirtualId(UUID.randomUUID().toString().trim().replaceAll("-", ""));
+				item.setSoncount(0);
+				item.setGid(item.getId());
+				result.add(item);
+			}
+		}
+		return result;
+	}
+
+	/**递归分页查找下级部门列表
+	* @Description 
+	* @author huxiaolong
+	* @Date 2021-06-17 11:20:01
+	* @param page
+	* @param fid
+	* @param uid
+	* @param result
+	* @return void
+	*/
+	private void recursionSearchDepartment (Page<WfwDepartmentDTO> page, Integer fid, Integer uid, List<WfwDepartmentDTO> result) {
+		page = listOrgDepartment(page, uid, fid);
+		if (CollectionUtils.isEmpty(page.getRecords())) {
+			return;
+		}
+		result.addAll(page.getRecords());
+		page.setCurrent(page.getCurrent() + 1);
+		recursionSearchDepartment(page, fid, uid, result);
 	}
 	/**搜索联系人
 	 * @Description 
@@ -163,6 +260,28 @@ public class WfwContactApiService {
 			throw new BusinessException(errorMessage);
 		}
 		return uids;
+	}
+
+	/**根据管理员puid获取管理员管理的部门
+	* @Description
+	* @author huxiaolong
+	* @Date 2021-06-16 10:15:19
+	* @param fid
+	* @param puid
+	* @return com.baomidou.mybatisplus.extension.plugins.pagination.Page<com.chaoxing.activity.dto.manager.WfwContacterDTO>
+	*/
+	public List<WfwDepartmentDTO> listManagerDepartment(Integer fid, Integer puid) {
+		String forObject = restTemplate.getForObject(GET_DEPARTMENT_BY_MANAGER_URL, String.class, fid, puid);
+		JSONObject jsonObject = JSON.parseObject(forObject);
+		Integer result = jsonObject.getInteger("result");
+		String msg = jsonObject.getString("msg");
+		if (Objects.equals(result, 1)) {
+			JSONObject dataObj = jsonObject.getJSONObject("data");
+			return JSON.parseArray(dataObj.getString("list"), WfwDepartmentDTO.class);
+		} else {
+			log.error("根据fid:{}, uid:{} 查询管理下的部门error:{}", fid, puid, msg);
+			throw new BusinessException("查询管理下的部门列表失败");
+		}
 	}
 
 }
