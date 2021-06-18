@@ -237,7 +237,7 @@
                         </el-table-column>
                         <el-table-column prop="pv" label="浏览量" width="234" align="center">
                             <template #header>
-                                <div :class="{number: 'true', 'active': sortCol && sortCol.field === 'pv'}" @click.stop="loadTopActivityStat(sortField.pv, $event)"> 浏览量<i class="down-icon"></i></div>
+                                <div :class="{number: 'true', 'active': sortCol && sortCol.field === 'PV'}" @click.stop="loadTopActivityStat(activitySortField.pv, $event)"> 浏览量<i class="down-icon"></i></div>
                             </template>
                             <template slot-scope="scope">
                                 <span class="color">{{scope.row.pv || 0}}</span>
@@ -245,7 +245,7 @@
                         </el-table-column>
                         <el-table-column prop="signedUpNum" label="报名人数" align="center">
                             <template #header>
-                                <div :class="{number: 'true', 'active': sortCol && sortCol.field === 'signedUpNum'}" @click="loadTopActivityStat(sortField.signedUpNum, $event)"> 报名人数<i class="down-icon"></i></div>
+                                <div :class="{number: 'true', 'active': sortCol && sortCol.field === 'SIGNED_UP_NUM'}" @click="loadTopActivityStat(activitySortField.signedUpNum, $event)"> 报名人数<i class="down-icon"></i></div>
                             </template>
                             <template slot-scope="scope">
                                 <span class="color">{{scope.row.signedUpNum || 0}}</span>
@@ -303,6 +303,16 @@
                     regionSortCol: null,
                     orgSortCol: null,
                     sortCol: null,
+                    activitySortField: {
+                        pv: {
+                            desc: true,
+                            field: 'PV'
+                        },
+                        signedUpNum: {
+                            desc: true,
+                            field: 'SIGNED_UP_NUM'
+                        }
+                    },
                     sortField: {
                         activityNum: {
                             desc: true,
