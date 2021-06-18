@@ -34,6 +34,8 @@ public class SignUpParticipateScope {
     private String externalName;
     /** 是不是叶子结点(非叶子结点没有选中所有也当作叶子结点) */
     private Boolean leaf;
+    /** 组织架构类型 */
+    private String groupType;
     /** 创建时间 */
     private LocalDateTime createTime;
 

@@ -29,6 +29,9 @@ public class ActivityCreatePermissionDTO {
      */
     private List<WfwGroupDTO> wfwGroups;
 
+    /** 组织架构类型 */
+    private String groupType;
+
     /**
      * 活动类型
      */
@@ -39,6 +42,7 @@ public class ActivityCreatePermissionDTO {
                 .existNoLimitPermission(Boolean.TRUE)
                 .wfwGroups(Lists.newArrayList())
                 .activityClassifies(Lists.newArrayList())
+                .groupType("wfw")
                 .build();
     }
 }

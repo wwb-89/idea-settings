@@ -613,6 +613,8 @@
                 activityClassifies: [[${activityClassifies}]],
                 // 报名参与范围是否受限制
                 existNoLimitPermission: [[${existNoLimitPermission}]],
+                // 组织架构类型
+                groupType: [[${groupType}]],
                 // 文件上传
                 uploader: null,
                 // 新增修改活动分类弹窗的显示
@@ -1546,7 +1548,7 @@
                     });
                     $(pNodes).each(function () {
                         if (!this.externalPid || !pNodeMap[this.externalPid]) {
-                            scopes.push(this);
+                            scopes.push($.extend({}, this, {groupType: $this.groupType}));
                         }
                     });
                     $this.$set($this.sign.signUps[$this.operateSignUpIndex], "participateScopes", scopes);
