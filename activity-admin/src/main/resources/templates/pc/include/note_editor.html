@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<div th:fragment="note_editor">
+	<!--音视频播放-start-->
+	<script type="text/javascript" src="https://noteyd.chaoxing.com/res/js/common/easydialog.min.js"></script>
+	<script type="text/javascript" src="https://noteyd.chaoxing.com/res/plugin/ckplayer/ckplayer.js"></script>
+	<link rel="stylesheet" type="text/css" href="https://noteyd.chaoxing.com/res/plugin/smusic/css/smusic.css" />
+	<script type="text/javascript" src="https://noteyd.chaoxing.com/res/plugin/smusic/js/smusic.js"></script>
+	<link rel="stylesheet" type="text/css" href="https://noteyd.chaoxing.com/res/pc/cssnew/media.css" />
+	<script type="text/javascript" src="https://noteyd.chaoxing.com/res/pc/js/media.js"></script>
+	<!-- 视频播放容器 -->
+	<div id="videoDiv">
+		<span class="videoCloseBtn"></span>
+		<div id="video"></div>
+	</div>
+	<!-- 音频播放容器 -->
+	<div id="audioDiv" style="z-index: 9000">
+		<div class="headBar"><span class="audioCloseBtn"></span></div>
+		<div class="grid-music-container f-usn">
+			<div class="m-music-play-wrap">
+				<div class="u-cover"></div>
+				<div class="m-now-info">
+					<h1 class="u-music-title"><strong></strong></h1>
+					<div class="m-now-controls">
+						<div class="startTime">00:00&nbsp;&nbsp;</div>
+						<div class="u-control u-process ">
+							<div class="old-bar"></div>
+							<span class="buffer-process"></span>
+							<span class="current-bar"></span>
+							<span class="current-process"></span>
+						</div>
+						<div class="u-control u-time">00:00</div>
+
+						<div class="u-control u-volume new-volume">
+							<div class="volume">
+                            <span class="volume-event">
+                                <div class="volume-process" data-volume="0.50"></div>
+                                <span class="volume-current"></span>
+                                <span class="volume-bar"></span>
+                            </span>
+								<a class="volume-control"></a>
+							</div>
+						</div>
+						<div class="m-play-controls">
+							<div class="musicOrder">
+								<a class="u-play-btn mode mode-list  " title="列表循环"></a>
+							</div>
+							<a class="u-play-btn prev" title="上一曲"></a>
+							<a class="u-play-btn ctrl-play play" title="暂停"></a>
+							<a class="u-play-btn next" title="下一曲"></a>
+						</div>
+					</div>
+				</div>
+				<div class="f-cb">&nbsp;</div>
+				<div class="m-music-list-wrap"></div>
+				<div class="m-music-lyric-wrap">
+					<div class="inner">
+						<ul class="js-music-lyric-content">
+							<li class="eof">暂无歌词...</li>
+						</ul>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+	<!--音视频播放-end-->
+</div>

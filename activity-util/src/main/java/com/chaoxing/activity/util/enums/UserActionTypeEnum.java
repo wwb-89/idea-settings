@@ -20,8 +20,8 @@ public enum UserActionTypeEnum {
 	SIGN_UP("报名", "sign_up", false),
 	SIGN_IN("签到", "sign_in", true, UserActionEnum.SIGNED_IN),
 	RATING("评价", "rating", true, UserActionEnum.RATING),
-	DISCUSS("讨论", "discuss", false, UserActionEnum.PUBLISH, UserActionEnum.REPLY),
-	WORK("作品征集", "work", true, UserActionEnum.WORK),
+	DISCUSS("讨论", "discuss", false, UserActionEnum.PUBLISH_TOPIC, UserActionEnum.REPLY_TOPIC),
+	WORK("作品征集", "work", true, UserActionEnum.SUBMIT_WORK),
 	PERFORMANCE("现场评分", "performance", true, UserActionEnum.PERFORMANCE);
 
 	private String name;

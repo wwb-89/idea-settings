@@ -4,10 +4,7 @@ import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.chaoxing.activity.dto.OrgFormConfigDTO;
-import com.chaoxing.activity.dto.manager.sign.SignIn;
-import com.chaoxing.activity.dto.manager.sign.SignStatDTO;
-import com.chaoxing.activity.dto.manager.sign.SignUp;
-import com.chaoxing.activity.dto.manager.sign.UserSignParticipationStatDTO;
+import com.chaoxing.activity.dto.manager.sign.*;
 import com.chaoxing.activity.dto.module.SignAddEditDTO;
 import com.chaoxing.activity.dto.module.SignAddEditResultDTO;
 import com.chaoxing.activity.dto.sign.ActivityBlockDetailSignStatDTO;
@@ -112,22 +109,27 @@ public class SignApiService {
 	private static final String NOTICE_HAVE_RATING_URL = SIGN_API_DOMAIN + "/sign/%d/notice/rating?uid=%d";
 	/** 通知报名签到活动积分已变更 */
 	private static final String NOTICE_ACTIVITY_INTEGRAL_CHANGE_URL = SIGN_API_DOMAIN + "/sign/%d/notice/activity-integral-change";
-	
+
 	/** 签到位置搜索缓存 */
 	private static final String SIGN_IN_POSITION_HISTORY_LIST_URL = SIGN_API_DOMAIN + "/sign-in/position-history";
 	private static final String SIGN_IN_POSITION_HISTORY_ADD_URL = SIGN_API_DOMAIN + "/sign-in/position-history/add";
 	private static final String SIGN_IN_POSITION_HISTORY_DELETE_URL = SIGN_API_DOMAIN + "/sign-in/position-history/delete";
-	
+
 	/** 获取机构配置的表单 */
 	private static final String GET_ORG_FORM_CONFIG_URL = SIGN_API_DOMAIN + "/org/%d/form";
 	/** 配置机构的表单 */
 	private static final String ORG_FORM_CONFIG_URL = SIGN_API_DOMAIN + "/org/form/config";
 
+	/** 查询用户在报名签到下的报名列表 */
+	private static final String USER_SIGNED_UP_LIST_URL = SIGN_API_DOMAIN + "/stat/user/%d/sign/%d/signed-up";
+	/** 查询用户在报名签到下的签到记录（排除未签到） */
+	private static final String USER_EXCLUDE_NOT_SIGNED_IN_URL = SIGN_API_DOMAIN + "/stat/user/%d/sign/%d/exclude-not-signed-in";
+
 	@Resource
 	private RestTemplate restTemplate;
 
 	/**结果处理
-	 * @Description 
+	 * @Description
 	 * @author wwb
 	 * @Date 2021-05-26 11:18:14
 	 * @param jsonObject
@@ -146,7 +148,7 @@ public class SignApiService {
 		}
 	}
 	/**创建报名签到
-	 * @Description 
+	 * @Description
 	 * @author wwb
 	 * @Date 2020-11-11 14:26:33
 	 * @param signAddEdit
@@ -165,7 +167,7 @@ public class SignApiService {
 	}
 
 	/**更新报名签到
-	 * @Description 
+	 * @Description
 	 * @author wwb
 	 * @Date 2020-11-11 17:58:39
 	 * @param signAddEdit
@@ -184,7 +186,7 @@ public class SignApiService {
 	}
 
 	/**获取签到报名信息
-	 * @Description 
+	 * @Description
 	 * @author wwb
 	 * @Date 2020-11-19 13:15:47
 	 * @param signId
@@ -219,7 +221,7 @@ public class SignApiService {
 	}
 
 	/**查询报名签到的参与情况
-	 * @Description 
+	 * @Description
 	 * @author wwb
 	 * @Date 2020-11-24 20:15:35
 	 * @param signId
@@ -233,7 +235,7 @@ public class SignApiService {
 	}
 
 	/**统计报名签到在活动管理首页需要的信息
-	 * @Description 
+	 * @Description
 	 * @author wwb
 	 * @Date 2020-12-24 11:25:45
 	 * @param signId
@@ -261,7 +263,7 @@ public class SignApiService {
 	}
 
 	/**统计报名人数
-	 * @Description 
+	 * @Description
 	 * @author wwb
 	 * @Date 2021-01-13 18:00:20
 	 * @param signIds
@@ -282,7 +284,7 @@ public class SignApiService {
 	}
 
 	/**活动块详情统计信息
-	 * @Description 
+	 * @Description
 	 * @author wwb
 	 * @Date 2021-01-14 20:19:14
 	 * @param signId
@@ -307,7 +309,7 @@ public class SignApiService {
 	}
 
 	/**分页查询用户报名的报名签到
-	 * @Description 
+	 * @Description
 	 * @author wwb
 	 * @Date 2021-01-27 20:31:46
 	 * @param page
@@ -333,7 +335,7 @@ public class SignApiService {
 	}
 
 	/**取消报名
-	 * @Description 
+	 * @Description
 	 * @author wwb
 	 * @Date 2021-01-28 14:35:58
 	 * @param request
@@ -354,7 +356,7 @@ public class SignApiService {
 	}
 
 	/**撤销报名
-	 * @Description 
+	 * @Description
 	 * @author wwb
 	 * @Date 2021-01-28 14:36:10
 	 * @param request
@@ -375,7 +377,7 @@ public class SignApiService {
 	}
 
 	/**根据报名签到id查询已报名的用户id列表
-	 * @Description 
+	 * @Description
 	 * @author wwb
 	 * @Date 2021-02-02 17:57:11
 	 * @param signId
@@ -392,7 +394,7 @@ public class SignApiService {
 	}
 
 	/**通知已收藏
-	 * @Description 
+	 * @Description
 	 * @author wwb
 	 * @Date 2021-02-05 16:20:39
 	 * @param signId
@@ -418,7 +420,7 @@ public class SignApiService {
 	}
 
 	/**是否开启了报名
-	 * @Description 
+	 * @Description
 	 * @author wwb
 	 * @Date 2021-03-08 19:18:23
 	 * @param signId
@@ -442,7 +444,7 @@ public class SignApiService {
 	}
 
 	/**用户是否报名成功
-	 * @Description 
+	 * @Description
 	 * @author wwb
 	 * @Date 2021-03-08 18:52:07
 	 * @param signId
@@ -460,7 +462,7 @@ public class SignApiService {
 	}
 
 	/**获取报名名单的url
-	 * @Description 
+	 * @Description
 	 * @author wwb
 	 * @Date 2021-03-09 15:55:55
 	 * @param signUpId
@@ -471,7 +473,7 @@ public class SignApiService {
 	}
 
 	/**获取用户报名签到参与情况
-	 * @Description 
+	 * @Description
 	 * @author wwb
 	 * @Date 2021-03-09 18:06:18
 	 * @param signId
@@ -500,7 +502,7 @@ public class SignApiService {
 	}
 
 	/**处理通知评价
-	 * @Description 
+	 * @Description
 	 * @author wwb
 	 * @Date 2021-03-24 14:08:22
 	 * @param signId
@@ -520,7 +522,7 @@ public class SignApiService {
 	}
 
 	/**根据signId列表查询报名的人数
-	 * @Description 
+	 * @Description
 	 * @author wwb
 	 * @Date 2021-03-24 20:24:58
 	 * @param signIds
@@ -546,7 +548,7 @@ public class SignApiService {
 	}
 
 	/**通知报名签到活动积分已修改
-	 * @Description 
+	 * @Description
 	 * @author wwb
 	 * @Date 2021-03-26 21:50:30
 	 * @param signId
@@ -562,7 +564,7 @@ public class SignApiService {
 	}
 
 	/**查询签到位置历史记录
-	 * @Description 
+	 * @Description
 	 * @author wwb
 	 * @Date 2021-04-07 18:50:54
 	 * @param uid
@@ -585,7 +587,7 @@ public class SignApiService {
 	}
 
 	/**新增签到位置历史记录
-	 * @Description 
+	 * @Description
 	 * @author wwb
 	 * @Date 2021-04-07 18:51:05
 	 * @param uid
@@ -605,7 +607,7 @@ public class SignApiService {
 	}
 
 	/**删除签到位置历史记录
-	 * @Description 
+	 * @Description
 	 * @author wwb
 	 * @Date 2021-04-07 18:51:15
 	 * @param uid
@@ -625,7 +627,7 @@ public class SignApiService {
 	}
 
 	/**报名签到每日统计
-	 * @Description 
+	 * @Description
 	 * @author wwb
 	 * @Date 2021-04-16 14:15:00
 	 * @param signId
@@ -646,7 +648,7 @@ public class SignApiService {
 	}
 
 	/**获取活动报名签到参与范围描述
-	 * @Description 
+	 * @Description
 	 * @author wwb
 	 * @Date 2021-04-20 10:16:17
 	 * @param signId
@@ -678,7 +680,7 @@ public class SignApiService {
 	}
 
 	/**用户报名签到统计汇总
-	 * @Description 
+	 * @Description
 	 * @author wwb
 	 * @Date 2021-05-27 14:13:30
 	 * @param uid
@@ -695,7 +697,7 @@ public class SignApiService {
 	}
 
 	/**用户合格的成绩数量
-	 * @Description 
+	 * @Description
 	 * @author wwb
 	 * @Date 2021-05-27 15:05:44
 	 * @param uid
@@ -769,6 +771,42 @@ public class SignApiService {
 		String result = restTemplate.postForObject(ORG_FORM_CONFIG_URL, httpEntity, String.class);
 		JSONObject jsonObject = JSON.parseObject(result);
 		resultHandle(jsonObject, () -> JSON.parseObject(jsonObject.getString("data")), (message) -> {
+			throw new BusinessException(message);
+		});
+	}
+
+	/**根据uid和报名签到id查询用户报名列表
+	 * @Description 
+	 * @author wwb
+	 * @Date 2021-06-17 16:24:10
+	 * @param uid
+	 * @param signId
+	 * @return java.util.List<com.chaoxing.activity.dto.manager.sign.UserSignUp>
+	*/
+	public List<UserSignUp> listUserSignedUp(Integer uid, Integer signId) {
+		String url = String.format(USER_SIGNED_UP_LIST_URL, uid, signId);
+		String result = restTemplate.getForObject(url, String.class);
+		JSONObject jsonObject = JSON.parseObject(result);
+		return resultHandle(jsonObject, () -> JSON.parseArray(jsonObject.getString("data"), UserSignUp.class), (message) -> {
+			log.error("根据url:{} 查询用户报名列表信息error:{}", url, message);
+			throw new BusinessException(message);
+		});
+	}
+
+	/**根据uid和报名签到id查询用户签到列表
+	 * @Description 
+	 * @author wwb
+	 * @Date 2021-06-17 16:24:52
+	 * @param uid
+	 * @param signId
+	 * @return java.util.List<com.chaoxing.activity.dto.manager.sign.UserSignIn>
+	*/
+	public List<UserSignIn> listUserExcludeNotSignIn(Integer uid, Integer signId) {
+		String url = String.format(USER_EXCLUDE_NOT_SIGNED_IN_URL, uid, signId);
+		String result = restTemplate.getForObject(url, String.class);
+		JSONObject jsonObject = JSON.parseObject(result);
+		return resultHandle(jsonObject, () -> JSON.parseArray(jsonObject.getString("data"), UserSignIn.class), (message) -> {
+			log.error("根据url:{} 查询用户签到列表信息error:{}", url, message);
 			throw new BusinessException(message);
 		});
 	}

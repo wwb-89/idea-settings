@@ -1,11 +1,8 @@
 package com.chaoxing.activity.dto.manager.sign;
 
-import com.baomidou.mybatisplus.annotation.IdType;
-import com.baomidou.mybatisplus.annotation.TableField;
-import com.baomidou.mybatisplus.annotation.TableId;
-import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.*;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Objects;
 
@@ -21,56 +18,57 @@ import java.util.Objects;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@TableName(value = "t_user_sign_up")
 public class UserSignUp {
 
-    /** 主键; column: id*/
-    @TableId(type = IdType.AUTO)
+    /** 主键 */
     private Integer id;
-    /** 用户id; column: uid*/
+    /** 用户id */
     private Integer uid;
-    /** 用户名; column: uname*/
+    /** 用户名 */
     private String uname;
-    /** 用户姓名; column: user_name*/
+    /** 用户姓名 */
     private String userName;
-    /** 报名签到id; column: sign_id*/
+    /** 报名签到id */
     private Integer signId;
-    /** 报名id; column: sign_up_id*/
+    /** 报名id */
     private Integer signUpId;
-    /** 报名时间; column: sign_up_time*/
+    /** 报名日期 */
+    private LocalDate signUpDate;
+    /** 报名时间 */
     private LocalDateTime signUpTime;
-    /** 报名状态。0：取消，1：成功，2：待审核，3：审核失败; column: sign_up_status*/
+    /** 报名状态。0：取消，1：成功，2：待审核，3：审核失败 */
     private Integer signUpStatus;
-    /** 是否代理报名; column: is_proxy*/
-    @TableField(value = "is_proxy")
+    /** 是否代理报名 */
     private Boolean proxy;
-    /** 代理人id; column: proxy_uid*/
+    /** 代理人id */
     private Integer proxyUid;
-    /** 代理人姓名; column: proxy_user_name*/
+    /** 代理人姓名 */
     private String proxyUserName;
-    /** 审核信息; column: audit_message*/
+    /** 审核时间 */
+    private String auditTime;
+    /** 审核信息 */
     private String auditMessage;
-    /** 创建时间; column: create_time*/
+    /** 创建时间 */
     private LocalDateTime createTime;
-    /** 创建人id; column: create_uid*/
+    /** 创建人id */
     private Integer createUid;
-    /** 创建人姓名; column: create_user_name*/
+    /** 创建人姓名 */
     private String createUserName;
-    /** 创建人fid; column: create_fid*/
+    /** 创建人fid */
     private Integer createFid;
-    /** 创建人机构名; column: create_org_name*/
+    /** 创建人机构名 */
     private String createOrgName;
-    /** 更新时间; column: update_time*/
+    /** 更新时间 */
     private LocalDateTime updateTime;
-    /** 更新人id; column: update_uid*/
+    /** 更新人id */
     private Integer updateUid;
 
     /**报名状态枚举
-     * @Description 
+     * @Description
      * @author wwb
      * @Date 2020-12-17 11:03:03
      * @return
-    */
+     */
     @Getter
     public enum SignUpStatusEnum{
 
@@ -88,9 +86,9 @@ public class UserSignUp {
             this.value = value;
         }
 
-        public static SignUpStatusEnum fromValue(Integer value) {
-            SignUpStatusEnum[] values = SignUpStatusEnum.values();
-            for (SignUpStatusEnum signUpStatusEnum : values) {
+        public static UserSignUp.SignUpStatusEnum fromValue(Integer value) {
+            UserSignUp.SignUpStatusEnum[] values = UserSignUp.SignUpStatusEnum.values();
+            for (UserSignUp.SignUpStatusEnum signUpStatusEnum : values) {
                 if (Objects.equals(signUpStatusEnum.getValue(), value)) {
                     return signUpStatusEnum;
                 }
@@ -98,9 +96,9 @@ public class UserSignUp {
             return null;
         }
 
-        public static SignUpStatusEnum fromName(String name) {
-            SignUpStatusEnum[] values = SignUpStatusEnum.values();
-            for (SignUpStatusEnum signUpStatusEnum : values) {
+        public static UserSignUp.SignUpStatusEnum fromName(String name) {
+            UserSignUp.SignUpStatusEnum[] values = UserSignUp.SignUpStatusEnum.values();
+            for (UserSignUp.SignUpStatusEnum signUpStatusEnum : values) {
                 if (Objects.equals(signUpStatusEnum.getName(), name)) {
                     return signUpStatusEnum;
                 }

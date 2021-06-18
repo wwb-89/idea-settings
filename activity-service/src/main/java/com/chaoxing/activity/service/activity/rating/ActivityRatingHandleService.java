@@ -88,7 +88,7 @@ public class ActivityRatingHandleService {
 			updateActivityScore(activityRatingDetail.getActivityId(), 1, activityRatingDetail.getScore());
 		}
 		// 评价变更
-		userRatingChangeEventService.change(loginUser.getUid(), activity.getSignId());
+		userRatingChangeEventService.change(loginUser.getUid(), activity);
 	}
 
 	/**更新活动评分
@@ -202,7 +202,7 @@ public class ActivityRatingHandleService {
 		// 评价成功后的额外操作
 		Activity activity = activityValidationService.activityExist(activityId);
 		// 评价变更
-		userRatingChangeEventService.change(loginUser.getUid(), activity.getSignId());
+		userRatingChangeEventService.change(loginUser.getUid(), activity);
 	}
 
 	/**获取活动评价缓存lock key

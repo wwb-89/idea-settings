@@ -253,6 +253,41 @@
         var $this = this;
         window.localStorage.setItem($this.activityChangeKey, activityId);
     };
+    /**
+     * 初始化富文本编辑器
+     * @param content
+     */
+    app.prototype.initUEditor = function (content) {
+        if (!content) {
+            content = "";
+        }
+        if (!activityApp.isEmpty(content) && content.indexOf("https://noteyd.chaoxing.com/attachment/insert") > 1) {
+            content = content.replace(/https:\/\/noteyd\.chaoxing\.com\/attachment\/insert/g,"insert");
+            content = content.replace(/https:\/\/noteyd\.chaoxing\.com\/attachment\/\/insert/g,"insert");
+        }
+        RichTextUitl.initUEditor('', content, '');
+    };
+    /**
+     * 获取富文本编辑器的内容
+     * @returns {string}
+     */
+    app.prototype.getUEditorContent = function () {
+        if (RichTextUitl.ueditor) {
+            return RichTextUitl.getRichText().rtf_content;
+        }
+        return "";
+    };
+    /**
+     * 销毁富文本编辑器
+     */
+    app.prototype.destroyUEditor = function () {
+        if (RichTextUitl.ueditor) {
+            if (Object.getOwnPropertyNames(RichTextUitl.ueditor).length > 0) {
+                RichTextUitl.ueditor.destroy();
+            }
+            RichTextUitl.ueditor = "";
+        }
+    };
     W['app'] = new app();
 })(window, jQuery, JSON);
 //统一处理ajax请求时未登录问题

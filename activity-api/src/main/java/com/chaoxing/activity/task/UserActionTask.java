@@ -3,8 +3,10 @@ package com.chaoxing.activity.task;
 import com.chaoxing.activity.model.Activity;
 import com.chaoxing.activity.service.activity.ActivityQueryService;
 import com.chaoxing.activity.service.queue.ActivityStatSummaryQueueService;
+import com.chaoxing.activity.service.queue.UserActionDetailQueueService;
 import com.chaoxing.activity.service.queue.UserActionQueueService;
 import com.chaoxing.activity.service.queue.UserStatSummaryQueueService;
+import com.chaoxing.activity.util.enums.UserActionTypeEnum;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
@@ -29,6 +31,8 @@ public class UserActionTask {
     private ActivityStatSummaryQueueService activityStatSummaryQueueService;
     @Resource
     private UserStatSummaryQueueService userStatSummaryQueueService;
+    @Resource
+    private UserActionDetailQueueService userActionDetailQueueService;
 
     @Resource
     private ActivityQueryService activityQueryService;
@@ -44,7 +48,10 @@ public class UserActionTask {
         Integer signId = queueParam.getSignId();
         Activity activity = activityQueryService.getBySignId(signId);
         if (activity != null) {
-            userStatSummaryQueueService.addUserSignStat(UserStatSummaryQueueService.QueueParamDTO.builder().uid(uid).activityId(activity.getId()).build());
+            Integer activityId = activity.getId();
+            userStatSummaryQueueService.addUserSignStat(UserStatSummaryQueueService.QueueParamDTO.builder().uid(uid).activityId(activityId).build());
+            // 用户报名行为详情更新
+            userActionDetailQueueService.push(UserActionDetailQueueService.QueueParamDTO.builder().uid(uid).activityId(activityId).userActionType(UserActionTypeEnum.SIGN_UP).build());
         }
     }
 
@@ -58,9 +65,12 @@ public class UserActionTask {
         Integer signId = queueParam.getSignId();
         Activity activity = activityQueryService.getBySignId(signId);
         if (activity != null) {
-            activityStatSummaryQueueService.addSignInStat(activity.getId());
+            Integer activityId = activity.getId();
+            activityStatSummaryQueueService.addSignInStat(activityId);
             Integer uid = queueParam.getUid();
-            userStatSummaryQueueService.addUserSignStat(UserStatSummaryQueueService.QueueParamDTO.builder().uid(uid).activityId(activity.getId()).build());
+            userStatSummaryQueueService.addUserSignStat(UserStatSummaryQueueService.QueueParamDTO.builder().uid(uid).activityId(activityId).build());
+            // 用户签到行为详情更新
+            userActionDetailQueueService.push(UserActionDetailQueueService.QueueParamDTO.builder().uid(uid).activityId(activityId).userActionType(UserActionTypeEnum.SIGN_IN).build());
         }
     }
 
