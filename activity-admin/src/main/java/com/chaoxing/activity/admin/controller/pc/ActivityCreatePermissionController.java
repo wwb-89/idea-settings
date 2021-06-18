@@ -8,7 +8,6 @@ import com.chaoxing.activity.model.ActivityClassify;
 import com.chaoxing.activity.model.OrgConfig;
 import com.chaoxing.activity.service.activity.classify.ActivityClassifyQueryService;
 import com.chaoxing.activity.service.manager.OrganizationalStructureApiService;
-import com.chaoxing.activity.service.manager.UcApiService;
 import com.chaoxing.activity.service.manager.WfwContactApiService;
 import com.chaoxing.activity.service.manager.WfwGroupApiService;
 import com.chaoxing.activity.service.org.OrgConfigService;
@@ -44,8 +43,6 @@ public class ActivityCreatePermissionController {
     @Resource
     private WfwContactApiService wfwContactApiService;
     @Resource
-    private UcApiService ucApiService;
-    @Resource
     private OrgConfigService orgConfigService;
 
     @LoginRequired
@@ -57,7 +54,6 @@ public class ActivityCreatePermissionController {
         if (realFid == null) {
             realFid = loginUser.getFid();
         }
-//        if (ucApiService.isManager(realFid, uid)) {
         List<OrgRoleDTO> roleList = organizationalStructureApiService.listOrgRoles(realFid);
         List<ActivityClassify> classifyList = activityClassifyQueryService.listOrgOptionsByFid(realFid);
         OrgConfig orgConfig = orgConfigService.getByFid(realFid);
@@ -74,7 +70,6 @@ public class ActivityCreatePermissionController {
         model.addAttribute("wfwGroups", wfwGroups);
         model.addAttribute("classifyList", classifyList);
         model.addAttribute("roleList", roleList);
-//        }
         return "pc/permission/index";
     }
 }
