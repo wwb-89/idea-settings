@@ -196,7 +196,15 @@ public class ActivityCreatePermissionService {
                 .eq(ActivityCreatePermission::getFid, fid)
                 .in(ActivityCreatePermission::getRoleId, userRoleIds)
                 .eq(ActivityCreatePermission::getDeleted, Boolean.FALSE));
-        String groupType = CollectionUtils.isNotEmpty(createPermissions) ? createPermissions.get(0).getGroupType() : orgConfig.getSignUpScopeType();
+        String groupType = "";
+        if (CollectionUtils.isNotEmpty(createPermissions)) {
+            groupType = createPermissions.get(0).getGroupType();
+        } else if (orgConfig != null) {
+            groupType = orgConfig.getSignUpScopeType();
+        }
+        if (StringUtils.isBlank(groupType)) {
+            groupType = OrgConfig.SignUpScopeType.WFW.getValue();
+        }
         activityCreatePermission.setGroupType(groupType);
 
         List<WfwGroupDTO> wfwGroups = Lists.newArrayList();
