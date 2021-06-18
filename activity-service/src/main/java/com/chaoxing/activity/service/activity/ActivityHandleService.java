@@ -13,6 +13,7 @@ import com.chaoxing.activity.dto.module.SignAddEditDTO;
 import com.chaoxing.activity.dto.module.SignAddEditResultDTO;
 import com.chaoxing.activity.dto.module.WorkFormDTO;
 import com.chaoxing.activity.mapper.ActivityAreaFlagMapper;
+import com.chaoxing.activity.mapper.ActivityDetailMapper;
 import com.chaoxing.activity.mapper.ActivityMapper;
 import com.chaoxing.activity.mapper.ActivitySignModuleMapper;
 import com.chaoxing.activity.model.*;
@@ -66,6 +67,8 @@ public class ActivityHandleService {
 	@Resource
 	private ActivityMapper activityMapper;
 	@Resource
+	private ActivityDetailMapper activityDetailMapper;
+	@Resource
 	private ActivityAreaFlagMapper activityAreaFlagMapper;
 	@Resource
 	private ActivitySignModuleMapper activitySignModuleMapper;
@@ -98,8 +101,6 @@ public class ActivityHandleService {
 	@Resource
 	private MhApiService mhApiService;
 	@Resource
-	private WfwRegionalArchitectureApiService wfwRegionalArchitectureApiService;
-	@Resource
 	private DistributedLock distributedLock;
 
 	/**新增活动
@@ -123,7 +124,6 @@ public class ActivityHandleService {
 		activity.setSignId(signAddEditResult.getSignId());
 		// 添加作品征集
 		handleWork(activity, loginUser);
-		// 保存活动
 		// 处理活动的状态, 新增的活动都是待发布的
 		activity.setStatus(Activity.StatusEnum.WAIT_RELEASE.getValue());
 		activity.setReleased(false);
@@ -145,6 +145,11 @@ public class ActivityHandleService {
 			activity.setOriginType(Activity.OriginTypeEnum.NORMAL.getValue());
 		}
 		activityMapper.insert(activity);
+		ActivityDetail activityDetail = ActivityDetail.builder()
+				.activityId(activity.getId())
+				.introduction(activity.getIntroduction())
+				.build();
+		activityDetailMapper.insert(activityDetail);
 		// 添加管理员
 		ActivityManager activityManager = new ActivityManager();
 		activityManager.setActivityId(activity.getId());
@@ -162,7 +167,6 @@ public class ActivityHandleService {
 		List<ActivityScope> activityScopes = WfwRegionalArchitectureDTO.convert2ActivityScopes(activityId, wfwRegionalArchitectures);
 		// 新增发布范围
 		activityScopeService.batchAdd(activityScopes);
-
 		// 处理活动的所属区域
 		handleActivityArea(activity, loginUser);
 		// 活动改变
@@ -422,6 +426,20 @@ public class ActivityHandleService {
 					.set(Activity::getTimingReleaseTime, existActivity.getTimingReleaseTime())
 					.set(Activity::getTimeLengthUpperLimit, existActivity.getTimeLengthUpperLimit())
 			);
+			ActivityDetail activityDetail = activityQueryService.getDetailByActivityId(activityId);
+			if (activityDetail == null) {
+				activityDetail = ActivityDetail.builder()
+						.activityId(activityId)
+						.introduction(activity.getIntroduction())
+						.build();
+				activityDetailMapper.insert(activityDetail);
+			}else {
+				activityDetailMapper.update(null, new UpdateWrapper<ActivityDetail>()
+					.lambda()
+						.eq(ActivityDetail::getId, activityDetail.getId())
+						.set(ActivityDetail::getIntroduction, activity.getIntroduction())
+				);
+			}
 			if (!Objects.equals(oldCoverCloudId, newCoverCloudId)) {
 				// 清空封面url
 				existActivity.setCoverUrl("");

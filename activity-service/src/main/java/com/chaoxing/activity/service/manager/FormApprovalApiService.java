@@ -280,6 +280,10 @@ public class FormApprovalApiService {
         } else {
             activity.setActivityType(Activity.ActivityTypeEnum.ONLINE.getValue());
         }
+        // 简介
+        String introduction = FormUtils.getValue(formData, "introduction");
+        introduction = Optional.ofNullable(introduction).orElse("");
+        activity.setIntroduction(introduction);
         // 是否开启作品征集
         String openWork = FormUtils.getValue(formData, "is_open_work");
         activity.setOpenWork(Objects.equals("是", openWork));

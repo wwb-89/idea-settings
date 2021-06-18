@@ -149,6 +149,9 @@ public class Activity {
     private LocalDateTime updateTime;
 
     // 附加
+    /** 活动详情 */
+    @TableField(exist = false)
+    private String introduction;
     /** 开始时间字符串 */
     @TableField(exist = false)
     private String startTimeStr;

@@ -37,6 +37,10 @@
         .webuploader-element-invisible {
             display: none;
         }
+        .webuploader-pick {
+            color: #0084FF!important;
+            background: unset!important;
+        }
         [v-cloak] {
             display: none;
         }
@@ -248,7 +252,7 @@
                     </div>
                 </div>
                 <div class="form-item">
-                    <label class="label">说明</label>
+                    <label class="label">简介</label>
                     <div class="input-box">
                         <!-- 笔记编辑器 -->
                         <div class="wrap">
@@ -703,7 +707,8 @@
                         timingRelease: false,
                         timingReleaseTime: "",
                         timingReleaseTimeStr: "",
-                        timeLengthUpperLimit: null
+                        timeLengthUpperLimit: null,
+                        introduction: ""
                     };
                 } else {
                     // 修改活动
@@ -816,7 +821,7 @@
             mounted: function () {
                 var $this = this;
                 // 初始化笔记便假期
-                app.initUEditor("");
+                app.initUEditor($this.activity.introduction);
                 $this.initUploader();
                 $this.handleImg();
                 $this.initWfwGroups();
@@ -1286,6 +1291,7 @@
                             default:
                         }
                     });
+                    $this.activity.introduction = app.getUEditorContent();
                     var params = {
                         activityJsonStr: activityApp.getJsonStr($this.activity),
                         participateScopeJsonStr: activityApp.getJsonStr($this.participatedOrgs),
@@ -1322,6 +1328,7 @@
                     }
                     var url = ctx + "/api/activity/edit";
                     var sign = $.extend({}, $this.sign);
+                    $this.activity.introduction = app.getUEditorContent();
                     var params = {
                         activityJsonStr: activityApp.getJsonStr($this.activity),
                         participateScopeJsonStr: activityApp.getJsonStr($this.participatedOrgs),

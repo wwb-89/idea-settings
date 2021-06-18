@@ -100,6 +100,7 @@ public class ActivityManageController {
 	public String edit(Model model, @PathVariable Integer activityId, HttpServletRequest request, String code, Integer step, @RequestParam(defaultValue = "0") Integer strict) {
 		LoginUserDTO loginUser = LoginUtils.getLoginUser(request);
 		Activity activity = activityValidationService.manageAble(activityId, loginUser.getUid());
+		activityQueryService.fillIntroduction(activity);
 		model.addAttribute("activity", activity);
 		// 活动类型列表
 		model.addAttribute("activityTypes", activityQueryService.listActivityType());

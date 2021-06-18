@@ -9,6 +9,7 @@ import com.chaoxing.activity.dto.manager.sign.SignStatDTO;
 import com.chaoxing.activity.dto.manager.mh.MhGeneralAppResultDataDTO;
 import com.chaoxing.activity.dto.query.MhActivityCalendarQueryDTO;
 import com.chaoxing.activity.model.Activity;
+import com.chaoxing.activity.model.ActivityDetail;
 import com.chaoxing.activity.service.activity.ActivityCoverUrlSyncService;
 import com.chaoxing.activity.service.activity.ActivityQueryService;
 import com.chaoxing.activity.service.manager.WfwRegionalArchitectureApiService;
@@ -412,6 +413,30 @@ public class ActivityMhAppController {
 		activity.setLongitude(longitude);
 		activity.setDimension(dimension);
 		return RestRespDTO.success(activity);
+	}
+
+	/**获取活动简介
+	 * @Description 
+	 * @author wwb
+	 * @Date 2021-06-18 14:46:28
+	 * @param websiteId
+	 * @param pageId
+	 * @return com.chaoxing.activity.dto.RestRespDTO
+	*/
+	@RequestMapping("activity/address")
+	public RestRespDTO activityIntroduction(Integer websiteId, Integer pageId) {
+		Activity activity = null;
+		String introduction = "";
+		if (pageId != null) {
+			activity = activityQueryService.getByPageId(pageId);
+		} else if (websiteId != null){
+			activity = activityQueryService.getByWebsiteId(websiteId);
+		}
+		if (activity != null) {
+			ActivityDetail activityDetail = activityQueryService.getDetailByActivityId(activity.getId());
+			introduction = Optional.ofNullable(activityDetail).map(ActivityDetail::getIntroduction).orElse("");
+		}
+		return RestRespDTO.success(introduction);
 	}
 
 }

@@ -58,6 +58,8 @@ public class ActivityQueryService {
 	@Resource
 	private ActivityMapper activityMapper;
 	@Resource
+	private ActivityDetailMapper activityDetailMapper;
+	@Resource
 	private ActivityRatingDetailMapper activityRatingDetailMapper;
 	@Resource
 	private ActivityFlagSignModuleMapper activityFlagSignModuleMapper;
@@ -292,19 +294,6 @@ public class ActivityQueryService {
 				activity.setManagerUids(activityManagers.stream().map(ActivityManager::getUid).collect(Collectors.toList()));
 			}
 		}
-	}
-
-	/**分页查询创建的活动
-	 * @Description 
-	 * @author wwb
-	 * @Date 2021-01-27 21:04:12
-	 * @param page
-	 * @param uid
-	 * @param sw
-	 * @return com.baomidou.mybatisplus.extension.plugins.pagination.Page<com.chaoxing.activity.model.Activity>
-	*/
-	public Page<Activity> pageCreated(Page<Activity> page, Integer uid, String sw) {
-		return activityMapper.pageUserCreated(page, uid, sw);
 	}
 
 	/**分页查询管理的活动
@@ -740,6 +729,34 @@ public class ActivityQueryService {
     		return Lists.newArrayList();
 		}
 		return activityMapper.listActivityIdByFids(fids, startDate, endDate);
-
 	}
+
+	/**根据活动id查询活动详情
+	 * @Description 
+	 * @author wwb
+	 * @Date 2021-06-18 14:20:45
+	 * @param activityId
+	 * @return com.chaoxing.activity.model.ActivityDetail
+	*/
+	public ActivityDetail getDetailByActivityId(Integer activityId) {
+		List<ActivityDetail> activityDetails = activityDetailMapper.selectList(new QueryWrapper<ActivityDetail>()
+				.lambda()
+				.eq(ActivityDetail::getActivityId, activityId)
+		);
+		return activityDetails.stream().findFirst().orElse(null);
+	}
+
+	/**填充简介
+	 * @Description 
+	 * @author wwb
+	 * @Date 2021-06-18 14:28:57
+	 * @param activity
+	 * @return void
+	*/
+	public void fillIntroduction(Activity activity) {
+		Integer id = activity.getId();
+		ActivityDetail activityDetail = getDetailByActivityId(id);
+		activity.setIntroduction(Optional.ofNullable(activityDetail).map(ActivityDetail::getIntroduction).orElse(""));
+	}
+
 }
