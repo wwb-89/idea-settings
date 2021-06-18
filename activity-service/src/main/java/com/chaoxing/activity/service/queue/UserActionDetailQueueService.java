@@ -13,6 +13,7 @@ import org.redisson.api.RedissonClient;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
+import java.time.LocalDateTime;
 
 /**用户行为详情队列服务
  * @author wwb
@@ -54,6 +55,10 @@ public class UserActionDetailQueueService implements IQueueService<UserActionDet
 		private UserActionTypeEnum userActionType;
 		/** 行为 */
 		private UserActionEnum userAction;
+		/** 主键 */
+		private String identify;
+		/** 时间 */
+		private LocalDateTime time;
 
 	}
 

@@ -13,8 +13,12 @@ import lombok.Getter;
 @Getter
 public enum UserActionEnum {
 
-	/** 签到 */
+	/** 报名 */
+	SIGNED_UP("报名", "signed_up", "报名成功获得", true, true),
+	CANCEL_SIGNED_UP("取消报名", "cancel_signed_up", "取消报名扣除", true, true),
+	NOT_SIGNED_UP("未报名", "not_signed_up", "未报名扣除", true, true),
 	SIGNED_IN("签到", "signed_in", "每次签到获得", true, true),
+	CANCEL_SIGNED_IN("取消签到", "cancel_signed_in", "取消签到扣除", true, true),
 	NOT_SIGNED_IN("未签", "not_signed_in", "每次未签扣除", true, true),
 	LEAVE("请假", "leave", "每次请假扣除", true, true),
 	RATING("评价", "rating", "提交评价获得", false, false),

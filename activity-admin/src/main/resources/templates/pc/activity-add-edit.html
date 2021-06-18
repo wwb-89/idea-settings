@@ -1586,8 +1586,8 @@
                 // 是否限制作品征集
                 isShowWork: function () {
                     var $this = this;
-                    var shows = ["teacher", "volunteer"];
-                    return shows.indexOf($this.activity.activityFlag) == -1;
+                    var hides = ["second_classroom", "teacher", "volunteer"];
+                    return hides.indexOf($this.activity.activityFlag) == -1;
                 },
                 // 是否显示参与时长上限
                 isShowTimeLengthUpperLimit() {
