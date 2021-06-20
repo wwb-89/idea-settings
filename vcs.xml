@@ -107,6 +107,10 @@
           <option name="userName" value="" />
         </UrlAndUserName>
         <UrlAndUserName>
+          <option name="url" value="git@github.com:sohutv/cachecloud.git" />
+          <option name="userName" value="" />
+        </UrlAndUserName>
+        <UrlAndUserName>
           <option name="url" value="git@github.com:wwb-89/cachecloud.git" />
           <option name="userName" value="" />
         </UrlAndUserName>
