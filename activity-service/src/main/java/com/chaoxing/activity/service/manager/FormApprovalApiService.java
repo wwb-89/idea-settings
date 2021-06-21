@@ -338,6 +338,8 @@ public class FormApprovalApiService {
                 signUp.setLimitPerson(true);
                 signUp.setPersonLimit(Integer.parseInt(sign_up_person_limit));
             }
+        } else {
+            signUp.setDeleted(true);
         }
 
         List<SignIn> signIns = signAddEdit.getSignIns();
@@ -372,6 +374,8 @@ public class FormApprovalApiService {
                     signIn.setScanCodeWay(SignIn.ScanCodeWay.PARTICIPATOR.getValue());
                 }
             }
+        } else {
+            signIn.setDeleted(true);
         }
         // 签退
         SignIn signOut = signIns.get(1);
@@ -404,6 +408,8 @@ public class FormApprovalApiService {
                     signOut.setScanCodeWay(SignIn.ScanCodeWay.PARTICIPATOR.getValue());
                 }
             }
+        } else {
+            signOut.setDeleted(true);
         }
         return signAddEdit;
     }
