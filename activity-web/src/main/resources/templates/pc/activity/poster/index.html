@@ -113,10 +113,13 @@
                     download: function () {
                         var $this = this;
                         html2canvas(document.querySelector("#capture"), { useCORS: true } ).then(canvas => {
-                            $(canvas).addClass('captureImg');
-                            document.body.appendChild(canvas)
-                            var imageData =  canvas.toDataURL({ format: 'image/png', quality:1 }).replace(/^data:image\/[^;]/, 'data:application/octet-stream');
-                            window.open(imageData);
+                            var imageData = canvas.toDataURL({format: 'image/png', quality: 1});
+                            // 放到一个a标签里面
+                            var a = document.createElement('a');
+                            a.href = imageData;
+                            a.download = $this.activity.name + ".png";
+                            document.body.appendChild(a);
+                            a.click();
                         });
                     }
                 }
