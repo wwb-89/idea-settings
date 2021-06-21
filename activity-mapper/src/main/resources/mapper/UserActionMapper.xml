@@ -5,11 +5,16 @@
         <id column="id" jdbcType="BIGINT" property="id" />
         <result column="uid" jdbcType="INTEGER" property="uid" />
         <result column="activity_id" jdbcType="INTEGER" property="activityId" />
-        <result column="total_score" jdbcType="DECIMAL" property="totalScore" />
+        <result column="action_type" jdbcType="VARCHAR" property="actionType" />
+        <result column="action" jdbcType="VARCHAR" property="action" />
+        <result column="action_identify" jdbcType="VARCHAR" property="actionIdentify" />
+        <result column="action_description" jdbcType="VARCHAR" property="actionDescription" />
+        <result column="score" jdbcType="DECIMAL" property="score" />
         <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
         <result column="update_time" jdbcType="TIMESTAMP" property="updateTime" />
     </resultMap>
     <sql id="Base_Column_List">
-        t.id, t.uid, t.activity_id, t.total_score, t.create_time, t.update_time
+        t.id, t.uid, t.activity_id, t.action_type, t.action, t.action_identify, t.action_description,
+        t.score, t.create_time, t.update_time
     </sql>
 </mapper>

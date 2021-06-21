@@ -1,7 +1,7 @@
 package com.chaoxing.activity.service.event;
 
 import com.chaoxing.activity.model.Activity;
-import com.chaoxing.activity.service.queue.user.UserActionDetailQueueService;
+import com.chaoxing.activity.service.queue.user.UserActionQueueService;
 import com.chaoxing.activity.service.queue.user.UserRatingQueueService;
 import com.chaoxing.activity.service.stat.UserStatSummaryHandleService;
 import com.chaoxing.activity.util.enums.UserActionTypeEnum;
@@ -27,7 +27,7 @@ public class UserRatingChangeEventService {
 	@Resource
 	private UserStatSummaryHandleService userStatSummaryService;
 	@Resource
-	private UserActionDetailQueueService userActionDetailQueueService;
+	private UserActionQueueService userActionDetailQueueService;
 
 	/**用户评价变更
 	 * @Description 
@@ -46,7 +46,7 @@ public class UserRatingChangeEventService {
 		// 更新用户的评价数量
 		userStatSummaryService.updateUserRatingNum(uid);
 		// 更新用户行为详情
-		userActionDetailQueueService.push(UserActionDetailQueueService.QueueParamDTO.builder().uid(uid).activityId(activityId).userActionType(UserActionTypeEnum.RATING).build());
+		userActionDetailQueueService.push(UserActionQueueService.QueueParamDTO.builder().uid(uid).activityId(activityId).userActionType(UserActionTypeEnum.RATING).build());
 	}
 
 }

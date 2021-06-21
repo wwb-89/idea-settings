@@ -759,4 +759,19 @@ public class ActivityQueryService {
 		activity.setIntroduction(Optional.ofNullable(activityDetail).map(ActivityDetail::getIntroduction).orElse(""));
 	}
 
+	/**根据作品征集id查询活动
+	 * @Description 
+	 * @author wwb
+	 * @Date 2021-06-21 16:36:04
+	 * @param workId
+	 * @return com.chaoxing.activity.model.Activity
+	*/
+	public Activity getByWorkId(Integer workId) {
+		List<Activity> activities = activityMapper.selectList(new QueryWrapper<Activity>()
+				.lambda()
+				.eq(Activity::getWorkId, workId)
+		);
+		return activities.stream().findFirst().orElse(null);
+	}
+
 }

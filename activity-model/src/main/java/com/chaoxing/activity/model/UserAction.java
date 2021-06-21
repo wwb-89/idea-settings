@@ -30,12 +30,20 @@ public class UserAction {
     /** 主键; column: id*/
     @TableId(type = IdType.AUTO)
     private Long id;
-    /** 用户uid; column: uid*/
+    /** 用户id; column: uid*/
     private Integer uid;
     /** 活动id; column: activity_id*/
     private Integer activityId;
-    /** 总得分; column: total_score*/
-    private BigDecimal totalScore;
+    /** 行为类型; column: action_type*/
+    private String actionType;
+    /** 具体行为; column: action*/
+    private String action;
+    /** 行为标识。行为id等; column: action_identify*/
+    private String actionIdentify;
+    /** 行为描述; column: action_description*/
+    private String actionDescription;
+    /** 得分; column: score*/
+    private BigDecimal score;
     /** 创建时间; column: create_time*/
     private LocalDateTime createTime;
     /** 更新时间; column: update_time*/
