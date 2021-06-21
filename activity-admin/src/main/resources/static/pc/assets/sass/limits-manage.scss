@@ -392,6 +392,8 @@ html,body{
     .manage-content {
         padding: 16px 24px;
         box-sizing: border-box;
+        height: 100%;
+        overflow: auto;
     }
     .breadcrumb-box{
         font-size: 0;
