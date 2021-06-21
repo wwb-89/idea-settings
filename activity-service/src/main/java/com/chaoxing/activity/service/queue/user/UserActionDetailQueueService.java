@@ -1,6 +1,6 @@
-package com.chaoxing.activity.service.queue;
+package com.chaoxing.activity.service.queue.user;
 
-import com.chaoxing.activity.model.UserAction;
+import com.chaoxing.activity.service.queue.IQueueService;
 import com.chaoxing.activity.util.constant.CacheConstant;
 import com.chaoxing.activity.util.enums.UserActionEnum;
 import com.chaoxing.activity.util.enums.UserActionTypeEnum;
@@ -19,7 +19,7 @@ import java.time.LocalDateTime;
  * @author wwb
  * @version ver 1.0
  * @className UserActionDetailQueueService
- * @description
+ * @description 报名、签到、评价等行为
  * @blame wwb
  * @date 2021-06-17 14:59:24
  */
@@ -27,7 +27,7 @@ import java.time.LocalDateTime;
 @Service
 public class UserActionDetailQueueService implements IQueueService<UserActionDetailQueueService.QueueParamDTO> {
 
-	/** 报名行为 */
+	/** 行为 */
 	private static final String CACHE_KEY = CacheConstant.QUEUE_CACHE_KEY_PREFIX + "user_action_detail";
 
 	@Resource

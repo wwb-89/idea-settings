@@ -1,7 +1,7 @@
 package com.chaoxing.activity.task;
 
 import com.chaoxing.activity.service.activity.ActivityHandleService;
-import com.chaoxing.activity.service.queue.ActivityWebsiteIdSyncQueueService;
+import com.chaoxing.activity.service.queue.activity.ActivityWebsiteIdSyncQueueService;
 import com.chaoxing.activity.util.exception.BusinessException;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;

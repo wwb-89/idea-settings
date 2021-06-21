@@ -1,6 +1,7 @@
-package com.chaoxing.activity.service.queue;
+package com.chaoxing.activity.service.queue.activity;
 
 import com.chaoxing.activity.service.ActivityStatHandleService;
+import com.chaoxing.activity.service.queue.IQueueService;
 import com.chaoxing.activity.util.constant.CacheConstant;
 import lombok.extern.slf4j.Slf4j;
 import org.redisson.api.RedissonClient;

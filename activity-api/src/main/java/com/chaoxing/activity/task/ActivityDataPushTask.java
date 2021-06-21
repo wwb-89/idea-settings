@@ -1,7 +1,7 @@
 package com.chaoxing.activity.task;
 
 import com.chaoxing.activity.service.form.ActivityFormRecordService;
-import com.chaoxing.activity.service.queue.ActivityDataPushQueueService;
+import com.chaoxing.activity.service.queue.activity.ActivityDataPushQueueService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;

@@ -1,5 +1,6 @@
-package com.chaoxing.activity.service.queue;
+package com.chaoxing.activity.service.queue.user;
 
+import com.chaoxing.activity.service.queue.IQueueService;
 import com.chaoxing.activity.util.constant.CacheConstant;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -21,7 +22,7 @@ import javax.annotation.Resource;
  */
 @Slf4j
 @Service
-public class UserTotalTimeLengthQueueService implements  IQueueService<UserTotalTimeLengthQueueService.QueueParamDTO> {
+public class UserTotalTimeLengthQueueService implements IQueueService<UserTotalTimeLengthQueueService.QueueParamDTO> {
 
 	/** 队列缓存key */
 	private static final String QUEUE_CACHE_KEY = CacheConstant.QUEUE_CACHE_KEY_PREFIX + "user_total_time_length";

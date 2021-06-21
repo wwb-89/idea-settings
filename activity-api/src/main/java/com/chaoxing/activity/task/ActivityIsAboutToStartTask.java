@@ -1,7 +1,7 @@
 package com.chaoxing.activity.task;
 
 import com.chaoxing.activity.service.activity.ActivityIsAboutStartHandleService;
-import com.chaoxing.activity.service.queue.ActivityIsAboutToStartQueueService;
+import com.chaoxing.activity.service.queue.activity.ActivityIsAboutToStartQueueService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.redis.core.ZSetOperations;
 import org.springframework.scheduling.annotation.Scheduled;

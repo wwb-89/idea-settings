@@ -2,7 +2,7 @@ package com.chaoxing.activity.task;
 
 import com.chaoxing.activity.dto.LoginUserDTO;
 import com.chaoxing.activity.service.activity.ActivityHandleService;
-import com.chaoxing.activity.service.queue.ActivityTimingReleaseQueueService;
+import com.chaoxing.activity.service.queue.activity.ActivityTimingReleaseQueueService;
 import com.chaoxing.activity.util.exception.ActivityNotExistException;
 import com.chaoxing.activity.util.exception.ActivityReleasedException;
 import lombok.extern.slf4j.Slf4j;

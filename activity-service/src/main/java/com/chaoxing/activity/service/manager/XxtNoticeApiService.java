@@ -3,7 +3,7 @@ package com.chaoxing.activity.service.manager;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.chaoxing.activity.dto.manager.NoticeDTO;
-import com.chaoxing.activity.service.queue.XxtNoticeQueueService;
+import com.chaoxing.activity.service.queue.notice.XxtNoticeQueueService;
 import com.chaoxing.activity.util.exception.BusinessException;
 import com.google.common.collect.Lists;
 import lombok.extern.slf4j.Slf4j;

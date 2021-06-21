@@ -1,5 +1,6 @@
-package com.chaoxing.activity.service.queue;
+package com.chaoxing.activity.service.queue.user;
 
+import com.chaoxing.activity.service.queue.IQueueService;
 import com.chaoxing.activity.util.constant.CacheConstant;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -36,7 +37,7 @@ public class UserRatingQueueService implements IQueueService<UserRatingQueueServ
 	 * @param queueParam
 	 * @return void
 	*/
-	public void add(QueueParamDTO queueParam) {
+	public void push(QueueParamDTO queueParam) {
 		push(redissonClient, QUEUE_CACHE_KEY, queueParam);
 	}
 
@@ -47,7 +48,7 @@ public class UserRatingQueueService implements IQueueService<UserRatingQueueServ
 	 * @param 
 	 * @return com.chaoxing.activity.service.queue.UserRatingQueueService.QueueParamDTO
 	*/
-	public QueueParamDTO get() throws InterruptedException {
+	public QueueParamDTO pop() throws InterruptedException {
 		return pop(redissonClient, QUEUE_CACHE_KEY);
 	}
 

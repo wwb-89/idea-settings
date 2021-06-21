@@ -1,7 +1,7 @@
 package com.chaoxing.activity.task;
 
 import com.chaoxing.activity.service.activity.ActivityCoverUrlSyncService;
-import com.chaoxing.activity.service.queue.ActivityCoverUrlSyncQueueService;
+import com.chaoxing.activity.service.queue.activity.ActivityCoverUrlSyncQueueService;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 

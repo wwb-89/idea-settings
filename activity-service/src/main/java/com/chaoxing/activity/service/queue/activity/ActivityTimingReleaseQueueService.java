@@ -1,6 +1,7 @@
-package com.chaoxing.activity.service.queue;
+package com.chaoxing.activity.service.queue.activity;
 
 import com.chaoxing.activity.dto.LoginUserDTO;
+import com.chaoxing.activity.service.queue.IDelayedQueueService;
 import com.chaoxing.activity.util.constant.CacheConstant;
 import lombok.*;
 import lombok.extern.slf4j.Slf4j;

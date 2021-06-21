@@ -1,8 +1,8 @@
 package com.chaoxing.activity.api.controller.action;
 
 import com.chaoxing.activity.dto.RestRespDTO;
-import com.chaoxing.activity.service.queue.UserActionDetailQueueService;
-import com.chaoxing.activity.service.queue.UserActionQueueService;
+import com.chaoxing.activity.service.queue.user.UserActionDetailQueueService;
+import com.chaoxing.activity.service.queue.user.UserActionQueueService;
 import com.chaoxing.activity.util.DateUtils;
 import com.chaoxing.activity.util.enums.UserActionEnum;
 import org.springframework.web.bind.annotation.RequestMapping;

@@ -2,10 +2,10 @@ package com.chaoxing.activity.task;
 
 import com.chaoxing.activity.model.Activity;
 import com.chaoxing.activity.service.activity.ActivityQueryService;
-import com.chaoxing.activity.service.queue.ActivityStatSummaryQueueService;
-import com.chaoxing.activity.service.queue.UserActionDetailQueueService;
-import com.chaoxing.activity.service.queue.UserActionQueueService;
-import com.chaoxing.activity.service.queue.UserStatSummaryQueueService;
+import com.chaoxing.activity.service.queue.activity.ActivityStatSummaryQueueService;
+import com.chaoxing.activity.service.queue.user.UserActionDetailQueueService;
+import com.chaoxing.activity.service.queue.user.UserActionQueueService;
+import com.chaoxing.activity.service.queue.user.UserStatSummaryQueueService;
 import com.chaoxing.activity.util.enums.UserActionTypeEnum;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Scheduled;

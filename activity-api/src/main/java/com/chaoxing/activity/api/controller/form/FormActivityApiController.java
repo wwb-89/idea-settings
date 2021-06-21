@@ -2,7 +2,7 @@ package com.chaoxing.activity.api.controller.form;
 
 import com.chaoxing.activity.dto.RestRespDTO;
 import com.chaoxing.activity.dto.manager.form.FormCreateActivity;
-import com.chaoxing.activity.service.queue.FormActivityCreateQueueService;
+import com.chaoxing.activity.service.queue.activity.FormActivityCreateQueueService;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
