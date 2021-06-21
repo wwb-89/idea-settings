@@ -1,6 +1,6 @@
 package com.chaoxing.activity.task.stat;
 
-import com.chaoxing.activity.service.queue.UserStatSummaryQueueService;
+import com.chaoxing.activity.service.queue.user.UserStatSummaryQueueService;
 import com.chaoxing.activity.service.stat.UserStatSummaryHandleService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Scheduled;

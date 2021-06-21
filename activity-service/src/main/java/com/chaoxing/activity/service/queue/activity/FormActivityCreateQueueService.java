@@ -1,6 +1,7 @@
-package com.chaoxing.activity.service.queue;
+package com.chaoxing.activity.service.queue.activity;
 
 import com.chaoxing.activity.dto.manager.form.FormCreateActivity;
+import com.chaoxing.activity.service.queue.IQueueService;
 import com.chaoxing.activity.util.constant.CacheConstant;
 import com.chaoxing.activity.util.constant.CommonConstant;
 import lombok.extern.slf4j.Slf4j;

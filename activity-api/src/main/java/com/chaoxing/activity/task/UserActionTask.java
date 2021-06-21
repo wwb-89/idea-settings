@@ -2,16 +2,17 @@ package com.chaoxing.activity.task;
 
 import com.chaoxing.activity.model.Activity;
 import com.chaoxing.activity.service.activity.ActivityQueryService;
-import com.chaoxing.activity.service.queue.ActivityStatSummaryQueueService;
-import com.chaoxing.activity.service.queue.UserActionDetailQueueService;
-import com.chaoxing.activity.service.queue.UserActionQueueService;
-import com.chaoxing.activity.service.queue.UserStatSummaryQueueService;
+import com.chaoxing.activity.service.queue.activity.ActivityStatSummaryQueueService;
+import com.chaoxing.activity.service.queue.user.UserActionDetailQueueService;
+import com.chaoxing.activity.service.queue.user.UserActionQueueService;
+import com.chaoxing.activity.service.queue.user.UserStatSummaryQueueService;
 import com.chaoxing.activity.util.enums.UserActionTypeEnum;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.Resource;
+import java.time.LocalDateTime;
 
 /**用户行为任务
  * @author wwb
@@ -44,14 +45,16 @@ public class UserActionTask {
             return;
         }
         // 用户统计（用户参与的活动数）
-        Integer uid = queueParam.getUid();
         Integer signId = queueParam.getSignId();
         Activity activity = activityQueryService.getBySignId(signId);
         if (activity != null) {
             Integer activityId = activity.getId();
+            Integer uid = queueParam.getUid();
             userStatSummaryQueueService.addUserSignStat(UserStatSummaryQueueService.QueueParamDTO.builder().uid(uid).activityId(activityId).build());
             // 用户报名行为详情更新
-            userActionDetailQueueService.push(UserActionDetailQueueService.QueueParamDTO.builder().uid(uid).activityId(activityId).userActionType(UserActionTypeEnum.SIGN_UP).build());
+            Integer signUpId = queueParam.getSignUpId();
+            LocalDateTime time = queueParam.getTime();
+            userActionDetailQueueService.push(UserActionDetailQueueService.QueueParamDTO.builder().uid(uid).activityId(activityId).activityId(activityId).identify(String.valueOf(signUpId)).userActionType(UserActionTypeEnum.SIGN_UP).userAction(queueParam.getUserAction()).time(time).build());
         }
     }
 
@@ -70,7 +73,9 @@ public class UserActionTask {
             Integer uid = queueParam.getUid();
             userStatSummaryQueueService.addUserSignStat(UserStatSummaryQueueService.QueueParamDTO.builder().uid(uid).activityId(activityId).build());
             // 用户签到行为详情更新
-            userActionDetailQueueService.push(UserActionDetailQueueService.QueueParamDTO.builder().uid(uid).activityId(activityId).userActionType(UserActionTypeEnum.SIGN_IN).build());
+            Integer signInId = queueParam.getSignInId();
+            LocalDateTime time = queueParam.getTime();
+            userActionDetailQueueService.push(UserActionDetailQueueService.QueueParamDTO.builder().uid(uid).activityId(activityId).identify(String.valueOf(signInId)).userActionType(UserActionTypeEnum.SIGN_IN).userAction(queueParam.getUserAction()).time(time).build());
         }
     }
 

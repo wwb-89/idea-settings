@@ -1,7 +1,7 @@
 package com.chaoxing.activity.task;
 
 import com.chaoxing.activity.service.manager.module.SignApiService;
-import com.chaoxing.activity.service.queue.ActivityIntegralChangeQueueService;
+import com.chaoxing.activity.service.queue.activity.ActivityIntegralChangeQueueService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;

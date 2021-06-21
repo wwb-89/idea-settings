@@ -1,5 +1,6 @@
-package com.chaoxing.activity.service.queue;
+package com.chaoxing.activity.service.queue.user;
 
+import com.chaoxing.activity.service.queue.IQueueService;
 import com.chaoxing.activity.util.constant.CacheConstant;
 import lombok.AllArgsConstructor;
 import lombok.Builder;

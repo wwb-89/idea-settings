@@ -2,8 +2,7 @@ package com.chaoxing.activity.task;
 
 import com.chaoxing.activity.service.activity.ActivityIsAboutEndHandleService;
 import com.chaoxing.activity.service.activity.ActivityStatusUpdateService;
-import com.chaoxing.activity.service.queue.ActivityStatusUpdateQueueService;
-import com.chaoxing.activity.util.DateUtils;
+import com.chaoxing.activity.service.queue.activity.ActivityStatusUpdateQueueService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.redis.core.ZSetOperations;
 import org.springframework.scheduling.annotation.Scheduled;

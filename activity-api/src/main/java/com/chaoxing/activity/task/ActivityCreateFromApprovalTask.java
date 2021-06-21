@@ -2,7 +2,7 @@ package com.chaoxing.activity.task;
 
 import com.chaoxing.activity.dto.manager.form.FormCreateActivity;
 import com.chaoxing.activity.service.manager.FormApprovalApiService;
-import com.chaoxing.activity.service.queue.FormActivityCreateQueueService;
+import com.chaoxing.activity.service.queue.activity.FormActivityCreateQueueService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;

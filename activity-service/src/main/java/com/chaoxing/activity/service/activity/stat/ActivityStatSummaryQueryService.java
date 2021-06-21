@@ -154,61 +154,63 @@ public class ActivityStatSummaryQueryService {
     */
     private List<List<String>> listData(List<ActivityStatSummaryDTO> records, List<TableFieldDetail> tableFieldDetails) {
         List<List<String>> data = Lists.newArrayList();
-        if (CollectionUtils.isNotEmpty(records)) {
-            for (ActivityStatSummaryDTO record : records) {
-                List<String> itemData = Lists.newArrayList();
-                for (TableFieldDetail tableFieldDetail : tableFieldDetails) {
-                    itemData.add(String.valueOf(record.getActivityId()));
-                    String code = tableFieldDetail.getCode();
-                    switch (code) {
-                        case "activityName":
-                            itemData.add(record.getActivityName());
-                            break;
-                        case "activityStatus":
-                            itemData.add(Activity.getStatusDescription(record.getActivityStatus()));
-                            break;
-                        case "activityClassify":
-                            itemData.add(record.getActivityClassify());
-                            break;
-                        case "activityCreator":
-                            itemData.add(record.getActivityCreator());
-                            break;
-                        case "participateScope":
-                            itemData.add(record.getParticipateScope());
-                            break;
-                        case "signedInNum":
-                            itemData.add(valueToString(record.getSignedInNum()));
-                            break;
-                        case "signInRate":
-                            itemData.add(valueToString(record.getSignInRate()));
-                            break;
-                        case "rateNum":
-                            itemData.add(valueToString(record.getRateNum()));
-                            break;
-                        case "rateScore":
-                            itemData.add(valueToString(record.getRateScore()));
-                            break;
-                        case "integral":
-                            itemData.add(valueToString(record.getIntegral()));
-                            break;
-                        case "activityStartEndTime":
-                            itemData.add(DateUtils.activityTimeScope(record.getStartTime(), record.getEndTime()));
-                            break;
-                        case "qualifiedNum":
-                            itemData.add(valueToString(record.getQualifiedNum()));
-                            break;
-                        case "signedUpNum":
-                            itemData.add(valueToString(record.getSignedUpNum()));
-                            break;
-                        case "avgParticipateTimeLength":
-                            itemData.add(valueToString(record.getAvgParticipateTimeLength()));
-                            break;
-                        default:
+        if (CollectionUtils.isEmpty(records)) {
+            return data;
+        }
+        for (ActivityStatSummaryDTO record : records) {
+            List<String> itemData = Lists.newArrayList();
+            itemData.add(String.valueOf(record.getActivityId()));
+            for (TableFieldDetail tableFieldDetail : tableFieldDetails) {
+                itemData.add(String.valueOf(record.getActivityId()));
+                String code = tableFieldDetail.getCode();
+                switch (code) {
+                    case "activityName":
+                        itemData.add(record.getActivityName());
+                        break;
+                    case "activityStatus":
+                        itemData.add(Activity.getStatusDescription(record.getActivityStatus()));
+                        break;
+                    case "activityClassify":
+                        itemData.add(record.getActivityClassify());
+                        break;
+                    case "activityCreator":
+                        itemData.add(record.getActivityCreator());
+                        break;
+                    case "participateScope":
+                        itemData.add(record.getParticipateScope());
+                        break;
+                    case "signedInNum":
+                        itemData.add(valueToString(record.getSignedInNum()));
+                        break;
+                    case "signInRate":
+                        itemData.add(valueToString(record.getSignInRate()));
+                        break;
+                    case "rateNum":
+                        itemData.add(valueToString(record.getRateNum()));
+                        break;
+                    case "rateScore":
+                        itemData.add(valueToString(record.getRateScore()));
+                        break;
+                    case "integral":
+                        itemData.add(valueToString(record.getIntegral()));
+                        break;
+                    case "activityStartEndTime":
+                        itemData.add(DateUtils.activityTimeScope(record.getStartTime(), record.getEndTime()));
+                        break;
+                    case "qualifiedNum":
+                        itemData.add(valueToString(record.getQualifiedNum()));
+                        break;
+                    case "signedUpNum":
+                        itemData.add(valueToString(record.getSignedUpNum()));
+                        break;
+                    case "avgParticipateTimeLength":
+                        itemData.add(valueToString(record.getAvgParticipateTimeLength()));
+                        break;
+                    default:
 
-                    }
                 }
-                data.add(itemData);
             }
+            data.add(itemData);
         }
         return data;
     }

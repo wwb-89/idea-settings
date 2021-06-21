@@ -1,7 +1,7 @@
 package com.chaoxing.activity.task;
 
 import com.chaoxing.activity.service.notice.ActivityDataChangeNoticeService;
-import com.chaoxing.activity.service.queue.ActivityDataChangeQueueService;
+import com.chaoxing.activity.service.queue.activity.ActivityDataChangeQueueService;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 

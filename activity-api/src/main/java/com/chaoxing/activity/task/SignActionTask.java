@@ -2,7 +2,7 @@ package com.chaoxing.activity.task;
 
 import com.chaoxing.activity.model.Activity;
 import com.chaoxing.activity.service.activity.ActivityQueryService;
-import com.chaoxing.activity.service.queue.ActivityStatSummaryQueueService;
+import com.chaoxing.activity.service.queue.activity.ActivityStatSummaryQueueService;
 import com.chaoxing.activity.service.queue.SignActionQueueService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Scheduled;

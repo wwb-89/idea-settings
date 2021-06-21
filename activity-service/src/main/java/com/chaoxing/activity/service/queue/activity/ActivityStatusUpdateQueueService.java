@@ -1,4 +1,4 @@
-package com.chaoxing.activity.service.queue;
+package com.chaoxing.activity.service.queue.activity;
 
 import com.chaoxing.activity.model.Activity;
 import com.chaoxing.activity.util.DateUtils;

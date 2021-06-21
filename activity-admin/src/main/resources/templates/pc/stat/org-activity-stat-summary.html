@@ -261,8 +261,6 @@
                 tableData: [],
                 // 总记录数
                 total: 0,
-                // 总页数
-                pages: 1,
                 dateValue1: [startTime, endTime],  //日期范围选择值
                 ifSelectPop: false, //参与范围的弹窗展示
                 wfwGroups: [[${wfwGroups}]],
@@ -414,12 +412,16 @@
                     var $this = this;
                     var url = ctx + "/api/stat/org/activity/page";
                     $this.loaded = false;
-                    app.ajaxPostWithLoading(url, { queryParamStr: activityApp.getJsonStr($this.queryParams) }, function (data) {
+                    var params = {
+                        pageNum: $this.queryParams.pageNum,
+                        pageSize: $this.queryParams.pageSize,
+                        queryParamStr: activityApp.getJsonStr($this.queryParams)
+                    };
+                    app.ajaxPostWithLoading(url, params, function (data) {
                         $this.loaded = true;
                         if (data.success) {
                             $this.tableData = data.data.records;
                             $this.total = data.data.total;
-                            $this.pages = data.data.pages;
                         } else {
                             var errorMessage = data.message;
                             if (activityApp.isEmpty(errorMessage)) {

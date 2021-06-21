@@ -6,7 +6,7 @@ import com.chaoxing.activity.mapper.ActivityStatSummaryMapper;
 import com.chaoxing.activity.model.Activity;
 import com.chaoxing.activity.model.ActivityStatSummary;
 import com.chaoxing.activity.service.manager.module.SignApiService;
-import com.chaoxing.activity.service.queue.ActivityStatSummaryQueueService;
+import com.chaoxing.activity.service.queue.activity.ActivityStatSummaryQueueService;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;

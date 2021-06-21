@@ -2,7 +2,7 @@ package com.chaoxing.activity.task;
 
 import com.chaoxing.activity.service.activity.module.ActivityModuleService;
 import com.chaoxing.activity.service.manager.module.WorkApiService;
-import com.chaoxing.activity.service.queue.ActivityReleaseScopeChangeQueueService;
+import com.chaoxing.activity.service.queue.activity.ActivityReleaseScopeChangeQueueService;
 import com.chaoxing.activity.util.enums.ModuleTypeEnum;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;

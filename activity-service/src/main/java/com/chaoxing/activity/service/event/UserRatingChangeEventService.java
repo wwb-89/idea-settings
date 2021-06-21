@@ -1,8 +1,8 @@
 package com.chaoxing.activity.service.event;
 
 import com.chaoxing.activity.model.Activity;
-import com.chaoxing.activity.service.queue.UserActionDetailQueueService;
-import com.chaoxing.activity.service.queue.UserRatingQueueService;
+import com.chaoxing.activity.service.queue.user.UserActionDetailQueueService;
+import com.chaoxing.activity.service.queue.user.UserRatingQueueService;
 import com.chaoxing.activity.service.stat.UserStatSummaryHandleService;
 import com.chaoxing.activity.util.enums.UserActionTypeEnum;
 import lombok.extern.slf4j.Slf4j;
@@ -41,7 +41,7 @@ public class UserRatingChangeEventService {
 		Integer activityId = activity.getId();
 		Integer signId = activity.getSignId();
 		if (signId != null) {
-			userRatingQueueService.add(UserRatingQueueService.QueueParamDTO.builder().uid(uid).signId(signId).build());
+			userRatingQueueService.push(UserRatingQueueService.QueueParamDTO.builder().uid(uid).signId(signId).build());
 		}
 		// 更新用户的评价数量
 		userStatSummaryService.updateUserRatingNum(uid);

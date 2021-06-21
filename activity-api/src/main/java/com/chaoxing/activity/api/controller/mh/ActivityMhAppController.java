@@ -423,7 +423,7 @@ public class ActivityMhAppController {
 	 * @param pageId
 	 * @return com.chaoxing.activity.dto.RestRespDTO
 	*/
-	@RequestMapping("activity/address")
+	@RequestMapping("activity/introduction")
 	public RestRespDTO activityIntroduction(Integer websiteId, Integer pageId) {
 		Activity activity = null;
 		String introduction = "";

@@ -1,5 +1,6 @@
-package com.chaoxing.activity.service.queue;
+package com.chaoxing.activity.service.queue.activity;
 
+import com.chaoxing.activity.service.queue.IQueueService;
 import com.chaoxing.activity.util.constant.CacheConstant;
 import com.chaoxing.activity.util.constant.CommonConstant;
 import lombok.extern.slf4j.Slf4j;
@@ -9,21 +10,22 @@ import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
+import javax.validation.constraints.NotNull;
 
-/**活动发布范围改变队列服务
+/**活动第二课堂积分变更队列服务
  * @author wwb
  * @version ver 1.0
- * @className ActivityReleaseScopeChangeQueueService
- * @description
+ * @className ActivityIntegralChangeQueueService
+ * @description 第二课堂积分变更
  * @blame wwb
- * @date 2021-03-26 17:10:17
+ * @date 2021-03-26 21:39:36
  */
 @Slf4j
 @Service
-public class ActivityReleaseScopeChangeQueueService implements IQueueService<Integer> {
+public class ActivityIntegralChangeQueueService implements IQueueService<Integer> {
 
 	/** 队列缓存key */
-	private static final String QUEUE_CACHE_KEY = CacheConstant.QUEUE_CACHE_KEY_PREFIX + "activity_release_scope_change";
+	private static final String QUEUE_CACHE_KEY = CacheConstant.QUEUE_CACHE_KEY_PREFIX + "second_classroom_integral_change";
 
 	@Resource
 	private RedissonClient redissonClient;
@@ -31,21 +33,19 @@ public class ActivityReleaseScopeChangeQueueService implements IQueueService<Int
 	/**往队列中添加数据
 	 * @Description 
 	 * @author wwb
-	 * @Date 2021-03-26 17:12:16
-	 * @param activityId
+	 * @Date 2021-03-26 21:43:21
+	 * @param signId
 	 * @return void
 	*/
-	public void add(Integer activityId) {
-		if (activityId != null) {
-			push(redissonClient, QUEUE_CACHE_KEY, activityId);
-		}
+	public void add(@NotNull Integer signId) {
+		push(redissonClient, QUEUE_CACHE_KEY, signId);
 	}
 
 	/**从队列中获取数据
-	 * @Description 
+	 * @Description
 	 * @author wwb
-	 * @Date 2021-03-26 17:12:29
-	 * @param 
+	 * @Date 2021-03-26 21:44:27
+	 * @param
 	 * @return java.lang.Integer
 	*/
 	public Integer get() throws InterruptedException {

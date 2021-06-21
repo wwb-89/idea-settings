@@ -8,7 +8,6 @@ import com.chaoxing.activity.dto.LoginUserDTO;
 import com.chaoxing.activity.dto.TimeScopeDTO;
 import com.chaoxing.activity.dto.manager.WfwRegionalArchitectureDTO;
 import com.chaoxing.activity.dto.manager.form.FormDTO;
-import com.chaoxing.activity.dto.manager.form.FormDataDTO;
 import com.chaoxing.activity.dto.manager.sign.SignIn;
 import com.chaoxing.activity.dto.manager.sign.SignUp;
 import com.chaoxing.activity.dto.module.SignAddEditDTO;
@@ -19,7 +18,7 @@ import com.chaoxing.activity.service.WebTemplateService;
 import com.chaoxing.activity.service.activity.ActivityHandleService;
 import com.chaoxing.activity.service.activity.ActivityQueryService;
 import com.chaoxing.activity.service.activity.classify.ActivityClassifyHandleService;
-import com.chaoxing.activity.service.queue.FormActivityCreateQueueService;
+import com.chaoxing.activity.service.queue.activity.FormActivityCreateQueueService;
 import com.chaoxing.activity.service.util.FormUtils;
 import com.chaoxing.activity.util.constant.CommonConstant;
 import com.chaoxing.activity.util.exception.BusinessException;
@@ -27,7 +26,6 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.codec.digest.DigestUtils;
-import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -338,6 +336,8 @@ public class FormApprovalApiService {
                 signUp.setLimitPerson(true);
                 signUp.setPersonLimit(Integer.parseInt(sign_up_person_limit));
             }
+        } else {
+            signUp.setDeleted(true);
         }
 
         List<SignIn> signIns = signAddEdit.getSignIns();
@@ -372,6 +372,8 @@ public class FormApprovalApiService {
                     signIn.setScanCodeWay(SignIn.ScanCodeWay.PARTICIPATOR.getValue());
                 }
             }
+        } else {
+            signIn.setDeleted(true);
         }
         // 签退
         SignIn signOut = signIns.get(1);
@@ -404,6 +406,8 @@ public class FormApprovalApiService {
                     signOut.setScanCodeWay(SignIn.ScanCodeWay.PARTICIPATOR.getValue());
                 }
             }
+        } else {
+            signOut.setDeleted(true);
         }
         return signAddEdit;
     }

@@ -3,7 +3,7 @@ package com.chaoxing.activity.task;
 import com.alibaba.fastjson.JSON;
 import com.chaoxing.activity.dto.manager.NoticeDTO;
 import com.chaoxing.activity.service.manager.XxtNoticeApiService;
-import com.chaoxing.activity.service.queue.XxtNoticeQueueService;
+import com.chaoxing.activity.service.queue.notice.XxtNoticeQueueService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;

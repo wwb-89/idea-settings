@@ -1,8 +1,10 @@
 package com.chaoxing.activity.api.controller.action;
 
 import com.chaoxing.activity.dto.RestRespDTO;
-import com.chaoxing.activity.service.queue.UserActionDetailQueueService;
-import com.chaoxing.activity.service.queue.UserActionQueueService;
+import com.chaoxing.activity.service.queue.user.UserActionDetailQueueService;
+import com.chaoxing.activity.service.queue.user.UserActionQueueService;
+import com.chaoxing.activity.util.DateUtils;
+import com.chaoxing.activity.util.enums.UserActionEnum;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -25,15 +27,27 @@ public class UserActionApiController {
     @Resource
     private UserActionDetailQueueService userActionDetailQueueService;
 
-    @RequestMapping("sign-up-change")
-    public RestRespDTO signUpChange(Integer uid, Integer signId) {
-        userSignActionQueueService.addUserSignUpAction(UserActionQueueService.QueueParamDTO.builder().uid(uid).signId(signId).build());
+    @RequestMapping("signed-up")
+    public RestRespDTO signedUp(Integer uid, Integer signId, Integer signUpId, Long time) {
+        userSignActionQueueService.addUserSignUpAction(UserActionQueueService.QueueParamDTO.builder().uid(uid).signId(signId).signUpId(signUpId).userAction(UserActionEnum.SIGNED_UP).time(DateUtils.timestamp2Date(time)).build());
         return RestRespDTO.success();
     }
 
-    @RequestMapping("sign-in-change")
-    public RestRespDTO signedIn(Integer uid, Integer signId) {
-        userSignActionQueueService.addUserSignInAction(UserActionQueueService.QueueParamDTO.builder().uid(uid).signId(signId).build());
+    @RequestMapping("cancel-sign-up")
+    public RestRespDTO cancelSignUp(Integer uid, Integer signId, Integer signUpId, Long time) {
+        userSignActionQueueService.addUserSignUpAction(UserActionQueueService.QueueParamDTO.builder().uid(uid).signId(signId).signUpId(signUpId).userAction(UserActionEnum.CANCEL_SIGNED_UP).time(DateUtils.timestamp2Date(time)).build());
+        return RestRespDTO.success();
+    }
+
+    @RequestMapping("signed-in")
+    public RestRespDTO signedIn(Integer uid, Integer signId, Integer signInId, Long time) {
+        userSignActionQueueService.addUserSignInAction(UserActionQueueService.QueueParamDTO.builder().uid(uid).signId(signId).signInId(signInId).userAction(UserActionEnum.SIGNED_IN).time(DateUtils.timestamp2Date(time)).build());
+        return RestRespDTO.success();
+    }
+
+    @RequestMapping("cancel-sign-in")
+    public RestRespDTO cancelSignIn(Integer uid, Integer signId, Integer signInId, Long time) {
+        userSignActionQueueService.addUserSignInAction(UserActionQueueService.QueueParamDTO.builder().uid(uid).signId(signId).signInId(signInId).userAction(UserActionEnum.CANCEL_SIGNED_UP).time(DateUtils.timestamp2Date(time)).build());
         return RestRespDTO.success();
     }
 

@@ -1,6 +1,6 @@
-package com.chaoxing.activity.service.queue;
+package com.chaoxing.activity.service.queue.user;
 
-import com.chaoxing.activity.model.UserAction;
+import com.chaoxing.activity.service.queue.IQueueService;
 import com.chaoxing.activity.util.constant.CacheConstant;
 import com.chaoxing.activity.util.enums.UserActionEnum;
 import com.chaoxing.activity.util.enums.UserActionTypeEnum;
@@ -13,12 +13,13 @@ import org.redisson.api.RedissonClient;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
+import java.time.LocalDateTime;
 
 /**用户行为详情队列服务
  * @author wwb
  * @version ver 1.0
  * @className UserActionDetailQueueService
- * @description
+ * @description 报名、签到、评价等行为
  * @blame wwb
  * @date 2021-06-17 14:59:24
  */
@@ -26,7 +27,7 @@ import javax.annotation.Resource;
 @Service
 public class UserActionDetailQueueService implements IQueueService<UserActionDetailQueueService.QueueParamDTO> {
 
-	/** 报名行为 */
+	/** 行为 */
 	private static final String CACHE_KEY = CacheConstant.QUEUE_CACHE_KEY_PREFIX + "user_action_detail";
 
 	@Resource
@@ -54,6 +55,10 @@ public class UserActionDetailQueueService implements IQueueService<UserActionDet
 		private UserActionTypeEnum userActionType;
 		/** 行为 */
 		private UserActionEnum userAction;
+		/** 主键 */
+		private String identify;
+		/** 时间 */
+		private LocalDateTime time;
 
 	}
 

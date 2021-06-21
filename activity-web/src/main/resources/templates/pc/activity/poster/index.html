@@ -41,7 +41,6 @@
                     <div id="canvas" class="qrcode"></div>
                 </div>
                 <div class="text-tip">扫码访问活动</div>
-<!--                <a id="canvasDownload" :href="canvasUrl" :download="`${activity.name}海报`" style="display: none" />-->
             </div>
         </div>
     </div>
@@ -107,17 +106,27 @@
                                 heightSome = el.clientHeight;
                             }
                             //得到正好符合高度的字符，删除最后一个变为省略号 填充在页面里
-                            el.innerHTML = wareNameText.substring(0,wareNameText.length-1)+'...';
+                            el.innerHTML = wareNameText.substring(0, wareNameText.length - 1) + '...';
                         }
                     },
                     download: function () {
                         var $this = this;
-                        html2canvas(document.querySelector("#capture"), { useCORS: true } ).then(canvas => {
-                            $(canvas).addClass('captureImg');
-                            document.body.appendChild(canvas)
-                            var imageData =  canvas.toDataURL({ format: 'image/png', quality:1 }).replace(/^data:image\/[^;]/, 'data:application/octet-stream');
-                            window.open(imageData);
-                        });
+                        var domId = "a-download";
+                        var downloadA = document.getElementById(domId);
+                        if (!downloadA) {
+                            html2canvas(document.querySelector("#capture"), {useCORS: true}).then(canvas => {
+                                var imageData = canvas.toDataURL('image/png', 1);
+                                // 放到一个a标签里面
+                                downloadA = document.createElement('a');
+                                downloadA.id = domId;
+                                downloadA.href = imageData;
+                                downloadA.download = $this.activity.name + ".png";
+                                document.body.appendChild(downloadA);
+                                downloadA.click();
+                            });
+                        } else {
+                            downloadA.click();
+                        }
                     }
                 }
             })

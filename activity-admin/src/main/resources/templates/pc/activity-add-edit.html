@@ -40,6 +40,7 @@
         .webuploader-pick {
             color: #0084FF!important;
             background: unset!important;
+            padding: unset!important;
         }
         [v-cloak] {
             display: none;
@@ -251,15 +252,15 @@
                         </span>
                     </div>
                 </div>
-                <div class="form-item">
+                <!--<div class="form-item align-start">
                     <label class="label">简介</label>
                     <div class="input-box">
-                        <!-- 笔记编辑器 -->
-                        <div class="wrap">
+                        &lt;!&ndash; 笔记编辑器 &ndash;&gt;
+                        <div class="wrap ueditor">
                             <script type="text/plain" id="container" name="content"></script>
                         </div>
                     </div>
-                </div>
+                </div>-->
             </form>
         </div>
         <!--报名设置列表-->
@@ -821,7 +822,7 @@
             mounted: function () {
                 var $this = this;
                 // 初始化笔记便假期
-                app.initUEditor($this.activity.introduction);
+                // app.initUEditor($this.activity.introduction);
                 $this.initUploader();
                 $this.handleImg();
                 $this.initWfwGroups();
@@ -1291,7 +1292,7 @@
                             default:
                         }
                     });
-                    $this.activity.introduction = app.getUEditorContent();
+                    // $this.activity.introduction = app.getUEditorContent();
                     var params = {
                         activityJsonStr: activityApp.getJsonStr($this.activity),
                         participateScopeJsonStr: activityApp.getJsonStr($this.participatedOrgs),
@@ -1328,7 +1329,7 @@
                     }
                     var url = ctx + "/api/activity/edit";
                     var sign = $.extend({}, $this.sign);
-                    $this.activity.introduction = app.getUEditorContent();
+                    // $this.activity.introduction = app.getUEditorContent();
                     var params = {
                         activityJsonStr: activityApp.getJsonStr($this.activity),
                         participateScopeJsonStr: activityApp.getJsonStr($this.participatedOrgs),
@@ -1586,8 +1587,8 @@
                 // 是否限制作品征集
                 isShowWork: function () {
                     var $this = this;
-                    var shows = ["teacher", "volunteer"];
-                    return shows.indexOf($this.activity.activityFlag) == -1;
+                    var hides = ["second_classroom", "teacher", "volunteer"];
+                    return hides.indexOf($this.activity.activityFlag) == -1;
                 },
                 // 是否显示参与时长上限
                 isShowTimeLengthUpperLimit() {
