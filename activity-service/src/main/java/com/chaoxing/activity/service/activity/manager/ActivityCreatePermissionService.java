@@ -211,7 +211,7 @@ public class ActivityCreatePermissionService {
         if (Objects.equals(OrgConfig.SignUpScopeType.WFW.getValue(), groupType)) {
             wfwGroups = wfwGroupApiService.listGroupByFid(fid);
         } else if (Objects.equals(OrgConfig.SignUpScopeType.CONTACTS.getValue(), groupType)) {
-            wfwGroups = wfwContactApiService.listUserContactOrgsByFid(uid, fid);
+            wfwGroups = wfwContactApiService.listUserContactOrgsByFid(fid);
         }
 
         List<ActivityClassify> activityClassifies = activityClassifyQueryService.listOrgOptional(fid);

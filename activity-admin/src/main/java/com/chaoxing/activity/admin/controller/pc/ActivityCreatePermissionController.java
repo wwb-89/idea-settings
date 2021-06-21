@@ -50,12 +50,11 @@ public class ActivityCreatePermissionController {
     public String index(HttpServletRequest request, Model model, Integer wfwfid, Integer unitId, Integer state, Integer fid) {
         Integer realFid = Optional.ofNullable(wfwfid).orElse(Optional.ofNullable(unitId).orElse(Optional.ofNullable(state).orElse(fid)));
         LoginUserDTO loginUser = LoginUtils.getLoginUser(request);
-        Integer uid = loginUser.getUid();
         if (realFid == null) {
             realFid = loginUser.getFid();
         }
         List<OrgRoleDTO> roleList = organizationalStructureApiService.listOrgRoles(realFid);
-        List<ActivityClassify> classifyList = activityClassifyQueryService.listOrgOptionsByFid(realFid);
+        List<ActivityClassify> classifyList = activityClassifyQueryService.listOrgAffiliation(realFid);
         OrgConfig orgConfig = orgConfigService.getByFid(realFid);
         // 微服务组织架构
         List<WfwGroupDTO> wfwGroups = Lists.newArrayList();
@@ -63,7 +62,7 @@ public class ActivityCreatePermissionController {
             wfwGroups = wfwGroupApiService.listGroupByFid(realFid);
             wfwGroups = wfwGroupApiService.buildWfwGroups(wfwGroups);
         } else if (Objects.equals(orgConfig.getSignUpScopeType(), OrgConfig.SignUpScopeType.CONTACTS.getValue())) {
-            wfwGroups = wfwContactApiService.listUserContactOrgsByFid(uid, realFid);
+            wfwGroups = wfwContactApiService.listUserContactOrgsByFid(realFid);
         }
         model.addAttribute("fid", realFid);
         model.addAttribute("groupType", orgConfig.getSignUpScopeType());
