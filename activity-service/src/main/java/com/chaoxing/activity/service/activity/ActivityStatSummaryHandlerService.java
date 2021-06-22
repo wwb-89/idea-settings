@@ -9,7 +9,6 @@ import com.chaoxing.activity.service.manager.module.SignApiService;
 import com.chaoxing.activity.service.queue.activity.ActivityStatSummaryQueueService;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -29,16 +28,33 @@ import java.util.stream.Collectors;
 public class ActivityStatSummaryHandlerService {
 
     @Resource
-    private SignApiService signApiService;
+    private ActivityStatSummaryMapper activityStatSummaryMapper;
 
     @Resource
+    private SignApiService signApiService;
+    @Resource
     private ActivityQueryService activityQueryService;
-
     @Resource
     private ActivityStatSummaryQueueService activityStatSummaryQueueService;
 
-    @Autowired
-    private ActivityStatSummaryMapper activityStatSummaryMapper;
+    /**给活动初始化统计汇总数据
+     * @Description 当创建活动的时候添加一条默认数据
+     * @author wwb
+     * @Date 2021-06-22 11:04:02
+     * @param activityId
+     * @return void
+    */
+    public void init(Integer activityId) {
+        ActivityStatSummary activityStatSummary = ActivityStatSummary.buildDefault();
+        activityStatSummary.setActivityId(activityId);
+        List<ActivityStatSummary> activityStatSummaries = activityStatSummaryMapper.selectList(new QueryWrapper<ActivityStatSummary>()
+                .lambda()
+                .eq(ActivityStatSummary::getActivityId, activityId)
+        );
+        if (CollectionUtils.isEmpty(activityStatSummaries)) {
+            activityStatSummaryMapper.insert(activityStatSummary);
+        }
+    }
 
     /**根据activityId进行对应的数据报名签到数据汇总计算
      * @Description
@@ -90,7 +106,7 @@ public class ActivityStatSummaryHandlerService {
     public void addOrUpdateAllActivityStatSummary() {
         List<Integer> activityIds = activityQueryService.list().stream().map(Activity::getId).collect(Collectors.toList());
         for (Integer activityId : activityIds) {
-            activityStatSummaryQueueService.addSignInStat(activityId);
+            activityStatSummaryQueueService.pushSignStat(activityId);
         }
     }
 }

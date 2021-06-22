@@ -26,9 +26,19 @@ public class ActivityStatSummaryTask {
     @Resource
     private ActivityStatSummaryHandlerService activityStatSummaryHandlerService;
 
+    /**由于签到信息的改变引起的活动统计信息的修改处理
+     * @Description 签到信息的改变包含：
+     * 1、用户报名、取消报名
+     * 2、用户签到、取消签到
+     * 3、报名签到本身的修改（新增/修改报名或签到）
+     * @author wwb
+     * @Date 2021-06-22 11:14:32
+     * @param 
+     * @return void
+    */
     @Scheduled(fixedDelay = 1L)
-    public void handleSignInStat() throws InterruptedException {
-        Integer activityId = activityStatSummaryQueueService.getSignInStat();
+    public void handleSignStat() throws InterruptedException {
+        Integer activityId = activityStatSummaryQueueService.getSignStat();
         if (activityId == null) {
             return;
         }
@@ -37,7 +47,7 @@ public class ActivityStatSummaryTask {
         } catch (Exception e) {
             e.printStackTrace();
             log.error("活动 :{} 的活动统计汇总计算error:{}", activityId, e.getMessage());
-            activityStatSummaryQueueService.addSignInStat(activityId);
+            activityStatSummaryQueueService.pushSignStat(activityId);
         }
     }
 

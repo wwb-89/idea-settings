@@ -28,11 +28,11 @@ public class ActivityStatSummaryQueueService implements IQueueService<Integer> {
     @Resource
     private RedissonClient redissonClient;
 
-    public void addSignInStat(Integer activityId) {
+    public void pushSignStat(Integer activityId) {
         push(redissonClient, SIGN_IN_CACHE_KEY, activityId);
     }
 
-    public Integer getSignInStat() throws InterruptedException {
+    public Integer getSignStat() throws InterruptedException {
         return pop(redissonClient, SIGN_IN_CACHE_KEY);
     }
 

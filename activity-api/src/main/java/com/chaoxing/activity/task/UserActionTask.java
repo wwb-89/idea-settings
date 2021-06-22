@@ -59,7 +59,7 @@ public class UserActionTask {
                 break;
             case SIGN_IN:
                 // 活动汇总统计
-                activityStatSummaryQueueService.addSignInStat(activityId);
+                activityStatSummaryQueueService.pushSignStat(activityId);
                 // 用户汇总统计
                 userStatSummaryQueueService.addUserSignStat(UserStatSummaryQueueService.QueueParamDTO.builder().uid(uid).activityId(activityId).build());
                 break;
