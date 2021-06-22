@@ -269,11 +269,14 @@ public class FormApprovalApiService {
             if (activityTypeEnum != null) {
                 activity.setActivityType(activityTypeEnum.getValue());
                 AddressDTO activity_address = FormUtils.getAddress(formData, "activity_address");
+                String activityDetailAddress = FormUtils.getValue(formData, "activity_detail_address");
+                activityDetailAddress = Optional.ofNullable(activityDetailAddress).orElse("");
                 if (activity_address != null) {
                     activity.setAddress(activity_address.getAddress());
                     activity.setLongitude(activity_address.getLng());
                     activity.setDimension(activity_address.getLat());
                 }
+                activity.setDetailAddress(activityDetailAddress);
             }
         } else {
             activity.setActivityType(Activity.ActivityTypeEnum.ONLINE.getValue());

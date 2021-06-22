@@ -225,14 +225,30 @@ public class FormUtils {
 			for (FormDataDTO data : formDatas) {
 				String alias = data.getAlias();
 				if (Objects.equals(fieldAlias, alias)) {
-					activityTimes.add(data.getValues().get(0).getString("val"));
+					List<JSONObject> values = data.getValues();
+					if (CollectionUtils.isNotEmpty(values)) {
+						activityTimes.add(values.get(0).getString("val"));
+					} else {
+						activityTimes.add("");
+					}
 				}
 			}
 		}
-		if (activityTimes.size() > 1) {
-			String startTimeStr = activityTimes.get(0);
-			String endTimeStr = activityTimes.get(1);
+		if (CollectionUtils.isEmpty(activityTimes)) {
+			// 添加开始结束时间
+			activityTimes.add("");
+			activityTimes.add("");
+		}
+		String startTimeStr = activityTimes.get(0);
+		String endTimeStr = activityTimes.get(1);
+		if (StringUtils.isBlank(startTimeStr)) {
+			startTime = LocalDateTime.now();
+		} else {
 			startTime = getTime(startTimeStr);
+		}
+		if (StringUtils.isBlank(endTimeStr)) {
+			endTime = startTime.plusMonths(1);
+		} else {
 			endTime = getTime(endTimeStr);
 		}
 		return TimeScopeDTO.builder()
