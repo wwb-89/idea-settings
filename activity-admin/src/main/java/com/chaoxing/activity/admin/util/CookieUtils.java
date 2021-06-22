@@ -48,7 +48,12 @@ public class CookieUtils {
     public static Integer getFid(HttpServletRequest request) {
         Integer fid = getWfwfid(request);
         fid = Optional.ofNullable(fid).orElse(getSpaceFid(request));
-        fid = Optional.ofNullable(fid).orElse(getFid(request));
+        if (fid == null) {
+            String fidStr = getValue(request, CookieConstant.FID);
+            if (StringUtils.isNotBlank(fidStr)) {
+                fid = Integer.parseInt(fidStr);
+            }
+        }
         return fid;
     }
 
