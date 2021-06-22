@@ -94,6 +94,8 @@ public class ActivityHandleService {
 	private WorkApiService workApiService;
 	@Resource
 	private ActivityWebsiteIdSyncQueueService activityWebsiteIdSyncQueueService;
+	@Resource
+	private ActivityStatSummaryHandlerService activityStatSummaryHandlerService;
 
 	@Resource
 	private SignApiService signApiService;
@@ -144,11 +146,14 @@ public class ActivityHandleService {
 			activity.setOriginType(Activity.OriginTypeEnum.NORMAL.getValue());
 		}
 		activityMapper.insert(activity);
+		Integer activityId = activity.getId();
+		activityStatSummaryHandlerService.init(activityId);
 		ActivityDetail activityDetail = ActivityDetail.builder()
-				.activityId(activity.getId())
+				.activityId(activityId)
 				.introduction(activity.getIntroduction())
 				.build();
 		activityDetailMapper.insert(activityDetail);
+
 		// 添加管理员
 		ActivityManager activityManager = new ActivityManager();
 		activityManager.setActivityId(activity.getId());
@@ -162,7 +167,6 @@ public class ActivityHandleService {
 		if (CollectionUtils.isEmpty(wfwRegionalArchitectures)) {
 			throw new BusinessException("请选择发布范围");
 		}
-		Integer activityId = activity.getId();
 		List<ActivityScope> activityScopes = WfwRegionalArchitectureDTO.convert2ActivityScopes(activityId, wfwRegionalArchitectures);
 		// 新增发布范围
 		activityScopeService.batchAdd(activityScopes);
