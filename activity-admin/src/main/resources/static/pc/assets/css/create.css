@@ -90,10 +90,9 @@ select {
 }
 
 .info {
-    width: 1002px;
+    width: 1000px;
     /* height: 531px; */
     background: #ffffff;
-    border: 1px solid #e9e9e9;
     border-radius: 8px;
     padding: 24px 0 24px 30px;
     box-sizing: border-box;
@@ -506,7 +505,8 @@ input.btn-name,
 .dailog-box1,
 .dailog-box2,
 .dailog-box3,
-.dailog-box4 {
+.dailog-box4,
+.dialog-box5 {
     height: 100%;
     position: fixed;
     z-index: 3;
@@ -1092,6 +1092,7 @@ input.btn-name,
     height: 132px;
     border: 1px solid #e9e9e9;
     border-radius: 6px;
+    overflow: hidden;
 }
 .pageset-right{
     position: relative;
@@ -1466,4 +1467,62 @@ input.btn-name,
     /* height: 110px !important; */
     padding: 0 10px;
     box-sizing: border-box;
+}
+/* 报名成功通知弹窗 */
+.dialog-box5 .dialog-wrap.edit-prize {
+    width: 520px;
+}
+.btn-forbid {
+    padding: 5px 14px;
+    line-height: 18px;
+    background: rgba(0, 132, 255, 0.3);
+    border-radius: 30px;
+    text-align: center;
+    font-size: 13px;
+    color: #ffffff;
+    cursor: pointer;
+}
+.btn-normal {
+    padding: 6px 14px;
+    line-height: 18px;
+    background: #0084FF;
+    border-radius: 30px;
+    text-align: center;
+    font-size: 13px;
+    color: #ffffff;
+    cursor: pointer;
+}
+.btn-normal:hover{
+    background: rgba(0, 132, 255, 0.8);
+}
+.btn-border {
+    padding: 5px 14px;
+    border: 1px solid #82C3FF;
+    box-sizing: border-box;
+    border-radius: 30px;
+    color: #0084FF;
+    font-size: 13px;
+    line-height: 18px;
+    cursor: pointer;
+}
+.btn-border:hover{
+    background: #EBF5FF;
+    opacity: 0.8;
+}
+
+.dialog-wrap.edit-prize .footer .btn:first-child {
+    margin-right: 24px;
+}
+.dialog-wrap.edit-prize .dialog-content{
+    position: relative;
+    height: 470px;
+    overflow-y: auto;
+}
+
+.dialog-wrap.edit-prize .dialog-content iframe{
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
 }
