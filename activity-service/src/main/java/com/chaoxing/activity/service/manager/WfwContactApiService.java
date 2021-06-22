@@ -45,7 +45,7 @@ public class WfwContactApiService {
 	/** 获取部门列表url */
 	private static final String GET_DEPARTMENT_URL = DOMAIN + "/apis/dept/getDeptsByServer?type=unit&fid={fid}&puid={uid}&cpage={page}&pageSize={pageSize}";
 	/** 获取机构下部门列表url */
-	private static final String GET_ORG_DEPARTMENT_URL = DOMAIN + "/apis/dept/getDeptsByServer?type=unit&fid={fid}&cpage={page}&pageSize={pageSize}";
+	private static final String GET_ORG_DEPARTMENT_URL = DOMAIN + "/apis/dept/getDeptsInfoByFidAndName4Server?fid={fid}&offsetValue={offsetValue}";
 	/** 获取部门人员列表url */
 	private static final String GET_DEPARTMENT_USER_URL = DOMAIN + "/apis/user/getSubDeptUserInfinite?deptId={deptId}&includeSub={includeSub}&cpage={page}&pagesize={pageSize}";
 	/** 根据管理员puid获取管理员管理的部门 */
@@ -82,16 +82,7 @@ public class WfwContactApiService {
 	* @return java.util.List<com.chaoxing.activity.dto.OrgDTO>
 	*/
 	public List<WfwGroupDTO> listUserContactOrgsByFid(Integer fid) {
-		Page<WfwDepartmentDTO> page = new Page<>(1, 50);
-		List<WfwDepartmentDTO> result = Lists.newArrayList();
-		while (true) {
-			page = listOrgDepartment(page, fid);
-			if (CollectionUtils.isEmpty(page.getRecords())) {
-				break;
-			}
-			result.addAll(page.getRecords());
-			page.setCurrent(page.getCurrent() + 1);
-		}
+		List<WfwDepartmentDTO> result = listOrgDepartment(fid, null);
 		return convert2WfwGroup(result);
 	}
 
@@ -191,26 +182,33 @@ public class WfwContactApiService {
 	}
 
 	/**查询机构下级部门
-	 * @Description
-	 * @author wwb
-	 * @Date 2021-03-28 16:59:08
-	 * @param page
-	 * @param fid
-	 * @return com.baomidou.mybatisplus.extension.plugins.pagination.Page<com.chaoxing.activity.dto.manager.WfwDepartmentDTO>
+	* @Description
+	* @author huxiaolong
+	* @Date 2021-06-22 10:15:23
+	* @param fid
+	* @param offsetValue
+	* @return java.util.List<com.chaoxing.activity.dto.manager.WfwDepartmentDTO>
 	*/
-	public Page<WfwDepartmentDTO> listOrgDepartment(Page<WfwDepartmentDTO> page, Integer fid) {
-		String forObject = restTemplate.getForObject(GET_ORG_DEPARTMENT_URL, String.class, fid, page.getCurrent(), page.getSize());
-		JSONObject jsonObject = JSON.parseObject(forObject);
-		Integer result = jsonObject.getInteger("result");
-		if (Objects.equals(result, 1)) {
-			String wfwContactersJsonStr = jsonObject.getString("msg");
-			List<WfwDepartmentDTO> wfwDepartments = JSON.parseArray(wfwContactersJsonStr, WfwDepartmentDTO.class);
-			page.setRecords(wfwDepartments);
-			return page;
-		} else {
-			log.error("根据fid:{} 查询部门error:{}", fid);
-			throw new BusinessException("查询部门列表失败");
+	public List<WfwDepartmentDTO> listOrgDepartment(Integer fid, Long offsetValue) {
+		List<WfwDepartmentDTO> departments = Lists.newArrayList();
+		while (true) {
+			String forObject = restTemplate.getForObject(GET_ORG_DEPARTMENT_URL, String.class, fid, offsetValue);
+			JSONObject jsonObject = JSON.parseObject(forObject);
+			Integer result = jsonObject.getInteger("result");
+			if (Objects.equals(result, 1)) {
+				JSONObject dataObj = jsonObject.getJSONObject("data");
+				List<WfwDepartmentDTO> tempResult = JSON.parseArray(dataObj.getString("list"), WfwDepartmentDTO.class);
+				if (CollectionUtils.isEmpty(tempResult)) {
+					break;
+				}
+				departments.addAll(tempResult);
+				offsetValue = dataObj.getLongValue("lastValue");
+			} else {
+				log.error("根据fid:{} 查询部门error:{}", fid);
+				throw new BusinessException("查询部门列表失败");
+			}
 		}
+		return departments;
 	}
 
 	/**查询部门下的联系人
