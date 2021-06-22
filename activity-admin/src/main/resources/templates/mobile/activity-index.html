@@ -26,7 +26,7 @@
             <p class="frTxt" v-show="signActivityManageIndex.signUpIds.length == 1">已报名 {{signActivityManageIndex.signUpNum}}</p>
             <i :class="{'icon-arrow-r': true, 'marginAuto': (signActivityManageIndex.signUpIds.length > 1)}"></i>
         </div>
-        <div class="item" v-if="signActivityManageIndex.signInExist" @click="signInManage">
+        <div class="item" @click="signInManage">
             <img src="/static/mobile/assets/images/admin/sign-in.png" th:src="@{/mobile/assets/images/admin/sign-in.png}">
             <p class="flTxt">签到管理</p>
             <i class="icon-arrow-r marginAuto"></i>

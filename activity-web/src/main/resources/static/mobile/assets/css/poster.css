@@ -18,7 +18,6 @@ body {
   -webkit-box-shadow: 0 6px 12px rgba(0, 0, 0, 0.04);
           box-shadow: 0 6px 12px rgba(0, 0, 0, 0.04);
   border-radius: 12px;
-  margin-bottom: 80px;
 }
 
 .poster-app .poster-box .img-box {
@@ -106,6 +105,24 @@ body {
   border-radius: 6px;
   width: 120px;
   margin: 18px auto;
+}
+
+.poster-app .capture-box {
+  position: relative;
+  overflow: hidden;
+  margin-bottom: 80px;
+}
+
+.poster-app .capture-box #canvasImage {
+  top: 0;
+  left: 0;
+  width: 100%;
+  border-radius: 12px;
+  opacity: 0;
+}
+
+.poster-app .capture-box #canvasImage.hasData {
+  opacity: 1;
 }
 
 canvas.captureImg {

@@ -63,7 +63,7 @@
                 </div>
             </div>
         </div>
-        <div class="edit" v-if="!isActivityDeclaration() && isActivityCreator()">
+        <div class="edit" v-if="isActivityCreator()">
             <div class="item" @click="toEdit">
                 <img src="/static/pc/assets/images/icon-edit-default.png" th:src="@{/pc/assets/images/icon-edit-default.png}">
                 <span>编辑活动</span>
@@ -209,11 +209,6 @@
                     var $this = this;
                     var url = ctx + $this.activity.id + "/edit";
                     window.open(url);
-                },
-                // 活动的来源是不是活动申报
-                isActivityDeclaration: function () {
-                    var $this = this;
-                    return "activity_declaration" == $this.activity.originType;
                 },
                 // 是活动创建者
                 isActivityCreator: function () {

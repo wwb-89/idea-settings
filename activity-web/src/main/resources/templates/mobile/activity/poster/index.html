@@ -12,34 +12,37 @@
 
 <body>
     <div class="poster-app" id="capture" v-cloak>
-        <div class="poster-box">
-            <div class="img-box">
-                <img :src="activity.coverCloudId | imgUrlFilter">
+        <div class="capture-box">
+            <div class="poster-box" v-show="showOriginDom">
+                <div class="img-box">
+                    <img :src="activity.coverCloudId | imgUrlFilter">
+                </div>
+                <div class="text-box">
+                    <p class="text-title marginb6">{{activity.name}}</p>
+                    <dl class="text-list">
+                        <dt class="label">活动时间&nbsp;&nbsp;&nbsp;&nbsp;</dt>
+                        <dd class="info"> {{ activity.startTime | timestampScopeFormat(activity.endTime, 'YYYY-MM-DD HH:mm') }}</dd>
+                    </dl>
+                    <dl class="text-list" v-show="activityAddress">
+                        <dt class="label">活动地点&nbsp;&nbsp;&nbsp;&nbsp;</dt>
+                        <dd class="info">{{activityAddress}}</dd>
+                    </dl>
+                    <dl class="text-list" v-if="activity.organisers">
+                        <dt class="label">主办方&nbsp;&nbsp;&nbsp;&nbsp;</dt>
+                        <dd class="info">{{activity.organisers}}</dd>
+                    </dl>
+                    <dl class="text-list" v-if="signUp">
+                        <dt class="label">报名容量&nbsp;&nbsp;&nbsp;&nbsp;</dt>
+                        <dd class="info" v-if="signUp.limitPerson">{{signUp.personLimit}}人</dd>
+                        <dd class="info" v-else>无限制</dd>
+                    </dl>
+                </div>
+                <div class="qrcode-box">
+                    <div id="canvas" class="qrcode"></div>
+                </div>
+                <div class="text-tip">扫码访问活动</div>
             </div>
-            <div class="text-box">
-                <p class="text-title marginb6">{{activity.name}}</p>
-               <dl class="text-list">
-                   <dt class="label">活动时间&nbsp;&nbsp;&nbsp;&nbsp;</dt>
-                   <dd class="info"> {{ activity.startTime | timestampScopeFormat(activity.endTime, 'YYYY-MM-DD HH:mm') }}</dd>
-               </dl>
-                <dl class="text-list" v-show="activityAddress">
-                    <dt class="label">活动地点&nbsp;&nbsp;&nbsp;&nbsp;</dt>
-                    <dd class="info">{{activityAddress}}</dd>
-                </dl>
-                <dl class="text-list" v-if="activity.organisers">
-                    <dt class="label">主办方&nbsp;&nbsp;&nbsp;&nbsp;</dt>
-                    <dd class="info">{{activity.organisers}}</dd>
-                </dl>
-                <dl class="text-list" v-if="signUp">
-                    <dt class="label">报名容量&nbsp;&nbsp;&nbsp;&nbsp;</dt>
-                    <dd class="info" v-if="signUp.limitPerson">{{signUp.personLimit}}人</dd>
-                    <dd class="info" v-else>无限制</dd>
-                </dl>
-            </div>
-            <div class="qrcode-box">
-                <div id="canvas" class="qrcode"></div>
-            </div>
-            <div class="text-tip">扫码访问活动</div>
+            <img id="canvasImage" src="">
         </div>
         <div class="btn-download" v-if="isShowDownloadBtn()" @click="download">保存到本地</div>
     </div>
@@ -55,7 +58,9 @@
                 el: "#capture",
                 data: {
                     activity: [[${activity}]],
-                    signUp: [[${signUp}]]
+                    signUp: [[${signUp}]],
+                    imageData: null,
+                    showOriginDom: true
                 },
                 computed: {
                     activityAddress: function () {
@@ -87,31 +92,35 @@
                             colorDark : "#000000",
                             colorLight : "#ffffff",
                         });
+                        html2canvas(document.querySelector(".poster-box"),{useCORS: true}).then(canvas => {
+                            $this.imageData = canvas.toDataURL('image/png', 1);
+                            $('#canvasImage')[0].src = $this.imageData;
+                            $('#canvasImage').addClass('hasData');
+                            $this.showOriginDom = false;
+                        });
                     },
                     getHeight: function (el, lineheight){
                         var heightSome = el.clientHeight;
                         var wareNameText = el.innerHTML;//获取内容
-                        if(heightSome>lineheight){ //这个数字是两行的时候的高度，根据你设定的字体大小有关
-                            for(var i=0;heightSome>lineheight;i++){
+                        if (heightSome > lineheight) { //这个数字是两行的时候的高度，根据你设定的字体大小有关
+                            for (var i = 0; heightSome > lineheight; i++) {
                                 //每次删掉最后一个然后返回
-                                wareNameText = wareNameText.substring(0,wareNameText.length-1);
+                                wareNameText = wareNameText.substring(0, wareNameText.length - 1);
                                 //重新返回的字符在写在span里面 ，计算新的高度
                                 el.innerHTML = wareNameText;
                                 heightSome = el.clientHeight;
                             }
                             //得到正好符合高度的字符，删除最后一个变为省略号 填充在页面里
-                            el.innerHTML = wareNameText.substring(0,wareNameText.length-1)+'...';
+                            el.innerHTML = wareNameText.substring(0, wareNameText.length - 1) + '...';
                         }
                     },
                     download: function () {
-                        html2canvas(document.querySelector(".poster-box"), { useCORS: true }).then(canvas => {
-                            var base64str = canvas.toDataURL('image/jpeg');
-                            var base64str = base64str.replace(/^data:image\/\w+;base64,/, "");
-                            app.savePicToSys("", base64str, "png");
-                        });
+                        var $this = this;
+                        var base64str = $this.imageData.replace(/^data:image\/\w+;base64,/, "");
+                        app.savePicToSys("", base64str, "png");
                     },
                     isShowDownloadBtn: function () {
-                        return !app.isWeixin();
+                        return app.isChaoxingApp();
                     }
                 }
             })

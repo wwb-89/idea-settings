@@ -12,35 +12,38 @@
 
 <body>
     <div class="poster-app" id="capture">
-        <div class="poster-box">
-            <div class="img-box">
-                <img src="https://gimg2.baidu.com/image_search/src=http%3A%2F%2Fpicb.zhimg.com%2Fv2-fa83d0a3178b8c722b45c755b9d59785_b.jpg&refer=http%3A%2F%2Fpicb.zhimg.com&app=2002&size=f9999,10000&q=a80&n=0&g=0n&fmt=jpeg?sec=1625382454&t=3ee0622bc98200969d39c483dab88f44" alt="">
+        <div class="capture-box">
+            <div class="poster-box">
+                <div class="img-box">
+                    <img src="https://gimg2.baidu.com/image_search/src=http%3A%2F%2Fpicb.zhimg.com%2Fv2-fa83d0a3178b8c722b45c755b9d59785_b.jpg&refer=http%3A%2F%2Fpicb.zhimg.com&app=2002&size=f9999,10000&q=a80&n=0&g=0n&fmt=jpeg?sec=1625382454&t=3ee0622bc98200969d39c483dab88f44" alt="">
+                </div>
+                <div class="text-box">
+                    <p class="text-title marginb6">书香浙江 云享阅读2020浙江省云阅读计划之“晒书房·荐图书云享阅读2020浙江省云阅读计划之云享阅读2020浙江省云阅读计划之</p>
+                   <dl class="text-list">
+                       <dt class="label">活动时间：</dt>
+                       <dd class="info"> 2021.03.29 00:00 ~ 2021.03.31 23:59</dd>
+                   </dl>
+                    <dl class="text-list">
+                        <dt class="label">活动地点：</dt>
+                        <dd class="info">上海市浦东新区金桥经济技术开发区宁桥路188号上海市浦东新区金桥经济技术开发区宁桥路188号上海市浦东新区金桥经济技术开发区宁桥路188号上海市浦东新区金桥经济技术开发区宁桥路188号上海市浦东新区金桥经济技术开发区宁桥路188号</dd>
+                    </dl>
+                    <dl class="text-list">
+                        <dt class="label">主办方：</dt>
+                        <dd class="info">浙江图书馆</dd>
+                    </dl>
+                    <dl class="text-list">
+                        <dt class="label">报名人数：</dt>
+                        <dd class="info">200人</dd>
+                    </dl>
+                </div>
+                <div class="qrcode-box">
+                    <!--<img src="../assets/images/qrcode.png" alt="">-->
+                    <!--<canvas id="canvas" class="qrcode" width="172" height="172"></canvas>-->
+                    <div id="canvas" class="qrcode"></div>
+                </div>
+                <div class="text-tip">扫码访问活动</div>
             </div>
-            <div class="text-box">
-                <p class="text-title marginb6">书香浙江 云享阅读2020浙江省云阅读计划之“晒书房·荐图书云享阅读2020浙江省云阅读计划之云享阅读2020浙江省云阅读计划之</p>
-               <dl class="text-list">
-                   <dt class="label">活动时间：</dt>
-                   <dd class="info"> 2021.03.29 00:00 ~ 2021.03.31 23:59</dd>
-               </dl>
-                <dl class="text-list">
-                    <dt class="label">活动地点：</dt>
-                    <dd class="info">上海市浦东新区金桥经济技术开发区宁桥路188号上海市浦东新区金桥经济技术开发区宁桥路188号上海市浦东新区金桥经济技术开发区宁桥路188号上海市浦东新区金桥经济技术开发区宁桥路188号上海市浦东新区金桥经济技术开发区宁桥路188号</dd>
-                </dl>
-                <dl class="text-list">
-                    <dt class="label">主办方：</dt>
-                    <dd class="info">浙江图书馆</dd>
-                </dl>
-                <dl class="text-list">
-                    <dt class="label">报名人数：</dt>
-                    <dd class="info">200人</dd>
-                </dl>
-            </div>
-            <div class="qrcode-box">
-                <!--<img src="../assets/images/qrcode.png" alt="">-->
-                <!--<canvas id="canvas" class="qrcode" width="172" height="172"></canvas>-->
-                <div id="canvas" class="qrcode"></div>
-            </div>
-            <div class="text-tip">扫码访问活动</div>
+            <img id="canvasImage" src="" alt="">
         </div>
         <div class="btn-download">保存到本地</div>
     </div>
@@ -49,12 +52,6 @@
     <script src="../assets/lib/qrcode.min.js"></script>
     <script src="../assets/lib/html2canvas.min.js"></script>
     <script>
-        $('.btn-download').click(function () {
-            html2canvas(document.querySelector(".poster-box"),{useCORS: true}).then(canvas => {
-                $(canvas).addClass('captureImg');
-                document.body.appendChild(canvas)
-            });
-        })
 
         /*多行省略  start*/
         function getHeight(el,lineheight){
@@ -89,6 +86,19 @@
             colorDark : "#000000",
             colorLight : "#ffffff",
         });
+
+
+
+        html2canvas(document.querySelector(".poster-box"),{useCORS: true}).then(canvas => {
+            canvas.width= document.documentElement.clientWidth;
+            canvas.height= document.documentElement.clientHeight;
+            // $(canvas).addClass('captureImg');
+            var imageData = canvas.toDataURL('image/png', 1.0);
+            $('#canvasImage')[0].src = imageData;
+            $('#canvasImage').addClass('hasData');
+        });
+
+
     </script>
 
 </body>
