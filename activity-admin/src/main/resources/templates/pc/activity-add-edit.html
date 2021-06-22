@@ -9,6 +9,8 @@
     <link rel="stylesheet" href="/static/pc/assets/css/reset.css" th:href="@{/pc/assets/css/reset.css}">
     <link rel="stylesheet" href="/static/pc/assets/css/public.css" th:href="@{/pc/assets/css/public.css}">
     <link rel="stylesheet" href="/static/pc/assets/css/create.css" th:href="@{/pc/assets/css/create.css}">
+    <link rel="stylesheet" href="https://noteyd.chaoxing.com/res/css/pc/note/richtext_detail.css">
+
     <script src="/static/assets/js/jquery.min.js" th:src="@{/assets/js/jquery.min.js}"></script>
     <script src="https://noteyd.chaoxing.com/res/plugin/ueditor4thirdparty/rich.text.util.js"></script>
     <style type="text/css">
@@ -197,17 +199,6 @@
                         <span>参与者通过签到和签退获取的参与时长不会超过该数值</span>
                     </div>
                 </div>
-                <div class="form-item cancel-margin marginTop16" v-show="isShowActivityFlag()">
-                    <label class="label">标签</label>
-                    <div class="input-box wrap">
-                        <!--添加满3个后，隐藏添加按钮-->
-                        <div class="type-item" v-for="(tag, index) of tags" :key="'tag-' + index">{{tag}}<div class="del_btn" @click="deleteTag(index)"></div></div>
-                        <div class="type-item add" @click="toAddTag">
-                            <div class="add_btn"></div>
-                            添加
-                        </div>
-                    </div>
-                </div>
                 <div class="form-item last marginTop16" v-show="isShowActivityParticipateScope()">
                     <label class="label"><img src="/static/pc/assets/images/required.png" th:src="@{/pc/assets/images/required.png}" class="required-img">发布范围</label>
                     <div class="input-box wrap">
@@ -252,15 +243,6 @@
                         </span>
                     </div>
                 </div>
-                <!--<div class="form-item align-start">
-                    <label class="label">简介</label>
-                    <div class="input-box">
-                        &lt;!&ndash; 笔记编辑器 &ndash;&gt;
-                        <div class="wrap ueditor">
-                            <script type="text/plain" id="container" name="content"></script>
-                        </div>
-                    </div>
-                </div>-->
             </form>
         </div>
         <!--报名设置列表-->
@@ -452,22 +434,6 @@
                 </div>
             </form>
         </div>
-        <!-- 评价设置 -->
-        <div class="info box" v-show="activityFlag == 'second_classroom'">
-            <div class="set-box">
-                <div class="title set">评价设置</div>
-                <el-switch v-model="activity.openRating" class="switch"></el-switch>
-            </div>
-            <form action="" class="setForm" v-show="activity.openRating">
-                <div class="form-item">
-                    <label class="label">评价需审核</label>
-                    <div class="input-box">
-                        <el-switch v-model="activity.ratingNeedAudit" class="examine-switch"></el-switch>
-                        <span>开启后，审核后的评价才能展示在评价列表</span>
-                    </div>
-                </div>
-            </form>
-        </div>
         <!--征集设置-->
         <div class="info box" v-show="isShowWork()">
             <div class="set-box">
@@ -479,6 +445,50 @@
                     <div class="input-box">
                         <el-switch v-model="activity.openWork" class="examine-switch"></el-switch>
                         <span>开启后，参与者可以在活动中提交作品，管理员在征集模块中进行审核评分推优等操作</span>
+                    </div>
+                </div>
+            </form>
+        </div>
+        <!--其他设置-->
+        <div class="info box">
+            <div class="set-box">
+                <div class="title set">其他设置</div>
+            </div>
+            <form action="" class="setForm">
+                <div class="form-item cancel-margin marginTop16" v-show="isShowActivityFlag()">
+                    <label class="label">标签</label>
+                    <div class="input-box wrap">
+                        <!--添加满3个后，隐藏添加按钮-->
+                        <div class="type-item" v-for="(tag, index) of tags" :key="'tag-' + index">{{tag}}<div class="del_btn" @click="deleteTag(index)"></div></div>
+                        <div class="type-item add" @click="toAddTag">
+                            <div class="add_btn"></div>
+                            添加
+                        </div>
+                    </div>
+                </div>
+                <div v-show="activityFlag == 'second_classroom'">
+                    <div class="form-item">
+                        <label class="label">活动评价</label>
+                        <div class="input-box">
+                            <el-switch v-model="activity.openRating" class="examine-switch"></el-switch>
+                            <span>参与者可以对活动进行评价</span>
+                        </div>
+                    </div>
+                    <div class="form-item" v-show="activity.openRating">
+                        <label class="label">评价需审核</label>
+                        <div class="input-box">
+                            <el-switch v-model="activity.ratingNeedAudit" class="examine-switch"></el-switch>
+                            <span>开启后，审核后的评价才能展示在评价列表</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="form-item align-start" v-show="isShowIntroduction()">
+                    <label class="label">简介</label>
+                    <div class="input-box">
+                        <!-- 笔记编辑器 -->
+                        <div class="wrap ueditor">
+                            <script type="text/plain" id="container" name="content"></script>
+                        </div>
                     </div>
                 </div>
             </form>
@@ -822,7 +832,7 @@
             mounted: function () {
                 var $this = this;
                 // 初始化笔记便假期
-                // app.initUEditor($this.activity.introduction);
+                app.initUEditor($this.activity.introduction);
                 $this.initUploader();
                 $this.handleImg();
                 $this.initWfwGroups();
@@ -1292,7 +1302,7 @@
                             default:
                         }
                     });
-                    // $this.activity.introduction = app.getUEditorContent();
+                    $this.activity.introduction = app.getUEditorContent();
                     var params = {
                         activityJsonStr: activityApp.getJsonStr($this.activity),
                         participateScopeJsonStr: activityApp.getJsonStr($this.participatedOrgs),
@@ -1329,7 +1339,7 @@
                     }
                     var url = ctx + "/api/activity/edit";
                     var sign = $.extend({}, $this.sign);
-                    // $this.activity.introduction = app.getUEditorContent();
+                    $this.activity.introduction = app.getUEditorContent();
                     var params = {
                         activityJsonStr: activityApp.getJsonStr($this.activity),
                         participateScopeJsonStr: activityApp.getJsonStr($this.participatedOrgs),
@@ -1592,6 +1602,12 @@
                 },
                 // 是否显示参与时长上限
                 isShowTimeLengthUpperLimit() {
+                    var $this = this;
+                    var shows = ["volunteer"];
+                    return shows.indexOf($this.activity.activityFlag) != -1;
+                },
+                // 是否显示简介
+                isShowIntroduction: function () {
                     var $this = this;
                     var shows = ["volunteer"];
                     return shows.indexOf($this.activity.activityFlag) != -1;

@@ -261,10 +261,6 @@
         if (!content) {
             content = "";
         }
-        if (!activityApp.isEmpty(content) && content.indexOf("https://noteyd.chaoxing.com/attachment/insert") > 1) {
-            content = content.replace(/https:\/\/noteyd\.chaoxing\.com\/attachment\/insert/g,"insert");
-            content = content.replace(/https:\/\/noteyd\.chaoxing\.com\/attachment\/\/insert/g,"insert");
-        }
         RichTextUitl.initUEditor('', content, '');
     };
     /**
