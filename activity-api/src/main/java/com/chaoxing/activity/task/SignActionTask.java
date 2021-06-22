@@ -10,11 +10,13 @@ import org.springframework.stereotype.Component;
 
 import javax.annotation.Resource;
 
-/**
+/**报名签到改变
  * @author wwb
  * @version ver 1.0
  * @className SignActionTask
- * @description
+ * @description 报名签到改变：
+ * 1、报名的新增/修改/删除
+ * 2、签到的新增/修改/删除
  * @blame wwb
  * @date 2021-05-25 19:50:57
  */
