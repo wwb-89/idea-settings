@@ -9,7 +9,6 @@ import com.chaoxing.activity.service.manager.module.SignApiService;
 import com.chaoxing.activity.service.queue.activity.ActivityStatSummaryQueueService;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -107,7 +106,7 @@ public class ActivityStatSummaryHandlerService {
     public void addOrUpdateAllActivityStatSummary() {
         List<Integer> activityIds = activityQueryService.list().stream().map(Activity::getId).collect(Collectors.toList());
         for (Integer activityId : activityIds) {
-            activityStatSummaryQueueService.addSignInStat(activityId);
+            activityStatSummaryQueueService.pushSignStat(activityId);
         }
     }
 }

@@ -42,8 +42,6 @@ public class ActivityChangeEventService {
 	@Resource
 	private ActivityDataChangeQueueService activityDataChangeQueueService;
 	@Resource
-	private ActivityStatSummaryQueueService activityStatSummaryQueueService;
-	@Resource
 	private UserStatSummaryHandleService userStatSummaryService;
 	@Resource
 	private ActivityTimingReleaseQueueService activityTimingReleaseQueueService;

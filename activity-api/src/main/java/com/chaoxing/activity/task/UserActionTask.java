@@ -49,6 +49,7 @@ public class UserActionTask {
         Activity activity = activityQueryService.getBySignId(signId);
         if (activity != null) {
             Integer activityId = activity.getId();
+            activityStatSummaryQueueService.pushSignStat(activityId);
             Integer uid = queueParam.getUid();
             userStatSummaryQueueService.addUserSignStat(UserStatSummaryQueueService.QueueParamDTO.builder().uid(uid).activityId(activityId).build());
             // 用户报名行为详情更新
@@ -69,7 +70,7 @@ public class UserActionTask {
         Activity activity = activityQueryService.getBySignId(signId);
         if (activity != null) {
             Integer activityId = activity.getId();
-            activityStatSummaryQueueService.addSignInStat(activityId);
+            activityStatSummaryQueueService.pushSignStat(activityId);
             Integer uid = queueParam.getUid();
             userStatSummaryQueueService.addUserSignStat(UserStatSummaryQueueService.QueueParamDTO.builder().uid(uid).activityId(activityId).build());
             // 用户签到行为详情更新
