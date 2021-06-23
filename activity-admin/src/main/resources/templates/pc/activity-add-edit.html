@@ -10,9 +10,6 @@
     <link rel="stylesheet" href="/static/pc/assets/css/public.css" th:href="@{/pc/assets/css/public.css}">
     <link rel="stylesheet" href="/static/pc/assets/css/create.css" th:href="@{/pc/assets/css/create.css}">
     <link rel="stylesheet" href="https://noteyd.chaoxing.com/res/css/pc/note/richtext_detail.css">
-
-    <script src="/static/assets/js/jquery.min.js" th:src="@{/assets/js/jquery.min.js}"></script>
-    <script src="https://noteyd.chaoxing.com/res/plugin/ueditor4thirdparty/rich.text.util.js"></script>
     <style type="text/css">
         body .create-class .layui-layer-btn0{
             width: 30px;
@@ -48,10 +45,6 @@
             display: none;
         }
     </style>
-    <script src="//api.map.baidu.com/api?v=3.0&ak=aG5nWGO5m5tkVhBHGuVppoIRfKbyp5H3"></script>
-    <script type="text/javascript">
-        RichTextUitl.loadEditorProfile();
-    </script>
 </head>
 
 <body>
@@ -249,7 +242,7 @@
         <div class="info box" v-for="(signUp, index) of sign.signUps" :key="'sign-up' + index">
             <div class="set-box">
                 <div class="title set">{{signUp.name ? signUp.name : '报名'}}设置</div>
-                <el-switch v-model="signUp.enable" class="switch" @change="signUpEnableChanged(index)"></el-switch>
+                <el-switch v-model="signUp.enable" class="section-switch" @change="signUpEnableChanged(index)"></el-switch>
             </div>
             <!-- 点击参与设置 -->
             <form action="" onsubmit="return false;" class="setForm" v-show="!signUp.deleted">
@@ -347,7 +340,7 @@
         <div class="info box" v-for="(signIn, index) of sign.signIns" :key="'sign-in' + index">
             <div class="set-box">
                 <div class="title set">{{signIn.name}}设置</div>
-                <el-switch v-model="signIn.enable" class="switch" @change="signInEnableChanged(index)"></el-switch>
+                <el-switch v-model="signIn.enable" class="section-switch" @change="signInEnableChanged(index)"></el-switch>
             </div>
             <!-- 点击参与设置 -->
             <form action="" onsubmit="return false;" class="setForm" v-show="!signIn.deleted">
@@ -421,7 +414,7 @@
         <div class="info box" v-show="activityFlag == 'second_classroom'">
             <div class="set-box">
                 <div class="title set">积分设置</div>
-                <el-switch v-model="activity.openIntegral" class="switch"></el-switch>
+                <el-switch v-model="activity.openIntegral" class="section-switch"></el-switch>
             </div>
             <form action="" class="setForm" v-show="activity.openIntegral">
                 <div class="form-item">
@@ -601,8 +594,12 @@
         </div>
     </div>
 </div>
-<div th:replace="pc/include/note_editor :: note_editor"></div>
 <div th:replace="pc/include/common_js :: common_js(~{::script})">
+    <script src="//api.map.baidu.com/api?v=3.0&ak=aG5nWGO5m5tkVhBHGuVppoIRfKbyp5H3"></script>
+    <script src="https://noteyd.chaoxing.com/res/plugin/ueditor4thirdparty/rich.text.util.js"></script>
+    <script type="text/javascript">
+        RichTextUitl.loadEditorProfile();
+    </script>
     <script src="/static/pc/assets/lib/zTree_v3/js/jquery.ztree.core.js" th:src="@{/pc/assets/lib/zTree_v3/js/jquery.ztree.core.js}"></script>
     <script src="/static/pc/assets/lib/zTree_v3/js/jquery.ztree.excheck.min.js" th:src="@{/pc/assets/lib/zTree_v3/js/jquery.ztree.excheck.min.js}"></script>
     <script src="/static/pc/assets/lib/zTree_v3/js/jquery.ztree.exedit.js" th:src="@{/pc/assets/lib/zTree_v3/js/jquery.ztree.exedit.js}"></script>
@@ -613,6 +610,7 @@
     <script src="/static/pc/assets/component/activity-participate-scope.js" th:src="@{/pc/assets/component/activity-participate-scope.js}"></script>
     <script src="/static/pc/assets/component/confirm.js" th:src="@{/pc/assets/component/confirm.js}"></script>
     <script src="/static/pc/assets/lib/jqthumb.min.js" th:src="@{/pc/assets/lib/jqthumb.min.js}"></script>
+
     <script th:inline="javascript">
         activityVue = new Vue({
             el: "#activity-vue",
@@ -1623,5 +1621,6 @@
         }
     </script>
 </div>
+<div th:replace="pc/include/note_editor :: note_editor"></div>
 </body>
 </html>
