@@ -30,6 +30,7 @@ CREATE TABLE `t_user_action_record`  (
     `action` varchar(50) NULL COMMENT '具体行为',
     `action_identify` varchar(50) NULL COMMENT '行为标识。行为id等',
     `action_description` varchar(255) NULL COMMENT '行为描述',
+    `is_valid` tinyint(1) NULL DEFAULT 1 COMMENT '是否有效的',
     `create_time` datetime(0) NULL COMMENT '创建时间',
     `update_time` datetime(0) NULL DEFAULT current_timestamp() ON UPDATE CURRENT_TIMESTAMP(0) COMMENT '更新时间',
     PRIMARY KEY (`id`),

@@ -28,12 +28,14 @@ public class UserStatService {
 	 * @author wwb
 	 * @Date 2021-05-27 23:05:12
 	 * @param uid
+	 * @param activityId
 	 * @return java.lang.Integer
 	*/
-	public Integer countUserRatingNum(Integer uid) {
+	public Integer countUserRatingNum(Integer uid, Integer activityId) {
 		return activityRatingDetailMapper.selectCount(new QueryWrapper<ActivityRatingDetail>()
 			.lambda()
 				.eq(ActivityRatingDetail::getScorerUid, uid)
+				.eq(ActivityRatingDetail::getActivityId, activityId)
 				.eq(ActivityRatingDetail::getDeleted, false)
 		);
 	}

@@ -9,12 +9,12 @@
         <result column="action" jdbcType="VARCHAR" property="action" />
         <result column="action_identify" jdbcType="VARCHAR" property="actionIdentify" />
         <result column="action_description" jdbcType="VARCHAR" property="actionDescription" />
-        <result column="score" jdbcType="DECIMAL" property="score" />
+        <result column="is_valid" jdbcType="BIT" property="valid" />
         <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
         <result column="update_time" jdbcType="TIMESTAMP" property="updateTime" />
     </resultMap>
     <sql id="Base_Column_List">
         t.id, t.uid, t.activity_id, t.action_type, t.action, t.action_identify, t.action_description,
-        t.score, t.create_time, t.update_time
+        t.is_valid, t.create_time, t.update_time
     </sql>
 </mapper>

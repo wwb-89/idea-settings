@@ -2,21 +2,17 @@ package com.chaoxing.activity.service.stat;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
-import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.chaoxing.activity.dto.manager.PassportUserDTO;
-import com.chaoxing.activity.dto.query.admin.UserStatSummaryQueryDTO;
 import com.chaoxing.activity.dto.sign.UserSignStatSummaryDTO;
-import com.chaoxing.activity.mapper.TableFieldDetailMapper;
 import com.chaoxing.activity.mapper.UserStatSummaryMapper;
 import com.chaoxing.activity.model.Activity;
-import com.chaoxing.activity.model.TableFieldDetail;
 import com.chaoxing.activity.model.UserStatSummary;
 import com.chaoxing.activity.service.activity.ActivityQueryService;
 import com.chaoxing.activity.service.manager.OrganizationalStructureApiService;
 import com.chaoxing.activity.service.manager.PassportApiService;
 import com.chaoxing.activity.service.manager.module.SignApiService;
 import com.chaoxing.activity.service.user.UserStatService;
-import com.google.common.collect.Lists;
+import com.chaoxing.activity.service.user.result.UserResultQueryService;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.stereotype.Service;
@@ -51,6 +47,8 @@ public class UserStatSummaryHandleService {
     private OrganizationalStructureApiService organizationalStructureApiService;
     @Resource
     private ActivityQueryService activityQueryService;
+    @Resource
+    private UserResultQueryService userResultQueryService;
 
     /**更新用户报名签到信息
      * @Description 
@@ -60,7 +58,7 @@ public class UserStatSummaryHandleService {
      * @param activityId
      * @return void
     */
-    public void updateUserSignUpInData(Integer uid, Integer activityId) {
+    public void updateUserSignData(Integer uid, Integer activityId) {
         Activity activity = activityQueryService.getById(activityId);
         Integer signId = activity.getSignId();
         if (signId == null) {
@@ -142,7 +140,7 @@ public class UserStatSummaryHandleService {
         if (signId == null) {
             return;
         }
-        boolean isQualified = signApiService.userIsQualified(uid, activityId);
+        boolean isQualified = userResultQueryService.isUserQualified(uid, activityId);
         List<UserStatSummary> userStatSummaries = userStatSummaryMapper.selectList(new QueryWrapper<UserStatSummary>()
                 .lambda()
                 .eq(UserStatSummary::getUid, uid)
@@ -177,25 +175,29 @@ public class UserStatSummaryHandleService {
      * @author wwb
      * @Date 2021-05-27 23:07:47
      * @param uid
+     * @param activityId
      * @return void
     */
-    public void updateUserRatingNum(Integer uid) {
-        Integer ratingNum = userStatService.countUserRatingNum(uid);
+    public void updateUserRatingNum(Integer uid, Integer activityId) {
+        Integer ratingNum = userStatService.countUserRatingNum(uid, activityId);
         List<UserStatSummary> userStatSummaries = userStatSummaryMapper.selectList(new QueryWrapper<UserStatSummary>()
                 .lambda()
                 .eq(UserStatSummary::getUid, uid)
+                .eq(UserStatSummary::getActivityId, activityId)
         );
         if (CollectionUtils.isNotEmpty(userStatSummaries)) {
             // 更新
             userStatSummaryMapper.update(null, new UpdateWrapper<UserStatSummary>()
                     .lambda()
                     .eq(UserStatSummary::getUid, uid)
+                    .eq(UserStatSummary::getActivityId, activityId)
                     .set(UserStatSummary::getRatingNum, ratingNum)
             );
         } else {
             // 新增
             UserStatSummary userStatSummary = UserStatSummary.builder()
                     .uid(uid)
+                    .activityId(activityId)
                     .realName(passportApiService.getUserRealName(uid))
                     .ratingNum(ratingNum)
                     .build();

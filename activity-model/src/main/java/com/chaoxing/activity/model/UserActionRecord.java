@@ -1,6 +1,7 @@
 package com.chaoxing.activity.model;
 
 import com.baomidou.mybatisplus.annotation.IdType;
+import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.AllArgsConstructor;
@@ -42,8 +43,9 @@ public class UserActionRecord {
     private String actionIdentify;
     /** 行为描述; column: action_description*/
     private String actionDescription;
-    /** 得分; column: score*/
-    private BigDecimal score;
+    /** 是否有效的; column: is_valid*/
+    @TableField(value = "is_valid")
+    private Boolean valid;
     /** 创建时间; column: create_time*/
     private LocalDateTime createTime;
     /** 更新时间; column: update_time*/
