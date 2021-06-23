@@ -5,6 +5,7 @@ import org.apache.commons.lang3.StringUtils;
 
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
+import java.util.Optional;
 
 /**
  * @author wwb
@@ -45,7 +46,15 @@ public class CookieUtils {
     }
 
     public static Integer getFid(HttpServletRequest request) {
-        return getWfwfid(request);
+        Integer fid = getWfwfid(request);
+        fid = Optional.ofNullable(fid).orElse(getSpaceFid(request));
+        if (fid == null) {
+            String fidStr = getValue(request, CookieConstant.FID);
+            if (StringUtils.isNotBlank(fidStr)) {
+                fid = Integer.parseInt(fidStr);
+            }
+        }
+        return fid;
     }
 
     public static long getValidateTime(HttpServletRequest request) {

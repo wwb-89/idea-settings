@@ -23,6 +23,10 @@
                         <dt class="label">活动时间&nbsp;&nbsp;&nbsp;&nbsp;</dt>
                         <dd class="info"> {{ activity.startTime | timestampScopeFormat(activity.endTime, 'YYYY-MM-DD HH:mm') }}</dd>
                     </dl>
+                    <dl class="text-list" v-if="signUp">
+                        <dt class="label">报名时间&nbsp;&nbsp;&nbsp;&nbsp;</dt>
+                        <dd class="info"> {{ signUp.startTime | timestampScopeFormat(signUp.endTime, 'YYYY-MM-DD HH:mm') }}</dd>
+                    </dl>
                     <dl class="text-list" v-show="activityAddress">
                         <dt class="label">活动地点&nbsp;&nbsp;&nbsp;&nbsp;</dt>
                         <dd class="info">{{activityAddress}}</dd>
@@ -34,7 +38,7 @@
                     <dl class="text-list" v-if="signUp">
                         <dt class="label">报名容量&nbsp;&nbsp;&nbsp;&nbsp;</dt>
                         <dd class="info" v-if="signUp.limitPerson">{{signUp.personLimit}}人</dd>
-                        <dd class="info" v-else>无限制</dd>
+                        <dd class="info" v-else>不限</dd>
                     </dl>
                 </div>
                 <div class="qrcode-box">

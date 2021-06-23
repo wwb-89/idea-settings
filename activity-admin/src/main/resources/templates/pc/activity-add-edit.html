@@ -9,8 +9,7 @@
     <link rel="stylesheet" href="/static/pc/assets/css/reset.css" th:href="@{/pc/assets/css/reset.css}">
     <link rel="stylesheet" href="/static/pc/assets/css/public.css" th:href="@{/pc/assets/css/public.css}">
     <link rel="stylesheet" href="/static/pc/assets/css/create.css" th:href="@{/pc/assets/css/create.css}">
-    <script src="/static/assets/js/jquery.min.js" th:src="@{/assets/js/jquery.min.js}"></script>
-    <script src="https://noteyd.chaoxing.com/res/plugin/ueditor4thirdparty/rich.text.util.js"></script>
+    <link rel="stylesheet" href="https://noteyd.chaoxing.com/res/css/pc/note/richtext_detail.css">
     <style type="text/css">
         body .create-class .layui-layer-btn0{
             width: 30px;
@@ -46,10 +45,6 @@
             display: none;
         }
     </style>
-    <script src="//api.map.baidu.com/api?v=3.0&ak=aG5nWGO5m5tkVhBHGuVppoIRfKbyp5H3"></script>
-    <script type="text/javascript">
-        RichTextUitl.loadEditorProfile();
-    </script>
 </head>
 
 <body>
@@ -197,17 +192,6 @@
                         <span>参与者通过签到和签退获取的参与时长不会超过该数值</span>
                     </div>
                 </div>
-                <div class="form-item cancel-margin marginTop16" v-show="isShowActivityFlag()">
-                    <label class="label">标签</label>
-                    <div class="input-box wrap">
-                        <!--添加满3个后，隐藏添加按钮-->
-                        <div class="type-item" v-for="(tag, index) of tags" :key="'tag-' + index">{{tag}}<div class="del_btn" @click="deleteTag(index)"></div></div>
-                        <div class="type-item add" @click="toAddTag">
-                            <div class="add_btn"></div>
-                            添加
-                        </div>
-                    </div>
-                </div>
                 <div class="form-item last marginTop16" v-show="isShowActivityParticipateScope()">
                     <label class="label"><img src="/static/pc/assets/images/required.png" th:src="@{/pc/assets/images/required.png}" class="required-img">发布范围</label>
                     <div class="input-box wrap">
@@ -252,22 +236,13 @@
                         </span>
                     </div>
                 </div>
-                <!--<div class="form-item align-start">
-                    <label class="label">简介</label>
-                    <div class="input-box">
-                        &lt;!&ndash; 笔记编辑器 &ndash;&gt;
-                        <div class="wrap ueditor">
-                            <script type="text/plain" id="container" name="content"></script>
-                        </div>
-                    </div>
-                </div>-->
             </form>
         </div>
         <!--报名设置列表-->
         <div class="info box" v-for="(signUp, index) of sign.signUps" :key="'sign-up' + index">
             <div class="set-box">
                 <div class="title set">{{signUp.name ? signUp.name : '报名'}}设置</div>
-                <el-switch v-model="signUp.enable" class="switch" @change="signUpEnableChanged(index)"></el-switch>
+                <el-switch v-model="signUp.enable" class="section-switch" @change="signUpEnableChanged(index)"></el-switch>
             </div>
             <!-- 点击参与设置 -->
             <form action="" onsubmit="return false;" class="setForm" v-show="!signUp.deleted">
@@ -365,7 +340,7 @@
         <div class="info box" v-for="(signIn, index) of sign.signIns" :key="'sign-in' + index">
             <div class="set-box">
                 <div class="title set">{{signIn.name}}设置</div>
-                <el-switch v-model="signIn.enable" class="switch" @change="signInEnableChanged(index)"></el-switch>
+                <el-switch v-model="signIn.enable" class="section-switch" @change="signInEnableChanged(index)"></el-switch>
             </div>
             <!-- 点击参与设置 -->
             <form action="" onsubmit="return false;" class="setForm" v-show="!signIn.deleted">
@@ -439,7 +414,7 @@
         <div class="info box" v-show="activityFlag == 'second_classroom'">
             <div class="set-box">
                 <div class="title set">积分设置</div>
-                <el-switch v-model="activity.openIntegral" class="switch"></el-switch>
+                <el-switch v-model="activity.openIntegral" class="section-switch"></el-switch>
             </div>
             <form action="" class="setForm" v-show="activity.openIntegral">
                 <div class="form-item">
@@ -448,22 +423,6 @@
                         <input type="number" v-model.trim="activity.integralValue" min="0" placeholder="请输入" class="score-input">
                         <span class="score">分</span>
                         <span>参与者成绩合格时，即可获取相应积分</span>
-                    </div>
-                </div>
-            </form>
-        </div>
-        <!-- 评价设置 -->
-        <div class="info box" v-show="activityFlag == 'second_classroom'">
-            <div class="set-box">
-                <div class="title set">评价设置</div>
-                <el-switch v-model="activity.openRating" class="switch"></el-switch>
-            </div>
-            <form action="" class="setForm" v-show="activity.openRating">
-                <div class="form-item">
-                    <label class="label">评价需审核</label>
-                    <div class="input-box">
-                        <el-switch v-model="activity.ratingNeedAudit" class="examine-switch"></el-switch>
-                        <span>开启后，审核后的评价才能展示在评价列表</span>
                     </div>
                 </div>
             </form>
@@ -479,6 +438,50 @@
                     <div class="input-box">
                         <el-switch v-model="activity.openWork" class="examine-switch"></el-switch>
                         <span>开启后，参与者可以在活动中提交作品，管理员在征集模块中进行审核评分推优等操作</span>
+                    </div>
+                </div>
+            </form>
+        </div>
+        <!--其他设置-->
+        <div class="info box">
+            <div class="set-box">
+                <div class="title set">其他设置</div>
+            </div>
+            <form action="" class="setForm">
+                <div class="form-item cancel-margin marginTop16" v-show="isShowActivityFlag()">
+                    <label class="label">标签</label>
+                    <div class="input-box wrap">
+                        <!--添加满3个后，隐藏添加按钮-->
+                        <div class="type-item" v-for="(tag, index) of tags" :key="'tag-' + index">{{tag}}<div class="del_btn" @click="deleteTag(index)"></div></div>
+                        <div class="type-item add" @click="toAddTag">
+                            <div class="add_btn"></div>
+                            添加
+                        </div>
+                    </div>
+                </div>
+                <div v-show="activityFlag == 'second_classroom'">
+                    <div class="form-item">
+                        <label class="label">活动评价</label>
+                        <div class="input-box">
+                            <el-switch v-model="activity.openRating" class="examine-switch"></el-switch>
+                            <span>参与者可以对活动进行评价</span>
+                        </div>
+                    </div>
+                    <div class="form-item" v-show="activity.openRating">
+                        <label class="label">评价需审核</label>
+                        <div class="input-box">
+                            <el-switch v-model="activity.ratingNeedAudit" class="examine-switch"></el-switch>
+                            <span>开启后，审核后的评价才能展示在评价列表</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="form-item align-start" v-show="isShowIntroduction()">
+                    <label class="label">简介</label>
+                    <div class="input-box">
+                        <!-- 笔记编辑器 -->
+                        <div class="wrap ueditor">
+                            <script type="text/plain" id="container" name="content"></script>
+                        </div>
                     </div>
                 </div>
             </form>
@@ -591,8 +594,12 @@
         </div>
     </div>
 </div>
-<div th:replace="pc/include/note_editor :: note_editor"></div>
 <div th:replace="pc/include/common_js :: common_js(~{::script})">
+    <script src="//api.map.baidu.com/api?v=3.0&ak=aG5nWGO5m5tkVhBHGuVppoIRfKbyp5H3"></script>
+    <script src="https://noteyd.chaoxing.com/res/plugin/ueditor4thirdparty/rich.text.util.js"></script>
+    <script type="text/javascript">
+        RichTextUitl.loadEditorProfile();
+    </script>
     <script src="/static/pc/assets/lib/zTree_v3/js/jquery.ztree.core.js" th:src="@{/pc/assets/lib/zTree_v3/js/jquery.ztree.core.js}"></script>
     <script src="/static/pc/assets/lib/zTree_v3/js/jquery.ztree.excheck.min.js" th:src="@{/pc/assets/lib/zTree_v3/js/jquery.ztree.excheck.min.js}"></script>
     <script src="/static/pc/assets/lib/zTree_v3/js/jquery.ztree.exedit.js" th:src="@{/pc/assets/lib/zTree_v3/js/jquery.ztree.exedit.js}"></script>
@@ -603,6 +610,7 @@
     <script src="/static/pc/assets/component/activity-participate-scope.js" th:src="@{/pc/assets/component/activity-participate-scope.js}"></script>
     <script src="/static/pc/assets/component/confirm.js" th:src="@{/pc/assets/component/confirm.js}"></script>
     <script src="/static/pc/assets/lib/jqthumb.min.js" th:src="@{/pc/assets/lib/jqthumb.min.js}"></script>
+
     <script th:inline="javascript">
         activityVue = new Vue({
             el: "#activity-vue",
@@ -822,7 +830,7 @@
             mounted: function () {
                 var $this = this;
                 // 初始化笔记便假期
-                // app.initUEditor($this.activity.introduction);
+                app.initUEditor($this.activity.introduction);
                 $this.initUploader();
                 $this.handleImg();
                 $this.initWfwGroups();
@@ -1292,7 +1300,7 @@
                             default:
                         }
                     });
-                    // $this.activity.introduction = app.getUEditorContent();
+                    $this.activity.introduction = app.getUEditorContent();
                     var params = {
                         activityJsonStr: activityApp.getJsonStr($this.activity),
                         participateScopeJsonStr: activityApp.getJsonStr($this.participatedOrgs),
@@ -1329,7 +1337,7 @@
                     }
                     var url = ctx + "/api/activity/edit";
                     var sign = $.extend({}, $this.sign);
-                    // $this.activity.introduction = app.getUEditorContent();
+                    $this.activity.introduction = app.getUEditorContent();
                     var params = {
                         activityJsonStr: activityApp.getJsonStr($this.activity),
                         participateScopeJsonStr: activityApp.getJsonStr($this.participatedOrgs),
@@ -1595,6 +1603,12 @@
                     var $this = this;
                     var shows = ["volunteer"];
                     return shows.indexOf($this.activity.activityFlag) != -1;
+                },
+                // 是否显示简介
+                isShowIntroduction: function () {
+                    var $this = this;
+                    var shows = ["volunteer"];
+                    return shows.indexOf($this.activity.activityFlag) != -1;
                 }
             }
         });
@@ -1607,5 +1621,6 @@
         }
     </script>
 </div>
+<div th:replace="pc/include/note_editor :: note_editor"></div>
 </body>
 </html>

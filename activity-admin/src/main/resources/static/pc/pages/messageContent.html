@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <title>通知内容</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="../assets/lib/element-ui/lib/theme-chalk/index.css">
+    <link rel="stylesheet" href="../assets/lib/webuploader/webuploader.css">
+    <link rel="stylesheet" href="../assets/css/reset.css">
+    <link rel="stylesheet" href="../assets/css/public.css">
+    <link rel="stylesheet" href="../assets/css/messageContent.css">
+    <script src="../assets/lib/jquery.min.js"></script>
+</head>
+
+<body class="bgwhite">
+<div class="page" id="iframe" v-cloak>
+    <div class="iframe-content">
+        <div class="input-box notice">
+            <el-input type="textarea" placeholder="请输入" :autosize="{ minRows: 5, maxRows: 5}" v-model="notice" resize="none" maxlength="100" show-word-limit></el-input>
+        </div>
+        <div class="uplode-list">
+            <div class="uplode-img" id="upload-btn"></div>
+            <div class="img-box js-crop-img">
+                <img src="../assets/images/example.jpg" alt="">
+                <i class="delete"></i>
+                <div class="hoverBg">
+                    <i class="icon-zoom"></i>
+                </div>
+            </div>
+            <div class="img-box load-bg">
+                <i class="loading"></i>
+                <p class="text">上传中</p>
+            </div>
+            <div class="img-box fail-bg">
+                <i class="fail-icon"></i>
+                <p class="text red">上传失败</p>
+                <i class="delete"></i>
+                <div class="hoverBg">
+                    <i class="icon-zoom"></i>
+                </div>
+            </div>
+        </div>
+        <div class="file-box">
+            <ul class="file-lists">
+                <li class="file-list">
+                    <img class="list-icon fl" src="../assets/images/messageContent/icon-pdf.png" alt="">
+                    <div class="list-info fl">
+                        <p class="list-name overHidden1">中小学心理健康.pdf</p>
+                        <p class="list-size overHidden1">218.5MB</p>
+                    </div>
+                    <span class="list-icon-delete fr"></span>
+                </li>
+            </ul>
+            <div class="input-file">
+                <span class="file-btn"></span>
+                <input type="file" class="file-input">
+            </div>
+        </div>
+    </div>
+
+</div>
+<script src="../../assets/js/vue.min.js"></script>
+<script src="../assets/lib/element-ui/lib/index.js"></script>
+<script src="../assets/js/common.js"></script>
+<script src="../assets/lib/jqthumb.min.js"></script>
+<script type="text/javascript" src="../assets/lib/webuploader/webuploader.min.js"></script>
+<script>
+    // vue
+    var iframe = new Vue({
+        el: '#iframe',
+        data: {
+            notice:'',
+        },
+        mounted: function () {
+            console.log(this.notice)
+            //文件上传
+            this.initUploader()
+        },
+        watch: {
+            notice: function (newVal,oldVal) {
+                if(parent.app){
+                    parent.app.notice = this.notice;
+                }
+            }
+        },
+        methods: {
+            //报名成功通知内容
+            openMessage: function () {
+                this.messageContentPop = true;
+                this.$nextTick(function(){
+                    this.initUploader()
+                })
+            },
+            sendClick:function(){
+                this.messageContentPop = false;
+
+            },
+            initUploader:function() {
+                var $this = this;
+                $this.uploader = WebUploader.create({
+                    // swf文件路径
+                    swf: "../../assets/lib/webuploader/Uploader.swf",
+                    // 文件接收服务端。
+                    server: "/api/upload/img",
+                    // 选择文件的按钮。可选。
+                    // 内部根据当前运行是创建，可能是input元素，也可能是flash.
+                    pick: "#upload-btn",
+                    // 不压缩image, 默认如果是jpeg，文件上传前会压缩一把再上传！
+                    resize: false,
+                    auto: true,
+                    // 只允许选择图片文件。
+                    accept: {
+                        title: 'work',
+                        extensions: 'doc,docx',
+                        mimeTypes: 'application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document'
+                    }
+                });
+            },
+        }
+    })
+</script>
+<script>
+    $(function () {
+        $('.list-icon-delete').click(function () {
+            $(this).parent().remove()
+        })
+        cropImgFun("body");
+    });
+</script>
+</body>
+
+</html>

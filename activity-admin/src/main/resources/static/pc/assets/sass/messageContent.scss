@@ -1,0 +1,215 @@
+.bgwhite{
+  background-color: white;
+}
+.iframe-content {
+  padding: 24px 32px;
+  -webkit-box-sizing: border-box;
+  -moz-box-sizing: border-box;
+  box-sizing: border-box;
+  height: auto;
+  min-height: 470px;
+  .input-box {
+    width: auto;
+    margin: 0;
+  }
+  .uplode-list {
+    font-size: 0;
+    .uplode-img {
+      display: inline-block;
+      vertical-align: top;
+      margin-top: 10px;
+      margin-right: 10px;
+      width: 76px;
+      height: 76px;
+    }
+    .webuploader-pick {
+      z-index: 2;
+      width: 76px;
+      height: 76px;
+      background: url(../images/yq-design/uplode.png);
+      background-size: 100% 100%;
+      padding: 0;
+      &:hover {
+        background: url(../images/yq-design/uplode-hover.png) !important;
+      }
+    }
+    .img-box {
+      position: relative;
+      display: inline-block;
+      vertical-align: top;
+      margin-top: 10px;
+      margin-right: 10px;
+      width: 76px;
+      height: 76px;
+      border-radius: 4px;
+      overflow: hidden;
+      cursor: pointer;
+      text-align: center;
+      img {
+        position: absolute;
+        width: 100%;
+        height: 100%;
+      }
+      .delete {
+        position: absolute;
+        z-index: 4;
+        right: 0;
+        top: 0;
+        display: none;
+        width: 16px;
+        height: 16px;
+        background: url(../images/yq-design/del.png) no-repeat;
+        background-size: 100%;
+        cursor: pointer;
+      }
+      .hoverBg {
+        position: absolute;
+        z-index: 2;
+        left: 0;
+        top: 0;
+        width: 100%;
+        height: 100%;
+        border: 2px solid #0084FF;
+        -webkit-box-sizing: border-box;
+        -moz-box-sizing: border-box;
+        box-sizing: border-box;
+        border-radius: 4px;
+        background: rgba(0, 0, 0, 0.4);
+        display: none;
+      }
+      .icon-zoom {
+        width: 24px;
+        height: 24px;
+        background: url(../images/yq-design/zoom-in.png) no-repeat;
+        background-size: 100%;
+        margin: 24px;
+        cursor: pointer;
+        display: none;
+      }
+      &:hover {
+        .delete {
+          display: block;
+        }
+        .hoverBg {
+          display: block;
+        }
+      }
+      &.load-bg {
+        background: #F2F4F7;
+        border: 1px solid #E9E9E9;
+      }
+      &.fail-bg {
+        background: #FFFFFF;
+        border: 1px solid #FF666D;
+      }
+      i {
+        display: inline-block;
+        background-size: cover;
+        &.loading {
+          width: 40px;
+          height: 40px;
+          background-image: url(../images/Spinner-1s-200px-grey.svg);
+          margin-top: 6px;
+        }
+        &.fail-icon {
+          width: 20px;
+          height: 20px;
+          background-image: url(../images/yq-design/fail-image.png);
+          margin-top: 15px;
+        }
+      }
+
+      .text {
+        font-size: 14px;
+        line-height: 20px;
+        color: #999999;
+        text-align: center;
+        &.red {
+          color: #FF666D;
+          margin-top: 6px;
+        }
+      }
+
+    }
+  }
+  .file-box {
+    padding-top: 10px;
+    .input-file {
+      position: relative;
+      cursor: pointer;
+      display: inline-block;
+      width: 24px;
+      height: 24px;
+      margin-top: 6px;
+      .file-btn {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 24px;
+        height: 24px;
+        background-repeat: no-repeat;
+        background-image: url("../images/messageContent/icon-paperclip.png");
+        background-position: center center;
+      }
+      .file-input {
+        position: absolute;
+        top: 0;
+        opacity: 0;
+        width: 24px;
+        height: 24px;
+      }
+      &:hover{
+        .file-btn {
+          background-image: url("../images/messageContent/icon-paperclip-hover.png");
+          background-position: center center;
+        }
+      }
+    }
+
+    .file-lists {
+      .file-list {
+        background: #F8F8F8;
+        border-radius: 4px;
+        padding: 12px;
+        overflow: hidden;
+        margin-bottom: 10px;
+        .list-icon {
+          width: 44px;
+          height: 44px;
+        }
+
+        .list-info {
+          margin-right: 6px;
+        }
+
+        .list-name {
+          font-size: 14px;
+          line-height: 20px;
+          color: #333333;
+        }
+        .list-size {
+          font-size: 12px;
+          line-height: 20px;
+          color: #999999;
+          margin-top: 4px;
+        }
+
+        .list-icon-delete {
+          width: 20px;
+          height: 20px;
+          margin-top: 12px;
+          margin-right: 6px;
+          cursor: pointer;
+          background-repeat: no-repeat;
+          background-image: url("../images/messageContent/icon-delete.png");
+          background-position: center center;
+          &:hover{
+            background-image: url("../images/messageContent/icon-delete-hover.png");
+            background-position: center center;
+          }
+        }
+
+      }
+    }
+  }
+}

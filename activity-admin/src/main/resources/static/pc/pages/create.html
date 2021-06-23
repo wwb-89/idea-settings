@@ -7,6 +7,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <link rel="stylesheet" href="../assets/lib/element-ui/lib/theme-chalk/index.css">
     <link rel="stylesheet" href="../assets/lib/zTree_v3/css/zTreeStyle/zTreeStyle.css" type="text/css">
+    <link rel="stylesheet" href="../assets/lib/webuploader/webuploader.css">
     <link rel="stylesheet" href="../assets/css/reset.css">
     <link rel="stylesheet" href="../assets/css/public.css">
     <link rel="stylesheet" href="../assets/css/create.css">
@@ -103,7 +104,7 @@
             </div>
             <div class="form-item align-start">
                 <label class="label cover"><img src="../assets/images/required.png"
-                                                                            alt="" class="required-img">封面</label>
+                                                alt="" class="required-img">封面</label>
                 <div class="input-box">
                     <div class="img-box">
                         <img src="../assets/images/img.png" alt="" class="cover-img jqthumbImg">
@@ -145,35 +146,35 @@
                 </div>
             </div>
             <div class="form-item cancel-margin">
-            <label class="label">活动类型</label>
-            <div class="input-box wrap">
-                <div class="type-item active">活动</div>
-                <div class="type-item">讲座</div>
-                <div class="type-item">讲座</div>
-                <div class="type-item">征文</div>
-                <div class="type-item paddingR0">自定义选项
-                    <!-- &lt;!&ndash;<img src="../assets/images/icon-more1.png" alt="" style="margin-left: 10px;">&ndash;&gt; -->
-                    <div class="more-box">
-                        <div class="more-btn"></div>
-                        <div class="edit-box">
-                            <div @click="handleEdit">编辑</div>
-                            <div @click="handleDelete">删除</div>
+                <label class="label">活动类型</label>
+                <div class="input-box wrap">
+                    <div class="type-item active">活动</div>
+                    <div class="type-item">讲座</div>
+                    <div class="type-item">讲座</div>
+                    <div class="type-item">征文</div>
+                    <div class="type-item paddingR0">自定义选项
+                        <!-- &lt;!&ndash;<img src="../assets/images/icon-more1.png" alt="" style="margin-left: 10px;">&ndash;&gt; -->
+                        <div class="more-box">
+                            <div class="more-btn"></div>
+                            <div class="edit-box">
+                                <div @click="handleEdit">编辑</div>
+                                <div @click="handleDelete">删除</div>
+                            </div>
                         </div>
                     </div>
-                </div>
-                <div class="type-item add" @click="handleAdd">
-                    <div class="add_btn"></div>
-                    新增
-                </div>
-                 <div class="select-activity">
-                    <el-select v-model="value7" placeholder="请选择">
-                        <el-option v-for="item in options7" :key="item.value" :label="item.label"
-                                   :value="item.value">
-                        </el-option>
-                    </el-select>
+                    <div class="type-item add" @click="handleAdd">
+                        <div class="add_btn"></div>
+                        新增
+                    </div>
+                    <div class="select-activity">
+                        <el-select v-model="value7" placeholder="请选择">
+                            <el-option v-for="item in options7" :key="item.value" :label="item.label"
+                                       :value="item.value">
+                            </el-option>
+                        </el-select>
+                    </div>
                 </div>
             </div>
-        </div>
             <div class="form-item cancel-margin marginTop16">
                 <label class="label">活动标签</label>
                 <div class="input-box wrap">
@@ -226,7 +227,7 @@
     <div class="info box" v-show="!pageShow">
         <div class="set-box">
             <div class="title set">报名设置</div>
-            <el-switch v-model="delivery" class="switch"></el-switch>
+            <el-switch v-model="delivery" class="section-switch"></el-switch>
         </div>
         <form action="" class="setForm" v-show="delivery">
             <!-- <div class="form-item">
@@ -294,11 +295,11 @@
                         <el-radio v-model="value1" label="2" name="active-type">自定义</el-radio>
                     </div>
                     <!--<div class="select-person">-->
-                        <!--<el-select v-model="value1" placeholder="请选择">-->
-                            <!--<el-option v-for="item in options1" :key="item.value" :label="item.label"-->
-                                       <!--:value="item.value">-->
-                            <!--</el-option>-->
-                        <!--</el-select>-->
+                    <!--<el-select v-model="value1" placeholder="请选择">-->
+                    <!--<el-option v-for="item in options1" :key="item.value" :label="item.label"-->
+                    <!--:value="item.value">-->
+                    <!--</el-option>-->
+                    <!--</el-select>-->
                     <!--</div>-->
                     <input type="number" placeholder="请输入正整数" class="person" v-show="value1 == 2">
                     <span class="person-span" v-show="value1 == 2">人</span>
@@ -377,6 +378,19 @@
                     <span class="tips">开启后，所有人都能看到报名人员名单</span>
                 </div>
             </div>
+            <div class="form-item align-start">
+                <label class="label" style="line-height: 20px;">报名成功通知</label>
+                <div class="input-box column">
+                    <div class="set-box">
+                        <el-switch v-model="delivery7"></el-switch>
+                        <span class="tips">开启后，可以为报名成功的用户发送特定内容的通知</span>
+                    </div>
+                    <div v-show="delivery7" class="set-box configurationForm" @click="openMessage">
+                        <img src="../assets/images/setting.png">
+                        <span class="tips set-information">编辑通知内容</span>
+                    </div>
+                </div>
+            </div>
             <!--<div class="form-item">-->
             <!--<label class="label">按钮名称</label>-->
             <!--<div class="input-box btn-name">-->
@@ -390,7 +404,7 @@
     <div class="info box" v-show="!pageShow">
         <div class="set-box">
             <div class="title set">签到设置</div>
-            <el-switch v-model="delivery1" class="switch"></el-switch>
+            <el-switch v-model="delivery1" class="section-switch"></el-switch>
         </div>
         <form action="" class="setForm" v-show="delivery1">
             <div class="form-item">
@@ -459,7 +473,7 @@
     <div class="info box" v-show="!pageShow">
         <div class="set-box">
             <div class="title set">签退设置</div>
-            <el-switch v-model="delivery1" class="switch"></el-switch>
+            <el-switch v-model="delivery1" class="section-switch"></el-switch>
         </div>
         <form action="" class="setForm" v-show="delivery1">
             <div class="form-item">
@@ -528,7 +542,7 @@
     <div class="info box">
         <div class="set-box">
             <div class="title set">积分设置</div>
-            <el-switch v-model="delivery5" class="switch"></el-switch>
+            <el-switch v-model="delivery5" class="section-switch"></el-switch>
         </div>
         <form action="" class="setForm" v-show="delivery5">
             <div class="form-item">
@@ -545,7 +559,7 @@
     <div class="info box">
         <div class="set-box">
             <div class="title set">评价设置</div>
-            <el-switch v-model="delivery5" class="switch"></el-switch>
+            <el-switch v-model="delivery5" class="section-switch"></el-switch>
         </div>
         <form action="" class="setForm" v-show="delivery5">
             <div class="form-item">
@@ -927,6 +941,25 @@
             </div>
         </div>
     </div>
+
+
+    <!-- 报名成功通知弹窗 -->
+    <div class="dialog-box5" v-if="messageContentPop">
+        <div class="dailog dialog-wrap edit-prize">
+            <div class="header">
+                <span class="color333">报名成功通知</span>
+                <img src="../assets/images/close.png" class="close" @click="messageContentPop = false">
+            </div>
+            <div class="dialog-content">
+                <iframe src="messageContent.html" frameborder="0"></iframe>
+            </div>
+            <div class="footer">
+                <div class="btn btn-border" @click="messageContentPop = false">取消</div>
+                <div class="btn" :class="notice ? 'btn-normal' : 'btn-forbid'" @click="sendClick">发布</div>
+            </div>
+        </div>
+    </div>
+
     <!--音视频播放-start-->
     <script type="text/javascript" src="https://noteyd.chaoxing.com/res/js/common/easydialog.min.js"></script>
     <script type="text/javascript" src="https://noteyd.chaoxing.com/res/plugin/ckplayer/ckplayer.js"></script>
@@ -1005,6 +1038,7 @@
 <script src="../assets/lib/zTree_v3/js/jquery.ztree.excheck.min.js"></script>
 <script type="text/javascript" src="../assets/lib/zTree_v3/js/jquery.ztree.exedit.js"></script>
 <script src="../assets/lib/layer/layer.js"></script>
+<script type="text/javascript" src="../assets/lib/webuploader/webuploader.min.js"></script>
 <script>
     // vue
     var app = new Vue({
@@ -1030,6 +1064,7 @@
             delivery4: false,
             delivery5: true,
             delivery6: false,
+            delivery7: true,
             time1: ['2020-11-16', '2020-11-17'],
             time2: '',
             time3: '',
@@ -1121,13 +1156,17 @@
             releaseShow: false,
             link: "http://xueya.chaox",
             rangeRadio: '2',
-            rangeShow: false
+            rangeShow: false,
+            messageContentPop: false,
+            notice:'',
         },
         mounted: function () {
             // this.initMap()
             this.organizationTreeFun();
             // 初始化笔记编辑器
             RichTextUitl.initUEditor();
+            //文件上传
+            this.initUploader()
         },
         methods: {
             handleDelAddr:function(e){
@@ -1289,12 +1328,13 @@
                         addDiyDom: addDiyDom
                     }
                 };
-                var zNodes = [{
-                    id: 1,
-                    pId: 0,
-                    name: "一级",
-                    open: true
-                },
+                var zNodes = [
+                    {
+                        id: 1,
+                        pId: 0,
+                        name: "一级",
+                        open: true
+                    },
                     {
                         id: 2,
                         pId: 0,
@@ -1409,7 +1449,40 @@
             // 删除参与范围
             handleDelRange:function(){
 
-            }
+            },
+            //报名成功通知内容
+            openMessage: function () {
+                this.messageContentPop = true;
+                this.$nextTick(function(){
+                    this.initUploader()
+                    cropImgFun("body");
+                })
+            },
+            sendClick:function(){
+                this.messageContentPop = false;
+
+            },
+            initUploader:function() {
+                var $this = this;
+                $this.uploader = WebUploader.create({
+                    // swf文件路径
+                    swf: "../../assets/lib/webuploader/Uploader.swf",
+                    // 文件接收服务端。
+                    server: "/api/upload/img",
+                    // 选择文件的按钮。可选。
+                    // 内部根据当前运行是创建，可能是input元素，也可能是flash.
+                    pick: "#upload-btn",
+                    // 不压缩image, 默认如果是jpeg，文件上传前会压缩一把再上传！
+                    resize: false,
+                    auto: true,
+                    // 只允许选择图片文件。
+                    accept: {
+                        title: 'work',
+                        extensions: 'doc,docx',
+                        mimeTypes: 'application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document'
+                    }
+                });
+            },
         }
     })
 </script>
