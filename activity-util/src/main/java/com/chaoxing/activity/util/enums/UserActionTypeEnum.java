@@ -25,10 +25,10 @@ public enum UserActionTypeEnum {
 	PERFORMANCE("现场评分", "performance", true, UserActionEnum.PERFORMANCE),
 	QUALIFIED("合格判定", "qualified", false);
 
-	private String name;
-	private String value;
-	private Boolean enable;
-	private List<UserActionEnum> userActions;
+	private final String name;
+	private final String value;
+	private final Boolean enable;
+	private final List<UserActionEnum> userActions;
 
 	UserActionTypeEnum(String name, String value, Boolean enable, UserActionEnum ...userActions) {
 		this.name = name;

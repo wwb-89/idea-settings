@@ -26,8 +26,8 @@ public enum MhAppDataTypeEnum {
 	ACTIVITY_LIST("活动列表", "activity_list"),
 	DUAL_SELECT("双选会", "dual_select");
 
-	private String name;
-	private String value;
+	private final String name;
+	private final String value;
 
 	MhAppDataTypeEnum(String name, String value) {
 		this.name = name;

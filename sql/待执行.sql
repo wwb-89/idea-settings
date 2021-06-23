@@ -36,3 +36,4 @@ CREATE TABLE `t_user_action_record`  (
     INDEX `idx_primary`(`uid`, `activity_id`)
 ) COMMENT = '用户行为记录表';
 ALTER TABLE t_user_stat_summary DROP COLUMN qualified_num;
+ALTER TABLE t_activity_stat_summary DROP COLUMN qualified_num;

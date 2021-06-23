@@ -23,8 +23,8 @@ public enum IntegralOriginTypeEnum {
 	VIEW_WORK("浏览作品", 43),
 	COMMENT_WORK("评论作品", 44);
 
-	private String name;
-	private Integer value;
+	private final String name;
+	private final Integer value;
 
 	IntegralOriginTypeEnum(String name, Integer value) {
 		this.name = name;

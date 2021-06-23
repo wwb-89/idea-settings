@@ -21,6 +21,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -83,12 +84,16 @@ public class ActivityRatingHandleService {
 		}else{
 			activityRatingDetail.setAuditStatus(ActivityRatingDetail.AuditStatus.PASSED.getValue());
 		}
+		LocalDateTime now = LocalDateTime.now();
+		activityRatingDetail.setCreateTime(now);
+		activityRatingDetail.setUpdateTime(now);
+		activityRatingDetail.setDeleted(false);
 		activityRatingDetailMapper.insert(activityRatingDetail);
 		if (activityRatingValidateService.isNeedUpdateActivityScore(activityRatingDetail)) {
 			updateActivityScore(activityRatingDetail.getActivityId(), 1, activityRatingDetail.getScore());
 		}
 		// 评价变更
-		userRatingChangeEventService.change(loginUser.getUid(), activity);
+		userRatingChangeEventService.change(activityRatingDetail);
 	}
 
 	/**更新活动评分
@@ -189,20 +194,25 @@ public class ActivityRatingHandleService {
 	*/
 	@Transactional(rollbackFor = Exception.class)
 	public void deleteRating(Integer ratingId, LoginUserDTO loginUser) {
-		ActivityRatingDetail existActivityRatingDetail = activityRatingValidateService.editAble(ratingId, loginUser.getUid());
+		Integer operateUid = loginUser.getUid();
+		ActivityRatingDetail existActivityRatingDetail = activityRatingValidateService.editAble(ratingId, operateUid);
+		existActivityRatingDetail.setDeleted(true);
+		// 更新时间
+		LocalDateTime now = LocalDateTime.now();
+		existActivityRatingDetail.setUpdateTime(now);
 		activityRatingDetailMapper.update(null, new UpdateWrapper<ActivityRatingDetail>()
 			.lambda()
 				.eq(ActivityRatingDetail::getId, ratingId)
-				.set(ActivityRatingDetail::getDeleted, Boolean.TRUE)
+				.set(ActivityRatingDetail::getDeleted, existActivityRatingDetail.getDeleted())
+				.set(ActivityRatingDetail::getUpdateTime, existActivityRatingDetail.getUpdateTime())
+				.set(ActivityRatingDetail::getUpdateUid, operateUid)
 		);
 		Integer activityId = existActivityRatingDetail.getActivityId();
 		if (activityRatingValidateService.isNeedUpdateActivityScore(existActivityRatingDetail)) {
 			updateActivityScore(activityId, -1, BigDecimal.valueOf(0).subtract(existActivityRatingDetail.getScore()));
 		}
-		// 评价成功后的额外操作
-		Activity activity = activityValidationService.activityExist(activityId);
 		// 评价变更
-		userRatingChangeEventService.change(loginUser.getUid(), activity);
+		userRatingChangeEventService.change(existActivityRatingDetail);
 	}
 
 	/**获取活动评价缓存lock key

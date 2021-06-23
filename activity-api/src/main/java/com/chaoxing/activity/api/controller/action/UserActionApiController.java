@@ -26,104 +26,139 @@ import javax.annotation.Resource;
 public class UserActionApiController {
 
     @Resource
-    private UserSignQueueService userSignQueueService;
-    @Resource
     private UserActionQueueService userActionQueueService;
     @Resource
     private ActivityQueryService activityQueryService;
 
+    /**用户报名
+     * @Description 
+     * @author wwb
+     * @Date 2021-06-23 16:07:43
+     * @param uid
+     * @param signId
+     * @param signUpId
+     * @param time
+     * @return com.chaoxing.activity.dto.RestRespDTO
+    */
     @RequestMapping("signed-up")
     public RestRespDTO signedUp(Integer uid, Integer signId, Integer signUpId, Long time) {
         Activity activity = activityQueryService.getBySignId(signId);
         if (activity != null) {
-            userActionQueueService.push(UserActionQueueService.QueueParamDTO.builder()
-                    .uid(uid)
-                    .activityId(activity.getId())
-                    .userActionType(UserActionTypeEnum.SIGN_UP)
-                    .userAction(UserActionEnum.SIGNED_UP)
-                    .identify(String.valueOf(signUpId))
-                    .time(DateUtils.timestamp2Date(time))
-                    .build());
+            userActionQueueService.push(new UserActionQueueService.QueueParamDTO(uid, activity.getId(), UserActionTypeEnum.SIGN_UP, UserActionEnum.SIGNED_UP, String.valueOf(signUpId), DateUtils.timestamp2Date(time)));
         }
         return RestRespDTO.success();
     }
 
+    /**取消报名
+     * @Description 
+     * @author wwb
+     * @Date 2021-06-23 16:08:17
+     * @param uid
+     * @param signId
+     * @param signUpId
+     * @param time
+     * @return com.chaoxing.activity.dto.RestRespDTO
+    */
     @RequestMapping("cancel-sign-up")
     public RestRespDTO cancelSignUp(Integer uid, Integer signId, Integer signUpId, Long time) {
         Activity activity = activityQueryService.getBySignId(signId);
         if (activity != null) {
-            userActionQueueService.push(UserActionQueueService.QueueParamDTO.builder()
-                    .uid(uid)
-                    .activityId(activity.getId())
-                    .userActionType(UserActionTypeEnum.SIGN_UP)
-                    .userAction(UserActionEnum.CANCEL_SIGNED_UP)
-                    .identify(String.valueOf(signUpId))
-                    .time(DateUtils.timestamp2Date(time))
-                    .build());
+            new UserActionQueueService.QueueParamDTO(uid, activity.getId(), UserActionTypeEnum.SIGN_UP, UserActionEnum.CANCEL_SIGNED_UP, String.valueOf(signUpId), DateUtils.timestamp2Date(time));
         }
         return RestRespDTO.success();
     }
 
+    /**用户签到
+     * @Description 
+     * @author wwb
+     * @Date 2021-06-23 16:08:30
+     * @param uid
+     * @param signId
+     * @param signInId
+     * @param time
+     * @return com.chaoxing.activity.dto.RestRespDTO
+    */
     @RequestMapping("signed-in")
     public RestRespDTO signedIn(Integer uid, Integer signId, Integer signInId, Long time) {
         Activity activity = activityQueryService.getBySignId(signId);
         if (activity != null) {
-            userActionQueueService.push(UserActionQueueService.QueueParamDTO.builder()
-                    .uid(uid)
-                    .activityId(activity.getId())
-                    .userActionType(UserActionTypeEnum.SIGN_IN)
-                    .userAction(UserActionEnum.SIGNED_IN)
-                    .identify(String.valueOf(signInId))
-                    .time(DateUtils.timestamp2Date(time))
-                    .build());
+            new UserActionQueueService.QueueParamDTO(uid, activity.getId(), UserActionTypeEnum.SIGN_IN, UserActionEnum.SIGNED_IN, String.valueOf(signInId), DateUtils.timestamp2Date(time));
         }
         return RestRespDTO.success();
     }
 
+    /**用户取消签到
+     * @Description 
+     * @author wwb
+     * @Date 2021-06-23 16:08:41
+     * @param uid
+     * @param signId
+     * @param signInId
+     * @param time
+     * @return com.chaoxing.activity.dto.RestRespDTO
+    */
     @RequestMapping("cancel-sign-in")
     public RestRespDTO cancelSignIn(Integer uid, Integer signId, Integer signInId, Long time) {
         Activity activity = activityQueryService.getBySignId(signId);
         if (activity != null) {
-            userActionQueueService.push(UserActionQueueService.QueueParamDTO.builder()
-                    .uid(uid)
-                    .activityId(activity.getId())
-                    .userActionType(UserActionTypeEnum.SIGN_IN)
-                    .userAction(UserActionEnum.CANCEL_SIGNED_IN)
-                    .identify(String.valueOf(signInId))
-                    .time(DateUtils.timestamp2Date(time))
-                    .build());
+            new UserActionQueueService.QueueParamDTO(uid, activity.getId(), UserActionTypeEnum.SIGN_IN, UserActionEnum.CANCEL_SIGNED_IN, String.valueOf(signInId), DateUtils.timestamp2Date(time));
         }
         return RestRespDTO.success();
     }
 
+    /**用户请假
+     * @Description 
+     * @author wwb
+     * @Date 2021-06-23 16:08:52
+     * @param uid
+     * @param signId
+     * @param signInId
+     * @param time
+     * @return com.chaoxing.activity.dto.RestRespDTO
+    */
+    @RequestMapping("leave-sign-in")
+    public RestRespDTO leaveSignIn(Integer uid, Integer signId, Integer signInId, Long time) {
+        Activity activity = activityQueryService.getBySignId(signId);
+        if (activity != null) {
+            new UserActionQueueService.QueueParamDTO(uid, activity.getId(), UserActionTypeEnum.SIGN_IN, UserActionEnum.LEAVE_SIGNED_IN, String.valueOf(signInId), DateUtils.timestamp2Date(time));
+        }
+        return RestRespDTO.success();
+    }
+
+    /**用户提交作品
+     * @Description 
+     * @author wwb
+     * @Date 2021-06-23 16:09:05
+     * @param workActivityId
+     * @param workId
+     * @param uid
+     * @param time
+     * @return com.chaoxing.activity.dto.RestRespDTO
+    */
     @RequestMapping("work/add")
     public RestRespDTO submitWork(Integer workActivityId, Integer workId, Integer uid, Long time) {
         Activity activity = activityQueryService.getByWorkId(workActivityId);
         if (activity != null) {
-            userActionQueueService.push(UserActionQueueService.QueueParamDTO.builder()
-                    .uid(uid)
-                    .activityId(activity.getId())
-                    .userActionType(UserActionTypeEnum.WORK)
-                    .userAction(UserActionEnum.SUBMIT_WORK)
-                    .identify(String.valueOf(workId))
-                    .time(DateUtils.timestamp2Date(time))
-                    .build());
+            userActionQueueService.push(new UserActionQueueService.QueueParamDTO(uid, activity.getId(), UserActionTypeEnum.WORK, UserActionEnum.SUBMIT_WORK, String.valueOf(workId), DateUtils.timestamp2Date(time)));
         }
         return RestRespDTO.success();
     }
 
+    /**用户删除作品
+     * @Description 
+     * @author wwb
+     * @Date 2021-06-23 16:09:16
+     * @param workActivityId
+     * @param workId
+     * @param uid
+     * @param time
+     * @return com.chaoxing.activity.dto.RestRespDTO
+    */
     @RequestMapping("work/delete")
     public RestRespDTO deleteWork(Integer workActivityId, Integer workId, Integer uid, Long time) {
         Activity activity = activityQueryService.getByWorkId(workActivityId);
         if (activity != null) {
-            userActionQueueService.push(UserActionQueueService.QueueParamDTO.builder()
-                    .uid(uid)
-                    .activityId(activity.getId())
-                    .userActionType(UserActionTypeEnum.WORK)
-                    .userAction(UserActionEnum.DELETE_WORK)
-                    .identify(String.valueOf(workId))
-                    .time(DateUtils.timestamp2Date(time))
-                    .build());
+            userActionQueueService.push(new UserActionQueueService.QueueParamDTO(uid, activity.getId(), UserActionTypeEnum.WORK, UserActionEnum.DELETE_WORK, String.valueOf(workId), DateUtils.timestamp2Date(time)));
         }
         return RestRespDTO.success();
     }

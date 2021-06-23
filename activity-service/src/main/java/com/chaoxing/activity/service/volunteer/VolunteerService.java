@@ -18,7 +18,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
-/**
+/**志愿者服务
  * @author huxiaolong
  * <p>
  * @version 1.0

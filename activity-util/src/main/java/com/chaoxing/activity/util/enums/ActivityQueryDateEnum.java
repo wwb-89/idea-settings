@@ -24,8 +24,8 @@ public enum ActivityQueryDateEnum {
 	NEARLY_A_YEAR("近一年", "nearly_a_year"),
 	EARLIER("更早", "earlier");
 
-	private String name;
-	private String value;
+	private final String name;
+	private final String value;
 
 	ActivityQueryDateEnum(String name, String value) {
 		this.name = name;

@@ -21,8 +21,8 @@ public enum ActivityAreaLevelEnum {
 	CITY("市", "city"),
 	COUNTRY("区县", "country");
 
-	private String name;
-	private String value;
+	private final String name;
+	private final String value;
 
 	ActivityAreaLevelEnum(String name, String value) {
 		this.name = name;

@@ -42,8 +42,6 @@ public class UserActionQueueService implements IQueueService<UserActionQueueServ
 	}
 
 	@Data
-	@Builder
-	@NoArgsConstructor
 	@AllArgsConstructor
 	public static class QueueParamDTO {
 

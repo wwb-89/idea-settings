@@ -38,7 +38,7 @@ public class ActivityStatSummaryTask {
     */
     @Scheduled(fixedDelay = 1L)
     public void handleSignStat() throws InterruptedException {
-        Integer activityId = activityStatSummaryQueueService.getSignStat();
+        Integer activityId = activityStatSummaryQueueService.pop();
         if (activityId == null) {
             return;
         }
@@ -47,22 +47,7 @@ public class ActivityStatSummaryTask {
         } catch (Exception e) {
             e.printStackTrace();
             log.error("活动 :{} 的活动统计汇总计算error:{}", activityId, e.getMessage());
-            activityStatSummaryQueueService.pushSignStat(activityId);
-        }
-    }
-
-    @Scheduled(fixedDelay = 1L)
-    public void handleResultStat() throws InterruptedException {
-        Integer activityId = activityStatSummaryQueueService.getResultStat();
-        if (activityId == null) {
-            return;
-        }
-        try {
-            activityStatSummaryHandlerService.activityStatSummaryCalByActivity(activityId);
-        } catch (Exception e) {
-            e.printStackTrace();
-            log.error("活动 :{} 的活动统计汇总计算error:{}", activityId, e.getMessage());
-            activityStatSummaryQueueService.addResultStat(activityId);
+            activityStatSummaryQueueService.push(activityId);
         }
     }
 

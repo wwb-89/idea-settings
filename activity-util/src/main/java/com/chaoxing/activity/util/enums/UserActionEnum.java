@@ -20,7 +20,7 @@ public enum UserActionEnum {
 	SIGNED_IN("签到", "signed_in", "每次签到获得", true, true),
 	CANCEL_SIGNED_IN("取消签到", "cancel_signed_in", "取消签到扣除", true, true),
 	NOT_SIGNED_IN("未签", "not_signed_in", "每次未签扣除", true, true),
-	LEAVE("请假", "leave", "每次请假扣除", true, true),
+	LEAVE_SIGNED_IN("请假", "leave_signed_in", "每次请假扣除", true, true),
 	RATING("评价", "rating", "提交评价获得", false, false),
 	NOT_RATING("未评价", "not_rating", "未评价扣除", false, false),
 	DELETE_RATING("删除评价", "delete_rating", "删除评价扣除", false, false),
@@ -35,11 +35,11 @@ public enum UserActionEnum {
 	PERFORMANCE("表现", "performance", "上限", false, false),
 	DELETE_PERFORMANCE("删除表现", "delete_performance", "上限", false, false);
 
-	private String name;
-	private String value;
-	private String description;
-	private Boolean multiple;
-	private Boolean enableUpperLimit;
+	private final String name;
+	private final String value;
+	private final String description;
+	private final Boolean multiple;
+	private final Boolean enableUpperLimit;
 
 	UserActionEnum(String name, String value, String description, Boolean multiple, Boolean enableUpperLimit) {
 		this.name = name;

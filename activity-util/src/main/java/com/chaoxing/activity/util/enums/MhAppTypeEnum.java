@@ -24,8 +24,8 @@ public enum MhAppTypeEnum {
 	GRAPHIC("图文", "graphic"),
 	MAP("地图", "map");
 
-	private String name;
-	private String value;
+	private final String name;
+	private final String value;
 
 	MhAppTypeEnum(String name, String value){
 		this.name = name;

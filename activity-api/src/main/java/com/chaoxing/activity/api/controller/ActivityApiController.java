@@ -67,7 +67,7 @@ public class ActivityApiController {
 	@Resource
 	private ActivityCollectionQueryService activityCollectionQueryService;
 	@Resource
-	private ActivityIsAboutStartHandleService activityStartNoticeHandleService;
+	private ActivityIsAboutStartHandleService activityIsAboutStartHandleService;
 	@Resource
 	private ActivityValidationService activityValidationService;
 	@Resource
@@ -208,23 +208,6 @@ public class ActivityApiController {
 		Activity activity = activityQueryService.getBySignId(signId);
 		List<Integer> collectedUids = activityCollectionQueryService.listCollectedUid(activity.getId());
 		return RestRespDTO.success(collectedUids);
-	}
-
-	/**通知活动已报名
-	 * @Description 
-	 * @author wwb
-	 * @Date 2021-02-03 15:34:35
-	 * @param data
-	 * @return com.chaoxing.activity.dto.RestRespDTO
-	*/
-	@RequestMapping("notice/signed-up")
-	public RestRespDTO sendActivityStartNotice(@RequestBody String data) {
-		JSONObject jsonObject = JSON.parseObject(data);
-		Integer signId = jsonObject.getInteger("signId");
-		List<Integer> uids = JSON.parseArray(jsonObject.getString("uids"), Integer.class);
-		Activity activity = activityQueryService.getBySignId(signId);
-		activityStartNoticeHandleService.sendSignedUpNotice(activity, uids);
-		return RestRespDTO.success();
 	}
 
 	/**查询活动
