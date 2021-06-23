@@ -1,6 +1,6 @@
 package com.chaoxing.activity.service.user.action;
 
-import com.chaoxing.activity.mapper.UserActionMapper;
+import com.chaoxing.activity.mapper.UserActionRecordMapper;
 import com.chaoxing.activity.mapper.UserResultMapper;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -22,7 +22,7 @@ public class UserActionQueryService {
 	@Resource
 	private UserResultMapper userResultMapper;
 	@Resource
-	private UserActionMapper userActionMapper;
+	private UserActionRecordMapper userActionMapper;
 
 
 

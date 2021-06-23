@@ -14,7 +14,7 @@ import java.util.Date;
 
 /**
  * 用户行为表
- * @className: UserAction, table_name: t_user_action
+ * @className: UserActionRecord, table_name: t_user_action_record
  * @Description: 
  * @author: mybatis generator
  * @date: 2021-06-16 11:01:23
@@ -24,8 +24,8 @@ import java.util.Date;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@TableName(value = "t_user_action")
-public class UserAction {
+@TableName(value = "t_user_action_record")
+public class UserActionRecord {
 
     /** 主键; column: id*/
     @TableId(type = IdType.AUTO)

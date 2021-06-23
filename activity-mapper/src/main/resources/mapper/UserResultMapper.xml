@@ -6,11 +6,13 @@
         <result column="uid" jdbcType="INTEGER" property="uid" />
         <result column="activity_id" jdbcType="INTEGER" property="activityId" />
         <result column="qualified_status" jdbcType="INTEGER" property="qualifiedStatus" />
+        <result column="manual_qualified_status" jdbcType="INTEGER" property="manualQualifiedStatus" />
+        <result column="auto_qualified_status" jdbcType="INTEGER" property="autoQualifiedStatus" />
         <result column="total_score" jdbcType="DECIMAL" property="totalScore" />
         <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
         <result column="update_time" jdbcType="TIMESTAMP" property="updateTime" />
     </resultMap>
     <sql id="Base_Column_List">
-        t.id, t.uid, qualifiedStatust.activity_id, t.qualified_status, t.total_score, t.create_time, t.update_time
+        t.id, t.uid, qualifiedStatust.activity_id, t.qualified_status, t.manual_qualified_status, t.auto_qualified_status, t.total_score, t.create_time, t.update_time
     </sql>
 </mapper>

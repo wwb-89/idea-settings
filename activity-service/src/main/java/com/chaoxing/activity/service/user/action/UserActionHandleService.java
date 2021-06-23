@@ -1,6 +1,6 @@
 package com.chaoxing.activity.service.user.action;
 
-import com.chaoxing.activity.mapper.UserActionMapper;
+import com.chaoxing.activity.mapper.UserActionRecordMapper;
 import com.chaoxing.activity.mapper.UserResultMapper;
 import com.chaoxing.activity.service.queue.user.UserActionQueueService;
 import com.chaoxing.activity.service.queue.user.UserResultQueueService;
@@ -24,14 +24,14 @@ public class UserActionHandleService {
 	@Resource
 	private UserResultMapper userResultMapper;
 	@Resource
-	private UserActionMapper userActionMapper;
+	private UserActionRecordMapper userActionMapper;
 
 	@Resource
 	private UserActionQueryService userActionQueryService;
 	@Resource
 	private UserResultQueueService userResultQueueService;
 
-	/**更新用户的行为
+	/**更新用户的成绩
 	 * @Description
 	 * 1、当用户行为变更都会重新计算用户的总分
 	 * 2、用户的合格数据也会记录在这儿

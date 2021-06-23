@@ -34,6 +34,10 @@ public class UserResult {
     private Integer activityId;
     /** 合格状态; column: qualified_status*/
     private Integer qualifiedStatus;
+    /** 手动评审的合格状态。。0：不合格，1：合格，2：待处理; column: manual_qualified_status*/
+    private Integer manualQualifiedStatus;
+    /** 自动评审的合格状态。0：不合格，1：合格，2：待处理; column: auto_qualified_status*/
+    private Integer autoQualifiedStatus;
     /** 总得分; column: total_score*/
     private BigDecimal totalScore;
     /** 创建时间; column: create_time*/
