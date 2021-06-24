@@ -2,29 +2,32 @@ package com.chaoxing.activity.service.queue.user;
 
 import com.chaoxing.activity.service.queue.IQueueService;
 import com.chaoxing.activity.util.constant.CacheConstant;
+import com.chaoxing.activity.util.enums.UserActionEnum;
+import com.chaoxing.activity.util.enums.UserActionTypeEnum;
 import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Data;
-import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.redisson.api.RedissonClient;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
+import java.time.LocalDateTime;
 
-/**用户成绩更新队列服务
+/**用户行为记录有效性更新服务
  * @author wwb
  * @version ver 1.0
- * @className UserResultQueueService
- * @description 用户的行为会导致用户成绩中获得积分的改变
+ * @className UserActionRecordValidQueueService
+ * @description 批量更新用户的行为记录有效性，影响的因素有：
+ * 1、新增/删除报名
+ * 2、新增/删除签到
  * @blame wwb
- * @date 2021-06-21 16:58:27
+ * @date 2021-06-24 10:56:45
  */
 @Slf4j
 @Service
-public class UserResultQueueService implements IQueueService<UserResultQueueService.QueueParamDTO> {
+public class UserActionRecordValidQueueService implements IQueueService<UserActionRecordValidQueueService.QueueParamDTO> {
 
-    private static final String CACHE_KEY = CacheConstant.QUEUE_CACHE_KEY_PREFIX + "user_result";
+    private static final String CACHE_KEY = CacheConstant.QUEUE_CACHE_KEY_PREFIX + "user_action_record_valid";
 
     @Resource
     private RedissonClient redissonClient;
@@ -41,10 +44,14 @@ public class UserResultQueueService implements IQueueService<UserResultQueueServ
     @AllArgsConstructor
     public static class QueueParamDTO {
 
-        /** 用户id */
-        private Integer uid;
         /** 活动id */
         private Integer activityId;
+        /** 主键 */
+        private String identify;
+        /**有效的 */
+        private Boolean valid;
+        /** 时间 */
+        private LocalDateTime time;
 
     }
 

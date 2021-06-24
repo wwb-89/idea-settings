@@ -5,6 +5,8 @@ import com.chaoxing.activity.model.UserActionRecord;
 import com.chaoxing.activity.service.activity.ActivityQueryService;
 import com.chaoxing.activity.service.queue.activity.ActivityStatSummaryQueueService;
 import com.chaoxing.activity.service.queue.SignActionQueueService;
+import com.chaoxing.activity.service.queue.user.UserActionRecordQueueService;
+import com.chaoxing.activity.service.queue.user.UserActionRecordValidQueueService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
@@ -33,13 +35,14 @@ public class SignActionTask {
     private SignActionQueueService signActionQueueService;
     @Resource
     private ActivityStatSummaryQueueService activityStatSummaryQueueService;
-
+    @Resource
+    private UserActionRecordValidQueueService userActionRecordValidQueueService;
 
     @Resource
     private ActivityQueryService activityQueryService;
 
     @Scheduled(fixedDelay = 1L)
-    public void signActionTask() throws InterruptedException {
+    public void consumerSignAction() throws InterruptedException {
         SignActionQueueService.QueueParamDTO queueParam = signActionQueueService.pop();
         if (queueParam == null) {
             return;
@@ -48,7 +51,25 @@ public class SignActionTask {
         Integer signId = queueParam.getSignId();
         Activity activity = activityQueryService.getBySignId(signId);
         if (activity != null) {
-            activityStatSummaryQueueService.push(activity.getId());
+            Integer activityId = activity.getId();
+            activityStatSummaryQueueService.push(activityId);
+            SignActionQueueService.SignActionEnum signAction = queueParam.getSignAction();
+            boolean valid = true;
+            switch (signAction) {
+                case ADD_SIGN_UP:
+                case ADD_SIGN_IN:
+                    // 新增报名、签到
+                    break;
+                case DELETE_SIGN_UP:
+                case DELETE_SIGN_IN:
+                    // 删除报名、签到
+                    valid = false;
+                    break;
+                default:
+            }
+            if (signAction != null) {
+                userActionRecordValidQueueService.push(new UserActionRecordValidQueueService.QueueParamDTO(activityId, queueParam.getIdentify(), valid, queueParam.getTime()));
+            }
         }
     }
 

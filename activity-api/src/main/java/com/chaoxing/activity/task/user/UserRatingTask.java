@@ -1,4 +1,4 @@
-package com.chaoxing.activity.task;
+package com.chaoxing.activity.task.user;
 
 import com.chaoxing.activity.service.manager.module.SignApiService;
 import com.chaoxing.activity.service.queue.user.UserRatingQueueService;

@@ -1,8 +1,9 @@
 package com.chaoxing.activity.service.queue;
 
-import com.chaoxing.activity.dto.manager.IntegralPushDTO;
 import com.chaoxing.activity.service.manager.IntegralApiService;
 import com.chaoxing.activity.util.constant.CacheConstant;
+import lombok.AllArgsConstructor;
+import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 import org.redisson.api.RedissonClient;
 import org.springframework.stereotype.Service;
@@ -21,7 +22,7 @@ import java.util.List;
  */
 @Slf4j
 @Service
-public class IntegralPushQueueService implements IQueueService<IntegralPushDTO> {
+public class IntegralPushQueueService implements IQueueService<IntegralPushQueueService.IntegralPushDTO> {
 
 	/** 队列缓存key */
 	private static final String QUEUE_CACHE_KEY = CacheConstant.QUEUE_CACHE_KEY_PREFIX + "integral_push";
@@ -57,6 +58,23 @@ public class IntegralPushQueueService implements IQueueService<IntegralPushDTO> 
 	*/
 	public IntegralPushDTO get() throws InterruptedException {
 		return pop(redissonClient, QUEUE_CACHE_KEY);
+	}
+
+	@Data
+	@AllArgsConstructor
+	public static class IntegralPushDTO {
+
+		/** 用户id */
+		private Integer uid;
+		/** 机构id */
+		private Integer fid;
+		/** 类型 */
+		private Integer type;
+		/** 资源id */
+		private String resourceId;
+		/** 资源名称 */
+		private String resourceName;
+
 	}
 
 }

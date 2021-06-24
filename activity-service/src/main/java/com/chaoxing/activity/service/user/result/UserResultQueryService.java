@@ -46,7 +46,23 @@ public class UserResultQueryService {
 		UserResult userResult = userResults.get(0);
 		Integer qualifiedStatus = userResult.getQualifiedStatus();
 		return Objects.equals(UserResult.QualifiedStatusEnum.QUALIFIED.getValue(), qualifiedStatus);
+	}
 
+	/**获取用户成绩
+	 * @Description 
+	 * @author wwb
+	 * @Date 2021-06-24 15:07:31
+	 * @param uid
+	 * @param activityId
+	 * @return com.chaoxing.activity.model.UserResult
+	*/
+	public UserResult getUserResult(Integer uid, Integer activityId) {
+		List<UserResult> userResults = userResultMapper.selectList(new QueryWrapper<UserResult>()
+				.lambda()
+				.eq(UserResult::getUid, uid)
+				.eq(UserResult::getActivityId, activityId)
+		);
+		return userResults.stream().findFirst().orElse(null);
 	}
 
 }

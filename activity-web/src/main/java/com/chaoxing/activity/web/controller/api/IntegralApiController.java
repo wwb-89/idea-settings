@@ -2,7 +2,6 @@ package com.chaoxing.activity.web.controller.api;
 
 import com.chaoxing.activity.dto.LoginUserDTO;
 import com.chaoxing.activity.dto.RestRespDTO;
-import com.chaoxing.activity.dto.manager.IntegralPushDTO;
 import com.chaoxing.activity.service.queue.IntegralPushQueueService;
 import com.chaoxing.activity.util.enums.IntegralOriginTypeEnum;
 import com.chaoxing.activity.web.util.LoginUtils;
@@ -42,13 +41,9 @@ public class IntegralApiController {
 	public RestRespDTO integralPush(HttpServletRequest request, @PathVariable Integer activityId, String activityName) {
 		LoginUserDTO loginUser = LoginUtils.getLoginUser(request);
 		Optional.ofNullable(loginUser).ifPresent(v -> {
-			IntegralPushDTO integralPush = IntegralPushDTO.builder()
-					.uid(loginUser.getUid())
-					.fid(loginUser.getFid())
-					.type(IntegralOriginTypeEnum.VIEW_ACTIVITY.getValue())
-					.resourceId(String.valueOf(activityId))
-					.resourceName(activityName)
-					.build();
+			Integer uid = loginUser.getUid();
+			Integer fid = loginUser.getFid();
+			IntegralPushQueueService.IntegralPushDTO integralPush = new IntegralPushQueueService.IntegralPushDTO(uid, fid, IntegralOriginTypeEnum.VIEW_ACTIVITY.getValue(), String.valueOf(activityId), activityName);
 			integralPushQueueService.add(integralPush);
 		});
 		return RestRespDTO.success();

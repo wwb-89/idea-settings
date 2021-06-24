@@ -1,12 +1,15 @@
-package com.chaoxing.activity.task;
+package com.chaoxing.activity.task.user;
 
 import com.chaoxing.activity.model.Activity;
 import com.chaoxing.activity.service.activity.ActivityIsAboutStartHandleService;
 import com.chaoxing.activity.service.activity.ActivityQueryService;
+import com.chaoxing.activity.service.queue.IntegralPushQueueService;
 import com.chaoxing.activity.service.queue.activity.ActivityStatSummaryQueueService;
 import com.chaoxing.activity.service.queue.user.UserActionQueueService;
 import com.chaoxing.activity.service.queue.user.UserActionRecordQueueService;
+import com.chaoxing.activity.service.queue.user.UserActionRecordValidQueueService;
 import com.chaoxing.activity.service.queue.user.UserStatSummaryQueueService;
+import com.chaoxing.activity.util.enums.IntegralOriginTypeEnum;
 import com.chaoxing.activity.util.enums.UserActionEnum;
 import com.chaoxing.activity.util.enums.UserActionTypeEnum;
 import lombok.extern.slf4j.Slf4j;
@@ -21,7 +24,7 @@ import java.util.Objects;
  * @author wwb
  * @version ver 1.0
  * @className UserActionTask
- * @description
+ * @description 处理用户的行为（行为的来源为：第三方系统、活动引擎本身）参考 UserActionTypeEnum和UserActionEnum枚举
  * @blame wwb
  * @date 2021-05-25 19:44:16
  */
@@ -39,10 +42,11 @@ public class UserActionTask {
     private UserActionRecordQueueService userActionRecordQueueService;
     @Resource
     private ActivityIsAboutStartHandleService activityIsAboutStartHandleService;
+    @Resource
+    private IntegralPushQueueService integralPushQueueService;
 
     @Resource
     private ActivityQueryService activityQueryService;
-
 
     /**处理用户行为
      * @Description 
@@ -68,16 +72,19 @@ public class UserActionTask {
             case SIGN_UP:
                 // 活动统计汇总中的报名数量需要更新
                 activityStatSummaryQueueService.push(activityId);
+                // 用户活动汇总统计中的报名签到信息需要更新
                 userStatSummaryQueueService.pushUserSignStat(new UserStatSummaryQueueService.QueueParamDTO(uid, activityId));
                 if (Objects.equals(UserActionEnum.SIGNED_UP, queueParam.getUserAction())) {
                     // 报名成功
                     activityIsAboutStartHandleService.sendSignedUpNotice(activity, new ArrayList(){{add(uid);}});
+                    // 推送积分
+                    integralPushQueueService.add(new IntegralPushQueueService.IntegralPushDTO(uid, activity.getCreateFid(), IntegralOriginTypeEnum.VIEW_ACTIVITY.getValue(), String.valueOf(activityId), activity.getName()));
                 }
                 break;
             case SIGN_IN:
-                // 活动统计汇总中的签到数量、签到率、平均签到时长需要更新
+                // 活动统计汇总中的报名数量需要更新
                 activityStatSummaryQueueService.push(activityId);
-                // 用户汇总统计
+                // 用户活动汇总统计中的报名签到信息需要更新
                 userStatSummaryQueueService.pushUserSignStat(new UserStatSummaryQueueService.QueueParamDTO(uid, activityId));
                 break;
             case RATING:
@@ -89,12 +96,13 @@ public class UserActionTask {
             case PERFORMANCE:
                 break;
             case QUALIFIED:
-                // 合格判定
+                // 活动汇总统计中合格的数量需要更新
                 activityStatSummaryQueueService.push(activityId);
+                // 用户活动汇总统计中的是否合格信息需要更新
                 userStatSummaryQueueService.pushUserResultStat(new UserStatSummaryQueueService.QueueParamDTO(uid, activityId));
                 break;
             default:
-                // 未知的用户行为
+                // 其他未知的用户行为
         }
         // 记录用户行为
         userActionRecordQueueService.push(queueParam);

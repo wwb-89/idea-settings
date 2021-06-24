@@ -8,6 +8,7 @@ import com.chaoxing.activity.util.DateUtils;
 import com.chaoxing.activity.util.enums.UserActionEnum;
 import com.chaoxing.activity.util.enums.UserActionTypeEnum;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.annotation.Resource;
@@ -135,7 +136,7 @@ public class UserActionApiController {
      * @return com.chaoxing.activity.dto.RestRespDTO
     */
     @RequestMapping("work/add")
-    public RestRespDTO submitWork(Integer workActivityId, Integer workId, Integer uid, Long time) {
+    public RestRespDTO submitWork(@RequestParam("activityId") Integer workActivityId, Integer workId, Integer uid, Long time) {
         Activity activity = activityQueryService.getByWorkId(workActivityId);
         if (activity != null) {
             userActionQueueService.push(new UserActionQueueService.QueueParamDTO(uid, activity.getId(), UserActionTypeEnum.WORK, UserActionEnum.SUBMIT_WORK, String.valueOf(workId), DateUtils.timestamp2Date(time)));
@@ -154,7 +155,7 @@ public class UserActionApiController {
      * @return com.chaoxing.activity.dto.RestRespDTO
     */
     @RequestMapping("work/delete")
-    public RestRespDTO deleteWork(Integer workActivityId, Integer workId, Integer uid, Long time) {
+    public RestRespDTO deleteWork(@RequestParam("activityId") Integer workActivityId, Integer workId, Integer uid, Long time) {
         Activity activity = activityQueryService.getByWorkId(workActivityId);
         if (activity != null) {
             userActionQueueService.push(new UserActionQueueService.QueueParamDTO(uid, activity.getId(), UserActionTypeEnum.WORK, UserActionEnum.DELETE_WORK, String.valueOf(workId), DateUtils.timestamp2Date(time)));
