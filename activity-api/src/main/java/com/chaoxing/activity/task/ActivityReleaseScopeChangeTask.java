@@ -41,7 +41,7 @@ public class ActivityReleaseScopeChangeTask {
 	*/
 	@Scheduled(fixedDelay = 1L)
 	public void clearScopeCache() throws InterruptedException {
-		Integer activityId = activityReleaseScopeChangeQueueService.get();
+		Integer activityId = activityReleaseScopeChangeQueueService.pop();
 		if (activityId == null) {
 			return;
 		}
@@ -52,7 +52,7 @@ public class ActivityReleaseScopeChangeTask {
 			} catch (Exception e) {
 				e.printStackTrace();
 				log.error("活动:{} 发布范围改变更新作品征集缓存的范围error:{}", activityId, e.getMessage());
-				activityReleaseScopeChangeQueueService.add(activityId);
+				activityReleaseScopeChangeQueueService.push(activityId);
 			}
 
 		}

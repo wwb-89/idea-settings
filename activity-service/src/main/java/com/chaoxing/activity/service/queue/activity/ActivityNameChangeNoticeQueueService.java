@@ -15,7 +15,7 @@ import javax.annotation.Resource;
  * @author wwb
  * @version ver 1.0
  * @className ActivityNameChangeNoticeQueueService
- * @description
+ * @description 通知门户修改活动详情页面的名称
  * @blame wwb
  * @date 2021-03-26 15:01:17
  */

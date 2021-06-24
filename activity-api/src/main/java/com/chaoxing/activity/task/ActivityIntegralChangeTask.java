@@ -34,7 +34,7 @@ public class ActivityIntegralChangeTask {
 	*/
 	@Scheduled(fixedDelay = 1L)
 	public void notice() throws InterruptedException {
-		Integer signId = activityIntegralChangeQueueService.get();
+		Integer signId = activityIntegralChangeQueueService.pop();
 		if (signId == null) {
 			return;
 		}
@@ -43,7 +43,7 @@ public class ActivityIntegralChangeTask {
 		} catch (Exception e) {
 			e.printStackTrace();
 			log.error("通知报名签到:{} 第二课堂积分已变更error:{}", signId, e.getMessage());
-			activityIntegralChangeQueueService.add(signId);
+			activityIntegralChangeQueueService.push(signId);
 		}
 	}
 

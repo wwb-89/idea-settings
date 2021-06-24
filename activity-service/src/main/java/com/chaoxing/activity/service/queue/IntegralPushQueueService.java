@@ -15,7 +15,7 @@ import java.util.List;
  * @author wwb
  * @version ver 1.0
  * @className IntegralPushQueueService
- * @description
+ * @description 给第三方推送用户的积分
  * @blame wwb
  * @date 2021-03-26 15:18:06
  */

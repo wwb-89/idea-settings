@@ -76,7 +76,7 @@ public class ActivityChangeEventService {
 			integralValue = Optional.ofNullable(integralValue).orElse(BigDecimal.valueOf(0));
 			oldIntegralValue = Optional.ofNullable(oldIntegralValue).orElse(BigDecimal.valueOf(0));
 			if (integralValue.compareTo(oldIntegralValue) != 0) {
-				activityIntegralChangeQueueService.add(signId);
+				activityIntegralChangeQueueService.push(signId);
 				// 机构用户统计中用户获得的积分更新
 				userStatSummaryService.updateActivityUserIntegral(activity.getId(), activity.getIntegralValue());
 			}
@@ -177,7 +177,7 @@ public class ActivityChangeEventService {
 			activityTimingReleaseQueueService.remove(queueParam);
 		}
 		// 活动发布范围改变
-		activityReleaseScopeChangeQueueService.add(activity.getId());
+		activityReleaseScopeChangeQueueService.push(activity.getId());
 	}
 
 }

@@ -34,8 +34,6 @@ public class ActivityDataPushQueueService implements IQueueService<Integer> {
 	private static final String DELETE_QUEUE_CACHE_KEY = CacheConstant.QUEUE_CACHE_KEY_PREFIX + "activity_push" + CacheConstant.CACHE_KEY_SEPARATOR + "delete";
 
 	@Resource
-	private RedisTemplate redisTemplate;
-	@Resource
 	private RedissonClient redissonClient;
 	@Resource
 	private OrgDataRepoConfigQueryService orgDataRepoConfigQueryService;

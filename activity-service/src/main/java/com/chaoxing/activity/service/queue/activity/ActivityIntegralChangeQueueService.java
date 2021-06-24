@@ -16,7 +16,7 @@ import javax.validation.constraints.NotNull;
  * @author wwb
  * @version ver 1.0
  * @className ActivityIntegralChangeQueueService
- * @description 第二课堂积分变更
+ * @description 活动积分变更通知表单积分修改
  * @blame wwb
  * @date 2021-03-26 21:39:36
  */
@@ -37,7 +37,7 @@ public class ActivityIntegralChangeQueueService implements IQueueService<Integer
 	 * @param signId
 	 * @return void
 	*/
-	public void add(@NotNull Integer signId) {
+	public void push(@NotNull Integer signId) {
 		push(redissonClient, QUEUE_CACHE_KEY, signId);
 	}
 
@@ -48,7 +48,7 @@ public class ActivityIntegralChangeQueueService implements IQueueService<Integer
 	 * @param
 	 * @return java.lang.Integer
 	*/
-	public Integer get() throws InterruptedException {
+	public Integer pop() throws InterruptedException {
 		return pop(redissonClient, QUEUE_CACHE_KEY);
 	}
 
