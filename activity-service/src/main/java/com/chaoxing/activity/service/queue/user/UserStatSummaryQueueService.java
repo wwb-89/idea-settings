@@ -10,11 +10,11 @@ import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
 
-/**
+/**用户活动统计汇总数据更新队列服务
  * @author wwb
  * @version ver 1.0
  * @className UserStatSummaryQueueService
- * @description
+ * @description 用户报名签到行为、用户成绩变更会将数据推送到该队列
  * @blame wwb
  * @date 2021-05-26 09:44:58
  */

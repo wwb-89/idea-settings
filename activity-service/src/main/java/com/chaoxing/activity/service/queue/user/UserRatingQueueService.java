@@ -53,8 +53,6 @@ public class UserRatingQueueService implements IQueueService<UserRatingQueueServ
 	}
 
 	@Data
-	@Builder
-	@NoArgsConstructor
 	@AllArgsConstructor
 	public static class QueueParamDTO {
 

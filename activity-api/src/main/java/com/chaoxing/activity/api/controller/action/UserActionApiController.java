@@ -4,7 +4,6 @@ import com.chaoxing.activity.dto.RestRespDTO;
 import com.chaoxing.activity.model.Activity;
 import com.chaoxing.activity.service.activity.ActivityQueryService;
 import com.chaoxing.activity.service.queue.user.UserActionQueueService;
-import com.chaoxing.activity.service.queue.user.UserSignQueueService;
 import com.chaoxing.activity.util.DateUtils;
 import com.chaoxing.activity.util.enums.UserActionEnum;
 import com.chaoxing.activity.util.enums.UserActionTypeEnum;

@@ -16,7 +16,7 @@ import javax.annotation.Resource;
  * @author wwb
  * @version ver 1.0
  * @className UserResultQueueService
- * @description
+ * @description 用户成绩变更需要更新用户活动统计汇总记录
  * @blame wwb
  * @date 2021-06-21 16:58:27
  */
@@ -38,8 +38,6 @@ public class UserResultQueueService implements IQueueService<UserResultQueueServ
     }
 
     @Data
-    @Builder
-    @NoArgsConstructor
     @AllArgsConstructor
     public static class QueueParamDTO {
 

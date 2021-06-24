@@ -24,28 +24,25 @@ public class UserActionHandleService {
 	@Resource
 	private UserResultMapper userResultMapper;
 	@Resource
-	private UserActionRecordMapper userActionMapper;
+	private UserActionRecordMapper userActionRecordMapper;
 
 	@Resource
 	private UserActionQueryService userActionQueryService;
 	@Resource
 	private UserResultQueueService userResultQueueService;
 
-	/**更新用户行为
+	/**新增用户行为记录
 	 * @Description 
 	 * @author wwb
 	 * @Date 2021-06-17 16:38:24
 	 * @param queueParam
 	 * @return void
 	*/
-	public void updateUserAction(UserActionQueueService.QueueParamDTO queueParam) {
+	public void addUserActionRecord(UserActionQueueService.QueueParamDTO queueParam) {
 		Integer uid = queueParam.getUid();
 		Integer activityId = queueParam.getActivityId();
 
-		userResultQueueService.push(UserResultQueueService.QueueParamDTO.builder()
-				.uid(uid)
-				.activityId(activityId)
-				.build());
+
 	}
 
 }

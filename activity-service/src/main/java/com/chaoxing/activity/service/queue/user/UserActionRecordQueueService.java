@@ -12,7 +12,7 @@ import javax.annotation.Resource;
  * @author wwb
  * @version ver 1.0
  * @className UserActionRecordQueueService
- * @description 新增用户行为（报名签到删除导致的删除行为直接删除（批量）记录，不在此处处理）
+ * @description 需要记录的用户行为都会推送到该队列中（报名签到删除导致的删除行为直接删除（批量）记录，不在此处处理）
  * @blame wwb
  * @date 2021-06-23 17:47:54
  */

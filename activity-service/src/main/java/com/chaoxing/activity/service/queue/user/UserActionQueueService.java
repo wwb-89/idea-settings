@@ -19,7 +19,7 @@ import java.time.LocalDateTime;
  * @author wwb
  * @version ver 1.0
  * @className UserActionQueueService
- * @description 报名、签到、评价等行为
+ * @description 报名、签到、评价等行为，所有行为都会推送到这个队列中
  * @blame wwb
  * @date 2021-06-17 14:59:24
  */
