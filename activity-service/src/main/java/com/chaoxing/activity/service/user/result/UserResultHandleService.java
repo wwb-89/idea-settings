@@ -7,6 +7,7 @@ import com.chaoxing.activity.model.UserActionRecord;
 import com.chaoxing.activity.model.UserResult;
 import com.chaoxing.activity.service.inspection.InspectionConfigQueryService;
 import com.chaoxing.activity.service.user.action.UserActionRecordQueryService;
+import com.chaoxing.activity.util.enums.UserActionEnum;
 import com.chaoxing.activity.util.enums.UserActionTypeEnum;
 import com.google.common.collect.Maps;
 import lombok.extern.slf4j.Slf4j;
@@ -17,6 +18,8 @@ import javax.annotation.Resource;
 import java.math.BigDecimal;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
+import java.util.stream.Collectors;
 
 /**用户成绩处理服务
  * @author wwb
@@ -93,17 +96,123 @@ public class UserResultHandleService {
             // 没有配置考核计划就得0分
             return BigDecimal.ZERO;
         }
+        Map<String, InspectionConfigDetail> actionConfigMap = inspectionConfigDetails.stream().collect(Collectors.toMap(InspectionConfigDetail::getAction, v -> v, (v1, v2) -> v2));
+        Map<String, BigDecimal> actionScoreConfigMap = actionScoreConfigMap(inspectionConfigDetails);
         // 用户有效的行为记录列表
         List<UserActionRecord> userValidActionRecords = userActionRecordQueryService.listUserValidActionRecord(uid, activityId);
         if (CollectionUtils.isEmpty(userValidActionRecords)) {
             return BigDecimal.ZERO;
         }
-        Map<String, BigDecimal> actionScoreMap = Maps.newHashMap();
+        // 所有行为的总得分
+        Map<String, BigDecimal> actionTotalScoreMap = Maps.newHashMap();
         for (UserActionRecord userValidActionRecord : userValidActionRecords) {
-
+            String action = userValidActionRecord.getAction();
+            UserActionEnum userActionEnum = UserActionEnum.fromValue(action);
+            if (userActionEnum == null) {
+                continue;
+            }
+            BigDecimal score = actionScoreConfigMap.get(action);
+            BigDecimal originScore = actionTotalScoreMap.get(action);
+            originScore = Optional.ofNullable(originScore).orElse(BigDecimal.ZERO);
+            actionTotalScoreMap.put(action, originScore.add(score));
         }
-        // TODO
-        return BigDecimal.ZERO;
+        // 计算总得分
+        BigDecimal totalScore = BigDecimal.ZERO;
+        for (InspectionConfigDetail inspectionConfigDetail : inspectionConfigDetails) {
+            String action = inspectionConfigDetail.getAction();
+            UserActionEnum userActionEnum = UserActionEnum.fromValue(action);
+            BigDecimal upperLimit = inspectionConfigDetail.getUpperLimit();
+            switch (userActionEnum) {
+                case SIGNED_UP:
+                    totalScore = totalScore.add(actionTotalScore(UserActionEnum.SIGNED_UP, UserActionEnum.CANCEL_SIGNED_UP, actionTotalScoreMap, upperLimit));
+                    break;
+                case SIGNED_IN:
+                    totalScore = totalScore.add(actionTotalScore(UserActionEnum.SIGNED_IN, UserActionEnum.CANCEL_SIGNED_IN, actionTotalScoreMap, upperLimit));
+                    break;
+                case RATING:
+                    totalScore = totalScore.add(actionTotalScore(UserActionEnum.RATING, UserActionEnum.DELETE_RATING, actionTotalScoreMap, upperLimit));
+                    break;
+                case PUBLISH_TOPIC:
+                    totalScore = totalScore.add(actionTotalScore(UserActionEnum.PUBLISH_TOPIC, UserActionEnum.DELETE_TOPIC, actionTotalScoreMap, upperLimit));
+                    break;
+                case REPLY_TOPIC:
+                    totalScore = totalScore.add(actionTotalScore(UserActionEnum.REPLY_TOPIC, UserActionEnum.DELETE_REPLY, actionTotalScoreMap, upperLimit));
+                    break;
+                case SUBMIT_WORK:
+                    totalScore = totalScore.add(actionTotalScore(UserActionEnum.SUBMIT_WORK, UserActionEnum.DELETE_WORK, actionTotalScoreMap, upperLimit));
+                    break;
+                default:
+            }
+        }
+        return totalScore;
+    }
+
+    private BigDecimal actionTotalScore(UserActionEnum action, UserActionEnum reverseAction, Map<String, BigDecimal> actionTotalScoreMap, BigDecimal upperLimit) {
+        BigDecimal score = actionTotalScoreMap.get(action.getValue());
+        score = Optional.ofNullable(score).orElse(BigDecimal.ZERO);
+        BigDecimal reverseScore = actionTotalScoreMap.get(reverseAction.getValue());
+        reverseScore = Optional.ofNullable(reverseScore).orElse(BigDecimal.ZERO);
+        BigDecimal totalScore = score.add(reverseScore);
+        if (upperLimit != null) {
+            totalScore = totalScore.compareTo(upperLimit) > 0 ? upperLimit : totalScore;
+        }
+        return totalScore;
+    }
+
+    public Map<String, BigDecimal> actionScoreConfigMap(List<InspectionConfigDetail> inspectionConfigDetails) {
+        Map<String, BigDecimal> actionScoreConfigMap = Maps.newHashMap();
+        if (CollectionUtils.isNotEmpty(inspectionConfigDetails)) {
+            for (InspectionConfigDetail inspectionConfigDetail : inspectionConfigDetails) {
+                String action = inspectionConfigDetail.getAction();
+                UserActionEnum userActionEnum = UserActionEnum.fromValue(action);
+                if (userActionEnum == null) {
+                    continue;
+                }
+                BigDecimal score = inspectionConfigDetail.getScore();
+                BigDecimal reverseScore = BigDecimal.ZERO.subtract(score);
+                score = Optional.ofNullable(score).orElse(BigDecimal.ZERO);
+                switch (userActionEnum) {
+                    case SIGNED_UP:
+                        // 报名
+                        actionScoreConfigMap.put(action, score);
+                        // 取消报名
+                        actionScoreConfigMap.put(UserActionEnum.CANCEL_SIGNED_UP.getValue(), reverseScore);
+                        break;
+                    case SIGNED_IN:
+                        // 签到
+                        actionScoreConfigMap.put(action, score);
+                        // 取消签到
+                        actionScoreConfigMap.put(UserActionEnum.CANCEL_SIGNED_IN.getValue(), reverseScore);
+                        break;
+                    case RATING:
+                        // 评价
+                        actionScoreConfigMap.put(action, score);
+                        // 删除评价
+                        actionScoreConfigMap.put(UserActionEnum.DELETE_RATING.getValue(), reverseScore);
+                        break;
+                    case PUBLISH_TOPIC:
+                        // 发帖
+                        actionScoreConfigMap.put(action, score);
+                        // 删除发帖
+                        actionScoreConfigMap.put(UserActionEnum.DELETE_TOPIC.getValue(), reverseScore);
+                        break;
+                    case REPLY_TOPIC:
+                        // 回帖
+                        actionScoreConfigMap.put(action, score);
+                        // 删除回帖
+                        actionScoreConfigMap.put(UserActionEnum.DELETE_REPLY.getValue(), reverseScore);
+                        break;
+                    case SUBMIT_WORK:
+                        // 提交作品
+                        actionScoreConfigMap.put(action, score);
+                        // 删除作品
+                        actionScoreConfigMap.put(UserActionEnum.DELETE_WORK.getValue(), reverseScore);
+                        break;
+                    default:
+                }
+            }
+        }
+        return actionScoreConfigMap;
     }
 
 }

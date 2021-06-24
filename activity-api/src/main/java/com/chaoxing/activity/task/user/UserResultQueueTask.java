@@ -1,6 +1,7 @@
 package com.chaoxing.activity.task.user;
 
 import com.chaoxing.activity.service.queue.user.UserResultQueueService;
+import com.chaoxing.activity.service.user.result.UserResultHandleService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
@@ -21,6 +22,8 @@ public class UserResultQueueTask {
 
     @Resource
     private UserResultQueueService userResultQueueService;
+    @Resource
+    private UserResultHandleService userResultHandleService;
 
     @Scheduled(fixedDelay = 1L)
     public void consumerUserResult() throws InterruptedException {
@@ -28,7 +31,12 @@ public class UserResultQueueTask {
         if (queueParam == null) {
             return;
         }
-        // TODO
+        try {
+            userResultHandleService.updateUserResult(queueParam.getUid(), queueParam.getActivityId());
+        } catch (Exception e) {
+            e.printStackTrace();
+            userResultQueueService.push(queueParam);
+        }
     }
 
 }
