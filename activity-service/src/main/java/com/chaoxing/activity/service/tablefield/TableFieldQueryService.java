@@ -1,16 +1,17 @@
 package com.chaoxing.activity.service.tablefield;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.chaoxing.activity.mapper.ActivityTableFieldMapper;
 import com.chaoxing.activity.mapper.OrgTableFieldMapper;
 import com.chaoxing.activity.mapper.TableFieldDetailMapper;
 import com.chaoxing.activity.mapper.TableFieldMapper;
+import com.chaoxing.activity.model.ActivityTableField;
 import com.chaoxing.activity.model.OrgTableField;
 import com.chaoxing.activity.model.TableField;
 import com.chaoxing.activity.model.TableFieldDetail;
 import com.google.common.collect.Lists;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
@@ -36,6 +37,8 @@ public class TableFieldQueryService {
     private TableFieldDetailMapper tableFieldDetailMapper;
     @Resource
     private OrgTableFieldMapper orgTableFieldMapper;
+    @Resource
+    private ActivityTableFieldMapper activityTableFieldMapper;
 
     /**根据fid、tableFieldId查询机构对应的字段配置列表
      * @Description
@@ -51,6 +54,22 @@ public class TableFieldQueryService {
                 .eq(OrgTableField::getFid, fid)
                 .eq(OrgTableField::getTableFieldId, tableFieldId)
                 .orderByAsc(OrgTableField::getSequence));
+
+    }
+    /**根据fid、tableFieldId查询活动对应的字段配置列表
+     * @Description
+     * @author huxiaolong
+     * @Date 2021-05-25 17:18:37
+     * @param activityId
+     * @param tableFieldId
+     * @return java.util.List<com.chaoxing.activity.model.OrgTableField>
+     */
+    public List<ActivityTableField> listActivityTableField(Integer activityId, Integer tableFieldId) {
+        // 活动对应的字段配置列表
+        return activityTableFieldMapper.selectList(new QueryWrapper<ActivityTableField>().lambda()
+                .eq(ActivityTableField::getActivityId, activityId)
+                .eq(ActivityTableField::getTableFieldId, tableFieldId)
+                .orderByAsc(ActivityTableField::getSequence));
 
     }
 
@@ -108,6 +127,26 @@ public class TableFieldQueryService {
         }
         Integer tableFieldId = tableField.getId();
         return listOrgTableField(fid, tableFieldId);
+    }
+
+    /**查询活动配置配置的tableFieldDetail
+    * @Description
+    * @author huxiaolong
+    * @Date 2021-06-24 10:10:53
+    * @param activityId
+    * @param type
+    * @param associatedType
+    * @return java.util.List<com.chaoxing.activity.model.ActivityTableField>
+    */
+    public List<ActivityTableField> listActivityTableField(Integer activityId, TableField.Type type, TableField.AssociatedType associatedType) {
+        List<ActivityTableField> result = Lists.newArrayList();
+        // 根据type和associatedType查询TableField
+        TableField tableField = getTableField(type, associatedType);
+        if (tableField == null) {
+            return result;
+        }
+        Integer tableFieldId = tableField.getId();
+        return listActivityTableField(activityId, tableFieldId);
     }
 
     /**根据类型和关联类型查询tableFieldDetail列表

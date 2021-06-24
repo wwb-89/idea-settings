@@ -15,4 +15,25 @@
     <sql id="Base_Column_List">
         t.id, t.uid, qualifiedStatust.activity_id, t.qualified_status, t.manual_qualified_status, t.auto_qualified_status, t.total_score, t.create_time, t.update_time
     </sql>
+
+    <select id="pageUserResult" resultType="com.chaoxing.activity.dto.stat.UserResultDTO">
+        SELECT
+            t.uid as uid,
+            t.real_name as realName,
+            t.activity_id as activityId,
+            t.signed_in_num as signedInNum,
+            ( CASE WHEN t.sign_in_num > 0 THEN ( CONVERT ( (t.signed_in_num / t.sign_in_num) * 100, DECIMAL ( 10, 2 ))) ELSE 0 END ) as signedInRate,
+            t.rating_num as ratingNum,
+            t1.qualified_status as qualifiedStatus,
+            t1.total_score as totalScore
+        FROM
+            t_user_stat_summary t
+        LEFT JOIN
+            t_user_result t1
+        ON
+            t.activity_id = t1.activity_id AND t.uid = t1.uid
+        WHERE
+            t.activity_id = #{activityId}
+    </select>
+
 </mapper>

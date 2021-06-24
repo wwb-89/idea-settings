@@ -45,7 +45,8 @@ public class TableField {
         SIGN_UP_LIST("报名名单", "sign_up_list"),
         SIGN_IN_LIST("签到名单", "sign_in_list"),
         ACTIVITY_STAT("活动统计", "activity_stat"),
-        USER_STAT("用户统计", "user_stat");
+        USER_STAT("用户统计", "user_stat"),
+        RESULT_MANAGE("活动考核管理", "activity_inspection_manage");
 
         private final String name;
         private final String value;

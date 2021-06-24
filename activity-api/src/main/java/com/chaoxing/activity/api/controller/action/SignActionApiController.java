@@ -2,7 +2,6 @@ package com.chaoxing.activity.api.controller.action;
 
 import com.chaoxing.activity.dto.RestRespDTO;
 import com.chaoxing.activity.service.queue.SignActionQueueService;
-import com.chaoxing.activity.service.queue.user.UserActionRecordQueueService;
 import com.chaoxing.activity.util.DateUtils;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -81,7 +80,7 @@ public class SignActionApiController {
      * @param time
      * @return com.chaoxing.activity.dto.RestRespDTO
     */
-    @RequestMapping("sign-up/delete")
+    @RequestMapping("sign-in/delete")
     public RestRespDTO deleteSignIn(@RequestParam Integer signId, @RequestParam Integer signInId, @RequestParam Long time) {
         signActionQueueService.push(new SignActionQueueService.QueueParamDTO(signId, SignActionQueueService.SignActionEnum.DELETE_SIGN_IN, String.valueOf(signInId), DateUtils.timestamp2Date(time)));
         return RestRespDTO.success();

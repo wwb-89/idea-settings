@@ -1,8 +1,11 @@
 package com.chaoxing.activity.service.user.result;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.chaoxing.activity.dto.stat.UserResultDTO;
 import com.chaoxing.activity.mapper.UserResultMapper;
 import com.chaoxing.activity.model.UserResult;
+import com.chaoxing.activity.service.inspection.InspectionConfigQueryService;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.stereotype.Service;
@@ -25,6 +28,10 @@ public class UserResultQueryService {
 
 	@Resource
 	private UserResultMapper userResultMapper;
+
+	@Resource
+	private InspectionConfigQueryService inspectionConfigQueryService;
+
 
 	/**用户成绩是否合格
 	 * @Description 
@@ -63,6 +70,22 @@ public class UserResultQueryService {
 				.eq(UserResult::getActivityId, activityId)
 		);
 		return userResults.stream().findFirst().orElse(null);
+	}
+
+	/**分页查询活动中用户的成绩
+	 * @Description
+	 * @author huxiaolong
+	 * @Date 2021-06-24 15:37:06
+	 * @param page
+	 * @param activityId
+	 * @return com.baomidou.mybatisplus.extension.plugins.pagination.Page<com.chaoxing.activity.dto.stat.UserResultDTO>
+	 */
+	public Page<UserResultDTO> pageUserResult(Page<UserResultDTO> page, Integer activityId) {
+		// 查找考核配置
+//		InspectionConfig inspectionConfig = inspectionConfigQueryService.getByActivityId(activityId);
+		// 查找已报名的用户id
+		page = userResultMapper.pageUserResult(page, activityId);
+		return page;
 	}
 
 }
