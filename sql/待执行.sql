@@ -51,3 +51,13 @@ CREATE TABLE `t_data_push_record`  (
     PRIMARY KEY (`id`),
     INDEX `idx_primary`(`identify`, `repo_type`, `data_type`, `repo`)
 ) COMMENT = '数据推送记录表';
+-- 活动表单推送记录数据迁移sql
+INSERT INTO t_data_push_record ( identify, data_type, repo_type, repo, record )
+SELECT
+    t.activity_id,
+    'activity',
+    'form',
+    t.form_id,
+    t.form_user_Id
+FROM
+    t_activity_form_record t
