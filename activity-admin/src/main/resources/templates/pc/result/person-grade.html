@@ -49,13 +49,18 @@
                                     <img :src="ctx + '/pc/assets/images/' + getActionIcon(action)">
                                 </div>
                                 <div class="text-box">
-                                    <template v-if="action.actionType === 'sign_in' || action.actionType === 'sign_up'">
-                                        <p class="name lineh48">{{action.name}}</p>
+                                    <template v-if="action.actionType === 'rating' && action.ratingDetail">
+                                        <div class="rate-box">
+                                            <el-rate v-model="action.ratingDetail.score"
+                                                     disabled
+                                                     text-color="#FFB503"
+                                                     disabled-void-color="#E4E2DB">
+                                            </el-rate>
+                                        </div>
+                                        <p class="desc overHidden5">{{action.ratingDetail.comment}}</p>
+                                        <a href="JavaScript:;" class="show-more">展开</a>
                                     </template>
-                                    <template v-else>
-                                        <p class="name">{{action.name}}</p>
-                                        <p class="desc">{{action.actionDescription}}</p>
-                                    </template>
+                                    <p v-else class="name lineh48">{{action.name}}</p>
                                 </div>
                                 <p class="score under" v-if="action.actionDescription">{{action.actionDescription}}</p>
 

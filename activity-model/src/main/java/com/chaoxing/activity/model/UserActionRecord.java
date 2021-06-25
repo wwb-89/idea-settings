@@ -9,7 +9,6 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 /**
@@ -58,8 +57,6 @@ public class UserActionRecord {
     @TableField(exist = false)
     private String name;
     @TableField(exist = false)
-    private String comment;
-    @TableField(exist = false)
-    private BigDecimal score;
+    private ActivityRatingDetail ratingDetail;
 
 }

@@ -6,6 +6,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 /**用户个人行为记录成绩
@@ -30,7 +31,7 @@ public class UserGradeDTO {
     /** 活动id */
     private String activityName;
     /** 总分(积分) */
-    private Integer totalScore;
+    private BigDecimal totalScore;
 
      List<UserActionRecord> userActionRecords;
 }
