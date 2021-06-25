@@ -2,7 +2,6 @@ package com.chaoxing.activity.service.user.action;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.chaoxing.activity.mapper.UserActionRecordMapper;
-import com.chaoxing.activity.mapper.UserResultMapper;
 import com.chaoxing.activity.model.UserActionRecord;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -39,6 +38,7 @@ public class UserActionRecordQueryService {
 				.eq(UserActionRecord::getUid, uid)
 				.eq(UserActionRecord::getActivityId, activityId)
 				.eq(UserActionRecord::getValid, true)
+				.orderByAsc(UserActionRecord::getCreateTime)
 		);
 	}
 

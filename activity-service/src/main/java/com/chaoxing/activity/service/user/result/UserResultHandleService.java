@@ -19,6 +19,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
 import java.math.BigDecimal;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -101,16 +102,21 @@ public class UserResultHandleService {
             // 没有配置考核计划就得0分
             return BigDecimal.ZERO;
         }
-        Map<String, InspectionConfigDetail> actionConfigMap = inspectionConfigDetails.stream().collect(Collectors.toMap(InspectionConfigDetail::getAction, v -> v, (v1, v2) -> v2));
         Map<String, BigDecimal> actionScoreConfigMap = actionScoreConfigMap(inspectionConfigDetails);
         // 用户有效的行为记录列表
         List<UserActionRecord> userValidActionRecords = userActionRecordQueryService.listUserValidActionRecord(uid, activityId);
         if (CollectionUtils.isEmpty(userValidActionRecords)) {
             return BigDecimal.ZERO;
         }
+        // 同一个主键标识取最新的（按照时间排序）
+        Map<String, UserActionRecord> identifyUserActionRecordMap = new HashMap<>();
+        for (UserActionRecord userValidActionRecord : userValidActionRecords) {
+            identifyUserActionRecordMap.put(userValidActionRecord.getActionIdentify(), userValidActionRecord);
+        }
+        List<UserActionRecord> identifyUniqueUserValidActionRecords = identifyUserActionRecordMap.values().stream().collect(Collectors.toList());
         // 所有行为的总得分
         Map<String, BigDecimal> actionTotalScoreMap = Maps.newHashMap();
-        for (UserActionRecord userValidActionRecord : userValidActionRecords) {
+        for (UserActionRecord userValidActionRecord : identifyUniqueUserValidActionRecords) {
             String action = userValidActionRecord.getAction();
             UserActionEnum userActionEnum = UserActionEnum.fromValue(action);
             if (userActionEnum == null) {
@@ -182,14 +188,10 @@ public class UserResultHandleService {
                     case SIGNED_UP:
                         // 报名
                         actionScoreConfigMap.put(action, score);
-                        // 取消报名
-                        actionScoreConfigMap.put(UserActionEnum.CANCEL_SIGNED_UP.getValue(), reverseScore);
                         break;
                     case SIGNED_IN:
                         // 签到
                         actionScoreConfigMap.put(action, score);
-                        // 取消签到
-                        actionScoreConfigMap.put(UserActionEnum.CANCEL_SIGNED_IN.getValue(), reverseScore);
                         break;
                     case RATING:
                         // 评价
