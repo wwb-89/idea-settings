@@ -27,5 +27,7 @@ public class FormCreateActivity {
     private Integer formUserId;
     /** 活动标识 */
     private String flag;
+    /** 使用的模版id */
+    private Integer templateId;
 
 }

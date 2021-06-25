@@ -36,7 +36,8 @@ public class ActivityCreateFromApprovalTask {
             formApprovalApiService.createActivity(formCreateActivity.getFid(),
                     formCreateActivity.getFormId(),
                     formCreateActivity.getFormUserId(),
-                    formCreateActivity.getFlag());
+                    formCreateActivity.getFlag(),
+                    formCreateActivity.getTemplateId());
         } catch (Exception e) {
             e.printStackTrace();
             log.error("根据表单信息创建活动error:{}", e);
