@@ -128,6 +128,7 @@ public class UserActionRecordQueryService {
 			if (userActionType != null && StringUtils.isNotBlank(actionIdentify)) {
 				Integer identityId = Integer.valueOf(actionIdentify);
 				record.setTitle(userActionType.getName());
+				record.setName(userActionType.getName());
 				switch (userActionType) {
 					case SIGN_IN:
 						SignIn signIn = signInMap.get(identityId);
