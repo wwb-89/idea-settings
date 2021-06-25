@@ -237,7 +237,7 @@ public class UserResultHandleService {
                 .eq(UserResult::getActivityId, activityId)
                 .eq(UserResult::getUid, uid)
                 .set(UserResult::getQualifiedStatus, qualifiedStatusEnum.getValue())
-                .set(UserResult::getManualQualifiedStatus, qualifiedStatusEnum.getValue());
+                .set(UserResult::getManualQualifiedStatus, qualifiedStatusEnum.getValue()));
         userResultQualifiedChangeEventService.change(uid, activityId);
     }
 
@@ -264,7 +264,7 @@ public class UserResultHandleService {
                 .eq(UserResult::getActivityId, activityId)
                 .in(UserResult::getUid, uidList)
                 .set(UserResult::getQualifiedStatus, qualifiedStatusEnum.getValue())
-                .set(UserResult::getManualQualifiedStatus, qualifiedStatusEnum.getValue());
+                .set(UserResult::getManualQualifiedStatus, qualifiedStatusEnum.getValue()));
         for (Integer uid : uidList) {
             userResultQualifiedChangeEventService.change(uid, activityId);
         }
