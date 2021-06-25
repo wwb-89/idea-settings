@@ -69,7 +69,7 @@ public class UserActionRecordQueryService {
 				.eq(UserActionRecord::getUid, uid)
 				.eq(UserActionRecord::getActivityId, activityId)
 				.eq(UserActionRecord::getValid, true)
-				.orderByAsc(UserActionRecord::getCreateTime)
+				.orderByDesc(UserActionRecord::getCreateTime)
 		);
 	}
 
