@@ -4,6 +4,7 @@ import com.google.common.collect.Lists;
 import lombok.Getter;
 
 import java.util.List;
+import java.util.Objects;
 
 /**用户行为枚举
  * @author wwb
@@ -43,4 +44,13 @@ public enum UserActionTypeEnum {
 		this.userActions = userActionEnums;
 	}
 
+	public static UserActionTypeEnum fromValue(String value) {
+		UserActionTypeEnum[] values = UserActionTypeEnum.values();
+		for (UserActionTypeEnum userActionTypeEnum : values) {
+			if (Objects.equals(userActionTypeEnum.getValue(), value)) {
+				return userActionTypeEnum;
+			}
+		}
+		return null;
+	}
 }

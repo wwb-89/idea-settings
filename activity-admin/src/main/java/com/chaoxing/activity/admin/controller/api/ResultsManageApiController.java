@@ -4,7 +4,7 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.chaoxing.activity.admin.util.LoginUtils;
 import com.chaoxing.activity.dto.LoginUserDTO;
 import com.chaoxing.activity.dto.RestRespDTO;
-import com.chaoxing.activity.dto.stat.UserResultDTO;
+import com.chaoxing.activity.dto.UserResultDTO;
 import com.chaoxing.activity.model.UserResult;
 import com.chaoxing.activity.service.user.result.UserResultHandleService;
 import com.chaoxing.activity.service.user.result.UserResultQueryService;

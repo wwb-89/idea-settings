@@ -428,7 +428,7 @@
                 toUserResultDetail: function (uid) {
                     var $this = this;
                     if (uid) {
-                        var url = ctx + '/activity/results/manage/detail/' + uid;
+                        var url = ctx + '/activity/results/manage/' + $this.activityId + '/person-grade?uid=' + uid;
                         window.open(url);
                     }
                 },
@@ -488,7 +488,7 @@
                     };
                     $this.submitReviewResult(url, params);
                 },
-                batchUnqualified: function () {
+                batchUnQualified: function () {
                     var $this = this;
                     var url = ctx + '/api/activity/results/manage/unQualified/';
                     var uids = [];

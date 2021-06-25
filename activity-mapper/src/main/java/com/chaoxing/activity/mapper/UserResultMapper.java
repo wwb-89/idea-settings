@@ -2,7 +2,7 @@ package com.chaoxing.activity.mapper;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
-import com.chaoxing.activity.dto.stat.UserResultDTO;
+import com.chaoxing.activity.dto.UserResultDTO;
 import com.chaoxing.activity.model.UserResult;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;

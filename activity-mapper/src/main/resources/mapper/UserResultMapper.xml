@@ -16,7 +16,7 @@
         t.id, t.uid, qualifiedStatust.activity_id, t.qualified_status, t.manual_qualified_status, t.auto_qualified_status, t.total_score, t.create_time, t.update_time
     </sql>
 
-    <select id="pageUserResult" resultType="com.chaoxing.activity.dto.stat.UserResultDTO">
+    <select id="pageUserResult" resultType="com.chaoxing.activity.dto.UserResultDTO">
         SELECT
             t.uid as uid,
             t.real_name as realName,

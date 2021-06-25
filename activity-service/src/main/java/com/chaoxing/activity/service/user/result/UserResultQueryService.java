@@ -3,7 +3,7 @@ package com.chaoxing.activity.service.user.result;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.chaoxing.activity.dto.export.ExportDataDTO;
-import com.chaoxing.activity.dto.stat.UserResultDTO;
+import com.chaoxing.activity.dto.UserResultDTO;
 import com.chaoxing.activity.mapper.UserResultMapper;
 import com.chaoxing.activity.model.Activity;
 import com.chaoxing.activity.model.TableField;

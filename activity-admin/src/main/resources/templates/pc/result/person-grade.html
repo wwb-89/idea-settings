@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org/">
+<head>
+    <title>个人成绩</title>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="/static/pc/assets/sign/assets/css/public.css" th:href="@{/pc/assets/sign/assets/css/public.css}">
+    <link rel="stylesheet" href="/static/pc/assets/lib/element-ui/lib/theme-chalk/index.css" th:href="@{/pc/assets/lib/element-ui/lib/theme-chalk/index.css}">
+    <link rel="stylesheet" href="/static/pc/assets/css/confirm_dialog.css" th:href="@{/pc/assets/css/confirm_dialog.css}">
+    <link rel="stylesheet" href="/static/pc/assets/sign/assets/css/examineManage.css" th:href="@{/pc/assets/sign/assets/css/examineManage.css}">
+    <style>
+        [v-cloak]{
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="personGrade" id="personGrade" v-cloak>
+        <div class="content">
+            <div class="white-block header">
+                <div class="head-img">
+                    <img :src="'http://photo.chaoxing.com/p/' + userGrade.uid + '_80'">
+                </div>
+                <div class="head-right">
+                    <p class="name">{{userGrade.realName}}</p>
+                    <p class="desc">{{userGrade.activityName}}</p>
+                </div>
+            </div>
+            <div class="white-block">
+                <p class="item-name padding0">活动积分</p>
+                <p class="integral">{{userGrade.totalScore || 0}}</p>
+            </div>
+            <div class="white-block record-block">
+                <p class="item-name">全部记录</p>
+<!--                <div class="btn-border add-performance">添加活动表现</div>-->
+                <div class="record-list" style="display: block;">
+                    <div class="record" v-for="action in userGrade.userActionRecords">
+                        <div class="left">
+                            <hr>
+                            <div class="circle-box">
+                                <i class="circle"></i>
+                            </div>
+                        </div>
+                        <div class="right">
+                            <p class="title">{{ action.createTime | timestampFormat }}&nbsp;&nbsp;·&nbsp;&nbsp;{{action.title}}</p>
+                            <div class="item">
+                                <div class="item-img">
+                                    <img :src="ctx + '/pc/assets/images/' + getActionIcon(action)">
+                                </div>
+                                <div class="text-box">
+                                    <template v-if="action.actionType === 'sign_in' || action.actionType === 'sign_up'">
+                                        <p class="name lineh48">{{action.name}}</p>
+                                    </template>
+                                    <template v-else>
+                                        <p class="name">{{action.name}}</p>
+                                        <p class="desc">{{action.actionDescription}}</p>
+                                    </template>
+                                </div>
+                                <p class="score under" v-if="action.actionDescription">{{action.actionDescription}}</p>
+
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="loading" style="display: block;" v-show="!userGrade || !userGrade.userActionRecords">
+                    <img src="/static/pc/assets/images/Spinner-1s-200px.svg" th:src="@{/pc/assets/images/Spinner-1s-200px.svg}" alt="">
+                    <span>加载中...</span>
+                </div>
+                <!-- 暂无内容 -->
+                <p class="no-content" v-show="userGrade && userGrade.userActionRecords && userGrade.userActionRecords.length === 0">暂无内容</p>
+            </div>
+        </div>
+        <!--删除活动表现弹窗-->
+        <div class="dialog-box" v-if="ifCancelPop">
+            <div class="confirm_dialog">
+                <span class="icon"><img src="/static/pc/assets/images/icon-warning.png" th:src="@{/pc/assets/images/icon-warning.png}"></span>
+                <span class="text">确定删除吗？</span>
+                <div class="btn">
+                    <span class="cancel" @click="ifCancelPop = false">取消</span>
+                    <span class="ok">确定</span>
+                </div>
+            </div>
+        </div>
+        <!-- 添加活动表现弹窗 -->
+        <div class="dialog-box addPerfor-pop" v-if="addPerformancePop">
+            <div class="dialog-wrap">
+                <div class="header">
+                    {{userGrade.realName}}的活动表现
+                    <img src="/static/pc/assets/images/close.png" th:src="@{/pc/assets/images/close.png}" @click="addPerformancePop=false">
+                </div>
+                <div class="dialog-content">
+                    <div class="form-item">
+                        <div class="input-box">
+                            <el-input type="text" placeholder="奖励分值" v-model="score" class="input" id="scoreInput"></el-input>
+                            <i class="arrow-down" id="arrow-down"></i>
+                        </div>
+                        <div class="score-box" id="score-box">
+                            <div class="score-item">
+                                <p class="title">奖励分值</p>
+                                <ul>
+                                    <li>1</li>
+                                    <li>2</li>
+                                    <li>3</li>
+                                    <li>4</li>
+                                    <li>5</li>
+                                </ul>
+                            </div>
+                            <div class="score-item">
+                                <p class="title">扣除分值</p>
+                                <ul>
+                                    <li>1</li>
+                                    <li>2</li>
+                                    <li>3</li>
+                                    <li>4</li>
+                                    <li>5</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-item">
+                        <el-input type="textarea" placeholder="输入评语..." v-model="info" resize="none" class="textarea" maxlength="200" show-word-limit></el-input>
+                    </div>
+                </div>
+                <div class="footer">
+                    <span class="btn btn-border" @click="addPerformancePop=false">取消</span>
+                    <span :class="info || score?'btn btn-normal':'btn btn-forbid'">完成</span>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div th:replace="pc/include/common_js :: common_js(~{::script})">
+        <script type="text/javascript" src="/static/pc/assets/lib/element-ui/lib/index.js" th:src="@{/pc/assets/lib/element-ui/lib/index.js}"></script>
+        <script th:inline="javascript">
+            Vue.filter("timestampFormat", function (timestamp) {
+                if (activityApp.isEmpty(timestamp)) {
+                    return "";
+                }
+                var dateObj = moment(timestamp);
+                return dateObj.format("YYYY.MM.DD HH:mm");
+            });
+            var app = new Vue({
+                el: '#personGrade',
+                data: {
+                    ctx: ctx,
+                    userGrade: [[${userGrade}]],
+                    recordIcon: {
+
+                    },
+                    rateValue:4,
+                    ifCancelPop:false,
+                    score:'',
+                    info:'',
+                    addPerformancePop:false,
+                },
+                mounted: function(){
+                    this.leftHeight()
+                    this.showMoreClick()
+                    this.scoreShowFun()
+                },
+                methods: {
+                    getActionIcon: function (action) {
+                        var actionType = action.actionType;
+
+                        switch (actionType) {
+                            case 'sign_up':
+                                return 'sign-up.png';
+                            case 'sign_in':
+                                if (action.way === 2) {
+                                    return 'sign-in.png';
+                                } else {
+                                    return 'sign-in-normal.png';
+                                }
+                            case 'rating':
+                                return 'evaluation.png';
+                            case 'work':
+                                return 'prize.png';
+                            case 'performance':
+                                return 'recommend.png';
+                            case 'discuss':
+                            default:
+                                return 'evaluation.png'
+                        }
+                    },
+                    leftHeight:function(){
+                        $('.record .left').each( function(i,n){
+                            var height = $(n).siblings('.right').height()
+                            $(n).height(height)
+                        })
+                    },
+                    showMoreClick:function(){
+                        $('.show-more').each(function (i, n) {
+                            $(n).on('click',function(){
+                                if($(this).text() == '展开'){
+                                    $(this).text('收起')
+                                    $(this).siblings('.desc').removeClass('overHidden5')
+                                }else{
+                                    $(this).text('展开')
+                                    $(this).siblings('.desc').addClass('overHidden5')
+                                }
+                            })
+                        })
+                    },
+                    addClick:function(){
+                        this.addPerformancePop = true
+                        this.$nextTick(function(){
+                            this.scoreShowFun()
+                        })
+                    },
+                    scoreShowFun:function(){
+                        var that = this
+                        $('#scoreInput').on('focus',function(){
+                            $('#arrow-down').addClass('rotate')
+                            $('#score-box').height(166)
+                        })
+                        $('#scoreInput').on('blur',function(){
+                            $('#arrow-down').removeClass('rotate')
+                            $('#score-box').height(0)
+                        })
+                    }
+                }
+            })
+        </script>
+    </div>
+
+</body>
+</html>

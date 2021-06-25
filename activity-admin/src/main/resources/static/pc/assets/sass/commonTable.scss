@@ -832,3 +832,29 @@ body {
     }
 }
 
+/* 修改合格状态弹窗 */
+.dialog-box.modifyPop{
+  .dialog-wrap{
+    width: 270px;
+    height: 206px;
+  }
+  .dialog-content{
+    height: calc(100% - 56px);
+    padding: 24px 0;
+    box-sizing: border-box;
+    .item{
+      width: 100%;
+      padding: 8px 0;
+      line-height: 34px;
+      text-align: center;
+      background: #fff;
+      font-size: 16px;
+      color: #333;
+      cursor: pointer;
+      &:hover{
+        background: #F8F8F8;
+        color: #0084FF;
+      }
+    }
+  }
+}

@@ -11,7 +11,6 @@ import lombok.NoArgsConstructor;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
-import java.util.Date;
 
 /**
  * 用户行为表
@@ -50,5 +49,17 @@ public class UserActionRecord {
     private LocalDateTime createTime;
     /** 更新时间; column: update_time*/
     private LocalDateTime updateTime;
+
+    // todo 以下个人行为页面字段暂时放置，后续迁移其他实体
+    @TableField(exist = false)
+    private String title;
+    @TableField(exist = false)
+    private Integer way;
+    @TableField(exist = false)
+    private String name;
+    @TableField(exist = false)
+    private String comment;
+    @TableField(exist = false)
+    private BigDecimal score;
 
 }
