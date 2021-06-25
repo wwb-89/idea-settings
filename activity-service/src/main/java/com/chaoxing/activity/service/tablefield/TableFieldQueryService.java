@@ -40,6 +40,19 @@ public class TableFieldQueryService {
     @Resource
     private ActivityTableFieldMapper activityTableFieldMapper;
 
+    
+    
+    /**根据id查询字段详情
+    * @Description 
+    * @author huxiaolong
+    * @Date 2021-06-25 19:52:27
+    * @param fieldDetailId
+    * @return com.chaoxing.activity.model.TableFieldDetail
+    */
+    public TableFieldDetail getFieldDetailById(Integer fieldDetailId) {
+        return tableFieldDetailMapper.selectById(fieldDetailId);
+    }
+    
     /**根据fid、tableFieldId查询机构对应的字段配置列表
      * @Description
      * @author huxiaolong

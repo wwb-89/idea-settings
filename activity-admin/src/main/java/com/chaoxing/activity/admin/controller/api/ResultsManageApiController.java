@@ -1,17 +1,15 @@
 package com.chaoxing.activity.admin.controller.api;
 
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
-import com.chaoxing.activity.admin.util.LoginUtils;
-import com.chaoxing.activity.dto.LoginUserDTO;
 import com.chaoxing.activity.dto.RestRespDTO;
 import com.chaoxing.activity.dto.UserResultDTO;
+import com.chaoxing.activity.dto.query.UserResultQueryDTO;
 import com.chaoxing.activity.model.UserResult;
 import com.chaoxing.activity.service.user.result.UserResultHandleService;
 import com.chaoxing.activity.service.user.result.UserResultQueryService;
 import com.chaoxing.activity.util.HttpServletRequestUtils;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.annotation.Resource;
@@ -41,11 +39,9 @@ public class ResultsManageApiController {
     * @return com.chaoxing.activity.dto.RestRespDTO
     */
     @RequestMapping("page")
-    public RestRespDTO page(HttpServletRequest request, @RequestParam Integer activityId) {
-        LoginUserDTO loginUser = LoginUtils.getLoginUser(request);
-//        signApiService.manageAble(activityId, loginUser.getUid());
+    public RestRespDTO page(HttpServletRequest request, UserResultQueryDTO queryParams) {
         Page<UserResultDTO> page = HttpServletRequestUtils.buid(request);
-        page = userResultQueryService.pageUserResult(page, activityId);
+        page = userResultQueryService.pageUserResult(page, queryParams);
         return RestRespDTO.success(page);
     }
 

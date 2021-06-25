@@ -33,7 +33,14 @@
         ON
             t.activity_id = t1.activity_id AND t.uid = t1.uid
         WHERE
-            t.activity_id = #{activityId}
+            t.activity_id = #{queryParam.activityId}
+            <if test="queryParam.sw != null and queryParam.sw != ''">
+                <bind name="swBind" value="'%' + queryParam.sw + '%'"/>
+                AND t.real_name like #{swBind}
+            </if>
+        <if test="queryParam.orderField != null and queryParam.orderField != ''">
+            ORDER BY ${queryParam.orderField} <if test="queryParam.orderType != null">${queryParam.orderType.value}</if>
+        </if>
     </select>
 
 </mapper>

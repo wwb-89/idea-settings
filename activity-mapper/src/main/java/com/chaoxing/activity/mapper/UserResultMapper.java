@@ -3,6 +3,7 @@ package com.chaoxing.activity.mapper;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.chaoxing.activity.dto.UserResultDTO;
+import com.chaoxing.activity.dto.query.UserResultQueryDTO;
 import com.chaoxing.activity.model.UserResult;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
@@ -23,9 +24,10 @@ public interface UserResultMapper extends BaseMapper<UserResult> {
     * @author huxiaolong
     * @Date 2021-06-24 15:57:44
     * @param page
-    * @param activityId
+    * @param queryParam
     * @return com.baomidou.mybatisplus.extension.plugins.pagination.Page<com.chaoxing.activity.dto.stat.UserResultDTO>
     */
-    Page<UserResultDTO> pageUserResult(@Param("page") Page<UserResultDTO> page, @Param("activityId") Integer activityId);
+    Page<UserResultDTO> pageUserResult(@Param("page") Page<UserResultDTO> page,
+                                       @Param("queryParam")UserResultQueryDTO queryParam);
 
 }

@@ -47,14 +47,14 @@
                         <el-input placeholder="搜索"
                                   icon="search"
                                   class="search"
-                                  v-model="queryParams.name"
+                                  v-model="queryParams.sw"
                                   suffix-icon="el-icon-search"
                                   @keydown.enter.native="search"
                         >
                         </el-input>
                         <i class="icon-cancel btn-cancel fs16"
-                           v-show="queryParams.name && queryParams.name.length > 0"
-                           @click="queryParams.name = ''"></i>
+                           v-show="queryParams.sw && queryParams.sw.length > 0"
+                           @click="queryParams.sw = ''"></i>
                     </div>
                 </div>
                 <!-- 计数栏 -->
@@ -217,7 +217,7 @@
                     activityId: [[${activityId}]],
                     pageNum: 1,
                     pageSize: 10,
-                    name: '',
+                    sw: '',
                     orderFieldId: null,
                     orderType: 'DESC'
                 },
@@ -301,17 +301,18 @@
                     }
                     return configTableFieldDetails;
                 },
+                search: function () {
+                    var $this = this;
+                    $this.queryParams.pageNum = 1;
+                    $this.queryParams.pageSize = 10;
+                    $this.loadData();
+                },
                 // 重新加载数据
                 loadData: function() {
                     var $this = this;
                     var url = ctx + "/api/activity/results/manage/page";
                     $this.loaded = false;
-                    var params = {
-                        pageNum: $this.queryParams.pageNum,
-                        pageSize: $this.queryParams.pageSize,
-                        activityId: $this.activityId
-                    };
-                    app.ajaxPostWithLoading(url, params, function (data) {
+                    app.ajaxPostWithLoading(url, $this.queryParams, function (data) {
                         $this.loaded = true;
                         if (data.success) {
                             $this.tableData = data.data.records;

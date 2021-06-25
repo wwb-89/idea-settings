@@ -2,8 +2,9 @@ package com.chaoxing.activity.service.user.result;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
-import com.chaoxing.activity.dto.export.ExportDataDTO;
 import com.chaoxing.activity.dto.UserResultDTO;
+import com.chaoxing.activity.dto.export.ExportDataDTO;
+import com.chaoxing.activity.dto.query.UserResultQueryDTO;
 import com.chaoxing.activity.mapper.UserResultMapper;
 import com.chaoxing.activity.model.Activity;
 import com.chaoxing.activity.model.TableField;
@@ -111,14 +112,15 @@ public class UserResultQueryService {
 	 * @author huxiaolong
 	 * @Date 2021-06-24 15:37:06
 	 * @param page
-	 * @param activityId
+	 * @param queryParams
 	 * @return com.baomidou.mybatisplus.extension.plugins.pagination.Page<com.chaoxing.activity.dto.stat.UserResultDTO>
 	 */
-	public Page<UserResultDTO> pageUserResult(Page<UserResultDTO> page, Integer activityId) {
-		// 查找考核配置
-//		InspectionConfig inspectionConfig = inspectionConfigQueryService.getByActivityId(activityId);
-		// 查找已报名的用户id
-		page = userResultMapper.pageUserResult(page, activityId);
+	public Page<UserResultDTO> pageUserResult(Page<UserResultDTO> page, UserResultQueryDTO queryParams) {
+		if (queryParams.getOrderFieldId() != null) {
+			TableFieldDetail tableFieldDetail = tableFieldQueryService.getFieldDetailById(queryParams.getOrderFieldId());
+			queryParams.setOrderField(tableFieldDetail.getCode());
+		}
+		page = userResultMapper.pageUserResult(page, queryParams);
 		return page;
 	}
 	/**获取excel表头
@@ -201,14 +203,14 @@ public class UserResultQueryService {
 	 * @Description
 	 * @author huxiaolong
 	 * @Date 2021-06-01 16:18:42
-	 * @param activityId
+	 * @param queryParam
 	 * @return com.chaoxing.activity.dto.export.ExportDataDTO
 	 */
-	public ExportDataDTO packageExportData(Integer activityId) {
-		List<TableFieldDetail> tableFieldDetails = tableFieldQueryService.listActivityShowTableFieldDetail(activityId, TableField.Type.RESULT_MANAGE, TableField.AssociatedType.ACTIVITY);
+	public ExportDataDTO packageExportData(UserResultQueryDTO queryParam) {
+		List<TableFieldDetail> tableFieldDetails = tableFieldQueryService.listActivityShowTableFieldDetail(queryParam.getActivityId(), TableField.Type.RESULT_MANAGE, TableField.AssociatedType.ACTIVITY);
 		ExportDataDTO exportData = new ExportDataDTO();
 		Page<UserResultDTO> page = new Page<>(1, Integer.MAX_VALUE);
-		page = pageUserResult(page, activityId);
+		page = pageUserResult(page, queryParam);
 		List<List<String>> headers = listResultInspectionHeader(tableFieldDetails);
 		exportData.setHeaders(headers);
 		List<List<String>> data = listData(page.getRecords(), tableFieldDetails);
