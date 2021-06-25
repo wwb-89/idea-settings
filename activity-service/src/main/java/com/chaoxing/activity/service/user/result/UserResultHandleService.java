@@ -1,5 +1,6 @@
 package com.chaoxing.activity.service.user.result;
 
+import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.chaoxing.activity.mapper.UserResultMapper;
 import com.chaoxing.activity.model.InspectionConfigDetail;
@@ -8,11 +9,12 @@ import com.chaoxing.activity.model.UserResult;
 import com.chaoxing.activity.service.inspection.InspectionConfigQueryService;
 import com.chaoxing.activity.service.user.action.UserActionRecordQueryService;
 import com.chaoxing.activity.util.enums.UserActionEnum;
-import com.chaoxing.activity.util.enums.UserActionTypeEnum;
 import com.google.common.collect.Maps;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
 import java.math.BigDecimal;
@@ -215,4 +217,51 @@ public class UserResultHandleService {
         return actionScoreConfigMap;
     }
 
+
+    /**改变用户合格状态
+     * @Description
+     * @author huxiaolong
+     * @Date 2021-06-24 18:29:20
+     * @param activityId
+     * @param uid
+     * @param qualifiedStatusEnum
+     * @return void
+     */
+    @Transactional(rollbackFor = Exception.class)
+    public void updateQualifiedStatus(Integer activityId, Integer uid, UserResult.QualifiedStatusEnum qualifiedStatusEnum) {
+        userResultMapper.update(null, new UpdateWrapper<UserResult>()
+                .lambda()
+                .eq(UserResult::getActivityId, activityId)
+                .eq(UserResult::getUid, uid)
+                .set(UserResult::getQualifiedStatus, qualifiedStatusEnum.getValue())
+                .set(UserResult::getManualQualifiedStatus, UserResult.QualifiedStatusEnum.QUALIFIED.getValue()));
+    }
+
+    /**批量改变用户合格状态
+     * @Description
+     * @author huxiaolong
+     * @Date 2021-06-24 18:29:08
+     * @param activityId
+     * @param uids
+     * @param qualifiedStatusEnum
+     * @return void
+     */
+    @Transactional(rollbackFor = Exception.class)
+    public void batchUpdateQualifiedStatus(Integer activityId, String uids, UserResult.QualifiedStatusEnum qualifiedStatusEnum) {
+        if (StringUtils.isNotBlank(uids)) {
+            return;
+        }
+        List<Integer> uidList = JSON.parseArray(uids, Integer.class);
+        if (CollectionUtils.isEmpty(uidList)) {
+            return;
+        }
+        userResultMapper.update(null, new UpdateWrapper<UserResult>()
+                .lambda()
+                .eq(UserResult::getActivityId, activityId)
+                .in(UserResult::getUid, uidList)
+                .set(UserResult::getQualifiedStatus, qualifiedStatusEnum.getValue())
+                .set(UserResult::getManualQualifiedStatus, UserResult.QualifiedStatusEnum.QUALIFIED.getValue()));
+
+
+    }
 }

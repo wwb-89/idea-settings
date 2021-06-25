@@ -39,9 +39,9 @@
             <div class="tab-item">
                 <!-- 操作栏 -->
                 <div class="table-operate-box fs0">
-                    <el-button class="btn-customize" round @click="ifModifyPop=true">修改合格状态</el-button>
-                    <el-button class="btn-customize" round>颁奖</el-button>
-                    <el-button class="btn-customize" round>导出</el-button>
+                    <el-button class="btn-customize" round :disabled="!selections || selections.length === 0" @click="ifModifyPop = true">修改合格状态</el-button>
+<!--                    <el-button class="btn-customize" round>颁奖</el-button>-->
+<!--                    <el-button class="btn-customize" round>导出</el-button>-->
                     <div class="search-Box">
                         <el-input placeholder="搜索"
                                   icon="search"
@@ -126,17 +126,17 @@
                         >
                             <template slot-scope="scope">
                                 <template v-if="(!scope.row.qualifiedStatus && scope.row.qualifiedStatus !== 0) || scope.row.qualifiedStatus === 2">
-                                    <span style="cursor: pointer; color: #0084FF" @click="toUserResultDetail(scope.row.uid)">合格</span>
-                                    <span style="cursor: pointer; color: #0084FF" @click="toUserResultDetail(scope.row.uid)">不合格</span>
+                                    <span style="cursor: pointer; color: #0084FF" @click="qualified(scope.row)">合格</span>
+                                    <span style="cursor: pointer; color: #0084FF" @click="unQualified(scope.row)">不合格</span>
                                 </template>
                                 <template v-else>
-                                    <el-dropdown class="status-dropdown">
+                                    <el-dropdown class="status-dropdown" @command="command => dropDownCmd(command, scope.row)">
                                       <span class="el-dropdown-link">
                                         {{ scope.row.qualifiedStatus === 0 ? '不合格' : '合格' }}<i class="el-icon-arrow-down el-icon--right"></i>
                                       </span>
                                         <el-dropdown-menu slot="dropdown">
-                                            <el-dropdown-item>合格</el-dropdown-item>
-                                            <el-dropdown-item>不合格</el-dropdown-item>
+                                            <el-dropdown-item command="qualified">合格</el-dropdown-item>
+                                            <el-dropdown-item command="unQualified">不合格</el-dropdown-item>
                                         </el-dropdown-menu>
                                     </el-dropdown>
                                 </template>
@@ -180,18 +180,13 @@
             </div>
         </div>
     </div>
-    <!-- toast提示 -->
-    <div class="toast-box">
-        toast提示，停留3s，自动消失，句末不加标点
-    </div>
-    <!--遮罩-->
     <!--修改合格状态弹窗-->
     <div class="dialog-box modifyPop" v-if="ifModifyPop">
         <div class="dialog-wrap">
             <div class="header">修改合格状态</div>
             <div class="dialog-content">
-                <div class="item" @click="modifyPopClick">合格</div>
-                <div class="item" @click="modifyPopClick">不合格</div>
+                <div class="item" @click="batchQualified">合格</div>
+                <div class="item" @click="batchUnQualified">不合格</div>
             </div>
         </div>
     </div>
@@ -237,9 +232,7 @@
                 total: 0,
                 selectNumber:0, //表格选中的人数
                 ifCancelPop: false,
-                ifModifyPop:false,//修改合格状态弹窗展示
-                bodyHeight: $(window).height(),
-                tbodyHeight: 0
+                ifModifyPop: false //修改合格状态弹窗展示
             },
             created: function () {
                 var $this = this;
@@ -433,6 +426,83 @@
                     if (uid) {
                         var url = ctx + '/activity/results/manage/detail/' + uid;
                         window.open(url);
+                    }
+                },
+                // 提交评审结果: 合格、不合格、批量合格、批量不合格
+                submitReviewResult: function (url, params) {
+                    app.ajaxPostWithLoading(url, params, function (data) {
+                        if (data.success) {
+                            app.showMsg("评审成功");
+                            window.location.reload();
+                        } else {
+                            var errorMessage = data.message;
+                            if (activityApp.isEmpty(errorMessage)) {
+                                errorMessage = "评审失败";
+                            }
+                            app.showMsg(errorMessage);
+                        }
+                    }, function () {
+                        app.showMsg("评审失败");
+                    });
+                },
+                // 合格
+                qualified: function (user) {
+                    if (user.qualifiedStatus === 1) {
+                        return;
+                    }
+                    var $this = this;
+                    var url = ctx + '/api/activity/results/manage/qualified/';
+                    var params = {
+                        activityId: $this.activityId,
+                        uid: user.uid
+                    }
+                    $this.submitReviewResult(url, params);
+                },
+                // 不合格
+                unQualified: function (user) {
+                    if (user.qualifiedStatus === 0) {
+                        return;
+                    }
+                    var $this = this;
+                    var url = ctx + '/api/activity/results/manage/unQualified/';
+                    var params = {
+                        activityId: $this.activityId,
+                        uid: user.uid
+                    }
+                    $this.submitReviewResult(url, params);
+                },
+                batchQualified: function () {
+                    var $this = this;
+                    var url = ctx + '/api/activity/results/manage/qualified/';
+                    var uids = [];
+                    $($this.selections).each(function () {
+                        uids.push(this.uid);
+                    });
+                    var params = {
+                        activityId: $this.activityId,
+                        uids: activityApp.getJsonStr(uids)
+                    };
+                    $this.submitReviewResult(url, params);
+                },
+                batchUnqualified: function () {
+                    var $this = this;
+                    var url = ctx + '/api/activity/results/manage/unQualified/';
+                    var uids = [];
+                    $($this.selections).each(function () {
+                        uids.push(this.uid);
+                    });
+                    var params = {
+                        activityId: $this.activityId,
+                        uids: activityApp.getJsonStr(uids)
+                    };
+                    $this.submitReviewResult(url, params);
+                },
+                dropDownCmd: function (command, user) {
+                    var $this = this;
+                    if (command === 'qualified') {
+                        $this.qualified(user);
+                    } else if (command === 'unQualified') {
+                        $this.unQualified(user);
                     }
                 }
             }
