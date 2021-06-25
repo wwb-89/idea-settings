@@ -1,4 +1,4 @@
-package com.chaoxing.activity.task;
+package com.chaoxing.activity.task.activity;
 
 import com.chaoxing.activity.service.activity.ActivityHandleService;
 import com.chaoxing.activity.service.queue.activity.ActivityWebsiteIdSyncQueueService;

@@ -1,5 +1,6 @@
 package com.chaoxing.activity.mapper.config;
 
+import com.alibaba.fastjson.parser.ParserConfig;
 import org.redisson.Redisson;
 import org.redisson.api.RedissonClient;
 import org.redisson.client.codec.Codec;
@@ -33,6 +34,7 @@ public class RedissonConfig {
 
     @Bean
     public RedissonClient redissonClient() {
+        ParserConfig.getGlobalInstance().setAutoTypeSupport(true);
         Config config = new Config();
         SingleServerConfig singleServerConfig = config.useSingleServer();
         singleServerConfig.setAddress("redis://"+ host +":" + port);

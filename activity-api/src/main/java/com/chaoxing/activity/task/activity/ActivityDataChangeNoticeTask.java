@@ -1,4 +1,4 @@
-package com.chaoxing.activity.task;
+package com.chaoxing.activity.task.activity;
 
 import com.chaoxing.activity.service.notice.ActivityDataChangeNoticeService;
 import com.chaoxing.activity.service.queue.activity.ActivityDataChangeQueueService;

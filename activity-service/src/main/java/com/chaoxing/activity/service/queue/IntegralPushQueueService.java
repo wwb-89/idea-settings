@@ -4,6 +4,7 @@ import com.chaoxing.activity.service.manager.IntegralApiService;
 import com.chaoxing.activity.util.constant.CacheConstant;
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.redisson.api.RedissonClient;
 import org.springframework.stereotype.Service;
@@ -61,6 +62,7 @@ public class IntegralPushQueueService implements IQueueService<IntegralPushQueue
 	}
 
 	@Data
+	@NoArgsConstructor
 	@AllArgsConstructor
 	public static class IntegralPushDTO {
 

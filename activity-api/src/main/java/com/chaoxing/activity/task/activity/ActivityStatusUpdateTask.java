@@ -1,4 +1,4 @@
-package com.chaoxing.activity.task;
+package com.chaoxing.activity.task.activity;
 
 import com.chaoxing.activity.service.activity.ActivityIsAboutEndHandleService;
 import com.chaoxing.activity.service.activity.ActivityStatusUpdateService;
@@ -29,7 +29,7 @@ public class ActivityStatusUpdateTask {
 	@Resource
 	private ActivityIsAboutEndHandleService activityEndNoticeService;
 
-	/**每秒执行一次
+	/**更新活动状态
 	 * @Description 
 	 * @author wwb
 	 * @Date 2020-12-11 14:34:40
@@ -51,7 +51,7 @@ public class ActivityStatusUpdateTask {
 		}
 	}
 
-	/**每秒执行一次
+	/**更新活动状态
 	 * @Description
 	 * @author wwb
 	 * @Date 2020-12-11 14:34:40

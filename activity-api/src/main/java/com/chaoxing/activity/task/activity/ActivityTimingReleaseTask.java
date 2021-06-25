@@ -1,4 +1,4 @@
-package com.chaoxing.activity.task;
+package com.chaoxing.activity.task.activity;
 
 import com.chaoxing.activity.dto.LoginUserDTO;
 import com.chaoxing.activity.service.activity.ActivityHandleService;

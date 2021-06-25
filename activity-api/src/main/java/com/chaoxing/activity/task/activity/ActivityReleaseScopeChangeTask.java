@@ -1,4 +1,4 @@
-package com.chaoxing.activity.task;
+package com.chaoxing.activity.task.activity;
 
 import com.chaoxing.activity.service.activity.module.ActivityModuleService;
 import com.chaoxing.activity.service.manager.module.WorkApiService;

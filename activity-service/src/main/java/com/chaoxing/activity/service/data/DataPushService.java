@@ -5,6 +5,7 @@ import com.chaoxing.activity.service.queue.DataPushQueueService;
 import com.chaoxing.activity.service.repoconfig.OrgDataRepoConfigQueryService;
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -86,6 +87,7 @@ public class DataPushService {
     }
 
     @Data
+    @NoArgsConstructor
     @AllArgsConstructor
     public static class DataPushParamDTO {
 

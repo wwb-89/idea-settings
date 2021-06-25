@@ -27,4 +27,5 @@ public interface UserResultMapper extends BaseMapper<UserResult> {
     * @return com.baomidou.mybatisplus.extension.plugins.pagination.Page<com.chaoxing.activity.dto.stat.UserResultDTO>
     */
     Page<UserResultDTO> pageUserResult(@Param("page") Page<UserResultDTO> page, @Param("activityId") Integer activityId);
+
 }

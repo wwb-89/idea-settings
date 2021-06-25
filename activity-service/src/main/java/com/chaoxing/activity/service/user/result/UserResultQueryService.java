@@ -216,4 +216,19 @@ public class UserResultQueryService {
 		return exportData;
 	}
 
+	/**根据活动id查询所有的活动成绩
+	 * @Description 按得分降序排序
+	 * @author wwb
+	 * @Date 2021-06-25 16:06:55
+	 * @param activityId
+	 * @return java.util.List<com.chaoxing.activity.model.UserResult>
+	*/
+	public List<UserResult> listByActivityId(Integer activityId) {
+		return userResultMapper.selectList(new QueryWrapper<UserResult>()
+			.lambda()
+				.eq(UserResult::getActivityId, activityId)
+				.orderByDesc(UserResult::getTotalScore)
+		);
+	}
+
 }

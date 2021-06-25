@@ -7,6 +7,7 @@ import com.chaoxing.activity.service.queue.IntegralPushQueueService;
 import com.chaoxing.activity.service.queue.activity.ActivityStatSummaryQueueService;
 import com.chaoxing.activity.service.queue.user.UserActionQueueService;
 import com.chaoxing.activity.service.queue.user.UserActionRecordQueueService;
+import com.chaoxing.activity.service.queue.user.UserRatingQueueService;
 import com.chaoxing.activity.service.queue.user.UserStatSummaryQueueService;
 import com.chaoxing.activity.util.enums.IntegralOriginTypeEnum;
 import com.chaoxing.activity.util.enums.UserActionEnum;
@@ -43,6 +44,8 @@ public class UserActionTask {
     private ActivityIsAboutStartHandleService activityIsAboutStartHandleService;
     @Resource
     private IntegralPushQueueService integralPushQueueService;
+    @Resource
+    private UserRatingQueueService userRatingQueueService;
 
     @Resource
     private ActivityQueryService activityQueryService;
@@ -87,6 +90,8 @@ public class UserActionTask {
                 userStatSummaryQueueService.pushUserSignStat(new UserStatSummaryQueueService.QueueParamDTO(uid, activityId));
                 break;
             case RATING:
+                // 通知报名签到用户评价了活动
+                userRatingQueueService.push(new UserRatingQueueService.QueueParamDTO(uid, activity.getSignId()));
                 break;
             case DISCUSS:
                 break;

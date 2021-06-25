@@ -1,4 +1,4 @@
-package com.chaoxing.activity.task;
+package com.chaoxing.activity.task.activity;
 
 import com.chaoxing.activity.dto.manager.form.FormCreateActivity;
 import com.chaoxing.activity.service.manager.FormApprovalApiService;

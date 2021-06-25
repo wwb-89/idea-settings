@@ -2,10 +2,9 @@ package com.chaoxing.activity.service.queue.user;
 
 import com.chaoxing.activity.service.queue.IQueueService;
 import com.chaoxing.activity.util.constant.CacheConstant;
-import com.chaoxing.activity.util.enums.UserActionEnum;
-import com.chaoxing.activity.util.enums.UserActionTypeEnum;
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.redisson.api.RedissonClient;
 import org.springframework.stereotype.Service;
@@ -41,6 +40,7 @@ public class UserActionRecordValidQueueService implements IQueueService<UserActi
     }
 
     @Data
+    @NoArgsConstructor
     @AllArgsConstructor
     public static class QueueParamDTO {
 

@@ -4,6 +4,7 @@ import com.chaoxing.activity.service.queue.IQueueService;
 import com.chaoxing.activity.util.constant.CacheConstant;
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.redisson.api.RedissonClient;
 import org.springframework.stereotype.Service;
@@ -36,6 +37,7 @@ public class UserResultQualifiedQueueService implements IQueueService<UserResult
     }
 
     @Data
+    @NoArgsConstructor
     @AllArgsConstructor
     public static class QueueParamDTO {
 

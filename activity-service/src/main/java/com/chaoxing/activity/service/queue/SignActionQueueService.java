@@ -1,13 +1,10 @@
 package com.chaoxing.activity.service.queue;
 
 import com.chaoxing.activity.util.constant.CacheConstant;
-import com.chaoxing.activity.util.enums.ActivityAreaLevelEnum;
-import com.chaoxing.activity.util.enums.UserActionEnum;
-import com.chaoxing.activity.util.enums.UserActionTypeEnum;
-import com.chaoxing.activity.util.exception.BusinessException;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.redisson.api.RedissonClient;
 import org.springframework.stereotype.Service;
@@ -43,6 +40,7 @@ public class SignActionQueueService implements IQueueService<SignActionQueueServ
     }
 
     @Data
+    @NoArgsConstructor
     @AllArgsConstructor
     public static class QueueParamDTO {
 
