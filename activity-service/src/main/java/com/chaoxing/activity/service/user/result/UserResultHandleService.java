@@ -234,7 +234,7 @@ public class UserResultHandleService {
                 .eq(UserResult::getActivityId, activityId)
                 .eq(UserResult::getUid, uid)
                 .set(UserResult::getQualifiedStatus, qualifiedStatusEnum.getValue())
-                .set(UserResult::getManualQualifiedStatus, UserResult.QualifiedStatusEnum.QUALIFIED.getValue()));
+                .set(UserResult::getManualQualifiedStatus, qualifiedStatusEnum.getValue()));
     }
 
     /**批量改变用户合格状态
@@ -260,7 +260,7 @@ public class UserResultHandleService {
                 .eq(UserResult::getActivityId, activityId)
                 .in(UserResult::getUid, uidList)
                 .set(UserResult::getQualifiedStatus, qualifiedStatusEnum.getValue())
-                .set(UserResult::getManualQualifiedStatus, UserResult.QualifiedStatusEnum.QUALIFIED.getValue()));
+                .set(UserResult::getManualQualifiedStatus, qualifiedStatusEnum.getValue()));
 
 
     }
