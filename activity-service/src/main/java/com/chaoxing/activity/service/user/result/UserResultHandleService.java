@@ -6,6 +6,7 @@ import com.chaoxing.activity.mapper.UserResultMapper;
 import com.chaoxing.activity.model.InspectionConfigDetail;
 import com.chaoxing.activity.model.UserActionRecord;
 import com.chaoxing.activity.model.UserResult;
+import com.chaoxing.activity.service.event.UserResultQualifiedChangeEventService;
 import com.chaoxing.activity.service.inspection.InspectionConfigQueryService;
 import com.chaoxing.activity.service.user.action.UserActionRecordQueryService;
 import com.chaoxing.activity.util.enums.UserActionEnum;
@@ -43,6 +44,8 @@ public class UserResultHandleService {
     private UserActionRecordQueryService userActionRecordQueryService;
     @Resource
     private InspectionConfigQueryService inspectionConfigQueryService;
+    @Resource
+    private UserResultQualifiedChangeEventService userResultQualifiedChangeEventService;
 
     /**更新用户成绩
      * @Description 
@@ -235,6 +238,7 @@ public class UserResultHandleService {
                 .eq(UserResult::getUid, uid)
                 .set(UserResult::getQualifiedStatus, qualifiedStatusEnum.getValue())
                 .set(UserResult::getManualQualifiedStatus, UserResult.QualifiedStatusEnum.QUALIFIED.getValue()));
+        userResultQualifiedChangeEventService.change(uid, activityId);
     }
 
     /**批量改变用户合格状态
@@ -261,7 +265,8 @@ public class UserResultHandleService {
                 .in(UserResult::getUid, uidList)
                 .set(UserResult::getQualifiedStatus, qualifiedStatusEnum.getValue())
                 .set(UserResult::getManualQualifiedStatus, UserResult.QualifiedStatusEnum.QUALIFIED.getValue()));
-
-
+        for (Integer uid : uidList) {
+            userResultQualifiedChangeEventService.change(uid, activityId);
+        }
     }
 }
