@@ -1,4 +1,4 @@
-package com.chaoxing.activity.admin.controller.pc;
+package com.chaoxing.activity.admin.controller.general;
 
 import com.chaoxing.activity.dto.UserGradeDTO;
 import com.chaoxing.activity.model.ActivityTableField;
@@ -6,7 +6,6 @@ import com.chaoxing.activity.model.TableField;
 import com.chaoxing.activity.model.TableFieldDetail;
 import com.chaoxing.activity.service.tablefield.TableFieldQueryService;
 import com.chaoxing.activity.service.user.action.UserActionRecordQueryService;
-import com.chaoxing.activity.service.user.result.UserResultQueryService;
 import com.chaoxing.activity.util.annotation.LoginRequired;
 import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.stereotype.Controller;
@@ -27,14 +26,12 @@ import java.util.List;
  * @date 2021-03-15 16:05:22
  */
 @Controller
-@RequestMapping("activity/results/manage/{activityId}")
+@RequestMapping("activity/{activityId}/results/manage")
 public class ResultsManageController {
 
 	@Resource
 	private TableFieldQueryService tableFieldQueryService;
 
-	@Resource
-	private UserResultQueryService userResultQueryService;
 	@Resource
 	private UserActionRecordQueryService userActionRecordQueryService;
 
@@ -70,8 +67,5 @@ public class ResultsManageController {
 		model.addAttribute("userGrade", userGrade);
 		return "pc/result/person-grade";
 	}
-
-
-
 
 }

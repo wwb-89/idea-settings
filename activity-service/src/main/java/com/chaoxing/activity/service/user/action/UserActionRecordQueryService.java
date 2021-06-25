@@ -129,10 +129,10 @@ public class UserActionRecordQueryService {
 						record.setName(signUp.getName());
 						break;
 					case RATING:
-						ActivityRatingDetail ratingDetail = ratingDetailMap.get(identityId);
-						record.setTitle("活动评价");
-						record.setScore(ratingDetail.getScore());
-						record.setComment(ratingDetail.getComment());
+//						ActivityRatingDetail ratingDetail = ratingDetailMap.get(identityId);
+//						record.setTitle("活动评价");
+//						record.setScore(ratingDetail.getScore());
+//						record.setComment(ratingDetail.getComment());
 						break;
 					case DISCUSS:
 						break;
