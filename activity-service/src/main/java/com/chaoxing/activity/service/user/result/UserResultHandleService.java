@@ -99,6 +99,7 @@ public class UserResultHandleService {
     private BigDecimal calUserActivityScore(Integer uid, Integer activityId) {
         // 查询考核配置
         List<InspectionConfigDetail> inspectionConfigDetails = inspectionConfigQueryService.listDetailByActivityId(activityId);
+        inspectionConfigDetails = inspectionConfigDetails.stream().filter(v -> !v.getDeleted()).collect(Collectors.toList());
         if (CollectionUtils.isEmpty(inspectionConfigDetails)) {
             // 没有配置考核计划就得0分
             return BigDecimal.ZERO;
