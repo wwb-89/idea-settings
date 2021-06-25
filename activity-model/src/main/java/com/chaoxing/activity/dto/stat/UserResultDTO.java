@@ -42,7 +42,7 @@ public class UserResultDTO {
     private Integer totalScore;
 
     /** 奖项 */
-    private Integer prize;
+    private String prize;
 
     /** 状态: 0：不合格，1：合格，2：待处理 */
     private Integer qualifiedStatus;

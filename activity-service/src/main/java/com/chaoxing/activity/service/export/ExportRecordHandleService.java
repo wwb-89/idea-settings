@@ -13,6 +13,7 @@ import com.chaoxing.activity.service.activity.stat.ActivityStatSummaryQueryServi
 import com.chaoxing.activity.service.manager.CloudApiService;
 import com.chaoxing.activity.service.queue.ExportQueueService;
 import com.chaoxing.activity.service.stat.UserStatSummaryQueryService;
+import com.chaoxing.activity.service.user.result.UserResultQueryService;
 import com.chaoxing.activity.util.FileUtils;
 import com.chaoxing.activity.util.constant.CommonConstant;
 import com.chaoxing.activity.util.exception.BusinessException;
@@ -54,6 +55,8 @@ public class ExportRecordHandleService {
     private ActivityStatSummaryQueryService activityStatSummaryQueryService;
     @Resource
     private UserStatSummaryQueryService userStatSummaryQueryService;
+    @Resource
+    private UserResultQueryService userResultQueryService;
     @Resource
     private CloudApiService cloudApiService;
 
@@ -143,6 +146,9 @@ public class ExportRecordHandleService {
                 UserStatSummaryQueryDTO queryParams = JSON.parseObject(params, UserStatSummaryQueryDTO.class);
                 exportData = userStatSummaryQueryService.getExportDataDTO(queryParams);
                 break;
+            case ACTIVITY_INSPECTION_MANAGE:
+                JSONObject paramObj = JSON.parseObject(params);
+                exportData = userResultQueryService.packageExportData(paramObj.getInteger("activityId"));
             default:
         }
         exportData.setSheetName(exportTypeEnum.getName());
