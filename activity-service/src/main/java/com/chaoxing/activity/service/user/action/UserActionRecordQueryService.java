@@ -118,7 +118,7 @@ public class UserActionRecordQueryService {
 		// 获取评价
 		Map<Integer, ActivityRatingDetail> ratingDetailMap = Maps.newHashMap();
 		if (CollectionUtils.isNotEmpty(ratingDetailIds)) {
-			List<ActivityRatingDetail> ratingDetails = activityRatingQueryService.listDetailByDetailIds(activityId, ratingDetailIds);
+			List<ActivityRatingDetail> ratingDetails = activityRatingQueryService.listAllDetailByDetailIds(activityId, ratingDetailIds);
 			ratingDetailMap = ratingDetails.stream().collect(Collectors.toMap(ActivityRatingDetail::getId, v -> v, (v1, v2) -> v2));
 
 		}

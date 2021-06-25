@@ -8,6 +8,8 @@ import com.chaoxing.activity.mapper.ActivityRatingMapper;
 import com.chaoxing.activity.model.ActivityRating;
 import com.chaoxing.activity.model.ActivityRatingDetail;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.compress.utils.Lists;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
@@ -136,6 +138,9 @@ public class ActivityRatingQueryService {
 	 * @return java.util.List<com.chaoxing.activity.model.ActivityRatingDetail>
 	*/
 	public List<ActivityRatingDetail> listDetailByDetailIds(Integer activityId, List<Integer> activityRatingDetailIds) {
+		if (CollectionUtils.isEmpty(activityRatingDetailIds)) {
+			return Lists.newArrayList();
+		}
 		return activityRatingDetailMapper.selectList(new QueryWrapper<ActivityRatingDetail>()
 				.lambda()
 				.eq(ActivityRatingDetail::getActivityId, activityId)
@@ -144,4 +149,22 @@ public class ActivityRatingQueryService {
 		);
 	}
 
+	/**根据活动id和评价id列表查询所有评价
+	 * @Description
+	 * @author wwb
+	 * @Date 2021-03-17 19:54:50
+	 * @param activityId
+	 * @param ratingDetailIds
+	 * @return java.util.List<com.chaoxing.activity.model.ActivityRatingDetail>
+	 */
+    public List<ActivityRatingDetail> listAllDetailByDetailIds(Integer activityId, List<Integer> ratingDetailIds) {
+		if (CollectionUtils.isEmpty(ratingDetailIds)) {
+			return Lists.newArrayList();
+		}
+		return activityRatingDetailMapper.selectList(new QueryWrapper<ActivityRatingDetail>()
+				.lambda()
+				.eq(ActivityRatingDetail::getActivityId, activityId)
+				.in(ActivityRatingDetail::getId, ratingDetailIds)
+		);
+    }
 }
