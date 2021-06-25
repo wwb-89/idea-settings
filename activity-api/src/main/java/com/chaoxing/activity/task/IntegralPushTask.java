@@ -35,7 +35,7 @@ public class IntegralPushTask {
 	*/
 	@Scheduled(fixedDelay = 1L)
 	public void pushData() throws InterruptedException {
-		IntegralPushQueueService.IntegralPushDTO integralPush = integralPushQueueService.get();
+		IntegralPushQueueService.IntegralPushDTO integralPush = integralPushQueueService.pop();
 		if (integralPush == null) {
 			return;
 		}
@@ -44,7 +44,7 @@ public class IntegralPushTask {
 		} catch (Exception e) {
 			e.printStackTrace();
 			log.error("积分推送:{} error:{}", JSON.toJSONString(integralPush), e.getMessage());
-			integralPushQueueService.add(integralPush);
+			integralPushQueueService.push(integralPush);
 
 		}
 	}

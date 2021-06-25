@@ -2,6 +2,8 @@ package com.chaoxing.activity.service.event;
 
 import com.chaoxing.activity.dto.LoginUserDTO;
 import com.chaoxing.activity.model.Activity;
+import com.chaoxing.activity.model.OrgDataRepoConfigDetail;
+import com.chaoxing.activity.service.data.DataPushService;
 import com.chaoxing.activity.service.queue.activity.*;
 import com.chaoxing.activity.service.stat.UserStatSummaryHandleService;
 import lombok.extern.slf4j.Slf4j;
@@ -36,8 +38,6 @@ public class ActivityChangeEventService {
 	@Resource
 	private ActivityReleaseScopeChangeQueueService activityReleaseScopeChangeQueueService;
 	@Resource
-	private ActivityDataPushQueueService activityDataPushQueueService;
-	@Resource
 	private ActivityIntegralChangeQueueService activityIntegralChangeQueueService;
 	@Resource
 	private ActivityDataChangeQueueService activityDataChangeQueueService;
@@ -45,6 +45,8 @@ public class ActivityChangeEventService {
 	private UserStatSummaryHandleService userStatSummaryService;
 	@Resource
 	private ActivityTimingReleaseQueueService activityTimingReleaseQueueService;
+	@Resource
+	private DataPushService dataPushService;
 
 	/**活动数据改变
 	 * @Description 
@@ -57,19 +59,21 @@ public class ActivityChangeEventService {
 	 * @return void
 	*/
 	public void dataChange(Activity activity, Activity oldActivity, BigDecimal oldIntegralValue, LoginUserDTO loginUser) {
-		// 往表单推送数据
-		activityDataPushQueueService.update(activity);
+		Integer activityId = activity.getId();
+		Integer createFid = activity.getCreateFid();
+		// 数据推送
+		dataPushService.dataPush(new DataPushService.DataPushParamDTO(createFid, OrgDataRepoConfigDetail.DataTypeEnum.ACTIVITY, String.valueOf(activityId), null));
 		// 订阅活动状态处理
 		activityStatusUpdateQueueService.addTime(activity);
 		// 通知门户修改网站的title
 		Integer pageId = activity.getPageId();
 		if (pageId != null) {
-			activityNameChangeNoticeQueueService.push(activity.getId());
+			activityNameChangeNoticeQueueService.push(activityId);
 		}
 		// 订阅活动通知发送
 		activityIsAboutToStartQueueService.add(activity);
 		// 活动封面url同步
-		activityCoverUrlSyncQueueService.push(activity.getId());
+		activityCoverUrlSyncQueueService.push(activityId);
 		Integer signId = activity.getSignId();
 		if (signId != null) {
 			BigDecimal integralValue = activity.getIntegralValue();
@@ -96,7 +100,7 @@ public class ActivityChangeEventService {
 			}
 			if (activityDataChange) {
 				// 给收藏活动和报名活动的用户发送通知
-				activityDataChangeQueueService.add(activity.getId());
+				activityDataChangeQueueService.add(activityId);
 			}
 		}
 		// 活动定时发布
@@ -145,8 +149,10 @@ public class ActivityChangeEventService {
 		if (Objects.equals(Activity.StatusEnum.DELETED, statusEnum)) {
 			// 活动被删除
 			activityIsAboutToStartQueueService.remove(activity.getId());
-			// 删除表单推送的数据
-			activityDataPushQueueService.delete(activity);
+			// 活动数据推送
+			Integer activityId = activity.getId();
+			Integer createFid = activity.getCreateFid();
+			dataPushService.dataPush(new DataPushService.DataPushParamDTO(createFid, OrgDataRepoConfigDetail.DataTypeEnum.ACTIVITY, String.valueOf(activityId), null));
 		}
 
 	}
@@ -161,13 +167,7 @@ public class ActivityChangeEventService {
 	*/
 	public void releaseStatusChange(Activity activity, LoginUserDTO loginUser) {
 		Boolean released = activity.getReleased();
-		if (released) {
-			// 往表单推送数据
-			activityDataPushQueueService.add(activity);
-		} else {
-			// 删除记录
-			// 删除表单推送的数据
-			activityDataPushQueueService.delete(activity);
+		if (!released) {
 			// 取消定时发布
 			ActivityTimingReleaseQueueService.QueueParamDTO queueParam = ActivityTimingReleaseQueueService.QueueParamDTO.builder()
 					.activityId(activity.getId())
@@ -178,6 +178,9 @@ public class ActivityChangeEventService {
 		}
 		// 活动发布范围改变
 		activityReleaseScopeChangeQueueService.push(activity.getId());
+		Integer activityId = activity.getId();
+		Integer createFid = activity.getCreateFid();
+		dataPushService.dataPush(new DataPushService.DataPushParamDTO(createFid, OrgDataRepoConfigDetail.DataTypeEnum.ACTIVITY, String.valueOf(activityId), null));
 	}
 
 }

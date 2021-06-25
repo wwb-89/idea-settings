@@ -55,6 +55,31 @@ public class UserResultQueryService {
 		return Objects.equals(UserResult.QualifiedStatusEnum.QUALIFIED.getValue(), qualifiedStatus);
 	}
 
+	/**获取用户成绩合格的描述
+	 * @Description 
+	 * @author wwb
+	 * @Date 2021-06-25 09:48:58
+	 * @param uid
+	 * @param activityId
+	 * @return java.lang.String
+	*/
+	public String getResultQualifiedDescription(Integer uid, Integer activityId) {
+		List<UserResult> userResults = userResultMapper.selectList(new QueryWrapper<UserResult>()
+				.lambda()
+				.eq(UserResult::getUid, uid)
+				.eq(UserResult::getActivityId, activityId)
+		);
+		UserResult.QualifiedStatusEnum qualifiedStatusEnum = null;
+		if (CollectionUtils.isNotEmpty(userResults)) {
+			UserResult userResult = userResults.get(0);
+			qualifiedStatusEnum = UserResult.QualifiedStatusEnum.fromValue(userResult.getQualifiedStatus());
+		}
+		if (qualifiedStatusEnum == null) {
+			qualifiedStatusEnum = UserResult.QualifiedStatusEnum.WAIT;
+		}
+		return qualifiedStatusEnum.getName();
+	}
+
 	/**获取用户成绩
 	 * @Description 
 	 * @author wwb

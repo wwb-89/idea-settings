@@ -75,7 +75,8 @@ public class OrgDataRepoConfigDetail {
 
         /** 活动 */
         ACTIVITY("活动", "activity"),
-        PARTICIPATE_TIME_LENGTH("参与时长", "participate_time_length");
+        PARTICIPATE_TIME_LENGTH("参与时长", "participate_time_length"),
+        USER_ACTIVITY_DATA("用户活动数据", "user_activity_data");
 
         private String name;
         private String value;
@@ -85,7 +86,7 @@ public class OrgDataRepoConfigDetail {
             this.value = value;
         }
 
-        public static DataTypeEnum fromValue(String value) {
+        public static DataTypeEnum fromValue(DataTypeEnum value) {
             DataTypeEnum[] values = DataTypeEnum.values();
             for (DataTypeEnum dataTypeEnum : values) {
                 if (Objects.equals(dataTypeEnum.getValue(), value)) {

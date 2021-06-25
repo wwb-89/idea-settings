@@ -7,7 +7,6 @@ import lombok.*;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
-import java.util.Date;
 import java.util.Objects;
 
 /**
@@ -51,7 +50,7 @@ public class UserResult {
         /** 不合格 */
         NOT_QUALIFIED("不合格", 0),
         QUALIFIED("合格", 1),
-        WAIT("待处理", 2);
+        WAIT("待审核", 2);
 
         private final String name;
         private final Integer value;

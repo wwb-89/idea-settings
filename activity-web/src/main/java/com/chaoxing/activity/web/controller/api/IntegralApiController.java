@@ -44,7 +44,7 @@ public class IntegralApiController {
 			Integer uid = loginUser.getUid();
 			Integer fid = loginUser.getFid();
 			IntegralPushQueueService.IntegralPushDTO integralPush = new IntegralPushQueueService.IntegralPushDTO(uid, fid, IntegralOriginTypeEnum.VIEW_ACTIVITY.getValue(), String.valueOf(activityId), activityName);
-			integralPushQueueService.add(integralPush);
+			integralPushQueueService.push(integralPush);
 		});
 		return RestRespDTO.success();
 	}

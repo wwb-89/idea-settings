@@ -38,3 +38,16 @@ CREATE TABLE `t_user_action_record`  (
 ) COMMENT = '用户行为记录表';
 ALTER TABLE t_user_stat_summary DROP COLUMN qualified_num;
 ALTER TABLE t_activity_stat_summary DROP COLUMN qualified_num;
+DROP TABLE t_user_data_push_record;
+CREATE TABLE `t_data_push_record`  (
+    `id` bigint(0) NOT NULL AUTO_INCREMENT COMMENT '主键',
+    `identify` varchar(50) NULL COMMENT '主键标识',
+    `data_type` varchar(50) NULL COMMENT '数据类型',
+    `repo_type` varchar(50) NULL COMMENT '仓库类型',
+    `repo` varchar(50) NULL COMMENT '仓库',
+    `record` varchar(50) NULL COMMENT '推送记录标识',
+    `create_time` datetime(0) NULL DEFAULT current_timestamp() COMMENT '创建时间',
+    `update_time` datetime(0) NULL DEFAULT current_timestamp() ON UPDATE CURRENT_TIMESTAMP(0) COMMENT '更新时间',
+    PRIMARY KEY (`id`),
+    INDEX `idx_primary`(`identify`, `repo_type`, `data_type`, `repo`)
+) COMMENT = '数据推送记录表';

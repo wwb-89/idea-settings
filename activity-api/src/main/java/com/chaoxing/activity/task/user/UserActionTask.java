@@ -7,7 +7,6 @@ import com.chaoxing.activity.service.queue.IntegralPushQueueService;
 import com.chaoxing.activity.service.queue.activity.ActivityStatSummaryQueueService;
 import com.chaoxing.activity.service.queue.user.UserActionQueueService;
 import com.chaoxing.activity.service.queue.user.UserActionRecordQueueService;
-import com.chaoxing.activity.service.queue.user.UserActionRecordValidQueueService;
 import com.chaoxing.activity.service.queue.user.UserStatSummaryQueueService;
 import com.chaoxing.activity.util.enums.IntegralOriginTypeEnum;
 import com.chaoxing.activity.util.enums.UserActionEnum;
@@ -78,7 +77,7 @@ public class UserActionTask {
                     // 报名成功
                     activityIsAboutStartHandleService.sendSignedUpNotice(activity, new ArrayList(){{add(uid);}});
                     // 推送积分
-                    integralPushQueueService.add(new IntegralPushQueueService.IntegralPushDTO(uid, activity.getCreateFid(), IntegralOriginTypeEnum.VIEW_ACTIVITY.getValue(), String.valueOf(activityId), activity.getName()));
+                    integralPushQueueService.push(new IntegralPushQueueService.IntegralPushDTO(uid, activity.getCreateFid(), IntegralOriginTypeEnum.VIEW_ACTIVITY.getValue(), String.valueOf(activityId), activity.getName()));
                 }
                 break;
             case SIGN_IN:

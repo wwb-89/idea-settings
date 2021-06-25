@@ -1,9 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="com.chaoxing.activity.mapper.UserDataPushRecordMapper">
-    <resultMap id="BaseResultMap" type="com.chaoxing.activity.model.UserDataPushRecord">
+<mapper namespace="com.chaoxing.activity.mapper.DataPushRecordMapper">
+    <resultMap id="BaseResultMap" type="com.chaoxing.activity.model.DataPushRecord">
         <id column="id" jdbcType="BIGINT" property="id" />
-        <result column="uid" jdbcType="INTEGER" property="uid" />
+        <result column="identify" jdbcType="VARCHAR" property="identify" />
+        <result column="data_type" jdbcType="VARCHAR" property="dataType" />
         <result column="repo_type" jdbcType="VARCHAR" property="repoType" />
         <result column="repo" jdbcType="VARCHAR" property="repo" />
         <result column="record" jdbcType="VARCHAR" property="record" />
@@ -11,6 +12,6 @@
         <result column="update_time" jdbcType="TIMESTAMP" property="updateTime" />
     </resultMap>
     <sql id="Base_Column_List">
-        t.id, t.uid, t.repo_type, t.repo, t.record, t.create_time, t.update_time
+        t.id, t.identify, t.data_type, t.repo_type, t.repo, t.record, t.create_time, t.update_time
     </sql>
 </mapper>

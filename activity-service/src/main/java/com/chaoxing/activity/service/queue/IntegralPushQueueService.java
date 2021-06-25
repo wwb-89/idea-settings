@@ -40,7 +40,7 @@ public class IntegralPushQueueService implements IQueueService<IntegralPushQueue
 	 * @param integralPush
 	 * @return void
 	*/
-	public void add(@NotNull IntegralPushDTO integralPush) {
+	public void push(@NotNull IntegralPushDTO integralPush) {
 		Integer fid = integralPush.getFid();
 		List<Integer> fids = integralApiService.listIntegralPushScope();
 		if (!fids.contains(fid)) {
@@ -56,7 +56,7 @@ public class IntegralPushQueueService implements IQueueService<IntegralPushQueue
 	 * @param 
 	 * @return com.chaoxing.activity.dto.manager.IntegralPushDTO
 	*/
-	public IntegralPushDTO get() throws InterruptedException {
+	public IntegralPushDTO pop() throws InterruptedException {
 		return pop(redissonClient, QUEUE_CACHE_KEY);
 	}
 
