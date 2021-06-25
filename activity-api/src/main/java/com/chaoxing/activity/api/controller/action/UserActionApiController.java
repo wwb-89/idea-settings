@@ -63,7 +63,7 @@ public class UserActionApiController {
     public RestRespDTO cancelSignUp(Integer uid, Integer signId, Integer signUpId, Long time) {
         Activity activity = activityQueryService.getBySignId(signId);
         if (activity != null) {
-            new UserActionQueueService.QueueParamDTO(uid, activity.getId(), UserActionTypeEnum.SIGN_UP, UserActionEnum.CANCEL_SIGNED_UP, String.valueOf(signUpId), DateUtils.timestamp2Date(time));
+            userActionQueueService.push(new UserActionQueueService.QueueParamDTO(uid, activity.getId(), UserActionTypeEnum.SIGN_UP, UserActionEnum.CANCEL_SIGNED_UP, String.valueOf(signUpId), DateUtils.timestamp2Date(time)));
         }
         return RestRespDTO.success();
     }
@@ -82,7 +82,7 @@ public class UserActionApiController {
     public RestRespDTO signedIn(Integer uid, Integer signId, Integer signInId, Long time) {
         Activity activity = activityQueryService.getBySignId(signId);
         if (activity != null) {
-            new UserActionQueueService.QueueParamDTO(uid, activity.getId(), UserActionTypeEnum.SIGN_IN, UserActionEnum.SIGNED_IN, String.valueOf(signInId), DateUtils.timestamp2Date(time));
+            userActionQueueService.push(new UserActionQueueService.QueueParamDTO(uid, activity.getId(), UserActionTypeEnum.SIGN_IN, UserActionEnum.SIGNED_IN, String.valueOf(signInId), DateUtils.timestamp2Date(time)));
         }
         return RestRespDTO.success();
     }
@@ -101,7 +101,7 @@ public class UserActionApiController {
     public RestRespDTO cancelSignIn(Integer uid, Integer signId, Integer signInId, Long time) {
         Activity activity = activityQueryService.getBySignId(signId);
         if (activity != null) {
-            new UserActionQueueService.QueueParamDTO(uid, activity.getId(), UserActionTypeEnum.SIGN_IN, UserActionEnum.CANCEL_SIGNED_IN, String.valueOf(signInId), DateUtils.timestamp2Date(time));
+            userActionQueueService.push(new UserActionQueueService.QueueParamDTO(uid, activity.getId(), UserActionTypeEnum.SIGN_IN, UserActionEnum.CANCEL_SIGNED_IN, String.valueOf(signInId), DateUtils.timestamp2Date(time)));
         }
         return RestRespDTO.success();
     }
@@ -120,7 +120,7 @@ public class UserActionApiController {
     public RestRespDTO leaveSignIn(Integer uid, Integer signId, Integer signInId, Long time) {
         Activity activity = activityQueryService.getBySignId(signId);
         if (activity != null) {
-            new UserActionQueueService.QueueParamDTO(uid, activity.getId(), UserActionTypeEnum.SIGN_IN, UserActionEnum.LEAVE_SIGNED_IN, String.valueOf(signInId), DateUtils.timestamp2Date(time));
+            userActionQueueService.push(new UserActionQueueService.QueueParamDTO(uid, activity.getId(), UserActionTypeEnum.SIGN_IN, UserActionEnum.LEAVE_SIGNED_IN, String.valueOf(signInId), DateUtils.timestamp2Date(time)));
         }
         return RestRespDTO.success();
     }

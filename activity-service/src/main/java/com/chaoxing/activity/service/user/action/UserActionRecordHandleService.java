@@ -3,7 +3,6 @@ package com.chaoxing.activity.service.user.action;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.chaoxing.activity.mapper.UserActionRecordMapper;
-import com.chaoxing.activity.mapper.UserResultMapper;
 import com.chaoxing.activity.model.UserActionRecord;
 import com.chaoxing.activity.service.queue.user.UserActionQueueService;
 import com.chaoxing.activity.service.queue.user.UserResultQueueService;
@@ -50,6 +49,7 @@ public class UserActionRecordHandleService {
 				.action(queueParam.getUserAction().getValue())
 				.actionIdentify(queueParam.getIdentify())
 				.actionDescription(queueParam.getUserAction().getName())
+				.createTime(queueParam.getTime())
 				.build();
 		userActionRecordMapper.insert(userActionRecord);
 		userResultQueueService.push(new UserResultQueueService.QueueParamDTO(uid, activityId));

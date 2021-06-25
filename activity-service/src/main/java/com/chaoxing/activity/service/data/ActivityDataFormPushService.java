@@ -67,7 +67,7 @@ public class ActivityDataFormPushService {
             return;
         }
         String repo = orgConfigDetail.getRepo();
-        if (StringUtils.isNotBlank(repo)) {
+        if (StringUtils.isBlank(repo)) {
             return;
         }
         String identify = String.valueOf(activityId);

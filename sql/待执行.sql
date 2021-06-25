@@ -9,7 +9,7 @@ CREATE TABLE `t_activity_detail`  (
 DROP TABLE t_user_action;
 DROP TABLE t_user_action_detail;
 CREATE TABLE `t_user_result`  (
-    `id` bigint(0) NOT NULL COMMENT '主键',
+    `id` bigint(0) NOT NULL AUTO_INCREMENT COMMENT '主键',
     `uid` int(11) NULL COMMENT '用户id',
     `activity_id` int(11) NULL COMMENT '活动id',
     `qualified_status` int(11) NULL DEFAULT 2 COMMENT '合格状态。0：不合格，1：合格，2：待处理',

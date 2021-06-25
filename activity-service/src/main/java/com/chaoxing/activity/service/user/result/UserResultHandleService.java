@@ -117,6 +117,7 @@ public class UserResultHandleService {
                 continue;
             }
             BigDecimal score = actionScoreConfigMap.get(action);
+            score = Optional.ofNullable(score).orElse(BigDecimal.ZERO);
             BigDecimal originScore = actionTotalScoreMap.get(action);
             originScore = Optional.ofNullable(originScore).orElse(BigDecimal.ZERO);
             actionTotalScoreMap.put(action, originScore.add(score));
@@ -174,6 +175,7 @@ public class UserResultHandleService {
                     continue;
                 }
                 BigDecimal score = inspectionConfigDetail.getScore();
+                score = Optional.ofNullable(score).orElse(BigDecimal.ZERO);
                 BigDecimal reverseScore = BigDecimal.ZERO.subtract(score);
                 score = Optional.ofNullable(score).orElse(BigDecimal.ZERO);
                 switch (userActionEnum) {

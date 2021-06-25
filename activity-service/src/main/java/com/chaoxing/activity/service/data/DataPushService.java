@@ -58,8 +58,7 @@ public class DataPushService {
     public void handleDataPush(DataPushParamDTO dataPushParam) {
         Integer fid = dataPushParam.getFid();
         OrgDataRepoConfigDetail.DataTypeEnum dataType = dataPushParam.getDataType();
-        OrgDataRepoConfigDetail.DataTypeEnum dataTypeEnum = OrgDataRepoConfigDetail.DataTypeEnum.fromValue(dataType);
-        List<OrgDataRepoConfigDetail> orgConfigDetails = orgDataRepoConfigQueryService.listOrgConfigDetail(fid, dataTypeEnum);
+        List<OrgDataRepoConfigDetail> orgConfigDetails = orgDataRepoConfigQueryService.listOrgConfigDetail(fid, dataType);
         if (CollectionUtils.isEmpty(orgConfigDetails)) {
             return;
         }
