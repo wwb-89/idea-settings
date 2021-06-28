@@ -192,7 +192,9 @@ Vue.component('vue-sign-map', {
             }
             if (activityApp.isEmpty(str)) {
                 // 加载历史
-                cb($this.histories);
+                if (cb) {
+                    cb($this.histories);
+                }
             } else {
                 // 创建LocalSearch构造函数
                 var local = new BMap.LocalSearch(this.map, options);
