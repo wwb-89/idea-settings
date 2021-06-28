@@ -49,7 +49,7 @@ public class UserActionRecord {
     /** 更新时间; column: update_time*/
     private LocalDateTime updateTime;
 
-    // todo 以下个人行为页面字段暂时放置，后续迁移其他实体
+    /** TODO 以下个人行为页面字段暂时放置，后续迁移其他实体 */
     @TableField(exist = false)
     private String title;
     @TableField(exist = false)

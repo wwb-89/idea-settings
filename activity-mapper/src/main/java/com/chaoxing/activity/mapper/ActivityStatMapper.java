@@ -17,6 +17,7 @@ import java.util.List;
  */
 @Mapper
 public interface ActivityStatMapper extends BaseMapper<ActivityStat> {
+
     /**根据统计起始时间，统计结束时间，查询每一个activity最新stat统计结果列表
     * @Description 
     * @author huxiaolong

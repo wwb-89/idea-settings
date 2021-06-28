@@ -120,14 +120,6 @@ public class WfwContactApiService {
 			Integer soncount = Optional.ofNullable(deptChildNumMap.get(group.getId())).orElse(0);
 			group.setSoncount(soncount);
 			result.add(group);
-//			if (group.getSoncount() > 0) {
-//				WfwGroupDTO item = new WfwGroupDTO();
-//				BeanUtils.copyProperties(group, item);
-//				item.setVirtualId(UUID.randomUUID().toString().trim().replaceAll("-", ""));
-//				item.setSoncount(0);
-//				item.setGid(item.getId());
-//				result.add(item);
-//			}
 		}
 		return result;
 	}

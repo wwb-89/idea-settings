@@ -258,7 +258,8 @@ public class ActivityStatHandleService {
             LocalDate yesterday = statDate.plusDays(-1);
             ActivityStat yesterdayStat = activityStatQueryService.getActivityStatByStatDate(activityId, yesterday);
             int pvIncrement = 0, signedUpIncrement = 0, signedInIncrement = 0;
-            if (yesterdayStat == null) {    //  若不存在之前的统计记录，则增量为本身
+            if (yesterdayStat == null) {
+                //  若不存在之前的统计记录，则增量为本身
                 pvIncrement = activityStat.getPv();
                 signedUpIncrement = activityStat.getSignedUpNum();
                 signedInIncrement = activityStat.getSignedInNum();

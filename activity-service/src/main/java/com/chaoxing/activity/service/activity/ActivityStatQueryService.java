@@ -537,7 +537,6 @@ public class ActivityStatQueryService {
 		for (Map.Entry<Integer, List<Integer>> entry : regionOrgsMap.entrySet()) {
 			Integer regionFid = entry.getKey();
 			List<Integer> values = entry.getValue();
-//			fids.add(regionFid);
 			searchRegionOrgFids(regionFid, values, wfwRegionChildrenFidMap);
 			fids.addAll(values);
 

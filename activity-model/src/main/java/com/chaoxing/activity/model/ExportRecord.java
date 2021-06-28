@@ -90,6 +90,8 @@ public class ExportRecord {
     */
     @Getter
     public enum StatusEnum {
+        
+        /** 失败 */
         FAIL("失败", 0),
         SUCCESS("成功", 1),
         WAIT_HANDLE("待处理", 2);

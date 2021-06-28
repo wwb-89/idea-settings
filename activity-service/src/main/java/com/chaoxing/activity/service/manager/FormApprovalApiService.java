@@ -57,6 +57,8 @@ public class FormApprovalApiService {
     private static final String SIGN = "approveData_activity";
     /** key */
     private static final String KEY = "XtTpP2MjfoHZa^5!s8";
+    /** 是 */
+    private static final String YES = "是";
     /** 表单api域名 */
     private static final String FORM_API_DOMAIN = "http://m.oa.chaoxing.com";
     /** 获取表单数据url */
@@ -263,20 +265,20 @@ public class FormApprovalApiService {
         activity.setOrganisers(organisers);
         // 是否开启评价
         String openRating = FormUtils.getValue(formData, "is_open_rating");
-        activity.setOpenRating(Objects.equals("是", openRating));
+        activity.setOpenRating(Objects.equals(YES, openRating));
         // 活动类型
         String activityType = FormUtils.getValue(formData, "activity_type");
         if (StringUtils.isNotBlank(activityType)) {
             Activity.ActivityTypeEnum activityTypeEnum = Activity.ActivityTypeEnum.fromName(activityType);
             if (activityTypeEnum != null) {
                 activity.setActivityType(activityTypeEnum.getValue());
-                AddressDTO activity_address = FormUtils.getAddress(formData, "activity_address");
+                AddressDTO activityAddress = FormUtils.getAddress(formData, "activity_address");
                 String activityDetailAddress = FormUtils.getValue(formData, "activity_detail_address");
                 activityDetailAddress = Optional.ofNullable(activityDetailAddress).orElse("");
-                if (activity_address != null) {
-                    activity.setAddress(activity_address.getAddress());
-                    activity.setLongitude(activity_address.getLng());
-                    activity.setDimension(activity_address.getLat());
+                if (activityAddress != null) {
+                    activity.setAddress(activityAddress.getAddress());
+                    activity.setLongitude(activityAddress.getLng());
+                    activity.setDimension(activityAddress.getLat());
                 }
                 activity.setDetailAddress(activityDetailAddress);
             }
@@ -289,7 +291,7 @@ public class FormApprovalApiService {
         activity.setIntroduction(introduction);
         // 是否开启作品征集
         String openWork = FormUtils.getValue(formData, "is_open_work");
-        activity.setOpenWork(Objects.equals("是", openWork));
+        activity.setOpenWork(Objects.equals(YES, openWork));
         // 学分
         String credit = FormUtils.getValue(formData, "credit");
         if (StringUtils.isNotBlank(credit)) {
@@ -328,22 +330,22 @@ public class FormApprovalApiService {
         // 报名
         List<SignUp> signUps = signAddEdit.getSignUps();
         SignUp signUp = signUps.get(0);
-        String is_open_sign_up = FormUtils.getValue(formData, "is_open_sign_up");
-        if (Objects.equals("是", is_open_sign_up)) {
+        String isOpenSignUp = FormUtils.getValue(formData, "is_open_sign_up");
+        if (Objects.equals(YES, isOpenSignUp)) {
             signUp.setDeleted(false);
-            String sign_up_open_audit = FormUtils.getValue(formData, "sign_up_open_audit");
-            signUp.setOpenAudit(Objects.equals("是", sign_up_open_audit));
+            String signUpOpenAudit = FormUtils.getValue(formData, "sign_up_open_audit");
+            signUp.setOpenAudit(Objects.equals(YES, signUpOpenAudit));
             TimeScopeDTO signUpTimeScope = FormUtils.getTimeScope(formData, "sign_up_time");
             signUp.setStartTime(signUpTimeScope.getStartTime());
             signUp.setEndTime(signUpTimeScope.getEndTime());
-            String sign_up_end_allow_cancel = FormUtils.getValue(formData, "sign_up_end_allow_cancel");
-            signUp.setEndAllowCancel(Objects.equals("是", sign_up_end_allow_cancel));
-            String sign_up_public_list = FormUtils.getValue(formData, "sign_up_public_list");
-            signUp.setPublicList(Objects.equals("是", sign_up_public_list));
-            String sign_up_person_limit = FormUtils.getValue(formData, "sign_up_person_limit");
-            if (StringUtils.isNotBlank(sign_up_person_limit)) {
+            String signUpEndAllowCancel = FormUtils.getValue(formData, "sign_up_end_allow_cancel");
+            signUp.setEndAllowCancel(Objects.equals(YES, signUpEndAllowCancel));
+            String signUpPublicList = FormUtils.getValue(formData, "sign_up_public_list");
+            signUp.setPublicList(Objects.equals(YES, signUpPublicList));
+            String signUpPersonLimit = FormUtils.getValue(formData, "sign_up_person_limit");
+            if (StringUtils.isNotBlank(signUpPersonLimit)) {
                 signUp.setLimitPerson(true);
-                signUp.setPersonLimit(Integer.parseInt(sign_up_person_limit));
+                signUp.setPersonLimit(Integer.parseInt(signUpPersonLimit));
             }
         } else {
             signUp.setDeleted(true);
@@ -352,29 +354,29 @@ public class FormApprovalApiService {
         List<SignIn> signIns = signAddEdit.getSignIns();
         // 签到
         SignIn signIn = signIns.get(0);
-        String is_open_sign_in = FormUtils.getValue(formData, "is_open_sign_in");
-        if (Objects.equals("是", is_open_sign_in)) {
+        String isOpenSignIn = FormUtils.getValue(formData, "is_open_sign_in");
+        if (Objects.equals(YES, isOpenSignIn)) {
             signIn.setDeleted(false);
             String signInPublicList = FormUtils.getValue(formData, "sign_in_public_list");
-            signIn.setPublicList(Objects.equals("是", signInPublicList));
+            signIn.setPublicList(Objects.equals(YES, signInPublicList));
             TimeScopeDTO signInTimeScope = FormUtils.getTimeScope(formData, "sign_in_time");
             signIn.setStartTime(signInTimeScope.getStartTime());
             signIn.setEndTime(signInTimeScope.getEndTime());
-            String sign_in_way = FormUtils.getValue(formData, "sign_in_way");
-            SignIn.Way way = SignIn.Way.fromName(sign_in_way);
+            String signInWay = FormUtils.getValue(formData, "sign_in_way");
+            SignIn.Way way = SignIn.Way.fromName(signInWay);
             if (way != null) {
                 signIn.setWay(way.getValue());
                 if (Objects.equals(SignIn.Way.POSITION, way)) {
-                    AddressDTO sign_in_address = FormUtils.getAddress(formData, "sign_in_address");
-                    if (sign_in_address != null) {
-                        signIn.setAddress(sign_in_address.getAddress());
-                        signIn.setLongitude(sign_in_address.getLng());
-                        signIn.setDimension(sign_in_address.getLat());
+                    AddressDTO signInAddress = FormUtils.getAddress(formData, "sign_in_address");
+                    if (signInAddress != null) {
+                        signIn.setAddress(signInAddress.getAddress());
+                        signIn.setLongitude(signInAddress.getLng());
+                        signIn.setDimension(signInAddress.getLat());
                     }
                 }
             } else {
                 signIn.setWay(SignIn.Way.QR_CODE.getValue());
-                SignIn.ScanCodeWay scanCodeWay = SignIn.ScanCodeWay.fromName(sign_in_way);
+                SignIn.ScanCodeWay scanCodeWay = SignIn.ScanCodeWay.fromName(signInWay);
                 if (scanCodeWay != null) {
                     signIn.setScanCodeWay(scanCodeWay.getValue());
                 } else {
@@ -386,29 +388,29 @@ public class FormApprovalApiService {
         }
         // 签退
         SignIn signOut = signIns.get(1);
-        String is_open_sign_out = FormUtils.getValue(formData, "is_open_sign_out");
-        if (Objects.equals("是", is_open_sign_out)) {
+        String isOpenSignOut = FormUtils.getValue(formData, "is_open_sign_out");
+        if (Objects.equals(YES, isOpenSignOut)) {
             signOut.setDeleted(false);
-            String sign_out_public_list = FormUtils.getValue(formData, "sign_out_public_list");
-            signOut.setPublicList(Objects.equals("是", sign_out_public_list));
+            String signOutPublicList = FormUtils.getValue(formData, "sign_out_public_list");
+            signOut.setPublicList(Objects.equals(YES, signOutPublicList));
             TimeScopeDTO signOutTimeScope = FormUtils.getTimeScope(formData, "sign_out_time");
             signOut.setStartTime(signOutTimeScope.getStartTime());
             signOut.setEndTime(signOutTimeScope.getEndTime());
-            String sign_out_way = FormUtils.getValue(formData, "sign_out_way");
-            SignIn.Way way = SignIn.Way.fromName(sign_out_way);
+            String signOutWay = FormUtils.getValue(formData, "sign_out_way");
+            SignIn.Way way = SignIn.Way.fromName(signOutWay);
             if (way != null) {
                 signOut.setWay(way.getValue());
                 if (Objects.equals(SignIn.Way.POSITION, way)) {
-                    AddressDTO sign_out_address = FormUtils.getAddress(formData, "sign_out_address");
-                    if (sign_out_address != null) {
-                        signOut.setAddress(sign_out_address.getAddress());
-                        signOut.setLongitude(sign_out_address.getLng());
-                        signOut.setDimension(sign_out_address.getLat());
+                    AddressDTO signOutAddress = FormUtils.getAddress(formData, "sign_out_address");
+                    if (signOutAddress != null) {
+                        signOut.setAddress(signOutAddress.getAddress());
+                        signOut.setLongitude(signOutAddress.getLng());
+                        signOut.setDimension(signOutAddress.getLat());
                     }
                 }
             } else {
                 signOut.setWay(SignIn.Way.QR_CODE.getValue());
-                SignIn.ScanCodeWay scanCodeWay = SignIn.ScanCodeWay.fromName(sign_out_way);
+                SignIn.ScanCodeWay scanCodeWay = SignIn.ScanCodeWay.fromName(signOutWay);
                 if (scanCodeWay != null) {
                     signOut.setScanCodeWay(scanCodeWay.getValue());
                 } else {

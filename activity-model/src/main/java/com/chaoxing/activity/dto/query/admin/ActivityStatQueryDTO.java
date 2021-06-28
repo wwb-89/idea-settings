@@ -33,6 +33,8 @@ public class ActivityStatQueryDTO {
 
     @Getter
     public enum OrderFieldEnum {
+        
+        /** 按浏览量 */
         PV("浏览量", "pv"),
         SIGNED_UP_NUM("签到人数", "signedUpNum");
 

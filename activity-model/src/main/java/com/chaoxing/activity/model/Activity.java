@@ -69,7 +69,7 @@ public class Activity {
     private BigDecimal period;
     /** 学分; column: credit*/
     private BigDecimal credit;
-    /** 参与时长上限; column: time_length_upper_limit*/
+    /** 参与时长上限（小时）; column: time_length_upper_limit*/
     private Integer timeLengthUpperLimit;
     /** 是否启用签到报名; column: is_enable_sign*/
     @TableField(value = "is_enable_sign")

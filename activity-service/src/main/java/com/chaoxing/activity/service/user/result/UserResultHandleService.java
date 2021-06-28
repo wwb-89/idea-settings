@@ -112,7 +112,7 @@ public class UserResultHandleService {
             return BigDecimal.ZERO;
         }
         // 同一个主键标识取最新的（按照时间排序）
-        Map<String, UserActionRecord> identifyUserActionRecordMap = new HashMap<>();
+        Map<String, UserActionRecord> identifyUserActionRecordMap = Maps.newHashMap();
         for (UserActionRecord userValidActionRecord : userValidActionRecords) {
             // 同行为类型同行为主键标识为一条数据
             String actionType = userValidActionRecord.getActionType();

@@ -48,6 +48,7 @@ public interface IDelayedQueueService<T> {
 	 * @Date 2021-06-09 14:58:13
 	 * @param redissonClient
 	 * @param key
+	 * @throws InterruptedException
 	 * @return T
 	*/
 	default T pop(RedissonClient redissonClient, String key) throws InterruptedException {

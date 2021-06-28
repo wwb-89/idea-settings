@@ -65,6 +65,7 @@ public class ActivityCreatePermission {
     @Getter
     public enum SignUpScopeType {
 
+        /** 不限 */
         NO_LIMIT("不限", 1),
         COMPETENT_RANGE("作为主管的范围", 2),
         CUSTOM("自定义", 3);

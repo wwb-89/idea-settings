@@ -98,7 +98,7 @@ public class ActivityStatSummaryQueryService {
         }
 
         List<SignParticipateScopeDTO> signParticipateScopes = signApiService.listSignParticipateScopeBySignIds(signIds);
-        Map<Integer, String> signParticipateScopeMap = new HashMap<>();
+        Map<Integer, String> signParticipateScopeMap = Maps.newHashMap();
         for (SignParticipateScopeDTO item : signParticipateScopes) {
             signParticipateScopeMap.put(item.getSignId(), item.getExternalName());
         }
