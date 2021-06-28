@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org/">
+
+<head>
+    <title>个人成绩</title>
+    <meta http-equiv="Content-type" content="text/html; charset=utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, minimal-ui" />
+    <meta name="format-detection" content="telephone=no, email=no">
+    <meta http-equiv="Pragma" content="no-cache" />
+    <meta http-equiv="cache-control" content="no-cache" />
+    <link rel="stylesheet" href="/static/mobile/assets/sign/assets/icomoon/style.css" th:href="@{/mobile/assets/sign/assets/icomoon/style.css}" />
+    <link rel="stylesheet" href="/static/mobile/assets/sign/assets/css/cssreset.css" th:href="@{/mobile/assets/sign/assets/css/cssreset.css}" />
+    <link rel="stylesheet" href="/static/mobile/assets/sign/assets/css/public.css" th:href="@{/mobile/assets/sign/assets/css/public.css}" />
+    <link rel="stylesheet" href="/static/mobile/assets/sign/assets/css/person-list.css" th:href="@{/mobile/assets/sign/assets/css/person-list.css}" />
+    <style>
+        [v-cloak]{
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <!-- 有底部按钮才添加 padding-bottom-->
+    <div class="single-score padding-bottom" id="m-person-grade" v-cloak>
+        <div class="modular">
+            <p class="title">活动积分</p>
+            <h2 class="integral">{{userGrade.totalScore || 0}}</h2>
+        </div>
+        <div class="modular min-height">
+            <p class="title">全部记录</p>
+            <div class="timeline">
+                <ul>
+                    <li v-for="action in userGrade.userActionRecords">
+                        <img class="left-icon" :src="ctx + '/pc/assets/images/' + getActionIcon(action)">
+                        <div class="left-line"></div>
+                        <div class="info">
+                            <p class="time">{{ action.createTime | timestampFormat }}&nbsp;&nbsp;·&nbsp;&nbsp;{{action.title}}</p>
+                            <div class="name">
+                                <p>{{action.name}}</p>
+                                <span class="color-red">{{action.actionDescription}}</span>
+                            </div>
+                        </div>
+                    </li>
+                </ul>
+            </div>
+            <!-- 无内容 -->
+            <div class="no-content" v-show="userGrade && userGrade.userActionRecords && userGrade.userActionRecords.length === 0">
+                暂无内容
+            </div>
+        </div>
+        <!--  加载中  -->
+        <div class="loading" v-show="!userGrade || !userGrade.userActionRecords"><img src="/static/mobile/assets/images/loading-icon.png" th:src="@{/mobile/assets/images/loading-icon.png}">加载中…</div>
+        <div class="bottom-operation">
+            <button class="btn-secondary">添加活动表现</button>
+        </div>
+<!--        删除弹窗-->
+        <div class="model z-index-high" v-show="deleteStatus"></div>
+        <div class="my-dialog" v-show="deleteStatus">
+            <div class="list">
+                <h2 class="border-bottom">确定删除吗？</h2>
+                <ul class="delete">
+                    <li>删除</li>
+                </ul>
+            </div>
+            <div class="cancle" @click="deleteStatus=false">取消</div>
+        </div>
+    </div>
+
+    <div th:replace="mobile/include/common_js :: common_js(~{::script})">
+        <script th:inline="javascript">
+            Vue.filter("timestampFormat", function (timestamp) {
+                if (activityApp.isEmpty(timestamp)) {
+                    return "";
+                }
+                var dateObj = moment(timestamp);
+                return dateObj.format("YYYY.MM.DD HH:mm");
+            });
+            var personGrade = new Vue({
+                el: '#m-person-grade',
+                data: function () {
+                    return {
+                        ctx: ctx,
+                        userGrade: [[${userGrade}]],
+                        deleteStatus:false,
+                    }
+                },
+                created: function () {
+
+                },
+                mounted: function () {
+                    this.decInit();
+                },
+                methods: {
+                    getActionIcon: function (action) {
+                        var actionType = action.actionType;
+
+                        switch (actionType) {
+                            case 'sign_up':
+                                return 'sign-up.png';
+                            case 'sign_in':
+                                if (action.way === 2) {
+                                    return 'sign-in.png';
+                                } else {
+                                    return 'sign-in-normal.png';
+                                }
+                            case 'rating':
+                                return 'evaluation.png';
+                            case 'work':
+                                return 'prize.png';
+                            case 'performance':
+                                return 'recommend.png';
+                            case 'discuss':
+                            default:
+                                return 'evaluation.png'
+                        }
+                    },
+                    //    超出高度计算
+                    decInit:function (){
+                        let winWidth = ($(document).width() / 750) * 32;
+                        let dec_vh = winWidth*4*1.40625;
+                        $(".dec").each(function (){
+                            let thisHight = $(this).height();
+                            if(thisHight>dec_vh){
+                                $(this).siblings(".slide").show();
+                                $(this).addClass("overHidden4")
+                            }
+                        })
+                    },
+                    //    展开更多
+                    showMore:function (obj){
+                        $(obj.target).hide().siblings(".dec").removeClass("overHidden4");
+                    },
+                }
+            });
+        </script>
+    </div>
+</body>
+</html>
+
+

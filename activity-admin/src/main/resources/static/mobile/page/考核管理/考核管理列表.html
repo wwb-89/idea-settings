@@ -15,144 +15,156 @@
     <link rel="stylesheet" href="../../assets/sign/assets/css/person-list.css" />
 </head>
 <body>
-    <div class="person-list" id="vue">
-        <div class="searchDiv">
-            <div class="searchbefore" v-show="!inputShowStatus" v-on:click="inputShow"><i></i><span>搜索</span></div>
-            <div class="searchafter" v-show="inputShowStatus">
-                <input type="text" class="txt" placeholder="姓名/账号" v-model="inputValue" v-on:input="wacthInput"
-                       v-on:focus="modelShow(true)" v-on:focus="modelShow(false)">
-                <i class="search"></i>
-                <i class="delete" v-show="inputValue.length!=0" v-on:click="inputDeleteFun"></i>
-                <div class="cancle" v-on:click="inputShow">取消</div>
-            </div>
+<div class="person-list" id="vue">
+    <div class="searchDiv">
+        <div class="searchbefore" v-show="!inputShowStatus" v-on:click="inputShow"><i></i><span>搜索</span></div>
+        <div class="searchafter" v-show="inputShowStatus">
+            <input type="text" class="txt" placeholder="姓名/账号" v-model="inputValue" v-on:input="wacthInput"
+                   v-on:focus="modelShow(true)" v-on:focus="modelShow(false)">
+            <i class="search"></i>
+            <i class="delete" v-show="inputValue.length!=0" v-on:click="inputDeleteFun"></i>
+            <div class="cancle" v-on:click="inputShow">取消</div>
         </div>
-        <div class="filter-box">
-            <div class="tabRank">
-                <div class="swiper-container">
-                    <div class="swiper-wrapper">
-                        <div v-for="(filter,index) in filterList" :class="['swiper-slide',index==filterActiveNum ?'active':'']"   v-on:click="filterChange(index)">{{filter.name}}{{filter.num}}</div>
-                    </div>
+    </div>
+    <div class="filter-box">
+        <div class="tabRank">
+            <div class="swiper-container">
+                <div class="swiper-wrapper">
+                    <div v-for="(filter,index) in filterList" :class="['swiper-slide',index==filterActiveNum ?'active':'']"   v-on:click="filterChange(index)">{{filter.name}}{{filter.num}}</div>
                 </div>
             </div>
-            <div class="order-box" v-on:click="orderStatus=true">
-                <span>排序</span><i class="icon-sort-2"></i>
-            </div>
         </div>
-        <!-- 有内容 列表格式1-->
-        <div class="list-style1" v-show="filterActiveNum==0">
-            <ul>
-                <li>
-                   <img src="../../assets/images/Vector.png">
-                    <div class="info border-bottom">
-                        <h2 class="name">高晓青</h2>
-                        <a href="#" class="flex-box">
-                            <p class="score">积分 5</p>
-                            <i class="icon-chevron-right"></i>
-                        </a>
-                        <div class="handel-style">
-                           <span class="txt">不合格</span>
-                           <span class="line"></span> 
-                           <span class="txt">合格</span>
-                        </div>
-                    </div>
-                </li>
-                <li>
-                    <img src="../../assets/images/Vector.png">
-                     <div class="info border-bottom">
-                         <h2 class="name">高晓青</h2>
-                         <a href="#" class="flex-box">
-                             <p class="score">积分 5</p>
-                             <i class="icon-chevron-right"></i>
-                         </a>
-                         <div class="handel-style">
-                            <span class="txt">不合格</span>
-                            <span class="line"></span> 
-                            <span class="txt">合格</span>
-                         </div>
-                     </div>
-                 </li>
-            </ul>
+        <div class="order-box" v-on:click="orderStatus=true">
+            <span>排序</span><i class="icon-sort-2"></i>
         </div>
-        <div class="list-style1" v-show="filterActiveNum==1">
-            <ul>
-                <li>
-                    <img src="../../assets/images/Vector.png">
-                    <div class="info border-bottom">
-                        <h2 class="name">高晓青</h2>
-                        <a href="#" class="flex-box">
-                            <p class="score">积分 5</p>
-                            <i class="icon-chevron-right"></i>
-                        </a>
-                        <div class="handel-style">
-                            <span class="txt">合格</span><i class="icon-chevron-down"></i>
-                        </div>
+    </div>
+    <!-- 有内容 列表格式1-->
+    <div class="list-style1" v-show="filterActiveNum==0">
+        <ul>
+            <li>
+                <img src="../../assets/images/Vector.png">
+                <div class="info border-bottom">
+                    <h2 class="name">高晓青</h2>
+                    <a href="#" class="flex-box">
+                        <p class="score">积分 5</p>
+                        <i class="icon-chevron-right"></i>
+                    </a>
+                    <div class="handel-style">
+                        <span class="txt">不合格</span>
+                        <span class="line"></span>
+                        <span class="txt">合格</span>
                     </div>
-                </li>
-                <li>
-                    <img src="../../assets/images/Vector.png">
-                    <div class="info border-bottom">
-                        <h2 class="name">高晓青</h2>
-                        <a href="#" class="flex-box">
-                            <p class="score">积分 5</p>
-                            <i class="icon-chevron-right"></i>
-                        </a>
-                        <div class="handel-style">
-                            <span class="txt">合格</span><i class="icon-chevron-down"></i>
-                        </div>
+                </div>
+            </li>
+            <li>
+                <img src="../../assets/images/Vector.png">
+                <div class="info border-bottom">
+                    <h2 class="name">高晓青</h2>
+                    <a href="#" class="flex-box">
+                        <p class="score">积分 5</p>
+                        <i class="icon-chevron-right"></i>
+                    </a>
+                    <div class="handel-style">
+                        <span class="txt">不合格</span>
+                        <span class="line"></span>
+                        <span class="txt">合格</span>
                     </div>
-                </li>
-            </ul>
-        </div>
-        <div class="list-style1" v-show="filterActiveNum==2">
-            <ul>
-                <li>
-                    <img src="../../assets/images/Vector.png">
-                    <div class="info border-bottom">
-                        <h2 class="name">高晓青</h2>
-                        <a href="#" class="flex-box">
-                            <p class="score">积分 5</p>
-                            <i class="icon-chevron-right"></i>
-                        </a>
-                        <div class="handel-style">
-                            <span class="txt">不合格</span><i class="icon-chevron-down"></i>
-                        </div>
+                </div>
+            </li>
+        </ul>
+    </div>
+    <div class="list-style1" v-show="filterActiveNum==1">
+        <ul>
+            <li>
+                <img src="../../assets/images/Vector.png">
+                <div class="info border-bottom">
+                    <h2 class="name">高晓青</h2>
+                    <a href="#" class="flex-box">
+                        <p class="score">积分 5</p>
+                        <i class="icon-chevron-right"></i>
+                    </a>
+                    <div class="handel-style" v-on:click="handelStatus=true">
+                        <span class="txt">合格</span><i class="icon-chevron-down"></i>
                     </div>
-                </li>
-                <li>
-                    <img src="../../assets/images/Vector.png">
-                    <div class="info border-bottom">
-                        <h2 class="name">高晓青</h2>
-                        <a href="#" class="flex-box">
-                            <p class="score">积分 5</p>
-                            <i class="icon-chevron-right"></i>
-                        </a>
-                        <div class="handel-style">
-                            <span class="txt">不合格</span><i class="icon-chevron-down"></i>
-                        </div>
+                </div>
+            </li>
+            <li>
+                <img src="../../assets/images/Vector.png">
+                <div class="info border-bottom">
+                    <h2 class="name">高晓青</h2>
+                    <a href="#" class="flex-box">
+                        <p class="score">积分 5</p>
+                        <i class="icon-chevron-right"></i>
+                    </a>
+                    <div class="handel-style" v-on:click="handelStatus=true">
+                        <span class="txt">合格</span><i class="icon-chevron-down"></i>
                     </div>
-                </li>
-            </ul>
-        </div>
-        <!-- 无内容 -->
-        <div class="no-content">
-            暂无内容
-        </div>
-        <!--  加载中  -->
-        <div class="loading"><img src="../../assets/images/loading-icon.png">加载中…</div>
-        <div class="model" v-show="modelShowStatus"></div>
-        <div class="model z-index-high" v-show="orderStatus"></div>
-<!--        排序弹窗-->
-        <div class="order-dialog" v-show="orderStatus">
+                </div>
+            </li>
+        </ul>
+    </div>
+    <div class="list-style1" v-show="filterActiveNum==2">
+        <ul>
+            <li>
+                <img src="../../assets/images/Vector.png">
+                <div class="info border-bottom">
+                    <h2 class="name">高晓青</h2>
+                    <a href="#" class="flex-box">
+                        <p class="score">积分 5</p>
+                        <i class="icon-chevron-right"></i>
+                    </a>
+                    <div class="handel-style" v-on:click="handelStatus=true">
+                        <span class="txt">不合格</span><i class="icon-chevron-down"></i>
+                    </div>
+                </div>
+            </li>
+            <li>
+                <img src="../../assets/images/Vector.png">
+                <div class="info border-bottom">
+                    <h2 class="name">高晓青</h2>
+                    <a href="#" class="flex-box">
+                        <p class="score">积分 5</p>
+                        <i class="icon-chevron-right"></i>
+                    </a>
+                    <div class="handel-style" v-on:click="handelStatus=true">
+                        <span class="txt">不合格</span><i class="icon-chevron-down"></i>
+                    </div>
+                </div>
+            </li>
+        </ul>
+    </div>
+    <!-- 无内容 -->
+    <div class="no-content">
+        暂无内容
+    </div>
+    <!--  加载中  -->
+    <div class="loading"><img src="../../assets/images/loading-icon.png">加载中…</div>
+    <div class="model" v-show="modelShowStatus"></div>
+    <div class="model z-index-high" v-show="orderStatus">
+        <div class="my-dialog">
             <div class="list">
                 <h2 class="border-bottom">选择排序方式</h2>
-                <ul>
-                    <li class="borser-bottom">积分从高到低</li>
+                <ul class="order-list">
+                    <li class="border-bottom">积分从高到低</li>
                     <li>积分从低到高</li>
                 </ul>
             </div>
             <div class="cancle" v-on:click="orderStatus=false">取消</div>
         </div>
     </div>
+    <!--        合格不合格弹窗样式-->
+    <div class="model z-index-high" v-show="handelStatus">
+        <div class="my-dialog">
+            <div class="list">
+                <ul class="order-list">
+                    <li class="border-bottom">合格</li>
+                    <li>不合格</li>
+                </ul>
+            </div>
+            <div class="cancle" v-on:click="handelStatus=false">取消</div>
+        </div>
+    </div>
+</div>
 </body>
 
 </html>
@@ -188,6 +200,7 @@
                 }],
                 filterActiveNum:0,
                 orderStatus:false,
+                handelStatus:false, //合格不合格弹窗状态
             }
         },
         created: function () {
@@ -246,7 +259,7 @@
                     }
                 }, true);
             },
-        //    弹窗
+            //    弹窗
         }
     });
 </script>

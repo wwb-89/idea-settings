@@ -208,10 +208,10 @@ a:visited {
     font-size: 27.3067px;
   }
 }
-  .overHidden1 {
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
+.overHidden1 {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 .overHidden2 {
   display: -webkit-box;
@@ -375,8 +375,8 @@ input{
   border: 1px solid #0084FF;
   box-sizing: border-box;
   &.disabled {
-    border: 1px solid rgba(0, 132, 255, 0.3);   
-    color: rgba(0, 132, 255, 0.3);        
+    border: 1px solid rgba(0, 132, 255, 0.3);
+    color: rgba(0, 132, 255, 0.3);
   }
 }
 
@@ -480,6 +480,7 @@ input{
   right: 0;
   bottom: 0;
   background: rgba(0, 0, 0, 0.3);
+  z-index: 4;
   &.z-index-high {
     z-index: 100;
   }

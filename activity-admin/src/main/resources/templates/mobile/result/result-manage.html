@@ -1,0 +1,404 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org/">
+
+<head>
+    <title>考核管理</title>
+    <meta http-equiv="Content-type" content="text/html; charset=utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, minimal-ui" />
+    <meta name="format-detection" content="telephone=no, email=no">
+    <meta http-equiv="Pragma" content="no-cache" />
+    <meta http-equiv="cache-control" content="no-cache" />
+    <link rel="stylesheet" href="/static/mobile/assets/sign/assets/icomoon/style.css" th:href="@{/mobile/assets/sign/assets/icomoon/style.css}" />
+    <link rel="stylesheet" href="/static/mobile/assets/lib/swiper/css/swiper.min.css" th:href="@{/mobile/assets/lib/swiper/css/swiper.min.css}" />
+    <link rel="stylesheet" href="/static/mobile/assets/sign/assets/css/cssreset.css" th:href="@{/mobile/assets/sign/assets/css/cssreset.css}" />
+    <link rel="stylesheet" href="/static/mobile/assets/sign/assets/css/public.css" th:href="@{/mobile/assets/sign/assets/css/public.css}" />
+    <link rel="stylesheet" href="/static/mobile/assets/sign/assets/css/person-list.css" th:href="@{/mobile/assets/sign/assets/css/person-list.css}" />
+    <link rel="stylesheet" href="/static/mobile/assets/lib/mescroll/mescroll.css" th:href="@{/mobile/assets/lib/mescroll/mescroll.css}" />
+    <style>
+        [v-cloak]{
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="person-list" id="result-list" v-cloak>
+        <div class="searchDiv">
+            <div class="searchbefore" v-show="!inputShowStatus" @click="inputShowStatus = !inputShowStatus"><i></i><span>搜索</span></div>
+            <div class="searchafter" v-show="inputShowStatus">
+                <input type="text" class="txt" placeholder="姓名/账号" v-model="queryParams.sw" @focus="modelShowStatus = !modelShowStatus" @keyup.enter="search">
+                <i class="search"></i>
+                <i class="delete" v-show="queryParams.sw.length != 0" @click="inputDeleteFun"></i>
+                <div class="cancle" @click="inputShowStatus = !inputShowStatus">取消</div>
+            </div>
+        </div>
+        <div class="filter-box">
+            <div class="tabRank">
+                <div class="swiper-container">
+                    <div class="swiper-wrapper">
+                        <div :class="['swiper-slide', filterType == 'WAIT_AUDIT' ? 'active':'']" @click="filterChange('WAIT_AUDIT', 2)">待审核{{dataMap.WAIT_AUDIT.num}}</div>
+                        <div :class="['swiper-slide', filterType == 'QUALIFIED' ? 'active':'']" @click="filterChange('QUALIFIED', 1)">合格{{dataMap.QUALIFIED.num}}</div>
+                        <div :class="['swiper-slide', filterType == 'UN_QUALIFIED' ? 'active':'']" @click="filterChange('UN_QUALIFIED', 0)">不合格{{dataMap.UN_QUALIFIED.num}}</div>
+                    </div>
+                </div>
+            </div>
+            <div class="order-box" @click="orderStatus=true">
+                <span>排序</span><i class="icon-sort-2"></i>
+            </div>
+        </div>
+
+        <div class="list-style1">
+            <ul>
+                <li v-for="record in dataMap[filterType].data">
+                    <img :src="'http://photo.chaoxing.com/p/' + record.uid + '_80'">
+                    <div class="info border-bottom">
+                        <h2 class="name">{{record.realName}}</h2>
+                        <a class="flex-box" @click="toUserResultDetail(record.uid)">
+                            <p class="score">积分 {{record.totalScore}}</p>
+                            <i class="icon-chevron-right"></i>
+                        </a>
+                        <div class="handel-style" v-if="filterType == 'UN_QUALIFIED'" @click="judgeQualified(record)">
+                            <span class="txt">不合格</span><i class="icon-chevron-down"></i>
+                        </div>
+                        <div class="handel-style" v-if="filterType == 'QUALIFIED'" @click="judgeQualified(record)">
+                            <span class="txt">合格</span><i class="icon-chevron-down"></i>
+                        </div>
+                        <div class="handel-style" v-if="filterType == 'WAIT_AUDIT'">
+                            <span class="txt" @click="qualified(record)">不合格</span>
+                            <span class="line"></span>
+                            <span class="txt" @click="unQualified(record)">合格</span>
+                        </div>
+                    </div>
+                </li>
+            </ul>
+        </div>
+        <!-- 无内容 -->
+        <div class="no-content" v-if="dataMap[filterType].data && dataMap[filterType].data.length === 0">
+            暂无内容
+        </div>
+        <!--  加载中  -->
+        <div class="loading" v-if="!dataMap[filterType].data"><img src="/static/mobile/assets/images/loading-icon.png" th:src="@{/mobile/assets/images/loading-icon.png}">加载中…</div>
+        <div class="model" v-show="modelShowStatus"></div>
+        <div class="model z-index-high" v-show="orderStatus">
+            <div class="my-dialog">
+                <div class="list">
+                    <h2 class="border-bottom">选择排序方式</h2>
+                    <ul class="order-list">
+                        <li class="border-bottom" @click="sortChange('DESC')">积分从高到低</li>
+                        <li @click="sortChange('ASC')">积分从低到高</li>
+                    </ul>
+                </div>
+                <div class="cancle" @click="orderStatus = false">取消</div>
+            </div>
+        </div>
+        <!--        合格不合格弹窗样式-->
+        <div class="model z-index-high" v-show="handleStatus">
+            <div class="my-dialog">
+                <div class="list">
+                    <ul class="order-list">
+                        <li class="border-bottom" @click="qualified()">合格</li>
+                        <li @click="unQualified()">不合格</li>
+                    </ul>
+                </div>
+                <div class="cancle" @click="cancelJudge">取消</div>
+            </div>
+        </div>
+    </div>
+
+    <div th:replace="mobile/include/common_js :: common_js(~{::script})">
+        <script src="/static/mobile/assets/lib/mescroll/mescroll.js" th:src="@{/mobile/assets/lib/mescroll/mescroll.js}"></script>
+        <script src="/static/mobile/assets/lib/swiper/js/swiper.min.js" th:src="@{/mobile/assets/lib/swiper/js/swiper.min.js}"></script>
+        <script th:inline="javascript">
+            var vm = new Vue({
+                el: '#result-list',
+                data: function () {
+                    return {
+                        activityId: [[${activityId}]],
+                        tableFieldDetails: [[${tableFieldDetails}]],
+                        queryParams: {
+                            activityId: [[${activityId}]],
+                            sw: '',
+                            orderFieldId: null,
+                            orderType: 'DESC'
+                        },
+                        mescroll: null,
+                        inited: false,
+                        dataMap: {
+                            QUALIFIED: {
+                                num: 0,
+                                data: [],
+                                pageNum: 1
+                            },
+                            UN_QUALIFIED: {
+                                num: 0,
+                                data: [],
+                                pageNum: 1
+                            },
+                            WAIT_AUDIT: {
+                                num: 0,
+                                data: [],
+                                pageNum: 1
+                            }
+                        },
+                        filterStatus: 2,
+                        filterType: 'WAIT_AUDIT',
+                        activeUser: null,
+                        inputShowStatus: false,
+                        modelShowStatus: false,
+                        orderStatus:false,
+                        handleStatus:false, //合格不合格弹窗状态
+                    }
+                },
+                created: function () {},
+                mounted: function () {
+                    var $this = this;
+                    $this.initMescroll();
+                    $($this.tableFieldDetails).each(function () {
+                        if (this.code == 'totalScore' && this.name == '积分') {
+                            $this.queryParams.orderFieldId = this.id;
+                        }
+                    });
+                    $this.$nextTick(function () {
+                        $this.loadAllData();
+                        $this.inited = true
+                    });
+                    $this.swiperInit()
+                },
+                methods: {
+                    sortChange: function (orderType) {
+                        var $this = this;
+                        $this.queryParams.orderType = orderType;
+                        $this.dataMap[$this.filterType] = {
+                            num: 0,
+                            data: [],
+                            pageNum: 1
+                        };
+                        $this.loadDataByFilterType();
+                        $this.orderStatus = false;
+                    },
+                    loadDataByFilterType: function () {
+                        var $this = this;
+                        switch ($this.filterType) {
+                            case 'QUALIFIED':
+                                $this.loadQualifiedData();
+                                break;
+                            case 'UN_QUALIFIED':
+                                $this.loadUnQualifiedData();
+                                break;
+                            case 'WAIT_AUDIT':
+                                $this.loadWaitAuditData();
+                                break;
+                            default:
+                        }
+                    },
+                    // 初始化 Mescroll
+                    search: function () {
+                        var $this = this;
+                        $this.dataMap = {
+                            QUALIFIED: {
+                                num: 0,
+                                data: [],
+                                pageNum: 1
+                            },
+                            UN_QUALIFIED: {
+                                num: 0,
+                                data: [],
+                                pageNum: 1
+                            },
+                            WAIT_AUDIT: {
+                                num: 0,
+                                data: [],
+                                pageNum: 1
+                            }
+                        };
+                        $this.loadAllData();
+                    },
+                    initMescroll: function () {
+                        var $this = this;
+                        if ($this.mescroll == null) {
+                            $this.mescroll = new MeScroll("body", {
+                                down: {
+                                    use: false
+                                },
+                                up: {
+                                    callback: function () {
+                                        if ($this.inited) {
+                                            $this.loadDataByFilterType();
+                                        }
+                                    }, //上拉加载的回调
+                                    htmlNodata: '<p class="upwarp-nodata">-- 没有更多了 --</p>',
+                                    noMoreSize: 5, //如果列表已无数据,可设置列表的总数量要大于5才显示无更多数据; 避免列表数据过少(比如只有一条数据),显示无更多数据会不好看 这就是为什么无更多数据有时候不显示的原因.
+                                }
+                            });
+                        }
+                    },
+                    loadAllData: async function () {
+                        var $this = this;
+                        $this.loadUnQualifiedData();
+                        $this.loadQualifiedData();
+                        $this.loadWaitAuditData();
+                    },
+                    loadUnQualifiedData: function () {
+                        var $this = this;
+                        var param = $.extend({}, $this.queryParams);
+                        param.qualifiedStatus = 0;
+                        $this.loadData(param);
+                    },
+                    loadQualifiedData: function () {
+                        var $this = this;
+                        var param = $.extend({}, $this.queryParams);
+                        param.qualifiedStatus = 1;
+                        $this.loadData(param);
+                    },
+                    loadWaitAuditData: function () {
+                        var $this = this;
+                        var param = $.extend({}, $this.queryParams);
+                        param.qualifiedStatus = 2;
+                        $this.loadData(param);
+                    },
+                    // 重新加载数据
+                    loadData: function(param) {
+                        var $this = this;
+                        var filterType = '';
+                        if (param.qualifiedStatus == 0) {
+                            filterType = 'UN_QUALIFIED';
+                        } else if (param.qualifiedStatus == 1) {
+                            filterType = 'QUALIFIED';
+                        } else if (param.qualifiedStatus == 2) {
+                            filterType = 'WAIT_AUDIT';
+                        }
+                        var dataItem = $this.dataMap[filterType];
+
+                        param.pageNum = dataItem.pageNum;
+                        param.pageSize = 10;
+
+                        var url = ctx + "/api/activity/results/manage/page";
+                        app.ajaxPost(url, param, function (res) {
+                            if (res.success) {
+                                var records = res.data.records;
+                                $this.mescroll.endByPage(records.length, res.data.pages);
+                                dataItem.data.pushArray(records);
+                                dataItem.num = res.data.total;
+                                dataItem.pageNum++;
+                                $this.dataMap[filterType] = dataItem
+                                // console.log(dataItem);
+                            } else {
+                                var errorMessage = data.message;
+                                if (activityApp.isEmpty(errorMessage)) {
+                                    errorMessage = "加载数据失败";
+                                }
+                                app.showMsg(errorMessage);
+                            }
+                        }, function () {
+                            app.showMsg("加载数据失败");
+                        });
+                    },
+                    //输入框的交互
+                    inputDeleteFun: function () {
+                        this.queryParams.sw = "";
+                        this.inputDeleteShow = false;
+                    },
+                    filterChange:function (type, status){
+                        var $this = this;
+                        $this.filterType = type;
+                        $this.filterStatus = status;
+                    },
+                    //swiper初始化
+                    swiperInit:function (){
+                        var swiper = new Swiper('.tabRank .swiper-container', {
+                            slidesPerView: "auto",
+                        });
+                        var startScroll, touchStart, touchCurrent;
+                        swiper.slides.on('touchstart', function (e) {
+                            startScroll = this.scrollLeft;
+                            touchStart = e.targetTouches[0].pageX;
+                        }, true);
+                        swiper.slides.on('touchmove', function (e) {
+                            touchCurrent = e.targetTouches[0].pageX;
+                            var touchesDiff = touchCurrent - touchStart;
+                            var slide = this;
+                            var onlyScrolling =
+                                ( slide.scrollWidth > slide.offsetWidth ) && //allow only when slide is scrollable
+                                (
+                                    ( touchesDiff < 0 && startScroll === 0 ) || //start from left edge to scroll right
+                                    ( touchesDiff > 0 && startScroll === ( slide.scrollWidth - slide.offsetWidth ) ) || //start from right edge to scroll left
+                                    ( startScroll > 0 && startScroll < ( slide.scrollWidth - slide.offsetWidth ) ) //start from the middle
+                                );
+                            if (onlyScrolling) {
+                                e.stopPropagation();
+                            }
+                        }, true);
+                    },
+                    // 合格
+                    qualified: function (user) {
+                        var $this = this;
+                        user = user || $this.activeUser;
+
+                        if (!user || user.qualifiedStatus === 1) {
+                            $this.handleStatus = false;
+                            return;
+                        }
+                        var url = ctx + '/api/activity/results/manage/qualified/';
+                        var params = {
+                            activityId: $this.activityId,
+                            uid: user.uid
+                        }
+                        $this.submitReviewResult(url, params);
+                        $this.handleStatus = false;
+                    },
+                    // 不合格
+                    unQualified: function (user) {
+                        var $this = this;
+                        user = user || $this.activeUser;
+                        if (!user || user.qualifiedStatus === 0) {
+                            $this.handleStatus = false;
+                            return;
+                        }
+                        var url = ctx + '/api/activity/results/manage/unQualified/';
+                        var params = {
+                            activityId: $this.activityId,
+                            uid: user.uid
+                        }
+                        $this.submitReviewResult(url, params);
+                        $this.handleStatus = false;
+                    },
+                    // 提交评审结果: 合格、不合格
+                    submitReviewResult: function (url, params) {
+                        app.ajaxPost(url, params, function (data) {
+                            if (data.success) {
+                                app.showMsg("评审成功");
+                                window.location.reload();
+                            } else {
+                                var errorMessage = data.message;
+                                if (activityApp.isEmpty(errorMessage)) {
+                                    errorMessage = "评审失败";
+                                }
+                                app.showMsg(errorMessage);
+                            }
+                        }, function () {
+                            app.showMsg("评审失败");
+                        });
+                    },
+                    judgeQualified: function (record) {
+                        var $this = this;
+                        $this.handleStatus = true;
+                        $this.activeUser = record;
+                    },
+                    cancelJudge: function () {
+                        var $this = this;
+                        $this.handleStatus = false;
+                        $this.activeUser = null;
+                    },
+                    toUserResultDetail: function (uid) {
+                        var $this = this;
+                        if (uid) {
+                            var url = ctx + '/activity/'+ $this.activityId +'/results/manage/person-grade?uid=' + uid;
+                            app.openUrl(url);
+                        }
+                    }
+                }
+            });
+        </script>
+    </div>
+</body>
+
+</html>
