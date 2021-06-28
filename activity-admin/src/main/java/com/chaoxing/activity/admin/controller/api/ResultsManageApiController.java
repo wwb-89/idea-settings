@@ -5,6 +5,7 @@ import com.chaoxing.activity.dto.RestRespDTO;
 import com.chaoxing.activity.dto.UserResultDTO;
 import com.chaoxing.activity.dto.query.UserResultQueryDTO;
 import com.chaoxing.activity.model.UserResult;
+import com.chaoxing.activity.service.user.action.UserActionRecordQueryService;
 import com.chaoxing.activity.service.user.result.UserResultHandleService;
 import com.chaoxing.activity.service.user.result.UserResultQueryService;
 import com.chaoxing.activity.util.HttpServletRequestUtils;
@@ -30,6 +31,8 @@ public class ResultsManageApiController {
     private UserResultQueryService userResultQueryService;
     @Resource
     private UserResultHandleService userResultHandleService;
+    @Resource
+    private UserActionRecordQueryService userActionRecordQueryService;
 
     /**分页查询
     * @Description
@@ -99,5 +102,18 @@ public class ResultsManageApiController {
     public RestRespDTO batchUnQualified(Integer activityId, String uids) {
         userResultHandleService.batchUpdateQualifiedStatus(activityId, uids, UserResult.QualifiedStatusEnum.NOT_QUALIFIED);
         return RestRespDTO.success();
+    }
+
+    /**查询个人成绩行为记录
+    * @Description
+    * @author huxiaolong
+    * @Date 2021-06-28 18:44:30
+    * @param activityId
+    * @param uid
+    * @return com.chaoxing.activity.dto.RestRespDTO
+    */
+    @PostMapping("person-grade")
+    public RestRespDTO personalGrade(Integer activityId, Integer uid) {
+        return RestRespDTO.success(userActionRecordQueryService.getUserGrade(uid, activityId));
     }
 }

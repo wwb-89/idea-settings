@@ -1,11 +1,9 @@
 package com.chaoxing.activity.admin.controller.general;
 
-import com.chaoxing.activity.dto.UserGradeDTO;
 import com.chaoxing.activity.model.ActivityTableField;
 import com.chaoxing.activity.model.TableField;
 import com.chaoxing.activity.model.TableFieldDetail;
 import com.chaoxing.activity.service.tablefield.TableFieldQueryService;
-import com.chaoxing.activity.service.user.action.UserActionRecordQueryService;
 import com.chaoxing.activity.util.UserAgentUtils;
 import com.chaoxing.activity.util.annotation.LoginRequired;
 import org.apache.commons.collections4.CollectionUtils;
@@ -33,8 +31,6 @@ public class ResultsManageController {
 	@Resource
 	private TableFieldQueryService tableFieldQueryService;
 
-	@Resource
-	private UserActionRecordQueryService userActionRecordQueryService;
 
 	/**考核管理主页
 	* @Description
@@ -64,11 +60,21 @@ public class ResultsManageController {
  		return "pc/result/result-manage";
 	}
 
+	/**个人成绩行为记录页
+	* @Description
+	* @author huxiaolong
+	* @Date 2021-06-28 18:45:02
+	* @param request
+	* @param model
+	* @param activityId
+	* @param uid
+	* @return java.lang.String
+	*/
 	@LoginRequired
 	@RequestMapping("person-grade")
 	public String personalGrade(HttpServletRequest request, Model model, @PathVariable Integer activityId, Integer uid) {
-		UserGradeDTO userGrade = userActionRecordQueryService.getUserGrade(uid, activityId);
-		model.addAttribute("userGrade", userGrade);
+		model.addAttribute("uid", uid);
+		model.addAttribute("activityId", activityId);
 		if (UserAgentUtils.isMobileAccess(request)) {
 			return "mobile/result/person-grade";
 		}

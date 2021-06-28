@@ -148,19 +148,43 @@
                 el: '#personGrade',
                 data: {
                     ctx: ctx,
-                    userGrade: [[${userGrade}]],
-                    rateValue:4,
+                    uid: [[${uid}]],
+                    activityId: [[${activityId}]],
+                    userGrade: {},
                     ifCancelPop:false,
                     score:'',
                     info:'',
                     addPerformancePop:false,
                 },
                 mounted: function(){
-                    this.leftHeight()
-                    this.showMoreClick()
-                    this.scoreShowFun()
+                    var $this = this;
+                    $this.loadData();
+                    $this.leftHeight()
+                    $this.showMoreClick()
+                    $this.scoreShowFun()
                 },
                 methods: {
+                    loadData: function () {
+                        var $this = this;
+                        var url = ctx + "/api/activity/results/manage/person-grade";
+                        var param = {
+                            uid: $this.uid,
+                            activityId: $this.activityId
+                        }
+                        app.ajaxPostWithLoading(url, param, function (res) {
+                            if (res.success) {
+                                $this.userGrade = res.data;
+                            } else {
+                                var errorMessage = data.message;
+                                if (activityApp.isEmpty(errorMessage)) {
+                                    errorMessage = "加载数据失败";
+                                }
+                                app.showMsg(errorMessage);
+                            }
+                        }, function () {
+                            app.showMsg("加载数据失败");
+                        });
+                    },
                     getActionIcon: function (action) {
                         var actionType = action.actionType;
 

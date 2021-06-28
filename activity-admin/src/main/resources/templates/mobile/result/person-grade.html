@@ -8,6 +8,7 @@
     <meta name="format-detection" content="telephone=no, email=no">
     <meta http-equiv="Pragma" content="no-cache" />
     <meta http-equiv="cache-control" content="no-cache" />
+    <link rel="stylesheet" href="/static/mobile/assets/lib/layui/css/layui.css" th:href="@{/mobile/assets/lib/layui/css/layui.css}" />
     <link rel="stylesheet" href="/static/mobile/assets/sign/assets/icomoon/style.css" th:href="@{/mobile/assets/sign/assets/icomoon/style.css}" />
     <link rel="stylesheet" href="/static/mobile/assets/sign/assets/css/cssreset.css" th:href="@{/mobile/assets/sign/assets/css/cssreset.css}" />
     <link rel="stylesheet" href="/static/mobile/assets/sign/assets/css/public.css" th:href="@{/mobile/assets/sign/assets/css/public.css}" />
@@ -15,6 +16,12 @@
     <style>
         [v-cloak]{
             display: none;
+        }
+        .layui-inline {
+            padding: 0px !important;
+        }
+        ul .layui-rate {
+            padding: 0px;
         }
     </style>
 </head>
@@ -29,15 +36,20 @@
             <p class="title">全部记录</p>
             <div class="timeline">
                 <ul>
-                    <li v-for="action in userGrade.userActionRecords">
+                    <li v-for="(action, index) in userGrade.userActionRecords">
                         <img class="left-icon" :src="ctx + '/pc/assets/images/' + getActionIcon(action)">
                         <div class="left-line"></div>
                         <div class="info">
                             <p class="time">{{ action.createTime | timestampFormat }}&nbsp;&nbsp;·&nbsp;&nbsp;{{action.title}}</p>
                             <div class="name">
-                                <p>{{action.name}}</p>
+                                <p v-if="action.actionType !== 'rating'">{{action.name}}</p>
                                 <span class="color-red">{{action.actionDescription}}</span>
                             </div>
+                            <template v-if="action.actionType === 'rating' && action.ratingDetail">
+                                <div class="star-box" data-name="star-box" :data-index="index"></div>
+                                <p class="dec">{{action.ratingDetail.comment}}</p>
+                                <span class="slide" @click="showDetailComment"></span>
+                            </template>
                         </div>
                     </li>
                 </ul>
@@ -49,9 +61,9 @@
         </div>
         <!--  加载中  -->
         <div class="loading" v-show="!userGrade || !userGrade.userActionRecords"><img src="/static/mobile/assets/images/loading-icon.png" th:src="@{/mobile/assets/images/loading-icon.png}">加载中…</div>
-        <div class="bottom-operation">
-            <button class="btn-secondary">添加活动表现</button>
-        </div>
+<!--        <div class="bottom-operation">-->
+<!--            <button class="btn-secondary">添加活动表现</button>-->
+<!--        </div>-->
 <!--        删除弹窗-->
         <div class="model z-index-high" v-show="deleteStatus"></div>
         <div class="my-dialog" v-show="deleteStatus">
@@ -66,6 +78,7 @@
     </div>
 
     <div th:replace="mobile/include/common_js :: common_js(~{::script})">
+        <script src="/static/mobile/assets/lib/layui/layui.js" th:src="@{/mobile/assets/lib/layui/layui.js}"></script>
         <script th:inline="javascript">
             Vue.filter("timestampFormat", function (timestamp) {
                 if (activityApp.isEmpty(timestamp)) {
@@ -79,17 +92,42 @@
                 data: function () {
                     return {
                         ctx: ctx,
-                        userGrade: [[${userGrade}]],
+                        uid: [[${uid}]],
+                        activityId: [[${activityId}]],
+                        userGrade: {},
                         deleteStatus:false,
                     }
                 },
-                created: function () {
-
-                },
                 mounted: function () {
-                    this.decInit();
+                    var $this = this;
+                    $this.loadData();
+                    // $this.decInit();
                 },
                 methods: {
+                    loadData: function () {
+                        var $this = this;
+                        var url = ctx + "/api/activity/results/manage/person-grade";
+                        var param = {
+                            uid: $this.uid,
+                            activityId: $this.activityId
+                        }
+                        app.ajaxPost(url, param, function (res) {
+                            if (res.success) {
+                                $this.userGrade = res.data;
+                                $this.$nextTick(function () {
+                                    this.rateList();
+                                })
+                            } else {
+                                var errorMessage = data.message;
+                                if (activityApp.isEmpty(errorMessage)) {
+                                    errorMessage = "加载数据失败";
+                                }
+                                app.showMsg(errorMessage);
+                            }
+                        }, function () {
+                            app.showMsg("加载数据失败");
+                        });
+                    },
                     getActionIcon: function (action) {
                         var actionType = action.actionType;
 
@@ -119,11 +157,53 @@
                         let dec_vh = winWidth*4*1.40625;
                         $(".dec").each(function (){
                             let thisHight = $(this).height();
-                            if(thisHight>dec_vh){
+                            if(thisHight > dec_vh){
                                 $(this).siblings(".slide").show();
                                 $(this).addClass("overHidden4")
                             }
                         })
+                    },
+                    // 遍历每个li中星星
+                    rateList: function () {
+                        var $this = this;
+                        var rates = $("div[data-name='star-box']");
+                        rates.each(function (i, n) {
+                            var dataIndex = $(n).attr('data-index');
+                            if (!dataIndex) {
+                                return;
+                            }
+                            var ratingItem = $this.userGrade.userActionRecords[parseInt(dataIndex)].ratingDetail;
+                            var score = ratingItem.score;
+
+                            $(n).addClass("testX");
+                            layui.use(['rate'], function () {
+                                var rate = layui.rate;
+                                rate.render({
+                                    elem: $(n),
+                                    value: score,
+                                    readonly: true,
+                                })
+                            })
+                        })
+                        var slide = $(".slide")
+                        let winWidth = ($(document).width() / 750) * 32;
+                        let dec_vh = winWidth * 4 * 1.40625;
+                        slide.each(function (i, n) {
+                            if ($(n).prev().height() >= dec_vh && !$(n).text()) {
+                                $(n).prev().addClass("overHidden4")
+                                $(n).html("展开")
+                            }
+                        });
+                    },
+                    showDetailComment: function (e) {
+                        var rateDom = e.target
+                        if ($(rateDom).prev($('.info .desc')).hasClass('overHidden4')) {
+                            $(rateDom).html('收起')
+                            $(rateDom).prev($('.info .desc')).removeClass('overHidden4')
+                        } else {
+                            $(rateDom).html('展开')
+                            $(rateDom).prev($('.info .desc')).addClass('overHidden4')
+                        }
                     },
                     //    展开更多
                     showMore:function (obj){
