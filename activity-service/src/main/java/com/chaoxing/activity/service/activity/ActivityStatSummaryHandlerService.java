@@ -84,7 +84,6 @@ public class ActivityStatSummaryHandlerService {
             defaultStatSummary.setSignedInNum(latestStatSummary.getSignedInNum());
             defaultStatSummary.setSignedUpNum(latestStatSummary.getSignedUpNum());
             defaultStatSummary.setSignInRate(latestStatSummary.getSignInRate());
-            defaultStatSummary.setQualifiedNum(latestStatSummary.getQualifiedNum());
             defaultStatSummary.setAvgParticipateTimeLength(latestStatSummary.getAvgParticipateTimeLength());
         }
         if (CollectionUtils.isEmpty(statSummaryList)) {
@@ -106,7 +105,7 @@ public class ActivityStatSummaryHandlerService {
     public void addOrUpdateAllActivityStatSummary() {
         List<Integer> activityIds = activityQueryService.list().stream().map(Activity::getId).collect(Collectors.toList());
         for (Integer activityId : activityIds) {
-            activityStatSummaryQueueService.pushSignStat(activityId);
+            activityStatSummaryQueueService.push(activityId);
         }
     }
 }

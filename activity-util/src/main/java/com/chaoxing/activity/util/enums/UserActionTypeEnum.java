@@ -4,6 +4,7 @@ import com.google.common.collect.Lists;
 import lombok.Getter;
 
 import java.util.List;
+import java.util.Objects;
 
 /**用户行为枚举
  * @author wwb
@@ -22,12 +23,13 @@ public enum UserActionTypeEnum {
 	RATING("评价", "rating", true, UserActionEnum.RATING),
 	DISCUSS("讨论", "discuss", false, UserActionEnum.PUBLISH_TOPIC, UserActionEnum.REPLY_TOPIC),
 	WORK("作品征集", "work", true, UserActionEnum.SUBMIT_WORK),
-	PERFORMANCE("现场评分", "performance", true, UserActionEnum.PERFORMANCE);
+	PERFORMANCE("现场评分", "performance", true, UserActionEnum.PERFORMANCE),
+	QUALIFIED("合格判定", "qualified", false);
 
-	private String name;
-	private String value;
-	private Boolean enable;
-	private List<UserActionEnum> userActions;
+	private final String name;
+	private final String value;
+	private final Boolean enable;
+	private final List<UserActionEnum> userActions;
 
 	UserActionTypeEnum(String name, String value, Boolean enable, UserActionEnum ...userActions) {
 		this.name = name;
@@ -42,4 +44,13 @@ public enum UserActionTypeEnum {
 		this.userActions = userActionEnums;
 	}
 
+	public static UserActionTypeEnum fromValue(String value) {
+		UserActionTypeEnum[] values = UserActionTypeEnum.values();
+		for (UserActionTypeEnum userActionTypeEnum : values) {
+			if (Objects.equals(userActionTypeEnum.getValue(), value)) {
+				return userActionTypeEnum;
+			}
+		}
+		return null;
+	}
 }

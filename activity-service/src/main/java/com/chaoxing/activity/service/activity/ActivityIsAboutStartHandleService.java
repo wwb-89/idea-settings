@@ -94,7 +94,7 @@ public class ActivityIsAboutStartHandleService {
 		return true;
 	}
 	/**报名发送通知
-	 * @Description 
+	 * @Description 当用户报名成功后，如果此时活动即将要开始则给用户发送活动即将开始的消息
 	 * @author wwb
 	 * @Date 2021-02-05 15:55:38
 	 * @param activity

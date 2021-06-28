@@ -21,27 +21,17 @@ import javax.annotation.Resource;
 public class ActivityStatSummaryQueueService implements IQueueService<Integer> {
 
     /** 签到、签到率 */
-    private static final String SIGN_IN_CACHE_KEY = CacheConstant.QUEUE_CACHE_KEY_PREFIX + "activity_stat_summary" + CacheConstant.CACHE_KEY_SEPARATOR + "sign_in";
-    /** 合格数 */
-    private static final String RESULT_CACHE_KEY = CacheConstant.QUEUE_CACHE_KEY_PREFIX + "activity_stat_summary" + CacheConstant.CACHE_KEY_SEPARATOR + "result";
+    private static final String SIGN_IN_CACHE_KEY = CacheConstant.QUEUE_CACHE_KEY_PREFIX + "activity_stat_summary";
 
     @Resource
     private RedissonClient redissonClient;
 
-    public void pushSignStat(Integer activityId) {
+    public void push(Integer activityId) {
         push(redissonClient, SIGN_IN_CACHE_KEY, activityId);
     }
 
-    public Integer getSignStat() throws InterruptedException {
+    public Integer pop() throws InterruptedException {
         return pop(redissonClient, SIGN_IN_CACHE_KEY);
-    }
-
-    public void addResultStat(Integer activityId) {
-        push(redissonClient, RESULT_CACHE_KEY, activityId);
-    }
-
-    public Integer getResultStat() throws InterruptedException {
-        return pop(redissonClient, RESULT_CACHE_KEY);
     }
 
 }

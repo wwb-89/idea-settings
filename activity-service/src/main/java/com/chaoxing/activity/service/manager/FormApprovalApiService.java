@@ -51,8 +51,6 @@ import java.util.*;
 @Service
 public class FormApprovalApiService {
 
-    private static final DateTimeFormatter DATA_DATE_TIME_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
-
     /** 日期格式化 */
     private static final DateTimeFormatter DATE_TIME_FORMATTER = DateTimeFormatter.ofPattern("yyyyMMddHH");
     /** sign */
@@ -80,8 +78,6 @@ public class FormApprovalApiService {
     private WfwRegionalArchitectureApiService wfwRegionalArchitectureApiService;
     @Resource
     private WebTemplateService webTemplateService;
-    @Resource
-    private MhApiService mhApiService;
 
     @Resource(name = "restTemplateProxy")
     private RestTemplate restTemplate;
@@ -181,10 +177,11 @@ public class FormApprovalApiService {
      * @param fid
      * @param formId
      * @param formUserId
+     * @param templateId
      * @return void
     */
     @Transactional(rollbackFor = Exception.class)
-    public void createActivity(Integer fid, Integer formId, Integer formUserId, String flag) {
+    public void createActivity(Integer fid, Integer formId, Integer formUserId, String flag, Integer templateId) {
         // 获取表单数据
         FormDTO formData = getFormData(fid, formId, formUserId);
         if (!Objects.equals(formData.getAprvStatusTypeId(), CommonConstant.FORM_APPROVAL_AGREE_VALUE)) {
@@ -205,7 +202,8 @@ public class FormApprovalApiService {
         }
         activity.setActivityFlag(activityFlag.getValue());
         // 使用指定的模板
-        WebTemplate webTemplate = webTemplateService.getById(CommonConstant.DEFAULT_FROM_FORM_CREATE_ACTIVITY_TEMPLATE_ID);
+        templateId = Optional.ofNullable(templateId).orElse(CommonConstant.DEFAULT_FROM_FORM_CREATE_ACTIVITY_TEMPLATE_ID);
+        WebTemplate webTemplate = webTemplateService.getById(templateId);
         if (webTemplate == null) {
             throw new BusinessException("通过活动申报创建活动指定的门户模版不存在");
         }
@@ -256,8 +254,12 @@ public class FormApprovalApiService {
             activity.setOpenIntegral(true);
             activity.setIntegralValue(BigDecimal.valueOf(Double.parseDouble(integralStr)));
         }
+        String orgName = passportApiService.getOrgName(fid);
         // 主办方
         String organisers = FormUtils.getValue(formData, "organisers");
+        if (StringUtils.isBlank(organisers)) {
+            organisers = orgName;
+        }
         activity.setOrganisers(organisers);
         // 是否开启评价
         String openRating = FormUtils.getValue(formData, "is_open_rating");
@@ -302,9 +304,7 @@ public class FormApprovalApiService {
         activity.setCreateUid(formData.getUid());
         activity.setCreateUserName(formData.getUname());
         activity.setCreateFid(fid);
-        String orgName = passportApiService.getOrgName(fid);
         activity.setCreateOrgName(orgName);
-        activity.setOrganisers(orgName);
         activity.setOriginType(Activity.OriginTypeEnum.ACTIVITY_DECLARATION.getValue());
         activity.setOrigin(String.valueOf(formUserId));
         return activity;

@@ -7,6 +7,7 @@ import com.chaoxing.activity.dto.RestRespDTO;
 import com.chaoxing.activity.dto.manager.WfwRegionalArchitectureDTO;
 import com.chaoxing.activity.dto.query.ActivityQueryDTO;
 import com.chaoxing.activity.model.Activity;
+import com.chaoxing.activity.model.ActivityDetail;
 import com.chaoxing.activity.service.activity.ActivityQueryService;
 import com.chaoxing.activity.service.activity.collection.ActivityCollectionHandleService;
 import com.chaoxing.activity.service.manager.WfwRegionalArchitectureApiService;
@@ -154,6 +155,30 @@ public class ActivityApiController {
 		LoginUserDTO loginUser = LoginUtils.getLoginUser(request);
 		activityCollectionHandleService.cancelCollect(activityId, loginUser);
 		return RestRespDTO.success();
+	}
+
+	/**获取活动简介
+	 * @Description 
+	 * @author wwb
+	 * @Date 2021-06-25 20:58:43
+	 * @param websiteId
+	 * @param pageId
+	 * @return com.chaoxing.activity.dto.RestRespDTO
+	*/
+	@RequestMapping("introduction")
+	public RestRespDTO getActivityIntroduction(Integer websiteId, Integer pageId) {
+		Activity activity = null;
+		String introduction = "";
+		if (pageId != null) {
+			activity = activityQueryService.getByPageId(pageId);
+		} else if (websiteId != null){
+			activity = activityQueryService.getByWebsiteId(websiteId);
+		}
+		if (activity != null) {
+			ActivityDetail activityDetail = activityQueryService.getDetailByActivityId(activity.getId());
+			introduction = Optional.ofNullable(activityDetail).map(ActivityDetail::getIntroduction).orElse("");
+		}
+		return RestRespDTO.success(introduction);
 	}
 
 }

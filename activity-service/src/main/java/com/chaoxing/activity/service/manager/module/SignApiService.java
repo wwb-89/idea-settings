@@ -93,8 +93,6 @@ public class SignApiService {
 	private static final String USER_IS_SIGNED_UP_URL = SIGN_API_DOMAIN + "/sign/%d/is-signed-up?uid=%d";
 	/** 用户报名签到统计汇总 */
 	private static final String USER_SIGN_STAT_SUMMARY_URL = SIGN_API_DOMAIN + "/stat/user/%d/sign/%d/sign-stat-summary";
-	/** 用户报名签到是否合格 */
-	private static final String USER_IS_QUALIFIED_URL = SIGN_API_DOMAIN + "/stat/user/%d/sign/%d/qualified";
 
 	/** 报名名单url */
 	private static final String SIGN_UP_USER_LIST_URL = SIGN_WEB_DOMAIN + "/sign-up/%d/user-list";
@@ -124,6 +122,9 @@ public class SignApiService {
 	private static final String USER_SIGNED_UP_LIST_URL = SIGN_API_DOMAIN + "/stat/user/%d/sign/%d/signed-up";
 	/** 查询用户在报名签到下的签到记录（排除未签到） */
 	private static final String USER_EXCLUDE_NOT_SIGNED_IN_URL = SIGN_API_DOMAIN + "/stat/user/%d/sign/%d/exclude-not-signed-in";
+	
+	/** 通知报名签到用户成绩合格变更 */
+	private static final String NOTICE_SIGN_USER_RESULT_QUALIFIED_CHANGE_URL = SIGN_API_DOMAIN + "/sign/%d/user/%d/result/qualified/changed";
 
 	@Resource
 	private RestTemplate restTemplate;
@@ -696,24 +697,6 @@ public class SignApiService {
 		});
 	}
 
-	/**用户合格的成绩数量
-	 * @Description
-	 * @author wwb
-	 * @Date 2021-05-27 15:05:44
-	 * @param uid
-	 * @param signId
-	 * @return java.lang.Integer
-	*/
-	public boolean userIsQualified(Integer uid, Integer signId) {
-		String url = String.format(USER_IS_QUALIFIED_URL, uid, signId);
-		String result = restTemplate.getForObject(url, String.class);
-		JSONObject jsonObject = JSON.parseObject(result);
-		return resultHandle(jsonObject, () -> jsonObject.getBoolean("data"), (message) -> {
-			log.error("获取用户:{}合格的成绩数量error:{}", uid, message);
-			throw new BusinessException(message);
-		});
-	}
-
 	public List<SignParticipateScopeDTO> listSignParticipateScopeBySignIds(List<Integer> signIds) {
 		HttpHeaders httpHeaders = new HttpHeaders();
 		httpHeaders.setContentType(MediaType.APPLICATION_JSON);
@@ -807,6 +790,24 @@ public class SignApiService {
 		JSONObject jsonObject = JSON.parseObject(result);
 		return resultHandle(jsonObject, () -> JSON.parseArray(jsonObject.getString("data"), UserSignIn.class), (message) -> {
 			log.error("根据url:{} 查询用户签到列表信息error:{}", url, message);
+			throw new BusinessException(message);
+		});
+	}
+
+	/**通知报名签到用户成绩合格状态变更
+	 * @Description 
+	 * @author wwb
+	 * @Date 2021-06-25 10:03:08
+	 * @param uid
+	 * @param signId
+	 * @return void
+	*/
+	public void noticeSignUserResultChange(Integer uid, Integer signId) {
+		String url = String.format(NOTICE_SIGN_USER_RESULT_QUALIFIED_CHANGE_URL, signId, uid);
+		String result = restTemplate.getForObject(url, String.class);
+		JSONObject jsonObject = JSON.parseObject(result);
+		resultHandle(jsonObject, () -> null, (message) -> {
+			log.error("根据url:{} 通知报名签到用户成绩合格状态变更error:{}", url, message);
 			throw new BusinessException(message);
 		});
 	}

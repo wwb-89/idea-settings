@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.chaoxing.activity.mapper.UserResultMapper">
+    <resultMap id="BaseResultMap" type="com.chaoxing.activity.model.UserResult">
+        <id column="id" jdbcType="BIGINT" property="id" />
+        <result column="uid" jdbcType="INTEGER" property="uid" />
+        <result column="activity_id" jdbcType="INTEGER" property="activityId" />
+        <result column="qualified_status" jdbcType="INTEGER" property="qualifiedStatus" />
+        <result column="manual_qualified_status" jdbcType="INTEGER" property="manualQualifiedStatus" />
+        <result column="auto_qualified_status" jdbcType="INTEGER" property="autoQualifiedStatus" />
+        <result column="total_score" jdbcType="DECIMAL" property="totalScore" />
+        <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
+        <result column="update_time" jdbcType="TIMESTAMP" property="updateTime" />
+    </resultMap>
+    <sql id="Base_Column_List">
+        t.id, t.uid, qualifiedStatust.activity_id, t.qualified_status, t.manual_qualified_status, t.auto_qualified_status, t.total_score, t.create_time, t.update_time
+    </sql>
+
+    <select id="pageUserResult" resultType="com.chaoxing.activity.dto.UserResultDTO">
+        SELECT
+            t.uid as uid,
+            t.real_name as realName,
+            t.activity_id as activityId,
+            t.signed_in_num as signedInNum,
+            ( CASE WHEN t.sign_in_num > 0 THEN ( CONVERT ( (t.signed_in_num / t.sign_in_num) * 100, DECIMAL ( 10, 2 ))) ELSE 0 END ) as signedInRate,
+            t.rating_num as ratingNum,
+            t1.qualified_status as qualifiedStatus,
+            t1.total_score as totalScore
+        FROM
+            t_user_stat_summary t
+        LEFT JOIN
+            t_user_result t1
+        ON
+            t.activity_id = t1.activity_id AND t.uid = t1.uid
+        WHERE
+            t.activity_id = #{queryParam.activityId}
+            <if test="queryParam.sw != null and queryParam.sw != ''">
+                <bind name="swBind" value="'%' + queryParam.sw + '%'"/>
+                AND t.real_name like #{swBind}
+            </if>
+        <if test="queryParam.orderField != null and queryParam.orderField != ''">
+            ORDER BY ${queryParam.orderField} <if test="queryParam.orderType != null">${queryParam.orderType.value}</if>
+        </if>
+    </select>
+
+</mapper>

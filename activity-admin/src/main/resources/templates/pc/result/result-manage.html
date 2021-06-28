@@ -1,0 +1,547 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org/">
+
+<head>
+    <title>考核管理</title>
+    <meta charset="UTF-8">
+    <meta name="renderer" content="webkit">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="/static/pc/assets/table-icomoon/style.css" th:href="@{/pc/assets/table-icomoon/style.css}">
+    <link rel="stylesheet" href="/static/pc/assets/lib/element-ui/lib/theme-chalk/index.css" th:href="@{/pc/assets/lib/element-ui/lib/theme-chalk/index.css}">
+    <link rel="stylesheet" href="/static/pc/assets/css/commonTable.css" th:href="@{/pc/assets/css/commonTable.css}">
+    <link rel="stylesheet" href="/static/pc/assets/css/confirm_dialog.css" th:href="@{/pc/assets/css/confirm_dialog.css}">
+    <style>
+        [v-cloak]{
+            display: none;
+        }
+        .el-table-filter .el-table-filter__list {
+            max-height: 300px;
+            overflow: auto;
+        }
+    </style>
+</head>
+
+<body>
+<div id="resultManage" v-cloak>
+    <div style="display: block">
+        <div class="header-box">
+            <div class="header header-type-3">
+                <span slot="label" class="menu-item-customize registered_title">
+                    <span class="title">考核管理</span>
+                </span>
+                <div class="top-btns">
+                    <el-button class="btn-customize export-btn" round @click="toInspectionConfig">考核设置</el-button>
+                </div>
+            </div>
+        </div>
+        <!-- 选项卡内容 -->
+        <div class="tab-content-box">
+            <div class="tab-item">
+                <!-- 操作栏 -->
+                <div class="table-operate-box fs0">
+                    <el-button class="btn-customize" round :disabled="!selections || selections.length === 0" @click="ifModifyPop = true">修改合格状态</el-button>
+<!--                    <el-button class="btn-customize" round>颁奖</el-button>-->
+                    <el-button class="btn-customize" round @click="exportData">导出</el-button>
+                    <el-button class="btn-customize" round @click="exportRecord">导出记录</el-button>
+                    <div class="search-Box">
+                        <el-input placeholder="搜索"
+                                  icon="search"
+                                  class="search"
+                                  v-model="queryParams.sw"
+                                  suffix-icon="el-icon-search"
+                                  @keydown.enter.native="search"
+                        >
+                        </el-input>
+                        <i class="icon-cancel btn-cancel fs16"
+                           v-show="queryParams.sw && queryParams.sw.length > 0"
+                           @click="queryParams.sw = ''"></i>
+                    </div>
+                </div>
+                <!-- 计数栏 -->
+                <div class="table-count-box fs12">
+                    <div class="count-info fl">
+                        <span class="colorBlue marginr8">已选择 {{ selections.length }} 人</span>
+                        <span class="color999">共 {{ total }} 人</span>
+                    </div>
+                    <div class="setting-box">
+                        <el-dropdown :hide-on-click="false" trigger="click">
+                            <el-tooltip class="item" effect="dark" content="显示字段" placement="top">
+                                <span class="icon-setting fs16"></span>
+                            </el-tooltip>
+                            <el-dropdown-menu slot="dropdown" class="set-dropdown">
+                                <div class="dropdown-lists">
+                                    <el-dropdown-item v-for="(item, index) in configTableFieldDetails" :key="'detail-' + item.id">
+                                        <el-checkbox v-model="item.defaultChecked" :disabled="item.allowUnchec" @change="reSortSettingData"> {{item.name}}</el-checkbox>
+                                        <el-tooltip v-if="item.allowTop" class="item" effect="dark" :content="item.defaultTop ? '取消置顶' : '置顶'" placement="top">
+                                            <i :class="`btn-fix icon-${item.defaultTop ? 'pinned' : 'pin'} fs16`" @click="topConfigChange(item)"></i>
+                                        </el-tooltip>
+                                        <i v-else :class="`btn-fix icon-${item.defaultTop ? 'pinned' : 'pin'} fs16`"></i>
+                                    </el-dropdown-item>
+                                </div>
+                                <div class="bottom-btns fs14 colorBlue">
+                                    <el-button type="text" class="btn-confirm" @click="configSubmit">确定</el-button>
+                                    <el-button type="text" class="btn-reset" @click="resetConfig">重置</el-button>
+                                </div>
+                            </el-dropdown-menu>
+                        </el-dropdown>
+                    </div>
+                    <div class="clear"></div>
+                </div>
+
+                <el-table class="table-box" :data="tableData" @sort-change="sortChange" @filter-change="filterChange" @selection-change="selectChange">
+                    <el-table-column fixed type="selection" width="24"></el-table-column>
+                    <template v-for="item in showTableFieldDetails" v-if="item.defaultChecked">
+                        <el-table-column
+                                v-if="item.code === 'realName'"
+                                :fixed="item.defaultTop"
+                                :label="item.name"
+                                :ifCenter="item.align"
+                                :min-width="item.minWidth"
+                        >
+                            <template slot-scope="scope">
+                                <div style="cursor: pointer; color: #0084FF" @click="toUserResultDetail(scope.row.uid)">
+                                    {{scope.row.realName}}
+                                </div>
+                            </template>
+                        </el-table-column>
+                        <el-table-column
+                                v-else-if="item.code === 'signedInRate'"
+                                :prop="item.code"
+                                :fixed="item.defaultTop"
+                                :label="item.name"
+                                :ifCenter="item.align"
+                                :min-width="item.minWidth"
+                                :sortable="item.sortable ? 'custom' : item.sortable"
+                        >
+                            <template slot-scope="scope">
+                                {{scope.row.signedInRate | percentConversion}}
+                            </template>
+                        </el-table-column>
+                        <el-table-column
+                                v-else-if="item.code === 'qualifiedStatus'"
+                                :prop="item.code"
+                                :fixed="item.defaultTop"
+                                :label="item.name"
+                                :ifCenter="item.align"
+                                :min-width="item.minWidth"
+                        >
+                            <template slot-scope="scope">
+                                <template v-if="(!scope.row.qualifiedStatus && scope.row.qualifiedStatus !== 0) || scope.row.qualifiedStatus === 2">
+                                    <span style="cursor: pointer; color: #0084FF" @click="qualified(scope.row)">合格</span>
+                                    <span style="cursor: pointer; color: #0084FF" @click="unQualified(scope.row)">不合格</span>
+                                </template>
+                                <template v-else>
+                                    <el-dropdown class="status-dropdown" @command="command => dropDownCmd(command, scope.row)">
+                                      <span class="el-dropdown-link">
+                                        {{ scope.row.qualifiedStatus === 0 ? '不合格' : '合格' }}<i class="el-icon-arrow-down el-icon--right"></i>
+                                      </span>
+                                        <el-dropdown-menu slot="dropdown">
+                                            <el-dropdown-item command="qualified">合格</el-dropdown-item>
+                                            <el-dropdown-item command="unQualified">不合格</el-dropdown-item>
+                                        </el-dropdown-menu>
+                                    </el-dropdown>
+                                </template>
+                            </template>
+                        </el-table-column>
+                        <el-table-column
+                                v-else
+                                :prop="item.code"
+                                :fixed="item.defaultTop"
+                                :label="item.name"
+                                :ifCenter="item.align"
+                                :min-width="item.minWidth"
+                                :sortable="item.sortable ? 'custom' : item.sortable"
+                        >
+                        </el-table-column>
+                    </template>
+                </el-table>
+                <el-pagination
+                        v-show="loaded && total > queryParams.pageSize"
+                        background
+                        layout="prev, pager, next"
+                        :total="total"
+                        :page-size="queryParams.pageSize"
+                        :current-page="queryParams.pageNum"
+                        @current-change="changePage">
+                </el-pagination>
+            </div>
+        </div>
+        <!-- 表格内容 -->
+    </div>
+
+    <!-------------------------------------------------分割线------------------------------------------------>
+    <!--确认取消报名弹窗-->
+    <div class="dialog-box" v-if="ifCancelPop">
+        <div class="confirm_dialog">
+            <span class="icon"><img src="/static/pc/assets/images/icon-warning.png" th:src="@{/pc/assets/images/icon-warning.png}"></span>
+            <span class="text">确定取消报名吗？</span>
+            <div class="btn">
+                <span class="cancel" @click="ifCancelPop = false">取消</span>
+                <span class="ok">确定</span>
+            </div>
+        </div>
+    </div>
+    <!--修改合格状态弹窗-->
+    <div class="dialog-box modifyPop" v-if="ifModifyPop">
+        <div class="dialog-wrap">
+            <div class="header">修改合格状态</div>
+            <div class="dialog-content">
+                <div class="item" @click="batchQualified">合格</div>
+                <div class="item" @click="batchUnQualified">不合格</div>
+            </div>
+        </div>
+    </div>
+
+    <vue-confirm-common ref="exportSuccessWindow" :message="'数据准备中，导出完成的数据会保存在“导出记录”中，请稍后下载'" :cancel="'完成'" :sure="'导出记录'" @callback="exportRecord"></vue-confirm-common>
+</div>
+
+<div th:replace="pc/include/common_js :: common_js(~{::script})">
+    <script src="/static/pc/assets/lib/element-ui/lib/index.js" th:src="@{/pc/assets/lib/element-ui/lib/index.js}"></script>
+    <script src="/static/pc/assets/component/confirm-common.js" th:src="@{/pc/assets/component/confirm-common.js}"></script>
+    <script th:inline="javascript">
+        Vue.filter("percentConversion", function (value) {
+            if (!value) {
+                return '0';
+            }
+            var str = parseInt(value);
+            str += "%";
+            return str;
+        });
+        var resultManage = new Vue({
+            el: '#resultManage',
+            data: {
+                loaded: false,
+                activityId: [[${activityId}]],
+                tableFieldId: [[${tableFieldId}]],
+                queryParams: {
+                    activityId: [[${activityId}]],
+                    pageNum: 1,
+                    pageSize: 10,
+                    sw: '',
+                    orderFieldId: null,
+                    orderType: 'DESC'
+                },
+                // 配置项源数据
+                tableFieldDetails: [[${tableFieldDetails}]],
+                // 配置项数据
+                configTableFieldDetails: [],
+                // 页面展示字段配置源数据
+                activityTableFields: [[${activityTableFields}]],
+                // 表格显示的字段列表
+                showTableFieldDetails: [],
+                // 页面数据
+                tableData: [],
+                selections: [],
+                // 总记录数
+                total: 0,
+                selectNumber:0, //表格选中的人数
+                ifCancelPop: false,
+                ifModifyPop: false //修改合格状态弹窗展示
+            },
+            created: function () {
+                var $this = this;
+                // 解决跨域
+                document.domain = "chaoxing.com";
+                $this.calShowTableFieldDetails();
+                $this.configTableFieldDetails = $this.calConfigTableFieldDetails();
+            },
+            mounted: function () {
+                var $this = this;
+                $this.loadData();
+                $this.reSortSettingData();
+            },
+            methods: {
+                selectChange: function (val) {
+                    var $this = this;
+                    $this.selections = val;
+                },
+                calShowTableFieldDetails: function () {
+                    var $this = this;
+                    // 计算表格显示的字段列表
+                    if ($this.activityTableFields.length < 1) {
+                        // 机构没有配置显示的字段。使用默认的
+                        $($this.tableFieldDetails).each(function () {
+                            if (this.defaultChecked) {
+                                $this.showTableFieldDetails.push($.extend({}, this));
+                            }
+                        });
+                    } else {
+                        $($this.activityTableFields).each(function () {
+                            var activityTableField = this;
+                            var tableFieldDetailId = activityTableField.tableFieldDetailId;
+                            $($this.tableFieldDetails).each(function () {
+                                if (tableFieldDetailId === this.id) {
+                                    var tableFieldDetail = $.extend({}, this);
+                                    tableFieldDetail.defaultChecked = true;
+                                    tableFieldDetail.defaultTop = activityTableField.top;
+                                    $this.showTableFieldDetails.push(tableFieldDetail);
+                                    return false;
+                                }
+                            });
+                        });
+                    }
+                },
+                calConfigTableFieldDetails: function () {
+                    var $this = this;
+                    var configTableFieldDetails = [];
+                    $($this.tableFieldDetails).each(function () {
+                        configTableFieldDetails.push($.extend({}, this));
+                    });
+                    if ($this.activityTableFields.length > 0) {
+                        $(configTableFieldDetails).each(function () {
+                            var configTableFieldDetail = this;
+                            configTableFieldDetail.defaultChecked = false;
+                            $($this.activityTableFields).each(function () {
+                                if (configTableFieldDetail.id === this.tableFieldDetailId) {
+                                    configTableFieldDetail.defaultChecked = true;
+                                    configTableFieldDetail.defaultTop = this.top;
+                                }
+                            });
+                        });
+                    }
+                    return configTableFieldDetails;
+                },
+                search: function () {
+                    var $this = this;
+                    $this.queryParams.pageNum = 1;
+                    $this.queryParams.pageSize = 10;
+                    $this.loadData();
+                },
+                // 重新加载数据
+                loadData: function() {
+                    var $this = this;
+                    var url = ctx + "/api/activity/results/manage/page";
+                    $this.loaded = false;
+                    app.ajaxPostWithLoading(url, $this.queryParams, function (data) {
+                        $this.loaded = true;
+                        if (data.success) {
+                            $this.tableData = data.data.records;
+                            $this.total = data.data.total;
+                        } else {
+                            var errorMessage = data.message;
+                            if (activityApp.isEmpty(errorMessage)) {
+                                errorMessage = "加载数据失败";
+                            }
+                            app.showMsg(errorMessage);
+                        }
+                    }, function () {
+                        $this.loaded = true;
+                        app.showMsg("加载数据失败");
+                    });
+                },
+                showToast(){
+                    $('.toast-box').fadeIn();
+                    setTimeout(function () {
+                        $('.toast-box').fadeOut();
+                    },2000)
+                },
+                // 对设置重排序
+                reSortSettingData: function() {
+                    var $this = this;
+                    $this.configTableFieldDetails.sort(function(a, b) {
+                        if (b.defaultChecked > a.defaultChecked) {
+                            return 1;
+                        } else if (b.defaultChecked < a.defaultChecked){
+                            return -1;
+                        } else {
+                            return b.defaultTop - a.defaultTop;
+                        }
+                    });
+                    $($this.configTableFieldDetails).each(function(i) {
+                        this.sequence = i;
+                    });
+                },
+                // 配置提交
+                configSubmit: function () {
+                    var $this = this;
+                    var activityTableFieldDetails = $this.packageSubmitTableFieldDetails();
+                    var url = ctx + "/api/activity/" + $this.activityId + "/table-field/" + $this.tableFieldId + "/config";
+                    var params = {
+                        activityTableFieldsStr: activityApp.getJsonStr(activityTableFieldDetails)
+                    };
+                    app.ajaxPostWithLoading(url, params, function (data) {
+                        window.location.reload();
+                    }, function () {
+
+                    });
+                },
+                // 重置配置
+                resetConfig: function () {
+                    var $this = this;
+                    $this.configTableFieldDetails = $this.calConfigTableFieldDetails();
+                    $this.reSortSettingData();
+                },
+                // 封装提交的配置
+                packageSubmitTableFieldDetails: function () {
+                    var $this = this;
+                    var activityTableFieldDetails = [];
+                    var sequence = 1;
+                    $($this.configTableFieldDetails).each(function () {
+                        if (this.defaultChecked) {
+                            var activityTableFieldDetail = {
+                                tableFieldDetailId: this.id,
+                                top: this.defaultTop,
+                                sequence: sequence++
+                            }
+                            activityTableFieldDetails.push(activityTableFieldDetail);
+
+                        }
+                    });
+                    return activityTableFieldDetails;
+                },
+                changePage: function (pageNum) {
+                    var $this = this;
+                    $this.queryParams.pageNum = pageNum;
+                    $this.loadData();
+                },
+                sortChange: function (column) {
+                    var $this = this;
+                    var sortFieldItem = $($this.showTableFieldDetails).filter(function() {
+                        return this.code === column.prop
+                    })[0];
+                    $this.queryParams.orderFieldId = sortFieldItem ? sortFieldItem.id : null;
+                    if (column.order === 'descending') {
+                        $this.queryParams.orderType = 'DESC';
+                    } else if (column.order === 'ascending'){
+                        $this.queryParams.orderType = 'ASC';
+                    } else {
+                        $this.queryParams.orderType = null;
+                    }
+                    $this.loadData();
+                },
+                filterChange: function (filterItem) {
+                    var $this = this;
+                    var key = Object.keys(filterItem)[0]
+                    // 单选过滤取第一个
+                    var value = filterItem[key][0];
+                    $this.queryParams[key] = activityApp.isEmpty(value) ? null : parseInt(value);
+                    $this.loadData();
+                },
+                modifyPopClick: function () {
+                    this.showToast()
+                    this.ifModifyPop = false
+                },
+                toInspectionConfig: function () {
+                    var $this = this;
+                    var url = ctx + '/activity/' + $this.activityId + '/inspection/config';
+                    window.open(url);
+                },
+                toUserResultDetail: function (uid) {
+                    var $this = this;
+                    if (uid) {
+                        var url = ctx + '/activity/'+ $this.activityId +'/results/manage/person-grade?uid=' + uid;
+                        window.open(url);
+                    }
+                },
+                // 提交评审结果: 合格、不合格、批量合格、批量不合格
+                submitReviewResult: function (url, params) {
+                    app.ajaxPostWithLoading(url, params, function (data) {
+                        if (data.success) {
+                            app.showMsg("评审成功");
+                            window.location.reload();
+                        } else {
+                            var errorMessage = data.message;
+                            if (activityApp.isEmpty(errorMessage)) {
+                                errorMessage = "评审失败";
+                            }
+                            app.showMsg(errorMessage);
+                        }
+                    }, function () {
+                        app.showMsg("评审失败");
+                    });
+                },
+                // 合格
+                qualified: function (user) {
+                    if (user.qualifiedStatus === 1) {
+                        return;
+                    }
+                    var $this = this;
+                    var url = ctx + '/api/activity/results/manage/qualified/';
+                    var params = {
+                        activityId: $this.activityId,
+                        uid: user.uid
+                    }
+                    $this.submitReviewResult(url, params);
+                },
+                // 不合格
+                unQualified: function (user) {
+                    if (user.qualifiedStatus === 0) {
+                        return;
+                    }
+                    var $this = this;
+                    var url = ctx + '/api/activity/results/manage/unQualified/';
+                    var params = {
+                        activityId: $this.activityId,
+                        uid: user.uid
+                    }
+                    $this.submitReviewResult(url, params);
+                },
+                batchQualified: function () {
+                    var $this = this;
+                    var url = ctx + '/api/activity/results/manage/qualified/';
+                    var uids = [];
+                    $($this.selections).each(function () {
+                        uids.push(this.uid);
+                    });
+                    var params = {
+                        activityId: $this.activityId,
+                        uids: activityApp.getJsonStr(uids)
+                    };
+                    $this.submitReviewResult(url, params);
+                },
+                batchUnQualified: function () {
+                    var $this = this;
+                    var url = ctx + '/api/activity/results/manage/unQualified/';
+                    var uids = [];
+                    $($this.selections).each(function () {
+                        uids.push(this.uid);
+                    });
+                    var params = {
+                        activityId: $this.activityId,
+                        uids: activityApp.getJsonStr(uids)
+                    };
+                    $this.submitReviewResult(url, params);
+                },
+                dropDownCmd: function (command, user) {
+                    var $this = this;
+                    if (command === 'qualified') {
+                        $this.qualified(user);
+                    } else if (command === 'unQualified') {
+                        $this.unQualified(user);
+                    }
+                },
+                // 导出
+                exportData: function () {
+                    var $this = this;
+                    var url = ctx + "/api/export";
+                    $this.loaded = false;
+                    var params = {
+                        queryParamStr: activityApp.getJsonStr($this.queryParams),
+                        exportType: "activity_inspection_manage"
+                    };
+                    app.ajaxPostWithLoading(url, params, function (data) {
+                        $this.loaded = true;
+                        if (data.success) {
+                            $this.$refs.exportSuccessWindow.show = true;
+                        } else {
+                            var errorMessage = data.message;
+                            if (activityApp.isEmpty(errorMessage)) {
+                                errorMessage = "导出失败";
+                            }
+                            app.showMsg(errorMessage);
+                        }
+                    }, function () {
+                        app.showMsg("导出失败");
+                    });
+                },
+                // 导出记录
+                exportRecord: function () {
+                    window.open(ctx + '/export-record?exportType=org_activity_stat');
+                }
+            }
+        })
+    </script>
+</div>
+</body>
+
+</html>

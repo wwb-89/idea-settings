@@ -2,7 +2,9 @@ package com.chaoxing.activity.service.tablefield;
 
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.chaoxing.activity.dto.LoginUserDTO;
+import com.chaoxing.activity.mapper.ActivityTableFieldMapper;
 import com.chaoxing.activity.mapper.OrgTableFieldMapper;
+import com.chaoxing.activity.model.ActivityTableField;
 import com.chaoxing.activity.model.OrgTableField;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
@@ -26,6 +28,8 @@ public class TableFieldHandleService {
 
     @Resource
     private OrgTableFieldMapper orgTableFieldMapper;
+    @Resource
+    private ActivityTableFieldMapper activityTableFieldMapper;
 
     /**机构配置表格字段
      * @Description 
@@ -53,6 +57,35 @@ public class TableFieldHandleService {
                 orgTableField.setUpdateUid(loginUser.getUid());
             }
             orgTableFieldMapper.batchAdd(orgTableFields);
+        }
+    }
+
+    /**活动配置表格字段
+    * @Description
+    * @author huxiaolong
+    * @Date 2021-06-24 14:49:25
+    * @param activityId
+    * @param tableFieldId
+    * @param activityTableFields
+    * @param loginUser
+    * @return void
+    */
+    @Transactional(rollbackFor = Exception.class)
+    public void activityConfig(Integer activityId, Integer tableFieldId, List<ActivityTableField> activityTableFields, LoginUserDTO loginUser) {
+        // 删除历史
+        activityTableFieldMapper.delete(new UpdateWrapper<ActivityTableField>()
+            .lambda()
+                .eq(ActivityTableField::getActivityId, activityId)
+                .eq(ActivityTableField::getTableFieldId, tableFieldId)
+        );
+        if (CollectionUtils.isNotEmpty(activityTableFields)) {
+            for (ActivityTableField activityTableField : activityTableFields) {
+                activityTableField.setActivityId(activityId);
+                activityTableField.setTableFieldId(tableFieldId);
+                activityTableField.setCreateUid(loginUser.getUid());
+                activityTableField.setUpdateUid(loginUser.getUid());
+            }
+            activityTableFieldMapper.batchAdd(activityTableFields);
         }
     }
 

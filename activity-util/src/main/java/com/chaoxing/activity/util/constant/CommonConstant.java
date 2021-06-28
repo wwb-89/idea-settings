@@ -49,7 +49,7 @@ public class CommonConstant {
 	public static final Duration QUEUE_GET_WAIT_TIME = Duration.ofMinutes(1);
 	/** 最大失败次数 */
 	public static final Integer MAX_ERROR_TIMES = 5;
-	/** 延时队列时间 */
+	/** 延时队列时间（默认2秒） */
 	public static final Duration DELAYED_QUEUE_DURATION = Duration.ofSeconds(2);
 
 	/** 默认封面云盘id */

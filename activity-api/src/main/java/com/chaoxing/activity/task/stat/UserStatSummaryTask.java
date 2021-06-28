@@ -27,27 +27,27 @@ public class UserStatSummaryTask {
 
     @Scheduled(fixedDelay = 1L)
     public void handleUserSignInStat() throws InterruptedException {
-        UserStatSummaryQueueService.QueueParamDTO queueParam = userStatSummaryQueueService.getUserSignStat();
+        UserStatSummaryQueueService.QueueParamDTO queueParam = userStatSummaryQueueService.popUserSignStat();
         if (queueParam == null) {
             return;
         }
         try {
-            userStatSummaryService.updateUserSignUpInData(queueParam.getUid(), queueParam.getActivityId());
+            userStatSummaryService.updateUserSignData(queueParam.getUid(), queueParam.getActivityId());
         } catch (Exception e) {
-            userStatSummaryQueueService.addUserSignStat(queueParam);
+            userStatSummaryQueueService.pushUserSignStat(queueParam);
         }
     }
 
     @Scheduled(fixedDelay = 1L)
     public void handleUserResultStat() throws InterruptedException {
-        UserStatSummaryQueueService.QueueParamDTO queueParam = userStatSummaryQueueService.getUserResultStata();
+        UserStatSummaryQueueService.QueueParamDTO queueParam = userStatSummaryQueueService.popUserResultStata();
         if (queueParam == null) {
             return;
         }
         try {
             userStatSummaryService.updateUserResult(queueParam.getUid(), queueParam.getActivityId());
         } catch (Exception e) {
-            userStatSummaryQueueService.addUserResultStat(queueParam);
+            userStatSummaryQueueService.pushUserResultStat(queueParam);
         }
     }
 

@@ -4,15 +4,26 @@ import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.chaoxing.activity.dto.LoginUserDTO;
 import com.chaoxing.activity.mapper.InspectionConfigDetailMapper;
 import com.chaoxing.activity.mapper.InspectionConfigMapper;
+import com.chaoxing.activity.model.Activity;
 import com.chaoxing.activity.model.InspectionConfig;
 import com.chaoxing.activity.model.InspectionConfigDetail;
+import com.chaoxing.activity.model.UserResult;
 import com.chaoxing.activity.service.activity.ActivityValidationService;
+import com.chaoxing.activity.service.queue.activity.ActivityInspectionResultDecideQueueService;
+import com.chaoxing.activity.service.queue.user.UserResultQueueService;
+import com.chaoxing.activity.service.user.result.UserResultQueryService;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
+import java.math.BigDecimal;
 import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Optional;
+import java.util.stream.Collectors;
 
 /**考核配置处理服务
  * @author wwb
@@ -35,6 +46,12 @@ public class InspectionConfigHandleService {
 	private ActivityValidationService activityValidationService;
 	@Resource
 	private InspectionConfigQueryService inspectionConfigQueryService;
+	@Resource
+	private ActivityInspectionResultDecideQueueService activityInspectionResultDecideQueueService;
+	@Resource
+	private UserResultQueueService userResultQueueService;
+	@Resource
+	private UserResultQueryService userResultQueryService;
 
 	/**配置
 	 * @Description 
@@ -48,8 +65,9 @@ public class InspectionConfigHandleService {
 	@Transactional(rollbackFor = Exception.class)
 	public void config(InspectionConfig inspectionConfig, List<InspectionConfigDetail> inspectionConfigDetails, LoginUserDTO loginUser) {
 		Integer activityId = inspectionConfig.getActivityId();
-		activityValidationService.manageAble(activityId, loginUser.getUid());
+		Activity activity = activityValidationService.manageAble(activityId, loginUser.getUid());
 		InspectionConfig existInspectionConfig = inspectionConfigQueryService.getByActivityId(activityId);
+		boolean standardChanged = isStandardChanged(inspectionConfig, existInspectionConfig);
 		if (existInspectionConfig == null) {
 			// 新增
 			inspectionConfigMapper.insert(inspectionConfig);
@@ -63,6 +81,8 @@ public class InspectionConfigHandleService {
 			);
 		}
 		Integer configId = inspectionConfig.getId();
+		List<InspectionConfigDetail> oldInspectionConfigDetails = inspectionConfigQueryService.listDetailByActivityId(activityId);
+		boolean ruleChanged = isRuleChanged(inspectionConfigDetails, oldInspectionConfigDetails);
 		for (InspectionConfigDetail inspectionConfigDetail : inspectionConfigDetails) {
 			inspectionConfigDetail.setConfigId(configId);
 			if (inspectionConfigDetail.getId() == null) {
@@ -77,7 +97,94 @@ public class InspectionConfigHandleService {
 				);
 			}
 		}
+		if (ruleChanged) {
+			// 重新计算得分
+			List<UserResult> userResults = userResultQueryService.listByActivityId(activityId);
+			if (CollectionUtils.isNotEmpty(userResults)) {
+				for (UserResult userResult : userResults) {
+					userResultQueueService.push(new UserResultQueueService.QueueParamDTO(userResult.getUid(), userResult.getActivityId()));
+				}
+			}
+		}
+		// 如果活动已经结束需要重新判定成绩
+		Integer status = activity.getStatus();
+		if (Objects.equals(Activity.StatusEnum.ENDED.getValue(), status)) {
+			if (standardChanged) {
+				activityInspectionResultDecideQueueService.push(activityId);
+			}
+		}
+	}
 
+	/**标准是否改变
+	 * @Description 
+	 * @author wwb
+	 * @Date 2021-06-25 17:59:48
+	 * @param inspectionConfig
+	 * @param oldInspectionConfig
+	 * @return boolean
+	*/
+	private boolean isStandardChanged(InspectionConfig inspectionConfig, InspectionConfig oldInspectionConfig) {
+		if (oldInspectionConfig == null) {
+			return true;
+		}
+		if (!Objects.equals(inspectionConfig.getPassDecideWay(), oldInspectionConfig.getPassDecideWay())) {
+			return true;
+		}
+		BigDecimal decideValue = inspectionConfig.getDecideValue();
+		decideValue = Optional.ofNullable(decideValue).orElse(BigDecimal.ZERO);
+		BigDecimal oldDecideValue = oldInspectionConfig.getDecideValue();
+		oldDecideValue = Optional.ofNullable(oldDecideValue).orElse(BigDecimal.ZERO);
+		return decideValue.compareTo(oldDecideValue) != 0;
+	}
+
+	/**规则是否改变
+	 * @Description 
+	 * @author wwb
+	 * @Date 2021-06-25 18:00:55
+	 * @param inspectionConfigDetails
+	 * @param oldInspectionConfigDetails
+	 * @return boolean
+	*/
+	private boolean isRuleChanged(List<InspectionConfigDetail> inspectionConfigDetails, List<InspectionConfigDetail> oldInspectionConfigDetails) {
+		if (CollectionUtils.isEmpty(oldInspectionConfigDetails)) {
+			return true;
+		}
+		if (inspectionConfigDetails.size() != oldInspectionConfigDetails.size()) {
+			return true;
+		}
+		Map<String, InspectionConfigDetail> keyObjectMap = inspectionConfigDetails.stream().collect(Collectors.toMap(v -> v.getActionType() + v.getAction(), v -> v, (v1, v2) -> v2));
+		Map<String, InspectionConfigDetail> oldKeyObjectMap = oldInspectionConfigDetails.stream().collect(Collectors.toMap(v -> v.getActionType() + v.getAction(), v -> v, (v1, v2) -> v2));
+		for (Map.Entry<String, InspectionConfigDetail> entry : keyObjectMap.entrySet()) {
+			String key = entry.getKey();
+			InspectionConfigDetail value = entry.getValue();
+			InspectionConfigDetail oldValue = oldKeyObjectMap.get(key);
+			if (oldValue == null) {
+				return true;
+			}
+			BigDecimal score = value.getScore();
+			score = Optional.ofNullable(score).orElse(BigDecimal.ZERO);
+			BigDecimal upperLimit = value.getUpperLimit();
+			upperLimit = Optional.ofNullable(upperLimit).orElse(BigDecimal.ZERO);
+			Boolean deleted = value.getDeleted();
+			deleted = Optional.ofNullable(deleted).orElse(false);
+
+			BigDecimal oldScore = oldValue.getScore();
+			oldScore = Optional.ofNullable(oldScore).orElse(BigDecimal.ZERO);
+			BigDecimal oldUpperLimit = oldValue.getUpperLimit();
+			oldUpperLimit = Optional.ofNullable(oldUpperLimit).orElse(BigDecimal.ZERO);
+			Boolean oldDeleted = oldValue.getDeleted();
+			oldDeleted = Optional.ofNullable(oldDeleted).orElse(false);
+			if (score.compareTo(oldScore) != 0) {
+				return true;
+			}
+			if (upperLimit.compareTo(oldUpperLimit) != 0) {
+				return true;
+			}
+			if (!Objects.equals(deleted, oldDeleted)) {
+				return true;
+			}
+		}
+		return false;
 	}
 
 }

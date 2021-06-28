@@ -19,7 +19,7 @@ import java.util.Set;
  * @author wwb
  * @version ver 1.0
  * @className ActivityIsAboutToStartQueueService
- * @description
+ * @description 活动要开始的时候通知已经报名的用户活动要开始了
  * @blame wwb
  * @date 2021-03-26 16:32:36
  */

@@ -5,6 +5,7 @@ import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.chaoxing.activity.dto.LoginUserDTO;
 import com.chaoxing.activity.dto.export.ExportDataDTO;
+import com.chaoxing.activity.dto.query.UserResultQueryDTO;
 import com.chaoxing.activity.dto.query.admin.ActivityStatSummaryQueryDTO;
 import com.chaoxing.activity.dto.query.admin.UserStatSummaryQueryDTO;
 import com.chaoxing.activity.mapper.ExportRecordMapper;
@@ -13,6 +14,7 @@ import com.chaoxing.activity.service.activity.stat.ActivityStatSummaryQueryServi
 import com.chaoxing.activity.service.manager.CloudApiService;
 import com.chaoxing.activity.service.queue.ExportQueueService;
 import com.chaoxing.activity.service.stat.UserStatSummaryQueryService;
+import com.chaoxing.activity.service.user.result.UserResultQueryService;
 import com.chaoxing.activity.util.FileUtils;
 import com.chaoxing.activity.util.constant.CommonConstant;
 import com.chaoxing.activity.util.exception.BusinessException;
@@ -54,6 +56,8 @@ public class ExportRecordHandleService {
     private ActivityStatSummaryQueryService activityStatSummaryQueryService;
     @Resource
     private UserStatSummaryQueryService userStatSummaryQueryService;
+    @Resource
+    private UserResultQueryService userResultQueryService;
     @Resource
     private CloudApiService cloudApiService;
 
@@ -143,6 +147,9 @@ public class ExportRecordHandleService {
                 UserStatSummaryQueryDTO queryParams = JSON.parseObject(params, UserStatSummaryQueryDTO.class);
                 exportData = userStatSummaryQueryService.getExportDataDTO(queryParams);
                 break;
+            case ACTIVITY_INSPECTION_MANAGE:
+                UserResultQueryDTO queryParam = JSON.parseObject(params, UserResultQueryDTO.class);
+                exportData = userResultQueryService.packageExportData(queryParam);
             default:
         }
         exportData.setSheetName(exportTypeEnum.getName());

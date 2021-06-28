@@ -1,7 +1,9 @@
 package com.chaoxing.activity.api.controller;
 
 import com.chaoxing.activity.model.Activity;
+import com.chaoxing.activity.model.DataPushRecord;
 import com.chaoxing.activity.service.activity.ActivityQueryService;
+import com.chaoxing.activity.service.data.DataPushRecordQueryService;
 import com.chaoxing.activity.util.constant.UrlConstant;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -22,6 +24,8 @@ public class RedirectController {
 
     @Resource
     private ActivityQueryService activityQueryService;
+    @Resource
+    private DataPushRecordQueryService dataPushRecordQueryService;
 
     /**根据表单行id重定向到活动的详情页面
      * @Description 
@@ -33,7 +37,11 @@ public class RedirectController {
     @RequestMapping("activity-detail/from/form")
     public String form2ActivityDetail(Integer formUserId) {
         String url = "";
-        Activity activity = activityQueryService.getByFormUserId(formUserId);
+        DataPushRecord dataPushRecord = dataPushRecordQueryService.getByRecord(String.valueOf(formUserId));
+        Activity activity = null;
+        if (dataPushRecord != null) {
+            activity = activityQueryService.getById(Integer.parseInt(dataPushRecord.getIdentify()));
+        }
         if (activity != null) {
             url = activity.getPreviewUrl();
         }

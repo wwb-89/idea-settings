@@ -5,10 +5,10 @@ import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.chaoxing.activity.dto.LoginUserDTO;
 import com.chaoxing.activity.dto.OrgAddressDTO;
 import com.chaoxing.activity.dto.manager.WfwRegionalArchitectureDTO;
-import com.chaoxing.activity.dto.manager.sign.SignIn;
-import com.chaoxing.activity.dto.manager.sign.SignUp;
 import com.chaoxing.activity.dto.manager.mh.MhCloneParamDTO;
 import com.chaoxing.activity.dto.manager.mh.MhCloneResultDTO;
+import com.chaoxing.activity.dto.manager.sign.SignIn;
+import com.chaoxing.activity.dto.manager.sign.SignUp;
 import com.chaoxing.activity.dto.module.SignAddEditDTO;
 import com.chaoxing.activity.dto.module.SignAddEditResultDTO;
 import com.chaoxing.activity.dto.module.WorkFormDTO;
@@ -26,6 +26,7 @@ import com.chaoxing.activity.service.manager.GuanliApiService;
 import com.chaoxing.activity.service.manager.MhApiService;
 import com.chaoxing.activity.service.manager.module.SignApiService;
 import com.chaoxing.activity.service.manager.module.WorkApiService;
+import com.chaoxing.activity.service.queue.activity.ActivityInspectionResultDecideQueueService;
 import com.chaoxing.activity.service.queue.activity.ActivityWebsiteIdSyncQueueService;
 import com.chaoxing.activity.util.DateUtils;
 import com.chaoxing.activity.util.DistributedLock;
@@ -96,6 +97,8 @@ public class ActivityHandleService {
 	private ActivityWebsiteIdSyncQueueService activityWebsiteIdSyncQueueService;
 	@Resource
 	private ActivityStatSummaryHandlerService activityStatSummaryHandlerService;
+	@Resource
+	private ActivityInspectionResultDecideQueueService activityInspectionResultDecideQueueService;
 
 	@Resource
 	private SignApiService signApiService;
@@ -793,6 +796,10 @@ public class ActivityHandleService {
 				.eq(Activity::getId, activityId)
 				.set(Activity::getStatus, status)
 		);
+		if (Objects.equals(Activity.StatusEnum.ENDED.getValue(), status)) {
+			// 当活动结束时触发用户合格判定
+			activityInspectionResultDecideQueueService.push(activityId);
+		}
 	}
 
 	/**更新活动的评价配置

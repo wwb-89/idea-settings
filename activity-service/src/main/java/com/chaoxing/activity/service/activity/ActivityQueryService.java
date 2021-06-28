@@ -19,7 +19,6 @@ import com.chaoxing.activity.mapper.*;
 import com.chaoxing.activity.model.*;
 import com.chaoxing.activity.service.activity.classify.ActivityClassifyQueryService;
 import com.chaoxing.activity.service.activity.manager.ActivityManagerQueryService;
-import com.chaoxing.activity.service.form.ActivityFormRecordService;
 import com.chaoxing.activity.service.manager.WfwRegionalArchitectureApiService;
 import com.chaoxing.activity.service.manager.module.SignApiService;
 import com.chaoxing.activity.util.DateUtils;
@@ -72,8 +71,6 @@ public class ActivityQueryService {
 	private SignApiService signApiService;
 	@Resource
 	private ActivityManagerQueryService activityManagerQueryService;
-	@Resource
-	private ActivityFormRecordService activityFormRecordService;
 	@Resource
 	private ActivityClassifyQueryService activityClassifyQueryService;
 
@@ -612,21 +609,6 @@ public class ActivityQueryService {
 		return uids;
 	}
 
-	/**根据表单记录id查询
-	 * @Description 
-	 * @author wwb
-	 * @Date 2021-05-17 15:13:58
-	 * @param formUserId
-	 * @return com.chaoxing.activity.model.Activity
-	*/
-	public Activity getByFormUserId(Integer formUserId) {
-		Integer activityId = activityFormRecordService.getActivityIdByFormUserId(formUserId);
-		if (activityId != null) {
-			return getById(activityId);
-		}
-		return null;
-	}
-
 	/**针对创建机构、时间范围，对活动进行分页查询
 	* @Description
 	* @author huxiaolong
@@ -757,6 +739,21 @@ public class ActivityQueryService {
 		Integer id = activity.getId();
 		ActivityDetail activityDetail = getDetailByActivityId(id);
 		activity.setIntroduction(Optional.ofNullable(activityDetail).map(ActivityDetail::getIntroduction).orElse(""));
+	}
+
+	/**根据作品征集id查询活动
+	 * @Description 
+	 * @author wwb
+	 * @Date 2021-06-21 16:36:04
+	 * @param workId
+	 * @return com.chaoxing.activity.model.Activity
+	*/
+	public Activity getByWorkId(Integer workId) {
+		List<Activity> activities = activityMapper.selectList(new QueryWrapper<Activity>()
+				.lambda()
+				.eq(Activity::getWorkId, workId)
+		);
+		return activities.stream().findFirst().orElse(null);
 	}
 
 }

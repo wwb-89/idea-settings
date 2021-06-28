@@ -15,7 +15,7 @@ import javax.annotation.Resource;
  * @author wwb
  * @version ver 1.0
  * @className ActivityReleaseScopeChangeQueueService
- * @description
+ * @description 目前统计作品征集刷新参与范围
  * @blame wwb
  * @date 2021-03-26 17:10:17
  */
@@ -36,7 +36,7 @@ public class ActivityReleaseScopeChangeQueueService implements IQueueService<Int
 	 * @param activityId
 	 * @return void
 	*/
-	public void add(Integer activityId) {
+	public void push(Integer activityId) {
 		if (activityId != null) {
 			push(redissonClient, QUEUE_CACHE_KEY, activityId);
 		}
@@ -49,7 +49,7 @@ public class ActivityReleaseScopeChangeQueueService implements IQueueService<Int
 	 * @param 
 	 * @return java.lang.Integer
 	*/
-	public Integer get() throws InterruptedException {
+	public Integer pop() throws InterruptedException {
 		return pop(redissonClient, QUEUE_CACHE_KEY);
 	}
 
