@@ -6,6 +6,7 @@ import com.chaoxing.activity.model.TableField;
 import com.chaoxing.activity.model.TableFieldDetail;
 import com.chaoxing.activity.service.tablefield.TableFieldQueryService;
 import com.chaoxing.activity.service.user.action.UserActionRecordQueryService;
+import com.chaoxing.activity.util.UserAgentUtils;
 import com.chaoxing.activity.util.annotation.LoginRequired;
 import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.stereotype.Controller;
@@ -57,14 +58,20 @@ public class ResultsManageController {
 		model.addAttribute("tableFieldId", tableFieldId);
 		model.addAttribute("tableFieldDetails", tableFieldDetails);
 		model.addAttribute("activityTableFields", activityTableFields);
-		return "pc/result/result-manage";
+	 	if (UserAgentUtils.isMobileAccess(request)) {
+	 		return "mobile/result/result-manage";
+		}
+ 		return "pc/result/result-manage";
 	}
 
 	@LoginRequired
 	@RequestMapping("person-grade")
-	public String personalGrade(Model model, @PathVariable Integer activityId, Integer uid) {
+	public String personalGrade(HttpServletRequest request, Model model, @PathVariable Integer activityId, Integer uid) {
 		UserGradeDTO userGrade = userActionRecordQueryService.getUserGrade(uid, activityId);
 		model.addAttribute("userGrade", userGrade);
+		if (UserAgentUtils.isMobileAccess(request)) {
+			return "mobile/result/person-grade";
+		}
 		return "pc/result/person-grade";
 	}
 

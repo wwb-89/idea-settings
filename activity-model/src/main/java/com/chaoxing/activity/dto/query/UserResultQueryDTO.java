@@ -23,6 +23,8 @@ public class UserResultQueryDTO {
     private Integer activityId;
     /** 关键字 */
     private String sw;
+    /** 合格状态 */
+    private Integer qualifiedStatus;
     /** 排序字段id */
     private Integer orderFieldId;
     /** 排序字段 */

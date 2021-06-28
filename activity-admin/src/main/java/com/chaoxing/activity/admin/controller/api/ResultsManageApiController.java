@@ -45,7 +45,6 @@ public class ResultsManageApiController {
         return RestRespDTO.success(page);
     }
 
-
     /**判定用户合格
     * @Description
     * @author huxiaolong
