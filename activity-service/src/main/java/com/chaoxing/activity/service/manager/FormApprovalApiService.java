@@ -300,6 +300,12 @@ public class FormApprovalApiService {
         if (StringUtils.isNotBlank(period)) {
             activity.setPeriod(new BigDecimal(period));
         }
+        // 最大参与时长
+        String timeLengthUpperLimitStr = FormUtils.getValue(formData, "time_length_upper_limit");
+        if (StringUtils.isNotBlank(timeLengthUpperLimitStr)) {
+            Integer timeLengthUpperLimit = Integer.parseInt(timeLengthUpperLimitStr);
+            activity.setTimeLengthUpperLimit(timeLengthUpperLimit);
+        }
 
         activity.setCreateUid(formData.getUid());
         activity.setCreateUserName(formData.getUname());
