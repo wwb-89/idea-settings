@@ -23,12 +23,12 @@
 <body>
     <div class="person-list" id="result-list" v-cloak>
         <div class="searchDiv">
-            <div class="searchbefore" v-show="!inputShowStatus" @click="inputShowStatus = !inputShowStatus"><i></i><span>搜索</span></div>
+            <div class="searchbefore" v-show="!inputShowStatus" @click="inputShowStatus = true"><i></i><span>搜索</span></div>
             <div class="searchafter" v-show="inputShowStatus">
-                <input type="text" class="txt" placeholder="姓名/账号" v-model="queryParams.sw" @focus="modelShowStatus = !modelShowStatus" @keyup.enter="search">
+                <input type="text" class="txt" placeholder="姓名/账号" v-model="queryParams.sw" @focus="modelShowStatus = true" @keyup.enter="search">
                 <i class="search"></i>
-                <i class="delete" v-show="queryParams.sw.length != 0" @click="inputDeleteFun"></i>
-                <div class="cancle" @click="inputShowStatus = !inputShowStatus">取消</div>
+                <i class="delete" v-show="queryParams.sw.length != 0" @click="queryParams.sw = ''"></i>
+                <div class="cancle" @click="cancelInput">取消</div>
             </div>
         </div>
         <div class="filter-box">
@@ -77,7 +77,7 @@
         </div>
         <!--  加载中  -->
         <div class="loading" v-if="!dataMap[filterType].data"><img src="/static/mobile/assets/images/loading-icon.png" th:src="@{/mobile/assets/images/loading-icon.png}">加载中…</div>
-        <div class="model" v-show="modelShowStatus"></div>
+        <div class="model" v-show="modelShowStatus" @click="modelShowStatus = false"></div>
         <div class="model z-index-high" v-show="orderStatus">
             <div class="my-dialog">
                 <div class="list">
@@ -164,54 +164,7 @@
                     $this.swiperInit()
                 },
                 methods: {
-                    sortChange: function (orderType) {
-                        var $this = this;
-                        $this.queryParams.orderType = orderType;
-                        $this.dataMap[$this.filterType] = {
-                            num: 0,
-                            data: [],
-                            pageNum: 1
-                        };
-                        $this.loadDataByFilterType();
-                        $this.orderStatus = false;
-                    },
-                    loadDataByFilterType: function () {
-                        var $this = this;
-                        switch ($this.filterType) {
-                            case 'QUALIFIED':
-                                $this.loadQualifiedData();
-                                break;
-                            case 'UN_QUALIFIED':
-                                $this.loadUnQualifiedData();
-                                break;
-                            case 'WAIT_AUDIT':
-                                $this.loadWaitAuditData();
-                                break;
-                            default:
-                        }
-                    },
                     // 初始化 Mescroll
-                    search: function () {
-                        var $this = this;
-                        $this.dataMap = {
-                            QUALIFIED: {
-                                num: 0,
-                                data: [],
-                                pageNum: 1
-                            },
-                            UN_QUALIFIED: {
-                                num: 0,
-                                data: [],
-                                pageNum: 1
-                            },
-                            WAIT_AUDIT: {
-                                num: 0,
-                                data: [],
-                                pageNum: 1
-                            }
-                        };
-                        $this.loadAllData();
-                    },
                     initMescroll: function () {
                         var $this = this;
                         if ($this.mescroll == null) {
@@ -236,6 +189,53 @@
                         $this.loadUnQualifiedData();
                         $this.loadQualifiedData();
                         $this.loadWaitAuditData();
+                    },
+                    loadDataByFilterType: function () {
+                        var $this = this;
+                        switch ($this.filterType) {
+                            case 'QUALIFIED':
+                                $this.loadQualifiedData();
+                                break;
+                            case 'UN_QUALIFIED':
+                                $this.loadUnQualifiedData();
+                                break;
+                            case 'WAIT_AUDIT':
+                                $this.loadWaitAuditData();
+                                break;
+                            default:
+                        }
+                    },
+                    sortChange: function (orderType) {
+                        var $this = this;
+                        $this.queryParams.orderType = orderType;
+                        $this.dataMap[$this.filterType] = {
+                            num: 0,
+                            data: [],
+                            pageNum: 1
+                        };
+                        $this.loadDataByFilterType();
+                        $this.orderStatus = false;
+                    },
+                    search: function () {
+                        var $this = this;
+                        $this.dataMap = {
+                            QUALIFIED: {
+                                num: 0,
+                                data: [],
+                                pageNum: 1
+                            },
+                            UN_QUALIFIED: {
+                                num: 0,
+                                data: [],
+                                pageNum: 1
+                            },
+                            WAIT_AUDIT: {
+                                num: 0,
+                                data: [],
+                                pageNum: 1
+                            }
+                        };
+                        $this.loadAllData();
                     },
                     loadUnQualifiedData: function () {
                         var $this = this;
@@ -292,10 +292,10 @@
                             app.showMsg("加载数据失败");
                         });
                     },
-                    //输入框的交互
-                    inputDeleteFun: function () {
-                        this.queryParams.sw = "";
-                        this.inputDeleteShow = false;
+                    cancelInput: function () {
+                        var $this = this;
+                        $this.inputShowStatus = false;
+                        $this.modelShowStatus = false;
                     },
                     filterChange:function (type, status){
                         var $this = this;
