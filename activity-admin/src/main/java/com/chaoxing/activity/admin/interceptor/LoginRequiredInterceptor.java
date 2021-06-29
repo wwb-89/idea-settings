@@ -4,6 +4,7 @@ import com.alibaba.fastjson.JSON;
 import com.chaoxing.activity.admin.util.LoginUtils;
 import com.chaoxing.activity.dto.LoginUserDTO;
 import com.chaoxing.activity.dto.RestRespDTO;
+import com.chaoxing.activity.util.constant.UrlConstant;
 import org.springframework.core.annotation.AnnotationUtils;
 import org.springframework.stereotype.Component;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -48,7 +49,7 @@ public class LoginRequiredInterceptor extends HandlerInterceptorAdapter {
 		refer = URLEncoder.encode(refer, StandardCharsets.UTF_8.name());
 		if (method == null) {
 			// 页面
-			response.sendRedirect("http://v1.chaoxing.com/backSchool/toLogin?refer=" + refer);
+			response.sendRedirect(UrlConstant.MANAGE_LOGIN_URL + refer);
 		}else{
 			if (AnnotationUtils.findAnnotation(method.getMethod(), ResponseBody.class) != null
 					|| AnnotationUtils.findAnnotation(method.getBeanType(), ResponseBody.class) != null
@@ -61,7 +62,7 @@ public class LoginRequiredInterceptor extends HandlerInterceptorAdapter {
 				writer.write(JSON.toJSONString(restResDTO));
 			} else {
 				// 页面
-				response.sendRedirect("http://v1.chaoxing.com/backSchool/toLogin?refer=" + refer);
+				response.sendRedirect(UrlConstant.MANAGE_LOGIN_URL + refer);
 			}
 		}
 	}

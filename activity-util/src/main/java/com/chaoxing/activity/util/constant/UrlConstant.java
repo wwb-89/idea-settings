@@ -19,14 +19,14 @@ public class UrlConstant {
 	public static final String DOMAIN = "https://hd.chaoxing.com";
 	/** 登录地址 */
 	public static final String LOGIN_URL = "https://passport2.chaoxing.com/login?loginType=4&newversion=true&refer=";
+	/** 管理端登录地址 */
+	public static final String MANAGE_LOGIN_URL = "http://v1.chaoxing.com/backSchool/toLogin?refer=";
 	/** 发通知logo地址 */
 	public static final String NOTICE_LOGO_URL = "https://p.ananas.chaoxing.com/star3/origin/b4d171e29d3c60e97c594e4d2b816bbe.png";
 	/** 活动管理地址 */
 	public static final String ATIVITY_MANAGE_URL = "http://manage.hd.chaoxing.com/activity/%s";
 	/** 活动评价的地址 */
 	public static final String ACTIVITY_RATING_URL = "https://hd.chaoxing.com/activity/%d/rating";
-	/** 活动评价的管理地址 */
-	public static final String ACTIVITY_RATING_MANAGE_URL = "http://manage.hd.chaoxing.com/activity/%d/rating/audit";
 
 	/** 双选会 */
 	/** 双选会主页url */

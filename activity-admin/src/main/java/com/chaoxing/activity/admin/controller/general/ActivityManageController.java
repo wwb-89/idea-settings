@@ -15,7 +15,6 @@ import com.chaoxing.activity.service.activity.ActivityQueryService;
 import com.chaoxing.activity.service.activity.ActivityValidationService;
 import com.chaoxing.activity.service.activity.manager.ActivityCreatePermissionService;
 import com.chaoxing.activity.service.activity.scope.ActivityScopeQueryService;
-import com.chaoxing.activity.service.manager.WfwGroupApiService;
 import com.chaoxing.activity.service.manager.module.SignApiService;
 import com.chaoxing.activity.util.UserAgentUtils;
 import org.springframework.stereotype.Controller;
@@ -53,8 +52,6 @@ public class ActivityManageController {
 	private ActivityScopeQueryService activityScopeQueryService;
 	@Resource
 	private ActivityValidationService activityValidationService;
-	@Resource
-	private WfwGroupApiService wfwGroupApiService;
 
 	/**活动管理主页
 	 * @Description 

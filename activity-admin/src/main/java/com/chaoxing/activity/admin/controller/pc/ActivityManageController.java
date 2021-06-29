@@ -14,7 +14,6 @@ import com.chaoxing.activity.service.GroupService;
 import com.chaoxing.activity.service.WebTemplateService;
 import com.chaoxing.activity.service.activity.ActivityQueryService;
 import com.chaoxing.activity.service.activity.classify.ActivityClassifyHandleService;
-import com.chaoxing.activity.service.activity.classify.ActivityClassifyQueryService;
 import com.chaoxing.activity.service.activity.manager.ActivityCreatePermissionService;
 import com.chaoxing.activity.service.manager.WfwRegionalArchitectureApiService;
 import com.chaoxing.activity.util.constant.CommonConstant;
@@ -44,8 +43,6 @@ public class ActivityManageController {
 
 	@Resource
 	private ActivityQueryService activityQueryService;
-	@Resource
-	private ActivityClassifyQueryService activityClassifyQueryService;
 	@Resource
 	private WebTemplateService webTemplateService;
 	@Resource
