@@ -187,23 +187,25 @@
                     },
                     getActionIcon: function (action) {
                         var actionType = action.actionType;
-
                         switch (actionType) {
                             case 'sign_up':
                                 return 'sign-up.png';
                             case 'sign_in':
                                 if (action.way === 2) {
                                     return 'sign-in.png';
+                                } else if (action.way === 3) {
+                                    return 'sign-in-code.png';
                                 } else {
                                     return 'sign-in-normal.png';
                                 }
                             case 'rating':
                                 return 'evaluation.png';
                             case 'work':
-                                return 'prize.png';
+                                return 'works.png';
                             case 'performance':
                                 return 'recommend.png';
                             case 'discuss':
+                                return 'discuss.png'
                             default:
                                 return 'evaluation.png'
                         }
