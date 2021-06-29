@@ -35,9 +35,9 @@
             <div class="tabRank">
                 <div class="swiper-container">
                     <div class="swiper-wrapper">
-                        <div :class="['swiper-slide', filterType == 'WAIT_AUDIT' ? 'active':'']" @click="filterChange('WAIT_AUDIT', 2)">待审核{{dataMap.WAIT_AUDIT.num}}</div>
-                        <div :class="['swiper-slide', filterType == 'QUALIFIED' ? 'active':'']" @click="filterChange('QUALIFIED', 1)">合格{{dataMap.QUALIFIED.num}}</div>
-                        <div :class="['swiper-slide', filterType == 'UN_QUALIFIED' ? 'active':'']" @click="filterChange('UN_QUALIFIED', 0)">不合格{{dataMap.UN_QUALIFIED.num}}</div>
+                        <div :class="['swiper-slide', queryParams.qualifiedStatus == 2 ? 'active':'']" @click="filterChange(2)">待审核{{waitAuditNum}}</div>
+                        <div :class="['swiper-slide', queryParams.qualifiedStatus == 1 ? 'active':'']" @click="filterChange(1)">合格{{qualifiedNum}}</div>
+                        <div :class="['swiper-slide', queryParams.qualifiedStatus == 0 ? 'active':'']" @click="filterChange(0)">不合格{{unQualifiedNum}}</div>
                     </div>
                 </div>
             </div>
@@ -48,7 +48,7 @@
 
         <div class="list-style1">
             <ul>
-                <li v-for="record in dataMap[filterType].data">
+                <li v-for="record in tableData">
                     <img :src="'http://photo.chaoxing.com/p/' + record.uid + '_80'">
                     <div class="info border-bottom">
                         <h2 class="name">{{record.realName}}</h2>
@@ -56,13 +56,13 @@
                             <p class="score">积分 {{record.totalScore}}</p>
                             <i class="icon-chevron-right"></i>
                         </a>
-                        <div class="handel-style" v-if="filterType == 'UN_QUALIFIED'" @click="judgeQualified(record)">
+                        <div class="handel-style" v-if="queryParams.qualifiedStatus == 0" @click="judgeQualified(record)">
                             <span class="txt">不合格</span><i class="icon-chevron-down"></i>
                         </div>
-                        <div class="handel-style" v-if="filterType == 'QUALIFIED'" @click="judgeQualified(record)">
+                        <div class="handel-style" v-else-if="queryParams.qualifiedStatus == 1" @click="judgeQualified(record)">
                             <span class="txt">合格</span><i class="icon-chevron-down"></i>
                         </div>
-                        <div class="handel-style" v-if="filterType == 'WAIT_AUDIT'">
+                        <div class="handel-style" v-else>
                             <span class="txt" @click="qualified(record)">不合格</span>
                             <span class="line"></span>
                             <span class="txt" @click="unQualified(record)">合格</span>
@@ -72,11 +72,11 @@
             </ul>
         </div>
         <!-- 无内容 -->
-        <div class="no-content" v-if="dataMap[filterType].data && dataMap[filterType].data.length === 0">
+        <div class="no-content" v-if="tableData && tableData.length === 0">
             暂无内容
         </div>
         <!--  加载中  -->
-        <div class="loading" v-if="!dataMap[filterType].data"><img src="/static/mobile/assets/images/loading-icon.png" th:src="@{/mobile/assets/images/loading-icon.png}">加载中…</div>
+        <div class="loading" v-if="!tableData"><img src="/static/mobile/assets/images/loading-icon.png" th:src="@{/mobile/assets/images/loading-icon.png}">加载中…</div>
         <div class="model" v-show="modelShowStatus" @click="modelShowStatus = false"></div>
         <div class="model z-index-high" v-show="orderStatus">
             <div class="my-dialog">
@@ -114,33 +114,20 @@
                     return {
                         activityId: [[${activityId}]],
                         tableFieldDetails: [[${tableFieldDetails}]],
+                        qualifiedNum: [[${qualifiedNum}]],
+                        unQualifiedNum: [[${unQualifiedNum}]],
+                        waitAuditNum: [[${waitAuditNum}]],
+                        tableData: [],
                         queryParams: {
                             activityId: [[${activityId}]],
+                            pageNum: 1,
+                            pageSize: 10,
+                            qualifiedStatus: 2,
                             sw: '',
                             orderFieldId: null,
                             orderType: 'DESC'
                         },
                         mescroll: null,
-                        inited: false,
-                        dataMap: {
-                            QUALIFIED: {
-                                num: 0,
-                                data: [],
-                                pageNum: 1
-                            },
-                            UN_QUALIFIED: {
-                                num: 0,
-                                data: [],
-                                pageNum: 1
-                            },
-                            WAIT_AUDIT: {
-                                num: 0,
-                                data: [],
-                                pageNum: 1
-                            }
-                        },
-                        filterStatus: 2,
-                        filterType: 'WAIT_AUDIT',
                         activeUser: null,
                         inputShowStatus: false,
                         modelShowStatus: false,
@@ -157,10 +144,6 @@
                             $this.queryParams.orderFieldId = this.id;
                         }
                     });
-                    $this.$nextTick(function () {
-                        $this.loadAllData();
-                        $this.inited = true
-                    });
                     $this.swiperInit()
                 },
                 methods: {
@@ -174,9 +157,7 @@
                                 },
                                 up: {
                                     callback: function () {
-                                        if ($this.inited) {
-                                            $this.loadDataByFilterType();
-                                        }
+                                        $this.loadData();
                                     }, //上拉加载的回调
                                     htmlNodata: '<p class="upwarp-nodata">-- 没有更多了 --</p>',
                                     noMoreSize: 5, //如果列表已无数据,可设置列表的总数量要大于5才显示无更多数据; 避免列表数据过少(比如只有一条数据),显示无更多数据会不好看 这就是为什么无更多数据有时候不显示的原因.
@@ -184,103 +165,24 @@
                             });
                         }
                     },
-                    loadAllData: async function () {
-                        var $this = this;
-                        $this.loadUnQualifiedData();
-                        $this.loadQualifiedData();
-                        $this.loadWaitAuditData();
-                    },
-                    loadDataByFilterType: function () {
-                        var $this = this;
-                        switch ($this.filterType) {
-                            case 'QUALIFIED':
-                                $this.loadQualifiedData();
-                                break;
-                            case 'UN_QUALIFIED':
-                                $this.loadUnQualifiedData();
-                                break;
-                            case 'WAIT_AUDIT':
-                                $this.loadWaitAuditData();
-                                break;
-                            default:
-                        }
-                    },
-                    sortChange: function (orderType) {
-                        var $this = this;
-                        $this.queryParams.orderType = orderType;
-                        $this.dataMap[$this.filterType] = {
-                            num: 0,
-                            data: [],
-                            pageNum: 1
-                        };
-                        $this.loadDataByFilterType();
-                        $this.orderStatus = false;
-                    },
-                    search: function () {
-                        var $this = this;
-                        $this.dataMap = {
-                            QUALIFIED: {
-                                num: 0,
-                                data: [],
-                                pageNum: 1
-                            },
-                            UN_QUALIFIED: {
-                                num: 0,
-                                data: [],
-                                pageNum: 1
-                            },
-                            WAIT_AUDIT: {
-                                num: 0,
-                                data: [],
-                                pageNum: 1
-                            }
-                        };
-                        $this.loadAllData();
-                    },
-                    loadUnQualifiedData: function () {
-                        var $this = this;
-                        var param = $.extend({}, $this.queryParams);
-                        param.qualifiedStatus = 0;
-                        $this.loadData(param);
-                    },
-                    loadQualifiedData: function () {
-                        var $this = this;
-                        var param = $.extend({}, $this.queryParams);
-                        param.qualifiedStatus = 1;
-                        $this.loadData(param);
-                    },
-                    loadWaitAuditData: function () {
-                        var $this = this;
-                        var param = $.extend({}, $this.queryParams);
-                        param.qualifiedStatus = 2;
-                        $this.loadData(param);
-                    },
                     // 重新加载数据
-                    loadData: function(param) {
+                    loadData: function() {
                         var $this = this;
-                        var filterType = '';
-                        if (param.qualifiedStatus == 0) {
-                            filterType = 'UN_QUALIFIED';
-                        } else if (param.qualifiedStatus == 1) {
-                            filterType = 'QUALIFIED';
-                        } else if (param.qualifiedStatus == 2) {
-                            filterType = 'WAIT_AUDIT';
-                        }
-                        var dataItem = $this.dataMap[filterType];
-
-                        param.pageNum = dataItem.pageNum;
-                        param.pageSize = 10;
-
                         var url = ctx + "/api/activity/results/manage/page";
-                        app.ajaxPost(url, param, function (res) {
+                        app.ajaxPost(url, $this.queryParams, function (res) {
                             if (res.success) {
                                 var records = res.data.records;
                                 $this.mescroll.endByPage(records.length, res.data.pages);
-                                dataItem.data.pushArray(records);
-                                dataItem.num = res.data.total;
-                                dataItem.pageNum++;
-                                $this.dataMap[filterType] = dataItem
-                                // console.log(dataItem);
+                                $this.tableData.pushArray(records);
+                                var status = $this.queryParams.qualifiedStatus;
+                                if (status == 0) {
+                                    $this.unQualifiedNum = res.data.total;
+                                } else if (status == 1) {
+                                    $this.qualifiedNum = res.data.total;
+                                } else {
+                                    $this.waitAuditNum = res.data.total;
+                                }
+                                $this.queryParams.pageNum++;
                             } else {
                                 var errorMessage = data.message;
                                 if (activityApp.isEmpty(errorMessage)) {
@@ -297,10 +199,40 @@
                         $this.inputShowStatus = false;
                         $this.modelShowStatus = false;
                     },
-                    filterChange:function (type, status){
+                    initData: function () {
                         var $this = this;
-                        $this.filterType = type;
-                        $this.filterStatus = status;
+                        $this.tableData = [];
+                        $this.queryParams.pageNum = 1;
+                    },
+                    sortChange: function (orderType) {
+                        var $this = this;
+                        $this.initData();
+                        $this.queryParams.orderType = orderType;
+                        if ($this.mescroll) {
+                            $this.mescroll.resetUpScroll();
+                        } else {
+                            $this.initMescroll();
+                        }
+                        $this.orderStatus = false;
+                    },
+                    search: function () {
+                        var $this = this;
+                        $this.initData();
+                        if ($this.mescroll) {
+                            $this.mescroll.resetUpScroll();
+                        } else {
+                            $this.initMescroll();
+                        }
+                    },
+                    filterChange: function (status){
+                        var $this = this;
+                        $this.initData();
+                        $this.queryParams.qualifiedStatus = status;
+                        if ($this.mescroll) {
+                            $this.mescroll.resetUpScroll();
+                        } else {
+                            $this.initMescroll();
+                        }
                     },
                     //swiper初始化
                     swiperInit:function (){
