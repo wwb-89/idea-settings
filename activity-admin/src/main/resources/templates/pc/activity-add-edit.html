@@ -210,32 +210,6 @@
                         </div>
                     </div>
                 </div>
-                <!--定时发布-->
-                <div class="form-item">
-                    <label class="label">定时发布</label>
-                    <div class="input-box">
-                        <el-switch v-model="activity.timingRelease" class="examine-switch"></el-switch>
-                        <span>开启后，可以按照设置的时间自动发布活动</span>
-                    </div>
-                </div>
-                <div class="form-item" v-show="activity.timingRelease">
-                    <label class="label"></label>
-                    <div class="input-box">
-                        <el-date-picker v-model="activity.timingReleaseTime"
-                                        type="datetime"
-                                        placeholder="发布时间"
-                                        format="yyyy-MM-dd HH:mm"
-                                        value-format="yyyy-MM-dd HH:mm:ss"
-                                        prefix-icon="disable"
-                                        :clearable="false"
-                                        :editable="false"
-                                        :picker-options="timingReleasePickerOption">
-                        </el-date-picker>
-                        <span class="date-piker-icon" style="left: 192px;">
-                            <img src="/static/pc/assets/images/calendar.png" th:src="@{/pc/assets/images/calendar.png}">
-                        </span>
-                    </div>
-                </div>
             </form>
         </div>
         <!--报名设置列表-->
@@ -447,7 +421,7 @@
             <div class="set-box">
                 <div class="title set">其他设置</div>
             </div>
-            <form action="" class="setForm">
+            <form action="" class="setForm" onsubmit="return false;">
                 <div class="form-item cancel-margin marginTop16" v-show="isShowActivityFlag()">
                     <label class="label">标签</label>
                     <div class="input-box wrap">
@@ -473,6 +447,32 @@
                             <el-switch v-model="activity.ratingNeedAudit" class="examine-switch"></el-switch>
                             <span>开启后，审核后的评价才能展示在评价列表</span>
                         </div>
+                    </div>
+                </div>
+                <!--定时发布-->
+                <div class="form-item">
+                    <label class="label">定时发布</label>
+                    <div class="input-box">
+                        <el-switch v-model="activity.timingRelease" class="examine-switch"></el-switch>
+                        <span>开启后，可以按照设置的时间自动发布活动</span>
+                    </div>
+                </div>
+                <div class="form-item" v-show="activity.timingRelease">
+                    <label class="label"></label>
+                    <div class="input-box">
+                        <el-date-picker v-model="activity.timingReleaseTime"
+                                        type="datetime"
+                                        placeholder="发布时间"
+                                        format="yyyy-MM-dd HH:mm"
+                                        value-format="yyyy-MM-dd HH:mm:ss"
+                                        prefix-icon="disable"
+                                        :clearable="false"
+                                        :editable="false"
+                                        :picker-options="timingReleasePickerOption">
+                        </el-date-picker>
+                        <span class="date-piker-icon" style="left: 192px;">
+                            <img src="/static/pc/assets/images/calendar.png" th:src="@{/pc/assets/images/calendar.png}">
+                        </span>
                     </div>
                 </div>
                 <div class="form-item align-start" v-show="isShowIntroduction()">
@@ -1583,7 +1583,7 @@
                 // 活动是否显示发布范围
                 isShowActivityParticipateScope: function () {
                     var $this = this;
-                    var hides = ["second_classroom", "dual_select"];
+                    var hides = ["second_classroom", "dual_select", "volunteer"];
                     return hides.indexOf($this.activity.activityFlag) == -1;
                 },
                 // 是否显示学时、学分
