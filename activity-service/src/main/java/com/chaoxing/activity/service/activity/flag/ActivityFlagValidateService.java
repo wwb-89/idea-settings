@@ -1,4 +1,4 @@
-package com.chaoxing.activity.service.activity.activityflag;
+package com.chaoxing.activity.service.activity.flag;
 
 import com.chaoxing.activity.model.Activity;
 import lombok.extern.slf4j.Slf4j;
