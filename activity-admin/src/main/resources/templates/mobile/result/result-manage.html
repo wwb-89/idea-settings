@@ -204,6 +204,7 @@
                         $this.tableData = [];
                         $this.queryParams.pageNum = 1;
                     },
+                    // 排序
                     sortChange: function (orderType) {
                         var $this = this;
                         $this.initData();
@@ -215,6 +216,7 @@
                         }
                         $this.orderStatus = false;
                     },
+                    // 根据用户名查询数据
                     search: function () {
                         var $this = this;
                         $this.initData();
@@ -224,6 +226,7 @@
                             $this.initMescroll();
                         }
                     },
+                    // 切换tab 重新请求数据
                     filterChange: function (status){
                         var $this = this;
                         $this.initData();
