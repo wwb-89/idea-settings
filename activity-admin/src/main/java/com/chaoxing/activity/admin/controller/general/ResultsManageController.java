@@ -3,7 +3,9 @@ package com.chaoxing.activity.admin.controller.general;
 import com.chaoxing.activity.model.ActivityTableField;
 import com.chaoxing.activity.model.TableField;
 import com.chaoxing.activity.model.TableFieldDetail;
+import com.chaoxing.activity.model.UserResult;
 import com.chaoxing.activity.service.tablefield.TableFieldQueryService;
+import com.chaoxing.activity.service.user.result.UserResultQueryService;
 import com.chaoxing.activity.util.UserAgentUtils;
 import com.chaoxing.activity.util.annotation.LoginRequired;
 import org.apache.commons.collections4.CollectionUtils;
@@ -30,6 +32,8 @@ public class ResultsManageController {
 
 	@Resource
 	private TableFieldQueryService tableFieldQueryService;
+	@Resource
+	private UserResultQueryService userResultQueryService;
 
 
 	/**考核管理主页
@@ -55,7 +59,10 @@ public class ResultsManageController {
 		model.addAttribute("tableFieldDetails", tableFieldDetails);
 		model.addAttribute("activityTableFields", activityTableFields);
 	 	if (UserAgentUtils.isMobileAccess(request)) {
-	 		return "mobile/result/result-manage";
+			model.addAttribute("qualifiedNum", userResultQueryService.countQualifiedStatusNum(activityId, UserResult.QualifiedStatusEnum.QUALIFIED));
+			model.addAttribute("unQualifiedNum", userResultQueryService.countQualifiedStatusNum(activityId, UserResult.QualifiedStatusEnum.NOT_QUALIFIED));
+			model.addAttribute("waitAuditNum", userResultQueryService.countQualifiedStatusNum(activityId, UserResult.QualifiedStatusEnum.WAIT));
+			return "mobile/result/result-manage";
 		}
  		return "pc/result/result-manage";
 	}

@@ -233,4 +233,18 @@ public class UserResultQueryService {
 		);
 	}
 
+	/**根据活动和合格状态，计算对应合格状态的数量
+	* @Description
+	* @author huxiaolong
+	* @Date 2021-06-29 10:04:25
+	* @param activityId
+	* @param qualifiedStatusEnum
+	* @return int
+	*/
+	public int countQualifiedStatusNum(Integer activityId, UserResult.QualifiedStatusEnum qualifiedStatusEnum) {
+		return userResultMapper.selectCount(new QueryWrapper<UserResult>()
+				.lambda()
+				.eq(UserResult::getActivityId, activityId)
+				.eq(UserResult::getQualifiedStatus, qualifiedStatusEnum.getValue()));
+	}
 }
