@@ -42,6 +42,20 @@ public interface IDelayedQueueService<T> {
 		delayedQueue.offer(value, delay.toMillis(), TimeUnit.MILLISECONDS);
 	}
 
+	/**直接将元素插入队列中
+	 * @Description 
+	 * @author wwb
+	 * @Date 2021-06-29 14:29:51
+	 * @param redissonClient
+	 * @param key
+	 * @param value
+	 * @return void
+	*/
+	default void directPush(RedissonClient redissonClient, String key, T value) {
+		RBlockingQueue<Object> blockingQueue = redissonClient.getBlockingQueue(key);
+		blockingQueue.offer(value);
+	}
+
 	/**从队列里面获取数据
 	 * @Description 
 	 * @author wwb

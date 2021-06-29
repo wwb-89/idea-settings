@@ -51,7 +51,7 @@ public class QueueApiController {
 		List<Activity> activities = activityQueryService.list();
 		if (CollectionUtils.isNotEmpty(activities)) {
 			for (Activity activity : activities) {
-				activityIsAboutToStartQueueService.add(activity);
+				activityIsAboutToStartQueueService.pushNoticeSignedUp(new ActivityIsAboutToStartQueueService.QueueParamDTO(activity.getId(), activity.getStartTime()), false);
 			}
 		}
 		return RestRespDTO.success();
@@ -69,7 +69,7 @@ public class QueueApiController {
 		List<Activity> activities = activityQueryService.list();
 		if (CollectionUtils.isNotEmpty(activities)) {
 			for (Activity activity : activities) {
-				activityStatusUpdateQueueService.addTime(activity);
+				activityStatusUpdateQueueService.push(activity);
 			}
 		}
 		return RestRespDTO.success();

@@ -1,7 +1,6 @@
 package com.chaoxing.activity.service.activity;
 
 import com.chaoxing.activity.model.Activity;
-import com.chaoxing.activity.util.DateUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
@@ -59,23 +58,14 @@ public class ActivityStatusUpdateService {
 	 * @author wwb
 	 * @Date 2021-03-26 14:41:44
 	 * @param activityId
-	 * @param l
 	 * @return void
 	*/
-	public boolean statusUpdate(Integer activityId, long l) {
-		LocalDateTime time = DateUtils.timestamp2Date(l);
-		LocalDateTime now = LocalDateTime.now();
-		if (time.compareTo(now) <= 0) {
-			log.info("根据活动:{}的结束时间更新活动的状态", activityId);
-			// 更新活动状态
-			Activity activity = activityQueryService.getById(activityId);
-			if (activity != null) {
-				Integer status = calActivityStatus(activity);
-				activityHandleService.updateActivityStatus(activityId, status);
-			}
-			return true;
+	public void statusUpdate(Integer activityId) {
+		Activity activity = activityQueryService.getById(activityId);
+		if (activity != null) {
+			Integer status = calActivityStatus(activity);
+			activityHandleService.updateActivityStatus(activityId, status);
 		}
-		return false;
 	}
 
 }

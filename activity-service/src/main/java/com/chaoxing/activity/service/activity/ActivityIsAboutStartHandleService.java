@@ -11,7 +11,6 @@ import com.chaoxing.activity.util.DateUtils;
 import com.chaoxing.activity.util.constant.CommonConstant;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
-import org.springframework.data.redis.core.ZSetOperations;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
@@ -53,26 +52,17 @@ public class ActivityIsAboutStartHandleService {
 	 * @Description 
 	 * @author wwb
 	 * @Date 2021-03-26 16:48:31
-	 * @param typedTuple
-	 * @return boolean
+	 * @param activityId
+	 * @return void
 	*/
-	public boolean sendActivityIsAboutStartNotice(ZSetOperations.TypedTuple<Integer> typedTuple) {
-		Integer activityId = typedTuple.getValue();
-		Double score = typedTuple.getScore();
-		long noticeTimestamp = score.longValue();
-		LocalDateTime now = LocalDateTime.now();
-		long nowTimestamp = DateUtils.date2Timestamp(now);
-		if (noticeTimestamp <= nowTimestamp) {
-			// 处理通知， 已报名的和已收藏（活动不需要报名的）
-			Activity activity = activityQueryService.getById(activityId);
-			List<Integer> signedUpUids = activityQueryService.listSignedUpUid(activity);
-			generateSignedUpNotice(activity, signedUpUids);
-			// 收藏的uid列表
-			List<Integer> collectedUids = activityCollectionQueryService.listCollectedUid(activityId);
-			generateCollectNotice(activity, collectedUids);
-			return true;
-		}
-		return false;
+	public void sendActivityIsAboutStartNotice(Integer activityId) {
+		// 处理通知， 已报名的和已收藏（活动不需要报名的）
+		Activity activity = activityQueryService.getById(activityId);
+		List<Integer> signedUpUids = activityQueryService.listSignedUpUid(activity);
+		generateSignedUpNotice(activity, signedUpUids);
+		// 收藏的uid列表
+		List<Integer> collectedUids = activityCollectionQueryService.listCollectedUid(activityId);
+		generateCollectNotice(activity, collectedUids);
 	}
 
 	/**是否直接发送活动开始的通知
@@ -88,7 +78,7 @@ public class ActivityIsAboutStartHandleService {
 		long startTimestamp = DateUtils.date2Timestamp(startTime);
 		long nowTimestamp = DateUtils.date2Timestamp(now);
 		// 如果时间阈值以外或活动一开始则不发送
-		if (startTimestamp - nowTimestamp >= CommonConstant.ACTIVITY_NOTICE_TIME_MILLISECOND || now.isAfter(startTime)) {
+		if (startTimestamp - nowTimestamp >= CommonConstant.ACTIVITY_BEFORE_START_NOTICE_TIME_THRESHOLD || now.isAfter(startTime)) {
 			return false;
 		}
 		return true;

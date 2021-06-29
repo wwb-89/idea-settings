@@ -4,6 +4,7 @@ import com.chaoxing.activity.model.Activity;
 import com.chaoxing.activity.service.activity.ActivityQueryService;
 import com.chaoxing.activity.service.manager.MhApiService;
 import com.chaoxing.activity.service.queue.activity.ActivityNameChangeNoticeQueueService;
+import com.chaoxing.activity.util.exception.BusinessException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
@@ -51,8 +52,9 @@ public class MhWebTitleUpdateTask {
 				try {
 					mhApiService.updateWebTitle(pageId, name, createUid);
 				} catch (Exception e) {
-					e.printStackTrace();
-					log.error("更新门户网站title activityId:{} error:{}", activityId, e.getMessage());
+					if (!(e instanceof BusinessException)) {
+						e.printStackTrace();
+					}
 					activityNameChangeNoticeQueueService.push(activityId);
 				}
 			}

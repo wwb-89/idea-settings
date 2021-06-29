@@ -101,8 +101,9 @@ public class MhApiService {
 		JSONObject jsonObject = JSON.parseObject(result);
 		Integer code = jsonObject.getInteger("code");
 		if (!Objects.equals(code, 1)) {
-			String errorMessage = jsonObject.getString("message");
-			throw new BusinessException(errorMessage);
+			String message = jsonObject.getString("message");
+			log.error("根据url:{} 更新网站title error:{}", url, message);
+			throw new BusinessException(message);
 		}
 	}
 

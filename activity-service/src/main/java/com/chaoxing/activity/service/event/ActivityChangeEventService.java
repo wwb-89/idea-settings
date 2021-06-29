@@ -64,14 +64,14 @@ public class ActivityChangeEventService {
 		// 数据推送
 		dataPushService.dataPush(new DataPushService.DataPushParamDTO(createFid, OrgDataRepoConfigDetail.DataTypeEnum.ACTIVITY, String.valueOf(activityId), null));
 		// 订阅活动状态处理
-		activityStatusUpdateQueueService.addTime(activity);
+		activityStatusUpdateQueueService.push(activity);
 		// 通知门户修改网站的title
 		Integer pageId = activity.getPageId();
 		if (pageId != null) {
 			activityNameChangeNoticeQueueService.push(activityId);
 		}
 		// 订阅活动通知发送
-		activityIsAboutToStartQueueService.add(activity);
+		activityIsAboutToStartQueueService.pushNoticeSignedUp(new ActivityIsAboutToStartQueueService.QueueParamDTO(activityId, activity.getStartTime()), false);
 		// 活动封面url同步
 		activityCoverUrlSyncQueueService.push(activityId);
 		Integer signId = activity.getSignId();
@@ -147,14 +147,12 @@ public class ActivityChangeEventService {
 		Integer status = activity.getStatus();
 		Activity.StatusEnum statusEnum = Activity.StatusEnum.fromValue(status);
 		if (Objects.equals(Activity.StatusEnum.DELETED, statusEnum)) {
-			// 活动被删除
-			activityIsAboutToStartQueueService.remove(activity.getId());
 			// 活动数据推送
 			Integer activityId = activity.getId();
 			Integer createFid = activity.getCreateFid();
 			dataPushService.dataPush(new DataPushService.DataPushParamDTO(createFid, OrgDataRepoConfigDetail.DataTypeEnum.ACTIVITY, String.valueOf(activityId), null));
 		}
-
+		activityIsAboutToStartQueueService.pushNoticeSignedUp(new ActivityIsAboutToStartQueueService.QueueParamDTO(activity.getId(), activity.getStartTime()), false);
 	}
 
 	/**发布状态的改变

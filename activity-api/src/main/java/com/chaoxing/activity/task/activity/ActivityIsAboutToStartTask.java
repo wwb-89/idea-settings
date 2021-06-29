@@ -3,7 +3,6 @@ package com.chaoxing.activity.task.activity;
 import com.chaoxing.activity.service.activity.ActivityIsAboutStartHandleService;
 import com.chaoxing.activity.service.queue.activity.ActivityIsAboutToStartQueueService;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.data.redis.core.ZSetOperations;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
@@ -33,14 +32,17 @@ public class ActivityIsAboutToStartTask {
 	 * @param 
 	 * @return void
 	*/
-	@Scheduled(fixedDelay = 100L)
-	public void handle() {
-		ZSetOperations.TypedTuple<Integer> integerTypedTuple = activityIsAboutToStartQueueService.get();
-		if (integerTypedTuple == null) {
+	@Scheduled(fixedDelay = 1L)
+	public void handle() throws InterruptedException {
+		ActivityIsAboutToStartQueueService.QueueParamDTO queueParam = activityIsAboutToStartQueueService.popNoticeSignedUp();
+		if (queueParam == null) {
 			return;
 		}
-		if (activityIsAboutStartHandleService.sendActivityIsAboutStartNotice(integerTypedTuple)) {
-			activityIsAboutToStartQueueService.remove(integerTypedTuple.getValue());
+		try {
+			activityIsAboutStartHandleService.sendActivityIsAboutStartNotice(queueParam.getActivityId());
+		} catch (Exception e) {
+			e.printStackTrace();
+			activityIsAboutToStartQueueService.pushNoticeSignedUp(queueParam, true);
 		}
 	}
 
