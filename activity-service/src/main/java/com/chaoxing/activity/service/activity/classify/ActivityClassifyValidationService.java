@@ -9,7 +9,6 @@ import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -73,23 +72,11 @@ public class ActivityClassifyValidationService {
 	 * @return void
 	 */
 	public void nameNotExist(String name, Integer id, Integer fid) {
-		List<ActivityClassify> activityClassifies = new ArrayList<>();
-		List<ActivityClassify> systemActivityClassifies = activityClassifyMapper.selectList(
-				new LambdaQueryWrapper<ActivityClassify>()
-						.eq(ActivityClassify::getSystem, Boolean.TRUE)
-						.eq(ActivityClassify::getName, name)
-		);
-		if (CollectionUtils.isNotEmpty(systemActivityClassifies)) {
-			activityClassifies.addAll(systemActivityClassifies);
-		}
-		List<ActivityClassify> orgActivityClassifies = activityClassifyMapper.selectList(
+		List<ActivityClassify> activityClassifies = activityClassifyMapper.selectList(
 				new LambdaQueryWrapper<ActivityClassify>()
 						.eq(ActivityClassify::getAffiliationFid, fid)
 						.eq(ActivityClassify::getName, name)
 		);
-		if (CollectionUtils.isNotEmpty(orgActivityClassifies)) {
-			activityClassifies.addAll(orgActivityClassifies);
-		}
 		if (CollectionUtils.isNotEmpty(activityClassifies)) {
 			for (ActivityClassify activityClassify : activityClassifies) {
 				if (!Objects.equals(activityClassify.getId(), id)) {
