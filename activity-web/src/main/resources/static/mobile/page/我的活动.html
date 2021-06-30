@@ -22,26 +22,12 @@
             <div class="cancle" v-on:click="inputShow">取消</div>
         </div>
     </div>
-    <div class="tab" id="road-tab">
-        <ul>
-            <li :class="[activeNum==0?'active':'']"  v-on:click="tabChangeFun('0')">已报名</li>
-            <li :class="[activeNum==1?'active':'']" v-on:click="tabChangeFun('1')">收藏</li>
-            <li :class="[activeNum==2?'active':'']" v-on:click="tabChangeFun('2')">管理</li>
-        </ul>
-        <div class="clear"></div>
-    </div>
     <div class="tabContent" v-show="activeNum==0">
         <div class="card-list">
             <ul>
                 <li class="list-item" data-type="0" @touchstart.capture="touchStart" @touchend.capture="touchEnd">
                     <div class="inner">
                         <div class="img-box border">
-<!--                            状态五种状态-->
-                            <p class="tips color1">进行中</p>
-                            <p class="tips color2">未开始</p>
-                            <p class="tips color3">已结束</p>
-                            <p class="tips color4">审核中</p>
-                             <p class="num"><i></i>1028</p>
                             <div class="js-crop-img">
                              <img src="https://p.ananas.chaoxing.com/star3/270_169c/669ca80d6a0c5f74835bb936a41aabca.jpg">
                             </div>
@@ -52,16 +38,16 @@
                              <p class="address">浙江图书馆</p>
                          </div>
                     </div>
-                    <div class="handel numTotal1">
-                        <a class="cancel" v-on:click="cancelFun"><span>取消<br>报名</span></a>
+                    <div class="handel numTotal3">
+                        <a class="cancel" v-on:click="cancelFun"><span class="text2">置顶</span></a>
+                        <a class="manage"><span class="text2">管理</span></a>
+                        <a class="delete"><span class="text2">删除</span></a>
                     </div>
                 </li>
                 <li class="list-item" data-type="0" @touchstart.capture="touchStart" @touchend.capture="touchEnd">
                     <div class="inner">
                         <div class="img-box border">
-                            <!--                            状态五种状态-->
-                            <p class="tips color1">进行中</p>
-                            <p class="num"><i></i>1028</p>
+                            <p class="tips color2">自建</p>
                             <div class="js-crop-img">
                                 <img src="https://p.ananas.chaoxing.com/star3/270_169c/669ca80d6a0c5f74835bb936a41aabca.jpg">
                             </div>
@@ -80,8 +66,7 @@
                     <div class="inner">
                         <div class="img-box border">
                             <!--                            状态五种状态-->
-                            <p class="tips color2">未开始</p>
-                            <p class="num"><i></i>1028</p>
+                            <p class="tips color2">自建</p>
                             <div class="js-crop-img">
                                 <img src="https://p.ananas.chaoxing.com/star3/270_169c/669ca80d6a0c5f74835bb936a41aabca.jpg">
                             </div>
@@ -99,9 +84,6 @@
                 <li class="list-item" data-type="0" @touchstart.capture="touchStart" @touchend.capture="touchEnd">
                     <div class="inner">
                         <div class="img-box border">
-                            <!--                            状态五种状态-->
-                            <p class="tips color3">已结束</p>
-                            <p class="num"><i></i>1028</p>
                             <div class="js-crop-img">
                                 <img src="https://p.ananas.chaoxing.com/star3/270_169c/669ca80d6a0c5f74835bb936a41aabca.jpg">
                             </div>
@@ -119,12 +101,6 @@
                 <li class="list-item" data-type="0" @touchstart.capture="touchStart" @touchend.capture="touchEnd">
                     <div class="inner">
                         <div class="img-box border">
-                            <!--                            状态五种状态-->
-                            <p class="tips color1">进行中</p>
-                            <p class="tips color2">未开始</p>
-                            <p class="tips color3">已结束</p>
-                            <p class="tips color4">审核中</p>
-                            <p class="num"><i></i>1028</p>
                             <div class="js-crop-img">
                                 <img src="https://p.ananas.chaoxing.com/star3/270_169c/669ca80d6a0c5f74835bb936a41aabca.jpg">
                             </div>
@@ -142,12 +118,7 @@
                 <li class="list-item" data-type="0" @touchstart.capture="touchStart" @touchend.capture="touchEnd">
                     <div class="inner">
                         <div class="img-box border">
-                            <!--                            状态五种状态-->
-                            <p class="tips color1">进行中</p>
-                            <p class="tips color2">未开始</p>
-                            <p class="tips color3">已结束</p>
-                            <p class="tips color4">审核中</p>
-                            <p class="num"><i></i>1028</p>
+                            <p class="tips color2">自建</p>
                             <div class="js-crop-img">
                                 <img src="https://p.ananas.chaoxing.com/star3/270_169c/669ca80d6a0c5f74835bb936a41aabca.jpg">
                             </div>
@@ -165,13 +136,7 @@
                 <li class="list-item" data-type="0" @touchstart.capture="touchStart" @touchend.capture="touchEnd">
                     <div class="inner">
                         <div class="img-box border">
-                            <!--                            状态五种状态-->
-                            <p class="tips color1">进行中</p>
-                            <p class="tips color2">未开始</p>
-                            <p class="tips color3">已结束</p>
-                            <p class="tips color4">审核中</p>
-                            <p class="tips color5">活动预告</p>
-                            <p class="num"><i></i>1028</p>
+                            <p class="tips color2">自建</p>
                             <div class="js-crop-img">
                                 <img src="https://p.ananas.chaoxing.com/star3/270_169c/669ca80d6a0c5f74835bb936a41aabca.jpg">
                             </div>
@@ -195,12 +160,7 @@
                 <li class="list-item" data-type="0" @touchstart.capture="touchStart" @touchend.capture="touchEnd">
                     <div class="inner">
                         <div class="img-box border">
-<!--                            状态五种状态-->
-                            <p class="tips color1">进行中</p>
-                            <p class="tips color2">未开始</p>
-                            <p class="tips color3">已结束</p>
-                            <p class="tips color4">审核中</p>
-                             <p class="num"><i></i>1028</p>
+                            <p class="tips color2">自建</p>
                             <div class="js-crop-img">
                              <img src="https://p.ananas.chaoxing.com/star3/270_169c/669ca80d6a0c5f74835bb936a41aabca.jpg">
                             </div>
@@ -224,12 +184,7 @@
                 <li class="list-item" data-type="0" @touchstart.capture="touchStart" @touchend.capture="touchEnd">
                     <div class="inner">
                         <div class="img-box border">
-<!--                            状态五种状态-->
-                            <p class="tips color1">进行中</p>
-                            <p class="tips color2">未开始</p>
-                            <p class="tips color3">已结束</p>
-                            <p class="tips color4">审核中</p>
-                             <p class="num"><i></i>1028</p>
+                            <p class="tips color2">自建</p>
                             <div class="js-crop-img">
                              <img src="https://p.ananas.chaoxing.com/star3/270_169c/669ca80d6a0c5f74835bb936a41aabca.jpg">
                             </div>
@@ -250,14 +205,15 @@
     </div>
     <!-- 无数据 -->
     <div class="noContent">
-        <p>无搜索结果</p>
+        <!--<p>无搜索结果</p>-->
+        <p>暂无内容</p>
     </div>
 <!--  加载中  -->
     <div class="loading"><img src="../assets/images/Spinner-1s-200px.svg">加载中…</div>
     <!--        没有更多-->
     <div class="noMore"><span></span></div>
 <!--    出示签到码位置-->
-    <div class="labelTab border"><i></i><span>出示签到码</span></div>
+    <div class="labelTab border"><i></i><span>扫码核签</span></div>
 </div>
 </body>
 </html>
@@ -344,7 +300,9 @@
                     // console.log(currentElement.lastChild.className.indexOf('numTotal2'))
                     if (currentElement.lastChild.className.indexOf('numTotal2') > -1) {
                         currentElement.dataset.type = 2;
-                    } else {
+                    } else if(currentElement.lastChild.className.indexOf('numTotal3') > -1){
+                        currentElement.dataset.type = 3;
+                    }else {
                         currentElement.dataset.type = 1;
                     }
                 }

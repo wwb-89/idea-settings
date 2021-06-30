@@ -1389,6 +1389,9 @@ input.btn-name,
     width: 700px;
     margin-left: 24px;
 }
+.setForm .join-box .autoRange {
+    margin-bottom: -13px;
+}
 .flexStart{
     align-items: flex-start;
 }

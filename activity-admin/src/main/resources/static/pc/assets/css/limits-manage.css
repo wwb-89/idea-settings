@@ -86,6 +86,15 @@ html, body {
   background: rgba(0, 0, 0, 0.3);
 }
 
+.dialog-mask .masking {
+  position: absolute;
+  z-index: 3;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+}
+
 .dailog {
   position: absolute;
   z-index: 4;
@@ -254,7 +263,6 @@ html, body {
 }
 
 .dailog.setting-dailog .body .form-item .input-box .el-checkbox {
-  width: 83px;
   margin: 4px 0;
   margin-right: 16px;
   color: #333333;
@@ -262,6 +270,10 @@ html, body {
 
 .dailog.setting-dailog .body .form-item .input-box .el-checkbox:nth-child(4n) {
   margin-right: 0;
+}
+
+.dailog.setting-dailog .body .form-item .input-box .el-checkbox .el-checkbox__label {
+  padding-left: 8px;
 }
 
 .dailog.setting-dailog .body .form-item .input-box .el-radio {
