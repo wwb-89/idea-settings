@@ -3,7 +3,6 @@ body {
 }
 .activity-list {
     .searchDiv {
-        background: #ffffff;
         padding: .75rem 1rem 0;
         position: relative;
         z-index: 20;
@@ -12,7 +11,7 @@ body {
            display: flex;
            align-items:center;
             justify-content:center;
-           background: #F6F7FB;
+         background: #ffffff;
            height: 1.125rem;
            line-height: 1.125rem;
            padding: .375rem 0;
@@ -24,7 +23,7 @@ body {
               width: .96875rem;
               height: .9375rem;
               background: url("../images/icon-30-search.png") center center no-repeat;
-              background-size: 100%; 
+              background-size: 100%;
               margin-right: .375rem;
               position: relative;
               top: -0.0625rem;
@@ -35,10 +34,10 @@ body {
                 line-height: 1.125rem;
                 font-weight: 100;
            }
-       } 
+       }
        .searchafter {
            position: relative;
-           background: #F6F7FB;
+         background: #ffffff;
            border-radius: .9375rem;
            margin-right: 2.875rem;
            .search {
@@ -49,7 +48,7 @@ body {
                 width: .96875rem;
                 height: 1.875rem;
                 background: url("../images/icon-30-search.png") center center no-repeat;
-                background-size: 100%; 
+                background-size: 100%;
            }
            .delete {
                 position: absolute;
@@ -71,7 +70,7 @@ body {
                border: none;
                box-sizing: border-box;
            }
-           
+
            .cancle {
                position: absolute;
                top: 0;
@@ -105,8 +104,8 @@ body {
                     font-weight: 600;
                     border-bottom: .125rem solid #0084FF;
                     span {
-                        font-weight: 400; 
-                        
+                        font-weight: 400;
+
                     }
                 }
             }
@@ -117,7 +116,7 @@ body {
          ul {
             overflow: hidden;
              li {
-                 
+
                  background: #FFFFFF;
                  padding: .75rem;
                  min-height: 5.5rem;
@@ -174,16 +173,16 @@ body {
                         color: #FFFFFF;
                         font-size: .5625rem;
                         border-radius: 0px .28125rem 0px .3125rem;
-                    } 
+                    }
                     .color1 {
                         background: linear-gradient(279.4deg, #24BB1D 0.2%, #48DF4E 100.2%);
-                    } 
+                    }
                     .color2 {
                         background: linear-gradient(99.4deg, #91D3FF -0.2%, #51B9FF 99.8%);
-                    } 
+                    }
                     .color3 {
                         background: linear-gradient(99.4deg, #ACB8BF -0.2%, #7F8E98 99.8%);
-                    } 
+                    }
                     .color4 {
                         background: linear-gradient(99.17deg, #FD8585 1.9%, #FC564C 99.8%);
                     }
@@ -191,7 +190,7 @@ body {
 
                       background: linear-gradient(96.68deg, #FFB763 1.14%, #FF8B20 98.13%);
                     }
-                } 
+                }
                 .card-info {
                     text-align: left;
                     .title {
@@ -212,20 +211,21 @@ body {
                         line-height: 1.25rem;
                         color: #999999;
                     }
-                } 
+                }
                 .handel {
                     position: absolute;
                     top: 0;
-                   
+
                     height: 100%;
                     font-size: 0;
-                    .cancel {
+                    .cancel,
+                    .cancel1 {
                       display: inline-block;
                       width: 2.75rem;
                       height: 2.75rem;
                       color: #FFFFFF;
                       font-size: .625rem;
-                      background: #FBA233;
+                      background: #7F8E98;
                       box-shadow: 0px .375rem .75rem rgba(105, 50, 0, 0.1);
                       border-radius: 1.375rem;
                       position: relative;
@@ -238,13 +238,13 @@ body {
                           padding: .5375rem 0;
                       }
                     }
-                    .cancel1 {
+                    .manage {
                         display: inline-block;
                         width: 2.75rem;
                         height: 2.75rem;
                         color: #FFFFFF;
                         font-size: .625rem;
-                        background: #7F8E98;
+                        background: #0084FF;
                         box-shadow: 0px 12px 24px rgba(14, 41, 66, 0.1);
                         border-radius: 1.375rem;
                         position: relative;
@@ -287,6 +287,12 @@ body {
                         top: 50%;
                         transform: translateY(-50%);
                     }
+                    a{
+                      span.text2{
+                        line-height: 2.75rem;
+                        padding: 0;
+                      }
+                    }
                 }
                 .numTotal1 {
                     right: -4rem;
@@ -295,7 +301,23 @@ body {
                 .numTotal2 {
                     right: -7.75rem;
                     width: 7.75rem;
+                  a{
+                    margin-left: 1rem;
+                    &:first-child{
+                      margin-left: 0;
+                    }
+                  }
                 }
+               .numTotal3 {
+                 right: -12.25rem;
+                 width: 12.25rem;
+                 a{
+                   margin-left: 1rem;
+                   &:first-child{
+                     margin-left: 0;
+                   }
+                 }
+               }
                 &[data-type="0"] {
                     transform: translate3d(0, 0, 0);
                   transition: all 0.6s ease .1s;
@@ -308,33 +330,41 @@ body {
                     transform: translate3d(-7.75rem, 0, 0);
                   transition: all 0.6s ease .1s;
                 }
-                
+               &[data-type="3"] {
+                 transform: translate3d(-12.25rem, 0, 0);
+                 transition: all 0.6s ease .1s;
+               }
+
              }
-         }   
+         }
     }
     .labelTab {
       position: fixed;
       right: 0;
       bottom: 3.125rem;
       box-sizing: border-box;
-      background: #ffffff;
+      //background: rgba(7, 75, 138, 0.6);
+      background: rgba(115, 149, 185, 1);
       display: flex;
       box-shadow: 0px 0px .75rem rgba(0, 0, 0, 0.1);
       border-radius: 1.40625rem 0px 0px 1.40625rem;
       padding: .625rem 1rem .625rem 1.0625rem;
       span {
         font-size: .9375rem;
-        color: #0084FF;
+        color: #ffffff;
         height: 1.3125rem;
         line-height: 1.3125rem;
       }
       i{
           display: inline-block;
-          width: .875rem;
-          height: 1.25rem;
-          background: url("../images/icon-16-code-blue.png") center center no-repeat;
+          //width: .875rem;
+          //height: 1.25rem;
+        width: 1rem;
+        height: 1rem;
+          background: url("../images/scan.png") center center no-repeat;
           background-size: 100%;
           margin-right: .3125rem;
+        margin-top: 0.1875rem;
       }
     }
 }
@@ -361,4 +391,3 @@ body {
     font-size: 0.9375rem;
   }
 }
-  

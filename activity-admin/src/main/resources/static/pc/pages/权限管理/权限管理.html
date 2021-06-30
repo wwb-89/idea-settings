@@ -102,6 +102,7 @@
 
         <!-- 确认删除模块弹框 -->
         <div class="dialog-mask" v-show="delDialog">
+            <div class="masking" @click="delDialog=false"></div>
             <div class="dailog delete-dailog">
                 <img src="../../assets/images/yq-design/warn.png" alt="">
                 <p class="text">确定删除吗？</p>
@@ -113,6 +114,7 @@
         </div>
         <!-- 新增弹窗 -->
         <div class="dialog-mask" v-show="addDialog">
+            <div class="masking" @click="addDialog=false"></div>
             <div class="dailog add-dailog">
                 <div class="header">
                     <span>角色名称</span>
@@ -133,6 +135,7 @@
         </div>
         <!-- 编辑弹窗 -->
         <div class="dialog-mask" v-show="editDialog">
+            <div class="masking" @click="editDialog=false"></div>
             <div class="dailog add-dailog">
                 <div class="header">
                     <span>角色名称</span>
@@ -153,6 +156,7 @@
         </div>
         <!-- 配置权限弹窗 -->
         <div class="dialog-mask" v-show="settingDialog">
+            <div class="masking" @click="settingDialog=false"></div>
             <div class="dailog setting-dailog">
                 <div class="header">
                     <span>配置权限</span>
@@ -225,6 +229,7 @@
         </div>
         <!-- 选择范围弹窗 -->
         <div class="dialog-mask" v-show="releaseDialog">
+            <div class="masking" @click="releaseDialog=false"></div>
             <div class="dailog release-dialog">
                 <div class="header">
                     <span>请选择</span>
@@ -291,7 +296,7 @@
             }
         },
         created: function () {
-            
+
         },
         mounted: function () {
             this.organizationTreeFun();

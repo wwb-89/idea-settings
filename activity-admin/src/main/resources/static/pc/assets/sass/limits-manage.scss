@@ -68,6 +68,14 @@ html,body{
     right: 0;
     bottom: 0;
     background: rgba(0, 0, 0, 0.3);
+    .masking{
+        position: absolute;
+        z-index: 3;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+    }
 }
 .dailog {
     position: absolute;
@@ -199,12 +207,15 @@ html,body{
                     vertical-align: top;
                     width: 380px;
                     .el-checkbox {
-                        width: 83px;
+                        //width: 83px;
                         margin: 4px 0;
                         margin-right: 16px;
                         color: #333333;
                         &:nth-child(4n){
                             margin-right: 0;
+                        }
+                        .el-checkbox__label {
+                            padding-left: 8px;
                         }
                     }
                     .el-radio {

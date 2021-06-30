@@ -102,7 +102,7 @@ section {
 body,
 html {
   width: 100%;
-  font-family: "SF Pro Display","Helvetica Neue",Helvetica,Tahoma,Arial,"PingFang SC","Hiragino Sans GB","Microsoft YaHei",sans-serif,'Apple Color Emoji','Segoe UI Emoji','Segoe UI Symbol','Noto Color Emoji';
+  font-family: "SF Pro Display", "Helvetica Neue", Helvetica, Tahoma, Arial, "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
   -webkit-text-size-adjust: 100%;
   -ms-text-size-adjust: 100%;
   -webkit-tap-highlight-color: transparent;
@@ -155,27 +155,34 @@ a:visited {
 .msgDialog.layui-layer {
   border-radius: 1.0625rem;
 }
+
 input::-webkit-input-placeholder, textarea::-webkit-input-placeholder {
   color: #CCCCCC;
-  font-weight: 100; }
+  font-weight: 100;
+}
 
 input:-moz-placeholder, textarea:-moz-placeholder {
   color: #CCCCCC;
-  font-weight: 100; }
+  font-weight: 100;
+}
 
 input::-moz-placeholder, textarea::-moz-placeholder {
   color: #CCCCCC;
-  font-weight: 100; }
+  font-weight: 100;
+}
 
 input:-ms-input-placeholder, textarea:-ms-input-placeholder {
   color: #CCCCCC;
-  font-weight: 100; }
+  font-weight: 100;
+}
+
 .overHidden1 {
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
   word-break: break-all;
 }
+
 .overHidden2 {
   display: -webkit-box;
   -webkit-box-orient: vertical;
@@ -183,7 +190,8 @@ input:-ms-input-placeholder, textarea:-ms-input-placeholder {
   overflow: hidden;
   word-break: break-all;
 }
-.btn-main{
+
+.btn-main {
   background: #0084FF;
   color: #FFFFFF;
   border-radius: 15px;
@@ -194,12 +202,13 @@ input:-ms-input-placeholder, textarea:-ms-input-placeholder {
   cursor: pointer;
   border: none;
   &:hover {
-    background: rgba(0,132,255,0.8);
+    background: rgba(0, 132, 255, 0.8);
   }
   &.disabled {
     background: rgba(0, 132, 255, 0.3);
   }
 }
+
 .btn-secondary {
   background: #FFFFFF;
   color: #0084FF;
@@ -211,12 +220,14 @@ input:-ms-input-placeholder, textarea:-ms-input-placeholder {
   display: flex;
   cursor: pointer;
   &:hover {
-    background: rgba(51,157,255,0.1)
+    background: rgba(51, 157, 255, 0.1)
   }
 }
+
 .clear {
   clear: both;
 }
+
 //loading
 .load-div {
   color: #999999;
@@ -232,12 +243,13 @@ input:-ms-input-placeholder, textarea:-ms-input-placeholder {
     height: 20px;
   }
 }
+
 //EUI 分页
 .MyPagination {
   text-align: center;
   margin-bottom: 50px;
   &.is-background {
-    .el-pager li{
+    .el-pager li {
       color: #666666;
       font-size: 14px;
       font-weight: normal;
@@ -247,6 +259,113 @@ input:-ms-input-placeholder, textarea:-ms-input-placeholder {
     }
   }
 }
+
 [v-cloak] {
   display: none;
+}
+
+// 公共下拉
+
+.inlineMiddle{
+  display: inline-block;
+  vertical-align: middle;
+}
+
+.select-down-box {
+  position: relative;
+  line-height: 30px;
+  font-size: 14px;
+  white-space: nowrap;
+  .hover-box {
+    cursor: pointer;
+    .text-name {
+      color: #666666;
+      margin-right: 4px;
+    }
+    .select-icon{
+      width: 16px;
+      height: 16px;
+    }
+  }
+  .select-show {
+    display: none;
+    position: absolute;
+    top: 30px;
+    right: 0px;
+    background: #FFFFFF;
+    box-shadow: 0px 6px 16px -8px rgba(0, 0, 0, 0.08), 0px 9px 28px rgba(0, 0, 0, 0.05), 0px 12px 48px 16px rgba(0, 0, 0, 0.03);
+    border-radius: 2px;
+    padding: 2px 0;
+    line-height: 36px;
+    text-align: center;
+    z-index: 1;
+    color: #333333;
+    .show-list {
+      padding: 0 16px;
+      cursor: pointer;
+    }
+    .show-list:hover {
+      color: #0084FF;
+      background-color: #F8F8F8;
+    }
+  }
+
+  &:hover {
+    .select-icon {
+      transform: rotate(180deg);
+    }
+    .select-show {
+      display: block;
+    }
+  }
+
+}
+// 公共搜索样式
+
+.searchDiv {
+  width: 220px;
+  position: relative;
+  .inputValue {
+    padding-right: 61px;
+    padding-left: 16px;
+    border: 1px solid #e9e9e9;
+    box-sizing: border-box;
+    border-radius: 25px;
+
+    color: #333333;
+    width: 100%;
+    height: 30px;
+    font-size: 14px;
+    &:focus{
+      border: 1px solid #0084FF;
+    }
+  }
+  .icon-delete1 {
+    cursor: pointer;
+    position: absolute;
+    right: 35px;
+    display: inline-block;
+    width: 17px;
+    height: 30px;
+    background: url("../images/icon-delete.png") center center no-repeat;
+    background-size: 100%;
+    &:hover{
+      background: url("../images/icon-delete-hover.png") center center no-repeat;
+      background-size: 100%;
+    }
+  }
+  .icon-search1 {
+    cursor: pointer;
+    position: absolute;
+    right: 9px;
+    display: inline-block;
+    width: 17px;
+    height: 30px;
+    background: url("../images/icon-search.png") center center no-repeat;
+    background-size: 100%;
+    &:hover{
+      background: url("../images/icon-search-hover.png") center center no-repeat;
+      background-size: 100%;
+    }
+  }
 }

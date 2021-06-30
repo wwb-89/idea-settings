@@ -268,7 +268,7 @@
             <div class="form-item flexStart">
                 <label class="label">参与范围</label>
                 <div class="join-box">
-                    <div>
+                    <div :class="rangeRadio==1?'autoRange':''">
                         <el-radio v-model="rangeRadio" label="1" name="active-type">不限</el-radio>
                         <el-radio v-model="rangeRadio" label="2" name="active-type">自定义</el-radio>
                     </div>
