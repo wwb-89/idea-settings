@@ -76,7 +76,7 @@
                             <el-dropdown-menu slot="dropdown" class="set-dropdown">
                                 <div class="dropdown-lists">
                                     <el-dropdown-item v-for="(item, index) in configTableFieldDetails" :key="'detail-' + item.id">
-                                        <el-checkbox v-model="item.defaultChecked" :disabled="item.allowUnchec" @change="reSortSettingData"> {{item.name}}</el-checkbox>
+                                        <el-checkbox v-model="item.defaultChecked" :disabled="!item.allowUncheck" @change="reSortSettingData"> {{item.name}}</el-checkbox>
                                         <el-tooltip v-if="item.allowTop" class="item" effect="dark" :content="item.defaultTop ? '取消置顶' : '置顶'" placement="top">
                                             <i :class="`btn-fix icon-${item.defaultTop ? 'pinned' : 'pin'} fs16`" @click="topConfigChange(item)"></i>
                                         </el-tooltip>

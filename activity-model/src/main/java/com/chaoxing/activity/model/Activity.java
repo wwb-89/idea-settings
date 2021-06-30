@@ -170,6 +170,8 @@ public class Activity {
     /** 管理员uid列表 */
     @TableField(exist = false)
     private List<Integer> managerUids;
+    /** 起止时间 */
+    private String activityStartEndTime;
 
     @Getter
     public enum OriginTypeEnum {

@@ -6,16 +6,14 @@ import com.chaoxing.activity.dto.activity.ActivityTypeDTO;
 import com.chaoxing.activity.dto.manager.ActivityCreatePermissionDTO;
 import com.chaoxing.activity.dto.manager.WfwRegionalArchitectureDTO;
 import com.chaoxing.activity.dto.module.SignAddEditDTO;
-import com.chaoxing.activity.model.Activity;
-import com.chaoxing.activity.model.ActivityFlagSignModule;
-import com.chaoxing.activity.model.Group;
-import com.chaoxing.activity.model.WebTemplate;
+import com.chaoxing.activity.model.*;
 import com.chaoxing.activity.service.GroupService;
 import com.chaoxing.activity.service.WebTemplateService;
 import com.chaoxing.activity.service.activity.ActivityQueryService;
 import com.chaoxing.activity.service.activity.classify.ActivityClassifyHandleService;
 import com.chaoxing.activity.service.activity.manager.ActivityCreatePermissionService;
 import com.chaoxing.activity.service.manager.WfwRegionalArchitectureApiService;
+import com.chaoxing.activity.service.tablefield.TableFieldQueryService;
 import com.chaoxing.activity.util.constant.CommonConstant;
 import com.google.common.collect.Lists;
 import org.apache.commons.collections4.CollectionUtils;
@@ -53,6 +51,8 @@ public class ActivityManageController {
 	private ActivityCreatePermissionService activityCreatePermissionService;
 	@Resource
 	private WfwRegionalArchitectureApiService wfwRegionalArchitectureApiService;
+	@Resource
+	private TableFieldQueryService tableFieldQueryService;
 
 	/**活动管理主页
 	 * @Description 
@@ -77,6 +77,41 @@ public class ActivityManageController {
 		flag = calActivityFlag(flag, secondClassroomFlag);
 		model.addAttribute("activityFlag", flag);
 		return "pc/activity-list";
+	}
+
+	/**新活动管理主页
+	 * @Description
+	 * @author wwb
+	 * @Date 2021-03-17 15:32:59
+	 * @param model
+	 * @param code 图书馆专用的code
+	 * @param fid 空间或微服务后台进入时查询的活动以该fid为主
+	 * @param secondClassroomFlag 第二课堂标识
+	 * @param strict 是不是严格模式， 严格模式：只显示自己创建的活动
+	 * @param flag 活动标示。通用、第二课堂、双选会...
+	 * @return java.lang.String
+	*/
+	public String newIndex(Model model, String code, Integer fid, Integer secondClassroomFlag, Integer strict, String flag) {
+		code = Optional.ofNullable(code).orElse("");
+		// 防止挂接到三放也携带了code参数
+		code = code.split(CommonConstant.DEFAULT_SEPARATOR)[0];
+		List<TableFieldDetail> tableFieldDetails = tableFieldQueryService.listTableFieldDetail(TableField.Type.ACTIVITY_LIST, TableField.AssociatedType.ACTIVITY_MARKET);
+		List<MarketTableField> marketTableFields = tableFieldQueryService.listMarketTableField(fid, flag, TableField.Type.ACTIVITY_LIST, TableField.AssociatedType.ACTIVITY_MARKET);
+		Integer tableFieldId = null;
+		if (CollectionUtils.isNotEmpty(tableFieldDetails)) {
+			tableFieldId = tableFieldDetails.get(0).getTableFieldId();
+		}
+		model.addAttribute("tableFieldId", tableFieldId);
+		model.addAttribute("tableFieldDetails", tableFieldDetails);
+		model.addAttribute("marketTableFields", marketTableFields);
+
+		model.addAttribute("code", code);
+		model.addAttribute("fid", fid);
+		model.addAttribute("secondClassroomFlag", secondClassroomFlag);
+		model.addAttribute("strict", strict);
+		flag = calActivityFlag(flag, secondClassroomFlag);
+		model.addAttribute("activityFlag", flag);
+		return "pc/activity-list-new";
 	}
 
 	/**计算活动标示

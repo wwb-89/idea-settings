@@ -46,7 +46,8 @@ public class TableField {
         SIGN_IN_LIST("签到名单", "sign_in_list"),
         ACTIVITY_STAT("活动统计", "activity_stat"),
         USER_STAT("用户统计", "user_stat"),
-        RESULT_MANAGE("活动考核管理", "activity_inspection_manage");
+        RESULT_MANAGE("活动考核管理", "activity_inspection_manage"),
+        ACTIVITY_LIST("活动管理", "activity_list");
 
         private final String name;
         private final String value;
@@ -73,7 +74,8 @@ public class TableField {
 
         /** 机构 */
         ORG("机构", "org"),
-        ACTIVITY("活动", "activity");
+        ACTIVITY("活动", "activity"),
+        ACTIVITY_MARKET("活动市场", "activity_market");
 
         private final String name;
         private final String value;

@@ -3,8 +3,11 @@ package com.chaoxing.activity.service.tablefield;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.chaoxing.activity.dto.LoginUserDTO;
 import com.chaoxing.activity.mapper.ActivityTableFieldMapper;
+import com.chaoxing.activity.mapper.MarketTableFieldMapper;
 import com.chaoxing.activity.mapper.OrgTableFieldMapper;
+import com.chaoxing.activity.model.Activity;
 import com.chaoxing.activity.model.ActivityTableField;
+import com.chaoxing.activity.model.MarketTableField;
 import com.chaoxing.activity.model.OrgTableField;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
@@ -13,6 +16,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
 import java.util.List;
+import java.util.Optional;
 
 /**
  * @author wwb
@@ -30,6 +34,8 @@ public class TableFieldHandleService {
     private OrgTableFieldMapper orgTableFieldMapper;
     @Resource
     private ActivityTableFieldMapper activityTableFieldMapper;
+    @Resource
+    private MarketTableFieldMapper marketTableFieldMapper;
 
     /**机构配置表格字段
      * @Description 
@@ -89,4 +95,25 @@ public class TableFieldHandleService {
         }
     }
 
+    @Transactional(rollbackFor = Exception.class)
+    public void marketTableFieldConfig(Integer fid, String activityFlag, Integer tableFieldId, List<MarketTableField> marketTableFields, LoginUserDTO loginUser) {
+        Activity.ActivityFlag flagEnum = Optional.ofNullable(Activity.ActivityFlag.fromValue(activityFlag)).orElse(Activity.ActivityFlag.NORMAL);
+        // 删除历史
+        marketTableFieldMapper.delete(new UpdateWrapper<MarketTableField>()
+                .lambda()
+                .eq(MarketTableField::getFid, fid)
+                .eq(MarketTableField::getActivityFlag, flagEnum.getValue())
+                .eq(MarketTableField::getTableFieldId, tableFieldId)
+        );
+        if (CollectionUtils.isNotEmpty(marketTableFields)) {
+            for (MarketTableField marketTableField : marketTableFields) {
+                marketTableField.setFid(fid);
+                marketTableField.setActivityFlag(flagEnum.getValue());
+                marketTableField.setTableFieldId(tableFieldId);
+                marketTableField.setCreateUid(loginUser.getUid());
+                marketTableField.setUpdateUid(loginUser.getUid());
+            }
+            marketTableFieldMapper.batchAdd(marketTableFields);
+        }
+    }
 }

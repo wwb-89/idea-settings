@@ -1,0 +1,715 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org/">
+<head>
+    <meta charset="UTF-8">
+    <title>活动管理</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="/static/pc/assets/css/create.css" th:href="@{/pc/assets/css/create.css}">
+    <link rel="stylesheet" href="/static/pc/assets/lib/element-ui/lib/theme-chalk/index.css" th:href="@{/pc/assets/lib/element-ui/lib/theme-chalk/index.css}">
+    <link rel="stylesheet" href="/static/pc/assets/lib/zTree_v3/css/zTreeStyle/zTreeStyle.css" th:href="@{/pc/assets/lib/zTree_v3/css/zTreeStyle/zTreeStyle.css}">
+    <link rel="stylesheet" href="/static/pc/assets/css/reset.css" th:href="@{/pc/assets/css/reset.css}">
+    <link rel="stylesheet" href="/static/pc/assets/css/public.css" th:href="@{/pc/assets/css/public.css}">
+    <link rel="stylesheet" href="/static/pc/assets/css/manage.css" th:href="@{/pc/assets/css/manage.css}">
+    <link rel="stylesheet" href="/static/pc/assets/lib/jquery.mCustomScrollbar.css" th:href="@{/pc/assets/lib/jquery.mCustomScrollbar.css}">
+
+    <link rel="stylesheet" href="/static/pc/assets/table-icomoon/style.css" th:href="@{/pc/assets/table-icomoon/style.css}">
+    <link rel="stylesheet" href="/static/pc/assets/css/commonTable.css" th:href="@{/pc/assets/css/commonTable.css}">
+
+    <style type="text/css">
+        [v-cloak] {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+<div id="activity-vue" v-cloak>
+    <div style="display: block">
+        <div class="header-box">
+            <div class="header header-type-3">
+                <span slot="label" class="menu-item-customize registered_title">
+                    <span class="title">活动管理</span>
+                </span>
+            </div>
+        </div>
+        <!-- 选项卡内容 -->
+        <div class="tab-content-box">
+            <div class="tab-item">
+                <!-- 操作栏 -->
+                <div class="table-operate-box fs0">
+                    <div class="manage-create-btn" @click="toAdd">
+                        <img src="/static/pc/assets/images/icon-add.png" th:src="@{/pc/assets/images/icon-add.png}">
+                        <div class="text">
+                            创建活动
+                        </div>
+                    </div>
+                    <div class="search-Box">
+                        <el-input placeholder="活动名称/创建人/创建单位" icon="search" class="search" v-model.trim="sw" maxlength="10" suffix-icon="el-icon-search" @keyup.enter.native="search"></el-input>
+                        <img v-show="sw" class="btn-cancel" style="display: block;" src="/static/pc/assets/images/icon-cancel.png" th:src="@{/pc/assets/images/icon-cancel.png}" @click="clearSearch">
+                    </div>
+                </div>
+                <!-- 计数栏 -->
+                <div class="table-count-box fs12">
+                    <div class="count-info fl">
+                        <span class="color999">共 {{ total }} 个</span>
+                    </div>
+                    <div class="setting-box">
+                        <el-dropdown :hide-on-click="false" trigger="click">
+                            <el-tooltip class="item" effect="dark" content="显示字段" placement="top">
+                                <span class="icon-setting fs16"></span>
+                            </el-tooltip>
+                            <el-dropdown-menu slot="dropdown" class="set-dropdown">
+                                <div class="dropdown-lists">
+                                    <el-dropdown-item v-for="(item, index) in configTableFieldDetails" :key="'detail-' + item.id">
+                                        <el-checkbox v-model="item.defaultChecked" :disabled="!item.allowUncheck" @change="reSortSettingData"> {{item.name}}</el-checkbox>
+                                        <el-tooltip v-if="item.allowTop" class="item" effect="dark" :content="item.defaultTop ? '取消置顶' : '置顶'" placement="top">
+                                            <i :class="`btn-fix icon-${item.defaultTop ? 'pinned' : 'pin'} fs16`" @click="topConfigChange(item)"></i>
+                                        </el-tooltip>
+                                        <i v-else :class="`btn-fix icon-${item.defaultTop ? 'pinned' : 'pin'} fs16`"></i>
+                                    </el-dropdown-item>
+                                </div>
+                                <div class="bottom-btns fs14 colorBlue">
+                                    <el-button type="text" class="btn-confirm" @click="configSubmit">确定</el-button>
+                                    <el-button type="text" class="btn-reset" @click="resetConfig">重置</el-button>
+                                </div>
+                            </el-dropdown-menu>
+                        </el-dropdown>
+                    </div>
+                    <div class="clear"></div>
+                </div>
+                <el-table class="table-box" :data="activities">
+                    <template v-for="item in showTableFieldDetails" v-if="item.defaultChecked">
+                        <el-table-column
+                                v-if="item.code === 'cover'"
+                                :fixed="item.defaultTop"
+                                :label="item.name"
+                                :ifCenter="item.align"
+                                :min-width="item.minWidth"
+                        >
+                            <template slot-scope="scope">
+                                <div class="img">
+                                    <img :src="scope.row | getCloudImgUrl" class="jqthumbImg">
+                                </div>
+                            </template>
+                        </el-table-column>
+                        <el-table-column
+                                v-else-if="item.code === 'name'"
+                                :fixed="item.defaultTop"
+                                :label="item.name"
+                                :ifCenter="item.align"
+                                :min-width="item.minWidth"
+                        >
+                            <template slot-scope="scope">
+                                <el-button type="text" @click="previewPage(scope.row)">{{scope.row.name}}</el-button>
+                            </template>
+                        </el-table-column>
+                        <el-table-column
+                                v-else-if="item.code === 'status'"
+                                :prop="item.code"
+                                :fixed="item.defaultTop"
+                                :label="item.name"
+                                :ifCenter="item.align"
+                                :min-width="item.minWidth"
+                        >
+                            <template slot="header" slot-scope="scope">
+                                <div class="status">{{selectedFilterStatusName}}<i class="el-icon-arrow-down el-down"></i></div>
+                                <!--状态筛选-->
+                                <div class="filters">
+                                    <p :class="{'blue': status.selected}" v-for="(status, index) of filterStatus" :key="'status-' + index" @click="changeStatus(index)">{{status.name}}</p>
+                                </div>
+                            </template>
+                            <template slot-scope="scope">
+                                <span :class="{'blue2': (scope.row.status == '1'), 'blue': (scope.row.status == '2'), 'green': (scope.row.status == '3')}">{{scope.row.status | activityStatusInstructions}}</span>
+                            </template>
+                        </el-table-column>
+                        <el-table-column
+                                v-else-if="item.code === 'poster'"
+                                :prop="item.code"
+                                :fixed="item.defaultTop"
+                                :label="item.name"
+                                :ifCenter="item.align"
+                                :min-width="item.minWidth"
+                        >
+                            <template slot-scope="scope">
+                                <el-button type="text" @click="previewPage(scope.row)">查看</el-button>
+                            </template>
+                        </el-table-column>
+                        <el-table-column
+                                v-else-if="item.code === 'dualSelect'"
+                                :prop="item.code"
+                                :fixed="item.defaultTop"
+                                :label="item.name"
+                                :ifCenter="item.align"
+                                :min-width="item.minWidth"
+                        >
+                            <template slot-scope="scope">
+                                <div>
+                                    <el-button type="text" @click="operateProxy(scope.row, operations.dualSelectStatExport.value)">{{ operations.dualSelectStatExport.name}}</el-button>
+                                </div>
+                            </template>
+                        </el-table-column>
+                        <el-table-column
+                                v-else
+                                :prop="item.code"
+                                :fixed="item.defaultTop"
+                                :label="item.name"
+                                :ifCenter="item.align"
+                                :min-width="item.minWidth"
+                                :sortable="item.sortable ? 'custom' : item.sortable"
+                        >
+                        </el-table-column>
+                    </template>
+                    <el-table-column label="操作" fixed="right"
+                                     min-width="180">
+                        <template slot-scope="scope">
+                            <div>
+                                <el-button type="text" v-if="index < 3" v-for="(operation, index) of scope.row.operations" @click="operateProxy(scope.row, operation.value)">{{operation.name}}</el-button>
+                                <div class="manage-more-btn" v-if="scope.row.operations.length > 3">
+                                    <el-button type="text"><img src="/static/pc/assets/images/more-vertical.png" th:src="@{/pc/assets/images/more-vertical.png}"></el-button>
+                                    <div class="more">
+                                        <p v-if="index > 2" v-for="(operation, index) of scope.row.operations" @click="operateProxy(scope.row, operation.value)">{{operation.name}}</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </template>
+                    </el-table-column>
+                </el-table>
+
+                <el-pagination v-show="pages > 1" background layout="prev, pager, next" :total="total" :page-size="queryParams.pageSize" :current-page="queryParams.pageNum" @current-change="changePage" style="text-align: center;"></el-pagination>
+
+                <!-- 删除弹窗 -->
+                <vue-confirm ref="deleteWindow" :message="'删除后，将清空该活动的相关信息和记录'" :cancel="'取消'" :sure="'删除'" @callback="deleteSubmit"></vue-confirm>
+                <!--下架弹窗-->
+                <vue-confirm ref="releaseWindow" :message="'发布后，该活动将展示在活动市场中'" :cancel="'取消'" :sure="'发布'" @callback="release"></vue-confirm>
+                <!--下架弹窗-->
+                <vue-confirm ref="canReleaseWindow" :message="'下架后，该活动将不在活动广场中显示'" :cancel="'取消'" :sure="'下架'" @callback="cancelRelease"></vue-confirm>
+                <!--去选择模版-->
+                <vue-confirm ref="selectTemlateWindow" :message="'活动还未选择模板，请选择模板后发布'" :cancel="'取消'" :sure="'去选择'" @callback="toSelectTemplate"></vue-confirm>
+
+            </div>
+        </div>
+        <!-- 表格内容 -->
+    </div>
+
+</div>
+<div th:replace="pc/include/common_js :: common_js(~{::script})">
+    <script src="/static/pc/assets/lib/element-ui/lib/index.js" th:src="@{/pc/assets/lib/element-ui/lib/index.js}"></script>
+    <script src="/static/pc/assets/lib/zTree_v3/js/jquery.ztree.core.js" th:src="@{/pc/assets/lib/zTree_v3/js/jquery.ztree.core.js}"></script>
+    <script src="/static/pc/assets/lib/zTree_v3/js/jquery.ztree.excheck.min.js" th:src="@{/pc/assets/lib/zTree_v3/js/jquery.ztree.excheck.min.js}"></script>
+    <script src="/static/pc/assets/lib/zTree_v3/js/jquery.ztree.exedit.js" th:src="@{/pc/assets/lib/zTree_v3/js/jquery.ztree.exedit.js}"></script>
+    <script src="/static/pc/assets/component/confirm.js" th:src="@{/pc/assets/component/confirm.js}"></script>
+    <script src="/static/pc/assets/component/activity-scope.js" th:src="@{/pc/assets/component/activity-scope.js}"></script>
+    <script src="/static/pc/assets/lib/jqthumb.min.js" th:src="@{/pc/assets/lib/jqthumb.min.js}"></script>
+    <script src="/static/pc/assets/lib/set-iframe-height-child.js" th:src="@{/pc/assets/lib/set-iframe-height-child.js}"></script>
+    <script src="/static/pc/assets/lib/jquery.mCustomScrollbar.concat.min.js" th:src="@{/pc/assets/lib/jquery.mCustomScrollbar.concat.min.js}"></script>
+    <script th:inline="javascript">
+        activityVue = new Vue({
+            el: "#activity-vue",
+            data: {
+                activities: [],
+                uid: [[${session._login_user_.uid}]],
+                fid: [[${fid != null ? fid : session._login_user_.fid}]],
+                filterStatus: [],
+                selectedFilterStatusName: "全部",
+                sw: "",
+                // 严格模式 只查询自己创建的
+                strict: [[${strict}]],
+                queryParams: {
+                    fid: [[${fid != null ? fid : session._login_user_.fid}]],
+                    pageNum: 1,
+                    pageSize: 8,
+                    status: "",
+                    // 严格模式 只查询自己创建的
+                    strict: [[${strict}]],
+                    sw: ""
+                },
+                loaded: false,
+                // 总记录数
+                total: 0,
+                // 总页数
+                pages: 0,
+                // 正在处理的活动id
+                operateActivityId: null,
+                operations: {
+                    edit: {name: "编辑", value: "edit"},
+                    delete: {name: "删除", value: "delete"},
+                    manage: {name: "管理", value: "manage"},
+                    release: {name: "发布", value: "release"},
+                    cancelRelease: {name: "下架", value: "cancelRelease"},
+                    dualSelectStatExport: {name: "导出投递数据", value: "dualSelectStatExport"}
+                },
+                code: [[${code}]],
+                // 活动标示
+                activityFlag: [[${activityFlag}]],
+                tableFieldId: [[${tableFieldId}]],
+                // 配置项源数据
+                tableFieldDetails: [[${tableFieldDetails}]],
+                // 页面展示字段配置源数据
+                marketTableFields: [[${marketTableFields}]],
+                // 配置项数据
+                configTableFieldDetails: [],
+                // 表格显示的字段列表
+                showTableFieldDetails: []
+            },
+            created: function () {
+                var $this = this;
+                // 解决跨域
+                document.domain = "chaoxing.com";
+                $this.filterStatus = [
+                    {name: "全部", value: "", selected: true},
+                    {name: "未发布", value: "1", selected: false},
+                    {name: "待开始", value: "2", selected: false},
+                    {name: "进行中", value: "3", selected: false},
+                    {name: "已结束", value: "4", selected: false}
+                ];
+                $this.calShowTableFieldDetails();
+                $this.configTableFieldDetails = $this.calConfigTableFieldDetails();
+            },
+            mounted: function () {
+                var $this = this;
+                $this.bindEvents();
+                $this.loadData();
+                // 监听活动的创建，当创建或者编辑活动后重新加载数据
+                app.bindActivityChangeEvent(function (activityId) {
+                    $this.loadData();
+                });
+            },
+            methods: {
+                bindEvents: function () {
+                    $(document).on("click", ".status", function () {
+                        $('.filters').toggle();
+                        $('.el-down').toggleClass('rotate')
+                    });
+                    $(document).on("mouseover", ".manage-more-btn", function () {
+                        $(this).children('.more').show();
+                    });
+                    $(document).on("mouseout", ".manage-more-btn", function () {
+                        $(this).children('.more').hide();
+                    });
+                },
+                // 处理操作顺序
+                handleOperationSequence: function (activities) {
+                    var $this = this;
+                    if (activities && activities.length > 0) {
+                        $(activities).each(function () {
+                            var activity = this;
+                            var manager = $this.isActivityManager(activity);
+                            var isCurrentOrgCreated = activity.createFid == $this.fid;
+                            var isDualSelect = activity.activityFlag == "dual_select";
+                            var status = activity.status;
+                            activity.operations = [];
+                            switch (status) {
+                                case 1:
+                                    activity.operations.push($this.operations.release);
+                                    if (manager || isCurrentOrgCreated) {
+                                        if (manager) {
+                                            activity.operations.push($this.operations.edit);
+                                            activity.operations.push($this.operations.manage);
+                                            if (isDualSelect) {
+                                                activity.operations.push($this.operations.dualSelectStatExport);
+                                            }
+                                            activity.operations.push($this.operations.delete);
+                                        }
+                                    }
+                                    break;
+                                case 2:
+                                case 3:
+                                    activity.operations.push($this.operations.cancelRelease);
+                                    if (manager || isCurrentOrgCreated) {
+                                        if (manager) {
+                                            activity.operations.push($this.operations.edit);
+                                            activity.operations.push($this.operations.manage);
+                                            if (isDualSelect) {
+                                                activity.operations.push($this.operations.dualSelectStatExport);
+                                            }
+                                            activity.operations.push($this.operations.delete);
+                                        }
+                                    }
+                                    break;
+                                case 4:
+                                    // 已结束支持有上下架功能
+                                    if (manager || isCurrentOrgCreated) {
+                                        if (activity.released) {
+                                            activity.operations.push($this.operations.cancelRelease);
+                                        }else {
+                                            activity.operations.push($this.operations.release);
+                                        }
+                                        if (manager) {
+                                            activity.operations.push($this.operations.edit);
+                                            activity.operations.push($this.operations.manage);
+                                            if (isDualSelect) {
+                                                activity.operations.push($this.operations.dualSelectStatExport);
+                                            }
+                                            activity.operations.push($this.operations.delete);
+                                        }
+                                    }
+                                    break;
+                                default:
+                            }
+                        });
+                    }
+                },
+                toAdd: function () {
+                    var $this = this;
+                    window.open(activityApp.getRelativeUrl("/activity/add?code=" + $this.code + "&flag=" + $this.activityFlag + "&strict=" + $this.strict));
+                },
+                toEdit: function (id) {
+                    var $this = this;
+                    window.open("/activity/" + id + "/edit?strict=" + $this.strict);
+                },
+                // 修改状态
+                changeStatus: function (index) {
+                    var $this = this;
+                    var status = $this.filterStatus[index];
+                    $($this.filterStatus).each(function (i) {
+                        if (i == index) {
+                            $this.$set($this.filterStatus[i], "selected", true);
+                            $this.selectedFilterStatusName = $this.filterStatus[i].name;
+                        } else {
+                            $this.$set($this.filterStatus[i], "selected", false);
+                        }
+                    });
+                    $('.filters').toggle();
+                    $('.el-down').removeClass('rotate')
+                    $this.queryParams.status = status.value;
+                    $this.queryParams.pageNum = 1;
+                    $this.loadData();
+                },
+                changePage: function (pageNum) {
+                    var $this = this;
+                    $this.queryParams.pageNum = pageNum;
+                    $this.loadData();
+                },
+                // 搜索
+                search: function () {
+                    var $this = this;
+                    $this.queryParams.sw = $this.sw;
+                    $this.queryParams.pageNum = 1;
+                    $this.loadData();
+                },
+                // 清空搜索
+                clearSearch: function () {
+                    var $this = this;
+                    $this.sw = "";
+                    if ($this.queryParams.sw != $this.sw) {
+                        $this.queryParams.sw = $this.sw;
+                        // 重新搜索
+                        $this.search();
+                    }
+                },
+                loadData: function () {
+                    var $this = this;
+                    var url = ctx + "/api/activity/list/managing";
+                    $this.loaded = false;
+                    app.ajaxPost(url, $this.queryParams, function (data) {
+                        $this.loaded = true;
+                        if (data.success) {
+                            $this.handleOperationSequence(data.data.records);
+                            $this.activities = data.data.records;
+                            $this.$nextTick(function () {
+                                $(".jqthumbImg").jqthumb({
+                                    width: "100%",
+                                    height: "100%"
+                                });
+                            });
+                            $this.total = data.data.total;
+                            $this.pages = data.data.pages;
+                        } else {
+                            var errorMessage = data.message;
+                            if (activityApp.isEmpty(errorMessage)) {
+                                errorMessage = "加载活动失败";
+                            }
+                            app.showMsg(errorMessage);
+                        }
+                    }, function () {
+                        $this.loaded = true;
+                        app.showMsg("加载活动失败");
+                    });
+                },
+                // 操作代理
+                operateProxy: function (activity, operation) {
+                    var id = activity.id;
+                    var $this = this;
+                    switch (operation) {
+                        case "edit":
+                            $this.toEdit(id);
+                            break;
+                        case "delete":
+                            $this.toDelete(id);
+                            break;
+                        case "manage":
+                            $this.toManage(id);
+                            break;
+                        case "release":
+                            $this.toRelease(id);
+                            break;
+                        case "cancelRelease":
+                            $this.toCancelRelease(id);
+                            break;
+                        case "dualSelectStatExport":
+                            $this.toDualSelectStatExport(id, activity.createFid);
+                            break;
+                        default:
+                    }
+                },
+                // 删除
+                toDelete: function (id) {
+                    var $this = this;
+                    $this.operateActivityId = id;
+                    $this.$refs.deleteWindow.show = true;
+                },
+                deleteSubmit: function () {
+                    var $this = this;
+                    var url = ctx + "/api/activity/" + $this.operateActivityId + "/delete"
+                    app.ajaxPostWithLoading(url, {}, function (data) {
+                        if (data.success) {
+                            $this.$refs.deleteWindow.show = false;
+                            // 重新查询
+                            $this.loadData();
+                        } else {
+                            var errorMessage = data.message;
+                            if (activityApp.isEmpty(errorMessage)) {
+                                errorMessage = "删除活动失败";
+                            }
+                            app.showMsg(errorMessage);
+                        }
+                    }, function () {
+                        app.showMsg("删除活动失败");
+                    });
+                },
+                toRelease: function (id) {
+                    var $this = this;
+                    $this.operateActivityId = id;
+                    $this.$refs.releaseWindow.show = true;
+                },
+                // 发布
+                release: function () {
+                    var $this = this;
+                    var activity = null;
+                    $($this.activities).each(function () {
+                        if (this.id == $this.operateActivityId) {
+                            activity = this;
+                            return false;
+                        }
+                    });
+                    if (!$this.selectedTemplateValidate(activity)) {
+                        return;
+                    }
+                    $this.$refs.releaseWindow.show = false;
+                    var url = ctx + "/api/activity/" + $this.operateActivityId + "/release";
+                    app.ajaxPostWithLoading(url, {}, function (data) {
+                        if (data.success) {
+                            app.showMsg("发布成功", function () {
+                                $this.loadData();
+                            });
+                        } else {
+                            var errorMessage = data.message;
+                            if (activityApp.isEmpty(errorMessage)) {
+                                errorMessage = "发布失败";
+                            }
+                            app.showMsg(errorMessage);
+                        }
+                    }, function () {
+                        app.showMsg("发布失败");
+                    });
+                },
+                isActivityManager: function (activity) {
+                    var $this = this;
+                    return activity.managerUids.indexOf($this.uid) > -1 || activity.createUid == $this.uid;
+                },
+                // 已选择模版验证
+                selectedTemplateValidate: function (activity) {
+                    var $this = this;
+                    if (activityApp.isEmpty(activity.pageId)) {
+                        if ($this.isActivityManager(activity)) {
+                            // 有管理权限
+                            $this.$refs.selectTemlateWindow.show = true;
+                        } else {
+                            app.showMsg("活动未选择模板，请联系活动创建者完善活动信息");
+                        }
+                        return false;
+                    }
+                    return true;
+                },
+                // 去选中模版
+                toSelectTemplate: function () {
+                    var $this = this;
+                    var url = ctx + "/activity/" + $this.operateActivityId + "/edit?step=2";
+                    window.open(url);
+                },
+                toCancelRelease: function (id) {
+                    var $this = this;
+                    $this.operateActivityId = id;
+                    $this.$refs.canReleaseWindow.show = true;
+                },
+                cancelRelease: function () {
+                    var $this = this;
+                    $this.$refs.canReleaseWindow.show = false;
+                    var url = ctx + "/api/activity/" + $this.operateActivityId + "/release/cancel";
+                    app.ajaxPostWithLoading(url, {}, function (data) {
+                        if (data.success) {
+                            app.showMsg("下架成功", function () {
+                                $this.loadData();
+                            });
+                        } else {
+                            var errorMessage = data.message;
+                            if (activityApp.isEmpty(errorMessage)) {
+                                errorMessage = "下架失败";
+                            }
+                            app.showMsg(errorMessage);
+                        }
+                    }, function () {
+                        app.showMsg("下架失败");
+                    });
+                },
+                toDualSelectStatExport: function (activityId, fid) {
+                    var url = activityApp.generateDualSelectStatExportUrl(activityId, fid);
+                    window.open(url);
+                },
+                // 配置页面
+                configPage: function (activity) {
+                    var editUrl = activity.editUrl;
+                    if (!activityApp.isEmpty(editUrl)) {
+                        window.open(editUrl);
+                    }
+                },
+                // 预览页面
+                previewPage: function (activity) {
+                    var $this = this;
+                    $this.operateActivityId = activity.id;
+                    if (!$this.selectedTemplateValidate(activity)) {
+                        return;
+                    }
+                    var previewUrl = activity.previewUrl;
+                    if (!activityApp.isEmpty(previewUrl)) {
+                        window.open(previewUrl);
+                    }
+                },
+                // 管理页面
+                toManage: function (activityId) {
+                    var url = ctx + "/activity/" + activityId;
+                    window.open(url);
+                },
+                // 活动的来源是不是活动申报
+                isActivityDeclaration: function (activity) {
+                    return "activity_declaration" == activity.originType;
+                },
+                calShowTableFieldDetails: function () {
+                    var $this = this;
+                    // 计算表格显示的字段列表
+                    if ($this.marketTableFields.length < 1) {
+                        // 机构没有配置显示的字段。使用默认的
+                        $($this.tableFieldDetails).each(function () {
+                            if (this.defaultChecked) {
+                                $this.showTableFieldDetails.push($.extend({}, this));
+                            }
+                        });
+                    } else {
+                        $($this.marketTableFields).each(function () {
+                            var orgTableField = this;
+                            var tableFieldDetailId = orgTableField.tableFieldDetailId;
+                            $($this.tableFieldDetails).each(function () {
+                                if (tableFieldDetailId === this.id) {
+                                    var tableFieldDetail = $.extend({}, this);
+                                    tableFieldDetail.defaultChecked = true;
+                                    tableFieldDetail.defaultTop = orgTableField.top;
+                                    $this.showTableFieldDetails.push(tableFieldDetail);
+                                    return false;
+                                }
+                            });
+                        });
+                    }
+                },
+                calConfigTableFieldDetails: function () {
+                    var $this = this;
+                    var configTableFieldDetails = [];
+                    $($this.tableFieldDetails).each(function () {
+                        configTableFieldDetails.push($.extend({}, this));
+                    });
+                    if ($this.marketTableFields.length > 0) {
+                        $(configTableFieldDetails).each(function () {
+                            var configTableFieldDetail = this;
+                            configTableFieldDetail.defaultChecked = false;
+                            $($this.marketTableFields).each(function () {
+                                if (configTableFieldDetail.id === this.tableFieldDetailId) {
+                                    configTableFieldDetail.defaultChecked = true;
+                                    configTableFieldDetail.defaultTop = this.top;
+                                }
+                            });
+                        });
+                    }
+                    return configTableFieldDetails;
+                },
+                // 取消置顶配置
+                topConfigChange: function(item) {
+                    item.defaultTop = !item.defaultTop;
+                    this.reSortSettingData();
+                },
+                // 对设置重排序
+                reSortSettingData: function() {
+                    var $this = this;
+                    $this.configTableFieldDetails.sort(function(a, b) {
+                        if (b.defaultChecked > a.defaultChecked) {
+                            return 1;
+                        } else if (b.defaultChecked < a.defaultChecked){
+                            return -1;
+                        } else {
+                            return b.defaultTop - a.defaultTop;
+                        }
+                    });
+                    $($this.configTableFieldDetails).each(function(i) {
+                        this.sequence = i;
+                    });
+                },
+                // 重置配置
+                resetConfig: function () {
+                    var $this = this;
+                    $this.configTableFieldDetails = $this.calConfigTableFieldDetails();
+                    $this.reSortSettingData();
+                },
+                // 封装提交的配置
+                packageSubmitTableFieldDetails: function () {
+                    var $this = this;
+                    var marketTableFieldDetails = [];
+                    var sequence = 1;
+                    $($this.configTableFieldDetails).each(function () {
+                        if (this.defaultChecked) {
+                            var orgTableFieldDetail = {
+                                tableFieldDetailId: this.id,
+                                top: this.defaultTop,
+                                sequence: sequence++
+                            }
+                            marketTableFieldDetails.push(orgTableFieldDetail);
+
+                        }
+                    });
+                    return marketTableFieldDetails;
+                },
+                // 配置提交
+                configSubmit: function () {
+                    var $this = this;
+                    var marketTableFieldDetails = $this.packageSubmitTableFieldDetails();
+                    var url = ctx + "/api/org/" + $this.fid + "/table-field/" + $this.tableFieldId + "/market/config";
+                    var params = {
+                        marketTableFieldsStr: activityApp.getJsonStr(marketTableFieldDetails)
+                    };
+                    app.ajaxPostWithLoading(url, params, function (data) {
+                        if (data.success) {
+                            window.location.reload();
+                        } else {
+                            var errorMessage = data.message;
+                            if (activityApp.isEmpty(errorMessage)) {
+                                errorMessage = "配置失败";
+                            }
+                            app.showMsg(errorMessage);
+                        }
+                    }, function () {
+                        app.showMsg("配置失败");
+                    });
+                },
+            }
+        });
+    </script>
+</div>
+</body>
+
+</html>

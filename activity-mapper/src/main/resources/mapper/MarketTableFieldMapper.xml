@@ -13,4 +13,22 @@
         <result column="update_time" jdbcType="TIMESTAMP" property="updateTime" />
         <result column="update_uid" jdbcType="INTEGER" property="updateUid" />
     </resultMap>
+
+
+    <insert id="batchAdd">
+        INSERT INTO t_market_table_field ( fid, activity_flag, table_field_id, table_field_detail_id, is_top, sequence, create_uid, update_uid )
+        VALUES
+        <foreach collection="marketTableFields" index="key" item="value" open="" close="" separator=",">
+            (
+            #{value.fid},
+            #{value.activityFlag},
+            #{value.tableFieldId},
+            #{value.tableFieldDetailId},
+            #{value.top},
+            #{value.sequence},
+            #{value.createUid},
+            #{value.updateUid}
+            )
+        </foreach>
+    </insert>
 </mapper>
