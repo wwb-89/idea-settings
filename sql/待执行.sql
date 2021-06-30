@@ -36,3 +36,16 @@ CREATE TABLE `t_performance`  (
     PRIMARY KEY (`id`),
     INDEX `idx_primary`(`activity_id`, `uid`)
 ) COMMENT = '用户活动表现';
+CREATE TABLE `t_market_table_field`  (
+    `fid` int(11) NULL COMMENT '机构id',
+    `activity_flag` varchar(50) NULL COMMENT '活动标识',
+    `table_field_id` int(11) NULL COMMENT '表格字段配置id',
+    `table_field_detail_id` int(11) NULL COMMENT '表格字段详细配置id',
+    `is_top` tinyint(1) NULL COMMENT '是否置顶',
+    `sequence` int(11) NULL COMMENT '顺序',
+    `create_time` datetime(0) NULL DEFAULT current_timestamp() COMMENT '创建时间',
+    `create_uid` int(11) NULL COMMENT '创建人uid',
+    `update_time` datetime(0) NULL DEFAULT current_timestamp() ON UPDATE CURRENT_TIMESTAMP(0) COMMENT '更新时间',
+    `update_uid` int(11) NULL COMMENT '更新人uid',
+    INDEX `idx_primary`(`fid`, `activity_flag`, `table_field_id`)
+) COMMENT = '活动市场表格字段关联表';
