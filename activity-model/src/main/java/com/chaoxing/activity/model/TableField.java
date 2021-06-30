@@ -47,7 +47,7 @@ public class TableField {
         ACTIVITY_STAT("活动统计", "activity_stat"),
         USER_STAT("用户统计", "user_stat"),
         RESULT_MANAGE("活动考核管理", "activity_inspection_manage"),
-        ACTIVITY_LIST("活动管理", "activity_list");
+        ACTIVITY_MANAGE_LIST("活动管理", "activity_manage_list");
 
         private final String name;
         private final String value;

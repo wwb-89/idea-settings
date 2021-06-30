@@ -95,8 +95,8 @@ public class ActivityManageController {
 		code = Optional.ofNullable(code).orElse("");
 		// 防止挂接到三放也携带了code参数
 		code = code.split(CommonConstant.DEFAULT_SEPARATOR)[0];
-		List<TableFieldDetail> tableFieldDetails = tableFieldQueryService.listTableFieldDetail(TableField.Type.ACTIVITY_LIST, TableField.AssociatedType.ACTIVITY_MARKET);
-		List<MarketTableField> marketTableFields = tableFieldQueryService.listMarketTableField(fid, flag, TableField.Type.ACTIVITY_LIST, TableField.AssociatedType.ACTIVITY_MARKET);
+		List<TableFieldDetail> tableFieldDetails = tableFieldQueryService.listTableFieldDetail(TableField.Type.ACTIVITY_MANAGE_LIST, TableField.AssociatedType.ACTIVITY_MARKET);
+		List<MarketTableField> marketTableFields = tableFieldQueryService.listMarketTableField(fid, flag, TableField.Type.ACTIVITY_MANAGE_LIST, TableField.AssociatedType.ACTIVITY_MARKET);
 		Integer tableFieldId = null;
 		if (CollectionUtils.isNotEmpty(tableFieldDetails)) {
 			tableFieldId = tableFieldDetails.get(0).getTableFieldId();
