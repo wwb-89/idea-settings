@@ -27,7 +27,7 @@
             <div class="searchafter" v-show="inputShowStatus">
                 <input type="text" class="txt" placeholder="姓名/账号" v-model="queryParams.sw" @focus="modelShowStatus = true" @keyup.enter="search">
                 <i class="search"></i>
-                <i class="delete" v-show="queryParams.sw.length != 0" @click="queryParams.sw = ''"></i>
+                <i class="delete" v-show="queryParams.sw.length != 0" @click="resetSearch"></i>
                 <div class="cancle" @click="cancelInput">取消</div>
             </div>
         </div>
@@ -133,6 +133,7 @@
                         modelShowStatus: false,
                         orderStatus:false,
                         handleStatus:false, //合格不合格弹窗状态
+                        searchFlag: false,  // 是否进行过查询
                     }
                 },
                 created: function () {},
@@ -204,26 +205,36 @@
                         $this.tableData = [];
                         $this.queryParams.pageNum = 1;
                     },
-                    // 排序
-                    sortChange: function (orderType) {
+                    reloadData: function () {
                         var $this = this;
-                        $this.initData();
-                        $this.queryParams.orderType = orderType;
                         if ($this.mescroll) {
                             $this.mescroll.resetUpScroll();
                         } else {
                             $this.initMescroll();
                         }
+                    },
+                    // 排序
+                    sortChange: function (orderType) {
+                        var $this = this;
+                        $this.initData();
+                        $this.queryParams.orderType = orderType;
+                        $this.reloadData();
                         $this.orderStatus = false;
                     },
                     // 根据用户名查询数据
                     search: function () {
                         var $this = this;
                         $this.initData();
-                        if ($this.mescroll) {
-                            $this.mescroll.resetUpScroll();
-                        } else {
-                            $this.initMescroll();
+                        $this.searchFlag = true;
+                        $this.reloadData();
+                    },
+                    resetSearch: function () {
+                       var $this = this;
+                        $this.queryParams.sw = ''
+                        $this.initData();
+                        if ($this.searchFlag) {
+                            $this.reloadData();
+                            $this.searchFlag = false;
                         }
                     },
                     // 切换tab 重新请求数据
@@ -231,11 +242,7 @@
                         var $this = this;
                         $this.initData();
                         $this.queryParams.qualifiedStatus = status;
-                        if ($this.mescroll) {
-                            $this.mescroll.resetUpScroll();
-                        } else {
-                            $this.initMescroll();
-                        }
+                        $this.reloadData();
                     },
                     //swiper初始化
                     swiperInit:function (){
