@@ -7,11 +7,9 @@ import com.chaoxing.activity.dto.manager.sign.SignIn;
 import com.chaoxing.activity.dto.manager.sign.SignUp;
 import com.chaoxing.activity.dto.module.SignAddEditDTO;
 import com.chaoxing.activity.mapper.UserActionRecordMapper;
-import com.chaoxing.activity.model.Activity;
-import com.chaoxing.activity.model.ActivityRatingDetail;
-import com.chaoxing.activity.model.UserActionRecord;
-import com.chaoxing.activity.model.UserResult;
+import com.chaoxing.activity.model.*;
 import com.chaoxing.activity.service.activity.ActivityQueryService;
+import com.chaoxing.activity.service.activity.performance.PerformanceService;
 import com.chaoxing.activity.service.activity.rating.ActivityRatingQueryService;
 import com.chaoxing.activity.service.manager.PassportApiService;
 import com.chaoxing.activity.service.manager.module.SignApiService;
@@ -52,6 +50,8 @@ public class UserActionRecordQueryService {
 	private UserResultQueryService userResultQueryService;
 	@Resource
 	private ActivityRatingQueryService activityRatingQueryService;
+	@Resource
+	private PerformanceService performanceService;
 	@Resource
 	private SignApiService signApiService;
 
@@ -107,20 +107,28 @@ public class UserActionRecordQueryService {
 
 
 		List<Integer> ratingDetailIds = Lists.newArrayList();
+		List<Integer> performanceIds = Lists.newArrayList();
 		for (UserActionRecord record : userActionRecords) {
 			String actionIdentify = record.getActionIdentify();
 			if (StringUtils.isNotBlank(actionIdentify)) {
+				Integer id = Integer.valueOf(actionIdentify);
 				if (Objects.equals(record.getActionType(), UserActionTypeEnum.RATING.getValue())) {
-					ratingDetailIds.add(Integer.valueOf(actionIdentify));
+					ratingDetailIds.add(id);
+				} else if (Objects.equals(record.getActionType(), UserActionTypeEnum.PERFORMANCE.getValue())) {
+					performanceIds.add(id);
 				}
 			}
 		}
 		// 获取评价
 		Map<Integer, ActivityRatingDetail> ratingDetailMap = Maps.newHashMap();
+		Map<Integer, Performance> performanceMap = Maps.newHashMap();
 		if (CollectionUtils.isNotEmpty(ratingDetailIds)) {
 			List<ActivityRatingDetail> ratingDetails = activityRatingQueryService.listAllDetailByDetailIds(activityId, ratingDetailIds);
 			ratingDetailMap = ratingDetails.stream().collect(Collectors.toMap(ActivityRatingDetail::getId, v -> v, (v1, v2) -> v2));
-
+		}
+		if (CollectionUtils.isNotEmpty(performanceIds)) {
+			List<Performance> performances = performanceService.listAllPerformanceByIds(activityId, performanceIds);
+			performanceMap = performances.stream().collect(Collectors.toMap(Performance::getId, v -> v, (v1, v2) -> v2));
 		}
 		for (UserActionRecord record : userActionRecords) {
 			UserActionTypeEnum userActionType = UserActionTypeEnum.fromValue(record.getActionType());
@@ -148,6 +156,10 @@ public class UserActionRecordQueryService {
 					case DISCUSS:
 						break;
 					case PERFORMANCE:
+						Performance performance = performanceMap.get(identityId);
+						if (performance != null) {
+							record.setRemark(performance.getRemark());
+						}
 						break;
 					case WORK:
 						break;

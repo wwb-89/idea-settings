@@ -52,10 +52,15 @@ public class UserActionRecord {
     /** TODO 以下个人行为页面字段暂时放置，后续迁移其他实体 */
     @TableField(exist = false)
     private String title;
+    /** 签到方式 */
     @TableField(exist = false)
     private Integer way;
     @TableField(exist = false)
     private String name;
+    /** 表现评语 */
+    @TableField(exist = false)
+    private String remark;
+    /** 评价详情 */
     @TableField(exist = false)
     private ActivityRatingDetail ratingDetail;
 
