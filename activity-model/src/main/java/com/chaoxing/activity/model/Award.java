@@ -4,12 +4,10 @@ import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import java.time.LocalDateTime;
+import java.util.Objects;
 
 /**
  * 活动奖项表
@@ -44,5 +42,34 @@ public class Award {
     private LocalDateTime createTime;
     /** 更新时间; column: update_time*/
     private LocalDateTime updateTime;
+
+    @Getter
+    public enum LevelEnum {
+
+        /** 一等奖 */
+        FIRST_PRIZE("一等奖", "first_prize"),
+        SECOND_PRIZE("二等奖", "second_prize"),
+        THIRD_PRIZE("三等奖", "third_prize"),
+        OTHER_PRIZE("其他奖", "other_prize");
+
+        private final String name;
+        private final String value;
+
+        LevelEnum(String name, String value) {
+            this.name = name;
+            this.value = value;
+        }
+
+        public static LevelEnum fromValue(String value) {
+            LevelEnum[] values = LevelEnum.values();
+            for (LevelEnum levelEnum : values) {
+                if (Objects.equals(levelEnum.getValue(), value)) {
+                    return levelEnum;
+                }
+            }
+            return null;
+        }
+
+    }
 
 }
