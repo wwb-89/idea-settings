@@ -224,13 +224,14 @@
                     // 根据用户名查询数据
                     search: function () {
                         var $this = this;
-                        $this.searchFlag = true;
                         $this.initData();
+                        $this.searchFlag = true;
                         $this.reloadData();
                     },
                     resetSearch: function () {
                        var $this = this;
                         $this.queryParams.sw = ''
+                        $this.initData();
                         if ($this.searchFlag) {
                             $this.reloadData();
                             $this.searchFlag = false;
