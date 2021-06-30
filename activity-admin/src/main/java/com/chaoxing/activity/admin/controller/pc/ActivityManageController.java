@@ -14,6 +14,7 @@ import com.chaoxing.activity.service.activity.classify.ActivityClassifyHandleSer
 import com.chaoxing.activity.service.activity.manager.ActivityCreatePermissionService;
 import com.chaoxing.activity.service.manager.WfwRegionalArchitectureApiService;
 import com.chaoxing.activity.service.tablefield.TableFieldQueryService;
+import com.chaoxing.activity.service.org.OrgService;
 import com.chaoxing.activity.util.constant.CommonConstant;
 import com.google.common.collect.Lists;
 import org.apache.commons.collections4.CollectionUtils;
@@ -51,6 +52,8 @@ public class ActivityManageController {
 	private ActivityCreatePermissionService activityCreatePermissionService;
 	@Resource
 	private WfwRegionalArchitectureApiService wfwRegionalArchitectureApiService;
+	@Resource
+	private OrgService orgService;
 	@Resource
 	private TableFieldQueryService tableFieldQueryService;
 
@@ -159,12 +162,13 @@ public class ActivityManageController {
 			}
 		}
 		LoginUserDTO loginUser = LoginUtils.getLoginUser(request);
+		Integer fid = loginUser.getFid();
 		// 活动类型列表
 		List<ActivityTypeDTO> activityTypes = activityQueryService.listActivityType();
 		model.addAttribute("activityTypes", activityTypes);
 		// 活动分类列表范围
-		activityClassifyHandleService.cloneSystemClassify(loginUser.getFid());
-		ActivityCreatePermissionDTO activityCreatePermission = activityCreatePermissionService.getGroupClassifyByUserPermission(loginUser.getFid(), loginUser.getUid());
+		activityClassifyHandleService.cloneSystemClassify(fid);
+		ActivityCreatePermissionDTO activityCreatePermission = activityCreatePermissionService.getGroupClassifyByUserPermission(fid, loginUser.getUid());
 		model.addAttribute("activityClassifies", activityCreatePermission.getActivityClassifies());
 		model.addAttribute("existNoLimitPermission", activityCreatePermission.getExistNoLimitPermission());
 		model.addAttribute("groupType", activityCreatePermission.getGroupType());
@@ -182,12 +186,15 @@ public class ActivityManageController {
 		model.addAttribute("activityFlagSignModules", activityFlagSignModules);
 		model.addAttribute("strict", strict);
 		// 发布范围默认选中当前机构
-		List<WfwRegionalArchitectureDTO> wfwRegionalArchitectures = wfwRegionalArchitectureApiService.listByFid(loginUser.getFid());
+		List<WfwRegionalArchitectureDTO> wfwRegionalArchitectures = wfwRegionalArchitectureApiService.listByFid(fid);
 		List<WfwRegionalArchitectureDTO> participatedOrgs = Lists.newArrayList();
 		if (CollectionUtils.isNotEmpty(wfwRegionalArchitectures)) {
 			participatedOrgs = wfwRegionalArchitectures.stream().filter(v -> Objects.equals(v.getFid(), loginUser.getFid())).collect(Collectors.toList());
 		}
 		model.addAttribute("participatedOrgs", participatedOrgs);
+		// 是不是定制机构
+		boolean customOrg = orgService.isCustomOrg(fid);
+		model.addAttribute("customOrg", customOrg);
 		return "pc/activity-add-edit";
 	}
 }

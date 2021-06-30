@@ -7,7 +7,7 @@ import com.chaoxing.activity.mapper.WebTemplateAppMapper;
 import com.chaoxing.activity.mapper.WebTemplateMapper;
 import com.chaoxing.activity.model.*;
 import com.chaoxing.activity.service.manager.WfwRegionalArchitectureApiService;
-import com.chaoxing.activity.util.constant.WebTemplateCustomConfigConstant;
+import com.chaoxing.activity.service.org.OrgService;
 import com.chaoxing.activity.util.enums.MhAppDataSourceEnum;
 import com.chaoxing.activity.util.enums.MhAppTypeEnum;
 import com.chaoxing.activity.util.exception.BusinessException;
@@ -43,6 +43,8 @@ public class WebTemplateService {
 
 	@Resource
 	private WfwRegionalArchitectureApiService wfwRegionalArchitectureApiService;
+	@Resource
+	private OrgService orgService;
 
 	/**根据id查询网站模版
 	 * @Description 
@@ -158,8 +160,8 @@ public class WebTemplateService {
 		if (CollectionUtils.isNotEmpty(orgAffiliations)) {
 			webTemplates.addAll(orgAffiliations);
 		}
-		codes.retainAll(WebTemplateCustomConfigConstant.CUSTOM_AREA_CODES);
-		if (CollectionUtils.isEmpty(codes)) {
+		boolean isCustomOrg = orgService.isCustomOrg(codes);
+		if (!isCustomOrg) {
 			Activity.ActivityFlagEnum activityFlagEnum = Activity.ActivityFlagEnum.fromValue(activityFlag);
 			if (activityFlagEnum == null) {
 				activityFlag = Activity.ActivityFlagEnum.NORMAL.getValue();

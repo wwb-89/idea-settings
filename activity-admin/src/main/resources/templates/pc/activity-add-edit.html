@@ -667,7 +667,8 @@
                     disabledDate: function (time) {
                         return activityApp.isBeforeToday(time.getTime());
                     }
-                }
+                },
+                customOrg: [[${customOrg}]]
             },
             created: function () {
                 var $this = this;
@@ -1585,8 +1586,8 @@
                 // 是否显示简介
                 isShowIntroduction: function () {
                     var $this = this;
-                    var shows = ["volunteer", "second_classroom"];
-                    return shows.indexOf($this.activity.activityFlag) != -1;
+                    var hides = ["dual_select"];
+                    return hides.indexOf($this.activity.activityFlag) == -1 && !$this.customOrg;
                 }
             }
         });
