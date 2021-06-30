@@ -37,7 +37,7 @@
             <div class="timeline">
                 <ul>
                     <li v-for="(action, index) in userGrade.userActionRecords">
-                        <img class="left-icon" :src="ctx + '/pc/assets/images/' + getActionIcon(action)">
+                        <img class="left-icon" :src="ctx + '/mobile/assets/images/' + getActionIcon(action)">
                         <div class="left-line"></div>
                         <div class="info">
                             <p class="time">{{ action.createTime | timestampFormat }}&nbsp;&nbsp;·&nbsp;&nbsp;{{action.title}}</p>
@@ -130,23 +130,25 @@
                     },
                     getActionIcon: function (action) {
                         var actionType = action.actionType;
-
                         switch (actionType) {
                             case 'sign_up':
                                 return 'sign-up.png';
                             case 'sign_in':
                                 if (action.way === 2) {
                                     return 'sign-in.png';
+                                } else if (action.way === 3) {
+                                    return 'sign-in-code.png';
                                 } else {
                                     return 'sign-in-normal.png';
                                 }
                             case 'rating':
                                 return 'evaluation.png';
                             case 'work':
-                                return 'prize.png';
+                                return 'works.png';
                             case 'performance':
                                 return 'recommend.png';
                             case 'discuss':
+                                return 'discuss.png'
                             default:
                                 return 'evaluation.png'
                         }
