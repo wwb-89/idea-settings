@@ -282,7 +282,7 @@ public class TableFieldQueryService {
     * @return java.util.List<com.chaoxing.activity.model.MarketTableField>
     */
     private List<MarketTableField> listMarketTableField(Integer fid, String activityFlag, Integer tableFieldId) {
-        Activity.ActivityFlag flagEnum = Optional.ofNullable(Activity.ActivityFlag.fromValue(activityFlag)).orElse(Activity.ActivityFlag.NORMAL);
+        Activity.ActivityFlagEnum flagEnum = Optional.ofNullable(Activity.ActivityFlagEnum.fromValue(activityFlag)).orElse(Activity.ActivityFlagEnum.NORMAL);
         // 活动市场对应的字段配置列表
         return marketTableFieldMapper.selectList(new QueryWrapper<MarketTableField>().lambda()
                 .eq(MarketTableField::getFid, fid)

@@ -97,7 +97,7 @@ public class TableFieldHandleService {
 
     @Transactional(rollbackFor = Exception.class)
     public void marketTableFieldConfig(Integer fid, String activityFlag, Integer tableFieldId, List<MarketTableField> marketTableFields, LoginUserDTO loginUser) {
-        Activity.ActivityFlag flagEnum = Optional.ofNullable(Activity.ActivityFlag.fromValue(activityFlag)).orElse(Activity.ActivityFlag.NORMAL);
+        Activity.ActivityFlagEnum flagEnum = Optional.ofNullable(Activity.ActivityFlagEnum.fromValue(activityFlag)).orElse(Activity.ActivityFlagEnum.NORMAL);
         // 删除历史
         marketTableFieldMapper.delete(new UpdateWrapper<MarketTableField>()
                 .lambda()
