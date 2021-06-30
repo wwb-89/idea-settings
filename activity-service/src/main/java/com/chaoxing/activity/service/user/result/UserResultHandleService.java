@@ -227,7 +227,7 @@ public class UserResultHandleService {
      */
     @Transactional(rollbackFor = Exception.class)
     public void batchUpdateQualifiedStatus(Integer activityId, String uids, UserResult.QualifiedStatusEnum qualifiedStatusEnum) {
-        if (StringUtils.isNotBlank(uids)) {
+        if (StringUtils.isBlank(uids)) {
             return;
         }
         List<Integer> uidList = JSON.parseArray(uids, Integer.class);

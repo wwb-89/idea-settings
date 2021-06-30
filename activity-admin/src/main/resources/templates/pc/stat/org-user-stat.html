@@ -256,12 +256,12 @@
                         } else {
 							var message = data.message;
                             if (activityApp.isEmpty(message)) {
-                                message = "处理失败";
+                                message = "操作失败";
                             }
                             app.showMsg(message);
                         }
                     }, function () {
-                        app.showMsg("处理失败");
+                        app.showMsg("操作失败");
                     });
                 },
                 loadData: function () {

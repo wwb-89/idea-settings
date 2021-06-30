@@ -395,7 +395,7 @@
                     app.ajaxPostWithPayload(url, JSON.stringify(managers), function (data) {
                         if (data.success) {
                             $this.addShow = false;
-                            app.showMsg("处理成功", function () {
+                            app.showMsg("操作成功", function () {
                                 window.location.reload();
                             });
                         } else {
@@ -422,7 +422,7 @@
                     $this.$refs.deleteWindow.show = false;
                     app.ajaxPostWithLoading(url, {}, function (data) {
                         if (data.success) {
-                            app.showMsg("处理成功", function () {
+                            app.showMsg("操作成功", function () {
                                 window.location.reload();
                             });
                         } else {
@@ -430,7 +430,7 @@
                             app.showMsg(errorMessage);
                         }
                     }, function () {
-                        app.showMsg("处理成功");
+                        app.showMsg("操作成功");
                     }, '处理');
                 },
                 batchDeleteSubmit: function () {
@@ -445,7 +445,7 @@
                     $this.$refs.batchDeleteWindow.show = false;
                     app.ajaxPostWithPayload(url, JSON.stringify(uids), function (data) {
                         if (data.success) {
-                            app.showMsg("处理成功", function () {
+                            app.showMsg("操作成功", function () {
                                 window.location.reload();
                             });
                         } else {
@@ -453,7 +453,7 @@
                             app.showMsg(errorMessage);
                         }
                     }, function () {
-                        app.showMsg("处理失败");
+                        app.showMsg("操作失败");
                     }, '');
                 },
                 initNiceScroll: function () {

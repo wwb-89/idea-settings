@@ -156,8 +156,8 @@ public class ActivityStatHandleService {
         // 上锁、同一个任务同时只能一个线程处理
         String lockKey = getTaskExcuteLockKey(taskId);
         Consumer<Exception> fail = (e) -> {
-            log.error("处理任务:{} error:{}", taskId, e.getMessage());
-            throw new BusinessException("处理任务失败");
+            log.error("操作任务:{} error:{}", taskId, e.getMessage());
+            throw new BusinessException("操作任务失败");
         };
         return distributedLock.lock(lockKey, () -> {
             ActivityStatTask task = activityStatTaskMapper.selectById(taskId);

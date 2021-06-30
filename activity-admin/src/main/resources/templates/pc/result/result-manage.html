@@ -60,7 +60,7 @@
                 <!-- 计数栏 -->
                 <div class="table-count-box fs12">
                     <div class="count-info fl">
-                        <span class="colorBlue marginr8">已选择 {{ selections.length }} 人</span>
+                        <span class="colorBlue marginr8" v-show="selections.length > 0">已选择 {{ selections.length }} 人</span>
                         <span class="color999">共 {{ total }} 人</span>
                     </div>
                     <div class="setting-box">
@@ -478,7 +478,7 @@
                 },
                 batchQualified: function () {
                     var $this = this;
-                    var url = ctx + '/api/activity/results/manage/qualified/';
+                    var url = ctx + '/api/activity/results/manage/batch/qualified';
                     var uids = [];
                     $($this.selections).each(function () {
                         uids.push(this.uid);
@@ -491,7 +491,7 @@
                 },
                 batchUnQualified: function () {
                     var $this = this;
-                    var url = ctx + '/api/activity/results/manage/unQualified/';
+                    var url = ctx + '/api/activity/results/manage/batch/un-qualified';
                     var uids = [];
                     $($this.selections).each(function () {
                         uids.push(this.uid);

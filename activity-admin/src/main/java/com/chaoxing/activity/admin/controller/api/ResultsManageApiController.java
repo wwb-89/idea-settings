@@ -98,7 +98,7 @@ public class ResultsManageApiController {
     * @param uids
     * @return com.chaoxing.activity.dto.RestRespDTO
     */
-    @PostMapping("batch/unQualified")
+    @PostMapping("batch/un-qualified")
     public RestRespDTO batchUnQualified(Integer activityId, String uids) {
         userResultHandleService.batchUpdateQualifiedStatus(activityId, uids, UserResult.QualifiedStatusEnum.NOT_QUALIFIED);
         return RestRespDTO.success();

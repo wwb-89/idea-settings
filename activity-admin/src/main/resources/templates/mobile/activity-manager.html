@@ -96,7 +96,7 @@
                                 var url = ctx + "/api/activity/" + $this.activityId + "/manager/add/batch";
                                 app.ajaxPostWithPayloadLoading(url, JSON.stringify(managers), function (data) {
                                     if (data.success) {
-                                        app.showMsg("处理成功", function () {
+                                        app.showMsg("操作成功", function () {
                                             window.location.reload();
                                         });
                                     } else {
@@ -104,7 +104,7 @@
                                         app.showMsg(errorMessage);
                                     }
                                 }, function () {
-                                    app.showMsg("处理失败");
+                                    app.showMsg("操作失败");
                                 }, '处理');
                             });
                         },
@@ -123,18 +123,18 @@
                             var url = ctx + "/api/activity/" + $this.activityId + "/manager/" + manager.uid + "/delete";
                             app.ajaxPost(url, {}, function (data) {
                                 if (data.success) {
-                                    app.showMsg("处理成功", function () {
+                                    app.showMsg("操作成功", function () {
                                         window.location.reload();
                                     });
                                 } else {
                                     var errorMessage = data.message;
                                     if (activityApp.isEmpty(errorMessage)) {
-                                        errorMessage = "处理失败";
+                                        errorMessage = "操作失败";
                                     }
                                     app.showMsg(errorMessage);
                                 }
                             }, function () {
-                                app.showMsg("处理失败");
+                                app.showMsg("操作失败");
                             });
                         },
                         //滑动开始

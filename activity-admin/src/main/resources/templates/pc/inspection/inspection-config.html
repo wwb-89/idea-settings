@@ -36,22 +36,21 @@
 						</el-radio-group>
 						<p class="decTips" v-show="inspectionConfig.passDecideWay == 'manual'">管理员在成绩管理中手动评审合格状态</p>
 						<div class="radio-box" v-show="inspectionConfig.passDecideWay == 'places'">
-							<span class="lineTips">活动结束时，按得分从高到底排序的</span>
+							<span class="lineTips">活动结束时，得分从高到底的前</span>
 							<el-input type="number" step="1" class="short-input" v-model="places"></el-input>
 							<span class="lineTips">人，判定为合格</span>
-							<p class="decTips">如果得分相同，则优先将先达到该分数者判定为合格</p>
+							<p class="decTips">如果得分相同，则优先将先达到改分数者判定为合格</p>
 						</div>
 						<div class="radio-box" v-show="inspectionConfig.passDecideWay == 'scale'">
-							<span class="lineTips">活动结束时，按得分从高到底排序的前</span>
+							<span class="lineTips">活动结束时，得分从高到底的前</span>
 							<el-input type="number" step="1" maxlength="10" class="short-input" v-model="scale"></el-input>
-							<span class="lineTips">%，判定为合格</span>
+							<span class="lineTips">%，判断为合格</span>
 							<p class="decTips">如果得分相同，则优先将先达到该分数者判定为合格</p>
 						</div>
 						<div class="radio-box" v-show="inspectionConfig.passDecideWay == 'score'">
 							<span class="lineTips">活动积分达到</span>
 							<el-input type="number" step="1" maxlength="10" class="short-input" v-model="score"></el-input>
 							<span class="lineTips">分，判定为合格</span>
-							<p class="decTips">如果得分相同，则优先将先达到该分数者判定为合格</p>
 						</div>
 					</div>
 				</div>
@@ -238,18 +237,18 @@
 					var url = ctx + "/api/inspection/config";
 					app.ajaxPostWithLoading(url, params, function (data) {
 						if (data.success) {
-							app.showMsg("处理成功", function () {
-								window.location.reload();
+							app.showMsg("操作成功", function () {
+								window.close();
 							});
 						} else {
 							var message = data.message;
 							if (activityApp.isEmpty(message)) {
-								message = "处理失败";
+								message = "操作失败";
 							}
 							app.showMsg(message);
 						}
 					}, function () {
-						app.showMsg("处理失败");
+						app.showMsg("操作失败");
 					});
 				}
 			}

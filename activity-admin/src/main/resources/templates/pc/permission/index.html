@@ -351,16 +351,16 @@
                         var url = !config.id ? addUrl : editUrl;
                         app.ajaxPostWithLoading(url, config, function (data) {
                             if (data.success) {
-                                app.showMsg("处理成功");
+                                app.showMsg("操作成功");
                             } else {
                                 var errorMessage = data.message;
                                 if (activityApp.isEmpty(errorMessage)) {
-                                    errorMessage = "处理失败";
+                                    errorMessage = "操作失败";
                                 }
                                 app.showMsg(errorMessage);
                             }
                         }, function () {
-                            app.showMsg("处理失败");
+                            app.showMsg("操作失败");
                         });
                     },
                     // 批量配置保存
@@ -368,16 +368,16 @@
                         var url = ctx + '/api/activity/create/permission/batchConfig';
                         app.ajaxPostWithPayload(url, JSON.stringify(submitData), function (data) {
                             if (data.success) {
-                                app.showMsg("处理成功");
+                                app.showMsg("操作成功");
                             } else {
                                 var errorMessage = data.message;
                                 if (activityApp.isEmpty(errorMessage)) {
-                                    errorMessage = "处理失败";
+                                    errorMessage = "操作失败";
                                 }
                                 app.showMsg(errorMessage);
                             }
                         }, function () {
-                            app.showMsg("处理失败");
+                            app.showMsg("操作失败");
                         });
                     },
                     cancelConfig: function () {
