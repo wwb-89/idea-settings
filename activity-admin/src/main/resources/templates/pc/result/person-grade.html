@@ -33,7 +33,7 @@
             </div>
             <div class="white-block record-block">
                 <p class="item-name">全部记录</p>
-<!--                <div class="btn-border add-performance">添加活动表现</div>-->
+                <div class="btn-border add-performance" @click="addClick">添加活动表现</div>
                 <div class="record-list" style="display: block;">
                     <div class="record" v-for="action in userGrade.userActionRecords">
                         <div class="left">
@@ -58,9 +58,11 @@
                                             </el-rate>
                                         </div>
                                         <p class="desc overHidden5">{{action.ratingDetail.comment}}</p>
-<!--                                        <a href="JavaScript:;" class="show-more">展开</a>-->
                                     </template>
                                     <p v-else class="name lineh48">{{action.name}}</p>
+                                    <template v-if="action.actionType === 'performance'">
+                                        <div class="description" v-if="action.remark" v-html="action.remark"></div>
+                                    </template>
                                 </div>
                                 <p class="score under" v-if="action.actionDescription">{{action.actionDescription}}</p>
 
@@ -97,28 +99,20 @@
                 <div class="dialog-content">
                     <div class="form-item">
                         <div class="input-box">
-                            <el-input type="text" placeholder="奖励分值" v-model="score" class="input" id="scoreInput"></el-input>
+                            <el-input type="text" placeholder="奖励分值" readonly class="input" id="scoreInput" :value="scoreDesc"></el-input>
                             <i class="arrow-down" id="arrow-down"></i>
                         </div>
                         <div class="score-box" id="score-box">
                             <div class="score-item">
                                 <p class="title">奖励分值</p>
                                 <ul>
-                                    <li>1</li>
-                                    <li>2</li>
-                                    <li>3</li>
-                                    <li>4</li>
-                                    <li>5</li>
+                                    <li v-for="value in rewardScores" :class="{active: score === value }" @click="changeScore(value)">{{ value }}</li>
                                 </ul>
                             </div>
                             <div class="score-item">
                                 <p class="title">扣除分值</p>
                                 <ul>
-                                    <li>1</li>
-                                    <li>2</li>
-                                    <li>3</li>
-                                    <li>4</li>
-                                    <li>5</li>
+                                    <li v-for="value in deductionScores" :class="{active: score === value }" @click="changeScore(value)">{{ value }}</li>
                                 </ul>
                             </div>
                         </div>
@@ -128,8 +122,8 @@
                     </div>
                 </div>
                 <div class="footer">
-                    <span class="btn btn-border" @click="addPerformancePop=false">取消</span>
-                    <span :class="info || score?'btn btn-normal':'btn btn-forbid'">完成</span>
+                    <span class="btn btn-border" @click="addPerformancePop = false">取消</span>
+                    <span :class="info || score ? 'btn btn-normal':'btn btn-forbid'" @click="submitPerformance">完成</span>
                 </div>
             </div>
         </div>
@@ -144,7 +138,7 @@
                 var dateObj = moment(timestamp);
                 return dateObj.format("YYYY.MM.DD HH:mm");
             });
-            var app = new Vue({
+            var personGrade = new Vue({
                 el: '#personGrade',
                 data: {
                     ctx: ctx,
@@ -152,8 +146,10 @@
                     activityId: [[${activityId}]],
                     userGrade: {},
                     ifCancelPop:false,
-                    score:'',
-                    info:'',
+                    rewardScores: [1, 2, 3, 4, 5],
+                    deductionScores: [-1, -2, -3, -4, -5],
+                    score: 0,
+                    info: '',
                     addPerformancePop:false,
                 },
                 mounted: function(){
@@ -162,6 +158,16 @@
                     $this.leftHeight()
                     $this.showMoreClick()
                     $this.scoreShowFun()
+                },
+                computed: {
+                    scoreDesc: function () {
+                        var $this = this;
+                        if ($this.score > 0) {
+                            return '奖励' + $this.score + '分';
+                        } else if ($this.score < 0) {
+                            return '扣除' + Math.abs($this.score) + '分';
+                        }
+                    }
                 },
                 methods: {
                     loadData: function () {
@@ -209,6 +215,34 @@
                             default:
                                 return 'evaluation.png'
                         }
+                    },
+                    changeScore: function (value) {
+                        var $this = this;
+                        $this.score = value
+                    },
+                    submitPerformance: function () {
+                        var $this = this;
+                        var url = ctx + "/api/activity/performance/add";
+                        var param = {
+                            uid: $this.uid,
+                            activityId: $this.activityId,
+                            score: $this.score,
+                            remark: activityApp.textareaToHtml($this.info)
+                        };
+                        app.ajaxPostWithLoading(url, param, function (res) {
+                            if (res.success) {
+                                app.showMsg("添加表现成功");
+                                window.location.reload();
+                            } else {
+                                var errorMessage = data.message;
+                                if (activityApp.isEmpty(errorMessage)) {
+                                    errorMessage = "添加表现失败";
+                                }
+                                app.showMsg(errorMessage);
+                            }
+                        }, function () {
+                            app.showMsg("添加表现失败");
+                        });
                     },
                     leftHeight:function(){
                         $('.record .left').each( function(i,n){

@@ -50,6 +50,9 @@
                                 <p class="dec">{{action.ratingDetail.comment}}</p>
                                 <span class="slide" @click="showDetailComment"></span>
                             </template>
+                            <template v-else-if="action.actionType === 'performance'">
+                                <div class="dec" v-if="action.remark" v-html="action.remark"></div>
+                            </template>
                         </div>
                     </li>
                 </ul>

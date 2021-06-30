@@ -150,13 +150,13 @@ public class ActivityRatingQueryService {
 	}
 
 	/**根据活动id和评价id列表查询所有评价
-	 * @Description
-	 * @author wwb
-	 * @Date 2021-03-17 19:54:50
-	 * @param activityId
-	 * @param ratingDetailIds
-	 * @return java.util.List<com.chaoxing.activity.model.ActivityRatingDetail>
-	 */
+	* @Description
+	* @author huxiaolong
+	* @Date 2021-06-30 10:51:25
+	* @param activityId
+	* @param ratingDetailIds
+	* @return java.util.List<com.chaoxing.activity.model.ActivityRatingDetail>
+	*/
     public List<ActivityRatingDetail> listAllDetailByDetailIds(Integer activityId, List<Integer> ratingDetailIds) {
 		if (CollectionUtils.isEmpty(ratingDetailIds)) {
 			return Lists.newArrayList();
