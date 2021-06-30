@@ -12,7 +12,6 @@ import com.chaoxing.activity.service.manager.WfwContactApiService;
 import com.chaoxing.activity.service.manager.WfwGroupApiService;
 import com.chaoxing.activity.service.org.OrgConfigService;
 import com.chaoxing.activity.util.annotation.LoginRequired;
-import com.google.common.collect.Lists;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -56,16 +55,18 @@ public class ActivityCreatePermissionController {
         List<OrgRoleDTO> roleList = organizationalStructureApiService.listOrgRoles(realFid);
         List<ActivityClassify> classifyList = activityClassifyQueryService.listOrgAffiliation(realFid);
         OrgConfig orgConfig = orgConfigService.getByFid(realFid);
+        String signUpScopeType = Optional.ofNullable(orgConfig).map(OrgConfig::getSignUpScopeType).orElse("");
         // 微服务组织架构
-        List<WfwGroupDTO> wfwGroups = Lists.newArrayList();
-        if (Objects.equals(orgConfig.getSignUpScopeType(), OrgConfig.SignUpScopeType.WFW.getValue())) {
+        List<WfwGroupDTO> wfwGroups;
+        if (Objects.equals(signUpScopeType, OrgConfig.SignUpScopeType.CONTACTS.getValue())) {
+            wfwGroups = wfwContactApiService.listUserContactOrgsByFid(realFid);
+        }else {
+            signUpScopeType = OrgConfig.SignUpScopeType.WFW.getValue();
             wfwGroups = wfwGroupApiService.listGroupByFid(realFid);
             wfwGroups = wfwGroupApiService.buildWfwGroups(wfwGroups);
-        } else if (Objects.equals(orgConfig.getSignUpScopeType(), OrgConfig.SignUpScopeType.CONTACTS.getValue())) {
-            wfwGroups = wfwContactApiService.listUserContactOrgsByFid(realFid);
         }
         model.addAttribute("fid", realFid);
-        model.addAttribute("groupType", orgConfig.getSignUpScopeType());
+        model.addAttribute("groupType", signUpScopeType);
         model.addAttribute("wfwGroups", wfwGroups);
         model.addAttribute("classifyList", classifyList);
         model.addAttribute("roleList", roleList);

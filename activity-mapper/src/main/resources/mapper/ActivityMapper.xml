@@ -42,7 +42,6 @@
         <result column="tags" jdbcType="INTEGER" property="tags" />
         <result column="is_open_rating" jdbcType="BIT" property="openRating" />
         <result column="is_rating_need_audit" jdbcType="BIT" property="ratingNeedAudit" />
-        <result column="is_open_integral" jdbcType="BIT" property="openIntegral" />
         <result column="integral_value" jdbcType="DECIMAL" property="integralValue" />
         <result column="activity_flag" jdbcType="VARCHAR" property="activityFlag" />
         <result column="is_open_work" jdbcType="VARCHAR" property="openWork" />
@@ -57,7 +56,7 @@
         t.id, t.name, t.start_time, t.end_time, t.start_date, t.end_date, t.cover_cloud_id, t.cover_url, t.organisers, t.activity_type, t.address, t.detail_address,
         t.longitude, t.dimension, t.activity_classify_id, t.period, t.credit, t.time_length_upper_limit, t.is_enable_sign, t.sign_id, t.web_template_id, t.website_id, t.page_id, t.preview_url, t.edit_url,
         t.is_timing_release, t.timing_release_time, t.is_released, t.release_time, t.release_uid, t.is_open_audit, t.audit_status, t.create_uid, t.create_user_name, t.create_fid, t.create_area_code,
-        t.create_org_name, t.tags, t.is_open_rating, t.is_rating_need_audit, t.is_open_integral, t.activity_flag, t.integral_value, t.is_open_work, t.work_id,
+        t.create_org_name, t.tags, t.is_open_rating, t.is_rating_need_audit, t.activity_flag, t.integral_value, t.is_open_work, t.work_id,
         t.origin_type, t.origin, t.status, t.create_time, t.update_time
     </sql>
 
@@ -282,6 +281,9 @@
         WHERE
             <!--状态-->
             t.`status` IN ( 2, 3, 4 )
+            <if test="params.classifyId != null">
+                AND t.activity_classify_id = #{params.classifyId}
+            </if>
             <if test="params.date != null and params.date != ''">
                 AND #{params.date} BETWEEN t.start_date AND t.end_date
             </if>
@@ -315,6 +317,9 @@
         WHERE
             <!--状态-->
             t.create_fid = #{params.topFid}
+            <if test="params.classifyId != null">
+                AND t.activity_classify_id = #{params.classifyId}
+            </if>
             AND t.`status` IN ( 2, 3, 4 )
             <if test="params.date != null and params.date != ''">
                 AND #{params.date} BETWEEN t.start_date AND t.end_date

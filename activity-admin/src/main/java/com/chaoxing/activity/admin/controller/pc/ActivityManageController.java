@@ -125,14 +125,14 @@ public class ActivityManageController {
 	private String calActivityFlag(String flag, Integer secondClassroomFlag) {
 		if (StringUtils.isBlank(flag)) {
 			if (Objects.equals(secondClassroomFlag, 1)) {
-				flag = Activity.ActivityFlag.SECOND_CLASSROOM.getValue();
+				flag = Activity.ActivityFlagEnum.SECOND_CLASSROOM.getValue();
 			} else {
-				flag = Activity.ActivityFlag.NORMAL.getValue();
+				flag = Activity.ActivityFlagEnum.NORMAL.getValue();
 			}
 		}
-		Activity.ActivityFlag activityFlag = Activity.ActivityFlag.fromValue(flag);
+		Activity.ActivityFlagEnum activityFlag = Activity.ActivityFlagEnum.fromValue(flag);
 		if (activityFlag == null) {
-			flag = Activity.ActivityFlag.NORMAL.getValue();
+			flag = Activity.ActivityFlagEnum.NORMAL.getValue();
 		}
 		return flag;
 	}
@@ -149,6 +149,7 @@ public class ActivityManageController {
 	 * @return java.lang.String
 	*/
 	public String add(Model model, HttpServletRequest request, String code, Integer secondClassroomFlag, String flag, Integer strict) {
+		flag = calActivityFlag(flag, secondClassroomFlag);
 		String areaCode = "";
 		if (StringUtils.isNotBlank(code)) {
 			// 根据code查询areaCode
@@ -170,12 +171,11 @@ public class ActivityManageController {
 		// 报名签到
 		model.addAttribute("sign", SignAddEditDTO.builder().build());
 		// 模板列表
-		List<WebTemplate> webTemplates = webTemplateService.listAvailable(loginUser.getFid());
+		List<WebTemplate> webTemplates = webTemplateService.listAvailable(loginUser.getFid(), flag);
 		model.addAttribute("webTemplates", webTemplates);
 		model.addAttribute("areaCode", areaCode);
 		// 微服务组织架构
 		model.addAttribute("wfwGroups", activityCreatePermission.getWfwGroups());
-		flag = calActivityFlag(flag, secondClassroomFlag);
 		model.addAttribute("activityFlag", flag);
 		// flag配置的报名签到的模块
 		List<ActivityFlagSignModule> activityFlagSignModules = activityQueryService.listSignModuleByFlag(flag);

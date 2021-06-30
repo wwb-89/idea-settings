@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.chaoxing.activity.mapper.WebTemplateActivityFlagMapper">
+    <resultMap id="BaseResultMap" type="com.chaoxing.activity.model.WebTemplateActivityFlag">
+        <id column="id" jdbcType="INTEGER" property="id" />
+        <result column="activity_flag" jdbcType="VARCHAR" property="activityFlag" />
+        <result column="web_template_id" jdbcType="INTEGER" property="webTemplateId" />
+        <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
+        <result column="update_time" jdbcType="TIMESTAMP" property="updateTime" />
+    </resultMap>
+    <sql id="Base_Column_List">
+        t.id, t.activity_flag, t.web_template_id, t.create_time, t.update_time
+    </sql>
+</mapper>

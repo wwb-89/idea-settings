@@ -198,9 +198,9 @@ public class FormApprovalApiService {
         // 根据表单数据创建报名签到
         SignAddEditDTO signAddEditDTO = buildSignFromActivityApproval(formData);
         // 设置活动标识
-        Activity.ActivityFlag activityFlag = Activity.ActivityFlag.fromValue(flag);
+        Activity.ActivityFlagEnum activityFlag = Activity.ActivityFlagEnum.fromValue(flag);
         if (activityFlag == null) {
-            activityFlag = Activity.ActivityFlag.NORMAL;
+            activityFlag = Activity.ActivityFlagEnum.NORMAL;
         }
         activity.setActivityFlag(activityFlag.getValue());
         // 使用指定的模板
@@ -253,7 +253,6 @@ public class FormApprovalApiService {
         // 积分
         String integralStr = FormUtils.getValue(formData, "integral_value");
         if (StringUtils.isNotBlank(integralStr)) {
-            activity.setOpenIntegral(true);
             activity.setIntegralValue(BigDecimal.valueOf(Double.parseDouble(integralStr)));
         }
         String orgName = passportApiService.getOrgName(fid);

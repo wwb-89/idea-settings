@@ -1,12 +1,13 @@
 package com.chaoxing.activity.api.controller.mh;
 
 import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.chaoxing.activity.dto.RestRespDTO;
 import com.chaoxing.activity.dto.manager.WfwRegionalArchitectureDTO;
-import com.chaoxing.activity.dto.manager.sign.SignStatDTO;
 import com.chaoxing.activity.dto.manager.mh.MhGeneralAppResultDataDTO;
+import com.chaoxing.activity.dto.manager.sign.SignStatDTO;
 import com.chaoxing.activity.dto.query.MhActivityCalendarQueryDTO;
 import com.chaoxing.activity.model.Activity;
 import com.chaoxing.activity.model.ActivityDetail;
@@ -313,6 +314,8 @@ public class ActivityMhAppController {
 		} else {
 			fids.add(wfwfid);
 		}
+		JSONArray classifies = jsonObject.getJSONArray("classifies");
+		Integer classifyId = ((JSONObject)Optional.ofNullable(classifies.get(0)).orElse(new JSONObject())).getInteger("id");
 		Integer pageNum = Optional.ofNullable(jsonObject.getInteger("page")).orElse(CommonConstant.DEFAULT_PAGE_NUM);
 		Integer pageSize = Optional.ofNullable(jsonObject.getInteger("pageSize")).orElse(CommonConstant.DEFAULT_PAGE_SIZE);
 		Page page = new Page(pageNum, pageSize);
@@ -321,6 +324,7 @@ public class ActivityMhAppController {
 				.topFid(wfwfid)
 				.strict(strict)
 				.activityFlag(activityFlag)
+				.classifyId(classifyId)
 				.build();
 		String year = jsonObject.getString("year");
 		String month = jsonObject.getString("month");
@@ -377,6 +381,19 @@ public class ActivityMhAppController {
 					.value(DateTimeFormatterConstant.YYYY_MM_DD_HH_MM.format(record.getEndTime()))
 					.flag("101")
 					.build());
+			// 活动状态130
+			Integer status = record.getStatus();
+			Activity.StatusEnum statusEnum = Activity.StatusEnum.fromValue(status);
+			if (statusEnum != null) {
+				String statusDescription = statusEnum.getName();
+				if (Objects.equals(Activity.StatusEnum.RELEASED, statusEnum)) {
+					statusDescription = "未开始";
+				}
+				mhGeneralAppResultDataFields.add(MhGeneralAppResultDataDTO.MhGeneralAppResultDataFieldDTO.builder()
+						.value(statusDescription)
+						.flag("130")
+						.build());
+			}
 			return mhGeneralAppResultDataFields;
 		});
 		result.put("results", mhGeneralAppResultDatas);

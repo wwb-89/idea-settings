@@ -1,12 +1,11 @@
 package com.chaoxing.activity.service;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.chaoxing.activity.mapper.WebTemplateActivityFlagMapper;
 import com.chaoxing.activity.mapper.WebTemplateAppDataMapper;
 import com.chaoxing.activity.mapper.WebTemplateAppMapper;
 import com.chaoxing.activity.mapper.WebTemplateMapper;
-import com.chaoxing.activity.model.WebTemplate;
-import com.chaoxing.activity.model.WebTemplateApp;
-import com.chaoxing.activity.model.WebTemplateAppData;
+import com.chaoxing.activity.model.*;
 import com.chaoxing.activity.service.manager.WfwRegionalArchitectureApiService;
 import com.chaoxing.activity.util.constant.WebTemplateCustomConfigConstant;
 import com.chaoxing.activity.util.enums.MhAppDataSourceEnum;
@@ -40,6 +39,9 @@ public class WebTemplateService {
 	@Resource
 	private WebTemplateAppDataMapper webTemplateAppDataMapper;
 	@Resource
+	private WebTemplateActivityFlagMapper webTemplateActivityFlagMapper;
+
+	@Resource
 	private WfwRegionalArchitectureApiService wfwRegionalArchitectureApiService;
 
 	/**根据id查询网站模版
@@ -51,6 +53,22 @@ public class WebTemplateService {
 	*/
 	public WebTemplate getById(Integer id) {
 		return webTemplateMapper.selectById(id);
+	}
+
+	/**根据id列表查询
+	 * @Description 
+	 * @author wwb
+	 * @Date 2021-06-30 17:23:27
+	 * @param ids
+	 * @return java.util.List<com.chaoxing.activity.model.WebTemplate>
+	*/
+	public List<WebTemplate> listByIds(List<Integer> ids) {
+		return webTemplateMapper.selectList(new QueryWrapper<WebTemplate>()
+				.lambda()
+				.in(WebTemplate::getId, ids)
+				.eq(WebTemplate::getDeleted, false)
+				.orderByAsc(WebTemplate::getSequence)
+		);
 	}
 
 	/**活动模板一定存在
@@ -121,30 +139,43 @@ public class WebTemplateService {
 	}
 
 	/**查询可用的模板
-	 * @Description 
+	 * @Description 查询可以使用的模版列表，规则：
+	 * 1、机构或区域独有的排列在前
+	 * 2、活动标识的在后
+	 * 3、1和2的结果要去重
 	 * @author wwb
 	 * @Date 2020-12-30 17:47:00
 	 * @param fid
+	 * @param activityFlag
 	 * @return java.util.List<com.chaoxing.activity.model.WebTemplate>
 	*/
-	public List<WebTemplate> listAvailable(Integer fid) {
+	public List<WebTemplate> listAvailable(Integer fid, String activityFlag) {
 		List<WebTemplate> webTemplates = Lists.newArrayList();
 		// 查询机构所属的code
 		List<String> codes = wfwRegionalArchitectureApiService.listCodeByFid(fid);
+		// 先查询机构和区域特有的
 		List<WebTemplate> orgAffiliations = webTemplateMapper.listAffiliation(codes, fid);
 		if (CollectionUtils.isNotEmpty(orgAffiliations)) {
 			webTemplates.addAll(orgAffiliations);
 		}
 		codes.retainAll(WebTemplateCustomConfigConstant.CUSTOM_AREA_CODES);
 		if (CollectionUtils.isEmpty(codes)) {
-			// 查询系统的
-			List<WebTemplate> systems = webTemplateMapper.selectList(new QueryWrapper<WebTemplate>()
+			Activity.ActivityFlagEnum activityFlagEnum = Activity.ActivityFlagEnum.fromValue(activityFlag);
+			if (activityFlagEnum == null) {
+				activityFlag = Activity.ActivityFlagEnum.NORMAL.getValue();
+			}
+			// 查询活动标识关联的模版列表
+			List<WebTemplateActivityFlag> webTemplateActivityFlags = webTemplateActivityFlagMapper.selectList(new QueryWrapper<WebTemplateActivityFlag>()
 					.lambda()
-					.eq(WebTemplate::getSystem, Boolean.TRUE)
-					.orderByAsc(WebTemplate::getSequence)
+					.eq(WebTemplateActivityFlag::getActivityFlag, activityFlag)
+					.select(WebTemplateActivityFlag::getWebTemplateId)
 			);
-			if (CollectionUtils.isNotEmpty(systems)) {
-				webTemplates.addAll(systems);
+			if (CollectionUtils.isNotEmpty(webTemplateActivityFlags)) {
+				List<Integer> webtemplateIds = webTemplateActivityFlags.stream().map(WebTemplateActivityFlag::getWebTemplateId).collect(Collectors.toList());
+				List<WebTemplate> activityFlagWebTemplates = listByIds(webtemplateIds);
+				if (CollectionUtils.isNotEmpty(activityFlagWebTemplates)) {
+					webTemplates.addAll(activityFlagWebTemplates);
+				}
 			}
 		}
 		return webTemplates;

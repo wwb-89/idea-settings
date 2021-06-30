@@ -208,7 +208,7 @@ public class SignUp {
                 .endAllowCancel(true)
                 .enableLimitParticipateScope(false)
                 .limitParticipateScope(false)
-                .activityFlag(Activity.ActivityFlag.NORMAL.getValue())
+                .activityFlag(Activity.ActivityFlagEnum.NORMAL.getValue())
                 .deleted(false)
                 .build();
     }
