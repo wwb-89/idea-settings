@@ -130,7 +130,7 @@
                                 :min-width="item.minWidth"
                         >
                             <template slot-scope="scope">
-                                <el-button type="text" @click="previewPage(scope.row)">查看</el-button>
+                                <el-button type="text" @click="toPoster(scope.row.id)">查看</el-button>
                             </template>
                         </el-table-column>
                         <el-table-column
@@ -583,6 +583,10 @@
                     if (!activityApp.isEmpty(previewUrl)) {
                         window.open(previewUrl);
                     }
+                },
+                toPoster: function (activityId) {
+                    var url = "http://hd.chaoxing.com/activity/" + activityId + "/poster";
+                    window.open(url);
                 },
                 // 管理页面
                 toManage: function (activityId) {
