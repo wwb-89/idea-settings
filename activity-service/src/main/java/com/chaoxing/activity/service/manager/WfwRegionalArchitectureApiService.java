@@ -183,7 +183,7 @@ public class WfwRegionalArchitectureApiService {
 	 * @return java.util.List<java.lang.String>
 	 */
 	public List<String> listCodeByFid(Integer fid) {
-		List<String> codes = new ArrayList<>();
+		List<String> codes = Lists.newArrayList();
 		String url = String.format(GET_REGIONAL_ARCHITECTURE_BY_FID_URL, fid);
 		String result = restTemplate.getForObject(url, String.class);
 		JSONObject jsonObject = JSON.parseObject(result);

@@ -16,6 +16,7 @@ import com.chaoxing.activity.service.activity.ActivityValidationService;
 import com.chaoxing.activity.service.activity.manager.ActivityCreatePermissionService;
 import com.chaoxing.activity.service.activity.scope.ActivityScopeQueryService;
 import com.chaoxing.activity.service.manager.module.SignApiService;
+import com.chaoxing.activity.service.org.OrgService;
 import com.chaoxing.activity.util.UserAgentUtils;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -52,6 +53,8 @@ public class ActivityManageController {
 	private ActivityScopeQueryService activityScopeQueryService;
 	@Resource
 	private ActivityValidationService activityValidationService;
+	@Resource
+	private OrgService orgService;
 
 	/**活动管理主页
 	 * @Description 
@@ -131,6 +134,9 @@ public class ActivityManageController {
 		List<ActivitySignModule> activitySignModules = activityQueryService.listByActivityId(activityId);
 		model.addAttribute("activitySignModules", activitySignModules);
 		model.addAttribute("strict", strict);
+		// 是不是定制机构
+		boolean customOrg = orgService.isCustomOrg(activity.getCreateFid());
+		model.addAttribute("customOrg", customOrg);
 		return "pc/activity-add-edit";
 	}
 
