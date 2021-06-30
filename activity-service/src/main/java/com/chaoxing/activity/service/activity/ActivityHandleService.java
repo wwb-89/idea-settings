@@ -253,7 +253,7 @@ public class ActivityHandleService {
 		if (CollectionUtils.isNotEmpty(signUps)) {
 			String activityFlag = activity.getActivityFlag();
 			if (StringUtils.isEmpty(activityFlag)) {
-				activityFlag = Activity.ActivityFlag.NORMAL.getValue();
+				activityFlag = Activity.ActivityFlagEnum.NORMAL.getValue();
 			}
 			for (SignUp signUp : signUps) {
 				signUp.setActivityFlag(activityFlag);
@@ -414,7 +414,6 @@ public class ActivityHandleService {
 			existActivity.setSignId(activity.getSignId());
 			existActivity.setWebTemplateId(activity.getWebTemplateId());
 			existActivity.setTags(activity.getTags());
-			existActivity.setOpenIntegral(activity.getOpenIntegral());
 			existActivity.setIntegralValue(activity.getIntegralValue());
 			existActivity.setOpenRating(activity.getOpenRating());
 			existActivity.setRatingNeedAudit(activity.getRatingNeedAudit());
@@ -431,6 +430,7 @@ public class ActivityHandleService {
 					.eq(Activity::getId, activity.getId())
 					.set(Activity::getTimingReleaseTime, existActivity.getTimingReleaseTime())
 					.set(Activity::getTimeLengthUpperLimit, existActivity.getTimeLengthUpperLimit())
+					.set(Activity::getIntegralValue, existActivity.getIntegralValue())
 			);
 			ActivityDetail activityDetail = activityQueryService.getDetailByActivityId(activityId);
 			if (activityDetail == null) {

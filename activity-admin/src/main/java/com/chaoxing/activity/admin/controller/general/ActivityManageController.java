@@ -94,7 +94,7 @@ public class ActivityManageController {
 	 * @return java.lang.String
 	 */
 	@GetMapping("{activityId}/edit")
-	public String edit(Model model, @PathVariable Integer activityId, HttpServletRequest request, String code, Integer step, @RequestParam(defaultValue = "0") Integer strict) {
+	public String edit(Model model, @PathVariable Integer activityId, HttpServletRequest request, Integer step, @RequestParam(defaultValue = "0") Integer strict) {
 		LoginUserDTO loginUser = LoginUtils.getLoginUser(request);
 		Activity activity = activityValidationService.manageAble(activityId, loginUser.getUid());
 		activityQueryService.fillIntroduction(activity);
@@ -114,7 +114,7 @@ public class ActivityManageController {
 		}
 		model.addAttribute("sign", sign);
 		// 模板列表
-		List<WebTemplate> webTemplates = webTemplateService.listAvailable(loginUser.getFid());
+		List<WebTemplate> webTemplates = webTemplateService.listAvailable(loginUser.getFid(), activity.getActivityFlag());
 		model.addAttribute("webTemplates", webTemplates);
 		model.addAttribute("step", step);
 		// 活动发布范围

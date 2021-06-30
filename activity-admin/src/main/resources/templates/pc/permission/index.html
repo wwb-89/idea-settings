@@ -1,6 +1,5 @@
 <!DOCTYPE html>
 <html lang="en" xmlns:th="http://www.thymeleaf.org/">
-
 <head>
     <title>权限管理</title>
     <meta charset="UTF-8">
@@ -26,7 +25,6 @@
                             <el-checkbox v-model="checkAllStatus" class="check-item-checkbox fl" @change="checkAllChange" />
                         </th>
                         <th>角色名称</th>
-<!--                        <th>成员数</th>-->
                         <th>操作</th>
                     </tr>
                 </thead>
@@ -36,7 +34,6 @@
                             <el-checkbox v-model="role.checked" class="check-item-checkbox fl" @change="roleCheckChange" />
                         </th>
                         <th>{{role.roleName}}</th>
-<!--                        <th>{{role.memberNum}}</th>-->
                         <th>
                             <span @click="singleConfig(role)">配置权限</span>
                         </th>
@@ -47,9 +44,9 @@
                 </tbody>
             </table>
         </div>
-
         <!-- 配置权限弹窗 -->
         <div class="dialog-mask" v-show="settingDialog">
+            <div class="masking" @click="settingDialog = false"></div>
             <div class="dailog setting-dailog">
                 <div class="header">
                     <span>配置权限</span>
@@ -58,7 +55,7 @@
                 <div class="body" v-loading="loading">
                     <form action="">
                         <div class="form-item">
-                            <label for="" class="label">活动类型</label>
+                            <label class="label">活动类型</label>
                             <div class="input-box">
                                 <el-checkbox label="全部" v-model="config.allActivityClassify" @change="classifyAllChange"></el-checkbox>
                                 <el-checkbox-group v-model="config.activityClassifyScope">
@@ -98,6 +95,7 @@
         </div>
         <!-- 选择范围弹窗 -->
         <div class="dialog-mask" v-show="releaseDialog">
+            <div class="masking" @click="releaseDialog = false"></div>
             <div class="dailog release-dialog">
                 <div class="header">
                     <span>请选择</span>
@@ -107,7 +105,6 @@
                     <div class="tree">
                         <div class="tree-head">
                             <p class="fl">选择发布的范围</p>
-<!--                            <p class="already fr">已选<span style="margin-left: 5px;">0</span></p>-->
                         </div>
                         <div class="tree-box">
                             <div id="organizationTree" class="ztree"></div>
@@ -122,9 +119,7 @@
                 </div>
             </div>
         </div>
-
         <vue-confirm ref="updateWindow" message="组织机构类型不一致，配置提交需清空其他不一致配置，是否确认修改？" sure="确定" cancel="取消" @callback="submitPermissionConfig"></vue-confirm>
-
     </div>
 
     <div th:replace="pc/include/common_js :: common_js(~{::script})">

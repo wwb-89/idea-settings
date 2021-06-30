@@ -35,5 +35,7 @@ public class MhActivityCalendarQueryDTO {
 	private Integer strict;
 	/** 活动标示 */
 	private String activityFlag;
+	/** 分类id */
+	private Integer classifyId;
 
 }

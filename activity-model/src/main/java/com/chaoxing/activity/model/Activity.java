@@ -123,9 +123,6 @@ public class Activity {
     /** 评价是否需要审核; column: is_rating_need_audit */
     @TableField(value = "is_rating_need_audit")
     private Boolean ratingNeedAudit;
-    /** 是否开启积分设置; column: is_open_integral */
-    @TableField(value = "is_open_integral")
-    private Boolean openIntegral;
     /** 积分值; column: integral_value*/
     private BigDecimal integralValue;
     /** 活动标示，通用、第二课堂、双选会等; column: activity_flag*/
@@ -306,7 +303,7 @@ public class Activity {
      * @version ver 1.0
      */
     @Getter
-    public enum ActivityFlag {
+    public enum ActivityFlagEnum {
 
         /** 通用 */
         NORMAL("通用", "normal"),
@@ -322,14 +319,14 @@ public class Activity {
         private final String name;
         private final String value;
 
-        ActivityFlag(String name, String value) {
+        ActivityFlagEnum(String name, String value) {
             this.name = name;
             this.value = value;
         }
 
-        public static ActivityFlag fromValue(String value) {
-            ActivityFlag[] values = ActivityFlag.values();
-            for (ActivityFlag activityFlag : values) {
+        public static ActivityFlagEnum fromValue(String value) {
+            ActivityFlagEnum[] values = ActivityFlagEnum.values();
+            for (ActivityFlagEnum activityFlag : values) {
                 if (Objects.equals(activityFlag.getValue(), value)) {
                     return activityFlag;
                 }

@@ -49,3 +49,11 @@ CREATE TABLE `t_market_table_field`  (
     `update_uid` int(11) NULL COMMENT '更新人uid',
     INDEX `idx_primary`(`fid`, `activity_flag`, `table_field_id`)
 ) COMMENT = '活动市场表格字段关联表';
+CREATE TABLE `t_web_template_activity_flag`  (
+    `id` int(11) NOT NULL AUTO_INCREMENT COMMENT '主键',
+    `activity_flag` varchar(50) NULL COMMENT '活动标识',
+    `web_template_id` int(11) NULL COMMENT '模版id',
+    `create_time` datetime(0) NULL DEFAULT current_timestamp() COMMENT '创建时间',
+    `update_time` datetime(0) NULL DEFAULT current_timestamp() ON UPDATE CURRENT_TIMESTAMP(0) COMMENT '更新时间',
+    PRIMARY KEY (`id`)
+) COMMENT = '活动标识与门户模版之间的关系';

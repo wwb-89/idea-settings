@@ -26,8 +26,8 @@ public class ActivityFlagValidateService {
 	 * @return boolean
 	*/
 	public boolean isDualSelect(Activity activity) {
-		Activity.ActivityFlag activityFlag = Activity.ActivityFlag.fromValue(activity.getActivityFlag());
-		return Objects.equals(activityFlag, Activity.ActivityFlag.DUAL_SELECT);
+		Activity.ActivityFlagEnum activityFlag = Activity.ActivityFlagEnum.fromValue(activity.getActivityFlag());
+		return Objects.equals(activityFlag, Activity.ActivityFlagEnum.DUAL_SELECT);
 	}
 
 }
