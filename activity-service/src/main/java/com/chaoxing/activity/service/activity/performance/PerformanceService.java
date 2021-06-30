@@ -8,8 +8,10 @@ import com.chaoxing.activity.util.enums.UserActionEnum;
 import com.chaoxing.activity.util.enums.UserActionTypeEnum;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
+import java.time.LocalDateTime;
 import java.util.List;
 
 /**活动表现
@@ -36,9 +38,12 @@ public class PerformanceService {
 	* @param
 	* @return void
 	*/
+	@Transactional(rollbackFor = Exception.class)
 	public void addPerformance(Performance performance) {
+		LocalDateTime now = LocalDateTime.now();
+		performance.setCreateTime(now);
+		performance.setUpdateTime(now);
 		performanceMapper.insert(performance);
-
 		userActionQueueService.push(
 				new UserActionQueueService.QueueParamDTO(performance.getUid(),
 						performance.getActivityId(),

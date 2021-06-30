@@ -33,7 +33,7 @@
             </div>
             <div class="white-block record-block">
                 <p class="item-name">全部记录</p>
-                <div class="btn-border add-performance" @click="addClick">添加活动表现</div>
+                <!--<div class="btn-border add-performance" @click="addClick">添加活动表现</div>-->
                 <div class="record-list" style="display: block;">
                     <div class="record" v-for="action in userGrade.userActionRecords">
                         <div class="left">
@@ -106,13 +106,13 @@
                             <div class="score-item">
                                 <p class="title">奖励分值</p>
                                 <ul>
-                                    <li v-for="value in rewardScores" :class="{active: score === value }" @click="changeScore(value)">{{ value }}</li>
+                                    <li v-for="value in rewardScores" :class="{active: score == value }" @click="changeScore(value)">{{ value }}</li>
                                 </ul>
                             </div>
                             <div class="score-item">
                                 <p class="title">扣除分值</p>
                                 <ul>
-                                    <li v-for="value in deductionScores" :class="{active: score === value }" @click="changeScore(value)">{{ value }}</li>
+                                    <li v-for="value in deductionScores" :class="{active: score == (0 - value) }" @click="changeDeductionScore(value)">{{ value }}</li>
                                 </ul>
                             </div>
                         </div>
@@ -145,12 +145,12 @@
                     uid: [[${uid}]],
                     activityId: [[${activityId}]],
                     userGrade: {},
-                    ifCancelPop:false,
+                    ifCancelPop: false,
                     rewardScores: [1, 2, 3, 4, 5],
-                    deductionScores: [-1, -2, -3, -4, -5],
+                    deductionScores: [1, 2, 3, 4, 5],
                     score: 0,
                     info: '',
-                    addPerformancePop:false,
+                    addPerformancePop: false
                 },
                 mounted: function(){
                     var $this = this;
@@ -220,6 +220,10 @@
                         var $this = this;
                         $this.score = value
                     },
+                    changeDeductionScore: function (value) {
+                        var $this = this;
+                        $this.score = 0 - value;
+                    },
                     submitPerformance: function () {
                         var $this = this;
                         var url = ctx + "/api/activity/performance/add";
@@ -252,33 +256,37 @@
                     },
                     showMoreClick:function(){
                         $('.show-more').each(function (i, n) {
-                            $(n).on('click',function(){
-                                if($(this).text() == '展开'){
-                                    $(this).text('收起')
+                            $(n).on('click', function () {
+                                if ($(this).text() == '展开') {
+                                    $(this).text('收起');
                                     $(this).siblings('.desc').removeClass('overHidden5')
-                                }else{
-                                    $(this).text('展开')
-                                    $(this).siblings('.desc').addClass('overHidden5')
+                                } else {
+                                    $(this).text('展开');
+                                    $(this).siblings('.desc').addClass('overHidden5');
                                 }
-                            })
-                        })
+                            });
+                        });
                     },
                     addClick:function(){
-                        this.addPerformancePop = true
-                        this.$nextTick(function(){
-                            this.scoreShowFun()
-                        })
+                        this.addPerformancePop = true;
+                        this.$nextTick(function () {
+                            this.scoreShowFun();
+                        });
                     },
                     scoreShowFun:function(){
-                        var that = this
-                        $('#scoreInput').on('focus',function(){
-                            $('#arrow-down').addClass('rotate')
-                            $('#score-box').height(166)
-                        })
-                        $('#scoreInput').on('blur',function(){
-                            $('#arrow-down').removeClass('rotate')
-                            $('#score-box').height(0)
-                        })
+                        $('#scoreInput').on('focus', function () {
+                            $('#arrow-down').addClass('rotate');
+                            $('#score-box').height(166);
+                        });
+                        $('#scoreInput').on('focus', function () {
+                            $('#arrow-down').addClass('rotate');
+                            $('#score-box').height(166);
+                        }).on('blur', function () {
+                            $('#arrow-down').removeClass('rotate');
+                            setTimeout(function () {
+                                $('#score-box').height(0);
+                            }, 300);
+                        });
                     }
                 }
             })
