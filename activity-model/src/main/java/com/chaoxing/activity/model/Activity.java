@@ -168,6 +168,7 @@ public class Activity {
     @TableField(exist = false)
     private List<Integer> managerUids;
     /** 起止时间 */
+    @TableField(exist = false)
     private String activityStartEndTime;
 
     @Getter
