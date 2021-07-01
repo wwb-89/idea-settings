@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>阅读活动统计-活动概况/用户数据</title>
+    <link rel="stylesheet" href="../assets/lib/layui/css/layui.css">
+    <link rel="stylesheet" href="../assets/lib/element-ui/lib/theme-chalk/index.css">
+    <link rel="stylesheet" href="../assets/icomoon/style.css">
+    <link rel="stylesheet" href="../assets/css/common.css">
+    <link rel="stylesheet" href="../assets/css/set.css">
+
+</head>
+
+<body>
+<div class="page-container" id="vue">
+    <div class="activity-tab flex">
+        <ul class="flex">
+            <li v-for="(item,index) in tabs" :class="{active:tabActiveNum==index}" v-on:click="tabChange(index)">
+                {{item.name}}
+            </li>
+        </ul>
+    </div>
+    <div class="tab" v-show="tabActiveNum==0">
+    </div>
+    <div class="tab" v-show="tabActiveNum==1">
+        <iframe src="./报名设置.html"></iframe>
+    </div>
+    <div class="tab" v-show="tabActiveNum==2">
+        <iframe src="./基本信息.html" width="1000px" height="800px" frameborder="no" border="0" marginwidth="0" marginheight="0" ></iframe>
+    </div>
+    <div class="tab" v-show="tabActiveNum==3">
+        <iframe src="./模块设置.html" width="100%" height="100%" frameborder="no" border="0" marginwidth="0" marginheight="0" ></iframe>
+    </div>
+</div>
+</body>
+<!--引入js-->
+<script type="text/javascript" src="../assets/lib/jquery.min.js"></script>
+<script src="../assets/lib/vue.js"></script>
+<script src="../assets/lib/layui/layui.js"></script>
+<script src="../assets/lib/element-ui/lib/index.js"></script>
+<script src="../assets/lib/jquery.nicescroll.min.js"></script>
+<script src="../assets/js/main.js"></script>
+
+<script>
+    var vm = new Vue({
+        el: '#vue',
+        data: function () {
+            return {
+                tabActiveNum:2,
+                tabs:[
+                    {name:'管理员设置'},
+                    {name:'报名设置'},
+                    {name:'基本信息'},
+                    {name:'模块设置'},
+                ]
+            }
+        },
+        created: function () {
+
+
+        },
+        mounted: function () {
+        },
+        methods: {
+            tabChange:function (index){
+                this.tabActiveNum = index;
+            },
+        }
+    });
+</script>
+
+</html>
