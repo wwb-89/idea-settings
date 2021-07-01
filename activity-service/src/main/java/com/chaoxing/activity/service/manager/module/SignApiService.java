@@ -126,6 +126,9 @@ public class SignApiService {
 	/** 通知报名签到用户成绩合格变更 */
 	private static final String NOTICE_SIGN_USER_RESULT_QUALIFIED_CHANGE_URL = SIGN_API_DOMAIN + "/sign/%d/user/%d/result/qualified/changed";
 
+	/** 根据字段名称列表创建表单接口 */
+	private static final String CREATE_FORM_BY_FIELD_NAMES_URL = SIGN_API_DOMAIN + "/form/create";
+
 	@Resource
 	private RestTemplate restTemplate;
 
@@ -811,4 +814,28 @@ public class SignApiService {
 			throw new BusinessException(message);
 		});
 	}
+
+	/**根据字段名称列表创建表单接口
+	 * @Description 
+	 * @author wwb
+	 * @Date 2021-07-01 17:33:37
+	 * @param fieldNames
+	 * @param uid
+	 * @return java.lang.Integer 表单id
+	*/
+	public Integer createFormBySystemFieldNames(List<String> fieldNames, Integer uid) {
+		String url = CREATE_FORM_BY_FIELD_NAMES_URL;
+		HttpHeaders httpHeaders = new HttpHeaders();
+		httpHeaders.setContentType(MediaType.APPLICATION_JSON);
+		JSONObject params = new JSONObject();
+		params.put("uid", uid);
+		params.put("fields", fieldNames);
+		HttpEntity<JSONObject> httpEntity = new HttpEntity(params, httpHeaders);
+		String result = restTemplate.postForObject(url, httpEntity, String.class);
+		JSONObject jsonObject = JSON.parseObject(result);
+		return resultHandle(jsonObject, () -> jsonObject.getInteger("data"), (message) -> {
+			throw new BusinessException(message);
+		});
+	}
+
 }

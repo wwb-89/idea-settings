@@ -18,7 +18,7 @@ import com.chaoxing.activity.service.WebTemplateService;
 import com.chaoxing.activity.service.activity.ActivityHandleService;
 import com.chaoxing.activity.service.activity.ActivityQueryService;
 import com.chaoxing.activity.service.activity.classify.ActivityClassifyHandleService;
-import com.chaoxing.activity.service.queue.activity.FormActivityCreateQueueService;
+import com.chaoxing.activity.service.manager.module.SignApiService;
 import com.chaoxing.activity.service.util.FormUtils;
 import com.chaoxing.activity.util.constant.CommonConstant;
 import com.chaoxing.activity.util.exception.BusinessException;
@@ -26,6 +26,7 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.codec.digest.DigestUtils;
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -73,13 +74,13 @@ public class FormApprovalApiService {
     @Resource
     private ActivityQueryService activityQueryService;
     @Resource
-    private FormActivityCreateQueueService formActivityCreateQueueService;
-    @Resource
     private ActivityHandleService activityHandleService;
     @Resource
     private WfwRegionalArchitectureApiService wfwRegionalArchitectureApiService;
     @Resource
     private WebTemplateService webTemplateService;
+    @Resource
+    private SignApiService signApiService;
 
     @Resource(name = "restTemplateProxy")
     private RestTemplate restTemplate;
@@ -196,7 +197,7 @@ public class FormApprovalApiService {
             return;
         }
         // 根据表单数据创建报名签到
-        SignAddEditDTO signAddEditDTO = buildSignFromActivityApproval(formData);
+        SignAddEditDTO signAddEditDTO = buildSignFromActivityApproval(formData, activity.getCreateUid());
         // 设置活动标识
         Activity.ActivityFlagEnum activityFlag = Activity.ActivityFlagEnum.fromValue(flag);
         if (activityFlag == null) {
@@ -322,9 +323,10 @@ public class FormApprovalApiService {
      * @author wwb
      * @Date 2021-06-11 17:49:43
      * @param formData
+     * @param uid
      * @return com.chaoxing.activity.dto.module.SignAddEditDTO
     */
-    private SignAddEditDTO buildSignFromActivityApproval(FormDTO formData) {
+    private SignAddEditDTO buildSignFromActivityApproval(FormDTO formData, Integer uid) {
         SignAddEditDTO signAddEdit = SignAddEditDTO.buildDefault();
         // 报名
         List<SignUp> signUps = signAddEdit.getSignUps();
@@ -346,6 +348,15 @@ public class FormApprovalApiService {
                 signUp.setLimitPerson(true);
                 signUp.setPersonLimit(Integer.parseInt(signUpPersonLimit));
             }
+            // 报名填报信息 sign_up_fill_info
+            List<String> fieldNames = FormUtils.listValue(formData, "sign_up_fill_info");
+            if (CollectionUtils.isNotEmpty(fieldNames)) {
+                // 创建表单
+                Integer formId = signApiService.createFormBySystemFieldNames(fieldNames, uid);
+                signUp.setFillInfo(true);
+                signUp.setFillInfoFormId(formId);
+            }
+
         } else {
             signUp.setDeleted(true);
         }

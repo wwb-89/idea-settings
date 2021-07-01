@@ -71,6 +71,23 @@ public class FormUtils {
 		return value;
 	}
 
+	public static List<String> listValue(FormDTO formData, String fieldAlias) {
+		List<String> values = Lists.newArrayList();
+		List<JSONObject> jsonObjects = listJsonValue(formData, fieldAlias);
+		if (CollectionUtils.isNotEmpty(jsonObjects)) {
+			for (JSONObject jsonObject : jsonObjects) {
+				String value = jsonObject.getString(VAL_KEY);
+				if (StringUtils.isNotBlank(value)) {
+					value = value.trim();
+					if (!values.contains(value)) {
+						values.add(value);
+					}
+				}
+			}
+		}
+		return values;
+	}
+
 	/**获取地址信息
 	 * @Description 
 	 * @author wwb
@@ -148,6 +165,19 @@ public class FormUtils {
 		return null;
 	}
 
+	private static List<JSONObject> listJsonValue(FormDTO formData, String fieldAlias) {
+		List<FormDataDTO> items = formData.getFormData();
+		if (CollectionUtils.isNotEmpty(items)) {
+			for (FormDataDTO item : items) {
+				String alias = item.getAlias();
+				if (Objects.equals(fieldAlias, alias)) {
+					return item.getValues();
+				}
+			}
+		}
+		return null;
+	}
+
 	/**从表单中获取日期
 	 * @Description 
 	 * @author wwb
@@ -217,8 +247,8 @@ public class FormUtils {
 		 * @return com.chaoxing.activity.dto.TimeScopeDTO
 	*/
 	public static TimeScopeDTO getTimeScope(FormDTO formData, String fieldAlias) {
-		LocalDateTime startTime = null;
-		LocalDateTime endTime = null;
+		LocalDateTime startTime;
+		LocalDateTime endTime;
 		List<FormDataDTO> formDatas = formData.getFormData();
 		List<String> activityTimes = Lists.newArrayList();
 		if (CollectionUtils.isNotEmpty(formDatas)) {

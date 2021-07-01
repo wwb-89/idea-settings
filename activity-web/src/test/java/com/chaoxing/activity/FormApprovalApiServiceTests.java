@@ -1,5 +1,6 @@
 package com.chaoxing.activity;
 
+import com.chaoxing.activity.model.Activity;
 import com.chaoxing.activity.service.manager.FormApprovalApiService;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -22,17 +23,26 @@ public class FormApprovalApiServiceTests {
 
     @Test
     public void getFormData() {
-        Integer fid = 147004;
-        Integer formId = 24167;
-        Integer formUserId = 1936586;
+        Integer fid = 139378;
+        Integer formId = 17251;
+        Integer formUserId = 1959060;
         formApprovalApiService.getFormData(fid, formId, formUserId);
     }
 
     @Test
     public void listFormData() {
-        Integer fid = 147004;
-        Integer formId = 24167;
+        Integer fid = 139378;
+        Integer formId = 17251;
         formApprovalApiService.listFormData(fid, formId);
+    }
+
+    @Test
+    public void createActivity() {
+        Integer fid = 139378;
+        Integer formId = 17251;
+        Integer formUserId = 1959060;
+        Integer templateId = null;
+        formApprovalApiService.createActivity(fid, formId, formUserId, Activity.ActivityFlagEnum.NORMAL.getValue(), templateId);
     }
 
 }
