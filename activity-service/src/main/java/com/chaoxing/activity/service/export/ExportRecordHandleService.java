@@ -173,20 +173,22 @@ public class ExportRecordHandleService {
         // 将导出数据流写到文件中
         FileOutputStream fileOutputStream = new FileOutputStream(fileName);
         fileOutputStream.write(os.toByteArray());
-        String errorMessage = "";
-        for (int i = 0; i < CommonConstant.MAX_ERROR_TIMES; i++) {
+        String message = "";
+        int repeatTime = 0;
+        while (StringUtils.isBlank(cloudId) && repeatTime < CommonConstant.MAX_ERROR_TIMES) {
             // 5次最大上传失败重试次数
             try {
                 cloudId = uploadCloudFile(fileName, ip);
             } catch (Exception e) {
-                errorMessage = e.getMessage();
+                message = e.getMessage();
                 e.printStackTrace();
             }
+            repeatTime++;
         }
         // 上传成功或失败后均删除文件
         FileUtils.deleteFile(fileName);
         if (StringUtils.isBlank(cloudId)) {
-            throw new BusinessException(errorMessage);
+            throw new BusinessException(message);
         }
         return cloudId;
     }
