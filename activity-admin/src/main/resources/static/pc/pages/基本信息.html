@@ -9,13 +9,17 @@
     <link rel="stylesheet" href="../assets/icomoon/style.css">
     <link rel="stylesheet" href="../assets/css/common.css">
     <link rel="stylesheet" href="../assets/css/set.css">
-    <script type="text/javascript" src="../assets/lib/jquery.min.js"></script>
+    <script src="../assets/lib/jquery.min.js"></script>
     <!-- 笔记编辑器 -->
     <script src="https://noteyd.chaoxing.com/res/plugin/ueditor4thirdparty/rich.text.util.js"></script>
+    <script type="text/javascript">
+        RichTextUitl.loadEditorProfile();
+    </script>
+
 </head>
 
 <body>
-<div id="vue">
+<div id="vue" v-cloak>
     <el-form class="basic-show" ref="form"  label-width="74px">
         <el-form-item label="封面">
             <div class="img-box js-crop-img">
@@ -112,90 +116,13 @@
                 </el-input>
             </div>
         </div>
-        <div class="form-item">
+        <div class="form-item align-start">
             <label class="label">活动说明</label>
             <div class="input-box">
                 <!-- 笔记编辑器 -->
-                <div class="wrap">
-                    <script type="text/javascript">
-                        RichTextUitl.loadEditorProfile();
-                    </script>
+                <div class="wrap ueditor">
                     <script type="text/plain" id="container" name="content"></script>
                 </div>
-
-
-                <script>
-                    $(document).ready(function () {
-                        RichTextUitl.initUEditor();
-                    });
-                </script>
-                <!--音视频播放-start-->
-                <script type="text/javascript" src="https://noteyd.chaoxing.com/res/js/common/easydialog.min.js"></script>
-                <script type="text/javascript" src="https://noteyd.chaoxing.com/res/plugin/ckplayer/ckplayer.js"></script>
-                <link rel="stylesheet" type="text/css" href="https://noteyd.chaoxing.com/res/plugin/smusic/css/smusic.css" />
-                <script type="text/javascript" src="https://noteyd.chaoxing.com/res/plugin/smusic/js/smusic.js"></script>
-                <link rel="stylesheet" type="text/css" href="https://noteyd.chaoxing.com/res/pc/cssnew/media.css" />
-                <script type="text/javascript" src="https://noteyd.chaoxing.com/res/pc/js/media.js"></script>
-                <!-- 视频播放容器 -->
-                <div id="videoDiv">
-                    <span class="videoCloseBtn"></span>
-                    <div id="video"></div>
-                </div>
-                <!-- 音频播放容器 -->
-                <div id="audioDiv" style="z-index: 9000">
-                    <div class="headBar"><span class="audioCloseBtn"></span></div>
-                    <div class="grid-music-container f-usn">
-                        <div class="m-music-play-wrap">
-                            <div class="u-cover"></div>
-                            <div class="m-now-info">
-                                <h1 class="u-music-title"><strong></strong></h1>
-
-                                <div class="m-now-controls">
-                                    <div class="startTime">00:00&nbsp;&nbsp;</div>
-                                    <div class="u-control u-process ">
-                                        <div class="old-bar"></div>
-                                        <span class="buffer-process"></span>
-                                        <span class="current-bar"></span>
-                                        <span class="current-process"></span>
-                                    </div>
-                                    <div class="u-control u-time">00:00</div>
-
-                                    <div class="u-control u-volume new-volume">
-                                        <div class="volume">
-                                <span class="volume-event">
-                                    <div class="volume-process" data-volume="0.50"></div>
-                                    <span class="volume-current"></span>
-                                    <span class="volume-bar"></span>
-                                </span>
-                                            <a class="volume-control"></a>
-                                        </div>
-                                    </div>
-                                    <div class="m-play-controls">
-                                        <div class="musicOrder">
-                                            <a class="u-play-btn mode mode-list  " title="列表循环"></a>
-                                            <!-- <a class="u-play-btn mode mode-random  " title="随机播放"></a>
-                                        <a class="u-play-btn mode mode-single " title="单曲循环"></a>  -->
-                                        </div>
-                                        <a class="u-play-btn prev" title="上一曲"></a>
-                                        <a class="u-play-btn ctrl-play play" title="暂停"></a>
-                                        <a class="u-play-btn next" title="下一曲"></a>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <div class="f-cb">&nbsp;</div>
-                            <div class="m-music-list-wrap"></div>
-                            <div class="m-music-lyric-wrap">
-                                <div class="inner">
-                                    <ul class="js-music-lyric-content">
-                                        <li class="eof">暂无歌词...</li>
-                                    </ul>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <!--音视频播放-end-->
             </div>
         </div>
         <div class="btn-box">
@@ -242,20 +169,87 @@
         <el-button class="btn-main"  @click="DialogVisible = false">离开</el-button>
       </span>
     </el-dialog>
+
+    <!--音视频播放-start-->
+    <script type="text/javascript" src="https://noteyd.chaoxing.com/res/js/common/easydialog.min.js"></script>
+    <script type="text/javascript" src="https://noteyd.chaoxing.com/res/plugin/ckplayer/ckplayer.js"></script>
+    <link rel="stylesheet" type="text/css" href="https://noteyd.chaoxing.com/res/plugin/smusic/css/smusic.css" />
+    <script type="text/javascript" src="https://noteyd.chaoxing.com/res/plugin/smusic/js/smusic.js"></script>
+    <link rel="stylesheet" type="text/css" href="https://noteyd.chaoxing.com/res/pc/cssnew/media.css" />
+    <script type="text/javascript" src="https://noteyd.chaoxing.com/res/pc/js/media.js"></script>
+    <!-- 视频播放容器 -->
+    <div id="videoDiv">
+        <span class="videoCloseBtn"></span>
+        <div id="video"></div>
     </div>
+    <!-- 音频播放容器 -->
+    <div id="audioDiv" style="z-index: 9000">
+        <div class="headBar"><span class="audioCloseBtn"></span></div>
+        <div class="grid-music-container f-usn">
+            <div class="m-music-play-wrap">
+                <div class="u-cover"></div>
+                <div class="m-now-info">
+                    <h1 class="u-music-title"><strong></strong></h1>
+
+                    <div class="m-now-controls">
+                        <div class="startTime">00:00&nbsp;&nbsp;</div>
+                        <div class="u-control u-process ">
+                            <div class="old-bar"></div>
+                            <span class="buffer-process"></span>
+                            <span class="current-bar"></span>
+                            <span class="current-process"></span>
+                        </div>
+                        <div class="u-control u-time">00:00</div>
+
+                        <div class="u-control u-volume new-volume">
+                            <div class="volume">
+                            <span class="volume-event">
+                                <div class="volume-process" data-volume="0.50"></div>
+                                <span class="volume-current"></span>
+                                <span class="volume-bar"></span>
+                            </span>
+                                <a class="volume-control"></a>
+                            </div>
+                        </div>
+                        <div class="m-play-controls">
+                            <div class="musicOrder">
+                                <a class="u-play-btn mode mode-list  " title="列表循环"></a>
+                                <!-- <a class="u-play-btn mode mode-random  " title="随机播放"></a>
+								<a class="u-play-btn mode mode-single " title="单曲循环"></a>  -->
+                            </div>
+                            <a class="u-play-btn prev" title="上一曲"></a>
+                            <a class="u-play-btn ctrl-play play" title="暂停"></a>
+                            <a class="u-play-btn next" title="下一曲"></a>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="f-cb">&nbsp;</div>
+                <div class="m-music-list-wrap"></div>
+                <div class="m-music-lyric-wrap">
+                    <div class="inner">
+                        <ul class="js-music-lyric-content">
+                            <li class="eof">暂无歌词...</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!--音视频播放-end-->
 </div>
 </body>
 <!--引入js-->
 <script type="text/javascript" src="https://api.map.baidu.com/api?v=3.0&ak=aG5nWGO5m5tkVhBHGuVppoIRfKbyp5H3">
 </script>
-<script src="../assets/lib/vue.js"></script>
+<script src="../../assets/js/vue.min.js"></script>
 <script src="../assets/lib/layui/layui.js"></script>
 <script src="../assets/lib/element-ui/lib/index.js"></script>
 <script src="../assets/lib/jquery.nicescroll.min.js"></script>
-<script src="../assets/lib/jqthumb.js"></script>
+<script src="../assets/lib/jqthumb.min.js"></script>
 <script src="../assets/js/create-active.js"></script>
 <script src="../assets/js/main.js"></script>
-
+<script src="../assets/js/common.js"></script>
 
 <script>
     var vm = new Vue({
@@ -284,6 +278,8 @@
         },
         mounted: function () {
             cropImgFun("body");
+            // 初始化笔记编辑器
+            RichTextUitl.initUEditor();
         },
         methods: {
         //    展开更多

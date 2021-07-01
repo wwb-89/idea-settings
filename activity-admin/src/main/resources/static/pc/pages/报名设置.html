@@ -7,8 +7,10 @@
     <link rel="stylesheet" href="../assets/lib/layui/css/layui.css">
     <link rel="stylesheet" href="../assets/lib/element-ui/lib/theme-chalk/index.css">
     <link rel="stylesheet" href="../assets/lib/zTree_v3/css/zTreeStyle/zTreeStyle.css">
+    <link rel="stylesheet" href="../assets/lib/webuploader/webuploader.css">
     <link rel="stylesheet" href="../assets/icomoon/style.css">
-    <link rel="stylesheet" href="../assets/css/common.css">
+    <link rel="stylesheet" href="../assets/css/reset.css">
+    <link rel="stylesheet" href="../assets/css/public.css">
     <link rel="stylesheet" href="../assets/css/set.css">
 </head>
 <body>
@@ -43,19 +45,24 @@
                     </span>
             </div>
         </div>
-        <div class="form-item">
+        <div class="form-item align-start">
             <label class="label">参与范围</label>
-            <div class="input-box">
-                <div class="raido-list">
-                    <el-radio-group v-model="radio1" @change="radio1Change">
-                        <el-radio label="1">不限</el-radio>
-                        <el-radio label="2">自定义</el-radio>
-                    </el-radio-group>
-                    <div class="down-div" v-show="radio1_2Status">
-                        <span>已选择 0 个单位</span>
-                        <a href="javascript:;" v-on:click="dialogVisibleFun">编辑</a>
+            <div class="input-box" style="display: block">
+                <div :class="rangeRadio==1?'autoRange':''">
+                    <el-radio v-model="rangeRadio" label="1" name="active-type">不限</el-radio>
+                    <el-radio v-model="rangeRadio" label="2" name="active-type">自定义</el-radio>
+                </div>
+                <div class="join-select" v-show="rangeRadio==2">
+                    <img src="../assets/images/add-circle.png" alt="" class="add-range" @click="dialogVisibleFun">
+                    <span v-if="rangeShow">请选择</span>
+                    <div class="add-tags" v-else>
+                        <span>产品研发<i class="del_btn" @click="handleDelRange"></i></span>
+                        <span>基础教育研发部<i class="del_btn" @click="handleDelRange"></i></span>
+                        <span>市场部<i class="del_btn" @click="handleDelRange"></i></span>
+                        <span>产品研发<i class="del_btn" @click="handleDelRange"></i></span>
                     </div>
                 </div>
+
             </div>
         </div>
         <div class="form-item">
@@ -115,10 +122,10 @@
             <label class="label">报名成功通知</label>
             <div class="input-box column">
                 <div class="set-box">
-                    <el-switch v-model="delivery4"></el-switch>
+                    <el-switch v-model="delivery7"></el-switch>
                     <span class="tips">开启后，可以为报名成功的用户发送特定内容的通知</span>
                 </div>
-                <div v-show="delivery4" class="set-box configurationForm" @click="openModal">
+                <div v-show="delivery7" class="set-box configurationForm" @click="openMessage">
                     <img src="../assets/images/setting.png">
                     <span class="tips set-information">编辑通知内容</span>
                 </div>
@@ -142,7 +149,7 @@
                 </div>
             </div>
         </div>
-        <div class="form-item">
+        <div class="form-item align-start">
             <label class="label">其他自定义的字段</label>
             <div class="input-box">
                 <div class="set-box">
@@ -165,10 +172,10 @@
         <el-button class="btn-main"  @click="DialogVisible = false">离开</el-button>
       </span>
     </el-dialog>
-    <!--    选择范围-->
+    <!-- 活添加发放对象弹窗 -->
     <el-dialog
             title="选择范围"
-            :visible.sync="dialogVisible1"
+            :visible.sync="releaseShow"
             width="448px"
             class="myDialog">
         <div class="checklist">
@@ -176,24 +183,43 @@
             <div class="ztree" id="organizationTree"></div>
         </div>
         <span slot="footer" class="dialog-footer">
-    <el-button v-on:click="dialogVisible1 = false">取消</el-button>
-    <el-button type="primary" v-on:click="dialogVisible1 = false">确定</el-button>
+    <el-button v-on:click="releaseShow = false">取消</el-button>
+    <el-button type="primary" v-on:click="releaseShow = false">确定</el-button>
   </span>
     </el-dialog>
-    </div>
+    <!-- 报名成功通知弹窗 -->
+        <el-dialog
+                title="报名成功通知"
+                :visible.sync="messageContentPop"
+                width="520px"
+                class="myDialog">
+            <div class="dialog-content">
+                <iframe src="./messageContent.html" frameborder="0"></iframe>
+            </div>
+            <span slot="footer" class="dialog-footer">
+    <el-button v-on:click="messageContentPop = false">取消</el-button>
+    <el-button type="primary" v-on:click="dialogVisible1 = false">发布</el-button>
+  </span>
+        </el-dialog>
+
+
+
+
 </div>
 </body>
 <script type="text/javascript" src="../assets/lib/jquery.min.js"></script>
-<script src="../assets/lib/vue.js"></script>
+<script src="../../assets/js/vue.min.js"></script>
 <script src="../assets/lib/layui/layui.js"></script>
 <script src="../assets/lib/element-ui/lib/index.js"></script>
 <script src="../assets/lib/jquery.nicescroll.min.js"></script>
 <script src="../assets/lib/jqthumb.js"></script>
+<script src="../assets/js/common.js"></script>
 <script src="../assets/js/create-active.js"></script>
 <script src="../assets/js/main.js"></script>
 <script src="../assets/lib/zTree_v3/js/jquery.ztree.core.js"></script>
 <script src="../assets/lib/zTree_v3/js/jquery.ztree.excheck.js"></script>
 <script src="../assets/lib/zTree_v3/js/jquery.ztree.exedit.js"></script>
+<script type="text/javascript" src="../assets/lib/webuploader/webuploader.min.js"></script>
 
 
 <script>
@@ -205,11 +231,16 @@
                 delivery2:'',
                 delivery3:false,
                 delivery4:false,
+                delivery7: true,
                 DialogVisible:false,
                 dialogVisible1:false,
                 radio1: '0',
                 radio1_2Status:false,
                 value1:'',
+                messageContentPop: false,
+                rangeRadio: '2',
+                rangeShow: false,
+                releaseShow: false,
             }
         },
         created: function () {
@@ -229,7 +260,7 @@
             },
             //查看范围弹窗
             dialogVisibleFun:function (){
-                this.dialogVisible1 = !this.dialogVisible1;
+                this.releaseShow = !this.releaseShow;
                 this.$nextTick(function (){
                     this.organizationTreeFun();
                 })
@@ -299,6 +330,43 @@
                         }
                     })
                 });
+
+            },
+            //报名成功通知内容
+            openMessage: function () {
+                this.messageContentPop = true;
+                this.$nextTick(function(){
+                    this.initUploader()
+                    cropImgFun("body");
+                })
+            },
+            initUploader:function() {
+                var $this = this;
+                $this.uploader = WebUploader.create({
+                    // swf文件路径
+                    swf: "../../assets/lib/webuploader/Uploader.swf",
+                    // 文件接收服务端。
+                    server: "/api/upload/img",
+                    // 选择文件的按钮。可选。
+                    // 内部根据当前运行是创建，可能是input元素，也可能是flash.
+                    pick: "#upload-btn",
+                    // 不压缩image, 默认如果是jpeg，文件上传前会压缩一把再上传！
+                    resize: false,
+                    auto: true,
+                    // 只允许选择图片文件。
+                    accept: {
+                        title: 'work',
+                        extensions: 'doc,docx',
+                        mimeTypes: 'application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document'
+                    }
+                });
+            },
+            sendClick:function(){
+                this.messageContentPop = false;
+
+            },
+            // 删除参与范围
+            handleDelRange:function(){
 
             },
         }
