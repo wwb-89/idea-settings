@@ -97,9 +97,9 @@
                                 :min-width="item.minWidth"
                         >
                             <template slot-scope="scope">
-                                <div style="cursor: pointer; color: #0084FF" @click="toUserResultDetail(scope.row.uid)">
+                                <span style="cursor: pointer; color: #0084FF" @click="toUserResultDetail(scope.row.uid)">
                                     {{scope.row.realName}}
-                                </div>
+                                </span>
                             </template>
                         </el-table-column>
                         <el-table-column

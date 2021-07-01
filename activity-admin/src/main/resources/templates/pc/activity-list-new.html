@@ -100,7 +100,7 @@
                                 :min-width="item.minWidth"
                         >
                             <template slot-scope="scope">
-                                <el-button type="text" @click="previewPage(scope.row)">{{scope.row.name}}</el-button>
+                                <span style="cursor: pointer; color: #0084FF" @click="previewPage(scope.row)">{{scope.row.name}}</span>
                             </template>
                         </el-table-column>
                         <el-table-column
