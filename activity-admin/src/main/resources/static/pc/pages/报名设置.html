@@ -1,0 +1,308 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>报名设置</title>
+    <link rel="stylesheet" href="../assets/lib/layui/css/layui.css">
+    <link rel="stylesheet" href="../assets/lib/element-ui/lib/theme-chalk/index.css">
+    <link rel="stylesheet" href="../assets/lib/zTree_v3/css/zTreeStyle/zTreeStyle.css">
+    <link rel="stylesheet" href="../assets/icomoon/style.css">
+    <link rel="stylesheet" href="../assets/css/common.css">
+    <link rel="stylesheet" href="../assets/css/set.css">
+</head>
+<body>
+<div id="vue">
+    <el-form class="basic-set"  ref="form">
+        <div class="form-item">
+            <label class="label">在线报名</label>
+            <div class="input-box">
+                <div class="set-box">
+                    <el-switch v-model="delivery2"></el-switch>
+                    <span class="tips">开启后，可以在线报名</span>
+                </div>
+            </div>
+
+        </div>
+        <div class="form-item">
+            <label class="label cover">报名时间</label>
+            <div class="input-box">
+                <el-date-picker v-model="time2"
+                                type="datetimerange"
+                                start-placeholder="开始时间"
+                                end-placeholder="结束时间"
+                                format="yyyy-MM-dd HH:mm"
+                                value-format="yyyy-MM-dd HH:mm"
+                                prefix-icon="disable"
+                                clear-icon="disable"
+                                unlink-panels>
+                    <img style="margin: 0 8px;" slot="range-separator" src="../assets/images/swap-right.png">
+                </el-date-picker>
+                <span class="date-piker-icon">
+                        <img src="../assets/images/time.png">
+                    </span>
+            </div>
+        </div>
+        <div class="form-item">
+            <label class="label">参与范围</label>
+            <div class="input-box">
+                <div class="raido-list">
+                    <el-radio-group v-model="radio1" @change="radio1Change">
+                        <el-radio label="1">不限</el-radio>
+                        <el-radio label="2">自定义</el-radio>
+                    </el-radio-group>
+                    <div class="down-div" v-show="radio1_2Status">
+                        <span>已选择 0 个单位</span>
+                        <a href="javascript:;" v-on:click="dialogVisibleFun">编辑</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="form-item">
+            <label class="label">人数限制</label>
+            <div class="input-box">
+                <div class="select-person-radio">
+                    <el-radio v-model="value1" label="1" name="active-type">不限</el-radio>
+                    <el-radio v-model="value1" label="2" name="active-type">自定义</el-radio>
+                </div>
+                <input type="number" placeholder="请输入正整数" class="person" v-show="value1 == 2">
+                <span class="person-span" v-show="value1 == 2">人</span>
+            </div>
+        </div>
+        <div class="form-item">
+            <label class="label">信息填写</label>
+            <div class="input-box column">
+                <div class="set-box">
+                    <el-switch v-model="delivery3"></el-switch>
+                    <span class="tips">如何创建报名信息表单？</span>
+                </div>
+                <div v-show="delivery3" class="set-box configurationForm" @click="openModal">
+                    <img src="../assets/images/setting.png">
+                    <span class="tips set-information">配置填报信息</span>
+                </div>
+            </div>
+        </div>
+        <div class="form-item">
+            <label class="label">报名需审核</label>
+            <div class="input-box">
+                <div class="set-box">
+                    <el-switch v-model="delivery2"></el-switch>
+                    <span class="tips">开启后，参与需发起人审核</span>
+                </div>
+            </div>
+
+        </div>
+        <div class="form-item">
+            <label class="label">报名名单公开</label>
+            <div class="input-box">
+                <div class="set-box">
+                    <el-switch v-model="delivery2"></el-switch>
+                    <span class="tips">开启后，所有人都能看到报名人员名单</span>
+                </div>
+            </div>
+
+        </div>
+        <div class="form-item">
+            <label class="label">取消报名设置</label>
+            <div class="input-box">
+                <div class="set-box">
+                    <el-switch v-model="delivery2"></el-switch>
+                    <span class="tips">开启后，报名结束后参与者不能取消报名</span>
+                </div>
+            </div>
+        </div>
+        <div class="form-item align-start">
+            <label class="label">报名成功通知</label>
+            <div class="input-box column">
+                <div class="set-box">
+                    <el-switch v-model="delivery4"></el-switch>
+                    <span class="tips">开启后，可以为报名成功的用户发送特定内容的通知</span>
+                </div>
+                <div v-show="delivery4" class="set-box configurationForm" @click="openModal">
+                    <img src="../assets/images/setting.png">
+                    <span class="tips set-information">编辑通知内容</span>
+                </div>
+            </div>
+        </div>
+        <div class="form-item">
+            <label class="label">现场报名</label>
+            <div class="input-box">
+                <div class="set-box">
+                    <el-switch v-model="delivery2"></el-switch>
+                    <span class="tips">开启后，如果开启了扫码签到，当用户未报名时，允许完善报名信息并且完成签到</span>
+                </div>
+            </div>
+        </div>
+        <div class="form-item">
+            <label class="label">仅志愿者报名</label>
+            <div class="input-box">
+                <div class="set-box">
+                    <el-switch v-model="delivery2"></el-switch>
+                    <span class="tips">仅志愿者报名</span>
+                </div>
+            </div>
+        </div>
+        <div class="form-item">
+            <label class="label">其他自定义的字段</label>
+            <div class="input-box">
+                <div class="set-box">
+                    <el-switch v-model="delivery2"></el-switch>
+                </div>
+            </div>
+        </div>
+    </el-form>
+    <!-- 警告类弹框 -->
+    <el-dialog
+            :visible.sync="DialogVisible"
+            :show-close=false
+            :center=true
+            width="304px"
+            class="warnDialog">
+        <div class="warn"><img src="../assets/images/warning.png" alt=""></div>
+        <p class="center-txt">还有编辑内容未保存，确定离开吗？</p>
+        <span slot="footer" class="dialog-footer center-footer">
+        <el-button class="btn-second-normal btn-width-80" @click="DialogVisible = false">继续编辑</el-button>
+        <el-button class="btn-main"  @click="DialogVisible = false">离开</el-button>
+      </span>
+    </el-dialog>
+    <!--    选择范围-->
+    <el-dialog
+            title="选择范围"
+            :visible.sync="dialogVisible1"
+            width="448px"
+            class="myDialog">
+        <div class="checklist">
+            <p class="num">选择范围<span>已选 4</span></p>
+            <div class="ztree" id="organizationTree"></div>
+        </div>
+        <span slot="footer" class="dialog-footer">
+    <el-button v-on:click="dialogVisible1 = false">取消</el-button>
+    <el-button type="primary" v-on:click="dialogVisible1 = false">确定</el-button>
+  </span>
+    </el-dialog>
+    </div>
+</div>
+</body>
+<script type="text/javascript" src="../assets/lib/jquery.min.js"></script>
+<script src="../assets/lib/vue.js"></script>
+<script src="../assets/lib/layui/layui.js"></script>
+<script src="../assets/lib/element-ui/lib/index.js"></script>
+<script src="../assets/lib/jquery.nicescroll.min.js"></script>
+<script src="../assets/lib/jqthumb.js"></script>
+<script src="../assets/js/create-active.js"></script>
+<script src="../assets/js/main.js"></script>
+<script src="../assets/lib/zTree_v3/js/jquery.ztree.core.js"></script>
+<script src="../assets/lib/zTree_v3/js/jquery.ztree.excheck.js"></script>
+<script src="../assets/lib/zTree_v3/js/jquery.ztree.exedit.js"></script>
+
+
+<script>
+    var vm = new Vue({
+        el: '#vue',
+        data: function () {
+            return {
+                time2:'',
+                delivery2:'',
+                delivery3:false,
+                delivery4:false,
+                DialogVisible:false,
+                dialogVisible1:false,
+                radio1: '0',
+                radio1_2Status:false,
+                value1:'',
+            }
+        },
+        created: function () {
+
+
+        },
+        mounted: function () {
+            cropImgFun("body");
+        },
+        methods: {
+            radio1Change:function (){
+                console.log(this.radio1)
+                switch (this.radio1){
+                    case "1":this.radio1_2Status=false; break;
+                    case "2":this.radio1_2Status=true;break;
+                }
+            },
+            //查看范围弹窗
+            dialogVisibleFun:function (){
+                this.dialogVisible1 = !this.dialogVisible1;
+                this.$nextTick(function (){
+                    this.organizationTreeFun();
+                })
+            },
+            // 树形结构
+            organizationTreeFun:function() {
+                var setting = {
+                    check: {
+                        enable: true
+                    },
+                    data: {
+                        simpleData: {
+                            enable: true
+                        }
+                    },
+                    view: {
+                    },
+                    callback: {
+                        onCheck: zTreeOnCheck
+                    },
+                };
+                var zNodes =[
+                    { id:1, pId:0, name:"一级", open:true},
+                    { id:11, pId:1, name:"二级", open:true},
+                    { id:111, pId:11, name:"三级",open:true},
+                    { id:112, pId:11, name:"三级"},
+                    { id:113, pId:111, name:"四级"},
+                    { id:21, pId:1, name:"二级", open:true},
+                    { id:22, pId:1, name:"二级", open:true},
+                    { id:23, pId:1, name:"二级", open:true},
+                    { id:24, pId:1, name:"二级", open:true},
+                    { id:25, pId:1, name:"二级", open:true},
+                    { id:26, pId:1, name:"二级", open:true},
+                    { id:27, pId:1, name:"二级", open:true},
+                    { id:28, pId:1, name:"二级", open:true},
+                    { id:29, pId:1, name:"二级", open:true},
+                    { id:30, pId:1, name:"二级", open:true},
+                    { id:31, pId:1, name:"二级", open:true},
+                    { id:32, pId:1, name:"二级", open:true},
+
+                ];
+                $.fn.zTree.init($("#organizationTree"), setting, zNodes);
+                function zTreeOnCheck(event, treeId, treeNode) {
+                    console.log(event);
+                    console.log(treeId);
+                    console.log(treeNode);
+                };
+            },
+            openModal:function() {
+                layui.use('layer', function(){
+                    var layer = layui.layer;
+
+                    layer.open({
+                        skin: 'create-class',
+                        type: 2,
+                        content: ['http://baidu.com', 'no'],
+                        area: ['600px','520px'],
+                        btn: ['取消', '完成'],
+                        btnAlign: 'c',
+                        yes: function (index, layero) {
+                            layer.close(index);
+                        },
+                        cancel: function () {
+
+                        },
+                        end: function () {
+                        }
+                    })
+                });
+
+            },
+        }
+    });
+</script>
+
+</html>

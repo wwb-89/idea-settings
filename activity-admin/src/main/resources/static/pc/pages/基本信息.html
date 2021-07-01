@@ -1,0 +1,368 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>基本信息</title>
+    <link rel="stylesheet" href="../assets/lib/layui/css/layui.css">
+    <link rel="stylesheet" href="../assets/lib/element-ui/lib/theme-chalk/index.css">
+    <link rel="stylesheet" href="../assets/icomoon/style.css">
+    <link rel="stylesheet" href="../assets/css/common.css">
+    <link rel="stylesheet" href="../assets/css/set.css">
+    <script type="text/javascript" src="../assets/lib/jquery.min.js"></script>
+    <!-- 笔记编辑器 -->
+    <script src="https://noteyd.chaoxing.com/res/plugin/ueditor4thirdparty/rich.text.util.js"></script>
+</head>
+
+<body>
+<div id="vue">
+    <el-form class="basic-show" ref="form"  label-width="74px">
+        <el-form-item label="封面">
+            <div class="img-box js-crop-img">
+                <img src="../assets/images/example.jpg" height="100%">
+            </div>
+        </el-form-item>
+        <el-form-item label="名称">
+            <div class="txt">成都少儿阅读活动</div>
+        </el-form-item>
+        <el-form-item label="时间">
+            <div class="txt">2021.02.23 12:00 ～ 2021.02.23 12:00</div>
+        </el-form-item>
+        <el-form-item label="位置">
+            <div class="txt">成都市金牛区天龙北二路与天龙大道交叉路口往东北约70米<i class="icon-position-active"></i></div>
+        </el-form-item>
+        <el-form-item label="活动说明">
+            <div class="txt">
+                <div :class="['width640',showMore?'overHidden2':'']">本次活动旨在引领孩子们用心阅读自然本次活动旨在引领孩子们用心阅读自然本次活动旨在引领孩子们用心阅读自然本次活动旨在引领孩子们用心阅读自然，探寻四季晨昏，草木变化，欣赏大自然斑斓的色彩、观察大自然的形状、自由大胆地表现大自然之美，并教会孩子观察和理解这个世界。将“尊重生命”的理念传承，让...</div>
+            </div>
+            <p class="special-txt" v-show="showMore" v-on:click="showMoreFun">展开</p>
+            <p class="special-txt" v-show="!showMore" v-on:click="showMoreFun">收起</p>
+        </el-form-item>
+        <el-form-item label="页面">
+            <div class="txt">
+                <p class="width498 overHidden1">http://xueya.chaoxing.com/sc.chaoxing.com/schoohool-base/scscscscscscscscsc...</p>
+                <button class="btn-second-small">页面配置</button>
+            </div>
+        </el-form-item>
+        <button class="btn-main btn-width-80 edit-btn">编辑</button>
+    </el-form>
+    <el-form class="basic-set"  ref="form">
+        <div class="form-item align-start">
+            <label class="label cover">封面</label>
+            <div class="input-box">
+                <div class="img-box js-crop-img">
+                    <img src="../assets/images/img.png" alt="">
+                </div>
+                <div class="font-box">
+                    <span>建议尺寸：1080x500</span>
+                    <span>大小：小于5M</span>
+                    <span>格式：jpg、png、gif</span>
+                    <div class="btn-flex">
+                        <input type="file" class="upload-btn" accept="image/gif, image/jpg, image/png"
+                               onchange="showImg(this)"/>
+                        <button onclick="uploadImage(this)" class="btn-second-normal btn-width-80">上传文件</button>
+                        <button onclick="uploadImage(this)" class="btn-second-normal btn-width-80">清除封面</button>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+        <div class="form-item">
+            <label class="label"><img src="../assets/images/required.png" alt=""
+                                      class="required-img">名称</label>
+            <div class="input-box">
+                <el-input type="text" placeholder="请填写" v-model="name" maxlength="20" show-word-limit>
+                </el-input>
+            </div>
+        </div>
+        <div class="form-item">
+            <label class="label">时间</label>
+            <div class="input-box">
+                <el-date-picker v-model="time2"
+                                type="daterange"
+                                start-placeholder="开始时间"
+                                end-placeholder="结束时间"
+                                format="yyyy-MM-dd"
+                                value-format="yyyy-MM-dd"
+                                prefix-icon="disable"
+                                clear-icon="disable"
+                                unlink-panels>
+                    <img style="margin: 0 8px;" slot="range-separator" src="../assets/images/swap-right.png">
+                </el-date-picker>
+                <span class="date-piker-icon">
+                        <img src="../assets/images/calendar.png">
+                    </span>
+            </div>
+        </div>
+
+        <div class="form-item">
+            <label class="label">活动类型</label>
+            <div class="input-box">
+                <el-radio v-model="radio" label="1" name="active-type">线上活动</el-radio>
+                <el-radio v-model="radio" label="2" name="active-type">线下活动</el-radio>
+            </div>
+        </div>
+        <div class="form-item">
+            <label class="label">位置</label>
+            <div class="input-box">
+                <el-input type="text" placeholder="请输入活动地点" class="name show-addr"  v-on:focus="handleFocus">
+                </el-input>
+                <i class="icon-position"></i>
+                <el-input type="text" placeholder="详细地址，例：E5栋1308室" class="name show-addr-detailed">
+                </el-input>
+            </div>
+        </div>
+        <div class="form-item">
+            <label class="label">活动说明</label>
+            <div class="input-box">
+                <!-- 笔记编辑器 -->
+                <div class="wrap">
+                    <script type="text/javascript">
+                        RichTextUitl.loadEditorProfile();
+                    </script>
+                    <script type="text/plain" id="container" name="content"></script>
+                </div>
+
+
+                <script>
+                    $(document).ready(function () {
+                        RichTextUitl.initUEditor();
+                    });
+                </script>
+                <!--音视频播放-start-->
+                <script type="text/javascript" src="https://noteyd.chaoxing.com/res/js/common/easydialog.min.js"></script>
+                <script type="text/javascript" src="https://noteyd.chaoxing.com/res/plugin/ckplayer/ckplayer.js"></script>
+                <link rel="stylesheet" type="text/css" href="https://noteyd.chaoxing.com/res/plugin/smusic/css/smusic.css" />
+                <script type="text/javascript" src="https://noteyd.chaoxing.com/res/plugin/smusic/js/smusic.js"></script>
+                <link rel="stylesheet" type="text/css" href="https://noteyd.chaoxing.com/res/pc/cssnew/media.css" />
+                <script type="text/javascript" src="https://noteyd.chaoxing.com/res/pc/js/media.js"></script>
+                <!-- 视频播放容器 -->
+                <div id="videoDiv">
+                    <span class="videoCloseBtn"></span>
+                    <div id="video"></div>
+                </div>
+                <!-- 音频播放容器 -->
+                <div id="audioDiv" style="z-index: 9000">
+                    <div class="headBar"><span class="audioCloseBtn"></span></div>
+                    <div class="grid-music-container f-usn">
+                        <div class="m-music-play-wrap">
+                            <div class="u-cover"></div>
+                            <div class="m-now-info">
+                                <h1 class="u-music-title"><strong></strong></h1>
+
+                                <div class="m-now-controls">
+                                    <div class="startTime">00:00&nbsp;&nbsp;</div>
+                                    <div class="u-control u-process ">
+                                        <div class="old-bar"></div>
+                                        <span class="buffer-process"></span>
+                                        <span class="current-bar"></span>
+                                        <span class="current-process"></span>
+                                    </div>
+                                    <div class="u-control u-time">00:00</div>
+
+                                    <div class="u-control u-volume new-volume">
+                                        <div class="volume">
+                                <span class="volume-event">
+                                    <div class="volume-process" data-volume="0.50"></div>
+                                    <span class="volume-current"></span>
+                                    <span class="volume-bar"></span>
+                                </span>
+                                            <a class="volume-control"></a>
+                                        </div>
+                                    </div>
+                                    <div class="m-play-controls">
+                                        <div class="musicOrder">
+                                            <a class="u-play-btn mode mode-list  " title="列表循环"></a>
+                                            <!-- <a class="u-play-btn mode mode-random  " title="随机播放"></a>
+                                        <a class="u-play-btn mode mode-single " title="单曲循环"></a>  -->
+                                        </div>
+                                        <a class="u-play-btn prev" title="上一曲"></a>
+                                        <a class="u-play-btn ctrl-play play" title="暂停"></a>
+                                        <a class="u-play-btn next" title="下一曲"></a>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="f-cb">&nbsp;</div>
+                            <div class="m-music-list-wrap"></div>
+                            <div class="m-music-lyric-wrap">
+                                <div class="inner">
+                                    <ul class="js-music-lyric-content">
+                                        <li class="eof">暂无歌词...</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!--音视频播放-end-->
+            </div>
+        </div>
+        <div class="btn-box">
+            <button class="btn-main btn-width-80">保存</button>
+            <button class="btn-second-normal btn-width-80">取消</button>
+        </div>
+    </el-form>
+    <!-- 地图 -->
+    <el-dialog
+            title="设置地址"
+            :visible.sync="addressShow"
+            width="840px" class="address-dialog">
+        <div class="body-head">
+            <div class="input-addr">
+                <el-autocomplete style="width:100%;" popper-class="autoAddressClass" v-model="address"
+                                 :fetch-suggestions="querySearchAsync" :trigger-on-focus="true" placeholder="请输入地址"
+                                 @select="handleSelect" clearable>
+                    <template slot-scope="scope"> <i class="el-icon-search fl mgr10"></i>
+                        <div class="address-box">
+                            <div class="title1">{{ scope.item.title }}</div>
+                            --
+                            <span class="address ellipsis">{{ scope.item.address }}</span>
+                        </div>
+                        <i class="el-icon-close" @click.stop="handleDelAddr($event)"></i>
+                    </template>
+                </el-autocomplete>
+            </div>
+            <div class="sure-btn">确定</div>
+        </div>
+        <div id="map-contain" class="map">
+        </div>
+    </el-dialog>
+    <!-- 警告类弹框 -->
+    <el-dialog
+            :visible.sync="DialogVisible"
+            :show-close=false
+            :center=true
+            width="304px"
+            class="warnDialog">
+        <div class="warn"><img src="../assets/images/warning.png" alt=""></div>
+        <p class="center-txt">还有编辑内容未保存，确定离开吗？</p>
+        <span slot="footer" class="dialog-footer center-footer">
+        <el-button class="btn-second-normal btn-width-80" @click="DialogVisible = false">继续编辑</el-button>
+        <el-button class="btn-main"  @click="DialogVisible = false">离开</el-button>
+      </span>
+    </el-dialog>
+    </div>
+</div>
+</body>
+<!--引入js-->
+<script type="text/javascript" src="https://api.map.baidu.com/api?v=3.0&ak=aG5nWGO5m5tkVhBHGuVppoIRfKbyp5H3">
+</script>
+<script src="../assets/lib/vue.js"></script>
+<script src="../assets/lib/layui/layui.js"></script>
+<script src="../assets/lib/element-ui/lib/index.js"></script>
+<script src="../assets/lib/jquery.nicescroll.min.js"></script>
+<script src="../assets/lib/jqthumb.js"></script>
+<script src="../assets/js/create-active.js"></script>
+<script src="../assets/js/main.js"></script>
+
+
+<script>
+    var vm = new Vue({
+        el: '#vue',
+        data: function () {
+            return {
+                showMore:true,
+                DialogVisible:false,
+                name: '',
+                time2: '',
+                radio: 3,
+                addressShow: false,
+                address: '', //详细地址
+                addrPoint: {
+                    lng: 0,
+                    lat: 0
+                },
+                map: '', //地图实例
+                mk: '', //Marker实例
+
+            }
+        },
+        created: function () {
+
+
+        },
+        mounted: function () {
+            cropImgFun("body");
+        },
+        methods: {
+        //    展开更多
+            showMoreFun:function (){
+                this.showMore = !this.showMore;
+            },
+            querySearchAsync: function (str, cb) {
+                var options = {
+                    onSearchComplete: function (res) { //检索完成后的回调函数
+                        var s = [];
+                        if (local.getStatus() == BMAP_STATUS_SUCCESS) {
+                            for (var i = 0; i < res.getCurrentNumPois(); i++) {
+                                s.push(res.getPoi(i));
+                            }
+                            cb(s) //获取到数据时，通过回调函数cb返回到<el-autocomplete>组件中进行显示
+                        } else {
+                            cb(s)
+                        }
+                    }
+                }
+                var local = new BMap.LocalSearch(this.map, options) //创建LocalSearch构造函数
+                if(!str){
+                    // 获取历史记录
+                    local.search(111)
+                }else{
+                    local.search(str) //调用search方法，根据检索词str发起检索
+                }
+            },
+            handleSelect: function (item) {
+                console.log(item)
+                this.address = item.address + item.title; //记录详细地址，含建筑物名
+                this.addrPoint = item.point; //记录当前选中地址坐标
+                this.map.clearOverlays() //清除地图上所有覆盖物
+                this.mk = new BMap.Marker(item.point) //根据所选坐标重新创建Marker
+                this.map.addOverlay(this.mk) //将覆盖物重新添加到地图中
+                this.map.panTo(item.point) //将地图的中心点更改为选定坐标点
+            },
+            initMap: function () {
+                var that = this;
+                this.map = new BMap.Map("map-contain", {
+                    enableMapClick: false
+                }) //新建地图实例，enableMapClick:false ：禁用地图默认点击弹框
+                var point = new BMap.Point(104.10194, 30.65984);
+                // this.map.addEventListener("mousemove", function (e) {
+                //     point = new BMap.Point(e.point.lng,e.point.lat)
+                // })
+                this.map.centerAndZoom(point, 19);
+                this.map.enableScrollWheelZoom(true) //启用滚轮放大缩小，默认禁用
+                this.mk = new BMap.Marker(point)
+                this.map.addOverlay(this.mk)
+                this.map.addEventListener('click', function (e) { //给地图绑定点击事件
+                    that.getAddrByPoint(e.point) //点击后调用逆地址解析函数
+                })
+            },
+            //逆地址解析
+            getAddrByPoint: function (point) {
+                var that = this;
+                console.log(point)
+                var geco = new BMap.Geocoder();
+                geco.getLocation(point, function (res) {
+                    console.log(res) //内容见下图
+                    that.mk.setPosition(point) //重新设置标注的地理坐标
+                    that.map.panTo(point) //将地图的中心点更改为给定的点
+                    that.address = res.address; //记录该点的详细地址信息
+                    that.addrPoint = point; //记录当前坐标点
+                })
+            },
+            handleFocus: function () {
+                this.addressShow = true;
+                this.$nextTick(function (){
+                    this.initMap();
+                })
+                $(window).scrollTop(0);
+            },
+            close: function () {
+                this.addressShow = false
+            },
+        }
+    });
+</script>
+
+</html>

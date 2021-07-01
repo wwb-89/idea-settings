@@ -1,0 +1,829 @@
+@charset "UTF-8";
+body {
+  background: #FFFFFF;
+}
+
+.activity-tab {
+  padding: 0 24px;
+  border-bottom: 1px solid #F0F0F0;
+}
+
+.activity-tab ul li {
+  height: 30px;
+  line-height: 30px;
+  padding: 16px 0 14px;
+  color: #666666;
+  font-size: 16px;
+  border-bottom: 2px solid transparent;
+  margin-right: 32px;
+  cursor: pointer;
+}
+
+.activity-tab ul li:last-child {
+  margin-right: 0;
+}
+
+.activity-tab ul li.active {
+  font-weight: 600;
+  color: #0084FF;
+  border-color: #0084FF;
+}
+
+.tab-c {
+  width: 100%;
+  height: 100%;
+  background: #000;
+}
+
+.basic-show {
+  padding: 32px 24px;
+}
+
+.basic-show .el-form-item {
+  margin-bottom: 8px;
+}
+
+.basic-show .el-form-item__label {
+  text-align: left;
+  padding-left: 8px;
+  padding-right: 0;
+  line-height: 32px;
+}
+
+.basic-show .el-form-item__content {
+  padding-left: 24px;
+}
+
+.basic-show .img-box {
+  width: 192px;
+  height: 100px;
+  border: 1px solid #E9E9E9;
+  -webkit-box-sizing: border-box;
+     -moz-box-sizing: border-box;
+          box-sizing: border-box;
+  border-radius: 2px;
+}
+
+.basic-show .txt {
+  color: #333333;
+  font-size: 14px;
+  line-height: 20px;
+  padding: 6px 0;
+  text-align: left;
+  display: -webkit-box;
+  display: -moz-box;
+  display: -ms-flexbox;
+  display: flex;
+}
+
+.basic-show .txt i {
+  margin-left: 4px;
+  position: relative;
+  top: 4px;
+}
+
+.basic-show .txt .width498 {
+  width: 498px;
+  color: #0084FF;
+}
+
+.basic-show .txt .width640 {
+  width: 640px;
+}
+
+.basic-show .txt button {
+  margin-left: 16px;
+}
+
+.basic-show .special-txt {
+  color: #0084FF;
+  font-size: 14px;
+  line-height: 22px;
+  cursor: pointer;
+}
+
+.basic-show .edit-btn {
+  margin-top: 16px;
+}
+
+.basic-set {
+  padding: 32px 24px;
+}
+
+.basic-set .form-item {
+  display: -webkit-box;
+  display: -moz-box;
+  display: -ms-flexbox;
+  display: flex;
+  margin-bottom: 20px;
+}
+
+.basic-set .label {
+  width: 90px;
+  line-height: 32px;
+  font-size: 14px;
+  color: #666666;
+  margin-left: 8px;
+  text-align: left;
+  position: relative;
+}
+
+.basic-set .label .required-img {
+  position: absolute;
+  left: -8px;
+  top: 50%;
+  -webkit-transform: translateY(-50%);
+      -ms-transform: translateY(-50%);
+          transform: translateY(-50%);
+}
+
+.basic-set input[type="text"],
+.basic-set input[type="number"] {
+  width: 100%;
+  background: #ffffff;
+  border: 1px solid #e9e9e9;
+  border-radius: 2px;
+  -webkit-box-sizing: border-box;
+     -moz-box-sizing: border-box;
+          box-sizing: border-box;
+  font-size: 14px;
+  color: #333333;
+  padding: 5px 0 5px 12px;
+  height: 32px;
+}
+
+.basic-set .input-box {
+  display: -webkit-box;
+  display: -moz-box;
+  display: -ms-flexbox;
+  display: flex;
+  width: 700px;
+  margin-left: 24px;
+  position: relative;
+  color: #999999;
+  font-size: 14px;
+}
+
+.basic-set .input-box .icon-position {
+  position: absolute;
+  right: 282px;
+  top: 25%;
+  color: #999999;
+  font-size: 16px;
+}
+
+.basic-set .input-box .person {
+  width: 130px;
+  margin-left: 24px;
+}
+
+.basic-set .input-box .person-span {
+  margin-left: 10px;
+  color: #333333;
+}
+
+.basic-set .input-box .el-checkbox {
+  height: 32px;
+  line-height: 32px;
+}
+
+.basic-set .input-box .el-checkbox__label {
+  color: #333333;
+  font-weight: 400;
+}
+
+.basic-set .show-addr {
+  width: 428px !important;
+}
+
+.basic-set .show-addr-detailed {
+  width: 256px !important;
+  margin-left: 16px;
+}
+
+.basic-set .el-radio-group {
+  line-height: 32px;
+}
+
+.basic-set .el-radio {
+  color: #333333;
+  font-weight: normal;
+  line-height: 32px;
+}
+
+.basic-set .el-radio__input.is-checked + .el-radio__label {
+  color: #333333;
+}
+
+.basic-set .el-range-editor.el-input__inner {
+  padding: 5px 12px;
+  width: 346px;
+  position: relative;
+}
+
+.basic-set .date-piker-icon {
+  position: absolute;
+  left: 319px;
+  top: 50%;
+  -webkit-transform: translateY(-50%);
+      -ms-transform: translateY(-50%);
+          transform: translateY(-50%);
+}
+
+.basic-set .img-box {
+  width: 192px;
+  height: 100px;
+  font-size: 0;
+  border: 1px solid #e9e9e9;
+  border-radius: 2px;
+}
+
+.basic-set .font-box {
+  position: relative;
+  display: -webkit-box;
+  display: -moz-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-orient: vertical;
+  -webkit-box-direction: normal;
+     -moz-box-orient: vertical;
+     -moz-box-direction: normal;
+      -ms-flex-direction: column;
+          flex-direction: column;
+  -webkit-box-align: start;
+     -moz-box-align: start;
+      -ms-flex-align: start;
+          align-items: flex-start;
+  font-size: 13px;
+  font-weight: 400;
+  text-align: left;
+  color: #666666;
+  line-height: 20px;
+  margin-left: 14px;
+}
+
+.basic-set .btn-flex {
+  display: -webkit-box;
+  display: -moz-box;
+  display: -ms-flexbox;
+  display: flex;
+  margin-top: 16px;
+}
+
+.basic-set .btn-flex button {
+  margin-right: 12px;
+}
+
+.basic-set .upload {
+  margin-top: 16px;
+  text-align: center;
+  line-height: 15px;
+}
+
+.basic-set .upload-btn {
+  position: absolute;
+  bottom: 0;
+  height: 32px;
+  opacity: 0;
+  width: 0;
+}
+
+.basic-set input::-webkit-input-placeholder {
+  font-size: 14px;
+  color: #cccccc;
+}
+
+.basic-set input::-moz-placeholder {
+  font-size: 14px;
+  color: #cccccc;
+}
+
+.basic-set input:-ms-input-placeholder {
+  font-size: 14px;
+  color: #cccccc;
+}
+
+.basic-set input::-ms-input-placeholder {
+  font-size: 14px;
+  color: #cccccc;
+}
+
+.basic-set input::placeholder {
+  font-size: 14px;
+  color: #cccccc;
+}
+
+.basic-set .el-input__inner {
+  height: 32px;
+  line-height: 32px;
+}
+
+.basic-set .el-range-editor .el-range__icon {
+  display: none;
+}
+
+.basic-set .btn-box {
+  font-size: 0;
+}
+
+.basic-set .btn-box button {
+  margin-right: 24px;
+}
+
+.basic-set .wrap {
+  height: 361px;
+  border: 1px solid #E9E9E9;
+  -webkit-box-sizing: border-box;
+     -moz-box-sizing: border-box;
+          box-sizing: border-box;
+  border-radius: 2px;
+}
+
+.basic-set .tips {
+  font-size: 14px;
+  font-weight: 400;
+  text-align: left;
+  color: #999999;
+  line-height: 16px;
+  margin-left: 16px;
+}
+
+.basic-set .down-div {
+  background: #F6F7FB;
+  border-radius: 4px;
+  height: 40px;
+  line-height: 40px;
+  padding: 0 16px;
+  display: -webkit-box;
+  display: -moz-box;
+  display: -ms-flexbox;
+  display: flex;
+  font-size: 14px;
+  color: #333333;
+  font-weight: normal;
+  margin-top: 8px;
+  width: 208px;
+}
+
+.basic-set .down-div span {
+  margin-right: auto;
+}
+
+.basic-set .down-div a {
+  color: #0084FF;
+}
+
+.basic-set .configurationForm {
+  margin-top: 20px;
+  cursor: pointer;
+}
+
+.basic-set .configurationForm img {
+  width: 16px;
+  height: 16px;
+}
+
+.basic-set .configurationForm .tips {
+  margin-left: 5px;
+}
+
+.basic-set .configurationForm .tips.set-information {
+  color: #0084FF;
+}
+
+.basic-set .column {
+  display: -webkit-box;
+  display: -moz-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-orient: vertical;
+  -webkit-box-direction: normal;
+     -moz-box-orient: vertical;
+     -moz-box-direction: normal;
+      -ms-flex-direction: column;
+          flex-direction: column;
+  -webkit-box-align: start;
+     -moz-box-align: start;
+      -ms-flex-align: start;
+          align-items: flex-start;
+  -webkit-box-pack: center;
+     -moz-box-pack: center;
+      -ms-flex-pack: center;
+          justify-content: center;
+}
+
+.basic-set .set-box {
+  display: -webkit-box;
+  display: -moz-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-align: center;
+     -moz-box-align: center;
+      -ms-flex-align: center;
+          align-items: center;
+}
+
+.address-dialog .el-dialog {
+  border-radius: 10px;
+}
+
+.address-dialog .body-head {
+  display: -webkit-box;
+  display: -moz-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-align: center;
+     -moz-box-align: center;
+      -ms-flex-align: center;
+          align-items: center;
+}
+
+.address-dialog .body-head .input-addr {
+  -webkit-box-flex: 1;
+     -moz-box-flex: 1;
+      -ms-flex: 1;
+          flex: 1;
+  font-size: 16px;
+}
+
+.address-dialog .sure-btn {
+  padding: 6px 14px;
+  background: #0084ff;
+  border-radius: 15px;
+  color: #ffffff;
+  font-size: 13px;
+  text-align: center;
+  cursor: pointer;
+  margin-left: 16px;
+  height: 18px;
+}
+
+.address-dialog .el-select,
+.address-dialog .el-input {
+  height: 32px;
+}
+
+.address-dialog .el-input__inner {
+  height: 32px;
+  line-height: 32px;
+}
+
+.address-dialog .map {
+  width: 100%;
+  height: 438px;
+  margin-top: 30px;
+}
+
+.autoAddressClass .el-scrollbar li {
+  position: relative;
+  padding-right: 30px;
+}
+
+.autoAddressClass .el-scrollbar li:hover .el-icon-close {
+  display: block;
+}
+
+.autoAddressClass .el-scrollbar li,
+.autoAddressClass .address-box {
+  display: -webkit-box;
+  display: -moz-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-align: center;
+     -moz-box-align: center;
+      -ms-flex-align: center;
+          align-items: center;
+  overflow: hidden;
+}
+
+.autoAddressClass .el-icon-search {
+  margin-right: 10px;
+}
+
+.autoAddressClass .el-icon-close {
+  position: absolute;
+  right: 10px;
+  color: #999999;
+  display: none;
+}
+
+.autoAddressClass .el-input__suffix {
+  line-height: 32px;
+}
+
+.autoAddressClass .el-input__suffix .el-input__icon {
+  line-height: 32px;
+}
+
+.warnDialog .el-dialog {
+  border-radius: 10px;
+}
+
+.warnDialog .el-dialog__header {
+  display: none;
+}
+
+.warnDialog .el-dialog__body {
+  padding: 32px;
+}
+
+.warnDialog .el-dialog__body .warn {
+  width: 30px;
+  height: 30px;
+  margin: 0 auto 24px;
+}
+
+.warnDialog .el-dialog__body .warn img {
+  width: 100%;
+  height: 100%;
+}
+
+.warnDialog .el-dialog__body .center-txt {
+  width: 100%;
+  color: #333333;
+  text-align: center;
+  font-size: 16px;
+  line-height: 24px;
+}
+
+.warnDialog .el-dialog__footer {
+  padding-top: 0;
+}
+
+.myDialog .el-dialog {
+  border-radius: 10px;
+  -webkit-box-shadow: 0px 6px 16px -8px rgba(0, 0, 0, 0.08), 0px 9px 28px rgba(0, 0, 0, 0.05), 0px 12px 48px 16px rgba(0, 0, 0, 0.03);
+          box-shadow: 0px 6px 16px -8px rgba(0, 0, 0, 0.08), 0px 9px 28px rgba(0, 0, 0, 0.05), 0px 12px 48px 16px rgba(0, 0, 0, 0.03);
+}
+
+.myDialog .el-dialog__header {
+  text-align: center;
+  color: #333333;
+  font-weight: 600;
+  font-size: 18px;
+  padding: 16px 30px;
+}
+
+.myDialog .el-dialog__headerbtn {
+  top: 12px;
+  right: 12px;
+}
+
+.myDialog .el-dialog__body {
+  padding: 24px;
+  border-top: 1px solid #E9E9E9;
+  border-bottom: 1px solid #E9E9E9;
+}
+
+.myDialog .el-dialog__footer {
+  text-align: center;
+  padding: 14px 0;
+}
+
+.myDialog .el-dialog__footer .el-button--default {
+  color: #0084ff;
+  font-size: 13px;
+  height: 30px;
+  line-height: 30px;
+  border: 1px solid #82c3ff;
+  border-radius: 15px;
+  padding: 0 13px;
+  background: #ffffff;
+  cursor: pointer;
+}
+
+.myDialog .el-dialog__footer .el-button--default:hover {
+  background: #EBF5FF;
+}
+
+.myDialog .el-dialog__footer .el-button--primary {
+  background: #0084FF;
+  color: #FFFFFF;
+  border: 1px solid #0084FF;
+  border-radius: 15px;
+  height: 30px;
+  line-height: 30px;
+  padding: 0 13px;
+  font-size: 13px;
+  cursor: pointer;
+}
+
+.myDialog .el-dialog__footer .el-button--primary:hover {
+  background: rgba(0, 132, 255, 0.8);
+}
+
+.myDialog .checklist {
+  border: 1px solid #E9E9E9;
+}
+
+.myDialog .checklist .num {
+  height: 40px;
+  line-height: 40px;
+  background: #F8F8F8;
+  padding: 0 10px;
+  display: -webkit-box;
+  display: -moz-box;
+  display: -ms-flexbox;
+  display: flex;
+  color: #666666;
+  font-size: 14px;
+}
+
+.myDialog .checklist .num span {
+  margin-left: auto;
+  color: #0084FF;
+}
+
+.myDialog .checklist ul.nocheck {
+  height: 260px;
+  overflow: auto;
+}
+
+.myDialog .checklist ul.nocheck li {
+  padding: 8px 16px;
+  line-height: 20px;
+  font-weight: normal;
+  font-size: 14px;
+  color: #333333;
+}
+
+.myDialog .checklist .ztree {
+  padding: 0;
+  height: 260px;
+  overflow: auto;
+}
+
+.myDialog .checklist .ztree .node_name {
+  display: inline-block;
+  max-width: 198px !important;
+  overflow: hidden;
+  -o-text-overflow: ellipsis;
+     text-overflow: ellipsis;
+  white-space: nowrap;
+  position: relative;
+  top: 4px;
+  color: #333333;
+  font-size: 14px;
+}
+
+.myDialog .checklist .ztree li {
+  position: relative;
+  line-height: 36px;
+}
+
+.myDialog .checklist .ztree li span.button.root_open {
+  width: 18px;
+  height: 36px;
+  background: url("../images/triangle.png") center center no-repeat;
+  transform: rotate(90deg);
+  -ms-transform: rotate(90deg);
+  /* IE 9 */
+  -moz-transform: rotate(90deg);
+  /* Firefox */
+  -webkit-transform: rotate(90deg);
+  /* Safari 和 Chrome */
+  -o-transform: rotate(90deg);
+  /* Opera */
+  position: relative;
+  z-index: 2;
+}
+
+.myDialog .checklist .ztree li span.button.root_close {
+  width: 18px;
+  height: 36px;
+  background: url("../images/triangle.png") center center no-repeat;
+}
+
+.myDialog .checklist .ztree li span.button.chk.checkbox_false_full, .myDialog .checklist .ztree li span.button.chk.checkbox_false_full_focus, .myDialog .checklist .ztree li span.button.chk.checkbox_false_part, .myDialog .checklist .ztree li span.button.chk.checkbox_false_part_focus {
+  width: 16px;
+  height: 16px;
+  background: url("../images/checkbox-pc_normal_.png") no-repeat;
+  background-size: 100%;
+  position: relative;
+  top: -2px;
+  z-index: 2;
+}
+
+.myDialog .checklist .ztree li span.button.center_docu, .myDialog .checklist .ztree li span.button.bottom_docu, .myDialog .checklist .ztree li ul.line {
+  background: none;
+}
+
+.myDialog .checklist .ztree li span.button.chk.checkbox_true_full,
+.myDialog .checklist .ztree li span.button.chk.checkbox_true_full_focus {
+  width: 16px;
+  height: 16px;
+  background: url("../images/checkbox-pc_normal.png") no-repeat;
+  background-size: 100%;
+  position: relative;
+  top: -2px;
+  z-index: 2;
+}
+
+.myDialog .checklist .ztree li span.button.chk.checkbox_true_part,
+.myDialog .checklist .ztree li span.button.chk.checkbox_true_part_focus {
+  width: 16px;
+  height: 16px;
+  background: url("../images/treeRadio.png") no-repeat;
+  background-size: 100%;
+  position: relative;
+  top: -2px;
+  z-index: 2;
+}
+
+.myDialog .checklist .ztree li span.button.chk.checkbox_false_full {
+  position: relative;
+  z-index: 2;
+}
+
+.myDialog .checklist .ztree li span.button.roots_open {
+  position: relative;
+  z-index: 2;
+}
+
+.myDialog .checklist .ztree li span.button.ico_open {
+  vertical-align: middle;
+  display: inline-block;
+  width: 16px;
+  height: 36px;
+  background: url("../images/icon-16-file.png") center center no-repeat;
+  background-size: 100%;
+}
+
+.myDialog .checklist .ztree li span.button.ico_docu {
+  display: inline-block;
+  width: 13px;
+  height: 36px;
+  background: url("../images/icon-16-shcool.png") center center no-repeat;
+  background-size: 100%;
+}
+
+.myDialog .checklist .ztree li span.button.ico_close {
+  display: none;
+}
+
+.myDialog .checklist .ztree li span.button.roots_open,
+.myDialog .checklist .ztree li span.button.bottom_open,
+.myDialog .checklist .ztree li span.button.center_open {
+  display: inline-block;
+  width: 18px;
+  height: 36px;
+  background: url("../images/triangle.png") center center no-repeat;
+  position: relative;
+  z-index: 2;
+  transform: rotate(90deg);
+  -ms-transform: rotate(90deg);
+  /* IE 9 */
+  -moz-transform: rotate(90deg);
+  /* Firefox */
+  -webkit-transform: rotate(90deg);
+  /* Safari 和 Chrome */
+  -o-transform: rotate(90deg);
+  /* Opera */
+}
+
+.myDialog .checklist .ztree li span.button.roots_close,
+.myDialog .checklist .ztree li span.button.bottom_close,
+.myDialog .checklist .ztree li span.button.center_close {
+  width: 18px;
+  height: 36px;
+  background: url("../images/triangle.png") center center no-repeat;
+}
+
+.myDialog .checklist .ztree li a {
+  height: 36px;
+  padding: 0;
+}
+
+.myDialog .checklist .ztree li a:hover {
+  text-decoration: none !important;
+  background: none;
+}
+
+.myDialog .checklist .ztree li a.curSelectedNode {
+  background: none;
+  border: none;
+  opacity: 1;
+}
+
+.myDialog .checklist .ztree li .stuImg {
+  width: 25px;
+  height: 25px;
+  border-radius: 18px;
+  position: relative;
+  top: 5px;
+  margin-right: 6px;
+}
+
+.myDialog .checklist .ztree span.button.chk {
+  position: relative;
+}
+
+.myDialog .el-dialog__footer .disabled {
+  background: rgba(0, 132, 255, 0.3);
+  border: none;
+}
+
+.myDialog .el-dialog__footer .disabled:hover {
+  background: rgba(0, 132, 255, 0.3);
+  border: none;
+}

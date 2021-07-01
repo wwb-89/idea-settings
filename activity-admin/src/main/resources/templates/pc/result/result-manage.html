@@ -14,13 +14,6 @@
         [v-cloak]{
             display: none;
         }
-        .el-table-filter .el-table-filter__list {
-            max-height: 300px;
-            overflow: auto;
-        }
-        .el-dropdown-link.el-dropdown-selfdefine {
-            color: #0084FF;
-        }
     </style>
 </head>
 
@@ -40,58 +33,60 @@
         <!-- 选项卡内容 -->
         <div class="tab-content-box">
             <div class="tab-item">
-                <!-- 操作栏 -->
-                <div class="table-operate-box fs0">
-                    <el-button class="btn-customize" round @click="ifModifyPop = true" v-if="selections && selections.length > 0">修改合格状态</el-button>
-<!--                    <el-button class="btn-customize" round>颁奖</el-button>-->
-                    <el-button class="btn-customize" round @click="exportData">导出</el-button>
-                    <el-button class="btn-customize" round @click="exportRecord">导出记录</el-button>
-                    <div class="search-Box">
-                        <el-input placeholder="搜索"
-                                  icon="search"
-                                  class="search"
-                                  v-model="queryParams.sw"
-                                  suffix-icon="el-icon-search"
-                                  @keydown.enter.native="search"
-                        >
-                        </el-input>
-                        <i class="icon-cancel btn-cancel fs16"
-                           v-show="queryParams.sw && queryParams.sw.length > 0"
-                           @click="resetSearch"></i>
+                <div class="operate-box">
+                    <!-- 操作栏 -->
+                    <div class="table-operate-box fs0"  >
+                        <el-button class="btn-customize" round @click="ifModifyPop = true" v-if="selections && selections.length > 0">修改合格状态</el-button>
+<!--                        <el-button class="btn-customize" round>颁奖</el-button>-->
+                        <el-button class="btn-customize" round @click="exportData">导出</el-button>
+                        <el-button class="btn-customize" round @click="exportRecord">导出记录</el-button>
+                        <div class="search-Box">
+                            <el-input placeholder="搜索"
+                                      icon="search"
+                                      class="search"
+                                      v-model="queryParams.sw"
+                                      suffix-icon="el-icon-search"
+                                      @keydown.enter.native="search"
+                            >
+                            </el-input>
+                            <i class="icon-cancel btn-cancel fs16"
+                               v-show="queryParams.sw && queryParams.sw.length > 0"
+                               @click="resetSearch"></i>
+                        </div>
                     </div>
-                </div>
                 <!-- 计数栏 -->
-                <div class="table-count-box fs12">
-                    <div class="count-info fl">
-                        <span class="colorBlue marginr8" v-show="selections.length > 0">已选择 {{ selections.length }} 人</span>
-                        <span class="color999">共 {{ total }} 人</span>
+                    <div class="table-count-box fs12">
+                        <div class="count-info fl">
+                            <span class="colorBlue marginr8" v-show="selections.length > 0">已选择 {{ selections.length }} 人</span>
+                            <span class="color999">共 {{ total }} 人</span>
+                        </div>
+                        <div class="setting-box">
+                            <el-dropdown :hide-on-click="false" trigger="click">
+                                <el-tooltip class="item" effect="dark" content="显示字段" placement="top">
+                                    <span class="icon-setting fs16"></span>
+                                </el-tooltip>
+                                <el-dropdown-menu slot="dropdown" class="set-dropdown">
+                                    <div class="dropdown-lists">
+                                        <el-dropdown-item v-for="(item, index) in configTableFieldDetails" :key="'detail-' + item.id">
+                                            <el-checkbox v-model="item.defaultChecked" :disabled="!item.allowUncheck" @change="reSortSettingData"> {{item.name}}</el-checkbox>
+                                            <el-tooltip v-if="item.allowTop" class="item" effect="dark" :content="item.defaultTop ? '取消置顶' : '置顶'" placement="top">
+                                                <i :class="`btn-fix icon-${item.defaultTop ? 'pinned' : 'pin'} fs16`" @click="topConfigChange(item)"></i>
+                                            </el-tooltip>
+                                            <i v-else :class="`btn-fix icon-${item.defaultTop ? 'pinned' : 'pin'} fs16`"></i>
+                                        </el-dropdown-item>
+                                    </div>
+                                    <div class="bottom-btns fs14 colorBlue">
+                                        <el-button type="text" class="btn-confirm" @click="configSubmit">确定</el-button>
+                                        <el-button type="text" class="btn-reset" @click="resetConfig">重置</el-button>
+                                    </div>
+                                </el-dropdown-menu>
+                            </el-dropdown>
+                        </div>
+                        <div class="clear"></div>
                     </div>
-                    <div class="setting-box">
-                        <el-dropdown :hide-on-click="false" trigger="click">
-                            <el-tooltip class="item" effect="dark" content="显示字段" placement="top">
-                                <span class="icon-setting fs16"></span>
-                            </el-tooltip>
-                            <el-dropdown-menu slot="dropdown" class="set-dropdown">
-                                <div class="dropdown-lists">
-                                    <el-dropdown-item v-for="(item, index) in configTableFieldDetails" :key="'detail-' + item.id">
-                                        <el-checkbox v-model="item.defaultChecked" :disabled="!item.allowUncheck" @change="reSortSettingData"> {{item.name}}</el-checkbox>
-                                        <el-tooltip v-if="item.allowTop" class="item" effect="dark" :content="item.defaultTop ? '取消置顶' : '置顶'" placement="top">
-                                            <i :class="`btn-fix icon-${item.defaultTop ? 'pinned' : 'pin'} fs16`" @click="topConfigChange(item)"></i>
-                                        </el-tooltip>
-                                        <i v-else :class="`btn-fix icon-${item.defaultTop ? 'pinned' : 'pin'} fs16`"></i>
-                                    </el-dropdown-item>
-                                </div>
-                                <div class="bottom-btns fs14 colorBlue">
-                                    <el-button type="text" class="btn-confirm" @click="configSubmit">确定</el-button>
-                                    <el-button type="text" class="btn-reset" @click="resetConfig">重置</el-button>
-                                </div>
-                            </el-dropdown-menu>
-                        </el-dropdown>
-                    </div>
-                    <div class="clear"></div>
                 </div>
 
-                <el-table class="table-box" :data="tableData" @sort-change="sortChange" @filter-change="filterChange" @selection-change="selectChange">
+                <el-table v-if="tbodyHeight > 0" class="table-box" :data="tableData" :height="tbodyHeight" @sort-change="sortChange" @filter-change="filterChange" @selection-change="selectChange">
                     <el-table-column fixed type="selection" width="24"></el-table-column>
                     <template v-for="item in showTableFieldDetails" v-if="item.defaultChecked">
                         <el-table-column
@@ -102,9 +97,9 @@
                                 :min-width="item.minWidth"
                         >
                             <template slot-scope="scope">
-                                <div style="cursor: pointer; color: #0084FF" @click="toUserResultDetail(scope.row.uid)">
+                                <span style="cursor: pointer; color: #0084FF" @click="toUserResultDetail(scope.row.uid)">
                                     {{scope.row.realName}}
-                                </div>
+                                </span>
                             </template>
                         </el-table-column>
                         <el-table-column
@@ -122,13 +117,14 @@
                         </el-table-column>
                         <el-table-column
                                 v-else-if="item.code === 'qualifiedStatus'"
+                                class-name="th-dropdwon"
                                 :fixed="item.defaultTop"
-                                :column-key="item.code"
+                                column-key="statuses"
                                 :label="item.name"
                                 :ifCenter="item.align"
                                 :min-width="item.minWidth"
                                 :filters="filterStatus"
-                                :filter-multiple="false"
+                                filter-placement="bottom"
                         >
                             <template slot-scope="scope">
                                 <template v-if="(!scope.row.qualifiedStatus && scope.row.qualifiedStatus !== 0) || scope.row.qualifiedStatus === 2">
@@ -222,7 +218,7 @@
                     activityId: [[${activityId}]],
                     pageNum: 1,
                     pageSize: 10,
-                    qualifiedStatus: '',
+                    statuses: '',
                     sw: '',
                     orderFieldId: null,
                     orderType: 'DESC'
@@ -247,7 +243,9 @@
                 total: 0,
                 selectNumber:0, //表格选中的人数
                 ifCancelPop: false,
-                ifModifyPop: false //修改合格状态弹窗展示
+                ifModifyPop: false, //修改合格状态弹窗展示
+                bodyHeight: $(window).height(),
+                tbodyHeight: 0
             },
             created: function () {
                 var $this = this;
@@ -258,6 +256,9 @@
             },
             mounted: function () {
                 var $this = this;
+                var headH = $('.header-box').height();
+                var operateH = $('.operate-box').height();
+                $this.tbodyHeight = $this.bodyHeight - (headH + operateH + 48 + 16 + 32);
                 $this.loadData();
                 $this.reSortSettingData();
             },
@@ -428,9 +429,9 @@
                 filterChange: function (filterItem) {
                     var $this = this;
                     var key = Object.keys(filterItem)[0]
-                    // 单选过滤取第一个
-                    var value = filterItem[key][0];
-                    $this.queryParams[key] = activityApp.isEmpty(value) ? null : parseInt(value);
+                    if (key == 'statuses') {
+                        $this.queryParams[key] = filterItem[key].join(',');
+                    }
                     $this.queryParams.pageNum = 1;
                     $this.loadData();
                 },
