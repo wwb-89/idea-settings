@@ -1,0 +1,310 @@
+body, html {
+    background: #fff;
+}
+.item-block{
+    margin-top: 24px;
+    font-size: 0;
+    .item-title{
+        display: inline-block;
+        padding: 6px 0;
+        font-weight: 500;
+        font-size: 16px;
+        line-height: 20px;    
+        color: #333333;   
+    }
+    .titleTips{
+        display: inline-block;
+        font-size: 13px;
+        line-height: 32px;
+        color: #999999;
+        margin-left: 24px;
+    }
+}
+.width120{
+    width: 120px;
+}
+.width80{
+    width: 80px;
+}
+.width362{
+    width: 362px;
+}
+.width162{
+    width: 162px;
+}
+.edit-box{
+    .edit-icon{
+        display: inline-block;
+        width: 16px;
+        height: 16px;
+        background: url(../images/yq-design/edit.png);
+        cursor: pointer;
+        &:hover{
+            background: url(../images/yq-design/edit-hover.png);
+        }
+    }
+    .delete-icon{
+        display: inline-block;
+        width: 16px;
+        height: 16px;
+        background: url(../images/yq-design/trash.png);
+        margin-left: 16px;
+        cursor: pointer;
+        &:hover{
+            background: url(../images/yq-design/trash-hover.png);
+        }
+    }
+}
+.el-form{
+    .form-item{
+        margin-top: 16px;
+        .label{
+            display: inline-block;
+            vertical-align: top;
+            width: 98px;
+            padding: 6px 0;
+            font-size: 14px;
+            line-height: 20px;
+            color: #666666;
+        }
+        .input-box{
+            display: inline-block;
+            vertical-align: top;
+            margin-left: 24px;
+            width: calc(100% - 122px);
+            .width120{
+                margin: 0 16px;
+            }
+            .select-box{
+                margin-top: 8px;
+            }
+            .width80{
+                margin-right: 16px;
+            }
+        }
+        .lineTips{
+            display: inline-block;
+            vertical-align: top;
+            padding: 5px 0;
+            font-size: 14px;
+            line-height: 22px;
+            color: #333333;
+        }
+        .bottomTips{
+            padding: 6px 0;
+            font-size: 14px;
+            line-height: 20px;
+            color: #999999;
+            margin-top: 8px;
+        }
+        .rightTips{
+            display: inline-block;
+            vertical-align: top;
+            padding: 6px 0;
+            font-size: 14px;
+            line-height: 20px;
+            color: #999999;
+            margin-left: 16px;
+        }
+        .el-switch{
+            height: 32px;
+            line-height: 32px;
+        }
+        .data-item{
+            position: relative;
+            border: 1px solid #E9E9E9;
+            box-sizing: border-box;
+            border-radius: 8px;
+            padding: 16px;
+            box-sizing: border-box;
+            width: 520px;
+            margin-bottom: 8px;
+            .txt-box{
+                width: 424px;
+                .name{
+                    font-weight: 500;
+                    font-size: 14px;
+                    line-height: 20px; 
+                    color: #333333;
+                }
+                .desc{
+                    font-size: 14px;
+                    line-height: 20px;
+                    color: #999999;
+                    margin-top: 8px;
+                }
+            }
+            .edit-box{
+                position: absolute;
+                right: 16px;
+                top: 50%;
+                transform: translateY(-50%);
+            }
+        }
+        .new-add{
+            cursor: pointer;
+            .add-icon{
+                display: inline-block;
+                vertical-align: top;
+                width: 16px;
+                height: 16px;
+                background: url(../images/yq-design/plus-circle-16.png);
+                margin-right: 4px;
+                margin-top: 2px;
+            }
+            span{
+                font-size: 14px;
+                line-height: 20px;
+                color: #0084FF;
+            }
+        }
+        .configure{
+            cursor: pointer;
+            height: 32px;
+            line-height: 32px;
+            .icon-set{
+                display: inline-block;
+                vertical-align: top;
+                width: 16px;
+                height: 16px;
+                background: url(../images/setting-16.png);
+                margin-right: 4px;
+                margin-top: 8px;
+            }
+            span{
+                font-size: 14px;
+                color: #0084FF;
+            }
+        }
+    }
+}
+.rule-setting{
+    padding: 0 32px 32px;
+    min-width: 820px;
+    box-sizing: border-box;
+    .more-set{
+        height: 20px;
+        margin-top: 24px;
+        cursor: pointer;
+        span{
+            display: inline-block;
+            vertical-align: top;
+            font-size: 14px;
+            line-height: 20px;
+            color: #999999;
+        }
+        .arrow-down{
+            display: inline-block;
+            vertical-align: top;
+            width: 16px;
+            height: 16px;
+            margin-top: 2px;
+            background: url(../images/yq-design/arrow-down-small.png);
+            &.active{
+                transform: rotate(180deg);
+            }
+        }
+    }
+}
+/* 数据推送弹窗样式 */
+.dialog-wrap.data-push{
+    width: 520px;
+    .dialog-content{
+        padding: 0 32px 20px;
+        font-size: 0;
+        .input-box{
+            margin-top: 20px;
+            .el-input{
+                vertical-align: top;
+            }
+            .label{
+                display: inline-block;
+                vertical-align: top;
+                padding: 6px 0;
+                font-size: 14px;
+                line-height: 20px;
+                color: #666666;
+                margin-right: 24px;
+            }
+            .el-select{
+                display: inline-block;
+                vertical-align: top;
+            }
+        }
+        .dataTips{
+            display: inline-block;
+            vertical-align: top;
+            font-size: 14px;
+            line-height: 32px;
+            color: #333333;
+            margin: 0 16px;
+        }
+        .bottomTips{
+            padding: 6px 0;
+            font-size: 14px;
+            line-height: 20px;
+            color: #999999;
+            margin-top: 4px;
+        }
+        .second-step{
+            .title-box{
+                margin-top: 20px;
+                span{
+                    display: inline-block;
+                    vertical-align: top;
+                    font-size: 14px;
+                    line-height: 20px;
+                    color: #666666;
+                    &:first-child{
+                        width: 53%;
+                    }
+                }
+            }
+            .data-box{
+                margin-top: 12px;
+                .start-name{
+                    display: inline-block;
+                    vertical-align: top;
+                    width: 152px;
+                    height: 32px;
+                    background: #F8F8F8;
+                    border: 1px solid #E9E9E9;
+                    box-sizing: border-box;
+                    border-radius: 2px;
+                    padding: 5px 12px;
+                    font-size: 14px;
+                    line-height: 22px;
+                    color: #333333;
+                }
+                .el-select{
+                    width: 152px;
+                    display: inline-block;
+                    vertical-align: top;
+                }
+            }
+            .edit-box{
+                display: inline-block;
+                vertical-align: top;
+                margin-left: 16px;
+                i{
+                    margin-top: 8px;
+                }
+            }
+        }
+        .other-form{
+            .dataTips{
+                margin: 0 12px;
+            }
+        }
+    }
+    .footer{
+        font-size: 0;
+        text-align: center;
+        .btn{
+            display: inline-block;
+            &:first-child{
+                margin-right: 24px;
+            }
+        }
+    }
+}

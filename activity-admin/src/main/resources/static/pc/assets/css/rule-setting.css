@@ -1,0 +1,370 @@
+@charset "UTF-8";
+body, html {
+  background: #fff;
+}
+
+.item-block {
+  margin-top: 24px;
+  font-size: 0;
+}
+
+.item-block .item-title {
+  display: inline-block;
+  padding: 6px 0;
+  font-weight: 500;
+  font-size: 16px;
+  line-height: 20px;
+  color: #333333;
+}
+
+.item-block .titleTips {
+  display: inline-block;
+  font-size: 13px;
+  line-height: 32px;
+  color: #999999;
+  margin-left: 24px;
+}
+
+.width120 {
+  width: 120px;
+}
+
+.width80 {
+  width: 80px;
+}
+
+.width362 {
+  width: 362px;
+}
+
+.width162 {
+  width: 162px;
+}
+
+.edit-box .edit-icon {
+  display: inline-block;
+  width: 16px;
+  height: 16px;
+  background: url(../images/yq-design/edit.png);
+  cursor: pointer;
+}
+
+.edit-box .edit-icon:hover {
+  background: url(../images/yq-design/edit-hover.png);
+}
+
+.edit-box .delete-icon {
+  display: inline-block;
+  width: 16px;
+  height: 16px;
+  background: url(../images/yq-design/trash.png);
+  margin-left: 16px;
+  cursor: pointer;
+}
+
+.edit-box .delete-icon:hover {
+  background: url(../images/yq-design/trash-hover.png);
+}
+
+.el-form .form-item {
+  margin-top: 16px;
+}
+
+.el-form .form-item .label {
+  display: inline-block;
+  vertical-align: top;
+  width: 98px;
+  padding: 6px 0;
+  font-size: 14px;
+  line-height: 20px;
+  color: #666666;
+}
+
+.el-form .form-item .input-box {
+  display: inline-block;
+  vertical-align: top;
+  margin-left: 24px;
+  width: calc(100% - 122px);
+}
+
+.el-form .form-item .input-box .width120 {
+  margin: 0 16px;
+}
+
+.el-form .form-item .input-box .select-box {
+  margin-top: 8px;
+}
+
+.el-form .form-item .input-box .width80 {
+  margin-right: 16px;
+}
+
+.el-form .form-item .lineTips {
+  display: inline-block;
+  vertical-align: top;
+  padding: 5px 0;
+  font-size: 14px;
+  line-height: 22px;
+  color: #333333;
+}
+
+.el-form .form-item .bottomTips {
+  padding: 6px 0;
+  font-size: 14px;
+  line-height: 20px;
+  color: #999999;
+  margin-top: 8px;
+}
+
+.el-form .form-item .rightTips {
+  display: inline-block;
+  vertical-align: top;
+  padding: 6px 0;
+  font-size: 14px;
+  line-height: 20px;
+  color: #999999;
+  margin-left: 16px;
+}
+
+.el-form .form-item .el-switch {
+  height: 32px;
+  line-height: 32px;
+}
+
+.el-form .form-item .data-item {
+  position: relative;
+  border: 1px solid #E9E9E9;
+  -webkit-box-sizing: border-box;
+     -moz-box-sizing: border-box;
+          box-sizing: border-box;
+  border-radius: 8px;
+  padding: 16px;
+  box-sizing: border-box;
+  width: 520px;
+  margin-bottom: 8px;
+}
+
+.el-form .form-item .data-item .txt-box {
+  width: 424px;
+}
+
+.el-form .form-item .data-item .txt-box .name {
+  font-weight: 500;
+  font-size: 14px;
+  line-height: 20px;
+  color: #333333;
+}
+
+.el-form .form-item .data-item .txt-box .desc {
+  font-size: 14px;
+  line-height: 20px;
+  color: #999999;
+  margin-top: 8px;
+}
+
+.el-form .form-item .data-item .edit-box {
+  position: absolute;
+  right: 16px;
+  top: 50%;
+  -webkit-transform: translateY(-50%);
+      -ms-transform: translateY(-50%);
+          transform: translateY(-50%);
+}
+
+.el-form .form-item .new-add {
+  cursor: pointer;
+}
+
+.el-form .form-item .new-add .add-icon {
+  display: inline-block;
+  vertical-align: top;
+  width: 16px;
+  height: 16px;
+  background: url(../images/yq-design/plus-circle-16.png);
+  margin-right: 4px;
+  margin-top: 2px;
+}
+
+.el-form .form-item .new-add span {
+  font-size: 14px;
+  line-height: 20px;
+  color: #0084FF;
+}
+
+.el-form .form-item .configure {
+  cursor: pointer;
+  height: 32px;
+  line-height: 32px;
+}
+
+.el-form .form-item .configure .icon-set {
+  display: inline-block;
+  vertical-align: top;
+  width: 16px;
+  height: 16px;
+  background: url(../images/setting-16.png);
+  margin-right: 4px;
+  margin-top: 8px;
+}
+
+.el-form .form-item .configure span {
+  font-size: 14px;
+  color: #0084FF;
+}
+
+.rule-setting {
+  padding: 0 32px 32px;
+  min-width: 820px;
+  -webkit-box-sizing: border-box;
+     -moz-box-sizing: border-box;
+          box-sizing: border-box;
+}
+
+.rule-setting .more-set {
+  height: 20px;
+  margin-top: 24px;
+  cursor: pointer;
+}
+
+.rule-setting .more-set span {
+  display: inline-block;
+  vertical-align: top;
+  font-size: 14px;
+  line-height: 20px;
+  color: #999999;
+}
+
+.rule-setting .more-set .arrow-down {
+  display: inline-block;
+  vertical-align: top;
+  width: 16px;
+  height: 16px;
+  margin-top: 2px;
+  background: url(../images/yq-design/arrow-down-small.png);
+}
+
+.rule-setting .more-set .arrow-down.active {
+  -webkit-transform: rotate(180deg);
+      -ms-transform: rotate(180deg);
+          transform: rotate(180deg);
+}
+
+/* 数据推送弹窗样式 */
+.dialog-wrap.data-push {
+  width: 520px;
+}
+
+.dialog-wrap.data-push .dialog-content {
+  padding: 0 32px 20px;
+  font-size: 0;
+}
+
+.dialog-wrap.data-push .dialog-content .input-box {
+  margin-top: 20px;
+}
+
+.dialog-wrap.data-push .dialog-content .input-box .el-input {
+  vertical-align: top;
+}
+
+.dialog-wrap.data-push .dialog-content .input-box .label {
+  display: inline-block;
+  vertical-align: top;
+  padding: 6px 0;
+  font-size: 14px;
+  line-height: 20px;
+  color: #666666;
+  margin-right: 24px;
+}
+
+.dialog-wrap.data-push .dialog-content .input-box .el-select {
+  display: inline-block;
+  vertical-align: top;
+}
+
+.dialog-wrap.data-push .dialog-content .dataTips {
+  display: inline-block;
+  vertical-align: top;
+  font-size: 14px;
+  line-height: 32px;
+  color: #333333;
+  margin: 0 16px;
+}
+
+.dialog-wrap.data-push .dialog-content .bottomTips {
+  padding: 6px 0;
+  font-size: 14px;
+  line-height: 20px;
+  color: #999999;
+  margin-top: 4px;
+}
+
+.dialog-wrap.data-push .dialog-content .second-step .title-box {
+  margin-top: 20px;
+}
+
+.dialog-wrap.data-push .dialog-content .second-step .title-box span {
+  display: inline-block;
+  vertical-align: top;
+  font-size: 14px;
+  line-height: 20px;
+  color: #666666;
+}
+
+.dialog-wrap.data-push .dialog-content .second-step .title-box span:first-child {
+  width: 53%;
+}
+
+.dialog-wrap.data-push .dialog-content .second-step .data-box {
+  margin-top: 12px;
+}
+
+.dialog-wrap.data-push .dialog-content .second-step .data-box .start-name {
+  display: inline-block;
+  vertical-align: top;
+  width: 152px;
+  height: 32px;
+  background: #F8F8F8;
+  border: 1px solid #E9E9E9;
+  -webkit-box-sizing: border-box;
+     -moz-box-sizing: border-box;
+          box-sizing: border-box;
+  border-radius: 2px;
+  padding: 5px 12px;
+  font-size: 14px;
+  line-height: 22px;
+  color: #333333;
+}
+
+.dialog-wrap.data-push .dialog-content .second-step .data-box .el-select {
+  width: 152px;
+  display: inline-block;
+  vertical-align: top;
+}
+
+.dialog-wrap.data-push .dialog-content .second-step .edit-box {
+  display: inline-block;
+  vertical-align: top;
+  margin-left: 16px;
+}
+
+.dialog-wrap.data-push .dialog-content .second-step .edit-box i {
+  margin-top: 8px;
+}
+
+.dialog-wrap.data-push .dialog-content .other-form .dataTips {
+  margin: 0 12px;
+}
+
+.dialog-wrap.data-push .footer {
+  font-size: 0;
+  text-align: center;
+}
+
+.dialog-wrap.data-push .footer .btn {
+  display: inline-block;
+}
+
+.dialog-wrap.data-push .footer .btn:first-child {
+  margin-right: 24px;
+}

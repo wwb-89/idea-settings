@@ -364,3 +364,7 @@ input:-ms-input-placeholder, textarea:-ms-input-placeholder {
   background-color: #0084FF;
   border-color: #0084FF;
 }
+.el-switch.is-checked .el-switch__core{
+  border-color: #0084FF;
+  background-color: #0084FF;
+}
