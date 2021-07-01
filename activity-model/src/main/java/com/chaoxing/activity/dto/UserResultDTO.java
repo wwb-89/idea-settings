@@ -26,6 +26,12 @@ public class UserResultDTO {
     /** 用户真实姓名 */
     private String realName;
 
+    /** 学号 */
+    private String studentNo;
+
+    /** 手机号 */
+    private String mobile;
+
     /** 活动id */
     private Integer activityId;
 

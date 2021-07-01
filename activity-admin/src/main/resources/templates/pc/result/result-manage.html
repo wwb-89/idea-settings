@@ -18,6 +18,9 @@
             max-height: 300px;
             overflow: auto;
         }
+        .el-dropdown-link.el-dropdown-selfdefine {
+            color: #0084FF;
+        }
     </style>
 </head>
 
@@ -39,7 +42,7 @@
             <div class="tab-item">
                 <!-- 操作栏 -->
                 <div class="table-operate-box fs0">
-                    <el-button class="btn-customize" round :disabled="!selections || selections.length === 0" @click="ifModifyPop = true">修改合格状态</el-button>
+                    <el-button class="btn-customize" round @click="ifModifyPop = true" v-if="selections && selections.length > 0">修改合格状态</el-button>
 <!--                    <el-button class="btn-customize" round>颁奖</el-button>-->
                     <el-button class="btn-customize" round @click="exportData">导出</el-button>
                     <el-button class="btn-customize" round @click="exportRecord">导出记录</el-button>
@@ -54,7 +57,7 @@
                         </el-input>
                         <i class="icon-cancel btn-cancel fs16"
                            v-show="queryParams.sw && queryParams.sw.length > 0"
-                           @click="queryParams.sw = ''"></i>
+                           @click="resetSearch"></i>
                     </div>
                 </div>
                 <!-- 计数栏 -->
@@ -119,16 +122,18 @@
                         </el-table-column>
                         <el-table-column
                                 v-else-if="item.code === 'qualifiedStatus'"
-                                :prop="item.code"
                                 :fixed="item.defaultTop"
+                                :column-key="item.code"
                                 :label="item.name"
                                 :ifCenter="item.align"
                                 :min-width="item.minWidth"
+                                :filters="filterStatus"
+                                :filter-multiple="false"
                         >
                             <template slot-scope="scope">
                                 <template v-if="(!scope.row.qualifiedStatus && scope.row.qualifiedStatus !== 0) || scope.row.qualifiedStatus === 2">
-                                    <span style="cursor: pointer; color: #0084FF" @click="qualified(scope.row)">合格</span>
-                                    <span style="cursor: pointer; color: #0084FF" @click="unQualified(scope.row)">不合格</span>
+                                    <el-button type="text" @click="qualified(scope.row)" style="padding-right: 5px">合格</el-button>
+                                    <el-button type="text" @click="unQualified(scope.row)">不合格</el-button>
                                 </template>
                                 <template v-else>
                                     <el-dropdown class="status-dropdown" @command="command => dropDownCmd(command, scope.row)">
@@ -217,10 +222,16 @@
                     activityId: [[${activityId}]],
                     pageNum: 1,
                     pageSize: 10,
+                    qualifiedStatus: '',
                     sw: '',
                     orderFieldId: null,
                     orderType: 'DESC'
                 },
+                filterStatus: [
+                    {text: "不合格", value: "0"},
+                    {text: "合格", value: "1"},
+                    {text: "待处理", value: "2"},
+                ],
                 // 配置项源数据
                 tableFieldDetails: [[${tableFieldDetails}]],
                 // 配置项数据
@@ -304,7 +315,12 @@
                 search: function () {
                     var $this = this;
                     $this.queryParams.pageNum = 1;
-                    $this.queryParams.pageSize = 10;
+                    $this.loadData();
+                },
+                resetSearch: function () {
+                    var $this = this;
+                    $this.queryParams.sw = ''
+                    $this.queryParams.pageNum = 1;
                     $this.loadData();
                 },
                 // 重新加载数据
@@ -415,6 +431,7 @@
                     // 单选过滤取第一个
                     var value = filterItem[key][0];
                     $this.queryParams[key] = activityApp.isEmpty(value) ? null : parseInt(value);
+                    $this.queryParams.pageNum = 1;
                     $this.loadData();
                 },
                 modifyPopClick: function () {

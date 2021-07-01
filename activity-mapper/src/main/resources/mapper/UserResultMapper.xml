@@ -20,6 +20,8 @@
         SELECT
             t.uid as uid,
             t.real_name as realName,
+            t.student_no as studentNo,
+            t.mobile as mobile,
             t.activity_id as activityId,
             t.signed_in_num as signedInNum,
             ( CASE WHEN t.sign_in_num > 0 THEN ( CONVERT ( (t.signed_in_num / t.sign_in_num) * 100, DECIMAL ( 10, 2 ))) ELSE 0 END ) as signedInRate,
