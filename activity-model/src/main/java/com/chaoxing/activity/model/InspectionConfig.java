@@ -12,8 +12,9 @@ import java.util.Objects;
 
 /**
  * 考核配置
+ *
  * @className: InspectionConfig, table_name: t_inspection_config
- * @Description: 
+ * @Description:
  * @author: mybatis generator
  * @date: 2021-06-16 11:01:23
  * @version: ver 1.0
@@ -25,19 +26,19 @@ import java.util.Objects;
 @TableName(value = "t_inspection_config")
 public class InspectionConfig {
 
-    /** 主键; column: id*/
+    /** 主键; column: id */
     @TableId(type = IdType.AUTO)
     private Integer id;
-    /** 活动id; column: activity_id*/
+    /** 活动id; column: activity_id */
     private Integer activityId;
-    /** 合格判定方式; column: pass_decide_way*/
+    /** 合格判定方式; column: pass_decide_way */
     private String passDecideWay;
-    /** 判定值; column: decide_value*/
+    /** 判定值; column: decide_value */
     private BigDecimal decideValue;
-    /** 创建时间; column: create_time*/
+    /** 创建时间; column: create_time */
     @JSONField(serialize = false, deserialize = false)
     private LocalDateTime createTime;
-    /** 更新时间; column: update_time*/
+    /** 更新时间; column: update_time */
     @JSONField(serialize = false, deserialize = false)
     private LocalDateTime updateTime;
 
@@ -69,5 +70,13 @@ public class InspectionConfig {
         }
 
     }
+
+    public static InspectionConfig buildDefault(Integer activityId) {
+        return InspectionConfig.builder()
+                .activityId(activityId)
+                .passDecideWay(PassDecideWayEnum.MANUAL.getValue())
+                .build();
+    }
+
 
 }

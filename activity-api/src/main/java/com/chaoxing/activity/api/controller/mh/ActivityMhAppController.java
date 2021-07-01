@@ -289,13 +289,17 @@ public class ActivityMhAppController {
 	@RequestMapping("activity/calendar")
 	public RestRespDTO activityCalendar(String areaCode, @RequestParam(defaultValue = "0") Integer strict, String activityFlag, @RequestBody String data) throws ParseException {
 		JSONObject jsonObject = JSON.parseObject(data);
-		// 获取参数
-		Integer wfwfid = jsonObject.getInteger("wfwfid");
 		if (StringUtils.isBlank(areaCode)) {
 			areaCode = jsonObject.getString("areaCode");
 		}
 		// 现在不取areaCode的数据
 		areaCode = null;
+		// 一个活动是否需要多条数据
+		Boolean multi = jsonObject.getBoolean("multi");
+		// 为了兼容原来的样式需要为true
+		multi = Optional.ofNullable(multi).orElse(true);
+		// 获取参数
+		Integer wfwfid = jsonObject.getInteger("wfwfid");
 		Optional.ofNullable(wfwfid).orElseThrow(() -> new BusinessException("wfwfid不能为空"));
 		List<Integer> fids = Lists.newArrayList();
 		List<WfwRegionalArchitectureDTO> wfwRegionalArchitectures = Lists.newArrayList();
@@ -314,8 +318,14 @@ public class ActivityMhAppController {
 		} else {
 			fids.add(wfwfid);
 		}
+		Integer classifyId = null;
 		JSONArray classifies = jsonObject.getJSONArray("classifies");
-		Integer classifyId = ((JSONObject)Optional.ofNullable(classifies.get(0)).orElse(new JSONObject())).getInteger("id");
+		if (classifies != null) {
+			JSONObject classify = classifies.getJSONObject(0);
+			if (classify != null) {
+				classifyId = classify.getInteger("id");
+			}
+		}
 		Integer pageNum = Optional.ofNullable(jsonObject.getInteger("page")).orElse(CommonConstant.DEFAULT_PAGE_NUM);
 		Integer pageSize = Optional.ofNullable(jsonObject.getInteger("pageSize")).orElse(CommonConstant.DEFAULT_PAGE_SIZE);
 		Page page = new Page(pageNum, pageSize);
@@ -339,7 +349,7 @@ public class ActivityMhAppController {
 		if (StringUtils.isNotBlank(date)) {
 			mhActivityCalendarQuery.setDate(date);
 		}
-		page = activityQueryService.listActivityCalendar(page, mhActivityCalendarQuery);
+		page = activityQueryService.listActivityCalendar(page, mhActivityCalendarQuery, multi);
 		JSONObject result = new JSONObject();
 		result.put("curPage", pageNum);
 		result.put("totalPages", page.getPages());
@@ -366,15 +376,25 @@ public class ActivityMhAppController {
 					.value(record.getCreateOrgName())
 					.flag("3")
 					.build());
-			// 地点
+			//
 			mhGeneralAppResultDataFields.add(MhGeneralAppResultDataDTO.MhGeneralAppResultDataFieldDTO.builder()
-					.value(Optional.ofNullable(record.getAddress()).orElse("") + Optional.ofNullable(record.getDetailAddress()).orElse(""))
-					.flag("100")
+					.value("")
+					.flag("4")
+					.build());
+			//
+			mhGeneralAppResultDataFields.add(MhGeneralAppResultDataDTO.MhGeneralAppResultDataFieldDTO.builder()
+					.value("")
+					.flag("5")
 					.build());
 			// 活动开始时间
 			mhGeneralAppResultDataFields.add(MhGeneralAppResultDataDTO.MhGeneralAppResultDataFieldDTO.builder()
 					.value(DateTimeFormatterConstant.YYYY_MM_DD_HH_MM.format(record.getStartTime()))
 					.flag("6")
+					.build());
+			// 地点
+			mhGeneralAppResultDataFields.add(MhGeneralAppResultDataDTO.MhGeneralAppResultDataFieldDTO.builder()
+					.value(Optional.ofNullable(record.getAddress()).orElse("") + Optional.ofNullable(record.getDetailAddress()).orElse(""))
+					.flag("100")
 					.build());
 			// 活动结束时间
 			mhGeneralAppResultDataFields.add(MhGeneralAppResultDataDTO.MhGeneralAppResultDataFieldDTO.builder()

@@ -94,9 +94,10 @@ public class ActivityQueryService {
 	 * @Date 2020-12-03 16:07:47
 	 * @param page
 	 * @param mhActivityCalendarQuery
+	 * @param multi 活动的时间范围内是否需要返回多条数据
 	 * @return com.baomidou.mybatisplus.extension.plugins.pagination.Page<com.chaoxing.activity.model.Activity>
 	*/
-	public Page<Activity> listActivityCalendar(Page<Activity> page, MhActivityCalendarQueryDTO mhActivityCalendarQuery) throws ParseException {
+	public Page<Activity> listActivityCalendar(Page<Activity> page, MhActivityCalendarQueryDTO mhActivityCalendarQuery, boolean multi) throws ParseException {
 		Integer strict = mhActivityCalendarQuery.getStrict();
 		if (Objects.equals(1, strict)) {
 			page = activityMapper.pageActivityCalendarCreated(page, mhActivityCalendarQuery);
@@ -112,24 +113,26 @@ public class ActivityQueryService {
 			// 每个活动的开始时间到结束时间
 			List<Activity> activities = Lists.newArrayList();
 			page.setRecords(activities);
-			for (Activity record : records) {
-				LocalDateTime startTime = record.getStartTime();
-				LocalDateTime endTime = record.getEndTime();
-				if (startTime.isBefore(startDateTime)) {
-					startTime = startDateTime;
-				}
-				if (endTime.isAfter(endDateTime)) {
-					endTime = endDateTime;
-				}
-				Calendar startCalendar = Calendar.getInstance();
-				startCalendar.set(startTime.getYear(), startTime.getMonthValue() - 1, startTime.getDayOfMonth(), 0, 0, 0);
-				while (startTime.isBefore(endTime)) {
-					Activity activity = new Activity();
-					BeanUtils.copyProperties(record, activity);
-					activity.setStartTime(DateUtils.timestamp2Date(startCalendar.getTime().getTime()));
-					activities.add(activity);
-					startCalendar.add(Calendar.DAY_OF_MONTH, 1);
-					startTime = DateUtils.timestamp2Date(startCalendar.getTime().getTime());
+			if (multi) {
+				for (Activity record : records) {
+					LocalDateTime startTime = record.getStartTime();
+					LocalDateTime endTime = record.getEndTime();
+					if (startTime.isBefore(startDateTime)) {
+						startTime = startDateTime;
+					}
+					if (endTime.isAfter(endDateTime)) {
+						endTime = endDateTime;
+					}
+					Calendar startCalendar = Calendar.getInstance();
+					startCalendar.set(startTime.getYear(), startTime.getMonthValue() - 1, startTime.getDayOfMonth(), 0, 0, 0);
+					while (startTime.isBefore(endTime)) {
+						Activity activity = new Activity();
+						BeanUtils.copyProperties(record, activity);
+						activity.setStartTime(DateUtils.timestamp2Date(startCalendar.getTime().getTime()));
+						activities.add(activity);
+						startCalendar.add(Calendar.DAY_OF_MONTH, 1);
+						startTime = DateUtils.timestamp2Date(startCalendar.getTime().getTime());
+					}
 				}
 			}
 		}

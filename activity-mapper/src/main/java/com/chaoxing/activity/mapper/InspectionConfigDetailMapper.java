@@ -17,6 +17,13 @@ import java.util.List;
 @Mapper
 public interface InspectionConfigDetailMapper extends BaseMapper<InspectionConfigDetail> {
 
-
+    /**批量新增
+     * @Description 
+     * @author wwb
+     * @Date 2021-07-01 14:08:39
+     * @param inspectionConfigDetails
+     * @return int
+    */
+    int batchAdd(@Param("inspectionConfigDetails") List<InspectionConfigDetail> inspectionConfigDetails);
 
 }

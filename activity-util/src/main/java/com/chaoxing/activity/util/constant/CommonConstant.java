@@ -61,4 +61,8 @@ public class CommonConstant {
 	/** 表单创建活动选择的门户模版id */
 	public static final Integer DEFAULT_FROM_FORM_CREATE_ACTIVITY_TEMPLATE_ID = 16;
 
+	// 活动相关
+	/** 活动考核配置签到默认分值 */
+	public static final BigDecimal DEFAULT_SIGNED_IN_SCORE = BigDecimal.valueOf(5);
+
 }

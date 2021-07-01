@@ -16,4 +16,19 @@
         t.id, t.config_id, t.action_type, t.action, t.score, t.upper_limit, t.is_deleted, 
         t.create_time, t.update_time
     </sql>
+    <insert id="batchAdd">
+        INSERT INTO t_inspection_config_detail ( config_id, action_type, action, score, upper_limit, is_deleted )
+        VALUES
+            <foreach collection="inspectionConfigDetails" index="key" item="value" open="" close="" separator=",">
+                (
+                    #{value.configId},
+                    #{value.actionType},
+                    #{value.action},
+                    #{value.score},
+                    #{value.upperLimit},
+                    #{value.deleted}
+                )
+            </foreach>
+    </insert>
+
 </mapper>

@@ -22,6 +22,7 @@ import com.chaoxing.activity.service.activity.manager.ActivityManagerService;
 import com.chaoxing.activity.service.activity.module.ActivityModuleService;
 import com.chaoxing.activity.service.activity.scope.ActivityScopeService;
 import com.chaoxing.activity.service.event.ActivityChangeEventService;
+import com.chaoxing.activity.service.inspection.InspectionConfigHandleService;
 import com.chaoxing.activity.service.manager.GuanliApiService;
 import com.chaoxing.activity.service.manager.MhApiService;
 import com.chaoxing.activity.service.manager.module.SignApiService;
@@ -99,6 +100,8 @@ public class ActivityHandleService {
 	private ActivityStatSummaryHandlerService activityStatSummaryHandlerService;
 	@Resource
 	private ActivityInspectionResultDecideQueueService activityInspectionResultDecideQueueService;
+	@Resource
+	private InspectionConfigHandleService inspectionConfigHandleService;
 
 	@Resource
 	private SignApiService signApiService;
@@ -150,6 +153,7 @@ public class ActivityHandleService {
 		}
 		activityMapper.insert(activity);
 		Integer activityId = activity.getId();
+		inspectionConfigHandleService.initInspectionConfig(activityId);
 		activityStatSummaryHandlerService.init(activityId);
 		ActivityDetail activityDetail = ActivityDetail.builder()
 				.activityId(activityId)

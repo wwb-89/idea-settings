@@ -18,6 +18,7 @@ import com.chaoxing.activity.service.activity.scope.ActivityScopeQueryService;
 import com.chaoxing.activity.service.manager.module.SignApiService;
 import com.chaoxing.activity.service.org.OrgService;
 import com.chaoxing.activity.util.UserAgentUtils;
+import com.google.common.collect.Lists;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -91,7 +92,6 @@ public class ActivityManageController {
 	 * @param model
 	 * @param activityId
 	 * @param request
-	 * @param code
 	 * @param step
 	 * @param strict
 	 * @return java.lang.String
@@ -116,8 +116,18 @@ public class ActivityManageController {
 			sign = signApiService.getById(signId);
 		}
 		model.addAttribute("sign", sign);
-		// 模板列表
-		List<WebTemplate> webTemplates = webTemplateService.listAvailable(loginUser.getFid(), activity.getActivityFlag());
+		// 模板列表，如果选择过模版就查询选择的模版，否则查询可用的模版
+		Integer webTemplateId = activity.getWebTemplateId();
+		List<WebTemplate> webTemplates;
+		if (webTemplateId != null) {
+			webTemplates = Lists.newArrayList();
+			WebTemplate webTemplate = webTemplateService.getById(webTemplateId);
+			if (webTemplate != null) {
+				webTemplates.add(webTemplate);
+			}
+		} else {
+			webTemplates = webTemplateService.listAvailable(loginUser.getFid(), activity.getActivityFlag());
+		}
 		model.addAttribute("webTemplates", webTemplates);
 		model.addAttribute("step", step);
 		// 活动发布范围
