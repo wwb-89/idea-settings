@@ -162,30 +162,26 @@
                         </template>
                     </el-table-column>
                 </el-table>
-
                 <el-pagination v-show="pages > 1" background layout="prev, pager, next" :total="total" :page-size="queryParams.pageSize" :current-page="queryParams.pageNum" @current-change="changePage" style="text-align: center;"></el-pagination>
-
-                <!-- 删除弹窗 -->
-                <vue-confirm ref="deleteWindow" :message="'删除后，将清空该活动的相关信息和记录'" :cancel="'取消'" :sure="'删除'" @callback="deleteSubmit"></vue-confirm>
-                <!--下架弹窗-->
-                <vue-confirm ref="releaseWindow" :message="'发布后，该活动将展示在活动市场中'" :cancel="'取消'" :sure="'发布'" @callback="release"></vue-confirm>
-                <!--下架弹窗-->
-                <vue-confirm ref="canReleaseWindow" :message="'下架后，该活动将不在活动广场中显示'" :cancel="'取消'" :sure="'下架'" @callback="cancelRelease"></vue-confirm>
-                <!--去选择模版-->
-                <vue-confirm ref="selectTemlateWindow" :message="'活动还未选择模板，请选择模板后发布'" :cancel="'取消'" :sure="'去选择'" @callback="toSelectTemplate"></vue-confirm>
-
             </div>
         </div>
         <!-- 表格内容 -->
     </div>
-
+    <!-- 删除弹窗 -->
+    <vue-confirm-common ref="deleteWindow" :message="'删除后，将清空该活动的相关信息和记录'" :cancel="'取消'" :sure="'删除'" @callback="deleteSubmit"></vue-confirm-common>
+    <!--下架弹窗-->
+    <vue-confirm-common ref="releaseWindow" :message="'发布后，该活动将展示在活动市场中'" :cancel="'取消'" :sure="'发布'" @callback="release"></vue-confirm-common>
+    <!--下架弹窗-->
+    <vue-confirm-common ref="canReleaseWindow" :message="'下架后，该活动将不在活动广场中显示'" :cancel="'取消'" :sure="'下架'" @callback="cancelRelease"></vue-confirm-common>
+    <!--去选择模版-->
+    <vue-confirm-common ref="selectTemlateWindow" :message="'活动还未选择模板，请选择模板后发布'" :cancel="'取消'" :sure="'去选择'" @callback="toSelectTemplate"></vue-confirm-common>
 </div>
 <div th:replace="pc/include/common_js :: common_js(~{::script})">
     <script src="/static/pc/assets/lib/element-ui/lib/index.js" th:src="@{/pc/assets/lib/element-ui/lib/index.js}"></script>
     <script src="/static/pc/assets/lib/zTree_v3/js/jquery.ztree.core.js" th:src="@{/pc/assets/lib/zTree_v3/js/jquery.ztree.core.js}"></script>
     <script src="/static/pc/assets/lib/zTree_v3/js/jquery.ztree.excheck.min.js" th:src="@{/pc/assets/lib/zTree_v3/js/jquery.ztree.excheck.min.js}"></script>
     <script src="/static/pc/assets/lib/zTree_v3/js/jquery.ztree.exedit.js" th:src="@{/pc/assets/lib/zTree_v3/js/jquery.ztree.exedit.js}"></script>
-    <script src="/static/pc/assets/component/confirm.js" th:src="@{/pc/assets/component/confirm.js}"></script>
+    <script src="/static/pc/assets/component/confirm-common.js" th:src="@{/pc/assets/component/confirm-common.js}"></script>
     <script src="/static/pc/assets/lib/jqthumb.min.js" th:src="@{/pc/assets/lib/jqthumb.min.js}"></script>
     <script src="/static/pc/assets/lib/set-iframe-height-child.js" th:src="@{/pc/assets/lib/set-iframe-height-child.js}"></script>
     <script th:inline="javascript">
