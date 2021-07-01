@@ -164,6 +164,12 @@
                 <when test="params.status != null">
                     AND t.`status` = #{params.status}
                 </when>
+                <when test="params.statusList != null and params.statusList.size() > 0">
+                    AND t.`status` in
+                        <foreach collection="params.statusList" index="key" item="value" open="(" close=")" separator=",">
+                            #{value}
+                        </foreach>
+                </when>
                 <otherwise>
                     AND t.`status` > 0
                 </otherwise>
