@@ -827,7 +827,7 @@ body {
 
 .el-table-filter .el-checkbox__label {
   overflow: hidden;
-  width: 152px;
+  min-width: 60px;
   line-height: 22px;
   max-height: 44px;
   display: inline-block;

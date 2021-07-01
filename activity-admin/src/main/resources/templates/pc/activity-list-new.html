@@ -15,9 +15,6 @@
         [v-cloak] {
             display: none;
         }
-        #activity-vue {
-            padding-top: 0;
-        }
     </style>
 </head>
 <body>
@@ -37,16 +34,9 @@
                 <div class="operate-box">
                     <div class="table-operate-box fs0">
                         <el-button class="btn-customize" round @click="toAdd">创建活动</el-button>
-                        <!--                    <div class="manage-create-btn" @click="toAdd">-->
-                        <!--                        <img src="/static/pc/assets/images/icon-add.png" th:src="@{/pc/assets/images/icon-add.png}">-->
-                        <!--                        <div class="text">-->
-                        <!--                            创建活动-->
-                        <!--                        </div>-->
-                        <!--                    </div>-->
                         <div class="search-Box">
                             <el-input placeholder="活动名称/创建人/创建单位" icon="search" class="search" v-model.trim="sw" maxlength="10" suffix-icon="el-icon-search" @keyup.enter.native="search"></el-input>
                             <i class="icon-cancel btn-cancel fs16" v-show="sw" @click="clearSearch"></i>
-                            <!--                        <img v-show="sw" class="btn-cancel" style="display: block;" src="/static/pc/assets/images/icon-cancel.png" th:src="@{/pc/assets/images/icon-cancel.png}" @click="clearSearch">-->
                         </div>
                     </div>
                     <!-- 计数栏 -->
@@ -271,6 +261,7 @@
 
                 $this.bindEvents();
                 $this.loadData();
+                $this.reSortSettingData();
                 // 监听活动的创建，当创建或者编辑活动后重新加载数据
                 app.bindActivityChangeEvent(function (activityId) {
                     $this.loadData();
