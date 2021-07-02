@@ -13,7 +13,7 @@
 <body>
     <div class="poster-app" id="capture" v-cloak>
         <div class="capture-box">
-            <div class="poster-box" v-show="showOriginDom">
+            <div class="poster-box">
                 <div class="img-box">
                     <img :src="activity.coverCloudId | imgUrlFilter">
                 </div>
@@ -63,8 +63,7 @@
                 data: {
                     activity: [[${activity}]],
                     signUp: [[${signUp}]],
-                    imageData: null,
-                    showOriginDom: true
+                    imageData: null
                 },
                 computed: {
                     activityAddress: function () {
@@ -100,7 +99,6 @@
                             $this.imageData = canvas.toDataURL('image/png', 1);
                             $('#canvasImage')[0].src = $this.imageData;
                             $('#canvasImage').addClass('hasData');
-                            $this.showOriginDom = false;
                         });
                     },
                     getHeight: function (el, lineheight){
