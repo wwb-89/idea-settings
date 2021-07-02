@@ -320,7 +320,7 @@ public class ActivityMhAppController {
 		}
 		Integer classifyId = null;
 		JSONArray classifies = jsonObject.getJSONArray("classifies");
-		if (classifies != null) {
+		if (classifies != null && classifies.size() > 0) {
 			JSONObject classify = classifies.getJSONObject(0);
 			if (classify != null) {
 				classifyId = classify.getInteger("id");

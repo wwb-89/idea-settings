@@ -806,6 +806,9 @@ public class SignApiService {
 	 * @return void
 	*/
 	public void noticeSignUserResultChange(Integer uid, Integer signId) {
+		if (uid == null) {
+			return;
+		}
 		String url = String.format(NOTICE_SIGN_USER_RESULT_QUALIFIED_CHANGE_URL, signId, uid);
 		String result = restTemplate.getForObject(url, String.class);
 		JSONObject jsonObject = JSON.parseObject(result);
