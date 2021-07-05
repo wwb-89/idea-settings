@@ -73,6 +73,9 @@ public class ActivityQueryService {
 	private ActivityManagerQueryService activityManagerQueryService;
 	@Resource
 	private ActivityClassifyQueryService activityClassifyQueryService;
+	@Resource
+	private TableFieldDetailMapper tableFieldDetailMapper;
+
 
 	/**查询参与的活动
 	 * @Description 
@@ -229,6 +232,12 @@ public class ActivityQueryService {
 	public Page<Activity> listManaging(Page<Activity> page, ActivityManageQueryDTO activityManageQuery, LoginUserDTO loginUser) {
 		Integer strict = activityManageQuery.getStrict();
 		strict = Optional.ofNullable(strict).orElse(0);
+		if (activityManageQuery.getOrderFieldId() != null) {
+			TableFieldDetail field = tableFieldDetailMapper.selectById(activityManageQuery.getOrderFieldId());
+			if (field != null) {
+				activityManageQuery.setOrderField(field.getCode());
+			}
+		}
 		if (strict.compareTo(1) == 0) {
 			// 严格模式
 			activityManageQuery.setCreateUid(loginUser.getUid());

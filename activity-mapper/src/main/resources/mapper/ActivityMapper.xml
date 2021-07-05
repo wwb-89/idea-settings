@@ -146,7 +146,7 @@
     <!--查询管理的活动-->
     <select id="pageManaging" resultMap="BaseResultMap">
         SELECT
-            <include refid="Base_Column_List"></include>
+            <include refid="Base_Column_List"></include>, t.start_time as startTime, t.end_Time as endTime
         FROM
             t_activity t
         WHERE
@@ -184,14 +184,19 @@
         GROUP BY
             t.id
         ORDER BY
+        <if test="params.orderField != null and params.orderField != ''">
+            ${params.orderField} ${params.orderType},
+        </if>
+        <if test="params.orderField == null or params.orderField == ''">
             t.create_time DESC,
+        </if>
             t.create_fid <![CDATA[<>]]> #{params.topFid}
     </select>
 
     <!--查询创建的活动-->
     <select id="pageCreated" resultMap="BaseResultMap">
         SELECT
-            <include refid="Base_Column_List"></include>
+            <include refid="Base_Column_List"></include>, t.start_time as startTime, t.end_Time as endTime
         FROM
             t_activity t
         WHERE
@@ -215,7 +220,12 @@
         GROUP BY
             t.id
         ORDER BY
-            t.create_time DESC
+            <if test="params.orderField != null and params.orderField != ''">
+                ${params.orderField} ${params.orderType}
+            </if>
+            <if test="params.orderField == null or params.orderField == ''">
+                t.create_time DESC
+            </if>
     </select>
 
     <!--查询机构创建的-->

@@ -1,5 +1,6 @@
 package com.chaoxing.activity.dto.query;
 
+import com.chaoxing.activity.util.enums.OrderTypeEnum;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -44,6 +45,12 @@ public class ActivityManageQueryDTO {
 	private Integer createUid;
 	/** 创建wfwfid */
 	private Integer createWfwfid;
+
+	private Integer orderFieldId;
+
+	private String orderField;
+
+	private OrderTypeEnum orderType;
 
 	public List<Integer> getStatusList() {
 		if (StringUtils.isBlank(statuses)) {

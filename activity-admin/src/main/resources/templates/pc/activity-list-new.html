@@ -15,27 +15,37 @@
         [v-cloak] {
             display: none;
         }
+        .search-Box .el-input--suffix .el-input__inner {
+            padding-right: 0;
+        }
     </style>
 </head>
 <body>
 <div id="activity-vue" v-cloak>
     <div style="display: block">
-        <div class="header-box">
-            <div class="header header-type-3">
-                <span slot="label" class="menu-item-customize registered_title">
-                    <span class="title">活动管理</span>
-                </span>
-            </div>
-        </div>
+<!--        <div class="header-box">-->
+<!--            <div class="header header-type-3">-->
+<!--                <span slot="label" class="menu-item-customize registered_title">-->
+<!--                    <span class="title">活动管理</span>-->
+<!--                </span>-->
+<!--            </div>-->
+<!--        </div>-->
         <!-- 选项卡内容 -->
         <div class="tab-content-box">
             <div class="tab-item">
                 <!-- 操作栏 -->
                 <div class="operate-box">
                     <div class="table-operate-box fs0">
-                        <el-button class="btn-customize" round @click="toAdd">创建活动</el-button>
+                        <el-button class="create-btn" round @click="toAdd">创建活动</el-button>
                         <div class="search-Box">
-                            <el-input placeholder="活动名称/创建人/创建单位" icon="search" class="search" v-model.trim="sw" maxlength="10" suffix-icon="el-icon-search" @keyup.enter.native="search"></el-input>
+                            <el-input placeholder="活动名称/创建人/创建单位"
+                                      icon="search"
+                                      class="search"
+                                      v-model.trim="sw"
+                                      suffix-icon="el-icon-search"
+                                      @keyup.enter.native="search"
+                            >
+                            </el-input>
                             <i class="icon-cancel btn-cancel fs16" v-show="sw" @click="clearSearch"></i>
                         </div>
                     </div>
@@ -69,7 +79,7 @@
                         <div class="clear"></div>
                     </div>
                 </div>
-                <el-table v-if="tbodyHeight > 0" class="table-box" :data="activities" :height="tbodyHeight" @filter-change="filterChange">
+                <el-table v-if="tbodyHeight > 0" class="table-box" :data="activities" :height="tbodyHeight" @filter-change="filterChange" @sort-change="sortChange">
                     <template v-for="item in showTableFieldDetails" v-if="item.defaultChecked">
                         <el-table-column
                                 v-if="item.code === 'cover'"
@@ -135,6 +145,19 @@
                             </template>
                         </el-table-column>
                         <el-table-column
+                                v-else-if="item.code === 'startTime' || item.code === 'endTime'"
+                                :prop="item.code"
+                                :fixed="item.defaultTop"
+                                :label="item.name"
+                                :ifCenter="item.align"
+                                :min-width="item.minWidth"
+                                :sortable="item.sortable ? 'custom' : item.sortable"
+                        >
+                            <template slot-scope="scope">
+                                <span>{{scope.row[item.code] | timestampFormat}}</span>
+                            </template>
+                        </el-table-column>
+                        <el-table-column
                                 v-else
                                 :prop="item.code"
                                 :fixed="item.defaultTop"
@@ -185,6 +208,13 @@
     <script src="/static/pc/assets/lib/jqthumb.min.js" th:src="@{/pc/assets/lib/jqthumb.min.js}"></script>
     <script src="/static/pc/assets/lib/set-iframe-height-child.js" th:src="@{/pc/assets/lib/set-iframe-height-child.js}"></script>
     <script th:inline="javascript">
+        Vue.filter("timestampFormat", function (timestamp) {
+            if (activityApp.isEmpty(timestamp)) {
+                return "";
+            }
+            var dateObj = moment(timestamp);
+            return dateObj.format("YYYY-MM-DD HH:mm:ss");
+        });
         activityVue = new Vue({
             el: "#activity-vue",
             data: {
@@ -204,7 +234,9 @@
                     statuses: "",
                     // 严格模式 只查询自己创建的
                     strict: [[${strict}]],
-                    sw: ""
+                    sw: "",
+                    orderFieldId: null,
+                    orderType: 'DESC'
                 },
                 loaded: false,
                 // 总记录数
@@ -353,6 +385,21 @@
                         $this.queryParams[key] = filterItem[key].join(',');
                     }
                     $this.queryParams.pageNum = 1;
+                    $this.loadData();
+                },
+                sortChange: function (column) {
+                    var $this = this;
+                    var sortFieldItem = $($this.showTableFieldDetails).filter(function() {
+                        return this.code === column.prop
+                    })[0];
+                    $this.queryParams.orderFieldId = sortFieldItem ? sortFieldItem.id : null;
+                    if (column.order === 'descending') {
+                        $this.queryParams.orderType = 'DESC';
+                    } else if (column.order === 'ascending'){
+                        $this.queryParams.orderType = 'ASC';
+                    } else {
+                        $this.queryParams.orderType = null;
+                    }
                     $this.loadData();
                 },
                 changePage: function (pageNum) {
