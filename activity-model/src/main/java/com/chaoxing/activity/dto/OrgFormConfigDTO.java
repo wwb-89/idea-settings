@@ -47,5 +47,9 @@ public class OrgFormConfigDTO {
 	private Integer userResultFormId;
 	/** 报名使用的组织架构 */
 	private String signUpScopeType;
+	/** 时长申述url */
+	private String timeLengthAppealUrl;
+	/** 时长申述url */
+	private String creditAppealUrl;
 
 }
