@@ -41,6 +41,7 @@
             t_activity_stat_summary t
             INNER JOIN t_activity t1 ON t1.id = t.activity_id
             AND t1.create_fid = #{queryItem.fid}
+            AND t1.status != 0
             <if test="queryItem.name != null and queryItem.name != ''">
                 <bind name="nameBind" value="'%' + queryItem.name + '%'"/>
                 AND (t1.name like #{nameBind} or t1.create_user_name like #{nameBind})
