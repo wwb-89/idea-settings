@@ -32,8 +32,6 @@ public class OrgConfig {
     private String signUpScopeType;
     /** 时长申述url; column: time_length_appeal_url*/
     private String timeLengthAppealUrl;
-    /** 时长申述url; column: credit_appeal_url*/
-    private String creditAppealUrl;
     /** 创建时间; column: create_time*/
     private LocalDateTime createTime;
     /** 更新时间; column: update_time*/

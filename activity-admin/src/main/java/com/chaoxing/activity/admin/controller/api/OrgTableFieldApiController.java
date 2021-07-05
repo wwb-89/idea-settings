@@ -62,7 +62,7 @@ public class OrgTableFieldApiController {
      * @return com.chaoxing.activity.dto.RestRespDTO
      */
     @LoginRequired
-    @RequestMapping("/market/config")
+    @RequestMapping("market/config")
     public RestRespDTO config(HttpServletRequest request,
                               @PathVariable Integer fid,
                               @PathVariable Integer tableFieldId,

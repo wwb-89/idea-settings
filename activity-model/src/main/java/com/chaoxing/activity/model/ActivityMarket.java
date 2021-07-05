@@ -10,7 +10,6 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
-import java.util.Date;
 
 /**
  * 活动市场表
@@ -34,8 +33,6 @@ public class ActivityMarket {
     private String name;
     /** 机构id; column: fid*/
     private Integer fid;
-    /** 活动标示。多个标示以逗号分割; column: activity_flags*/
-    private String activityFlags;
     /** 顺序; column: sequence*/
     private Integer sequence;
     /** 是否被删除; column: is_deleted*/

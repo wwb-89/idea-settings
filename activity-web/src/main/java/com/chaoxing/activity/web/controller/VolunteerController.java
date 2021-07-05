@@ -55,8 +55,8 @@ public class VolunteerController {
         model.addAttribute("serviceTypeList", serviceTypeList);
         // 时长申报的url
         OrgConfig orgConfig = orgConfigService.getByFid(fid);
-        String creditAppealUrl = Optional.ofNullable(orgConfig).map(OrgConfig::getCreditAppealUrl).orElse("");
-        model.addAttribute("creditAppealUrl", creditAppealUrl);
+        String appealUrl = Optional.ofNullable(orgConfig).map(OrgConfig::getTimeLengthAppealUrl).orElse("");
+        model.addAttribute("appealUrl", appealUrl);
         if (UserAgentUtils.isMobileAccess(request)) {
             return "mobile/volunteer/service-list";
         }

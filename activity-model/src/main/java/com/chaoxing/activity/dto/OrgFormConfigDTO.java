@@ -49,7 +49,7 @@ public class OrgFormConfigDTO {
 	private String signUpScopeType;
 	/** 时长申述url */
 	private String timeLengthAppealUrl;
-	/** 时长申述url */
+	/** 学分申述url */
 	private String creditAppealUrl;
 
 }
