@@ -4,6 +4,7 @@ import com.chaoxing.activity.service.ActivityStatHandleService;
 import com.chaoxing.activity.service.queue.IQueueService;
 import com.chaoxing.activity.util.constant.CacheConstant;
 import lombok.extern.slf4j.Slf4j;
+import org.redisson.api.RBlockingDeque;
 import org.redisson.api.RedissonClient;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -42,8 +43,9 @@ public class ActivityStatQueueService implements IQueueService<Integer> {
     */
     public void batchAddActivityStatTask() {
         List<Integer> taskIds = activityStatHandleService.reAddAllActivityStat();
+        RBlockingDeque<Object> blockingDeque = redissonClient.getBlockingDeque(QUEUE_ACTIVITY_STAT_CACHE_KEY);
         for (Integer taskId : taskIds) {
-            push(redissonClient, QUEUE_ACTIVITY_STAT_CACHE_KEY, taskId);
+            blockingDeque.offer(taskId);
         }
     }
 
