@@ -67,10 +67,10 @@ public class OrgTableFieldApiController {
                               @PathVariable Integer fid,
                               @PathVariable Integer tableFieldId,
                               @RequestParam String marketTableFieldsStr,
-                              String activityFlag) {
+                              String flag) {
         LoginUserDTO loginUser = LoginUtils.getLoginUser(request);
         List<MarketTableField> marketTableFields = JSON.parseArray(marketTableFieldsStr, MarketTableField.class);
-        tableFieldHandleService.marketTableFieldConfig(fid, activityFlag, tableFieldId, marketTableFields, loginUser);
+        tableFieldHandleService.marketTableFieldConfig(fid, flag, tableFieldId, marketTableFields, loginUser);
         return RestRespDTO.success();
     }
 }
