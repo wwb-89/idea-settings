@@ -86,7 +86,6 @@ public class OrgFormConfigService {
 				.fid(orgFormConfig.getFid())
 				.signUpScopeType(orgFormConfig.getSignUpScopeType())
 				.timeLengthAppealUrl(orgFormConfig.getTimeLengthAppealUrl())
-				.creditAppealUrl(orgFormConfig.getCreditAppealUrl())
 				.build();
 		orgConfigService.config(orgConfig);
 		secondClassroomApiService.configOrgForm(orgFormConfig);
