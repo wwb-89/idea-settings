@@ -295,9 +295,10 @@ public class ActivityMhAppController {
 		// 现在不取areaCode的数据
 		areaCode = null;
 		// 一个活动是否需要多条数据
-		Boolean multi = jsonObject.getBoolean("multi");
+		Boolean multiBoolean = jsonObject.getBoolean("multi");
 		// 为了兼容原来的样式需要为true
-		multi = Optional.ofNullable(multi).orElse(true);
+		multiBoolean = Optional.ofNullable(multiBoolean).orElse(true);
+		final boolean multi = multiBoolean;
 		// 获取参数
 		Integer wfwfid = jsonObject.getInteger("wfwfid");
 		Optional.ofNullable(wfwfid).orElseThrow(() -> new BusinessException("wfwfid不能为空"));
@@ -349,7 +350,7 @@ public class ActivityMhAppController {
 		if (StringUtils.isNotBlank(date)) {
 			mhActivityCalendarQuery.setDate(date);
 		}
-		page = activityQueryService.listActivityCalendar(page, mhActivityCalendarQuery, multi);
+		page = activityQueryService.listActivityCalendar(page, mhActivityCalendarQuery, multiBoolean);
 		JSONObject result = new JSONObject();
 		result.put("curPage", pageNum);
 		result.put("totalPages", page.getPages());
@@ -392,10 +393,12 @@ public class ActivityMhAppController {
 					.flag("6")
 					.build());
 			// 地点
-			mhGeneralAppResultDataFields.add(MhGeneralAppResultDataDTO.MhGeneralAppResultDataFieldDTO.builder()
-					.value(Optional.ofNullable(record.getAddress()).orElse("") + Optional.ofNullable(record.getDetailAddress()).orElse(""))
-					.flag("100")
-					.build());
+			if (multi) {
+				mhGeneralAppResultDataFields.add(MhGeneralAppResultDataDTO.MhGeneralAppResultDataFieldDTO.builder()
+						.value(Optional.ofNullable(record.getAddress()).orElse("") + Optional.ofNullable(record.getDetailAddress()).orElse(""))
+						.flag("100")
+						.build());
+			}
 			// 活动结束时间
 			mhGeneralAppResultDataFields.add(MhGeneralAppResultDataDTO.MhGeneralAppResultDataFieldDTO.builder()
 					.value(DateTimeFormatterConstant.YYYY_MM_DD_HH_MM.format(record.getEndTime()))

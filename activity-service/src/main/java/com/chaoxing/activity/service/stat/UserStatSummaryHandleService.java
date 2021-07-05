@@ -157,14 +157,12 @@ public class UserStatSummaryHandleService {
                     .lambda()
                     .eq(UserStatSummary::getUid, uid)
                     .eq(UserStatSummary::getActivityId, activityId)
-                    .set(UserStatSummary::getQualified, isQualified)
                     .set(UserStatSummary::getIntegral, integral)
             );
         } else {
             // 新增用户数据
             UserStatSummary userStatSummary = buildDefault(uid, activity.getCreateFid());
             userStatSummary.setActivityId(activityId);
-            userStatSummary.setQualified(isQualified);
             userStatSummary.setIntegral(integral);
             userStatSummaryMapper.insert(userStatSummary);
         }
@@ -215,12 +213,16 @@ public class UserStatSummaryHandleService {
     */
     public void updateActivityUserIntegral(Integer activityId, BigDecimal integral) {
         integral = Optional.ofNullable(integral).orElse(BigDecimal.ZERO);
-        userStatSummaryMapper.update(null, new UpdateWrapper<UserStatSummary>()
-            .lambda()
-                .eq(UserStatSummary::getActivityId, activityId)
-                .eq(UserStatSummary::getQualified, true)
-                .set(UserStatSummary::getIntegral, integral)
-        );
+        // 找到活动下合格的用户uid列表
+        List<Integer> uids = userResultQueryService.listActivityQualifiedUid(activityId);
+        if (CollectionUtils.isNotEmpty(uids)) {
+            userStatSummaryMapper.update(null, new UpdateWrapper<UserStatSummary>()
+                    .lambda()
+                    .eq(UserStatSummary::getActivityId, activityId)
+                    .in(UserStatSummary::getUid, uids)
+                    .set(UserStatSummary::getIntegral, integral)
+            );
+        }
     }
 
 }

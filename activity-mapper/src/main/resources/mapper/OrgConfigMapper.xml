@@ -5,10 +5,11 @@
         <id column="id" jdbcType="INTEGER" property="id" />
         <result column="fid" jdbcType="INTEGER" property="fid" />
         <result column="sign_up_scope_type" jdbcType="VARCHAR" property="signUpScopeType" />
+        <result column="time_length_appeal_url" jdbcType="VARCHAR" property="timeLengthAppealUrl" />
         <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
         <result column="update_time" jdbcType="TIMESTAMP" property="updateTime" />
     </resultMap>
     <sql id="Base_Column_List">
-        t.id, t.fid, t.sign_up_scope_type, t.create_time, t.update_time
+        t.id, t.fid, t.sign_up_scope_type, t.time_length_appeal_url, t.create_time, t.update_time
     </sql>
 </mapper>

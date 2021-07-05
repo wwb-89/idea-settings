@@ -20,6 +20,7 @@ import org.springframework.stereotype.Service;
 import javax.annotation.Resource;
 import java.util.List;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
 /**用户成绩查询服务
  * @author wwb
@@ -246,5 +247,25 @@ public class UserResultQueryService {
 				.lambda()
 				.eq(UserResult::getActivityId, activityId)
 				.eq(UserResult::getQualifiedStatus, qualifiedStatusEnum.getValue()));
+	}
+
+	/**查询活动下合格的用户uid列表
+	 * @Description 
+	 * @author wwb
+	 * @Date 2021-07-05 14:18:34
+	 * @param activityId
+	 * @return java.util.List<java.lang.Integer>
+	*/
+	public List<Integer> listActivityQualifiedUid(Integer activityId) {
+		List<UserResult> userResults = userResultMapper.selectList(new QueryWrapper<UserResult>()
+				.lambda()
+				.eq(UserResult::getActivityId, activityId)
+				.eq(UserResult::getQualifiedStatus, UserResult.QualifiedStatusEnum.QUALIFIED.getValue())
+				.select(UserResult::getUid)
+		);
+		if (CollectionUtils.isNotEmpty(userResults)) {
+			return userResults.stream().map(UserResult::getUid).collect(Collectors.toList());
+		}
+		return Lists.newArrayList();
 	}
 }

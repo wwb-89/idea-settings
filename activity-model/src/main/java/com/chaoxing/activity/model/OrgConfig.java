@@ -6,7 +6,6 @@ import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.*;
 
 import java.time.LocalDateTime;
-import java.util.Date;
 import java.util.Objects;
 
 /**
@@ -31,6 +30,8 @@ public class OrgConfig {
     private Integer fid;
     /** 报名范围类型。微服务/通讯录; column: sign_up_scope_type*/
     private String signUpScopeType;
+    /** 时长申述url; column: time_length_appeal_url*/
+    private String timeLengthAppealUrl;
     /** 创建时间; column: create_time*/
     private LocalDateTime createTime;
     /** 更新时间; column: update_time*/

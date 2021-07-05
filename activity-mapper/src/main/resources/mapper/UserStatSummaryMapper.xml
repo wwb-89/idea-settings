@@ -15,7 +15,6 @@
         <result column="sign_in_num" jdbcType="INTEGER" property="signInNum" />
         <result column="signed_in_num" jdbcType="INTEGER" property="signedInNum" />
         <result column="rating_num" jdbcType="INTEGER" property="ratingNum" />
-        <result column="is_qualified" jdbcType="BIT" property="qualified" />
         <result column="integral" jdbcType="DECIMAL" property="integral" />
         <result column="participate_time_length" jdbcType="INTEGER" property="participateTimeLength" />
         <result column="is_valid" jdbcType="BIT" property="valid" />
@@ -23,7 +22,7 @@
         <result column="update_time" jdbcType="TIMESTAMP" property="updateTime" />
     </resultMap>
     <sql id="Base_Column_List">
-        t.uid, t.activity_id, t.uname, t.real_name, t.mobile, t.student_no, t.organization_structure, t.sign_up_num, t.signed_up_num, t.sign_up_time, t.sign_in_num, t.signed_in_num, t.rating_num, t.is_qualified, t.integral, t.participate_time_length, t.is_valid, t.create_time, t.update_time
+        t.uid, t.activity_id, t.uname, t.real_name, t.mobile, t.student_no, t.organization_structure, t.sign_up_num, t.signed_up_num, t.sign_up_time, t.sign_in_num, t.signed_in_num, t.rating_num, t.integral, t.participate_time_length, t.is_valid, t.create_time, t.update_time
     </sql>
     <select id="paging" resultType="com.chaoxing.activity.model.UserStatSummary">
         SELECT
@@ -92,7 +91,8 @@
 
     <select id="pagingUserParticipate" resultMap="BaseResultMap">
         SELECT
-            <include refid="Base_Column_List"></include>
+            <include refid="Base_Column_List"></include>,
+            CASE WHEN t2.qualified_status IS NULL THEN NULL WHEN t2.qualified_status = 1 THEN TRUE ELSE FALSE END qualified
         FROM
             t_user_stat_summary t
             INNER JOIN t_activity t1 ON t.activity_id = t1.id
@@ -100,6 +100,8 @@
             <if test="fid != null">
                 AND t1.create_fid = #{fid}
             </if>
+            LEFT JOIN t_user_result t2 ON t.uid = t2.uid
+            AND t.activity_id = t2.activity_id
         WHERE
             t.uid = #{uid}
             AND t.is_valid = 1

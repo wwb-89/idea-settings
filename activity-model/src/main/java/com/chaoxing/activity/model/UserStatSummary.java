@@ -51,9 +51,6 @@ public class UserStatSummary {
     private Integer signedInNum;
     /** 评价数量; column: rating_num*/
     private Integer ratingNum;
-    /** 是否合格; column: is_qualified*/
-    @TableField(value = "is_qualified")
-    private Boolean qualified;
     /** 获得的积分; column: integral*/
     private BigDecimal integral;
     /** 参与时长; column: participate_time_length*/
@@ -67,6 +64,9 @@ public class UserStatSummary {
     private LocalDateTime updateTime;
     
     // 附加
+    /** 是否合格 */
+    @TableField(exist = false)
+    private Boolean qualified;
     /** 合格数量（汇总多个活动时使用） */
     @TableField(exist = false)
     private Integer qualifiedNum;
