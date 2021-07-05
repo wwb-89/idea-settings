@@ -722,7 +722,7 @@
                     var marketTableFieldDetails = $this.packageSubmitTableFieldDetails();
                     var url = ctx + "/api/org/" + $this.fid + "/table-field/" + $this.tableFieldId + "/market/config";
                     var params = {
-                        flag: $this.$this.activityFlag,
+                        flag: $this.activityFlag,
                         marketTableFieldsStr: activityApp.getJsonStr(marketTableFieldDetails)
                     };
                     app.ajaxPostWithLoading(url, params, function (data) {
