@@ -678,10 +678,18 @@ public class ActivityQueryService {
 			return null;
 		}
 		SignAddEditDTO signAddEditDTO = signApiService.getById(signId);
+		SignUp validSignUp = null;
 		if (signAddEditDTO == null || CollectionUtils.isEmpty(signAddEditDTO.getSignUps())) {
 			return null;
 		}
-		return signAddEditDTO.getSignUps().get(0);
+		List<SignUp> signUps = signAddEditDTO.getSignUps();
+		for (SignUp signUp : signUps) {
+			if (!signUp.getDeleted()) {
+				validSignUp = signUp;
+				break;
+			}
+		}
+		return validSignUp;
 	}
 
 	/**根据活动id列表查询活动列表
