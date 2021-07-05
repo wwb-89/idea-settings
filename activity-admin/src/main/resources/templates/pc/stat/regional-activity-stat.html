@@ -161,7 +161,7 @@
                                 <div :class="{number: 'true', 'active': regionSortCol && regionSortCol.field === 'pv'}" @click="sortRegionStatDetail(sortField.pv, $event)"> 浏览量<i class="down-icon"></i></div>
                             </template>
                             <template slot-scope="scope">
-                                <span class="color">{{scope.row.pv}}</span>
+                                <span class="color">{{scope.row.pv | nonNegativeNumberFilter}}</span>
                             </template>
                         </el-table-column>
                         <el-table-column prop="signedUpNum" label="报名数" width="140" align="center">
@@ -169,7 +169,7 @@
                                 <div :class="{number: 'true', 'active': regionSortCol && regionSortCol.field === 'signedUpNum'}" @click="sortRegionStatDetail(sortField.signedUpNum, $event)"> 报名数<i class="down-icon"></i></div>
                             </template>
                             <template slot-scope="scope">
-                                <span class="color">{{scope.row.signedUpNum}}</span>
+                                <span class="color">{{scope.row.signedUpNum | nonNegativeNumberFilter}}</span>
                             </template>
                         </el-table-column>
                         <el-table-column prop="signedInNum" label="签到数" width="140" align="center">
@@ -177,7 +177,7 @@
                                 <div :class="{number: 'true', 'active': regionSortCol && regionSortCol.field === 'signedInNum'}" @click="sortRegionStatDetail(sortField.signedInNum, $event)"> 签到数<i class="down-icon"></i></div>
                             </template>
                             <template slot-scope="scope">
-                                <span class="color">{{scope.row.signedInNum}}</span>
+                                <span class="color">{{scope.row.signedInNum | nonNegativeNumberFilter}}</span>
                             </template>
                         </el-table-column>
                     </el-table>
@@ -201,7 +201,7 @@
                                 <div :class="{number: 'true', 'active': orgSortCol && orgSortCol.field === 'pv'}" @click="sortOrgStatDetail(sortField.pv, $event)"> 浏览量<i class="down-icon"></i></div>
                             </template>
                             <template slot-scope="scope">
-                                <span class="color">{{scope.row.pv}}</span>
+                                <span class="color">{{scope.row.pv | nonNegativeNumberFilter}}</span>
                             </template>
                         </el-table-column>
                         <el-table-column prop="signedUpNum" label="报名数" width="140" align="center">
@@ -209,7 +209,7 @@
                                 <div :class="{number: 'true', 'active': orgSortCol && orgSortCol.field === 'signedUpNum'}" @click="sortOrgStatDetail(sortField.signedUpNum, $event)"> 报名数<i class="down-icon"></i></div>
                             </template>
                             <template slot-scope="scope">
-                                <span class="color">{{scope.row.signedUpNum}}</span>
+                                <span class="color">{{scope.row.signedUpNum | nonNegativeNumberFilter}}</span>
                             </template>
                         </el-table-column>
                         <el-table-column prop="signedInNum" label="签到数" width="140" align="center">
@@ -217,7 +217,7 @@
                                 <div :class="{number: 'true', 'active': orgSortCol && orgSortCol.field === 'signedInNum'}" @click="sortOrgStatDetail(sortField.signedInNum, $event)"> 签到数<i class="down-icon"></i></div>
                             </template>
                             <template slot-scope="scope">
-                                <span class="color">{{scope.row.signedInNum}}</span>
+                                <span class="color">{{scope.row.signedInNum | nonNegativeNumberFilter}}</span>
                             </template>
                         </el-table-column>
                     </el-table>
@@ -240,7 +240,7 @@
                                 <div :class="{number: 'true', 'active': sortCol && sortCol.field === 'PV'}" @click.stop="loadTopActivityStat(activitySortField.pv, $event)"> 浏览量<i class="down-icon"></i></div>
                             </template>
                             <template slot-scope="scope">
-                                <span class="color">{{scope.row.pv || 0}}</span>
+                                <span class="color">{{scope.row.pv | nonNegativeNumberFilter}}</span>
                             </template>
                         </el-table-column>
                         <el-table-column prop="signedUpNum" label="报名人数" align="center">
@@ -248,7 +248,7 @@
                                 <div :class="{number: 'true', 'active': sortCol && sortCol.field === 'SIGNED_UP_NUM'}" @click="loadTopActivityStat(activitySortField.signedUpNum, $event)"> 报名人数<i class="down-icon"></i></div>
                             </template>
                             <template slot-scope="scope">
-                                <span class="color">{{scope.row.signedUpNum || 0}}</span>
+                                <span class="color">{{scope.row.signedUpNum | nonNegativeNumberFilter }}</span>
                             </template>
                         </el-table-column>
                     </el-table>
@@ -264,13 +264,12 @@
     <script src="/static/pc/assets/lib/jquery.nicescroll.min.js" th:src="@{/pc/assets/lib/jquery.nicescroll.min.js}"></script>
     <script src="/static/pc/assets/js/main.js" th:src="@{/pc/assets/js/main.js}"></script>
     <script th:inline="javascript">
-        // $(function () {
-        //
-        //     $('.el-table .number').click(function () {
-        //         $(this).parents('.el-table').find($(' .number')).removeClass('active')
-        //         $(this).addClass('active')
-        //     })
-        // })
+        Vue.filter("nonNegativeNumberFilter", function (value) {
+            if (!value || value < 0) {
+                return 0;
+            }
+            return value;
+        });
         var vm = new Vue({
             el: '#activity-statistics',
             data: function () {

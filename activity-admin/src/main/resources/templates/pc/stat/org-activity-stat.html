@@ -48,7 +48,7 @@
                         <img class="count-img" src="/static/pc/assets/images/yd-icon/icon-eye.png" th:src="@{/pc/assets/images/yd-icon/icon-eye.png}" alt="">
                         <div class="text-box">
                             <p>
-                                <span class="count-num">{{activityOrgStat.pv}}</span>
+                                <span class="count-num">{{activityOrgStat.pv | nonNegativeNumberFilter}}</span>
                             </p>
                             <p class="count-name">浏览量(pv)</p>
                         </div>
@@ -57,7 +57,7 @@
                         <img class="count-img" src="/static/pc/assets/images/yd-icon/icon-shi2.png" th:src="@{/pc/assets/images/yd-icon/icon-shi2.png}" alt="">
                         <div class="text-box">
                             <p>
-                                <span class="count-num">{{activityOrgStat.signedUpNum}}</span>
+                                <span class="count-num">{{activityOrgStat.signedUpNum | nonNegativeNumberFilter }}</span>
                             </p>
                             <p class="count-name">报名人数(人)</p>
                         </div>
@@ -66,7 +66,7 @@
                         <img class="count-img" src="/static/pc/assets/images/yd-icon/icon-sign-number.png" th:src="@{/pc/assets/images/yd-icon/icon-sign-number.png}" alt="">
                         <div class="text-box">
                             <p>
-                                <span class="count-num">{{activityOrgStat.signedInNum}}</span>
+                                <span class="count-num">{{activityOrgStat.signedInNum | nonNegativeNumberFilter }}</span>
                             </p>
                             <p class="count-name">签到数(人·次)</p>
                         </div>
@@ -103,7 +103,7 @@
                             <div class="number" :class="{'active': sortCol && sortCol.field === 'PV'}" @click.stop="loadTopActivity(sortField.pv, $event)"> 浏览量<i class="down-icon"></i></div>
                         </template>
                         <template slot-scope="scope">
-                            <span class="color">{{scope.row.pv || 0}}</span>
+                            <span class="color">{{scope.row.pv | nonNegativeNumberFilter}}</span>
                         </template>
                     </el-table-column>
                     <el-table-column prop="signedUpNum" label="报名人数" align="center">
@@ -111,7 +111,7 @@
                             <div class="number" :class="{'active': sortCol && sortCol.field === 'SIGNED_UP_NUM'}" @click="loadTopActivity(sortField.signedUpNum, $event)"> 报名人数<i class="down-icon"></i></div>
                         </template>
                         <template slot-scope="scope">
-                            <span class="color">{{scope.row.signedUpNum || 0}}</span>
+                            <span class="color">{{scope.row.signedUpNum | nonNegativeNumberFilter }}</span>
                         </template>
                     </el-table-column>
                 </el-table>
@@ -124,12 +124,12 @@
     <script src="/static/pc/assets/lib/element-ui/lib/index.js" th:src="@{/pc/assets/lib/element-ui/lib/index.js}"></script>
     <script src="/static/pc/assets/lib/jquery.nicescroll.min.js" th:src="@{/pc/assets/lib/jquery.nicescroll.min.js}"></script>
     <script th:inline="javascript">
-        // $(function () {
-        //     $('.el-table .number').click(function () {
-        //         $(this).parents('.el-table').find($(' .number')).removeClass('active')
-        //         $(this).addClass('active')
-        //     })
-        // })
+        Vue.filter("nonNegativeNumberFilter", function (value) {
+            if (!value || value < 0) {
+                return 0;
+            }
+            return value;
+        });
         var vm = new Vue({
             el: '#activity-statistics',
             data: {
