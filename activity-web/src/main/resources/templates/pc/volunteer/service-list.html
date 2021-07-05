@@ -12,7 +12,7 @@
     <div id="volunteerService" class="service-list" v-cloak>
         <div class="item-box title clear">
             <p class="fl name">{{loginUser.realName}}的服务时长记录</p>
-            <div class="fr">o
+            <div class="fr" v-show="appealUrl">
                 <div class="btn-border-80 btn" @click="toAppeal">申诉</div>
             </div>
         </div>
@@ -87,7 +87,7 @@
                     loginUser: [[${session._login_user_}]],
                     volunteerList: [[${volunteerList}]],
                     serviceTypeList: [[${serviceTypeList}]],
-                    appealUrl: 'http://office.chaoxing.com/front/third/approve/apps/forms/fore/apply?pageEnc=441acab58f8f550ca89785b55b283d15&aprvAppId=17185&id=17185&fidEnc=03603594820a2427',
+                    appealUrl: [[${creditAppealUrl}]],
                     selectedType: {},
                     hourMinutes: 60,
                     totalMinute: 0
