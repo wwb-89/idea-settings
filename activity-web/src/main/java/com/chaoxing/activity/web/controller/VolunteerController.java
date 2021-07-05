@@ -2,6 +2,8 @@ package com.chaoxing.activity.web.controller;
 
 import com.chaoxing.activity.dto.LoginUserDTO;
 import com.chaoxing.activity.dto.activity.VolunteerServiceDTO;
+import com.chaoxing.activity.model.OrgConfig;
+import com.chaoxing.activity.service.org.OrgConfigService;
 import com.chaoxing.activity.service.volunteer.VolunteerService;
 import com.chaoxing.activity.util.UserAgentUtils;
 import com.chaoxing.activity.util.annotation.LoginRequired;
@@ -29,6 +31,8 @@ public class VolunteerController {
 
     @Resource
     private VolunteerService volunteerService;
+    @Resource
+    private OrgConfigService orgConfigService;
 
     /***志愿服务单首页
     * @Description
@@ -49,6 +53,10 @@ public class VolunteerController {
         model.addAttribute("fid", realFid);
         model.addAttribute("volunteerList", volunteerServiceDTOList);
         model.addAttribute("serviceTypeList", serviceTypeList);
+        // 时长申报的url
+        OrgConfig orgConfig = orgConfigService.getByFid(fid);
+        String creditAppealUrl = Optional.ofNullable(orgConfig).map(OrgConfig::getCreditAppealUrl).orElse("");
+        model.addAttribute("creditAppealUrl", creditAppealUrl);
         if (UserAgentUtils.isMobileAccess(request)) {
             return "mobile/volunteer/service-list";
         }
