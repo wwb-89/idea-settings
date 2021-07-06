@@ -41,6 +41,8 @@ public class OrgFormConfigDTO {
 	private Integer inspectionPlanRuleFormId;
 	/** 学分项目类型关联表单 */
 	private Integer creditProjectFormId;
+	/** 项目类型表单 */
+	private Integer projectTypeFormId;
 	/** 用户得分记录表单 */
 	private Integer userScoreFormId;
 	/** 用户成绩表单 */

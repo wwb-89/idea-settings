@@ -5,11 +5,8 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.apache.commons.lang3.StringUtils;
 
-import java.util.Arrays;
 import java.util.List;
-import java.util.stream.Collectors;
 
 /**活动管理查询对象
  * @author wwb
@@ -31,10 +28,6 @@ public class ActivityManageQueryDTO {
 	private Integer status;
 	/** 创建活动的fid列表 */
 	private List<Integer> fids;
-	/** 活动状态 */
-	private String statuses;
-	/** 活动状态列表 */
-	private List<Integer> statusList;
 	/** 置顶fid */
 	private Integer topFid;
 	/** 关键字 */
@@ -51,11 +44,4 @@ public class ActivityManageQueryDTO {
 	private String orderField;
 
 	private OrderTypeEnum orderType;
-
-	public List<Integer> getStatusList() {
-		if (StringUtils.isBlank(statuses)) {
-			return null;
-		}
-		return Arrays.stream(statuses.split(",")).map(Integer::valueOf).collect(Collectors.toList());
-	}
 }
