@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.chaoxing.activity.mapper.ComponentMapper">
+    <resultMap id="BaseResultMap" type="com.chaoxing.activity.model.Component">
+        <id column="id" jdbcType="INTEGER" property="id" />
+        <result column="market_id" jdbcType="INTEGER" property="marketId" />
+        <result column="name" jdbcType="VARCHAR" property="name" />
+        <result column="code" jdbcType="VARCHAR" property="code" />
+        <result column="is_required" jdbcType="BIT" property="isRequired" />
+        <result column="introduction" jdbcType="VARCHAR" property="introduction" />
+        <result column="is_system" jdbcType="BIT" property="isSystem" />
+        <result column="is_multi" jdbcType="BIT" property="isMulti" />
+        <result column="type" jdbcType="VARCHAR" property="type" />
+        <result column="data_origin" jdbcType="VARCHAR" property="dataOrigin" />
+        <result column="origin_identify" jdbcType="VARCHAR" property="originIdentify" />
+        <result column="field_flag" jdbcType="VARCHAR" property="fieldFlag" />
+        <result column="fid" jdbcType="INTEGER" property="fid" />
+        <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
+        <result column="create_uid" jdbcType="INTEGER" property="createUid" />
+        <result column="update_time" jdbcType="TIMESTAMP" property="updateTime" />
+        <result column="update_uid" jdbcType="INTEGER" property="updateUid" />
+    </resultMap>
+    <sql id="Base_Column_List">
+        t.id, t.market_id, t.name, t.code, t.is_required, t.introduction, t.is_system, t.is_multi, 
+        t.type, t.data_origin, t.origin_identify, t.field_flag, t.fid, t.create_time, t.create_uid, 
+        t.update_time, t.update_uid
+    </sql>
+</mapper>
