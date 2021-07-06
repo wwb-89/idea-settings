@@ -43,12 +43,6 @@
             <if test="queryParam.qualifiedStatus != null">
                 AND t1.qualified_status = #{queryParam.qualifiedStatus}
             </if>
-            <if test="queryParam.statusList != null and queryParam.statusList.size() > 0">
-                AND t1.qualified_status in
-                    <foreach collection="queryParam.statusList" index="key" item="value" open="(" close=")" separator=",">
-                        #{value}
-                    </foreach>
-            </if>
         <if test="queryParam.orderField != null and queryParam.orderField != ''">
             ORDER BY ${queryParam.orderField} <if test="queryParam.orderType != null">${queryParam.orderType.value}</if>
         </if>

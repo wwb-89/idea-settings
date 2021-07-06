@@ -36,7 +36,10 @@
                 <!-- 操作栏 -->
                 <div class="operate-box">
                     <div class="table-operate-box fs0">
-                        <el-button class="create-btn" round @click="toAdd">创建活动</el-button>
+                        <el-button type="primary" class="btn-bg-blue" @click="toAdd">
+                            <i class="el-icon-plus inlineMiddle"></i>
+                            <span class="inlineMiddle">创建活动</span>
+                        </el-button>
                         <div class="search-Box">
                             <el-input placeholder="活动名称/创建人/创建单位"
                                       icon="search"
@@ -62,7 +65,7 @@
                                 <el-dropdown-menu slot="dropdown" class="set-dropdown">
                                     <div class="dropdown-lists">
                                         <el-dropdown-item v-for="(item, index) in configTableFieldDetails" :key="'detail-' + item.id">
-                                            <el-checkbox v-model="item.defaultChecked" :disabled="!item.allowUncheck" @change="reSortSettingData"> {{item.name}}</el-checkbox>
+                                            <el-checkbox v-model="item.defaultChecked" :disabled="!item.allowUncheck" @change="checkFieldChange(item)"> {{item.name}}</el-checkbox>
                                             <el-tooltip v-if="item.allowTop" class="item" effect="dark" :content="item.defaultTop ? '取消置顶' : '置顶'" placement="top">
                                                 <i :class="`btn-fix icon-${item.defaultTop ? 'pinned' : 'pin'} fs16`" @click="topConfigChange(item)"></i>
                                             </el-tooltip>
@@ -105,13 +108,14 @@
                         </el-table-column>
                         <el-table-column
                                 v-else-if="item.code === 'status'"
-                                class-name="th-dropdwon"
+                                class-name="th-dropdwon-radio"
                                 :fixed="item.defaultTop"
-                                column-key="statuses"
+                                column-key="status"
                                 :label="item.name"
                                 :ifCenter="item.align"
                                 :min-width="item.minWidth"
                                 :filters="filterStatus"
+                                :filter-multiple="false"
                                 filter-placement="bottom"
                         >
                             <template slot-scope="scope">
@@ -231,7 +235,6 @@
                     pageNum: 1,
                     pageSize: 8,
                     status: "",
-                    statuses: "",
                     // 严格模式 只查询自己创建的
                     strict: [[${strict}]],
                     sw: "",
@@ -381,8 +384,10 @@
                 filterChange: function (filterItem) {
                     var $this = this;
                     var key = Object.keys(filterItem)[0]
-                    if (key == 'statuses') {
-                        $this.queryParams[key] = filterItem[key].join(',');
+                    if (key == 'status') {
+                        // 单选过滤取第一个
+                        var value = filterItem[key][0];
+                        $this.queryParams[key] = activityApp.isEmpty(value) ? null : parseInt(value);
                     }
                     $this.queryParams.pageNum = 1;
                     $this.loadData();
@@ -670,6 +675,14 @@
                         });
                     }
                     return configTableFieldDetails;
+                },
+                // 取消勾选
+                checkFieldChange: function (item) {
+                    var $this = this;
+                    if (!item.defaultChecked) {
+                        item.defaultTop = item.defaultChecked;
+                    }
+                    $this.reSortSettingData()
                 },
                 // 取消置顶配置
                 topConfigChange: function(item) {
