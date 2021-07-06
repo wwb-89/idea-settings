@@ -28,51 +28,57 @@
 	<div class="info box">
 		<form action="">
 			<div class="form-item">
-				<label class="label">活动数据表单</label>
+				<label class="label">活动参与审核</label>
 				<div class="input-box">
-					<el-input type="number" placeholder="活动数据表单id" v-model.trim="orgFormConfig.activityDataFormId" oninput="if(value.length > 11) value=value.slice(0, 11)"></el-input>
+					<el-input type="number" placeholder="活动参与审核表单id" v-model.trim="orgFormConfig.activityDataFormId" oninput="if(value.length > 11) value=value.slice(0, 11)"></el-input>
 				</div>
 			</div>
 			<div class="form-item">
-				<label class="label">参与时长表单</label>
+				<label class="label">参与时长</label>
 				<div class="input-box">
 					<el-input type="number" placeholder="参与时长表单id" v-model.trim="orgFormConfig.participateTimeLengthFormId" oninput="if(value.length > 11) value=value.slice(0, 11)"></el-input>
 				</div>
 			</div>
 			<div class="form-item">
-				<label class="label">用户活动参与情况表单</label>
+				<label class="label">在线活动记录</label>
 				<div class="input-box">
-					<el-input type="number" placeholder="用户活动参与情况表单id" v-model.trim="orgFormConfig.userParticipateRecordFormId" oninput="if(value.length > 11) value=value.slice(0, 11)"></el-input>
+					<el-input type="number" placeholder="在线活动记录表单id" v-model.trim="orgFormConfig.userParticipateRecordFormId" oninput="if(value.length > 11) value=value.slice(0, 11)"></el-input>
 				</div>
 			</div>
 			<div class="form-item">
-				<label class="label">考核计划表单</label>
+				<label class="label">成绩考核方案</label>
 				<div class="input-box">
-					<el-input type="number" placeholder="考核计划表单id" v-model.trim="orgFormConfig.inspectionPlanFormId" oninput="if(value.length > 11) value=value.slice(0, 11)"></el-input>
+					<el-input type="number" placeholder="成绩考核方案表单id" v-model.trim="orgFormConfig.inspectionPlanFormId" oninput="if(value.length > 11) value=value.slice(0, 11)"></el-input>
 				</div>
 			</div>
 			<div class="form-item">
-				<label class="label">考核计划规则配置表单</label>
+				<label class="label">考核规则</label>
 				<div class="input-box">
-					<el-input type="number" placeholder="考核计划规则配置表单id" v-model.trim="orgFormConfig.inspectionPlanRuleFormId" oninput="if(value.length > 11) value=value.slice(0, 11)"></el-input>
+					<el-input type="number" placeholder="考核规则表单id" v-model.trim="orgFormConfig.inspectionPlanRuleFormId" oninput="if(value.length > 11) value=value.slice(0, 11)"></el-input>
 				</div>
 			</div>
 			<div class="form-item">
-				<label class="label">学分项目类型关联表单</label>
+				<label class="label">学分类型管理</label>
 				<div class="input-box">
-					<el-input type="number" placeholder="学分项目类型关联表单id" v-model.trim="orgFormConfig.creditProjectFormId" oninput="if(value.length > 11) value=value.slice(0, 11)"></el-input>
+					<el-input type="number" placeholder="学分类型管理表单id" v-model.trim="orgFormConfig.creditProjectFormId" oninput="if(value.length > 11) value=value.slice(0, 11)"></el-input>
 				</div>
 			</div>
 			<div class="form-item">
-				<label class="label">用户得分记录表单</label>
+				<label class="label">项目考核细则</label>
 				<div class="input-box">
-					<el-input type="number" placeholder="用户得分记录表单id" v-model.trim="orgFormConfig.userScoreFormId" oninput="if(value.length > 11) value=value.slice(0, 11)"></el-input>
+					<el-input type="number" placeholder="项目考核细则表单id" v-model.trim="orgFormConfig.projectTypeFormId" oninput="if(value.length > 11) value=value.slice(0, 11)"></el-input>
 				</div>
 			</div>
 			<div class="form-item">
-				<label class="label">用户成绩表单</label>
+				<label class="label">学生得分记录</label>
 				<div class="input-box">
-					<el-input type="number" placeholder="用户成绩表单id" v-model.trim="orgFormConfig.userResultFormId" oninput="if(value.length > 11) value=value.slice(0, 11)"></el-input>
+					<el-input type="number" placeholder="学生得分记录表单id" v-model.trim="orgFormConfig.userScoreFormId" oninput="if(value.length > 11) value=value.slice(0, 11)"></el-input>
+				</div>
+			</div>
+			<div class="form-item">
+				<label class="label">二课成绩查询</label>
+				<div class="input-box">
+					<el-input type="number" placeholder="二课成绩查询表单id" v-model.trim="orgFormConfig.userResultFormId" oninput="if(value.length > 11) value=value.slice(0, 11)"></el-input>
 				</div>
 			</div>
 			<div class="form-item">
