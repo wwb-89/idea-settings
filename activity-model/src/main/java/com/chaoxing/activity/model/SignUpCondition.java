@@ -1,5 +1,6 @@
 package com.chaoxing.activity.model;
 
+import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -30,6 +31,7 @@ public class SignUpCondition {
     /** 字段名; column: filed_name*/
     private String filedName;
     /** 是否允许报名; column: is_allow_signed_up*/
-    private Boolean isAllowSignedUp;
+    @TableField(value = "is_allow_signed_up")
+    private Boolean allowSignedUp;
 
 }

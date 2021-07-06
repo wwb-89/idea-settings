@@ -1,5 +1,6 @@
 package com.chaoxing.activity.model;
 
+import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -32,7 +33,8 @@ public class TemplateComponent {
     /** 定制的简介; column: introduction*/
     private String introduction;
     /** 是否必填; column: is_required*/
-    private Boolean isRequired;
+    @TableField(value = "is_required")
+    private Boolean required;
     /** 顺序; column: sequence*/
     private Integer sequence;
 

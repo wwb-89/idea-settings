@@ -1,12 +1,11 @@
 package com.chaoxing.activity.model;
 
+import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableName;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import java.util.Date;
+import java.util.Objects;
 
 /**
  * 组件表
@@ -32,13 +31,16 @@ public class Component {
     /** 组件编码。系统字段才有code; column: code*/
     private String code;
     /** 是否必填; column: is_required*/
-    private Boolean isRequired;
+    @TableField(value = "is_required")
+    private Boolean required;
     /** 简介; column: introduction*/
     private String introduction;
     /** 是否是系统组件; column: is_system*/
-    private Boolean isSystem;
+    @TableField(value = "is_system")
+    private Boolean system;
     /** 是否支持多个组件; column: is_multi*/
-    private Boolean isMulti;
+    @TableField(value = "is_multi")
+    private Boolean multi;
     /** 组件类型。自定义组件才有类型：文本、单选、多选; column: type*/
     private String type;
     /** 数据来源; column: data_origin*/
@@ -57,4 +59,29 @@ public class Component {
     private Date updateTime;
     /** 更新人uid; column: update_uid*/
     private Integer updateUid;
+
+    @Getter
+    public enum DataOriginEnum {
+
+        CUSTOM("自定义", "custom"),
+        FORM("表单", "form");
+
+        private String name;
+        private String value;
+
+        DataOriginEnum(String name, String value) {
+            this.name = name;
+            this.value = value;
+        }
+
+        public static DataOriginEnum fromValue(String value) {
+            DataOriginEnum[] values = DataOriginEnum.values();
+            for (DataOriginEnum dataOriginEnum : values) {
+                if (Objects.equals(dataOriginEnum.getValue(), value)) {
+                    return dataOriginEnum;
+                }
+            }
+            return null;
+        }
+    }
 }

@@ -7,7 +7,7 @@
         <result column="component_id" jdbcType="INTEGER" property="componentId" />
         <result column="name" jdbcType="VARCHAR" property="name" />
         <result column="introduction" jdbcType="VARCHAR" property="introduction" />
-        <result column="is_required" jdbcType="BIT" property="isRequired" />
+        <result column="is_required" jdbcType="BIT" property="required" />
         <result column="sequence" jdbcType="INTEGER" property="sequence" />
     </resultMap>
     <sql id="Base_Column_List">

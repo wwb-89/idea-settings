@@ -4,7 +4,7 @@
     <resultMap id="BaseResultMap" type="com.chaoxing.activity.model.Template">
         <id column="id" jdbcType="INTEGER" property="id" />
         <result column="name" jdbcType="VARCHAR" property="name" />
-        <result column="is_system" jdbcType="BIT" property="isSystem" />
+        <result column="is_system" jdbcType="BIT" property="system" />
         <result column="fid" jdbcType="INTEGER" property="fid" />
         <result column="cover_url" jdbcType="VARCHAR" property="coverUrl" />
         <result column="sequence" jdbcType="INTEGER" property="sequence" />

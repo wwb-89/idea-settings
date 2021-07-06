@@ -1,5 +1,6 @@
 package com.chaoxing.activity.model;
 
+import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -32,7 +33,8 @@ public class ComponentField {
     /** 顺序; column: sequence*/
     private Integer sequence;
     /** 是否被删除; column: is_deleted*/
-    private Boolean isDeleted;
+    @TableField(value = "is_deleted")
+    private Boolean deleted;
     /** 创建时间; column: create_time*/
     private Date createTime;
     /** 创建人uid; column: create_uid*/

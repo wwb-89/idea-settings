@@ -6,7 +6,7 @@
         <result column="component_id" jdbcType="INTEGER" property="componentId" />
         <result column="field_name" jdbcType="VARCHAR" property="fieldName" />
         <result column="sequence" jdbcType="INTEGER" property="sequence" />
-        <result column="is_deleted" jdbcType="BIT" property="isDeleted" />
+        <result column="is_deleted" jdbcType="BIT" property="deleted" />
         <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
         <result column="create_uid" jdbcType="INTEGER" property="createUid" />
         <result column="update_time" jdbcType="TIMESTAMP" property="updateTime" />

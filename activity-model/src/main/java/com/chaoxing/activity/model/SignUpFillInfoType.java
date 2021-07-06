@@ -28,4 +28,6 @@ public class SignUpFillInfoType {
     /** 类型; column: type*/
     private String type;
 
+
+
 }

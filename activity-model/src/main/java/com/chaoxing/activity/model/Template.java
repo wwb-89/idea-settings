@@ -1,5 +1,6 @@
 package com.chaoxing.activity.model;
 
+import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -28,7 +29,8 @@ public class Template {
     /** 模版名称; column: name*/
     private String name;
     /** 是否是系统模版; column: is_system*/
-    private Boolean isSystem;
+    @TableField(value = "is_system")
+    private Boolean system;
     /** 所属机构id; column: fid*/
     private Integer fid;
     /** 封面url; column: cover_url*/

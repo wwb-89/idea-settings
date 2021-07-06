@@ -6,7 +6,7 @@
         <result column="template_component_id" jdbcType="INTEGER" property="templateComponentId" />
         <result column="origin_identify" jdbcType="VARCHAR" property="originIdentify" />
         <result column="filed_name" jdbcType="VARCHAR" property="filedName" />
-        <result column="is_allow_signed_up" jdbcType="BIT" property="isAllowSignedUp" />
+        <result column="is_allow_signed_up" jdbcType="BIT" property="allowSignedUp" />
     </resultMap>
     <sql id="Base_Column_List">
         t.id, t.template_component_id, t.origin_identify, t.filed_name, t.is_allow_signed_up
