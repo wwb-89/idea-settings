@@ -86,7 +86,14 @@
                     </div>
                 </div>
 
-                <el-table v-if="tbodyHeight > 0" class="table-box" :data="tableData" :height="tbodyHeight" @sort-change="sortChange" @filter-change="filterChange" @selection-change="selectChange">
+                <el-table v-if="tbodyHeight > 0"
+                          class="table-box"
+                          :data="tableData"
+                          :height="tbodyHeight"
+                          :empty-text="loaded && tableData.length === 0 ? '暂无数据' : '数据加载中'"
+                          @sort-change="sortChange"
+                          @filter-change="filterChange"
+                          @selection-change="selectChange">
                     <el-table-column fixed type="selection" width="24"></el-table-column>
                     <template v-for="item in showTableFieldDetails" v-if="item.defaultChecked">
                         <el-table-column
