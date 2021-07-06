@@ -1,9 +1,12 @@
 package com.chaoxing.activity.model;
 
+import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableField;
+import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.*;
 
+import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.Objects;
 
@@ -23,9 +26,8 @@ import java.util.Objects;
 public class Component {
 
     /** 主键; column: id*/
+    @TableId(type = IdType.AUTO)
     private Integer id;
-    /** 市场id。系统组件为空; column: market_id*/
-    private Integer marketId;
     /** 组件名称; column: name*/
     private String name;
     /** 组件编码。系统字段才有code; column: code*/
@@ -52,17 +54,18 @@ public class Component {
     /** 所属机构id; column: fid*/
     private Integer fid;
     /** 创建时间; column: create_time*/
-    private Date createTime;
+    private LocalDateTime createTime;
     /** 创建人uid; column: create_uid*/
     private Integer createUid;
     /** 更新时间; column: update_time*/
-    private Date updateTime;
+    private LocalDateTime updateTime;
     /** 更新人uid; column: update_uid*/
     private Integer updateUid;
 
     @Getter
     public enum DataOriginEnum {
 
+        /** 自定义 */
         CUSTOM("自定义", "custom"),
         FORM("表单", "form");
 
@@ -84,4 +87,5 @@ public class Component {
             return null;
         }
     }
+
 }

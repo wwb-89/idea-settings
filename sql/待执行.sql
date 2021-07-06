@@ -14,7 +14,6 @@ CREATE TABLE `t_template`  (
 ) COMMENT = '模版表';
 CREATE TABLE `t_component`  (
     `id` int(11) NOT NULL AUTO_INCREMENT COMMENT '主键',
-    `market_id` int(11) NULL COMMENT '市场id。系统组件为空',
     `name` varchar(50) NULL COMMENT '组件名称',
     `code` varchar(50) NULL COMMENT '组件编码。系统字段才有code',
     `is_required` tinyint(1) NULL DEFAULT 1 COMMENT '是否必填',
@@ -26,9 +25,9 @@ CREATE TABLE `t_component`  (
     `origin_identify` varchar(50) NULL COMMENT '来源主键',
     `field_flag` varchar(50) NULL COMMENT '字段标识',
     `fid` int(11) NULL COMMENT '所属机构id',
-    `create_time` datetime(0) NULL COMMENT '创建时间',
+    `create_time` datetime(0) NULL DEFAULT current_timestamp() COMMENT '创建时间',
     `create_uid` int(11) NULL COMMENT '创建人uid',
-    `update_time` datetime(0) NULL COMMENT '更新时间',
+    `update_time` datetime(0) NULL DEFAULT current_timestamp() ON UPDATE CURRENT_TIMESTAMP(0) COMMENT '更新时间',
     `update_uid` int(11) NULL COMMENT '更新人uid',
     PRIMARY KEY (`id`),
     INDEX `idx_primary`(`market_id`)
@@ -39,9 +38,9 @@ CREATE TABLE `t_component_field`  (
     `field_name` varchar(255) NULL COMMENT '字段名',
     `sequence` int(11) NULL COMMENT '顺序',
     `is_deleted` tinyint(1) NULL DEFAULT 0 COMMENT '是否被删除',
-    `create_time` datetime(0) NULL COMMENT '创建时间',
+    `create_time` datetime(0) NULL DEFAULT current_timestamp() COMMENT '创建时间',
     `create_uid` int(11) NULL COMMENT '创建人uid',
-    `update_time` datetime(0) NULL COMMENT '更新时间',
+    `update_time` datetime(0) NULL DEFAULT current_timestamp() ON UPDATE CURRENT_TIMESTAMP(0) COMMENT '更新时间',
     `update_uid` int(11) NULL COMMENT '更新人uid',
     PRIMARY KEY (`id`),
     INDEX `idx_primary`(`component_id`)

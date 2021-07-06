@@ -1,5 +1,7 @@
 package com.chaoxing.activity.model;
 
+import com.baomidou.mybatisplus.annotation.IdType;
+import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -22,6 +24,7 @@ import lombok.NoArgsConstructor;
 public class SignUpFillInfoType {
 
     /** 主键; column: id*/
+    @TableId(type = IdType.AUTO)
     private Integer id;
     /** 模版主键id; column: template_component_id*/
     private Integer templateComponentId;
