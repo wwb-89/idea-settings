@@ -36,8 +36,8 @@ public class ActivityTimingReleaseQueueService implements IDelayedQueueService<A
 		return pop(redissonClient, CACHE_KEY);
 	}
 
-	public void remove(QueueParamDTO queueParam) {
-		remove(redissonClient, CACHE_KEY, queueParam);
+	public void remove(Integer activityId) {
+		remove(redissonClient, CACHE_KEY, QueueParamDTO.builder().activityId(activityId).build());
 	}
 
 	@Data

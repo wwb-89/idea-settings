@@ -369,4 +369,31 @@ public class Activity {
         }
     }
 
+    /**发布
+     * @Description 
+     * @author wwb
+     * @Date 2021-07-06 11:04:18
+     * @param releaseUid
+     * @return void
+    */
+    public void release(Integer releaseUid) {
+        setReleased(true);
+        setReleaseUid(releaseUid);
+        LocalDateTime now = LocalDateTime.now();
+        setReleaseTime(now);
+    }
+
+    /**取消发布
+     * @Description 
+     * @author wwb
+     * @Date 2021-07-06 11:06:35
+     * @param
+     * @return void
+    */
+    public void cancelRelease() {
+        setReleased(false);
+        setReleaseUid(null);
+        setReleaseTime(null);
+    }
+
 }

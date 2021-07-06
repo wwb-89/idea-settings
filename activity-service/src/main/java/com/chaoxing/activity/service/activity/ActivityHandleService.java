@@ -87,7 +87,7 @@ public class ActivityHandleService {
 	@Resource
 	private WebTemplateService webTemplateService;
 	@Resource
-	private ActivityStatusUpdateService activityStatusUpdateService;
+	private ActivityStatusService activityStatusService;
 	@Resource
 	private ActivityChangeEventService activityChangeEventService;
 	@Resource
@@ -426,9 +426,6 @@ public class ActivityHandleService {
 			existActivity.setTimingRelease(activity.getTimingRelease());
 			existActivity.setTimingReleaseTime(activity.getTimingReleaseTime());
 			existActivity.setTimeLengthUpperLimit(activity.getTimeLengthUpperLimit());
-			// 根据活动时间判断状态
-			Integer status = activityStatusUpdateService.calActivityStatus(existActivity);
-			existActivity.setStatus(status);
 			activityMapper.update(existActivity, new UpdateWrapper<Activity>()
 					.lambda()
 					.eq(Activity::getId, activity.getId())
@@ -436,6 +433,8 @@ public class ActivityHandleService {
 					.set(Activity::getTimeLengthUpperLimit, existActivity.getTimeLengthUpperLimit())
 					.set(Activity::getIntegralValue, existActivity.getIntegralValue())
 			);
+			// 更新活动状态
+			activityStatusService.statusUpdate(existActivity);
 			ActivityDetail activityDetail = activityQueryService.getDetailByActivityId(activityId);
 			if (activityDetail == null) {
 				activityDetail = ActivityDetail.builder()
@@ -483,22 +482,8 @@ public class ActivityHandleService {
 	@Transactional(rollbackFor = Exception.class)
 	public void release(Integer activityId, LoginUserDTO loginUser) {
 		Activity activity = activityValidationService.releaseAble(activityId, loginUser);
-		// 发布活动
-		activity.setReleased(true);
-		activity.setReleaseTime(LocalDateTime.now());
-		activity.setReleaseUid(loginUser.getUid());
-		Integer status = activityStatusUpdateService.calActivityStatus(activity);
-		activity.setStatus(status);
-		activityMapper.update(null, new UpdateWrapper<Activity>()
-			.lambda()
-				.eq(Activity::getId, activity.getId())
-				.set(Activity::getReleased, activity.getReleased())
-				.set(Activity::getReleaseTime, LocalDateTime.now())
-				.set(Activity::getReleaseUid, loginUser.getUid())
-				.set(Activity::getStatus, activity.getStatus())
-		);
-		// 活动状态改变
-		activityChangeEventService.releaseStatusChange(activity, loginUser);
+		activity.release(loginUser.getUid());
+		activityStatusService.updateReleaseStatus(activity);
 	}
 
 	/**取消发布（下架）
@@ -512,16 +497,8 @@ public class ActivityHandleService {
 	@Transactional(rollbackFor = Exception.class)
 	public void cancelRelease(Integer activityId, LoginUserDTO loginUser) {
 		Activity activity = activityValidationService.cancelReleaseAble(activityId, loginUser);
-		activity.setReleased(Boolean.FALSE);
-		Integer status = activityStatusUpdateService.calActivityStatus(activity);
-		activityMapper.update(null, new UpdateWrapper<Activity>()
-			.lambda()
-				.eq(Activity::getId, activity.getId())
-				.set(Activity::getReleased, activity.getReleased())
-				.set(Activity::getStatus, status)
-		);
-		// 活动状态改变
-		activityChangeEventService.releaseStatusChange(activity, loginUser);
+		activity.cancelRelease();
+		activityStatusService.updateReleaseStatus(activity);
 	}
 
 	/**删除活动
@@ -794,13 +771,13 @@ public class ActivityHandleService {
 	 * @param status
 	 * @return void
 	*/
-	public void updateActivityStatus(Integer activityId, Integer status) {
+	public void updateActivityStatus(Integer activityId, Activity.StatusEnum status) {
 		activityMapper.update(null, new UpdateWrapper<Activity>()
 			.lambda()
 				.eq(Activity::getId, activityId)
-				.set(Activity::getStatus, status)
+				.set(Activity::getStatus, status.getValue())
 		);
-		if (Objects.equals(Activity.StatusEnum.ENDED.getValue(), status)) {
+		if (Objects.equals(Activity.StatusEnum.ENDED, status)) {
 			// 当活动结束时触发用户合格判定
 			activityInspectionResultDecideQueueService.push(activityId);
 		}

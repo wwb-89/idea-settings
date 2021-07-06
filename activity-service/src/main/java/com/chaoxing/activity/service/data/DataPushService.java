@@ -34,8 +34,6 @@ public class DataPushService {
     @Resource
     private ActivityDataFormPushService activityDataFormPushService;
     @Resource
-    private UserActivityDataFormPushService userActivityDataFormPushService;
-    @Resource
     private DataPushQueueService dataPushQueueService;
 
     /**数据推送
@@ -91,7 +89,7 @@ public class DataPushService {
     @AllArgsConstructor
     public static class DataPushParamDTO {
 
-        /** 机构id */
+        /** 机构id（找到配置的推送信息） */
         private Integer fid;
         /** 数据类型 */
         private OrgDataRepoConfigDetail.DataTypeEnum dataType;

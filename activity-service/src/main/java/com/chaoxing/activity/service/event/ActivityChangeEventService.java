@@ -125,13 +125,13 @@ public class ActivityChangeEventService {
 				}
 				if (timingReleaseTimeChange) {
 					// 取消定时发布
-					activityTimingReleaseQueueService.remove(queueParam);
+					activityTimingReleaseQueueService.remove(activityId);
 					// 定时发布
 					activityTimingReleaseQueueService.push(queueParam);
 				}
 			} else {
 				// 取消定时发布
-				activityTimingReleaseQueueService.remove(queueParam);
+				activityTimingReleaseQueueService.remove(activityId);
 			}
 		}
 	}
@@ -160,23 +160,17 @@ public class ActivityChangeEventService {
 	 * @author wwb
 	 * @Date 2021-03-26 20:04:29
 	 * @param activity
-	 * @param loginUser
 	 * @return void
 	*/
-	public void releaseStatusChange(Activity activity, LoginUserDTO loginUser) {
+	public void releaseStatusChange(Activity activity) {
+		Integer activityId = activity.getId();
 		Boolean released = activity.getReleased();
 		if (!released) {
 			// 取消定时发布
-			ActivityTimingReleaseQueueService.QueueParamDTO queueParam = ActivityTimingReleaseQueueService.QueueParamDTO.builder()
-					.activityId(activity.getId())
-					.releaseTime(activity.getTimingReleaseTime())
-					.loginUser(loginUser)
-					.build();
-			activityTimingReleaseQueueService.remove(queueParam);
+			activityTimingReleaseQueueService.remove(activityId);
 		}
 		// 活动发布范围改变
-		activityReleaseScopeChangeQueueService.push(activity.getId());
-		Integer activityId = activity.getId();
+		activityReleaseScopeChangeQueueService.push(activityId);
 		Integer createFid = activity.getCreateFid();
 		dataPushService.dataPush(new DataPushService.DataPushParamDTO(createFid, OrgDataRepoConfigDetail.DataTypeEnum.ACTIVITY, String.valueOf(activityId), null));
 	}
