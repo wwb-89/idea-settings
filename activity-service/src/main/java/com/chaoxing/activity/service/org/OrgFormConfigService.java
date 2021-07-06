@@ -61,6 +61,7 @@ public class OrgFormConfigService {
 				.inspectionPlanFormId(Optional.ofNullable(secondClassroomOrgFormConfig).map(OrgFormConfigDTO::getInspectionPlanFormId).orElse(null))
 				.inspectionPlanRuleFormId(Optional.ofNullable(secondClassroomOrgFormConfig).map(OrgFormConfigDTO::getInspectionPlanRuleFormId).orElse(null))
 				.creditProjectFormId(Optional.ofNullable(secondClassroomOrgFormConfig).map(OrgFormConfigDTO::getCreditProjectFormId).orElse(null))
+				.projectTypeFormId(Optional.ofNullable(secondClassroomOrgFormConfig).map(OrgFormConfigDTO::getProjectTypeFormId).orElse(null))
 				.userScoreFormId(Optional.ofNullable(secondClassroomOrgFormConfig).map(OrgFormConfigDTO::getUserScoreFormId).orElse(null))
 				.userResultFormId(Optional.ofNullable(secondClassroomOrgFormConfig).map(OrgFormConfigDTO::getUserResultFormId).orElse(null))
 				.signUpScopeType(Optional.ofNullable(orgConfig).map(OrgConfig::getSignUpScopeType).orElse(""))
