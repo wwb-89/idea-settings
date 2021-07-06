@@ -3,6 +3,7 @@
 <mapper namespace="com.chaoxing.activity.mapper.ComponentMapper">
     <resultMap id="BaseResultMap" type="com.chaoxing.activity.model.Component">
         <id column="id" jdbcType="INTEGER" property="id" />
+        <result column="pid" jdbcType="INTEGER" property="pid" />
         <result column="name" jdbcType="VARCHAR" property="name" />
         <result column="code" jdbcType="VARCHAR" property="code" />
         <result column="is_required" jdbcType="BIT" property="required" />
@@ -20,7 +21,7 @@
         <result column="update_uid" jdbcType="INTEGER" property="updateUid" />
     </resultMap>
     <sql id="Base_Column_List">
-        t.id, t.name, t.code, t.is_required, t.introduction, t.is_system, t.is_multi,
+        t.id, t.pid, t.name, t.code, t.is_required, t.introduction, t.is_system, t.is_multi,
         t.type, t.data_origin, t.origin_identify, t.field_flag, t.fid, t.create_time, t.create_uid, 
         t.update_time, t.update_uid
     </sql>

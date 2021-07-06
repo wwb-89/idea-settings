@@ -28,6 +28,8 @@ public class Component {
     /** 主键; column: id*/
     @TableId(type = IdType.AUTO)
     private Integer id;
+    /** 父组件id; column: pid*/
+    private Integer pid;
     /** 组件名称; column: name*/
     private String name;
     /** 组件编码。系统字段才有code; column: code*/

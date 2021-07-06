@@ -14,6 +14,8 @@ CREATE TABLE `t_template`  (
 ) COMMENT = '模版表';
 CREATE TABLE `t_component`  (
     `id` int(11) NOT NULL AUTO_INCREMENT COMMENT '主键',
+    `pid` int(11) NULL DEFAULT 0 COMMENT '父组件id',
+    `market_id` int(11) NULL COMMENT '市场id。系统组件为空',
     `name` varchar(50) NULL COMMENT '组件名称',
     `code` varchar(50) NULL COMMENT '组件编码。系统字段才有code',
     `is_required` tinyint(1) NULL DEFAULT 1 COMMENT '是否必填',
@@ -30,7 +32,9 @@ CREATE TABLE `t_component`  (
     `update_time` datetime(0) NULL DEFAULT current_timestamp() ON UPDATE CURRENT_TIMESTAMP(0) COMMENT '更新时间',
     `update_uid` int(11) NULL COMMENT '更新人uid',
     PRIMARY KEY (`id`),
-    INDEX `idx_primary`(`market_id`)
+    INDEX `idx_primary`(`fid`),
+    INDEX `idx_system`(`is_system`),
+    INDEX `idx_pid`(`pid`)
 ) COMMENT = '组件表';
 CREATE TABLE `t_component_field`  (
     `id` int(11) NOT NULL AUTO_INCREMENT COMMENT '主键',
