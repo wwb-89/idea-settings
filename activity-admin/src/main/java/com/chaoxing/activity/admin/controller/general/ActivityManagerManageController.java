@@ -56,8 +56,6 @@ public class ActivityManagerManageController {
 		Integer operateUid = loginUser.getUid();
 		Activity activity = activityValidationService.manageAble(activityId, operateUid);
 		model.addAttribute("activity", activity);
-		// 查询用户的机构列表
-		List<Integer> fids = moocApiService.listUserFids(operateUid);
 		List<OrgDTO> orgs = wfwContactApiService.listUserHaveContactsOrg(operateUid);
 		model.addAttribute("orgs", orgs);
 		// 查询以选择的uid列表

@@ -3,7 +3,7 @@ package com.chaoxing.activity.service.org;
 import com.chaoxing.activity.dto.OrgFormConfigDTO;
 import com.chaoxing.activity.model.OrgConfig;
 import com.chaoxing.activity.model.OrgDataRepoConfigDetail;
-import com.chaoxing.activity.service.manager.module.SecondClassroomApiService;
+import com.chaoxing.activity.service.manager.SecondClassroomApiService;
 import com.chaoxing.activity.service.manager.module.SignApiService;
 import com.chaoxing.activity.service.repoconfig.OrgDataRepoConfigHandleService;
 import com.chaoxing.activity.service.repoconfig.OrgDataRepoConfigQueryService;
