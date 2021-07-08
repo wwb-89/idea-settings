@@ -13,4 +13,21 @@
     <sql id="Base_Column_List">
         t.id, t.template_id, t.component_id, t.name, t.introduction, t.is_required, t.sequence
     </sql>
+
+    <insert id="batchAdd">
+
+        INSERT INTO
+            t_template_component ( template_id, component_id, `name`, introduction, is_required, `sequence` )
+        VALUES
+        <foreach collection="templateComponents" item="item" open="" close="" separator=",">
+            (
+                #{item.templateId},
+                #{item.componentId},
+                #{item.name},
+                #{item.introduction},
+                #{item.required},
+                #{item.sequence}
+            )
+        </foreach>
+    </insert>
 </mapper>

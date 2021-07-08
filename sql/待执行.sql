@@ -35,7 +35,7 @@ CREATE TABLE `t_component`  (
     INDEX `idx_primary`(`fid`),
     INDEX `idx_system`(`is_system`),
     INDEX `idx_pid`(`pid`)
-) COMMENT = '组件表';
+) COMM lkENT = '组件表';
 CREATE TABLE `t_component_field`  (
     `id` int(11) NOT NULL AUTO_INCREMENT COMMENT '主键',
     `component_id` int(11) NULL COMMENT '组件id',
@@ -59,7 +59,7 @@ CREATE TABLE `t_template_component`  (
     `sequence` int(11) NULL COMMENT '顺序',
     PRIMARY KEY (`id`),
     INDEX `idx_primary`(`template_id`)
-) COMMENT = '模版组件关联表';
+) COMMENT = '模版组件关联 表';
 CREATE TABLE `t_sign_up_condition`  (
     `id` int(11) NOT NULL AUTO_INCREMENT COMMENT '主键',
     `template_component_id` int(11) NULL COMMENT '模版主键id',

@@ -7,7 +7,7 @@ import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.*;
 
 import java.time.LocalDateTime;
-import java.util.Date;
+import java.util.List;
 import java.util.Objects;
 
 /**
@@ -63,6 +63,35 @@ public class Component {
     private LocalDateTime updateTime;
     /** 更新人uid; column: update_uid*/
     private Integer updateUid;
+
+    @TableField(exist = false)
+    private List<ComponentField> fieldList;
+
+    @Getter
+    public enum TypeEnum {
+
+        TEXT("文本", "text"),
+        RADIO("单选", "radio"),
+        CHECKBOX("多选", "checkbox");
+
+        private String name;
+        private String value;
+
+        TypeEnum(String name, String value) {
+            this.name = name;
+            this.value = value;
+        }
+
+        public static TypeEnum fromValue(String value) {
+            TypeEnum[] values = TypeEnum.values();
+            for (TypeEnum typeEnum : values) {
+                if (Objects.equals(typeEnum.getValue(), value)) {
+                    return typeEnum;
+                }
+            }
+            return null;
+        }
+    }
 
     @Getter
     public enum DataOriginEnum {

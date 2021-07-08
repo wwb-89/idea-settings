@@ -3,6 +3,9 @@ package com.chaoxing.activity.mapper;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.chaoxing.activity.model.Component;
 import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Param;
+
+import java.util.Collection;
 
 /**
  * @className: ComponentMapper
@@ -13,4 +16,13 @@ import org.apache.ibatis.annotations.Mapper;
  */
 @Mapper
 public interface ComponentMapper extends BaseMapper<Component> {
+
+    /**
+    * @Description 
+    * @author huxiaolong
+    * @Date 2021-07-08 11:07:57
+    * @param components
+    * @return void
+    */
+    void batchAdd(@Param("components") Collection<Component> components);
 }
