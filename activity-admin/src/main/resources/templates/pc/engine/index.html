@@ -12,22 +12,18 @@
 <body>
     <div class="field-setting" id="field-setting" v-cloak>
         <div class="top-con">
-            <div class="go-back white-border-btn"><i></i><span>返回</span></div>
+            <div class="go-back white-border-btn" v-if="loaded && currTemplateId" @click="returnBack"><i></i><span>返回</span></div>
             <div class="step-box">
                 <img src="/static/pc/assets/images/yq-design/step2-active.png" th:src="@{/pc/assets/images/yq-design/step2-active.png}" alt="">
                 <img src="/static/pc/assets/images/yq-design/step3-normal.png" th:src="@{/pc/assets/images/yq-design/step3-normal.png}" alt="">
             </div>
             <div class="look-div fr">
-                <div class="btn-width80px-color1">预览</div>
-                <div class="btn-width80px-color2">发布</div>
-            </div>
-            <div class="step-div fr">
-                <div class="prev-step white-border-btn">上一步</div>
-                <div class="next-step white-border-btn">下一步</div>
+<!--                <div class="btn-width80px-color1">预览</div>-->
+                <div class="btn-width80px-color2" v-if="loaded && currTemplateId" @click="publish">发布</div>
             </div>
         </div>
         <div class="content">
-            <div class="w-900px choose-mould">
+            <div class="w-900px choose-mould" v-show="!loaded || !currTemplateId">
                 <p class="title">请选择模版</p>
                 <ul class="mould">
                     <li class="mould-item" v-for="template in templates" @click="templateChange(template.id)">
@@ -36,7 +32,7 @@
                     </li>
                 </ul>
             </div>
-            <div class="w-900px info-box" style="display: block;" >
+            <div class="w-900px info-box" style="display: block;" v-show="currTemplateId && loaded">
                 <form action="" id="drag-box">
                     <!-- 基本信息 -->
                     <div class="title sort-item">
@@ -362,7 +358,7 @@
                         </div>
                     </div>
                 </form>
-                <div class="add-circle" @click="addFieldDialog=true" id="add-circle"></div>
+                <div class="add-circle" @click="addFieldDialog = true" id="add-circle"></div>
             </div>
         </div>
         <!--拖拽排序的提示-->
@@ -386,6 +382,17 @@
                     <i class="close" @click="addFieldDialog=false"></i>
                 </div>
                 <div class="body">
+                    <div class="down-list">
+                        <p class="down-btn">
+                            <span>基本信息</span>
+                            <i class="down-icon"></i>
+                        </p>
+                        <ul class="item-list">
+                            <li>基本信息</li>
+                            <li>学生报名</li>
+                            <li>企业报名</li>
+                        </ul>
+                    </div>
                     <div class="field-item">
                         <p class="field overHidden1">参与范围</p>
                         <el-tooltip class="tooltip" effect="dark" content="说明文字单行效果" placement="top">
@@ -393,8 +400,8 @@
                         </el-tooltip>
                         <div class="fr add-btn">
                             <i class="icon-add"></i>
-                            <span class="aready">已添加</span>
-                            <span class="remove">移除</span>
+                            <span class="aready" style="display: none;">已添加</span>
+                            <span class="remove" style="display: none;">移除</span>
                         </div>
                     </div>
                     <div class="field-item aready-add">
@@ -403,9 +410,9 @@
                             <i class="icon-info"></i>
                         </el-tooltip>
                         <div class="fr add-btn">
-                            <i class="icon-add"></i>
+                            <i class="icon-add" style="display: none;"></i>
                             <span class="aready">已添加</span>
-                            <span class="remove">移除</span>
+                            <span class="remove" style="display: none;">移除</span>
                         </div>
                     </div>
                     <div class="field-item">
@@ -415,8 +422,8 @@
                         </el-tooltip>
                         <div class="fr add-btn">
                             <i class="icon-add"></i>
-                            <span class="aready">已添加</span>
-                            <span class="remove">移除</span>
+                            <span class="aready" style="display: none;">已添加</span>
+                            <span class="remove" style="display: none;">移除</span>
                         </div>
                     </div>
                     <div class="field-item">
@@ -748,6 +755,12 @@
                     fid: [[${fid}]],
                     templates: [[${templates}]],
                     currTemplateId: null,
+                    template: {},
+                    components: [],
+                    templateComponents: [],
+                    showTemplateComponents: [],
+
+
                     loaded: false,
                     radio1:'1',
                     activityType:'创新创业',
@@ -853,39 +866,116 @@
                                     $(this).find('.aready').show()
                                 }
                             })
-                            /* 右下角加号的位置 */
+                        })
+                    },
+                    // 调整右下角加号位置
+                    fixRightEndBtnStyle: function () {
+                        /* 右下角加号的位置 */
+                        var right = $('.w-900px.info-box').offset().left + 50
+                        $('#add-circle').css('right', right)
+                        $(window).resize(function () {
                             var right = $('.w-900px.info-box').offset().left + 50
-                            $('#add-circle').css('right',right)
-                            $(window).resize(function () {
-                                var right = $('.w-900px.info-box').offset().left + 50
-                                $('#add-circle').css('right',right)
-                            })
+                            $('#add-circle').css('right', right)
                         })
                     },
                     templateChange: function (templateId) {
                         var $this = this;
                         $this.currTemplateId = templateId;
-                        $this.loadTemplateDesign();
+                        $this.loadTemplateInfo();
                     },
-                    loadTemplateDesign: function () {
+                    loadTemplateInfo: function () {
                         var $this = this;
-                        var url = ctx + "/api/activity/engine/design";
+                        var url = ctx + "/api/activity/engine/info";
                         var params = {
                             fid: $this.fid,
                             templateId: $this.currTemplateId
                         }
-                        app.ajaxPost(url, params, function (data) {
-                            if (data.success) {
+                        $this.loaded = false;
+                        app.ajaxPost(url, params, function (res) {
+                            $this.loaded = true;
+                            if (res.success) {
+                                var { template, components, templateComponents } = res.data
+                                $this.template = template;
+                                $this.components = components;
+                                $this.templateComponents = templateComponents;
+                                $this.calShowComponents();
+                                $this.$nextTick(function () {
+                                    $this.fixRightEndBtnStyle();
+                                })
                             } else {
-                                var errorMessage = data.message;
+                                var errorMessage = res.message;
                                 if (activityApp.isEmpty(errorMessage)) {
                                     errorMessage = "加载模板数据失败";
                                 }
                                 app.showMsg(errorMessage);
                             }
                         }, function () {
+                            $this.loaded = true;
                             app.showMsg("加载模板数据失败");
                         });
+                    },
+                    calShowComponents: function() {
+                        var $this = this;
+                        $($this.templateComponents).each(function () {
+                            var tplComponent = $.extend({}, this);
+                            var componentId = tplComponent.componentId;
+                            $($this.components).each(function () {
+                                if (componentId === this.id) {
+                                    // 封装component 详情到 templateComponent里面
+                                    tplComponent.component = $.extend({}, this);
+                                    $this.showTemplateComponents.push(tplComponent);
+                                    return false;
+                                }
+                            });
+                        });
+                    },
+                    // 返回
+                    returnBack: function () {
+                        window.location.reload();
+                    },
+                    // 发布数据
+                    publish: function () {
+                        var $this = this;
+                        var submitData = $this.packageData();
+                        var url = ctx + "/api/activity/engine/publish";
+
+                        // app.ajaxPost(url, { templateInfoStr: activityApp.getJsonStr(submitData) }, function (res) {
+                        //     if (res.success) {
+                        //         app.showMsg("发布成功", function () {
+                        //             window.location.reload();
+                        //         });
+                        //     } else {
+                        //         var errorMessage = res.message;
+                        //         if (activityApp.isEmpty(errorMessage)) {
+                        //             errorMessage = "发布失败";
+                        //         }
+                        //         app.showMsg(errorMessage);
+                        //     }
+                        // }, function () {
+                        //     app.showMsg("发布失败");
+                        // });
+
+                    },
+                    packageData: function () {
+                        var template = $.extend({}, $this.template);
+                        var templateComponents = [];
+                        $($this.showTemplateComponents).each(function () {
+                            templateComponents.push({
+                                id: this.id,
+                                templateId: $this.templateId,
+                                componentId: this.componentId,
+                                name: this.name,
+                                introduction: this.introduction,
+                                required: this.required,
+                                sequence: this.sequence
+
+                            });
+                        });
+                        return {
+                            template: template,
+                            components: $this.components,
+                            templateComponents: templateComponents
+                        }
                     },
                     addOption1: function(){
                         this.option1.push({title: ''})
@@ -905,6 +995,5 @@
             })
         </script>
     </div>
-
 </body>
 </html>
