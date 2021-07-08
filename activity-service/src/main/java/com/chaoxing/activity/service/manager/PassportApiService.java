@@ -29,7 +29,6 @@ import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletResponse;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -107,7 +106,7 @@ public class PassportApiService {
 			PassportUserDTO fanyaUserDTO = new PassportUserDTO();
 			JSONArray logininfos = jsonObject.getJSONArray("logininfos");
 			int orgSize = logininfos.size();
-			List<OrgDTO> affiliations = new ArrayList<>();
+			List<OrgDTO> affiliations = Lists.newArrayList();
 			for (int i = 0; i < orgSize; i++) {
 				JSONObject orgJsonObject = logininfos.getJSONObject(i);
 				Integer fid = orgJsonObject.getInteger("fid");
