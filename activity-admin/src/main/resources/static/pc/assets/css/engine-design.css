@@ -381,7 +381,7 @@
   cursor: pointer;
 }
 
-.dailog.add-field .field-item:nth-child(2n) {
+.dailog.add-field .field-item:nth-child(2n + 1) {
   margin-right: 0;
 }
 
@@ -1312,4 +1312,70 @@
   line-height: 18px;
   color: #999999;
   margin-top: 16px;
+}
+
+.down-list {
+  position: relative;
+  height: 28px;
+}
+
+.down-list:hover .down-btn .down-icon {
+  -webkit-transform: rotate(180deg);
+      -ms-transform: rotate(180deg);
+          transform: rotate(180deg);
+}
+
+.down-list:hover .item-list {
+  display: block;
+}
+
+.down-list .down-btn {
+  cursor: pointer;
+  display: inline-block;
+}
+
+.down-list .down-btn span {
+  display: inline-block;
+  font-size: 14px;
+  line-height: 20px;
+  color: #666666;
+}
+
+.down-list .down-btn .down-icon {
+  display: inline-block;
+  vertical-align: top;
+  margin-top: 2px;
+  margin-left: 4px;
+  width: 16px;
+  height: 16px;
+  background: url(../images/yq-design/arrow-down-hover.png);
+}
+
+.down-list .item-list {
+  position: absolute;
+  top: 24px;
+  z-index: 10;
+  width: 120px;
+  display: none;
+  padding: 2px 0;
+  -webkit-box-sizing: border-box;
+     -moz-box-sizing: border-box;
+          box-sizing: border-box;
+  background: #FFFFFF;
+  -webkit-box-shadow: 0px 6px 16px -8px rgba(0, 0, 0, 0.08), 0px 9px 28px rgba(0, 0, 0, 0.05), 0px 12px 48px 16px rgba(0, 0, 0, 0.03);
+          box-shadow: 0px 6px 16px -8px rgba(0, 0, 0, 0.08), 0px 9px 28px rgba(0, 0, 0, 0.05), 0px 12px 48px 16px rgba(0, 0, 0, 0.03);
+  border-radius: 2px;
+}
+
+.down-list .item-list li {
+  padding: 8px 12px;
+  font-size: 14px;
+  line-height: 20px;
+  color: #333;
+  cursor: pointer;
+}
+
+.down-list .item-list li:hover {
+  background: #F8F8F8;
+  color: #0084FF;
 }
