@@ -1,4 +1,4 @@
-package com.chaoxing.activity.service.manager.module;
+package com.chaoxing.activity.service.manager;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
