@@ -9,6 +9,7 @@ import com.chaoxing.activity.dto.manager.form.FilterItemDTO;
 import com.chaoxing.activity.dto.manager.form.FormDTO;
 import com.chaoxing.activity.dto.manager.form.FormStructureDTO;
 import com.chaoxing.activity.util.exception.BusinessException;
+import com.chaoxing.activity.vo.manager.WfwFormVO;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import lombok.extern.slf4j.Slf4j;
@@ -51,7 +52,7 @@ public class FormApiService {
 	private static final String FORM_API_DOMAIN = "http://m.oa.chaoxing.com";
 
 	/** 获取机构下表单列表url */
-	private static final String GET_ORG_FORMS_URL = FORM_API_DOMAIN + "/api/apps/forms/app/list?deptId=%d&datetime=%s&sign=%s&enc=%s";
+	private static final String GET_ORG_FORMS_URL = FORM_API_DOMAIN + "/api/apps/forms/app/list";
 	/** 获取表单字段信息url */
 	private static final String GET_FORM_DETAIL_URL = FORM_API_DOMAIN + "/api/apps/forms/app/config/values?deptId=%d&formId=%d&datetime=%s&sign=%s&enc=%s";
 	/** 获取表单数据url */
@@ -70,40 +71,33 @@ public class FormApiService {
 	private RestTemplate restTemplate;
 
 	/**获取机构下的表单列表
-	 * @Description
+	 * @Description 
 	 * @author wwb
-	 * @Date 2020-11-18 19:12:15
+	 * @Date 2021-07-08 17:42:43
 	 * @param fid
-	 * @return java.util.List<com.chaoxing.activity.dto.manager.FormDTO>
-	 */
-	public List<FormDTO> listOrgForm(Integer fid) {
-		List<FormDTO> forms;
+	 * @return java.util.List<com.chaoxing.activity.vo.manager.WfwFormVO>
+	*/
+	public List<WfwFormVO> listOrgForm(Integer fid) {
 		LocalDateTime now = LocalDateTime.now();
-		String formatDateStr = now.format(DATE_TIME_FORMATTER);
-		String enc = calListOrgFormEnc(fid, formatDateStr);
-		String url = String.format(GET_ORG_FORMS_URL, fid, formatDateStr, SIGN, enc);
-		String result = restTemplate.getForObject(url, String.class);
+		String dateTime = now.format(DATE_TIME_FORMATTER);
+		Map<String, Object> params = new TreeMap<>();
+		params.put("deptId", fid);
+		params.put("datetime", dateTime);
+		params.put("sign", SIGN);
+		String enc = getEnc(params);
+		params.put("enc", enc);
+		MultiValueMap<String, Object> paramsMap = new LinkedMultiValueMap<>();
+		paramsMap.setAll(params);
+		String result = restTemplate.postForObject(GET_ORG_FORMS_URL, paramsMap, String.class);
 		JSONObject jsonObject = JSON.parseObject(result);
 		Boolean success = jsonObject.getBoolean("success");
 		success = Optional.ofNullable(success).orElse(Boolean.FALSE);
 		if (success) {
-			JSONArray jsonArray = jsonObject.getJSONObject("data").getJSONArray("dataList");
-			int size = jsonArray.size();
-			if (size > 0) {
-				forms = JSON.parseArray(jsonArray.toJSONString(), FormDTO.class);
-			} else {
-				forms = Lists.newArrayList();
-			}
-			return forms;
+			return JSON.parseArray(jsonObject.getJSONObject("data").getString("dataList"), WfwFormVO.class);
 		} else {
 			String errorMessage = jsonObject.getString("msg");
 			throw new BusinessException(errorMessage);
 		}
-	}
-
-	private String calListOrgFormEnc(Integer fid, String formatDateStr) {
-		String enc = "[datetime=" + formatDateStr + "][deptId=" + fid + "][sign=" + SIGN + "][" + KEY + "]";
-		return DigestUtils.md5Hex(enc);
 	}
 
 	/**获取表单结构信息
@@ -369,7 +363,7 @@ public class FormApiService {
 		encParamMap.put("datetime", dateFormatStr);
 		encParamMap.put("sign", SIGN);
 
-		String enc = calAdvanceSearchEnc(encParamMap);
+		String enc = getEnc(encParamMap);
 		MultiValueMap<String, Object> paramMap = new LinkedMultiValueMap();
 		paramMap.setAll(encParamMap);
 		paramMap.add("enc", enc);
@@ -461,7 +455,7 @@ public class FormApiService {
 		return JSONObject.toJSONString(searchMap);
 	}
 
-	private String calAdvanceSearchEnc(TreeMap<String, Object> encParamMap) {
+	private String getEnc(Map<String, Object> encParamMap) {
 		StringBuilder enc = new StringBuilder();
 		for (Map.Entry<String, Object> entry : encParamMap.entrySet()) {
 			enc.append("[").append(entry.getKey()).append("=")
