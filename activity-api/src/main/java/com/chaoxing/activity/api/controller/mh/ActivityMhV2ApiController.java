@@ -140,7 +140,6 @@ public class ActivityMhV2ApiController {
 		mhGeneralAppResultDataFields.add(buildField("活动地点链接", activityAddressLink, "117"));
 		// 主办方
 		mhGeneralAppResultDataFields.add(buildField("主办方", activity.getOrganisers(), "105"));
-		mhGeneralAppResultDataFields.add(buildField("活动对象", "", "108"));
 		// 海报
 		mhGeneralAppResultDataFields.add(buildField("海报", "海报", "130"));
 		mhGeneralAppResultDataFields.add(buildField("海报", String.format(ActivityMhUrlConstant.ACTIVITY_POSTERS_URL, activity.getId()), "131"));

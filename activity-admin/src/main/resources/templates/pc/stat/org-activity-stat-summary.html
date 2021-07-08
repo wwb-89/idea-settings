@@ -89,7 +89,12 @@
                     <div class="clear"></div>
                 </div>
 
-                <el-table class="table-box" :data="tableData" @sort-change="sortChange" @filter-change="filterChange">
+                <el-table
+                        class="table-box"
+                        :data="tableData"
+                        :empty-text="loaded && tableData.length === 0 ? '暂无数据' : '数据加载中'"
+                        @sort-change="sortChange"
+                        @filter-change="filterChange">
                     <template v-for="item in showTableFieldDetails" v-if="item.defaultChecked">
                         <el-table-column
                                 v-if="item.code === 'activityName'"
