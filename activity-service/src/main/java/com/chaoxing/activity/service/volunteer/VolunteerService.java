@@ -4,7 +4,6 @@ import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.chaoxing.activity.dto.activity.VolunteerServiceDTO;
-import com.chaoxing.activity.dto.manager.form.FormStructureDTO;
 import com.chaoxing.activity.model.OrgDataRepoConfigDetail;
 import com.chaoxing.activity.service.manager.FormApiService;
 import com.chaoxing.activity.service.repoconfig.OrgDataRepoConfigQueryService;
@@ -54,9 +53,8 @@ public class VolunteerService {
                 if (Objects.equals(formType, configDetail.getRepoType())) {
                     // 查出来的repo值应为formId
                     Integer formId = Integer.valueOf(configDetail.getRepo());
-                    List<FormStructureDTO> formStructures = formApiService.getFormInfo(fid, formId);
                     while (true) {
-                        page = formApiService.pageVolunteerRecord(page, fid, uid, formId, formStructures, serviceType);
+                        page = formApiService.pageVolunteerRecord(page, fid, uid, formId, serviceType);
                         if (CollectionUtils.isEmpty(page.getRecords())) {
                             break;
                         }

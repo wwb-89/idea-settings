@@ -3,7 +3,7 @@ package com.chaoxing.activity.service.data;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.chaoxing.activity.dto.manager.form.FormDTO;
-import com.chaoxing.activity.dto.manager.form.FormStructureDTO;
+import com.chaoxing.activity.dto.manager.form.FormFieldDTO;
 import com.chaoxing.activity.model.Activity;
 import com.chaoxing.activity.model.DataPushRecord;
 import com.chaoxing.activity.model.OrgDataRepoConfigDetail;
@@ -11,10 +11,12 @@ import com.chaoxing.activity.service.activity.ActivityQueryService;
 import com.chaoxing.activity.service.manager.FormApiService;
 import com.chaoxing.activity.service.manager.module.SignApiService;
 import com.chaoxing.activity.service.repoconfig.OrgDataRepoConfigQueryService;
+import com.chaoxing.activity.util.exception.BusinessException;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.CollectionUtils;
 
 import javax.annotation.Resource;
 import java.util.List;
@@ -122,13 +124,17 @@ public class ActivityDataFormPushService {
     }
 
     private String packageFormData(Activity activity, Integer formId, Integer createFid) {
-        List<FormStructureDTO> formInfo = formApiService.getFormInfo(createFid, formId);
+        List<FormFieldDTO> formFields = formApiService.listFormField(createFid, formId);
+        if (CollectionUtils.isEmpty(formFields)) {
+            log.error("微服务表单:{}没有字段", formId);
+            throw new BusinessException("微服务表单没有字段");
+        }
         JSONArray result = new JSONArray();
-        for (FormStructureDTO formStructure : formInfo) {
-            String alias = formStructure.getAlias();
+        for (FormFieldDTO field : formFields) {
+            String alias = field.getAlias();
             JSONObject item = new JSONObject();
-            item.put("compt", formStructure.getCompt());
-            item.put("comptId", formStructure.getId());
+            item.put("compt", field.getCompt());
+            item.put("comptId", field.getId());
             JSONArray data = new JSONArray();
             result.add(item);
             // 活动id

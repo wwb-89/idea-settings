@@ -7,10 +7,10 @@ import lombok.NoArgsConstructor;
 
 import java.util.List;
 
-/**表单结构对象
+/**表单字段对象
  * @author wwb
  * @version ver 1.0
- * @className FormStructureDTO
+ * @className FormFieldDTO
  * @description
  * @blame wwb
  * @date 2021-03-09 12:28:12
@@ -19,7 +19,7 @@ import java.util.List;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class FormStructureDTO {
+public class FormFieldDTO {
 
 	/** 字段id */
 	private Integer id;
@@ -28,6 +28,6 @@ public class FormStructureDTO {
 	/** 别名 */
 	private String alias;
 	private String compt;
-	private List<FormStructureDTO> compts;
+	private List<FormFieldDTO> compts;
 
 }

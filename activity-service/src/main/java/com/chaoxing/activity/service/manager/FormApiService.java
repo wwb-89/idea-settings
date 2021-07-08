@@ -7,7 +7,7 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.chaoxing.activity.dto.activity.VolunteerServiceDTO;
 import com.chaoxing.activity.dto.manager.form.FilterItemDTO;
 import com.chaoxing.activity.dto.manager.form.FormDTO;
-import com.chaoxing.activity.dto.manager.form.FormStructureDTO;
+import com.chaoxing.activity.dto.manager.form.FormFieldDTO;
 import com.chaoxing.activity.util.exception.BusinessException;
 import com.chaoxing.activity.vo.manager.WfwFormVO;
 import com.google.common.collect.Lists;
@@ -54,7 +54,7 @@ public class FormApiService {
 	/** 获取机构下表单列表url */
 	private static final String GET_ORG_FORMS_URL = FORM_API_DOMAIN + "/api/apps/forms/app/list";
 	/** 获取表单字段信息url */
-	private static final String GET_FORM_DETAIL_URL = FORM_API_DOMAIN + "/api/apps/forms/app/config/values?deptId=%d&formId=%d&datetime=%s&sign=%s&enc=%s";
+	private static final String GET_FORM_DETAIL_URL = FORM_API_DOMAIN + "/api/apps/forms/app/config/values";
 	/** 获取表单数据url */
 	private static final String LIST_FORM_DATA_URL = FORM_API_DOMAIN + "/api/apps/forms/user/records/list?deptId=%d&formId=%d&datetime=%s&orderType=%s&limit=%d&sign=%s&enc=%s&scrollId=%s&formUserId=%s";
 	/** 填写表单url */
@@ -78,17 +78,14 @@ public class FormApiService {
 	 * @return java.util.List<com.chaoxing.activity.vo.manager.WfwFormVO>
 	*/
 	public List<WfwFormVO> listOrgForm(Integer fid) {
-		LocalDateTime now = LocalDateTime.now();
-		String dateTime = now.format(DATE_TIME_FORMATTER);
 		Map<String, Object> params = new TreeMap<>();
 		params.put("deptId", fid);
-		params.put("datetime", dateTime);
+		params.put("datetime", LocalDateTime.now().format(DATE_TIME_FORMATTER));
 		params.put("sign", SIGN);
-		String enc = getEnc(params);
-		params.put("enc", enc);
-		MultiValueMap<String, Object> paramsMap = new LinkedMultiValueMap<>();
-		paramsMap.setAll(params);
-		String result = restTemplate.postForObject(GET_ORG_FORMS_URL, paramsMap, String.class);
+		params.put("enc", getEnc(params));
+		MultiValueMap<String, Object> paramMap = new LinkedMultiValueMap();
+		paramMap.setAll(params);
+		String result = restTemplate.postForObject(GET_ORG_FORMS_URL, paramMap, String.class);
 		JSONObject jsonObject = JSON.parseObject(result);
 		Boolean success = jsonObject.getBoolean("success");
 		success = Optional.ofNullable(success).orElse(Boolean.FALSE);
@@ -106,14 +103,14 @@ public class FormApiService {
 	 * @Date 2021-03-09 13:00:37
 	 * @param fid
 	 * @param formId
-	 * @return java.util.List<com.chaoxing.secondclassroom.dto.manager.form.FormStructureDTO>
+	 * @return java.util.List<com.chaoxing.secondclassroom.dto.manager.form.FormFieldDTO>
 	 */
-	public List<FormStructureDTO> getFormInfo(Integer fid, Integer formId) {
+	public List<FormFieldDTO> listFormField(Integer fid, Integer formId) {
 		JSONArray data = getFormInfoData(fid, formId);
 		if (data.size() > 0) {
-			return JSON.parseArray(data.toJSONString(), FormStructureDTO.class);
+			return JSON.parseArray(data.toJSONString(), FormFieldDTO.class);
 		} else {
-			return null;
+			return Lists.newArrayList();
 		}
 	}
 
@@ -126,11 +123,15 @@ public class FormApiService {
 	* @return com.alibaba.fastjson.JSONArray
 	*/
 	public JSONArray getFormInfoData(Integer fid, Integer formId) {
-		LocalDateTime now = LocalDateTime.now();
-		String formatDateStr = now.format(DATE_TIME_FORMATTER);
-		String enc = calGetOrgFormEnc(fid, formId, formatDateStr);
-		String url = String.format(GET_FORM_DETAIL_URL, fid, formId, formatDateStr, SIGN, enc);
-		String result = restTemplate.getForObject(url, String.class);
+		Map<String, Object> params = Maps.newTreeMap();
+		params.put("deptId", fid);
+		params.put("formId", formId);
+		params.put("datetime", LocalDateTime.now().format(DATE_TIME_FORMATTER));
+		params.put("sign", SIGN);
+		params.put("enc", getEnc(params));
+		MultiValueMap<String, Object> paramMap = new LinkedMultiValueMap();
+		paramMap.setAll(params);
+		String result = restTemplate.postForObject(GET_FORM_DETAIL_URL, paramMap, String.class);
 		JSONObject jsonObject = JSON.parseObject(result);
 		Boolean success = jsonObject.getBoolean("success");
 		success = Optional.ofNullable(success).orElse(Boolean.FALSE);
@@ -141,11 +142,6 @@ public class FormApiService {
 			log.error("根据fid:{},表单id:{} 获取表单信息error:{}", fid, formId, errorMessage);
 			throw new BusinessException(errorMessage);
 		}
-	}
-
-	private String calGetOrgFormEnc(Integer fid, Integer formId, String formatDateStr) {
-		String enc = "[datetime=" + formatDateStr + "][deptId=" + fid + "][formId=" + formId + "][sign=" + SIGN + "][" + KEY + "]";
-		return DigestUtils.md5Hex(enc);
 	}
 
 	/**填写表单
@@ -347,11 +343,10 @@ public class FormApiService {
 	* @param fid
 	* @param uid
 	* @param formId
-	* @param formStructures
 	* @param serviceType
 	 * @return com.baomidou.mybatisplus.extension.plugins.pagination.Page<com.chaoxing.activity.dto.activity.VolunteerServiceDTO>
 	*/
-	public Page<VolunteerServiceDTO> pageVolunteerRecord(Page<VolunteerServiceDTO> page, Integer fid, Integer uid, Integer formId, List<FormStructureDTO> formStructures, String serviceType) {
+	public Page<VolunteerServiceDTO> pageVolunteerRecord(Page<VolunteerServiceDTO> page, Integer fid, Integer uid, Integer formId, String serviceType) {
 		// 创建encParamMap, 存储enc加密所需内容
 		TreeMap<String, Object> encParamMap = new TreeMap<>();
 		LocalDateTime now = LocalDateTime.now();
