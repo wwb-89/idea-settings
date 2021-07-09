@@ -65,7 +65,7 @@ CREATE TABLE `t_sign_up_condition`  (
     `template_id` int(11) NULL COMMENT '模版id',
     `component_id` int(11) NULL COMMENT '组件id',
     `origin_identify` varchar(50) NULL COMMENT '来源主键标识',
-    `filed_name` varchar(50) NULL COMMENT '字段名',
+    `field_name` varchar(50) NULL COMMENT '字段名',
     `is_allow_signed_up` tinyint(1) NULL DEFAULT 1 COMMENT '是否允许报名',
     PRIMARY KEY (`id`),
     INDEX `idx_primary`(`template_id`, `component_id`)
@@ -84,5 +84,6 @@ CREATE TABLE `t_activity_component_value`  (
     `activity_id` int(11) NULL COMMENT '活动id',
     `component_id` int(11) NULL COMMENT '组件id',
     `value` varchar(255) NULL COMMENT '值',
-    PRIMARY KEY (`id`)
+    PRIMARY KEY (`id`),
+    INDEX `idx_primary`(`activity_id`, `component_id`)
 ) COMMENT = '活动组件值表';
