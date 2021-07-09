@@ -62,20 +62,22 @@ CREATE TABLE `t_template_component`  (
 ) COMMENT = '模版组件关联表';
 CREATE TABLE `t_sign_up_condition`  (
     `id` int(11) NOT NULL AUTO_INCREMENT COMMENT '主键',
-    `template_component_id` int(11) NULL COMMENT '模版主键id',
+    `template_id` int(11) NULL COMMENT '模版id',
+    `component_id` int(11) NULL COMMENT '组件id',
     `origin_identify` varchar(50) NULL COMMENT '来源主键标识',
     `filed_name` varchar(50) NULL COMMENT '字段名',
     `is_allow_signed_up` tinyint(1) NULL DEFAULT 1 COMMENT '是否允许报名',
     PRIMARY KEY (`id`),
-    INDEX `idx_primary`(`template_component_id`)
+    INDEX `idx_primary`(`template_id`, `component_id`)
 ) COMMENT = '模版组件报名条件表';
 
 CREATE TABLE `t_sign_up_fill_info_type`  (
     `id` int(11) NOT NULL AUTO_INCREMENT COMMENT '主键',
-    `template_component_id` int(11) NULL COMMENT '模版主键id',
+    `template_id` int(11) NULL COMMENT '模版id',
+    `component_id` int(11) NULL COMMENT '组件id',
     `type` varchar(50) NULL COMMENT '类型',
     PRIMARY KEY (`id`),
-    INDEX `idx_primary`(`template_component_id`)
+    INDEX `idx_primary`(`template_id`, `component_id`)
 ) COMMENT = '报名填报信息类型表：默认、双选会、微服务表单';
 CREATE TABLE `t_activity_component_value`  (
     `id` int(11) NOT NULL AUTO_INCREMENT COMMENT '主键',

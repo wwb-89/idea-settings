@@ -25,8 +25,10 @@ public class SignUpFillInfoType {
     /** 主键; column: id*/
     @TableId(type = IdType.AUTO)
     private Integer id;
-    /** 模版主键id; column: template_component_id*/
-    private Integer templateComponentId;
+    /** 模版id; column: template_id*/
+    private Integer templateId;
+    /** 组件id; column: component_id*/
+    private Integer componentId;
     /** 类型; column: type*/
     private String type;
 
