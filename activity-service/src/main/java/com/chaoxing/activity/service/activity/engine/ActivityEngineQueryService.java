@@ -69,7 +69,7 @@ public class ActivityEngineQueryService {
                 .orderByAsc(Template::getSequence));
     }
 
-    /**
+    /**系统组件 + fid 的自定义组件 = 组件集合
     * @Description
     * @author huxiaolong
     * @Date 2021-07-07 15:31:05
@@ -84,10 +84,10 @@ public class ActivityEngineQueryService {
                 .or(j -> j.eq(Component::getSystem, Boolean.TRUE)
                         .isNull(Component::getFid)));
 
-        // todo 自定义组件处理
+
         for (Component component : components) {
             if (!component.getSystem() && StringUtils.isNotBlank(component.getType())) {
-
+                // todo 自定义组件处理
             }
         }
         return components;

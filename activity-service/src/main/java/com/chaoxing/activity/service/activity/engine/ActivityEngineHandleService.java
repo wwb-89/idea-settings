@@ -42,6 +42,8 @@ public class ActivityEngineHandleService {
     @Autowired
     private ComponentFieldMapper componentFieldMapper;
 
+    private final Integer ROOT_ID = 0;
+
 
     /**处理引擎模板组件相关数据(新增/更新)
     * @Description
@@ -91,10 +93,24 @@ public class ActivityEngineHandleService {
     /**新增自定义组件
     * @Description
     * @author huxiaolong
+    * @Date 2021-07-08 18:50:00
+    * @param fid
+    * @param components
+    * @return java.util.Map<java.lang.Integer,com.chaoxing.activity.model.Component>
+    */
+    public Map<Integer, Component> saveCustomComponent(Integer fid, List<Component> components) {
+        return null;
+    }
+
+
+    /**新增组件
+    * @Description
+    * @author huxiaolong
     * @Date 2021-07-08 11:52:12
     * @param
     * @return void
     */
+    @Deprecated
     @Transactional(rollbackFor = Exception.class)
     public Map<Integer, Component> saveComponent(Integer fid, List<Component> components) {
         Map<Integer, Component> nonPidComponentMap = Maps.newHashMap();
@@ -105,7 +121,7 @@ public class ActivityEngineHandleService {
             component.setSystem(Boolean.FALSE);
             if (component.getId() == null) {
                 customComponents.add(component);
-            } else if (component.getPid() == null) {
+            } else if (Objects.equals(component.getPid(), ROOT_ID)) {
                 nonPidComponentMap.put(component.getId(), component);
             } else {
                 hasPidComponentMap.put(component.getId(), component);

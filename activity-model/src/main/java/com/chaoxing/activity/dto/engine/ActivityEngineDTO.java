@@ -23,10 +23,13 @@ import java.util.List;
 @AllArgsConstructor
 public class ActivityEngineDTO {
 
+    /** 模板信息 */
     private Template template;
 
+    /** 组件信息list */
     private List<Component> components;
 
+    /** 模板组件关联信息list */
     private List<TemplateComponent> templateComponents;
 
 }

@@ -43,320 +43,316 @@
                             <i class="icon-delete" @click="delDialog=true"></i>
                         </div>
                     </div>
-                    <div class="form-item sort-item">
-                        <i class="icon-drag"></i>
-                        <div class="icon-div">
-                            <i class="icon-edit" @click='activityNameDialog=true'></i>
-                        </div>
-                        <label class="label required">活动名称</label>
-                        <div class="input-box">
-                            <el-input type="text" placeholder="请填写" maxlength="20" show-word-limit readonly></el-input>
-                        </div>
-                    </div>
-                    <div class="form-item sort-item">
-                        <i class="icon-drag"></i>
-                        <div class="icon-div">
-                            <i class="icon-edit" @click="activityTimeDialog=true"></i>
-                        </div>
-                        <label class="label required">活动时间</label>
-                        <div class="input-box">
-                            <el-date-picker type="daterange"
-                                            start-placeholder="开始时间"
-                                            end-placeholder="结束时间"
-                                            format="yyyy-MM-dd"
-                                            value-format="yyyy-MM-dd"
-                                            prefix-icon="disable"
-                                            clear-icon="disable"
-                                            unlink-panels
-                                            readonly>
-                                <img style="margin: 0 8px;" slot="range-separator" src="/static/pc/assets/images/swap-right.png" th:src="@{/pc/assets/images/swap-right.png}">
-                            </el-date-picker>
-                            <span class="date-piker-icon"><img src="/static/pc/assets/images/calendar.png" th:src="@{/pc/assets/images/calendar.png}"></span>
-                        </div>
-                    </div>
-                    <div class="form-item sort-item">
-                        <i class="icon-drag"></i>
-                        <div class="icon-div">
-                            <i class="icon-edit" @click="textDialog=true"></i>
-                        </div>
-                        <label class="label required">封面</label>
-                        <div class="input-box">
-                            <div class="img-box">
-                                <img src="/static/pc/assets/images/img.png" th:src="@{/pc/assets/images/img.png}" alt="" class="cover-img jqthumbImg">
+                    <template v-for="item in showTemplateComponents">
+                        <div class="form-item sort-item" v-if="!['activity_address', 'company_sign_up', 'sign_up', 'sign_in', 'sign_out', 'work', 'introduction'].includes(item.code)">
+                            <i class="icon-drag"></i>
+                            <div class="icon-div">
+                                <i class="icon-edit" @click='activityNameDialog=true'></i>
+<!--                                <i class="icon-edit" @click="activityTimeDialog=true"></i>-->
+<!--                                <i class="icon-edit" @click="textDialog=true"></i>-->
+<!--                                <i class="icon-edit" @click="activityFormDialog=true"></i>-->
+<!--                                <i class="icon-delete" @click="delDialog=true"></i>-->
+<!--                                <i class="icon-edit" @click="activityTypeDialog=true"></i>-->
+<!--                                <i class="icon-edit" @click="activityNameDialog=true"></i>-->
+<!--                                <i class="icon-delete"></i>-->
+<!--                                <i class="icon-edit" @click="activityNameDialog=true"></i>-->
+<!--                                <i class="icon-delete"></i>-->
                             </div>
-                            <div class="font-box">
-                                <p>建议尺寸：1080x500</p>
-                                <p>大小：小于5M</p>
-                                <p>格式：jpg、png、gif</p>
-                                <div class="blue-border-btn upload">上传文件</div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="form-item sort-item">
-                        <i class="icon-drag"></i>
-                        <div class="icon-div">
-                            <i class="icon-edit" @click="activityFormDialog=true"></i>
-                            <i class="icon-delete" @click="delDialog=true"></i>
-                        </div>
-                        <label class="label">活动形式</label>
-                        <div class="input-box">
-                            <div>
-                                <el-radio v-model="radio1" label="1" name="active-type" class="radio-item" readonly>线下活动</el-radio>
-                                <el-radio label="2" name="active-type" class="radio-item" readonly>线上活动</el-radio>
-                            </div>
-                            <div class="address-box">
-                                <el-input type="text" placeholder="请输入活动地点" autocomplete="off" class="address-input" readonly></el-input>
-                                <img src="/static/pc/assets/images/location.png" th:src="@{/pc/assets/images/location.png}" alt="" class="address-icon">
-                                <el-input type="text" placeholder="详细地址，例：E5栋1308室" autocomplete="off" class="detaile-address" readonly></el-input>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="form-item sort-item">
-                        <i class="icon-drag"></i>
-                        <div class="icon-div">
-                            <i class="icon-edit" @click="activityTypeDialog=true"></i>
-                        </div>
-                        <label class="label">活动类型</label>
-                        <div class="input-box">
-                            <el-input type="text" v-model="activityType" placeholder="请选择" autocomplete="off" class="select-input" readonly></el-input>
-                            <img src="/static/pc/assets/images/yq-design/arrow-down-small.png" th:src="@{/pc/assets/images/yq-design/arrow-down-small.png}" alt="" class="arrow-down">
-                            <p class="tips first">辅助说明文字，这是最长效果这是最长效果这是最长效果这是最长效果这是最长效果这是最长</p>
-                        </div>
-                    </div>
-                    <div class="form-item sort-item">
-                        <i class="icon-drag"></i>
-                        <div class="icon-div">
-                            <i class="icon-edit" @click="activityNameDialog=true"></i>
-                            <i class="icon-delete"></i>
-                        </div>
-                        <label class="label">活动标签</label>
-                        <div class="input-box">
-                            <div class="type-item">
-                                <i class="add_btn"></i>新增
-                            </div>
-                        </div>
-                    </div>
-                    <div class="form-item sort-item">
-                        <i class="icon-drag"></i>
-                        <div class="icon-div">
-                            <i class="icon-edit" @click="activityNameDialog=true"></i>
-                            <i class="icon-delete"></i>
-                        </div>
-                        <label class="label">参与范围</label>
-                        <div class="input-box">
-                            <div class="type-item">
-                                <div class="add_btn"></div>选择
+                            <label :class="{ label: true, required: item.required }">{{item.name}}</label>
+                            <div class="input-box">
+                                <!-- 活动名称：activity_name -->
+                                <el-input v-if="item.code == 'activity_name'" type="text" placeholder="请填写" maxlength="20" show-word-limit readonly></el-input>
+                                <!-- 主办方：activity_organisers -->
+                                <el-input v-else-if="item.code == 'activity_organisers'" style="width: 400px" type="text" placeholder="请填写主办方" maxlength="20" readonly></el-input>
+                                <!-- 活动时间：activity_time_scope -->
+                                <template v-else-if="item.code == 'activity_time_scope'">
+                                    <el-date-picker type="daterange"
+                                                    start-placeholder="开始时间"
+                                                    end-placeholder="结束时间"
+                                                    format="yyyy-MM-dd"
+                                                    value-format="yyyy-MM-dd"
+                                                    prefix-icon="disable"
+                                                    clear-icon="disable"
+                                                    unlink-panels
+                                                    readonly>
+                                        <img style="margin: 0 8px;" slot="range-separator" src="/static/pc/assets/images/swap-right.png" th:src="@{/pc/assets/images/swap-right.png}">
+                                    </el-date-picker>
+                                    <span class="date-piker-icon"><img src="/static/pc/assets/images/calendar.png" th:src="@{/pc/assets/images/calendar.png}"></span>
+                                </template>
+                                <!-- 活动封面：activity_cover -->
+                                <template v-else-if="item.code == 'activity_cover'">
+                                    <div class="img-box">
+                                        <img src="/static/pc/assets/images/img.png" th:src="@{/pc/assets/images/img.png}" alt="" class="cover-img jqthumbImg">
+                                    </div>
+                                    <div class="font-box">
+                                        <p>建议尺寸：1080x500</p>
+                                        <p>大小：小于5M</p>
+                                        <p>格式：jpg、png、gif</p>
+                                        <div class="blue-border-btn upload">上传文件</div>
+                                    </div>
+                                </template>
+                                <!-- 活动形式：activity_type -->
+                                <template v-else-if="item.code == 'activity_type'">
+                                    <div>
+                                        <el-radio v-model="radio1" label="1" name="active-type" class="radio-item" readonly>线下活动</el-radio>
+                                        <el-radio label="2" name="active-type" class="radio-item" readonly>线上活动</el-radio>
+                                    </div>
+                                    <div class="address-box">
+                                        <el-input type="text" placeholder="请输入活动地点" autocomplete="off" class="address-input" readonly></el-input>
+                                        <img src="/static/pc/assets/images/location.png" th:src="@{/pc/assets/images/location.png}" alt="" class="address-icon">
+                                        <el-input type="text" placeholder="详细地址，例：E5栋1308室" autocomplete="off" class="detaile-address" readonly></el-input>
+                                    </div>
+                                </template>
+                                <!-- 活动类型：activity_classify -->
+                                <template v-else-if="item.code == 'activity_classify'">
+                                    <el-input type="text" v-model="activityType" placeholder="请选择" autocomplete="off" class="select-input" readonly></el-input>
+                                    <img src="/static/pc/assets/images/yq-design/arrow-down-small.png" th:src="@{/pc/assets/images/yq-design/arrow-down-small.png}" alt="" class="arrow-down">
+                                    <p class="tips first">{{item.introduction}}</p>
+                                </template>
+                                <!-- 标签：tags -->
+                                <template v-else-if="item.code == 'tags'">
+                                    <div class="type-item">
+                                        <i class="add_btn"></i>新增
+                                    </div>
+                                </template>
+                                <!-- 发布范围：activity_release_scope -->
+                                <template v-else-if="item.code == 'activity_release_scope'">
+                                    <div class="type-item">
+                                        <div class="add_btn"></div>选择
+                                    </div>
+                                </template>
+                                <!-- 定时发布：timing_release -->
+                                <template v-else-if="item.code == 'timing_release'">
+                                    <el-switch class="switch fl marginTop6" disabled></el-switch>
+                                    <p class="tips third">开启后，可以按照设置的时间自动发布活动</p>
+                                </template>
+                                <!-- 简介：introduction -->
+<!--                                <template v-else-if="item.code == 'introduction'">-->
+<!--                                    <div class="wrap ueditor">-->
+<!--                                        <script type="text/plain" id="container" name="content"></script>-->
+<!--                                    </div>-->
+<!--                                </template>-->
                             </div>
                         </div>
-                    </div>
-                    <!-- 特殊活动报名设置 -->
-                    <div class="title sort-item">
-                        <i class="icon-drag"></i>
-                        <div class="lable">特殊活动报名设置</div>
-                        <div class="icon-div">
-                            <i class="icon-edit" @click="switchDialog=true"></i>
-                            <i class="icon-delete" @click="delDialog=true"></i>
-                        </div>
-                        <div class="input-box">
-                            <el-switch v-model="delivery1" class="switch fl marginTop6" disabled></el-switch>
-                            <p class="tips second">辅助说明文字，这是最长效果这是最长效果这是最长效果这是最长效果这是最长效果这是最</p>
-                        </div>
-                    </div>
-                    <div class="form-item sort-item">
-                        <i class="icon-drag"></i>
-                        <div class="icon-div">
-                            <i class="icon-edit"></i>
-                        </div>
-                        <label class="label required">报名时间</label>
-                        <div class="input-box">
-                            <el-date-picker type="daterange"
-                                            start-placeholder="开始时间"
-                                            end-placeholder="结束时间"
-                                            format="yyyy-MM-dd"
-                                            value-format="yyyy-MM-dd"
-                                            prefix-icon="disable"
-                                            clear-icon="disable"
-                                            unlink-panels
-                                            readonly>
-                                <img style="margin: 0 8px;" slot="range-separator" src="/static/pc/assets/images/swap-right.png" th:src="@{/pc/assets/images/swap-right.png}">
-                            </el-date-picker>
-                            <span class="date-piker-icon"><img src="/static/pc/assets/images/calendar.png" th:src="@{/pc/assets/images/calendar.png}"></span>
-                        </div>
-                    </div>
-                    <div class="form-item sort-item">
-                        <i class="icon-drag"></i>
-                        <div class="icon-div">
-                            <i class="icon-edit"></i>
-                            <i class="icon-delete"></i>
-                        </div>
-                        <label class="label">人数限制</label>
-                        <div class="input-box">
-                            <el-input type="text" v-model="person" placeholder="请选择" autocomplete="off" class="select-input" readonly></el-input>
-                            <img src="/static/pc/assets/images/yq-design/arrow-down-small.png" th:src="@{/pc/assets/images/yq-design/arrow-down-small.png}" alt="" class="arrow-down">
-                            <div class="person-box">
-                                <el-input type="number" placeholder="请输入正整数" readonly></el-input>
-                                <span class="person-span">人</span>
+                        <!-- 特殊活动报名设置 -->
+                        <template v-else-if="item.code == 'company_sign_up' || item.code == 'sign_up'">
+                            <div class="title sort-item">
+                                <i class="icon-drag"></i>
+                                <div class="lable">{{item.name}}</div>
+                                <div class="icon-div">
+                                    <i class="icon-edit" @click="switchDialog=true"></i>
+                                    <i class="icon-delete" @click="delDialog=true"></i>
+                                </div>
+                                <div class="input-box">
+                                    <el-switch v-model="delivery1" class="switch fl marginTop6" disabled></el-switch>
+                                    <p class="tips second">{{item.introduction}}</p>
+                                </div>
                             </div>
-                        </div>
-                    </div>
-                    <div class="form-item sort-item">
-                        <i class="icon-drag"></i>
-                        <div class="icon-div">
-                            <i class="icon-edit"></i>
-                            <i class="icon-delete"></i>
-                        </div>
-                        <label class="label">信息填写</label>
-                        <div class="input-box">
-                            <el-switch class="switch fl marginTop6" disabled></el-switch>
-                            <p class="tips third">开启后，报名者需填写信息</p>
-                        </div>
-                    </div>
-                    <div class="form-item sort-item">
-                        <i class="icon-drag"></i>
-                        <div class="icon-div">
-                            <i class="icon-edit"></i>
-                            <i class="icon-delete"></i>
-                        </div>
-                        <label class="label">报名需审核</label>
-                        <div class="input-box">
-                            <el-switch class="switch fl marginTop6" disabled></el-switch>
-                            <p class="tips third">开启后，参与需发起人审核</p>
-                        </div>
-                    </div>
-                    <div class="form-item sort-item">
-                        <i class="icon-drag"></i>
-                        <div class="icon-div">
-                            <i class="icon-edit"></i>
-                            <i class="icon-delete"></i>
-                        </div>
-                        <label class="label">报名名单公开</label>
-                        <div class="input-box">
-                            <el-switch class="switch fl marginTop6" disabled></el-switch>
-                            <p class="tips third">开启后，所有人都能看到报名人员名单</p>
-                        </div>
-                    </div>
-                    <!-- 签到设置 -->
-                    <div class="title sort-item">
-                        <i class="icon-drag"></i>
-                        <div class="lable">签到设置</div>
-                        <div class="icon-div">
-                            <i class="icon-edit"></i>
-                            <i class="icon-delete"></i>
-                        </div>
-                        <div class="input-box">
-                            <el-switch v-model="delivery1" class="switch fl marginTop6" disabled></el-switch>
-                        </div>
-                    </div>
-                    <div class="form-item sort-item">
-                        <i class="icon-drag"></i>
-                        <div class="icon-div">
-                            <i class="icon-edit"></i>
-                            <i class="icon-delete"></i>
-                        </div>
-                        <label class="label required">签到方式</label>
-                        <div class="input-box sign-in">
-                            <el-radio v-model="radio1" label="1" class="radio-item" readonly>普通签到</el-radio>
-                            <el-radio label="2" class="radio-item">位置签到</el-radio>
-                            <el-radio label="3" class="radio-item">二维码签到</el-radio>
-                            <!-- 如果勾选可多选 -->
-                            <!-- <el-checkbox-group v-model="radio1" disabled>
-                                <el-checkbox label="普通签到"></el-checkbox>
-                                <el-checkbox label="位置签到"></el-checkbox>
-                                <el-checkbox label="二维码签到"></el-checkbox>
-                            </el-checkbox-group> -->
-                        </div>
-                    </div>
-                    <div class="form-item sort-item">
-                        <i class="icon-drag"></i>
-                        <div class="icon-div">
-                            <i class="icon-edit"></i>
-                        </div>
-                        <label class="label required">签到时间</label>
-                        <div class="input-box">
-                            <el-date-picker type="daterange"
-                                            start-placeholder="开始时间"
-                                            end-placeholder="结束时间"
-                                            format="yyyy-MM-dd"
-                                            value-format="yyyy-MM-dd"
-                                            prefix-icon="disable"
-                                            clear-icon="disable"
-                                            unlink-panels
-                                            readonly>
-                                <img style="margin: 0 8px;" slot="range-separator" src="/static/pc/assets/images/swap-right.png" th:src="@{/pc/assets/images/swap-right.png}">
-                            </el-date-picker>
-                            <span class="date-piker-icon"><img src="/static/pc/assets/images/calendar.png" th:src="@{/pc/assets/images/calendar.png}"></span>
-                        </div>
-                    </div>
-                    <div class="form-item sort-item">
-                        <i class="icon-drag"></i>
-                        <div class="icon-div">
-                            <i class="icon-edit"></i>
-                            <i class="icon-delete"></i>
-                        </div>
-                        <label class="label">签到人员名单公开</label>
-                        <div class="input-box">
-                            <el-switch class="switch fl marginTop6" disabled></el-switch>
-                            <p class="tips third">开启后，所有人都能看到报名人员名单</p>
-                        </div>
-                    </div>
-                    <!-- 签退设置 -->
-                    <div class="title sort-item">
-                        <i class="icon-drag"></i>
-                        <div class="lable">签退设置</div>
-                        <div class="icon-div">
-                            <i class="icon-edit"></i>
-                            <i class="icon-delete"></i>
-                        </div>
-                        <div class="input-box">
-                            <el-switch v-model="delivery1" class="switch fl marginTop6" disabled></el-switch>
-                        </div>
-                    </div>
-                    <div class="form-item sort-item">
-                        <i class="icon-drag"></i>
-                        <div class="icon-div">
-                            <i class="icon-edit"></i>
-                            <i class="icon-delete"></i>
-                        </div>
-                        <label class="label required">签退方式</label>
-                        <div class="input-box sign-in">
-                            <el-radio v-model="radio1" label="1" class="radio-item" readonly>普通签退</el-radio>
-                            <el-radio label="2" class="radio-item">位置签退</el-radio>
-                            <el-radio label="3" class="radio-item">二维码签退</el-radio>
-                        </div>
-                    </div>
-                    <div class="form-item sort-item">
-                        <i class="icon-drag"></i>
-                        <div class="icon-div">
-                            <i class="icon-edit"></i>
-                        </div>
-                        <label class="label required">签退时间</label>
-                        <div class="input-box">
-                            <el-date-picker type="daterange"
-                                            start-placeholder="开始时间"
-                                            end-placeholder="结束时间"
-                                            format="yyyy-MM-dd"
-                                            value-format="yyyy-MM-dd"
-                                            prefix-icon="disable"
-                                            clear-icon="disable"
-                                            unlink-panels
-                                            readonly>
-                                <img style="margin: 0 8px;" slot="range-separator" src="/static/pc/assets/images/swap-right.png" th:src="@{/pc/assets/images/swap-right.png}">
-                            </el-date-picker>
-                            <span class="date-piker-icon"><img src="/static/pc/assets/images/calendar.png" th:src="@{/pc/assets/images/calendar.png}"></span>
-                        </div>
-                    </div>
-                    <div class="form-item sort-item">
-                        <i class="icon-drag"></i>
-                        <div class="icon-div">
-                            <i class="icon-edit"></i>
-                            <i class="icon-delete"></i>
-                        </div>
-                        <label class="label">签退名单公开</label>
-                        <div class="input-box">
-                            <el-switch class="switch fl marginTop6" disabled></el-switch>
-                            <p class="tips third">开启后，所有人都能看到报名人员名单</p>
-                        </div>
-                    </div>
+                            <div class="form-item sort-item" v-if="item.children && item.children.length > 0" v-for="it in item.children">
+                                <i class="icon-drag"></i>
+                                <div class="icon-div">
+                                    <i class="icon-edit"></i>
+                                </div>
+                                <label :class="{ label: true, required: it.required }">{{it.name}}</label>
+                                <div class="input-box">
+                                    <template v-if="it.code == 'sign_up_time_scope'">
+                                        <el-date-picker type="daterange"
+                                                        start-placeholder="开始时间"
+                                                        end-placeholder="结束时间"
+                                                        format="yyyy-MM-dd"
+                                                        value-format="yyyy-MM-dd"
+                                                        prefix-icon="disable"
+                                                        clear-icon="disable"
+                                                        unlink-panels
+                                                        readonly>
+                                            <img style="margin: 0 8px;" slot="range-separator" src="/static/pc/assets/images/swap-right.png" th:src="@{/pc/assets/images/swap-right.png}">
+                                        </el-date-picker>
+                                        <span class="date-piker-icon"><img src="/static/pc/assets/images/calendar.png" th:src="@{/pc/assets/images/calendar.png}"></span>
+                                    </template>
+                                    <template v-else-if="it.code == 'wfw_participation_scope'">
+                                        <div class="type-item">
+                                            <div class="add_btn"></div>选择
+                                        </div>
+                                    </template>
+                                    <template v-else-if="it.code == 'contacts_participation_scope'">
+                                        <div class="type-item">
+                                            <div class="add_btn"></div>选择
+                                        </div>
+                                    </template>
+                                    <template v-else-if="it.code == 'sign_up_person_limit'">
+                                        <el-input type="text" v-model="person" placeholder="请选择" autocomplete="off" class="select-input" readonly></el-input>
+                                        <img src="/static/pc/assets/images/yq-design/arrow-down-small.png" th:src="@{/pc/assets/images/yq-design/arrow-down-small.png}" alt="" class="arrow-down">
+                                        <div class="person-box">
+                                            <el-input type="number" placeholder="请输入正整数" readonly></el-input>
+                                            <span class="person-span">人</span>
+                                        </div>
+                                    </template>
+                                    <template v-else-if="it.code == 'sign_up_fill_info'">
+                                        <el-switch class="switch fl marginTop6" disabled></el-switch>
+                                        <p class="tips third">开启后，报名者需填写信息</p>
+                                    </template>
+                                    <template v-else-if="it.code == 'sign_up_review'">
+                                        <el-switch class="switch fl marginTop6" disabled></el-switch>
+                                        <p class="tips third">开启后，参与需发起人审核</p>
+                                    </template>
+                                    <template v-else-if="it.code == 'sign_up_public_list'">
+                                        <el-switch class="switch fl marginTop6" disabled></el-switch>
+                                        <p class="tips third">开启后，所有人都能看到报名人员名单</p>
+                                    </template>
+                                    <template v-else-if="it.code == 'sign_up_cancel_signed_up'">
+                                        <el-switch class="switch fl marginTop6" disabled></el-switch>
+                                        <p class="tips third">开启后，报名结束后参与者不能取消报名</p>
+                                    </template>
+                                </div>
+                            </div>
+                        </template>
+                        <!-- 签到设置 -->
+                        <template v-else-if="item.code == 'sign_in'">
+                            <div class="title sort-item">
+                                <i class="icon-drag"></i>
+                                <div class="lable">签到设置</div>
+                                <div class="icon-div">
+                                    <i class="icon-edit"></i>
+                                    <i class="icon-delete"></i>
+                                </div>
+                                <div class="input-box">
+                                    <el-switch v-model="delivery1" class="switch fl marginTop6" disabled></el-switch>
+                                </div>
+                            </div>
+                            <div class="form-item sort-item">
+                                <i class="icon-drag"></i>
+                                <div class="icon-div">
+                                    <i class="icon-edit"></i>
+                                    <i class="icon-delete"></i>
+                                </div>
+                                <label class="label required">签到方式</label>
+                                <div class="input-box sign-in">
+                                    <el-radio v-model="radio1" label="1" class="radio-item" readonly>普通签到</el-radio>
+                                    <el-radio label="2" class="radio-item">位置签到</el-radio>
+                                    <el-radio label="3" class="radio-item">二维码签到</el-radio>
+                                    <!-- 如果勾选可多选 -->
+                                    <!-- <el-checkbox-group v-model="radio1" disabled>
+                                        <el-checkbox label="普通签到"></el-checkbox>
+                                        <el-checkbox label="位置签到"></el-checkbox>
+                                        <el-checkbox label="二维码签到"></el-checkbox>
+                                    </el-checkbox-group> -->
+                                </div>
+                            </div>
+                            <div class="form-item sort-item">
+                                <i class="icon-drag"></i>
+                                <div class="icon-div">
+                                    <i class="icon-edit"></i>
+                                </div>
+                                <label class="label required">签到时间</label>
+                                <div class="input-box">
+                                    <el-date-picker type="daterange"
+                                                    start-placeholder="开始时间"
+                                                    end-placeholder="结束时间"
+                                                    format="yyyy-MM-dd"
+                                                    value-format="yyyy-MM-dd"
+                                                    prefix-icon="disable"
+                                                    clear-icon="disable"
+                                                    unlink-panels
+                                                    readonly>
+                                        <img style="margin: 0 8px;" slot="range-separator" src="/static/pc/assets/images/swap-right.png" th:src="@{/pc/assets/images/swap-right.png}">
+                                    </el-date-picker>
+                                    <span class="date-piker-icon"><img src="/static/pc/assets/images/calendar.png" th:src="@{/pc/assets/images/calendar.png}"></span>
+                                </div>
+                            </div>
+                            <div class="form-item sort-item">
+                                <i class="icon-drag"></i>
+                                <div class="icon-div">
+                                    <i class="icon-edit"></i>
+                                    <i class="icon-delete"></i>
+                                </div>
+                                <label class="label">签到人员名单公开</label>
+                                <div class="input-box">
+                                    <el-switch class="switch fl marginTop6" disabled></el-switch>
+                                    <p class="tips third">开启后，所有人都能看到报名人员名单</p>
+                                </div>
+                            </div>
+                        </template>
+                        <!-- 签退设置 -->
+                        <template v-else-if="item.code == 'sign_out'">
+                            <div class="title sort-item">
+                                <i class="icon-drag"></i>
+                                <div class="lable">签退设置</div>
+                                <div class="icon-div">
+                                    <i class="icon-edit"></i>
+                                    <i class="icon-delete"></i>
+                                </div>
+                                <div class="input-box">
+                                    <el-switch v-model="delivery1" class="switch fl marginTop6" disabled></el-switch>
+                                </div>
+                            </div>
+                            <div class="form-item sort-item">
+                                <i class="icon-drag"></i>
+                                <div class="icon-div">
+                                    <i class="icon-edit"></i>
+                                    <i class="icon-delete"></i>
+                                </div>
+                                <label class="label required">签退方式</label>
+                                <div class="input-box sign-in">
+                                    <el-radio v-model="radio1" label="1" class="radio-item" readonly>普通签退</el-radio>
+                                    <el-radio label="2" class="radio-item">位置签退</el-radio>
+                                    <el-radio label="3" class="radio-item">二维码签退</el-radio>
+                                </div>
+                            </div>
+                            <div class="form-item sort-item">
+                                <i class="icon-drag"></i>
+                                <div class="icon-div">
+                                    <i class="icon-edit"></i>
+                                </div>
+                                <label class="label required">签退时间</label>
+                                <div class="input-box">
+                                    <el-date-picker type="daterange"
+                                                    start-placeholder="开始时间"
+                                                    end-placeholder="结束时间"
+                                                    format="yyyy-MM-dd"
+                                                    value-format="yyyy-MM-dd"
+                                                    prefix-icon="disable"
+                                                    clear-icon="disable"
+                                                    unlink-panels
+                                                    readonly>
+                                        <img style="margin: 0 8px;" slot="range-separator" src="/static/pc/assets/images/swap-right.png" th:src="@{/pc/assets/images/swap-right.png}">
+                                    </el-date-picker>
+                                    <span class="date-piker-icon"><img src="/static/pc/assets/images/calendar.png" th:src="@{/pc/assets/images/calendar.png}"></span>
+                                </div>
+                            </div>
+                            <div class="form-item sort-item">
+                                <i class="icon-drag"></i>
+                                <div class="icon-div">
+                                    <i class="icon-edit"></i>
+                                    <i class="icon-delete"></i>
+                                </div>
+                                <label class="label">签退名单公开</label>
+                                <div class="input-box">
+                                    <el-switch class="switch fl marginTop6" disabled></el-switch>
+                                    <p class="tips third">开启后，所有人都能看到报名人员名单</p>
+                                </div>
+                            </div>
+                        </template>
+                        <!-- 作品征集 -->
+                        <template v-else-if="item.code == 'work'">
+                            <div class="title sort-item">
+                                <i class="icon-drag"></i>
+                                <div class="lable">作品征集</div>
+                            </div>
+                            <div class="form-item sort-item">
+                                <i class="icon-drag"></i>
+                                <div class="icon-div">
+                                    <i class="icon-edit"></i>
+                                    <i class="icon-delete"></i>
+                                </div>
+                                <label class="label">{{item.name}}</label>
+                                <div class="input-box">
+                                    <el-switch class="switch fl marginTop6" disabled></el-switch>
+                                    <p class="tips third">开启后，参与者可以在活动中提交作品，管理员在征集模块中进行审核评分推优等操作</p>
+                                </div>
+                            </div>
+                        </template>
+                    </template>
+
                 </form>
                 <div class="add-circle" @click="addFieldDialog = true" id="add-circle"></div>
             </div>
@@ -384,99 +380,48 @@
                 <div class="body">
                     <div class="down-list">
                         <p class="down-btn">
-                            <span>基本信息</span>
+                            <span>{{activeComponentType.name}}</span>
                             <i class="down-icon"></i>
                         </p>
                         <ul class="item-list">
-                            <li>基本信息</li>
-                            <li>学生报名</li>
-                            <li>企业报名</li>
+                            <li v-for="item in componentTypeList" @click="changeComponentType(item)">{{item.name}}</li>
                         </ul>
                     </div>
-                    <div class="field-item">
-                        <p class="field overHidden1">参与范围</p>
-                        <el-tooltip class="tooltip" effect="dark" content="说明文字单行效果" placement="top">
+                    <!-- todo style 有问题 -->
+                    <div :class="{'field-item': true, 'aready-add': item.checked && !item.multi }" style="width: 214px" v-for="(item, index) in components" v-if="item.pid == activeComponentType.pid" >
+                        <p class="field overHidden1">{{item.name}}</p>
+                        <el-tooltip class="tooltip" effect="dark" :content="item.introduction" placement="top">
                             <i class="icon-info"></i>
                         </el-tooltip>
                         <div class="fr add-btn">
-                            <i class="icon-add"></i>
-                            <span class="aready" style="display: none;">已添加</span>
-                            <span class="remove" style="display: none;">移除</span>
+                            <i class="icon-add" v-if="item.multi" @click="addComponent(index, item)"></i>
+                            <template v-else>
+                                <i class="icon-add" v-show="!item.checked" @click="addComponent(index, item)"></i>
+                                <span class="aready" v-show="item.checked">已添加</span>
+                                <span class="remove" style="display: none;" @click="removeComponent(index, item)">移除</span>
+                            </template>
                         </div>
                     </div>
-                    <div class="field-item aready-add">
-                        <p class="field overHidden1">活动时间活动时间活动</p>
-                        <el-tooltip class="tooltip" effect="dark" content="说明文字单行效果" placement="top">
-                            <i class="icon-info"></i>
-                        </el-tooltip>
-                        <div class="fr add-btn">
-                            <i class="icon-add" style="display: none;"></i>
-                            <span class="aready">已添加</span>
-                            <span class="remove" style="display: none;">移除</span>
+                    <template v-if="activeComponentType.pid == 0">
+                        <div class="field-item" style="width: 214px" @click="addFieldDialog=false,textDialog=true">
+                            <p class="field overHidden1">文本字段</p>
+                            <el-tooltip class="tooltip" effect="dark" content="说明文字单行效果" placement="top">
+                                <i class="icon-info"></i>
+                            </el-tooltip>
                         </div>
-                    </div>
-                    <div class="field-item">
-                        <p class="field overHidden1">活动时间活动时间活动</p>
-                        <el-tooltip class="tooltip" effect="dark" content="说明文字多行效果说明文字多行效果说明文字多行效果说明文字多行效果说明文字多行效果" placement="top">
-                            <i class="icon-info"></i>
-                        </el-tooltip>
-                        <div class="fr add-btn">
-                            <i class="icon-add"></i>
-                            <span class="aready" style="display: none;">已添加</span>
-                            <span class="remove" style="display: none;">移除</span>
+                        <div class="field-item" style="width: 214px" @click="addFieldDialog=false,chooseDialog=true">
+                            <p class="field overHidden1">选择字段</p>
+                            <el-tooltip class="tooltip" effect="dark" content="说明文字单行效果" placement="top">
+                                <i class="icon-info"></i>
+                            </el-tooltip>
                         </div>
-                    </div>
-                    <div class="field-item">
-                        <p class="field overHidden1">活动标签</p>
-                        <el-tooltip class="tooltip" effect="dark" content="说明文字单行效果" placement="top">
-                            <i class="icon-info"></i>
-                        </el-tooltip>
-                        <div class="fr add-btn">
-                            <i class="icon-add"></i>
-                            <span class="aready" style="display: none;">已添加</span>
-                            <span class="remove" style="display: none;">移除</span>
+                        <div class="field-item" style="width: 214px" @click="addFieldDialog=false,partitionDialog=true">
+                            <p class="field overHidden1">分区</p>
+                            <el-tooltip class="tooltip" effect="dark" content="说明文字单行效果" placement="top">
+                                <i class="icon-info"></i>
+                            </el-tooltip>
                         </div>
-                    </div>
-                    <div class="field-item">
-                        <p class="field overHidden1">活动形式</p>
-                        <el-tooltip class="tooltip" effect="dark" content="说明文字单行效果" placement="top">
-                            <i class="icon-info"></i>
-                        </el-tooltip>
-                        <div class="fr add-btn">
-                            <i class="icon-add"></i>
-                            <span class="aready" style="display: none;">已添加</span>
-                            <span class="remove" style="display: none;">移除</span>
-                        </div>
-                    </div>
-                    <div class="field-item">
-                        <p class="field overHidden1">活动类型</p>
-                        <el-tooltip class="tooltip" effect="dark" content="说明文字单行效果" placement="top">
-                            <i class="icon-info"></i>
-                        </el-tooltip>
-                        <div class="fr add-btn">
-                            <i class="icon-add"></i>
-                            <span class="aready" style="display: none;">已添加</span>
-                            <span class="remove" style="display: none;">移除</span>
-                        </div>
-                    </div>
-                    <div class="field-item" @click="addFieldDialog=false,textDialog=true">
-                        <p class="field overHidden1">文本字段</p>
-                        <el-tooltip class="tooltip" effect="dark" content="说明文字单行效果" placement="top">
-                            <i class="icon-info"></i>
-                        </el-tooltip>
-                    </div>
-                    <div class="field-item" @click="addFieldDialog=false,chooseDialog=true">
-                        <p class="field overHidden1">选择字段</p>
-                        <el-tooltip class="tooltip" effect="dark" content="说明文字单行效果" placement="top">
-                            <i class="icon-info"></i>
-                        </el-tooltip>
-                    </div>
-                    <div class="field-item" @click="addFieldDialog=false,partitionDialog=true">
-                        <p class="field overHidden1">分区</p>
-                        <el-tooltip class="tooltip" effect="dark" content="说明文字单行效果" placement="top">
-                            <i class="icon-info"></i>
-                        </el-tooltip>
-                    </div>
+                    </template>
                 </div>
                 <div class="footer">
                     <div class="btn-box">
@@ -748,6 +693,10 @@
         <script src="/static/pc/assets/lib/element-ui/lib/index.js" th:src="@{/pc/assets/lib/element-ui/lib/index.js}"></script>
         <script src="/static/pc/assets/lib/drag/sortTable.js" th:src="@{/pc/assets/lib/drag/sortTable.js}"></script>
         <script src="/static/pc/assets/lib/jqthumb.min.js" th:src="@{/pc/assets/lib/jqthumb.min.js}"></script>
+<!--        <script src="https://noteyd.chaoxing.com/res/plugin/ueditor4thirdparty/rich.text.util.js"></script>-->
+<!--        <script type="text/javascript">-->
+<!--            RichTextUitl.loadEditorProfile();-->
+<!--        </script>-->
         <script th:inline="javascript">
             vm = new Vue({
                 el: '#field-setting',
@@ -757,10 +706,15 @@
                     currTemplateId: null,
                     template: {},
                     components: [],
+                    componentMap: {},
                     templateComponents: [],
                     showTemplateComponents: [],
-
-
+                    componentTypeList: [],
+                    activeComponentType: {
+                        type: 'basic_info',
+                        name: '基本信息',
+                        pid: 0
+                    },
                     loaded: false,
                     radio1:'1',
                     activityType:'创新创业',
@@ -813,15 +767,13 @@
                 },
                 mounted: function () {
                     var $this = this;
-                    $this.init()
+                    $this.init();
+                    // app.initUEditor("");
                 },
                 methods:{
                     init: function () {
                         $(function(){
-                            $('.jqthumbImg').jqthumb({
-                                width: '100%',
-                                height: '100%'
-                            });
+
                             $("#drag-box").sortable({
                                 scroll: true,
                                 axis: "y",
@@ -842,29 +794,6 @@
                             })
                             $('.icon-drag').on('mouseleave', function (e) {
                                 $('#dragBubble').hide()
-                            })
-                            /* 添加字段弹窗 */
-                            $('.add-btn .icon-add').click(function() {
-                                $(this).hide()
-                                $(this).siblings('.aready').show()
-                                $(this).parents('.field-item').addClass('aready-add')
-                            })
-                            $('.add-btn .remove').click(function() {
-                                $(this).hide()
-                                $(this).siblings('.icon-add').show()
-                                $(this).parents('.field-item').removeClass('aready-add')
-                            })
-                            $('.field-item').mouseenter(function() {
-                                if($(this).hasClass('aready-add')){
-                                    $(this).find('.remove').show()
-                                    $(this).find('.aready').hide()
-                                }
-                            })
-                            $('.field-item').mouseleave(function() {
-                                if($(this).hasClass('aready-add')){
-                                    $(this).find('.remove').hide()
-                                    $(this).find('.aready').show()
-                                }
                             })
                         })
                     },
@@ -896,11 +825,38 @@
                             if (res.success) {
                                 var { template, components, templateComponents } = res.data
                                 $this.template = template;
+                                // 置空componentMap
+                                $this.componentMap = {};
+                                var checkedComponentIds = [];
+                                $(templateComponents).each(function () {
+                                    checkedComponentIds.push(this.componentId);
+                                });
+                                $(components).each(function () {
+                                    $this.componentMap[this.id] = this;
+                                    this.checked = checkedComponentIds.indexOf(this.id) != -1;
+                                });
                                 $this.components = components;
                                 $this.templateComponents = templateComponents;
                                 $this.calShowComponents();
+                                $this.calComponentConfig();
                                 $this.$nextTick(function () {
                                     $this.fixRightEndBtnStyle();
+                                    $('.jqthumbImg').jqthumb({
+                                        width: '100%',
+                                        height: '100%'
+                                    });
+                                    $('.field-item').mouseenter(function() {
+                                        if($(this).hasClass('aready-add')){
+                                            $(this).find('.remove').show()
+                                            $(this).find('.aready').hide()
+                                        }
+                                    });
+                                    $('.field-item').mouseleave(function() {
+                                        if($(this).hasClass('aready-add')){
+                                            $(this).find('.remove').hide()
+                                            $(this).find('.aready').show()
+                                        }
+                                    });
                                 })
                             } else {
                                 var errorMessage = res.message;
@@ -916,18 +872,64 @@
                     },
                     calShowComponents: function() {
                         var $this = this;
+                        var idPidMap = {};
+                        $($this.components).each(function () {
+                            idPidMap[this.id] = this.pid
+                        });
+
+                        var tmpTplComponents = [];
                         $($this.templateComponents).each(function () {
                             var tplComponent = $.extend({}, this);
                             var componentId = tplComponent.componentId;
                             $($this.components).each(function () {
                                 if (componentId === this.id) {
                                     // 封装component 详情到 templateComponent里面
+                                    tplComponent.code = this.code;
+                                    tplComponent.cpPid = this.pid;
                                     tplComponent.component = $.extend({}, this);
-                                    $this.showTemplateComponents.push(tplComponent);
+                                    tmpTplComponents.push(tplComponent);
                                     return false;
                                 }
                             });
                         });
+                        $this.showTemplateComponents = [];
+                        $(tmpTplComponents).each(function () {
+                            var _this = this;
+                            if (!this.cpPid || this.cpPid == 0) {
+                                $this.showTemplateComponents.push(_this);
+                            }
+                            $(tmpTplComponents).each(function () {
+                                if (this.cpPid && this.cpPid != 0 && _this.componentId == this.cpPid) {
+                                    if (!_this.children) {
+                                        _this.children = [];
+                                    }
+                                    _this.children.push(this);
+                                }
+                            });
+                        });
+                    },
+                    calComponentConfig: function () {
+                        var $this = this;
+                        // 初始化组件类型
+                        $this.componentTypeList = [$this.activeComponentType];
+                        // 非基础类型组件id集合，用于区分组件类型
+                        var nonBasicComponentIds = [];
+                        $($this.components).each(function () {
+                            if (this.pid && this.pid != 0 && !nonBasicComponentIds.includes(this.pid)) {
+                                nonBasicComponentIds.push(this.pid);
+                                var parent = $this.componentMap[this.pid];
+                                $this.componentTypeList.push({
+                                    type: parent.code,
+                                    name: parent.name,
+                                    pid: parent.id
+                                })
+                            }
+                        });
+
+                    },
+                    changeComponentType: function (item) {
+                        var $this = this;
+                        $this.activeComponentType = item;
                     },
                     // 返回
                     returnBack: function () {
@@ -977,6 +979,68 @@
                             templateComponents: templateComponents
                         }
                     },
+                    addComponent: function (index, item) {
+                        var $this = this;
+                        $this.$set($this.components[index], 'checked', true)
+                        var templateComponentLength = $this.templateComponents.length;
+                        if (item.multi) {
+
+                        } else {
+                            var newTemplateComponent = {
+                                templateId: $this.currTemplateId,
+                                componentId: item.id,
+                                name: item.name,
+                                introduction: item.introduction,
+                                required: item.required,
+                                sequence: templateComponentLength + 1
+                            };
+                            $this.templateComponents.push(newTemplateComponent);
+                            if (item.pid == 0) {
+                                $this.showTemplateComponents.push(newTemplateComponent);
+                            } else {
+                                $($this.showTemplateComponents).each(function () {
+                                    if (this.componentId == item.pid) {
+                                        if (!this.children) {
+                                            $this.$set(this, 'children', [])
+                                        }
+                                        this.children.push(newTemplateComponent);
+                                        return false;
+                                    }
+                                })
+                            }
+                        }
+                    },
+                    removeComponent: function (index, item) {
+                        var $this = this;
+                        $this.$set($this.components[index], 'checked', false)
+
+                        var newTemplateComponents = [];
+                        $($this.templateComponents).each(function () {
+                            if (this.componentId != item.id) {
+                                newTemplateComponents.push(this);
+                            }
+                        });
+                        $this.templateComponents = newTemplateComponents;
+                        var newShowTemplateComponents = [];
+                        if (item.pid == 0) {
+                            $($this.showTemplateComponents).each(function () {
+                                if (this.componentId != item.id) {
+                                    newShowTemplateComponents.push(this);
+                                }
+                            });
+                            $this.showTemplateComponents = newShowTemplateComponents;
+                        } else {
+                            $($this.showTemplateComponents).each(function () {
+                                if (this.componentId == item.pid) {
+                                    if (this.children) {
+                                        $this.$set(this, 'children', [])
+                                    }
+                                    this.children.push(newTemplateComponent);
+                                    return false;
+                                }
+                            })
+                        }
+                    },
                     addOption1: function(){
                         this.option1.push({title: ''})
                     },
@@ -995,5 +1059,6 @@
             })
         </script>
     </div>
+<!--    <div th:replace="pc/include/note_editor :: note_editor"></div>-->
 </body>
 </html>

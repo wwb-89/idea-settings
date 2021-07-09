@@ -42,6 +42,12 @@ public class ActivityEngineApiController {
         return RestRespDTO.success(activityEngineQueryService.findEngineTemplateInfo(fid, templateId));
     }
 
+
+    @PostMapping("/component/add")
+    public RestRespDTO addCustomComponent() {
+        return RestRespDTO.success();
+    }
+
     /**发布模板(新增/修改)
     * @Description
     * @author huxiaolong
