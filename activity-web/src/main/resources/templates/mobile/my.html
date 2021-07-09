@@ -431,7 +431,7 @@
 						e.stopPropagation();
 						var $this = this;
 						$this.restSlide();
-						app.confirm("确定取消报名？", "取消报名后需要重新报名才能参与活动", function () {
+						app.confirm("确定取消报名？", "确认取消报名吗？", function () {
 							var activity = $this.signedUps[index];
 							var url = ctx + "/api/sign-up/" + activity.signUpId + "/cancel";
 							app.ajaxPostLoading(url, {}, function () {

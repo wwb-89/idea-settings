@@ -121,7 +121,7 @@
 		<div class="load-div no-more" v-show="(signedUpNoMore && signedUps.length > 10 && activeTabIndex == 0) || (collectedNoMore && collecteds.length > 10 && activeTabIndex == 1) || (managingNoMore && managings.length > 10 && activeTabIndex == 2)">没有更多了</div>
 	</div>
 	<!--取消报名-->
-	<vue-confirm ref="cancelSignUp" :message="'取消报名后需要重新报名才能参与活动'" @callback="cancelSignUpSubmit"></vue-confirm>
+	<vue-confirm ref="cancelSignUp" :message="'确认取消报名吗？'" @callback="cancelSignUpSubmit"></vue-confirm>
 	<!--撤销申请-->
 	<vue-confirm ref="revocationSignUp" :message="'撤销申请后需要重新报名才能参与活动'" :sure-btn-name="'撤销'" @callback="revocationSignUpSubmit"></vue-confirm>
 	<!--发布-->
