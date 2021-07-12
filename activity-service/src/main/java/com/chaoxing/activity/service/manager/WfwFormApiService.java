@@ -5,13 +5,14 @@ import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.chaoxing.activity.dto.activity.VolunteerServiceDTO;
-import com.chaoxing.activity.dto.manager.form.FilterItemDTO;
-import com.chaoxing.activity.dto.manager.form.FormDTO;
-import com.chaoxing.activity.dto.manager.form.FormFieldDTO;
+import com.chaoxing.activity.dto.manager.wfwform.WfwFormDTO;
+import com.chaoxing.activity.dto.manager.wfwform.WfwFormFieldDTO;
+import com.chaoxing.activity.dto.manager.wfwform.WfwFormFilterItemDTO;
 import com.chaoxing.activity.util.exception.BusinessException;
 import com.chaoxing.activity.vo.manager.WfwFormVO;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
+import com.google.common.collect.Sets;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.collections4.CollectionUtils;
@@ -26,7 +27,7 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
 
-/**表单api服务
+/**微服务表单api服务
  * @author wwb
  * @version ver 1.0
  * @className FormApiService
@@ -36,7 +37,7 @@ import java.util.*;
  */
 @Slf4j
 @Service
-public class FormApiService {
+public class WfwFormApiService {
 
 	/** 日期格式化 */
 	private static final DateTimeFormatter DATE_TIME_FORMATTER = DateTimeFormatter.ofPattern("yyyyMMddHH");
@@ -56,13 +57,13 @@ public class FormApiService {
 	/** 获取表单字段信息url */
 	private static final String GET_FORM_DETAIL_URL = FORM_API_DOMAIN + "/api/apps/forms/app/config/values";
 	/** 获取表单数据url */
-	private static final String LIST_FORM_DATA_URL = FORM_API_DOMAIN + "/api/apps/forms/user/records/list?deptId=%d&formId=%d&datetime=%s&orderType=%s&limit=%d&sign=%s&enc=%s&scrollId=%s&formUserId=%s";
+	private static final String LIST_FORM_DATA_URL = FORM_API_DOMAIN + "/api/apps/forms/user/records/list";
 	/** 填写表单url */
 	private static final String FILL_FORM_URL = FORM_API_DOMAIN + "/api/apps/forms/user/save";
 	/** 修改表单url */
 	private static final String UPDATE_FORM_URL = FORM_API_DOMAIN + "/api/apps/forms/user/edit";
 	/** 删除表单记录url */
-	private static final String DELETE_FORM_RECORD_URL = FORM_API_DOMAIN + "/api/apps/forms/user/del?formId=%d&formUserId=%d&datetime=%s&sign=%s&enc=%s";
+	private static final String DELETE_FORM_RECORD_URL = FORM_API_DOMAIN + "/api/apps/forms/user/del";
 
 	/** 高级检索 */
 	private static final String ADVANCED_SEARCH_URL = FORM_API_DOMAIN + "/api/apps/forms/user/advanced/search/list";
@@ -105,10 +106,10 @@ public class FormApiService {
 	 * @param formId
 	 * @return java.util.List<com.chaoxing.secondclassroom.dto.manager.form.FormFieldDTO>
 	 */
-	public List<FormFieldDTO> listFormField(Integer fid, Integer formId) {
+	public List<WfwFormFieldDTO> listFormField(Integer fid, Integer formId) {
 		JSONArray data = getFormInfoData(fid, formId);
 		if (data.size() > 0) {
-			return JSON.parseArray(data.toJSONString(), FormFieldDTO.class);
+			return JSON.parseArray(data.toJSONString(), WfwFormFieldDTO.class);
 		} else {
 			return Lists.newArrayList();
 		}
@@ -155,18 +156,17 @@ public class FormApiService {
 	 * @return java.lang.Integer
 	 */
 	public Integer fillForm(Integer fid, Integer formId, Integer uid, String data) {
-		LocalDateTime now = LocalDateTime.now();
-		String formatDateStr = now.format(DATE_TIME_FORMATTER);
-		String enc = calFillFormEnc(uid, fid, formId, formatDateStr, data);
-		MultiValueMap<String, Object> paramMap = new LinkedMultiValueMap();
-		paramMap.add("datetime", formatDateStr);
-		paramMap.add("sign", SIGN);
-		paramMap.add("enc", enc);
-		paramMap.add("deptId", fid);
-		paramMap.add("uid", uid);
-		paramMap.add("formId", formId);
-		paramMap.add("comptIdValues", data);
-		String result = restTemplate.postForObject(FILL_FORM_URL, paramMap, String.class);
+		TreeMap<String, Object> paramMap = Maps.newTreeMap();
+		paramMap.put("datetime", LocalDateTime.now().format(DATE_TIME_FORMATTER));
+		paramMap.put("deptId", fid);
+		paramMap.put("sign", SIGN);
+		paramMap.put("formId", formId);
+		paramMap.put("uid", uid);
+		paramMap.put("comptIdValues", data);
+		paramMap.put("enc", getEnc(paramMap));
+		MultiValueMap<String, Object> params = new LinkedMultiValueMap();
+		params.setAll(paramMap);
+		String result = restTemplate.postForObject(FILL_FORM_URL, params, String.class);
 		JSONObject jsonObject = JSON.parseObject(result);
 		Boolean success = jsonObject.getBoolean("success");
 		success = Optional.ofNullable(success).orElse(Boolean.FALSE);
@@ -180,11 +180,6 @@ public class FormApiService {
 		}
 	}
 
-	private String calFillFormEnc(Integer uid, Integer fid, Integer formId, String formatDateStr, String data) {
-		String enc = "[comptIdValues=" + data + "][datetime=" + formatDateStr + "][deptId=" + fid + "][formId=" + formId + "][sign=" + SIGN + "][uid=" + uid + "][" + KEY + "]";
-		return DigestUtils.md5Hex(enc);
-	}
-
 	/**更新表单数据
 	 * @Description
 	 * @author wwb
@@ -196,17 +191,16 @@ public class FormApiService {
 	 */
 	public void updateForm(Integer formId, Integer formUserId, String data) {
 		// 先查看表单数据是否存在
-		LocalDateTime now = LocalDateTime.now();
-		String formatDateStr = now.format(DATE_TIME_FORMATTER);
-		String enc = calUpdateFormEnc(formId, formUserId, formatDateStr, data);
-		MultiValueMap<String, Object> paramMap = new LinkedMultiValueMap();
-		paramMap.add("datetime", formatDateStr);
-		paramMap.add("sign", SIGN);
-		paramMap.add("enc", enc);
-		paramMap.add("formId", formId);
-		paramMap.add("formUserId", formUserId);
-		paramMap.add("comptIdValues", data);
-		String result = restTemplate.postForObject(UPDATE_FORM_URL, paramMap, String.class);
+		TreeMap<String, Object> paramMap = Maps.newTreeMap();
+		paramMap.put("formId", formId);
+		paramMap.put("formUserId", formUserId);
+		paramMap.put("comptIdValues", data);
+		paramMap.put("datetime", LocalDateTime.now().format(DATE_TIME_FORMATTER));
+		paramMap.put("sign", SIGN);
+		paramMap.put("enc", getEnc(paramMap));
+		MultiValueMap<String, Object> params = new LinkedMultiValueMap();
+		params.setAll(paramMap);
+		String result = restTemplate.postForObject(UPDATE_FORM_URL, params, String.class);
 		JSONObject jsonObject = JSON.parseObject(result);
 		Boolean success = jsonObject.getBoolean("success");
 		success = Optional.ofNullable(success).orElse(Boolean.FALSE);
@@ -215,11 +209,6 @@ public class FormApiService {
 			log.info("填写表单error:{}", errorMessage);
 			throw new BusinessException(errorMessage);
 		}
-	}
-
-	private String calUpdateFormEnc(Integer formId, Integer formUserId, String formatDateStr, String data) {
-		String enc = "[comptIdValues=" + data + "][datetime=" + formatDateStr + "][formId=" + formId + "][formUserId=" + formUserId + "][sign=" + SIGN + "][" + KEY + "]";
-		return DigestUtils.md5Hex(enc);
 	}
 
 	/**删除表单记录
@@ -231,11 +220,15 @@ public class FormApiService {
 	 * @return void
 	 */
 	public void deleteFormRecord(Integer formId, Integer formUserId) {
-		LocalDateTime now = LocalDateTime.now();
-		String formatDateStr = now.format(DATE_TIME_FORMATTER);
-		String enc = calDeleteFormRecordEnc(formId, formUserId, formatDateStr);
-		String url = String.format(DELETE_FORM_RECORD_URL, formId, formUserId, formatDateStr, SIGN, enc);
-		String result = restTemplate.getForObject(url, String.class);
+		TreeMap<String, Object> paramMap = Maps.newTreeMap();
+		paramMap.put("formId", formId);
+		paramMap.put("formUserId", formUserId);
+		paramMap.put("datetime", LocalDateTime.now().format(DATE_TIME_FORMATTER));
+		paramMap.put("sign", SIGN);
+		paramMap.put("enc", getEnc(paramMap));
+		MultiValueMap<String, Object> params = new LinkedMultiValueMap();
+		params.setAll(paramMap);
+		String result = restTemplate.postForObject(DELETE_FORM_RECORD_URL, params, String.class);
 		JSONObject jsonObject = JSON.parseObject(result);
 		Boolean success = jsonObject.getBoolean("success");
 		success = Optional.ofNullable(success).orElse(Boolean.FALSE);
@@ -258,8 +251,31 @@ public class FormApiService {
 	 * @param formId
 	 * @return java.util.List<com.chaoxing.secondclassroom.dto.manager.form.FormDTO>
 	 */
-	public List<FormDTO> listFormData(Integer fid, Integer formId) {
+	public List<WfwFormDTO> listFormData(Integer fid, Integer formId) {
 		return listFormData(fid, formId, "", null);
+	}
+
+	/**查询表单某个字段的值列表
+	 * @Description 
+	 * @author wwb
+	 * @Date 2021-07-12 10:41:39
+	 * @param fid
+	 * @param formId
+	 * @param fieldName
+	 * @return java.util.List<java.lang.String>
+	*/
+	public List<String> listFormFieldValue(Integer fid, Integer formId, String fieldName) {
+		List<WfwFormDTO> wfwFormData = listFormData(fid, formId);
+		TreeSet<String> fieldValueSet = Sets.newTreeSet();
+		if (CollectionUtils.isNotEmpty(wfwFormData)) {
+			for (WfwFormDTO wfwFormDatum : wfwFormData) {
+				String fieldValue = wfwFormDatum.getFieldValue(fieldName);
+				if (StringUtils.isNotBlank(fieldValue)) {
+					fieldValueSet.add(fieldValue);
+				}
+			}
+		}
+		return new ArrayList<>(fieldValueSet);
 	}
 
 	/**获取表单数据
@@ -271,8 +287,8 @@ public class FormApiService {
 	 * @param dataId
 	 * @return com.chaoxing.secondclassroom.dto.manager.form.FormDTO
 	 */
-	public FormDTO getFormData(Integer fid, Integer formId, Integer dataId) {
-		List<FormDTO> formData = listFormData(fid, formId, "", dataId);
+	public WfwFormDTO getFormData(Integer fid, Integer formId, Integer dataId) {
+		List<WfwFormDTO> formData = listFormData(fid, formId, "", dataId);
 		if (CollectionUtils.isNotEmpty(formData)) {
 			return formData.get(0);
 		}
@@ -286,21 +302,26 @@ public class FormApiService {
 	 * @param fid
 	 * @param formId
 	 * @param scrollId 游标id
+	 * @param dataId 表单中记录id
 	 * @return java.util.List<com.chaoxing.secondclassroom.dto.manager.form.FormDTO>
 	 */
-	private List<FormDTO> listFormData(Integer fid, Integer formId, String scrollId, Integer dataId) {
-		List<FormDTO> forms = Lists.newArrayList();
-		LocalDateTime now = LocalDateTime.now();
-		String dateStr = now.format(DATE_TIME_FORMATTER);
-		int limit = DEFAULT_PAGE_SIZE_LIMIT;
-		String orderType = DEFAULT_ORDER_TYPE;
-		String enc = calListFormDataEnc(fid, formId, dateStr, limit, orderType, dataId);
-		String formUserId = "";
-		if (dataId != null) {
-			formUserId = String.valueOf(dataId);
-		}
-		String url = String.format(LIST_FORM_DATA_URL, fid, formId, dateStr, orderType, limit, SIGN, enc, scrollId, formUserId);
-		String result = restTemplate.getForObject(url, String.class);
+	private List<WfwFormDTO> listFormData(Integer fid, Integer formId, String scrollId, Integer dataId) {
+		List<WfwFormDTO> forms = Lists.newArrayList();
+		Integer limit = DEFAULT_PAGE_SIZE_LIMIT;
+		TreeMap<String, Object> paramsMap = Maps.newTreeMap();
+		paramsMap.put("deptId", fid);
+		paramsMap.put("formId", formId);
+		paramsMap.put("datetime", LocalDateTime.now().format(DATE_TIME_FORMATTER));
+		paramsMap.put("orderType", DEFAULT_ORDER_TYPE);
+		paramsMap.put("limit", limit);
+		paramsMap.put("sign", SIGN);
+		paramsMap.put("formUserId", Optional.ofNullable(dataId).map(String::valueOf).orElse(""));
+		String enc = getEnc(paramsMap);
+		paramsMap.put("enc", enc);
+		paramsMap.put("scrollId", Optional.ofNullable(scrollId).orElse(""));
+		MultiValueMap<String, Object> params = new LinkedMultiValueMap();
+		params.setAll(paramsMap);
+		String result = restTemplate.postForObject(LIST_FORM_DATA_URL, params, String.class);
 		JSONObject jsonObject = JSON.parseObject(result);
 		Boolean success = jsonObject.getBoolean("success");
 		success = Optional.ofNullable(success).orElse(Boolean.FALSE);
@@ -308,9 +329,10 @@ public class FormApiService {
 			jsonObject = jsonObject.getJSONObject("data");
 			JSONArray data = jsonObject.getJSONArray("data");
 			if (data.size() > 0) {
-				List<FormDTO> subForms = JSON.parseArray(data.toJSONString(), FormDTO.class);
+				List<WfwFormDTO> subForms = JSON.parseArray(data.toJSONString(), WfwFormDTO.class);
 				// 判断数据有没有获取完
 				if (subForms.size() == limit) {
+					// 满一页
 					scrollId = jsonObject.getString("scrollId");
 					subForms.addAll(listFormData(fid, formId, scrollId, dataId));
 				}
@@ -319,21 +341,10 @@ public class FormApiService {
 			return forms;
 		} else {
 			String errorMessage = jsonObject.getString("msg");
-			log.error("获取机构:{}的表单:{}数据error:{}, url:{}", fid, formId, errorMessage, url);
+			log.error("根据url: {}, 参数: {}, 获取机构表单数据error: {}", LIST_FORM_DATA_URL, JSON.toJSONString(paramsMap));
 			throw new BusinessException(errorMessage);
 		}
 	}
-
-	private String calListFormDataEnc(Integer fid, Integer formId, String dateStr, Integer limit, String orderType, Integer formUserId) {
-		String formUserIdStr = "";
-		if (formUserId != null) {
-			formUserIdStr = String.valueOf(formUserId);
-		}
-		String enc = "[datetime=" + dateStr + "][deptId=" + fid + "][formId=" + formId + "][formUserId=" + formUserIdStr + "][limit=" + limit + "][orderType=" + orderType + "][sign=" + SIGN + "][" + KEY + "]";
-		return DigestUtils.md5Hex(enc);
-	}
-
-
 
 	/**调用高级检索接口，分页查询用户的服务时长记录
 	* @Description
@@ -357,16 +368,15 @@ public class FormApiService {
 		encParamMap.put("formId", formId);
 		encParamMap.put("datetime", dateFormatStr);
 		encParamMap.put("sign", SIGN);
-
 		String enc = getEnc(encParamMap);
+		encParamMap.put("enc", enc);
 		MultiValueMap<String, Object> paramMap = new LinkedMultiValueMap();
 		paramMap.setAll(encParamMap);
-		paramMap.add("enc", enc);
-		List<List<FilterItemDTO>> filterItems = Lists.newArrayList();
-		FilterItemDTO uidFilterItem = FilterItemDTO.builder().alias("user").compt("belonger").val(JSON.toJSONString(Collections.singleton(uid))).express("===").build();
+		List<List<WfwFormFilterItemDTO>> filterItems = Lists.newArrayList();
+		WfwFormFilterItemDTO uidFilterItem = WfwFormFilterItemDTO.builder().alias("user").compt("belonger").val(JSON.toJSONString(Collections.singleton(uid))).express("===").build();
 		filterItems.add(Lists.newArrayList(uidFilterItem));
 		if (StringUtils.isNotBlank(serviceType)) {
-			FilterItemDTO searchTypeFilterItem = FilterItemDTO.builder().alias("type").compt("selectbox").val(JSON.toJSONString(Collections.singleton(serviceType))).express("match").build();
+			WfwFormFilterItemDTO searchTypeFilterItem = WfwFormFilterItemDTO.builder().alias("type").compt("selectbox").val(JSON.toJSONString(Collections.singleton(serviceType))).express("match").build();
 			filterItems.add(Lists.newArrayList(searchTypeFilterItem));
 		}
 		String searchStr = buildSearchStr(filterItems);
@@ -443,7 +453,7 @@ public class FormApiService {
 	* @param filters
 	* @return java.lang.String
 	*/
-	private String buildSearchStr(List<List<FilterItemDTO>> filters) {
+	private String buildSearchStr(List<List<WfwFormFilterItemDTO>> filters) {
 		Map<String, Object> searchMap = Maps.newHashMap();
 		searchMap.put("model", 0);
 		searchMap.put("filters", filters);

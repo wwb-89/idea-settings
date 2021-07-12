@@ -5,7 +5,7 @@ import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.chaoxing.activity.dto.activity.VolunteerServiceDTO;
 import com.chaoxing.activity.model.OrgDataRepoConfigDetail;
-import com.chaoxing.activity.service.manager.FormApiService;
+import com.chaoxing.activity.service.manager.WfwFormApiService;
 import com.chaoxing.activity.service.repoconfig.OrgDataRepoConfigQueryService;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
@@ -32,7 +32,7 @@ public class VolunteerService {
     private OrgDataRepoConfigQueryService orgDataRepoConfigQueryService;
 
     @Resource
-    private FormApiService formApiService;
+    private WfwFormApiService formApiService;
 
     /**获取服务市场记录列表
      * @Description

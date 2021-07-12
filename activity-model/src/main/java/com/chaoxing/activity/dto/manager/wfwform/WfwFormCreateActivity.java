@@ -1,4 +1,4 @@
-package com.chaoxing.activity.dto.manager.form;
+package com.chaoxing.activity.dto.manager.wfwform;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -8,7 +8,7 @@ import lombok.NoArgsConstructor;
 /**
  * @author wwb
  * @version ver 1.0
- * @className FormCreateActivity
+ * @className WfwFormCreateActivity
  * @description
  * @blame wwb
  * @date 2021-05-11 16:20:05
@@ -17,7 +17,7 @@ import lombok.NoArgsConstructor;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class FormCreateActivity {
+public class WfwFormCreateActivity {
 
     /** 创建机构id */
     private Integer fid;

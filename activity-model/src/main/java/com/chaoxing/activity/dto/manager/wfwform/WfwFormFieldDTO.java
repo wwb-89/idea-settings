@@ -1,6 +1,5 @@
-package com.chaoxing.activity.dto.manager.form;
+package com.chaoxing.activity.dto.manager.wfwform;
 
-import com.alibaba.fastjson.JSONObject;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -8,25 +7,27 @@ import lombok.NoArgsConstructor;
 
 import java.util.List;
 
-/**表单数据对象
+/**表单字段对象
  * @author wwb
  * @version ver 1.0
- * @className FormDataDTO
+ * @className WfwFormFieldDTO
  * @description
  * @blame wwb
- * @date 2021-03-09 12:17:29
+ * @date 2021-03-09 12:28:12
  */
 @Data
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class FormDataDTO {
+public class WfwFormFieldDTO {
 
+	/** 字段id */
 	private Integer id;
+	/** 字段名称 */
 	private String label;
-	private String compt;
+	/** 别名 */
 	private String alias;
-	private List<JSONObject> values;
-	private List<FormDataDTO> compts;
+	private String compt;
+	private List<WfwFormFieldDTO> compts;
 
 }

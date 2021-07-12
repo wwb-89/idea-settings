@@ -1,4 +1,4 @@
-package com.chaoxing.activity.dto.manager.form;
+package com.chaoxing.activity.dto.manager.wfwform;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -8,7 +8,7 @@ import lombok.NoArgsConstructor;
 /**表单用户对象
  * @author wwb
  * @version ver 1.0
- * @className FormUserDTO
+ * @className WfwFormUserDTO
  * @description
  * @blame wwb
  * @date 2021-03-11 19:48:32
@@ -17,7 +17,7 @@ import lombok.NoArgsConstructor;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class FormUserDTO {
+public class WfwFormUserDTO {
 
 	/** 用户uid */
 	private Integer puid;

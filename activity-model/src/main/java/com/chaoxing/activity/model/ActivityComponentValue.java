@@ -28,6 +28,10 @@ public class ActivityComponentValue {
     private Integer id;
     /** 活动id; column: activity_id*/
     private Integer activityId;
+    /** 模版组件id; column: template_component_id*/
+    private Integer templateComponentId;
+    /** 模版id; column: template_id*/
+    private Integer templateId;
     /** 组件id; column: component_id*/
     private Integer componentId;
     /** 值; column: value*/

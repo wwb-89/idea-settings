@@ -1,8 +1,8 @@
 package com.chaoxing.activity.admin.controller.api;
 
 import com.chaoxing.activity.dto.RestRespDTO;
-import com.chaoxing.activity.dto.manager.form.FormFieldDTO;
-import com.chaoxing.activity.service.manager.FormApiService;
+import com.chaoxing.activity.dto.manager.wfwform.WfwFormFieldDTO;
+import com.chaoxing.activity.service.manager.WfwFormApiService;
 import com.chaoxing.activity.vo.manager.WfwFormFieldVO;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -26,7 +26,7 @@ import java.util.stream.Collectors;
 public class WfwFormApiController {
 
 	@Resource
-	private FormApiService formApiService;
+	private WfwFormApiService formApiService;
 
 	/**查询微服务表单的字段列表
 	 * @Description 
@@ -38,7 +38,7 @@ public class WfwFormApiController {
 	*/
 	@RequestMapping("{formId}/field")
 	public RestRespDTO listWfwFormField(@PathVariable Integer formId, @RequestParam Integer fid) {
-		List<FormFieldDTO> formFields = formApiService.listFormField(fid, formId);
+		List<WfwFormFieldDTO> formFields = formApiService.listFormField(fid, formId);
 		return RestRespDTO.success(formFields.stream().map(WfwFormFieldVO::buildFromWfwFormFieldDTO).collect(Collectors.toList()));
 	}
 

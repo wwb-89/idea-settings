@@ -1,7 +1,7 @@
 package com.chaoxing.activity;
 
 import com.chaoxing.activity.model.Activity;
-import com.chaoxing.activity.service.manager.FormApprovalApiService;
+import com.chaoxing.activity.service.manager.WfwFormApprovalApiService;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 
@@ -19,7 +19,7 @@ import javax.annotation.Resource;
 public class FormApprovalApiServiceTests {
 
     @Resource
-    private FormApprovalApiService formApprovalApiService;
+    private WfwFormApprovalApiService formApprovalApiService;
 
     @Test
     public void getFormData() {

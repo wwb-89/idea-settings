@@ -7,7 +7,7 @@ import com.chaoxing.activity.dto.AddressDTO;
 import com.chaoxing.activity.dto.LoginUserDTO;
 import com.chaoxing.activity.dto.TimeScopeDTO;
 import com.chaoxing.activity.dto.manager.WfwRegionalArchitectureDTO;
-import com.chaoxing.activity.dto.manager.form.FormDTO;
+import com.chaoxing.activity.dto.manager.wfwform.WfwFormDTO;
 import com.chaoxing.activity.dto.manager.sign.SignIn;
 import com.chaoxing.activity.dto.manager.sign.SignUp;
 import com.chaoxing.activity.dto.module.SignAddEditDTO;
@@ -40,7 +40,7 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
 
-/**表单审批api服务
+/**微服务表单审批api服务
  * @author wwb
  * @version ver 1.0
  * @className FormApprovalApiService
@@ -50,7 +50,7 @@ import java.util.*;
  */
 @Slf4j
 @Service
-public class FormApprovalApiService {
+public class WfwFormApprovalApiService {
 
     /** 日期格式化 */
     private static final DateTimeFormatter DATE_TIME_FORMATTER = DateTimeFormatter.ofPattern("yyyyMMddHH");
@@ -85,7 +85,7 @@ public class FormApprovalApiService {
     @Resource(name = "restTemplateProxy")
     private RestTemplate restTemplate;
 
-    public FormDTO getFormData(Integer fid, Integer formId, Integer formUserId) {
+    public WfwFormDTO getFormData(Integer fid, Integer formId, Integer formUserId) {
         LocalDateTime now = LocalDateTime.now();
         String dateStr = now.format(DATE_TIME_FORMATTER);
         // 参数
@@ -106,7 +106,7 @@ public class FormApprovalApiService {
         if (success) {
             jsonObject = jsonObject.getJSONObject("data");
             JSONArray data = jsonObject.getJSONArray("formUserList");
-            return JSON.parseObject(data.getJSONObject(0).toJSONString(), FormDTO.class);
+            return JSON.parseObject(data.getJSONObject(0).toJSONString(), WfwFormDTO.class);
         } else {
             String errorMessage = jsonObject.getString("msg");
             log.error("获取机构:{}的表单:{}数据error:{}, url:{}, prams:{}", fid, formId, errorMessage, GET_FORM_DATA_URL, JSON.toJSONString(params));
@@ -129,7 +129,7 @@ public class FormApprovalApiService {
         return DigestUtils.md5Hex(endBuilder.toString());
     }
 
-    public List<FormDTO> listFormData(Integer fid, Integer formId) {
+    public List<WfwFormDTO> listFormData(Integer fid, Integer formId) {
         LocalDateTime now = LocalDateTime.now();
         String dateStr = now.format(DATE_TIME_FORMATTER);
         // 参数
@@ -186,7 +186,7 @@ public class FormApprovalApiService {
     @Transactional(rollbackFor = Exception.class)
     public void createActivity(Integer fid, Integer formId, Integer formUserId, String flag, Integer templateId) {
         // 获取表单数据
-        FormDTO formData = getFormData(fid, formId, formUserId);
+        WfwFormDTO formData = getFormData(fid, formId, formUserId);
         if (!Objects.equals(formData.getAprvStatusTypeId(), CommonConstant.FORM_APPROVAL_AGREE_VALUE)) {
             // 审批不通过的忽略
             return;
@@ -226,7 +226,7 @@ public class FormApprovalApiService {
      * @param formData
      * @return com.chaoxing.activity.model.Activity
      */
-    private Activity buildActivityFromActivityApproval(FormDTO formData) {
+    private Activity buildActivityFromActivityApproval(WfwFormDTO formData) {
         Activity activity = Activity.buildDefault();
         Integer fid = formData.getFid();
         Integer formUserId = formData.getFormUserId();
@@ -326,7 +326,7 @@ public class FormApprovalApiService {
      * @param uid
      * @return com.chaoxing.activity.dto.module.SignAddEditDTO
     */
-    private SignAddEditDTO buildSignFromActivityApproval(FormDTO formData, Integer uid) {
+    private SignAddEditDTO buildSignFromActivityApproval(WfwFormDTO formData, Integer uid) {
         SignAddEditDTO signAddEdit = SignAddEditDTO.buildDefault();
         // 报名
         List<SignUp> signUps = signAddEdit.getSignUps();

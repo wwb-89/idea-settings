@@ -82,8 +82,13 @@ CREATE TABLE `t_sign_up_fill_info_type`  (
 CREATE TABLE `t_activity_component_value`  (
     `id` int(11) NOT NULL AUTO_INCREMENT COMMENT '主键',
     `activity_id` int(11) NULL COMMENT '活动id',
+    `template_component_id` int(11) NULL COMMENT '模版组件id',
+    `template_id` int(11) NULL COMMENT '模版id',
     `component_id` int(11) NULL COMMENT '组件id',
     `value` varchar(255) NULL COMMENT '值',
     PRIMARY KEY (`id`),
-    INDEX `idx_primary`(`activity_id`, `component_id`)
+    INDEX `idx_primary`(`activity_id`, `template_component_id`),
+    INDEX `idx_template_component`(`activity_id`, `template_id`, `component_id`)
 ) COMMENT = '活动组件值表';
+ALTER TABLE t_activity ADD COLUMN market_id INT COMMENT '市场id';
+ALTER TABLE t_activity ADD COLUMN template_id INT COMMENT '模版id';

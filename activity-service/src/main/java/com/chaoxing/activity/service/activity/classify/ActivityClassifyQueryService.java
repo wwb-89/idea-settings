@@ -1,7 +1,7 @@
 package com.chaoxing.activity.service.activity.classify;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
-import com.chaoxing.activity.dto.manager.form.FilterDTO;
+import com.chaoxing.activity.dto.manager.wfwform.WfwFormFilterDTO;
 import com.chaoxing.activity.mapper.ActivityClassifyMapper;
 import com.chaoxing.activity.model.ActivityClassify;
 import com.google.common.collect.Lists;
@@ -37,10 +37,10 @@ public class ActivityClassifyQueryService {
 	 * @param fid
 	 * @return java.util.List<com.chaoxing.activity.model.ActivityClassify>
 	*/
-	public List<FilterDTO> listOrgOptions(Integer fid) {
-		List<FilterDTO> result = new ArrayList<>();
+	public List<WfwFormFilterDTO> listOrgOptions(Integer fid) {
+		List<WfwFormFilterDTO> result = new ArrayList<>();
 		CollectionUtils.collect(activityClassifyMapper.listByFid(fid), activityClassify -> {
-			FilterDTO item = new FilterDTO();
+			WfwFormFilterDTO item = new WfwFormFilterDTO();
 			item.setText(activityClassify.getName());
 			item.setValue(String.valueOf(activityClassify.getId()));
 			return item;

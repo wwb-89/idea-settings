@@ -136,6 +136,10 @@ public class Activity {
     private String originType;
     /** 来源值; column: origin*/
     private String origin;
+    /** 市场id; column: market_id*/
+    private Integer marketId;
+    /** 模版id; column: template_id*/
+    private Integer templateId;
     /** 状态。0：已删除，1：待发布，2：已发布，3：进行中，4：已结束; column: status*/
     private Integer status;
     /** 创建时间; column: create_time*/

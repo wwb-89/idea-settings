@@ -3,9 +3,9 @@ package com.chaoxing.activity.service.util;
 import com.alibaba.fastjson.JSONObject;
 import com.chaoxing.activity.dto.AddressDTO;
 import com.chaoxing.activity.dto.TimeScopeDTO;
-import com.chaoxing.activity.dto.manager.form.FormDTO;
-import com.chaoxing.activity.dto.manager.form.FormDataDTO;
-import com.chaoxing.activity.dto.manager.form.FormUserDTO;
+import com.chaoxing.activity.dto.manager.wfwform.WfwFormDTO;
+import com.chaoxing.activity.dto.manager.wfwform.WfwFormDataDTO;
+import com.chaoxing.activity.dto.manager.wfwform.WfwFormUserDTO;
 import com.google.common.collect.Lists;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -61,7 +61,7 @@ public class FormUtils {
 	 * @param fieldAlias
 	 * @return java.lang.String
 	*/
-	public static String getValue(FormDTO formData, String fieldAlias) {
+	public static String getValue(WfwFormDTO formData, String fieldAlias) {
 		String value = "";
 		JSONObject jsonValue = getJsonValue(formData, fieldAlias);
 		if (jsonValue != null) {
@@ -71,7 +71,7 @@ public class FormUtils {
 		return value;
 	}
 
-	public static List<String> listValue(FormDTO formData, String fieldAlias) {
+	public static List<String> listValue(WfwFormDTO formData, String fieldAlias) {
 		List<String> values = Lists.newArrayList();
 		List<JSONObject> jsonObjects = listJsonValue(formData, fieldAlias);
 		if (CollectionUtils.isNotEmpty(jsonObjects)) {
@@ -96,7 +96,7 @@ public class FormUtils {
 	 * @param fieldAlias
 	 * @return com.chaoxing.activity.dto.AddressDTO
 	*/
-	public static AddressDTO getAddress(FormDTO formData, String fieldAlias) {
+	public static AddressDTO getAddress(WfwFormDTO formData, String fieldAlias) {
 		AddressDTO address = null;
 		JSONObject jsonValue = getJsonValue(formData, fieldAlias);
 		if (jsonValue != null) {
@@ -117,7 +117,7 @@ public class FormUtils {
 	 * @param fieldAlias
 	 * @return java.lang.String
 	*/
-	public static String getCloudId(FormDTO formData, String fieldAlias) {
+	public static String getCloudId(WfwFormDTO formData, String fieldAlias) {
 		String value = "";
 		JSONObject jsonValue = getJsonValue(formData, fieldAlias);
 		if (jsonValue != null) {
@@ -135,12 +135,12 @@ public class FormUtils {
 	 * @param fieldName
 	 * @return com.chaoxing.secondclassroom.dto.FormUserDTO
 	*/
-	public static FormUserDTO getUser(FormDTO formData, String fieldName) {
+	public static WfwFormUserDTO getUser(WfwFormDTO formData, String fieldName) {
 		JSONObject jsonValue = getJsonValue(formData, fieldName);
 		if (jsonValue != null) {
 			String uidString = jsonValue.getString(PUID_KEY);
 			if (StringUtils.isNotBlank(uidString)) {
-				return FormUserDTO.builder()
+				return WfwFormUserDTO.builder()
 						.puid(Integer.parseInt(uidString))
 						.userName(jsonValue.getString(UNAME_KEY))
 						.build();
@@ -149,10 +149,10 @@ public class FormUtils {
 		return null;
 	}
 
-	private static JSONObject getJsonValue(FormDTO formData, String fieldAlias) {
-		List<FormDataDTO> items = formData.getFormData();
+	private static JSONObject getJsonValue(WfwFormDTO formData, String fieldAlias) {
+		List<WfwFormDataDTO> items = formData.getFormData();
 		if (CollectionUtils.isNotEmpty(items)) {
-			for (FormDataDTO item : items) {
+			for (WfwFormDataDTO item : items) {
 				String alias = item.getAlias();
 				if (Objects.equals(fieldAlias, alias)) {
 					List<JSONObject> values = item.getValues();
@@ -165,10 +165,10 @@ public class FormUtils {
 		return null;
 	}
 
-	private static List<JSONObject> listJsonValue(FormDTO formData, String fieldAlias) {
-		List<FormDataDTO> items = formData.getFormData();
+	private static List<JSONObject> listJsonValue(WfwFormDTO formData, String fieldAlias) {
+		List<WfwFormDataDTO> items = formData.getFormData();
 		if (CollectionUtils.isNotEmpty(items)) {
-			for (FormDataDTO item : items) {
+			for (WfwFormDataDTO item : items) {
 				String alias = item.getAlias();
 				if (Objects.equals(fieldAlias, alias)) {
 					return item.getValues();
@@ -186,7 +186,7 @@ public class FormUtils {
 	 * @param fieldAlias 字段别名
 	 * @return java.time.LocalDate
 	*/
-	public static LocalDate getDate(FormDTO formData, String fieldAlias) {
+	public static LocalDate getDate(WfwFormDTO formData, String fieldAlias) {
 		LocalDate result = null;
 		String value = getValue(formData, fieldAlias);
 		if (StringUtils.isNotBlank(value)) {
@@ -216,7 +216,7 @@ public class FormUtils {
 	 * @param fieldAlias 字段别名
 	 * @return java.time.LocalDateTime
 	*/
-	public static LocalDateTime getTime(FormDTO formData, String fieldAlias) {
+	public static LocalDateTime getTime(WfwFormDTO formData, String fieldAlias) {
 		LocalDateTime result = null;
 		String value = getValue(formData, fieldAlias);
 		if (StringUtils.isNotBlank(value)) {
@@ -246,13 +246,13 @@ public class FormUtils {
 	 * @param fieldAlias
 		 * @return com.chaoxing.activity.dto.TimeScopeDTO
 	*/
-	public static TimeScopeDTO getTimeScope(FormDTO formData, String fieldAlias) {
+	public static TimeScopeDTO getTimeScope(WfwFormDTO formData, String fieldAlias) {
 		LocalDateTime startTime;
 		LocalDateTime endTime;
-		List<FormDataDTO> formDatas = formData.getFormData();
+		List<WfwFormDataDTO> formDatas = formData.getFormData();
 		List<String> activityTimes = Lists.newArrayList();
 		if (CollectionUtils.isNotEmpty(formDatas)) {
-			for (FormDataDTO data : formDatas) {
+			for (WfwFormDataDTO data : formDatas) {
 				String alias = data.getAlias();
 				if (Objects.equals(fieldAlias, alias)) {
 					List<JSONObject> values = data.getValues();

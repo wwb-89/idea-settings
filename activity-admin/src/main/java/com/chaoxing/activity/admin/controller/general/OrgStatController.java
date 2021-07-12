@@ -1,7 +1,7 @@
 package com.chaoxing.activity.admin.controller.general;
 
 import com.chaoxing.activity.admin.util.LoginUtils;
-import com.chaoxing.activity.dto.manager.form.FilterDTO;
+import com.chaoxing.activity.dto.manager.wfwform.WfwFormFilterDTO;
 import com.chaoxing.activity.dto.LoginUserDTO;
 import com.chaoxing.activity.dto.manager.WfwGroupDTO;
 import com.chaoxing.activity.model.OrgTableField;
@@ -113,7 +113,7 @@ public class OrgStatController {
         }
         List<TableFieldDetail> tableFieldDetails = tableFieldQueryService.listTableFieldDetail(TableField.Type.ACTIVITY_STAT, TableField.AssociatedType.ORG);
         List<OrgTableField> orgTableFields = tableFieldQueryService.listOrgTableField(realFid, TableField.Type.ACTIVITY_STAT, TableField.AssociatedType.ORG);
-        List<FilterDTO> classifyOptions = activityClassifyQueryService.listOrgOptions(realFid);
+        List<WfwFormFilterDTO> classifyOptions = activityClassifyQueryService.listOrgOptions(realFid);
         Integer tableFieldId = null;
         if (CollectionUtils.isNotEmpty(tableFieldDetails)) {
             tableFieldId = tableFieldDetails.get(0).getTableFieldId();

@@ -38,7 +38,7 @@ public class SignUpConditionService {
 	/**批量新增报名条件
 	 * @Description 
 	 * @author wwb
-	 * @Date 2021-07-09 17:40:04
+	 * @Date 2021-07-09 17:42:10
 	 * @param signUpConditions
 	 * @return void
 	*/
@@ -57,6 +57,23 @@ public class SignUpConditionService {
 		signUpConditionMapper.delete(new LambdaUpdateWrapper<SignUpCondition>()
 			.eq(SignUpCondition::getTemplateId, templateComponentId)
 		);
+	}
+
+	/**是否能报名
+	 * @Description
+	 * 1、根据报名签到id查询活动
+	 * 2、报名的组件code查询组件id列表
+	 * 3、根据活动id、组件id、报名id查询报名条件
+	 * 4、根据报名条件判断用户能否报名
+	 * @author wwb
+	 * @Date 2021-07-09 17:44:47
+	 * @param signId
+	 * @param signUpId
+	 * @return boolean
+	*/
+	public boolean whetherCanSignUp(Integer signId, Integer signUpId) {
+		// TODO 待实现
+		return true;
 	}
 
 }

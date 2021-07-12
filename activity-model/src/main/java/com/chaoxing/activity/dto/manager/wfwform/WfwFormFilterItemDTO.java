@@ -1,4 +1,4 @@
-package com.chaoxing.activity.dto.manager.form;
+package com.chaoxing.activity.dto.manager.wfwform;
 
 import lombok.*;
 
@@ -8,7 +8,7 @@ import java.util.Map;
 /**高级检索筛选条件item
  * @author 胡小龙
  * @version ver 1.0
- * @className FilterItemDTO
+ * @className WfwFormFilterItemDTO
  * @description
  * @date 2021-04-21 16:19:04
  */
@@ -17,7 +17,7 @@ import java.util.Map;
 @NoArgsConstructor
 @AllArgsConstructor
 @EqualsAndHashCode
-public class FilterItemDTO {
+public class WfwFormFilterItemDTO {
 
     /** 字段id， id可通过”获取表单结构“接口的返回值拿到
      * 针对系统字段,

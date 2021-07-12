@@ -2,13 +2,13 @@ package com.chaoxing.activity.service.data;
 
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
-import com.chaoxing.activity.dto.manager.form.FormDTO;
-import com.chaoxing.activity.dto.manager.form.FormFieldDTO;
+import com.chaoxing.activity.dto.manager.wfwform.WfwFormDTO;
+import com.chaoxing.activity.dto.manager.wfwform.WfwFormFieldDTO;
 import com.chaoxing.activity.model.Activity;
 import com.chaoxing.activity.model.DataPushRecord;
 import com.chaoxing.activity.model.OrgDataRepoConfigDetail;
 import com.chaoxing.activity.service.activity.ActivityQueryService;
-import com.chaoxing.activity.service.manager.FormApiService;
+import com.chaoxing.activity.service.manager.WfwFormApiService;
 import com.chaoxing.activity.service.manager.module.SignApiService;
 import com.chaoxing.activity.service.repoconfig.OrgDataRepoConfigQueryService;
 import com.chaoxing.activity.util.exception.BusinessException;
@@ -35,7 +35,7 @@ import java.util.Objects;
 public class ActivityDataFormPushService {
 
     @Resource
-    private FormApiService formApiService;
+    private WfwFormApiService formApiService;
     @Resource
     private ActivityQueryService activityQueryService;
     @Resource
@@ -86,14 +86,14 @@ public class ActivityDataFormPushService {
                 dataPushRecordHandleService.delete(dataPushRecord.getId());
                 Integer formUserId = Integer.parseInt(dataPushRecord.getRecord());
                 // 删除记录
-                FormDTO formData = formApiService.getFormData(activity.getCreateFid(), formId, formUserId);
+                WfwFormDTO formData = formApiService.getFormData(activity.getCreateFid(), formId, formUserId);
                 if (formData != null) {
                     formApiService.deleteFormRecord(formId, formUserId);
                 }
             }
         } else {
             Integer createUid = activity.getCreateUid();
-            FormDTO existFormData = null;
+            WfwFormDTO existFormData = null;
             if (dataPushRecord != null) {
                 Integer formUserId = Integer.parseInt(dataPushRecord.getRecord());
                 existFormData = formApiService.getFormData(activity.getCreateFid(), formId, formUserId);
@@ -124,13 +124,13 @@ public class ActivityDataFormPushService {
     }
 
     private String packageFormData(Activity activity, Integer formId, Integer createFid) {
-        List<FormFieldDTO> formFields = formApiService.listFormField(createFid, formId);
+        List<WfwFormFieldDTO> formFields = formApiService.listFormField(createFid, formId);
         if (CollectionUtils.isEmpty(formFields)) {
             log.error("微服务表单:{}没有字段", formId);
             throw new BusinessException("微服务表单没有字段");
         }
         JSONArray result = new JSONArray();
-        for (FormFieldDTO field : formFields) {
+        for (WfwFormFieldDTO field : formFields) {
             String alias = field.getAlias();
             JSONObject item = new JSONObject();
             item.put("compt", field.getCompt());

@@ -4,10 +4,12 @@
     <resultMap id="BaseResultMap" type="com.chaoxing.activity.model.ActivityComponentValue">
         <id column="id" jdbcType="INTEGER" property="id" />
         <result column="activity_id" jdbcType="INTEGER" property="activityId" />
+        <result column="template_component_id" jdbcType="INTEGER" property="templateComponentId" />
+        <result column="template_id" jdbcType="INTEGER" property="templateId" />
         <result column="component_id" jdbcType="INTEGER" property="componentId" />
         <result column="value" jdbcType="VARCHAR" property="value" />
     </resultMap>
     <sql id="Base_Column_List">
-        t.id, t.activity_id, t.component_id, t.value
+        t.id, t.activity_id, t.template_component_id, t.template_id, t.component_id, t.value
     </sql>
 </mapper>

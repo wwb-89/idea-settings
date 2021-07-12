@@ -1,7 +1,7 @@
 package com.chaoxing.activity.task.activity;
 
-import com.chaoxing.activity.dto.manager.form.FormCreateActivity;
-import com.chaoxing.activity.service.manager.FormApprovalApiService;
+import com.chaoxing.activity.dto.manager.wfwform.WfwFormCreateActivity;
+import com.chaoxing.activity.service.manager.WfwFormApprovalApiService;
 import com.chaoxing.activity.service.queue.activity.FormActivityCreateQueueService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -24,11 +24,11 @@ public class ActivityCreateFromApprovalTask {
     @Resource
     private FormActivityCreateQueueService formActivityCreateQueueService;
     @Resource
-    private FormApprovalApiService formApprovalApiService;
+    private WfwFormApprovalApiService formApprovalApiService;
 
     @Scheduled(fixedDelay = 1L)
     public void handle() throws InterruptedException {
-        FormCreateActivity formCreateActivity = formActivityCreateQueueService.pop();
+        WfwFormCreateActivity formCreateActivity = formActivityCreateQueueService.pop();
         if (formCreateActivity == null) {
             return;
         }

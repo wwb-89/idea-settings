@@ -1,4 +1,4 @@
-package com.chaoxing.activity.dto.manager.form;
+package com.chaoxing.activity.dto.manager.wfwform;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -16,7 +16,7 @@ import lombok.NoArgsConstructor;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class FilterDTO {
+public class WfwFormFilterDTO {
 
     private String text;
 
