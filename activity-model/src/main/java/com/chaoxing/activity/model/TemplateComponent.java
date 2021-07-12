@@ -27,6 +27,8 @@ public class TemplateComponent {
     /** 主键; column: id*/
     @TableId(type = IdType.AUTO)
     private Integer id;
+    /** 父id; column: pid*/
+    private Integer pid;
     /** 模版id; column: template_id*/
     private Integer templateId;
     /** 组件id; column: component_id*/

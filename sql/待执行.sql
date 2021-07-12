@@ -51,6 +51,7 @@ CREATE TABLE `t_component_field`  (
 ) COMMENT = '组件选项表（单选、多选）';
 CREATE TABLE `t_template_component`  (
     `id` int(11) NOT NULL AUTO_INCREMENT COMMENT '主键',
+    `pid` int(11) NULL COMMENT '父id',
     `template_id` int(11) NULL COMMENT '模版id',
     `component_id` int(11) NULL COMMENT '组件id',
     `name` varchar(50) NULL COMMENT '定制的名称',

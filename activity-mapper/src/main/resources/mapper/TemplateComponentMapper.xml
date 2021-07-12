@@ -3,6 +3,7 @@
 <mapper namespace="com.chaoxing.activity.mapper.TemplateComponentMapper">
     <resultMap id="BaseResultMap" type="com.chaoxing.activity.model.TemplateComponent">
         <id column="id" jdbcType="INTEGER" property="id" />
+        <result column="pid" jdbcType="INTEGER" property="pid" />
         <result column="template_id" jdbcType="INTEGER" property="templateId" />
         <result column="component_id" jdbcType="INTEGER" property="componentId" />
         <result column="name" jdbcType="VARCHAR" property="name" />
@@ -11,17 +12,18 @@
         <result column="sequence" jdbcType="INTEGER" property="sequence" />
     </resultMap>
     <sql id="Base_Column_List">
-        t.id, t.template_id, t.component_id, t.name, t.introduction, t.is_required, t.sequence
+        t.id, t.template_id, t.pid, t.component_id, t.name, t.introduction, t.is_required, t.sequence
     </sql>
 
     <insert id="batchAdd">
 
         INSERT INTO
-            t_template_component ( template_id, component_id, `name`, introduction, is_required, `sequence` )
+            t_template_component ( template_id, pid, component_id, `name`, introduction, is_required, `sequence` )
         VALUES
         <foreach collection="templateComponents" item="item" open="" close="" separator=",">
             (
                 #{item.templateId},
+                #{item.pid},
                 #{item.componentId},
                 #{item.name},
                 #{item.introduction},
