@@ -35,20 +35,21 @@
             <div class="w-900px info-box" style="display: block;" v-show="currTemplateId && loaded">
                 <form action="" id="drag-box">
                     <!-- 基本信息 -->
-                    <div class="title sort-item">
-                        <i class="icon-drag"></i>
+                    <div class="title">
+<!--                        <i class="icon-drag"></i>-->
                         <div class="lable">基本信息</div>
-                        <div class="icon-div">
-                            <i class="icon-edit" @click="textDialog=true"></i>
-                            <i class="icon-delete" @click="delDialog=true"></i>
-                        </div>
+<!--                        <div class="icon-div">-->
+<!--                            <i class="icon-edit" @click="textDialog=true"></i>-->
+<!--                            <i class="icon-delete" @click="delDialog=true"></i>-->
+<!--                        </div>-->
                     </div>
-                    <template v-for="item in showTemplateComponents">
+                    <template v-for="(item, index) in showTemplateComponents">
                         <div class="form-item sort-item" v-if="!['activity_address', 'company_sign_up', 'sign_up', 'sign_in', 'sign_out', 'work', 'introduction'].includes(item.code)">
                             <i class="icon-drag"></i>
                             <div class="icon-div">
-                                <i class="icon-edit" @click='activityNameDialog=true'></i>
-<!--                                <i class="icon-edit" @click="activityTimeDialog=true"></i>-->
+                                <i class="icon-edit" @click="openTextEditDialog(index, item)"></i>
+                                <i class="icon-delete" v-show="!item.required" @click="removeComponent1(index, item)"></i>
+                                <!--                                <i class="icon-edit" @click="activityTimeDialog=true"></i>-->
 <!--                                <i class="icon-edit" @click="textDialog=true"></i>-->
 <!--                                <i class="icon-edit" @click="activityFormDialog=true"></i>-->
 <!--                                <i class="icon-delete" @click="delDialog=true"></i>-->
@@ -56,7 +57,6 @@
 <!--                                <i class="icon-edit" @click="activityNameDialog=true"></i>-->
 <!--                                <i class="icon-delete"></i>-->
 <!--                                <i class="icon-edit" @click="activityNameDialog=true"></i>-->
-<!--                                <i class="icon-delete"></i>-->
                             </div>
                             <label :class="{ label: true, required: item.required }">{{item.name}}</label>
                             <div class="input-box">
@@ -141,17 +141,18 @@
                                 <div class="lable">{{item.name}}</div>
                                 <div class="icon-div">
                                     <i class="icon-edit" @click="switchDialog=true"></i>
-                                    <i class="icon-delete" @click="delDialog=true"></i>
+                                    <i class="icon-delete" @click="removeComponent2(index, item)"></i>
                                 </div>
                                 <div class="input-box">
                                     <el-switch v-model="delivery1" class="switch fl marginTop6" disabled></el-switch>
                                     <p class="tips second">{{item.introduction}}</p>
                                 </div>
                             </div>
-                            <div class="form-item sort-item" v-if="item.children && item.children.length > 0" v-for="it in item.children">
+                            <div class="form-item sort-item" v-if="item.children && item.children.length > 0" v-for="(it, idx) in item.children">
                                 <i class="icon-drag"></i>
                                 <div class="icon-div">
                                     <i class="icon-edit"></i>
+                                    <i class="icon-delete" v-show="!it.required" @click="removeComponent3(index, idx, it)"></i>
                                 </div>
                                 <label :class="{ label: true, required: it.required }">{{it.name}}</label>
                                 <div class="input-box">
@@ -354,7 +355,7 @@
                     </template>
 
                 </form>
-                <div class="add-circle" @click="addFieldDialog = true" id="add-circle"></div>
+                <div class="add-circle" @click="initAddFieldDialog" id="add-circle"></div>
             </div>
         </div>
         <!--拖拽排序的提示-->
@@ -365,13 +366,13 @@
                 <img src="/static/pc/assets/images/yq-design/warn.png" th:src="@{/pc/assets/images/yq-design/warn.png}" alt="">
                 <p class="text">删除后，可重新添加。确定删除？</p>
                 <div class="btn-box">
-                    <div class="border-btn">保留</div>
-                    <div class="normal-btn" @click="delDialog=false">删除</div>
+                    <div class="border-btn" @click="cancelRemoveComponent">保留</div>
+                    <div class="normal-btn" @click="confirmRemove">删除</div>
                 </div>
             </div>
         </div>
         <!-- 添加字段弹窗 -->
-        <div class="dialog-mask" v-show="addFieldDialog">
+        <div class="dialog-mask" v-if="addFieldDialog">
             <div class="dailog add-field">
                 <div class="header">
                     <span>添加字段</span>
@@ -380,15 +381,17 @@
                 <div class="body">
                     <div class="down-list">
                         <p class="down-btn">
-                            <span>{{activeComponentType.name}}</span>
+                            <span>{{activeCpTypeName}}</span>
                             <i class="down-icon"></i>
                         </p>
                         <ul class="item-list">
-                            <li v-for="item in componentTypeList" @click="changeComponentType(item)">{{item.name}}</li>
+                            <li v-for="(item, index) in componentTypeList" @click="changeComponentType(index)">{{item.name}}</li>
                         </ul>
                     </div>
                     <!-- todo style 有问题 -->
-                    <div :class="{'field-item': true, 'aready-add': item.checked && !item.multi }" style="width: 214px" v-for="(item, index) in components" v-if="item.pid == activeComponentType.pid" >
+                    <div :class="{'field-item': true, 'aready-add': item.checked && !item.multi }"
+                         style="width: 214px"
+                         v-for="(item, index) in waitHandleData.componentTypeList[activeCpTypeIndex] && waitHandleData.componentTypeList[activeCpTypeIndex].components || []" >
                         <p class="field overHidden1">{{item.name}}</p>
                         <el-tooltip class="tooltip" effect="dark" :content="item.introduction" placement="top">
                             <i class="icon-info"></i>
@@ -398,11 +401,11 @@
                             <template v-else>
                                 <i class="icon-add" v-show="!item.checked" @click="addComponent(index, item)"></i>
                                 <span class="aready" v-show="item.checked">已添加</span>
-                                <span class="remove" style="display: none;" @click="removeComponent(index, item)">移除</span>
+                                <span class="remove" style="display: none;" @click="removeComponent(index, item, $event)">移除</span>
                             </template>
                         </div>
                     </div>
-                    <template v-if="activeComponentType.pid == 0">
+                    <template>
                         <div class="field-item" style="width: 214px" @click="addFieldDialog=false,textDialog=true">
                             <p class="field overHidden1">文本字段</p>
                             <el-tooltip class="tooltip" effect="dark" content="说明文字单行效果" placement="top">
@@ -425,8 +428,8 @@
                 </div>
                 <div class="footer">
                     <div class="btn-box">
-                        <div class="border-btn">取消</div>
-                        <div class="normal-btn">确定</div>
+                        <div class="border-btn" @click="addFieldDialog = false">取消</div>
+                        <div class="normal-btn" @click="confirmFieldConfig">确定</div>
                     </div>
                 </div>
             </div>
@@ -496,8 +499,8 @@
                 </div>
                 <div class="footer">
                     <div class="btn-box">
-                        <div class="border-btn">取消</div>
-                        <div class="normal-btn disable">确定</div>
+                        <div class="border-btn" >取消</div>
+                        <div class="normal-btn disable" >确定</div>
                         <!-- <div class="normal-btn">确定</div> -->
                     </div>
                 </div>
@@ -540,22 +543,22 @@
                     <i class="close" @click="activityNameDialog=false"></i>
                 </div>
                 <div class="body">
-                    <div class="custom-box">
+                    <div class="custom-box" v-if="currEditItem.code == 'activity_name'">
                         <span>主要字段，活动的名称</span>
                     </div>
                     <div class="form">
-                        <el-input v-model="name" type="text" placeholder="标题" maxlength="8" show-word-limit class="marginBottom24"></el-input>
-                        <el-input v-model="explain" type="text" placeholder="辅助说明" maxlength="40" show-word-limit class="marginBottom24"></el-input>
+                        <el-input v-model="currEditItem.name" type="text" placeholder="标题" maxlength="8" show-word-limit class="marginBottom24"></el-input>
+                        <el-input v-model="currEditItem.introduction" type="text" placeholder="辅助说明" maxlength="40" show-word-limit class="marginBottom24"></el-input>
                         <div class="switch-box">
                             <label class="label">必填项</label>
-                            <el-switch class="switch" v-model="switch3"></el-switch>
+                            <el-switch class="switch" v-model="currEditItem.required"></el-switch>
                         </div>
                     </div>
                 </div>
                 <div class="footer">
                     <div class="btn-box">
-                        <div class="border-btn">取消</div>
-                        <div class="normal-btn">确定</div>
+                        <div class="border-btn" @click="activityNameDialog = false">取消</div>
+                        <div class="normal-btn" @click="confirmTextEditResult">确定</div>
                     </div>
                 </div>
             </div>
@@ -695,9 +698,14 @@
         <script src="/static/pc/assets/lib/jqthumb.min.js" th:src="@{/pc/assets/lib/jqthumb.min.js}"></script>
 <!--        <script src="https://noteyd.chaoxing.com/res/plugin/ueditor4thirdparty/rich.text.util.js"></script>-->
 <!--        <script type="text/javascript">-->
-<!--            RichTextUitl.loadEditorProfile();-->
-<!--        </script>-->
         <script th:inline="javascript">
+            var uuid = function () {
+                return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function (c) {
+                    var r = Math.random() * 16 | 0,
+                        v = c == 'x' ? r : (r & 0x3 | 0x8);
+                    return v.toString(16);
+                });
+            }
             vm = new Vue({
                 el: '#field-setting',
                 data: {
@@ -707,15 +715,32 @@
                     template: {},
                     components: [],
                     componentMap: {},
+                    // 父组件id：子组件列表
+                    pidChildrenMap: {},
                     templateComponents: [],
                     showTemplateComponents: [],
                     componentTypeList: [],
-                    activeComponentType: {
-                        type: 'basic_info',
-                        name: '基本信息',
-                        pid: 0
+                    /**
+                     * 暂存字段配置弹框页数据，打开时会根据componentTypeList、showTemplateComponents、templateComponents更新数据，
+                     * 确定之后才会将数据刷新到对应数据列表中
+                     **/
+                    waitHandleData: {
+                        componentTypeList: [],
+                        showTemplateComponents: [],
+                        templateComponents: []
                     },
+                    activeCpTypeIndex: 0,
+                    activeCpTypeName: '基本信息',
                     loaded: false,
+                    delDialog:false,
+                    // 大组件删除时用到的临时变量
+                    currRemoveItemIndex: null,
+                    currRemoveItem: null,
+                    // 组件编辑弹窗所用到的临时变量
+                    currEditItem: {},
+                    currEditIndex: null,
+
+
                     radio1:'1',
                     activityType:'创新创业',
                     delivery1:'',
@@ -748,7 +773,6 @@
                     addFieldDialog:false,
                     chooseDialog:false,
                     partitionDialog:false,
-                    delDialog:false,
                     activityNameDialog:false,
                     activityTimeDialog:false,
                     activityTypeDialog:false,
@@ -773,7 +797,6 @@
                 methods:{
                     init: function () {
                         $(function(){
-
                             $("#drag-box").sortable({
                                 scroll: true,
                                 axis: "y",
@@ -812,6 +835,7 @@
                         $this.currTemplateId = templateId;
                         $this.loadTemplateInfo();
                     },
+                    // 选择模板，加载对应组件、模板组件数据
                     loadTemplateInfo: function () {
                         var $this = this;
                         var url = ctx + "/api/activity/engine/info";
@@ -827,35 +851,33 @@
                                 $this.template = template;
                                 // 置空componentMap
                                 $this.componentMap = {};
+                                // 初始化父节点对应子节点列表
+                                $this.pidChildrenMap = {};
                                 var checkedComponentIds = [];
                                 $(templateComponents).each(function () {
                                     checkedComponentIds.push(this.componentId);
                                 });
                                 $(components).each(function () {
                                     $this.componentMap[this.id] = this;
-                                    this.checked = checkedComponentIds.indexOf(this.id) != -1;
+                                    this.virtualId = this.id;
+                                    this.virtualPid = this.pid;
+                                    // 新增是否选中属性，默认true
+                                    this.checked = true;
+                                    // 填充父节点对应子节点列表数据
+                                    if (!$this.pidChildrenMap[this.pid]) {
+                                        $this.pidChildrenMap[this.pid] = [];
+                                    }
+                                    $this.pidChildrenMap[this.pid].push(this);
                                 });
                                 $this.components = components;
                                 $this.templateComponents = templateComponents;
                                 $this.calShowComponents();
-                                $this.calComponentConfig();
+                                $this.initComponentTypeList();
                                 $this.$nextTick(function () {
                                     $this.fixRightEndBtnStyle();
                                     $('.jqthumbImg').jqthumb({
                                         width: '100%',
                                         height: '100%'
-                                    });
-                                    $('.field-item').mouseenter(function() {
-                                        if($(this).hasClass('aready-add')){
-                                            $(this).find('.remove').show()
-                                            $(this).find('.aready').hide()
-                                        }
-                                    });
-                                    $('.field-item').mouseleave(function() {
-                                        if($(this).hasClass('aready-add')){
-                                            $(this).find('.remove').hide()
-                                            $(this).find('.aready').show()
-                                        }
                                     });
                                 })
                             } else {
@@ -870,36 +892,30 @@
                             app.showMsg("加载模板数据失败");
                         });
                     },
+                    // 根据关联关系，处理展示出来的模板组件
                     calShowComponents: function() {
                         var $this = this;
-                        var idPidMap = {};
-                        $($this.components).each(function () {
-                            idPidMap[this.id] = this.pid
+                        var tmpTplComponents = [];
+                        // 处理封装补充 tmpTplComponents 数据
+                        $($this.templateComponents).each(function () {
+                            var componentId = this.componentId;
+                            var componentItem = $this.componentMap[componentId];
+                            // 封装component 详情到 templateComponent里面
+                            this.code = componentItem.code;
+                            this.virtualId = this.id;
+                            this.virtualPid = this.pid;
+                            tmpTplComponents.push(this);
                         });
 
-                        var tmpTplComponents = [];
-                        $($this.templateComponents).each(function () {
-                            var tplComponent = $.extend({}, this);
-                            var componentId = tplComponent.componentId;
-                            $($this.components).each(function () {
-                                if (componentId === this.id) {
-                                    // 封装component 详情到 templateComponent里面
-                                    tplComponent.code = this.code;
-                                    tplComponent.cpPid = this.pid;
-                                    tplComponent.component = $.extend({}, this);
-                                    tmpTplComponents.push(tplComponent);
-                                    return false;
-                                }
-                            });
-                        });
                         $this.showTemplateComponents = [];
+                        // 封装处理展示的templateComponents，并把子组件放入父组件中
                         $(tmpTplComponents).each(function () {
                             var _this = this;
-                            if (!this.cpPid || this.cpPid == 0) {
+                            if (!this.virtualPid || this.virtualPid == 0) {
                                 $this.showTemplateComponents.push(_this);
                             }
                             $(tmpTplComponents).each(function () {
-                                if (this.cpPid && this.cpPid != 0 && _this.componentId == this.cpPid) {
+                                if (this.virtualPid && this.virtualPid != 0 && _this.virtualId == this.virtualPid) {
                                     if (!_this.children) {
                                         _this.children = [];
                                     }
@@ -908,28 +924,293 @@
                             });
                         });
                     },
-                    calComponentConfig: function () {
+                    // 初始化组件类型列表
+                    initComponentTypeList: function () {
                         var $this = this;
                         // 初始化组件类型
-                        $this.componentTypeList = [$this.activeComponentType];
-                        // 非基础类型组件id集合，用于区分组件类型
-                        var nonBasicComponentIds = [];
-                        $($this.components).each(function () {
-                            if (this.pid && this.pid != 0 && !nonBasicComponentIds.includes(this.pid)) {
-                                nonBasicComponentIds.push(this.pid);
-                                var parent = $this.componentMap[this.pid];
-                                $this.componentTypeList.push({
-                                    type: parent.code,
-                                    name: parent.name,
-                                    pid: parent.id
-                                })
+                        $this.componentTypeList = [];
+                        var relationComponentMap = {};
+                        var tplCpPidComponentIdsMap = {};
+                        // 先根据templateComponent关系中，按 pid 分块组件
+                        $($this.templateComponents).each(function () {
+                            relationComponentMap[this.id] = this.componentId;
+                            if (!tplCpPidComponentIdsMap[this.pid]) {
+                                tplCpPidComponentIdsMap[this.pid] = [];
+                            }
+                            tplCpPidComponentIdsMap[this.pid].push(this.componentId);
+                        })
+                        var tplCpPids = Object.keys(tplCpPidComponentIdsMap);
+                        $(tplCpPids).each(function (i) {
+                            var tplCpPid = tplCpPids[i];
+                            var componentId = relationComponentMap[tplCpPid];
+                            var components = []
+                            if (tplCpPid == 0) {
+                                components = $.extend(true, [], $this.pidChildrenMap[0]);
+                            } else {
+                                components = $.extend(true, [], $this.pidChildrenMap[componentId]);
+                            }
+                            $(components).each(function () {
+                                this.checked = tplCpPidComponentIdsMap[tplCpPid].indexOf(this.id) != -1;
+                            })
+                            var parent = $this.componentMap[componentId];
+                            var newType = {
+                                type: tplCpPid == 0 ? 'basic_info' : parent.code,
+                                name: tplCpPid == 0 ? '基本信息' : parent.name,
+                                virtualId: tplCpPid,
+                                components: components
+                            }
+                            $this.componentTypeList.push(newType);
+                        });
+                    },
+                    changeComponentType: function (index) {
+                        var $this = this;
+                        $this.activeCpTypeIndex = index;
+                        $this.activeCpTypeName = $this.componentTypeList[index].name;
+                    },
+                    // 初始化添加字段弹窗
+                    initAddFieldDialog: function () {
+                        var $this = this;
+                        $this.addFieldDialog = true;
+                        $this.$set($this.waitHandleData, 'componentTypeList', $.extend(true, [], $this.componentTypeList));
+                        $this.$set($this.waitHandleData, 'templateComponents', $.extend(true, [], $this.templateComponents));
+                        $this.$set($this.waitHandleData, 'showTemplateComponents', $.extend(true, [], $this.showTemplateComponents));
+                        $this.$nextTick(function () {
+                            $('.field-item').mouseenter(function() {
+                                if($(this).hasClass('aready-add')){
+                                    $(this).find('.remove').show()
+                                    $(this).find('.aready').hide()
+                                }
+                            });
+                            $('.field-item').mouseleave(function() {
+                                if($(this).hasClass('aready-add')){
+                                    $(this).find('.remove').hide()
+                                    $(this).find('.aready').show()
+                                }
+                            });
+                        });
+                    },
+                    // 新增组件
+                    addComponent: function (index, item) {
+                        var $this = this;
+                        var { componentTypeList, templateComponents, showTemplateComponents } = $this.waitHandleData;
+                        var templateComponentLength = templateComponents.length;
+                        var newTemplateComponent = {
+                            templateId: $this.currTemplateId,
+                            componentId: item.id,
+                            name: item.name,
+                            introduction: item.introduction,
+                            required: item.required,
+                            sequence: templateComponentLength + 1,
+                            code: item.code,
+                            virtualId: item.virtualId,
+                            virtualPid: item.virtualPid
+                        };
+                        // 可重复添加组件(目前报名块、报名条件)
+                        if (item.multi) {
+                            if (item.code == 'company_sign_up' || item.code == 'sign_up') {
+                                $this.addSignUpComponent(item, newTemplateComponent);
+                            }
+                        } else {
+                            var componentType = componentTypeList[$this.activeCpTypeIndex];
+                            var components = componentType.components;
+                            $this.$set(components[index], 'checked', true);
+
+                            newTemplateComponent.virtualPid = componentType.virtualId;
+                            templateComponents.push(newTemplateComponent);
+                            if (item.pid == 0) {
+                                showTemplateComponents.push(newTemplateComponent);
+                            } else {
+                                $(showTemplateComponents).each(function () {
+                                    if (this.componentId == item.pid) {
+                                        if (!this.children) {
+                                            $this.$set(this, 'children', [])
+                                        }
+                                        this.children.push(newTemplateComponent);
+                                        return false;
+                                    }
+                                });
+                            }
+                        }
+                        $this.$nextTick(function () {
+                            $('.jqthumbImg').jqthumb({
+                                width: '100%',
+                                height: '100%'
+                            });
+                        });
+                    },
+                    // 新增报名组件
+                    addSignUpComponent: function (component, newSignUpTemplateComponent) {
+                        var $this = this;
+                        var { componentTypeList, templateComponents, showTemplateComponents } = $this.waitHandleData;
+                        var templateComponentLength = templateComponents.length;
+                        // 生成虚拟id
+                        var newPid = uuid();
+                        newSignUpTemplateComponent.virtualId = newPid;
+                        // 拷贝一份子组件出来
+                        var newComponents = $.extend(true, [], $this.pidChildrenMap[component.id]);
+                        var newChildTemplateComponents = [];
+                        $(newComponents).each(function () {
+                            var newId = uuid();
+                            this.virtualId = newId;
+                            this.virtualPid = newPid;
+                            if (this.checked) {
+                                newChildTemplateComponents.push({
+                                    templateId: $this.currTemplateId,
+                                    componentId: this.id,
+                                    name: this.name,
+                                    introduction: this.introduction,
+                                    required: this.required,
+                                    sequence: templateComponentLength + 1,
+                                    component: this,
+                                    code: this.code,
+                                    virtualId: newId,
+                                    virtualPid: newPid
+                                });
                             }
                         });
-
+                        newSignUpTemplateComponent.children = newChildTemplateComponents;
+                        templateComponents.pushArray(newChildTemplateComponents);
+                        showTemplateComponents.push(newSignUpTemplateComponent);
+                        // 将报名添加到分类中
+                        var code = component.code;
+                        var name = component.name;
+                        componentTypeList.push({
+                            type: code,
+                            name: name,
+                            virtualId: newPid,
+                            components: newComponents
+                        })
                     },
-                    changeComponentType: function (item) {
+                    // 移除组件
+                    removeComponent: function (index, item, e) {
                         var $this = this;
-                        $this.activeComponentType = item;
+                        var { componentTypeList, templateComponents, showTemplateComponents } = $this.waitHandleData;
+                        var components = componentTypeList[$this.activeCpTypeIndex].components;
+                        var target = e.target;
+                        // 样式改变
+                        $(target).hide();
+                        $this.$set(components[index], 'checked', false)
+                        $this.waitHandleData.templateComponents = $.grep(templateComponents, function (it, index) {
+                            return it.virtualId != item.virtualId;
+                        });
+                        // 基本信息的移除
+                        if (item.virtualPid == 0) {
+                            $this.waitHandleData.showTemplateComponents = $.grep(showTemplateComponents, function (it, index) {
+                                return it.virtualId != item.virtualId;
+                            });
+                        } else { // 报名组件信息的移除
+                            $($this.waitHandleData.showTemplateComponents).each(function () {
+                                var _this = this;
+                                if (_this.virtualId == item.virtualPid) {
+                                    if (_this.children) {
+                                        _this.children = $.grep(_this.children, function (it, index) {
+                                            return it.virtualId != item.virtualId;
+                                        });
+                                    }
+                                    return false;
+                                }
+                            });
+                        }
+                    },
+                    // 确认组件配置
+                    confirmFieldConfig: function () {
+                        var $this = this;
+                        $this.componentTypeList = $this.waitHandleData.componentTypeList;
+                        $this.templateComponents = $this.waitHandleData.templateComponents;
+                        $this.showTemplateComponents = $this.waitHandleData.showTemplateComponents;
+                        $this.addFieldDialog = false;
+                    },
+                    // 配置页面基础信息删除按钮
+                    removeComponent1: function (index, item) {
+                        var $this = this;
+                        // 移除展示模板组件关联记录
+                        $this.showTemplateComponents.splice(index, 1);
+                        $this.templateComponents = $.grep($this.templateComponents, function (it, index) {
+                            return it.virtualId != item.virtualId;
+                        });
+                        if (item.code == 'sign_up' || item.code == 'company_sign_up') {
+                            // 继续移除子组件
+                            $this.templateComponents = $.grep($this.templateComponents, function (it, index) {
+                                return it.virtualPid != item.virtualId;
+                            });
+                            $this.componentTypeList = $.grep($this.componentTypeList, function (it, index) {
+                                return it.virtualId != item.virtualId;
+                            });
+                        } else {
+                            var componentType = $.grep($this.componentTypeList, function (it, index) {
+                                return it.virtualId == item.virtualPid;
+                            })[0];
+                            var components = componentType.components;
+                            $(components).each(function () {
+                                if (this.virtualId == item.componentId) {
+                                    this.checked = false;
+                                }
+                            });
+                            $this.$nextTick(function () {
+                                $('.jqthumbImg').jqthumb({
+                                    width: '100%',
+                                    height: '100%'
+                                });
+                            });
+                        }
+                    },
+                    removeComponent2: function (index, item) {
+                        var $this = this;
+                        $this.delDialog = true;
+                        $this.currRemoveItem = item;
+                        $this.currRemoveItemIndex = index;
+                    },
+                    removeComponent3: function (index, idx, item) {
+                        var $this = this;
+                        // console.log($this.showTemplateComponents[index].children)  todo
+                        $this.showTemplateComponents[index].children.splice(idx, 1);
+                        // console.log($this.showTemplateComponents[index].children)
+                        $this.templateComponents = $.grep($this.templateComponents, function (it, index) {
+                            return it.virtualId != item.virtualId;
+                        });
+
+                        var virtualPid = item.virtualPid;
+                        var componentType = $.grep($this.componentTypeList, function (it, index) {
+                            return it.virtualId == virtualPid;
+                        })[0];
+                        var components = componentType.components;
+                        $(components).each(function () {
+                            if (this.virtualId == item.componentId) {
+                                this.checked = false;
+                            }
+                        });
+                    },
+                    cancelRemoveComponent: function () {
+                        var $this = this;
+                        $this.delDialog = false;
+                        $this.currRemoveItem = null;
+                        $this.currRemoveItemIndex = null;
+                    },
+                    confirmRemove: function () {
+                        var $this = this;
+                        $this.removeComponent1($this.currRemoveItemIndex, $this.currRemoveItem);
+                        $this.currRemoveItem = null;
+                        $this.currRemoveItemIndex = null;
+                        $this.delDialog = false;
+                    },
+                    openTextEditDialog: function (index, item) {
+                        var $this = this;
+                        $this.activityNameDialog = true
+                        $this.currEditIndex = index;
+                        $this.currEditItem = $.extend({}, item);
+                    },
+                    confirmTextEditResult: function () {
+                        var $this = this;
+                        $this.showTemplateComponents[$this.currEditIndex] = $this.currEditItem;
+                        $($this.templateComponents).each(function () {
+                            if (this.virtualId == $this.currEditItem.virtualId && this.virtualPid == $this.currEditItem.virtualPid) {
+                                $.extend(this, $this.currEditItem);
+                                return false;
+                            }
+                        })
+                        $this.currEditItem = {};
+                        $this.currEditIndex = null;
+                        $this.activityNameDialog = false
                     },
                     // 返回
                     returnBack: function () {
@@ -979,68 +1260,6 @@
                             templateComponents: templateComponents
                         }
                     },
-                    addComponent: function (index, item) {
-                        var $this = this;
-                        $this.$set($this.components[index], 'checked', true)
-                        var templateComponentLength = $this.templateComponents.length;
-                        if (item.multi) {
-
-                        } else {
-                            var newTemplateComponent = {
-                                templateId: $this.currTemplateId,
-                                componentId: item.id,
-                                name: item.name,
-                                introduction: item.introduction,
-                                required: item.required,
-                                sequence: templateComponentLength + 1
-                            };
-                            $this.templateComponents.push(newTemplateComponent);
-                            if (item.pid == 0) {
-                                $this.showTemplateComponents.push(newTemplateComponent);
-                            } else {
-                                $($this.showTemplateComponents).each(function () {
-                                    if (this.componentId == item.pid) {
-                                        if (!this.children) {
-                                            $this.$set(this, 'children', [])
-                                        }
-                                        this.children.push(newTemplateComponent);
-                                        return false;
-                                    }
-                                })
-                            }
-                        }
-                    },
-                    removeComponent: function (index, item) {
-                        var $this = this;
-                        $this.$set($this.components[index], 'checked', false)
-
-                        var newTemplateComponents = [];
-                        $($this.templateComponents).each(function () {
-                            if (this.componentId != item.id) {
-                                newTemplateComponents.push(this);
-                            }
-                        });
-                        $this.templateComponents = newTemplateComponents;
-                        var newShowTemplateComponents = [];
-                        if (item.pid == 0) {
-                            $($this.showTemplateComponents).each(function () {
-                                if (this.componentId != item.id) {
-                                    newShowTemplateComponents.push(this);
-                                }
-                            });
-                            $this.showTemplateComponents = newShowTemplateComponents;
-                        } else {
-                            $($this.showTemplateComponents).each(function () {
-                                if (this.componentId == item.pid) {
-                                    if (this.children) {
-                                        $this.$set(this, 'children', [])
-                                    }
-                                    this.children.push(newTemplateComponent);
-                                    return false;
-                                }
-                            })
-                        }
-                    },
                     addOption1: function(){
                         this.option1.push({title: ''})
                     },
@@ -1058,6 +1277,8 @@
                 }
             })
         </script>
+        <!--            RichTextUitl.loadEditorProfile();-->
+        <!--        </script>-->
     </div>
 <!--    <div th:replace="pc/include/note_editor :: note_editor"></div>-->
 </body>
