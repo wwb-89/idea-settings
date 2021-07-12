@@ -155,7 +155,7 @@ public class WfwFormApiService {
 	 * @param data
 	 * @return java.lang.Integer
 	 */
-	public Integer fillForm(Integer fid, Integer formId, Integer uid, String data) {
+	public Integer fillFormData(Integer fid, Integer formId, Integer uid, String data) {
 		TreeMap<String, Object> paramMap = Maps.newTreeMap();
 		paramMap.put("datetime", LocalDateTime.now().format(DATE_TIME_FORMATTER));
 		paramMap.put("deptId", fid);
@@ -189,7 +189,7 @@ public class WfwFormApiService {
 	 * @param data
 	 * @return void
 	 */
-	public void updateForm(Integer formId, Integer formUserId, String data) {
+	public void updateFormData(Integer formId, Integer formUserId, String data) {
 		// 先查看表单数据是否存在
 		TreeMap<String, Object> paramMap = Maps.newTreeMap();
 		paramMap.put("formId", formId);

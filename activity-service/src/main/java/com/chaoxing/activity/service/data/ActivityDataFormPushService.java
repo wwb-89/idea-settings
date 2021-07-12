@@ -12,6 +12,7 @@ import com.chaoxing.activity.service.manager.WfwFormApiService;
 import com.chaoxing.activity.service.manager.module.SignApiService;
 import com.chaoxing.activity.service.repoconfig.OrgDataRepoConfigQueryService;
 import com.chaoxing.activity.util.exception.BusinessException;
+import com.google.common.collect.Lists;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
@@ -101,7 +102,7 @@ public class ActivityDataFormPushService {
             String formData = packageFormData(activity, formId, createFid);
             if (existFormData == null) {
                 // 新增
-                Integer formUserId = formApiService.fillForm(createFid, formId, createUid, formData);
+                Integer formUserId = formApiService.fillFormData(createFid, formId, createUid, formData);
                 String record = String.valueOf(formUserId);
                 if (dataPushRecord == null) {
                     dataPushRecord = DataPushRecord.builder()
@@ -118,7 +119,7 @@ public class ActivityDataFormPushService {
             } else {
                 // 更新
                 Integer formUserId = Integer.parseInt(dataPushRecord.getRecord());
-                formApiService.updateForm(formId, formUserId, formData);
+                formApiService.updateFormData(formId, formUserId, formData);
             }
         }
     }
@@ -130,8 +131,14 @@ public class ActivityDataFormPushService {
             throw new BusinessException("微服务表单没有字段");
         }
         JSONArray result = new JSONArray();
+        List<String> handledAlias = Lists.newArrayList();
         for (WfwFormFieldDTO field : formFields) {
             String alias = field.getAlias();
+            if (handledAlias.contains(alias)) {
+                continue;
+            } else {
+                handledAlias.add(alias);
+            }
             JSONObject item = new JSONObject();
             item.put("compt", field.getCompt());
             item.put("comptId", field.getId());
