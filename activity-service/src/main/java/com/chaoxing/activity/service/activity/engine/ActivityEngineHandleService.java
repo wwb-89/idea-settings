@@ -13,12 +13,13 @@ import com.google.common.collect.Maps;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.compress.utils.Lists;
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.*;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -52,13 +53,16 @@ public class ActivityEngineHandleService {
     * @param activityEngineDTO
     * @return void
     */
-    public void handleEngineTemplate(ActivityEngineDTO activityEngineDTO) {
+    public void handleEngineTemplate(Integer fid, Integer uid, ActivityEngineDTO activityEngineDTO) {
         Template template = activityEngineDTO.getTemplate();
-        if (template.getSystem() && template.getFid() != null) {
-            updateOperation(activityEngineDTO);
+        if (template.getSystem() && template.getFid() == null) {
+            // todo 临时测试，默认新建一个template
+            Template newTemplate = Template.builder().name("自建测试模板").fid(fid).createUid(uid).updateUid(uid).build();
+            activityEngineDTO.setTemplate(newTemplate);
+            saveOperation(newTemplate, activityEngineDTO.getTemplateComponents());
             return;
         }
-        saveOperation(activityEngineDTO);
+        updateOperation(template, activityEngineDTO.getTemplateComponents());
     }
 
 
@@ -66,28 +70,24 @@ public class ActivityEngineHandleService {
     * @Description
     * @author huxiaolong
     * @Date 2021-07-08 16:21:44
-    * @param activityEngineDTO
+    * @param template
+    * @param templateComponents
     * @return void
     */
     @Transactional(rollbackFor = Exception.class)
-    public void saveOperation(ActivityEngineDTO activityEngineDTO) {
+    public void saveOperation(Template template, List<TemplateComponent> templateComponents) {
         // 保存模板
-        Template template = activityEngineDTO.getTemplate();
         templateMapper.insert(template);
-        // 保存组件，并返回保存结果
-        Map<Integer, Component> savedComponent = saveComponent(template.getFid(), activityEngineDTO.getComponents());
         // 保存模板组件关联关系
-        saveTemplateComponent(template.getId(), activityEngineDTO.getTemplateComponents(), savedComponent);
+        saveTemplateComponent(template.getId(), templateComponents);
     }
 
     @Transactional(rollbackFor = Exception.class)
-    public void updateOperation(ActivityEngineDTO activityEngineDTO) {
+    public void updateOperation(Template template, List<TemplateComponent> templateComponents) {
         // 更新模板
-        Template template = activityEngineDTO.getTemplate();
         templateMapper.updateById(template);
-        Map<Integer, Component> updatedComponentMap = updateComponent(template.getFid(), activityEngineDTO.getComponents());
         // 保存模板组件关联关系
-        updateTemplateComponent(template.getId(), activityEngineDTO.getTemplateComponents(), updatedComponentMap);
+        updateTemplateComponent(template.getId(), templateComponents);
     }
 
     /**新增自定义组件
@@ -190,32 +190,22 @@ public class ActivityEngineHandleService {
     * @Description
     * @author huxiaolong
     * @Date 2021-07-08 14:52:34
+    * @param templateId 新模板id
     * @param
     * @return void
     */
-    public void saveTemplateComponent(Integer templateId, List<TemplateComponent> templateComponents, Map<Integer, Component> componentMap) {
-        List<Component> customComponents = componentMap.values().stream().filter(v -> StringUtils.isNotBlank(v.getType())).collect(Collectors.toList());
+    public void saveTemplateComponent(Integer templateId, List<TemplateComponent> templateComponents) {
         for (TemplateComponent templateComponent : templateComponents) {
             templateComponent.setTemplateId(templateId);
-
-            Integer componentId = templateComponent.getComponentId();
-            if (templateComponent.getComponentId() == null) {
-                // 一定为自定义组件
-                for (Component customComponent : customComponents) {
-                    boolean nameEquals = Objects.equals(customComponent.getName(), templateComponent.getName());
-                    boolean introductionEquals = Objects.equals(customComponent.getIntroduction(), templateComponent.getIntroduction());
-                    if (nameEquals && introductionEquals) {
-                        templateComponent.setComponentId(customComponent.getId());
-                    }
-                }
-            } else {
-                // 一定会存在一个 旧id 的映射
-                Component component = componentMap.get(componentId);
-                templateComponent.setComponentId(component.getId());
-            }
         }
         if (CollectionUtils.isNotEmpty(templateComponents)) {
             templateComponentMapper.batchAdd(templateComponents);
+        }
+        for (TemplateComponent templateComponent : templateComponents) {
+            if (CollectionUtils.isNotEmpty(templateComponent.getChildren())) {
+                templateComponent.getChildren().forEach(item -> item.setPid(templateComponent.getId()));
+                templateComponentMapper.batchAdd(templateComponent.getChildren());
+            }
         }
     }
     
@@ -227,12 +217,12 @@ public class ActivityEngineHandleService {
     * @return void
     */
     @Transactional(rollbackFor = Exception.class)
-    public void updateTemplateComponent(Integer templateId, List<TemplateComponent> templateComponents, Map<Integer, Component> componentMap) {
+    public void updateTemplateComponent(Integer templateId, List<TemplateComponent> templateComponents) {
         // 删除模板对应的组件关联关系
         templateComponentMapper.delete(new QueryWrapper<TemplateComponent>()
                 .lambda()
                 .eq(TemplateComponent::getTemplateId, templateId));
         // 重新建立关联关系
-        saveTemplateComponent(templateId, templateComponents, componentMap);
+        saveTemplateComponent(templateId, templateComponents);
     }
 }

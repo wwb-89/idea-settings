@@ -37,7 +37,7 @@ public class ActivityEngineController {
             realFid = loginUser.getFid();
         }
         List<Template> templates = activityEngineQueryService.listTemplateByFid(realFid);
-        model.addAttribute("fid", fid);
+        model.addAttribute("fid", realFid);
         model.addAttribute("templates", templates);
         return "pc/engine/index";
     }

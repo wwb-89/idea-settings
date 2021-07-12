@@ -927,22 +927,22 @@
                     // 初始化组件类型列表
                     initComponentTypeList: function () {
                         var $this = this;
-                        // 初始化组件类型
-                        $this.componentTypeList = [];
-                        var relationComponentMap = {};
-                        var tplCpPidComponentIdsMap = {};
+                        // tplCpCpIdMap =>   templateComponent 的  { pid : componentId }
+                        var tplCpCpIdMap = {};
+                        // pidComponentIdsMap =>   templateComponent 的  pid : [componentId, ....]
+                        var pidComponentIdsMap = {};
                         // 先根据templateComponent关系中，按 pid 分块组件
                         $($this.templateComponents).each(function () {
-                            relationComponentMap[this.id] = this.componentId;
-                            if (!tplCpPidComponentIdsMap[this.pid]) {
-                                tplCpPidComponentIdsMap[this.pid] = [];
+                            tplCpCpIdMap[this.id] = this.componentId;
+                            if (!pidComponentIdsMap[this.pid]) {
+                                pidComponentIdsMap[this.pid] = [];
                             }
-                            tplCpPidComponentIdsMap[this.pid].push(this.componentId);
+                            pidComponentIdsMap[this.pid].push(this.componentId);
                         })
-                        var tplCpPids = Object.keys(tplCpPidComponentIdsMap);
+                        var tplCpPids = Object.keys(pidComponentIdsMap);
                         $(tplCpPids).each(function (i) {
                             var tplCpPid = tplCpPids[i];
-                            var componentId = relationComponentMap[tplCpPid];
+                            var componentId = tplCpCpIdMap[tplCpPid];
                             var components = []
                             if (tplCpPid == 0) {
                                 components = $.extend(true, [], $this.pidChildrenMap[0]);
@@ -950,7 +950,7 @@
                                 components = $.extend(true, [], $this.pidChildrenMap[componentId]);
                             }
                             $(components).each(function () {
-                                this.checked = tplCpPidComponentIdsMap[tplCpPid].indexOf(this.id) != -1;
+                                this.checked = pidComponentIdsMap[tplCpPid].indexOf(this.id) != -1;
                             })
                             var parent = $this.componentMap[componentId];
                             var newType = {
@@ -998,6 +998,7 @@
                             templateId: $this.currTemplateId,
                             componentId: item.id,
                             name: item.name,
+                            pid: 0,
                             introduction: item.introduction,
                             required: item.required,
                             sequence: templateComponentLength + 1,
@@ -1049,6 +1050,7 @@
                         // 拷贝一份子组件出来
                         var newComponents = $.extend(true, [], $this.pidChildrenMap[component.id]);
                         var newChildTemplateComponents = [];
+                        var childIdx = 1;
                         $(newComponents).each(function () {
                             var newId = uuid();
                             this.virtualId = newId;
@@ -1060,12 +1062,13 @@
                                     name: this.name,
                                     introduction: this.introduction,
                                     required: this.required,
-                                    sequence: templateComponentLength + 1,
+                                    sequence: templateComponentLength + childIdx,
                                     component: this,
                                     code: this.code,
                                     virtualId: newId,
                                     virtualPid: newPid
                                 });
+                                childIdx++;
                             }
                         });
                         newSignUpTemplateComponent.children = newChildTemplateComponents;
@@ -1221,42 +1224,61 @@
                         var $this = this;
                         var submitData = $this.packageData();
                         var url = ctx + "/api/activity/engine/publish";
-
-                        // app.ajaxPost(url, { templateInfoStr: activityApp.getJsonStr(submitData) }, function (res) {
-                        //     if (res.success) {
-                        //         app.showMsg("发布成功", function () {
-                        //             window.location.reload();
-                        //         });
-                        //     } else {
-                        //         var errorMessage = res.message;
-                        //         if (activityApp.isEmpty(errorMessage)) {
-                        //             errorMessage = "发布失败";
-                        //         }
-                        //         app.showMsg(errorMessage);
-                        //     }
-                        // }, function () {
-                        //     app.showMsg("发布失败");
-                        // });
-
+                        var param = {
+                            fid: $this.fid,
+                            templateInfoStr: activityApp.getJsonStr(submitData)
+                        }
+                        app.ajaxPost(url, param, function (res) {
+                            if (res.success) {
+                                app.showMsg("发布成功", function () {
+                                    window.location.reload();
+                                });
+                            } else {
+                                var errorMessage = res.message;
+                                if (activityApp.isEmpty(errorMessage)) {
+                                    errorMessage = "发布失败";
+                                }
+                                app.showMsg(errorMessage);
+                            }
+                        }, function () {
+                            app.showMsg("发布失败");
+                        });
                     },
                     packageData: function () {
+                        var $this = this;
                         var template = $.extend({}, $this.template);
                         var templateComponents = [];
                         $($this.showTemplateComponents).each(function () {
+                            var _this = this;
+                            var newChildren;
+                            if (_this.children) {
+                                newChildren = [];
+                                $(_this.children).each(function () {
+                                    newChildren.push({
+                                        templateId: $this.currTemplateId,
+                                        componentId: this.componentId,
+                                        pid: this.pid,
+                                        name: this.name,
+                                        introduction: this.introduction,
+                                        required: this.required,
+                                        sequence: this.sequence,
+                                        children: this.children
+                                    })
+                                })
+                            }
                             templateComponents.push({
-                                id: this.id,
-                                templateId: $this.templateId,
-                                componentId: this.componentId,
-                                name: this.name,
-                                introduction: this.introduction,
-                                required: this.required,
-                                sequence: this.sequence
-
+                                templateId: $this.currTemplateId,
+                                componentId: _this.componentId,
+                                pid: _this.pid,
+                                name: _this.name,
+                                introduction: _this.introduction,
+                                required: _this.required,
+                                sequence: _this.sequence,
+                                children: newChildren
                             });
                         });
                         return {
                             template: template,
-                            components: $this.components,
                             templateComponents: templateComponents
                         }
                     },

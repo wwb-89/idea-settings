@@ -9,6 +9,8 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.List;
+
 /**
  * 模版组件关联表
  * @className: TemplateComponent, table_name: t_template_component
@@ -43,4 +45,6 @@ public class TemplateComponent {
     /** 顺序; column: sequence*/
     private Integer sequence;
 
+    @TableField(exist = false)
+    private List<TemplateComponent> children;
 }

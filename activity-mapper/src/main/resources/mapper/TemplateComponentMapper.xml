@@ -15,8 +15,7 @@
         t.id, t.template_id, t.pid, t.component_id, t.name, t.introduction, t.is_required, t.sequence
     </sql>
 
-    <insert id="batchAdd">
-
+    <insert id="batchAdd" useGeneratedKeys="true" keyProperty="id">
         INSERT INTO
             t_template_component ( template_id, pid, component_id, `name`, introduction, is_required, `sequence` )
         VALUES

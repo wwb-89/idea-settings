@@ -1,15 +1,19 @@
 package com.chaoxing.activity.admin.controller.api;
 
 import com.alibaba.fastjson.JSON;
+import com.chaoxing.activity.admin.util.LoginUtils;
+import com.chaoxing.activity.dto.LoginUserDTO;
 import com.chaoxing.activity.dto.RestRespDTO;
 import com.chaoxing.activity.dto.engine.ActivityEngineDTO;
 import com.chaoxing.activity.service.activity.engine.ActivityEngineHandleService;
 import com.chaoxing.activity.service.activity.engine.ActivityEngineQueryService;
+import com.chaoxing.activity.util.annotation.LoginRequired;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.annotation.Resource;
+import javax.servlet.http.HttpServletRequest;
 
 /**
  * @author huxiaolong
@@ -55,10 +59,12 @@ public class ActivityEngineApiController {
     * @param templateInfoStr
     * @return com.chaoxing.activity.dto.RestRespDTO
     */
+    @LoginRequired
     @PostMapping("publish")
-    public RestRespDTO publish(String templateInfoStr) {
+    public RestRespDTO publish(HttpServletRequest request, Integer fid, String templateInfoStr) {
+        LoginUserDTO loginUser = LoginUtils.getLoginUser(request);
         ActivityEngineDTO activityEngineDTO = JSON.parseObject(templateInfoStr, ActivityEngineDTO.class);
-        activityEngineHandleService.handleEngineTemplate(activityEngineDTO);
+        activityEngineHandleService.handleEngineTemplate(fid, loginUser.getUid(), activityEngineDTO);
         return RestRespDTO.success();
     }
 }
