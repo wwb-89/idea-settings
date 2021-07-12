@@ -3,6 +3,7 @@
 <mapper namespace="com.chaoxing.activity.mapper.TemplateMapper">
     <resultMap id="BaseResultMap" type="com.chaoxing.activity.model.Template">
         <id column="id" jdbcType="INTEGER" property="id" />
+        <result column="market_id" jdbcType="INTEGER" property="marketId" />
         <result column="name" jdbcType="VARCHAR" property="name" />
         <result column="is_system" jdbcType="BIT" property="system" />
         <result column="fid" jdbcType="INTEGER" property="fid" />
@@ -14,7 +15,7 @@
         <result column="update_uid" jdbcType="INTEGER" property="updateUid" />
     </resultMap>
     <sql id="Base_Column_List">
-        t.id, t.name, t.is_system, t.fid, t.cover_url, t.sequence, t.create_time, t.create_uid, 
+        t.id, t.market_id, t.name, t.is_system, t.fid, t.cover_url, t.sequence, t.create_time, t.create_uid,
         t.update_time, t.update_uid
     </sql>
 </mapper>

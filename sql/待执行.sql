@@ -1,5 +1,6 @@
 CREATE TABLE `t_template`  (
     `id` int(11) NOT NULL AUTO_INCREMENT COMMENT '主键',
+    `market_id` int(11) NULL COMMENT '市场id',
     `name` varchar(50) NULL COMMENT '模版名称',
     `is_system` tinyint(1) NULL DEFAULT 0 COMMENT '是否是系统模版',
     `fid` int(11) NULL COMMENT '所属机构id',
@@ -11,6 +12,7 @@ CREATE TABLE `t_template`  (
     `update_uid` int(11) NULL COMMENT '更新人uid',
     PRIMARY KEY (`id`),
     INDEX `idx_primary`(`is_system`, `fid`)
+    INDEX `idx_market_id`(`market_id`)
 ) COMMENT = '模版表';
 CREATE TABLE `t_component`  (
     `id` int(11) NOT NULL AUTO_INCREMENT COMMENT '主键',

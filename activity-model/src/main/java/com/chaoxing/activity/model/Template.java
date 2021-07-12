@@ -10,7 +10,6 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
-import java.util.Date;
 
 /**
  * 模版表
@@ -30,6 +29,8 @@ public class Template {
     /** 主键; column: id*/
     @TableId(type = IdType.AUTO)
     private Integer id;
+    /** 市场id; column: market_id*/
+    private Integer marketId;
     /** 模版名称; column: name*/
     private String name;
     /** 是否是系统模版; column: is_system*/
