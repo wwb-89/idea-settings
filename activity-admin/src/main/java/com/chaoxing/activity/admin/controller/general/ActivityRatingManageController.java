@@ -1,4 +1,4 @@
-package com.chaoxing.activity.admin.controller.pc;
+package com.chaoxing.activity.admin.controller.general;
 
 import com.chaoxing.activity.model.Activity;
 import com.chaoxing.activity.service.activity.ActivityQueryService;

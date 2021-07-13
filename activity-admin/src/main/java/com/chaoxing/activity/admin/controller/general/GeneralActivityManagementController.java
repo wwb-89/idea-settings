@@ -1,4 +1,4 @@
-package com.chaoxing.activity.admin.controller.pc;
+package com.chaoxing.activity.admin.controller.general;
 
 import com.chaoxing.activity.admin.util.LoginUtils;
 import lombok.extern.slf4j.Slf4j;
@@ -26,7 +26,7 @@ import java.util.Optional;
 public class GeneralActivityManagementController {
 
 	@Resource
-	private ActivityManageController activityManageController;
+	private ActivityManagementController activityManagementController;
 
 	/**活动管理主页
 	 * @Description
@@ -46,7 +46,7 @@ public class GeneralActivityManagementController {
 	@RequestMapping("")
 	public String newIndex(HttpServletRequest request, Model model, String code, Integer wfwfid, Integer unitId, Integer state, Integer fid, @RequestParam(defaultValue = "0") Integer secondClassroomFlag, @RequestParam(defaultValue = "0") Integer strict, String flag) {
 		Integer realFid = Optional.ofNullable(wfwfid).orElse(Optional.ofNullable(unitId).orElse(Optional.ofNullable(state).orElse(Optional.ofNullable(fid).orElse(LoginUtils.getLoginUser(request).getFid()))));
-		return activityManageController.index(model, code, realFid, secondClassroomFlag, strict, flag);
+		return activityManagementController.index(model, code, realFid, secondClassroomFlag, strict, flag);
 	}
 
 	/**活动新增页面
@@ -63,7 +63,7 @@ public class GeneralActivityManagementController {
 	*/
 	@GetMapping("activity/add")
 	public String add(Model model, HttpServletRequest request, String code, @RequestParam(defaultValue = "0") Integer secondClassroomFlag, String flag, @RequestParam(defaultValue = "0") Integer strict) {
-		return activityManageController.add(model, request, code, secondClassroomFlag, flag, strict);
+		return activityManagementController.add(model, request, code, secondClassroomFlag, flag, strict);
 	}
 
 }
