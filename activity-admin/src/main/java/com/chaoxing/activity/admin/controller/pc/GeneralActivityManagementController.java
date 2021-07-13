@@ -44,26 +44,6 @@ public class GeneralActivityManagementController {
 	 * @param flag 活动标示。通用、第二课堂、双选会...
 	 * @return java.lang.String
 	 */
-	@RequestMapping("old")
-	public String index(Model model, String code, Integer wfwfid, Integer unitId, Integer state, Integer fid, @RequestParam(defaultValue = "0") Integer secondClassroomFlag, @RequestParam(defaultValue = "0") Integer strict, String flag) {
-		Integer realFid = Optional.ofNullable(wfwfid).orElse(Optional.ofNullable(unitId).orElse(Optional.ofNullable(state).orElse(fid)));
-		return activityManageController.index(model, code, realFid, secondClassroomFlag, strict, flag);
-	}
-	/**活动管理主页
-	 * @Description
-	 * @author wwb
-	 * @Date 2020-11-18 11:34:30
-	 * @param model
-	 * @param code 图书馆编码
-	 * @param wfwfid
-	 * @param unitId
-	 * @param state
-	 * @param fid
-	 * @param secondClassroomFlag 第二课堂标识
-	 * @param strict
-	 * @param flag 活动标示。通用、第二课堂、双选会...
-	 * @return java.lang.String
-	 */
 	@RequestMapping("")
 	public String newIndex(HttpServletRequest request, Model model, String code, Integer wfwfid, Integer unitId, Integer state, Integer fid, @RequestParam(defaultValue = "0") Integer secondClassroomFlag, @RequestParam(defaultValue = "0") Integer strict, String flag) {
 		Integer realFid = Optional.ofNullable(wfwfid).orElse(Optional.ofNullable(unitId).orElse(Optional.ofNullable(state).orElse(fid)));
@@ -71,7 +51,7 @@ public class GeneralActivityManagementController {
 			LoginUserDTO loginUser = LoginUtils.getLoginUser(request);
 			realFid = loginUser.getFid();
 		}
-		return activityManageController.newIndex(model, code, realFid, secondClassroomFlag, strict, flag);
+		return activityManageController.index(model, code, realFid, secondClassroomFlag, strict, flag);
 	}
 
 	/**活动新增页面

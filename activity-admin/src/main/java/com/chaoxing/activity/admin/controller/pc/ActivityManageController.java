@@ -57,8 +57,8 @@ public class ActivityManageController {
 	@Resource
 	private TableFieldQueryService tableFieldQueryService;
 
-	/**活动管理主页
-	 * @Description 
+	/**新活动管理主页
+	 * @Description
 	 * @author wwb
 	 * @Date 2021-03-17 15:32:59
 	 * @param model
@@ -73,37 +73,9 @@ public class ActivityManageController {
 		code = Optional.ofNullable(code).orElse("");
 		// 防止挂接到三放也携带了code参数
 		code = code.split(CommonConstant.DEFAULT_SEPARATOR)[0];
-		model.addAttribute("code", code);
-		model.addAttribute("fid", fid);
-		model.addAttribute("secondClassroomFlag", secondClassroomFlag);
-		model.addAttribute("strict", strict);
-		flag = calActivityFlag(flag, secondClassroomFlag);
-		model.addAttribute("activityFlag", flag);
-		return "pc/activity-list";
-	}
-
-	/**新活动管理主页
-	 * @Description
-	 * @author wwb
-	 * @Date 2021-03-17 15:32:59
-	 * @param model
-	 * @param code 图书馆专用的code
-	 * @param fid 空间或微服务后台进入时查询的活动以该fid为主
-	 * @param secondClassroomFlag 第二课堂标识
-	 * @param strict 是不是严格模式， 严格模式：只显示自己创建的活动
-	 * @param flag 活动标示。通用、第二课堂、双选会...
-	 * @return java.lang.String
-	*/
-	public String newIndex(Model model, String code, Integer fid, Integer secondClassroomFlag, Integer strict, String flag) {
-		code = Optional.ofNullable(code).orElse("");
-		// 防止挂接到三放也携带了code参数
-		code = code.split(CommonConstant.DEFAULT_SEPARATOR)[0];
 		List<TableFieldDetail> tableFieldDetails = tableFieldQueryService.listTableFieldDetail(TableField.Type.ACTIVITY_MANAGE_LIST, TableField.AssociatedType.ACTIVITY_MARKET);
 		List<MarketTableField> marketTableFields = tableFieldQueryService.listMarketTableField(fid, flag, TableField.Type.ACTIVITY_MANAGE_LIST, TableField.AssociatedType.ACTIVITY_MARKET);
-		Integer tableFieldId = null;
-		if (CollectionUtils.isNotEmpty(tableFieldDetails)) {
-			tableFieldId = tableFieldDetails.get(0).getTableFieldId();
-		}
+		Integer tableFieldId = Optional.ofNullable(tableFieldDetails).orElse(Lists.newArrayList()).stream().findFirst().map(TableFieldDetail::getTableFieldId).orElse(null);
 		model.addAttribute("tableFieldId", tableFieldId);
 		model.addAttribute("tableFieldDetails", tableFieldDetails);
 		model.addAttribute("marketTableFields", marketTableFields);
@@ -114,10 +86,10 @@ public class ActivityManageController {
 		model.addAttribute("strict", strict);
 		flag = calActivityFlag(flag, secondClassroomFlag);
 		model.addAttribute("activityFlag", flag);
-		return "pc/activity-list-new";
+		return "pc/activity-list";
 	}
 
-	/**计算活动标示
+	/**计算活动标识
 	 * @Description 
 	 * @author wwb
 	 * @Date 2021-03-29 14:50:27
@@ -132,10 +104,9 @@ public class ActivityManageController {
 			} else {
 				flag = Activity.ActivityFlagEnum.NORMAL.getValue();
 			}
-		}
-		Activity.ActivityFlagEnum activityFlag = Activity.ActivityFlagEnum.fromValue(flag);
-		if (activityFlag == null) {
-			flag = Activity.ActivityFlagEnum.NORMAL.getValue();
+		} else {
+			Activity.ActivityFlagEnum activityFlag = Activity.ActivityFlagEnum.fromValue(flag);
+			flag = Optional.ofNullable(activityFlag).map(Activity.ActivityFlagEnum::getValue).orElse(Activity.ActivityFlagEnum.NORMAL.getValue());
 		}
 		return flag;
 	}
@@ -153,14 +124,7 @@ public class ActivityManageController {
 	*/
 	public String add(Model model, HttpServletRequest request, String code, Integer secondClassroomFlag, String flag, Integer strict) {
 		flag = calActivityFlag(flag, secondClassroomFlag);
-		String areaCode = "";
-		if (StringUtils.isNotBlank(code)) {
-			// 根据code查询areaCode
-			Group group = groupService.getByCode(code);
-			if (group != null) {
-				areaCode = group.getAreaCode();
-			}
-		}
+		String areaCode = Optional.ofNullable(code).filter(StringUtils::isNotBlank).map(groupService::getByCode).map(Group::getAreaCode).orElse("");
 		LoginUserDTO loginUser = LoginUtils.getLoginUser(request);
 		Integer fid = loginUser.getFid();
 		// 活动类型列表
@@ -175,7 +139,7 @@ public class ActivityManageController {
 		// 报名签到
 		model.addAttribute("sign", SignCreateParamDTO.builder().build());
 		// 模板列表
-		List<WebTemplate> webTemplates = webTemplateService.listAvailable(loginUser.getFid(), flag);
+		List<WebTemplate> webTemplates = webTemplateService.listAvailable(fid, flag);
 		model.addAttribute("webTemplates", webTemplates);
 		model.addAttribute("areaCode", areaCode);
 		// 微服务组织架构
@@ -189,7 +153,7 @@ public class ActivityManageController {
 		List<WfwRegionalArchitectureDTO> wfwRegionalArchitectures = wfwRegionalArchitectureApiService.listByFid(fid);
 		List<WfwRegionalArchitectureDTO> participatedOrgs = Lists.newArrayList();
 		if (CollectionUtils.isNotEmpty(wfwRegionalArchitectures)) {
-			participatedOrgs = wfwRegionalArchitectures.stream().filter(v -> Objects.equals(v.getFid(), loginUser.getFid())).collect(Collectors.toList());
+			participatedOrgs = wfwRegionalArchitectures.stream().filter(v -> Objects.equals(v.getFid(), fid)).collect(Collectors.toList());
 		}
 		model.addAttribute("participatedOrgs", participatedOrgs);
 		// 是不是定制机构

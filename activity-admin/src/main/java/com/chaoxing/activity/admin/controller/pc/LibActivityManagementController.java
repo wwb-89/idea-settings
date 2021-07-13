@@ -42,9 +42,7 @@ public class LibActivityManagementController {
 	@RequestMapping("")
 	public String index(Model model, String code, Integer wfwfid, Integer unitId, Integer state, Integer fid, @RequestParam(defaultValue = "0") Integer strict, String flag) {
 		Integer realFid = Optional.ofNullable(wfwfid).orElse(Optional.ofNullable(unitId).orElse(Optional.ofNullable(state).orElse(fid)));
-//		todo
-//		return activityManageController.index(model, code, realFid,0, strict, flag);
-		return activityManageController.newIndex(model, code, realFid,0, strict, flag);
+		return activityManageController.index(model, code, realFid,0, strict, flag);
 	}
 
 	/**活动新增页面

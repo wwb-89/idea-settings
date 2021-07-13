@@ -29,13 +29,13 @@ CREATE TABLE `t_component`  (
     `data_origin` varchar(50) NULL COMMENT '数据来源',
     `origin_identify` varchar(50) NULL COMMENT '来源主键',
     `field_flag` varchar(50) NULL COMMENT '字段标识',
-    `fid` int(11) NULL COMMENT '所属机构id',
+    `template_id` int(11) NULL COMMENT '组件id',
     `create_time` datetime(0) NULL DEFAULT current_timestamp() COMMENT '创建时间',
     `create_uid` int(11) NULL COMMENT '创建人uid',
     `update_time` datetime(0) NULL DEFAULT current_timestamp() ON UPDATE CURRENT_TIMESTAMP(0) COMMENT '更新时间',
     `update_uid` int(11) NULL COMMENT '更新人uid',
     PRIMARY KEY (`id`),
-    INDEX `idx_primary`(`fid`),
+    INDEX `idx_primary`(`template_id`),
     INDEX `idx_system`(`is_system`),
     INDEX `idx_pid`(`pid`)
 ) COMMENT = '组件表';
