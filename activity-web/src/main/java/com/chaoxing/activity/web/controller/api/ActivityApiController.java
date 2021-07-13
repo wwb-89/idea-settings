@@ -4,13 +4,13 @@ import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.chaoxing.activity.dto.LoginUserDTO;
 import com.chaoxing.activity.dto.RestRespDTO;
-import com.chaoxing.activity.dto.manager.WfwRegionalArchitectureDTO;
+import com.chaoxing.activity.dto.manager.WfwAreaDTO;
 import com.chaoxing.activity.dto.query.ActivityQueryDTO;
 import com.chaoxing.activity.model.Activity;
 import com.chaoxing.activity.model.ActivityDetail;
 import com.chaoxing.activity.service.activity.ActivityQueryService;
 import com.chaoxing.activity.service.activity.collection.ActivityCollectionHandleService;
-import com.chaoxing.activity.service.manager.WfwRegionalArchitectureApiService;
+import com.chaoxing.activity.service.manager.WfwAreaApiService;
 import com.chaoxing.activity.util.HttpServletRequestUtils;
 import com.chaoxing.activity.util.annotation.LoginRequired;
 import com.chaoxing.activity.util.constant.CommonConstant;
@@ -47,7 +47,7 @@ public class ActivityApiController {
 	@Resource
 	private ActivityQueryService activityQueryService;
 	@Resource
-	private WfwRegionalArchitectureApiService wfwRegionalArchitectureApiService;
+	private WfwAreaApiService wfwAreaApiService;
 	@Resource
 	private ActivityCollectionHandleService activityCollectionHandleService;
 
@@ -64,20 +64,20 @@ public class ActivityApiController {
 		ActivityQueryDTO activityQuery = JSON.parseObject(data, ActivityQueryDTO.class);
 		String areaCode = activityQuery.getAreaCode();
 		List<Integer> fids = new ArrayList<>();
-		List<WfwRegionalArchitectureDTO> wfwRegionalArchitectures;
+		List<WfwAreaDTO> wfwRegionalArchitectures;
 		Integer topFid = activityQuery.getTopFid();
 		if (StringUtils.isNotBlank(areaCode)) {
 			// 区域的
-			wfwRegionalArchitectures = wfwRegionalArchitectureApiService.listByCode(areaCode);
+			wfwRegionalArchitectures = wfwAreaApiService.listByCode(areaCode);
 		} else {
 			if (topFid == null) {
 				LoginUserDTO loginUser = LoginUtils.getLoginUser(request);
 				topFid = loginUser.getFid();
 			}
-			wfwRegionalArchitectures = wfwRegionalArchitectureApiService.listByFid(topFid);
+			wfwRegionalArchitectures = wfwAreaApiService.listByFid(topFid);
 		}
 		if (CollectionUtils.isNotEmpty(wfwRegionalArchitectures)) {
-			List<Integer> subFids = wfwRegionalArchitectures.stream().map(WfwRegionalArchitectureDTO::getFid).collect(Collectors.toList());
+			List<Integer> subFids = wfwRegionalArchitectures.stream().map(WfwAreaDTO::getFid).collect(Collectors.toList());
 			fids.addAll(subFids);
 		} else {
 			fids.add(topFid);

@@ -6,7 +6,7 @@ import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.chaoxing.activity.dto.LoginUserDTO;
 import com.chaoxing.activity.dto.activity.ActivityCreateParamDTO;
 import com.chaoxing.activity.dto.activity.ActivityUpdateParamDTO;
-import com.chaoxing.activity.dto.manager.WfwRegionalArchitectureDTO;
+import com.chaoxing.activity.dto.manager.WfwAreaDTO;
 import com.chaoxing.activity.dto.manager.mh.MhCloneParamDTO;
 import com.chaoxing.activity.dto.manager.mh.MhCloneResultDTO;
 import com.chaoxing.activity.dto.manager.sign.create.SignCreateParamDTO;
@@ -111,7 +111,7 @@ public class ActivityHandleService {
 	 * @return java.lang.Integer 活动id
 	*/
 	@Transactional(rollbackFor = Exception.class)
-	public Integer add(ActivityCreateParamDTO activityCreateParamDto, SignCreateParamDTO signCreateParamDto, List<WfwRegionalArchitectureDTO> wfwRegionalArchitectureDtos, LoginUserDTO loginUser) {
+	public Integer add(ActivityCreateParamDTO activityCreateParamDto, SignCreateParamDTO signCreateParamDto, List<WfwAreaDTO> wfwRegionalArchitectureDtos, LoginUserDTO loginUser) {
 		Activity activity = activityCreateParamDto.buildActivity();
 		// 新增活动输入验证
 		activityValidationService.addInputValidate(activity);
@@ -199,7 +199,7 @@ public class ActivityHandleService {
 	 * @return void
 	*/
 	@Transactional(rollbackFor = Exception.class)
-	public void edit(ActivityUpdateParamDTO activityUpdateParamDto, SignCreateParamDTO signCreateParam, final List<WfwRegionalArchitectureDTO> wfwRegionalArchitectureDtos, LoginUserDTO loginUser) {
+	public void edit(ActivityUpdateParamDTO activityUpdateParamDto, SignCreateParamDTO signCreateParam, final List<WfwAreaDTO> wfwRegionalArchitectureDtos, LoginUserDTO loginUser) {
 		Activity activity = activityUpdateParamDto.buildActivity();
 		activityValidationService.updateInputValidate(activity);
 		if (CollectionUtils.isEmpty(wfwRegionalArchitectureDtos)) {

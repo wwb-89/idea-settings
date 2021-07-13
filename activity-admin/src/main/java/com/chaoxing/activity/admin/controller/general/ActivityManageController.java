@@ -3,7 +3,7 @@ package com.chaoxing.activity.admin.controller.general;
 import com.chaoxing.activity.admin.util.LoginUtils;
 import com.chaoxing.activity.dto.LoginUserDTO;
 import com.chaoxing.activity.dto.manager.ActivityCreatePermissionDTO;
-import com.chaoxing.activity.dto.manager.WfwRegionalArchitectureDTO;
+import com.chaoxing.activity.dto.manager.WfwAreaDTO;
 import com.chaoxing.activity.dto.manager.sign.SignActivityManageIndexDTO;
 import com.chaoxing.activity.dto.manager.sign.create.SignCreateParamDTO;
 import com.chaoxing.activity.model.Activity;
@@ -130,7 +130,7 @@ public class ActivityManageController {
 		model.addAttribute("webTemplates", webTemplates);
 		model.addAttribute("step", step);
 		// 活动发布范围
-		List<WfwRegionalArchitectureDTO> wfwRegionalArchitectures = activityScopeQueryService.listByActivityId(activityId);
+		List<WfwAreaDTO> wfwRegionalArchitectures = activityScopeQueryService.listByActivityId(activityId);
 		model.addAttribute("participatedOrgs", wfwRegionalArchitectures);
 		// 报名范围
 		model.addAttribute("wfwGroups", activityCreatePermission.getWfwGroups());

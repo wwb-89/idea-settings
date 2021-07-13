@@ -3,7 +3,7 @@ package com.chaoxing.activity.service.activity;
 import com.chaoxing.activity.dto.LoginUserDTO;
 import com.chaoxing.activity.model.Activity;
 import com.chaoxing.activity.service.activity.manager.ActivityManagerValidationService;
-import com.chaoxing.activity.service.manager.WfwRegionalArchitectureApiService;
+import com.chaoxing.activity.service.manager.WfwAreaApiService;
 import com.chaoxing.activity.util.exception.ActivityNotExistException;
 import com.chaoxing.activity.util.exception.ActivityReleasedException;
 import com.chaoxing.activity.util.exception.BusinessException;
@@ -32,7 +32,7 @@ public class ActivityValidationService {
 	@Resource
 	private ActivityQueryService activityQueryService;
 	@Resource
-	private WfwRegionalArchitectureApiService wfwRegionalArchitectureApiService;
+	private WfwAreaApiService wfwAreaApiService;
 	@Resource
 	private ActivityManagerValidationService activityManagerValidationService;
 
@@ -186,7 +186,7 @@ public class ActivityValidationService {
 	*/
 	public boolean isOrgInManageScope(Integer fid, LoginUserDTO loginUser) {
 		Integer loginUserFid = loginUser.getFid();
-		List<Integer> manageFids = wfwRegionalArchitectureApiService.listSubFid(loginUserFid);
+		List<Integer> manageFids = wfwAreaApiService.listSubFid(loginUserFid);
 		return manageFids.contains(fid);
 	}
 
@@ -327,7 +327,7 @@ public class ActivityValidationService {
 			isCurrentOrgCreated = true;
 		}
 		// 活动是不是下级机构创建的
-		List<Integer> subFids = wfwRegionalArchitectureApiService.listSubFid(fid);
+		List<Integer> subFids = wfwAreaApiService.listSubFid(fid);
 		if (!manager && !isCurrentOrgCreated && !subFids.contains(createFid)) {
 			// 自己是活动的管理员、是本机构创建的、是自己机构的下级机构创建的
 			throw new BusinessException("无权限");

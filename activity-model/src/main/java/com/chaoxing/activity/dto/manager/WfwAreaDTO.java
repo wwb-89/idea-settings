@@ -12,10 +12,10 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-/**微服务层级架构对象
+/**微服务区域
  * @author wwb
  * @version ver 1.0
- * @className WfwRegionalArchitectureDTO
+ * @className WfwAreaDTO
  * @description
  * {
  *             "id": 5372,
@@ -35,7 +35,7 @@ import java.util.stream.Collectors;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class WfwRegionalArchitectureDTO {
+public class WfwAreaDTO {
 
 	private Integer id;
 	private String name;
@@ -48,7 +48,7 @@ public class WfwRegionalArchitectureDTO {
 	/** 是否存在区域 */
 	private Boolean existArea;
 	private Integer sort;
-	private List<WfwRegionalArchitectureDTO> children;
+	private List<WfwAreaDTO> children;
 
 	public ActivityScope buildActivityScope() {
 		return ActivityScope.builder()
@@ -65,11 +65,11 @@ public class WfwRegionalArchitectureDTO {
 				.build();
 	}
 
-	public static List<ActivityScope> buildActivityScopes(List<WfwRegionalArchitectureDTO> wfwRegionalArchitectures) {
+	public static List<ActivityScope> buildActivityScopes(List<WfwAreaDTO> wfwRegionalArchitectures) {
 		if (CollectionUtils.isEmpty(wfwRegionalArchitectures)) {
 			return Lists.newArrayList();
 		}
-		return wfwRegionalArchitectures.stream().map(WfwRegionalArchitectureDTO::buildActivityScope).collect(Collectors.toList());
+		return wfwRegionalArchitectures.stream().map(WfwAreaDTO::buildActivityScope).collect(Collectors.toList());
 	}
 
 }

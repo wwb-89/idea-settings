@@ -7,7 +7,7 @@ import com.chaoxing.activity.dto.AddressDTO;
 import com.chaoxing.activity.dto.LoginUserDTO;
 import com.chaoxing.activity.dto.TimeScopeDTO;
 import com.chaoxing.activity.dto.activity.ActivityCreateParamDTO;
-import com.chaoxing.activity.dto.manager.WfwRegionalArchitectureDTO;
+import com.chaoxing.activity.dto.manager.WfwAreaDTO;
 import com.chaoxing.activity.dto.manager.sign.create.SignCreateParamDTO;
 import com.chaoxing.activity.dto.manager.sign.create.SignInCreateParamDTO;
 import com.chaoxing.activity.dto.manager.sign.create.SignUpCreateParamDTO;
@@ -78,7 +78,7 @@ public class WfwFormApprovalApiService {
     @Resource
     private ActivityHandleService activityHandleService;
     @Resource
-    private WfwRegionalArchitectureApiService wfwRegionalArchitectureApiService;
+    private WfwAreaApiService wfwAreaApiService;
     @Resource
     private WebTemplateService webTemplateService;
     @Resource
@@ -196,7 +196,7 @@ public class WfwFormApprovalApiService {
         if (webTemplate == null) {
             throw new BusinessException("通过活动申报创建活动指定的门户模版不存在");
         }
-        WfwRegionalArchitectureDTO wfwRegionalArchitecture = wfwRegionalArchitectureApiService.buildWfwRegionalArchitecture(fid);
+        WfwAreaDTO wfwRegionalArchitecture = wfwAreaApiService.buildWfwRegionalArchitecture(fid);
         Integer activityId = activityHandleService.add(activity, signCreateParam, Lists.newArrayList(wfwRegionalArchitecture), loginUser);
         // 门户克隆模版
         activityHandleService.bindWebTemplate(activityId, webTemplate.getId(), loginUser);

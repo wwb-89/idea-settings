@@ -1,7 +1,7 @@
 package com.chaoxing.activity.service.activity.scope;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
-import com.chaoxing.activity.dto.manager.WfwRegionalArchitectureDTO;
+import com.chaoxing.activity.dto.manager.WfwAreaDTO;
 import com.chaoxing.activity.mapper.ActivityScopeMapper;
 import com.chaoxing.activity.model.ActivityScope;
 import lombok.extern.slf4j.Slf4j;
@@ -48,9 +48,9 @@ public class ActivityScopeService {
 	 * @param wfwRegionalArchitectureDtos
 	 * @return void
 	*/
-	public void batchAdd(Integer activityId, List<WfwRegionalArchitectureDTO> wfwRegionalArchitectureDtos) {
+	public void batchAdd(Integer activityId, List<WfwAreaDTO> wfwRegionalArchitectureDtos) {
 		deleteByActivityId(activityId);
-		List<ActivityScope> activityScopes = WfwRegionalArchitectureDTO.buildActivityScopes(wfwRegionalArchitectureDtos);
+		List<ActivityScope> activityScopes = WfwAreaDTO.buildActivityScopes(wfwRegionalArchitectureDtos);
 		if (CollectionUtils.isNotEmpty(activityScopes)) {
 			activityScopes.forEach(v -> v.setActivityId(activityId));
 			activityScopeMapper.batchAdd(activityScopes);

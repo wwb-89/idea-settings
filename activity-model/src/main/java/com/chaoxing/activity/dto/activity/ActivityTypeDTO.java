@@ -1,5 +1,6 @@
 package com.chaoxing.activity.dto.activity;
 
+import com.chaoxing.activity.model.Activity;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -21,5 +22,12 @@ public class ActivityTypeDTO {
 
 	private String name;
 	private String value;
+
+	public static ActivityTypeDTO buildFromActivityTypeEnum(Activity.ActivityTypeEnum activityTypeEnum) {
+		return ActivityTypeDTO.builder()
+				.name(activityTypeEnum.getName())
+				.value(activityTypeEnum.getValue())
+				.build();
+	}
 
 }

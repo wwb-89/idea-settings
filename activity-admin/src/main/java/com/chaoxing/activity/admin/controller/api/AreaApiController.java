@@ -3,10 +3,10 @@ package com.chaoxing.activity.admin.controller.api;
 import com.chaoxing.activity.admin.util.LoginUtils;
 import com.chaoxing.activity.dto.LoginUserDTO;
 import com.chaoxing.activity.dto.RestRespDTO;
-import com.chaoxing.activity.dto.manager.WfwRegionalArchitectureDTO;
+import com.chaoxing.activity.dto.manager.WfwAreaDTO;
 import com.chaoxing.activity.model.Activity;
 import com.chaoxing.activity.service.activity.ActivityQueryService;
-import com.chaoxing.activity.service.manager.WfwRegionalArchitectureApiService;
+import com.chaoxing.activity.service.manager.WfwAreaApiService;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -14,20 +14,20 @@ import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import java.util.List;
 
-/**层级架构api服务
+/**区域api服务
  * @author wwb
  * @version ver 1.0
- * @className RegionalArchitectureApiController
+ * @className AreaApiController
  * @description
  * @blame wwb
  * @date 2020-11-19 21:28:20
  */
 @RestController
-@RequestMapping("api/regional-architecture")
-public class RegionalArchitectureApiController {
+@RequestMapping("api/area")
+public class AreaApiController {
 
 	@Resource
-	private WfwRegionalArchitectureApiService wfwRegionalArchitectureApiService;
+	private WfwAreaApiService wfwAreaApiService;
 	@Resource
 	private ActivityQueryService activityQueryService;
 
@@ -41,7 +41,7 @@ public class RegionalArchitectureApiController {
 	@RequestMapping("")
 	public RestRespDTO listByFid(Integer activityId) {
 		Activity activity = activityQueryService.getById(activityId);
-		List<WfwRegionalArchitectureDTO> regionalArchitectures = wfwRegionalArchitectureApiService.listByFid(activity.getCreateFid());
+		List<WfwAreaDTO> regionalArchitectures = wfwAreaApiService.listByFid(activity.getCreateFid());
 		return RestRespDTO.success(regionalArchitectures);
 	}
 
@@ -55,7 +55,7 @@ public class RegionalArchitectureApiController {
 	@RequestMapping("list")
 	public RestRespDTO listByFid(HttpServletRequest request) {
 		LoginUserDTO loginUser = LoginUtils.getLoginUser(request);
-		List<WfwRegionalArchitectureDTO> regionalArchitectures = wfwRegionalArchitectureApiService.listByFid(loginUser.getFid());
+		List<WfwAreaDTO> regionalArchitectures = wfwAreaApiService.listByFid(loginUser.getFid());
 		return RestRespDTO.success(regionalArchitectures);
 	}
 

@@ -1,7 +1,7 @@
 package com.chaoxing.activity.service.activity.scope;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
-import com.chaoxing.activity.dto.manager.WfwRegionalArchitectureDTO;
+import com.chaoxing.activity.dto.manager.WfwAreaDTO;
 import com.chaoxing.activity.mapper.ActivityScopeMapper;
 import com.chaoxing.activity.model.ActivityScope;
 import com.google.common.collect.Lists;
@@ -34,8 +34,8 @@ public class ActivityScopeQueryService {
 	 * @param activityId
 	 * @return java.util.List<com.chaoxing.activity.dto.manager.WfwRegionalArchitectureDTO>
 	*/
-	public List<WfwRegionalArchitectureDTO> listByActivityId(Integer activityId) {
-		List<WfwRegionalArchitectureDTO> result;
+	public List<WfwAreaDTO> listByActivityId(Integer activityId) {
+		List<WfwAreaDTO> result;
 		List<ActivityScope> activityScopes = activityScopeMapper.selectList(new QueryWrapper<ActivityScope>()
 				.lambda()
 				.eq(ActivityScope::getActivityId, activityId)

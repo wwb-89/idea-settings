@@ -4,7 +4,7 @@ import com.chaoxing.activity.admin.util.LoginUtils;
 import com.chaoxing.activity.dto.LoginUserDTO;
 import com.chaoxing.activity.dto.activity.ActivityTypeDTO;
 import com.chaoxing.activity.dto.manager.ActivityCreatePermissionDTO;
-import com.chaoxing.activity.dto.manager.WfwRegionalArchitectureDTO;
+import com.chaoxing.activity.dto.manager.WfwAreaDTO;
 import com.chaoxing.activity.dto.manager.sign.create.SignCreateParamDTO;
 import com.chaoxing.activity.model.*;
 import com.chaoxing.activity.service.GroupService;
@@ -13,7 +13,8 @@ import com.chaoxing.activity.service.activity.ActivityQueryService;
 import com.chaoxing.activity.service.activity.classify.ActivityClassifyHandleService;
 import com.chaoxing.activity.service.activity.engine.ActivityEngineQueryService;
 import com.chaoxing.activity.service.activity.manager.ActivityCreatePermissionService;
-import com.chaoxing.activity.service.manager.WfwRegionalArchitectureApiService;
+import com.chaoxing.activity.service.activity.template.TemplateQueryService;
+import com.chaoxing.activity.service.manager.WfwAreaApiService;
 import com.chaoxing.activity.service.org.OrgService;
 import com.chaoxing.activity.service.tablefield.TableFieldQueryService;
 import com.chaoxing.activity.util.constant.CommonConstant;
@@ -52,13 +53,15 @@ public class ActivityManagementController {
 	@Resource
 	private ActivityCreatePermissionService activityCreatePermissionService;
 	@Resource
-	private WfwRegionalArchitectureApiService wfwRegionalArchitectureApiService;
+	private WfwAreaApiService wfwAreaApiService;
 	@Resource
 	private OrgService orgService;
 	@Resource
 	private TableFieldQueryService tableFieldQueryService;
 	@Resource
 	private ActivityEngineQueryService activityEngineQueryService;
+	@Resource
+	private TemplateQueryService templateQueryService;
 
 	/**新活动管理主页
 	 * @Description
@@ -153,8 +156,8 @@ public class ActivityManagementController {
 		model.addAttribute("activityFlagSignModules", activityFlagSignModules);
 		model.addAttribute("strict", strict);
 		// 发布范围默认选中当前机构
-		List<WfwRegionalArchitectureDTO> wfwRegionalArchitectures = wfwRegionalArchitectureApiService.listByFid(fid);
-		List<WfwRegionalArchitectureDTO> participatedOrgs = Lists.newArrayList();
+		List<WfwAreaDTO> wfwRegionalArchitectures = wfwAreaApiService.listByFid(fid);
+		List<WfwAreaDTO> participatedOrgs = Lists.newArrayList();
 		if (CollectionUtils.isNotEmpty(wfwRegionalArchitectures)) {
 			participatedOrgs = wfwRegionalArchitectures.stream().filter(v -> Objects.equals(v.getFid(), fid)).collect(Collectors.toList());
 		}
@@ -165,7 +168,7 @@ public class ActivityManagementController {
 		return "pc/activity-add-edit";
 	}
 
-	public String add(HttpServletRequest request, Model model, Integer marketId, Integer templateId, String code) {
+	public String add(HttpServletRequest request, Model model, Integer templateId, String code) {
 		String areaCode = Optional.ofNullable(code).filter(StringUtils::isNotBlank).map(groupService::getByCode).map(Group::getAreaCode).orElse("");
 		LoginUserDTO loginUser = LoginUtils.getLoginUser(request);
 		Integer fid = loginUser.getFid();
@@ -175,7 +178,7 @@ public class ActivityManagementController {
 		// 构建默认的报名签到创建对象
 		SignCreateParamDTO signCreateParamDto = SignCreateParamDTO.buildDefault();
 		model.addAttribute("sign", signCreateParamDto);
-		// 活动类型列表
+		// 活动形式列表
 		List<ActivityTypeDTO> activityTypes = activityQueryService.listActivityType();
 		model.addAttribute("activityTypes", activityTypes);
 		// 活动分类列表范围
@@ -186,7 +189,7 @@ public class ActivityManagementController {
 		model.addAttribute("groupType", activityCreatePermission.getGroupType());
 		// 报名签到
 		model.addAttribute("sign", SignCreateParamDTO.builder().build());
-		String flag = "";
+		String flag = templateQueryService.getActivityFlagByTemplateId(templateId);
 		// 模板列表
 		List<WebTemplate> webTemplates = webTemplateService.listAvailable(fid, flag);
 		model.addAttribute("webTemplates", webTemplates);
@@ -194,19 +197,13 @@ public class ActivityManagementController {
 		// 微服务组织架构
 		model.addAttribute("wfwGroups", activityCreatePermission.getWfwGroups());
 		model.addAttribute("activityFlag", flag);
-		// flag配置的报名签到的模块
-		List<ActivityFlagSignModule> activityFlagSignModules = activityQueryService.listSignModuleByFlag(flag);
-		model.addAttribute("activityFlagSignModules", activityFlagSignModules);
 		// 发布范围默认选中当前机构
-		List<WfwRegionalArchitectureDTO> wfwRegionalArchitectures = wfwRegionalArchitectureApiService.listByFid(fid);
-		List<WfwRegionalArchitectureDTO> participatedOrgs = Lists.newArrayList();
-		if (CollectionUtils.isNotEmpty(wfwRegionalArchitectures)) {
-			participatedOrgs = wfwRegionalArchitectures.stream().filter(v -> Objects.equals(v.getFid(), fid)).collect(Collectors.toList());
-		}
+		List<WfwAreaDTO> wfwAreaDtos = wfwAreaApiService.listByFid(fid);
+		List<WfwAreaDTO> participatedOrgs = Optional.ofNullable(wfwAreaDtos).orElse(Lists.newArrayList()).stream().filter(v -> Objects.equals(v.getFid(), fid)).collect(Collectors.toList());
 		model.addAttribute("participatedOrgs", participatedOrgs);
 		// 是不是定制机构
-		boolean customOrg = orgService.isCustomOrg(fid);
-		model.addAttribute("customOrg", customOrg);
+		boolean isCustomOrg = orgService.isCustomOrg(fid);
+		model.addAttribute("isCustomOrg", isCustomOrg);
 		return "pc/activity-add-edit-new";
 	}
 

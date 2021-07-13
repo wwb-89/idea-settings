@@ -4,7 +4,7 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.chaoxing.activity.dto.LoginUserDTO;
 import com.chaoxing.activity.dto.OrgDTO;
 import com.chaoxing.activity.dto.TimeScopeDTO;
-import com.chaoxing.activity.dto.manager.WfwRegionalArchitectureDTO;
+import com.chaoxing.activity.dto.manager.WfwAreaDTO;
 import com.chaoxing.activity.dto.query.admin.ActivityRegionStatQueryDTO;
 import com.chaoxing.activity.dto.query.admin.ActivityStatQueryDTO;
 import com.chaoxing.activity.dto.stat.*;
@@ -13,7 +13,7 @@ import com.chaoxing.activity.mapper.ActivityStatMapper;
 import com.chaoxing.activity.model.Activity;
 import com.chaoxing.activity.model.ActivityStat;
 import com.chaoxing.activity.service.manager.MhApiService;
-import com.chaoxing.activity.service.manager.WfwRegionalArchitectureApiService;
+import com.chaoxing.activity.service.manager.WfwAreaApiService;
 import com.chaoxing.activity.service.manager.module.SignApiService;
 import com.chaoxing.activity.util.DateUtils;
 import com.google.common.collect.Lists;
@@ -56,7 +56,7 @@ public class ActivityStatQueryService {
 	@Resource
 	private ActivityStatMapper activityStatMapper;
 	@Resource
-	private WfwRegionalArchitectureApiService wfwRegionalArchitectureApiService;
+	private WfwAreaApiService wfwAreaApiService;
 
 	/**机构参与的活动的pageId列表
 	 * @Description
@@ -261,8 +261,8 @@ public class ActivityStatQueryService {
 	 * @Date 2021-05-11 15:21:34
 	 */
 	public ActivityOrgStatDTO regionalActivityStat(Integer fid, String startDate, String endDate) {
-		List<WfwRegionalArchitectureDTO> regionalOrgList = wfwRegionalArchitectureApiService.listByFid(fid);
-		List<Integer> fids = regionalOrgList.stream().map(WfwRegionalArchitectureDTO::getFid).collect(Collectors.toList());
+		List<WfwAreaDTO> regionalOrgList = wfwAreaApiService.listByFid(fid);
+		List<Integer> fids = regionalOrgList.stream().map(WfwAreaDTO::getFid).collect(Collectors.toList());
 		// 根据机构id集合, 给定的活动时间范围，查询在此范围内进行中的活动id列表
 		List<Integer> activityIds = activityQueryService.listActivityIdsByFids(fids, startDate, endDate);
 		return packageActivityStat(activityIds, startDate, endDate, fids.size());
@@ -510,16 +510,16 @@ public class ActivityStatQueryService {
 	* @return java.util.List<com.chaoxing.activity.dto.stat.ActivityRegionalStatDTO>
 	*/
 	private List<ActivityRegionalStatDTO> regionActivityStatQuery(Integer nodeId, Integer fid, String startDate, String endDate) {
-		List<WfwRegionalArchitectureDTO> regionalArchitectures = wfwRegionalArchitectureApiService.listByFid(fid);
+		List<WfwAreaDTO> regionalArchitectures = wfwAreaApiService.listByFid(fid);
 		// 机构fid 对应着子节点的fid列表
 		Map<Integer, List<Integer>> wfwRegionChildrenFidMap = Maps.newHashMap();
 		// 区域fid 对应着对应的下属机构的fid列表
 		Map<Integer, List<Integer>> regionOrgsMap = Maps.newHashMap();
 		Map<Integer, ActivityRegionalStatDTO> resultMap = Maps.newHashMap();
 
-		for (WfwRegionalArchitectureDTO item : regionalArchitectures) {
+		for (WfwAreaDTO item : regionalArchitectures) {
 			wfwRegionChildrenFidMap.computeIfAbsent(item.getFid(), k -> Lists.newArrayList());
-			for (WfwRegionalArchitectureDTO it: regionalArchitectures) {
+			for (WfwAreaDTO it: regionalArchitectures) {
 				if (it.getPid() != null && Objects.equals(it.getPid(), item.getId())) {
 					wfwRegionChildrenFidMap.get(item.getFid()).add(it.getFid());
 				}
@@ -577,14 +577,14 @@ public class ActivityStatQueryService {
 		String startDate = queryParams.getStartDate();
 		String endDate = queryParams.getEndDate();
 		// 根据fid查询下属所有机构
-		List<WfwRegionalArchitectureDTO> regionalArchitectures = wfwRegionalArchitectureApiService.listByFid(fid);
+		List<WfwAreaDTO> regionalArchitectures = wfwAreaApiService.listByFid(fid);
 		// 若当前机构没有下属机构，则返回空
 		if (regionalArchitectures.size() == 1 && Objects.equals(regionalArchitectures.get(0).getFid(), fid)) {
 			return null;
 		}
 
 		List<OrgDTO> orgList = Lists.newArrayList();
-		for (WfwRegionalArchitectureDTO region : regionalArchitectures) {
+		for (WfwAreaDTO region : regionalArchitectures) {
 			if (!Objects.equals(region.getFid(), fid)) {
 				orgList.add(OrgDTO.builder()
 						.fid(region.getFid())

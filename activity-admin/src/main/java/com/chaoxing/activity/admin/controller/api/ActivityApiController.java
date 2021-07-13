@@ -7,7 +7,7 @@ import com.chaoxing.activity.dto.LoginUserDTO;
 import com.chaoxing.activity.dto.RestRespDTO;
 import com.chaoxing.activity.dto.activity.ActivityCreateParamDTO;
 import com.chaoxing.activity.dto.activity.ActivityUpdateParamDTO;
-import com.chaoxing.activity.dto.manager.WfwRegionalArchitectureDTO;
+import com.chaoxing.activity.dto.manager.WfwAreaDTO;
 import com.chaoxing.activity.dto.manager.mh.MhCloneResultDTO;
 import com.chaoxing.activity.dto.query.ActivityManageQueryDTO;
 import com.chaoxing.activity.dto.manager.sign.create.SignCreateParamDTO;
@@ -57,7 +57,7 @@ public class ActivityApiController {
 	public RestRespDTO create(HttpServletRequest request, String activityJsonStr, String participateScopeJsonStr, String signJsonStr) {
 		LoginUserDTO loginUser = LoginUtils.getLoginUser(request);
 		ActivityCreateParamDTO activityCreateParamDto = JSON.parseObject(activityJsonStr, ActivityCreateParamDTO.class);
-		List<WfwRegionalArchitectureDTO> wfwRegionalArchitectures = JSON.parseArray(participateScopeJsonStr, WfwRegionalArchitectureDTO.class);
+		List<WfwAreaDTO> wfwRegionalArchitectures = JSON.parseArray(participateScopeJsonStr, WfwAreaDTO.class);
 		SignCreateParamDTO signAddEdit = JSON.parseObject(signJsonStr, SignCreateParamDTO.class);
 		Integer activityId = activityHandleService.add(activityCreateParamDto, signAddEdit, wfwRegionalArchitectures, loginUser);
 		return RestRespDTO.success(activityId);
@@ -78,7 +78,7 @@ public class ActivityApiController {
 	public RestRespDTO edit(HttpServletRequest request, String activityJsonStr, String participateScopeJsonStr, String signJsonStr) {
 		LoginUserDTO loginUser = LoginUtils.getLoginUser(request);
 		ActivityUpdateParamDTO activityUpdateParamDto = JSON.parseObject(activityJsonStr, ActivityUpdateParamDTO.class);
-		List<WfwRegionalArchitectureDTO> wfwRegionalArchitectures = JSON.parseArray(participateScopeJsonStr, WfwRegionalArchitectureDTO.class);
+		List<WfwAreaDTO> wfwRegionalArchitectures = JSON.parseArray(participateScopeJsonStr, WfwAreaDTO.class);
 		SignCreateParamDTO signAddEdit = JSON.parseObject(signJsonStr, SignCreateParamDTO.class);
 		activityHandleService.edit(activityUpdateParamDto, signAddEdit, wfwRegionalArchitectures, loginUser);
 		return RestRespDTO.success(activityUpdateParamDto);

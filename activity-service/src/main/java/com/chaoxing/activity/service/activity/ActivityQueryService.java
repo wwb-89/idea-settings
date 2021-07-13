@@ -19,7 +19,7 @@ import com.chaoxing.activity.mapper.*;
 import com.chaoxing.activity.model.*;
 import com.chaoxing.activity.service.activity.classify.ActivityClassifyQueryService;
 import com.chaoxing.activity.service.activity.manager.ActivityManagerQueryService;
-import com.chaoxing.activity.service.manager.WfwRegionalArchitectureApiService;
+import com.chaoxing.activity.service.manager.WfwAreaApiService;
 import com.chaoxing.activity.service.manager.module.SignApiService;
 import com.chaoxing.activity.util.DateUtils;
 import com.chaoxing.activity.util.constant.DateFormatConstant;
@@ -66,7 +66,7 @@ public class ActivityQueryService {
 	private ActivitySignModuleMapper activitySignModuleMapper;
 
 	@Resource
-	private WfwRegionalArchitectureApiService wfwRegionalArchitectureApiService;
+	private WfwAreaApiService wfwAreaApiService;
 	@Resource
 	private SignApiService signApiService;
 	@Resource
@@ -208,16 +208,7 @@ public class ActivityQueryService {
 	 * @return java.util.List<com.chaoxing.activity.dto.activity.ActivityTypeDTO>
 	*/
 	public List<ActivityTypeDTO> listActivityType() {
-		List<ActivityTypeDTO> result = new ArrayList<>();
-		Activity.ActivityTypeEnum[] values = Activity.ActivityTypeEnum.values();
-		for (Activity.ActivityTypeEnum value : values) {
-			ActivityTypeDTO activityType = ActivityTypeDTO.builder()
-					.name(value.getName())
-					.value(value.getValue())
-					.build();
-			result.add(activityType);
-		}
-		return result;
+		return Arrays.stream(Activity.ActivityTypeEnum.values()).map(ActivityTypeDTO::buildFromActivityTypeEnum).collect(Collectors.toList());
 	}
 
 	/**查询管理的活动列表
@@ -230,21 +221,15 @@ public class ActivityQueryService {
 	 * @return com.baomidou.mybatisplus.extension.plugins.pagination.Page<com.chaoxing.activity.model.Activity>
 	*/
 	public Page<Activity> listManaging(Page<Activity> page, ActivityManageQueryDTO activityManageQuery, LoginUserDTO loginUser) {
-		Integer strict = activityManageQuery.getStrict();
-		strict = Optional.ofNullable(strict).orElse(0);
-		if (activityManageQuery.getOrderFieldId() != null) {
-			TableFieldDetail field = tableFieldDetailMapper.selectById(activityManageQuery.getOrderFieldId());
-			if (field != null) {
-				activityManageQuery.setOrderField(field.getCode());
-			}
-		}
+		Integer strict = Optional.ofNullable(activityManageQuery.getStrict()).orElse(0);
+		activityManageQuery.setOrderField(Optional.ofNullable(activityManageQuery.getOrderFieldId()).map(tableFieldDetailMapper::selectById).map(TableFieldDetail::getCode).orElse(""));
 		if (strict.compareTo(1) == 0) {
 			// 严格模式
 			activityManageQuery.setCreateUid(loginUser.getUid());
 			activityManageQuery.setCreateWfwfid(activityManageQuery.getFid());
 			page = activityMapper.pageCreated(page, activityManageQuery);
 		} else {
-			List<Integer> fids = wfwRegionalArchitectureApiService.listSubFid(activityManageQuery.getFid());
+			List<Integer> fids = wfwAreaApiService.listSubFid(activityManageQuery.getFid());
 			activityManageQuery.setFids(fids);
 			page = activityMapper.pageManaging(page, activityManageQuery);
 		}
@@ -257,26 +242,11 @@ public class ActivityQueryService {
 	}
 
 	private void packageSignedUpNum(List<Activity> activities) {
-		if (CollectionUtils.isNotEmpty(activities)) {
-			// 查询报名人数
-			List<Integer> signIds = Lists.newArrayList();
-			for (Activity activity : activities) {
-				Integer signId = activity.getSignId();
-				if (signId != null) {
-					signIds.add(signId);
-				}
-			}
+		List<Integer> signIds = Optional.ofNullable(activities).orElse(Lists.newArrayList()).stream().map(Activity::getSignId).filter(v -> v != null).collect(Collectors.toList());
+		if (CollectionUtils.isNotEmpty(signIds)) {
 			List<SignStatDTO> signStats = signApiService.statSignSignedUpNum(signIds);
 			Map<Integer, Integer> signIdSignedUpNumMap = signStats.stream().collect(Collectors.toMap(SignStatDTO::getId, SignStatDTO::getSignedUpNum, (v1, v2) -> v2));
-			for (Activity activity : activities) {
-				Integer signId = activity.getSignId();
-				Integer signedUpNum = 0;
-				if (signId != null) {
-					signedUpNum = signIdSignedUpNumMap.get(signId);
-				}
-				signedUpNum = Optional.ofNullable(signedUpNum).orElse(0);
-				activity.setSignedUpNum(signedUpNum);
-			}
+			activities.forEach(activity -> activity.setSignedUpNum(Optional.ofNullable(activity.getSignId()).map(signIdSignedUpNumMap::get).orElse(0)));
 		}
 	}
 

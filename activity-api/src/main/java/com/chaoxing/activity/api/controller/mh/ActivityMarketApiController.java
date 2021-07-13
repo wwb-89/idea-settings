@@ -12,7 +12,7 @@ import com.chaoxing.activity.model.ActivityClassify;
 import com.chaoxing.activity.service.activity.ActivityCoverUrlSyncService;
 import com.chaoxing.activity.service.activity.ActivityQueryService;
 import com.chaoxing.activity.service.activity.classify.ActivityClassifyQueryService;
-import com.chaoxing.activity.service.manager.WfwRegionalArchitectureApiService;
+import com.chaoxing.activity.service.manager.WfwAreaApiService;
 import com.chaoxing.activity.util.constant.DateTimeFormatterConstant;
 import com.chaoxing.activity.util.exception.BusinessException;
 import com.google.common.collect.Lists;
@@ -43,7 +43,7 @@ public class ActivityMarketApiController {
 	@Resource
 	private ActivityClassifyQueryService activityClassifyQueryService;
 	@Resource
-	private WfwRegionalArchitectureApiService wfwRegionalArchitectureApiService;
+	private WfwAreaApiService wfwAreaApiService;
 	@Resource
 	private ActivityCoverUrlSyncService activityCoverUrlSyncService;
 
@@ -85,7 +85,7 @@ public class ActivityMarketApiController {
 				.statusList(statusList)
 				.activityClassifyId(activityClassifyId)
 				.build();
-		List<Integer> fids = wfwRegionalArchitectureApiService.listSubFid(wfwfid);
+		List<Integer> fids = wfwAreaApiService.listSubFid(wfwfid);
 		activityQuery.setFids(fids);
 		Page<Activity> page = new Page(pageNum, pageSize);
 		page = activityQueryService.listParticipate(page, activityQuery);
@@ -174,7 +174,7 @@ public class ActivityMarketApiController {
 				.topFid(wfwfid)
 				.activityClassifyId(activityClassifyId)
 				.build();
-		List<Integer> fids = wfwRegionalArchitectureApiService.listSubFid(wfwfid);
+		List<Integer> fids = wfwAreaApiService.listSubFid(wfwfid);
 		activityQuery.setFids(fids);
 		Page<Activity> page = new Page(pageNum, pageSize);
 		page = activityQueryService.listParticipate(page, activityQuery);

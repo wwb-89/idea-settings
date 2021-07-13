@@ -1,6 +1,6 @@
 package com.chaoxing.activity;
 
-import com.chaoxing.activity.service.manager.WfwRegionalArchitectureApiService;
+import com.chaoxing.activity.service.manager.WfwAreaApiService;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 
@@ -16,15 +16,15 @@ import java.util.List;
  * @date 2021-06-30 17:55:21
  */
 @SpringBootTest
-public class WfwRegionalArchitectureApiServiceTests {
+public class WfwAreaApiServiceTests {
 
     @Resource
-    private WfwRegionalArchitectureApiService wfwRegionalArchitectureApiService;
+    private WfwAreaApiService wfwAreaApiService;
 
     @Test
     public void listCodeByFid() {
         Integer fid = 2885;
-        List<String> codes = wfwRegionalArchitectureApiService.listCodeByFid(fid);
+        List<String> codes = wfwAreaApiService.listCodeByFid(fid);
         System.out.println(codes);
     }
 

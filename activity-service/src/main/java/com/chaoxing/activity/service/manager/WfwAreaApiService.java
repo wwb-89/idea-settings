@@ -2,7 +2,7 @@ package com.chaoxing.activity.service.manager;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
-import com.chaoxing.activity.dto.manager.WfwRegionalArchitectureDTO;
+import com.chaoxing.activity.dto.manager.WfwAreaDTO;
 import com.chaoxing.activity.util.exception.BusinessException;
 import com.google.common.collect.Lists;
 import lombok.extern.slf4j.Slf4j;
@@ -17,7 +17,7 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-/**微服务组织架构服务
+/**微服务区域服务
  * @author wwb
  * @version ver 1.0
  * @className WfwRegionalArchitectureApiService
@@ -27,12 +27,12 @@ import java.util.stream.Collectors;
  */
 @Slf4j
 @Service
-public class WfwRegionalArchitectureApiService {
+public class WfwAreaApiService {
 
 	/** 根据fid获取架构的code */
-	private static final String GET_REGIONAL_ARCHITECTURE_BY_FID_URL = "http://guanli.chaoxing.com/siteInter/siteHierarchy?fid=%s";
+	private static final String GET_AREA_BY_FID_URL = "http://guanli.chaoxing.com/siteInter/siteHierarchy?fid=%s";
 	/** 根据code获取架构 */
-	private static final String GET_REGIONAL_ARCHITECTURE_BY_CODE_URL = "http://guanli.chaoxing.com/siteInter/siteHierarchy?code=%s&pageSize=%s";
+	private static final String GET_AREA_BY_CODE_URL = "http://guanli.chaoxing.com/siteInter/siteHierarchy?code=%s&pageSize=%s";
 
 	@Resource
 	private RestTemplate restTemplate;
@@ -47,8 +47,8 @@ public class WfwRegionalArchitectureApiService {
 	 * @param fid
 	 * @return java.util.List<com.chaoxing.activity.common.manager.dto.RegionalArchitectureDTO>
 	 */
-	public List<WfwRegionalArchitectureDTO> listByFid(Integer fid) {
-		List<WfwRegionalArchitectureDTO> result;
+	public List<WfwAreaDTO> listByFid(Integer fid) {
+		List<WfwAreaDTO> result;
 		List<String> codes = listCodeByFid(fid);
 		if (CollectionUtils.isEmpty(codes)) {
 			result = Lists.newArrayList();
@@ -70,11 +70,11 @@ public class WfwRegionalArchitectureApiService {
 	* @param fid
 	* @return java.util.List<com.chaoxing.activity.dto.manager.WfwRegionalArchitectureDTO>
 	*/
-	public List<WfwRegionalArchitectureDTO> listWfwRegionalTreesByFid(Integer fid) {
-		List<WfwRegionalArchitectureDTO> wfwRegionalArchitectures = listByFid(fid);
-		List<WfwRegionalArchitectureDTO> trees = buildTree(fid, wfwRegionalArchitectures);
+	public List<WfwAreaDTO> listWfwAreaTreesByFid(Integer fid) {
+		List<WfwAreaDTO> wfwRegionalArchitectures = listByFid(fid);
+		List<WfwAreaDTO> trees = buildTree(fid, wfwRegionalArchitectures);
 
-		for (WfwRegionalArchitectureDTO item : wfwRegionalArchitectures) {
+		for (WfwAreaDTO item : wfwRegionalArchitectures) {
 			Boolean existChild = Optional.ofNullable(item.getExistChild()).orElse(Boolean.FALSE);
 			// 有父节点，且有子节点，那么当前节点一定为区域节点，其父节点存在区域
 			if (item.getPid() != null && existChild) {
@@ -92,8 +92,8 @@ public class WfwRegionalArchitectureApiService {
 	* @param trees
 	* @return void
 	*/
-	private void handleExistAreaNode(Integer pid, List<WfwRegionalArchitectureDTO> trees) {
-		for (WfwRegionalArchitectureDTO item : trees) {
+	private void handleExistAreaNode(Integer pid, List<WfwAreaDTO> trees) {
+		for (WfwAreaDTO item : trees) {
 			if (Objects.equals(pid, item.getId())) {
 				item.setExistArea(Boolean.TRUE);
 				return;
@@ -105,9 +105,9 @@ public class WfwRegionalArchitectureApiService {
 
 	}
 
-	private List<WfwRegionalArchitectureDTO> buildTree(Integer fid, List<WfwRegionalArchitectureDTO> regionalArchitectureList) {
-		List<WfwRegionalArchitectureDTO> trees = new ArrayList<>();
-		for (WfwRegionalArchitectureDTO treeNode : regionalArchitectureList) {
+	private List<WfwAreaDTO> buildTree(Integer fid, List<WfwAreaDTO> regionalArchitectureList) {
+		List<WfwAreaDTO> trees = new ArrayList<>();
+		for (WfwAreaDTO treeNode : regionalArchitectureList) {
 			// 将当前fid的机构节点父级设为0(无父级)，以便于构造树
 			if (Objects.equals(fid, treeNode.getFid())) {
 				treeNode.setPid(0);
@@ -115,7 +115,7 @@ public class WfwRegionalArchitectureApiService {
 			if (Objects.equals(treeNode.getPid(), 0)) {
 				trees.add(treeNode);
 			}
-			for (WfwRegionalArchitectureDTO it : regionalArchitectureList) {
+			for (WfwAreaDTO it : regionalArchitectureList) {
 				if (it.getPid() != null && !Objects.equals(it.getPid(), 0) && Objects.equals(it.getPid(), treeNode.getId())) {
 					if (treeNode.getChildren() == null) {
 						treeNode.setChildren(new ArrayList<>());
@@ -134,9 +134,9 @@ public class WfwRegionalArchitectureApiService {
 	 * @param fid
 	 * @return com.chaoxing.activity.dto.manager.WfwRegionalArchitectureDTO
 	*/
-	public WfwRegionalArchitectureDTO buildWfwRegionalArchitecture(Integer fid) {
+	public WfwAreaDTO buildWfwRegionalArchitecture(Integer fid) {
 		String orgName = passportApiService.getOrgName(fid);
-		return WfwRegionalArchitectureDTO.builder()
+		return WfwAreaDTO.builder()
 				.id(0)
 				.name(orgName)
 				.pid(0)
@@ -156,9 +156,9 @@ public class WfwRegionalArchitectureApiService {
 	 * @param code
 	 * @return java.util.List<com.chaoxing.activity.dto.manager.WfwRegionalArchitectureDTO>
 	*/
-	public List<WfwRegionalArchitectureDTO> listByCode(String code) {
-		List<WfwRegionalArchitectureDTO> regionalArchitectures = Lists.newArrayList();
-		String url = String.format(GET_REGIONAL_ARCHITECTURE_BY_CODE_URL, code, Integer.MAX_VALUE);
+	public List<WfwAreaDTO> listByCode(String code) {
+		List<WfwAreaDTO> regionalArchitectures = Lists.newArrayList();
+		String url = String.format(GET_AREA_BY_CODE_URL, code, Integer.MAX_VALUE);
 		String result = restTemplate.getForObject(url, String.class);
 		JSONObject jsonObject = JSON.parseObject(result);
 		Boolean status = jsonObject.getBooleanValue("status");
@@ -168,7 +168,7 @@ public class WfwRegionalArchitectureApiService {
 			throw new BusinessException("未查询到层级架构");
 		}
 		String jsonlistStr = jsonObject.getString("list");
-		List<WfwRegionalArchitectureDTO> items = JSON.parseArray(jsonlistStr, WfwRegionalArchitectureDTO.class);
+		List<WfwAreaDTO> items = JSON.parseArray(jsonlistStr, WfwAreaDTO.class);
 		if (CollectionUtils.isNotEmpty(items)) {
 			regionalArchitectures.addAll(items);
 		}
@@ -184,7 +184,7 @@ public class WfwRegionalArchitectureApiService {
 	 */
 	public List<String> listCodeByFid(Integer fid) {
 		List<String> codes = Lists.newArrayList();
-		String url = String.format(GET_REGIONAL_ARCHITECTURE_BY_FID_URL, fid);
+		String url = String.format(GET_AREA_BY_FID_URL, fid);
 		String result = restTemplate.getForObject(url, String.class);
 		JSONObject jsonObject = JSON.parseObject(result);
 		boolean status = jsonObject.getBooleanValue("status");
@@ -193,9 +193,9 @@ public class WfwRegionalArchitectureApiService {
 			throw new BusinessException("未查询到层级架构");
 		}
 		String jsonlistStr = jsonObject.getString("list");
-		List<WfwRegionalArchitectureDTO> regionalArchitectures = JSON.parseArray(jsonlistStr, WfwRegionalArchitectureDTO.class);
+		List<WfwAreaDTO> regionalArchitectures = JSON.parseArray(jsonlistStr, WfwAreaDTO.class);
 		if (CollectionUtils.isNotEmpty(regionalArchitectures)) {
-			for (WfwRegionalArchitectureDTO regionalArchitecture : regionalArchitectures) {
+			for (WfwAreaDTO regionalArchitecture : regionalArchitectures) {
 				String code = regionalArchitecture.getCode();
 				if (!codes.contains(code)) {
 					codes.add(code);
@@ -214,9 +214,9 @@ public class WfwRegionalArchitectureApiService {
 	*/
 	public List<Integer> listSubFid(Integer fid) {
 		List<Integer> fids = Lists.newArrayList();
-		List<WfwRegionalArchitectureDTO> wfwRegionalArchitectures = listByFid(fid);
+		List<WfwAreaDTO> wfwRegionalArchitectures = listByFid(fid);
 		if (CollectionUtils.isNotEmpty(wfwRegionalArchitectures)) {
-			List<Integer> subFids = wfwRegionalArchitectures.stream().map(WfwRegionalArchitectureDTO::getFid).collect(Collectors.toList());
+			List<Integer> subFids = wfwRegionalArchitectures.stream().map(WfwAreaDTO::getFid).collect(Collectors.toList());
 			fids.addAll(subFids);
 		} else {
 			fids.add(fid);
