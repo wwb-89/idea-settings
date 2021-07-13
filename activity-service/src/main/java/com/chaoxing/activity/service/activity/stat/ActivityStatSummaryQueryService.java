@@ -3,7 +3,7 @@ package com.chaoxing.activity.service.activity.stat;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.chaoxing.activity.dto.export.ExportDataDTO;
 import com.chaoxing.activity.dto.query.admin.ActivityStatSummaryQueryDTO;
-import com.chaoxing.activity.dto.sign.SignParticipateScopeDTO;
+import com.chaoxing.activity.dto.manager.sign.SignParticipateScopeDTO;
 import com.chaoxing.activity.dto.stat.ActivityStatSummaryDTO;
 import com.chaoxing.activity.mapper.ActivityClassifyMapper;
 import com.chaoxing.activity.mapper.ActivityStatSummaryMapper;

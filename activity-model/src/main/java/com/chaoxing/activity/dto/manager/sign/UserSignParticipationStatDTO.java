@@ -1,5 +1,6 @@
 package com.chaoxing.activity.dto.manager.sign;
 
+import com.chaoxing.activity.dto.manager.sign.create.SignUpCreateParamDTO;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -26,7 +27,7 @@ public class UserSignParticipationStatDTO {
 	/** 报名id列表 */
 	private List<Integer> signUpIds;
 	/** 报名列表 */
-	private List<SignUp> signUps;
+	private List<SignUpCreateParamDTO> signUps;
 	/** 报名未开始 */
 	private Boolean signUpNotStart;
 	/** 报名已结束 */

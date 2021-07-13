@@ -3,7 +3,7 @@ package com.chaoxing.activity.admin.controller.pc;
 import com.chaoxing.activity.admin.util.LoginUtils;
 import com.chaoxing.activity.dto.LoginUserDTO;
 import com.chaoxing.activity.dto.OrgFormConfigDTO;
-import com.chaoxing.activity.dto.sign.SignUpScopeTypeDTO;
+import com.chaoxing.activity.dto.manager.sign.SignUpScopeTypeDTO;
 import com.chaoxing.activity.service.manager.PassportApiService;
 import com.chaoxing.activity.service.org.OrgFormConfigService;
 import com.chaoxing.activity.util.annotation.LoginRequired;

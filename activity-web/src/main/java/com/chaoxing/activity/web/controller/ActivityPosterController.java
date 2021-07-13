@@ -1,9 +1,8 @@
 package com.chaoxing.activity.web.controller;
 
-import com.chaoxing.activity.dto.manager.sign.SignUp;
+import com.chaoxing.activity.dto.manager.sign.create.SignUpCreateParamDTO;
 import com.chaoxing.activity.model.Activity;
 import com.chaoxing.activity.service.activity.ActivityQueryService;
-import com.chaoxing.activity.service.manager.module.SignApiService;
 import com.chaoxing.activity.util.UserAgentUtils;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -27,13 +26,11 @@ public class ActivityPosterController {
 
     @Resource
     private ActivityQueryService activityQueryService;
-    @Resource
-    private SignApiService signApiService;
 
     @GetMapping("")
     public String index(HttpServletRequest request, Model model, @PathVariable Integer activityId) {
         Activity activity = activityQueryService.getById(activityId);
-        SignUp  signUp = activityQueryService.getActivitySignUp(activity.getSignId());
+        SignUpCreateParamDTO signUp = activityQueryService.getActivitySignUp(activity.getSignId());
         model.addAttribute("activity", activity);
         model.addAttribute("signUp", signUp);
 

@@ -5,7 +5,7 @@ import com.chaoxing.activity.dto.LoginUserDTO;
 import com.chaoxing.activity.dto.activity.ActivityTypeDTO;
 import com.chaoxing.activity.dto.manager.ActivityCreatePermissionDTO;
 import com.chaoxing.activity.dto.manager.WfwRegionalArchitectureDTO;
-import com.chaoxing.activity.dto.module.SignAddEditDTO;
+import com.chaoxing.activity.dto.manager.sign.create.SignCreateParamDTO;
 import com.chaoxing.activity.model.*;
 import com.chaoxing.activity.service.GroupService;
 import com.chaoxing.activity.service.WebTemplateService;
@@ -13,8 +13,8 @@ import com.chaoxing.activity.service.activity.ActivityQueryService;
 import com.chaoxing.activity.service.activity.classify.ActivityClassifyHandleService;
 import com.chaoxing.activity.service.activity.manager.ActivityCreatePermissionService;
 import com.chaoxing.activity.service.manager.WfwRegionalArchitectureApiService;
-import com.chaoxing.activity.service.tablefield.TableFieldQueryService;
 import com.chaoxing.activity.service.org.OrgService;
+import com.chaoxing.activity.service.tablefield.TableFieldQueryService;
 import com.chaoxing.activity.util.constant.CommonConstant;
 import com.google.common.collect.Lists;
 import org.apache.commons.collections4.CollectionUtils;
@@ -173,7 +173,7 @@ public class ActivityManageController {
 		model.addAttribute("existNoLimitPermission", activityCreatePermission.getExistNoLimitPermission());
 		model.addAttribute("groupType", activityCreatePermission.getGroupType());
 		// 报名签到
-		model.addAttribute("sign", SignAddEditDTO.builder().build());
+		model.addAttribute("sign", SignCreateParamDTO.builder().build());
 		// 模板列表
 		List<WebTemplate> webTemplates = webTemplateService.listAvailable(loginUser.getFid(), flag);
 		model.addAttribute("webTemplates", webTemplates);

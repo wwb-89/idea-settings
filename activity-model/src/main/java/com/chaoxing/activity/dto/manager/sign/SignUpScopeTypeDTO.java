@@ -1,4 +1,4 @@
-package com.chaoxing.activity.dto.sign;
+package com.chaoxing.activity.dto.manager.sign;
 
 import com.chaoxing.activity.model.OrgConfig;
 import com.google.common.collect.Lists;

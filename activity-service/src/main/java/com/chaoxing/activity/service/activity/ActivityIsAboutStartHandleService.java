@@ -1,8 +1,8 @@
 package com.chaoxing.activity.service.activity;
 
 import com.chaoxing.activity.dto.manager.NoticeDTO;
-import com.chaoxing.activity.dto.manager.sign.SignUp;
-import com.chaoxing.activity.dto.module.SignAddEditDTO;
+import com.chaoxing.activity.dto.manager.sign.create.SignCreateParamDTO;
+import com.chaoxing.activity.dto.manager.sign.create.SignUpCreateParamDTO;
 import com.chaoxing.activity.model.Activity;
 import com.chaoxing.activity.service.activity.collection.ActivityCollectionQueryService;
 import com.chaoxing.activity.service.manager.XxtNoticeApiService;
@@ -152,13 +152,13 @@ public class ActivityIsAboutStartHandleService {
 		String name = activity.getName();
 		String previewUrl = activity.getPreviewUrl();
 		Integer signId = activity.getSignId();
-		List<SignUp> signUps = null;
+		List<SignUpCreateParamDTO> signUps = null;
 		if (signId != null) {
-			SignAddEditDTO signAddEditDTO = signApiService.getById(signId);
-			signUps = signAddEditDTO.getSignUps();
+			SignCreateParamDTO signCreateParam = signApiService.getById(signId);
+			signUps = signCreateParam.getSignUps();
 		}
 		String title = generateCollectedNoticeTitle(activity);
-		for (SignUp signUp : signUps) {
+		for (SignUpCreateParamDTO signUp : signUps) {
 			String content = generateCollectedNoticeContent(activity, signUp);
 			for (Integer collectedUid : uids) {
 				noticeApiService.sendNotice(title, content, NoticeDTO.generateAttachment(name, previewUrl), CommonConstant.NOTICE_SEND_UID, new ArrayList(){{add(collectedUid);}});
@@ -197,11 +197,11 @@ public class ActivityIsAboutStartHandleService {
 		return "您收藏的" + activity.getName() + "即将开始！";
 	}
 
-	private String generateCollectedNoticeContent(Activity activity, SignUp signUp) {
+	private String generateCollectedNoticeContent(Activity activity, SignUpCreateParamDTO signUp) {
 		String content = "活动名称：" + activity.getName() + "\n" +
 				"活动时间：" + activity.getStartTime().format(ACTIVITY_TIME_FORMATTER) + "- " + activity.getEndTime().format(ACTIVITY_TIME_FORMATTER) + "\n";
 		if (signUp != null) {
-			content += "报名时间：" + signUp.getStartTime().format(SIGN_UP_TIME_FORMATTER) + "- " + signUp.getEndTime().format(SIGN_UP_TIME_FORMATTER) + "\n";
+			content += "报名时间：" + DateUtils.timestamp2Date(signUp.getStartTime()).format(SIGN_UP_TIME_FORMATTER) + "- " + DateUtils.timestamp2Date(signUp.getEndTime()).format(SIGN_UP_TIME_FORMATTER) + "\n";
 		}
 		return content;
 	}

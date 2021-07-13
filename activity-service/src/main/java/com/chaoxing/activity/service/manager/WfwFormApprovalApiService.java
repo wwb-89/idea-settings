@@ -8,9 +8,9 @@ import com.chaoxing.activity.dto.LoginUserDTO;
 import com.chaoxing.activity.dto.TimeScopeDTO;
 import com.chaoxing.activity.dto.manager.WfwRegionalArchitectureDTO;
 import com.chaoxing.activity.dto.manager.wfwform.WfwFormDTO;
-import com.chaoxing.activity.dto.manager.sign.SignIn;
-import com.chaoxing.activity.dto.manager.sign.SignUp;
-import com.chaoxing.activity.dto.module.SignAddEditDTO;
+import com.chaoxing.activity.dto.manager.sign.create.SignCreateParamDTO;
+import com.chaoxing.activity.dto.manager.sign.create.SignInCreateParamDTO;
+import com.chaoxing.activity.dto.manager.sign.create.SignUpCreateParamDTO;
 import com.chaoxing.activity.model.Activity;
 import com.chaoxing.activity.model.ActivityClassify;
 import com.chaoxing.activity.model.WebTemplate;
@@ -20,6 +20,7 @@ import com.chaoxing.activity.service.activity.ActivityQueryService;
 import com.chaoxing.activity.service.activity.classify.ActivityClassifyHandleService;
 import com.chaoxing.activity.service.manager.module.SignApiService;
 import com.chaoxing.activity.service.util.FormUtils;
+import com.chaoxing.activity.util.DateUtils;
 import com.chaoxing.activity.util.constant.CommonConstant;
 import com.chaoxing.activity.util.exception.BusinessException;
 import com.google.common.collect.Lists;
@@ -95,10 +96,9 @@ public class WfwFormApprovalApiService {
         treeMap.put("formUserIds", formUserId);
         treeMap.put("datetime", dateStr);
         treeMap.put("sign", SIGN);
-        String enc = calGetFormDataEnc(treeMap);
+        treeMap.put("enc", getEnc(treeMap));
         MultiValueMap<String, Object> params = new LinkedMultiValueMap<>();
         params.setAll(treeMap);
-        params.add("enc", enc);
         String result = restTemplate.postForObject(GET_FORM_DATA_URL, params, String.class);
         JSONObject jsonObject = JSON.parseObject(result);
         Boolean success = jsonObject.getBoolean("success");
@@ -114,7 +114,7 @@ public class WfwFormApprovalApiService {
         }
     }
 
-    private String calGetFormDataEnc(TreeMap<String, Object> params) {
+    private String getEnc(TreeMap<String, Object> params) {
         StringBuilder endBuilder = new StringBuilder();
         for (Map.Entry<String, Object> entry : params.entrySet()) {
             endBuilder.append("[");
@@ -139,10 +139,9 @@ public class WfwFormApprovalApiService {
         treeMap.put("datetime", dateStr);
         treeMap.put("pageSize", 100);
         treeMap.put("sign", SIGN);
-        String enc = calListFormDataEnc(treeMap);
+        treeMap.put("enc", getEnc(treeMap));
         MultiValueMap<String, Object> params = new LinkedMultiValueMap<>();
         params.setAll(treeMap);
-        params.add("enc", enc);
         String result = restTemplate.postForObject(LIST_FORM_DATA_URL, params, String.class);
         JSONObject jsonObject = JSON.parseObject(result);
         Boolean success = jsonObject.getBoolean("success");
@@ -156,21 +155,6 @@ public class WfwFormApprovalApiService {
             log.error("获取机构:{}的表单:{}数据error:{}, url:{}, prams:{}", fid, formId, errorMessage, GET_FORM_DATA_URL, JSON.toJSONString(params));
             throw new BusinessException(errorMessage);
         }
-    }
-
-    private String calListFormDataEnc(TreeMap<String, Object> params) {
-        StringBuilder endBuilder = new StringBuilder();
-        for (Map.Entry<String, Object> entry : params.entrySet()) {
-            endBuilder.append("[");
-            endBuilder.append(entry.getKey());
-            endBuilder.append("=");
-            endBuilder.append(entry.getValue());
-            endBuilder.append("]");
-        }
-        endBuilder.append("[");
-        endBuilder.append(KEY);
-        endBuilder.append("]");
-        return DigestUtils.md5Hex(endBuilder.toString());
     }
 
     /**创建活动
@@ -197,7 +181,7 @@ public class WfwFormApprovalApiService {
             return;
         }
         // 根据表单数据创建报名签到
-        SignAddEditDTO signAddEditDTO = buildSignFromActivityApproval(formData, activity.getCreateUid());
+        SignCreateParamDTO signCreateParam = buildSignFromActivityApproval(formData, activity.getCreateUid());
         // 设置活动标识
         Activity.ActivityFlagEnum activityFlag = Activity.ActivityFlagEnum.fromValue(flag);
         if (activityFlag == null) {
@@ -212,7 +196,7 @@ public class WfwFormApprovalApiService {
         }
         WfwRegionalArchitectureDTO wfwRegionalArchitecture = wfwRegionalArchitectureApiService.buildWfwRegionalArchitecture(fid);
         LoginUserDTO loginUser = LoginUserDTO.buildDefault(activity.getCreateUid(), activity.getCreateUserName(), activity.getCreateFid(), activity.getCreateOrgName());
-        activityHandleService.add(activity, signAddEditDTO, Lists.newArrayList(wfwRegionalArchitecture), loginUser);
+        activityHandleService.add(activity, signCreateParam, Lists.newArrayList(wfwRegionalArchitecture), loginUser);
         // 门户克隆模版
         activityHandleService.bindWebTemplate(activity.getId(), webTemplate.getId(), loginUser);
         // 发布
@@ -324,21 +308,21 @@ public class WfwFormApprovalApiService {
      * @Date 2021-06-11 17:49:43
      * @param formData
      * @param uid
-     * @return com.chaoxing.activity.dto.module.SignAddEditDTO
+     * @return com.chaoxing.activity.dto.sign.create.SignCreateParamDTO
     */
-    private SignAddEditDTO buildSignFromActivityApproval(WfwFormDTO formData, Integer uid) {
-        SignAddEditDTO signAddEdit = SignAddEditDTO.buildDefault();
+    private SignCreateParamDTO buildSignFromActivityApproval(WfwFormDTO formData, Integer uid) {
+        SignCreateParamDTO signCreateParam = SignCreateParamDTO.buildDefault();
         // 报名
-        List<SignUp> signUps = signAddEdit.getSignUps();
-        SignUp signUp = signUps.get(0);
+        List<SignUpCreateParamDTO> signUps = signCreateParam.getSignUps();
+        SignUpCreateParamDTO signUp = signUps.get(0);
         String isOpenSignUp = FormUtils.getValue(formData, "is_open_sign_up");
         if (Objects.equals(YES, isOpenSignUp)) {
             signUp.setDeleted(false);
             String signUpOpenAudit = FormUtils.getValue(formData, "sign_up_open_audit");
             signUp.setOpenAudit(Objects.equals(YES, signUpOpenAudit));
             TimeScopeDTO signUpTimeScope = FormUtils.getTimeScope(formData, "sign_up_time");
-            signUp.setStartTime(signUpTimeScope.getStartTime());
-            signUp.setEndTime(signUpTimeScope.getEndTime());
+            signUp.setStartTime(DateUtils.date2Timestamp(signUpTimeScope.getStartTime()));
+            signUp.setEndTime(DateUtils.date2Timestamp(signUpTimeScope.getEndTime()));
             String signUpEndAllowCancel = FormUtils.getValue(formData, "sign_up_end_allow_cancel");
             signUp.setEndAllowCancel(Objects.equals(YES, signUpEndAllowCancel));
             String signUpPublicList = FormUtils.getValue(formData, "sign_up_public_list");
@@ -361,22 +345,22 @@ public class WfwFormApprovalApiService {
             signUp.setDeleted(true);
         }
 
-        List<SignIn> signIns = signAddEdit.getSignIns();
+        List<SignInCreateParamDTO> signIns = signCreateParam.getSignIns();
         // 签到
-        SignIn signIn = signIns.get(0);
+        SignInCreateParamDTO signIn = signIns.get(0);
         String isOpenSignIn = FormUtils.getValue(formData, "is_open_sign_in");
         if (Objects.equals(YES, isOpenSignIn)) {
             signIn.setDeleted(false);
             String signInPublicList = FormUtils.getValue(formData, "sign_in_public_list");
             signIn.setPublicList(Objects.equals(YES, signInPublicList));
             TimeScopeDTO signInTimeScope = FormUtils.getTimeScope(formData, "sign_in_time");
-            signIn.setStartTime(signInTimeScope.getStartTime());
-            signIn.setEndTime(signInTimeScope.getEndTime());
+            signIn.setStartTime(DateUtils.date2Timestamp(signInTimeScope.getStartTime()));
+            signIn.setEndTime(DateUtils.date2Timestamp(signInTimeScope.getEndTime()));
             String signInWay = FormUtils.getValue(formData, "sign_in_way");
-            SignIn.Way way = SignIn.Way.fromName(signInWay);
+            SignInCreateParamDTO.Way way = SignInCreateParamDTO.Way.fromName(signInWay);
             if (way != null) {
                 signIn.setWay(way.getValue());
-                if (Objects.equals(SignIn.Way.POSITION, way)) {
+                if (Objects.equals(SignInCreateParamDTO.Way.POSITION, way)) {
                     AddressDTO signInAddress = FormUtils.getAddress(formData, "sign_in_address");
                     if (signInAddress != null) {
                         signIn.setAddress(signInAddress.getAddress());
@@ -385,32 +369,32 @@ public class WfwFormApprovalApiService {
                     }
                 }
             } else {
-                signIn.setWay(SignIn.Way.QR_CODE.getValue());
-                SignIn.ScanCodeWay scanCodeWay = SignIn.ScanCodeWay.fromName(signInWay);
+                signIn.setWay(SignInCreateParamDTO.Way.QR_CODE.getValue());
+                SignInCreateParamDTO.ScanCodeWay scanCodeWay = SignInCreateParamDTO.ScanCodeWay.fromName(signInWay);
                 if (scanCodeWay != null) {
                     signIn.setScanCodeWay(scanCodeWay.getValue());
                 } else {
-                    signIn.setScanCodeWay(SignIn.ScanCodeWay.PARTICIPATOR.getValue());
+                    signIn.setScanCodeWay(SignInCreateParamDTO.ScanCodeWay.PARTICIPATOR.getValue());
                 }
             }
         } else {
             signIn.setDeleted(true);
         }
         // 签退
-        SignIn signOut = signIns.get(1);
+        SignInCreateParamDTO signOut = signIns.get(1);
         String isOpenSignOut = FormUtils.getValue(formData, "is_open_sign_out");
         if (Objects.equals(YES, isOpenSignOut)) {
             signOut.setDeleted(false);
             String signOutPublicList = FormUtils.getValue(formData, "sign_out_public_list");
             signOut.setPublicList(Objects.equals(YES, signOutPublicList));
             TimeScopeDTO signOutTimeScope = FormUtils.getTimeScope(formData, "sign_out_time");
-            signOut.setStartTime(signOutTimeScope.getStartTime());
-            signOut.setEndTime(signOutTimeScope.getEndTime());
+            signOut.setStartTime(DateUtils.date2Timestamp(signOutTimeScope.getStartTime()));
+            signOut.setEndTime(DateUtils.date2Timestamp(signOutTimeScope.getEndTime()));
             String signOutWay = FormUtils.getValue(formData, "sign_out_way");
-            SignIn.Way way = SignIn.Way.fromName(signOutWay);
+            SignInCreateParamDTO.Way way = SignInCreateParamDTO.Way.fromName(signOutWay);
             if (way != null) {
                 signOut.setWay(way.getValue());
-                if (Objects.equals(SignIn.Way.POSITION, way)) {
+                if (Objects.equals(SignInCreateParamDTO.Way.POSITION, way)) {
                     AddressDTO signOutAddress = FormUtils.getAddress(formData, "sign_out_address");
                     if (signOutAddress != null) {
                         signOut.setAddress(signOutAddress.getAddress());
@@ -419,18 +403,18 @@ public class WfwFormApprovalApiService {
                     }
                 }
             } else {
-                signOut.setWay(SignIn.Way.QR_CODE.getValue());
-                SignIn.ScanCodeWay scanCodeWay = SignIn.ScanCodeWay.fromName(signOutWay);
+                signOut.setWay(SignInCreateParamDTO.Way.QR_CODE.getValue());
+                SignInCreateParamDTO.ScanCodeWay scanCodeWay = SignInCreateParamDTO.ScanCodeWay.fromName(signOutWay);
                 if (scanCodeWay != null) {
                     signOut.setScanCodeWay(scanCodeWay.getValue());
                 } else {
-                    signOut.setScanCodeWay(SignIn.ScanCodeWay.PARTICIPATOR.getValue());
+                    signOut.setScanCodeWay(SignInCreateParamDTO.ScanCodeWay.PARTICIPATOR.getValue());
                 }
             }
         } else {
             signOut.setDeleted(true);
         }
-        return signAddEdit;
+        return signCreateParam;
     }
 
 }

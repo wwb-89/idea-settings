@@ -4,8 +4,8 @@ import com.chaoxing.activity.admin.util.LoginUtils;
 import com.chaoxing.activity.dto.LoginUserDTO;
 import com.chaoxing.activity.dto.manager.ActivityCreatePermissionDTO;
 import com.chaoxing.activity.dto.manager.WfwRegionalArchitectureDTO;
-import com.chaoxing.activity.dto.module.SignAddEditDTO;
-import com.chaoxing.activity.dto.sign.SignActivityManageIndexDTO;
+import com.chaoxing.activity.dto.manager.sign.SignActivityManageIndexDTO;
+import com.chaoxing.activity.dto.manager.sign.create.SignCreateParamDTO;
 import com.chaoxing.activity.model.Activity;
 import com.chaoxing.activity.model.ActivityFlagSignModule;
 import com.chaoxing.activity.model.ActivitySignModule;
@@ -111,7 +111,7 @@ public class ActivityManageController {
 		model.addAttribute("groupType", activityCreatePermission.getGroupType());
 		// 报名签到
 		Integer signId = activity.getSignId();
-		SignAddEditDTO sign = SignAddEditDTO.builder().build();
+		SignCreateParamDTO sign = SignCreateParamDTO.builder().build();
 		if (signId != null) {
 			sign = signApiService.getById(signId);
 		}

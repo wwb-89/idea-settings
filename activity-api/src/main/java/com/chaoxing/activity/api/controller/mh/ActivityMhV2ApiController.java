@@ -3,10 +3,10 @@ package com.chaoxing.activity.api.controller.mh;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.chaoxing.activity.dto.RestRespDTO;
-import com.chaoxing.activity.dto.manager.sign.SignStatDTO;
-import com.chaoxing.activity.dto.manager.sign.SignUp;
-import com.chaoxing.activity.dto.manager.sign.UserSignParticipationStatDTO;
 import com.chaoxing.activity.dto.manager.mh.MhGeneralAppResultDataDTO;
+import com.chaoxing.activity.dto.manager.sign.SignStatDTO;
+import com.chaoxing.activity.dto.manager.sign.UserSignParticipationStatDTO;
+import com.chaoxing.activity.dto.manager.sign.create.SignUpCreateParamDTO;
 import com.chaoxing.activity.model.Activity;
 import com.chaoxing.activity.service.activity.ActivityQueryService;
 import com.chaoxing.activity.service.activity.ActivityValidationService;
@@ -178,11 +178,11 @@ public class ActivityMhV2ApiController {
 			// 如果开启了学生报名则需要报名（报名任意一个报名）才能看见"进入会场"
 			if (activityFlagValidateService.isDualSelect(activity)) {
 				// 双选会
-				List<SignUp> signUps = userSignParticipationStat.getSignUps();
+				List<SignUpCreateParamDTO> signUps = userSignParticipationStat.getSignUps();
 				boolean openedStudengSignUp = false;
 				if (CollectionUtils.isNotEmpty(signUps)) {
-					for (SignUp signUp : signUps) {
-						if (!Objects.equals(SignUp.CustomSignUpTypeEnum.DUAL_SELECT_COMPANY.getValue(), signUp.getCustomSignUpType())) {
+					for (SignUpCreateParamDTO signUp : signUps) {
+						if (!Objects.equals(SignUpCreateParamDTO.CustomSignUpTypeEnum.DUAL_SELECT_COMPANY.getValue(), signUp.getCustomSignUpType())) {
 							openedStudengSignUp = true;
 							break;
 						}
@@ -223,9 +223,9 @@ public class ActivityMhV2ApiController {
 				result.addAll(buildBtnField("名额已满", getFlag(availableFlags), "", "0"));
 			} else {
 				String showName = "报名参加";
-				List<SignUp> signUps = userSignParticipationStat.getSignUps();
+				List<SignUpCreateParamDTO> signUps = userSignParticipationStat.getSignUps();
 				if (signUpIds.size() == 1) {
-					SignUp signUp = signUps.get(0);
+					SignUpCreateParamDTO signUp = signUps.get(0);
 					String btnName = signUp.getBtnName();
 					if (StringUtils.isNotBlank(btnName)) {
 						showName = btnName;
