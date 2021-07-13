@@ -534,7 +534,7 @@
             </div>
         </div>
         <!-- 选择字段弹窗 -->
-        <div class="dialog-mask" v-show="chooseDialog"> 
+        <div class="dialog-mask" v-show="chooseDialog">
             <div class="dailog choose-field">
                 <div class="header">
                     <span>选择字段</span>
@@ -758,6 +758,56 @@
                 </div>
             </div>
         </div>
+        <!-- 报名条件-->
+        <div class="dialog-mask" v-show="!signUpDialog">
+            <div class="dailog">
+                <div class="header">
+                    <span>报名条件</span>
+                    <i class="close" @click="switchDialog=false"></i>
+                </div>
+                <div class="body">
+                    <el-form ref="form"  label-width="72px">
+                        <el-input v-model="title" type="text" placeholder="标题（必填）" maxlength="8" show-word-limit class="marginBottom20"></el-input>
+                        <el-input v-model="explain" type="text" placeholder="说明" maxlength="40" show-word-limit class="marginBottom20"></el-input>
+                        <el-form-item label="数据来源" class="marginBottom20">
+                            <el-select v-model="AssociationForm" placeholder="请选择关联表单">
+                                <el-option label="数据来源1" value="1"></el-option>
+                                <el-option label="数据来源2" value="2"></el-option>
+                            </el-select>
+                        </el-form-item>
+                        <div class="marginBottom20">
+                            <p class="tips marginBottom8">报名用户</p>
+                            <div class="three">
+                                <el-select v-model="baomingzhe" placeholder="" class="width186">
+                                    <el-option label="报名者" value="1"></el-option>
+                                </el-select>
+                                <span>等于</span>
+                                <el-select v-model="shijian" placeholder="请选择"  class="width186">
+                                    <el-option label="时间1" value="1"></el-option>
+                                    <el-option label="时间2" value="2"></el-option>
+                                </el-select>
+                            </div>
+                        </div>
+                        <div class="marginBottom20">
+                            <p class="tips marginBottom8">判断条件</p>
+                            <div class="three">
+                                <el-select v-model="zhuangtai" placeholder="" class="width150">
+                                    <el-option label="不为空" value="不为空"></el-option>
+                                    <el-option label="为空" value="为空"></el-option>
+                                </el-select>
+                                <span>时，可以报名</span>
+                            </div>
+                        </div>
+                    </el-form>
+                </div>
+                <div class="footer">
+                    <div class="btn-box">
+                        <div class="border-btn">取消</div>
+                        <div class="normal-btn disable">确定</div>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
     <script src="../../assets/lib/jquery.min.js"></script>
     <script src="../../assets/lib/vue.js"></script>
@@ -805,7 +855,12 @@
                 activityTimeDialog:false,
                 activityTypeDialog:false,
                 activityFormDialog:false,
-                switchDialog:false
+                switchDialog:false,
+                signUpDialog:false,
+                AssociationForm:'',
+                baomingzhe:'报名者',
+                shijian:'',
+                zhuangtai:'不为空',
             },
             watch: {
                 /* 监听选项列表的改变 */

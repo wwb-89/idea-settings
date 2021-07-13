@@ -237,6 +237,10 @@
   margin-bottom: 24px;
 }
 
+.dailog .body .marginBottom20 {
+  margin-bottom: 20px;
+}
+
 .dailog .body .marginBottom8 {
   margin-bottom: 8px;
 }
@@ -324,6 +328,57 @@
 
 .dailog .body .add-option:hover {
   opacity: 0.8;
+}
+
+.dailog .body .el-form .el-form-item__content {
+  height: 32px;
+  line-height: 32px;
+}
+
+.dailog .body .el-form .el-select {
+  width: 100%;
+}
+
+.dailog .body .el-form .el-input__inner {
+  line-height: 32px;
+}
+
+.dailog .body .el-form .el-input__icon {
+  line-height: 32px;
+}
+
+.dailog .body .el-form .el-form-item__label {
+  text-align: left;
+  color: #333333;
+  line-height: 32px;
+}
+
+.dailog .body .el-form .tips {
+  color: #666666;
+  font-size: 14px;
+  line-height: 32px;
+}
+
+.dailog .body .el-form .three {
+  display: -webkit-box;
+  display: -moz-box;
+  display: -ms-flexbox;
+  display: flex;
+}
+
+.dailog .body .el-form .three > span {
+  line-height: 32px;
+  color: #333333;
+  font-size: 14px;
+  margin: 0 12px;
+}
+
+.dailog .body .el-form .three .width186 {
+  width: 186px;
+}
+
+.dailog .body .el-form .three .width150 {
+  width: 150px;
 }
 
 .dailog .footer {

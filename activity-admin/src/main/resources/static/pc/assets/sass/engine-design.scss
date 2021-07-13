@@ -183,6 +183,9 @@
         .marginBottom24{
             margin-bottom: 24px;
         }
+        .marginBottom20{
+            margin-bottom: 20px;
+        }
         .marginBottom8{
             margin-bottom: 8px;
         }
@@ -255,6 +258,46 @@
             }
             &:hover{
                 opacity: 0.8;
+            }
+        }
+        .el-form {
+            .el-form-item__content {
+                height: 32px;
+                line-height: 32px;
+            }
+            .el-select {
+                width: 100%;
+            }
+            .el-input__inner {
+                line-height: 32px;
+            }
+            .el-input__icon {
+                line-height: 32px;
+            }
+            .el-form-item__label {
+                text-align: left;
+                color: #333333;
+                line-height: 32px;
+            }
+            .tips {
+                color: #666666;
+                font-size: 14px;
+                line-height: 32px;
+            }
+            .three {
+                display: flex;
+                >span {
+                    line-height: 32px;
+                    color: #333333;
+                    font-size: 14px;
+                    margin: 0 12px;
+                }
+                .width186 {
+                    width: 186px;
+                }
+                .width150 {
+                    width: 150px;
+                }
             }
         }
     }
