@@ -160,11 +160,12 @@ public class ActivityUpdateParamDTO {
 	 * @Description 
 	 * @author wwb
 	 * @Date 2021-07-13 15:15:18
-	 * @param 
+	 * @param
 	 * @return com.chaoxing.activity.model.ActivityDetail
 	*/
 	public ActivityDetail buildActivityDetail() {
 		return ActivityDetail.builder()
+				.activityId(getId())
 				.introduction(getIntroduction())
 				.build();
 	}

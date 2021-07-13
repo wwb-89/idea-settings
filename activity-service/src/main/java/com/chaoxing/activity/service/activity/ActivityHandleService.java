@@ -39,14 +39,11 @@ import com.chaoxing.activity.util.exception.BusinessException;
 import com.google.common.collect.Lists;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
-import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
-import java.math.BigDecimal;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -109,80 +106,42 @@ public class ActivityHandleService {
 	 * @Date 2020-11-10 15:54:16
 	 * @param activityCreateParamDto
 	 * @param signCreateParamDto
-	 * @param wfwRegionalArchitectures
+	 * @param wfwRegionalArchitectureDtos
 	 * @param loginUser
-	 * @return com.chaoxing.activity.dto.activity.ActivityUpdateParamDTO
+	 * @return java.lang.Integer 活动id
 	*/
 	@Transactional(rollbackFor = Exception.class)
-	public ActivityUpdateParamDTO add(ActivityCreateParamDTO activityCreateParamDto, SignCreateParamDTO signCreateParamDto, List<WfwRegionalArchitectureDTO> wfwRegionalArchitectures, LoginUserDTO loginUser) {
+	public Integer add(ActivityCreateParamDTO activityCreateParamDto, SignCreateParamDTO signCreateParamDto, List<WfwRegionalArchitectureDTO> wfwRegionalArchitectureDtos, LoginUserDTO loginUser) {
 		Activity activity = activityCreateParamDto.buildActivity();
 		// 新增活动输入验证
 		activityValidationService.addInputValidate(activity);
-		// 处理活动类型
-		handleActivityType(activity);
+		if (CollectionUtils.isEmpty(wfwRegionalArchitectureDtos)) {
+			throw new BusinessException("请选择发布范围");
+		}
 		// 添加报名签到
 		SignCreateResultDTO signCreateResult = handleSign(activity, signCreateParamDto, loginUser);
 		activity.setSignId(signCreateResult.getSignId());
 		// 添加作品征集
 		handleWork(activity, loginUser);
 		// 处理活动的状态, 新增的活动都是待发布的
-		activity.setStatus(Activity.StatusEnum.WAIT_RELEASE.getValue());
-		activity.setReleased(false);
-		activity.setCreateUid(loginUser.getUid());
-		activity.setCreateUserName(loginUser.getRealName());
-		activity.setCreateFid(loginUser.getFid());
-		activity.setCreateOrgName(loginUser.getOrgName());
-		activity.setStartDate(activity.getStartTime().toLocalDate());
-		activity.setEndDate(activity.getEndTime().toLocalDate());
-		String originType = activity.getOriginType();
-		if (StringUtils.isBlank(originType)) {
-			activity.setOriginType(Activity.OriginTypeEnum.NORMAL.getValue());
-		}
+		activity.beforeCreate(loginUser.getUid(), loginUser.getRealName(), loginUser.getFid(), loginUser.getOrgName());
 		activityMapper.insert(activity);
 		Integer activityId = activity.getId();
 		inspectionConfigHandleService.initInspectionConfig(activityId);
 		activityStatSummaryHandlerService.init(activityId);
-		ActivityDetail activityDetail = ActivityDetail.builder()
-				.activityId(activityId)
-				.introduction(activity.getIntroduction())
-				.build();
+		// 活动详情
+		ActivityDetail activityDetail = activityCreateParamDto.buildActivityDetail(activityId);
 		activityDetailMapper.insert(activityDetail);
-
 		// 添加管理员
-		ActivityManager activityManager = new ActivityManager();
-		activityManager.setActivityId(activity.getId());
-		activityManager.setUid(activity.getCreateUid());
-		activityManager.setUserName(activity.getCreateUserName());
-		activityManager.setCreateUid(activity.getCreateUid());
+		ActivityManager activityManager = ActivityManager.buildCreator(activity);
 		activityManagerService.add(activityManager, loginUser);
 		// 处理发布范围
-		if (CollectionUtils.isEmpty(wfwRegionalArchitectures)) {
-			throw new BusinessException("请选择发布范围");
-		}
-		List<ActivityScope> activityScopes = WfwRegionalArchitectureDTO.convert2ActivityScopes(activityId, wfwRegionalArchitectures);
-		// 新增发布范围
-		activityScopeService.batchAdd(activityScopes);
+		activityScopeService.batchAdd(activityId, wfwRegionalArchitectureDtos);
 		// 活动改变
 		activityChangeEventService.dataChange(activity, null, loginUser);
-		return null;
+		return activityId;
 	}
 
-	/**处理活动类型
-	 * @Description 
-	 * @author wwb
-	 * @Date 2020-12-10 14:35:41
-	 * @param activity
-	 * @return void
-	*/
-	private void handleActivityType(Activity activity) {
-		String activityType = activity.getActivityType();
-		Activity.ActivityTypeEnum activityTypeEnum = Activity.ActivityTypeEnum.fromValue(activityType);
-		if (Activity.ActivityTypeEnum.ONLINE.equals(activityTypeEnum)) {
-			activity.setAddress(null);
-			activity.setLongitude(null);
-			activity.setDimension(null);
-		}
-	}
 	/**处理报名签到
 	 * @Description
 	 * @author wwb
@@ -193,19 +152,11 @@ public class ActivityHandleService {
 	 * @return com.chaoxing.activity.dto.sign.create.SignCreateResultDTO
 	*/
 	private SignCreateResultDTO handleSign(Activity activity, SignCreateParamDTO signCreateParam, LoginUserDTO loginUser) {
-		Integer signId = signCreateParam.getId();
-		if (signId == null) {
-			// 签到的名称为活动引擎活动的名称
-			signCreateParam.setName(activity.getName());
-			// 新增报名签到
-			signCreateParam.setUid(loginUser.getUid());
-			signCreateParam.setUserName(loginUser.getRealName());
-			signCreateParam.setFid(loginUser.getFid());
-			signCreateParam.setOrgName(loginUser.getOrgName());
+		signCreateParam.perfectName(activity.getName());
+		if (signCreateParam.getId() == null) {
+			signCreateParam.perfectCreator(loginUser);
 			return signApiService.create(signCreateParam);
 		} else {
-			// 修改报名签到
-			signCreateParam.setName(activity.getName());
 			return signApiService.update(signCreateParam);
 		}
 	}
@@ -219,8 +170,7 @@ public class ActivityHandleService {
 	 * @return void
 	*/
 	private void handleWork(Activity activity, LoginUserDTO loginUser) {
-		Boolean openWork = activity.getOpenWork();
-		openWork = Optional.ofNullable(openWork).orElse(Boolean.FALSE);
+		Boolean openWork = Optional.ofNullable(activity.getOpenWork()).orElse(Boolean.FALSE);
 		if (openWork) {
 			Integer workId = activity.getWorkId();
 			if (workId == null) {
@@ -243,22 +193,22 @@ public class ActivityHandleService {
 	 * @author wwb
 	 * @Date 2020-11-11 15:41:49
 	 * @param activityUpdateParamDto
-	 * @param wfwRegionalArchitectures
+	 * @param wfwRegionalArchitectureDtos
 	 * @param signCreateParam
 	 * @param loginUser
 	 * @return void
 	*/
 	@Transactional(rollbackFor = Exception.class)
-	public void edit(ActivityUpdateParamDTO activityUpdateParamDto, SignCreateParamDTO signCreateParam, final List<WfwRegionalArchitectureDTO> wfwRegionalArchitectures, LoginUserDTO loginUser) {
+	public void edit(ActivityUpdateParamDTO activityUpdateParamDto, SignCreateParamDTO signCreateParam, final List<WfwRegionalArchitectureDTO> wfwRegionalArchitectureDtos, LoginUserDTO loginUser) {
 		Activity activity = activityUpdateParamDto.buildActivity();
+		activityValidationService.updateInputValidate(activity);
+		if (CollectionUtils.isEmpty(wfwRegionalArchitectureDtos)) {
+			throw new BusinessException("请选择发布范围");
+		}
 		Integer activityId = activity.getId();
 		String activityEditLockKey = getActivityEditLockKey(activityId);
 		distributedLock.lock(activityEditLockKey, () -> {
-			activityValidationService.addInputValidate(activity);
-			// 处理活动类型
-			handleActivityType(activity);
 			Activity existActivity = activityValidationService.editAble(activityId, loginUser);
-			BigDecimal oldIntegralValue = existActivity.getIntegral();
 			// 更新报名签到
 			Integer signId = existActivity.getSignId();
 			signCreateParam.setId(signId);
@@ -280,27 +230,17 @@ public class ActivityHandleService {
 			activityStatusService.statusUpdate(existActivity);
 			ActivityDetail activityDetail = activityQueryService.getDetailByActivityId(activityId);
 			if (activityDetail == null) {
-				activityDetail = ActivityDetail.builder()
-						.activityId(activityId)
-						.introduction(activity.getIntroduction())
-						.build();
+				activityDetail = activityUpdateParamDto.buildActivityDetail();
 				activityDetailMapper.insert(activityDetail);
 			}else {
 				activityDetailMapper.update(null, new UpdateWrapper<ActivityDetail>()
 					.lambda()
 						.eq(ActivityDetail::getId, activityDetail.getId())
-						.set(ActivityDetail::getIntroduction, activity.getIntroduction())
+						.set(ActivityDetail::getIntroduction, activityUpdateParamDto.getIntroduction())
 				);
 			}
 			// 处理发布范围
-			if (CollectionUtils.isEmpty(wfwRegionalArchitectures)) {
-				throw new BusinessException("请选择发布范围");
-			}
-			List<ActivityScope> activityScopes = WfwRegionalArchitectureDTO.convert2ActivityScopes(activityId, wfwRegionalArchitectures);
-			// 删除以前发布的发布范围
-			activityScopeService.deleteByActivityId(activityId);
-			// 新增活动发布范围
-			activityScopeService.batchAdd(activityScopes);
+			activityScopeService.batchAdd(activityId, wfwRegionalArchitectureDtos);
 			// 活动改变
 			activityChangeEventService.dataChange(activity, existActivity, loginUser);
 			return null;

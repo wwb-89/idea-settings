@@ -741,19 +741,6 @@ public class ActivityQueryService {
 		return activityDetails.stream().findFirst().orElse(null);
 	}
 
-	/**填充简介
-	 * @Description 
-	 * @author wwb
-	 * @Date 2021-06-18 14:28:57
-	 * @param activity
-	 * @return void
-	*/
-	public void fillIntroduction(Activity activity) {
-		Integer id = activity.getId();
-		ActivityDetail activityDetail = getDetailByActivityId(id);
-		activity.setIntroduction(Optional.ofNullable(activityDetail).map(ActivityDetail::getIntroduction).orElse(""));
-	}
-
 	/**根据作品征集id查询活动
 	 * @Description 
 	 * @author wwb

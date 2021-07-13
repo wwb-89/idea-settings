@@ -59,8 +59,8 @@ public class ActivityApiController {
 		ActivityCreateParamDTO activityCreateParamDto = JSON.parseObject(activityJsonStr, ActivityCreateParamDTO.class);
 		List<WfwRegionalArchitectureDTO> wfwRegionalArchitectures = JSON.parseArray(participateScopeJsonStr, WfwRegionalArchitectureDTO.class);
 		SignCreateParamDTO signAddEdit = JSON.parseObject(signJsonStr, SignCreateParamDTO.class);
-		ActivityUpdateParamDTO activityUpdateParamDto = activityHandleService.add(activityCreateParamDto, signAddEdit, wfwRegionalArchitectures, loginUser);
-		return RestRespDTO.success(activityUpdateParamDto);
+		Integer activityId = activityHandleService.add(activityCreateParamDto, signAddEdit, wfwRegionalArchitectures, loginUser);
+		return RestRespDTO.success(activityId);
 	}
 
 	/**修改活动

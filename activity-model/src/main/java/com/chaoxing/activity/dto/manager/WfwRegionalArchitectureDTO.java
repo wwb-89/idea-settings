@@ -1,15 +1,16 @@
 package com.chaoxing.activity.dto.manager;
 
 import com.chaoxing.activity.model.ActivityScope;
+import com.google.common.collect.Lists;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.apache.commons.collections4.CollectionUtils;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 /**微服务层级架构对象
  * @author wwb
@@ -49,27 +50,26 @@ public class WfwRegionalArchitectureDTO {
 	private Integer sort;
 	private List<WfwRegionalArchitectureDTO> children;
 
-	public static List<ActivityScope> convert2ActivityScopes(Integer activityId, List<WfwRegionalArchitectureDTO> wfwRegionalArchitectures) {
-		List<ActivityScope> activityScopes = new ArrayList<>();
-		if (CollectionUtils.isNotEmpty(wfwRegionalArchitectures)) {
-			for (WfwRegionalArchitectureDTO wfwRegionalArchitecture : wfwRegionalArchitectures) {
-				ActivityScope activityScope = ActivityScope.builder()
-						.activityId(activityId)
-						.hierarchyId(wfwRegionalArchitecture.getId())
-						.name(wfwRegionalArchitecture.getName())
-						.hierarchyPid(wfwRegionalArchitecture.getPid())
-						.code(wfwRegionalArchitecture.getCode())
-						.links(wfwRegionalArchitecture.getLinks())
-						.level(wfwRegionalArchitecture.getLevel())
-						.adjustedLevel(wfwRegionalArchitecture.getLevel())
-						.fid(wfwRegionalArchitecture.getFid())
-						.existChild(Optional.ofNullable(wfwRegionalArchitecture.getExistChild()).orElse(Boolean.FALSE))
-						.sort(wfwRegionalArchitecture.getSort())
-						.build();
-				activityScopes.add(activityScope);
-			}
+	public ActivityScope buildActivityScope() {
+		return ActivityScope.builder()
+				.hierarchyId(getId())
+				.name(getName())
+				.hierarchyPid(getPid())
+				.code(getCode())
+				.links(getLinks())
+				.level(getLevel())
+				.adjustedLevel(getLevel())
+				.fid(getFid())
+				.existChild(Optional.ofNullable(getExistChild()).orElse(Boolean.FALSE))
+				.sort(getSort())
+				.build();
+	}
+
+	public static List<ActivityScope> buildActivityScopes(List<WfwRegionalArchitectureDTO> wfwRegionalArchitectures) {
+		if (CollectionUtils.isEmpty(wfwRegionalArchitectures)) {
+			return Lists.newArrayList();
 		}
-		return activityScopes;
+		return wfwRegionalArchitectures.stream().map(WfwRegionalArchitectureDTO::buildActivityScope).collect(Collectors.toList());
 	}
 
 }

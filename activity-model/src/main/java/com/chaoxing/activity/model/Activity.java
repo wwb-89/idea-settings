@@ -141,9 +141,6 @@ public class Activity {
     private LocalDateTime updateTime;
 
     // 附加
-    /** 活动详情 */
-    @TableField(exist = false)
-    private String introduction;
     /** 开始时间字符串 */
     @TableField(exist = false)
     private String startTimeStr;
@@ -347,6 +344,15 @@ public class Activity {
 
     public void coverCloudIdChange() {
         setCoverUrl("");
+    }
+
+    public void beforeCreate(Integer uid, String userName, Integer fid, String orgName) {
+        setStatus(Activity.StatusEnum.WAIT_RELEASE.getValue());
+        setReleased(false);
+        setCreateUid(uid);
+        setCreateUserName(userName);
+        setCreateFid(fid);
+        setCreateOrgName(orgName);
     }
 
 }

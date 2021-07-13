@@ -1,7 +1,5 @@
 package com.chaoxing.activity.model;
 
-import com.baomidou.mybatisplus.annotation.IdType;
-import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -35,5 +33,13 @@ public class ActivityManager {
     private LocalDateTime createTime;
     /** 创建人id; column: create_uid*/
     private Integer createUid;
+
+    public static ActivityManager buildCreator(Activity activity) {
+        return ActivityManager.builder()
+                .activityId(activity.getId())
+                .uid(activity.getCreateUid())
+                .userName(activity.getCreateUserName())
+                .build();
+    }
 
 }

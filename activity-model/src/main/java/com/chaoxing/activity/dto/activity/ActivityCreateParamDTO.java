@@ -136,11 +136,12 @@ public class ActivityCreateParamDTO {
 	 * @Description 
 	 * @author wwb
 	 * @Date 2021-07-13 15:21:43
-	 * @param 
+	 * @param activityId
 	 * @return com.chaoxing.activity.model.ActivityDetail
 	*/
-	public ActivityDetail buildActivityDetail() {
+	public ActivityDetail buildActivityDetail(Integer activityId) {
 		return ActivityDetail.builder()
+				.activityId(activityId)
 				.introduction(getIntroduction())
 				.build();
 	}

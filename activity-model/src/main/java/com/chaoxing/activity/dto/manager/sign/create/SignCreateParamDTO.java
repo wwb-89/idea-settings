@@ -1,5 +1,6 @@
 package com.chaoxing.activity.dto.manager.sign.create;
 
+import com.chaoxing.activity.dto.LoginUserDTO;
 import com.google.common.collect.Lists;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -49,6 +50,17 @@ public class SignCreateParamDTO {
 				.signUps(Lists.newArrayList(signUp))
 				.signIns(Lists.newArrayList(signIn, signOut))
 				.build();
+	}
+
+	public void perfectCreator(LoginUserDTO loginUser) {
+		setUid(loginUser.getUid());
+		setUserName(loginUser.getRealName());
+		setFid(loginUser.getFid());
+		setOrgName(loginUser.getOrgName());
+	}
+
+	public void perfectName(String name) {
+		setName(name);
 	}
 
 }

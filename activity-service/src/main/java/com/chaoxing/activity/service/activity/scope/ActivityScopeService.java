@@ -1,9 +1,11 @@
 package com.chaoxing.activity.service.activity.scope;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.chaoxing.activity.dto.manager.WfwRegionalArchitectureDTO;
 import com.chaoxing.activity.mapper.ActivityScopeMapper;
 import com.chaoxing.activity.model.ActivityScope;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
@@ -42,11 +44,17 @@ public class ActivityScopeService {
 	 * @Description 
 	 * @author wwb
 	 * @Date 2020-11-12 16:16:17
-	 * @param activityScopes
+	 * @param activityId
+	 * @param wfwRegionalArchitectureDtos
 	 * @return void
 	*/
-	public void batchAdd(List<ActivityScope> activityScopes) {
-		activityScopeMapper.batchAdd(activityScopes);
+	public void batchAdd(Integer activityId, List<WfwRegionalArchitectureDTO> wfwRegionalArchitectureDtos) {
+		deleteByActivityId(activityId);
+		List<ActivityScope> activityScopes = WfwRegionalArchitectureDTO.buildActivityScopes(wfwRegionalArchitectureDtos);
+		if (CollectionUtils.isNotEmpty(activityScopes)) {
+			activityScopes.forEach(v -> v.setActivityId(activityId));
+			activityScopeMapper.batchAdd(activityScopes);
+		}
 	}
 
 }

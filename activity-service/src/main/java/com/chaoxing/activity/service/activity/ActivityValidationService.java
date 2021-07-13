@@ -80,6 +80,31 @@ public class ActivityValidationService {
 		}
 		activity.setTimingRelease(timingRelease);
 		activity.setTimingReleaseTime(timingReleaseTime);
+		String originType = activity.getOriginType();
+		if (StringUtils.isBlank(originType)) {
+			activity.setOriginType(Activity.OriginTypeEnum.NORMAL.getValue());
+		}
+		// 活动形式
+		String activityType = activity.getActivityType();
+		Activity.ActivityTypeEnum activityTypeEnum = Activity.ActivityTypeEnum.fromValue(activityType);
+		if (Activity.ActivityTypeEnum.ONLINE.equals(activityTypeEnum)) {
+			activity.setAddress(null);
+			activity.setLongitude(null);
+			activity.setDimension(null);
+		}
+	}
+
+	/**更新活动的输入验证
+	 * @Description 
+	 * @author wwb
+	 * @Date 2021-07-13 18:32:58
+	 * @param activity
+	 * @return void
+	*/
+	public void updateInputValidate(Activity activity) {
+		Integer activityId = activity.getId();
+		Optional.ofNullable(activityId).orElseThrow(() -> new BusinessException("活动id不能为空"));
+		addInputValidate(activity);
 	}
 
 	/**活动必须存在
