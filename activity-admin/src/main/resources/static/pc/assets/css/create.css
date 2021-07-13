@@ -172,7 +172,10 @@ select {
     width: 16px;
     height: 16px;
 }
-
+.form-item .input-box .el-checkbox__label {
+    color: #333333;
+    font-weight: 400;
+    }
 .label {
     width: 90px;
     line-height: 20px;
