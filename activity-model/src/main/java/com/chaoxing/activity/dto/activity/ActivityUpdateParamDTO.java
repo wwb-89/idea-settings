@@ -143,7 +143,7 @@ public class ActivityUpdateParamDTO {
 	/**通过活动构建修改活动对象
 	 * @Description 
 	 * @author wwb
-	 * @Date 2021-07-13 15:28:25
+	 * @Date 2021-07-13 15:46:21
 	 * @param activity
 	 * @return com.chaoxing.activity.dto.activity.ActivityUpdateParamDTO
 	*/

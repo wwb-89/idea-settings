@@ -153,7 +153,7 @@ public class ActivityApiController {
 	@RequestMapping("{activityId}/cancel-collect")
 	public RestRespDTO cancelCollect(HttpServletRequest request, @PathVariable Integer activityId) {
 		LoginUserDTO loginUser = LoginUtils.getLoginUser(request);
-		activityCollectionHandleService.cancelCollect(activityId, loginUser);
+		activityCollectionHandleService.cancelCollect(activityId, loginUser.getUid());
 		return RestRespDTO.success();
 	}
 
