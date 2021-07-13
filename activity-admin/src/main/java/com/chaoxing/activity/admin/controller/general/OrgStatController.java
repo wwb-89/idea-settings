@@ -1,9 +1,8 @@
 package com.chaoxing.activity.admin.controller.general;
 
 import com.chaoxing.activity.admin.util.LoginUtils;
-import com.chaoxing.activity.dto.manager.wfwform.WfwFormFilterDTO;
-import com.chaoxing.activity.dto.LoginUserDTO;
 import com.chaoxing.activity.dto.manager.WfwGroupDTO;
+import com.chaoxing.activity.dto.manager.wfwform.WfwFormFilterDTO;
 import com.chaoxing.activity.model.OrgTableField;
 import com.chaoxing.activity.model.TableField;
 import com.chaoxing.activity.model.TableFieldDetail;
@@ -14,7 +13,7 @@ import com.chaoxing.activity.service.tablefield.TableFieldQueryService;
 import com.chaoxing.activity.util.DateUtils;
 import com.chaoxing.activity.util.SchoolYearSemesterUtils;
 import com.chaoxing.activity.util.annotation.LoginRequired;
-import org.apache.commons.collections4.CollectionUtils;
+import com.google.common.collect.Lists;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -65,19 +64,13 @@ public class OrgStatController {
     @RequestMapping("user")
     public String index(HttpServletRequest request, Model model, Integer wfwfid, Integer unitId, Integer state, Integer fid) {
         Integer realFid = Optional.ofNullable(wfwfid).orElse(Optional.ofNullable(unitId).orElse(Optional.ofNullable(state).orElse(fid)));
-        if (realFid == null) {
-            LoginUserDTO loginUser = LoginUtils.getLoginUser(request);
-            realFid = loginUser.getFid();
-        }
+        realFid = Optional.ofNullable(realFid).orElse(LoginUtils.getLoginUser(request).getFid());
         List<TableFieldDetail> tableFieldDetails = tableFieldQueryService.listTableFieldDetail(TableField.Type.USER_STAT, TableField.AssociatedType.ORG);
         model.addAttribute("tableFieldDetails", tableFieldDetails);
         List<OrgTableField> orgTableFields = tableFieldQueryService.listOrgTableField(realFid, TableField.Type.USER_STAT, TableField.AssociatedType.ORG);
         model.addAttribute("orgTableFields", orgTableFields);
         model.addAttribute("fid", realFid);
-        Integer tableFieldId = null;
-        if (CollectionUtils.isNotEmpty(tableFieldDetails)) {
-            tableFieldId = tableFieldDetails.get(0).getTableFieldId();
-        }
+        Integer tableFieldId = Optional.ofNullable(tableFieldDetails).orElse(Lists.newArrayList()).stream().findFirst().map(TableFieldDetail::getTableFieldId).orElse(null);
         model.addAttribute("tableFieldId", tableFieldId);
         // 带层级（children）组织架构
         List<WfwGroupDTO> groups = wfwGroupApiService.listHierarchyGroupByFid(realFid);
@@ -107,17 +100,11 @@ public class OrgStatController {
     @RequestMapping("activity")
     public String activityStatIndex(HttpServletRequest request, Model model, Integer wfwfid, Integer unitId, Integer state, Integer fid) {
         Integer realFid = Optional.ofNullable(wfwfid).orElse(Optional.ofNullable(unitId).orElse(Optional.ofNullable(state).orElse(fid)));
-        if (realFid == null) {
-            LoginUserDTO loginUser = LoginUtils.getLoginUser(request);
-            realFid = loginUser.getFid();
-        }
+        realFid = Optional.ofNullable(realFid).orElse(LoginUtils.getLoginUser(request).getFid());
         List<TableFieldDetail> tableFieldDetails = tableFieldQueryService.listTableFieldDetail(TableField.Type.ACTIVITY_STAT, TableField.AssociatedType.ORG);
         List<OrgTableField> orgTableFields = tableFieldQueryService.listOrgTableField(realFid, TableField.Type.ACTIVITY_STAT, TableField.AssociatedType.ORG);
         List<WfwFormFilterDTO> classifyOptions = activityClassifyQueryService.listOrgOptions(realFid);
-        Integer tableFieldId = null;
-        if (CollectionUtils.isNotEmpty(tableFieldDetails)) {
-            tableFieldId = tableFieldDetails.get(0).getTableFieldId();
-        }
+        Integer tableFieldId = Optional.ofNullable(tableFieldDetails).orElse(Lists.newArrayList()).stream().findFirst().map(TableFieldDetail::getTableFieldId).orElse(null);
         // 微服务组织架构
         List<WfwGroupDTO> wfwGroups = wfwGroupApiService.listGroupByFid(realFid);
 
