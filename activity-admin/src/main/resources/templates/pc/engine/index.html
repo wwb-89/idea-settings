@@ -36,27 +36,14 @@
                 <form action="" id="drag-box">
                     <!-- 基本信息 -->
                     <div class="title">
-<!--                        <i class="icon-drag"></i>-->
                         <div class="lable">基本信息</div>
-<!--                        <div class="icon-div">-->
-<!--                            <i class="icon-edit" @click="textDialog=true"></i>-->
-<!--                            <i class="icon-delete" @click="delDialog=true"></i>-->
-<!--                        </div>-->
                     </div>
                     <template v-for="(item, index) in showTemplateComponents">
                         <div class="form-item sort-item" v-if="!['activity_address', 'company_sign_up', 'sign_up', 'sign_in', 'sign_out', 'work', 'introduction'].includes(item.code)">
                             <i class="icon-drag"></i>
                             <div class="icon-div">
-                                <i class="icon-edit" @click="openTextEditDialog(index, item)"></i>
+                                <i class="icon-edit" @click="openEditDialog(index, item)"></i>
                                 <i class="icon-delete" v-show="!item.required" @click="removeComponent1(index, item)"></i>
-                                <!--                                <i class="icon-edit" @click="activityTimeDialog=true"></i>-->
-<!--                                <i class="icon-edit" @click="textDialog=true"></i>-->
-<!--                                <i class="icon-edit" @click="activityFormDialog=true"></i>-->
-<!--                                <i class="icon-delete" @click="delDialog=true"></i>-->
-<!--                                <i class="icon-edit" @click="activityTypeDialog=true"></i>-->
-<!--                                <i class="icon-edit" @click="activityNameDialog=true"></i>-->
-<!--                                <i class="icon-delete"></i>-->
-<!--                                <i class="icon-edit" @click="activityNameDialog=true"></i>-->
                             </div>
                             <label :class="{ label: true, required: item.required }">{{item.name}}</label>
                             <div class="input-box">
@@ -140,7 +127,7 @@
                                 <i class="icon-drag"></i>
                                 <div class="lable">{{item.name}}</div>
                                 <div class="icon-div">
-                                    <i class="icon-edit" @click="switchDialog=true"></i>
+                                    <i class="icon-edit" @click="openEditDialog(index, item)"></i>
                                     <i class="icon-delete" @click="removeComponent2(index, item)"></i>
                                 </div>
                                 <div class="input-box">
@@ -151,7 +138,7 @@
                             <div class="form-item sort-item" v-if="item.children && item.children.length > 0" v-for="(it, idx) in item.children">
                                 <i class="icon-drag"></i>
                                 <div class="icon-div">
-                                    <i class="icon-edit"></i>
+                                    <i class="icon-edit" @click="openEditDialog(index, it, idx)"></i>
                                     <i class="icon-delete" v-show="!it.required" @click="removeComponent3(index, idx, it)"></i>
                                 </div>
                                 <label :class="{ label: true, required: it.required }">{{it.name}}</label>
@@ -213,8 +200,8 @@
                                 <i class="icon-drag"></i>
                                 <div class="lable">签到设置</div>
                                 <div class="icon-div">
-                                    <i class="icon-edit"></i>
-                                    <i class="icon-delete"></i>
+                                    <i class="icon-edit" @click="openEditDialog(index, item)"></i>
+                                    <i class="icon-delete" @click="removeComponent1(index, item)"></i>
                                 </div>
                                 <div class="input-box">
                                     <el-switch v-model="delivery1" class="switch fl marginTop6" disabled></el-switch>
@@ -279,8 +266,8 @@
                                 <i class="icon-drag"></i>
                                 <div class="lable">签退设置</div>
                                 <div class="icon-div">
-                                    <i class="icon-edit"></i>
-                                    <i class="icon-delete"></i>
+                                    <i class="icon-edit" @click="openEditDialog(index, item)"></i>
+                                    <i class="icon-delete" @click="removeComponent1(index, item)"></i>
                                 </div>
                                 <div class="input-box">
                                     <el-switch v-model="delivery1" class="switch fl marginTop6" disabled></el-switch>
@@ -338,13 +325,13 @@
                             <div class="title sort-item">
                                 <i class="icon-drag"></i>
                                 <div class="lable">作品征集</div>
-                            </div>
-                            <div class="form-item sort-item">
-                                <i class="icon-drag"></i>
                                 <div class="icon-div">
-                                    <i class="icon-edit"></i>
-                                    <i class="icon-delete"></i>
+                                    <i class="icon-edit" @click="openEditDialog(index, item)"></i>
+                                    <i class="icon-delete" @click="removeComponent1(index, item)"></i>
                                 </div>
+                            </div>
+                            <div class="form-item">
+                                <i class="icon-drag"></i>
                                 <label class="label">{{item.name}}</label>
                                 <div class="input-box">
                                     <el-switch class="switch fl marginTop6" disabled></el-switch>
@@ -355,7 +342,7 @@
                     </template>
 
                 </form>
-                <div class="add-circle" @click="initAddFieldDialog" id="add-circle"></div>
+                <div class="add-circle" @click="addFieldDialog = true" id="add-circle"></div>
             </div>
         </div>
         <!--拖拽排序的提示-->
@@ -372,7 +359,7 @@
             </div>
         </div>
         <!-- 添加字段弹窗 -->
-        <div class="dialog-mask" v-if="addFieldDialog">
+        <div class="dialog-mask" v-show="addFieldDialog">
             <div class="dailog add-field">
                 <div class="header">
                     <span>添加字段</span>
@@ -391,7 +378,8 @@
                     <!-- todo style 有问题 -->
                     <div :class="{'field-item': true, 'aready-add': item.checked && !item.multi }"
                          style="width: 214px"
-                         v-for="(item, index) in waitHandleData.componentTypeList[activeCpTypeIndex] && waitHandleData.componentTypeList[activeCpTypeIndex].components || []" >
+                         v-for="(item, index) in  componentTypeList && componentTypeList[activeCpTypeIndex] && componentTypeList[activeCpTypeIndex].components || []"
+                    >
                         <p class="field overHidden1">{{item.name}}</p>
                         <el-tooltip class="tooltip" effect="dark" :content="item.introduction" placement="top">
                             <i class="icon-info"></i>
@@ -406,13 +394,13 @@
                         </div>
                     </div>
                     <template>
-                        <div class="field-item" style="width: 214px" @click="addFieldDialog=false,textDialog=true">
+                        <div class="field-item" style="width: 214px" @click="addCustomTextField">
                             <p class="field overHidden1">文本字段</p>
                             <el-tooltip class="tooltip" effect="dark" content="说明文字单行效果" placement="top">
                                 <i class="icon-info"></i>
                             </el-tooltip>
                         </div>
-                        <div class="field-item" style="width: 214px" @click="addFieldDialog=false,chooseDialog=true">
+                        <div class="field-item" style="width: 214px" @click="addCustomChooseField">
                             <p class="field overHidden1">选择字段</p>
                             <el-tooltip class="tooltip" effect="dark" content="说明文字单行效果" placement="top">
                                 <i class="icon-info"></i>
@@ -428,8 +416,7 @@
                 </div>
                 <div class="footer">
                     <div class="btn-box">
-                        <div class="border-btn" @click="addFieldDialog = false">取消</div>
-                        <div class="normal-btn" @click="confirmFieldConfig">确定</div>
+                        <div class="normal-btn" @click="addFieldDialog = false">完成</div>
                     </div>
                 </div>
             </div>
@@ -442,24 +429,19 @@
                     <i class="close" @click="textDialog=false"></i>
                 </div>
                 <div class="body">
-                    <div class="custom-box">
-                        <span>自定义字段</span>
-                        <span class="fr">ID 212667</span>
-                    </div>
                     <div class="form">
-                        <el-input v-model="title" type="text" placeholder="标题" maxlength="8" show-word-limit class="marginBottom24"></el-input>
-                        <el-input v-model="explain" type="text" placeholder="辅助说明" maxlength="40" show-word-limit class="marginBottom24"></el-input>
-                        <div class="switch-box">
+                        <el-input v-model="currEditItem.name" type="text" placeholder="标题" maxlength="8" show-word-limit class="marginBottom24"></el-input>
+                        <el-input v-model="currEditItem.introduction" type="text" placeholder="辅助说明" maxlength="40" show-word-limit class="marginBottom24"></el-input>
+                        <div class="switch-box" v-show="currEditItem.code != 'sign_up' || currEditItem.code != 'company_sign_up'">
                             <label class="label">必填项</label>
-                            <el-switch class="switch" v-model="switch1"></el-switch>
+                            <el-switch class="switch" v-model="currEditItem.required"></el-switch>
                         </div>
                     </div>
                 </div>
                 <div class="footer">
                     <div class="btn-box">
-                        <div class="border-btn">取消</div>
-                        <div class="normal-btn disable">确定</div>
-                        <div class="normal-btn">确定</div>
+                        <div class="border-btn" @click="textDialog = false">取消</div>
+                        <div class="normal-btn" @click="confirmEditResult">确定</div>
                     </div>
                 </div>
             </div>
@@ -472,10 +454,6 @@
                     <i class="close" @click="chooseDialog=false"></i>
                 </div>
                 <div class="body">
-                    <div class="custom-box">
-                        <span>自定义字段</span>
-                        <span class="fr">ID 212667</span>
-                    </div>
                     <div class="form">
                         <el-input v-model="title" type="text" placeholder="标题" maxlength="8" show-word-limit class="marginBottom24"></el-input>
                         <el-input v-model="explain" type="text" placeholder="辅助说明" maxlength="40" show-word-limit class="marginBottom24"></el-input>
@@ -534,161 +512,6 @@
                 </div>
             </div>
         </div>
-        <!-- 特定字段弹窗 -->
-        <!-- 活动名称 -->
-        <div class="dialog-mask" v-show="activityNameDialog">
-            <div class="dailog">
-                <div class="header">
-                    <span>活动名称</span>
-                    <i class="close" @click="activityNameDialog=false"></i>
-                </div>
-                <div class="body">
-                    <div class="custom-box" v-if="currEditItem.code == 'activity_name'">
-                        <span>主要字段，活动的名称</span>
-                    </div>
-                    <div class="form">
-                        <el-input v-model="currEditItem.name" type="text" placeholder="标题" maxlength="8" show-word-limit class="marginBottom24"></el-input>
-                        <el-input v-model="currEditItem.introduction" type="text" placeholder="辅助说明" maxlength="40" show-word-limit class="marginBottom24"></el-input>
-                        <div class="switch-box">
-                            <label class="label">必填项</label>
-                            <el-switch class="switch" v-model="currEditItem.required"></el-switch>
-                        </div>
-                    </div>
-                </div>
-                <div class="footer">
-                    <div class="btn-box">
-                        <div class="border-btn" @click="activityNameDialog = false">取消</div>
-                        <div class="normal-btn" @click="confirmTextEditResult">确定</div>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <!-- 活动类型 -->
-        <div class="dialog-mask" v-show="activityTypeDialog">
-            <div class="dailog">
-                <div class="header">
-                    <span>活动类型</span>
-                    <i class="close" @click="activityTypeDialog=false"></i>
-                </div>
-                <div class="body">
-                    <div class="custom-box">
-                        <span>该系统字段的描述</span>
-                    </div>
-                    <div class="form">
-                        <el-input v-model="type" type="text" placeholder="标题" maxlength="8" show-word-limit class="marginBottom24"></el-input>
-                        <el-input v-model="explain" type="text" placeholder="辅助说明" maxlength="40" show-word-limit class="marginBottom24"></el-input>
-                        <div class="switch-box">
-                            <label class="label">必填项</label>
-                            <el-switch class="switch" v-model="switch3"></el-switch>
-                        </div>
-                    </div>
-                </div>
-                <div class="footer">
-                    <div class="btn-box">
-                        <div class="border-btn">取消</div>
-                        <div class="normal-btn">确定</div>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <!-- 活动时间 -->
-        <div class="dialog-mask" v-show="activityTimeDialog">
-            <div class="dailog">
-                <div class="header">
-                    <span>活动时间</span>
-                    <i class="close" @click="activityTimeDialog=false"></i>
-                </div>
-                <div class="body">
-                    <div class="custom-box">
-                        <span>该系统字段的描述</span>
-                    </div>
-                    <div class="form">
-                        <el-input v-model="time" type="text" placeholder="标题" maxlength="8" show-word-limit class="marginBottom24"></el-input>
-                        <el-input v-model="explain" type="text" placeholder="辅助说明" maxlength="40" show-word-limit class="marginBottom24"></el-input>
-                        <div class="switch-box">
-                            <label class="label">必填项</label>
-                            <el-switch class="switch" v-model="switch3"></el-switch>
-                            <label class="label">显示时分</label>
-                            <el-switch class="switch" v-model="switch3"></el-switch>
-                        </div>
-                    </div>
-                </div>
-                <div class="footer">
-                    <div class="btn-box">
-                        <div class="border-btn">取消</div>
-                        <div class="normal-btn">确定</div>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <!-- 活动形式 -->
-        <div class="dialog-mask" v-show="activityFormDialog">
-            <div class="dailog choose-field">
-                <div class="header">
-                    <span>活动形式</span>
-                    <i class="close" @click="activityFormDialog=false"></i>
-                </div>
-                <div class="body">
-                    <div class="custom-box">
-                        <span>系统字段</span>
-                    </div>
-                    <div class="form">
-                        <el-input v-model="title" type="text" placeholder="标题" maxlength="8" show-word-limit class="marginBottom24"></el-input>
-                        <el-input v-model="explain" type="text" placeholder="辅助说明" maxlength="40" show-word-limit class="marginBottom24"></el-input>
-                        <div class="input-box">
-                            <label class="label">选项1</label>
-                            <el-input v-model="type1" type="text" placeholder="请输入" class="weight372"></el-input>
-                        </div>
-                        <div class="input-box">
-                            <label class="label">选项2</label>
-                            <el-input v-model="type2" type="text" placeholder="请输入" class="weight372"></el-input>
-                        </div>
-                        <div class="input-box" v-for="(item,index) in option2">
-                            <label class="label">选项{{index + 3}}</label>
-                            <el-input v-model="title" type="text" placeholder="请输入" class="weight348"></el-input>
-                            <i class="del-circle" @click="delOption2(index)"></i>
-                        </div>
-                        <div class="add-option" @click="addOption2">
-                            <i></i>添加选项
-                        </div>
-                        <div class="switch-box">
-                            <label class="label">必填项</label>
-                            <el-switch class="switch" v-model="switch3"></el-switch>
-                        </div>
-                    </div>
-                </div>
-                <div class="footer">
-                    <div class="btn-box">
-                        <div class="border-btn">取消</div>
-                        <div class="normal-btn">确定</div>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <!-- 开关或选择类型 -->
-        <div class="dialog-mask" v-show="switchDialog">
-            <div class="dailog">
-                <div class="header">
-                    <span>开关或选择类型</span>
-                    <i class="close" @click="switchDialog=false"></i>
-                </div>
-                <div class="body">
-                    <div class="custom-box">
-                        <span>开关或选择类型</span>
-                    </div>
-                    <div class="form">
-                        <el-input v-model="title" type="text" placeholder="标题" maxlength="8" show-word-limit class="marginBottom24"></el-input>
-                        <el-input v-model="explain" type="text" placeholder="辅助说明" maxlength="40" show-word-limit class="marginBottom8"></el-input>
-                    </div>
-                </div>
-                <div class="footer">
-                    <div class="btn-box">
-                        <div class="border-btn">取消</div>
-                        <div class="normal-btn disable">确定</div>
-                    </div>
-                </div>
-            </div>
-        </div>
     </div>
     <div th:replace="pc/include/common_js :: common_js(~{::script})">
         <script src="/static/pc/assets/lib/jquery.min.js" th:src="@{/pc/assets/lib/jquery.min.js}"></script>
@@ -720,15 +543,6 @@
                     templateComponents: [],
                     showTemplateComponents: [],
                     componentTypeList: [],
-                    /**
-                     * 暂存字段配置弹框页数据，打开时会根据componentTypeList、showTemplateComponents、templateComponents更新数据，
-                     * 确定之后才会将数据刷新到对应数据列表中
-                     **/
-                    waitHandleData: {
-                        componentTypeList: [],
-                        showTemplateComponents: [],
-                        templateComponents: []
-                    },
                     activeCpTypeIndex: 0,
                     activeCpTypeName: '基本信息',
                     loaded: false,
@@ -739,6 +553,8 @@
                     // 组件编辑弹窗所用到的临时变量
                     currEditItem: {},
                     currEditIndex: null,
+                    // 编辑报名内组件时，存储报名index
+                    currEditSignUpInsideIndex: null,
 
 
                     radio1:'1',
@@ -820,6 +636,23 @@
                             })
                         })
                     },
+                    initMouseEnterField: function () {
+                        var $this = this;
+                        $this.$nextTick(function () {
+                            $('.field-item').mouseenter(function() {
+                                if($(this).hasClass('aready-add')){
+                                    $(this).find('.remove').show()
+                                    $(this).find('.aready').hide()
+                                }
+                            });
+                            $('.field-item').mouseleave(function() {
+                                if($(this).hasClass('aready-add')){
+                                    $(this).find('.remove').hide()
+                                    $(this).find('.aready').show()
+                                }
+                            });
+                        });
+                    },
                     // 调整右下角加号位置
                     fixRightEndBtnStyle: function () {
                         /* 右下角加号的位置 */
@@ -879,6 +712,7 @@
                                         width: '100%',
                                         height: '100%'
                                     });
+                                    $this.initMouseEnterField();
                                 })
                             } else {
                                 var errorMessage = res.message;
@@ -967,33 +801,10 @@
                         $this.activeCpTypeIndex = index;
                         $this.activeCpTypeName = $this.componentTypeList[index].name;
                     },
-                    // 初始化添加字段弹窗
-                    initAddFieldDialog: function () {
-                        var $this = this;
-                        $this.addFieldDialog = true;
-                        $this.$set($this.waitHandleData, 'componentTypeList', $.extend(true, [], $this.componentTypeList));
-                        $this.$set($this.waitHandleData, 'templateComponents', $.extend(true, [], $this.templateComponents));
-                        $this.$set($this.waitHandleData, 'showTemplateComponents', $.extend(true, [], $this.showTemplateComponents));
-                        $this.$nextTick(function () {
-                            $('.field-item').mouseenter(function() {
-                                if($(this).hasClass('aready-add')){
-                                    $(this).find('.remove').show()
-                                    $(this).find('.aready').hide()
-                                }
-                            });
-                            $('.field-item').mouseleave(function() {
-                                if($(this).hasClass('aready-add')){
-                                    $(this).find('.remove').hide()
-                                    $(this).find('.aready').show()
-                                }
-                            });
-                        });
-                    },
                     // 新增组件
                     addComponent: function (index, item) {
                         var $this = this;
-                        var { componentTypeList, templateComponents, showTemplateComponents } = $this.waitHandleData;
-                        var templateComponentLength = templateComponents.length;
+                        var templateComponentLength = $this.templateComponents.length;
                         var newTemplateComponent = {
                             templateId: $this.currTemplateId,
                             componentId: item.id,
@@ -1012,16 +823,16 @@
                                 $this.addSignUpComponent(item, newTemplateComponent);
                             }
                         } else {
-                            var componentType = componentTypeList[$this.activeCpTypeIndex];
+                            var componentType = $this.componentTypeList[$this.activeCpTypeIndex];
                             var components = componentType.components;
                             $this.$set(components[index], 'checked', true);
 
                             newTemplateComponent.virtualPid = componentType.virtualId;
-                            templateComponents.push(newTemplateComponent);
+                            $this.templateComponents.push(newTemplateComponent);
                             if (item.pid == 0) {
-                                showTemplateComponents.push(newTemplateComponent);
+                                $this.showTemplateComponents.push(newTemplateComponent);
                             } else {
-                                $(showTemplateComponents).each(function () {
+                                $($this.showTemplateComponents).each(function () {
                                     if (this.componentId == item.pid) {
                                         if (!this.children) {
                                             $this.$set(this, 'children', [])
@@ -1042,8 +853,7 @@
                     // 新增报名组件
                     addSignUpComponent: function (component, newSignUpTemplateComponent) {
                         var $this = this;
-                        var { componentTypeList, templateComponents, showTemplateComponents } = $this.waitHandleData;
-                        var templateComponentLength = templateComponents.length;
+                        var templateComponentLength = $this.templateComponents.length;
                         // 生成虚拟id
                         var newPid = uuid();
                         newSignUpTemplateComponent.virtualId = newPid;
@@ -1072,8 +882,8 @@
                             }
                         });
                         newSignUpTemplateComponent.children = newChildTemplateComponents;
-                        templateComponents.pushArray(newChildTemplateComponents);
-                        showTemplateComponents.push(newSignUpTemplateComponent);
+                        $this.templateComponents.pushArray(newChildTemplateComponents);
+                        $this.showTemplateComponents.push(newSignUpTemplateComponent);
                         // 将报名添加到分类中
                         var code = component.code;
                         var name = component.name;
@@ -1087,41 +897,32 @@
                     // 移除组件
                     removeComponent: function (index, item, e) {
                         var $this = this;
-                        var { componentTypeList, templateComponents, showTemplateComponents } = $this.waitHandleData;
-                        var components = componentTypeList[$this.activeCpTypeIndex].components;
+                        var components = $this.componentTypeList[$this.activeCpTypeIndex].components;
                         var target = e.target;
                         // 样式改变
                         $(target).hide();
                         $this.$set(components[index], 'checked', false)
-                        $this.waitHandleData.templateComponents = $.grep(templateComponents, function (it, index) {
-                            return it.virtualId != item.virtualId;
+                        $this.templateComponents = $.grep($this.templateComponents, function (it) {
+                            return it.componentId != item.virtualId;
                         });
                         // 基本信息的移除
                         if (item.virtualPid == 0) {
-                            $this.waitHandleData.showTemplateComponents = $.grep(showTemplateComponents, function (it, index) {
-                                return it.virtualId != item.virtualId;
+                            $this.showTemplateComponents = $.grep($this.showTemplateComponents, function (it) {
+                                return it.componentId != item.virtualId;
                             });
                         } else { // 报名组件信息的移除
-                            $($this.waitHandleData.showTemplateComponents).each(function () {
+                            $($this.showTemplateComponents).each(function () {
                                 var _this = this;
-                                if (_this.virtualId == item.virtualPid) {
+                                if (_this.componentId == item.virtualPid) {
                                     if (_this.children) {
                                         _this.children = $.grep(_this.children, function (it, index) {
-                                            return it.virtualId != item.virtualId;
+                                            return it.componentId != item.virtualId;
                                         });
                                     }
                                     return false;
                                 }
                             });
                         }
-                    },
-                    // 确认组件配置
-                    confirmFieldConfig: function () {
-                        var $this = this;
-                        $this.componentTypeList = $this.waitHandleData.componentTypeList;
-                        $this.templateComponents = $this.waitHandleData.templateComponents;
-                        $this.showTemplateComponents = $this.waitHandleData.showTemplateComponents;
-                        $this.addFieldDialog = false;
                     },
                     // 配置页面基础信息删除按钮
                     removeComponent1: function (index, item) {
@@ -1196,24 +997,55 @@
                         $this.currRemoveItemIndex = null;
                         $this.delDialog = false;
                     },
-                    openTextEditDialog: function (index, item) {
+                    openEditDialog: function (index, item, idx) {
                         var $this = this;
-                        $this.activityNameDialog = true
                         $this.currEditIndex = index;
+                        $this.currEditSignUpInsideIndex = idx;
                         $this.currEditItem = $.extend({}, item);
+
+                        if (item.code == 'sign_up_condition') {
+
+                            $this.chooseDialog = true
+                        } else if(item.type == 'radio' || item.type == 'checkbox') {
+                            $this.chooseDialog = true
+                        } else {
+                            $this.textDialog = true;
+                        }
                     },
-                    confirmTextEditResult: function () {
+                    confirmEditResult: function () {
                         var $this = this;
-                        $this.showTemplateComponents[$this.currEditIndex] = $this.currEditItem;
                         $($this.templateComponents).each(function () {
                             if (this.virtualId == $this.currEditItem.virtualId && this.virtualPid == $this.currEditItem.virtualPid) {
                                 $.extend(this, $this.currEditItem);
                                 return false;
                             }
-                        })
+                        });
+                        if ($this.currEditSignUpInsideIndex || $this.currEditSignUpInsideIndex == 0) {
+                            $this.$set($this.showTemplateComponents[$this.currEditIndex].children, $this.currEditSignUpInsideIndex, $this.currEditItem);
+                        } else {
+                            $this.showTemplateComponents[$this.currEditIndex] = $this.currEditItem;
+                        }
+
+                        if ($this.currEditItem.code == 'sign_up_condition') {
+
+                        } else if($this.currEditItem.type == 'radio' || $this.currEditItem.type == 'checkbox') {
+                            $this.chooseDialog = false
+                        } else {
+                            $this.textDialog = false;
+                        }
                         $this.currEditItem = {};
                         $this.currEditIndex = null;
-                        $this.activityNameDialog = false
+                        $this.currEditSignUpInsideIndex = null;
+                    },
+                    addCustomTextField: function () {
+                        var $this = this;
+                        $this.addFieldDialog = false;
+                        $this.textDialog = true;
+                    },
+                    addCustomChooseField: function () {
+                        var $this = this;
+                        $this.addFieldDialog = false;
+                        $this.chooseDialog = true
                     },
                     // 返回
                     returnBack: function () {
@@ -1281,6 +1113,14 @@
                             template: template,
                             templateComponents: templateComponents
                         }
+                    },
+                    addEditItemOptions: function () {
+                        var $this = this;
+                        $this.currEditItem.options.push({title: ''})
+                    },
+                    delEditItemOptions: function (index) {
+                        var $this = this;
+                        $this.currEditItem.options.splice(index, 1);
                     },
                     addOption1: function(){
                         this.option1.push({title: ''})
