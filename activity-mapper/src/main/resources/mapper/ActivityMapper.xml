@@ -438,9 +438,13 @@
     </select>
 
     <select id="listByActivityDate" resultType="java.lang.Integer">
-        SELECT t.id
-        FROM t_activity t
-        WHERE t.start_date &lt;= #{activityDate} and t.end_date &gt;= #{activityDate}
+        SELECT
+            t.id
+        FROM
+            t_activity t
+        WHERE
+            t.start_date &lt;= #{activityDate}
+            AND t.end_date &gt;= #{activityDate}
     </select>
 
     <select id="listActivityGroupByClassifyId" resultType="com.chaoxing.activity.dto.stat.ActivityClassifyDTO">
@@ -478,14 +482,15 @@
                     </if>
                 </trim>
             </if>
+            AND t.`status` IN ( 1, 2, 3, 4 )
         </where>
     </select>
 
     <select id="listActivityIdByFids" resultType="java.lang.Integer">
         SELECT
-        t.id
+            t.id
         FROM
-        t_activity t
+            t_activity t
         <where>
             t.create_fid in
             <foreach collection="fids" item="fid" open="(" close=")" separator=",">
@@ -502,8 +507,8 @@
                     </if>
                 </trim>
             </if>
+            AND t.`status` IN ( 1, 2, 3, 4 )
         </where>
     </select>
-
 
 </mapper>

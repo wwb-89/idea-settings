@@ -7,11 +7,10 @@ import com.chaoxing.activity.dto.OrgAddressDTO;
 import com.chaoxing.activity.dto.manager.WfwRegionalArchitectureDTO;
 import com.chaoxing.activity.dto.manager.mh.MhCloneParamDTO;
 import com.chaoxing.activity.dto.manager.mh.MhCloneResultDTO;
-import com.chaoxing.activity.dto.manager.sign.SignIn;
-import com.chaoxing.activity.dto.manager.sign.SignUp;
-import com.chaoxing.activity.dto.module.SignAddEditDTO;
-import com.chaoxing.activity.dto.module.SignAddEditResultDTO;
 import com.chaoxing.activity.dto.module.WorkFormDTO;
+import com.chaoxing.activity.dto.manager.sign.create.SignCreateParamDTO;
+import com.chaoxing.activity.dto.manager.sign.create.SignCreateResultDTO;
+import com.chaoxing.activity.dto.manager.sign.create.SignUpCreateParamDTO;
 import com.chaoxing.activity.mapper.ActivityAreaFlagMapper;
 import com.chaoxing.activity.mapper.ActivityDetailMapper;
 import com.chaoxing.activity.mapper.ActivityMapper;
@@ -36,7 +35,6 @@ import com.chaoxing.activity.util.constant.ActivityModuleConstant;
 import com.chaoxing.activity.util.constant.CacheConstant;
 import com.chaoxing.activity.util.enums.*;
 import com.chaoxing.activity.util.exception.BusinessException;
-import com.google.common.collect.Lists;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -115,20 +113,20 @@ public class ActivityHandleService {
 	 * @author wwb
 	 * @Date 2020-11-10 15:54:16
 	 * @param activity
-	 * @param signAddEdit
+	 * @param signCreateParam
 	 * @param wfwRegionalArchitectures
 	 * @param loginUser
 	 * @return void
 	*/
 	@Transactional(rollbackFor = Exception.class)
-	public void add(Activity activity, SignAddEditDTO signAddEdit, List<WfwRegionalArchitectureDTO> wfwRegionalArchitectures, LoginUserDTO loginUser) {
+	public void add(Activity activity, SignCreateParamDTO signCreateParam, List<WfwRegionalArchitectureDTO> wfwRegionalArchitectures, LoginUserDTO loginUser) {
 		// 新增活动输入验证
 		activityValidationService.addInputValidate(activity);
 		// 处理活动类型
 		handleActivityType(activity);
 		// 添加报名签到
-		SignAddEditResultDTO signAddEditResult = handleSign(activity, signAddEdit, loginUser);
-		activity.setSignId(signAddEditResult.getSignId());
+		SignCreateResultDTO signCreateResult = handleSign(activity, signCreateParam, loginUser);
+		activity.setSignId(signCreateResult.getSignId());
 		// 添加作品征集
 		handleWork(activity, loginUser);
 		// 处理活动的状态, 新增的活动都是待发布的
@@ -168,8 +166,6 @@ public class ActivityHandleService {
 		activityManager.setUserName(activity.getCreateUserName());
 		activityManager.setCreateUid(activity.getCreateUid());
 		activityManagerService.add(activityManager, loginUser);
-		// 活动报名签到模块
-		handleActivitySignModule(activity.getId(), signAddEditResult);
 		// 处理发布范围
 		if (CollectionUtils.isEmpty(wfwRegionalArchitectures)) {
 			throw new BusinessException("请选择发布范围");
@@ -181,49 +177,6 @@ public class ActivityHandleService {
 		handleActivityArea(activity, loginUser);
 		// 活动改变
 		activityChangeEventService.dataChange(activity, null, activity.getIntegralValue(), loginUser);
-	}
-
-	/**处理活动与报名签到模块的关系
-	 * @Description handleParticipateScope
-	 * @author wwb
-	 * @Date 2021-03-30 17:16:57
-	 * @param activityId
-	 * @param signAddEditResult
-	 * @return void
-	*/
-	private void handleActivitySignModule(Integer activityId, SignAddEditResultDTO signAddEditResult) {
-		if (activityId == null || signAddEditResult == null) {
-			return;
-		}
-		activitySignModuleMapper.delete(new UpdateWrapper<ActivitySignModule>()
-			.lambda()
-				.eq(ActivitySignModule::getActivityId, activityId)
-		);
-		List<ActivitySignModule> activitySignModules = Lists.newArrayList();
-		List<SignUp> signUpModules = signAddEditResult.getSignUpModules();
-		for (int i = 0; i < signUpModules.size(); i++) {
-			ActivitySignModule activitySignModule = ActivitySignModule.builder()
-					.activityId(activityId)
-					.moduleType(ActivityFlagSignModule.ModuleType.SIGN_UP.getValue())
-					.moduleId(signUpModules.get(i).getId())
-					.sequence(i)
-					.build();
-			activitySignModules.add(activitySignModule);
-		}
-		List<SignIn> signInModules = signAddEditResult.getSignInModules();
-		for (int i = 0; i < signInModules.size(); i++) {
-			SignIn signIn = signInModules.get(i);
-			ActivitySignModule activitySignModule = ActivitySignModule.builder()
-					.activityId(activityId)
-					.moduleType(ActivityFlagSignModule.ModuleType.fromValue(signIn.getType()).getValue())
-					.moduleId(signIn.getId())
-					.sequence(i)
-					.build();
-			activitySignModules.add(activitySignModule);
-		}
-		if (CollectionUtils.isNotEmpty(activitySignModules)) {
-			activitySignModuleMapper.batchAdd(activitySignModules);
-		}
 	}
 
 	/**处理活动类型
@@ -247,37 +200,32 @@ public class ActivityHandleService {
 	 * @author wwb
 	 * @Date 2020-11-13 15:46:49
 	 * @param activity
-	 * @param signAddEdit
+	 * @param signCreateParam
 	 * @param loginUser
-	 * @return com.chaoxing.activity.dto.module.SignAddEditResultDTO
+	 * @return com.chaoxing.activity.dto.sign.create.SignCreateResultDTO
 	*/
-	private SignAddEditResultDTO handleSign(Activity activity, SignAddEditDTO signAddEdit, LoginUserDTO loginUser) {
-		Integer signId = signAddEdit.getId();
-		List<SignUp> signUps = signAddEdit.getSignUps();
+	private SignCreateResultDTO handleSign(Activity activity, SignCreateParamDTO signCreateParam, LoginUserDTO loginUser) {
+		Integer signId = signCreateParam.getId();
+		List<SignUpCreateParamDTO> signUps = signCreateParam.getSignUps();
 		if (CollectionUtils.isNotEmpty(signUps)) {
 			String activityFlag = activity.getActivityFlag();
 			if (StringUtils.isEmpty(activityFlag)) {
 				activityFlag = Activity.ActivityFlagEnum.NORMAL.getValue();
 			}
-			for (SignUp signUp : signUps) {
-				signUp.setActivityFlag(activityFlag);
-			}
 		}
 		if (signId == null) {
 			// 签到的名称为活动引擎活动的名称
-			signAddEdit.setName(activity.getName());
+			signCreateParam.setName(activity.getName());
 			// 新增报名签到
-			signAddEdit.setCreateUid(loginUser.getUid());
-			signAddEdit.setCreateUserName(loginUser.getRealName());
-			signAddEdit.setCreateFid(loginUser.getFid());
-			signAddEdit.setCreateOrgName(loginUser.getOrgName());
-			signAddEdit.setUpdateUid(loginUser.getUid());
-			return signApiService.create(signAddEdit);
+			signCreateParam.setUid(loginUser.getUid());
+			signCreateParam.setUserName(loginUser.getRealName());
+			signCreateParam.setFid(loginUser.getFid());
+			signCreateParam.setOrgName(loginUser.getOrgName());
+			return signApiService.create(signCreateParam);
 		} else {
 			// 修改报名签到
-			signAddEdit.setUpdateUid(loginUser.getUid());
-			signAddEdit.setName(activity.getName());
-			return signApiService.update(signAddEdit);
+			signCreateParam.setName(activity.getName());
+			return signApiService.update(signCreateParam);
 		}
 	}
 
@@ -367,12 +315,12 @@ public class ActivityHandleService {
 	 * @Date 2020-11-11 15:41:49
 	 * @param activity
 	 * @param wfwRegionalArchitectures
-	 * @param signAddEdit
+	 * @param signCreateParam
 	 * @param loginUser
 	 * @return void
 	*/
 	@Transactional(rollbackFor = Exception.class)
-	public void edit(Activity activity, SignAddEditDTO signAddEdit, final List<WfwRegionalArchitectureDTO> wfwRegionalArchitectures, LoginUserDTO loginUser) {
+	public void edit(Activity activity, SignCreateParamDTO signCreateParam, final List<WfwRegionalArchitectureDTO> wfwRegionalArchitectures, LoginUserDTO loginUser) {
 		Integer activityId = activity.getId();
 		String activityEditLockKey = getActivityEditLockKey(activityId);
 		distributedLock.lock(activityEditLockKey, () -> {
@@ -386,9 +334,8 @@ public class ActivityHandleService {
 			BigDecimal oldIntegralValue = existActivity.getIntegralValue();
 			// 更新报名签到
 			Integer signId = existActivity.getSignId();
-			signAddEdit.setId(signId);
-			SignAddEditResultDTO signAddEditResult = handleSign(activity, signAddEdit, loginUser);
-			handleActivitySignModule(activity.getId(), signAddEditResult);
+			signCreateParam.setId(signId);
+			SignCreateResultDTO signCreateResult = handleSign(activity, signCreateParam, loginUser);
 			// 征集相关
 			handleWork(activity, loginUser);
 			// 处理活动相关

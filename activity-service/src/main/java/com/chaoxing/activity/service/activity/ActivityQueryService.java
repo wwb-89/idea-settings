@@ -9,12 +9,12 @@ import com.chaoxing.activity.dto.LoginUserDTO;
 import com.chaoxing.activity.dto.activity.ActivitySignedUpDTO;
 import com.chaoxing.activity.dto.activity.ActivityTypeDTO;
 import com.chaoxing.activity.dto.manager.sign.SignStatDTO;
-import com.chaoxing.activity.dto.manager.sign.SignUp;
-import com.chaoxing.activity.dto.module.SignAddEditDTO;
+import com.chaoxing.activity.dto.manager.sign.UserSignUpStatusStatDTO;
+import com.chaoxing.activity.dto.manager.sign.create.SignCreateParamDTO;
+import com.chaoxing.activity.dto.manager.sign.create.SignUpCreateParamDTO;
 import com.chaoxing.activity.dto.query.ActivityManageQueryDTO;
 import com.chaoxing.activity.dto.query.ActivityQueryDTO;
 import com.chaoxing.activity.dto.query.MhActivityCalendarQueryDTO;
-import com.chaoxing.activity.dto.sign.UserSignUpStatusStatDTO;
 import com.chaoxing.activity.mapper.*;
 import com.chaoxing.activity.model.*;
 import com.chaoxing.activity.service.activity.classify.ActivityClassifyQueryService;
@@ -671,25 +671,18 @@ public class ActivityQueryService {
 	* @author huxiaolong
 	* @Date 2021-05-31 11:25:37
 	* @param signId
-	* @return com.chaoxing.activity.dto.manager.sign.SignUp
+	* @return com.chaoxing.activity.dto.sign.create.SignUpCreateParamDTO
 	*/
-	public SignUp getActivitySignUp(Integer signId) {
+	public SignUpCreateParamDTO getActivitySignUp(Integer signId) {
 		if (signId == null) {
 			return null;
 		}
-		SignAddEditDTO signAddEditDTO = signApiService.getById(signId);
-		SignUp validSignUp = null;
-		if (signAddEditDTO == null || CollectionUtils.isEmpty(signAddEditDTO.getSignUps())) {
+		SignCreateParamDTO signCreateParam = signApiService.getById(signId);
+		List<SignUpCreateParamDTO> signUps = Optional.ofNullable(signCreateParam).map(SignCreateParamDTO::getSignUps).orElse(Lists.newArrayList());
+		if (CollectionUtils.isEmpty(signUps)) {
 			return null;
 		}
-		List<SignUp> signUps = signAddEditDTO.getSignUps();
-		for (SignUp signUp : signUps) {
-			if (!signUp.getDeleted()) {
-				validSignUp = signUp;
-				break;
-			}
-		}
-		return validSignUp;
+		return signUps.get(0);
 	}
 
 	/**根据活动id列表查询活动列表

@@ -4,17 +4,17 @@ import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.chaoxing.activity.dto.OrgFormConfigDTO;
-import com.chaoxing.activity.dto.manager.sign.*;
-import com.chaoxing.activity.dto.module.SignAddEditDTO;
-import com.chaoxing.activity.dto.module.SignAddEditResultDTO;
-import com.chaoxing.activity.dto.sign.ActivityBlockDetailSignStatDTO;
-import com.chaoxing.activity.dto.sign.SignActivityManageIndexDTO;
-import com.chaoxing.activity.dto.sign.SignParticipateScopeDTO;
-import com.chaoxing.activity.dto.sign.UserSignStatSummaryDTO;
+import com.chaoxing.activity.dto.manager.sign.SignStatDTO;
+import com.chaoxing.activity.dto.manager.sign.UserSignParticipationStatDTO;
+import com.chaoxing.activity.dto.manager.sign.SignActivityManageIndexDTO;
+import com.chaoxing.activity.dto.manager.sign.SignParticipateScopeDTO;
+import com.chaoxing.activity.dto.manager.sign.UserSignStatSummaryDTO;
+import com.chaoxing.activity.dto.manager.sign.create.SignCreateParamDTO;
+import com.chaoxing.activity.dto.manager.sign.create.SignCreateResultDTO;
+import com.chaoxing.activity.dto.manager.sign.create.SignUpCreateParamDTO;
 import com.chaoxing.activity.dto.stat.SignActivityStatDTO;
 import com.chaoxing.activity.model.ActivityStatSummary;
 import com.chaoxing.activity.util.CookieUtils;
-import com.chaoxing.activity.util.DateUtils;
 import com.chaoxing.activity.util.exception.BusinessException;
 import com.google.common.collect.Lists;
 import lombok.extern.slf4j.Slf4j;
@@ -31,7 +31,6 @@ import org.springframework.web.client.RestTemplate;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
-import java.time.ZoneOffset;
 import java.util.List;
 import java.util.Optional;
 import java.util.function.Consumer;
@@ -155,17 +154,17 @@ public class SignApiService {
 	 * @Description
 	 * @author wwb
 	 * @Date 2020-11-11 14:26:33
-	 * @param signAddEdit
-	 * @return com.chaoxing.activity.dto.module.SignAddEditResultDTO
+	 * @param signCreateParam
+	 * @return com.chaoxing.activity.dto.sign.create.SignCreateResultDTO
 	*/
-	public SignAddEditResultDTO create(SignAddEditDTO signAddEdit) {
+	public SignCreateResultDTO create(SignCreateParamDTO signCreateParam) {
 		HttpHeaders httpHeaders = new HttpHeaders();
 		httpHeaders.setContentType(MediaType.APPLICATION_JSON);
-		HttpEntity<String> httpEntity = new HttpEntity<>(JSON.toJSONString(signAddEdit), httpHeaders);
+		HttpEntity<String> httpEntity = new HttpEntity<>(JSON.toJSONString(signCreateParam), httpHeaders);
 		String result = restTemplate.postForObject(CREATE_URL, httpEntity, String.class);
 		JSONObject jsonObject = JSON.parseObject(result);
-		return resultHandle(jsonObject, () -> JSON.parseObject(jsonObject.getString("data"), SignAddEditResultDTO.class), (message) -> {
-			log.error("创建报名报名:{}失败:{}", JSON.toJSONString(signAddEdit), message);
+		return resultHandle(jsonObject, () -> JSON.parseObject(jsonObject.getString("data"), SignCreateResultDTO.class), (message) -> {
+			log.error("创建报名报名:{}失败:{}", JSON.toJSONString(signCreateParam), message);
 			throw new BusinessException(message);
 		});
 	}
@@ -174,17 +173,17 @@ public class SignApiService {
 	 * @Description
 	 * @author wwb
 	 * @Date 2020-11-11 17:58:39
-	 * @param signAddEdit
-	 * @return com.chaoxing.activity.dto.module.SignAddEditResultDTO
+	 * @param signCreateParam
+	 * @return com.chaoxing.activity.dto.sign.create.SignCreateResultDTO
 	*/
-	public SignAddEditResultDTO update(SignAddEditDTO signAddEdit) {
+	public SignCreateResultDTO update(SignCreateParamDTO signCreateParam) {
 		HttpHeaders httpHeaders = new HttpHeaders();
 		httpHeaders.setContentType(MediaType.APPLICATION_JSON);
-		HttpEntity<String> httpEntity = new HttpEntity<>(JSON.toJSONString(signAddEdit), httpHeaders);
+		HttpEntity<String> httpEntity = new HttpEntity<>(JSON.toJSONString(signCreateParam), httpHeaders);
 		String result = restTemplate.postForObject(UPDATE_URL, httpEntity, String.class);
 		JSONObject jsonObject = JSON.parseObject(result);
-		return resultHandle(jsonObject, () -> JSON.parseObject(jsonObject.getString("data"), SignAddEditResultDTO.class), (message) -> {
-			log.error("修改签到报名:{}失败:{}", JSON.toJSONString(signAddEdit), message);
+		return resultHandle(jsonObject, () -> JSON.parseObject(jsonObject.getString("data"), SignCreateResultDTO.class), (message) -> {
+			log.error("修改签到报名:{}失败:{}", JSON.toJSONString(signCreateParam), message);
 			throw new BusinessException(message);
 		});
 	}
@@ -194,30 +193,16 @@ public class SignApiService {
 	 * @author wwb
 	 * @Date 2020-11-19 13:15:47
 	 * @param signId
-	 * @return com.chaoxing.activity.dto.module.SignAddEditDTO
+	 * @return com.chaoxing.activity.dto.sign.create.SignCreateParamDTO
 	*/
-	public SignAddEditDTO getById(Integer signId) {
+	public SignCreateParamDTO getById(Integer signId) {
 		String url = String.format(DETAIL_URL, signId);
 		String result = restTemplate.getForObject(url, String.class);
 		JSONObject jsonObject = JSON.parseObject(result);
 		return resultHandle(jsonObject, () -> {
 			String data = jsonObject.getString("data");
-			SignAddEditDTO signAddEdit = JSON.parseObject(data, SignAddEditDTO.class);
-			List<SignUp> signUps = signAddEdit.getSignUps();
-			if (CollectionUtils.isNotEmpty(signUps)) {
-				for (SignUp signUp : signUps) {
-					signUp.setStartTimestamp(signUp.getStartTime().toInstant(ZoneOffset.ofHours(8)).toEpochMilli());
-					signUp.setEndTimestamp(signUp.getEndTime().toInstant(ZoneOffset.ofHours(8)).toEpochMilli());
-				}
-			}
-			List<SignIn> signIns = signAddEdit.getSignIns();
-			if (CollectionUtils.isNotEmpty(signIns)) {
-				for (SignIn signIn : signIns) {
-					signIn.setStartTimestamp(signIn.getStartTime().toInstant(ZoneOffset.ofHours(8)).toEpochMilli());
-					signIn.setEndTimestamp(signIn.getEndTime().toInstant(ZoneOffset.ofHours(8)).toEpochMilli());
-				}
-			}
-			return signAddEdit;
+			SignCreateParamDTO signCreateParam = JSON.parseObject(data, SignCreateParamDTO.class);
+			return signCreateParam;
 		}, (message) -> {
 			log.error("根据签到报名id:{}查询签到报名失败:{}", signId, message);
 			throw new BusinessException(message);
@@ -285,31 +270,6 @@ public class SignApiService {
 			return Optional.ofNullable(signedUpNum).orElse(0);
 		}
 		return signedUpNum;
-	}
-
-	/**活动块详情统计信息
-	 * @Description
-	 * @author wwb
-	 * @Date 2021-01-14 20:19:14
-	 * @param signId
-	 * @param uid
-	 * @return com.chaoxing.activity.dto.sign.ActivityBlockDetailSignStatDTO
-	*/
-	public ActivityBlockDetailSignStatDTO statActivityBlockDetail(Integer signId, Integer uid) {
-		String url = String.format(ACTIVITY_BLOCK_DETAIL_STAT_URL, signId, uid == null ? "" : uid);
-		String result = restTemplate.getForObject(url, String.class);
-		JSONObject jsonObject = JSON.parseObject(result);
-		return resultHandle(jsonObject, () -> {
-			ActivityBlockDetailSignStatDTO activityBlockDetailSignStat = JSON.parseObject(jsonObject.getString("data"), ActivityBlockDetailSignStatDTO.class);
-			SignUp signUp = activityBlockDetailSignStat.getSignUp();
-			if (signUp != null) {
-				signUp.setStartTimestamp(DateUtils.date2Timestamp(signUp.getStartTime()));
-				signUp.setEndTimestamp(DateUtils.date2Timestamp(signUp.getEndTime()));
-			}
-			return activityBlockDetailSignStat;
-		}, (message) -> {
-			throw new BusinessException(message);
-		});
 	}
 
 	/**分页查询用户报名的报名签到
@@ -432,11 +392,11 @@ public class SignApiService {
 	*/
 	public boolean isOpenSignUp(Integer signId) {
 		boolean isOpenSignUp = false;
-		SignAddEditDTO signAddEdit = getById(signId);
-		if (signAddEdit != null) {
-			List<SignUp> signUps = signAddEdit.getSignUps();
+		SignCreateParamDTO signCreateParam = getById(signId);
+		if (signCreateParam != null) {
+			List<SignUpCreateParamDTO> signUps = signCreateParam.getSignUps();
 			if (CollectionUtils.isNotEmpty(signUps)) {
-				for (SignUp signUp : signUps) {
+				for (SignUpCreateParamDTO signUp : signUps) {
 					if (!signUp.getDeleted()) {
 						isOpenSignUp = true;
 						break;
@@ -757,42 +717,6 @@ public class SignApiService {
 		String result = restTemplate.postForObject(ORG_FORM_CONFIG_URL, httpEntity, String.class);
 		JSONObject jsonObject = JSON.parseObject(result);
 		resultHandle(jsonObject, () -> JSON.parseObject(jsonObject.getString("data")), (message) -> {
-			throw new BusinessException(message);
-		});
-	}
-
-	/**根据uid和报名签到id查询用户报名列表
-	 * @Description 
-	 * @author wwb
-	 * @Date 2021-06-17 16:24:10
-	 * @param uid
-	 * @param signId
-	 * @return java.util.List<com.chaoxing.activity.dto.manager.sign.UserSignUp>
-	*/
-	public List<UserSignUp> listUserSignedUp(Integer uid, Integer signId) {
-		String url = String.format(USER_SIGNED_UP_LIST_URL, uid, signId);
-		String result = restTemplate.getForObject(url, String.class);
-		JSONObject jsonObject = JSON.parseObject(result);
-		return resultHandle(jsonObject, () -> JSON.parseArray(jsonObject.getString("data"), UserSignUp.class), (message) -> {
-			log.error("根据url:{} 查询用户报名列表信息error:{}", url, message);
-			throw new BusinessException(message);
-		});
-	}
-
-	/**根据uid和报名签到id查询用户签到列表
-	 * @Description 
-	 * @author wwb
-	 * @Date 2021-06-17 16:24:52
-	 * @param uid
-	 * @param signId
-	 * @return java.util.List<com.chaoxing.activity.dto.manager.sign.UserSignIn>
-	*/
-	public List<UserSignIn> listUserExcludeNotSignIn(Integer uid, Integer signId) {
-		String url = String.format(USER_EXCLUDE_NOT_SIGNED_IN_URL, uid, signId);
-		String result = restTemplate.getForObject(url, String.class);
-		JSONObject jsonObject = JSON.parseObject(result);
-		return resultHandle(jsonObject, () -> JSON.parseArray(jsonObject.getString("data"), UserSignIn.class), (message) -> {
-			log.error("根据url:{} 查询用户签到列表信息error:{}", url, message);
 			throw new BusinessException(message);
 		});
 	}

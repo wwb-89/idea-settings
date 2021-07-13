@@ -6,7 +6,7 @@ import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.chaoxing.activity.dto.manager.ActivityCreatePermissionDTO;
 import com.chaoxing.activity.dto.manager.WfwDepartmentDTO;
 import com.chaoxing.activity.dto.manager.WfwGroupDTO;
-import com.chaoxing.activity.dto.manager.sign.SignUpParticipateScope;
+import com.chaoxing.activity.dto.manager.sign.SignUpParticipateScopeDTO;
 import com.chaoxing.activity.mapper.ActivityCreatePermissionMapper;
 import com.chaoxing.activity.model.ActivityClassify;
 import com.chaoxing.activity.model.ActivityCreatePermission;
@@ -23,7 +23,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanUtils;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -55,7 +54,7 @@ public class ActivityCreatePermissionService {
     @Resource
     private MoocApiService moocApiService;
 
-    @Autowired
+    @Resource
     private ActivityCreatePermissionMapper activityCreatePermissionMapper;
 
     @Resource
@@ -226,7 +225,7 @@ public class ActivityCreatePermissionService {
         boolean setAllReleaseScope = Boolean.FALSE;
         boolean setManageGroupScope = Boolean.FALSE;
         boolean setClassifyScope = Boolean.FALSE;
-        Set<SignUpParticipateScope> releaseScopes = Sets.newHashSet();
+        Set<SignUpParticipateScopeDTO> releaseScopes = Sets.newHashSet();
         List<Integer> manageGroupIds = Lists.newArrayList();
         Set<Integer> classifyIdSet = Sets.newHashSet();
         for (ActivityCreatePermission permission : createPermissions) {
@@ -251,7 +250,7 @@ public class ActivityCreatePermissionService {
                     }
                     // 获取用户角色发布范围并集
                     if (StringUtils.isNotBlank(permission.getSignUpScope())) {
-                        releaseScopes.addAll(JSON.parseArray(permission.getSignUpScope(), SignUpParticipateScope.class));
+                        releaseScopes.addAll(JSON.parseArray(permission.getSignUpScope(), SignUpParticipateScopeDTO.class));
                     }
                 }
             }
@@ -272,7 +271,7 @@ public class ActivityCreatePermissionService {
         if (!setAllReleaseScope) {
             // 基于不存在角色有不限的发布范围，若有设置基于管理的角色，查询管理的组织架构，构建和发布范围一致的实体
             if (setManageGroupScope) {
-                List<SignUpParticipateScope> additionalReleaseScopes = packageReleaseScopes(manageGroupIds, wfwGroups);
+                List<SignUpParticipateScopeDTO> additionalReleaseScopes = packageReleaseScopes(manageGroupIds, wfwGroups);
                 releaseScopes.addAll(additionalReleaseScopes);
             }
             activityCreatePermission.setWfwGroups(buildWfwGroups(releaseScopes, wfwGroups));
@@ -290,16 +289,16 @@ public class ActivityCreatePermissionService {
     * @Date 2021-06-04 18:12:52
     * @param manageGroupIds
     * @param wfwGroups
-    * @return java.util.List<com.chaoxing.activity.dto.manager.sign.SignUpParticipateScope>
+    * @return java.util.List<com.chaoxing.activity.dto.sign.SignUpParticipateScopeDTO>
     */
-    private List<SignUpParticipateScope> packageReleaseScopes(List<Integer> manageGroupIds, List<WfwGroupDTO> wfwGroups) {
-        List<SignUpParticipateScope> scopes = Lists.newArrayList();
+    private List<SignUpParticipateScopeDTO> packageReleaseScopes(List<Integer> manageGroupIds, List<WfwGroupDTO> wfwGroups) {
+        List<SignUpParticipateScopeDTO> scopes = Lists.newArrayList();
         for (WfwGroupDTO group : wfwGroups) {
             Integer groupId = Integer.valueOf(group.getId());
             Integer gid = StringUtils.isBlank(group.getGid()) ? null : Integer.valueOf(group.getGid());
             Boolean isLeaf = group.getSoncount() == null || group.getSoncount() != 0;
             if (manageGroupIds.contains(groupId)) {
-                scopes.add(SignUpParticipateScope.builder()
+                scopes.add(SignUpParticipateScopeDTO.builder()
                         .externalId(groupId)
                         .externalPid(gid)
                         .externalName(group.getGroupname())
@@ -319,7 +318,7 @@ public class ActivityCreatePermissionService {
     * @param wfwGroups
     * @return java.util.List<com.chaoxing.activity.dto.manager.WfwGroupDTO>
     */
-    private List<WfwGroupDTO> buildWfwGroups(Set<SignUpParticipateScope> releaseScopes, List<WfwGroupDTO> wfwGroups) {
+    private List<WfwGroupDTO> buildWfwGroups(Set<SignUpParticipateScopeDTO> releaseScopes, List<WfwGroupDTO> wfwGroups) {
         // wfwGroups 转换为map
         Map<Integer, WfwGroupDTO> wfwGroupMap = Maps.newHashMap();
         for (WfwGroupDTO group : wfwGroups) {
@@ -331,7 +330,7 @@ public class ActivityCreatePermissionService {
         Set<Integer> scopeGroupIdSet = Sets.newHashSet();
         Map<Integer, Boolean> scopeGroupMap = Maps.newHashMap();
 
-        for (SignUpParticipateScope scope : releaseScopes) {
+        for (SignUpParticipateScopeDTO scope : releaseScopes) {
             Integer externalId = scope.getExternalId();
             scopeGroupIdSet.add(externalId);
             scopeGroupMap.put(externalId, scope.getLeaf());
