@@ -70,20 +70,11 @@ public class ActivityStatController {
     @LoginRequired
     @RequestMapping("org/stat")
     public String orgActivityStat(HttpServletRequest request, Model model, Integer wfwfid, Integer unitId, Integer state, Integer fid) {
-        Integer realFid = Optional.ofNullable(wfwfid).orElse(Optional.ofNullable(unitId).orElse(Optional.ofNullable(state).orElse(fid)));
-        if (realFid == null) {
-            LoginUserDTO loginUser = LoginUtils.getLoginUser(request);
-            realFid = loginUser.getFid();
-        }
+        Integer realFid = Optional.ofNullable(wfwfid).orElse(Optional.ofNullable(unitId).orElse(Optional.ofNullable(state).orElse(Optional.ofNullable(fid).orElse(LoginUtils.getLoginUser(request).getFid()))));
         ActivityOrgStatDTO activityOrgStat = activityStatQueryService.orgActivityStat(realFid);
         model.addAttribute("fid", realFid);
         model.addAttribute("activityOrgStat", activityOrgStat);
-        if (UserAgentUtils.isMobileAccess(request)) {
-            // todo 移动端无机构统计前端
-            return "mobile/stat/org-activity-stat";
-        } else {
-            return "pc/stat/org-activity-stat";
-        }
+        return "pc/stat/org-activity-stat";
     }
 
     /**区域下活动统计主页
@@ -98,22 +89,13 @@ public class ActivityStatController {
     @LoginRequired
     @RequestMapping("region/stat")
     public String regionActivityStat(HttpServletRequest request, Model model, Integer wfwfid, Integer unitId, Integer state, Integer fid) {
-        Integer realFid = Optional.ofNullable(wfwfid).orElse(Optional.ofNullable(unitId).orElse(Optional.ofNullable(state).orElse(fid)));
-        if (realFid == null) {
-            LoginUserDTO loginUser = LoginUtils.getLoginUser(request);
-            realFid = loginUser.getFid();
-        }
+        Integer realFid = Optional.ofNullable(wfwfid).orElse(Optional.ofNullable(unitId).orElse(Optional.ofNullable(state).orElse(Optional.ofNullable(fid).orElse(LoginUtils.getLoginUser(request).getFid()))));
         ActivityOrgStatDTO regionalActivityStat = activityStatQueryService.regionalActivityStat(realFid);
         List<WfwRegionalArchitectureDTO> wfwRegionalArchitectureTrees = wfwRegionalArchitectureApiService.listWfwRegionalTreesByFid(realFid);
         model.addAttribute("fid", realFid);
         model.addAttribute("regionalActivityStat", regionalActivityStat);
         model.addAttribute("wfwRegionalArchitectureTrees", wfwRegionalArchitectureTrees);
-        if (UserAgentUtils.isMobileAccess(request)) {
-            // todo 移动端无区域统计前端
-            return "mobile/stat/regional-activity-stat";
-        } else {
-            return "pc/stat/regional-activity-stat";
-        }
+        return "pc/stat/regional-activity-stat";
     }
 
 }

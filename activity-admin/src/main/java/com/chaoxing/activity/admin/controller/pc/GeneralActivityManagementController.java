@@ -1,7 +1,6 @@
 package com.chaoxing.activity.admin.controller.pc;
 
 import com.chaoxing.activity.admin.util.LoginUtils;
-import com.chaoxing.activity.dto.LoginUserDTO;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -46,11 +45,7 @@ public class GeneralActivityManagementController {
 	 */
 	@RequestMapping("")
 	public String newIndex(HttpServletRequest request, Model model, String code, Integer wfwfid, Integer unitId, Integer state, Integer fid, @RequestParam(defaultValue = "0") Integer secondClassroomFlag, @RequestParam(defaultValue = "0") Integer strict, String flag) {
-		Integer realFid = Optional.ofNullable(wfwfid).orElse(Optional.ofNullable(unitId).orElse(Optional.ofNullable(state).orElse(fid)));
-		if (realFid == null) {
-			LoginUserDTO loginUser = LoginUtils.getLoginUser(request);
-			realFid = loginUser.getFid();
-		}
+		Integer realFid = Optional.ofNullable(wfwfid).orElse(Optional.ofNullable(unitId).orElse(Optional.ofNullable(state).orElse(Optional.ofNullable(fid).orElse(LoginUtils.getLoginUser(request).getFid()))));
 		return activityManageController.index(model, code, realFid, secondClassroomFlag, strict, flag);
 	}
 

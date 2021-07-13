@@ -8,7 +8,7 @@ import com.chaoxing.activity.service.tablefield.TableFieldQueryService;
 import com.chaoxing.activity.service.user.result.UserResultQueryService;
 import com.chaoxing.activity.util.UserAgentUtils;
 import com.chaoxing.activity.util.annotation.LoginRequired;
-import org.apache.commons.collections4.CollectionUtils;
+import com.google.common.collect.Lists;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import java.util.List;
+import java.util.Optional;
 
 /** 考核管理
  * @author wwb
@@ -50,10 +51,7 @@ public class ResultsManageController {
 	public String index(HttpServletRequest request, Model model, @PathVariable Integer activityId) {
 		List<TableFieldDetail> tableFieldDetails = tableFieldQueryService.listTableFieldDetail(TableField.Type.RESULT_MANAGE, TableField.AssociatedType.ACTIVITY);
 		List<ActivityTableField> activityTableFields = tableFieldQueryService.listActivityTableField(activityId, TableField.Type.RESULT_MANAGE, TableField.AssociatedType.ACTIVITY);
-		Integer tableFieldId = null;
-		if (CollectionUtils.isNotEmpty(tableFieldDetails)) {
-			tableFieldId = tableFieldDetails.get(0).getTableFieldId();
-		}
+		Integer tableFieldId = Optional.ofNullable(tableFieldDetails).orElse(Lists.newArrayList()).stream().findFirst().map(TableFieldDetail::getTableFieldId).orElse(null);
 		model.addAttribute("activityId", activityId);
 		model.addAttribute("tableFieldId", tableFieldId);
 		model.addAttribute("tableFieldDetails", tableFieldDetails);

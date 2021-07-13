@@ -6,7 +6,6 @@ import com.chaoxing.activity.dto.OrgDTO;
 import com.chaoxing.activity.model.Activity;
 import com.chaoxing.activity.service.activity.ActivityValidationService;
 import com.chaoxing.activity.service.activity.manager.ActivityManagerService;
-import com.chaoxing.activity.service.manager.MoocApiService;
 import com.chaoxing.activity.service.manager.WfwContactApiService;
 import com.chaoxing.activity.util.UserAgentUtils;
 import com.chaoxing.activity.util.annotation.LoginRequired;
@@ -35,8 +34,6 @@ public class ActivityManagerManageController {
 	private ActivityValidationService activityValidationService;
 	@Resource
 	private ActivityManagerService activityManagerService;
-	@Resource
-	private MoocApiService moocApiService;
 	@Resource
 	private WfwContactApiService wfwContactApiService;
 

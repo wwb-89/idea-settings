@@ -1,7 +1,6 @@
 package com.chaoxing.activity.admin.controller.pc;
 
 import com.chaoxing.activity.admin.util.LoginUtils;
-import com.chaoxing.activity.dto.LoginUserDTO;
 import com.chaoxing.activity.dto.OrgRoleDTO;
 import com.chaoxing.activity.dto.manager.WfwGroupDTO;
 import com.chaoxing.activity.model.ActivityClassify;
@@ -48,11 +47,7 @@ public class ActivityCreatePermissionController {
     @LoginRequired
     @RequestMapping("")
     public String index(HttpServletRequest request, Model model, Integer wfwfid, Integer unitId, Integer state, Integer fid) {
-        Integer realFid = Optional.ofNullable(wfwfid).orElse(Optional.ofNullable(unitId).orElse(Optional.ofNullable(state).orElse(fid)));
-        LoginUserDTO loginUser = LoginUtils.getLoginUser(request);
-        if (realFid == null) {
-            realFid = loginUser.getFid();
-        }
+        Integer realFid = Optional.ofNullable(wfwfid).orElse(Optional.ofNullable(unitId).orElse(Optional.ofNullable(state).orElse(Optional.ofNullable(fid).orElse(LoginUtils.getLoginUser(request).getFid()))));
         List<OrgRoleDTO> roleList = organizationalStructureApiService.listOrgRoles(realFid);
         List<ActivityClassify> classifyList = activityClassifyQueryService.listOrgAffiliation(realFid);
         OrgConfig orgConfig = orgConfigService.getByFid(realFid);

@@ -1,7 +1,6 @@
 package com.chaoxing.activity.admin.controller.general;
 
 import com.chaoxing.activity.admin.util.LoginUtils;
-import com.chaoxing.activity.dto.LoginUserDTO;
 import com.chaoxing.activity.model.Template;
 import com.chaoxing.activity.service.activity.engine.ActivityEngineQueryService;
 import com.chaoxing.activity.util.annotation.LoginRequired;
@@ -31,11 +30,7 @@ public class ActivityEngineController {
     @LoginRequired
     @RequestMapping()
     public String index(HttpServletRequest request, Model model, Integer wfwfid, Integer unitId, Integer state, Integer fid) {
-        Integer realFid = Optional.ofNullable(wfwfid).orElse(Optional.ofNullable(unitId).orElse(Optional.ofNullable(state).orElse(fid)));
-        if (realFid == null) {
-            LoginUserDTO loginUser = LoginUtils.getLoginUser(request);
-            realFid = loginUser.getFid();
-        }
+        Integer realFid = Optional.ofNullable(wfwfid).orElse(Optional.ofNullable(unitId).orElse(Optional.ofNullable(state).orElse(Optional.ofNullable(fid).orElse(LoginUtils.getLoginUser(request).getFid()))));
         List<Template> templates = activityEngineQueryService.listTemplateByFid(realFid);
         model.addAttribute("fid", realFid);
         model.addAttribute("templates", templates);
