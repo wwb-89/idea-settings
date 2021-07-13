@@ -452,7 +452,7 @@ public class ActivityHandleService {
 	public void delete(Integer activityId, LoginUserDTO loginUser) {
 		// 验证是否能删除
 		Activity activity = activityValidationService.deleteAble(activityId, loginUser);
-		activity.setStatus(Activity.StatusEnum.DELETED.getValue());
+		activity.delete();
 		activityMapper.update(null, new UpdateWrapper<Activity>()
 			.lambda()
 				.eq(Activity::getId, activityId)

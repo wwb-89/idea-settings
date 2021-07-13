@@ -78,7 +78,6 @@ public class ActivityApiController {
 		LoginUserDTO loginUser = LoginUtils.getLoginUser(request);
 		Activity activity = JSON.parseObject(activityJsonStr, Activity.class);
 		List<WfwRegionalArchitectureDTO> wfwRegionalArchitectures = JSON.parseArray(participateScopeJsonStr, WfwRegionalArchitectureDTO.class);
-		// 本期不开启审核
 		SignCreateParamDTO signAddEdit = JSON.parseObject(signJsonStr, SignCreateParamDTO.class);
 		activityHandleService.edit(activity, signAddEdit, wfwRegionalArchitectures, loginUser);
 		return RestRespDTO.success(activity);

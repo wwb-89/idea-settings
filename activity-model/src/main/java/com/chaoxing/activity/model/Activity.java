@@ -163,9 +163,6 @@ public class Activity {
     /** 管理员uid列表 */
     @TableField(exist = false)
     private List<Integer> managerUids;
-    /** 起止时间 */
-    @TableField(exist = false)
-    private String activityStartEndTime;
 
     @Getter
     public enum OriginTypeEnum {
@@ -256,40 +253,6 @@ public class Activity {
                 }
             }
             throw new BusinessException("未知的活动状态");
-        }
-    }
-
-    /**活动状态枚举
-     * @className Activity
-     * @description
-     * @author wwb
-     * @blame wwb
-     * @date 2021-03-29 10:49:06
-     * @version ver 1.0
-     */
-    @Getter
-    public enum AuditStatusEnum {
-        /** 已删除 */
-        NOT_PASS("未通过", 0),
-        PASSED("已通过", 1),
-        WAIT_AUDIT("待审核", 2);
-
-        private final String name;
-        private final Integer value;
-
-        AuditStatusEnum(String name, Integer value) {
-            this.name = name;
-            this.value = value;
-        }
-
-        public static AuditStatusEnum fromValue(Integer value) {
-            AuditStatusEnum[] values = AuditStatusEnum.values();
-            for (AuditStatusEnum auditStatusEnum : values) {
-                if (Objects.equals(auditStatusEnum.getValue(), value)) {
-                    return auditStatusEnum;
-                }
-            }
-            return null;
         }
     }
 
@@ -388,6 +351,10 @@ public class Activity {
         setReleased(false);
         setReleaseUid(null);
         setReleaseTime(null);
+    }
+
+    public void delete() {
+        setStatus(StatusEnum.DELETED.getValue());
     }
 
 }

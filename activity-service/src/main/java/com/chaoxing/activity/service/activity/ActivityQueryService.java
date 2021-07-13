@@ -261,8 +261,6 @@ public class ActivityQueryService {
 			// 查询报名人数
 			List<Integer> signIds = Lists.newArrayList();
 			for (Activity activity : activities) {
-				// 处理活动时间范围
-				activity.setActivityStartEndTime(DateUtils.activityTimeScope(activity.getStartTime(), activity.getEndTime()));
 				Integer signId = activity.getSignId();
 				if (signId != null) {
 					signIds.add(signId);

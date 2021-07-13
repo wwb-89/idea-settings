@@ -7,25 +7,28 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.springframework.beans.BeanUtils;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
-import java.util.List;
+import java.util.Optional;
 
-/**创建活动对象
+/**更新活动对象
  * @author wwb
  * @version ver 1.0
- * @className ActivityCreateParamDTO
+ * @className ActivityUpdateParamDTO
  * @description
  * @blame wwb
- * @date 2021-07-13 10:55:23
+ * @date 2021-07-13 15:03:52
  */
 @Data
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class ActivityCreateParamDTO {
+public class ActivityUpdateParamDTO {
 
+	/** id */
+	private Integer id;
 	/** 活动名称 */
 	private String name;
 	/** 开始时间 */
@@ -56,6 +59,18 @@ public class ActivityCreateParamDTO {
 	private BigDecimal credit;
 	/** 参与时长上限（小时） */
 	private Integer timeLengthUpperLimit;
+	/** 签到报名id */
+	private Integer signId;
+	/** 网页模板id */
+	private Integer webTemplateId;
+	/** 门户网站id */
+	private Integer websiteId;
+	/** 门户网页id */
+	private Integer pageId;
+	/** 门户预览地址 */
+	private String previewUrl;
+	/** 门户编辑地址 */
+	private String editUrl;
 	/** 是否定时发布 */
 	private Boolean timingRelease;
 	/** 定时发布时间 */
@@ -74,6 +89,8 @@ public class ActivityCreateParamDTO {
 	private BigDecimal integral;
 	/** 是否开启作品征集 */
 	private Boolean openWork;
+	/** 作品征集id */
+	private Integer workId;
 	/** 来源类型 */
 	private String originType;
 	/** 来源值 */
@@ -85,13 +102,10 @@ public class ActivityCreateParamDTO {
 	/** 简介 */
 	private String introduction;
 
-	/** 活动组件值对象列表 */
-	private List<ActivityComponentValueDTO> activityComponentValues;
-
-	/**构建活动对象
+	/**构建活动
 	 * @Description 
 	 * @author wwb
-	 * @Date 2021-07-13 15:14:51
+	 * @Date 2021-07-13 15:15:44
 	 * @param 
 	 * @return com.chaoxing.activity.model.Activity
 	*/
@@ -99,13 +113,13 @@ public class ActivityCreateParamDTO {
 		LocalDateTime startTime = DateUtils.timestamp2Date(getStartTimeStamp());
 		LocalDateTime endTime = DateUtils.timestamp2Date(getEndTimeStamp());
 		return Activity.builder()
+				.id(getId())
 				.name(getName())
 				.startTime(startTime)
 				.endTime(endTime)
 				.startDate(startTime.toLocalDate())
 				.endDate(endTime.toLocalDate())
 				.coverCloudId(getCoverCloudId())
-				.coverUrl("")
 				.organisers(getOrganisers())
 				.activityType(getActivityType())
 				.address(getAddress())
@@ -123,15 +137,29 @@ public class ActivityCreateParamDTO {
 				.ratingNeedAudit(getRatingNeedAudit())
 				.integral(getIntegral())
 				.openWork(getOpenWork())
-				.marketId(getMarketId())
-				.templateId(getTemplateId())
 				.build();
+	}
+
+	/**通过活动构建修改活动对象
+	 * @Description 
+	 * @author wwb
+	 * @Date 2021-07-13 15:28:25
+	 * @param activity
+	 * @return com.chaoxing.activity.dto.activity.ActivityUpdateParamDTO
+	*/
+	public ActivityUpdateParamDTO buildFromActivity(Activity activity) {
+		ActivityUpdateParamDTO activityUpdateParam = new ActivityUpdateParamDTO();
+		BeanUtils.copyProperties(activity, activityUpdateParam);
+		activityUpdateParam.setStartTimeStamp(DateUtils.date2Timestamp(activity.getStartTime()));
+		activityUpdateParam.setEndTimeStamp(DateUtils.date2Timestamp(activity.getEndTime()));
+		activityUpdateParam.setTimingReleaseTimeStamp(Optional.ofNullable(activity.getTimingReleaseTime()).map(DateUtils::date2Timestamp).orElse(null));
+		return activityUpdateParam;
 	}
 
 	/**构建活动详情
 	 * @Description 
 	 * @author wwb
-	 * @Date 2021-07-13 15:21:43
+	 * @Date 2021-07-13 15:15:18
 	 * @param 
 	 * @return com.chaoxing.activity.model.ActivityDetail
 	*/

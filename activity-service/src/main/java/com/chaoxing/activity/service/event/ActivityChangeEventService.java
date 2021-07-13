@@ -54,11 +54,11 @@ public class ActivityChangeEventService {
 	 * @Date 2021-03-26 14:54:18
 	 * @param activity
 	 * @param oldActivity 原活动
-	 * @param oldIntegralValue 原积分
+	 * @param oldIntegral 原积分
 	 * @param loginUser
 	 * @return void
 	*/
-	public void dataChange(Activity activity, Activity oldActivity, BigDecimal oldIntegralValue, LoginUserDTO loginUser) {
+	public void dataChange(Activity activity, Activity oldActivity, BigDecimal oldIntegral, LoginUserDTO loginUser) {
 		Integer activityId = activity.getId();
 		Integer createFid = activity.getCreateFid();
 		// 数据推送
@@ -76,10 +76,9 @@ public class ActivityChangeEventService {
 		activityCoverUrlSyncQueueService.push(activityId);
 		Integer signId = activity.getSignId();
 		if (signId != null) {
-			BigDecimal integralValue = activity.getIntegral();
-			integralValue = Optional.ofNullable(integralValue).orElse(BigDecimal.valueOf(0));
-			oldIntegralValue = Optional.ofNullable(oldIntegralValue).orElse(BigDecimal.valueOf(0));
-			if (integralValue.compareTo(oldIntegralValue) != 0) {
+			BigDecimal integral = Optional.ofNullable(activity.getIntegral()).orElse(BigDecimal.valueOf(0));
+			oldIntegral = Optional.ofNullable(oldIntegral).orElse(BigDecimal.valueOf(0));
+			if (integral.compareTo(oldIntegral) != 0) {
 				activityIntegralChangeQueueService.push(signId);
 				// 机构用户统计中用户获得的积分更新
 				userStatSummaryService.updateActivityUserIntegral(activity.getId(), activity.getIntegral());
