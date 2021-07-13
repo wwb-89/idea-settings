@@ -564,9 +564,13 @@
                         <el-input v-model="title" type="text" placeholder="标题（必填）" maxlength="8" show-word-limit class="marginBottom20"></el-input>
                         <el-input v-model="explain" type="text" placeholder="说明" maxlength="40" show-word-limit class="marginBottom20"></el-input>
                         <el-form-item label="数据来源" class="marginBottom20">
-                            <el-select v-model="currEditItem." placeholder="请选择关联表单">
-                                <el-option label="数据来源1" value="1"></el-option>
-                                <el-option label="数据来源2" value="2"></el-option>
+                            <el-select v-model="currEditItem.originIdentify" placeholder="请选择关联表单" @change="selectForm">
+                                <el-option v-for="item in wfwForms"
+                                        :key="item.id"
+                                        :label="item.name"
+                                        :value="item.id"
+                                >
+                                </el-option>
                             </el-select>
                         </el-form-item>
                         <div class="marginBottom20">
@@ -576,18 +580,22 @@
                                     <el-option label="报名者" value="1"></el-option>
                                 </el-select>
                                 <span>等于</span>
-                                <el-select v-model="shijian" placeholder="请选择"  class="width186">
-                                    <el-option label="时间1" value="1"></el-option>
-                                    <el-option label="时间2" value="2"></el-option>
+                                <el-select v-model="currEditItem.fieldName" placeholder="请选择"  class="width186">
+                                    <el-option  v-for="(item, index) in wfwFormFields"
+                                                :key="index"
+                                                :label="item.name"
+                                                :value="item.name"
+                                    >
+                                </el-option>
                                 </el-select>
                             </div>
                         </div>
                         <div class="marginBottom20">
                             <p class="tips marginBottom8">判断条件</p>
                             <div class="three">
-                                <el-select v-model="zhuangtai" placeholder="" class="width150">
-                                    <el-option label="不为空" value="不为空"></el-option>
-                                    <el-option label="为空" value="为空"></el-option>
+                                <el-select v-model="currEditItem.allowSignedUp" placeholder="" class="width150">
+                                    <el-option label="不为空" :value="false"></el-option>
+                                    <el-option label="为空" :value="true"></el-option>
                                 </el-select>
                                 <span>时，可以报名</span>
                             </div>
