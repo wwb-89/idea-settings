@@ -29,6 +29,9 @@ public class ActivityEngineDTO {
     /** 组件信息list */
     private List<Component> components;
 
+    /** 待更新templateId 自定义组件ids */
+    private List<Integer> customComponentIds;
+
     /** 模板组件关联信息list */
     private List<TemplateComponent> templateComponents;
 

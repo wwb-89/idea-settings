@@ -3,6 +3,9 @@ package com.chaoxing.activity.mapper;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.chaoxing.activity.model.ComponentField;
 import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Param;
+
+import java.util.List;
 
 /**
  * @className: ComponentFieldMapper
@@ -13,4 +16,12 @@ import org.apache.ibatis.annotations.Mapper;
  */
 @Mapper
 public interface ComponentFieldMapper extends BaseMapper<ComponentField> {
+    /**
+    * @Description
+    * @author huxiaolong
+    * @Date 2021-07-13 16:15:51
+    * @param fieldList
+    * @return void
+    */
+    void batchAdd(@Param("fieldList") List<ComponentField> fieldList);
 }

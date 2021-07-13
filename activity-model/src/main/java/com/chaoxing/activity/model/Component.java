@@ -53,8 +53,8 @@ public class Component {
     private String originIdentify;
     /** 字段标识; column: field_flag*/
     private String fieldFlag;
-    /** 所属机构id; column: fid*/
-    private Integer fid;
+    /** 模板; column: templateId*/
+    private Integer templateId;
     /** 创建时间; column: create_time*/
     private LocalDateTime createTime;
     /** 创建人uid; column: create_uid*/

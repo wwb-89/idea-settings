@@ -3,11 +3,10 @@
 <mapper namespace="com.chaoxing.activity.mapper.SignUpFillInfoTypeMapper">
     <resultMap id="BaseResultMap" type="com.chaoxing.activity.model.SignUpFillInfoType">
         <id column="id" jdbcType="INTEGER" property="id" />
-        <result column="template_id" jdbcType="INTEGER" property="templateId" />
-        <result column="component_id" jdbcType="INTEGER" property="componentId" />
+        <result column="template_component_id" jdbcType="INTEGER" property="templateComponentId" />
         <result column="type" jdbcType="VARCHAR" property="type" />
     </resultMap>
     <sql id="Base_Column_List">
-        t.id, t.template_id, t.component_id, t.type
+        t.id, t.template_component_id, t.type
     </sql>
 </mapper>

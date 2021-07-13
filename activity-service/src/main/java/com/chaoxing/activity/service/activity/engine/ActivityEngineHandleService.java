@@ -1,6 +1,7 @@
 package com.chaoxing.activity.service.activity.engine;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.chaoxing.activity.dto.engine.ActivityEngineDTO;
 import com.chaoxing.activity.mapper.ComponentFieldMapper;
 import com.chaoxing.activity.mapper.ComponentMapper;
@@ -9,19 +10,14 @@ import com.chaoxing.activity.mapper.TemplateMapper;
 import com.chaoxing.activity.model.Component;
 import com.chaoxing.activity.model.Template;
 import com.chaoxing.activity.model.TemplateComponent;
-import com.google.common.collect.Maps;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
-import org.apache.commons.compress.utils.Lists;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
-import java.util.Map;
 import java.util.Objects;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 /**
  * @author huxiaolong
@@ -45,7 +41,6 @@ public class ActivityEngineHandleService {
 
     private final Integer ROOT_ID = 0;
 
-
     /**处理引擎模板组件相关数据(新增/更新)
     * @Description
     * @author huxiaolong
@@ -55,16 +50,16 @@ public class ActivityEngineHandleService {
     */
     public void handleEngineTemplate(Integer fid, Integer uid, ActivityEngineDTO activityEngineDTO) {
         Template template = activityEngineDTO.getTemplate();
+        List<TemplateComponent> templateComponents = activityEngineDTO.getTemplateComponents();
         if (template.getSystem() && template.getFid() == null) {
             // todo 临时测试，默认新建一个template
             Template newTemplate = Template.builder().name("自建测试模板").fid(fid).createUid(uid).updateUid(uid).build();
             activityEngineDTO.setTemplate(newTemplate);
-            saveOperation(newTemplate, activityEngineDTO.getTemplateComponents());
+            saveOperation(newTemplate, templateComponents, activityEngineDTO.getCustomComponentIds());
             return;
         }
-        updateOperation(template, activityEngineDTO.getTemplateComponents());
+        updateOperation(template, templateComponents);
     }
-
 
     /**新增操作(新增模板、新增组件、新增模板组件关联关系)
     * @Description
@@ -75,11 +70,18 @@ public class ActivityEngineHandleService {
     * @return void
     */
     @Transactional(rollbackFor = Exception.class)
-    public void saveOperation(Template template, List<TemplateComponent> templateComponents) {
+    public void saveOperation(Template template, List<TemplateComponent> templateComponents, List<Integer> customComponentIds) {
         // 保存模板
         templateMapper.insert(template);
         // 保存模板组件关联关系
         saveTemplateComponent(template.getId(), templateComponents);
+        // 更新自定义组件关联templateId
+        if (CollectionUtils.isNotEmpty(customComponentIds)) {
+            componentMapper.update(null, new UpdateWrapper<Component>()
+                    .lambda()
+                    .in(Component::getId, customComponentIds)
+                    .set(Component::getTemplateId, template.getId()));
+        }
     }
 
     @Transactional(rollbackFor = Exception.class)
@@ -94,96 +96,25 @@ public class ActivityEngineHandleService {
     * @Description
     * @author huxiaolong
     * @Date 2021-07-08 18:50:00
-    * @param fid
-    * @param components
+    * @param uid
+    * @param component
     * @return java.util.Map<java.lang.Integer,com.chaoxing.activity.model.Component>
     */
-    public Map<Integer, Component> saveCustomComponent(Integer fid, List<Component> components) {
-        return null;
-    }
-
-
-    /**新增组件
-    * @Description
-    * @author huxiaolong
-    * @Date 2021-07-08 11:52:12
-    * @param
-    * @return void
-    */
-    @Deprecated
     @Transactional(rollbackFor = Exception.class)
-    public Map<Integer, Component> saveComponent(Integer fid, List<Component> components) {
-        Map<Integer, Component> nonPidComponentMap = Maps.newHashMap();
-        Map<Integer, Component> hasPidComponentMap = Maps.newHashMap();
-        List<Component> customComponents = Lists.newArrayList();
-        for (Component component : components) {
-            component.setFid(fid);
-            component.setSystem(Boolean.FALSE);
-            if (component.getId() == null) {
-                customComponents.add(component);
-            } else if (Objects.equals(component.getPid(), ROOT_ID)) {
-                nonPidComponentMap.put(component.getId(), component);
-            } else {
-                hasPidComponentMap.put(component.getId(), component);
-            }
+    public Component saveCustomComponent(Integer uid, Component component) {
+        component.setCreateUid(uid);
+        component.setUpdateUid(uid);
+        componentMapper.insert(component);
+        if (Objects.equals(component.getDataOrigin(), Component.DataOriginEnum.CUSTOM.getValue())
+                && CollectionUtils.isNotEmpty(component.getFieldList())) {
+            component.getFieldList().forEach(v -> {
+                v.setCreateUid(uid);
+                v.setUpdateUid(uid);
+                v.setComponentId(component.getId());
+            });
+            componentFieldMapper.batchAdd(component.getFieldList());
         }
-        if (!nonPidComponentMap.isEmpty()) {
-            // 先存 pid为空的
-            componentMapper.batchAdd(nonPidComponentMap.values());
-            // 更新子节点对应的父节点id
-            for (Component component : hasPidComponentMap.values()) {
-                Component parentComponent = nonPidComponentMap.get(component.getPid());
-                if (parentComponent != null) {
-                    component.setPid(parentComponent.getId());
-                }
-            }
-        }
-
-        if (!hasPidComponentMap.isEmpty()) {
-            // 再存 子节点
-            componentMapper.batchAdd(hasPidComponentMap.values());
-        }
-        Map<Integer, Component> result = Stream.concat(nonPidComponentMap.entrySet().stream(), hasPidComponentMap.entrySet().stream())
-                .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue, (v1, v2) -> v2));
-
-        if (CollectionUtils.isNotEmpty(customComponents)) {
-            // 最后存  自定义组件
-            componentMapper.batchAdd(customComponents);
-            for (Component customComponent : customComponents) {
-                result.put(customComponent.getId(), customComponent);
-            }
-        }
-        return result;
-    }
-
-    /**更新自定义组件
-    * @Description
-    * @author huxiaolong
-    * @Date 2021-07-08 14:53:14
-    * @param
-    * @return void
-    */
-    public Map<Integer, Component> updateComponent(Integer fid, List<Component> components) {
-        List<Component> waitSaveComponents = Lists.newArrayList();
-        Map<Integer, Component> result = Maps.newHashMap();
-        for (Component component : components) {
-            if (component.getId() == null) {
-                waitSaveComponents.add(component);
-            } else {
-                // 更新
-                componentMapper.updateById(component);
-                result.put(component.getId(), component);
-            }
-        }
-
-        // 处理新增的自定义组件
-        if (CollectionUtils.isNotEmpty(waitSaveComponents)) {
-            Map<Integer, Component> savedComponentMap = saveComponent(fid, waitSaveComponents);
-            savedComponentMap.forEach(
-                    (key, value) -> result.merge(key, value, (v1, v2) -> v2));
-        }
-
-        return result;
+        return component;
     }
 
     /**新增模板组件关联

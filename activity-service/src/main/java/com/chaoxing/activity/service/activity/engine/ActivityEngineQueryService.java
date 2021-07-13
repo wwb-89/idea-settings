@@ -2,19 +2,18 @@ package com.chaoxing.activity.service.activity.engine;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.chaoxing.activity.dto.engine.ActivityEngineDTO;
-import com.chaoxing.activity.mapper.ComponentFieldMapper;
-import com.chaoxing.activity.mapper.ComponentMapper;
-import com.chaoxing.activity.mapper.TemplateComponentMapper;
-import com.chaoxing.activity.mapper.TemplateMapper;
-import com.chaoxing.activity.model.Component;
-import com.chaoxing.activity.model.Template;
-import com.chaoxing.activity.model.TemplateComponent;
+import com.chaoxing.activity.mapper.*;
+import com.chaoxing.activity.model.*;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.stream.Collectors;
 
 /**
  * @author huxiaolong
@@ -35,13 +34,17 @@ public class ActivityEngineQueryService {
     private ComponentMapper componentMapper;
     @Autowired
     private ComponentFieldMapper componentFieldMapper;
+    @Autowired
+    private SignUpConditionMapper signUpConditionMapper;
+    @Autowired
+    private SignUpFillInfoTypeMapper signUpFillInfoTypeMapper;
 
 
-    public ActivityEngineDTO findEngineTemplateInfo(Integer fid, Integer templateId) {
+    public ActivityEngineDTO findEngineTemplateInfo(Integer templateId) {
         // 查询模板数据
         Template template = templateMapper.selectById(templateId);
         // 查询组件数据
-        List<Component> components = listComponentByFid(fid);
+        List<Component> components = listComponentByTemplateId(templateId);
         // 查询模板组件关联关系
         List<TemplateComponent> templateComponents = listTemplateComponentByTemplateId(templateId);
 
@@ -69,25 +72,29 @@ public class ActivityEngineQueryService {
                 .orderByAsc(Template::getSequence));
     }
 
-    /**系统组件 + fid 的自定义组件 = 组件集合
+    /**系统组件 + templateId 的自定义组件 = 组件集合
     * @Description
     * @author huxiaolong
     * @Date 2021-07-07 15:31:05
-    * @param fid
+    * @param templateId
     * @return void
     */
-    public List<Component> listComponentByFid(Integer fid) {
-        // 系统组件(isSystem: true, fid: null) + fid 自身的组件
+    public List<Component> listComponentByTemplateId(Integer templateId) {
+        // 系统组件(isSystem: true, templateId: null) + templateId 自身的组件
         List<Component> components = componentMapper.selectList(new QueryWrapper<Component>()
                 .lambda()
-                .eq(Component::getFid, fid)
+                .eq(Component::getTemplateId, templateId)
                 .or(j -> j.eq(Component::getSystem, Boolean.TRUE)
-                        .isNull(Component::getFid)));
-
-
+                        .isNull(Component::getTemplateId)));
         for (Component component : components) {
             if (!component.getSystem() && StringUtils.isNotBlank(component.getType())) {
                 // todo 自定义组件处理
+                if (Objects.equals(component.getDataOrigin(), Component.DataOriginEnum.CUSTOM.getValue())) {
+                    List<ComponentField> fieldList = componentFieldMapper.selectList(new QueryWrapper<ComponentField>()
+                            .lambda()
+                            .eq(ComponentField::getComponentId, component.getId()));
+                    component.setFieldList(fieldList);
+                }
             }
         }
         return components;
@@ -101,9 +108,25 @@ public class ActivityEngineQueryService {
     * @return void
     */
     public List<TemplateComponent> listTemplateComponentByTemplateId(Integer templateId) {
-        return templateComponentMapper.selectList(new QueryWrapper<TemplateComponent>()
+        List<TemplateComponent> templateComponents = templateComponentMapper.selectList(new QueryWrapper<TemplateComponent>()
                 .lambda()
                 .eq(TemplateComponent::getTemplateId, templateId)
                 .orderByAsc(TemplateComponent::getSequence));
+
+        List<Integer> templateComponentIds = templateComponents.stream().map(TemplateComponent::getId).collect(Collectors.toList());
+        if (CollectionUtils.isNotEmpty(templateComponentIds)) {
+            List<SignUpCondition> signUpConditions = signUpConditionMapper.selectList(new QueryWrapper<SignUpCondition>()
+                    .lambda()
+                    .in(SignUpCondition::getTemplateComponentId, templateComponentIds));
+            Map<Integer, SignUpCondition> signUpConditionMap = signUpConditions.stream()
+                    .collect(Collectors.toMap(SignUpCondition::getTemplateComponentId, v -> v, (v1, v2) -> v2));
+            for (TemplateComponent templateComponent : templateComponents) {
+                Integer templateComponentId = templateComponent.getId();
+                if (signUpConditionMap.get(templateComponentId) != null) {
+                    templateComponent.setSignUpCondition(signUpConditionMap.get(templateComponentId));
+                }
+            }
+        }
+        return templateComponents;
     }
 }

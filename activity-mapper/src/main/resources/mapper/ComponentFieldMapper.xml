@@ -16,4 +16,18 @@
         t.id, t.component_id, t.field_name, t.sequence, t.is_deleted, t.create_time, t.create_uid, 
         t.update_time, t.update_uid
     </sql>
+    <insert id="batchAdd" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO
+        t_component_field( component_id, field_name, `sequence`, create_uid, update_uid )
+        VALUES
+        <foreach collection="components" item="item" open="" close="" separator=",">
+            (
+             #{item.componentId},
+             #{item.fieldName},
+             #{item.sequence},
+             #{item.createUid},
+             #{item.updateUid}
+            )
+        </foreach>
+    </insert>
 </mapper>

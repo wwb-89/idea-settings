@@ -14,7 +14,7 @@
         <result column="data_origin" jdbcType="VARCHAR" property="dataOrigin" />
         <result column="origin_identify" jdbcType="VARCHAR" property="originIdentify" />
         <result column="field_flag" jdbcType="VARCHAR" property="fieldFlag" />
-        <result column="fid" jdbcType="INTEGER" property="fid" />
+        <result column="template_id" jdbcType="INTEGER" property="templateId" />
         <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
         <result column="create_uid" jdbcType="INTEGER" property="createUid" />
         <result column="update_time" jdbcType="TIMESTAMP" property="updateTime" />
@@ -22,13 +22,13 @@
     </resultMap>
     <sql id="Base_Column_List">
         t.id, t.pid, t.name, t.code, t.is_required, t.introduction, t.is_system, t.is_multi,
-        t.type, t.data_origin, t.origin_identify, t.field_flag, t.fid, t.create_time, t.create_uid, 
+        t.type, t.data_origin, t.origin_identify, t.field_flag, t.template_id, t.create_time, t.create_uid,
         t.update_time, t.update_uid
     </sql>
     <insert id="batchAdd" useGeneratedKeys="true" keyProperty="id">
         INSERT INTO
             t_component( pid, `name`, code, is_required, introduction, is_system, is_multi,
-            `type`, data_origin, origin_identify, field_flag, fid, create_uid, update_uid )
+            `type`, data_origin, origin_identify, field_flag, template_id, create_uid, update_uid )
         VALUES
         <foreach collection="components" item="item" open="" close="" separator=",">
             (
@@ -43,7 +43,7 @@
                 #{item.dataOrigin},
                 #{item.originIdentifiy},
                 #{item.fieldFlag},
-                #{item.fid},
+                #{item.templateId},
                 #{item.createUid},
                 #{item.updateUid}
             )

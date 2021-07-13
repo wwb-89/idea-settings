@@ -55,7 +55,7 @@ public class SignUpConditionService {
 	*/
 	public void deleteByTemplateComponentId(Integer templateComponentId) {
 		signUpConditionMapper.delete(new LambdaUpdateWrapper<SignUpCondition>()
-			.eq(SignUpCondition::getTemplateId, templateComponentId)
+			.eq(SignUpCondition::getTemplateComponentId, templateComponentId)
 		);
 	}
 

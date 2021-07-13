@@ -5,6 +5,7 @@ import com.chaoxing.activity.admin.util.LoginUtils;
 import com.chaoxing.activity.dto.LoginUserDTO;
 import com.chaoxing.activity.dto.RestRespDTO;
 import com.chaoxing.activity.dto.engine.ActivityEngineDTO;
+import com.chaoxing.activity.model.Component;
 import com.chaoxing.activity.service.activity.engine.ActivityEngineHandleService;
 import com.chaoxing.activity.service.activity.engine.ActivityEngineQueryService;
 import com.chaoxing.activity.util.annotation.LoginRequired;
@@ -37,19 +38,19 @@ public class ActivityEngineApiController {
     * @Description
     * @author huxiaolong
     * @Date 2021-07-08 17:24:12
-    * @param fid
     * @param templateId
     * @return com.chaoxing.activity.dto.RestRespDTO
     */
     @PostMapping("info")
-    public RestRespDTO listOrgComponent(Integer fid, Integer templateId) {
-        return RestRespDTO.success(activityEngineQueryService.findEngineTemplateInfo(fid, templateId));
+    public RestRespDTO listOrgComponent(Integer templateId) {
+        return RestRespDTO.success(activityEngineQueryService.findEngineTemplateInfo(templateId));
     }
 
 
     @PostMapping("/component/add")
-    public RestRespDTO addCustomComponent() {
-        return RestRespDTO.success();
+    public RestRespDTO addCustomComponent(HttpServletRequest request, Component component) {
+        LoginUserDTO loginUser = LoginUtils.getLoginUser(request);
+        return RestRespDTO.success(activityEngineHandleService.saveCustomComponent(loginUser.getUid(), component));
     }
 
     /**发布模板(新增/修改)

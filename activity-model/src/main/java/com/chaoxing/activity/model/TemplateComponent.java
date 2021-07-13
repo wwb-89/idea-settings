@@ -47,4 +47,8 @@ public class TemplateComponent {
 
     @TableField(exist = false)
     private List<TemplateComponent> children;
+    @TableField(exist = false)
+    private SignUpCondition signUpCondition;
+    @TableField(exist = false)
+    private SignUpFillInfoType signUpFillInfoType;
 }
