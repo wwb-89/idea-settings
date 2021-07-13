@@ -38,6 +38,8 @@ public class Template {
     /** 是否是系统模版; column: is_system*/
     @TableField(value = "is_system")
     private Boolean system;
+    /** 活动标识; column: activity_flag*/
+    private String activityFlag;
     /** 所属机构id; column: fid*/
     private Integer fid;
     /** 封面url; column: cover_url*/

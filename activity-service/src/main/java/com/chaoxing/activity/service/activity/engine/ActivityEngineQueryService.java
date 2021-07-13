@@ -4,12 +4,14 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.chaoxing.activity.dto.engine.ActivityEngineDTO;
 import com.chaoxing.activity.mapper.*;
 import com.chaoxing.activity.model.*;
+import com.chaoxing.activity.service.activity.template.TemplateQueryService;
+import com.chaoxing.activity.service.manager.WfwFormApiService;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import javax.annotation.Resource;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -38,6 +40,10 @@ public class ActivityEngineQueryService {
     private SignUpConditionMapper signUpConditionMapper;
     @Autowired
     private SignUpFillInfoTypeMapper signUpFillInfoTypeMapper;
+    @Resource
+    private WfwFormApiService wfwFormApiService;
+    @Resource
+    private TemplateQueryService templateQueryService;
 
 
     public ActivityEngineDTO findEngineTemplateInfo(Integer templateId) {
@@ -83,18 +89,24 @@ public class ActivityEngineQueryService {
         // 系统组件(isSystem: true, templateId: null) + templateId 自身的组件
         List<Component> components = componentMapper.selectList(new QueryWrapper<Component>()
                 .lambda()
-                .eq(Component::getTemplateId, templateId)
-                .or(j -> j.eq(Component::getSystem, Boolean.TRUE)
-                        .isNull(Component::getTemplateId)));
+                .or(j -> j.eq(Component::getTemplateId, templateId).eq(Component::getSystem, Boolean.TRUE)));
         for (Component component : components) {
-            if (!component.getSystem() && StringUtils.isNotBlank(component.getType())) {
-                // todo 自定义组件处理
-                if (Objects.equals(component.getDataOrigin(), Component.DataOriginEnum.CUSTOM.getValue())) {
-                    List<ComponentField> fieldList = componentFieldMapper.selectList(new QueryWrapper<ComponentField>()
-                            .lambda()
-                            .eq(ComponentField::getComponentId, component.getId()));
-                    component.setFieldList(fieldList);
-                }
+            if (component.isSystemComponent()) {
+                continue;
+            }
+            if (Objects.equals(component.getDataOrigin(), Component.DataOriginEnum.FORM.getValue())) {
+                // 表单
+                String originIdentify = component.getOriginIdentify();
+                String fieldFlag = component.getFieldFlag();
+                Template template = templateQueryService.getById(templateId);
+                List<String> fieldValues = wfwFormApiService.listFormFieldValue(template.getFid(), Integer.parseInt(originIdentify), fieldFlag);
+                component.setFormFieldValues(fieldValues);
+            } else {
+                // 自定义
+                List<ComponentField> componentFields = componentFieldMapper.selectList(new QueryWrapper<ComponentField>()
+                        .lambda()
+                        .eq(ComponentField::getComponentId, component.getId()));
+                component.setFieldList(componentFields);
             }
         }
         return components;

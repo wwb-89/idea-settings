@@ -7,6 +7,7 @@
         <result column="origin_template_id" jdbcType="INTEGER" property="originTemplateId" />
         <result column="name" jdbcType="VARCHAR" property="name" />
         <result column="is_system" jdbcType="BIT" property="system" />
+        <result column="activity_flag" jdbcType="VARCHAR" property="activityFlag" />
         <result column="fid" jdbcType="INTEGER" property="fid" />
         <result column="cover_url" jdbcType="VARCHAR" property="coverUrl" />
         <result column="sequence" jdbcType="INTEGER" property="sequence" />
@@ -16,7 +17,7 @@
         <result column="update_uid" jdbcType="INTEGER" property="updateUid" />
     </resultMap>
     <sql id="Base_Column_List">
-        t.id, t.market_id, t.origin_template_id, t.name, t.is_system, t.fid, t.cover_url, t.sequence, t.create_time, t.create_uid,
+        t.id, t.market_id, t.origin_template_id, t.name, t.is_system, t.activity_flag, t.fid, t.cover_url, t.sequence, t.create_time, t.create_uid,
         t.update_time, t.update_uid
     </sql>
 </mapper>

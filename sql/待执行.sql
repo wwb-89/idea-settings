@@ -4,6 +4,7 @@ CREATE TABLE `t_template`  (
     `origin_template_id` int(11) NULL COMMENT '源模版id',
     `name` varchar(50) NULL COMMENT '模版名称',
     `is_system` tinyint(1) NULL DEFAULT 0 COMMENT '是否是系统模版',
+    `activity_flag` VARCHAR (50) NULL COMMENT '活动标识',
     `fid` int(11) NULL COMMENT '所属机构id',
     `cover_url` varchar(255) NULL COMMENT '封面url',
     `sequence` int(11) NULL DEFAULT 1 COMMENT '顺序',

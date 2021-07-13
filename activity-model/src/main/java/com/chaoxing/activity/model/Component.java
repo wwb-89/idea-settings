@@ -66,16 +66,19 @@ public class Component {
 
     @TableField(exist = false)
     private List<ComponentField> fieldList;
+    @TableField(exist = false)
+    private List<String> formFieldValues;
 
     @Getter
     public enum TypeEnum {
 
+        /** 文本 */
         TEXT("文本", "text"),
         RADIO("单选", "radio"),
         CHECKBOX("多选", "checkbox");
 
-        private String name;
-        private String value;
+        private final String name;
+        private final String value;
 
         TypeEnum(String name, String value) {
             this.name = name;
@@ -100,8 +103,8 @@ public class Component {
         CUSTOM("自定义", "custom"),
         FORM("表单", "form");
 
-        private String name;
-        private String value;
+        private final String name;
+        private final String value;
 
         DataOriginEnum(String name, String value) {
             this.name = name;
@@ -117,6 +120,10 @@ public class Component {
             }
             return null;
         }
+    }
+
+    public boolean isSystemComponent() {
+        return getSystem();
     }
 
 }
