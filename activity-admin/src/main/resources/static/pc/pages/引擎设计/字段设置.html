@@ -759,11 +759,11 @@
             </div>
         </div>
         <!-- 报名条件-->
-        <div class="dialog-mask" v-show="!signUpDialog">
+        <div class="dialog-mask" v-show="signUpDialog">
             <div class="dailog">
                 <div class="header">
                     <span>报名条件</span>
-                    <i class="close" @click="switchDialog=false"></i>
+                    <i class="close" @click="signUpDialog=false"></i>
                 </div>
                 <div class="body">
                     <el-form ref="form"  label-width="72px">
