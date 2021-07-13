@@ -1,4 +1,4 @@
-package com.chaoxing.activity.admin.controller.pc;
+package com.chaoxing.activity.admin.controller.general;
 
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -23,7 +23,7 @@ import java.util.Optional;
 public class LibActivityManagementController {
 
 	@Resource
-	private ActivityManageController activityManageController;
+	private ActivityManagementController activityManagementController;
 
 	/**活动管理主页
 	 * @Description 
@@ -42,7 +42,7 @@ public class LibActivityManagementController {
 	@RequestMapping("")
 	public String index(Model model, String code, Integer wfwfid, Integer unitId, Integer state, Integer fid, @RequestParam(defaultValue = "0") Integer strict, String flag) {
 		Integer realFid = Optional.ofNullable(wfwfid).orElse(Optional.ofNullable(unitId).orElse(Optional.ofNullable(state).orElse(fid)));
-		return activityManageController.index(model, code, realFid,0, strict, flag);
+		return activityManagementController.index(model, code, realFid,0, strict, flag);
 	}
 
 	/**活动新增页面
@@ -58,7 +58,7 @@ public class LibActivityManagementController {
 	*/
 	@GetMapping("activity/add")
 	public String add(Model model, HttpServletRequest request, String code, String flag, @RequestParam(defaultValue = "0") Integer strict) {
-		return activityManageController.add(model, request, code, 0, flag, strict);
+		return activityManagementController.add(model, request, code, 0, flag, strict);
 	}
 
 }
