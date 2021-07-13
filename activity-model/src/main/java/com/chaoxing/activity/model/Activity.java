@@ -7,7 +7,6 @@ import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import com.chaoxing.activity.util.LocalDateTimeDeserializer;
 import com.chaoxing.activity.util.LocalDateTimeSerializer;
-import com.chaoxing.activity.util.constant.CommonConstant;
 import com.chaoxing.activity.util.exception.BusinessException;
 import lombok.*;
 
@@ -298,17 +297,6 @@ public class Activity {
 
     }
 
-    public static Activity buildDefault() {
-        return Activity.builder()
-                .name("")
-                .coverCloudId(CommonConstant.ACTIVITY_DEFAULT_COVER_CLOUD_ID)
-                .organisers("")
-                .address("")
-                .detailAddress("")
-                .openWork(false)
-                .build();
-    }
-
     public static String getStatusDescription(Integer status) {
         StatusEnum statusEnum = StatusEnum.fromValue(status);
         switch (statusEnum) {
@@ -355,6 +343,10 @@ public class Activity {
 
     public void delete() {
         setStatus(StatusEnum.DELETED.getValue());
+    }
+
+    public void coverCloudIdChange() {
+        setCoverUrl("");
     }
 
 }

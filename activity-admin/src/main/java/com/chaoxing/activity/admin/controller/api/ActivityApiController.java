@@ -5,6 +5,8 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.chaoxing.activity.admin.util.LoginUtils;
 import com.chaoxing.activity.dto.LoginUserDTO;
 import com.chaoxing.activity.dto.RestRespDTO;
+import com.chaoxing.activity.dto.activity.ActivityCreateParamDTO;
+import com.chaoxing.activity.dto.activity.ActivityUpdateParamDTO;
 import com.chaoxing.activity.dto.manager.WfwRegionalArchitectureDTO;
 import com.chaoxing.activity.dto.manager.mh.MhCloneResultDTO;
 import com.chaoxing.activity.dto.query.ActivityManageQueryDTO;
@@ -54,11 +56,11 @@ public class ActivityApiController {
 	@PostMapping("new")
 	public RestRespDTO create(HttpServletRequest request, String activityJsonStr, String participateScopeJsonStr, String signJsonStr) {
 		LoginUserDTO loginUser = LoginUtils.getLoginUser(request);
-		Activity activity = JSON.parseObject(activityJsonStr, Activity.class);
+		ActivityCreateParamDTO activityCreateParamDto = JSON.parseObject(activityJsonStr, ActivityCreateParamDTO.class);
 		List<WfwRegionalArchitectureDTO> wfwRegionalArchitectures = JSON.parseArray(participateScopeJsonStr, WfwRegionalArchitectureDTO.class);
 		SignCreateParamDTO signAddEdit = JSON.parseObject(signJsonStr, SignCreateParamDTO.class);
-		activityHandleService.add(activity, signAddEdit, wfwRegionalArchitectures, loginUser);
-		return RestRespDTO.success(activity);
+		ActivityUpdateParamDTO activityUpdateParamDto = activityHandleService.add(activityCreateParamDto, signAddEdit, wfwRegionalArchitectures, loginUser);
+		return RestRespDTO.success(activityUpdateParamDto);
 	}
 
 	/**修改活动
@@ -75,11 +77,11 @@ public class ActivityApiController {
 	@PostMapping("edit")
 	public RestRespDTO edit(HttpServletRequest request, String activityJsonStr, String participateScopeJsonStr, String signJsonStr) {
 		LoginUserDTO loginUser = LoginUtils.getLoginUser(request);
-		Activity activity = JSON.parseObject(activityJsonStr, Activity.class);
+		ActivityUpdateParamDTO activityUpdateParamDto = JSON.parseObject(activityJsonStr, ActivityUpdateParamDTO.class);
 		List<WfwRegionalArchitectureDTO> wfwRegionalArchitectures = JSON.parseArray(participateScopeJsonStr, WfwRegionalArchitectureDTO.class);
 		SignCreateParamDTO signAddEdit = JSON.parseObject(signJsonStr, SignCreateParamDTO.class);
-		activityHandleService.edit(activity, signAddEdit, wfwRegionalArchitectures, loginUser);
-		return RestRespDTO.success(activity);
+		activityHandleService.edit(activityUpdateParamDto, signAddEdit, wfwRegionalArchitectures, loginUser);
+		return RestRespDTO.success(activityUpdateParamDto);
 	}
 
 	/**删除活动

@@ -6,6 +6,8 @@ import com.alibaba.fastjson.JSONObject;
 import com.chaoxing.activity.dto.AddressDTO;
 import com.chaoxing.activity.dto.LoginUserDTO;
 import com.chaoxing.activity.dto.TimeScopeDTO;
+import com.chaoxing.activity.dto.activity.ActivityCreateParamDTO;
+import com.chaoxing.activity.dto.activity.ActivityUpdateParamDTO;
 import com.chaoxing.activity.dto.manager.WfwRegionalArchitectureDTO;
 import com.chaoxing.activity.dto.manager.wfwform.WfwFormDTO;
 import com.chaoxing.activity.dto.manager.sign.create.SignCreateParamDTO;
@@ -176,18 +178,19 @@ public class WfwFormApprovalApiService {
             return;
         }
         // 根据表单数据创建活动
-        Activity activity = buildActivityFromActivityApproval(formData);
+        ActivityCreateParamDTO activity = buildActivityFromActivityApproval(formData);
         if (activity == null) {
             return;
         }
+        LoginUserDTO loginUser = activity.getLoginUser();
         // 根据表单数据创建报名签到
-        SignCreateParamDTO signCreateParam = buildSignFromActivityApproval(formData, activity.getCreateUid());
+        SignCreateParamDTO signCreateParam = buildSignFromActivityApproval(formData, loginUser.getUid());
         // 设置活动标识
         Activity.ActivityFlagEnum activityFlag = Activity.ActivityFlagEnum.fromValue(flag);
         if (activityFlag == null) {
             activityFlag = Activity.ActivityFlagEnum.NORMAL;
         }
-        activity.setActivityFlag(activityFlag.getValue());
+        // TODO 根据活动标识设置模版和市场id
         // 使用指定的模板
         templateId = Optional.ofNullable(templateId).orElse(CommonConstant.DEFAULT_FROM_FORM_CREATE_ACTIVITY_TEMPLATE_ID);
         WebTemplate webTemplate = webTemplateService.getById(templateId);
@@ -195,12 +198,11 @@ public class WfwFormApprovalApiService {
             throw new BusinessException("通过活动申报创建活动指定的门户模版不存在");
         }
         WfwRegionalArchitectureDTO wfwRegionalArchitecture = wfwRegionalArchitectureApiService.buildWfwRegionalArchitecture(fid);
-        LoginUserDTO loginUser = LoginUserDTO.buildDefault(activity.getCreateUid(), activity.getCreateUserName(), activity.getCreateFid(), activity.getCreateOrgName());
-        activityHandleService.add(activity, signCreateParam, Lists.newArrayList(wfwRegionalArchitecture), loginUser);
+        ActivityUpdateParamDTO activityUpdateParamDto = activityHandleService.add(activity, signCreateParam, Lists.newArrayList(wfwRegionalArchitecture), loginUser);
         // 门户克隆模版
-        activityHandleService.bindWebTemplate(activity.getId(), webTemplate.getId(), loginUser);
+        activityHandleService.bindWebTemplate(activityUpdateParamDto.getId(), webTemplate.getId(), loginUser);
         // 发布
-        activityHandleService.release(activity.getId(), loginUser);
+        activityHandleService.release(activityUpdateParamDto.getId(), loginUser);
     }
 
     /**获取需要创建的活动
@@ -208,10 +210,10 @@ public class WfwFormApprovalApiService {
      * @author wwb
      * @Date 2021-05-11 16:14:37
      * @param formData
-     * @return com.chaoxing.activity.model.Activity
+     * @return com.chaoxing.activity.dto.activity.ActivityCreateParamDTO
      */
-    private Activity buildActivityFromActivityApproval(WfwFormDTO formData) {
-        Activity activity = Activity.buildDefault();
+    private ActivityCreateParamDTO buildActivityFromActivityApproval(WfwFormDTO formData) {
+        ActivityCreateParamDTO activityCreateParamDto = ActivityCreateParamDTO.buildDefault();
         Integer fid = formData.getFid();
         Integer formUserId = formData.getFormUserId();
         // 是否已经创建了活动，根据formUserId来判断
@@ -221,24 +223,24 @@ public class WfwFormApprovalApiService {
         }
         // 活动名称
         String activityName = FormUtils.getValue(formData, "activity_name");
-        activity.setName(activityName);
+        activityCreateParamDto.setName(activityName);
         // 封面
         String coverCloudId = FormUtils.getCloudId(formData, "cover");
         if (StringUtils.isNotBlank(coverCloudId)) {
-            activity.setCoverCloudId(coverCloudId);
+            activityCreateParamDto.setCoverCloudId(coverCloudId);
         }
         // 开始时间、结束时间
         TimeScopeDTO activityTimeScope = FormUtils.getTimeScope(formData, "activity_time");
-        activity.setStartTime(activityTimeScope.getStartTime());
-        activity.setEndTime(activityTimeScope.getEndTime());
+        activityCreateParamDto.setStartTimeStamp(DateUtils.date2Timestamp(activityTimeScope.getStartTime()));
+        activityCreateParamDto.setEndTimeStamp(DateUtils.date2Timestamp(activityTimeScope.getEndTime()));
         // 活动分类
         String activityClassifyName = FormUtils.getValue(formData, "activity_classify");
         ActivityClassify activityClassify = activityClassifyHandleService.addAndGet(activityClassifyName, fid);
-        activity.setActivityClassifyId(activityClassify.getId());
+        activityCreateParamDto.setActivityClassifyId(activityClassify.getId());
         // 积分
         String integralStr = FormUtils.getValue(formData, "integral_value");
         if (StringUtils.isNotBlank(integralStr)) {
-            activity.setIntegral(BigDecimal.valueOf(Double.parseDouble(integralStr)));
+            activityCreateParamDto.setIntegral(BigDecimal.valueOf(Double.parseDouble(integralStr)));
         }
         String orgName = passportApiService.getOrgName(fid);
         // 主办方
@@ -246,60 +248,56 @@ public class WfwFormApprovalApiService {
         if (StringUtils.isBlank(organisers)) {
             organisers = orgName;
         }
-        activity.setOrganisers(organisers);
+        activityCreateParamDto.setOrganisers(organisers);
         // 是否开启评价
         String openRating = FormUtils.getValue(formData, "is_open_rating");
-        activity.setOpenRating(Objects.equals(YES, openRating));
+        activityCreateParamDto.setOpenRating(Objects.equals(YES, openRating));
         // 活动类型
         String activityType = FormUtils.getValue(formData, "activity_type");
         if (StringUtils.isNotBlank(activityType)) {
             Activity.ActivityTypeEnum activityTypeEnum = Activity.ActivityTypeEnum.fromName(activityType);
             if (activityTypeEnum != null) {
-                activity.setActivityType(activityTypeEnum.getValue());
+                activityCreateParamDto.setActivityType(activityTypeEnum.getValue());
                 AddressDTO activityAddress = FormUtils.getAddress(formData, "activity_address");
                 String activityDetailAddress = FormUtils.getValue(formData, "activity_detail_address");
                 activityDetailAddress = Optional.ofNullable(activityDetailAddress).orElse("");
                 if (activityAddress != null) {
-                    activity.setAddress(activityAddress.getAddress());
-                    activity.setLongitude(activityAddress.getLng());
-                    activity.setDimension(activityAddress.getLat());
+                    activityCreateParamDto.setAddress(activityAddress.getAddress());
+                    activityCreateParamDto.setLongitude(activityAddress.getLng());
+                    activityCreateParamDto.setDimension(activityAddress.getLat());
                 }
-                activity.setDetailAddress(activityDetailAddress);
+                activityCreateParamDto.setDetailAddress(activityDetailAddress);
             }
         } else {
-            activity.setActivityType(Activity.ActivityTypeEnum.ONLINE.getValue());
+            activityCreateParamDto.setActivityType(Activity.ActivityTypeEnum.ONLINE.getValue());
         }
         // 简介
         String introduction = FormUtils.getValue(formData, "introduction");
         introduction = Optional.ofNullable(introduction).orElse("");
-        activity.setIntroduction(introduction);
+        activityCreateParamDto.setIntroduction(introduction);
         // 是否开启作品征集
         String openWork = FormUtils.getValue(formData, "is_open_work");
-        activity.setOpenWork(Objects.equals(YES, openWork));
+        activityCreateParamDto.setOpenWork(Objects.equals(YES, openWork));
         // 学分
         String credit = FormUtils.getValue(formData, "credit");
         if (StringUtils.isNotBlank(credit)) {
-            activity.setCredit(new BigDecimal(credit));
+            activityCreateParamDto.setCredit(new BigDecimal(credit));
         }
         // 学时
         String period = FormUtils.getValue(formData, "period");
         if (StringUtils.isNotBlank(period)) {
-            activity.setPeriod(new BigDecimal(period));
+            activityCreateParamDto.setPeriod(new BigDecimal(period));
         }
         // 最大参与时长
         String timeLengthUpperLimitStr = FormUtils.getValue(formData, "time_length_upper_limit");
         if (StringUtils.isNotBlank(timeLengthUpperLimitStr)) {
             Integer timeLengthUpperLimit = Integer.parseInt(timeLengthUpperLimitStr);
-            activity.setTimeLengthUpperLimit(timeLengthUpperLimit);
+            activityCreateParamDto.setTimeLengthUpperLimit(timeLengthUpperLimit);
         }
-
-        activity.setCreateUid(formData.getUid());
-        activity.setCreateUserName(formData.getUname());
-        activity.setCreateFid(fid);
-        activity.setCreateOrgName(orgName);
-        activity.setOriginType(Activity.OriginTypeEnum.ACTIVITY_DECLARATION.getValue());
-        activity.setOrigin(String.valueOf(formUserId));
-        return activity;
+        activityCreateParamDto.buildLoginUser(formData.getUid(), formData.getUname(), fid, orgName);
+        activityCreateParamDto.setOriginType(Activity.OriginTypeEnum.ACTIVITY_DECLARATION.getValue());
+        activityCreateParamDto.setOrigin(String.valueOf(formUserId));
+        return activityCreateParamDto;
     }
 
     /**通过活动审批创建报名签到

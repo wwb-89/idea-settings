@@ -1,8 +1,10 @@
 package com.chaoxing.activity.dto.activity;
 
+import com.chaoxing.activity.dto.LoginUserDTO;
 import com.chaoxing.activity.model.Activity;
 import com.chaoxing.activity.model.ActivityDetail;
 import com.chaoxing.activity.util.DateUtils;
+import com.chaoxing.activity.util.constant.CommonConstant;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -87,6 +89,8 @@ public class ActivityCreateParamDTO {
 
 	/** 活动组件值对象列表 */
 	private List<ActivityComponentValueDTO> activityComponentValues;
+	/** 操作用户 */
+	private LoginUserDTO loginUser;
 
 	/**构建活动对象
 	 * @Description 
@@ -139,6 +143,21 @@ public class ActivityCreateParamDTO {
 		return ActivityDetail.builder()
 				.introduction(getIntroduction())
 				.build();
+	}
+
+	public static ActivityCreateParamDTO buildDefault() {
+		return ActivityCreateParamDTO.builder()
+				.name("")
+				.coverCloudId(CommonConstant.ACTIVITY_DEFAULT_COVER_CLOUD_ID)
+				.organisers("")
+				.address("")
+				.detailAddress("")
+				.openWork(false)
+				.build();
+	}
+
+	public void buildLoginUser(Integer uid, String userName, Integer fid, String orgName) {
+		setLoginUser(LoginUserDTO.buildDefault(uid, userName, fid, orgName));
 	}
 
 }

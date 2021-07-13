@@ -1,20 +1,19 @@
 package com.chaoxing.activity.service.activity;
 
 import com.alibaba.fastjson.JSON;
+import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.chaoxing.activity.dto.LoginUserDTO;
-import com.chaoxing.activity.dto.OrgAddressDTO;
+import com.chaoxing.activity.dto.activity.ActivityCreateParamDTO;
+import com.chaoxing.activity.dto.activity.ActivityUpdateParamDTO;
 import com.chaoxing.activity.dto.manager.WfwRegionalArchitectureDTO;
 import com.chaoxing.activity.dto.manager.mh.MhCloneParamDTO;
 import com.chaoxing.activity.dto.manager.mh.MhCloneResultDTO;
 import com.chaoxing.activity.dto.manager.sign.create.SignCreateParamDTO;
 import com.chaoxing.activity.dto.manager.sign.create.SignCreateResultDTO;
-import com.chaoxing.activity.dto.manager.sign.create.SignUpCreateParamDTO;
 import com.chaoxing.activity.dto.module.WorkFormDTO;
-import com.chaoxing.activity.mapper.ActivityAreaFlagMapper;
 import com.chaoxing.activity.mapper.ActivityDetailMapper;
 import com.chaoxing.activity.mapper.ActivityMapper;
-import com.chaoxing.activity.mapper.ActivitySignModuleMapper;
 import com.chaoxing.activity.model.*;
 import com.chaoxing.activity.service.WebTemplateService;
 import com.chaoxing.activity.service.activity.manager.ActivityManagerService;
@@ -22,7 +21,6 @@ import com.chaoxing.activity.service.activity.module.ActivityModuleService;
 import com.chaoxing.activity.service.activity.scope.ActivityScopeService;
 import com.chaoxing.activity.service.event.ActivityChangeEventService;
 import com.chaoxing.activity.service.inspection.InspectionConfigHandleService;
-import com.chaoxing.activity.service.manager.GuanliApiService;
 import com.chaoxing.activity.service.manager.MhApiService;
 import com.chaoxing.activity.service.manager.module.SignApiService;
 import com.chaoxing.activity.service.manager.module.WorkApiService;
@@ -33,7 +31,10 @@ import com.chaoxing.activity.util.DistributedLock;
 import com.chaoxing.activity.util.constant.ActivityMhUrlConstant;
 import com.chaoxing.activity.util.constant.ActivityModuleConstant;
 import com.chaoxing.activity.util.constant.CacheConstant;
-import com.chaoxing.activity.util.enums.*;
+import com.chaoxing.activity.util.enums.MhAppDataSourceEnum;
+import com.chaoxing.activity.util.enums.MhAppDataTypeEnum;
+import com.chaoxing.activity.util.enums.MhAppTypeEnum;
+import com.chaoxing.activity.util.enums.ModuleTypeEnum;
 import com.chaoxing.activity.util.exception.BusinessException;
 import com.google.common.collect.Lists;
 import lombok.extern.slf4j.Slf4j;
@@ -46,7 +47,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
 import java.math.BigDecimal;
-import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -68,10 +68,6 @@ public class ActivityHandleService {
 	private ActivityMapper activityMapper;
 	@Resource
 	private ActivityDetailMapper activityDetailMapper;
-	@Resource
-	private ActivityAreaFlagMapper activityAreaFlagMapper;
-	@Resource
-	private ActivitySignModuleMapper activitySignModuleMapper;
 
 	@Resource
 	private ActivityQueryService activityQueryService;
@@ -81,8 +77,6 @@ public class ActivityHandleService {
 	private ActivityModuleService activityModuleService;
 	@Resource
 	private ActivityScopeService activityScopeService;
-	@Resource
-	private GuanliApiService guanliApiService;
 	@Resource
 	private WebTemplateService webTemplateService;
 	@Resource
@@ -113,20 +107,21 @@ public class ActivityHandleService {
 	 * @Description
 	 * @author wwb
 	 * @Date 2020-11-10 15:54:16
-	 * @param activity
-	 * @param signCreateParam
+	 * @param activityCreateParamDto
+	 * @param signCreateParamDto
 	 * @param wfwRegionalArchitectures
 	 * @param loginUser
-	 * @return void
+	 * @return com.chaoxing.activity.dto.activity.ActivityUpdateParamDTO
 	*/
 	@Transactional(rollbackFor = Exception.class)
-	public void add(Activity activity, SignCreateParamDTO signCreateParam, List<WfwRegionalArchitectureDTO> wfwRegionalArchitectures, LoginUserDTO loginUser) {
+	public ActivityUpdateParamDTO add(ActivityCreateParamDTO activityCreateParamDto, SignCreateParamDTO signCreateParamDto, List<WfwRegionalArchitectureDTO> wfwRegionalArchitectures, LoginUserDTO loginUser) {
+		Activity activity = activityCreateParamDto.buildActivity();
 		// 新增活动输入验证
 		activityValidationService.addInputValidate(activity);
 		// 处理活动类型
 		handleActivityType(activity);
 		// 添加报名签到
-		SignCreateResultDTO signCreateResult = handleSign(activity, signCreateParam, loginUser);
+		SignCreateResultDTO signCreateResult = handleSign(activity, signCreateParamDto, loginUser);
 		activity.setSignId(signCreateResult.getSignId());
 		// 添加作品征集
 		handleWork(activity, loginUser);
@@ -167,10 +162,9 @@ public class ActivityHandleService {
 		List<ActivityScope> activityScopes = WfwRegionalArchitectureDTO.convert2ActivityScopes(activityId, wfwRegionalArchitectures);
 		// 新增发布范围
 		activityScopeService.batchAdd(activityScopes);
-		// 处理活动的所属区域
-		handleActivityArea(activity, loginUser);
 		// 活动改变
-		activityChangeEventService.dataChange(activity, null, activity.getIntegral(), loginUser);
+		activityChangeEventService.dataChange(activity, null, loginUser);
+		return null;
 	}
 
 	/**处理活动类型
@@ -200,13 +194,6 @@ public class ActivityHandleService {
 	*/
 	private SignCreateResultDTO handleSign(Activity activity, SignCreateParamDTO signCreateParam, LoginUserDTO loginUser) {
 		Integer signId = signCreateParam.getId();
-		List<SignUpCreateParamDTO> signUps = signCreateParam.getSignUps();
-		if (CollectionUtils.isNotEmpty(signUps)) {
-			String activityFlag = activity.getActivityFlag();
-			if (StringUtils.isEmpty(activityFlag)) {
-				activityFlag = Activity.ActivityFlagEnum.NORMAL.getValue();
-			}
-		}
 		if (signId == null) {
 			// 签到的名称为活动引擎活动的名称
 			signCreateParam.setName(activity.getName());
@@ -251,70 +238,19 @@ public class ActivityHandleService {
 		}
 	}
 
-	/**处理活动所属范围
-	 * @Description
-	 * @author wwb
-	 * @Date 2020-11-13 15:46:43
-	 * @param activity
-	 * @param loginUser
-	 * @return void
-	*/
-	private void handleActivityArea(Activity activity, LoginUserDTO loginUser) {
-		Integer fid = loginUser.getFid();
-		try {
-			OrgAddressDTO orgAddress = guanliApiService.getAddressByFid(fid);
-			if (orgAddress == null) {
-				return;
-			}
-			String province = orgAddress.getProvince();
-			String city = orgAddress.getCity();
-			String county = orgAddress.getCounty();
-			// 删除活动下的区域标签
-			Integer activityId = activity.getId();
-			activityAreaFlagMapper.delete(new UpdateWrapper<ActivityAreaFlag>()
-				.lambda()
-					.eq(ActivityAreaFlag::getActivityId, activityId)
-			);
-			if (StringUtils.isNotEmpty(province)) {
-				ActivityAreaFlag activityAreaFlag = generateActivityAreaFlag(activityId, province, ActivityAreaLevelEnum.PROVINCE);
-				activityAreaFlagMapper.insert(activityAreaFlag);
-			}
-			if (StringUtils.isNotEmpty(city)) {
-				ActivityAreaFlag activityAreaFlag = generateActivityAreaFlag(activityId, city, ActivityAreaLevelEnum.CITY);
-				activityAreaFlagMapper.insert(activityAreaFlag);
-			}
-			if (StringUtils.isNotEmpty(county)) {
-				ActivityAreaFlag activityAreaFlag = generateActivityAreaFlag(activityId, county, ActivityAreaLevelEnum.COUNTRY);
-				activityAreaFlagMapper.insert(activityAreaFlag);
-			}
-		} catch (Exception e) {
-			// 不影响活动的创建
-			log.error("根据fid:{}获取区域信息error:{}", fid, e.getMessage());
-			e.printStackTrace();
-		}
-	}
-
-	private ActivityAreaFlag generateActivityAreaFlag(Integer activityId, String name, ActivityAreaLevelEnum activityAreaLevel) {
-		ActivityAreaFlag activityAreaFlag = ActivityAreaFlag.builder()
-				.activityId(activityId)
-				.area(name)
-				.areaLevel(activityAreaLevel.getValue())
-				.build();
-		return activityAreaFlag;
-	}
-
 	/**修改活动
 	 * @Description
 	 * @author wwb
 	 * @Date 2020-11-11 15:41:49
-	 * @param activity
+	 * @param activityUpdateParamDto
 	 * @param wfwRegionalArchitectures
 	 * @param signCreateParam
 	 * @param loginUser
 	 * @return void
 	*/
 	@Transactional(rollbackFor = Exception.class)
-	public void edit(Activity activity, SignCreateParamDTO signCreateParam, final List<WfwRegionalArchitectureDTO> wfwRegionalArchitectures, LoginUserDTO loginUser) {
+	public void edit(ActivityUpdateParamDTO activityUpdateParamDto, SignCreateParamDTO signCreateParam, final List<WfwRegionalArchitectureDTO> wfwRegionalArchitectures, LoginUserDTO loginUser) {
+		Activity activity = activityUpdateParamDto.buildActivity();
 		Integer activityId = activity.getId();
 		String activityEditLockKey = getActivityEditLockKey(activityId);
 		distributedLock.lock(activityEditLockKey, () -> {
@@ -322,53 +258,20 @@ public class ActivityHandleService {
 			// 处理活动类型
 			handleActivityType(activity);
 			Activity existActivity = activityValidationService.editAble(activityId, loginUser);
-			// 克隆
-			Activity oldActivity = new Activity();
-			BeanUtils.copyProperties(existActivity, oldActivity);
 			BigDecimal oldIntegralValue = existActivity.getIntegral();
 			// 更新报名签到
 			Integer signId = existActivity.getSignId();
 			signCreateParam.setId(signId);
-			SignCreateResultDTO signCreateResult = handleSign(activity, signCreateParam, loginUser);
+			handleSign(activity, signCreateParam, loginUser);
 			// 征集相关
 			handleWork(activity, loginUser);
 			// 处理活动相关
-			LocalDateTime startTime = activity.getStartTime();
-			LocalDateTime endTime = activity.getEndTime();
-
-			String oldCoverCloudId = existActivity.getCoverCloudId();
-			String newCoverCloudId = activity.getCoverCloudId();
-
-			existActivity.setName(activity.getName());
-			existActivity.setStartTime(startTime);
-			existActivity.setEndTime(endTime);
-			existActivity.setStartDate(startTime.toLocalDate());
-			existActivity.setEndDate(endTime.toLocalDate());
-			existActivity.setCoverCloudId(newCoverCloudId);
-			existActivity.setCoverUrl(activity.getCoverUrl());
-			existActivity.setOrganisers(activity.getOrganisers());
-			existActivity.setActivityType(activity.getActivityType());
-			existActivity.setAddress(activity.getAddress());
-			existActivity.setDetailAddress(activity.getDetailAddress());
-			existActivity.setLongitude(activity.getLongitude());
-			existActivity.setDimension(activity.getDimension());
-			existActivity.setActivityClassifyId(activity.getActivityClassifyId());
-			existActivity.setPeriod(activity.getPeriod());
-			existActivity.setCredit(activity.getCredit());
-			existActivity.setSignId(activity.getSignId());
-			existActivity.setWebTemplateId(activity.getWebTemplateId());
-			existActivity.setTags(activity.getTags());
-			existActivity.setIntegral(activity.getIntegral());
-			existActivity.setOpenRating(activity.getOpenRating());
-			existActivity.setRatingNeedAudit(activity.getRatingNeedAudit());
-			existActivity.setOpenWork(activity.getOpenWork());
-			existActivity.setWorkId(activity.getWorkId());
-			existActivity.setTimingRelease(activity.getTimingRelease());
-			existActivity.setTimingReleaseTime(activity.getTimingReleaseTime());
-			existActivity.setTimeLengthUpperLimit(activity.getTimeLengthUpperLimit());
-			activityMapper.update(existActivity, new UpdateWrapper<Activity>()
-					.lambda()
+			if (!Objects.equals(existActivity.getCoverCloudId(), activity.getCoverCloudId())) {
+				activity.coverCloudIdChange();
+			}
+			activityMapper.update(existActivity, new LambdaUpdateWrapper<Activity>()
 					.eq(Activity::getId, activity.getId())
+					// 一些可能为null的字段需要设置
 					.set(Activity::getTimingReleaseTime, existActivity.getTimingReleaseTime())
 					.set(Activity::getTimeLengthUpperLimit, existActivity.getTimeLengthUpperLimit())
 					.set(Activity::getIntegral, existActivity.getIntegral())
@@ -389,10 +292,6 @@ public class ActivityHandleService {
 						.set(ActivityDetail::getIntroduction, activity.getIntroduction())
 				);
 			}
-			if (!Objects.equals(oldCoverCloudId, newCoverCloudId)) {
-				// 清空封面url
-				existActivity.setCoverUrl("");
-			}
 			// 处理发布范围
 			if (CollectionUtils.isEmpty(wfwRegionalArchitectures)) {
 				throw new BusinessException("请选择发布范围");
@@ -403,7 +302,7 @@ public class ActivityHandleService {
 			// 新增活动发布范围
 			activityScopeService.batchAdd(activityScopes);
 			// 活动改变
-			activityChangeEventService.dataChange(activity, oldActivity, oldIntegralValue, loginUser);
+			activityChangeEventService.dataChange(activity, existActivity, loginUser);
 			return null;
 		}, e -> {
 			log.error("更新活动:{} error:{}", JSON.toJSONString(activity), e.getMessage());

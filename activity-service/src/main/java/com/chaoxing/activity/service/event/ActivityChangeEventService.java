@@ -54,11 +54,10 @@ public class ActivityChangeEventService {
 	 * @Date 2021-03-26 14:54:18
 	 * @param activity
 	 * @param oldActivity 原活动
-	 * @param oldIntegral 原积分
 	 * @param loginUser
 	 * @return void
 	*/
-	public void dataChange(Activity activity, Activity oldActivity, BigDecimal oldIntegral, LoginUserDTO loginUser) {
+	public void dataChange(Activity activity, Activity oldActivity, LoginUserDTO loginUser) {
 		Integer activityId = activity.getId();
 		Integer createFid = activity.getCreateFid();
 		// 数据推送
@@ -74,16 +73,6 @@ public class ActivityChangeEventService {
 		activityIsAboutToStartQueueService.pushNoticeSignedUp(new ActivityIsAboutToStartQueueService.QueueParamDTO(activityId, activity.getStartTime()), false);
 		// 活动封面url同步
 		activityCoverUrlSyncQueueService.push(activityId);
-		Integer signId = activity.getSignId();
-		if (signId != null) {
-			BigDecimal integral = Optional.ofNullable(activity.getIntegral()).orElse(BigDecimal.valueOf(0));
-			oldIntegral = Optional.ofNullable(oldIntegral).orElse(BigDecimal.valueOf(0));
-			if (integral.compareTo(oldIntegral) != 0) {
-				activityIntegralChangeQueueService.push(signId);
-				// 机构用户统计中用户获得的积分更新
-				userStatSummaryService.updateActivityUserIntegral(activity.getId(), activity.getIntegral());
-			}
-		}
 		if (oldActivity != null) {
 			// 提醒已收藏、已报名的用户活动的变更，需要判断的变更内容：活动地点、活动时间
 			boolean activityDataChange = !Objects.equals(activity.getAddress(), oldActivity.getAddress()) || !Objects.equals(activity.getDetailAddress(), oldActivity.getDetailAddress());
@@ -100,6 +89,16 @@ public class ActivityChangeEventService {
 			if (activityDataChange) {
 				// 给收藏活动和报名活动的用户发送通知
 				activityDataChangeQueueService.add(activityId);
+			}
+			Integer signId = activity.getSignId();
+			if (signId != null) {
+				BigDecimal integral = Optional.ofNullable(activity.getIntegral()).orElse(BigDecimal.valueOf(0));
+				BigDecimal oldIntegral = Optional.ofNullable(oldActivity.getIntegral()).orElse(BigDecimal.valueOf(0));
+				if (integral.compareTo(oldIntegral) != 0) {
+					activityIntegralChangeQueueService.push(signId);
+					// 机构用户统计中用户获得的积分更新
+					userStatSummaryService.updateActivityUserIntegral(activity.getId(), activity.getIntegral());
+				}
 			}
 		}
 		// 活动定时发布
