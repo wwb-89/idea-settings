@@ -33,6 +33,7 @@ import java.util.Optional;
 @Controller
 @RequestMapping("activity/create/permission")
 public class ActivityCreatePermissionController {
+
     @Resource
     private OrganizationalStructureApiService organizationalStructureApiService;
     @Resource

@@ -84,12 +84,10 @@ public class ActivityMhV2ApiController {
 		// 结束时间
 		mhGeneralAppResultDataFields.add(buildField("活动结束时间", DateTimeFormatterConstant.YYYY_MM_DD_HH_MM.format(activity.getEndTime()), "101"));
 		// 报名、签到人数
-		Boolean enableSign = activity.getEnableSign();
-		enableSign = Optional.ofNullable(enableSign).orElse(Boolean.FALSE);
 		Integer signId = activity.getSignId();
 		List<MhGeneralAppResultDataDTO.MhGeneralAppResultDataFieldDTO> btns;
 		List<Integer> availableFlags = Lists.newArrayList(109, 111, 113, 115, 116, 118);
-		if (enableSign && signId != null) {
+		if (signId != null) {
 			SignStatDTO signStat = signApiService.getSignParticipation(signId);
 			if (signStat != null && CollectionUtils.isNotEmpty(signStat.getSignUpIds())) {
 				// 报名时间

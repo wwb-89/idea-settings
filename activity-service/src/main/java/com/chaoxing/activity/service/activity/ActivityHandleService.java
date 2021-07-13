@@ -132,13 +132,6 @@ public class ActivityHandleService {
 		// 处理活动的状态, 新增的活动都是待发布的
 		activity.setStatus(Activity.StatusEnum.WAIT_RELEASE.getValue());
 		activity.setReleased(false);
-		// 审核状态
-		Boolean openAudit = activity.getOpenAudit();
-		if (openAudit) {
-			activity.setAuditStatus(Activity.AuditStatusEnum.WAIT_AUDIT.getValue());
-		} else {
-			activity.setAuditStatus(Activity.AuditStatusEnum.PASSED.getValue());
-		}
 		activity.setCreateUid(loginUser.getUid());
 		activity.setCreateUserName(loginUser.getRealName());
 		activity.setCreateFid(loginUser.getFid());
@@ -176,7 +169,7 @@ public class ActivityHandleService {
 		// 处理活动的所属区域
 		handleActivityArea(activity, loginUser);
 		// 活动改变
-		activityChangeEventService.dataChange(activity, null, activity.getIntegralValue(), loginUser);
+		activityChangeEventService.dataChange(activity, null, activity.getIntegral(), loginUser);
 	}
 
 	/**处理活动类型
@@ -331,7 +324,7 @@ public class ActivityHandleService {
 			// 克隆
 			Activity oldActivity = new Activity();
 			BeanUtils.copyProperties(existActivity, oldActivity);
-			BigDecimal oldIntegralValue = existActivity.getIntegralValue();
+			BigDecimal oldIntegralValue = existActivity.getIntegral();
 			// 更新报名签到
 			Integer signId = existActivity.getSignId();
 			signCreateParam.setId(signId);
@@ -361,11 +354,10 @@ public class ActivityHandleService {
 			existActivity.setActivityClassifyId(activity.getActivityClassifyId());
 			existActivity.setPeriod(activity.getPeriod());
 			existActivity.setCredit(activity.getCredit());
-			existActivity.setEnableSign(activity.getEnableSign());
 			existActivity.setSignId(activity.getSignId());
 			existActivity.setWebTemplateId(activity.getWebTemplateId());
 			existActivity.setTags(activity.getTags());
-			existActivity.setIntegralValue(activity.getIntegralValue());
+			existActivity.setIntegral(activity.getIntegral());
 			existActivity.setOpenRating(activity.getOpenRating());
 			existActivity.setRatingNeedAudit(activity.getRatingNeedAudit());
 			existActivity.setOpenWork(activity.getOpenWork());
@@ -378,7 +370,7 @@ public class ActivityHandleService {
 					.eq(Activity::getId, activity.getId())
 					.set(Activity::getTimingReleaseTime, existActivity.getTimingReleaseTime())
 					.set(Activity::getTimeLengthUpperLimit, existActivity.getTimeLengthUpperLimit())
-					.set(Activity::getIntegralValue, existActivity.getIntegralValue())
+					.set(Activity::getIntegral, existActivity.getIntegral())
 			);
 			// 更新活动状态
 			activityStatusService.statusUpdate(existActivity);

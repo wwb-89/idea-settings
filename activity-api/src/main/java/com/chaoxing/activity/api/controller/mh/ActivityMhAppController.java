@@ -186,27 +186,19 @@ public class ActivityMhAppController {
 	@RequestMapping("activity/{activityId}/sign/btn")
 	public RestRespDTO signInUp(@PathVariable Integer activityId, @RequestBody String data) {
 		Activity activity = activityQueryService.getById(activityId);
-		Boolean enableSign = activity.getEnableSign();
-		if (enableSign) {
-			// 请求签到报名
-			String url = String.format(QD_BTN_URL, activity.getSignId(), activityId);
-			HttpHeaders httpHeaders = new HttpHeaders();
-			httpHeaders.setContentType(MediaType.APPLICATION_JSON);
-			HttpEntity<String> httpEntity = new HttpEntity<>(data, httpHeaders);
-			String result = restTemplate.postForObject(url, httpEntity, String.class);
-			JSONObject jsonObject = JSON.parseObject(result);
-			Boolean success = jsonObject.getBoolean("success");
-			success = Optional.ofNullable(success).orElse(false);
-			if (success) {
-				return RestRespDTO.success(jsonObject.getJSONObject("data"));
-			} else {
-				return RestRespDTO.error(jsonObject.getString("message"));
-			}
+		// 请求签到报名
+		String url = String.format(QD_BTN_URL, activity.getSignId(), activityId);
+		HttpHeaders httpHeaders = new HttpHeaders();
+		httpHeaders.setContentType(MediaType.APPLICATION_JSON);
+		HttpEntity<String> httpEntity = new HttpEntity<>(data, httpHeaders);
+		String result = restTemplate.postForObject(url, httpEntity, String.class);
+		JSONObject jsonObject = JSON.parseObject(result);
+		Boolean success = jsonObject.getBoolean("success");
+		success = Optional.ofNullable(success).orElse(false);
+		if (success) {
+			return RestRespDTO.success(jsonObject.getJSONObject("data"));
 		} else {
-			// 直接返回信息给门户，返回空数据
-			JSONObject jsonObject = new JSONObject();
-			jsonObject.put("results", new ArrayList<>());
-			return RestRespDTO.success(jsonObject);
+			return RestRespDTO.error(jsonObject.getString("message"));
 		}
 	}
 

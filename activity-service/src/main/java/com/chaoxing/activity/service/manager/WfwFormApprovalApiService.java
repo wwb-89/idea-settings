@@ -238,7 +238,7 @@ public class WfwFormApprovalApiService {
         // 积分
         String integralStr = FormUtils.getValue(formData, "integral_value");
         if (StringUtils.isNotBlank(integralStr)) {
-            activity.setIntegralValue(BigDecimal.valueOf(Double.parseDouble(integralStr)));
+            activity.setIntegral(BigDecimal.valueOf(Double.parseDouble(integralStr)));
         }
         String orgName = passportApiService.getOrgName(fid);
         // 主办方

@@ -1,6 +1,7 @@
 CREATE TABLE `t_template`  (
     `id` int(11) NOT NULL AUTO_INCREMENT COMMENT '主键',
     `market_id` int(11) NULL COMMENT '市场id',
+    `origin_template_id` int(11) NULL COMMENT '源模版id',
     `name` varchar(50) NULL COMMENT '模版名称',
     `is_system` tinyint(1) NULL DEFAULT 0 COMMENT '是否是系统模版',
     `fid` int(11) NULL COMMENT '所属机构id',
@@ -95,3 +96,9 @@ CREATE TABLE `t_activity_component_value`  (
 ) COMMENT = '活动组件值表';
 ALTER TABLE t_activity ADD COLUMN market_id INT COMMENT '市场id';
 ALTER TABLE t_activity ADD COLUMN template_id INT COMMENT '模版id';
+ALTER TABLE t_activity DROP COLUMN is_enable_sign;
+ALTER TABLE t_activity DROP COLUMN is_open_audit;
+ALTER TABLE t_activity DROP COLUMN audit_status;
+ALTER TABLE t_activity DROP COLUMN activity_flag;
+ALTER TABLE t_activity DROP COLUMN second_classroom_flag;
+ALTER TABLE t_activity CHANGE integral_value integral DECIMAL(20, 2) COMMENT '积分';

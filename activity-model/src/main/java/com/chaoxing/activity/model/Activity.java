@@ -71,9 +71,6 @@ public class Activity {
     private BigDecimal credit;
     /** 参与时长上限（小时）; column: time_length_upper_limit*/
     private Integer timeLengthUpperLimit;
-    /** 是否启用签到报名; column: is_enable_sign*/
-    @TableField(value = "is_enable_sign")
-    private Boolean enableSign;
     /** 签到报名id; column: sign_id*/
     private Integer signId;
     /** 网页模板id; column: web_template_id*/
@@ -100,11 +97,6 @@ public class Activity {
     private LocalDateTime releaseTime;
     /** 发布人id; column: release_uid*/
     private Integer releaseUid;
-    /** 是否开启审核; column: is_open_audit*/
-    @TableField(value = "is_open_audit")
-    private Boolean openAudit;
-    /** 审核状态。0：审核不通过，1：审核通过，2：待审核; column: audit_status*/
-    private Integer auditStatus;
     /** 创建人id; column: create_uid*/
     private Integer createUid;
     /** 创建人姓名; column: create_user_name*/
@@ -123,9 +115,9 @@ public class Activity {
     /** 评价是否需要审核; column: is_rating_need_audit */
     @TableField(value = "is_rating_need_audit")
     private Boolean ratingNeedAudit;
-    /** 积分值; column: integral_value*/
-    private BigDecimal integralValue;
-    /** 活动标示，通用、第二课堂、双选会等; column: activity_flag*/
+    /** 积分值; column: integral*/
+    private BigDecimal integral;
+    /** 活动标识; column: activity_flag*/
     private String activityFlag;
     /** 是否开启作品征集; column: is_open_work*/
     @TableField(value = "is_open_work")
@@ -350,9 +342,7 @@ public class Activity {
                 .organisers("")
                 .address("")
                 .detailAddress("")
-                .enableSign(true)
                 .openWork(false)
-                .openAudit(false)
                 .build();
     }
 

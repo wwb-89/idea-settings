@@ -176,7 +176,7 @@ public class ActivityDataFormPushService {
             }
             // 活动积分
             if ("activity_integral".equals(alias)) {
-                data.add(activity.getIntegralValue());
+                data.add(activity.getIntegral());
                 item.put("val", data);
                 continue;
             }

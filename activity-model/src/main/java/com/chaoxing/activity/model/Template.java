@@ -31,6 +31,8 @@ public class Template {
     private Integer id;
     /** 市场id; column: market_id*/
     private Integer marketId;
+    /** 源模版id; column: origin_template_id*/
+    private Integer originTemplateId;
     /** 模版名称; column: name*/
     private String name;
     /** 是否是系统模版; column: is_system*/

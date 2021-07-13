@@ -197,4 +197,9 @@ public class ActivityManageController {
 		model.addAttribute("customOrg", customOrg);
 		return "pc/activity-add-edit";
 	}
+
+	public String add(HttpServletRequest request, Model model, Integer marketId, Integer templateId) {
+		return "";
+	}
+
 }

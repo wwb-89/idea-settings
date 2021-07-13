@@ -146,7 +146,7 @@ public class UserStatSummaryHandleService {
                 .eq(UserStatSummary::getUid, uid)
                 .eq(UserStatSummary::getActivityId, activityId)
         );
-        BigDecimal integral = activity.getIntegralValue();
+        BigDecimal integral = activity.getIntegral();
         integral = Optional.ofNullable(integral).orElse(BigDecimal.ZERO);
         if (!isQualified) {
             integral = BigDecimal.ZERO;

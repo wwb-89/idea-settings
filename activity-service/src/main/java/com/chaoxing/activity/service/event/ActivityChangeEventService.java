@@ -76,13 +76,13 @@ public class ActivityChangeEventService {
 		activityCoverUrlSyncQueueService.push(activityId);
 		Integer signId = activity.getSignId();
 		if (signId != null) {
-			BigDecimal integralValue = activity.getIntegralValue();
+			BigDecimal integralValue = activity.getIntegral();
 			integralValue = Optional.ofNullable(integralValue).orElse(BigDecimal.valueOf(0));
 			oldIntegralValue = Optional.ofNullable(oldIntegralValue).orElse(BigDecimal.valueOf(0));
 			if (integralValue.compareTo(oldIntegralValue) != 0) {
 				activityIntegralChangeQueueService.push(signId);
 				// 机构用户统计中用户获得的积分更新
-				userStatSummaryService.updateActivityUserIntegral(activity.getId(), activity.getIntegralValue());
+				userStatSummaryService.updateActivityUserIntegral(activity.getId(), activity.getIntegral());
 			}
 		}
 		if (oldActivity != null) {
