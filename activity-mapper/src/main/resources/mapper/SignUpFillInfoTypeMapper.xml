@@ -9,4 +9,13 @@
     <sql id="Base_Column_List">
         t.id, t.template_component_id, t.type
     </sql>
+
+    <insert id="batchAdd">
+        INSERT INTO t_sign_up_fill_info_type ( template_component_id, type )
+        VALUES
+            <foreach collection="signUpFillInfoTypes" index="key" item="value" open="" close="" separator=",">
+                ( #{value.templateComponentId}, #{value.type} )
+            </foreach>
+    </insert>
+
 </mapper>

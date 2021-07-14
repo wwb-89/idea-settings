@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
+import com.chaoxing.activity.dto.OperateUserDTO;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -54,5 +55,29 @@ public class Template {
     private LocalDateTime updateTime;
     /** 更新人uid; column: update_uid*/
     private Integer updateUid;
+
+    /**克隆到一个新的市场
+     * @Description 
+     * @author wwb
+     * @Date 2021-07-14 17:33:40
+     * @param marketId
+     * @param fid
+     * @return com.chaoxing.activity.model.Template
+    */
+    public Template cloneToNewMarket(Integer marketId, Integer fid) {
+        return Template.builder()
+                .marketId(marketId)
+                .fid(fid)
+                .originTemplateId(getId())
+                .name(getName())
+                .system(false)
+                .activityFlag(getActivityFlag())
+                .coverUrl(getCoverUrl())
+                .build();
+    }
+
+    public void perfectCreator(OperateUserDTO operateUserDto) {
+        setCreateUid(operateUserDto.getUid());
+    }
 
 }

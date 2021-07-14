@@ -10,9 +10,10 @@
         <result column="introduction" jdbcType="VARCHAR" property="introduction" />
         <result column="is_required" jdbcType="BIT" property="required" />
         <result column="sequence" jdbcType="INTEGER" property="sequence" />
+        <result column="is_deleted" jdbcType="INTEGER" property="deleted" />
     </resultMap>
     <sql id="Base_Column_List">
-        t.id, t.template_id, t.pid, t.component_id, t.name, t.introduction, t.is_required, t.sequence
+        t.id, t.template_id, t.pid, t.component_id, t.name, t.introduction, t.is_required, t.sequence, is_deleted
     </sql>
 
     <insert id="batchAdd" useGeneratedKeys="true" keyProperty="id">

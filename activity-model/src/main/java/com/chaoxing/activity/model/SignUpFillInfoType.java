@@ -3,9 +3,14 @@ package com.chaoxing.activity.model;
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
+import com.google.common.collect.Lists;
 import lombok.*;
 
+import java.util.List;
+import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
+import java.util.stream.Collectors;
 
 /**
  * 报名填报信息类型表：默认、双选会、微服务表单
@@ -29,6 +34,17 @@ public class SignUpFillInfoType {
     private Integer templateComponentId;
     /** 类型; column: type*/
     private String type;
+
+    public SignUpFillInfoType cloneToNewTemplateComponentId(Integer templateComponentId) {
+        return SignUpFillInfoType.builder()
+                .templateComponentId(templateComponentId)
+                .type(getType())
+                .build();
+    }
+
+    public static List<SignUpFillInfoType> cloneToNewTemplateComponentId(List<SignUpFillInfoType> signUpFillInfoTypes, Map<Integer, Integer> oldNewTemplateComponentIdRelation) {
+        return Optional.ofNullable(signUpFillInfoTypes).orElse(Lists.newArrayList()).stream().map(v -> v.cloneToNewTemplateComponentId(oldNewTemplateComponentIdRelation.get(v.getId()))).collect(Collectors.toList());
+    }
 
     @Getter
     public enum TypeEnum {

@@ -4,10 +4,16 @@ import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
+import com.google.common.collect.Lists;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.stream.Collectors;
 
 /**
  * 模版组件报名条件表
@@ -36,5 +42,18 @@ public class SignUpCondition {
     /** 是否允许报名; column: is_allow_signed_up*/
     @TableField(value = "is_allow_signed_up")
     private Boolean allowSignedUp;
+
+    public SignUpCondition cloneToNewTemplateComponentId(Integer templateComponentId) {
+        return SignUpCondition.builder()
+                .templateComponentId(templateComponentId)
+                .originIdentify(getOriginIdentify())
+                .fieldName(getFieldName())
+                .allowSignedUp(getAllowSignedUp())
+                .build();
+    }
+
+    public static List<SignUpCondition> cloneToNewTemplateComponentId(List<SignUpCondition> signUpConditions, Map<Integer, Integer> oldNewTemplateComponentIdRelation) {
+        return Optional.ofNullable(signUpConditions).orElse(Lists.newArrayList()).stream().map(v -> v.cloneToNewTemplateComponentId(oldNewTemplateComponentIdRelation.get(v.getId()))).collect(Collectors.toList());
+    }
 
 }

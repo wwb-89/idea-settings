@@ -4,12 +4,16 @@ import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
+import com.google.common.collect.Lists;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
+import java.util.stream.Collectors;
 
 /**
  * 模版组件关联表
@@ -44,6 +48,8 @@ public class TemplateComponent {
     private Boolean required;
     /** 顺序; column: sequence*/
     private Integer sequence;
+    /** 是否被删除; column: is_deleted*/
+    private Boolean deleted;
 
     @TableField(exist = false)
     private List<TemplateComponent> children;
@@ -51,4 +57,26 @@ public class TemplateComponent {
     private SignUpCondition signUpCondition;
     @TableField(exist = false)
     private SignUpFillInfoType signUpFillInfoType;
+
+    /**将模版组件列表克隆到指定的模版
+     * @Description 子组件将封装到父组件的children中
+     * @author wwb
+     * @Date 2021-07-14 18:06:08
+     * @param templateComponents
+     * @param templateId
+     * @return java.util.List<com.chaoxing.activity.model.TemplateComponent>
+    */
+    public static List<TemplateComponent> cloneToNewTemplateId(List<TemplateComponent> templateComponents, Integer templateId) {
+        // 清理一些属性
+        Optional.ofNullable(templateComponents).orElse(Lists.newArrayList()).forEach(v -> {
+            v.setId(null);
+            v.setTemplateId(templateId);
+        });
+        // 找到父组件列表
+        List<TemplateComponent> parentTemplateComponents = Optional.ofNullable(templateComponents).orElse(Lists.newArrayList()).stream().filter(v -> Objects.equals(0, v.getPid())).collect(Collectors.toList());
+        // 给父组件填充子组件列表
+        Optional.ofNullable(parentTemplateComponents).orElse(Lists.newArrayList()).stream().forEach(templateComponent -> templateComponent.setChildren(Optional.ofNullable(templateComponents).orElse(Lists.newArrayList()).stream().filter(v -> Objects.equals(templateComponent.getId(), v.getPid())).collect(Collectors.toList())));
+        return parentTemplateComponents;
+    }
+
 }

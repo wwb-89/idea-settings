@@ -62,6 +62,7 @@ CREATE TABLE `t_template_component`  (
     `introduction` varchar(255) NULL COMMENT '定制的简介',
     `is_required` tinyint(1) NULL DEFAULT 0 COMMENT '是否必填',
     `sequence` int(11) NULL COMMENT '顺序',
+    `is_deleted` tinyint(1) NULL DEFAULT 0 COMMENT '是否被删除',
     PRIMARY KEY (`id`),
     INDEX `idx_primary`(`template_id`)
 ) COMMENT = '模版组件关联表';

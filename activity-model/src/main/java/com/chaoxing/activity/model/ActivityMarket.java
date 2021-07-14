@@ -4,12 +4,17 @@ import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
+import com.chaoxing.activity.dto.OperateUserDTO;
+import com.chaoxing.activity.util.exception.BusinessException;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.apache.commons.lang3.StringUtils;
 
 import java.time.LocalDateTime;
+import java.util.Objects;
+import java.util.Optional;
 
 /**
  * 活动市场表
@@ -47,5 +52,14 @@ public class ActivityMarket {
     /** 更新人id; column: update_uid*/
     private Integer updateUid;
 
+    public void perfectCreator(OperateUserDTO operateUserDto) {
+        setCreateUid(operateUserDto.getUid());
+    }
+
+    public void updateValidate(OperateUserDTO operateUserDto) {
+        Optional.ofNullable(getId()).orElseThrow(() -> new BusinessException("活动市场id不能为空"));
+        Optional.ofNullable(getName()).filter(StringUtils::isNotBlank).orElseThrow(() -> new BusinessException("名称不能为空"));
+        Optional.ofNullable(getFid()).filter(v -> Objects.equals(v, operateUserDto.getFid())).orElseThrow(() -> new BusinessException("无权限"));
+    }
 
 }

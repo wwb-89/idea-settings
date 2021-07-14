@@ -1,13 +1,17 @@
 package com.chaoxing.activity.service.activity.engine;
 
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.chaoxing.activity.mapper.SignUpConditionMapper;
 import com.chaoxing.activity.model.SignUpCondition;
+import com.google.common.collect.Lists;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
 import java.util.List;
+import java.util.Optional;
 
 /**报名条件服务
  * @author wwb
@@ -57,6 +61,22 @@ public class SignUpConditionService {
 		signUpConditionMapper.delete(new LambdaUpdateWrapper<SignUpCondition>()
 			.eq(SignUpCondition::getTemplateComponentId, templateComponentId)
 		);
+	}
+
+	/**根据模版组件id列表查询报名条件列表
+	 * @Description 
+	 * @author wwb
+	 * @Date 2021-07-14 17:24:23
+	 * @param templateComponentIds
+	 * @return java.util.List<com.chaoxing.activity.model.SignUpCondition>
+	*/
+	public List<SignUpCondition> listByTemplateComponentIds(List<Integer> templateComponentIds) {
+		if (CollectionUtils.isNotEmpty(templateComponentIds)) {
+			return signUpConditionMapper.selectList(new LambdaQueryWrapper<SignUpCondition>()
+					.in(SignUpCondition::getTemplateComponentId, templateComponentIds)
+			);
+		}
+		return Lists.newArrayList();
 	}
 
 	/**是否能报名
