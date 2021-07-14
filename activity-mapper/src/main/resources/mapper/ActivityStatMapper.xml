@@ -60,11 +60,13 @@
             <foreach collection="queryParams.activityIds" item="value" open="(" close=")" separator=",">
                 #{value}
             </foreach>
+            AND t.`status` IN ( 1, 2, 3, 4 )
+            AND t.is_released = 1
         GROUP BY t.id
-        <if test="orderField != null and orderField != ''">
-            ORDER BY ${orderField} <if test="orderType != null and orderType != ''">${orderType}</if>
-        </if>
-        LIMIT 0, 10
+            <if test="orderField != null and orderField != ''">
+                ORDER BY ${orderField} <if test="orderType != null and orderType != ''">${orderType}</if>
+            </if>
+            LIMIT 0, 10
     </select>
 
     <select id="activityStatList" resultType="com.chaoxing.activity.model.ActivityStat">
@@ -121,6 +123,8 @@
             <foreach collection="fids" item="fid" open="(" close=")" separator=",">
                 #{fid}
             </foreach>
+            AND t.`status` IN ( 1, 2, 3, 4 )
+            AND t.is_released = 1
         GROUP BY t.id
     </select>
 </mapper>

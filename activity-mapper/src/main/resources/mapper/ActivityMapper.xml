@@ -461,7 +461,7 @@
             t.activity_classify_id
     </select>
 
-    <select id="listActivityIds" resultType="java.lang.Integer">
+    <select id="listOrgReleasedActivityIds" resultType="java.lang.Integer">
         SELECT
             t.id
         FROM
@@ -480,10 +480,11 @@
                 </trim>
             </if>
             AND t.`status` IN ( 1, 2, 3, 4 )
+            AND t.is_released = 1
         </where>
     </select>
 
-    <select id="listActivityIdByFids" resultType="java.lang.Integer">
+    <select id="listOrgsReleasedActivityId" resultType="java.lang.Integer">
         SELECT
             t.id
         FROM
@@ -505,6 +506,7 @@
                 </trim>
             </if>
             AND t.`status` IN ( 1, 2, 3, 4 )
+            AND t.is_released = 1
         </where>
     </select>
 

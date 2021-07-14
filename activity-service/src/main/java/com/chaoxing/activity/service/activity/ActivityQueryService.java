@@ -519,7 +519,7 @@ public class ActivityQueryService {
 	* @return java.util.List<java.lang.Integer>
 	*/
     public List<Integer> listActivityIdsByFid(Integer fid, String startDate, String endDate) {
-		return activityMapper.listActivityIds(fid, startDate, endDate);
+		return activityMapper.listOrgReleasedActivityIds(fid, startDate, endDate);
     }
 
 	/**查询活动已报名用户id列表
@@ -693,7 +693,7 @@ public class ActivityQueryService {
     	if (CollectionUtils.isEmpty(fids)) {
     		return Lists.newArrayList();
 		}
-		return activityMapper.listActivityIdByFids(fids, startDate, endDate);
+		return activityMapper.listOrgsReleasedActivityId(fids, startDate, endDate);
 	}
 
 	/**根据活动id查询活动详情
