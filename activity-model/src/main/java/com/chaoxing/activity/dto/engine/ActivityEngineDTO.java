@@ -32,6 +32,9 @@ public class ActivityEngineDTO {
     /** 待更新templateId 自定义组件ids */
     private List<Integer> customComponentIds;
 
+    /** 待删除templateComponentId 自定义组件ids */
+    private List<Integer> delTemplateComponentIds;
+
     /** 模板组件关联信息list */
     private List<TemplateComponent> templateComponents;
 

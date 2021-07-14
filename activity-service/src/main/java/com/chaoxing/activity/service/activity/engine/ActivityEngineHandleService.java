@@ -4,8 +4,10 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.chaoxing.activity.dto.engine.ActivityEngineDTO;
 import com.chaoxing.activity.mapper.*;
-import com.chaoxing.activity.model.*;
-import com.google.common.collect.Maps;
+import com.chaoxing.activity.model.Component;
+import com.chaoxing.activity.model.ComponentField;
+import com.chaoxing.activity.model.Template;
+import com.chaoxing.activity.model.TemplateComponent;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.compress.utils.Lists;
@@ -13,7 +15,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.*;
+import java.util.Collection;
+import java.util.List;
+import java.util.Objects;
 
 /**
  * @author huxiaolong
@@ -56,7 +60,7 @@ public class ActivityEngineHandleService {
             saveOperation(newTemplate, templateComponents, activityEngineDTO.getCustomComponentIds());
             return;
         }
-        updateOperation(template, templateComponents);
+        updateOperation(template, templateComponents, activityEngineDTO.getDelTemplateComponentIds());
     }
 
     /**新增操作(新增模板、新增组件、新增模板组件关联关系)
@@ -72,7 +76,7 @@ public class ActivityEngineHandleService {
         // 保存模板
         templateMapper.insert(template);
         // 保存模板组件关联关系
-        saveTemplateComponent(template.getId(), templateComponents, true);
+        saveTemplateComponent(template.getId(), templateComponents);
         // 更新自定义组件关联templateId
         if (CollectionUtils.isNotEmpty(customComponentIds)) {
             componentMapper.update(null, new UpdateWrapper<Component>()
@@ -83,11 +87,19 @@ public class ActivityEngineHandleService {
     }
 
     @Transactional(rollbackFor = Exception.class)
-    public void updateOperation(Template template, List<TemplateComponent> templateComponents) {
+    public void updateOperation(Template template, List<TemplateComponent> templateComponents, List<Integer> delTemplateComponentIds) {
         // 更新模板
         templateMapper.updateById(template);
         // 保存模板组件关联关系
         updateTemplateComponent(template.getId(), templateComponents);
+
+        if (CollectionUtils.isNotEmpty(delTemplateComponentIds)) {
+            templateComponentMapper.update(null, new UpdateWrapper<TemplateComponent>()
+                    .lambda()
+                    .in(TemplateComponent::getId, delTemplateComponentIds)
+                    .set(TemplateComponent::getDeleted, Boolean.TRUE));
+        }
+
     }
 
 
@@ -170,7 +182,7 @@ public class ActivityEngineHandleService {
     * @param
     * @return void
     */
-    public void saveTemplateComponent(Integer templateId, Collection<TemplateComponent> templateComponents, Boolean saveSignUpCondition) {
+    public void saveTemplateComponent(Integer templateId, Collection<TemplateComponent> templateComponents) {
         for (TemplateComponent templateComponent : templateComponents) {
             templateComponent.setTemplateId(templateId);
         }
@@ -178,6 +190,11 @@ public class ActivityEngineHandleService {
             templateComponentMapper.batchAdd(templateComponents);
         }
         for (TemplateComponent templateComponent : templateComponents) {
+            if (templateComponent.getSignUpCondition() != null) {
+                templateComponent.getSignUpCondition().setTemplateComponentId(templateComponent.getId());
+                signUpConditionMapper.insert(templateComponent.getSignUpCondition());
+            }
+
             if (CollectionUtils.isNotEmpty(templateComponent.getChildren())) {
                 templateComponent.getChildren().forEach(item -> {
                     item.setPid(templateComponent.getId());
@@ -186,7 +203,7 @@ public class ActivityEngineHandleService {
                 templateComponentMapper.batchAdd(templateComponent.getChildren());
 
                 for (TemplateComponent child : templateComponent.getChildren()) {
-                    if (child.getSignUpCondition() != null && saveSignUpCondition) {
+                    if (child.getSignUpCondition() != null) {
                         child.getSignUpCondition().setTemplateComponentId(child.getId());
                         signUpConditionMapper.insert(child.getSignUpCondition());
                     }
@@ -204,53 +221,38 @@ public class ActivityEngineHandleService {
     */
     @Transactional(rollbackFor = Exception.class)
     public void updateTemplateComponent(Integer templateId, List<TemplateComponent> templateComponents) {
-        List<Integer> originalSignUpTemplateIds = signUpConditionMapper.selectTemplateComponentIdByTemplateId(templateId);
-        Map<Integer, TemplateComponent> waitHandleComponents = Maps.newHashMap();
-        List<TemplateComponent> oldChildTemplateComponents = Lists.newArrayList();
+        List<TemplateComponent> waitUpdateTemplateComponents = Lists.newArrayList();
+        List<TemplateComponent> waitSaveTemplateComponents = Lists.newArrayList();
+
         for (TemplateComponent templateComponent : templateComponents) {
-            if (CollectionUtils.isNotEmpty(templateComponent.getChildren())) {
-                templateComponent.getChildren().forEach(child -> {
-                    if (child.getId() != null && originalSignUpTemplateIds.contains(child.getId())) {
-                        waitHandleComponents.put(child.getId(), child);
+            if (templateComponent.getId() == null) {
+                waitSaveTemplateComponents.add(templateComponent);
+            } else {
+                waitUpdateTemplateComponents.add(templateComponent);
+                if (CollectionUtils.isNotEmpty(templateComponent.getChildren())) {
+                    for (TemplateComponent child : templateComponent.getChildren()) {
+                        if (child.getId() == null) {
+                            waitSaveTemplateComponents.add(child);
+                        } else {
+                            child.setPid(templateComponent.getId());
+                            waitUpdateTemplateComponents.add(child);
+                        }
                     }
-                });
-                oldChildTemplateComponents.addAll(templateComponent.getChildren());
+                }
             }
         }
-        // 删除模板对应的组件关联关系
-        templateComponentMapper.delete(new QueryWrapper<TemplateComponent>()
-                .lambda()
-                .eq(TemplateComponent::getTemplateId, templateId));
-
-        templateComponents.removeAll(waitHandleComponents.values());
-        // 先保存不需要更新 报名条件的 模板关系
-        saveTemplateComponent(templateId, templateComponents, true);
-
-        if (!waitHandleComponents.isEmpty()) {
-
-            List<TemplateComponent> newChildTemplateComponents = Lists.newArrayList();
-            templateComponents.forEach(v -> {
-                if (CollectionUtils.isNotEmpty(v.getChildren())) {
-                    newChildTemplateComponents.addAll(v.getChildren());
+        for (TemplateComponent tplComponent : waitUpdateTemplateComponents) {
+            templateComponentMapper.updateById(tplComponent);
+            if (tplComponent.getSignUpCondition() != null) {
+                tplComponent.getSignUpCondition().setTemplateComponentId(tplComponent.getId());
+                if (tplComponent.getSignUpCondition().getId() == null) {
+                    signUpConditionMapper.insert(tplComponent.getSignUpCondition());
+                } else {
+                    signUpConditionMapper.updateById(tplComponent.getSignUpCondition());
                 }
-            });
-
-            Map<Integer, Integer> oldNewIds = Maps.newHashMap();
-            for (int i = 0; i < oldChildTemplateComponents.size(); i++) {
-                if (oldChildTemplateComponents.get(i).getId() != null) {
-                    oldNewIds.put(oldChildTemplateComponents.get(i).getId(), newChildTemplateComponents.get(i).getId());
-                }
-            }
-            // 重新建立关联关系
-            for (Map.Entry<Integer, TemplateComponent> entry : waitHandleComponents.entrySet()) {
-                Integer originalSignUpTemplateComponentId = entry.getKey();
-                Integer nowSignUpTemplateComponentId = oldNewIds.get(entry.getValue().getId());
-                signUpConditionMapper.update(null, new UpdateWrapper<SignUpCondition>()
-                        .lambda()
-                        .eq(SignUpCondition::getTemplateComponentId, originalSignUpTemplateComponentId)
-                        .set(SignUpCondition::getTemplateComponentId, nowSignUpTemplateComponentId));
             }
         }
 
+        saveTemplateComponent(templateId, waitSaveTemplateComponents);
     }
 }

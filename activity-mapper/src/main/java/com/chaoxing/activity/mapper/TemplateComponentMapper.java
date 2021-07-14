@@ -26,4 +26,5 @@ public interface TemplateComponentMapper extends BaseMapper<TemplateComponent> {
     * @return void
     */
     void batchAdd(@Param("templateComponents") Collection<TemplateComponent> templateComponents);
+
 }

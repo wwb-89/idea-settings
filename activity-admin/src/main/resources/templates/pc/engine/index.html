@@ -23,7 +23,6 @@
             </div>
         </div>
         <div class="content">
-            <span>{{currSUConditionTplComponent}}</span>
             <div class="w-900px choose-mould" v-show="!loaded || !currTemplateId">
                 <p class="title">请选择模版</p>
                 <ul class="mould">
@@ -663,6 +662,7 @@
                     signUpConditionItem: {},
                     signUpConditionAdd: false,
                     customComponentIds: [],
+                    delTemplateComponentIds: [],
 
                     radio1:'1',
                     activityType:'创新创业',
@@ -977,19 +977,22 @@
                         // 样式改变
                         $(target).hide();
                         $this.$set(components[index], 'checked', false)
-                        $this.templateComponents = $.grep($this.templateComponents, function (it) {
-                            return it.pid != currTypeVirtualId || it.componentId != item.id;
-                        });
-                        // var waitRemoveItems = $.grep($this.templateComponents, function (it) {
-                        //     return it.pid == currTypeVirtualId && it.componentId == item.id;
-                        // });
-                        // var waitRemoveTplCpIds = [];
-                        // $(waitRemoveItems).each(function () {
-                        //     waitRemoveTplCpIds.push(this.id);
-                        // });
                         // $this.templateComponents = $.grep($this.templateComponents, function (it) {
-                        //     return waitRemoveTplCpIds.indexOf(it.id) == -1;
+                        //     return it.pid != currTypeVirtualId || it.componentId != item.id;
                         // });
+                        var waitRemoveItems = $.grep($this.templateComponents, function (it) {
+                            return it.pid == currTypeVirtualId && it.componentId == item.id;
+                        });
+                        var waitRemoveTplCpIds = [];
+                        $(waitRemoveItems).each(function () {
+                            waitRemoveTplCpIds.push(this.id);
+                            if ( typeof this.id == 'number') {
+                                $this.delTemplateComponentIds.push(this.id);
+                            }
+                        });
+                        $this.templateComponents = $.grep($this.templateComponents, function (it) {
+                            return waitRemoveTplCpIds.indexOf(it.id) == -1;
+                        });
                         // 基本信息的移除
                         if (item.pid == 0) {
                             $this.showTemplateComponents = $.grep($this.showTemplateComponents, function (it) {
@@ -1012,6 +1015,9 @@
                     // 配置页面基础信息关联移除操作 --> 主要针对 pid = 0 item : templateComponent
                     removeComponentAssociate1: function (index, item) {
                         var $this = this;
+                        if (typeof item.id == 'number') {
+                            $this.delTemplateComponentIds.push(item.id);
+                        }
                         // 移除展示模板组件关联记录
                         $this.showTemplateComponents.splice(index, 1);
                         $this.templateComponents = $.grep($this.templateComponents, function (it) {
@@ -1020,6 +1026,9 @@
                         // 如果是报名组件，则需要继续移除它的子组件
                         if (item.code == 'sign_up' || item.code == 'company_sign_up') {
                             $this.templateComponents = $.grep($this.templateComponents, function (it) {
+                                if (it.pid == item.id && typeof it.id == 'number') {
+                                    $this.delTemplateComponentIds.push(it.id);
+                                }
                                 return it.pid != item.id;
                             });
                             // 也需要移除分类中的列表
@@ -1052,6 +1061,10 @@
                     removeComponentAssociate2: function (index, idx, item) {
                         var $this = this;
                         // 移除展示模板组件关联记录
+                        var id = $this.showTemplateComponents[index].children[idx].id;
+                        if (typeof id == 'number') {
+                            $this.delTemplateComponentIds.push(id);
+                        }
                         $this.showTemplateComponents[index].children.splice(idx, 1);
                         $this.templateComponents = $.grep($this.templateComponents, function (it) {
                             return it.id != item.id;
@@ -1399,7 +1412,8 @@
                         return {
                             template: template,
                             customComponentIds: $this.customComponentIds,
-                            templateComponents: templateComponents
+                            templateComponents: templateComponents,
+                            delTemplateComponentIds: $this.delTemplateComponentIds
                         }
                     },
                     addEditItemFields: function () {

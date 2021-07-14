@@ -49,6 +49,7 @@ public class TemplateComponent {
     /** 顺序; column: sequence*/
     private Integer sequence;
     /** 是否被删除; column: is_deleted*/
+    @TableField(value = "is_deleted")
     private Boolean deleted;
 
     @TableField(exist = false)
