@@ -8,14 +8,12 @@ import com.chaoxing.activity.model.*;
 import com.google.common.collect.Maps;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.compress.utils.Lists;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Collection;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
 
 /**
  * @author huxiaolong
@@ -150,14 +148,16 @@ public class ActivityEngineHandleService {
         component.setCreateUid(uid);
         component.setUpdateUid(uid);
         componentMapper.insert(component);
+        List<ComponentField> fieldList = component.getFieldList();
+        component = componentMapper.selectById(component.getId());
         if (Objects.equals(component.getDataOrigin(), Component.DataOriginEnum.CUSTOM.getValue())
-                && CollectionUtils.isNotEmpty(component.getFieldList())) {
-            component.getFieldList().forEach(v -> {
-                v.setCreateUid(uid);
-                v.setUpdateUid(uid);
-                v.setComponentId(component.getId());
-            });
-            componentFieldMapper.batchAdd(component.getFieldList());
+                && CollectionUtils.isNotEmpty(fieldList)) {
+            for (ComponentField field : fieldList) {
+                field.setCreateUid(uid);
+                field.setUpdateUid(uid);
+                field.setComponentId(component.getId());
+            }
+            componentFieldMapper.batchAdd(fieldList);
         }
         return component;
     }
@@ -206,28 +206,51 @@ public class ActivityEngineHandleService {
     public void updateTemplateComponent(Integer templateId, List<TemplateComponent> templateComponents) {
         List<Integer> originalSignUpTemplateIds = signUpConditionMapper.selectTemplateComponentIdByTemplateId(templateId);
         Map<Integer, TemplateComponent> waitHandleComponents = Maps.newHashMap();
+        List<TemplateComponent> oldChildTemplateComponents = Lists.newArrayList();
         for (TemplateComponent templateComponent : templateComponents) {
-            if (templateComponent.getId() != null && originalSignUpTemplateIds.contains(templateComponent.getId())) {
-                waitHandleComponents.put(templateComponent.getId(), templateComponent);
+            if (CollectionUtils.isNotEmpty(templateComponent.getChildren())) {
+                templateComponent.getChildren().forEach(child -> {
+                    if (child.getId() != null && originalSignUpTemplateIds.contains(child.getId())) {
+                        waitHandleComponents.put(child.getId(), child);
+                    }
+                });
+                oldChildTemplateComponents.addAll(templateComponent.getChildren());
             }
         }
         // 删除模板对应的组件关联关系
         templateComponentMapper.delete(new QueryWrapper<TemplateComponent>()
                 .lambda()
                 .eq(TemplateComponent::getTemplateId, templateId));
+
+        templateComponents.removeAll(waitHandleComponents.values());
+        // 先保存不需要更新 报名条件的 模板关系
+        saveTemplateComponent(templateId, templateComponents, true);
+
         if (!waitHandleComponents.isEmpty()) {
-            templateComponents.removeAll(waitHandleComponents.values());
+
+            List<TemplateComponent> newChildTemplateComponents = Lists.newArrayList();
+            templateComponents.forEach(v -> {
+                if (CollectionUtils.isNotEmpty(v.getChildren())) {
+                    newChildTemplateComponents.addAll(v.getChildren());
+                }
+            });
+
+            Map<Integer, Integer> oldNewIds = Maps.newHashMap();
+            for (int i = 0; i < oldChildTemplateComponents.size(); i++) {
+                if (oldChildTemplateComponents.get(i).getId() != null) {
+                    oldNewIds.put(oldChildTemplateComponents.get(i).getId(), newChildTemplateComponents.get(i).getId());
+                }
+            }
             // 重新建立关联关系
-            saveTemplateComponent(templateId, waitHandleComponents.values(), false);
             for (Map.Entry<Integer, TemplateComponent> entry : waitHandleComponents.entrySet()) {
                 Integer originalSignUpTemplateComponentId = entry.getKey();
-                Integer nowSignUpTemplateComponentId = entry.getValue().getId();
+                Integer nowSignUpTemplateComponentId = oldNewIds.get(entry.getValue().getId());
                 signUpConditionMapper.update(null, new UpdateWrapper<SignUpCondition>()
                         .lambda()
                         .eq(SignUpCondition::getTemplateComponentId, originalSignUpTemplateComponentId)
                         .set(SignUpCondition::getTemplateComponentId, nowSignUpTemplateComponentId));
             }
         }
-        saveTemplateComponent(templateId, templateComponents, true);
+
     }
 }
