@@ -60,7 +60,7 @@ CREATE TABLE `t_template_component`  (
     `component_id` int(11) NULL COMMENT '组件id',
     `name` varchar(50) NULL COMMENT '定制的名称',
     `introduction` varchar(255) NULL COMMENT '定制的简介',
-    `is_required` tinyint(1) NULL DEFAULT 1 COMMENT '是否必填',
+    `is_required` tinyint(1) NULL DEFAULT 0 COMMENT '是否必填',
     `sequence` int(11) NULL COMMENT '顺序',
     PRIMARY KEY (`id`),
     INDEX `idx_primary`(`template_id`)
