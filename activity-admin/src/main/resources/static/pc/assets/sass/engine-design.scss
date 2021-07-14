@@ -498,6 +498,51 @@
             }
         }
     }
+    .name-txt {
+        font-weight: 600;
+        font-size: 18px;
+        line-height: 30px;
+        color: #ffffff;
+        position: absolute;
+        left: 50%;
+        top: 50%;
+        transform: translate(-50%,-50%);
+    }
+}
+.top-con-light {
+    position: fixed;
+    top: 0;
+    z-index: 2;
+    width: 100%;
+    height: 54px;
+    padding: 12px 24px;
+    box-sizing: border-box;
+    min-width: 1280px;
+    background: #FFFFFF;
+    .go-back{
+        display: flex;
+        i{
+            font-size: 16px;
+            margin-right: 6px;
+            vertical-align: middle;
+            margin-top: 6px;
+        }
+        span{
+            font-size: 14px;
+            line-height: 30px;
+            color: #999999;
+        }
+    }
+    .name-txt {
+        font-weight: 600;
+        font-size: 18px;
+        line-height: 30px;
+        color: #333333;
+        position: absolute;
+        left: 50%;
+        top: 50%;
+        transform: translate(-50%,-50%);
+    }
 }
 .el-input__inner{
     height: 32px;
@@ -673,13 +718,13 @@
                 position: relative;
                 padding: 0 10px;
                 height: 32px;
-                line-height: 32px;
+                line-height: 30px;
                 background: #ffffff;
                 border: 1px dashed #E9E9E9;
                 border-radius: 2px;
                 box-sizing: border-box;
                 cursor: pointer;
-                margin: 4px 16px 4px 0;
+                margin: 0 16px 0 0;
                 font-size: 14px;
                 color: #333333;
                 display: inline-block;
@@ -690,7 +735,7 @@
                     width: 16px;
                     height: 16px;
                     margin-right: 5px;
-                    margin-top: 8px;
+                    margin-top: 6px;
                     background: url(../images/icon-add-more.png);
                 }
             }
@@ -873,6 +918,71 @@
                     display: block;
                 }
             }
+            &.nopadding{
+                padding: 0;
+            }
+            .top-drag {
+                padding: 12px 24px;
+                position: relative;
+            }
+        }
+        .drag-box-inner {
+            border: 2px dashed #E9E9E9;
+            border-radius: 4px;
+            box-sizing: border-box;
+        }
+        .sort-item-inner{
+            position: relative;
+            cursor: pointer;
+            .icon-drag-inner{
+                position: absolute;
+                top: 20px;
+                left: 4px;
+                width: 16px;
+                height: 16px;
+                background-image: url(../images/yq-design/drag.png);
+                cursor: move;
+                display: none;
+                &:hover{
+                    background-image: url(../images/yq-design/drag-hover.png);
+                }
+            }
+            .icon-div-inner{
+                position: absolute;
+                right: 12px;
+                top: 50%;
+                transform: translateY(-50%);
+                height: 16px;
+                display: none;
+                i{
+                    display: inline-block;
+                    vertical-align: top;
+                    margin-left: 16px;
+                    width: 16px;
+                    height: 16px;
+                }
+                .icon-edit{
+                    background-image: url(../images/yq-design/edit.png);
+                    &:hover{
+                        background-image: url(../images/yq-design/edit-hover.png);
+                    }
+                }
+                .icon-delete{
+                    background-image: url(../images/yq-design/trash.png);
+                    &:hover{
+                        background-image: url(../images/yq-design/trash-hover.png);
+                    }
+                }
+            }
+            &:hover{
+                background: #F8F8F8;
+                .icon-drag-inner{
+                    display: block;
+                }
+                .icon-div-inner{
+                    display: block;
+                }
+            }
         }
         .add-circle{
             position: fixed;
@@ -916,6 +1026,7 @@
     .basic-con{
         padding: 96px 163px;
         min-height: 600px;
+        position: relative;
         .input-box{
             margin-bottom: 32px;
             line-height: 32px;
@@ -981,7 +1092,17 @@
                 }
             }
         }
+        .fixedTips {
+            position: absolute;
+            left: 50%;
+            transform: translateX(-50%);
+            bottom: 32px;
+            font-size: 13px;
+            line-height: 18px;
+            color: #999999;
+        }
     }
+
 }
 .clear::after{
     content: "";
