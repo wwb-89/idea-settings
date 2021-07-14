@@ -89,7 +89,7 @@ public class ActivityEngineQueryService {
         // 系统组件(isSystem: true, templateId: null) + templateId 自身的组件
         List<Component> components = componentMapper.selectList(new QueryWrapper<Component>()
                 .lambda()
-                .or(j -> j.eq(Component::getTemplateId, templateId).eq(Component::getSystem, Boolean.TRUE)));
+                .eq(Component::getTemplateId, templateId).or().eq(Component::getSystem, Boolean.TRUE));
         for (Component component : components) {
             if (component.isSystemComponent()) {
                 continue;

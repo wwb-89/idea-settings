@@ -187,6 +187,7 @@ public class ActivityEngineHandleService {
 
                 for (TemplateComponent child : templateComponent.getChildren()) {
                     if (child.getSignUpCondition() != null && saveSignUpCondition) {
+                        child.getSignUpCondition().setTemplateComponentId(child.getId());
                         signUpConditionMapper.insert(child.getSignUpCondition());
                     }
                 }

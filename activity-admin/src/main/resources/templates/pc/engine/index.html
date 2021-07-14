@@ -1152,10 +1152,14 @@
                         $this.signUpDialog=true;
 
                         $this.currComponent = $.extend({}, item);
-                        $this.currSUConditionTplComponent.signUpCondition = {
-                            originIdentify: '',
-                            fieldName: '',
-                            allowSignedUp: false
+                        $this.currSUConditionTplComponent = {
+                            name: '',
+                            introduction: '',
+                            signUpCondition: {
+                                originIdentify: '',
+                                fieldName: '',
+                                allowSignedUp: false
+                            }
                         }
                     },
                     confirmSignUpCondition: function () {
@@ -1164,8 +1168,6 @@
                         $this.currSUConditionTplComponent = $.extend($this.currSUConditionTplComponent, {
                             templateId: $this.currTemplateId,
                             componentId: $this.currComponent.id,
-                            name: $this.currComponent.name,
-                            introduction: $this.currComponent.introduction,
                             required: $this.currComponent.required,
                             sequence: templateComponentLength + 1,
                             code: $this.currComponent.code,
@@ -1357,7 +1359,8 @@
                                         introduction: this.introduction,
                                         required: this.required,
                                         sequence: this.sequence,
-                                        children: this.children
+                                        children: this.children,
+                                        signUpCondition: this.signUpCondition
                                     })
                                 })
                             }
