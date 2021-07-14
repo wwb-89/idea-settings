@@ -617,6 +617,75 @@
   right: 0;
 }
 
+.top-con .name-txt {
+  font-weight: 600;
+  font-size: 18px;
+  line-height: 30px;
+  color: #ffffff;
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  -webkit-transform: translate(-50%, -50%);
+      -ms-transform: translate(-50%, -50%);
+          transform: translate(-50%, -50%);
+}
+
+.top-con-light {
+  position: fixed;
+  top: 0;
+  z-index: 2;
+  width: 100%;
+  height: 54px;
+  padding: 12px 24px;
+  -webkit-box-sizing: border-box;
+     -moz-box-sizing: border-box;
+          box-sizing: border-box;
+  min-width: 1280px;
+  background: #FFFFFF;
+}
+
+.top-con-light .go-back {
+  display: -webkit-box;
+  display: -moz-box;
+  display: -ms-flexbox;
+  display: flex;
+  cursor: pointer;
+}
+
+.top-con-light .go-back i {
+  font-size: 16px;
+  margin-right: 6px;
+  vertical-align: middle;
+  margin-top: 6px;
+}
+
+.top-con-light .go-back span {
+  font-size: 14px;
+  line-height: 30px;
+  color: #999999;
+}
+
+.top-con-light .go-back:hover .icon-back:before {
+  color: #0084FF;
+}
+
+.top-con-light .go-back:hover span {
+  color: #0084FF;
+}
+
+.top-con-light .name-txt {
+  font-weight: 600;
+  font-size: 18px;
+  line-height: 30px;
+  color: #333333;
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  -webkit-transform: translate(-50%, -50%);
+      -ms-transform: translate(-50%, -50%);
+          transform: translate(-50%, -50%);
+}
+
 .el-input__inner {
   height: 32px;
   border: 1px solid #E9E9E9;
@@ -830,7 +899,7 @@
   position: relative;
   padding: 0 10px;
   height: 32px;
-  line-height: 32px;
+  line-height: 30px;
   background: #ffffff;
   border: 1px dashed #E9E9E9;
   border-radius: 2px;
@@ -838,7 +907,7 @@
      -moz-box-sizing: border-box;
           box-sizing: border-box;
   cursor: pointer;
-  margin: 4px 16px 4px 0;
+  margin: 0 16px 0 0;
   font-size: 14px;
   color: #333333;
   display: inline-block;
@@ -851,7 +920,7 @@
   width: 16px;
   height: 16px;
   margin-right: 5px;
-  margin-top: 8px;
+  margin-top: 6px;
   background: url(../images/icon-add-more.png);
 }
 
@@ -1070,6 +1139,85 @@
   display: block;
 }
 
+.field-setting .info-box .sort-item.nopadding {
+  padding: 0;
+}
+
+.field-setting .info-box .drag-box-inner {
+  border: 2px dashed #E9E9E9;
+  border-radius: 4px;
+  -webkit-box-sizing: border-box;
+     -moz-box-sizing: border-box;
+          box-sizing: border-box;
+}
+
+.field-setting .info-box .sort-item-inner {
+  position: relative;
+  cursor: pointer;
+}
+
+.field-setting .info-box .sort-item-inner .icon-drag-inner {
+  position: absolute;
+  top: 20px;
+  left: 4px;
+  width: 16px;
+  height: 16px;
+  background-image: url(../images/yq-design/drag.png);
+  cursor: move;
+  display: none;
+}
+
+.field-setting .info-box .sort-item-inner .icon-drag-inner:hover {
+  background-image: url(../images/yq-design/drag-hover.png);
+}
+
+.field-setting .info-box .sort-item-inner .icon-div-inner {
+  position: absolute;
+  right: 12px;
+  top: 50%;
+  -webkit-transform: translateY(-50%);
+      -ms-transform: translateY(-50%);
+          transform: translateY(-50%);
+  height: 16px;
+  display: none;
+}
+
+.field-setting .info-box .sort-item-inner .icon-div-inner i {
+  display: inline-block;
+  vertical-align: top;
+  margin-left: 16px;
+  width: 16px;
+  height: 16px;
+}
+
+.field-setting .info-box .sort-item-inner .icon-div-inner .icon-edit {
+  background-image: url(../images/yq-design/edit.png);
+}
+
+.field-setting .info-box .sort-item-inner .icon-div-inner .icon-edit:hover {
+  background-image: url(../images/yq-design/edit-hover.png);
+}
+
+.field-setting .info-box .sort-item-inner .icon-div-inner .icon-delete {
+  background-image: url(../images/yq-design/trash.png);
+}
+
+.field-setting .info-box .sort-item-inner .icon-div-inner .icon-delete:hover {
+  background-image: url(../images/yq-design/trash-hover.png);
+}
+
+.field-setting .info-box .sort-item-inner:hover {
+  background: #F8F8F8;
+}
+
+.field-setting .info-box .sort-item-inner:hover .icon-drag-inner {
+  display: block;
+}
+
+.field-setting .info-box .sort-item-inner:hover .icon-div-inner {
+  display: block;
+}
+
 .field-setting .info-box .add-circle {
   position: fixed;
   bottom: 50px;
@@ -1119,6 +1267,7 @@
 .basic-setting .basic-con {
   padding: 96px 163px;
   min-height: 600px;
+  position: relative;
 }
 
 .basic-setting .basic-con .input-box {
@@ -1198,6 +1347,18 @@
 .basic-setting .basic-con .input-box .icon-box .text-box .btn-box div {
   display: inline-block;
   vertical-align: top;
+}
+
+.basic-setting .basic-con .fixedTips {
+  position: absolute;
+  left: 50%;
+  -webkit-transform: translateX(-50%);
+      -ms-transform: translateX(-50%);
+          transform: translateX(-50%);
+  bottom: 32px;
+  font-size: 13px;
+  line-height: 18px;
+  color: #999999;
 }
 
 .clear::after {
