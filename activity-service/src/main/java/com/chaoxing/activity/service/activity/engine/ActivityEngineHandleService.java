@@ -3,20 +3,18 @@ package com.chaoxing.activity.service.activity.engine;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.chaoxing.activity.dto.engine.ActivityEngineDTO;
-import com.chaoxing.activity.mapper.ComponentFieldMapper;
-import com.chaoxing.activity.mapper.ComponentMapper;
-import com.chaoxing.activity.mapper.TemplateComponentMapper;
-import com.chaoxing.activity.mapper.TemplateMapper;
-import com.chaoxing.activity.model.Component;
-import com.chaoxing.activity.model.Template;
-import com.chaoxing.activity.model.TemplateComponent;
+import com.chaoxing.activity.mapper.*;
+import com.chaoxing.activity.model.*;
+import com.google.common.collect.Maps;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Collection;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 
 /**
@@ -38,6 +36,8 @@ public class ActivityEngineHandleService {
     private ComponentMapper componentMapper;
     @Autowired
     private ComponentFieldMapper componentFieldMapper;
+    @Autowired
+    private SignUpConditionMapper signUpConditionMapper;
 
     private final Integer ROOT_ID = 0;
 
@@ -74,7 +74,7 @@ public class ActivityEngineHandleService {
         // 保存模板
         templateMapper.insert(template);
         // 保存模板组件关联关系
-        saveTemplateComponent(template.getId(), templateComponents);
+        saveTemplateComponent(template.getId(), templateComponents, true);
         // 更新自定义组件关联templateId
         if (CollectionUtils.isNotEmpty(customComponentIds)) {
             componentMapper.update(null, new UpdateWrapper<Component>()
@@ -91,6 +91,51 @@ public class ActivityEngineHandleService {
         // 保存模板组件关联关系
         updateTemplateComponent(template.getId(), templateComponents);
     }
+
+
+    /**
+    * @Description
+    * @author huxiaolong
+    * @Date 2021-07-14 10:30:36
+    * @param uid
+    * @param component
+    * @return com.chaoxing.activity.model.Component
+    */
+    @Transactional(rollbackFor = Exception.class)
+    public Component handleCustomComponent(Integer uid, Component component) {
+        if (component.getId() == null) {
+            return saveCustomComponent(uid, component);
+        }
+        return updateCustomComponent(uid, component);
+    }
+
+
+    /**
+    * @Description
+    * @author huxiaolong
+    * @Date 2021-07-14 10:29:27
+    * @param uid
+    * @param component
+    * @return com.chaoxing.activity.model.Component
+    */
+    @Transactional(rollbackFor = Exception.class)
+    public Component updateCustomComponent(Integer uid, Component component) {
+        component.setUpdateUid(uid);
+        componentMapper.updateById(component);
+        if (Objects.equals(component.getDataOrigin(), Component.DataOriginEnum.CUSTOM.getValue())
+                && CollectionUtils.isNotEmpty(component.getFieldList())) {
+            componentFieldMapper.delete(new QueryWrapper<ComponentField>().lambda().eq(ComponentField::getComponentId, component.getId()));
+
+            component.getFieldList().forEach(v -> {
+                v.setCreateUid(uid);
+                v.setUpdateUid(uid);
+                v.setComponentId(component.getId());
+            });
+            componentFieldMapper.batchAdd(component.getFieldList());
+        }
+        return component;
+    }
+
 
     /**新增自定义组件
     * @Description
@@ -125,7 +170,7 @@ public class ActivityEngineHandleService {
     * @param
     * @return void
     */
-    public void saveTemplateComponent(Integer templateId, List<TemplateComponent> templateComponents) {
+    public void saveTemplateComponent(Integer templateId, Collection<TemplateComponent> templateComponents, Boolean saveSignUpCondition) {
         for (TemplateComponent templateComponent : templateComponents) {
             templateComponent.setTemplateId(templateId);
         }
@@ -134,8 +179,17 @@ public class ActivityEngineHandleService {
         }
         for (TemplateComponent templateComponent : templateComponents) {
             if (CollectionUtils.isNotEmpty(templateComponent.getChildren())) {
-                templateComponent.getChildren().forEach(item -> item.setPid(templateComponent.getId()));
+                templateComponent.getChildren().forEach(item -> {
+                    item.setPid(templateComponent.getId());
+                    item.setTemplateId(templateId);
+                });
                 templateComponentMapper.batchAdd(templateComponent.getChildren());
+
+                for (TemplateComponent child : templateComponent.getChildren()) {
+                    if (child.getSignUpCondition() != null && saveSignUpCondition) {
+                        signUpConditionMapper.insert(child.getSignUpCondition());
+                    }
+                }
             }
         }
     }
@@ -149,11 +203,30 @@ public class ActivityEngineHandleService {
     */
     @Transactional(rollbackFor = Exception.class)
     public void updateTemplateComponent(Integer templateId, List<TemplateComponent> templateComponents) {
+        List<Integer> originalSignUpTemplateIds = signUpConditionMapper.selectTemplateComponentIdByTemplateId(templateId);
+        Map<Integer, TemplateComponent> waitHandleComponents = Maps.newHashMap();
+        for (TemplateComponent templateComponent : templateComponents) {
+            if (templateComponent.getId() != null && originalSignUpTemplateIds.contains(templateComponent.getId())) {
+                waitHandleComponents.put(templateComponent.getId(), templateComponent);
+            }
+        }
         // 删除模板对应的组件关联关系
         templateComponentMapper.delete(new QueryWrapper<TemplateComponent>()
                 .lambda()
                 .eq(TemplateComponent::getTemplateId, templateId));
-        // 重新建立关联关系
-        saveTemplateComponent(templateId, templateComponents);
+        if (!waitHandleComponents.isEmpty()) {
+            templateComponents.removeAll(waitHandleComponents.values());
+            // 重新建立关联关系
+            saveTemplateComponent(templateId, waitHandleComponents.values(), false);
+            for (Map.Entry<Integer, TemplateComponent> entry : waitHandleComponents.entrySet()) {
+                Integer originalSignUpTemplateComponentId = entry.getKey();
+                Integer nowSignUpTemplateComponentId = entry.getValue().getId();
+                signUpConditionMapper.update(null, new UpdateWrapper<SignUpCondition>()
+                        .lambda()
+                        .eq(SignUpCondition::getTemplateComponentId, originalSignUpTemplateComponentId)
+                        .set(SignUpCondition::getTemplateComponentId, nowSignUpTemplateComponentId));
+            }
+        }
+        saveTemplateComponent(templateId, templateComponents, true);
     }
 }

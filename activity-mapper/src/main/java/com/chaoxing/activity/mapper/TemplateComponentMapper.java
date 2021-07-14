@@ -5,6 +5,7 @@ import com.chaoxing.activity.model.TemplateComponent;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
+import java.util.Collection;
 import java.util.List;
 
 /**
@@ -24,5 +25,5 @@ public interface TemplateComponentMapper extends BaseMapper<TemplateComponent> {
     * @param templateComponents
     * @return void
     */
-    void batchAdd(@Param("templateComponents") List<TemplateComponent> templateComponents);
+    void batchAdd(@Param("templateComponents") Collection<TemplateComponent> templateComponents);
 }

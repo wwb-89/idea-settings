@@ -20,7 +20,7 @@
         INSERT INTO
         t_component_field( component_id, field_name, `sequence`, create_uid, update_uid )
         VALUES
-        <foreach collection="components" item="item" open="" close="" separator=",">
+        <foreach collection="fieldList" item="item" open="" close="" separator=",">
             (
              #{item.componentId},
              #{item.fieldName},

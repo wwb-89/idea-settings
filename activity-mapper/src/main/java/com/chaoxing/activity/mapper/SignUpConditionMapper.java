@@ -26,4 +26,12 @@ public interface SignUpConditionMapper extends BaseMapper<SignUpCondition> {
 	*/
 	int batchAdd(@Param("signUpConditions") List<SignUpCondition> signUpConditions);
 
+	/**
+	* @Description 
+	* @author huxiaolong
+	* @Date 2021-07-14 11:55:30
+	* @param templateId
+	* @return java.util.List<java.lang.Integer>
+	*/
+    List<Integer> selectTemplateComponentIdByTemplateId(@Param("templateId") Integer templateId);
 }

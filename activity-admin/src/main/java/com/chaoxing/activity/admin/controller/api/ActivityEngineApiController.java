@@ -47,10 +47,11 @@ public class ActivityEngineApiController {
     }
 
 
-    @PostMapping("/component/add")
-    public RestRespDTO addCustomComponent(HttpServletRequest request, Component component) {
+    @PostMapping("/component/submit")
+    public RestRespDTO addCustomComponent(HttpServletRequest request, String componentStr) {
         LoginUserDTO loginUser = LoginUtils.getLoginUser(request);
-        return RestRespDTO.success(activityEngineHandleService.saveCustomComponent(loginUser.getUid(), component));
+        Component component = JSON.parseObject(componentStr, Component.class);
+        return RestRespDTO.success(activityEngineHandleService.handleCustomComponent(loginUser.getUid(), component));
     }
 
     /**发布模板(新增/修改)
