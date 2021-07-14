@@ -9,7 +9,6 @@ import com.chaoxing.activity.service.activity.engine.SignUpFillInfoTypeService;
 import com.chaoxing.activity.service.activity.market.ActivityMarketQueryService;
 import com.chaoxing.activity.util.exception.BusinessException;
 import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.stereotype.Service;
@@ -94,10 +93,12 @@ public class TemplateHandleService {
 		ActivityMarket activityMarket = activityMarketQueryService.getById(marketId);
 		Template originTemplate = templateQueryService.getById(originTemplateId);
 		Optional.ofNullable(originTemplate).orElseThrow(() -> new BusinessException("模版不存在"));
+
 		List<TemplateComponent> originTemplateComponents = templateQueryService.listTemplateComponentByTemplateId(originTemplateId);
 		List<Integer> templateComponentIds = Optional.ofNullable(originTemplateComponents).orElse(Lists.newArrayList()).stream().map(TemplateComponent::getId).collect(Collectors.toList());
 		List<SignUpCondition> originSignUpConditions = signUpConditionService.listByTemplateComponentIds(templateComponentIds);
 		List<SignUpFillInfoType> originSignUpFillInfoTypes = signUpFillInfoTypeService.listByTemplateComponentIds(templateComponentIds);
+
 		// 克隆
 		OperateUserDTO operateUserDto = OperateUserDTO.build(activityMarket.getCreateUid());
 		// 克隆模版
@@ -105,19 +106,18 @@ public class TemplateHandleService {
 		add(template, operateUserDto);
 		Integer templateId = template.getId();
 		// 克隆模版组件列表
-		List<TemplateComponent> templateComponents = TemplateComponent.cloneToNewTemplateId(originTemplateComponents, templateId);
-		batchAddTemplateComponents(templateComponents);
+		List<TemplateComponent> parentTemplateComponents = TemplateComponent.cloneToNewTemplateId(originTemplateComponents, templateId);
+		batchAddTemplateComponents(parentTemplateComponents);
 		// 找到新旧templateComponentId的对应关系
-		Map<Integer, Integer> oldNewTemplateComponentIdRelation = Maps.newHashMap();
-		for (int i = 0; i < originTemplateComponents.size(); i++) {
-			oldNewTemplateComponentIdRelation.put(originTemplateComponents.get(i).getId(), templateComponents.get(i).getId());
-		}
+		List<TemplateComponent> templateComponents = Lists.newArrayList(parentTemplateComponents);
+		parentTemplateComponents.forEach(v -> templateComponents.addAll(v.getChildren()));
+		Map<Integer, Integer> oldNewTemplateComponentIdRelation = templateComponents.stream().collect(Collectors.toMap(TemplateComponent::getOriginId, TemplateComponent::getId));
 		// 克隆报名条件列表
 		List<SignUpCondition> signUpConditions = SignUpCondition.cloneToNewTemplateComponentId(originSignUpConditions, oldNewTemplateComponentIdRelation);
 		signUpConditionService.batchAdd(signUpConditions);
 		// 克隆报名填报信息类型列表
 		List<SignUpFillInfoType> signUpFillInfoTypes = SignUpFillInfoType.cloneToNewTemplateComponentId(originSignUpFillInfoTypes, oldNewTemplateComponentIdRelation);
-
+		signUpFillInfoTypeService.batchAdd(signUpFillInfoTypes);
 	}
 
 }

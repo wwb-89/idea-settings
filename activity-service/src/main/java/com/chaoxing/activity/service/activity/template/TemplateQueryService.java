@@ -85,4 +85,23 @@ public class TemplateQueryService {
 		);
 	}
 
+	/**根据活动标识找到机构下对应的模版
+	 * @Description
+	 * 1、根据活动标识找到系统模版
+	 * 2、根据系统模版找到机构的模版
+	 * @author wwb
+	 * @Date 2021-07-14 20:45:21
+	 * @param fid
+	 * @param activityFlagEnum
+	 * @return com.chaoxing.activity.model.Template
+	*/
+	public Template getOrgTemplateByActivityFlag(Integer fid, Activity.ActivityFlagEnum activityFlagEnum) {
+		Integer systemTemplateId = getSystemTemplateIdByActivityFlag(activityFlagEnum);
+		List<Template> orgTemplates = templateMapper.selectList(new LambdaQueryWrapper<Template>()
+				.eq(Template::getOriginTemplateId, systemTemplateId)
+				.eq(Template::getFid, fid)
+		);
+		return Optional.ofNullable(orgTemplates).orElse(Lists.newArrayList()).stream().findFirst().orElse(null);
+	}
+
 }

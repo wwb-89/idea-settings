@@ -58,6 +58,8 @@ public class TemplateComponent {
     private SignUpCondition signUpCondition;
     @TableField(exist = false)
     private SignUpFillInfoType signUpFillInfoType;
+    @TableField(exist = false)
+    private Integer originId;
 
     /**将模版组件列表克隆到指定的模版
      * @Description 子组件将封装到父组件的children中
@@ -70,13 +72,14 @@ public class TemplateComponent {
     public static List<TemplateComponent> cloneToNewTemplateId(List<TemplateComponent> templateComponents, Integer templateId) {
         // 清理一些属性
         Optional.ofNullable(templateComponents).orElse(Lists.newArrayList()).forEach(v -> {
-            v.setId(null);
             v.setTemplateId(templateId);
+            v.setOriginId(v.getId());
+            v.setId(null);
         });
         // 找到父组件列表
         List<TemplateComponent> parentTemplateComponents = Optional.ofNullable(templateComponents).orElse(Lists.newArrayList()).stream().filter(v -> Objects.equals(0, v.getPid())).collect(Collectors.toList());
         // 给父组件填充子组件列表
-        Optional.ofNullable(parentTemplateComponents).orElse(Lists.newArrayList()).stream().forEach(templateComponent -> templateComponent.setChildren(Optional.ofNullable(templateComponents).orElse(Lists.newArrayList()).stream().filter(v -> Objects.equals(templateComponent.getId(), v.getPid())).collect(Collectors.toList())));
+        Optional.ofNullable(parentTemplateComponents).orElse(Lists.newArrayList()).stream().forEach(templateComponent -> templateComponent.setChildren(Optional.ofNullable(templateComponents).orElse(Lists.newArrayList()).stream().filter(v -> Objects.equals(templateComponent.getOriginId(), v.getPid())).collect(Collectors.toList())));
         return parentTemplateComponents;
     }
 

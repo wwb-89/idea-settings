@@ -5,8 +5,11 @@ import com.chaoxing.activity.dto.OperateUserDTO;
 import com.chaoxing.activity.dto.activity.market.ActivityMarketCreateParamDTO;
 import com.chaoxing.activity.dto.activity.market.ActivityMarketUpdateParamDTO;
 import com.chaoxing.activity.mapper.ActivityMarketMapper;
+import com.chaoxing.activity.model.Activity;
 import com.chaoxing.activity.model.ActivityMarket;
+import com.chaoxing.activity.service.activity.template.TemplateHandleService;
 import com.chaoxing.activity.service.activity.template.TemplateQueryService;
+import com.chaoxing.activity.util.ApplicationContextHolder;
 import com.chaoxing.activity.util.exception.BusinessException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -32,7 +35,10 @@ public class ActivityMarketHandleService {
 
 	@Resource
 	private ActivityMarketQueryService activityMarketQueryService;
-
+	@Resource
+	private TemplateHandleService templateHandleService;
+	@Resource
+	private TemplateQueryService templateQueryService;
 
 	/**创建活动市场
 	 * @Description 
@@ -47,8 +53,44 @@ public class ActivityMarketHandleService {
 		ActivityMarket activityMarket = activityMarketCreateParamDto.buildActivityMarket();
 		activityMarket.perfectCreator(operateUserDto);
 		activityMarketMapper.insert(activityMarket);
+		Integer marketId = activityMarket.getId();
 		// 给市场克隆一个通用模版
+		templateHandleService.cloneTemplate(marketId, templateQueryService.getSystemTemplateIdByActivityFlag(Activity.ActivityFlagEnum.NORMAL));
+	}
 
+	/**创建活动市场
+	 * @Description 
+	 * @author wwb
+	 * @Date 2021-07-14 20:38:43
+	 * @param activityMarketCreateParamDto
+	 * @param activityFlagEnum
+	 * @param operateUserDto
+	 * @return void
+	*/
+	@Transactional(rollbackFor = Exception.class)
+	public void add(ActivityMarketCreateParamDTO activityMarketCreateParamDto, Activity.ActivityFlagEnum activityFlagEnum, OperateUserDTO operateUserDto) {
+		ActivityMarket activityMarket = activityMarketCreateParamDto.buildActivityMarket();
+		activityMarket.perfectCreator(operateUserDto);
+		activityMarketMapper.insert(activityMarket);
+		Integer marketId = activityMarket.getId();
+		// 给市场克隆一个通用模版
+		templateHandleService.cloneTemplate(marketId, templateQueryService.getSystemTemplateIdByActivityFlag(activityFlagEnum));
+	}
+
+	/**创建活动市场
+	 * @Description 
+	 * @author wwb
+	 * @Date 2021-07-14 20:33:29
+	 * @param fid
+	 * @param activityFlag
+	 * @param operateUserDto
+	 * @return void
+	*/
+	@Transactional(rollbackFor = Exception.class)
+	public void add(Integer fid, String activityFlag, OperateUserDTO operateUserDto) {
+		Activity.ActivityFlagEnum activityFlagEnum = Activity.ActivityFlagEnum.fromValue(activityFlag);
+		ActivityMarketCreateParamDTO activityMarketCreateParamDto = ActivityMarketCreateParamDTO.build(activityFlagEnum.getName(), fid);
+		ApplicationContextHolder.getBean(ActivityMarketHandleService.class).add(activityMarketCreateParamDto, activityFlagEnum, operateUserDto);
 	}
 
 	/**更新活动市场

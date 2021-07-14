@@ -1,8 +1,8 @@
 CREATE TABLE `t_template`  (
     `id` int(11) NOT NULL AUTO_INCREMENT COMMENT '主键',
+    `name` varchar(50) NULL COMMENT '模版名称',
     `market_id` int(11) NULL COMMENT '市场id',
     `origin_template_id` int(11) NULL COMMENT '源模版id',
-    `name` varchar(50) NULL COMMENT '模版名称',
     `is_system` tinyint(1) NULL DEFAULT 0 COMMENT '是否是系统模版',
     `activity_flag` VARCHAR (50) NULL COMMENT '活动标识',
     `fid` int(11) NULL COMMENT '所属机构id',
@@ -13,7 +13,7 @@ CREATE TABLE `t_template`  (
     `update_time` datetime(0) NULL DEFAULT current_timestamp() ON UPDATE CURRENT_TIMESTAMP(0) COMMENT '更新时间',
     `update_uid` int(11) NULL COMMENT '更新人uid',
     PRIMARY KEY (`id`),
-    INDEX `idx_primary`(`is_system`, `fid`)
+    INDEX `idx_primary`(`is_system`, `fid`),
     INDEX `idx_market_id`(`market_id`)
 ) COMMENT = '模版表';
 CREATE TABLE `t_component`  (
@@ -100,6 +100,9 @@ ALTER TABLE t_activity DROP COLUMN is_enable_sign;
 ALTER TABLE t_activity DROP COLUMN is_open_audit;
 ALTER TABLE t_activity DROP COLUMN audit_status;
 ALTER TABLE t_activity DROP COLUMN second_classroom_flag;
+ALTER TABLE t_activity_market DROP COLUMN activity_flags;
 ALTER TABLE t_market_table_field DROP COLUMN fid;
 ALTER TABLE t_activity CHANGE integral_value integral DECIMAL(20, 2) COMMENT '积分';
+TRUNCATE TABLE t_market_table_field;
 ALTER TABLE t_market_table_field CHANGE activity_flag market_id INT COMMENT '市场id';
+

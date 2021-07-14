@@ -11,7 +11,6 @@ import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
 import java.util.List;
-import java.util.Optional;
 
 /**报名条件服务
  * @author wwb
@@ -47,7 +46,9 @@ public class SignUpConditionService {
 	 * @return void
 	*/
 	public void batchAdd(List<SignUpCondition> signUpConditions) {
-		signUpConditionMapper.batchAdd(signUpConditions);
+		if (CollectionUtils.isNotEmpty(signUpConditions)) {
+			signUpConditionMapper.batchAdd(signUpConditions);
+		}
 	}
 
 	/**根据模版组件id删除

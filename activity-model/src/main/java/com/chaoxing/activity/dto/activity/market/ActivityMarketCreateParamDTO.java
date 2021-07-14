@@ -32,4 +32,11 @@ public class ActivityMarketCreateParamDTO {
 				.build();
 	}
 
+	public static ActivityMarketCreateParamDTO build(String name, Integer fid) {
+		return ActivityMarketCreateParamDTO.builder()
+				.name(name)
+				.fid(fid)
+				.build();
+	}
+
 }

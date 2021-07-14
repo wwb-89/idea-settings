@@ -45,7 +45,7 @@ public class SignUpFillInfoTypeService {
 	/**批量
 	 * @Description 
 	 * @author wwb
-	 * @Date 2021-07-14 18:30:58
+	 * @Date 2021-07-14 18:45:20
 	 * @param signUpFillInfoTypes
 	 * @return void
 	*/
