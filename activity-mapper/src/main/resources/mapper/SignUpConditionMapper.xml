@@ -19,4 +19,13 @@
                 ( #{value.templateComponentId}, #{value.originIdentify}, #{value.fieldName}, #{value.allowSignedUp} )
             </foreach>
     </insert>
+    <select id="selectTemplateComponentIdByTemplateId" resultType="java.lang.Integer">
+        SELECT
+            t.template_component_id
+        FROM
+            t_sign_up_condition t
+        LEFT JOIN t_template_component t1
+            on t.template_component_id = t1.id
+            and t1.template_id = #{templateId}
+    </select>
 </mapper>

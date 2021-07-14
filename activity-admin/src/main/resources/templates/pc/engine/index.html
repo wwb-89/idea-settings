@@ -385,7 +385,8 @@
                             <i class="icon-info"></i>
                         </el-tooltip>
                         <div class="fr add-btn">
-                            <i class="icon-add" v-if="item.multi" @click="addComponent(index, item)"></i>
+                            <i class="icon-add" v-if="item.code == 'sign_up_condition'" @click="addSignUpCondition(index, item)"></i>
+                            <i class="icon-add" v-else-if="item.multi" @click="addComponent(index, item)"></i>
                             <template v-else>
                                 <i class="icon-add" v-show="!item.checked" @click="addComponent(index, item)"></i>
                                 <span class="aready" v-show="item.checked">已添加</span>
@@ -446,6 +447,7 @@
                 </div>
             </div>
         </div>
+
         <!-- 选择字段弹窗 -->
         <div class="dialog-mask" v-show="chooseDialog"> 
             <div class="dailog choose-field">
@@ -454,11 +456,10 @@
                     <i class="close" @click="chooseDialog = false"></i>
                 </div>
                 <div class="body">
-                    <div class="form">
+                    <el-form class="form" label-width="72px">
                         <el-input v-model="currEditItem.name" type="text" placeholder="标题" maxlength="8" show-word-limit class="marginBottom24"></el-input>
                         <el-input v-model="currEditItem.introduction" type="text" placeholder="辅助说明" maxlength="40" show-word-limit class="marginBottom24"></el-input>
-                        <div class="input-box">
-                            <<label class="label" style="width: 100px">数据来源</label>
+                        <el-form-item label="数据来源" class="marginBottom20">
                             <el-select v-model="currEditItem.dataOrigin" placeholder="请选择">
                                 <el-option
                                         v-for="item in [{label: '自定义', value: 'custom'}, {label: '表单', value: 'form'}]"
@@ -468,10 +469,9 @@
                                 >
                                 </el-option>
                             </el-select>
-                        </div>
+                        </el-form-item>
                         <template v-if="currEditItem.dataOrigin == 'form'">
-                            <div class="input-box">
-                                <label class="label" style="width: 100px">选择表单</label>
+                            <el-form-item label="选择表单" class="marginBottom20">
                                 <el-select v-model="currEditItem.originIdentify" placeholder="请选择" @change="selectForm">
                                     <el-option
                                             v-for="item in wfwForms"
@@ -481,9 +481,8 @@
                                     >
                                     </el-option>
                                 </el-select>
-                            </div>
-                            <div class="input-box">
-                                <label class="label" style="width: 100px">选择字段</label>
+                            </el-form-item>
+                            <el-form-item label="选择字段" class="marginBottom20">
                                 <el-select v-model="currEditItem.fieldFlag" placeholder="请选择">
                                     <el-option
                                             v-for="(item, index) in wfwFormFields"
@@ -493,7 +492,7 @@
                                     >
                                     </el-option>
                                 </el-select>
-                            </div>
+                            </el-form-item>
                         </template>
                         <template v-if="currEditItem.dataOrigin == 'custom'">
                             <div class="choose-box">
@@ -513,7 +512,7 @@
                             <label class="label">允许多选</label>
                             <el-switch class="switch" v-model="currEditItem.type" active-value="checkbox" inactive-value="radio"></el-switch>
                         </div>
-                    </div>
+                    </el-form>
                 </div>
                 <div class="footer">
                     <div class="btn-box">
@@ -524,6 +523,7 @@
                 </div>
             </div>
         </div>
+
         <!-- 分区弹窗 -->
         <div class="dialog-mask" v-show="partitionDialog">
             <div class="dailog">
@@ -552,6 +552,7 @@
                 </div>
             </div>
         </div>
+
         <!-- 报名条件-->
         <div class="dialog-mask" v-show="signUpDialog">
             <div class="dailog">
@@ -561,10 +562,10 @@
                 </div>
                 <div class="body">
                     <el-form ref="form"  label-width="72px">
-                        <el-input v-model="title" type="text" placeholder="标题（必填）" maxlength="8" show-word-limit class="marginBottom20"></el-input>
-                        <el-input v-model="explain" type="text" placeholder="说明" maxlength="40" show-word-limit class="marginBottom20"></el-input>
+                        <el-input v-model="currSUConditionTplComponent.name" type="text" placeholder="标题（必填）" maxlength="8" show-word-limit class="marginBottom20"></el-input>
+                        <el-input v-model="currSUConditionTplComponent.introduction" type="text" placeholder="说明" maxlength="40" show-word-limit class="marginBottom20"></el-input>
                         <el-form-item label="数据来源" class="marginBottom20">
-                            <el-select v-model="currEditItem.originIdentify" placeholder="请选择关联表单" @change="selectForm">
+                            <el-select v-model="currSUConditionTplComponent.signUpCondition.originIdentify" placeholder="请选择关联表单" @change="selectForm">
                                 <el-option v-for="item in wfwForms"
                                         :key="item.id"
                                         :label="item.name"
@@ -580,7 +581,7 @@
                                     <el-option label="报名者" value="1"></el-option>
                                 </el-select>
                                 <span>等于</span>
-                                <el-select v-model="currEditItem.fieldName" placeholder="请选择"  class="width186">
+                                <el-select v-model="currSUConditionTplComponent.signUpCondition.fieldName" placeholder="请选择"  class="width186">
                                     <el-option  v-for="(item, index) in wfwFormFields"
                                                 :key="index"
                                                 :label="item.name"
@@ -593,7 +594,7 @@
                         <div class="marginBottom20">
                             <p class="tips marginBottom8">判断条件</p>
                             <div class="three">
-                                <el-select v-model="currEditItem.allowSignedUp" placeholder="" class="width150">
+                                <el-select v-model="currSUConditionTplComponent.signUpCondition.allowSignedUp" placeholder="" class="width150">
                                     <el-option label="不为空" :value="false"></el-option>
                                     <el-option label="为空" :value="true"></el-option>
                                 </el-select>
@@ -604,8 +605,8 @@
                 </div>
                 <div class="footer">
                     <div class="btn-box">
-                        <div class="border-btn">取消</div>
-                        <div class="normal-btn disable">确定</div>
+                        <div class="border-btn" @click="signUpDialog = false">取消</div>
+                        <div class="normal-btn " @click="confirmSignUpCondition">确定</div>
                     </div>
                 </div>
             </div>
@@ -658,6 +659,11 @@
                     // 是否添加自定义组件
                     customAdd: false,
                     customComponentIds: [],
+                    // 报名条件
+                    currComponent: {},
+                    currSUConditionTplComponent: {
+                        signUpCondition: {}
+                    },
 
                     radio1:'1',
                     activityType:'创新创业',
@@ -965,7 +971,7 @@
                         // 将报名添加到分类中
                         var code = component.code;
                         var name = component.name;
-                        componentTypeList.push({
+                        $this.componentTypeList.push({
                             type: code,
                             name: name,
                             virtualId: newPid,
@@ -1084,7 +1090,11 @@
                         if (item.code == 'sign_up_condition') {
                             $this.chooseDialog = true
                         } else if(item.type == 'radio' || item.type == 'checkbox') {
-                            $this.chooseDialog = true
+                            // 更新组件
+                            $this.currEditItem = $.extend({}, $.grep($this.components, function (it) {
+                                return it.id == item.componentId;
+                            })[0]);
+                            $this.chooseDialog = true;
                         } else {
                             $this.textDialog = true;
                         }
@@ -1102,7 +1112,6 @@
                         } else {
                             $this.showTemplateComponents[$this.currEditIndex] = $this.currEditItem;
                         }
-
                         if ($this.currEditItem.code == 'sign_up_condition') {
 
                         } else if($this.currEditItem.type == 'radio' || $this.currEditItem.type == 'checkbox') {
@@ -1137,44 +1146,52 @@
                         $this.confirmEditResult();
 
                     },
-                    submitCustomComponent: function () {
+                    addSignUpCondition: function (index, item) {
                         var $this = this;
-                        var url = ctx + "/api/activity/engine/component/add";
-                        app.ajaxPost(url, $this.currEditItem, function (res) {
-                            if (res.success) {
-                                var component = res.data
-                                component.checked = true;
-                                component.virtualId = component.id;
-                                component.virtualPid = component.pid;
-                                $this.componentTypeList[component.pid].components.push(component);
-                                var newTemplateComponent = {
-                                    templateId: $this.currTemplateId,
-                                    componentId: component.id,
-                                    name: component.name,
-                                    introduction: component.introduction,
-                                    required: component.required,
-                                    sequence: $this.templateComponents.length + 1,
-                                    component: component,
-                                    code: component.code,
-                                    type: component.type,
-                                    pid: 0
-                                };
-                                $this.showTemplateComponents.push(newTemplateComponent);
-                                $this.templateComponents.push(newTemplateComponent);
-                                $this.customComponentIds.push(component.id);
-                                $this.currEditItem = {};
-                                $this.textDialog = false;
-                                $this.customAdd = false;
-                            } else {
-                                var errorMessage = res.message;
-                                if (activityApp.isEmpty(errorMessage)) {
-                                    errorMessage = "保存自定义组件失败";
-                                }
-                                app.showMsg(errorMessage);
+                        $this.addFieldDialog=false;
+                        $this.signUpDialog=true;
+
+                        $this.currComponent = $.extend({}, item);
+                        $this.currSUConditionTplComponent = {
+                            name: '',
+                            introduction: '',
+                            signUpCondition: {
+                                originIdentify: '',
+                                fieldName: '',
+                                allowSignedUp: false
                             }
-                        }, function () {
-                            app.showMsg("保存自定义组件失败");
+                        }
+                    },
+                    confirmSignUpCondition: function () {
+                        var $this = this;
+                        var templateComponentLength = $this.templateComponents.length;
+                        $this.currSUConditionTplComponent = $.extend($this.currSUConditionTplComponent, {
+                            templateId: $this.currTemplateId,
+                            componentId: $this.currComponent.id,
+                            required: $this.currComponent.required,
+                            sequence: templateComponentLength + 1,
+                            code: $this.currComponent.code,
                         });
+                        // 可重复添加组件(目前报名块、报名条件)
+                        var componentType = $this.componentTypeList[$this.activeCpTypeIndex];
+                        $this.currSUConditionTplComponent.pid = componentType.virtualId;
+                        $this.currSUConditionTplComponent.virtualPid = componentType.virtualId;
+                        $this.templateComponents.push($this.currSUConditionTplComponent);
+                        $($this.showTemplateComponents).each(function () {
+                            if (this.componentId == $this.currComponent.pid) {
+                                if (!this.children) {
+                                    $this.$set(this, 'children', [])
+                                }
+                                this.children.push($this.currSUConditionTplComponent);
+                                return false;
+                            }
+                        });
+
+                        $this.currComponent = {};
+                        $this.currSUConditionTplComponent = {
+                            signUpCondition: {}
+                        };
+                        $this.signUpDialog = false;
                     },
                     addCustomChooseField: function () {
                         var $this = this;
@@ -1192,7 +1209,7 @@
                                 sequence: 1
                             }],
                             pid: 0,
-                            type: 'choose'
+                            type: 'radio'
                         }
                     },
                     selectForm: function (value) {
@@ -1214,6 +1231,86 @@
                             app.showMsg("加载表单字段失败");
                         });
 
+                    },
+                    submitCustomComponent: function () {
+                        var $this = this;
+                        var url = ctx + "/api/activity/engine/component/submit";
+                        var isAdd = !$this.currEditItem.id;
+                        app.ajaxPost(url, { componentStr: activityApp.getJsonStr($this.currEditItem) }, function (res) {
+                            if (res.success) {
+                                var component = res.data
+                                if (isAdd) {
+                                    $this.addedComponent(component);
+                                } else {
+                                    $this.editedComponent(component);
+                                }
+                                $this.currEditItem = {};
+
+                                $this.chooseDialog = false;
+                                $this.textDialog = false;
+
+                                $this.customAdd = false;
+                            } else {
+                                var errorMessage = res.message;
+                                if (activityApp.isEmpty(errorMessage)) {
+                                    errorMessage = "保存自定义组件失败";
+                                }
+                                app.showMsg(errorMessage);
+                            }
+                        }, function () {
+                            app.showMsg("保存自定义组件失败");
+                        });
+                    },
+                    addedComponent: function (component) {
+                        var $this = this;
+                        component.checked = true;
+                        component.virtualId = component.id;
+                        component.virtualPid = component.pid;
+                        $this.componentTypeList[component.pid].components.push(component);
+                        var newTemplateComponent = {
+                            templateId: $this.currTemplateId,
+                            componentId: component.id,
+                            name: component.name,
+                            introduction: component.introduction,
+                            required: component.required,
+                            sequence: $this.templateComponents.length + 1,
+                            component: component,
+                            code: component.code,
+                            type: component.type,
+                            pid: 0
+                        };
+                        $this.showTemplateComponents.push(newTemplateComponent);
+                        $this.templateComponents.push(newTemplateComponent);
+                        $this.customComponentIds.push(component.id);
+                    },
+                    editedComponent: function (component) {
+                        var $this = this;
+                        component.virtualId = component.id;
+                        component.virtualPid = component.pid;
+                        var components = $this.componentTypeList[component.pid].components;
+                        var i;
+                        for (i = 0; i < components.length; i++) {
+                            if (components[i].id == component.id) {
+                                components[i] = component;
+                                break;
+                            }
+                        }
+                        var updatedAttrs = {
+                            name: component.name,
+                            introduction: component.introduction,
+                            required: component.required,
+                            code: component.code,
+                            type: component.type,
+                            component: component
+                        };
+
+                        $this.showTemplateComponents[$this.currEditIndex] = $.extend({}, $this.showTemplateComponents[$this.currEditIndex], updatedAttrs);
+                        for (i = 0; i < $this.templateComponents.length; i++) {
+                            if ($this.templateComponents[i].componentId == component.id) {
+                                $this.templateComponents[i] = $.extend({}, $this.templateComponents[i], updatedAttrs);
+                                break;
+                            }
+                        }
                     },
                     // 返回
                     returnBack: function () {
@@ -1262,7 +1359,8 @@
                                         introduction: this.introduction,
                                         required: this.required,
                                         sequence: this.sequence,
-                                        children: this.children
+                                        children: this.children,
+                                        signUpCondition: this.signUpCondition
                                     })
                                 })
                             }
