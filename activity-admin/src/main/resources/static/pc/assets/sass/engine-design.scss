@@ -521,6 +521,7 @@
     background: #FFFFFF;
     .go-back{
         display: flex;
+        cursor: pointer;
         i{
             font-size: 16px;
             margin-right: 6px;
@@ -531,6 +532,14 @@
             font-size: 14px;
             line-height: 30px;
             color: #999999;
+        }
+        &:hover {
+            .icon-back:before {
+                color: #0084FF;
+            }
+            span {
+                color: #0084FF;
+            }
         }
     }
     .name-txt {
@@ -920,10 +929,6 @@
             }
             &.nopadding{
                 padding: 0;
-            }
-            .top-drag {
-                padding: 12px 24px;
-                position: relative;
             }
         }
         .drag-box-inner {

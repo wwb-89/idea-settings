@@ -307,27 +307,26 @@
                             <p class="tips first">辅助说明文字，这是最长效果这是最长效果这是最长效果这是最长效果这是最长效果这是最长</p>
                         </div>
                     </div>
-                    <!--签到整体拖动-->
-                    <div class="form-item sort-item nopadding">
-                        <div class="top-drag">
-                            <i class="icon-drag"></i>
-                            <div class="icon-div" style="display: block">
-                                <i class="icon-edit"></i>
-                                <i class="icon-delete"></i>
-                            </div>
-                            <label class="label">签到</label>
-                            <div class="input-box">
-                                <div class="type-item">
-                                    <i class="add_btn"></i>新增
-                                </div>
+                    <div class="form-item sort-item">
+                        <i class="icon-drag"></i>
+                        <div class="icon-div">
+                            <i class="icon-edit"></i>
+                            <i class="icon-delete"></i>
+                        </div>
+                        <label class="label">签到</label>
+                        <div class="input-box">
+                            <div class="type-item">
+                                <i class="add_btn"></i>新增
                             </div>
                         </div>
-                        <div class="drag-box-inner" id="drag-box-inner">
-                            <!-- 特殊活动报名设置 -->
-                            <div class="title sort-item-inner">
-                                <i class="icon-drag-inner"></i>
+                    </div>
+                    <!-- 特殊活动报名设置整体拖动-->
+                    <div class="form-item sort-item nopadding">
+                        <div class="drag-box-inner">
+                            <div class="title sort-item">
+                                <i class="icon-drag"></i>
                                 <div class="lable">特殊活动报名设置</div>
-                                <div class="icon-div-inner">
+                                <div class="icon-div">
                                     <i class="icon-edit" @click="switchDialog=true"></i>
                                     <i class="icon-delete" @click="delDialog=true"></i>
                                 </div>
@@ -336,81 +335,82 @@
                                     <p class="tips second">辅助说明文字，这是最长效果这是最长效果这是最长效果这是最长效果这是最长效果这是最</p>
                                 </div>
                             </div>
-                            <div class="form-item sort-item-inner">
-                                <i class="icon-drag-inner"></i>
-                                <div class="icon-div-inner">
-                                    <i class="icon-edit"></i>
+                            <div  id="drag-box-inner">
+                                <div class="form-item sort-item-inner">
+                                    <i class="icon-drag-inner"></i>
+                                    <div class="icon-div-inner">
+                                        <i class="icon-edit"></i>
+                                    </div>
+                                    <label class="label required">报名时间</label>
+                                    <div class="input-box">
+                                        <el-date-picker type="daterange"
+                                                        start-placeholder="开始时间"
+                                                        end-placeholder="结束时间"
+                                                        format="yyyy-MM-dd"
+                                                        value-format="yyyy-MM-dd"
+                                                        prefix-icon="disable"
+                                                        clear-icon="disable"
+                                                        unlink-panels
+                                                        readonly>
+                                            <img style="margin: 0 8px;" slot="range-separator" src="../../assets/images/swap-right.png">
+                                        </el-date-picker>
+                                        <span class="date-piker-icon"><img src="../../assets/images/calendar.png"></span>
+                                    </div>
                                 </div>
-                                <label class="label required">报名时间</label>
-                                <div class="input-box">
-                                    <el-date-picker type="daterange"
-                                                    start-placeholder="开始时间"
-                                                    end-placeholder="结束时间"
-                                                    format="yyyy-MM-dd"
-                                                    value-format="yyyy-MM-dd"
-                                                    prefix-icon="disable"
-                                                    clear-icon="disable"
-                                                    unlink-panels
-                                                    readonly>
-                                        <img style="margin: 0 8px;" slot="range-separator" src="../../assets/images/swap-right.png">
-                                    </el-date-picker>
-                                    <span class="date-piker-icon"><img src="../../assets/images/calendar.png"></span>
+                                <div class="form-item sort-item-inner">
+                                    <i class="icon-drag-inner"></i>
+                                    <div class="icon-div-inner">
+                                        <i class="icon-edit"></i>
+                                        <i class="icon-delete"></i>
+                                    </div>
+                                    <label class="label">人数限制</label>
+                                    <div class="input-box">
+                                        <el-input type="text" v-model="person" placeholder="请选择" autocomplete="off" class="select-input" readonly></el-input>
+                                        <img src="../../assets/images/yq-design/arrow-down-small.png" alt="" class="arrow-down">
+                                        <div class="person-box">
+                                            <el-input type="number" placeholder="请输入正整数" readonly></el-input>
+                                            <span class="person-span">人</span>
+                                        </div>
+                                    </div>
                                 </div>
-                            </div>
-                            <div class="form-item sort-item-inner">
-                                <i class="icon-drag-inner"></i>
-                                <div class="icon-div-inner">
-                                    <i class="icon-edit"></i>
-                                    <i class="icon-delete"></i>
+                                <div class="form-item sort-item-inner">
+                                    <i class="icon-drag-inner"></i>
+                                    <div class="icon-div-inner">
+                                        <i class="icon-edit"></i>
+                                        <i class="icon-delete"></i>
+                                    </div>
+                                    <label class="label">信息填写</label>
+                                    <div class="input-box">
+                                        <el-switch class="switch fl marginTop6" disabled></el-switch>
+                                        <p class="tips third">开启后，报名者需填写信息</p>
+                                    </div>
                                 </div>
-                                <label class="label">人数限制</label>
-                                <div class="input-box">
-                                    <el-input type="text" v-model="person" placeholder="请选择" autocomplete="off" class="select-input" readonly></el-input>
-                                    <img src="../../assets/images/yq-design/arrow-down-small.png" alt="" class="arrow-down">
-                                    <div class="person-box">
-                                        <el-input type="number" placeholder="请输入正整数" readonly></el-input>
-                                        <span class="person-span">人</span>
+                                <div class="form-item sort-item-inner">
+                                    <i class="icon-drag-inner"></i>
+                                    <div class="icon-div-inner">
+                                        <i class="icon-edit"></i>
+                                        <i class="icon-delete"></i>
+                                    </div>
+                                    <label class="label">报名需审核</label>
+                                    <div class="input-box">
+                                        <el-switch class="switch fl marginTop6" disabled></el-switch>
+                                        <p class="tips third">开启后，参与需发起人审核</p>
+                                    </div>
+                                </div>
+                                <div class="form-item sort-item-inner">
+                                    <i class="icon-drag-inner"></i>
+                                    <div class="icon-div-inner">
+                                        <i class="icon-edit"></i>
+                                        <i class="icon-delete"></i>
+                                    </div>
+                                    <label class="label">报名名单公开</label>
+                                    <div class="input-box">
+                                        <el-switch class="switch fl marginTop6" disabled></el-switch>
+                                        <p class="tips third">开启后，所有人都能看到报名人员名单</p>
                                     </div>
                                 </div>
                             </div>
-                            <div class="form-item sort-item-inner">
-                                <i class="icon-drag-inner"></i>
-                                <div class="icon-div-inner">
-                                    <i class="icon-edit"></i>
-                                    <i class="icon-delete"></i>
-                                </div>
-                                <label class="label">信息填写</label>
-                                <div class="input-box">
-                                    <el-switch class="switch fl marginTop6" disabled></el-switch>
-                                    <p class="tips third">开启后，报名者需填写信息</p>
-                                </div>
-                            </div>
-                            <div class="form-item sort-item-inner">
-                                <i class="icon-drag-inner"></i>
-                                <div class="icon-div-inner">
-                                    <i class="icon-edit"></i>
-                                    <i class="icon-delete"></i>
-                                </div>
-                                <label class="label">报名需审核</label>
-                                <div class="input-box">
-                                    <el-switch class="switch fl marginTop6" disabled></el-switch>
-                                    <p class="tips third">开启后，参与需发起人审核</p>
-                                </div>
-                            </div>
-                            <div class="form-item sort-item-inner">
-                                <i class="icon-drag-inner"></i>
-                                <div class="icon-div-inner">
-                                    <i class="icon-edit"></i>
-                                    <i class="icon-delete"></i>
-                                </div>
-                                <label class="label">报名名单公开</label>
-                                <div class="input-box">
-                                    <el-switch class="switch fl marginTop6" disabled></el-switch>
-                                    <p class="tips third">开启后，所有人都能看到报名人员名单</p>
-                                </div>
-                            </div>
                         </div>
-
                     </div>
                 </form>
                 <div class="add-circle" @click="addFieldDialog=true" id="add-circle"></div>

@@ -649,6 +649,7 @@
   display: -moz-box;
   display: -ms-flexbox;
   display: flex;
+  cursor: pointer;
 }
 
 .top-con-light .go-back i {
@@ -662,6 +663,14 @@
   font-size: 14px;
   line-height: 30px;
   color: #999999;
+}
+
+.top-con-light .go-back:hover .icon-back:before {
+  color: #0084FF;
+}
+
+.top-con-light .go-back:hover span {
+  color: #0084FF;
 }
 
 .top-con-light .name-txt {
@@ -1132,11 +1141,6 @@
 
 .field-setting .info-box .sort-item.nopadding {
   padding: 0;
-}
-
-.field-setting .info-box .sort-item .top-drag {
-  padding: 12px 24px;
-  position: relative;
 }
 
 .field-setting .info-box .drag-box-inner {
