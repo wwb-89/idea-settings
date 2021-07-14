@@ -23,13 +23,6 @@
 <body>
 <div id="activity-vue" v-cloak>
     <div style="display: block">
-<!--        <div class="header-box">-->
-<!--            <div class="header header-type-3">-->
-<!--                <span slot="label" class="menu-item-customize registered_title">-->
-<!--                    <span class="title">活动管理</span>-->
-<!--                </span>-->
-<!--            </div>-->
-<!--        </div>-->
         <!-- 选项卡内容 -->
         <div class="tab-content-box">
             <div class="tab-item">
@@ -231,6 +224,7 @@
                 activities: [],
                 uid: [[${session._login_user_.uid}]],
                 fid: [[${fid != null ? fid : session._login_user_.fid}]],
+                marketId: [[${marketId}]],
                 filterStatus: [],
                 selectedFilterStatusName: "全部",
                 sw: "",
@@ -381,7 +375,7 @@
                 },
                 toAdd: function () {
                     var $this = this;
-                    window.open(activityApp.getRelativeUrl("/activity/add?code=" + $this.code + "&flag=" + $this.activityFlag + "&strict=" + $this.strict));
+                    window.open(activityApp.getRelativeUrl("/activity/add?code=" + $this.code + "&template_id=" + $this.marketId + "&strict=" + $this.strict));
                 },
                 toEdit: function (id) {
                     var $this = this;
@@ -739,9 +733,8 @@
                 configSubmit: function () {
                     var $this = this;
                     var marketTableFieldDetails = $this.packageSubmitTableFieldDetails();
-                    var url = ctx + "/api/org/" + $this.fid + "/table-field/" + $this.tableFieldId + "/market/config";
+                    var url = ctx + "/api/market/" + $this.marketId + "/table-field/" + $this.tableFieldId + "/config";
                     var params = {
-                        flag: $this.activityFlag,
                         marketTableFieldsStr: activityApp.getJsonStr(marketTableFieldDetails)
                     };
                     app.ajaxPostWithLoading(url, params, function (data) {

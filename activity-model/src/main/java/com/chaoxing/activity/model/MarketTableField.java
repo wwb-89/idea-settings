@@ -24,10 +24,8 @@ import java.time.LocalDateTime;
 @TableName(value = "t_market_table_field")
 public class MarketTableField {
 
-    /** 机构id; column: fid*/
-    private Integer fid;
-    /** 活动标识; column: activity_flag*/
-    private String activityFlag;
+    /** 市场id; column: market_id*/
+    private Integer marketId;
     /** 表格字段配置id; column: table_field_id*/
     private Integer tableFieldId;
     /** 表格字段详细配置id; column: table_field_detail_id*/

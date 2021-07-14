@@ -98,6 +98,7 @@ ALTER TABLE t_activity ADD COLUMN template_id INT COMMENT '模版id';
 ALTER TABLE t_activity DROP COLUMN is_enable_sign;
 ALTER TABLE t_activity DROP COLUMN is_open_audit;
 ALTER TABLE t_activity DROP COLUMN audit_status;
-ALTER TABLE t_activity DROP COLUMN activity_flag;
 ALTER TABLE t_activity DROP COLUMN second_classroom_flag;
+ALTER TABLE t_market_table_field DROP COLUMN fid;
 ALTER TABLE t_activity CHANGE integral_value integral DECIMAL(20, 2) COMMENT '积分';
+ALTER TABLE t_market_table_field CHANGE activity_flag market_id INT COMMENT '市场id';

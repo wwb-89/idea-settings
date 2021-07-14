@@ -33,37 +33,34 @@ public class GeneralActivityManagementController {
 	 * @author wwb
 	 * @Date 2020-11-18 11:34:30
 	 * @param model
+	 * @param marketId
 	 * @param code 图书馆编码
 	 * @param wfwfid
 	 * @param unitId
 	 * @param state
 	 * @param fid
-	 * @param secondClassroomFlag 第二课堂标识
 	 * @param strict
-	 * @param flag 活动标示。通用、第二课堂、双选会...
 	 * @return java.lang.String
 	 */
 	@RequestMapping("")
-	public String newIndex(HttpServletRequest request, Model model, String code, Integer wfwfid, Integer unitId, Integer state, Integer fid, @RequestParam(defaultValue = "0") Integer secondClassroomFlag, @RequestParam(defaultValue = "0") Integer strict, String flag) {
+	public String newIndex(HttpServletRequest request, Model model, Integer marketId, String code, Integer wfwfid, Integer unitId, Integer state, Integer fid, @RequestParam(defaultValue = "0") Integer strict) {
 		Integer realFid = Optional.ofNullable(wfwfid).orElse(Optional.ofNullable(unitId).orElse(Optional.ofNullable(state).orElse(Optional.ofNullable(fid).orElse(LoginUtils.getLoginUser(request).getFid()))));
-		return activityManagementController.index(model, code, realFid, secondClassroomFlag, strict, flag);
+		return activityManagementController.index(model, marketId, code, realFid, strict);
 	}
 
 	/**活动新增页面
 	 * @Description 
 	 * @author wwb
 	 * @Date 2020-12-25 10:19:16
-	 * @param model
 	 * @param request
+	 * @param model
+	 * @param templateId
 	 * @param code
-	 * @param secondClassroomFlag 第二课堂标识
-	 * @param flag
-	 * @param strict
 	 * @return java.lang.String
 	*/
 	@GetMapping("activity/add")
-	public String add(Model model, HttpServletRequest request, String code, @RequestParam(defaultValue = "0") Integer secondClassroomFlag, String flag, @RequestParam(defaultValue = "0") Integer strict) {
-		return activityManagementController.add(model, request, code, secondClassroomFlag, flag, strict);
+	public String add(HttpServletRequest request, Model model, Integer templateId, String code) {
+		return activityManagementController.add(request, model, templateId, code);
 	}
 
 }
