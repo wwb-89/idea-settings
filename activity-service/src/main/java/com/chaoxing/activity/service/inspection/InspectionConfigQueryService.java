@@ -7,11 +7,11 @@ import com.chaoxing.activity.model.InspectionConfig;
 import com.chaoxing.activity.model.InspectionConfigDetail;
 import com.google.common.collect.Lists;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
 import java.util.List;
+import java.util.Optional;
 
 /**考核配置查询服务
  * @author wwb
@@ -42,10 +42,7 @@ public class InspectionConfigQueryService {
 				.lambda()
 				.eq(InspectionConfig::getActivityId, activityId)
 		);
-		if (CollectionUtils.isNotEmpty(inspectionConfigs)) {
-			return inspectionConfigs.get(0);
-		}
-		return null;
+		return Optional.ofNullable(inspectionConfigs).orElse(Lists.newArrayList()).stream().findFirst().orElse(null);
 	}
 
 	/**根据活动id查询考核配置详情列表
@@ -57,8 +54,7 @@ public class InspectionConfigQueryService {
 	*/
 	public List<InspectionConfigDetail> listDetailByActivityId(Integer activityId) {
 		InspectionConfig inspectionConfig = getByActivityId(activityId);
-		List<InspectionConfigDetail> inspectionConfigDetails = listDetailByConfig(inspectionConfig);
-		return inspectionConfigDetails;
+		return listDetailByConfig(inspectionConfig);
 	}
 
 	/**根据考核配置查询考核配置详情列表
@@ -69,17 +65,21 @@ public class InspectionConfigQueryService {
 	 * @return java.util.List<com.chaoxing.activity.model.InspectionConfigDetail>
 	*/
 	public List<InspectionConfigDetail> listDetailByConfig(InspectionConfig inspectionConfig) {
-		List<InspectionConfigDetail> inspectionConfigDetails = null;
-		if (inspectionConfig != null) {
-			inspectionConfigDetails = inspectionConfigDetailMapper.selectList(new QueryWrapper<InspectionConfigDetail>()
-					.lambda()
-					.eq(InspectionConfigDetail::getConfigId, inspectionConfig.getId())
-			);
-		}
-		if (CollectionUtils.isEmpty(inspectionConfigDetails)) {
-			inspectionConfigDetails = Lists.newArrayList();
-		}
-		return inspectionConfigDetails;
+		return Optional.ofNullable(inspectionConfig).map(v -> listDetailByConfigId(v.getId())).orElse(Lists.newArrayList());
+	}
+
+	/**根据考核配置id查询考核配置详情列表
+	 * @Description 
+	 * @author wwb
+	 * @Date 2021-07-15 14:47:31
+	 * @param inspectionConfigId
+	 * @return java.util.List<com.chaoxing.activity.model.InspectionConfigDetail>
+	*/
+	public List<InspectionConfigDetail> listDetailByConfigId(Integer inspectionConfigId) {
+		return inspectionConfigDetailMapper.selectList(new QueryWrapper<InspectionConfigDetail>()
+				.lambda()
+				.eq(InspectionConfigDetail::getConfigId, inspectionConfigId)
+		);
 	}
 
 }

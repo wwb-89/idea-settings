@@ -355,4 +355,8 @@ public class Activity {
         setCreateOrgName(orgName);
     }
 
+    public boolean isEnded() {
+        return Objects.equals(StatusEnum.ENDED.getValue(), getStatus());
+    }
+
 }

@@ -6,7 +6,9 @@ import com.chaoxing.activity.model.Performance;
 import com.chaoxing.activity.service.queue.user.UserActionQueueService;
 import com.chaoxing.activity.util.enums.UserActionEnum;
 import com.chaoxing.activity.util.enums.UserActionTypeEnum;
+import com.google.common.collect.Lists;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -63,6 +65,9 @@ public class PerformanceService {
 	* @return java.util.List<com.chaoxing.activity.model.Performance>
 	*/
 	public List<Performance> listAllPerformanceByIds(Integer activityId, List<Integer> performanceIds) {
+		if (CollectionUtils.isEmpty(performanceIds)) {
+			return Lists.newArrayList();
+		}
 		return performanceMapper.selectList(new QueryWrapper<Performance>()
 				.lambda()
 				.eq(Performance::getActivityId, activityId)

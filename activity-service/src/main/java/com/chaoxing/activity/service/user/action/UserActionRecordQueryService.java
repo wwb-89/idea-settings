@@ -15,9 +15,7 @@ import com.chaoxing.activity.service.manager.PassportApiService;
 import com.chaoxing.activity.service.manager.module.SignApiService;
 import com.chaoxing.activity.service.user.result.UserResultQueryService;
 import com.chaoxing.activity.util.enums.UserActionTypeEnum;
-import com.google.common.collect.Maps;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.compress.utils.Lists;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
@@ -26,6 +24,7 @@ import javax.annotation.Resource;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 /**用户行为记录查询服务
@@ -78,7 +77,7 @@ public class UserActionRecordQueryService {
 	* @author huxiaolong
 	* @Date 2021-06-25 18:51:11
 	* @param uid
-* @param activityId
+	* @param activityId
 	* @return com.chaoxing.activity.dto.UserGradeDTO
 	*/
 	public UserGradeDTO getUserGrade(Integer uid, Integer activityId) {
@@ -120,16 +119,11 @@ public class UserActionRecordQueryService {
 			}
 		}
 		// 获取评价
-		Map<Integer, ActivityRatingDetail> ratingDetailMap = Maps.newHashMap();
-		Map<Integer, Performance> performanceMap = Maps.newHashMap();
-		if (CollectionUtils.isNotEmpty(ratingDetailIds)) {
-			List<ActivityRatingDetail> ratingDetails = activityRatingQueryService.listAllDetailByDetailIds(activityId, ratingDetailIds);
-			ratingDetailMap = ratingDetails.stream().collect(Collectors.toMap(ActivityRatingDetail::getId, v -> v, (v1, v2) -> v2));
-		}
-		if (CollectionUtils.isNotEmpty(performanceIds)) {
-			List<Performance> performances = performanceService.listAllPerformanceByIds(activityId, performanceIds);
-			performanceMap = performances.stream().collect(Collectors.toMap(Performance::getId, v -> v, (v1, v2) -> v2));
-		}
+		List<ActivityRatingDetail> ratingDetails = activityRatingQueryService.listAllDetailByDetailIds(activityId, ratingDetailIds);
+		Map<Integer, ActivityRatingDetail> ratingDetailMap = ratingDetails.stream().collect(Collectors.toMap(ActivityRatingDetail::getId, v -> v, (v1, v2) -> v2));
+		List<Performance> performances = performanceService.listAllPerformanceByIds(activityId, performanceIds);
+		Map<Integer, Performance> performanceMap = performances.stream().collect(Collectors.toMap(Performance::getId, v -> v, (v1, v2) -> v2));
+
 		for (UserActionRecord record : userActionRecords) {
 			UserActionTypeEnum userActionType = UserActionTypeEnum.fromValue(record.getActionType());
 			String actionIdentify = record.getActionIdentify();
@@ -140,29 +134,20 @@ public class UserActionRecordQueryService {
 				switch (userActionType) {
 					case SIGN_IN:
 						SignInCreateParamDTO signIn = signInMap.get(identityId);
-						SignInCreateParamDTO.Way way = SignInCreateParamDTO.Way.fromValue(signIn.getWay());
-						if (way != null) {
-							record.setWay(way.getValue());
-						}
-						record.setName(signIn.getName());
+						record.setWay(Optional.ofNullable(signIn).map(v -> SignInCreateParamDTO.Way.fromValue(v.getWay())).map(SignInCreateParamDTO.Way::getValue).orElse(null));
+						record.setName(Optional.ofNullable(signIn).map(SignInCreateParamDTO::getName).orElse(""));
 						break;
 					case SIGN_UP:
-						SignUpCreateParamDTO signUp = signUpMap.get(identityId);
-						record.setName(signUp.getName());
+						record.setName(Optional.ofNullable(signUpMap.get(identityId)).map(SignUpCreateParamDTO::getName).orElse(""));
 						break;
 					case RATING:
 						record.setRatingDetail(ratingDetailMap.get(identityId));
 						break;
-					case DISCUSS:
-						break;
 					case PERFORMANCE:
-						Performance performance = performanceMap.get(identityId);
-						if (performance != null) {
-							record.setRemark(performance.getRemark());
-						}
+						record.setRemark(Optional.ofNullable(performanceMap.get(identityId)).map(Performance::getRemark).orElse(""));
 						break;
+					case DISCUSS:
 					case WORK:
-						break;
 					default:
 						// 未知行为
 				}
