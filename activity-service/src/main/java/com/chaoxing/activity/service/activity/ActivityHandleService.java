@@ -152,13 +152,16 @@ public class ActivityHandleService {
 	 * @return com.chaoxing.activity.dto.sign.create.SignCreateResultDTO
 	*/
 	private SignCreateResultDTO handleSign(Activity activity, SignCreateParamDTO signCreateParam, LoginUserDTO loginUser) {
+		SignCreateResultDTO signCreateResultDto;
 		signCreateParam.perfectName(activity.getName());
 		if (signCreateParam.getId() == null) {
 			signCreateParam.perfectCreator(loginUser);
-			return signApiService.create(signCreateParam);
+			signCreateResultDto = signApiService.create(signCreateParam);
 		} else {
-			return signApiService.update(signCreateParam);
+			signCreateResultDto = signApiService.update(signCreateParam);
 		}
+		activity.setSignId(signCreateResultDto.getSignId());
+		return signCreateResultDto;
 	}
 
 	/**处理作品征集
@@ -212,19 +215,19 @@ public class ActivityHandleService {
 			// 更新报名签到
 			Integer signId = existActivity.getSignId();
 			signCreateParam.setId(signId);
-			handleSign(activity, signCreateParam, loginUser);
+			SignCreateResultDTO signCreateResultDto = handleSign(activity, signCreateParam, loginUser);
 			// 征集相关
 			handleWork(activity, loginUser);
 			// 处理活动相关
 			if (!Objects.equals(existActivity.getCoverCloudId(), activity.getCoverCloudId())) {
 				activity.coverCloudIdChange();
 			}
-			activityMapper.update(existActivity, new LambdaUpdateWrapper<Activity>()
+			activityMapper.update(activity, new LambdaUpdateWrapper<Activity>()
 					.eq(Activity::getId, activity.getId())
 					// 一些可能为null的字段需要设置
-					.set(Activity::getTimingReleaseTime, existActivity.getTimingReleaseTime())
-					.set(Activity::getTimeLengthUpperLimit, existActivity.getTimeLengthUpperLimit())
-					.set(Activity::getIntegral, existActivity.getIntegral())
+					.set(Activity::getTimingReleaseTime, activity.getTimingReleaseTime())
+					.set(Activity::getTimeLengthUpperLimit, activity.getTimeLengthUpperLimit())
+					.set(Activity::getIntegral, activity.getIntegral())
 			);
 			// 更新活动状态
 			activityStatusService.statusUpdate(existActivity);
