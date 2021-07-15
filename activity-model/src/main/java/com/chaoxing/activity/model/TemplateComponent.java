@@ -9,6 +9,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.springframework.beans.BeanUtils;
 
 import java.util.List;
 import java.util.Objects;
@@ -70,16 +71,20 @@ public class TemplateComponent {
      * @return java.util.List<com.chaoxing.activity.model.TemplateComponent>
     */
     public static List<TemplateComponent> cloneToNewTemplateId(List<TemplateComponent> templateComponents, Integer templateId) {
-        // 清理一些属性
+        // 复制一个新列表出来
+        List<TemplateComponent> clonedTemplateComponents = Lists.newArrayList();
         Optional.ofNullable(templateComponents).orElse(Lists.newArrayList()).forEach(v -> {
-            v.setTemplateId(templateId);
-            v.setOriginId(v.getId());
-            v.setId(null);
+            TemplateComponent clonedTemplateComponent = new TemplateComponent();
+            BeanUtils.copyProperties(v, clonedTemplateComponent);
+            clonedTemplateComponent.setTemplateId(templateId);
+            clonedTemplateComponent.setOriginId(v.getId());
+            clonedTemplateComponent.setId(null);
+            clonedTemplateComponents.add(clonedTemplateComponent);
         });
         // 找到父组件列表
-        List<TemplateComponent> parentTemplateComponents = Optional.ofNullable(templateComponents).orElse(Lists.newArrayList()).stream().filter(v -> Objects.equals(0, v.getPid())).collect(Collectors.toList());
+        List<TemplateComponent> parentTemplateComponents = Optional.ofNullable(clonedTemplateComponents).orElse(Lists.newArrayList()).stream().filter(v -> Objects.equals(0, v.getPid())).collect(Collectors.toList());
         // 给父组件填充子组件列表
-        Optional.ofNullable(parentTemplateComponents).orElse(Lists.newArrayList()).stream().forEach(templateComponent -> templateComponent.setChildren(Optional.ofNullable(templateComponents).orElse(Lists.newArrayList()).stream().filter(v -> Objects.equals(templateComponent.getOriginId(), v.getPid())).collect(Collectors.toList())));
+        Optional.ofNullable(parentTemplateComponents).orElse(Lists.newArrayList()).stream().forEach(templateComponent -> templateComponent.setChildren(Optional.ofNullable(clonedTemplateComponents).orElse(Lists.newArrayList()).stream().filter(v -> Objects.equals(templateComponent.getOriginId(), v.getPid())).collect(Collectors.toList())));
         return parentTemplateComponents;
     }
 
