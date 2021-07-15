@@ -104,4 +104,19 @@ public class TemplateQueryService {
 		return Optional.ofNullable(orgTemplates).orElse(Lists.newArrayList()).stream().findFirst().orElse(null);
 	}
 
+	/**根据模版id和组件id查询模版组件列表
+	 * @Description 
+	 * @author wwb
+	 * @Date 2021-07-15 16:08:00
+	 * @param templateId
+	 * @param componentId
+	 * @return java.util.List<com.chaoxing.activity.model.TemplateComponent>
+	*/
+	public List<TemplateComponent> listByTemplateIdAndComponentId(Integer templateId, Integer componentId) {
+		return templateComponentMapper.selectList(new LambdaQueryWrapper<TemplateComponent>()
+				.eq(TemplateComponent::getTemplateId, templateId)
+				.eq(TemplateComponent::getComponentId, componentId)
+		);
+	}
+
 }
