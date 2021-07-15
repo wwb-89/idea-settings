@@ -69,12 +69,11 @@ public class ActivityEngineQueryService {
     * @param fid
     * @return java.util.List<com.chaoxing.activity.model.Template>
     */
-    public List<Template> listTemplateByFid(Integer fid) {
+    public List<Template> listTemplateByFid(Integer fid, Integer marketId) {
         return templateMapper.selectList(new QueryWrapper<Template>()
                 .lambda()
                 .eq(Template::getSystem, Boolean.TRUE)
-                .or()
-                .eq(Template::getFid, fid)
+                .or(j -> j.eq(Template::getFid, fid).eq(Template::getMarketId, marketId))
                 .orderByAsc(Template::getSequence));
     }
 

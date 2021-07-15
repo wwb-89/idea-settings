@@ -50,12 +50,20 @@ public class ActivityEngineHandleService {
     * @param activityEngineDTO
     * @return void
     */
-    public void handleEngineTemplate(Integer fid, Integer uid, ActivityEngineDTO activityEngineDTO) {
+    public void handleEngineTemplate(Integer fid, Integer marketId, Integer uid, ActivityEngineDTO activityEngineDTO) {
         Template template = activityEngineDTO.getTemplate();
         List<TemplateComponent> templateComponents = activityEngineDTO.getTemplateComponents();
         if (template.getSystem() && template.getFid() == null) {
             // todo 临时测试，默认新建一个template
-            Template newTemplate = Template.builder().name("自建测试模板").fid(fid).createUid(uid).updateUid(uid).build();
+            Template newTemplate = Template.builder()
+                    .name("自建测试模板")
+                    .fid(fid)
+                    .marketId(marketId)
+                    .originTemplateId(template.getOriginTemplateId())
+                    .activityFlag(template.getActivityFlag())
+                    .createUid(uid)
+                    .updateUid(uid)
+                    .build();
             activityEngineDTO.setTemplate(newTemplate);
             saveOperation(newTemplate, templateComponents, activityEngineDTO.getCustomComponentIds());
             return;
@@ -102,7 +110,6 @@ public class ActivityEngineHandleService {
 
     }
 
-
     /**
     * @Description
     * @author huxiaolong
@@ -118,7 +125,6 @@ public class ActivityEngineHandleService {
         }
         return updateCustomComponent(uid, component);
     }
-
 
     /**
     * @Description
@@ -145,7 +151,6 @@ public class ActivityEngineHandleService {
         }
         return component;
     }
-
 
     /**新增自定义组件
     * @Description
@@ -182,34 +187,31 @@ public class ActivityEngineHandleService {
     * @param
     * @return void
     */
+    @Transactional(rollbackFor = Exception.class)
     public void saveTemplateComponent(Integer templateId, Collection<TemplateComponent> templateComponents) {
-        for (TemplateComponent templateComponent : templateComponents) {
-            templateComponent.setTemplateId(templateId);
-        }
-        if (CollectionUtils.isNotEmpty(templateComponents)) {
-            templateComponentMapper.batchAdd(templateComponents);
-        }
-        for (TemplateComponent templateComponent : templateComponents) {
-            if (templateComponent.getSignUpCondition() != null) {
-                templateComponent.getSignUpCondition().setTemplateComponentId(templateComponent.getId());
-                signUpConditionMapper.insert(templateComponent.getSignUpCondition());
-            }
+        templateComponents.forEach(v -> v.setTemplateId(templateId));
+        templateComponentMapper.batchAdd(templateComponents);
 
-            if (CollectionUtils.isNotEmpty(templateComponent.getChildren())) {
-                templateComponent.getChildren().forEach(item -> {
-                    item.setPid(templateComponent.getId());
-                    item.setTemplateId(templateId);
+        templateComponents.forEach(v -> {
+            if (v.getSignUpCondition() != null) {
+                v.getSignUpCondition().setTemplateComponentId(v.getId());
+                signUpConditionMapper.insert(v.getSignUpCondition());
+            }
+            if (CollectionUtils.isNotEmpty(v.getChildren())) {
+                v.getChildren().forEach(v1 -> {
+                    v1.setPid(v.getId());
+                    v1.setTemplateId(templateId);
                 });
-                templateComponentMapper.batchAdd(templateComponent.getChildren());
+                templateComponentMapper.batchAdd(v.getChildren());
 
-                for (TemplateComponent child : templateComponent.getChildren()) {
-                    if (child.getSignUpCondition() != null) {
-                        child.getSignUpCondition().setTemplateComponentId(child.getId());
-                        signUpConditionMapper.insert(child.getSignUpCondition());
+                v.getChildren().forEach(v1 -> {
+                    if (v1.getSignUpCondition() != null) {
+                        v1.getSignUpCondition().setTemplateComponentId(v1.getId());
+                        signUpConditionMapper.insert(v1.getSignUpCondition());
                     }
-                }
+                });
             }
-        }
+        });
     }
     
     /**更新模板组件关联

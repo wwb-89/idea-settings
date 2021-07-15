@@ -6,20 +6,17 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="/static/pc/assets/lib/element-ui/lib/theme-chalk/index.css" th:href="@{/pc/assets/lib/element-ui/lib/theme-chalk/index.css}">
+    <link rel="stylesheet" href="/static/pc/assets/icomoon/style.css" th:href="@{/pc/assets/icomoon/style.css}">
     <link rel="stylesheet" href="/static/pc/assets/css/public.css" th:href="@{/pc/assets/css/public.css}">
     <link rel="stylesheet" href="/static/pc/assets/css/engine-design.css" th:href="@{/pc/assets/css/engine-design.css}">
 </head>
 <body>
     <div class="field-setting" id="field-setting" v-cloak>
-        <div class="top-con">
-            <div class="go-back white-border-btn" v-if="loaded && currTemplateId" @click="returnBack"><i></i><span>返回</span></div>
-            <div class="step-box">
-                <img src="/static/pc/assets/images/yq-design/step2-active.png" th:src="@{/pc/assets/images/yq-design/step2-active.png}" alt="">
-                <img src="/static/pc/assets/images/yq-design/step3-normal.png" th:src="@{/pc/assets/images/yq-design/step3-normal.png}" alt="">
-            </div>
-            <div class="look-div fr">
-<!--                <div class="btn-width80px-color1">预览</div>-->
-                <div class="btn-width80px-color2" v-if="loaded && currTemplateId" @click="publish">发布</div>
+        <div class="top-con-light">
+            <div class="go-back fl" v-show="loaded && currTemplateId" @click="returnBack"><i class="icon-back"></i><span>返回</span></div>
+            <div class="name-txt">{{loaded && currTemplateId ? '字段编辑' : '模板选择'}}</div>
+            <div class="look-div fr" v-show="loaded && currTemplateId" @click="publish">
+                <div class="btn-width80px-color2">发布</div>
             </div>
         </div>
         <div class="content">
@@ -40,7 +37,7 @@
                     </div>
                     <template v-for="(item, index) in showTemplateComponents">
                         <div class="form-item sort-item" v-if="!['activity_address', 'company_sign_up', 'sign_up', 'sign_in', 'sign_out', 'work', 'introduction'].includes(item.code)">
-                            <i class="icon-drag"></i>
+                            <i class="icon-drag" :pid-key="item.pid" :id-key="item.id"></i>
                             <div class="icon-div">
                                 <i class="icon-edit" @click="openEditDialog(index, item)"></i>
                                 <i class="icon-delete" v-show="!item.required" @click="removeComponentAssociate1(index, item)"></i>
@@ -114,224 +111,210 @@
                                     <p class="tips third">开启后，可以按照设置的时间自动发布活动</p>
                                 </template>
                                 <!-- 简介：introduction -->
-<!--                                <template v-else-if="item.code == 'introduction'">-->
-<!--                                    <div class="wrap ueditor">-->
-<!--                                        <script type="text/plain" id="container" name="content"></script>-->
-<!--                                    </div>-->
-<!--                                </template>-->
+                                <template v-else-if="item.code == 'introduction'">
+                                    <el-input type="text" placeholder="请填写" maxlength="20" show-word-limit readonly></el-input>
+                                </template>
+                                <template v-else-if="item.type == 'text'">
+                                    <el-input type="text" placeholder="请填写" maxlength="20" show-word-limit readonly></el-input>
+                                </template>
+                                <template v-else-if="item.type == 'radio'">
+                                    <div>
+                                        <el-radio v-model="radio1" label="1" name="active-type" class="radio-item" readonly>选项1</el-radio>
+                                        <el-radio label="2" name="active-type" class="radio-item" readonly>选项2</el-radio>
+                                    </div>
+                                </template>
+                                <template v-else-if="item.type == 'checkbox'">
+                                    <el-checkbox-group v-model="typecheck" disabled>
+                                        <el-checkbox label="选项1"  name="type"></el-checkbox>
+                                        <el-checkbox label="选项" name="type"></el-checkbox>
+                                    </el-checkbox-group>
+                                </template>
                             </div>
                         </div>
                         <!-- 特殊活动报名设置 -->
                         <template v-else-if="item.code == 'company_sign_up' || item.code == 'sign_up'">
-                            <div class="title sort-item">
-                                <i class="icon-drag"></i>
-                                <div class="lable">{{item.name}}</div>
-                                <div class="icon-div">
-                                    <i class="icon-edit" @click="openEditDialog(index, item)"></i>
-                                    <i class="icon-delete" @click="openSignUpRemoveDialog(index, item)"></i>
-                                </div>
-                                <div class="input-box">
-                                    <el-switch v-model="delivery1" class="switch fl marginTop6" disabled></el-switch>
-                                    <p class="tips second">{{item.introduction}}</p>
-                                </div>
-                            </div>
-                            <div class="form-item sort-item" v-if="item.children && item.children.length > 0" v-for="(it, idx) in item.children">
-                                <i class="icon-drag"></i>
-                                <div class="icon-div">
-                                    <i class="icon-edit" @click="openEditDialog1(index, idx, it)"></i>
-                                    <i class="icon-delete" v-show="!it.required" @click="removeComponentAssociate2(index, idx, it)"></i>
-                                </div>
-                                <label :class="{ label: true, required: it.required }">{{it.name}}</label>
-                                <div class="input-box">
-                                    <template v-if="it.code == 'sign_up_time_scope'">
-                                        <el-date-picker type="daterange"
-                                                        start-placeholder="开始时间"
-                                                        end-placeholder="结束时间"
-                                                        format="yyyy-MM-dd"
-                                                        value-format="yyyy-MM-dd"
-                                                        prefix-icon="disable"
-                                                        clear-icon="disable"
-                                                        unlink-panels
-                                                        readonly>
-                                            <img style="margin: 0 8px;" slot="range-separator" src="/static/pc/assets/images/swap-right.png" th:src="@{/pc/assets/images/swap-right.png}">
-                                        </el-date-picker>
-                                        <span class="date-piker-icon"><img src="/static/pc/assets/images/calendar.png" th:src="@{/pc/assets/images/calendar.png}"></span>
-                                    </template>
-                                    <template v-else-if="it.code == 'wfw_participation_scope'">
-                                        <div class="type-item">
-                                            <div class="add_btn"></div>选择
+                            <div class="form-item sort-item nopadding">
+                                <div class="drag-box-inner">
+                                    <div class="title sort-item">
+                                        <i class="icon-drag" :pid-key="item.pid" :id-key="item.id"></i>
+                                        <div class="lable">{{item.name}}</div>
+                                        <div class="icon-div">
+                                            <i class="icon-edit" @click="openEditDialog(index, item)"></i>
+                                            <i class="icon-delete" @click="openSignUpRemoveDialog(index, item)"></i>
                                         </div>
-                                    </template>
-                                    <template v-else-if="it.code == 'contacts_participation_scope'">
-                                        <div class="type-item">
-                                            <div class="add_btn"></div>选择
+                                        <div class="input-box">
+                                            <el-switch v-model="delivery1" class="switch fl marginTop6" disabled></el-switch>
+                                            <p class="tips second">{{item.introduction}}</p>
                                         </div>
-                                    </template>
-                                    <template v-else-if="it.code == 'sign_up_person_limit'">
-                                        <el-input type="text" v-model="person" placeholder="请选择" autocomplete="off" class="select-input" readonly></el-input>
-                                        <img src="/static/pc/assets/images/yq-design/arrow-down-small.png" th:src="@{/pc/assets/images/yq-design/arrow-down-small.png}" alt="" class="arrow-down">
-                                        <div class="person-box">
-                                            <el-input type="number" placeholder="请输入正整数" readonly></el-input>
-                                            <span class="person-span">人</span>
+                                    </div>
+                                    <div id="drag-box-inner">
+                                        <div class="form-item sort-item-inner" v-if="item.children && item.children.length > 0" v-for="(it, idx) in item.children">
+                                            <i class="icon-drag-inner" :pid-key="it.pid" :id-key="it.id"></i>
+                                            <div class="icon-div-inner">
+                                                <i class="icon-edit" @click="openEditDialog1(index, idx, it)"></i>
+                                                <i class="icon-delete" v-show="!it.required" @click="removeComponentAssociate2(index, idx, it)"></i>
+                                            </div>
+                                            <label :class="{ label: true, required: it.required }">{{it.name}}</label>
+                                            <div class="input-box">
+                                                <template v-if="it.code == 'sign_up_time_scope'">
+                                                    <el-date-picker type="daterange"
+                                                                    start-placeholder="开始时间"
+                                                                    end-placeholder="结束时间"
+                                                                    format="yyyy-MM-dd"
+                                                                    value-format="yyyy-MM-dd"
+                                                                    prefix-icon="disable"
+                                                                    clear-icon="disable"
+                                                                    unlink-panels
+                                                                    readonly>
+                                                        <img style="margin: 0 8px;" slot="range-separator" src="/static/pc/assets/images/swap-right.png" th:src="@{/pc/assets/images/swap-right.png}">
+                                                    </el-date-picker>
+                                                    <span class="date-piker-icon"><img src="/static/pc/assets/images/calendar.png" th:src="@{/pc/assets/images/calendar.png}"></span>
+                                                </template>
+                                                <template v-else-if="it.code == 'wfw_participation_scope'">
+                                                    <div class="type-item">
+                                                        <div class="add_btn"></div>选择
+                                                    </div>
+                                                </template>
+                                                <template v-else-if="it.code == 'contacts_participation_scope'">
+                                                    <div class="type-item">
+                                                        <div class="add_btn"></div>选择
+                                                    </div>
+                                                </template>
+                                                <template v-else-if="it.code == 'sign_up_person_limit'">
+                                                    <el-input type="text" v-model="person" placeholder="请选择" autocomplete="off" class="select-input" readonly></el-input>
+                                                    <img src="/static/pc/assets/images/yq-design/arrow-down-small.png" th:src="@{/pc/assets/images/yq-design/arrow-down-small.png}" alt="" class="arrow-down">
+                                                    <div class="person-box">
+                                                        <el-input type="number" placeholder="请输入正整数" readonly></el-input>
+                                                        <span class="person-span">人</span>
+                                                    </div>
+                                                </template>
+                                                <template v-else-if="it.code == 'sign_up_fill_info'">
+                                                    <el-switch class="switch fl marginTop6" disabled></el-switch>
+                                                    <p class="tips third">开启后，报名者需填写信息</p>
+                                                </template>
+                                                <template v-else-if="it.code == 'sign_up_review'">
+                                                    <el-switch class="switch fl marginTop6" disabled></el-switch>
+                                                    <p class="tips third">开启后，参与需发起人审核</p>
+                                                </template>
+                                                <template v-else-if="it.code == 'sign_up_public_list'">
+                                                    <el-switch class="switch fl marginTop6" disabled></el-switch>
+                                                    <p class="tips third">开启后，所有人都能看到报名人员名单</p>
+                                                </template>
+                                                <template v-else-if="it.code == 'sign_up_cancel_signed_up'">
+                                                    <el-switch class="switch fl marginTop6" disabled></el-switch>
+                                                    <p class="tips third">开启后，报名结束后参与者不能取消报名</p>
+                                                </template>
+                                            </div>
                                         </div>
-                                    </template>
-                                    <template v-else-if="it.code == 'sign_up_fill_info'">
-                                        <el-switch class="switch fl marginTop6" disabled></el-switch>
-                                        <p class="tips third">开启后，报名者需填写信息</p>
-                                    </template>
-                                    <template v-else-if="it.code == 'sign_up_review'">
-                                        <el-switch class="switch fl marginTop6" disabled></el-switch>
-                                        <p class="tips third">开启后，参与需发起人审核</p>
-                                    </template>
-                                    <template v-else-if="it.code == 'sign_up_public_list'">
-                                        <el-switch class="switch fl marginTop6" disabled></el-switch>
-                                        <p class="tips third">开启后，所有人都能看到报名人员名单</p>
-                                    </template>
-                                    <template v-else-if="it.code == 'sign_up_cancel_signed_up'">
-                                        <el-switch class="switch fl marginTop6" disabled></el-switch>
-                                        <p class="tips third">开启后，报名结束后参与者不能取消报名</p>
-                                    </template>
+                                    </div>
                                 </div>
                             </div>
                         </template>
                         <!-- 签到设置 -->
                         <template v-else-if="item.code == 'sign_in'">
-                            <div class="title sort-item">
-                                <i class="icon-drag"></i>
-                                <div class="lable">签到设置</div>
-                                <div class="icon-div">
-                                    <i class="icon-edit" @click="openEditDialog(index, item)"></i>
-                                    <i class="icon-delete" @click="removeComponentAssociate1(index, item)"></i>
-                                </div>
-                                <div class="input-box">
-                                    <el-switch v-model="delivery1" class="switch fl marginTop6" disabled></el-switch>
-                                </div>
-                            </div>
-                            <div class="form-item sort-item">
-                                <i class="icon-drag"></i>
-                                <div class="icon-div">
-                                    <i class="icon-edit"></i>
-                                    <i class="icon-delete"></i>
-                                </div>
-                                <label class="label required">签到方式</label>
-                                <div class="input-box sign-in">
-                                    <el-radio v-model="radio1" label="1" class="radio-item" readonly>普通签到</el-radio>
-                                    <el-radio label="2" class="radio-item">位置签到</el-radio>
-                                    <el-radio label="3" class="radio-item">二维码签到</el-radio>
-                                    <!-- 如果勾选可多选 -->
-                                    <!-- <el-checkbox-group v-model="radio1" disabled>
-                                        <el-checkbox label="普通签到"></el-checkbox>
-                                        <el-checkbox label="位置签到"></el-checkbox>
-                                        <el-checkbox label="二维码签到"></el-checkbox>
-                                    </el-checkbox-group> -->
-                                </div>
-                            </div>
-                            <div class="form-item sort-item">
-                                <i class="icon-drag"></i>
-                                <div class="icon-div">
-                                    <i class="icon-edit"></i>
-                                </div>
-                                <label class="label required">签到时间</label>
-                                <div class="input-box">
-                                    <el-date-picker type="daterange"
-                                                    start-placeholder="开始时间"
-                                                    end-placeholder="结束时间"
-                                                    format="yyyy-MM-dd"
-                                                    value-format="yyyy-MM-dd"
-                                                    prefix-icon="disable"
-                                                    clear-icon="disable"
-                                                    unlink-panels
-                                                    readonly>
-                                        <img style="margin: 0 8px;" slot="range-separator" src="/static/pc/assets/images/swap-right.png" th:src="@{/pc/assets/images/swap-right.png}">
-                                    </el-date-picker>
-                                    <span class="date-piker-icon"><img src="/static/pc/assets/images/calendar.png" th:src="@{/pc/assets/images/calendar.png}"></span>
-                                </div>
-                            </div>
-                            <div class="form-item sort-item">
-                                <i class="icon-drag"></i>
-                                <div class="icon-div">
-                                    <i class="icon-edit"></i>
-                                    <i class="icon-delete"></i>
-                                </div>
-                                <label class="label">签到人员名单公开</label>
-                                <div class="input-box">
-                                    <el-switch class="switch fl marginTop6" disabled></el-switch>
-                                    <p class="tips third">开启后，所有人都能看到报名人员名单</p>
+                            <div class="form-item sort-item nopadding">
+                                <div class="drag-box-inner">
+                                    <div class="title sort-item">
+                                        <i class="icon-drag" :pid-key="item.pid" :id-key="item.id"></i>
+                                        <div class="lable">签到设置</div>
+                                        <div class="icon-div">
+                                            <i class="icon-edit" @click="openEditDialog(index, item)"></i>
+                                            <i class="icon-delete" @click="removeComponentAssociate1(index, item)"></i>
+                                        </div>
+                                        <div class="input-box">
+                                            <el-switch v-model="delivery1" class="switch fl marginTop6" disabled></el-switch>
+                                        </div>
+                                    </div>
+                                    <div class="form-item">
+                                        <label class="label required">签到方式</label>
+                                        <div class="input-box sign-in">
+                                            <el-radio v-model="radio1" label="1" class="radio-item" readonly>普通签到</el-radio>
+                                            <el-radio label="2" class="radio-item">位置签到</el-radio>
+                                            <el-radio label="3" class="radio-item">二维码签到</el-radio>
+                                        </div>
+                                    </div>
+                                    <div class="form-item">
+                                        <label class="label required">签到时间</label>
+                                        <div class="input-box">
+                                            <el-date-picker type="daterange"
+                                                            start-placeholder="开始时间"
+                                                            end-placeholder="结束时间"
+                                                            format="yyyy-MM-dd"
+                                                            value-format="yyyy-MM-dd"
+                                                            prefix-icon="disable"
+                                                            clear-icon="disable"
+                                                            unlink-panels
+                                                            readonly>
+                                                <img style="margin: 0 8px;" slot="range-separator" src="/static/pc/assets/images/swap-right.png" th:src="@{/pc/assets/images/swap-right.png}">
+                                            </el-date-picker>
+                                            <span class="date-piker-icon"><img src="/static/pc/assets/images/calendar.png" th:src="@{/pc/assets/images/calendar.png}"></span>
+                                        </div>
+                                    </div>
+                                    <div class="form-item">
+                                        <label class="label">签到人员名单公开</label>
+                                        <div class="input-box">
+                                            <el-switch class="switch fl marginTop6" disabled></el-switch>
+                                            <p class="tips third">开启后，所有人都能看到报名人员名单</p>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
                         </template>
                         <!-- 签退设置 -->
                         <template v-else-if="item.code == 'sign_out'">
-                            <div class="title sort-item">
-                                <i class="icon-drag"></i>
-                                <div class="lable">签退设置</div>
-                                <div class="icon-div">
-                                    <i class="icon-edit" @click="openEditDialog(index, item)"></i>
-                                    <i class="icon-delete" @click="removeComponentAssociate1(index, item)"></i>
-                                </div>
-                                <div class="input-box">
-                                    <el-switch v-model="delivery1" class="switch fl marginTop6" disabled></el-switch>
-                                </div>
-                            </div>
-                            <div class="form-item sort-item">
-                                <i class="icon-drag"></i>
-                                <div class="icon-div">
-                                    <i class="icon-edit"></i>
-                                    <i class="icon-delete"></i>
-                                </div>
-                                <label class="label required">签退方式</label>
-                                <div class="input-box sign-in">
-                                    <el-radio v-model="radio1" label="1" class="radio-item" readonly>普通签退</el-radio>
-                                    <el-radio label="2" class="radio-item">位置签退</el-radio>
-                                    <el-radio label="3" class="radio-item">二维码签退</el-radio>
-                                </div>
-                            </div>
-                            <div class="form-item sort-item">
-                                <i class="icon-drag"></i>
-                                <div class="icon-div">
-                                    <i class="icon-edit"></i>
-                                </div>
-                                <label class="label required">签退时间</label>
-                                <div class="input-box">
-                                    <el-date-picker type="daterange"
-                                                    start-placeholder="开始时间"
-                                                    end-placeholder="结束时间"
-                                                    format="yyyy-MM-dd"
-                                                    value-format="yyyy-MM-dd"
-                                                    prefix-icon="disable"
-                                                    clear-icon="disable"
-                                                    unlink-panels
-                                                    readonly>
-                                        <img style="margin: 0 8px;" slot="range-separator" src="/static/pc/assets/images/swap-right.png" th:src="@{/pc/assets/images/swap-right.png}">
-                                    </el-date-picker>
-                                    <span class="date-piker-icon"><img src="/static/pc/assets/images/calendar.png" th:src="@{/pc/assets/images/calendar.png}"></span>
-                                </div>
-                            </div>
-                            <div class="form-item sort-item">
-                                <i class="icon-drag"></i>
-                                <div class="icon-div">
-                                    <i class="icon-edit"></i>
-                                    <i class="icon-delete"></i>
-                                </div>
-                                <label class="label">签退名单公开</label>
-                                <div class="input-box">
-                                    <el-switch class="switch fl marginTop6" disabled></el-switch>
-                                    <p class="tips third">开启后，所有人都能看到报名人员名单</p>
+                            <div class="form-item sort-item nopadding">
+                                <div class="drag-box-inner">
+                                    <div class="title sort-item">
+                                        <i class="icon-drag" :pid-key="item.pid" :id-key="item.id"></i>
+                                        <div class="lable">签退设置</div>
+                                        <div class="icon-div">
+                                            <i class="icon-edit" @click="openEditDialog(index, item)"></i>
+                                            <i class="icon-delete" @click="removeComponentAssociate1(index, item)"></i>
+                                        </div>
+                                        <div class="input-box">
+                                            <el-switch v-model="delivery1" class="switch fl marginTop6" disabled></el-switch>
+                                        </div>
+                                    </div>
+                                    <div class="form-item">
+                                        <label class="label required">签退方式</label>
+                                        <div class="input-box sign-in">
+                                            <el-radio v-model="radio1" label="1" class="radio-item" readonly>普通签退</el-radio>
+                                            <el-radio label="2" class="radio-item">位置签退</el-radio>
+                                            <el-radio label="3" class="radio-item">二维码签退</el-radio>
+                                        </div>
+                                    </div>
+                                    <div class="form-item">
+                                        <i class="icon-drag" :pid-key="item.pid" :id-key="item.id"></i>
+                                        <label class="label required">签退时间</label>
+                                        <div class="input-box">
+                                            <el-date-picker type="daterange"
+                                                            start-placeholder="开始时间"
+                                                            end-placeholder="结束时间"
+                                                            format="yyyy-MM-dd"
+                                                            value-format="yyyy-MM-dd"
+                                                            prefix-icon="disable"
+                                                            clear-icon="disable"
+                                                            unlink-panels
+                                                            readonly>
+                                                <img style="margin: 0 8px;" slot="range-separator" src="/static/pc/assets/images/swap-right.png" th:src="@{/pc/assets/images/swap-right.png}">
+                                            </el-date-picker>
+                                            <span class="date-piker-icon"><img src="/static/pc/assets/images/calendar.png" th:src="@{/pc/assets/images/calendar.png}"></span>
+                                        </div>
+                                    </div>
+                                    <div class="form-item">
+                                        <label class="label">签退名单公开</label>
+                                        <div class="input-box">
+                                            <el-switch class="switch fl marginTop6" disabled></el-switch>
+                                            <p class="tips third">开启后，所有人都能看到报名人员名单</p>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
                         </template>
                         <!-- 作品征集 -->
                         <template v-else-if="item.code == 'work'">
-                            <div class="title sort-item">
-                                <i class="icon-drag"></i>
-                                <div class="lable">作品征集</div>
-                                <div class="icon-div">
-                                    <i class="icon-edit" @click="openEditDialog(index, item)"></i>
-                                    <i class="icon-delete" @click="removeComponentAssociate1(index, item)"></i>
-                                </div>
-                            </div>
-                            <div class="form-item">
-                                <i class="icon-drag"></i>
+                            <div class="form-item sort-item">
+                                <i class="icon-drag" :pid-key="item.pid" :id-key="item.id"></i>
                                 <label class="label">{{item.name}}</label>
                                 <div class="input-box">
                                     <el-switch class="switch fl marginTop6" disabled></el-switch>
@@ -631,10 +614,12 @@
                 el: '#field-setting',
                 data: {
                     fid: [[${fid}]],
+                    marketId: [[${marketId}]],
                     templates: [[${templates}]],
                     wfwForms: [[${wfwForms}]],
                     wfwFormFields: [],
                     currTemplateId: null,
+                    originTemplateId: null,
                     template: {},
                     components: [],
                     componentMap: {},
@@ -683,37 +668,50 @@
                     chooseDialog:false,
                     partitionDialog:false,
                     signUpDialog:false,
-                    baomingzhe:'报名者'
+                    baomingzhe:'报名者',
+                    typecheck:[]
                 },
                 mounted: function () {
                     var $this = this;
-                    $this.init();
                     // app.initUEditor("");
                 },
                 methods:{
                     init: function () {
-                        $(function(){
-                            $("#drag-box").sortable({
-                                scroll: true,
-                                axis: "y",
-                                dalay: 300,
-                                handle: ".icon-drag",
-                                start: function () {
-                                    $("#dragBubble").hide()
-                                },
-                            });
-                            $('.icon-drag').on('mouseenter', function (e) {
-                                var $event = $(e.target);
-                                var top = $event.offset().top - 39;
-                                var left = $event.offset().left - 40;
-                                $('#dragBubble').css({
-                                    top: top,
-                                    left: left
-                                }).show()
-                            })
-                            $('.icon-drag').on('mouseleave', function (e) {
-                                $('#dragBubble').hide()
-                            })
+                        $("#drag-box").sortable({
+                            scroll: true,
+                            axis: "y",
+                            dalay: 300,
+                            handle: ".icon-drag",
+                            start: function (e1, e2) {
+                                $("#dragBubble").hide()
+                            },
+                            end: function (e1, e2) {
+                                debugger
+                            }
+                        });
+                        $("#drag-box-inner").sortable({
+                            scroll: true,
+                            axis: "y",
+                            dalay: 300,
+                            handle: ".icon-drag-inner",
+                            start: function (e1, e2) {
+                                // $("#dragBubble").hide()
+                            },
+                            end: function (e1, e2) {
+                                debugger
+                            }
+                        });
+                        $('.icon-drag').on('mouseenter', function (e) {
+                            var $event = $(e.target);
+                            var top = $event.offset().top - 39;
+                            var left = $event.offset().left - 40;
+                            $('#dragBubble').css({
+                                top: top,
+                                left: left
+                            }).show()
+                        })
+                        $('.icon-drag').on('mouseleave', function (e) {
+                            $('#dragBubble').hide()
                         })
                     },
                     initMouseEnterField: function () {
@@ -751,12 +749,13 @@
                     // 选择模板，加载对应组件、模板组件数据
                     loadTemplateInfo: function () {
                         var $this = this;
-                        var url = ctx + "/api/activity/engine/info?templateId=" + $this.currTemplateId;
+                        var url = ctx + "/api/activity/engine/template/" + $this.currTemplateId + "/info";
                         $this.loaded = false;
                         app.ajaxPost(url, {}, function (res) {
                             $this.loaded = true;
                             if (res.success) {
                                 var { template, components, templateComponents } = res.data
+                                $this.originTemplateId = template.originTemplateId || template.id;
                                 $this.template = template;
                                 // 置空componentMap
                                 $this.componentMap = {};
@@ -781,6 +780,7 @@
                                 $this.calShowComponents();
                                 $this.initComponentTypeList();
                                 $this.$nextTick(function () {
+                                    $this.init();
                                     $this.fixRightEndBtnStyle();
                                     $('.jqthumbImg').jqthumb({
                                         width: '100%',
@@ -1348,7 +1348,7 @@
                     publish: function () {
                         var $this = this;
                         var submitData = $this.packageData();
-                        var url = ctx + "/api/activity/engine/publish";
+                        var url = ctx + "/api/activity/engine/market/" + $this.marketId + "/template/publish";
                         var param = {
                             fid: $this.fid,
                             templateInfoStr: activityApp.getJsonStr(submitData)
@@ -1371,7 +1371,7 @@
                     },
                     packageData: function () {
                         var $this = this;
-                        var template = $.extend({}, $this.template);
+                        var template = $.extend({}, $this.template, { originTemplateId: $this.originTemplateId });
                         var templateComponents = [];
                         $($this.showTemplateComponents).each(function () {
                             var _this = this;

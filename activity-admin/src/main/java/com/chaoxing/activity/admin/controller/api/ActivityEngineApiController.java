@@ -9,6 +9,7 @@ import com.chaoxing.activity.model.Component;
 import com.chaoxing.activity.service.activity.engine.ActivityEngineHandleService;
 import com.chaoxing.activity.service.activity.engine.ActivityEngineQueryService;
 import com.chaoxing.activity.util.annotation.LoginRequired;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -41,13 +42,13 @@ public class ActivityEngineApiController {
     * @param templateId
     * @return com.chaoxing.activity.dto.RestRespDTO
     */
-    @PostMapping("info")
-    public RestRespDTO listOrgComponent(Integer templateId) {
+    @PostMapping("template/{templateId}/info")
+    public RestRespDTO listOrgComponent(@PathVariable Integer templateId) {
         return RestRespDTO.success(activityEngineQueryService.findEngineTemplateInfo(templateId));
     }
 
 
-    @PostMapping("/component/submit")
+    @PostMapping("component/submit")
     public RestRespDTO addCustomComponent(HttpServletRequest request, String componentStr) {
         LoginUserDTO loginUser = LoginUtils.getLoginUser(request);
         Component component = JSON.parseObject(componentStr, Component.class);
@@ -62,11 +63,11 @@ public class ActivityEngineApiController {
     * @return com.chaoxing.activity.dto.RestRespDTO
     */
     @LoginRequired
-    @PostMapping("publish")
-    public RestRespDTO publish(HttpServletRequest request, Integer fid, String templateInfoStr) {
+    @PostMapping("market/{marketId}/template/publish")
+    public RestRespDTO publish(HttpServletRequest request, Integer fid, @PathVariable Integer marketId, String templateInfoStr) {
         LoginUserDTO loginUser = LoginUtils.getLoginUser(request);
         ActivityEngineDTO activityEngineDTO = JSON.parseObject(templateInfoStr, ActivityEngineDTO.class);
-        activityEngineHandleService.handleEngineTemplate(fid, loginUser.getUid(), activityEngineDTO);
+        activityEngineHandleService.handleEngineTemplate(fid, marketId, loginUser.getUid(), activityEngineDTO);
         return RestRespDTO.success();
     }
 }
