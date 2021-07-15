@@ -4,13 +4,11 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.chaoxing.activity.dto.engine.ActivityEngineDTO;
 import com.chaoxing.activity.mapper.*;
-import com.chaoxing.activity.model.Component;
-import com.chaoxing.activity.model.ComponentField;
-import com.chaoxing.activity.model.Template;
-import com.chaoxing.activity.model.TemplateComponent;
+import com.chaoxing.activity.model.*;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.compress.utils.Lists;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -40,8 +38,6 @@ public class ActivityEngineHandleService {
     private ComponentFieldMapper componentFieldMapper;
     @Autowired
     private SignUpConditionMapper signUpConditionMapper;
-
-    private final Integer ROOT_ID = 0;
 
     /**处理引擎模板组件相关数据(新增/更新)
     * @Description
@@ -107,7 +103,6 @@ public class ActivityEngineHandleService {
                     .in(TemplateComponent::getId, delTemplateComponentIds)
                     .set(TemplateComponent::getDeleted, Boolean.TRUE));
         }
-
     }
 
     /**
@@ -189,9 +184,11 @@ public class ActivityEngineHandleService {
     */
     @Transactional(rollbackFor = Exception.class)
     public void saveTemplateComponent(Integer templateId, Collection<TemplateComponent> templateComponents) {
+        if (CollectionUtils.isEmpty(templateComponents)) {
+            return;
+        }
         templateComponents.forEach(v -> v.setTemplateId(templateId));
         templateComponentMapper.batchAdd(templateComponents);
-
         templateComponents.forEach(v -> {
             if (v.getSignUpCondition() != null) {
                 v.getSignUpCondition().setTemplateComponentId(v.getId());
@@ -203,7 +200,6 @@ public class ActivityEngineHandleService {
                     v1.setTemplateId(templateId);
                 });
                 templateComponentMapper.batchAdd(v.getChildren());
-
                 v.getChildren().forEach(v1 -> {
                     if (v1.getSignUpCondition() != null) {
                         v1.getSignUpCondition().setTemplateComponentId(v1.getId());
@@ -223,38 +219,50 @@ public class ActivityEngineHandleService {
     */
     @Transactional(rollbackFor = Exception.class)
     public void updateTemplateComponent(Integer templateId, List<TemplateComponent> templateComponents) {
-        List<TemplateComponent> waitUpdateTemplateComponents = Lists.newArrayList();
-        List<TemplateComponent> waitSaveTemplateComponents = Lists.newArrayList();
+        List<TemplateComponent> waitSaveTplComponent = Lists.newArrayList();
+        List<TemplateComponent> waitUpdateTplComponent = Lists.newArrayList();
+        buildSaveUpdateList(templateComponents, waitSaveTplComponent, waitUpdateTplComponent);
 
-        for (TemplateComponent templateComponent : templateComponents) {
-            if (templateComponent.getId() == null) {
-                waitSaveTemplateComponents.add(templateComponent);
-            } else {
-                waitUpdateTemplateComponents.add(templateComponent);
-                if (CollectionUtils.isNotEmpty(templateComponent.getChildren())) {
-                    for (TemplateComponent child : templateComponent.getChildren()) {
-                        if (child.getId() == null) {
-                            waitSaveTemplateComponents.add(child);
-                        } else {
-                            child.setPid(templateComponent.getId());
-                            waitUpdateTemplateComponents.add(child);
-                        }
-                    }
-                }
-            }
-        }
-        for (TemplateComponent tplComponent : waitUpdateTemplateComponents) {
+        // 新增
+        saveTemplateComponent(templateId, waitSaveTplComponent);
+        // 更新
+        waitUpdateTplComponent.forEach(v -> {
+            TemplateComponent tplComponent = new TemplateComponent();
+            BeanUtils.copyProperties(v, tplComponent);
             templateComponentMapper.updateById(tplComponent);
-            if (tplComponent.getSignUpCondition() != null) {
-                tplComponent.getSignUpCondition().setTemplateComponentId(tplComponent.getId());
-                if (tplComponent.getSignUpCondition().getId() == null) {
-                    signUpConditionMapper.insert(tplComponent.getSignUpCondition());
+            SignUpCondition suc = v.getSignUpCondition();
+            if (suc != null) {
+                suc.setTemplateComponentId(tplComponent.getId());
+                if (v.getSignUpCondition().getId() == null) {
+                    signUpConditionMapper.insert(suc);
                 } else {
-                    signUpConditionMapper.updateById(tplComponent.getSignUpCondition());
+                    signUpConditionMapper.updateById(suc);
                 }
             }
-        }
+        });
+    }
 
-        saveTemplateComponent(templateId, waitSaveTemplateComponents);
+    /**
+    * @Description
+    * @author huxiaolong
+    * @Date 2021-07-15 15:26:34
+    * @param tplComponents
+    * @param waitSaveTplComponent
+    * @param waitUpdateTplComponent
+    * @return void
+    */
+    private void buildSaveUpdateList(List<TemplateComponent> tplComponents,
+                     List<TemplateComponent> waitSaveTplComponent,
+                     List<TemplateComponent> waitUpdateTplComponent) {
+        tplComponents.forEach(v -> {
+            if (v.getId() == null) {
+                waitSaveTplComponent.add(v);
+            } else {
+                waitUpdateTplComponent.add(v);
+                if (CollectionUtils.isNotEmpty(v.getChildren())) {
+                    buildSaveUpdateList(v.getChildren(), waitSaveTplComponent, waitUpdateTplComponent);
+                }
+            }
+        });
     }
 }
