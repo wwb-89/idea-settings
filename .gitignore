@@ -43,3 +43,6 @@ mvnw.cmd
 node_modules
 package-lock.json
 rebel.xml
+
+### 环境配置
+application-local.yml
