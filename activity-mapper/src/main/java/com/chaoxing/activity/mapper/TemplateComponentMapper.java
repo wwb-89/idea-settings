@@ -1,6 +1,7 @@
 package com.chaoxing.activity.mapper;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import com.chaoxing.activity.dto.engine.TemplateComponentDTO;
 import com.chaoxing.activity.model.TemplateComponent;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
@@ -27,4 +28,12 @@ public interface TemplateComponentMapper extends BaseMapper<TemplateComponent> {
     */
     void batchAdd(@Param("templateComponents") Collection<TemplateComponent> templateComponents);
 
+    /**
+    * @Description
+    * @author huxiaolong
+    * @Date 2021-07-15 14:43:01
+    * @param templateId
+    * @return java.util.List<com.chaoxing.activity.dto.engine.TemplateComponentDTO>
+    */
+    List<TemplateComponentDTO> listTemplateComponentInfo(Integer templateId);
 }

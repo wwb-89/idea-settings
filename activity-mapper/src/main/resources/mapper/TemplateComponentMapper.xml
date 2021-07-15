@@ -32,4 +32,25 @@
             )
         </foreach>
     </insert>
+    <select id="listTemplateComponentInfo" resultType="com.chaoxing.activity.dto.engine.TemplateComponentDTO">
+        SELECT
+            t.id,
+            t.pid,
+            t.component_id as componentId,
+            t.template_id as templateId,
+            t.name,
+            t.introduction,
+            t.is_required as required,
+            t1.code,
+            t1.type
+        FROM
+            t_template_component t
+            LEFT JOIN t_component t1 ON t.component_id = t1.id
+        where
+            t.template_id = #{templateId}
+        ORDER BY
+            t.sequence
+    </select>
+
+
 </mapper>

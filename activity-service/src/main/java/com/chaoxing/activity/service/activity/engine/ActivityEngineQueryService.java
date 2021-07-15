@@ -2,12 +2,14 @@ package com.chaoxing.activity.service.activity.engine;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.chaoxing.activity.dto.engine.ActivityEngineDTO;
+import com.chaoxing.activity.dto.engine.TemplateComponentDTO;
 import com.chaoxing.activity.mapper.*;
 import com.chaoxing.activity.model.*;
 import com.chaoxing.activity.service.activity.template.TemplateQueryService;
 import com.chaoxing.activity.service.manager.WfwFormApiService;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.compress.utils.Lists;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -15,6 +17,7 @@ import javax.annotation.Resource;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 /**
@@ -51,13 +54,24 @@ public class ActivityEngineQueryService {
         Template template = templateMapper.selectById(templateId);
         // 查询组件数据
         List<Component> components = listComponentByTemplateId(templateId);
-        // 查询模板组件关联关系
-        List<TemplateComponent> templateComponents = listTemplateComponentByTemplateId(templateId);
-
+        // 查询模板组件关联关系 todo 后续对前端进行处理，会移除templateComponents，直接使用showTemplateComponents
+        List<TemplateComponentDTO> showTplComponents = listTemplateComponentByTemplateId(templateId);
+        List<TemplateComponent> templateComponents = Lists.newArrayList();
+        CollectionUtils.collect(showTplComponents, o -> TemplateComponent.builder()
+                .id(o.getId())
+                .pid(o.getPid())
+                .name(o.getName())
+                .introduction(o.getIntroduction())
+                .componentId(o.getComponentId())
+                .templateId(o.getTemplateId())
+                .signUpCondition(o.getSignUpCondition())
+                .sequence(o.getSequence())
+                .build(), templateComponents);
         return ActivityEngineDTO.builder()
                 .template(template)
                 .components(components)
                 .templateComponents(templateComponents)
+                .showTemplateComponents(showTplComponents)
                 .build();
     }
 
@@ -118,25 +132,22 @@ public class ActivityEngineQueryService {
     * @param templateId
     * @return void
     */
-    public List<TemplateComponent> listTemplateComponentByTemplateId(Integer templateId) {
-        List<TemplateComponent> templateComponents = templateComponentMapper.selectList(new QueryWrapper<TemplateComponent>()
-                .lambda()
-                .eq(TemplateComponent::getTemplateId, templateId)
-                .orderByAsc(TemplateComponent::getSequence));
-
-        List<Integer> templateComponentIds = templateComponents.stream().map(TemplateComponent::getId).collect(Collectors.toList());
-        if (CollectionUtils.isNotEmpty(templateComponentIds)) {
-            List<SignUpCondition> signUpConditions = signUpConditionMapper.selectList(new QueryWrapper<SignUpCondition>()
+    public List<TemplateComponentDTO> listTemplateComponentByTemplateId(Integer templateId) {
+        List<TemplateComponentDTO> templateComponents = templateComponentMapper.listTemplateComponentInfo(templateId);
+        // 报名条件templateComponentIds
+        List<Integer> sucTplComponentIds = templateComponents.stream()
+                .filter(v -> v.getPid() != 0 && Objects.equals(v.getCode(), "sign_up_condition"))
+                .map(TemplateComponentDTO::getId)
+                .collect(Collectors.toList());
+        if (CollectionUtils.isNotEmpty(sucTplComponentIds)) {
+            Map<Integer, SignUpCondition> signUpConditionMap = signUpConditionMapper.selectList(new QueryWrapper<SignUpCondition>()
                     .lambda()
-                    .in(SignUpCondition::getTemplateComponentId, templateComponentIds));
-            Map<Integer, SignUpCondition> signUpConditionMap = signUpConditions.stream()
+                    .in(SignUpCondition::getTemplateComponentId, sucTplComponentIds))
+                    .stream()
                     .collect(Collectors.toMap(SignUpCondition::getTemplateComponentId, v -> v, (v1, v2) -> v2));
-            for (TemplateComponent templateComponent : templateComponents) {
-                Integer templateComponentId = templateComponent.getId();
-                if (signUpConditionMap.get(templateComponentId) != null) {
-                    templateComponent.setSignUpCondition(signUpConditionMap.get(templateComponentId));
-                }
-            }
+            templateComponents.forEach(v -> {
+                v.setSignUpCondition(Optional.ofNullable(signUpConditionMap.get(v.getId())).orElse(null));
+            });
         }
         return templateComponents;
     }

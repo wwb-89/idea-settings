@@ -38,4 +38,7 @@ public class ActivityEngineDTO {
     /** 模板组件关联信息list */
     private List<TemplateComponent> templateComponents;
 
+    /** 模板组件关联信息list */
+    private List<TemplateComponentDTO> showTemplateComponents;
+
 }
