@@ -415,7 +415,7 @@ public class ActivityHandleService {
 			existActivity.setPeriod(activity.getPeriod());
 			existActivity.setCredit(activity.getCredit());
 			existActivity.setEnableSign(activity.getEnableSign());
-			existActivity.setSignId(activity.getSignId());
+			existActivity.setSignId(signAddEditResult.getSignId());
 			existActivity.setWebTemplateId(activity.getWebTemplateId());
 			existActivity.setTags(activity.getTags());
 			existActivity.setIntegralValue(activity.getIntegralValue());
