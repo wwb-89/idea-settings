@@ -43,7 +43,7 @@ public class SignUpFillInfoType {
     }
 
     public static List<SignUpFillInfoType> cloneToNewTemplateComponentId(List<SignUpFillInfoType> signUpFillInfoTypes, Map<Integer, Integer> oldNewTemplateComponentIdRelation) {
-        return Optional.ofNullable(signUpFillInfoTypes).orElse(Lists.newArrayList()).stream().map(v -> v.cloneToNewTemplateComponentId(oldNewTemplateComponentIdRelation.get(v.getId()))).collect(Collectors.toList());
+        return Optional.ofNullable(signUpFillInfoTypes).orElse(Lists.newArrayList()).stream().map(v -> v.cloneToNewTemplateComponentId(oldNewTemplateComponentIdRelation.get(v.getTemplateComponentId()))).collect(Collectors.toList());
     }
 
     @Getter
