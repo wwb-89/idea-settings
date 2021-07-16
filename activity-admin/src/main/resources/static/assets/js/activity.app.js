@@ -255,6 +255,22 @@
         return dateObj.year + "-" + dateObj.month + "-" + dateObj.day + " " + "00:00:00";
     };
     /**
+     * 生成活动的默认开始时间
+     * @returns {string}
+     */
+    activityApp.prototype.generateActivityDefaultStartTimeStamp = function () {
+        var $this = this;
+        return new Date().getTime();
+    };
+    /**
+     * 生成活动的默认结束时间
+     * @returns {string}
+     */
+    activityApp.prototype.generateActivityDefaultEndTimeStamp = function () {
+        var $this = this;
+        return new Date(new Date().setMonth(new Date().getMonth() + 1)).getTime();
+    };
+    /**
      * 生成活动的默认结束时间
      * @returns {string}
      */

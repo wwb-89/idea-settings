@@ -3,8 +3,8 @@ package com.chaoxing.activity.admin.controller.general;
 import com.chaoxing.activity.admin.util.LoginUtils;
 import com.chaoxing.activity.dto.LoginUserDTO;
 import com.chaoxing.activity.dto.manager.ActivityCreatePermissionDTO;
-import com.chaoxing.activity.dto.manager.wfw.WfwAreaDTO;
 import com.chaoxing.activity.dto.manager.sign.create.SignCreateParamDTO;
+import com.chaoxing.activity.dto.manager.wfw.WfwAreaDTO;
 import com.chaoxing.activity.model.*;
 import com.chaoxing.activity.service.GroupService;
 import com.chaoxing.activity.service.WebTemplateService;
@@ -90,9 +90,11 @@ public class ActivityManagementController {
 		return "pc/activity-list";
 	}
 
-	public String add(HttpServletRequest request, Model model, Integer templateId, String code) {
+	public String add(HttpServletRequest request, Model model, Integer templateId, String flag, String code) {
 		LoginUserDTO loginUser = LoginUtils.getLoginUser(request);
 		Integer fid = loginUser.getFid();
+		Template template = templateQueryService.getTemplateByIdOrActivityFlag(templateId, Activity.ActivityFlagEnum.fromValue(flag));
+		model.addAttribute("templateId", template.getId());
 		// 加载模版对应的组件列表
 		model.addAttribute("templateComponents", activityEngineQueryService.listTemplateComponentTree(templateId));
 		// 活动形式列表
@@ -105,7 +107,9 @@ public class ActivityManagementController {
 		model.addAttribute("groupType", activityCreatePermission.getGroupType());
 		// 报名签到
 		model.addAttribute("sign", SignCreateParamDTO.builder().build());
-		String flag = templateQueryService.getActivityFlagByTemplateId(templateId);
+		if (StringUtils.isBlank(flag)) {
+			flag = templateQueryService.getActivityFlagByTemplateId(templateId);
+		}
 		// 模板列表
 		model.addAttribute("webTemplates", webTemplateService.listAvailable(fid, flag));
 		model.addAttribute("areaCode", Optional.ofNullable(code).filter(StringUtils::isNotBlank).map(groupService::getByCode).map(Group::getAreaCode).orElse(""));

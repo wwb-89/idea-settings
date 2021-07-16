@@ -59,8 +59,8 @@ public class GeneralActivityManagementController {
 	 * @return java.lang.String
 	*/
 	@GetMapping("activity/add")
-	public String add(HttpServletRequest request, Model model, Integer templateId, String code) {
-		return activityManagementController.add(request, model, templateId, code);
+	public String add(HttpServletRequest request, Model model, Integer templateId, String flag, String code) {
+		return activityManagementController.add(request, model, templateId, flag, code);
 	}
 
 }

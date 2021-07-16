@@ -89,7 +89,7 @@
                             <el-date-picker v-model="activity.timeScope"
                                             type="datetimerange"
                                             format="yyyy-MM-dd HH:mm"
-                                            value-format="yyyy-MM-dd HH:mm:ss"
+                                            value-format="timestamp"
                                             prefix-icon="disable"
                                             :clearable="false"
                                             :editable="false"
@@ -97,7 +97,7 @@
                                             start-placeholder="开始时间"
                                             end-placeholder="结束时间"
                                             :default-time="['00:00:00', '23:59:59']"
-                                            @input="selectActivityDate">
+                                            @input="selectActivityTime">
                                 <img style="margin: 0 8px;" slot="range-separator" src="/static/pc/assets/images/swap-right.png" th:src="@{/pc/assets/images/swap-right.png}">
                             </el-date-picker>
                             <span class="date-piker-icon">
@@ -230,7 +230,68 @@
                             <span>开启后，参与者可以在活动中提交作品，管理员在征集模块中进行审核评分推优等操作</span>
                         </div>
                     </div>
-
+                    <div class="form-item cancel-margin marginTop16" v-else-if="item.code == 'tags'" v-show="isShowActivityFlag()">
+                        <label class="label">标签</label>
+                        <div class="input-box wrap">
+                            <!--添加满3个后，隐藏添加按钮-->
+                            <div class="type-item" v-for="(tag, index) of tags" :key="'tag-' + index">{{tag}}<div class="del_btn" @click="deleteTag(index)"></div></div>
+                            <div class="type-item add" @click="toAddTag">
+                                <div class="add_btn"></div>
+                                添加
+                            </div>
+                        </div>
+                    </div>
+                    <div v-else-if="item.code == 'activity_rating'" v-show="activity.activityFlag == 'second_classroom'">
+                        <div class="form-item">
+                            <label class="label">活动评价</label>
+                            <div class="input-box">
+                                <el-switch v-model="activity.openRating" class="examine-switch"></el-switch>
+                                <span>参与者可以对活动进行评价</span>
+                            </div>
+                        </div>
+                        <div class="form-item" v-show="activity.openRating">
+                            <label class="label">评价需审核</label>
+                            <div class="input-box">
+                                <el-switch v-model="activity.ratingNeedAudit" class="examine-switch"></el-switch>
+                                <span>开启后，审核后的评价才能展示在评价列表</span>
+                            </div>
+                        </div>
+                    </div>
+                    <!--定时发布-->
+                    <div class="form-item" v-else-if="item.code == 'timing_release'">
+                        <label class="label">{{item.name}}</label>
+                        <div class="input-box">
+                            <el-switch v-model="activity.timingRelease" class="examine-switch"></el-switch>
+                            <span>开启后，可以按照设置的时间自动发布活动</span>
+                        </div>
+                    </div>
+                    <div class="form-item" v-else-if="item.code == 'tags'" v-show="activity.timingRelease">
+                        <label class="label"></label>
+                        <div class="input-box">
+                            <el-date-picker v-model="activity.timingReleaseTime"
+                                            type="datetime"
+                                            placeholder="发布时间"
+                                            format="yyyy-MM-dd HH:mm"
+                                            value-format="yyyy-MM-dd HH:mm:ss"
+                                            prefix-icon="disable"
+                                            :clearable="false"
+                                            :editable="false"
+                                            :picker-options="timingReleasePickerOption">
+                            </el-date-picker>
+                            <span class="date-piker-icon" style="left: 192px;">
+                            <img src="/static/pc/assets/images/calendar.png" th:src="@{/pc/assets/images/calendar.png}">
+                        </span>
+                        </div>
+                    </div>
+                    <div class="form-item align-start" v-else-if="item.code == 'introduction'" v-show="isShowIntroduction()">
+                        <label class="label">简介</label>
+                        <div class="input-box">
+                            <!-- 笔记编辑器 -->
+                            <div class="wrap ueditor">
+                                <script type="text/plain" id="container" name="content"></script>
+                            </div>
+                        </div>
+                    </div>
                     <!--报名设置列表-->
                     <div v-else-if="item.code == 'sign_up' || item.code =='company_sign_up'">
                         <div class="set-box">
@@ -258,8 +319,8 @@
                                             <img style="margin: 0 8px;" slot="range-separator" src="/static/pc/assets/images/swap-right.png" th:src="@{/pc/assets/images/swap-right.png}">
                                         </el-date-picker>
                                         <span class="date-piker-icon">
-                            <img src="/static/pc/assets/images/time.png" th:src="@{/pc/assets/images/time.png}">
-                        </span>
+                                            <img src="/static/pc/assets/images/time.png" th:src="@{/pc/assets/images/time.png}">
+                                        </span>
                                     </div>
                                 </div>
                                 <!-- todo 微服务和通讯录应区分开 -->
@@ -353,7 +414,7 @@
                             <div class="form-item" v-show="signInMap[item.id].way == 2">
                                 <label class="label"><img src="/static/pc/assets/images/required.png" th:src="@{/pc/assets/images/required.png}" class="required-img">位置</label>
                                 <div class="input-box">
-                                    <input type="text" readonly required lay-verify="required" v-model.trim="signInMap[item.id].address" :placeholder="'请选择'+ signInMap[item.id].typeName +'地点'" autocomplete="off" class="layui-input name show-addr" style="cursor: pointer;" @click="showSignInMap(index)">
+                                    <input type="text" readonly required lay-verify="required" v-model.trim="signInMap[item.id].address" :placeholder="'请选择'+ signInMap[item.id].typeName +'地点'" autocomplete="off" class="layui-input name show-addr" style="cursor: pointer;" @click="showSignInMap(item.id)">
                                     <img src="/static/pc/assets/images/location.png" th:src="@{/pc/assets/images/location.png}" class="length icon">
                                     <input type="text" required lay-verify="required" v-model.trim="signInMap[item.id].detailAddress" placeholder="详细地址，例：E5栋1308室" autocomplete="off" class="layui-input name show-addr-detailed">
                                 </div>
@@ -407,77 +468,7 @@
                             </div>
                         </form>
                     </div>
-                    <!--其他设置-->
                 </template>
-                <div>
-                    <div class="set-box">
-                        <div class="title set">其他设置</div>
-                    </div>
-                    <form action="" class="setForm" onsubmit="return false;">
-                        <div class="form-item cancel-margin marginTop16" v-show="isShowActivityFlag()">
-                            <label class="label">标签</label>
-                            <div class="input-box wrap">
-                                <!--添加满3个后，隐藏添加按钮-->
-                                <div class="type-item" v-for="(tag, index) of tags" :key="'tag-' + index">{{tag}}<div class="del_btn" @click="deleteTag(index)"></div></div>
-                                <div class="type-item add" @click="toAddTag">
-                                    <div class="add_btn"></div>
-                                    添加
-                                </div>
-                            </div>
-                        </div>
-                        <div v-show="activity.activityFlag == 'second_classroom'">
-                            <div class="form-item">
-                                <label class="label">活动评价</label>
-                                <div class="input-box">
-                                    <el-switch v-model="activity.openRating" class="examine-switch"></el-switch>
-                                    <span>参与者可以对活动进行评价</span>
-                                </div>
-                            </div>
-                            <div class="form-item" v-show="activity.openRating">
-                                <label class="label">评价需审核</label>
-                                <div class="input-box">
-                                    <el-switch v-model="activity.ratingNeedAudit" class="examine-switch"></el-switch>
-                                    <span>开启后，审核后的评价才能展示在评价列表</span>
-                                </div>
-                            </div>
-                        </div>
-                        <!--定时发布-->
-                        <div class="form-item">
-                            <label class="label">定时发布</label>
-                            <div class="input-box">
-                                <el-switch v-model="activity.timingRelease" class="examine-switch"></el-switch>
-                                <span>开启后，可以按照设置的时间自动发布活动</span>
-                            </div>
-                        </div>
-                        <div class="form-item" v-show="activity.timingRelease">
-                            <label class="label"></label>
-                            <div class="input-box">
-                                <el-date-picker v-model="activity.timingReleaseTime"
-                                                type="datetime"
-                                                placeholder="发布时间"
-                                                format="yyyy-MM-dd HH:mm"
-                                                value-format="yyyy-MM-dd HH:mm:ss"
-                                                prefix-icon="disable"
-                                                :clearable="false"
-                                                :editable="false"
-                                                :picker-options="timingReleasePickerOption">
-                                </el-date-picker>
-                                <span class="date-piker-icon" style="left: 192px;">
-                            <img src="/static/pc/assets/images/calendar.png" th:src="@{/pc/assets/images/calendar.png}">
-                        </span>
-                            </div>
-                        </div>
-                        <div class="form-item align-start" v-show="isShowIntroduction()">
-                            <label class="label">简介</label>
-                            <div class="input-box">
-                                <!-- 笔记编辑器 -->
-                                <div class="wrap ueditor">
-                                    <script type="text/plain" id="container" name="content"></script>
-                                </div>
-                            </div>
-                        </div>
-                    </form>
-                </div>
             </form>
         </div>
 
@@ -613,6 +604,7 @@
             data: {
                 step: 1,
                 fid: [[${session._login_user_.fid}]],
+                templateId: [[${templateId}]],
                 activity: [[${activity}]],
                 templateComponents: [[${templateComponents}]],
                 tags: [],
@@ -644,7 +636,9 @@
                 operateWebTemplateId: "",
                 // 签到报名相关
                 sign: [[${sign}]],
+                // 报名: { originId: signUp }
                 signUpMap: {},
+                // 签到: { originId: signIn }
                 signInMap: {},
                 // 签到方式
                 signInWays: [],
@@ -696,9 +690,10 @@
                     $this.activity = {
                         id: null,
                         name: "",
-                        startTime: activityApp.generateActivityDefaultStartTime(),
-                        endTime: activityApp.generateActivityDefaultEndTime(),
+                        startTimeStamp: activityApp.generateActivityDefaultStartTimeStamp(),
+                        endTimeStamp: activityApp.generateActivityDefaultEndTimeStamp(),
                         coverCloudId: activityApp.getDefaultCoverCloudId(),
+                        coverUrl: "",
                         organisers: [[${session._login_user_.orgName}]],
                         activityType: "offline",
                         address: "",
@@ -708,16 +703,28 @@
                         activityClassifyId: firstActivityClassifyId,
                         period: 0.0,
                         credit: 0.0,
-                        enableSign: true,
+                        timeLengthUpperLimit: null,
+                        timingRelease: false,
+                        timingReleaseTimeStamp: "",
+                        openAudit: false,
                         createAreaCode: $this.areaCode,
                         tags: "",
-                        activityFlag: $this.activityFlag,
+                        openRating: false,
+                        ratingNeedAudit: false,
+                        integral: 0.0,
                         openWork: false,
-                        timingRelease: false,
+                        originType: "",
+                        origin: "",
+                        marketId: "",
+                        templateId: $this.templateId,
+                        introduction: "",
+                        // 目前数据接收实体没有以下字段
                         timingReleaseTime: "",
                         timingReleaseTimeStr: "",
-                        timeLengthUpperLimit: null,
-                        introduction: ""
+                        startTime: activityApp.generateActivityDefaultStartTime(),
+                        endTime: activityApp.generateActivityDefaultEndTime(),
+                        enableSign: true,
+                        activityFlag: $this.activityFlag,
                     };
                 } else {
                     // 修改活动
@@ -734,7 +741,7 @@
                 } else {
                     $this.activity.timingReleaseTime = $this.activity.timingReleaseTimeStr;
                 }
-                $this.$set($this.activity, "timeScope", [$this.activity.startTime, $this.activity.endTime]);
+                $this.$set($this.activity, "timeScope", [$this.activity.startTimeStamp, $this.activity.endTimeStamp]);
                 // 标签
                 var tags = $this.activity.tags;
                 if (activityApp.isEmpty(tags)) {
@@ -1046,7 +1053,7 @@
                     var $this = this;
                     $this.$refs.activityMap.show = true;
                 },
-                showSignInMapNew: function (tplComponentId) {
+                showSignInMap: function (tplComponentId) {
                     var $this = this;
                     $this.operateSignInOriginId = tplComponentId;
                     $this.$refs.signInMap.show = true;
@@ -1323,11 +1330,13 @@
                 packageSubmitSign: function () {
                     var $this = this;
                     var waitSubmitSignUps = [], waitSubmitSignIns = [];
-                    var signInMap = $({}, $this.signInMap), signUpMap = $({}, $this.signUpMap);
+                    var signInMap = $.extend({}, $this.signInMap), signUpMap = $.extend({}, $this.signUpMap);
                     $.each(signUpMap, function (key, item) {
                         // 新增，且未开启报名，则不提交
-                        if (item.id || item.deleted) {
+                        if ((!item.id && !item.deleted) || item.id) {
                             waitSubmitSignUps.push(item);
+                        }
+                        if (item.id) {
                         }
                     });
                     $.each(signInMap, function (key, item) {
@@ -1343,7 +1352,7 @@
                             default:
                         }
                         // 新增，且未开启签到，则不提交
-                        if (item.id || item.deleted) {
+                        if ((!item.id && !item.deleted) || item.id) {
                             waitSubmitSignIns.push(item);
                         }
                     });
@@ -1427,10 +1436,10 @@
                     });
                 },
                 // 选中活动的日期范围
-                selectActivityDate: function (obj) {
+                selectActivityTime: function (obj) {
                     var $this = this;
-                    $this.activity.startTime = obj[0];
-                    $this.activity.endTime = obj[1];
+                    $this.activity.startTimeStamp = obj[0];
+                    $this.activity.endTimeStamp = obj[1];
                 },
                 // 选中报名的时间范围
                 selectSignUpTime: function (tplComponentId, obj) {

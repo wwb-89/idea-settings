@@ -121,7 +121,7 @@ public class ActivityCreateParamDTO {
 				.credit(getCredit())
 				.timeLengthUpperLimit(getTimeLengthUpperLimit())
 				.timingRelease(getTimingRelease())
-				.timingReleaseTime(DateUtils.timestamp2Date(getTimingReleaseTimeStamp()))
+				.timingReleaseTime(getTimingRelease() ? DateUtils.timestamp2Date(getTimingReleaseTimeStamp()) : null)
 				.tags(getTags())
 				.openRating(getOpenRating())
 				.ratingNeedAudit(getRatingNeedAudit())

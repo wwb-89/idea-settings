@@ -104,6 +104,24 @@ public class TemplateQueryService {
 		return Optional.ofNullable(orgTemplates).orElse(Lists.newArrayList()).stream().findFirst().orElse(null);
 	}
 
+	/**当templateId存在时，根据templateId查找；否则根据flag查找系统模板
+	* @Description
+	* @author huxiaolong
+	* @Date 2021-07-16 18:11:21
+	* @param templateId
+	* @param activityFlagEnum
+	* @return com.chaoxing.activity.model.Template
+	*/
+	public Template getTemplateByIdOrActivityFlag(Integer templateId, Activity.ActivityFlagEnum activityFlagEnum) {
+		if (templateId == null) {
+			List<Template> systemTemplates = templateMapper.selectList(new LambdaQueryWrapper<Template>()
+					.eq(Template::getSystem, Boolean.TRUE)
+					.eq(Template::getActivityFlag, activityFlagEnum.getValue()));
+			return Optional.ofNullable(systemTemplates).orElse(Lists.newArrayList()).stream().findFirst().orElse(null);
+		}
+		return templateMapper.selectById(templateId);
+	}
+
 	/**根据模版id和组件id查询模版组件列表
 	 * @Description 
 	 * @author wwb
