@@ -2,7 +2,10 @@ package com.chaoxing.activity.service.manager;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
+import com.chaoxing.activity.util.Base64Utils;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.codec.binary.Base64;
+import org.apache.commons.io.FileUtils;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
@@ -16,6 +19,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import javax.annotation.Resource;
 import java.io.File;
+import java.io.IOException;
 
 /**云盘api服务
  * @author wwb
@@ -84,6 +88,28 @@ public class CloudApiService {
 		String url = String.format(UPLOAD_URL, ip);
 		ResponseEntity<String> stringResponseEntity = restTemplate.postForEntity(url, httpEntity, String.class);
 		return stringResponseEntity.getBody();
+	}
+
+	/**上传文件
+	 * @Description 
+	 * @author wwb
+	 * @Date 2021-07-16 18:09:49
+	 * @param base64
+	 * @param rootPath
+	 * @param ip
+	 * @return java.lang.String
+	*/
+	public String upload(String base64, String rootPath, String ip) throws IOException {
+		String suffixFromBase64Str = Base64Utils.getSuffixFromBase64Str(base64);
+		String base64Data = Base64Utils.getBase64Data(base64);
+		String fileName = System.currentTimeMillis() + suffixFromBase64Str;
+		File file = new File(rootPath + fileName);
+		try {
+			FileUtils.writeByteArrayToFile(file, Base64.decodeBase64(base64Data));
+			return upload(file, ip);
+		} finally {
+			file.delete();
+		}
 	}
 
 	/**获取云盘资源状态

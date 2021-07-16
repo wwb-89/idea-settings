@@ -195,7 +195,11 @@
         if (!$this.isEmpty(coverUrl)) {
             return activity.coverUrl;
         }
-        return "http://p.ananas.chaoxing.com/star3/origin/" + coverCloudId;
+        return $this.buildCloudImgUrl(coverCloudId);
+    };
+
+    activityApp.prototype.buildCloudImgUrl = function (cloudId) {
+        return "http://p.ananas.chaoxing.com/star3/origin/" + cloudId;
     };
 
     /**
