@@ -94,7 +94,7 @@ public class ActivityManagementController {
 		LoginUserDTO loginUser = LoginUtils.getLoginUser(request);
 		Integer fid = loginUser.getFid();
 		// 加载模版对应的组件列表
-		model.addAttribute("components", activityEngineQueryService.listComponentByTemplateId(templateId));
+		model.addAttribute("templateComponents", activityEngineQueryService.listTemplateComponentTree(templateId));
 		// 活动形式列表
 		model.addAttribute("activityTypes", activityQueryService.listActivityType());
 		// 活动分类列表范围

@@ -14,10 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -150,5 +147,25 @@ public class ActivityEngineQueryService {
             });
         }
         return templateComponents;
+    }
+
+    public List<TemplateComponentDTO> listTemplateComponentTree(Integer templateId) {
+        List<TemplateComponentDTO> templateComponents = templateComponentMapper.listTemplateComponentInfo(templateId);
+
+        List<TemplateComponentDTO> trees = Lists.newArrayList();
+        templateComponents.forEach(v -> {
+            if (Objects.equals(v.getPid(), 0)) {
+                trees.add(v);
+            }
+            templateComponents.forEach(v1 -> {
+                if (!Objects.equals(v1.getPid(), 0) && Objects.equals(v1.getPid(), v.getId())) {
+                    if (v.getChildren() == null) {
+                        v.setChildren(new ArrayList<>());
+                    }
+                    v.getChildren().add(v1);
+                }
+            });
+        });
+        return trees;
     }
 }
