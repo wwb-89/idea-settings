@@ -109,7 +109,7 @@ public class ActivityHandleService {
 	 * @param wfwRegionalArchitectureDtos
 	 * @param loginUser
 	 * @return java.lang.Integer 活动id
-	*/
+	 */
 	@Transactional(rollbackFor = Exception.class)
 	public Integer add(ActivityCreateParamDTO activityCreateParamDto, SignCreateParamDTO signCreateParamDto, List<WfwAreaDTO> wfwRegionalArchitectureDtos, LoginUserDTO loginUser) {
 		Activity activity = activityCreateParamDto.buildActivity();
@@ -150,7 +150,7 @@ public class ActivityHandleService {
 	 * @param signCreateParam
 	 * @param loginUser
 	 * @return com.chaoxing.activity.dto.sign.create.SignCreateResultDTO
-	*/
+	 */
 	private SignCreateResultDTO handleSign(Activity activity, SignCreateParamDTO signCreateParam, LoginUserDTO loginUser) {
 		SignCreateResultDTO signCreateResultDto;
 		signCreateParam.perfectName(activity.getName());
@@ -165,13 +165,13 @@ public class ActivityHandleService {
 	}
 
 	/**处理作品征集
-	 * @Description 
+	 * @Description
 	 * @author wwb
 	 * @Date 2021-04-09 15:04:39
 	 * @param activity
 	 * @param loginUser
 	 * @return void
-	*/
+	 */
 	private void handleWork(Activity activity, LoginUserDTO loginUser) {
 		Boolean openWork = Optional.ofNullable(activity.getOpenWork()).orElse(Boolean.FALSE);
 		if (openWork) {
@@ -200,7 +200,7 @@ public class ActivityHandleService {
 	 * @param signCreateParam
 	 * @param loginUser
 	 * @return void
-	*/
+	 */
 	@Transactional(rollbackFor = Exception.class)
 	public void edit(ActivityUpdateParamDTO activityUpdateParamDto, SignCreateParamDTO signCreateParam, final List<WfwAreaDTO> wfwRegionalArchitectureDtos, LoginUserDTO loginUser) {
 		Activity activity = activityUpdateParamDto.buildActivity();
@@ -237,7 +237,7 @@ public class ActivityHandleService {
 				activityDetailMapper.insert(activityDetail);
 			}else {
 				activityDetailMapper.update(null, new UpdateWrapper<ActivityDetail>()
-					.lambda()
+						.lambda()
 						.eq(ActivityDetail::getId, activityDetail.getId())
 						.set(ActivityDetail::getIntroduction, activityUpdateParamDto.getIntroduction())
 				);
@@ -260,7 +260,7 @@ public class ActivityHandleService {
 	 * @param activityId
 	 * @param loginUser
 	 * @return void
-	*/
+	 */
 	@Transactional(rollbackFor = Exception.class)
 	public void release(Integer activityId, LoginUserDTO loginUser) {
 		Activity activity = activityValidationService.releaseAble(activityId, loginUser);
@@ -275,7 +275,7 @@ public class ActivityHandleService {
 	 * @param activityId
 	 * @param loginUser
 	 * @return void
-	*/
+	 */
 	@Transactional(rollbackFor = Exception.class)
 	public void cancelRelease(Integer activityId, LoginUserDTO loginUser) {
 		Activity activity = activityValidationService.cancelReleaseAble(activityId, loginUser);
@@ -290,14 +290,14 @@ public class ActivityHandleService {
 	 * @param activityId
 	 * @param loginUser
 	 * @return void
-	*/
+	 */
 	@Transactional(rollbackFor = Exception.class)
 	public void delete(Integer activityId, LoginUserDTO loginUser) {
 		// 验证是否能删除
 		Activity activity = activityValidationService.deleteAble(activityId, loginUser);
 		activity.delete();
 		activityMapper.update(null, new UpdateWrapper<Activity>()
-			.lambda()
+				.lambda()
 				.eq(Activity::getId, activityId)
 				.set(Activity::getStatus, activity.getStatus())
 		);
@@ -317,7 +317,7 @@ public class ActivityHandleService {
 	 * @param webTemplateId
 	 * @param loginUser
 	 * @return com.chaoxing.activity.dto.mh.MhCloneResultDTO
-	*/
+	 */
 	@Transactional(rollbackFor = Exception.class, propagation = Propagation.REQUIRED)
 	public MhCloneResultDTO bindWebTemplate(Integer activityId, Integer webTemplateId, LoginUserDTO loginUser) {
 		Activity activity = activityValidationService.activityExist(activityId);
@@ -352,7 +352,7 @@ public class ActivityHandleService {
 	 * @param webTemplateId
 	 * @param loginUser
 	 * @return void
-	*/
+	 */
 	private void createModuleByWebTemplateId(Integer activityId, Integer webTemplateId, LoginUserDTO loginUser) {
 		// 先删除活动的模块
 		activityModuleService.deleteByActivityId(activityId);
@@ -390,7 +390,7 @@ public class ActivityHandleService {
 	 * @param webTemplateAppData
 	 * @param loginUser
 	 * @return com.chaoxing.activity.model.ActivityModule
-	*/
+	 */
 	private ActivityModule createModule(Integer activityId, Integer templateAppId, WebTemplateAppData webTemplateAppData, LoginUserDTO loginUser) {
 		ActivityModule activityModule = null;
 		// 模块类型
@@ -417,14 +417,14 @@ public class ActivityHandleService {
 	}
 
 	/**封装门户克隆模板使用的请求参数
-	 * @Description 
+	 * @Description
 	 * @author wwb
 	 * @Date 2020-12-21 16:12:23
 	 * @param activity
 	 * @param webTemplateId
 	 * @param loginUser
 	 * @return com.chaoxing.activity.dto.mh.MhCloneParamDTO
-	*/
+	 */
 	public MhCloneParamDTO packageMhCloneParam(Activity activity, Integer webTemplateId, LoginUserDTO loginUser) {
 		WebTemplate webTemplate = webTemplateService.webTemplateExist(webTemplateId);
 		MhCloneParamDTO mhCloneParam = new MhCloneParamDTO();
@@ -438,13 +438,13 @@ public class ActivityHandleService {
 	}
 
 	/**封装应用模块列表
-	 * @Description 
+	 * @Description
 	 * @author wwb
 	 * @Date 2020-12-21 16:12:57
 	 * @param activity
 	 * @param webTemplateId
 	 * @return java.util.List<com.chaoxing.activity.dto.mh.MhCloneParamDTO.MhAppDTO>
-	*/
+	 */
 	private List<MhCloneParamDTO.MhAppDTO> packageTemplateApps(Activity activity, Integer webTemplateId) {
 		List<WebTemplateApp> webTemplateApps = webTemplateService.listAppByWebTemplateId(webTemplateId);
 		if (CollectionUtils.isEmpty(webTemplateApps)) {
@@ -454,13 +454,13 @@ public class ActivityHandleService {
 	}
 
 	/**封装应用模块
-	 * @Description 
+	 * @Description
 	 * @author wwb
 	 * @Date 2020-12-21 16:13:14
 	 * @param activity
 	 * @param webTemplateApp
 	 * @return com.chaoxing.activity.dto.mh.MhCloneParamDTO.MhAppDTO
-	*/
+	 */
 	private MhCloneParamDTO.MhAppDTO packageMhAppDTO(Activity activity, WebTemplateApp webTemplateApp) {
 		MhCloneParamDTO.MhAppDTO mhApp = new MhCloneParamDTO.MhAppDTO();
 		mhApp.setAppName(webTemplateApp.getAppName());
@@ -483,7 +483,7 @@ public class ActivityHandleService {
 	 * @param webTemplateApp
 	 * @param activity
 	 * @return java.util.List<com.chaoxing.activity.dto.mh.MhCloneParamDTO.MhAppDataDTO>
-	*/
+	 */
 	private List<MhCloneParamDTO.MhAppDataDTO> packageMhAppData(WebTemplateApp webTemplateApp, Activity activity) {
 		Integer activityId = activity.getId();
 		// 目前只处理图标
@@ -502,13 +502,13 @@ public class ActivityHandleService {
 	}
 
 	/**封装外部数据源数据
-	 * @Description 
+	 * @Description
 	 * @author wwb
 	 * @Date 2020-11-24 23:44:52
 	 * @param activity
 	 * @param webTemplateApp
 	 * @return java.lang.String
-	*/
+	 */
 	private String packageMhAppDataUrl(Activity activity, WebTemplateApp webTemplateApp) {
 		Integer activityId = activity.getId();
 		String dataType = webTemplateApp.getDataType();
@@ -533,16 +533,16 @@ public class ActivityHandleService {
 	}
 
 	/**更新活动状态
-	 * @Description 
+	 * @Description
 	 * @author wwb
 	 * @Date 2020-12-11 14:55:01
 	 * @param activityId
 	 * @param status
 	 * @return void
-	*/
+	 */
 	public void updateActivityStatus(Integer activityId, Activity.StatusEnum status) {
 		activityMapper.update(null, new UpdateWrapper<Activity>()
-			.lambda()
+				.lambda()
 				.eq(Activity::getId, activityId)
 				.set(Activity::getStatus, status.getValue())
 		);
@@ -553,7 +553,7 @@ public class ActivityHandleService {
 	}
 
 	/**更新活动的评价配置
-	 * @Description 
+	 * @Description
 	 * @author wwb
 	 * @Date 2021-03-08 16:22:35
 	 * @param activityId
@@ -561,7 +561,7 @@ public class ActivityHandleService {
 	 * @param ratingNeedAudit
 	 * @param loginUser
 	 * @return void
-	*/
+	 */
 	public void updateRatingConfig(Integer activityId, boolean openRating, boolean ratingNeedAudit, LoginUserDTO loginUser) {
 		activityValidationService.manageAble(activityId, loginUser.getUid());
 		activityMapper.update(null, new UpdateWrapper<Activity>()
@@ -573,13 +573,13 @@ public class ActivityHandleService {
 	}
 
 	/**更新活动封面
-	 * @Description 
+	 * @Description
 	 * @author wwb
 	 * @Date 2021-03-26 16:25:00
 	 * @param activityId
 	 * @param coverUrl
 	 * @return void
-	*/
+	 */
 	public void updateActivityCoverUrl(Integer activityId, String coverUrl) {
 		activityMapper.update(null, new UpdateWrapper<Activity>()
 				.lambda()
@@ -594,18 +594,18 @@ public class ActivityHandleService {
 	 * @Date 2021-03-26 20:27:43
 	 * @param activityId
 	 * @return java.lang.String
-	*/
+	 */
 	public String getActivityEditLockKey(Integer activityId) {
 		return CacheConstant.LOCK_CACHE_KEY_PREFIX + "activity" + CacheConstant.CACHE_KEY_SEPARATOR + activityId;
 	}
 
 	/**同步活动websiteId
-	 * @Description 
+	 * @Description
 	 * @author wwb
 	 * @Date 2021-05-10 15:28:53
 	 * @param activityId
 	 * @return void
-	*/
+	 */
 	public void syncActivityWebsiteId(Integer activityId) {
 		Activity activity = activityQueryService.getById(activityId);
 		if (activity != null) {

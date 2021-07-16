@@ -1305,6 +1305,11 @@
   height: 80px;
 }
 
+.basic-setting .basic-con .input-box .icon-box .img-box img {
+  width: 100%;
+  height: 100%;
+}
+
 .basic-setting .basic-con .input-box .icon-box .text-box {
   padding: 4px 0;
 }
@@ -1594,4 +1599,14 @@
 .down-list .item-list li:hover {
   background: #F8F8F8;
   color: #0084FF;
+}
+
+.iconLibrary-box {
+  position: fixed;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.6);
+  z-index: 999;
 }
