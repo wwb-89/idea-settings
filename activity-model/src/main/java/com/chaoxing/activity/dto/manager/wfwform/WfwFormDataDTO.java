@@ -27,6 +27,8 @@ public class WfwFormDataDTO {
 
 	/** value的key */
 	private static final String VAL_KEY = "val";
+	/** uid key */
+	private static final String UID_KEY = "puid";
 
 	private Integer id;
 	private String label;
@@ -50,6 +52,18 @@ public class WfwFormDataDTO {
 		String value = jsonObject.getString(VAL_KEY);
 		if (StringUtils.isBlank(fieldName) || Objects.equals(label, fieldName)) {
 			return value;
+		}
+		return null;
+	}
+
+	public Integer getFieldUid(String fieldName) {
+		if (CollectionUtils.isEmpty(values)) {
+			return null;
+		}
+		JSONObject jsonObject = values.get(0);
+		Integer uid = jsonObject.getInteger(UID_KEY);
+		if (StringUtils.isBlank(fieldName) || Objects.equals(label, fieldName)) {
+			return uid;
 		}
 		return null;
 	}

@@ -25,9 +25,9 @@ public class WfwFormApiServiceTests {
 	@Test
 	public void listFormFieldValue() {
 		Integer fid = 139378;
-		Integer formId = 11344;
-		String fieldName = "学分类型";
-		List<String> fieldValues = wfwFormApiService.listFormFieldValue(fid, formId, fieldName);
+		Integer formId = 11916;
+		String fieldName = "姓名";
+		List<Integer> fieldValues = wfwFormApiService.listFormFieldUid(fid, formId, fieldName);
 		Assert.notEmpty(fieldValues, "表单的字段的值不能为空");
 	}
 

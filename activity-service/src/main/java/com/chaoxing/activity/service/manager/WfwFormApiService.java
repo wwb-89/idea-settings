@@ -239,10 +239,6 @@ public class WfwFormApiService {
 		}
 	}
 
-	private String calDeleteFormRecordEnc(Integer formId, Integer formUserId, String formatDateStr) {
-		String enc = "[datetime=" + formatDateStr + "][formId=" + formId + "][formUserId=" + formUserId + "][sign=" + SIGN + "][" + KEY + "]";
-		return DigestUtils.md5Hex(enc);
-	}
 	/**获取表单数据
 	 * @Description
 	 * @author wwb
@@ -272,6 +268,29 @@ public class WfwFormApiService {
 				String fieldValue = wfwFormDatum.getFieldValue(fieldName);
 				if (StringUtils.isNotBlank(fieldValue)) {
 					fieldValueSet.add(fieldValue);
+				}
+			}
+		}
+		return new ArrayList<>(fieldValueSet);
+	}
+
+	/**查询表单数据中某个字段的uid列表
+	 * @Description 
+	 * @author wwb
+	 * @Date 2021-07-16 10:45:56
+	 * @param fid
+	 * @param formId
+	 * @param fieldName
+	 * @return java.util.List<java.lang.Integer>
+	*/
+	public List<Integer> listFormFieldUid(Integer fid, Integer formId, String fieldName) {
+		List<WfwFormDTO> wfwFormData = listFormData(fid, formId);
+		TreeSet<Integer> fieldValueSet = Sets.newTreeSet();
+		if (CollectionUtils.isNotEmpty(wfwFormData)) {
+			for (WfwFormDTO wfwFormDatum : wfwFormData) {
+				Integer uid = wfwFormDatum.getFieldUid(fieldName);
+				if (uid != null) {
+					fieldValueSet.add(uid);
 				}
 			}
 		}

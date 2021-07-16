@@ -51,4 +51,17 @@ public class WfwFormDTO {
 		return null;
 	}
 
+	public Integer getFieldUid(String fieldName) {
+		if (CollectionUtils.isEmpty(formData)) {
+			return null;
+		}
+		for (WfwFormDataDTO formDatum : formData) {
+			Integer uid = formDatum.getFieldUid(fieldName);
+			if (uid != null) {
+				return uid;
+			}
+		}
+		return null;
+	}
+
 }
