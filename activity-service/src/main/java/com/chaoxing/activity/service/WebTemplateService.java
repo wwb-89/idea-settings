@@ -6,7 +6,7 @@ import com.chaoxing.activity.mapper.WebTemplateAppDataMapper;
 import com.chaoxing.activity.mapper.WebTemplateAppMapper;
 import com.chaoxing.activity.mapper.WebTemplateMapper;
 import com.chaoxing.activity.model.*;
-import com.chaoxing.activity.service.manager.WfwAreaApiService;
+import com.chaoxing.activity.service.manager.wfw.WfwAreaApiService;
 import com.chaoxing.activity.service.org.OrgService;
 import com.chaoxing.activity.util.enums.MhAppDataSourceEnum;
 import com.chaoxing.activity.util.enums.MhAppTypeEnum;

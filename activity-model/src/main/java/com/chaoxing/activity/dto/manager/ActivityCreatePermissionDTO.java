@@ -1,5 +1,6 @@
 package com.chaoxing.activity.dto.manager;
 
+import com.chaoxing.activity.dto.manager.wfw.WfwGroupDTO;
 import com.chaoxing.activity.model.ActivityClassify;
 import com.google.common.collect.Lists;
 import lombok.AllArgsConstructor;

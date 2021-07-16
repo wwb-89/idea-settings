@@ -1,4 +1,4 @@
-package com.chaoxing.activity.service.manager;
+package com.chaoxing.activity.service.manager.wfw;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;

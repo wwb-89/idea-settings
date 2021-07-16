@@ -1,5 +1,7 @@
 package com.chaoxing.activity.dto.manager;
 
+import com.chaoxing.activity.dto.manager.wfw.WfwClassDTO;
+import com.chaoxing.activity.dto.manager.wfw.WfwRoleDTO;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;

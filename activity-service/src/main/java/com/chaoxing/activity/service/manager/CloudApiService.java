@@ -37,6 +37,8 @@ public class CloudApiService {
 	private static final String CLOUD_IMAGE_STATUS_URL_KEY = "http";
 	/** 下载url key */
 	private static final String DOWNLOAD_URL_KEY = "download";
+	/** 图片url前缀 */
+	private static final String IMAGE_URL_SUFFIX = "http://p.ananas.chaoxing.com/star3/origin/";
 
 	@Resource(name = "restTemplateProxy")
 	private RestTemplate restTemplate;
@@ -126,6 +128,17 @@ public class CloudApiService {
 			return jsonObject.getString(CLOUD_IMAGE_STATUS_URL_KEY);
 		}
 		return "";
+	}
+
+	/**构建图片地址
+	 * @Description 
+	 * @author wwb
+	 * @Date 2021-07-16 17:18:13
+	 * @param cloudId
+	 * @return java.lang.String
+	*/
+	public String buildImageUrl(String cloudId) {
+		return IMAGE_URL_SUFFIX + cloudId;
 	}
 
 }

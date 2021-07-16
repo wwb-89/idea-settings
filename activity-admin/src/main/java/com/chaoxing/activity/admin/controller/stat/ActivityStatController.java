@@ -2,11 +2,11 @@ package com.chaoxing.activity.admin.controller.stat;
 
 import com.chaoxing.activity.admin.util.LoginUtils;
 import com.chaoxing.activity.dto.LoginUserDTO;
-import com.chaoxing.activity.dto.manager.WfwAreaDTO;
+import com.chaoxing.activity.dto.manager.wfw.WfwAreaDTO;
 import com.chaoxing.activity.dto.stat.ActivityOrgStatDTO;
 import com.chaoxing.activity.dto.stat.ActivityStatDTO;
 import com.chaoxing.activity.service.activity.ActivityStatQueryService;
-import com.chaoxing.activity.service.manager.WfwAreaApiService;
+import com.chaoxing.activity.service.manager.wfw.WfwAreaApiService;
 import com.chaoxing.activity.util.UserAgentUtils;
 import com.chaoxing.activity.util.annotation.LoginRequired;
 import org.springframework.stereotype.Controller;

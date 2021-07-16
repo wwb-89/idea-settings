@@ -1,8 +1,9 @@
-package com.chaoxing.activity.service.manager;
+package com.chaoxing.activity.service.manager.wfw;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
-import com.chaoxing.activity.dto.manager.WfwAreaDTO;
+import com.chaoxing.activity.dto.manager.wfw.WfwAreaDTO;
+import com.chaoxing.activity.service.manager.PassportApiService;
 import com.chaoxing.activity.util.exception.BusinessException;
 import com.google.common.collect.Lists;
 import lombok.extern.slf4j.Slf4j;

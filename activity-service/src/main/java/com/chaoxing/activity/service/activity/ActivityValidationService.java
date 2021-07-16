@@ -3,7 +3,7 @@ package com.chaoxing.activity.service.activity;
 import com.chaoxing.activity.dto.LoginUserDTO;
 import com.chaoxing.activity.model.Activity;
 import com.chaoxing.activity.service.activity.manager.ActivityManagerValidationService;
-import com.chaoxing.activity.service.manager.WfwAreaApiService;
+import com.chaoxing.activity.service.manager.wfw.WfwAreaApiService;
 import com.chaoxing.activity.util.exception.ActivityNotExistException;
 import com.chaoxing.activity.util.exception.ActivityReleasedException;
 import com.chaoxing.activity.util.exception.BusinessException;

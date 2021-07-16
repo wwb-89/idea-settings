@@ -1,7 +1,7 @@
 package com.chaoxing.activity.admin.controller.stat;
 
 import com.chaoxing.activity.admin.util.LoginUtils;
-import com.chaoxing.activity.dto.manager.WfwGroupDTO;
+import com.chaoxing.activity.dto.manager.wfw.WfwGroupDTO;
 import com.chaoxing.activity.dto.manager.wfwform.WfwFormFilterDTO;
 import com.chaoxing.activity.model.OrgTableField;
 import com.chaoxing.activity.model.TableField;

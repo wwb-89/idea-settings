@@ -1,4 +1,4 @@
-package com.chaoxing.activity.dto.manager;
+package com.chaoxing.activity.dto.manager.wfw;
 
 import com.alibaba.fastjson.annotation.JSONField;
 import lombok.*;

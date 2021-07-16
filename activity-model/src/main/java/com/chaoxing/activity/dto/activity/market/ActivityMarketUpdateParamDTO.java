@@ -24,13 +24,18 @@ public class ActivityMarketUpdateParamDTO {
 	private Integer id;
 	/** 市场名称 */
 	private String name;
+	/** 图标云盘id */
+	private String iconCloudId;
 	/** 机构id */
 	private Integer fid;
+	/** 分类id（微服务创建使用） */
+	private Integer classifyId;
 
 	public ActivityMarket buildActivityMarket() {
 		return ActivityMarket.builder()
 				.id(getId())
 				.name(getName())
+				.iconCloudId(getIconCloudId())
 				.fid(getFid())
 				.build();
 	}
@@ -39,6 +44,7 @@ public class ActivityMarketUpdateParamDTO {
 		return ActivityMarketUpdateParamDTO.builder()
 				.id(activityMarket.getId())
 				.name(activityMarket.getName())
+				.iconCloudId(activityMarket.getIconCloudId())
 				.fid(activityMarket.getFid())
 				.build();
 	}
