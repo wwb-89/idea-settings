@@ -5,6 +5,7 @@
         <id column="id" jdbcType="INTEGER" property="id" />
         <result column="name" jdbcType="VARCHAR" property="name" />
         <result column="fid" jdbcType="INTEGER" property="fid" />
+        <result column="wfw_app_id" jdbcType="INTEGER" property="wfwAppId" />
         <result column="sequence" jdbcType="INTEGER" property="sequence" />
         <result column="is_deleted" jdbcType="BIT" property="deleted" />
         <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
@@ -13,7 +14,7 @@
         <result column="update_uid" jdbcType="INTEGER" property="updateUid" />
     </resultMap>
     <sql id="Base_Column_List">
-        t.id, t.name, t.fid, t.sequence, t.is_deleted, t.create_time, t.create_uid,
+        t.id, t.name, t.fid, t.wfw_app_id, t.sequence, t.is_deleted, t.create_time, t.create_uid,
         t.update_time, t.update_uid
     </sql>
 </mapper>

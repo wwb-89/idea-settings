@@ -3,20 +3,21 @@
 <mapper namespace="com.chaoxing.activity.mapper.SignUpConditionMapper">
     <resultMap id="BaseResultMap" type="com.chaoxing.activity.model.SignUpCondition">
         <id column="id" jdbcType="INTEGER" property="id" />
+        <result column="fid" jdbcType="INTEGER" property="fid" />
         <result column="template_component_id" jdbcType="INTEGER" property="templateComponentId" />
         <result column="origin_identify" jdbcType="VARCHAR" property="originIdentify" />
         <result column="field_name" jdbcType="VARCHAR" property="fieldName" />
         <result column="is_allow_signed_up" jdbcType="BIT" property="allowSignedUp" />
     </resultMap>
     <sql id="Base_Column_List">
-        t.id, t.template_component_id, t.origin_identify, t.field_name, t.is_allow_signed_up
+        t.id, t.fid, t.template_component_id, t.origin_identify, t.field_name, t.is_allow_signed_up
     </sql>
 
     <insert id="batchAdd">
-        INSERT INTO t_sign_up_condition ( template_component_id, origin_identify, field_name, is_allow_signed_up )
+        INSERT INTO t_sign_up_condition ( template_component_id, fid, origin_identify, field_name, is_allow_signed_up )
         VALUES
             <foreach collection="signUpConditions" index="key" item="value" open="" close="" separator=",">
-                ( #{value.templateComponentId}, #{value.originIdentify}, #{value.fieldName}, #{value.allowSignedUp} )
+                ( #{value.templateComponentId}, #{value.fid}, #{value.originIdentify}, #{value.fieldName}, #{value.allowSignedUp} )
             </foreach>
     </insert>
     <select id="selectTemplateComponentIdByTemplateId" resultType="java.lang.Integer">

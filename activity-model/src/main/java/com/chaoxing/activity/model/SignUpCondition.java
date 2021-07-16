@@ -33,6 +33,8 @@ public class SignUpCondition {
     /** 主键; column: id*/
     @TableId(type = IdType.AUTO)
     private Integer id;
+    /** 机构id; column: fid*/
+    private Integer fid;
     /** 模版组件关联id; column: template_component_id*/
     private Integer templateComponentId;
     /** 来源主键标识; column: origin_identify*/

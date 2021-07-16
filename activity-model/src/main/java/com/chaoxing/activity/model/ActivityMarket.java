@@ -38,6 +38,8 @@ public class ActivityMarket {
     private String name;
     /** 机构id; column: fid*/
     private Integer fid;
+    /** 微服务应用id; column: wfw_app_id*/
+    private Integer wfwAppId;
     /** 顺序; column: sequence*/
     private Integer sequence;
     /** 是否被删除; column: is_deleted*/

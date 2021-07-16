@@ -68,6 +68,7 @@ CREATE TABLE `t_template_component`  (
 ) COMMENT = '模版组件关联表';
 CREATE TABLE `t_sign_up_condition`  (
     `id` int(11) NOT NULL AUTO_INCREMENT COMMENT '主键',
+    `fid` int(11) NULL COMMENT '机构id',
     `template_component_id` int(11) NULL COMMENT '模版组件id',
     `origin_identify` varchar(50) NULL COMMENT '来源主键标识',
     `field_name` varchar(50) NULL COMMENT '字段名',
