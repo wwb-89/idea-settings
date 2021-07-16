@@ -5,13 +5,18 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>基础设置</title>
+<!--    图标库的-->
+    <link rel="stylesheet" href="../../IconLibrary/css/global.css">
+    <link rel="stylesheet" href="../../IconLibrary/css/jquery.mCustomScrollbar.min.css">
+    <link rel="stylesheet" href="../../IconLibrary/css/space-poupop.css">
+
     <link rel="stylesheet" href="../../assets/lib/element-ui/lib/theme-chalk/index.css">
     <link rel="stylesheet" href="../../assets/lib/webuploader/webuploader.css">
     <link rel="stylesheet" href="../../assets/css/public.css">
     <link rel="stylesheet" href="../../assets/css/engine-design.css">
 </head>
 <body>
-    <div class="basic-setting" id="basic-setting">
+    <div class="basic-setting" id="basic-setting" v-cloak>
         <div class="top-con">
             <div class="go-back white-border-btn"><i></i><span>返回</span></div>
 <!--            <div class="step-box">-->
@@ -38,12 +43,12 @@
                     <div class="input-box">
                         <label for="" class="label">应用图标</label>
                         <div class="icon-box">
-                            <div class="img-box"><img src="../../assets/images/yq-design/icon-cover.png" alt=""></div>
+                            <div class="img-box"><img src="../../assets/images/yq-design/icon-cover.png" id="appIconImg" alt=""></div>
                             <div class="text-box fr">
                                 <p>请上传尺寸为256PX*256PX，500KB以内的PNG,GIF,JPG图标</p>
                                 <div class="btn-box">
                                     <div class="" id="upload-btn">上传</div>
-                                    <div class="border-btn">从图标库选择</div>
+                                    <div class="border-btn" v-on:click="iconLibraryStatus=true">从图标库选择</div>
                                 </div>
                             </div>
                         </div>
@@ -52,6 +57,746 @@
                 <div class="fixedTips">规则和字段配置请创建应用后在 应用详情 > 后台 中配置</div>
             </div>
         </div>
+        <!--图标库-->
+        <div class="iconLibrary-box" v-show="iconLibraryStatus">
+            <div class="pouop iconLibrary" id="iconLibrary">
+                <div class="pu-top">
+                    <h3>图标图</h3>
+                </div>
+                <div class="pu-con">
+                    <div class="app-color">
+                        <h6>选择颜色</h6>
+                        <div class="color-list">
+                            <ul>
+                                <li class="active" data-color="28A7FF" style="background: #28A7FF"></li>
+                                <li data-color="5B7EFF" style="background: #5B7EFF"></li>
+                                <li data-color="9261FF" style="background: #9261FF"></li>
+                                <li data-color="C872EB" style="background: #C872EB"></li>
+                                <li data-color="FF83A5" style="background: #FF83A5"></li>
+                                <li data-color="FF9064" style="background: #FF9064"></li>
+                                <li data-color="FF6B6B" style="background: #FF6B6B"></li>
+                                <li data-color="FFBF29" style="background: #FFBF29"></li>
+                                <li data-color="68CD1E" style="background: #68CD1E"></li>
+                                <li data-color="0AC16D" style="background: #0AC16D"></li>
+                                <li data-color="0ED2B3" style="background: #0ED2B3"></li>
+                                <li data-color="BBBBBB" style="background: #BBBBBB"></li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="app-icon-list" id="app-icon-list">
+                        <ul>
+                            <li class="cur">
+                                <div class="icon">
+                                    <img class="iconBg" src="../../IconLibrary/images/iconBg/28A7FF.svg" alt="">
+                                    <img class="iconImg" src="../../IconLibrary/images/icons/icon1.png" alt="">
+                                </div>
+                            </li>
+                            <li>
+                                <div class="icon">
+                                    <img class="iconBg" src="../../IconLibrary/images/iconBg/28A7FF.svg" alt="">
+                                    <img class="iconImg" src="../../IconLibrary/images/icons/icon2.png" alt="">
+                                </div>
+                            </li>
+                            <li>
+                                <div class="icon">
+                                    <img class="iconBg" src="../../IconLibrary/images/iconBg/28A7FF.svg" alt="">
+                                    <img class="iconImg" src="../../IconLibrary/images/icons/icon3.png" alt="">
+                                </div>
+                            </li>
+                            <li>
+                                <div class="icon">
+                                    <img class="iconBg" src="../../IconLibrary/images/iconBg/28A7FF.svg" alt="">
+                                    <img class="iconImg" src="../../IconLibrary/images/icons/icon4.png" alt="">
+                                </div>
+                            </li>
+                            <li>
+                                <div class="icon">
+                                    <img class="iconBg" src="../../IconLibrary/images/iconBg/28A7FF.svg" alt="">
+                                    <img class="iconImg" src="../../IconLibrary/images/icons/icon5.png" alt="">
+                                </div>
+                            </li>
+                            <li>
+                                <div class="icon">
+                                    <img class="iconBg" src="../../IconLibrary/images/iconBg/28A7FF.svg" alt="">
+                                    <img class="iconImg" src="../../IconLibrary/images/icons/icon6.png" alt="">
+                                </div>
+                            </li>
+                            <li>
+                                <div class="icon">
+                                    <img class="iconBg" src="../../IconLibrary/images/iconBg/28A7FF.svg" alt="">
+                                    <img class="iconImg" src="../../IconLibrary/images/icons/icon7.png" alt="">
+                                </div>
+                            </li>
+                            <li>
+                                <div class="icon">
+                                    <img class="iconBg" src="../../IconLibrary/images/iconBg/28A7FF.svg" alt="">
+                                    <img class="iconImg" src="../../IconLibrary/images/icons/icon8.png" alt="">
+                                </div>
+                            </li>
+                            <li>
+                                <div class="icon">
+                                    <img class="iconBg" src="../../IconLibrary/images/iconBg/28A7FF.svg" alt="">
+                                    <img class="iconImg" src="../../IconLibrary/images/icons/icon9.png" alt="">
+                                </div>
+                            </li>
+                            <li>
+                                <div class="icon">
+                                    <img class="iconBg" src="../../IconLibrary/images/iconBg/28A7FF.svg" alt="">
+                                    <img class="iconImg" src="../../IconLibrary/images/icons/icon10.png" alt="">
+                                </div>
+                            </li>
+                            <li>
+                                <div class="icon">
+                                    <img class="iconBg" src="../../IconLibrary/images/iconBg/28A7FF.svg" alt="">
+                                    <img class="iconImg" src="../../IconLibrary/images/icons/icon11.png" alt="">
+                                </div>
+                            </li>
+                            <li>
+                                <div class="icon">
+                                    <img class="iconBg" src="../../IconLibrary/images/iconBg/28A7FF.svg" alt="">
+                                    <img class="iconImg" src="../../IconLibrary/images/icons/icon12.png" alt="">
+                                </div>
+                            </li>
+                            <li>
+                                <div class="icon">
+                                    <img class="iconBg" src="../../IconLibrary/images/iconBg/28A7FF.svg" alt="">
+                                    <img class="iconImg" src="../../IconLibrary/images/icons/icon13.png" alt="">
+                                </div>
+                            </li>
+                            <li>
+                                <div class="icon">
+                                    <img class="iconBg" src="../../IconLibrary/images/iconBg/28A7FF.svg" alt="">
+                                    <img class="iconImg" src="../../IconLibrary/images/icons/icon14.png" alt="">
+                                </div>
+                            </li>
+                            <li>
+                                <div class="icon">
+                                    <img class="iconBg" src="../../IconLibrary/images/iconBg/28A7FF.svg" alt="">
+                                    <img class="iconImg" src="../../IconLibrary/images/icons/icon15.png" alt="">
+                                </div>
+                            </li>
+                            <li>
+                                <div class="icon">
+                                    <img class="iconBg" src="../../IconLibrary/images/iconBg/28A7FF.svg" alt="">
+                                    <img class="iconImg" src="../../IconLibrary/images/icons/icon16.png" alt="">
+                                </div>
+                            </li>
+                            <li>
+                                <div class="icon">
+                                    <img class="iconBg" src="../../IconLibrary/images/iconBg/28A7FF.svg" alt="">
+                                    <img class="iconImg" src="../../IconLibrary/images/icons/icon17.png" alt="">
+                                </div>
+                            </li>
+                            <li>
+                                <div class="icon">
+                                    <img class="iconBg" src="../../IconLibrary/images/iconBg/28A7FF.svg" alt="">
+                                    <img class="iconImg" src="../../IconLibrary/images/icons/icon18.png" alt="">
+                                </div>
+                            </li>
+                            <li>
+                                <div class="icon">
+                                    <img class="iconBg" src="../../IconLibrary/images/iconBg/28A7FF.svg" alt="">
+                                    <img class="iconImg" src="../../IconLibrary/images/icons/icon19.png" alt="">
+                                </div>
+                            </li>
+                            <li>
+                                <div class="icon">
+                                    <img class="iconBg" src="../../IconLibrary/images/iconBg/28A7FF.svg" alt="">
+                                    <img class="iconImg" src="../../IconLibrary/images/icons/icon20.png" alt="">
+                                </div>
+                            </li>
+                            <li>
+                                <div class="icon">
+                                    <img class="iconBg" src="../../IconLibrary/images/iconBg/28A7FF.svg" alt="">
+                                    <img class="iconImg" src="../../IconLibrary/images/icons/icon21.png" alt="">
+                                </div>
+                            </li>
+                            <li>
+                                <div class="icon">
+                                    <img class="iconBg" src="../../IconLibrary/images/iconBg/28A7FF.svg" alt="">
+                                    <img class="iconImg" src="../../IconLibrary/images/icons/icon22.png" alt="">
+                                </div>
+                            </li>
+                            <li>
+                                <div class="icon">
+                                    <img class="iconBg" src="../../IconLibrary/images/iconBg/28A7FF.svg" alt="">
+                                    <img class="iconImg" src="../../IconLibrary/images/icons/icon23.png" alt="">
+                                </div>
+                            </li>
+                            <li>
+                                <div class="icon">
+                                    <img class="iconBg" src="../../IconLibrary/images/iconBg/28A7FF.svg" alt="">
+                                    <img class="iconImg" src="../../IconLibrary/images/icons/icon24.png" alt="">
+                                </div>
+                            </li>
+                            <li>
+                                <div class="icon">
+                                    <img class="iconBg" src="../../IconLibrary/images/iconBg/28A7FF.svg" alt="">
+                                    <img class="iconImg" src="../../IconLibrary/images/icons/icon25.png" alt="">
+                                </div>
+                            </li>
+                            <li>
+                                <div class="icon">
+                                    <img class="iconBg" src="../../IconLibrary/images/iconBg/28A7FF.svg" alt="">
+                                    <img class="iconImg" src="../../IconLibrary/images/icons/icon26.png" alt="">
+                                </div>
+                            </li>
+                            <li>
+                                <div class="icon">
+                                    <img class="iconBg" src="../../IconLibrary/images/iconBg/28A7FF.svg" alt="">
+                                    <img class="iconImg" src="../../IconLibrary/images/icons/icon27.png" alt="">
+                                </div>
+                            </li>
+                            <li>
+                                <div class="icon">
+                                    <img class="iconBg" src="../../IconLibrary/images/iconBg/28A7FF.svg" alt="">
+                                    <img class="iconImg" src="../../IconLibrary/images/icons/icon28.png" alt="">
+                                </div>
+                            </li>
+                            <li>
+                                <div class="icon">
+                                    <img class="iconBg" src="../../IconLibrary/images/iconBg/28A7FF.svg" alt="">
+                                    <img class="iconImg" src="../../IconLibrary/images/icons/icon29.png" alt="">
+                                </div>
+                            </li>
+                            <li>
+                                <div class="icon">
+                                    <img class="iconBg" src="../../IconLibrary/images/iconBg/28A7FF.svg" alt="">
+                                    <img class="iconImg" src="../../IconLibrary/images/icons/icon30.png" alt="">
+                                </div>
+                            </li>
+                            <li>
+                                <div class="icon">
+                                    <img class="iconBg" src="../../IconLibrary/images/iconBg/28A7FF.svg" alt="">
+                                    <img class="iconImg" src="../../IconLibrary/images/icons/icon31.png" alt="">
+                                </div>
+                            </li>
+                            <li>
+                                <div class="icon">
+                                    <img class="iconBg" src="../../IconLibrary/images/iconBg/28A7FF.svg" alt="">
+                                    <img class="iconImg" src="../../IconLibrary/images/icons/icon32.png" alt="">
+                                </div>
+                            </li>
+                            <li>
+                                <div class="icon">
+                                    <img class="iconBg" src="../../IconLibrary/images/iconBg/28A7FF.svg" alt="">
+                                    <img class="iconImg" src="../../IconLibrary/images/icons/icon33.png" alt="">
+                                </div>
+                            </li>
+                            <li>
+                                <div class="icon">
+                                    <img class="iconBg" src="../../IconLibrary/images/iconBg/28A7FF.svg" alt="">
+                                    <img class="iconImg" src="../../IconLibrary/images/icons/icon34.png" alt="">
+                                </div>
+                            </li>
+                            <li>
+                                <div class="icon">
+                                    <img class="iconBg" src="../../IconLibrary/images/iconBg/28A7FF.svg" alt="">
+                                    <img class="iconImg" src="../../IconLibrary/images/icons/icon35.png" alt="">
+                                </div>
+                            </li>
+                            <li>
+                                <div class="icon">
+                                    <img class="iconBg" src="../../IconLibrary/images/iconBg/28A7FF.svg" alt="">
+                                    <img class="iconImg" src="../../IconLibrary/images/icons/icon36.png" alt="">
+                                </div>
+                            </li>
+                            <li>
+                                <div class="icon">
+                                    <img class="iconBg" src="../../IconLibrary/images/iconBg/28A7FF.svg" alt="">
+                                    <img class="iconImg" src="../../IconLibrary/images/icons/icon37.png" alt="">
+                                </div>
+                            </li>
+                            <li>
+                                <div class="icon">
+                                    <img class="iconBg" src="../../IconLibrary/images/iconBg/28A7FF.svg" alt="">
+                                    <img class="iconImg" src="../../IconLibrary/images/icons/icon38.png" alt="">
+                                </div>
+                            </li>
+                            <li>
+                                <div class="icon">
+                                    <img class="iconBg" src="../../IconLibrary/images/iconBg/28A7FF.svg" alt="">
+                                    <img class="iconImg" src="../../IconLibrary/images/icons/icon39.png" alt="">
+                                </div>
+                            </li>
+                            <li>
+                                <div class="icon">
+                                    <img class="iconBg" src="../../IconLibrary/images/iconBg/28A7FF.svg" alt="">
+                                    <img class="iconImg" src="../../IconLibrary/images/icons/icon40.png" alt="">
+                                </div>
+                            </li>
+                            <li>
+                                <div class="icon">
+                                    <img class="iconBg" src="../../IconLibrary/images/iconBg/28A7FF.svg" alt="">
+                                    <img class="iconImg" src="../../IconLibrary/images/icons/icon41.png" alt="">
+                                </div>
+                            </li>
+                            <li>
+                                <div class="icon">
+                                    <img class="iconBg" src="../../IconLibrary/images/iconBg/28A7FF.svg" alt="">
+                                    <img class="iconImg" src="../../IconLibrary/images/icons/icon42.png" alt="">
+                                </div>
+                            </li>
+                            <li>
+                                <div class="icon">
+                                    <img class="iconBg" src="../../IconLibrary/images/iconBg/28A7FF.svg" alt="">
+                                    <img class="iconImg" src="../../IconLibrary/images/icons/icon43.png" alt="">
+                                </div>
+                            </li>
+                            <li>
+                                <div class="icon">
+                                    <img class="iconBg" src="../../IconLibrary/images/iconBg/28A7FF.svg" alt="">
+                                    <img class="iconImg" src="../../IconLibrary/images/icons/icon44.png" alt="">
+                                </div>
+                            </li>
+                            <li>
+                                <div class="icon">
+                                    <img class="iconBg" src="../../IconLibrary/images/iconBg/28A7FF.svg" alt="">
+                                    <img class="iconImg" src="../../IconLibrary/images/icons/icon45.png" alt="">
+                                </div>
+                            </li>
+                            <li>
+                                <div class="icon">
+                                    <img class="iconBg" src="../../IconLibrary/images/iconBg/28A7FF.svg" alt="">
+                                    <img class="iconImg" src="../../IconLibrary/images/icons/icon46.png" alt="">
+                                </div>
+                            </li>
+                            <li>
+                                <div class="icon">
+                                    <img class="iconBg" src="../../IconLibrary/images/iconBg/28A7FF.svg" alt="">
+                                    <img class="iconImg" src="../../IconLibrary/images/icons/icon47.png" alt="">
+                                </div>
+                            </li>
+                            <li>
+                                <div class="icon">
+                                    <img class="iconBg" src="../../IconLibrary/images/iconBg/28A7FF.svg" alt="">
+                                    <img class="iconImg" src="../../IconLibrary/images/icons/icon48.png" alt="">
+                                </div>
+                            </li>
+                            <li>
+                                <div class="icon">
+                                    <img class="iconBg" src="../../IconLibrary/images/iconBg/28A7FF.svg" alt="">
+                                    <img class="iconImg" src="../../IconLibrary/images/icons/icon49.png" alt="">
+                                </div>
+                            </li>
+                            <li>
+                                <div class="icon">
+                                    <img class="iconBg" src="../../IconLibrary/images/iconBg/28A7FF.svg" alt="">
+                                    <img class="iconImg" src="../../IconLibrary/images/icons/icon50.png" alt="">
+                                </div>
+                            </li>
+                            <li>
+                                <div class="icon">
+                                    <img class="iconBg" src="../../IconLibrary/images/iconBg/28A7FF.svg" alt="">
+                                    <img class="iconImg" src="../../IconLibrary/images/icons/icon51.png" alt="">
+                                </div>
+                            </li>
+                            <li>
+                                <div class="icon">
+                                    <img class="iconBg" src="../../IconLibrary/images/iconBg/28A7FF.svg" alt="">
+                                    <img class="iconImg" src="../../IconLibrary/images/icons/icon52.png" alt="">
+                                </div>
+                            </li>
+                            <li>
+                                <div class="icon">
+                                    <img class="iconBg" src="../../IconLibrary/images/iconBg/28A7FF.svg" alt="">
+                                    <img class="iconImg" src="../../IconLibrary/images/icons/icon53.png" alt="">
+                                </div>
+                            </li>
+                            <li>
+                                <div class="icon">
+                                    <img class="iconBg" src="../../IconLibrary/images/iconBg/28A7FF.svg" alt="">
+                                    <img class="iconImg" src="../../IconLibrary/images/icons/icon54.png" alt="">
+                                </div>
+                            </li>
+                            <li>
+                                <div class="icon">
+                                    <img class="iconBg" src="../../IconLibrary/images/iconBg/28A7FF.svg" alt="">
+                                    <img class="iconImg" src="../../IconLibrary/images/icons/icon55.png" alt="">
+                                </div>
+                            </li>
+                            <li>
+                                <div class="icon">
+                                    <img class="iconBg" src="../../IconLibrary/images/iconBg/28A7FF.svg" alt="">
+                                    <img class="iconImg" src="../../IconLibrary/images/icons/icon56.png" alt="">
+                                </div>
+                            </li>
+                            <li>
+                                <div class="icon">
+                                    <img class="iconBg" src="../../IconLibrary/images/iconBg/28A7FF.svg" alt="">
+                                    <img class="iconImg" src="../../IconLibrary/images/icons/icon57.png" alt="">
+                                </div>
+                            </li>
+                            <li>
+                                <div class="icon">
+                                    <img class="iconBg" src="../../IconLibrary/images/iconBg/28A7FF.svg" alt="">
+                                    <img class="iconImg" src="../../IconLibrary/images/icons/icon57.png" alt="">
+                                </div>
+                            </li>
+                            <li>
+                                <div class="icon">
+                                    <img class="iconBg" src="../../IconLibrary/images/iconBg/28A7FF.svg" alt="">
+                                    <img class="iconImg" src="../../IconLibrary/images/icons/icon58.png" alt="">
+                                </div>
+                            </li>
+                            <li>
+                                <div class="icon">
+                                    <img class="iconBg" src="../../IconLibrary/images/iconBg/28A7FF.svg" alt="">
+                                    <img class="iconImg" src="../../IconLibrary/images/icons/icon59.png" alt="">
+                                </div>
+                            </li>
+                            <li>
+                                <div class="icon">
+                                    <img class="iconBg" src="../../IconLibrary/images/iconBg/28A7FF.svg" alt="">
+                                    <img class="iconImg" src="../../IconLibrary/images/icons/icon60.png" alt="">
+                                </div>
+                            </li>
+                            <li>
+                                <div class="icon">
+                                    <img class="iconBg" src="../../IconLibrary/images/iconBg/28A7FF.svg" alt="">
+                                    <img class="iconImg" src="../../IconLibrary/images/icons/icon61.png" alt="">
+                                </div>
+                            </li>
+                            <li>
+                                <div class="icon">
+                                    <img class="iconBg" src="../../IconLibrary/images/iconBg/28A7FF.svg" alt="">
+                                    <img class="iconImg" src="../../IconLibrary/images/icons/icon62.png" alt="">
+                                </div>
+                            </li>
+                            <li>
+                                <div class="icon">
+                                    <img class="iconBg" src="../../IconLibrary/images/iconBg/28A7FF.svg" alt="">
+                                    <img class="iconImg" src="../../IconLibrary/images/icons/icon63.png" alt="">
+                                </div>
+                            </li>
+                            <li>
+                                <div class="icon">
+                                    <img class="iconBg" src="../../IconLibrary/images/iconBg/28A7FF.svg" alt="">
+                                    <img class="iconImg" src="../../IconLibrary/images/icons/icon64.png" alt="">
+                                </div>
+                            </li>
+                            <li>
+                                <div class="icon">
+                                    <img class="iconBg" src="../../IconLibrary/images/iconBg/28A7FF.svg" alt="">
+                                    <img class="iconImg" src="../../IconLibrary/images/icons/icon65.png" alt="">
+                                </div>
+                            </li>
+                            <li>
+                                <div class="icon">
+                                    <img class="iconBg" src="../../IconLibrary/images/iconBg/28A7FF.svg" alt="">
+                                    <img class="iconImg" src="../../IconLibrary/images/icons/icon66.png" alt="">
+                                </div>
+                            </li>
+                            <li>
+                                <div class="icon">
+                                    <img class="iconBg" src="../../IconLibrary/images/iconBg/28A7FF.svg" alt="">
+                                    <img class="iconImg" src="../../IconLibrary/images/icons/icon67.png" alt="">
+                                </div>
+                            </li>
+                            <li>
+                                <div class="icon">
+                                    <img class="iconBg" src="../../IconLibrary/images/iconBg/28A7FF.svg" alt="">
+                                    <img class="iconImg" src="../../IconLibrary/images/icons/icon68.png" alt="">
+                                </div>
+                            </li>
+                            <li>
+                                <div class="icon">
+                                    <img class="iconBg" src="../../IconLibrary/images/iconBg/28A7FF.svg" alt="">
+                                    <img class="iconImg" src="../../IconLibrary/images/icons/icon69.png" alt="">
+                                </div>
+                            </li>
+                            <li>
+                                <div class="icon">
+                                    <img class="iconBg" src="../../IconLibrary/images/iconBg/28A7FF.svg" alt="">
+                                    <img class="iconImg" src="../../IconLibrary/images/icons/icon70.png" alt="">
+                                </div>
+                            </li>
+                            <li>
+                                <div class="icon">
+                                    <img class="iconBg" src="../../IconLibrary/images/iconBg/28A7FF.svg" alt="">
+                                    <img class="iconImg" src="../../IconLibrary/images/icons/icon71.png" alt="">
+                                </div>
+                            </li>
+                            <li>
+                                <div class="icon">
+                                    <img class="iconBg" src="../../IconLibrary/images/iconBg/28A7FF.svg" alt="">
+                                    <img class="iconImg" src="../../IconLibrary/images/icons/icon72.png" alt="">
+                                </div>
+                            </li>
+                            <li>
+                                <div class="icon">
+                                    <img class="iconBg" src="../../IconLibrary/images/iconBg/28A7FF.svg" alt="">
+                                    <img class="iconImg" src="../../IconLibrary/images/icons/icon73.png" alt="">
+                                </div>
+                            </li>
+                            <li>
+                                <div class="icon">
+                                    <img class="iconBg" src="../../IconLibrary/images/iconBg/28A7FF.svg" alt="">
+                                    <img class="iconImg" src="../../IconLibrary/images/icons/icon74.png" alt="">
+                                </div>
+                            </li>
+                            <li>
+                                <div class="icon">
+                                    <img class="iconBg" src="../../IconLibrary/images/iconBg/28A7FF.svg" alt="">
+                                    <img class="iconImg" src="../../IconLibrary/images/icons/icon75.png" alt="">
+                                </div>
+                            </li>
+                            <li>
+                                <div class="icon">
+                                    <img class="iconBg" src="../../IconLibrary/images/iconBg/28A7FF.svg" alt="">
+                                    <img class="iconImg" src="../../IconLibrary/images/icons/icon76.png" alt="">
+                                </div>
+                            </li>
+                            <li>
+                                <div class="icon">
+                                    <img class="iconBg" src="../../IconLibrary/images/iconBg/28A7FF.svg" alt="">
+                                    <img class="iconImg" src="../../IconLibrary/images/icons/icon77.png" alt="">
+                                </div>
+                            </li>
+                            <li>
+                                <div class="icon">
+                                    <img class="iconBg" src="../../IconLibrary/images/iconBg/28A7FF.svg" alt="">
+                                    <img class="iconImg" src="../../IconLibrary/images/icons/icon78.png" alt="">
+                                </div>
+                            </li>
+                            <li>
+                                <div class="icon">
+                                    <img class="iconBg" src="../../IconLibrary/images/iconBg/28A7FF.svg" alt="">
+                                    <img class="iconImg" src="../../IconLibrary/images/icons/icon79.png" alt="">
+                                </div>
+                            </li>
+                            <li>
+                                <div class="icon">
+                                    <img class="iconBg" src="../../IconLibrary/images/iconBg/28A7FF.svg" alt="">
+                                    <img class="iconImg" src="../../IconLibrary/images/icons/icon80.png" alt="">
+                                </div>
+                            </li>
+                            <li>
+                                <div class="icon">
+                                    <img class="iconBg" src="../../IconLibrary/images/iconBg/28A7FF.svg" alt="">
+                                    <img class="iconImg" src="../../IconLibrary/images/icons/icon81.png" alt="">
+                                </div>
+                            </li>
+                            <li>
+                                <div class="icon">
+                                    <img class="iconBg" src="../../IconLibrary/images/iconBg/28A7FF.svg" alt="">
+                                    <img class="iconImg" src="../../IconLibrary/images/icons/icon82.png" alt="">
+                                </div>
+                            </li>
+                            <li>
+                                <div class="icon">
+                                    <img class="iconBg" src="../../IconLibrary/images/iconBg/28A7FF.svg" alt="">
+                                    <img class="iconImg" src="../../IconLibrary/images/icons/icon83.png" alt="">
+                                </div>
+                            </li>
+                            <li>
+                                <div class="icon">
+                                    <img class="iconBg" src="../../IconLibrary/images/iconBg/28A7FF.svg" alt="">
+                                    <img class="iconImg" src="../../IconLibrary/images/icons/icon84.png" alt="">
+                                </div>
+                            </li>
+                            <li>
+                                <div class="icon">
+                                    <img class="iconBg" src="../../IconLibrary/images/iconBg/28A7FF.svg" alt="">
+                                    <img class="iconImg" src="../../IconLibrary/images/icons/icon85.png" alt="">
+                                </div>
+                            </li>
+                            <li>
+                                <div class="icon">
+                                    <img class="iconBg" src="../../IconLibrary/images/iconBg/28A7FF.svg" alt="">
+                                    <img class="iconImg" src="../../IconLibrary/images/icons/icon86.png" alt="">
+                                </div>
+                            </li>
+                            <li>
+                                <div class="icon">
+                                    <img class="iconBg" src="../../IconLibrary/images/iconBg/28A7FF.svg" alt="">
+                                    <img class="iconImg" src="../../IconLibrary/images/icons/icon87.png" alt="">
+                                </div>
+                            </li>
+                            <li>
+                                <div class="icon">
+                                    <img class="iconBg" src="../../IconLibrary/images/iconBg/28A7FF.svg" alt="">
+                                    <img class="iconImg" src="../../IconLibrary/images/icons/icon88.png" alt="">
+                                </div>
+                            </li>
+                            <li>
+                                <div class="icon">
+                                    <img class="iconBg" src="../../IconLibrary/images/iconBg/28A7FF.svg" alt="">
+                                    <img class="iconImg" src="../../IconLibrary/images/icons/icon89.png" alt="">
+                                </div>
+                            </li>
+                            <li>
+                                <div class="icon">
+                                    <img class="iconBg" src="../../IconLibrary/images/iconBg/28A7FF.svg" alt="">
+                                    <img class="iconImg" src="../../IconLibrary/images/icons/icon90.png" alt="">
+                                </div>
+                            </li>
+                            <li>
+                                <div class="icon">
+                                    <img class="iconBg" src="../../IconLibrary/images/iconBg/28A7FF.svg" alt="">
+                                    <img class="iconImg" src="../../IconLibrary/images/icons/icon91.png" alt="">
+                                </div>
+                            </li>
+                            <li>
+                                <div class="icon">
+                                    <img class="iconBg" src="../../IconLibrary/images/iconBg/28A7FF.svg" alt="">
+                                    <img class="iconImg" src="../../IconLibrary/images/icons/icon92.png" alt="">
+                                </div>
+                            </li>
+                            <li>
+                                <div class="icon">
+                                    <img class="iconBg" src="../../IconLibrary/images/iconBg/28A7FF.svg" alt="">
+                                    <img class="iconImg" src="../../IconLibrary/images/icons/icon93.png" alt="">
+                                </div>
+                            </li>
+                            <li>
+                                <div class="icon">
+                                    <img class="iconBg" src="../../IconLibrary/images/iconBg/28A7FF.svg" alt="">
+                                    <img class="iconImg" src="../../IconLibrary/images/icons/icon94.png" alt="">
+                                </div>
+                            </li>
+                            <li>
+                                <div class="icon">
+                                    <img class="iconBg" src="../../IconLibrary/images/iconBg/28A7FF.svg" alt="">
+                                    <img class="iconImg" src="../../IconLibrary/images/icons/icon95.png" alt="">
+                                </div>
+                            </li>
+                            <li>
+                                <div class="icon">
+                                    <img class="iconBg" src="../../IconLibrary/images/iconBg/28A7FF.svg" alt="">
+                                    <img class="iconImg" src="../../IconLibrary/images/icons/icon96.png" alt="">
+                                </div>
+                            </li>
+                            <li>
+                                <div class="icon">
+                                    <img class="iconBg" src="../../IconLibrary/images/iconBg/28A7FF.svg" alt="">
+                                    <img class="iconImg" src="../../IconLibrary/images/icons/icon97.png" alt="">
+                                </div>
+                            </li>
+                            <li>
+                                <div class="icon">
+                                    <img class="iconBg" src="../../IconLibrary/images/iconBg/28A7FF.svg" alt="">
+                                    <img class="iconImg" src="../../IconLibrary/images/icons/icon98.png" alt="">
+                                </div>
+                            </li>
+                            <li>
+                                <div class="icon">
+                                    <img class="iconBg" src="../../IconLibrary/images/iconBg/28A7FF.svg" alt="">
+                                    <img class="iconImg" src="../../IconLibrary/images/icons/icon99.png" alt="">
+                                </div>
+                            </li>
+                            <li>
+                                <div class="icon">
+                                    <img class="iconBg" src="../../IconLibrary/images/iconBg/28A7FF.svg" alt="">
+                                    <img class="iconImg" src="../../IconLibrary/images/icons/icon100.png" alt="">
+                                </div>
+                            </li>
+                            <li>
+                                <div class="icon">
+                                    <img class="iconBg" src="../../IconLibrary/images/iconBg/28A7FF.svg" alt="">
+                                    <img class="iconImg" src="../../IconLibrary/images/icons/icon101.png" alt="">
+                                </div>
+                            </li>
+                            <li>
+                                <div class="icon">
+                                    <img class="iconBg" src="../../IconLibrary/images/iconBg/28A7FF.svg" alt="">
+                                    <img class="iconImg" src="../../IconLibrary/images/icons/icon102.png" alt="">
+                                </div>
+                            </li>
+                            <li>
+                                <div class="icon">
+                                    <img class="iconBg" src="../../IconLibrary/images/iconBg/28A7FF.svg" alt="">
+                                    <img class="iconImg" src="../../IconLibrary/images/icons/icon103.png" alt="">
+                                </div>
+                            </li>
+                            <li>
+                                <div class="icon">
+                                    <img class="iconBg" src="../../IconLibrary/images/iconBg/28A7FF.svg" alt="">
+                                    <img class="iconImg" src="../../IconLibrary/images/icons/icon104.png" alt="">
+                                </div>
+                            </li>
+                            <li>
+                                <div class="icon">
+                                    <img class="iconBg" src="../../IconLibrary/images/iconBg/28A7FF.svg" alt="">
+                                    <img class="iconImg" src="../../IconLibrary/images/icons/icon105.png" alt="">
+                                </div>
+                            </li>
+                            <li>
+                                <div class="icon">
+                                    <img class="iconBg" src="../../IconLibrary/images/iconBg/28A7FF.svg" alt="">
+                                    <img class="iconImg" src="../../IconLibrary/images/icons/icon106.png" alt="">
+                                </div>
+                            </li>
+                            <li>
+                                <div class="icon">
+                                    <img class="iconBg" src="../../IconLibrary/images/iconBg/28A7FF.svg" alt="">
+                                    <img class="iconImg" src="../../IconLibrary/images/icons/icon107.png" alt="">
+                                </div>
+                            </li>
+                            <li>
+                                <div class="icon">
+                                    <img class="iconBg" src="../../IconLibrary/images/iconBg/28A7FF.svg" alt="">
+                                    <img class="iconImg" src="../../IconLibrary/images/icons/icon108.png" alt="">
+                                </div>
+                            </li>
+                            <li>
+                                <div class="icon">
+                                    <img class="iconBg" src="../../IconLibrary/images/iconBg/28A7FF.svg" alt="">
+                                    <img class="iconImg" src="../../IconLibrary/images/icons/icon109.png" alt="">
+                                </div>
+                            </li>
+                            <li>
+                                <div class="icon">
+                                    <img class="iconBg" src="../../IconLibrary/images/iconBg/28A7FF.svg" alt="">
+                                    <img class="iconImg" src="../../IconLibrary/images/icons/icon110.png" alt="">
+                                </div>
+                            </li>
+                            <li>
+                                <div class="icon">
+                                    <img class="iconBg" src="../../IconLibrary/images/iconBg/28A7FF.svg" alt="">
+                                    <img class="iconImg" src="../../IconLibrary/images/icons/icon111.png" alt="">
+                                </div>
+                            </li>
+                            <li>
+                                <div class="icon">
+                                    <img class="iconBg" src="../../IconLibrary/images/iconBg/28A7FF.svg" alt="">
+                                    <img class="iconImg" src="../../IconLibrary/images/icons/icon112.png" alt="">
+                                </div>
+                            </li>
+                            <li>
+                                <div class="icon">
+                                    <img class="iconBg" src="../../IconLibrary/images/iconBg/28A7FF.svg" alt="">
+                                    <img class="iconImg" src="../../IconLibrary/images/icons/icon113.png" alt="">
+                                </div>
+                            </li>
+                            <li>
+                                <div class="icon">
+                                    <img class="iconBg" src="../../IconLibrary/images/iconBg/28A7FF.svg" alt="">
+                                    <img class="iconImg" src="../../IconLibrary/images/icons/icon114.png" alt="">
+                                </div>
+                            </li>
+                            <li>
+                                <div class="icon">
+                                    <img class="iconBg" src="../../IconLibrary/images/iconBg/28A7FF.svg" alt="">
+                                    <img class="iconImg" src="../../IconLibrary/images/icons/icon115.png" alt="">
+                                </div>
+                            </li>
+                            <li>
+                                <div class="icon">
+                                    <img class="iconBg" src="../../IconLibrary/images/iconBg/28A7FF.svg" alt="">
+                                    <img class="iconImg" src="../../IconLibrary/images/icons/icon116.png" alt="">
+                                </div>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="pu-bot" style="padding-top:17px;">
+                    <span class="cancle" v-on:click="iconLibraryStatus=false">取消</span>
+                    <span class="confirm" v-on:click="imgCreate">确认</span>
+                </div>
+            </div>
+        </div>
+
 
     </div>
     <script src="../../assets/lib/jquery.min.js"></script>
@@ -59,12 +804,68 @@
     <script src="../../assets/lib/element-ui/lib/index.js"></script>
     <script src="../../assets/lib/jqthumb.min.js"></script>
     <script src="../../assets/lib/webuploader/webuploader.js"></script>
+    <script src="../../IconLibrary/js/jquery.mCustomScrollbar.concat.min.js"></script>
     <script>
         var app = new Vue({
             el: '#basic-setting',
             data: {
                 name:'',
-            }
+                iconLibraryStatus:false,
+            },
+            mounted: function () {
+                <!--    图标库-->
+                //图标库细滚动条
+                $("#app-icon-list").mCustomScrollbar({scrollbarPosition: "outside" });
+                // 改变图标库的背景色
+                $(".iconLibrary .color-list").on('click', 'ul li', function () {
+                    $(this).addClass('active').siblings().removeClass('active');
+                    var dataColor = $(this).attr('data-color');
+                    $("#app-icon-list ul li img.iconBg").attr('src', '../../IconLibrary/images/iconBg/' + dataColor + '.svg');
+                });
+
+                // 图标库切换
+                $(".iconLibrary .app-icon-list").on("click", "  ul li", function () {
+                    $(this).addClass("cur").siblings().removeClass('cur');
+                });
+
+            },
+            methods: {
+            //   图片合并
+                imgCreate:function (){
+                    var iconBg = $("#app-icon-list ul li.cur").find('.iconBg').attr('src');
+                    var iconImg = $("#app-icon-list ul li.cur").find('.iconImg').attr('src');
+                    console.log(iconBg)
+                    console.log(iconImg)
+                    this.drawAndShareImage(iconBg, iconImg)
+                },
+                drawAndShareImage:function (iconBg, iconImg) {
+                    var $this = this;
+                    var canvas = document.createElement("canvas");
+                    canvas.width = 700;
+                    canvas.height = 700;
+                    var context = canvas.getContext("2d");
+                    context.rect(0, 0, canvas.width, canvas.height);
+                    context.fillStyle = 'rgba(255, 255, 255, 0)';
+                    context.fill();
+                    var myImage = new Image();
+                    myImage.src = iconBg;  //背景图片 你自己本地的图片或者在线图片
+                    myImage.crossOrigin = 'Anonymous';
+                    myImage.onload = function () {
+                        context.drawImage(myImage, 0, 0, 700, 700);
+                        var myImage2 = new Image();
+                        myImage2.src = iconImg;  //你自己本地的图片或者在线图片
+                        myImage2.crossOrigin = 'Anonymous';
+                        myImage2.onload = function () {
+                            context.drawImage(myImage2, 0, 0, 700, 700);
+                            var base64 = canvas.toDataURL("image/png");
+                            var img = document.getElementById('appIconImg');
+                            console.log(base64)
+                            img.setAttribute('src', base64);
+                        }
+                        $this.iconLibraryStatus = !$this.iconLibraryStatus;
+                    }
+                }
+            },
         })
     </script>
     <script>
