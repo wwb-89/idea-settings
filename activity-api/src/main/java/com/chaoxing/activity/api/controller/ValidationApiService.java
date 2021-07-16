@@ -26,13 +26,13 @@ public class ValidationApiService {
 	 * @Description
 	 * @author wwb
 	 * @Date 2021-07-16 10:09:09
-	 * @param templateComponentId
 	 * @param uid
+	 * @param templateComponentId
 	 * @return com.chaoxing.activity.dto.RestRespDTO
 	*/
 	@RequestMapping("sign-up-able")
-	public RestRespDTO signUpAble(Integer templateComponentId, Integer uid) {
-		return RestRespDTO.success(signUpConditionService.whetherCanSignUp(templateComponentId, uid));
+	public RestRespDTO signUpAble(Integer uid, Integer templateComponentId) {
+		return RestRespDTO.success(signUpConditionService.whetherCanSignUp(uid, templateComponentId));
 	}
 
 }

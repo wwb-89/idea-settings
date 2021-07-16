@@ -102,11 +102,11 @@ public class SignUpConditionService {
 	 * @Description
 	 * @author wwb
 	 * @Date 2021-07-09 17:44:47
-	 * @param templateComponentId
 	 * @param uid
+	 * @param templateComponentId
 	 * @return boolean
 	*/
-	public boolean whetherCanSignUp(Integer templateComponentId, Integer uid) {
+	public boolean whetherCanSignUp(Integer uid, Integer templateComponentId) {
 		List<SignUpCondition> signUpConditions = listByTemplateComponentId(templateComponentId);
 		if (CollectionUtils.isEmpty(signUpConditions)) {
 			return true;
