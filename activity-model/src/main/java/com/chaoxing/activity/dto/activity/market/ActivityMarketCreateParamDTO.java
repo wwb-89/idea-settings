@@ -22,19 +22,25 @@ public class ActivityMarketCreateParamDTO {
 
 	/** 市场名称 */
 	private String name;
+	/** 图标云盘id */
+	private String iconCloudId;
 	/** 机构id */
 	private Integer fid;
+	/** 分类id（微服务创建使用） */
+	private Integer classifyId;
 
 	public ActivityMarket buildActivityMarket() {
 		return ActivityMarket.builder()
 				.name(getName())
+				.iconCloudId(getIconCloudId())
 				.fid(getFid())
 				.build();
 	}
 
-	public static ActivityMarketCreateParamDTO build(String name, Integer fid) {
+	public static ActivityMarketCreateParamDTO build(String name, String iconCloudId, Integer fid) {
 		return ActivityMarketCreateParamDTO.builder()
 				.name(name)
+				.iconCloudId(iconCloudId)
 				.fid(fid)
 				.build();
 	}

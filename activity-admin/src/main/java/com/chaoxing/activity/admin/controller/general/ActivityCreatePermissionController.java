@@ -2,12 +2,12 @@ package com.chaoxing.activity.admin.controller.general;
 
 import com.chaoxing.activity.admin.util.LoginUtils;
 import com.chaoxing.activity.dto.OrgRoleDTO;
-import com.chaoxing.activity.dto.manager.WfwGroupDTO;
+import com.chaoxing.activity.dto.manager.wfw.WfwGroupDTO;
 import com.chaoxing.activity.model.ActivityClassify;
 import com.chaoxing.activity.model.OrgConfig;
 import com.chaoxing.activity.service.activity.classify.ActivityClassifyQueryService;
 import com.chaoxing.activity.service.manager.OrganizationalStructureApiService;
-import com.chaoxing.activity.service.manager.WfwContactApiService;
+import com.chaoxing.activity.service.manager.wfw.WfwContactApiService;
 import com.chaoxing.activity.service.manager.WfwGroupApiService;
 import com.chaoxing.activity.service.org.OrgConfigService;
 import com.chaoxing.activity.util.annotation.LoginRequired;

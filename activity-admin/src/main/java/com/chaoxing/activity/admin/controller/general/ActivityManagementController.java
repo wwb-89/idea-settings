@@ -3,7 +3,7 @@ package com.chaoxing.activity.admin.controller.general;
 import com.chaoxing.activity.admin.util.LoginUtils;
 import com.chaoxing.activity.dto.LoginUserDTO;
 import com.chaoxing.activity.dto.manager.ActivityCreatePermissionDTO;
-import com.chaoxing.activity.dto.manager.WfwAreaDTO;
+import com.chaoxing.activity.dto.manager.wfw.WfwAreaDTO;
 import com.chaoxing.activity.dto.manager.sign.create.SignCreateParamDTO;
 import com.chaoxing.activity.model.*;
 import com.chaoxing.activity.service.GroupService;
@@ -13,7 +13,7 @@ import com.chaoxing.activity.service.activity.classify.ActivityClassifyHandleSer
 import com.chaoxing.activity.service.activity.engine.ActivityEngineQueryService;
 import com.chaoxing.activity.service.activity.manager.ActivityCreatePermissionService;
 import com.chaoxing.activity.service.activity.template.TemplateQueryService;
-import com.chaoxing.activity.service.manager.WfwAreaApiService;
+import com.chaoxing.activity.service.manager.wfw.WfwAreaApiService;
 import com.chaoxing.activity.service.org.OrgService;
 import com.chaoxing.activity.service.tablefield.TableFieldQueryService;
 import com.chaoxing.activity.util.constant.CommonConstant;

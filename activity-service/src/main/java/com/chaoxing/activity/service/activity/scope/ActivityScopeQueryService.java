@@ -1,7 +1,7 @@
 package com.chaoxing.activity.service.activity.scope;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
-import com.chaoxing.activity.dto.manager.WfwAreaDTO;
+import com.chaoxing.activity.dto.manager.wfw.WfwAreaDTO;
 import com.chaoxing.activity.mapper.ActivityScopeMapper;
 import com.chaoxing.activity.model.ActivityScope;
 import com.google.common.collect.Lists;

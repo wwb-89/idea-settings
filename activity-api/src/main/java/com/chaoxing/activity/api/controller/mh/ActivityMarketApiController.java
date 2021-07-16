@@ -12,7 +12,7 @@ import com.chaoxing.activity.model.ActivityClassify;
 import com.chaoxing.activity.service.activity.ActivityCoverUrlSyncService;
 import com.chaoxing.activity.service.activity.ActivityQueryService;
 import com.chaoxing.activity.service.activity.classify.ActivityClassifyQueryService;
-import com.chaoxing.activity.service.manager.WfwAreaApiService;
+import com.chaoxing.activity.service.manager.wfw.WfwAreaApiService;
 import com.chaoxing.activity.util.constant.DateTimeFormatterConstant;
 import com.chaoxing.activity.util.exception.BusinessException;
 import com.google.common.collect.Lists;

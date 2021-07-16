@@ -6,7 +6,7 @@ import com.chaoxing.activity.dto.OrgDTO;
 import com.chaoxing.activity.model.Activity;
 import com.chaoxing.activity.service.activity.ActivityValidationService;
 import com.chaoxing.activity.service.activity.manager.ActivityManagerService;
-import com.chaoxing.activity.service.manager.WfwContactApiService;
+import com.chaoxing.activity.service.manager.wfw.WfwContactApiService;
 import com.chaoxing.activity.util.UserAgentUtils;
 import com.chaoxing.activity.util.annotation.LoginRequired;
 import org.springframework.stereotype.Controller;

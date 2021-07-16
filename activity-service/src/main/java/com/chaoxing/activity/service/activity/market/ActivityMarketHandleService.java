@@ -4,11 +4,13 @@ import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.chaoxing.activity.dto.OperateUserDTO;
 import com.chaoxing.activity.dto.activity.market.ActivityMarketCreateParamDTO;
 import com.chaoxing.activity.dto.activity.market.ActivityMarketUpdateParamDTO;
+import com.chaoxing.activity.dto.manager.wfw.WfwAppCreateParamDTO;
 import com.chaoxing.activity.mapper.ActivityMarketMapper;
 import com.chaoxing.activity.model.Activity;
 import com.chaoxing.activity.model.ActivityMarket;
 import com.chaoxing.activity.service.activity.template.TemplateHandleService;
 import com.chaoxing.activity.service.activity.template.TemplateQueryService;
+import com.chaoxing.activity.service.manager.wfw.WfwAppApiService;
 import com.chaoxing.activity.util.ApplicationContextHolder;
 import com.chaoxing.activity.util.exception.BusinessException;
 import lombok.extern.slf4j.Slf4j;
@@ -39,6 +41,8 @@ public class ActivityMarketHandleService {
 	private TemplateHandleService templateHandleService;
 	@Resource
 	private TemplateQueryService templateQueryService;
+	@Resource
+	private WfwAppApiService wfwAppApiService;
 
 	/**创建活动市场
 	 * @Description 
@@ -46,16 +50,34 @@ public class ActivityMarketHandleService {
 	 * @Date 2021-07-14 16:34:09
 	 * @param activityMarketCreateParamDto
 	 * @param operateUserDto
-	 * @return void
+	 * @return com.chaoxing.activity.model.ActivityMarket
 	*/
 	@Transactional(rollbackFor = Exception.class)
-	public void add(ActivityMarketCreateParamDTO activityMarketCreateParamDto, OperateUserDTO operateUserDto) {
+	public ActivityMarket add(ActivityMarketCreateParamDTO activityMarketCreateParamDto, OperateUserDTO operateUserDto) {
 		ActivityMarket activityMarket = activityMarketCreateParamDto.buildActivityMarket();
 		activityMarket.perfectCreator(operateUserDto);
 		activityMarketMapper.insert(activityMarket);
 		Integer marketId = activityMarket.getId();
 		// 给市场克隆一个通用模版
 		templateHandleService.cloneTemplate(marketId, templateQueryService.getSystemTemplateIdByActivityFlag(Activity.ActivityFlagEnum.NORMAL));
+		return activityMarket;
+	}
+
+	/**创建活动市场
+	 * @Description 
+	 * @author wwb
+	 * @Date 2021-07-16 17:11:35
+	 * @param activityMarketCreateParamDto
+	 * @param operateUserDto
+	 * @return com.chaoxing.activity.model.ActivityMarket
+	*/
+	@Transactional(rollbackFor = Exception.class)
+	public ActivityMarket addFromWfw(ActivityMarketCreateParamDTO activityMarketCreateParamDto, OperateUserDTO operateUserDto) {
+		ActivityMarket activityMarket = add(activityMarketCreateParamDto, operateUserDto);
+		// 创建微服务应用
+		WfwAppCreateParamDTO wfwAppCreateParamDto = WfwAppCreateParamDTO.buildFromActivityMarket(activityMarket, activityMarketCreateParamDto.getClassifyId());
+		wfwAppApiService.newApp(wfwAppCreateParamDto);
+		return activityMarket;
 	}
 
 	/**创建活动市场
@@ -89,7 +111,7 @@ public class ActivityMarketHandleService {
 	@Transactional(rollbackFor = Exception.class)
 	public void add(Integer fid, String activityFlag, OperateUserDTO operateUserDto) {
 		Activity.ActivityFlagEnum activityFlagEnum = Activity.ActivityFlagEnum.fromValue(activityFlag);
-		ActivityMarketCreateParamDTO activityMarketCreateParamDto = ActivityMarketCreateParamDTO.build(activityFlagEnum.getName(), fid);
+		ActivityMarketCreateParamDTO activityMarketCreateParamDto = ActivityMarketCreateParamDTO.build(activityFlagEnum.getName(), ActivityMarket.DEFAULT_MARKET_ICON_CLOUD_ID, fid);
 		ApplicationContextHolder.getBean(ActivityMarketHandleService.class).add(activityMarketCreateParamDto, activityFlagEnum, operateUserDto);
 	}
 

@@ -2,7 +2,7 @@ package com.chaoxing.activity.model;
 
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableName;
-import com.chaoxing.activity.dto.manager.WfwAreaDTO;
+import com.chaoxing.activity.dto.manager.wfw.WfwAreaDTO;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;

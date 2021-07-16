@@ -1,6 +1,6 @@
 package com.chaoxing.activity;
 
-import com.chaoxing.activity.service.manager.WfwAreaApiService;
+import com.chaoxing.activity.service.manager.wfw.WfwAreaApiService;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 

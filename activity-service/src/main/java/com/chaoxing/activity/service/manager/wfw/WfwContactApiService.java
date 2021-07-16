@@ -1,12 +1,12 @@
-package com.chaoxing.activity.service.manager;
+package com.chaoxing.activity.service.manager.wfw;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.chaoxing.activity.dto.OrgDTO;
-import com.chaoxing.activity.dto.manager.WfwContacterDTO;
-import com.chaoxing.activity.dto.manager.WfwDepartmentDTO;
-import com.chaoxing.activity.dto.manager.WfwGroupDTO;
+import com.chaoxing.activity.dto.manager.wfw.WfwContacterDTO;
+import com.chaoxing.activity.dto.manager.wfw.WfwDepartmentDTO;
+import com.chaoxing.activity.dto.manager.wfw.WfwGroupDTO;
 import com.chaoxing.activity.util.exception.BusinessException;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
