@@ -82,4 +82,8 @@ public class ActivityMarket {
         return "http://manage.hd.chaoxing.com?marketId=" + getId();
     }
 
+    public String buildMarketmanageUrl() {
+        return "http://manage.hd.chaoxing.com/market/" + getId();
+    }
+
 }

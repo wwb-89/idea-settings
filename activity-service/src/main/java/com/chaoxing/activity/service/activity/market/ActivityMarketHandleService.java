@@ -75,9 +75,17 @@ public class ActivityMarketHandleService {
 	public ActivityMarket addFromWfw(ActivityMarketCreateParamDTO activityMarketCreateParamDto, OperateUserDTO operateUserDto) {
 		ActivityMarket activityMarket = add(activityMarketCreateParamDto, operateUserDto);
 		// 创建微服务应用
-		WfwAppCreateParamDTO wfwAppCreateParamDto = WfwAppCreateParamDTO.buildFromActivityMarket(activityMarket, activityMarketCreateParamDto.getClassifyId());
-		wfwAppApiService.newApp(wfwAppCreateParamDto);
+		addWfwApp(activityMarket, activityMarketCreateParamDto.getClassifyId());
 		return activityMarket;
+	}
+
+	private void addWfwApp(ActivityMarket activityMarket, Integer classifyId) {
+		// 应用
+		WfwAppCreateParamDTO wfwAppCreateParamDto = WfwAppCreateParamDTO.buildFromActivityMarket(activityMarket, classifyId);
+		wfwAppApiService.newApp(wfwAppCreateParamDto);
+		// 应用管理
+		WfwAppCreateParamDTO wfwManageAppCreateParamDto = WfwAppCreateParamDTO.buildManageAppFromActivityMarket(activityMarket, classifyId);
+		wfwAppApiService.newApp(wfwManageAppCreateParamDto);
 	}
 
 	/**创建活动市场
