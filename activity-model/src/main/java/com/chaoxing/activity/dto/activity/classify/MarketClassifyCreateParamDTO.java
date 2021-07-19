@@ -24,4 +24,11 @@ public class MarketClassifyCreateParamDTO {
 	/** 活动市场id */
 	private Integer marketId;
 
+	public static MarketClassifyCreateParamDTO build(String name, Integer marketId) {
+		return MarketClassifyCreateParamDTO.builder()
+				.name(name)
+				.marketId(marketId)
+				.build();
+	}
+
 }

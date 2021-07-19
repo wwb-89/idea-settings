@@ -5,12 +5,11 @@
         <result column="fid" jdbcType="INTEGER" property="fid" />
         <result column="classify_id" jdbcType="INTEGER" property="classifyId" />
         <result column="sequence" jdbcType="INTEGER" property="sequence" />
-        <result column="is_deleted" jdbcType="BIT" property="deleted" />
         <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
         <result column="update_time" jdbcType="TIMESTAMP" property="updateTime" />
     </resultMap>
     <sql id="Base_Column_List">
-        t.fid, t.classify_id, t.sequence, t.is_deleted, t.create_time, t.update_time
+        t.fid, t.classify_id, t.sequence, t.create_time, t.update_time
     </sql>
     <insert id="batachAdd">
         INSERT INTO t_org_classify ( fid, classify_id, sequence )
@@ -19,4 +18,14 @@
                 ( #{value.fid}, #{value.classifyId}, #{value.sequence} )
             </foreach>
     </insert>
+
+    <select id="getMaxSequenceByFid" resultType="java.lang.Integer">
+        SELECT
+            CASE WHEN ISNULL(MAX(t.sequence)) THEN 1 ELSE MAX(t.sequence) + 1 END
+        FROM
+            t_org_classify t
+        WHERE
+            t.fid = #{fid}
+    </select>
+
 </mapper>

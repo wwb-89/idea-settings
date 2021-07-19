@@ -1,6 +1,5 @@
 package com.chaoxing.activity.model;
 
-import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -8,6 +7,8 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
+import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * 活动市场与活动分类关联表
@@ -30,12 +31,27 @@ public class MarketClassify {
     private Integer classifyId;
     /** 顺序; column: sequence*/
     private Integer sequence;
-    /** 是否被删除; column: is_deleted*/
-    @TableField(value = "is_deleted")
-    private Boolean deleted;
     /** 创建时间; column: create_time*/
     private LocalDateTime createTime;
     /** 更新时间; column: update_time*/
     private LocalDateTime updateTime;
+
+    public static MarketClassify buildFromClassify(Classify classify, Integer marketId, Integer sequence) {
+        return MarketClassify.builder()
+                .marketId(marketId)
+                .classifyId(classify.getId())
+                .sequence(sequence)
+                .build();
+    }
+
+    public static List<MarketClassify> buildFromClassifies(List<Classify> classifies, Integer marketId) {
+        return classifies.stream().map(v -> MarketClassify.buildFromClassify(v, marketId, 1)).collect(Collectors.toList());
+    }
+
+    public static void handleSequence(List<MarketClassify> marketClassifies, Integer initialSequence) {
+        for (MarketClassify marketClassify : marketClassifies) {
+            marketClassify.setSequence(initialSequence++);
+        }
+    }
 
 }

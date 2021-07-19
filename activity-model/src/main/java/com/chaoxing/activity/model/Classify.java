@@ -36,4 +36,11 @@ public class Classify {
     /** 更新时间; column: update_time*/
     private LocalDateTime updateTime;
 
+    public static Classify buildFromName(String classifyName) {
+        return Classify.builder()
+                .name(classifyName)
+                .system(false)
+                .build();
+    }
+
 }

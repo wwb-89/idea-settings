@@ -17,13 +17,23 @@ import java.util.List;
 @Mapper
 public interface OrgClassifyMapper extends BaseMapper<OrgClassify> {
 
-	/**批量新增
-	 * @Description 
-	 * @author wwb
-	 * @Date 2021-07-19 16:14:48
+	/**
+	 * 批量新增
+	 *
 	 * @param orgClassifies
 	 * @return int
-	*/
+	 * @Description
+	 * @author wwb
+	 * @Date 2021-07-19 16:14:48
+	 */
 	int batachAdd(@Param("orgClassifies") List<OrgClassify> orgClassifies);
 
+	/**获取机构最大的顺序
+	 * @Description 
+	 * @author wwb
+	 * @Date 2021-07-19 17:48:23
+	 * @param fid
+	 * @return int
+	*/
+	int getMaxSequenceByFid(@Param("fid") Integer fid);
 }

@@ -1,6 +1,5 @@
 package com.chaoxing.activity.model;
 
-import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -31,23 +30,21 @@ public class OrgClassify {
     private Integer classifyId;
     /** 顺序; column: sequence*/
     private Integer sequence;
-    /** 是否被删除; column: is_deleted*/
-    @TableField(value = "is_deleted")
-    private Boolean deleted;
     /** 创建时间; column: create_time*/
     private LocalDateTime createTime;
     /** 更新时间; column: update_time*/
     private LocalDateTime updateTime;
 
-    public static OrgClassify buildFromClassify(Classify classify, Integer fid) {
+    public static OrgClassify buildFromClassify(Classify classify, Integer fid, Integer sequence) {
         return OrgClassify.builder()
                 .fid(fid)
                 .classifyId(classify.getId())
+                .sequence(sequence)
                 .build();
     }
 
     public static List<OrgClassify> buildFromClassifies(List<Classify> classifies, Integer fid) {
-        return classifies.stream().map(v -> OrgClassify.buildFromClassify(v, fid)).collect(Collectors.toList());
+        return classifies.stream().map(v -> OrgClassify.buildFromClassify(v, fid, 1)).collect(Collectors.toList());
     }
 
     public static void handleSequence(List<OrgClassify> orgClassifies, Integer initialSequence) {

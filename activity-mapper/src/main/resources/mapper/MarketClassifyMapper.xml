@@ -5,11 +5,20 @@
         <result column="market_id" jdbcType="INTEGER" property="marketId" />
         <result column="classify_id" jdbcType="INTEGER" property="classifyId" />
         <result column="sequence" jdbcType="INTEGER" property="sequence" />
-        <result column="is_deleted" jdbcType="BIT" property="deleted" />
         <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
         <result column="update_time" jdbcType="TIMESTAMP" property="updateTime" />
     </resultMap>
     <sql id="Base_Column_List">
-        t.market_id, t.classify_id, t.sequence, t.is_deleted, t.create_time, t.update_time
+        t.market_id, t.classify_id, t.sequence, t.create_time, t.update_time
     </sql>
+
+    <select id="getMaxSequenceByMarketId" resultType="java.lang.Integer">
+        SELECT
+            CASE WHEN ISNULL(MAX( t.sequence )) THEN 1 ELSE MAX( t.sequence ) + 1 END
+        FROM
+            t_market_classify t
+        WHERE
+            t.market_id = #{marketId}
+    </select>
+
 </mapper>

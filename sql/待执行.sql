@@ -127,7 +127,6 @@ CREATE TABLE `t_org_classify`  (
     `fid` int(11) NULL COMMENT '机构id',
     `classify_id` int(11) NULL COMMENT '分类id',
     `sequence` int(11) NULL DEFAULT 1 COMMENT '顺序',
-    `is_deleted` tinyint(1) NULL DEFAULT 0 COMMENT '是否被删除',
     `create_time` datetime(0) NULL DEFAULT current_timestamp() COMMENT '创建时间',
     `update_time` datetime(0) NULL DEFAULT current_timestamp() ON UPDATE CURRENT_TIMESTAMP(0) COMMENT '更新时间'
 );
@@ -135,7 +134,6 @@ CREATE TABLE `t_market_classify`  (
     `market_id` int(11) NULL COMMENT '活动市场id',
     `classify_id` int(11) NULL COMMENT '分类id',
     `sequence` int(11) NULL COMMENT '顺序',
-    `is_deleted` tinyint(1) NULL DEFAULT 0 COMMENT '是否被删除',
     `create_time` datetime(0) NULL DEFAULT current_timestamp() COMMENT '创建时间',
     `update_time` datetime(0) NULL DEFAULT current_timestamp() ON UPDATE CURRENT_TIMESTAMP(0) COMMENT '更新时间'
 ) COMMENT = '活动市场与活动分类关联表';

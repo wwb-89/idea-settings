@@ -24,4 +24,11 @@ public class OrgClassifyCreateParamDTO {
 	/** 机构id */
 	private Integer fid;
 
+	public static OrgClassifyCreateParamDTO build(String name, Integer fid) {
+		return OrgClassifyCreateParamDTO.builder()
+				.name(name)
+				.fid(fid)
+				.build();
+	}
+
 }

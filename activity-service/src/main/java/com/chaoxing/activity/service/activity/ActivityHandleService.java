@@ -629,4 +629,39 @@ public class ActivityHandleService {
 		}
 	}
 
+	/**更新机构创建的活动（没有活动市场id）的分类id
+	 * @Description 
+	 * @author wwb
+	 * @Date 2021-07-19 17:32:11
+	 * @param fid
+	 * @param classifyId
+	 * @param oldClassifyId
+	 * @return void
+	*/
+	public void updateOrgActivityClassifyId(Integer fid, Integer classifyId, Integer oldClassifyId) {
+		activityMapper.update(null, new LambdaUpdateWrapper<Activity>()
+				.eq(Activity::getCreateFid, fid)
+				.eq(Activity::getMarketId, null)
+				.eq(Activity::getActivityClassifyId, oldClassifyId)
+				.set(Activity::getActivityClassifyId, classifyId)
+		);
+	}
+
+	/**更新活动市场关联的活动的分类id
+	 * @Description 
+	 * @author wwb
+	 * @Date 2021-07-19 17:32:47
+	 * @param marketId
+	 * @param classifyId
+	 * @param oldClassifyId
+	 * @return void
+	*/
+	public void updateMarketActivityClassifyId(Integer marketId, Integer classifyId, Integer oldClassifyId) {
+		activityMapper.update(null, new LambdaUpdateWrapper<Activity>()
+				.eq(Activity::getMarketId, marketId)
+				.eq(Activity::getActivityClassifyId, oldClassifyId)
+				.set(Activity::getActivityClassifyId, classifyId)
+		);
+	}
+
 }
