@@ -74,12 +74,12 @@
             <!--类型-->
             <choose>
                 <when test="params.activityClassifyId != null">
-                    INNER JOIN t_activity_classify t3 ON t.activity_classify_id = t3.id
+                    INNER JOIN t_classify t3 ON t.activity_classify_id = t3.id
                     AND t3.id = #{params.activityClassifyId}
                 </when>
                 <otherwise>
                     <if test="params.activityClassifyName != null and params.activityClassifyName != ''">
-                        INNER JOIN t_activity_classify t3 ON t.activity_classify_id = t3.id
+                        INNER JOIN t_classify t3 ON t.activity_classify_id = t3.id
                         AND t3.name = #{params.activityClassifyName}
                     </if>
                 </otherwise>
@@ -286,7 +286,7 @@
             <foreach collection="params.fids" index="key" item="value" open="(" close=")" separator=",">
                 #{value}
             </foreach>
-            LEFT JOIN t_activity_classify t2 ON t.activity_classify_id = t2.id
+            LEFT JOIN t_classify t2 ON t.activity_classify_id = t2.id
         WHERE
             <!--状态-->
             t.`status` IN ( 2, 3, 4 )
@@ -322,7 +322,7 @@
             t1.`name` activityClassifyName
         FROM
             t_activity t
-            LEFT JOIN t_activity_classify t1 ON t.activity_classify_id = t1.id
+            LEFT JOIN t_classify t1 ON t.activity_classify_id = t1.id
         WHERE
             <!--状态-->
             t.create_fid = #{params.topFid}
@@ -401,7 +401,7 @@
             t1.`name` activityClassifyName
         FROM
             t_activity t
-            LEFT JOIN t_activity_classify t1 ON t.activity_classify_id = t1.id
+            LEFT JOIN t_classify t1 ON t.activity_classify_id = t1.id
         WHERE
             t.sign_id = #{signId}
         LIMIT 1
@@ -413,7 +413,7 @@
             t1.`name` activityClassifyName
         FROM
             t_activity t
-            LEFT JOIN t_activity_classify t1 ON t.activity_classify_id = t1.id
+            LEFT JOIN t_classify t1 ON t.activity_classify_id = t1.id
         WHERE
             t.id = #{id}
     </select>
@@ -451,7 +451,7 @@
             count( 1 ) AS typeNum
         FROM
             t_activity t
-            LEFT JOIN t_activity_classify tac ON t.activity_classify_id = tac.id
+            LEFT JOIN t_classify tac ON t.activity_classify_id = tac.id
         WHERE
             t.id in
             <foreach collection="activityIds" item="activityId" open="(" close=")" separator=",">
