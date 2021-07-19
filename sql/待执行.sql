@@ -137,3 +137,57 @@ CREATE TABLE `t_market_classify`  (
     `create_time` datetime(0) NULL DEFAULT current_timestamp() COMMENT '创建时间',
     `update_time` datetime(0) NULL DEFAULT current_timestamp() ON UPDATE CURRENT_TIMESTAMP(0) COMMENT '更新时间'
 ) COMMENT = '活动市场与活动分类关联表';
+-- 刷入系统分类
+INSERT INTO t_classify ( `name`, is_system )
+SELECT
+    t.`name`,
+    1
+FROM
+    t_activity_classify t
+WHERE
+    t.is_system = 1;
+-- 刷入机构创建的分类
+INSERT INTO t_classify ( `name`, is_system )
+SELECT DISTINCT
+    t.`name`,
+    0
+FROM
+    t_activity_classify t
+WHERE
+    NOT EXISTS (
+        SELECT
+            1
+        FROM
+            t_classify t1
+        WHERE
+                t.`name` = t1.`name`
+    );
+-- 输入org_classify表数据
+INSERT INTO t_org_classify ( fid, classify_id, sequence )
+SELECT
+    t.affiliation_fid,
+    t1.id,
+    t.sequence
+FROM
+    t_activity_classify t
+    INNER JOIN t_classify t1 ON t.`name` = t1.`name`
+WHERE
+    t.is_system = 0
+    AND t.`status` = 1
+ORDER BY
+    t.affiliation_fid,
+    t.sequence;
+-- 更新活动表的活动分类id
+UPDATE t_activity t,
+    (
+    SELECT
+    t.id,
+    t2.id new_classify_id
+    FROM
+    t_activity t
+    INNER JOIN t_activity_classify t1 ON t.activity_classify_id = t1.id
+    INNER JOIN t_classify t2 ON t1.`name` = t2.`name`
+    ) t1
+SET t.activity_classify_id = t1.new_classify_id
+WHERE
+    t.id = t1.id;
