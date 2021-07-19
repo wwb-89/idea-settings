@@ -55,13 +55,13 @@ public class GeneralActivityManagementController {
 	 * @Date 2020-12-25 10:19:16
 	 * @param request
 	 * @param model
-	 * @param templateId
+	 * @param marketId
 	 * @param code
 	 * @return java.lang.String
 	*/
 	@GetMapping("activity/add")
-	public String add(HttpServletRequest request, Model model, Integer templateId, String flag, String code) {
-		return activityManagementController.add(request, model, templateId, flag, code);
+	public String add(HttpServletRequest request, Model model, Integer marketId, String flag, String code) {
+		return activityManagementController.add(request, model, marketId, flag, code);
 	}
 
 }

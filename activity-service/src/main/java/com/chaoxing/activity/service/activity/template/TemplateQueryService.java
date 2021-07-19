@@ -122,6 +122,26 @@ public class TemplateQueryService {
 		return templateMapper.selectById(templateId);
 	}
 
+	/**根据活动市场id获取模版，市场id为空则根据activityFlag查询系统模版
+	 * @Description 
+	 * @author wwb
+	 * @Date 2021-07-19 11:51:29
+	 * @param marketId
+	 * @param activityFlagEnum
+	 * @return com.chaoxing.activity.model.Template
+	*/
+	public Template getTemplateByMarketIdOrActivityFlag(Integer marketId, Activity.ActivityFlagEnum activityFlagEnum) {
+		if (marketId == null) {
+			List<Template> systemTemplates = templateMapper.selectList(new LambdaQueryWrapper<Template>()
+					.eq(Template::getSystem, true)
+					.eq(Template::getActivityFlag, activityFlagEnum.getValue()));
+			return Optional.ofNullable(systemTemplates).orElse(Lists.newArrayList()).stream().findFirst().orElse(null);
+		}
+		List<Template> marketTemplates = templateMapper.selectList(new LambdaQueryWrapper<Template>()
+				.eq(Template::getMarketId, marketId));
+		return Optional.ofNullable(marketTemplates).orElse(Lists.newArrayList()).stream().findFirst().orElse(null);
+	}
+
 	/**根据模版id和组件id查询模版组件列表
 	 * @Description 
 	 * @author wwb

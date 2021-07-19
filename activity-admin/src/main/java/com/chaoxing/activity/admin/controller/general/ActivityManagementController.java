@@ -92,11 +92,11 @@ public class ActivityManagementController {
 		return "pc/activity-list";
 	}
 
-	public String add(HttpServletRequest request, Model model, Integer templateId, String flag, String code) {
+	public String add(HttpServletRequest request, Model model, Integer marketId, String flag, String code) {
 		LoginUserDTO loginUser = LoginUtils.getLoginUser(request);
 		Integer fid = loginUser.getFid();
-		Template template = templateQueryService.getTemplateByIdOrActivityFlag(templateId, Activity.ActivityFlagEnum.fromValue(flag));
-		templateId = Optional.ofNullable(templateId).orElse(template.getId());
+		Template template = templateQueryService.getTemplateByMarketIdOrActivityFlag(marketId, Activity.ActivityFlagEnum.fromValue(flag));
+		Integer templateId = Optional.ofNullable(template).map(Template::getId).orElse(null);
 		model.addAttribute("templateId", template.getId());
 		// 加载模版对应的组件列表
 		model.addAttribute("templateComponents", activityEngineQueryService.listTemplateComponentTree(templateId));
