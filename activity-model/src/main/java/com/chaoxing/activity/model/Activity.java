@@ -17,6 +17,7 @@ import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 
 /**
  * 活动表
@@ -388,7 +389,7 @@ public class Activity {
                 .credit(credit)
                 .timeLengthUpperLimit(timeLengthUpperLimit)
                 .timingRelease(timingRelease)
-                .timingReleaseTimeStamp(timingReleaseTime == null ? null : timingReleaseTime.toInstant(ZoneOffset.of("+8")).toEpochMilli())
+                .timingReleaseTimeStamp(Optional.ofNullable(timingReleaseTime).map(v -> timingReleaseTime.toInstant(ZoneOffset.of("+8")).toEpochMilli()).orElse(null))
 //                .openAudit()
                 .createAreaCode(createAreaCode)
                 .tags(tags)

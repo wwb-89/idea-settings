@@ -256,11 +256,11 @@
                         <div class="form-item" v-show="activity.timingRelease">
                             <label class="label"></label>
                             <div class="input-box">
-                                <el-date-picker v-model="activity.timingReleaseTime"
+                                <el-date-picker v-model="activity.timingReleaseTimeStamp"
                                                 type="datetime"
                                                 placeholder="发布时间"
                                                 format="yyyy-MM-dd HH:mm"
-                                                value-format="yyyy-MM-dd HH:mm:ss"
+                                                value-format="timestamp"
                                                 prefix-icon="disable"
                                                 :clearable="false"
                                                 :editable="false"
@@ -754,20 +754,10 @@
                         introduction: "",
                         webTemplateId: '',
                         // 目前数据接收实体没有以下字段
-                        timingReleaseTime: "",
-                        timingReleaseTimeStr: "",
-                        startTime: activityApp.generateActivityDefaultStartTime(),
-                        endTime: activityApp.generateActivityDefaultEndTime(),
                         activityFlag: $this.activityFlag,
                     };
                 } else {
                     // 修改活动
-                    $this.activity.createTime = null;
-                    $this.activity.updateTime = null;
-                    $this.activity.releaseTime = null;
-                    $this.activity.startTime = $this.activity.startTimeStr;
-                    $this.activity.endTime = $this.activity.endTimeStr;
-
                     if ($this.activity.activityComponentValues) {
                         $($this.activity.activityComponentValues).each(function () {
                             var componentField = $.extend({}, this);
@@ -778,11 +768,6 @@
                             $this.$set($this.activityComponentValueMap, this.templateComponentId, componentField);
                         });
                     }
-                }
-                if (activityApp.isEmpty($this.activity.timingReleaseTime)) {
-                    $this.activity.timingReleaseTime = "";
-                } else {
-                    $this.activity.timingReleaseTime = $this.activity.timingReleaseTimeStr;
                 }
                 $this.$set($this.activity, "timeScope", [$this.activity.startTimeStamp, $this.activity.endTimeStamp]);
                 // 标签
@@ -828,11 +813,11 @@
                     // 根据模板组件关联关系，初始化数据
                     $($this.templateComponents).each(function () {
                         if (this.code == 'sign_up' || this.code == 'company_sign_up') {
-                            var signUp = signApp.newSignUp();
+                            var signUp = signApp.newSignUp(this);
                             signUp.originId = this.id;
                             $this.$set($this.signUpMap, this.id, signUp);
                         } else if (this.code == 'sign_in' || this.code == 'sign_out') {
-                            var signIn = this.code == 'sign_in' ? signApp.newSignIn() : signApp.newSignOut();
+                            var signIn = signApp.newSignIn(this);
                             signIn.originId = this.id;
                             $this.$set($this.signInMap, this.id, signIn);
                         } else if (this.type == 'text' || this.type == 'radio' || this.type == 'checkbox') {
@@ -866,7 +851,6 @@
                         }
                     });
                     // 报名
-                    debugger;
                     $($this.sign.signUps).each(function (i) {
                         if (!activityApp.isEmpty(this.id)) {
                             if (this.wfwParticipateScopes) {
@@ -897,7 +881,7 @@
                     $(signUpTplComponentIds).each(function (i) {
                         var originId = signUpTplComponentIds[i];
                         if (!$this.signUpMap[originId]) {
-                            var signUp = signApp.newSignUp();
+                            var signUp = signApp.newSignUp($this.templateComponentMap[originId]);
                             signUp.originId = originId;
                             signUp.deleted = true;
                             $this.$set($this.signUpMap, originId, signUp);
@@ -910,7 +894,7 @@
                     $(signInTplComponentIds).each(function (i) {
                         var originId = signInTplComponentIds[i];
                         if (!$this.signInMap[originId]) {
-                            var signIn = $this.templateComponentMap[originId] == 'sign_in' ? signApp.newSignIn() : signApp.newSignOut();
+                            var signIn = signApp.newSignIn($this.templateComponentMap[originId]);
                             signIn.originId = originId;
                             $this.$set($this.signInMap, originId, signIn);
                         }
@@ -1488,8 +1472,6 @@
                             var activityData = data.data;
                             $this.$set($this.sign, "id", activityData.signId);
                             if (activityApp.isEmpty($this.activity.pageId)) {
-                                // $this.filterOptionalTemplate();
-                                // $this.step = 2;
                                 $this.returnBack();
                             } else {
                                 app.showMsg("修改成功", function () {
@@ -1541,26 +1523,6 @@
                     var webTemplate = $this.webTemplates[index];
                     $this.operateWebTemplateId = webTemplate.id;
                     $this.activity.webTemplateId = webTemplate.id;
-                    // var url = ctx + "/api/activity/" + $this.activity.id + "/bind/template/" + webTemplate.id;
-                    // app.ajaxPostWithLoading(url, {}, function (data) {
-                    //     if (data.success) {
-                    //         app.noticeActivityChange($this.activity.id);
-                    //         var editUrl = data.data.editUrl;
-                    //         $this.$set($this.activity, "webTemplateId", $this.operateWebTemplateId);
-                    //         app.showMsg("选择模板成功", function () {
-                    //             // 到编辑门户页面
-                    //             window.location.replace(editUrl);
-                    //         });
-                    //     } else {
-                    //         var errorMessage = data.message;
-                    //         if (activityApp.isEmpty(errorMessage)) {
-                    //             errorMessage = "选择模板失败";
-                    //         }
-                    //         app.showMsg(errorMessage);
-                    //     }
-                    // }, function () {
-                    //     app.showMsg("选择模板失败");
-                    // });
                 },
                 // 预览页面
                 previePage: function () {
@@ -1619,19 +1581,6 @@
                     var $this = this;
                     app.closeLayerPop($this.formConfigLayerIndex);
                     $this.$set($this.signUpMap[$this.operateSignUpOriginId], "fillInfoFormId", formId);
-                },
-                // 过滤可选的模板
-                filterOptionalTemplate: function () {
-                    var $this = this;
-                    var activityType = $this.activity.activityType;
-                    var webTemplates = [];
-                    $($this.webTemplates).each(function () {
-                        if ((this.activityType == activityType || activityApp.isEmpty(this.activityType)) && !this.deleted) {
-                            // 模板的类型为空则表示线上和线下都可用
-                            webTemplates.push(this);
-                        }
-                    });
-                    $this.webTemplates = webTemplates;
                 },
                 toAddSignUpParticipateScope: function(signUpTplComponentId, templateComponent){
                     var $this = this;
