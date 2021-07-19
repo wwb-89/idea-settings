@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.chaoxing.activity.mapper.OrgClassifyMapper">
+    <resultMap id="BaseResultMap" type="com.chaoxing.activity.model.OrgClassify">
+        <result column="fid" jdbcType="INTEGER" property="fid" />
+        <result column="classify_id" jdbcType="INTEGER" property="classifyId" />
+        <result column="sequence" jdbcType="INTEGER" property="sequence" />
+        <result column="is_deleted" jdbcType="BIT" property="deleted" />
+        <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
+        <result column="update_time" jdbcType="TIMESTAMP" property="updateTime" />
+    </resultMap>
+    <sql id="Base_Column_List">
+        t.fid, t.classify_id, t.sequence, t.is_deleted, t.create_time, t.update_time
+    </sql>
+    <insert id="batachAdd">
+        INSERT INTO t_org_classify ( fid, classify_id, sequence )
+        VALUES
+            <foreach collection="orgClassifies" index="key" item="value" open="" close="" separator=",">
+                ( #{value.fid}, #{value.classifyId}, #{value.sequence} )
+            </foreach>
+    </insert>
+</mapper>
