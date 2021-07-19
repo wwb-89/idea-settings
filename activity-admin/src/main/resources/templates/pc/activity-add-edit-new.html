@@ -258,31 +258,35 @@
                         </div>
                     </div>
                     <!--定时发布-->
-                    <div class="form-item" v-else-if="item.code == 'timing_release'">
-                        <label class="label">{{item.name}}</label>
-                        <div class="input-box">
-                            <el-switch v-model="activity.timingRelease" class="examine-switch"></el-switch>
-                            <span>开启后，可以按照设置的时间自动发布活动</span>
+                    <template v-else-if="item.code == 'timing_release'">
+                        <div class="form-item">
+                            <label class="label">{{item.name}}</label>
+                            <div class="input-box">
+                                <el-switch v-model="activity.timingRelease" class="examine-switch"></el-switch>
+                                <span>开启后，可以按照设置的时间自动发布活动</span>
+                            </div>
                         </div>
-                    </div>
-                    <div class="form-item" v-else-if="item.code == 'tags'" v-show="activity.timingRelease">
-                        <label class="label"></label>
-                        <div class="input-box">
-                            <el-date-picker v-model="activity.timingReleaseTime"
-                                            type="datetime"
-                                            placeholder="发布时间"
-                                            format="yyyy-MM-dd HH:mm"
-                                            value-format="yyyy-MM-dd HH:mm:ss"
-                                            prefix-icon="disable"
-                                            :clearable="false"
-                                            :editable="false"
-                                            :picker-options="timingReleasePickerOption">
-                            </el-date-picker>
-                            <span class="date-piker-icon" style="left: 192px;">
+
+                        <div class="form-item" v-show="activity.timingRelease">
+                            <label class="label"></label>
+                            <div class="input-box">
+                                <el-date-picker v-model="activity.timingReleaseTime"
+                                                type="datetime"
+                                                placeholder="发布时间"
+                                                format="yyyy-MM-dd HH:mm"
+                                                value-format="yyyy-MM-dd HH:mm:ss"
+                                                prefix-icon="disable"
+                                                :clearable="false"
+                                                :editable="false"
+                                                :picker-options="timingReleasePickerOption">
+                                </el-date-picker>
+                                <span class="date-piker-icon" style="left: 192px;">
                             <img src="/static/pc/assets/images/calendar.png" th:src="@{/pc/assets/images/calendar.png}">
                         </span>
+                            </div>
                         </div>
-                    </div>
+                    </template>
+
                     <div class="form-item align-start" v-else-if="item.code == 'introduction'" v-show="isShowIntroduction()">
                         <label class="label">简介</label>
                         <div class="input-box">
@@ -293,7 +297,7 @@
                         </div>
                     </div>
                     <!--报名设置列表-->
-                    <div v-else-if="item.code == 'sign_up' || item.code =='company_sign_up'">
+                    <div v-else-if="signUpMap[item.id] && (item.code == 'sign_up' || item.code =='company_sign_up')">
                         <div class="set-box">
                             <div class="title set">{{signUpMap[item.id].name ? signUpMap[item.id].name : '报名'}}设置</div>
                             <el-switch v-model="signUpMap[item.id].enable" class="section-switch" @change="signUpEnableChanged(item.id)"></el-switch>
@@ -304,7 +308,7 @@
                                 <div class="form-item" v-if="it.code == 'sign_up_time_scope'">
                                     <label class="label"><img src="/static/pc/assets/images/required.png" th:src="@{/pc/assets/images/required.png}" class="required-img" v-if="it.required">{{it.name}}</label>
                                     <div class="input-box">
-                                        <el-date-picker v-model="signUpMap[item.id].timeScope"
+                                        <el-date-picker v-model="signUpMap[item.id] && signUpMap[item.id].timeScope"
                                                         type="datetimerange"
                                                         format="yyyy-MM-dd HH:mm"
                                                         value-format="timestamp"
@@ -395,7 +399,7 @@
                     </div>
 
                     <!--签到设置列表-->
-                    <div style="margin: 24px 0" v-else-if="item.code == 'sign_in' || item.code == 'sign_out'">
+                    <div style="margin: 24px 0" v-else-if="signInMap[item.id] && (item.code == 'sign_in' || item.code == 'sign_out')">
                         <div class="set-box">
                             <div class="title set">{{signInMap[item.id].name}}设置</div>
                             <el-switch v-model="signInMap[item.id].enable" class="section-switch" @change="signInEnableChanged(item.id)"></el-switch>
@@ -434,7 +438,7 @@
                             <div class="form-item">
                                 <label class="label"><img src="/static/pc/assets/images/required.png" th:src="@{/pc/assets/images/required.png}" class="required-img">{{signInMap[item.id].typeName}}时间</label>
                                 <div class="input-box">
-                                    <el-date-picker v-model="signInMap[item.id].timeScope"
+                                    <el-date-picker v-model="signInMap[item.id] && signInMap[item.id].timeScope"
                                                     type="datetimerange"
                                                     format="yyyy-MM-dd HH:mm"
                                                     value-format="timestamp"
@@ -796,19 +800,20 @@
                     });
                 } else {
                     // 修改已有的报名签到
-                    signApp.editSign($this.sign, $this.activitySignModules, $this.activityFlagSignModules);
+                    // signApp.editSign($this.sign, $this.activitySignModules, $this.activityFlagSignModules);
                     // 修改已有的报名签到
-                    $this.sign.createTime = "";
-                    $this.sign.updateTime = "";
-
+                    // $this.sign.createTime = "";
+                    // $this.sign.updateTime = "";
                     var signUpTplComponentIds = [],
-                        signInTplComponentIds = [];
+                        signInTplComponentIds = [],
+                        signInTplComponentCodeMap = {};
 
                     $($this.templateComponents).each(function () {
                         if (this.code == 'sign_up' || this.code == 'company_sign_up') {
                             signUpTplComponentIds.push(this.id);
                         } else if (this.code == 'sign_in' || this.code == 'sign_out') {
                             signInTplComponentIds.push(this.id);
+                            signInTplComponentCodeMap[this.id] = this.code;
                         }
                     });
                     // 报名
@@ -838,21 +843,22 @@
                         }
                     });
                     // 签到、签退
-                    $($this.sign.signIns).each(function () {
+                     $($this.sign.signIns).each(function() {
                         if (!activityApp.isEmpty(this.id)) {
-                            this.startTime = this.startTimestamp;
-                            this.endTime = this.endTimestamp;
-                            this.createTime = "";
-                            this.updateTime = "";
+                            rgus.startTime = this.startTimestamp;
+                            rgus.endTime = this.endTimestamp;
+                            rgus.createTime = "";
+                            rgus.updateTime = "";
                         }
-                        if (signInTplComponentIds.indexOf(this.originId) != -1) {
-                            $this.$set($this.signInMap, this.originId, this);
-                        } else {
-                            var signIn = this.type == 'sign_in' ? signApp.newSignIn() : signApp.newSignOut();
-                            signIn.originId = this.originId;
-                            $this.$set($this.signInMap, this.originId, signIn);
+                         $this.signInMap[item.templateId] = item;
+                    });
+                    $(signInTplComponentIds).each(function (i) {
+                        var originId = signInTplComponentIds[i];
+                        if (!$this.signInMap[originId]) {
+                            var signIn = signInTplComponentCodeMap[originId] == 'sign_in' ? signApp.newSignIn() : signApp.newSignOut();
+                            signIn.originId = originId;
+                            $this.$set($this.signInMap, originId, signIn);
                         }
-
                     });
                 }
                 $.each($this.signUpMap, function (key, item) {
@@ -913,6 +919,7 @@
                 "operateSignInOriginId": function () {
                     var $this = this;
                     if ($this.operateSignInOriginId > -1) {
+                        debugger
                         $this.signInMapTitleKey = $this.signInMap[$this.operateSignInOriginId].name;
                     }
                 }
@@ -1219,11 +1226,11 @@
                         app.showMsg("活动名称不能为空");
                         return false;
                     }
-                    if (activityApp.isEmpty($this.activity.startTime)) {
+                    if (activityApp.isEmpty($this.activity.startTimeStamp)) {
                         app.showMsg("活动开始时间不能为空");
                         return false;
                     }
-                    if (activityApp.isEmpty($this.activity.endTime)) {
+                    if (activityApp.isEmpty($this.activity.endTimeStamp)) {
                         app.showMsg("活动结束时间不能为空");
                         return false;
                     }

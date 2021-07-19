@@ -93,6 +93,29 @@
                                     <img src="/static/pc/assets/images/yq-design/arrow-down-small.png" th:src="@{/pc/assets/images/yq-design/arrow-down-small.png}" alt="" class="arrow-down">
                                     <p class="tips first">{{item.introduction}}</p>
                                 </template>
+                                <template v-else-if="item.code == 'period'">
+                                    <el-input type="number" min="0" step="0.1" v-model="scoreNum" placeholder="请输入" readonly></el-input>
+                                    <span class="score">学时</span>
+                                    <span class="tips third">参与者成绩合格时，即可获取相应学时</span>
+                                </template>
+                                <template v-else-if="item.code == 'credit'">
+                                    <el-input type="number" min="0" step="0.1" v-model="scoreNum" placeholder="请输入" readonly></el-input>
+                                    <span class="score">学分</span>
+                                    <span class="tips third">参与者成绩合格时，即可获取相应学分</span>
+                                </template>
+                                <template v-else-if="item.code == 'integral'">
+                                    <el-input type="number" min="0" v-model="scoreNum"placeholder="请输入" readonly></el-input>
+                                    <span class="score">分</span>
+                                    <span class="tips third">参与者成绩合格时，即可获取相应积分</span>
+                                </template>
+                                <template v-else-if="item.code == 'max_participate_time_length'">
+                                    <el-input type="number" min="1" step="1" v-model="scoreNum" placeholder="不限" readonly></el-input>
+                                    <span class="score">小时</span>
+                                    <span class="tips third">参与者通过签到和签退获取的参与时长不会超过该数值</span>
+                                </template>
+                                <template v-else-if="item.code == 'activity_rating'">
+                                    <el-input type="text" placeholder="活动评价" readonly></el-input>
+                                </template>
                                 <!-- 标签：tags -->
                                 <template v-else-if="item.code == 'tags'">
                                     <div class="type-item">
@@ -649,6 +672,7 @@
                     customComponentIds: [],
                     delTemplateComponentIds: [],
 
+                    scoreNum: 0,
                     radio1:'1',
                     activityType:'创新创业',
                     delivery1:'',

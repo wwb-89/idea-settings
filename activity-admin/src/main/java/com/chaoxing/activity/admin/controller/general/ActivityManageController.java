@@ -3,9 +3,9 @@ package com.chaoxing.activity.admin.controller.general;
 import com.chaoxing.activity.admin.util.LoginUtils;
 import com.chaoxing.activity.dto.LoginUserDTO;
 import com.chaoxing.activity.dto.manager.ActivityCreatePermissionDTO;
-import com.chaoxing.activity.dto.manager.wfw.WfwAreaDTO;
 import com.chaoxing.activity.dto.manager.sign.SignActivityManageIndexDTO;
 import com.chaoxing.activity.dto.manager.sign.create.SignCreateParamDTO;
+import com.chaoxing.activity.dto.manager.wfw.WfwAreaDTO;
 import com.chaoxing.activity.model.Activity;
 import com.chaoxing.activity.model.ActivityFlagSignModule;
 import com.chaoxing.activity.model.ActivitySignModule;
@@ -13,6 +13,7 @@ import com.chaoxing.activity.model.WebTemplate;
 import com.chaoxing.activity.service.WebTemplateService;
 import com.chaoxing.activity.service.activity.ActivityQueryService;
 import com.chaoxing.activity.service.activity.ActivityValidationService;
+import com.chaoxing.activity.service.activity.engine.ActivityEngineQueryService;
 import com.chaoxing.activity.service.activity.manager.ActivityCreatePermissionService;
 import com.chaoxing.activity.service.activity.scope.ActivityScopeQueryService;
 import com.chaoxing.activity.service.manager.module.SignApiService;
@@ -56,6 +57,8 @@ public class ActivityManageController {
 	private ActivityValidationService activityValidationService;
 	@Resource
 	private OrgService orgService;
+	@Resource
+	private ActivityEngineQueryService activityEngineQueryService;
 
 	/**活动管理主页
 	 * @Description 
@@ -100,7 +103,9 @@ public class ActivityManageController {
 	public String edit(Model model, @PathVariable Integer activityId, HttpServletRequest request, Integer step, @RequestParam(defaultValue = "0") Integer strict) {
 		LoginUserDTO loginUser = LoginUtils.getLoginUser(request);
 		Activity activity = activityValidationService.manageAble(activityId, loginUser.getUid());
-		model.addAttribute("activity", activity);
+
+		model.addAttribute("activity", activity.buildActivityCreateParam());
+		model.addAttribute("templateComponents", activityEngineQueryService.listTemplateComponentTree(activity.getTemplateId()));
 		// 活动类型列表
 		model.addAttribute("activityTypes", activityQueryService.listActivityType());
 		// 活动分类列表范围
@@ -146,7 +151,7 @@ public class ActivityManageController {
 		// 是不是定制机构：定制机构不显示简介
 		boolean customOrg = orgService.isCustomOrg(activity.getCreateFid());
 		model.addAttribute("customOrg", customOrg);
-		return "pc/activity-add-edit";
+		return "pc/activity-add-edit-new";
 	}
 
 }
