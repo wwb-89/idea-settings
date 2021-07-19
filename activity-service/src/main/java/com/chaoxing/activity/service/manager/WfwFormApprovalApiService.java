@@ -7,18 +7,18 @@ import com.chaoxing.activity.dto.AddressDTO;
 import com.chaoxing.activity.dto.LoginUserDTO;
 import com.chaoxing.activity.dto.TimeScopeDTO;
 import com.chaoxing.activity.dto.activity.ActivityCreateParamDTO;
-import com.chaoxing.activity.dto.manager.wfw.WfwAreaDTO;
 import com.chaoxing.activity.dto.manager.sign.create.SignCreateParamDTO;
 import com.chaoxing.activity.dto.manager.sign.create.SignInCreateParamDTO;
 import com.chaoxing.activity.dto.manager.sign.create.SignUpCreateParamDTO;
+import com.chaoxing.activity.dto.manager.wfw.WfwAreaDTO;
 import com.chaoxing.activity.dto.manager.wfwform.WfwFormDTO;
 import com.chaoxing.activity.model.Activity;
-import com.chaoxing.activity.model.ActivityClassify;
+import com.chaoxing.activity.model.Classify;
 import com.chaoxing.activity.model.WebTemplate;
 import com.chaoxing.activity.service.WebTemplateService;
 import com.chaoxing.activity.service.activity.ActivityHandleService;
 import com.chaoxing.activity.service.activity.ActivityQueryService;
-import com.chaoxing.activity.service.activity.classify.ActivityClassifyHandleService;
+import com.chaoxing.activity.service.activity.classify.ClassifyHandleService;
 import com.chaoxing.activity.service.manager.module.SignApiService;
 import com.chaoxing.activity.service.manager.wfw.WfwAreaApiService;
 import com.chaoxing.activity.service.util.FormUtils;
@@ -73,7 +73,7 @@ public class WfwFormApprovalApiService {
     @Resource
     private PassportApiService passportApiService;
     @Resource
-    private ActivityClassifyHandleService activityClassifyHandleService;
+    private ClassifyHandleService classifyHandleService;
     @Resource
     private ActivityQueryService activityQueryService;
     @Resource
@@ -235,8 +235,8 @@ public class WfwFormApprovalApiService {
         activityCreateParamDto.setEndTimeStamp(DateUtils.date2Timestamp(activityTimeScope.getEndTime()));
         // 活动分类
         String activityClassifyName = FormUtils.getValue(formData, "activity_classify");
-        ActivityClassify activityClassify = activityClassifyHandleService.addAndGet(activityClassifyName, fid);
-        activityCreateParamDto.setActivityClassifyId(activityClassify.getId());
+        Classify classify = classifyHandleService.getOrAddOrgClassify(fid, activityClassifyName);
+        activityCreateParamDto.setActivityClassifyId(classify.getId());
         // 积分
         String integralStr = FormUtils.getValue(formData, "integral_value");
         if (StringUtils.isNotBlank(integralStr)) {

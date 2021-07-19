@@ -4,17 +4,17 @@ import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.chaoxing.activity.dto.manager.ActivityCreatePermissionDTO;
+import com.chaoxing.activity.dto.manager.sign.SignUpParticipateScopeDTO;
 import com.chaoxing.activity.dto.manager.wfw.WfwDepartmentDTO;
 import com.chaoxing.activity.dto.manager.wfw.WfwGroupDTO;
-import com.chaoxing.activity.dto.manager.sign.SignUpParticipateScopeDTO;
 import com.chaoxing.activity.mapper.ActivityCreatePermissionMapper;
-import com.chaoxing.activity.model.ActivityClassify;
 import com.chaoxing.activity.model.ActivityCreatePermission;
+import com.chaoxing.activity.model.Classify;
 import com.chaoxing.activity.model.OrgConfig;
-import com.chaoxing.activity.service.activity.classify.ActivityClassifyQueryService;
+import com.chaoxing.activity.service.activity.classify.ClassifyQueryService;
 import com.chaoxing.activity.service.manager.MoocApiService;
-import com.chaoxing.activity.service.manager.wfw.WfwContactApiService;
 import com.chaoxing.activity.service.manager.WfwGroupApiService;
+import com.chaoxing.activity.service.manager.wfw.WfwContactApiService;
 import com.chaoxing.activity.service.org.OrgConfigService;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
@@ -44,19 +44,14 @@ public class ActivityCreatePermissionService {
 
     @Resource
     private WfwGroupApiService wfwGroupApiService;
-
     @Resource
     private WfwContactApiService wfwContactApiService;
-
     @Resource
-    private ActivityClassifyQueryService activityClassifyQueryService;
-
+    private ClassifyQueryService classifyQueryService;
     @Resource
     private MoocApiService moocApiService;
-
     @Resource
     private ActivityCreatePermissionMapper activityCreatePermissionMapper;
-
     @Resource
     private OrgConfigService orgConfigService;
 
@@ -213,10 +208,10 @@ public class ActivityCreatePermissionService {
             wfwGroups = wfwContactApiService.listUserContactOrgsByFid(fid);
         }
 
-        List<ActivityClassify> activityClassifies = activityClassifyQueryService.listOrgOptional(fid);
+        List<Classify> classifies = classifyQueryService.listOrgClassifies(fid);
         // 若查出的角色配置权限数量少于userRoleIds的数量 证明有未配置权限的角色，则以该角色最大权限返回数据
         if (createPermissions.size() < userRoleIds.size()) {
-            activityCreatePermission.setActivityClassifies(activityClassifies);
+            activityCreatePermission.setClassifies(classifies);
             activityCreatePermission.setWfwGroups(wfwGroupApiService.buildWfwGroups(wfwGroups));
             return activityCreatePermission;
         }
@@ -256,7 +251,7 @@ public class ActivityCreatePermissionService {
             }
             if (!setClassifyScope) {
                 if (permission.getAllActivityClassify()) {
-                    activityCreatePermission.setActivityClassifies(activityClassifies);
+                    activityCreatePermission.setClassifies(classifies);
                     setClassifyScope = Boolean.TRUE;
                 }
                 // 获取用户角色活动类型范围并集
@@ -277,7 +272,7 @@ public class ActivityCreatePermissionService {
             activityCreatePermission.setWfwGroups(buildWfwGroups(releaseScopes, wfwGroups));
         }
         if (!setClassifyScope) {
-            activityCreatePermission.setActivityClassifies(listActivityClassify(classifyIdSet, activityClassifies));
+            activityCreatePermission.setClassifies(listActivityClassify(classifyIdSet, classifies));
         }
         activityCreatePermission.setExistNoLimitPermission(Boolean.FALSE);
         return activityCreatePermission;
@@ -429,12 +424,12 @@ public class ActivityCreatePermissionService {
     * @author huxiaolong
     * @Date 2021-06-03 15:44:28
     * @param classifyIdSet
-    * @param activityClassifies
-    * @return java.util.List<com.chaoxing.activity.model.ActivityClassify>
+    * @param classifies
+    * @return java.util.List<com.chaoxing.activity.model.Classify>
     */
-    private List<ActivityClassify> listActivityClassify(Set<Integer> classifyIdSet, List<ActivityClassify> activityClassifies) {
-        List<ActivityClassify> result = Lists.newArrayList();
-        for (ActivityClassify classify: activityClassifies) {
+    private List<Classify> listActivityClassify(Set<Integer> classifyIdSet, List<Classify> classifies) {
+        List<Classify> result = Lists.newArrayList();
+        for (Classify classify: classifies) {
             if (classifyIdSet.contains(classify.getId())) {
                 result.add(classify);
             }

@@ -115,7 +115,7 @@ public class ActivityManageController {
 		model.addAttribute("activityTypes", activityQueryService.listActivityType());
 		// 活动分类列表范围
 		ActivityCreatePermissionDTO activityCreatePermission = activityCreatePermissionService.getGroupClassifyByUserPermission(loginUser.getFid(), loginUser.getUid());
-		model.addAttribute("activityClassifies", activityCreatePermission.getActivityClassifies());
+		model.addAttribute("activityClassifies", activityCreatePermission.getClassifies());
 		model.addAttribute("existNoLimitPermission", activityCreatePermission.getExistNoLimitPermission());
 		model.addAttribute("groupType", activityCreatePermission.getGroupType());
 		// 报名签到

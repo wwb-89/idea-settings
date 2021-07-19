@@ -9,6 +9,7 @@ import com.chaoxing.activity.model.MarketClassify;
 import com.chaoxing.activity.model.OrgClassify;
 import com.google.common.collect.Lists;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
@@ -73,6 +74,17 @@ public class ClassifyQueryService {
 	*/
 	public List<Classify> listOrgClassifies(Integer fid) {
 		return classifyMapper.listByFid(fid);
+	}
+
+	/**根据机构id列表查询活动类型列表
+	 * @Description 
+	 * @author wwb
+	 * @Date 2021-07-19 20:04:53
+	 * @param fids
+	 * @return java.util.List<com.chaoxing.activity.model.Classify>
+	*/
+	public List<Classify> listByFids(List<Integer> fids) {
+		return classifyMapper.listByFids(fids);
 	}
 
 	/**查询活动市场的活动分类列表
@@ -168,6 +180,33 @@ public class ClassifyQueryService {
 	*/
 	public int getMarketMaxSequence(Integer marketId) {
 		return marketClassifyMapper.getMaxSequenceByMarketId(marketId);
+	}
+
+	/**根据活动分类id列表查询
+	 * @Description 
+	 * @author wwb
+	 * @Date 2021-07-19 19:56:46
+	 * @param classifyIds
+	 * @return java.util.List<com.chaoxing.activity.model.Classify>
+	*/
+	public List<Classify> listByIds(List<Integer> classifyIds) {
+		if (CollectionUtils.isEmpty(classifyIds)) {
+			return Lists.newArrayList();
+		}
+		return classifyMapper.selectList(new LambdaQueryWrapper<Classify>()
+			.in(Classify::getId, classifyIds)
+		);
+	}
+
+	/**根据活动分类id查询
+	 * @Description 
+	 * @author wwb
+	 * @Date 2021-07-19 19:58:23
+	 * @param classifyId
+	 * @return com.chaoxing.activity.model.Classify
+	*/
+	public Classify getById(Integer classifyId) {
+		return classifyMapper.selectById(classifyId);
 	}
 
 }

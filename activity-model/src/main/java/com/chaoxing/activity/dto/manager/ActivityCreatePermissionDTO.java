@@ -1,7 +1,7 @@
 package com.chaoxing.activity.dto.manager;
 
 import com.chaoxing.activity.dto.manager.wfw.WfwGroupDTO;
-import com.chaoxing.activity.model.ActivityClassify;
+import com.chaoxing.activity.model.Classify;
 import com.google.common.collect.Lists;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -36,13 +36,13 @@ public class ActivityCreatePermissionDTO {
     /**
      * 活动类型
      */
-    private List<ActivityClassify> activityClassifies;
+    private List<Classify> classifies;
 
     public static ActivityCreatePermissionDTO buildDefault() {
         return ActivityCreatePermissionDTO.builder()
                 .existNoLimitPermission(Boolean.TRUE)
                 .wfwGroups(Lists.newArrayList())
-                .activityClassifies(Lists.newArrayList())
+                .classifies(Lists.newArrayList())
                 .groupType("wfw")
                 .build();
     }

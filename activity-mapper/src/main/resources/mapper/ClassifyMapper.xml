@@ -32,4 +32,16 @@
         ORDER BY
             t1.sequence
     </select>
+
+    <select id="listByFids" resultMap="BaseResultMap">
+        SELECT
+            <include refid="Base_Column_List"></include>
+        FROM
+            t_classify t
+            INNER JOIN t_org_classify t1 ON t.id = t1.classify_id
+            AND t1.fid IN
+                <foreach collection="fids" index="key" item="value" open="(" close=")" separator=",">
+                    #{value}
+                </foreach>
+    </select>
 </mapper>
