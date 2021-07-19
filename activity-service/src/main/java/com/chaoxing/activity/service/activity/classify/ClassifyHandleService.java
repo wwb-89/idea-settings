@@ -87,13 +87,13 @@ public class ClassifyHandleService {
 	 * @author wwb
 	 * @Date 2021-07-19 16:27:08
 	 * @param orgClassifyCreateParamDto
-	 * @return void
+	 * @return com.chaoxing.activity.model.Classify
 	*/
 	@Transactional(rollbackFor = Exception.class)
-	public void addOrgClassify(OrgClassifyCreateParamDTO orgClassifyCreateParamDto) {
+	public Classify addOrgClassify(OrgClassifyCreateParamDTO orgClassifyCreateParamDto) {
 		Integer fid = orgClassifyCreateParamDto.getFid();
 		int maxSequence = classifyQueryService.getOrgMaxSequence(fid);
-		addOrgClassify(orgClassifyCreateParamDto, maxSequence);
+		return addOrgClassify(orgClassifyCreateParamDto, maxSequence);
 	}
 
 	/**新增机构活动分类
@@ -102,15 +102,16 @@ public class ClassifyHandleService {
 	 * @Date 2021-07-19 17:52:15
 	 * @param orgClassifyCreateParamDto
 	 * @param sequence
-	 * @return void
+	 * @return com.chaoxing.activity.model.Classify
 	*/
 	@Transactional(rollbackFor = Exception.class)
-	public void addOrgClassify(OrgClassifyCreateParamDTO orgClassifyCreateParamDto, Integer sequence) {
+	public Classify addOrgClassify(OrgClassifyCreateParamDTO orgClassifyCreateParamDto, Integer sequence) {
 		String name = orgClassifyCreateParamDto.getName();
 		Integer fid = orgClassifyCreateParamDto.getFid();
 		classifyValidationService.classifyNameNotExistInOrg(name, fid);
 		Classify classify = classifyQueryService.getOrAddByName(name);
 		orgClassifyMapper.insert(OrgClassify.buildFromClassify(classify, orgClassifyCreateParamDto.getFid(), sequence));
+		return classify;
 	}
 
 	/**修改机构活动分类
@@ -118,10 +119,10 @@ public class ClassifyHandleService {
 	 * @author wwb
 	 * @Date 2021-07-19 16:27:18
 	 * @param orgClassifyUpdateParamDto
-	 * @return void
+	 * @return com.chaoxing.activity.model.Classify
 	*/
 	@Transactional(rollbackFor = Exception.class)
-	public void updateOrgClassify(OrgClassifyUpdateParamDTO orgClassifyUpdateParamDto) {
+	public Classify updateOrgClassify(OrgClassifyUpdateParamDTO orgClassifyUpdateParamDto) {
 		Integer oldClassifyId = orgClassifyUpdateParamDto.getClassifyId();
 		Integer fid = orgClassifyUpdateParamDto.getFid();
 		OrgClassify oldOrgClassify = classifyValidationService.orgClassifyExist(fid, oldClassifyId);
@@ -130,7 +131,7 @@ public class ClassifyHandleService {
 		Integer newClassifyId = newClassify.getId();
 		if (Objects.equals(newClassifyId, oldClassifyId)) {
 			// 新旧分类id相同，不做处理
-			return;
+			return newClassify;
 		}
 		// 删除旧的
 		deleteOrgClassify(orgClassifyUpdateParamDto);
@@ -138,6 +139,7 @@ public class ClassifyHandleService {
 		addOrgClassify(OrgClassifyCreateParamDTO.build(classifyName, fid), oldOrgClassify.getSequence());
 		// 更新机构创建的活动中活动分类id
 		activityHandleService.updateOrgActivityClassifyId(fid, oldClassifyId, newClassifyId);
+		return newClassify;
 	}
 
 	/**删除机构活动分类
