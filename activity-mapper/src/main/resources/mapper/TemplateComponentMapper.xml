@@ -42,7 +42,10 @@
             t.introduction,
             t.is_required as required,
             t1.code,
-            t1.type
+            t1.type,
+            t1.data_origin as dataOrigin,
+            t1.origin_identify as originIdentify,
+            t1.field_flag as fieldFlag
         FROM
             t_template_component t
             LEFT JOIN t_component t1 ON t.component_id = t1.id

@@ -13,6 +13,7 @@ import lombok.NoArgsConstructor;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 
 /**创建活动对象
  * @author wwb
@@ -28,6 +29,7 @@ import java.util.List;
 @AllArgsConstructor
 public class ActivityCreateParamDTO {
 
+	private Integer id;
 	/** 活动名称 */
 	private String name;
 	/** 开始时间 */
@@ -121,7 +123,7 @@ public class ActivityCreateParamDTO {
 				.credit(getCredit())
 				.timeLengthUpperLimit(getTimeLengthUpperLimit())
 				.timingRelease(getTimingRelease())
-				.timingReleaseTime(getTimingRelease() ? DateUtils.timestamp2Date(getTimingReleaseTimeStamp()) : null)
+				.timingReleaseTime(Optional.ofNullable(getTimingReleaseTimeStamp()).map(v -> DateUtils.timestamp2Date(getTimingReleaseTimeStamp())).orElse(null))
 				.tags(getTags())
 				.openRating(getOpenRating())
 				.ratingNeedAudit(getRatingNeedAudit())

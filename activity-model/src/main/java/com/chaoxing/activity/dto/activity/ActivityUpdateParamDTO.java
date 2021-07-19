@@ -11,6 +11,7 @@ import org.springframework.beans.BeanUtils;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Optional;
 
 /**更新活动对象
@@ -102,6 +103,9 @@ public class ActivityUpdateParamDTO {
 	/** 简介 */
 	private String introduction;
 
+	/** 活动组件值对象列表 */
+	private List<ActivityComponentValueDTO> activityComponentValues;
+
 	/**构建活动
 	 * @Description 
 	 * @author wwb
@@ -131,7 +135,7 @@ public class ActivityUpdateParamDTO {
 				.credit(getCredit())
 				.timeLengthUpperLimit(getTimeLengthUpperLimit())
 				.timingRelease(getTimingRelease())
-				.timingReleaseTime(DateUtils.timestamp2Date(getTimingReleaseTimeStamp()))
+				.timingReleaseTime(Optional.ofNullable(getTimingReleaseTimeStamp()).map(v -> DateUtils.timestamp2Date(getTimingReleaseTimeStamp())).orElse(null))
 				.tags(getTags())
 				.openRating(getOpenRating())
 				.ratingNeedAudit(getRatingNeedAudit())

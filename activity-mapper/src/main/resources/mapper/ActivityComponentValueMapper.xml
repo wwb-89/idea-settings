@@ -12,4 +12,17 @@
     <sql id="Base_Column_List">
         t.id, t.activity_id, t.template_component_id, t.template_id, t.component_id, t.value
     </sql>
+    <insert id="batchAdd">
+        INSERT INTO t_activity_component_value ( activity_id, template_component_id, template_id, component_id, `value` )
+        VALUES
+        <foreach collection="activityComponentValues" index="key" item="item" open="" close="" separator=",">
+            (
+                #{item.activityId},
+                #{item.templateComponentId},
+                #{item.templateId},
+                #{item.componentId},
+                #{item.value}
+            )
+        </foreach>
+    </insert>
 </mapper>

@@ -7,9 +7,11 @@ import com.chaoxing.activity.mapper.*;
 import com.chaoxing.activity.model.*;
 import com.chaoxing.activity.service.activity.template.TemplateQueryService;
 import com.chaoxing.activity.service.manager.WfwFormApiService;
+import com.google.common.collect.Maps;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.compress.utils.Lists;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -151,6 +153,24 @@ public class ActivityEngineQueryService {
 
     public List<TemplateComponentDTO> listTemplateComponentTree(Integer templateId) {
         List<TemplateComponentDTO> templateComponents = templateComponentMapper.listTemplateComponentInfo(templateId);
+
+        List<Integer> chooseComponentIds = templateComponents.stream()
+                .filter(v -> StringUtils.isNotBlank(v.getType()) && Objects.equals(v.getDataOrigin(), Component.DataOriginEnum.CUSTOM.getValue()))
+                .map(TemplateComponentDTO::getComponentId)
+                .collect(Collectors.toList());
+        Map<Integer, List<ComponentField>> componentFieldMap = Maps.newHashMap();
+        if (CollectionUtils.isNotEmpty(chooseComponentIds)) {
+            List<ComponentField> componentFields = componentFieldMapper.selectList(new QueryWrapper<ComponentField>().lambda().in(ComponentField::getComponentId, chooseComponentIds));
+            componentFields.forEach(v -> {
+                componentFieldMap.computeIfAbsent(v.getComponentId(), k -> Lists.newArrayList());
+                componentFieldMap.get(v.getComponentId()).add(v);
+            });
+            templateComponents.forEach(v -> {
+                if (CollectionUtils.isNotEmpty(componentFieldMap.get(v.getComponentId()))) {
+                    v.setComponentFields(componentFieldMap.get(v.getComponentId()));
+                }
+            });
+        }
 
         List<TemplateComponentDTO> trees = Lists.newArrayList();
         templateComponents.forEach(v -> {

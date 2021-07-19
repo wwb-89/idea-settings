@@ -371,6 +371,7 @@ public class Activity {
     */
     public ActivityCreateParamDTO buildActivityCreateParam() {
         return ActivityCreateParamDTO.builder()
+                .id(id)
                 .name(getName())
                 .startTimeStamp(startTime == null ? null : startTime.toInstant(ZoneOffset.of("+8")).toEpochMilli())
                 .endTimeStamp(endTime == null ? null : endTime.toInstant(ZoneOffset.of("+8")).toEpochMilli())

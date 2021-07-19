@@ -61,6 +61,8 @@ public class SignInCreateParamDTO {
 	private Boolean deleted;
 	/** 来源id。模版组件id */
 	private Integer originId;
+	/** 按钮名称 */
+	private String btnName;
 
 	public static SignInCreateParamDTO buildDefaultSignIn() {
 		SignInCreateParamDTO signIn = buildDefault();
@@ -86,6 +88,7 @@ public class SignInCreateParamDTO {
 				.way(1)
 				.address("")
 				.detailAddress("")
+				.btnName("签到")
 				.scanCodeWay(1)
 				.fillInfo(false)
 				.publicList(false)
