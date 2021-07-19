@@ -215,4 +215,19 @@ public class ClassifyHandleService {
 		);
 	}
 
+	/**批量删除活动市场关联的活动分类
+	 * @Description 
+	 * @author wwb
+	 * @Date 2021-07-19 18:56:42
+	 * @param marketId
+	 * @param classifyIds
+	 * @return void
+	*/
+	public void batchDeleteMarketClassify(Integer marketId, List<Integer> classifyIds) {
+		marketClassifyMapper.delete(new LambdaUpdateWrapper<MarketClassify>()
+				.eq(MarketClassify::getMarketId, marketId)
+				.in(MarketClassify::getClassifyId, classifyIds)
+		);
+	}
+
 }
