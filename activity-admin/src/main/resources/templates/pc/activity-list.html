@@ -375,7 +375,15 @@
                 },
                 toAdd: function () {
                     var $this = this;
-                    window.open(activityApp.getRelativeUrl("/activity/add?code=" + $this.code + "&marketId=" + $this.marketId + "&flag="+ $this.flag +"&strict=" + $this.strict));
+                    var marketId = $this.marketId;
+                    if (activityApp.isEmpty(marketId)) {
+                        marketId = "";
+                    }
+                    var flag = $this.flag;
+                    if (activityApp.isEmpty(flag)) {
+                        flag = "";
+                    }
+                    window.open(activityApp.getRelativeUrl("/activity/add?code=" + $this.code + "&marketId=" + marketId + "&flag="+ flag +"&strict=" + $this.strict));
                 },
                 toEdit: function (id) {
                     var $this = this;

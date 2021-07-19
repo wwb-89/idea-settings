@@ -97,6 +97,7 @@ public class ActivityManagementController {
 	}
 
 	public String add(HttpServletRequest request, Model model, Integer marketId, String flag, String code) {
+		flag = Optional.ofNullable(flag).filter(StringUtils::isNotBlank).orElse(Activity.ActivityFlagEnum.NORMAL.getValue());
 		LoginUserDTO loginUser = LoginUtils.getLoginUser(request);
 		Integer fid = loginUser.getFid();
 		Template template = templateQueryService.getTemplateByMarketIdOrActivityFlag(marketId, Activity.ActivityFlagEnum.fromValue(flag));
@@ -114,10 +115,6 @@ public class ActivityManagementController {
 		} else {
 			model.addAttribute("activityClassifies", classifyQueryService.listMarketClassifies(marketId));
 		}
-//		ActivityCreatePermissionDTO activityCreatePermission = activityCreatePermissionService.getGroupClassifyByUserPermission(fid, loginUser.getUid());
-//		model.addAttribute("existNoLimitPermission", activityCreatePermission.getExistNoLimitPermission());
-//		model.addAttribute("groupType", activityCreatePermission.getGroupType());
-
 		// 报名签到
 		model.addAttribute("sign", SignCreateParamDTO.builder().build());
 		if (StringUtils.isBlank(flag)) {
