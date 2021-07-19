@@ -84,6 +84,8 @@
             activityFlag: "",
             customSignUpType: activityFlagSignModule.customSignUpType,
             participateScopes: [],
+            wfwParticipateScopes: [],
+            contactsParticipateScopes: [],
             deleted: false,
             // deleted取反
             enable: true

@@ -398,6 +398,9 @@ public class Activity {
                 .openWork(openWork)
                 .originType(originType)
                 .origin(origin)
+                .webTemplateId(webTemplateId)
+                .previewUrl(previewUrl)
+                .editUrl(editUrl)
                 .build();
     }
 }

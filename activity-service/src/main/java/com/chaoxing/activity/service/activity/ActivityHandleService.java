@@ -129,9 +129,12 @@ public class ActivityHandleService {
 		// 处理活动的状态, 新增的活动都是待发布的
 		activity.beforeCreate(loginUser.getUid(), loginUser.getRealName(), loginUser.getFid(), loginUser.getOrgName());
 		activityMapper.insert(activity);
-		// 保存自定义组件值
-		activityComponentValueService.saveActivityComponentValues(activity.getId(), activityCreateParamDto.getActivityComponentValues());
 		Integer activityId = activity.getId();
+		// 保存自定义组件值
+		activityComponentValueService.saveActivityComponentValues(activityId, activityCreateParamDto.getActivityComponentValues());
+		// 保存门户模板
+		MhCloneResultDTO mhCloneResult = bindWebTemplate(activityId, activity.getWebTemplateId(), loginUser);
+
 		inspectionConfigHandleService.initInspectionConfig(activityId);
 		activityStatSummaryHandlerService.init(activityId);
 		// 活动详情

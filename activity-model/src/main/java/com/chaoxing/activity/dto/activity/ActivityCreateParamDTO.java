@@ -89,6 +89,12 @@ public class ActivityCreateParamDTO {
 	/** 简介 */
 	private String introduction;
 
+	private String previewUrl;
+
+	private String editUrl;
+
+	private Integer webTemplateId;
+
 	/** 活动组件值对象列表 */
 	private List<ActivityComponentValueDTO> activityComponentValues;
 	/** 操作用户 */
