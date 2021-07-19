@@ -37,12 +37,13 @@ public class LibActivityManagementController {
 	 * @param state
 	 * @param fid
 	 * @param strict
+	 * @param flag
 	 * @return java.lang.String
 	*/
 	@RequestMapping("")
-	public String index(Model model, Integer marketId, String code, Integer wfwfid, Integer unitId, Integer state, Integer fid, @RequestParam(defaultValue = "0") Integer strict) {
+	public String index(Model model, Integer marketId, String code, Integer wfwfid, Integer unitId, Integer state, Integer fid, @RequestParam(defaultValue = "0") Integer strict, String flag) {
 		Integer realFid = Optional.ofNullable(wfwfid).orElse(Optional.ofNullable(unitId).orElse(Optional.ofNullable(state).orElse(fid)));
-		return activityManagementController.index(model, marketId, code, realFid, strict);
+		return activityManagementController.index(model, marketId, code, realFid, strict, flag);
 	}
 
 	/**活动新增页面

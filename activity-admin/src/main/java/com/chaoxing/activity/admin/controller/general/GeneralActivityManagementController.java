@@ -40,12 +40,13 @@ public class GeneralActivityManagementController {
 	 * @param state
 	 * @param fid
 	 * @param strict
+	 * @param flag
 	 * @return java.lang.String
 	 */
 	@RequestMapping("")
-	public String newIndex(HttpServletRequest request, Model model, Integer marketId, String code, Integer wfwfid, Integer unitId, Integer state, Integer fid, @RequestParam(defaultValue = "0") Integer strict) {
+	public String index(HttpServletRequest request, Model model, Integer marketId, String code, Integer wfwfid, Integer unitId, Integer state, Integer fid, @RequestParam(defaultValue = "0") Integer strict, String flag) {
 		Integer realFid = Optional.ofNullable(wfwfid).orElse(Optional.ofNullable(unitId).orElse(Optional.ofNullable(state).orElse(Optional.ofNullable(fid).orElse(LoginUtils.getLoginUser(request).getFid()))));
-		return activityManagementController.index(model, marketId, code, realFid, strict);
+		return activityManagementController.index(model, marketId, code, realFid, strict, flag);
 	}
 
 	/**活动新增页面

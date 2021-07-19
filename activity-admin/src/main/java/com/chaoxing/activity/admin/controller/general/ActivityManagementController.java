@@ -70,9 +70,10 @@ public class ActivityManagementController {
 	 * @param code 图书馆专用的code
 	 * @param fid 空间或微服务后台进入时查询的活动以该fid为主
 	 * @param strict 是不是严格模式， 严格模式：只显示自己创建的活动
+	 * @param flag
 	 * @return java.lang.String
 	*/
-	public String index(Model model, Integer marketId, String code, Integer fid, Integer strict) {
+	public String index(Model model, Integer marketId, String code, Integer fid, Integer strict, String flag) {
 		code = Optional.ofNullable(code).orElse("");
 		// 防止挂接到三放也携带了code参数
 		code = code.split(CommonConstant.DEFAULT_SEPARATOR)[0];
@@ -87,6 +88,7 @@ public class ActivityManagementController {
 		model.addAttribute("fid", fid);
 		model.addAttribute("strict", strict);
 		model.addAttribute("marketId", marketId);
+		model.addAttribute("flag", flag);
 		return "pc/activity-list";
 	}
 
@@ -94,6 +96,7 @@ public class ActivityManagementController {
 		LoginUserDTO loginUser = LoginUtils.getLoginUser(request);
 		Integer fid = loginUser.getFid();
 		Template template = templateQueryService.getTemplateByIdOrActivityFlag(templateId, Activity.ActivityFlagEnum.fromValue(flag));
+		templateId = Optional.ofNullable(templateId).orElse(template.getId());
 		model.addAttribute("templateId", template.getId());
 		// 加载模版对应的组件列表
 		model.addAttribute("templateComponents", activityEngineQueryService.listTemplateComponentTree(templateId));

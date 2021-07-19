@@ -258,7 +258,7 @@
                 },
                 code: [[${code}]],
                 // 活动标示
-                activityFlag: [[${activityFlag}]],
+                flag: [[${flag}]],
                 tableFieldId: [[${tableFieldId}]],
                 // 配置项源数据
                 tableFieldDetails: [[${tableFieldDetails}]],
@@ -319,7 +319,7 @@
                             var activity = this;
                             var manager = $this.isActivityManager(activity);
                             var isCurrentOrgCreated = activity.createFid == $this.fid;
-                            var isDualSelect = activity.activityFlag == "dual_select";
+                            var isDualSelect = activity.flag == "dual_select";
                             var status = activity.status;
                             activity.operations = [];
                             switch (status) {
@@ -375,7 +375,7 @@
                 },
                 toAdd: function () {
                     var $this = this;
-                    window.open(activityApp.getRelativeUrl("/activity/add?code=" + $this.code + "&template_id=" + $this.marketId + "&strict=" + $this.strict));
+                    window.open(activityApp.getRelativeUrl("/activity/add?code=" + $this.code + "&marketId=" + $this.marketId + "&flag="+ $this.flag +"&strict=" + $this.strict));
                 },
                 toEdit: function (id) {
                     var $this = this;

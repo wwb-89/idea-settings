@@ -106,4 +106,10 @@ ALTER TABLE t_market_table_field DROP COLUMN fid;
 ALTER TABLE t_activity CHANGE integral_value integral DECIMAL(20, 2) COMMENT '积分';
 TRUNCATE TABLE t_market_table_field;
 ALTER TABLE t_market_table_field CHANGE activity_flag market_id INT COMMENT '市场id';
-
+-- 不给已创建活动的机构创建活动市场和模版， 先将活动关联上系统模版
+UPDATE t_activity t,
+    t_template t1
+SET t.template_id = t1.id
+WHERE
+    t1.is_system = 1
+  AND t.activity_flag = t1.activity_flag;
