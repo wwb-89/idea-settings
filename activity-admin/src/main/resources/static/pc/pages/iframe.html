@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <link rel="stylesheet" href="../assets/css/reset.css">
+    <link rel="stylesheet" href="../assets/css/public.css">
+    <link rel="stylesheet" href="../assets/css/iframe.css">
+</head>
+<body>
+<!--    顶部固定栏-->
+<div class="topFixed">
+    <h2>活动管理后台</h2>
+    <div class="user">
+        <img src="">
+        <p>刘琼锦</p>
+    </div>
+</div>
+<!--    左侧固定栏-->
+<div class="leftFixed">
+    <div class="menu">
+        <ul>
+            <li class="current">活动管理</li>
+            <li>活动管理</li>
+            <li>活动管理</li>
+        </ul>
+    </div>
+</div>
+<!--    右侧内容栏-->
+<div class="iframe-content">
+    <iframe src="./create.html"  scrolling="no" width="100%" frameborder="0"></iframe>
+</div>
+</body>
+</html>
+<script src="../assets/lib/jquery.min.js"></script>
+<script src="../../assets/js/vue.min.js"></script>
+<script src="../assets/lib/set-iframe-height-parent-min.js"></script>
+<script>
+    // vue
+    var app = new Vue({
+        el: '#app',
+        data: {
+        },
+        mounted: function () {
+        },
+        methods:{
+
+        },
+    })
+</script>

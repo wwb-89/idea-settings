@@ -1,10 +1,4 @@
 @charset "UTF-8";
-.page {
-  width: auto;
-  margin: 0 30px;
-  padding-bottom: 80px;
-}
-
 button {
   cursor: pointer;
 }
@@ -82,7 +76,6 @@ select {
 }
 
 .top {
-  width: 1000px;
   height: 68px;
   background: #ffffff;
   /*border: 1px solid #e9e9e9;*/
@@ -92,6 +85,49 @@ select {
   -webkit-box-sizing: border-box;
      -moz-box-sizing: border-box;
           box-sizing: border-box;
+  position: relative;
+}
+
+.top .go-back {
+  display: -webkit-box;
+  display: -moz-box;
+  display: -ms-flexbox;
+  display: flex;
+  cursor: pointer;
+}
+
+.top .go-back i {
+  font-size: 16px;
+  margin-right: 6px;
+  vertical-align: middle;
+  margin-top: 6px;
+}
+
+.top .go-back span {
+  font-size: 14px;
+  line-height: 30px;
+  color: #999999;
+}
+
+.top .go-back:hover .icon-back:before {
+  color: #0084FF;
+}
+
+.top .go-back:hover span {
+  color: #0084FF;
+}
+
+.top .name-txt {
+  font-weight: 600;
+  font-size: 18px;
+  line-height: 30px;
+  color: #333333;
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  -webkit-transform: translate(-50%, -50%);
+      -ms-transform: translate(-50%, -50%);
+          transform: translate(-50%, -50%);
 }
 
 .create {
@@ -511,7 +547,7 @@ input.btn-name,
 .cover-list ul li {
   float: left;
   margin-right: 30px;
-  width: calc(25% - 22.5px);
+  width: 366px;
   margin-top: 30px;
 }
 
@@ -524,6 +560,7 @@ input.btn-name,
           box-sizing: border-box;
   position: relative;
   border-radius: 8px;
+  overflow: hidden;
 }
 
 .cover-list ul li .img-inner-box img {
@@ -555,10 +592,6 @@ input.btn-name,
 
 .cover-list ul li .magnifier:hover {
   opacity: 0.5;
-}
-
-.cover-list ul li:nth-child(4n) {
-  margin-right: 0;
 }
 
 .cover-list ul li p {

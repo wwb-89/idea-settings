@@ -8,6 +8,7 @@
     <link rel="stylesheet" href="../assets/lib/element-ui/lib/theme-chalk/index.css">
     <link rel="stylesheet" href="../assets/lib/zTree_v3/css/zTreeStyle/zTreeStyle.css" type="text/css">
     <link rel="stylesheet" href="../assets/lib/webuploader/webuploader.css">
+    <link rel="stylesheet" href="..//assets/icomoon/style.css">
     <link rel="stylesheet" href="../assets/css/reset.css">
     <link rel="stylesheet" href="../assets/css/public.css">
     <link rel="stylesheet" href="../assets/css/create.css">
@@ -45,20 +46,10 @@
 <body>
 <div class="page" id="app" v-cloak>
     <!-- 创建活动头部 -->
-    <div class="top flex box" id="create">
-        <div v-show="!pageShow">
-            <a href="#" class="flex" @click="handleLast">
-                <span class="create">创建活动</span>
-            </a>
-        </div>
-        <button v-show="!pageShow" type="button" class="create-btn" @click="handleNext">下一步</button>
-        <div v-show="pageShow">
-            <a href="#" class="flex" @click="handleLast">
-                <span class="create">活动展示页</span>
-                <span class="create_tips">请选择你的活动呈现模版，点击“自定义”可配置展示样式</span>
-            </a>
-        </div>
-        <button v-show="pageShow" type="button" class="create-btn" @click="handleLast">上一步</button>
+    <div class="top flex" id="create">
+        <div class="go-back"><i class="icon-back"></i><span>返回</span></div>
+        <div class="name-txt">字段编辑</div>
+        <button type="button" class="create-btn" @click="handleNext">保存</button>
     </div>
     <!-- 编辑活动头部 -->
     <div class="top flex box" id="edit" style="display: none;">
@@ -1023,66 +1014,67 @@
     <script type="text/javascript" src="https://noteyd.chaoxing.com/res/plugin/smusic/js/smusic.js"></script>
     <link rel="stylesheet" type="text/css" href="https://noteyd.chaoxing.com/res/pc/cssnew/media.css" />
     <script type="text/javascript" src="https://noteyd.chaoxing.com/res/pc/js/media.js"></script>
-<!--    &lt;!&ndash; 视频播放容器 &ndash;&gt;-->
-<!--    <div id="videoDiv">-->
-<!--        <span class="videoCloseBtn"></span>-->
-<!--        <div id="video"></div>-->
-<!--    </div>-->
-<!--    &lt;!&ndash; 音频播放容器 &ndash;&gt;-->
-<!--    <div id="audioDiv" style="z-index: 9000">-->
-<!--        <div class="headBar"><span class="audioCloseBtn"></span></div>-->
-<!--        <div class="grid-music-container f-usn">-->
-<!--            <div class="m-music-play-wrap">-->
-<!--                <div class="u-cover"></div>-->
-<!--                <div class="m-now-info">-->
-<!--                    <h1 class="u-music-title"><strong></strong></h1>-->
+    <!-- 视频播放容器 -->
+    <div id="videoDiv">
+        <span class="videoCloseBtn"></span>
+        <div id="video"></div>
+    </div>
+    <!-- 音频播放容器 -->
+    <div id="audioDiv" style="z-index: 9000">
+        <div class="headBar"><span class="audioCloseBtn"></span></div>
+        <div class="grid-music-container f-usn">
+            <div class="m-music-play-wrap">
+                <div class="u-cover"></div>
+                <div class="m-now-info">
+                    <h1 class="u-music-title"><strong></strong></h1>
 
-<!--                    <div class="m-now-controls">-->
-<!--                        <div class="startTime">00:00&nbsp;&nbsp;</div>-->
-<!--                        <div class="u-control u-process ">-->
-<!--                            <div class="old-bar"></div>-->
-<!--                            <span class="buffer-process"></span>-->
-<!--                            <span class="current-bar"></span>-->
-<!--                            <span class="current-process"></span>-->
-<!--                        </div>-->
-<!--                        <div class="u-control u-time">00:00</div>-->
+                    <div class="m-now-controls">
+                        <div class="startTime">00:00&nbsp;&nbsp;</div>
+                        <div class="u-control u-process ">
+                            <div class="old-bar"></div>
+                            <span class="buffer-process"></span>
+                            <span class="current-bar"></span>
+                            <span class="current-process"></span>
+                        </div>
+                        <div class="u-control u-time">00:00</div>
 
-<!--                        <div class="u-control u-volume new-volume">-->
-<!--                            <div class="volume">-->
-<!--                            <span class="volume-event">-->
-<!--                                <div class="volume-process" data-volume="0.50"></div>-->
-<!--                                <span class="volume-current"></span>-->
-<!--                                <span class="volume-bar"></span>-->
-<!--                            </span>-->
-<!--                                <a class="volume-control"></a>-->
-<!--                            </div>-->
-<!--                        </div>-->
-<!--                        <div class="m-play-controls">-->
-<!--                            <div class="musicOrder">-->
-<!--                                <a class="u-play-btn mode mode-list  " title="列表循环"></a>-->
-<!--                                &lt;!&ndash; <a class="u-play-btn mode mode-random  " title="随机播放"></a>-->
-<!--								<a class="u-play-btn mode mode-single " title="单曲循环"></a>  &ndash;&gt;-->
-<!--                            </div>-->
-<!--                            <a class="u-play-btn prev" title="上一曲"></a>-->
-<!--                            <a class="u-play-btn ctrl-play play" title="暂停"></a>-->
-<!--                            <a class="u-play-btn next" title="下一曲"></a>-->
-<!--                        </div>-->
-<!--                    </div>-->
-<!--                </div>-->
+                        <div class="u-control u-volume new-volume">
+                            <div class="volume">
+                                <span class="volume-event">
+                                    <div class="volume-process" data-volume="0.50"></div>
+                                    <span class="volume-current"></span>
+                                    <span class="volume-bar"></span>
+                                </span>
+                                <a class="volume-control"></a>
+                            </div>
+                        </div>
+                        <div class="m-play-controls">
+                            <div class="musicOrder">
+                                <a class="u-play-btn mode mode-list  " title="列表循环"></a>
+                                <!-- <a class="u-play-btn mode mode-random  " title="随机播放"></a>
+                                <a class="u-play-btn mode mode-single " title="单曲循环"></a>  -->
+                            </div>
+                            <a class="u-play-btn prev" title="上一曲"></a>
+                            <a class="u-play-btn ctrl-play play" title="暂停"></a>
+                            <a class="u-play-btn next" title="下一曲"></a>
+                        </div>
+                    </div>
+                </div>
 
-<!--                <div class="f-cb">&nbsp;</div>-->
-<!--                <div class="m-music-list-wrap"></div>-->
-<!--                <div class="m-music-lyric-wrap">-->
-<!--                    <div class="inner">-->
-<!--                        <ul class="js-music-lyric-content">-->
-<!--                            <li class="eof">暂无歌词...</li>-->
-<!--                        </ul>-->
-<!--                    </div>-->
-<!--                </div>-->
-<!--            </div>-->
-<!--        </div>-->
-<!--    </div>-->
-<!--    &lt;!&ndash;音视频播放-end&ndash;&gt;-->
+                <div class="f-cb">&nbsp;</div>
+                <div class="m-music-list-wrap"></div>
+                <div class="m-music-lyric-wrap">
+                    <div class="inner">
+                        <ul class="js-music-lyric-content">
+                            <li class="eof">暂无歌词...</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!--音视频播放-end-->
+
 </div>
 <script type="text/javascript" src="https://api.map.baidu.com/api?v=3.0&ak=aG5nWGO5m5tkVhBHGuVppoIRfKbyp5H3"></script>
 <script src="../../assets/js/vue.min.js"></script>
@@ -1095,6 +1087,7 @@
 <script type="text/javascript" src="../assets/lib/zTree_v3/js/jquery.ztree.exedit.js"></script>
 <script src="../assets/lib/layer/layer.js"></script>
 <script type="text/javascript" src="../assets/lib/webuploader/webuploader.min.js"></script>
+<script src="../assets/lib/set-iframe-height-child-min.js"></script>
 <script>
     // vue
     var app = new Vue({
