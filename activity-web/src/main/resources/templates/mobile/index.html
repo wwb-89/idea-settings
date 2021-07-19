@@ -65,7 +65,7 @@
                 <div class="list-item">
                     <div class="title">类型</div>
                     <ul>
-                        <li :class="{'active': activityClassify.selected}" v-for="(activityClassify, index) of activityClassifies" :key="'activity-classify' + index" @click="changeActivityClassify(index)">{{activityClassify.name}}</li>
+                        <li :class="{'active': activityClassify.selected}" v-for="(activityClassify, index) of classifies" :key="'activity-classify' + index" @click="changeActivityClassify(index)">{{activityClassify.name}}</li>
                     </ul>
                     <div class="clear"></div>
                 </div>
@@ -109,9 +109,9 @@
             activityVue = new Vue({
                 el: "#activity-vue",
                 data: {
-                    activityClassifyNames: [[${activityClassifyNames}]],
+                    classifyNames: [[${classifyNames}]],
                     activityQueryDates: [[${activityQueryDates}]],
-                    activityClassifies: [],
+                    classifies: [],
                     regions: [[${regions}]],
                     areaCode: [[${areaCode}]],
                     // 状态
@@ -132,10 +132,10 @@
                         option: "activityVue.my();"
                     });
                     // 活动分类列表
-                    $($this.activityClassifyNames).each(function () {
-                        $this.activityClassifies.push({name: this, value: this, selected: false});
+                    $($this.classifyNames).each(function () {
+                        $this.classifies.push({name: this, value: this, selected: false});
                     });
-                    $this.activityClassifies.splice(0, 0, {
+                    $this.classifies.splice(0, 0, {
                         name: "全部",
                         value: "",
                         selected: true
@@ -215,6 +215,7 @@
                             status: "",
                             areaCode: $this.areaCode,
                             topFid: [[${topFid}]],
+                            marketId: [[${marketId}]],
                             flag: [[${flag}]]
                         };
                     },
@@ -289,8 +290,8 @@
                     },
                     changeActivityClassify: function (index) {
                         var $this = this;
-                        $($this.activityClassifies).each(function (i) {
-                            $this.$set($this.activityClassifies[i], "selected", i == index);
+                        $($this.classifies).each(function (i) {
+                            $this.$set($this.classifies[i], "selected", i == index);
                         });
                     },
                     changeTime: function (index) {
@@ -314,7 +315,7 @@
                     },
                     condition2QueryParams: function () {
                         var $this = this;
-                        $($this.activityClassifies).each(function () {
+                        $($this.classifies).each(function () {
                             if (this.selected) {
                                 $this.queryParams.activityClassifyName = this.value;
                                 return false;
@@ -347,8 +348,8 @@
                     },
                     queryParams2Condition: function () {
                         var $this = this;
-                        $($this.activityClassifies).each(function (i) {
-                            $this.$set($this.activityClassifies[i], "selected", this.value == $this.queryParams.activityClassifyName);
+                        $($this.classifies).each(function (i) {
+                            $this.$set($this.classifies[i], "selected", this.value == $this.queryParams.activityClassifyName);
                         });
                         $($this.activityQueryDates).each(function (i) {
                             $this.$set($this.activityQueryDates[i], "selected", this.value == $this.queryParams.date);

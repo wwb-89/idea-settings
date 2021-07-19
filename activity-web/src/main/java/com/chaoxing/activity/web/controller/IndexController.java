@@ -66,13 +66,14 @@ public class IndexController {
 	 * @param banner
 	 * @param style 风格
 	 * @param flag 活动标示：双选会、第二课堂等
+	 * @param marketId 市场id
 	 * @return java.lang.String
 	 */
 	@GetMapping("")
-	public String index(HttpServletRequest request, Model model, Integer wfwfid, Integer unitId, Integer state, Integer fid, Integer banner, String style, @RequestParam(defaultValue = "") String flag) {
+	public String index(HttpServletRequest request, Model model, Integer wfwfid, Integer unitId, Integer state, Integer fid, Integer banner, String style, @RequestParam(defaultValue = "") String flag, Integer marketId) {
 		Integer realFid = Optional.ofNullable(wfwfid).orElse(Optional.ofNullable(unitId).orElse(Optional.ofNullable(state).orElse(fid)));
 		style = Optional.ofNullable(style).filter(StringUtils::isNotBlank).orElse(DEFAULT_STYLE);
-		return handleData(request, model, null, realFid, null, banner, style, flag);
+		return handleData(request, model, null, realFid, null, banner, style, flag, marketId);
 	}
 
 	/**图书馆
@@ -90,12 +91,13 @@ public class IndexController {
 	 * @param banner
 	 * @param style
 	 * @param flag 活动标示：双选会、第二课堂等
+	 * @param marketId 市场id
 	 * @return java.lang.String
 	 */
 	@GetMapping("lib")
-	public String libIndex(HttpServletRequest request, Model model, String code, Integer wfwfid, Integer unitId, Integer state, Integer fid, Integer pageId, Integer banner, String style, @RequestParam(defaultValue = "") String flag) {
+	public String libIndex(HttpServletRequest request, Model model, String code, Integer wfwfid, Integer unitId, Integer state, Integer fid, Integer pageId, Integer banner, String style, @RequestParam(defaultValue = "") String flag, Integer marketId) {
 		Integer realFid = Optional.ofNullable(wfwfid).orElse(Optional.ofNullable(unitId).orElse(Optional.ofNullable(state).orElse(fid)));
-		return handleData(request, model, code, realFid, pageId, banner, style, flag);
+		return handleData(request, model, code, realFid, pageId, banner, style, flag, marketId);
 	}
 
 	/**基础教育
@@ -113,13 +115,14 @@ public class IndexController {
 	 * @param banner
 	 * @param style
 	 * @param flag 活动标示：双选会、第二课堂等
+	 * @param marketId 市场id
 	 * @return java.lang.String
 	 */
 	@GetMapping("bas")
-	public String basIndex(HttpServletRequest request, Model model, String code, Integer wfwfid, Integer unitId, Integer state, Integer fid, Integer pageId, Integer banner, String style, @RequestParam(defaultValue = "") String flag) {
+	public String basIndex(HttpServletRequest request, Model model, String code, Integer wfwfid, Integer unitId, Integer state, Integer fid, Integer pageId, Integer banner, String style, @RequestParam(defaultValue = "") String flag, Integer marketId) {
 		Integer realFid = Optional.ofNullable(wfwfid).orElse(Optional.ofNullable(unitId).orElse(Optional.ofNullable(state).orElse(fid)));
 		style = Optional.ofNullable(style).filter(StringUtils::isNotBlank).orElse(DEFAULT_STYLE);
-		return handleData(request, model, code, realFid, pageId, banner, style, flag);
+		return handleData(request, model, code, realFid, pageId, banner, style, flag, marketId);
 	}
 
 	/**高校
@@ -137,23 +140,30 @@ public class IndexController {
 	 * @param banner
 	 * @param style
 	 * @param flag 活动标示：双选会、第二课堂等
+	 * @param marketId 市场id
 	 * @return java.lang.String
 	 */
 	@GetMapping("edu")
-	public String eduIndex(HttpServletRequest request, Model model, String code, Integer wfwfid, Integer unitId, Integer state, Integer fid, Integer pageId, Integer banner, String style, @RequestParam(defaultValue = "") String flag) {
+	public String eduIndex(HttpServletRequest request, Model model, String code, Integer wfwfid, Integer unitId, Integer state, Integer fid, Integer pageId, Integer banner, String style, @RequestParam(defaultValue = "") String flag, Integer marketId) {
 		Integer realFid = Optional.ofNullable(wfwfid).orElse(Optional.ofNullable(unitId).orElse(Optional.ofNullable(state).orElse(fid)));
 		style = Optional.ofNullable(style).filter(StringUtils::isNotBlank).orElse(DEFAULT_STYLE);
-		return handleData(request, model, code, realFid, pageId, banner, style, flag);
+		return handleData(request, model, code, realFid, pageId, banner, style, flag, marketId);
 	}
 
-	private String handleData(HttpServletRequest request, Model model, String code, Integer fid, Integer pageId, Integer banner, String style, String flag) {
-		if (fid == null) {
-			LoginUserDTO loginUser = LoginUtils.getLoginUser(request);
-			Optional.ofNullable(loginUser).orElseThrow(() -> new LoginRequiredException());
+	private String handleData(HttpServletRequest request, Model model, String code, Integer fid, Integer pageId, Integer banner, String style, String flag, Integer marketId) {
+		List<Classify> classifies;
+		if (marketId == null) {
+			if (fid == null) {
+				LoginUserDTO loginUser = LoginUtils.getLoginUser(request);
+				Optional.ofNullable(loginUser).orElseThrow(() -> new LoginRequiredException());
+				fid = loginUser.getFid();
+			}
+			classifies = classifyQueryService.listOrgClassifies(fid);
+		}else {
+			classifies = classifyQueryService.listMarketClassifies(marketId);
 		}
-		List<Classify> classifies = classifyQueryService.listOrgClassifies(fid);
 		List<String> classifyNames = Optional.ofNullable(classifies).orElse(Lists.newArrayList()).stream().map(Classify::getName).collect(Collectors.toList());
-		model.addAttribute("activityClassifyNames", classifyNames);
+		model.addAttribute("classifyNames", classifyNames);
 		// 查询地区列表
 		List<GroupRegionFilter> groupRegionFilters;
 		String areaCode = "";
@@ -175,6 +185,7 @@ public class IndexController {
 		banner = Optional.ofNullable(banner).orElse(0);
 		model.addAttribute("banner", banner);
 		model.addAttribute("flag", flag);
+		model.addAttribute("marketId", marketId);
 		if (UserAgentUtils.isMobileAccess(request)) {
 			return "mobile/index";
 		}else {
