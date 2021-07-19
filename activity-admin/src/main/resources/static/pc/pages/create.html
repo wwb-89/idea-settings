@@ -898,7 +898,7 @@
                             <template slot-scope="scope"> <i class="el-icon-search fl mgr10"></i>
                                 <div class="address-box">
                                     <div class="title1">{{ scope.item.title }}</div>
-                                    &#45;&#45;
+                                    --
                                     <span class="address ellipsis">{{ scope.item.address }}</span>
                                 </div>
                                 <i class="el-icon-close" @click.stop="handleDelAddr($event)"></i>
@@ -952,7 +952,52 @@
             </div>
         </div>
     </div>
-
+    <!--    活动展示页-->
+    <div class="info box">
+        <div class="set-box">
+            <div class="title">活动展示页<span>请选择你的活动呈现页面</span></div>
+        </div>
+        <div class="cover-list">
+            <ul>
+                <li class="current">
+                    <div class="img-inner-box">
+                        <img src="../assets/images/cover.png">
+                        <div class="magnifier"><i></i></div>
+                    </div>
+                    <p class="overHidden1">“博阅锦绣”2020寒假星阅读</p>
+                </li>
+                <li>
+                    <div class="img-inner-box">
+                        <img src="../assets/images/cover.png">
+                        <div class="magnifier"><i></i></div>
+                    </div>
+                    <p  class="overHidden1">“博阅锦绣”2020寒假星阅读</p>
+                </li>
+                <li>
+                    <div class="img-inner-box">
+                        <img src="../assets/images/cover.png">
+                        <div class="magnifier"><i></i></div>
+                    </div>
+                    <p  class="overHidden1">“博阅锦绣”2020寒假星阅读</p>
+                </li>
+                <li>
+                    <div class="img-inner-box">
+                        <img src="../assets/images/cover.png">
+                        <div class="magnifier"><i></i></div>
+                    </div>
+                    <p  class="overHidden1">“博阅锦绣”2020寒假星阅读</p>
+                </li>
+                <li>
+                    <div class="img-inner-box">
+                        <img src="../assets/images/cover.png">
+                        <div class="magnifier"><i></i></div>
+                    </div>
+                    <p  class="overHidden1">“博阅锦绣”2020寒假星阅读</p>
+                </li>
+            </ul>
+            <div class="clear"></div>
+        </div>
+    </div>
 
     <!-- 报名成功通知弹窗 -->
     <div class="dialog-box5" v-if="messageContentPop">
@@ -978,66 +1023,66 @@
     <script type="text/javascript" src="https://noteyd.chaoxing.com/res/plugin/smusic/js/smusic.js"></script>
     <link rel="stylesheet" type="text/css" href="https://noteyd.chaoxing.com/res/pc/cssnew/media.css" />
     <script type="text/javascript" src="https://noteyd.chaoxing.com/res/pc/js/media.js"></script>
-    <!-- 视频播放容器 -->
-    <div id="videoDiv">
-        <span class="videoCloseBtn"></span>
-        <div id="video"></div>
-    </div>
-    <!-- 音频播放容器 -->
-    <div id="audioDiv" style="z-index: 9000">
-        <div class="headBar"><span class="audioCloseBtn"></span></div>
-        <div class="grid-music-container f-usn">
-            <div class="m-music-play-wrap">
-                <div class="u-cover"></div>
-                <div class="m-now-info">
-                    <h1 class="u-music-title"><strong></strong></h1>
+<!--    &lt;!&ndash; 视频播放容器 &ndash;&gt;-->
+<!--    <div id="videoDiv">-->
+<!--        <span class="videoCloseBtn"></span>-->
+<!--        <div id="video"></div>-->
+<!--    </div>-->
+<!--    &lt;!&ndash; 音频播放容器 &ndash;&gt;-->
+<!--    <div id="audioDiv" style="z-index: 9000">-->
+<!--        <div class="headBar"><span class="audioCloseBtn"></span></div>-->
+<!--        <div class="grid-music-container f-usn">-->
+<!--            <div class="m-music-play-wrap">-->
+<!--                <div class="u-cover"></div>-->
+<!--                <div class="m-now-info">-->
+<!--                    <h1 class="u-music-title"><strong></strong></h1>-->
 
-                    <div class="m-now-controls">
-                        <div class="startTime">00:00&nbsp;&nbsp;</div>
-                        <div class="u-control u-process ">
-                            <div class="old-bar"></div>
-                            <span class="buffer-process"></span>
-                            <span class="current-bar"></span>
-                            <span class="current-process"></span>
-                        </div>
-                        <div class="u-control u-time">00:00</div>
+<!--                    <div class="m-now-controls">-->
+<!--                        <div class="startTime">00:00&nbsp;&nbsp;</div>-->
+<!--                        <div class="u-control u-process ">-->
+<!--                            <div class="old-bar"></div>-->
+<!--                            <span class="buffer-process"></span>-->
+<!--                            <span class="current-bar"></span>-->
+<!--                            <span class="current-process"></span>-->
+<!--                        </div>-->
+<!--                        <div class="u-control u-time">00:00</div>-->
 
-                        <div class="u-control u-volume new-volume">
-                            <div class="volume">
-                            <span class="volume-event">
-                                <div class="volume-process" data-volume="0.50"></div>
-                                <span class="volume-current"></span>
-                                <span class="volume-bar"></span>
-                            </span>
-                                <a class="volume-control"></a>
-                            </div>
-                        </div>
-                        <div class="m-play-controls">
-                            <div class="musicOrder">
-                                <a class="u-play-btn mode mode-list  " title="列表循环"></a>
-                                <!-- <a class="u-play-btn mode mode-random  " title="随机播放"></a>
-								<a class="u-play-btn mode mode-single " title="单曲循环"></a>  -->
-                            </div>
-                            <a class="u-play-btn prev" title="上一曲"></a>
-                            <a class="u-play-btn ctrl-play play" title="暂停"></a>
-                            <a class="u-play-btn next" title="下一曲"></a>
-                        </div>
-                    </div>
-                </div>
+<!--                        <div class="u-control u-volume new-volume">-->
+<!--                            <div class="volume">-->
+<!--                            <span class="volume-event">-->
+<!--                                <div class="volume-process" data-volume="0.50"></div>-->
+<!--                                <span class="volume-current"></span>-->
+<!--                                <span class="volume-bar"></span>-->
+<!--                            </span>-->
+<!--                                <a class="volume-control"></a>-->
+<!--                            </div>-->
+<!--                        </div>-->
+<!--                        <div class="m-play-controls">-->
+<!--                            <div class="musicOrder">-->
+<!--                                <a class="u-play-btn mode mode-list  " title="列表循环"></a>-->
+<!--                                &lt;!&ndash; <a class="u-play-btn mode mode-random  " title="随机播放"></a>-->
+<!--								<a class="u-play-btn mode mode-single " title="单曲循环"></a>  &ndash;&gt;-->
+<!--                            </div>-->
+<!--                            <a class="u-play-btn prev" title="上一曲"></a>-->
+<!--                            <a class="u-play-btn ctrl-play play" title="暂停"></a>-->
+<!--                            <a class="u-play-btn next" title="下一曲"></a>-->
+<!--                        </div>-->
+<!--                    </div>-->
+<!--                </div>-->
 
-                <div class="f-cb">&nbsp;</div>
-                <div class="m-music-list-wrap"></div>
-                <div class="m-music-lyric-wrap">
-                    <div class="inner">
-                        <ul class="js-music-lyric-content">
-                            <li class="eof">暂无歌词...</li>
-                        </ul>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-    <!--音视频播放-end-->
+<!--                <div class="f-cb">&nbsp;</div>-->
+<!--                <div class="m-music-list-wrap"></div>-->
+<!--                <div class="m-music-lyric-wrap">-->
+<!--                    <div class="inner">-->
+<!--                        <ul class="js-music-lyric-content">-->
+<!--                            <li class="eof">暂无歌词...</li>-->
+<!--                        </ul>-->
+<!--                    </div>-->
+<!--                </div>-->
+<!--            </div>-->
+<!--        </div>-->
+<!--    </div>-->
+<!--    &lt;!&ndash;音视频播放-end&ndash;&gt;-->
 </div>
 <script type="text/javascript" src="https://api.map.baidu.com/api?v=3.0&ak=aG5nWGO5m5tkVhBHGuVppoIRfKbyp5H3"></script>
 <script src="../../assets/js/vue.min.js"></script>
