@@ -2,9 +2,9 @@ package com.chaoxing.activity.service.util;
 
 import com.chaoxing.activity.dto.activity.ActivityExternalDTO;
 import com.chaoxing.activity.model.Activity;
-import com.chaoxing.activity.model.ActivityClassify;
+import com.chaoxing.activity.model.Classify;
 import com.chaoxing.activity.service.activity.ActivityCoverUrlSyncService;
-import com.chaoxing.activity.service.activity.classify.ActivityClassifyQueryService;
+import com.chaoxing.activity.service.activity.classify.ClassifyQueryService;
 import com.google.common.collect.Maps;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
@@ -31,7 +31,7 @@ import java.util.stream.Collectors;
 public class Model2DtoService {
 
 	@Resource
-	private ActivityClassifyQueryService activityClassifyQueryService;
+	private ClassifyQueryService classifyQueryService;
 	@Resource
 	private ActivityCoverUrlSyncService activityCoverService;
 
@@ -47,12 +47,12 @@ public class Model2DtoService {
 		if (CollectionUtils.isNotEmpty(activities)) {
 			// 查询活动分类列表
 			List<Integer> activityClassifyIds = activities.stream().map(Activity::getActivityClassifyId).collect(Collectors.toList());
-			List<ActivityClassify> activityClassifies = activityClassifyQueryService.listByIds(activityClassifyIds);
-			Map<Integer, ActivityClassify> idActivityClassifyMap;
-			if (CollectionUtils.isNotEmpty(activityClassifies)) {
-				idActivityClassifyMap = activityClassifies.stream().collect(Collectors.toMap(ActivityClassify::getId, v -> v, (v1, v2) -> v2));
+			List<Classify> classifies = classifyQueryService.listByIds(activityClassifyIds);
+			Map<Integer, Classify> idClassifyMap;
+			if (CollectionUtils.isNotEmpty(classifies)) {
+				idClassifyMap = classifies.stream().collect(Collectors.toMap(Classify::getId, v -> v, (v1, v2) -> v2));
 			} else {
-				idActivityClassifyMap = Maps.newHashMap();
+				idClassifyMap = Maps.newHashMap();
 			}
 			for (Activity activity : activities) {
 				ActivityExternalDTO activityExternal = new ActivityExternalDTO();
@@ -63,8 +63,8 @@ public class Model2DtoService {
 				Activity.ActivityTypeEnum activityTypeEnum = Activity.ActivityTypeEnum.fromValue(activityType);
 				activityExternal.setActivityType(Optional.ofNullable(activityTypeEnum).map(Activity.ActivityTypeEnum::getName).orElse(""));
 				// 处理活动分类名
-				ActivityClassify activityClassify = idActivityClassifyMap.get(activityClassifyId);
-				activityExternal.setActivityClassify(Optional.ofNullable(activityClassify).map(ActivityClassify::getName).orElse(""));
+				Classify classify = idClassifyMap.get(activityClassifyId);
+				activityExternal.setActivityClassify(Optional.ofNullable(classify).map(Classify::getName).orElse(""));
 				activityExternals.add(activityExternal);
 				// 封面地址
 				activityExternal.setCoverUrl(activityCoverService.getCoverUrl(activity));
@@ -84,7 +84,7 @@ public class Model2DtoService {
 	*/
 	public ActivityExternalDTO activity2Dto(Activity activity) {
 		// 查询活动分类列表
-		ActivityClassify activityClassify = activityClassifyQueryService.getById(activity.getActivityClassifyId());
+		Classify classify = classifyQueryService.getById(activity.getActivityClassifyId());
 		ActivityExternalDTO activityExternal = new ActivityExternalDTO();
 		BeanUtils.copyProperties(activity, activityExternal);
 		// 处理活动形式
@@ -92,7 +92,7 @@ public class Model2DtoService {
 		Activity.ActivityTypeEnum activityTypeEnum = Activity.ActivityTypeEnum.fromValue(activityType);
 		activityExternal.setActivityType(Optional.ofNullable(activityTypeEnum).map(Activity.ActivityTypeEnum::getName).orElse(""));
 		// 处理活动分类名
-		activityExternal.setActivityClassify(Optional.ofNullable(activityClassify).map(ActivityClassify::getName).orElse(""));
+		activityExternal.setActivityClassify(Optional.ofNullable(classify).map(Classify::getName).orElse(""));
 		// 封面地址
 		activityExternal.setCoverUrl(activityCoverService.getCoverUrl(activity));
 		// 访问地址

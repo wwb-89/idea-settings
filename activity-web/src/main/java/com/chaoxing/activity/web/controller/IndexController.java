@@ -2,12 +2,13 @@ package com.chaoxing.activity.web.controller;
 
 import com.chaoxing.activity.dto.ActivityQueryDateDTO;
 import com.chaoxing.activity.dto.LoginUserDTO;
+import com.chaoxing.activity.model.Classify;
 import com.chaoxing.activity.model.Group;
 import com.chaoxing.activity.model.GroupRegionFilter;
 import com.chaoxing.activity.service.ActivityQueryDateService;
 import com.chaoxing.activity.service.GroupRegionFilterService;
 import com.chaoxing.activity.service.GroupService;
-import com.chaoxing.activity.service.activity.classify.ActivityClassifyQueryService;
+import com.chaoxing.activity.service.activity.classify.ClassifyQueryService;
 import com.chaoxing.activity.util.UserAgentUtils;
 import com.chaoxing.activity.util.annotation.LoginRequired;
 import com.chaoxing.activity.util.exception.LoginRequiredException;
@@ -25,6 +26,7 @@ import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 /**活动市场
  * @author wwb
@@ -45,7 +47,7 @@ public class IndexController {
 	@Resource
 	private GroupRegionFilterService groupRegionFilterService;
 	@Resource
-	private ActivityClassifyQueryService activityClassifyQueryService;
+	private ClassifyQueryService classifyQueryService;
 	@Resource
 	private GroupService groupService;
 	@Resource
@@ -149,8 +151,9 @@ public class IndexController {
 			LoginUserDTO loginUser = LoginUtils.getLoginUser(request);
 			Optional.ofNullable(loginUser).orElseThrow(() -> new LoginRequiredException());
 		}
-		List<String> activityClassifyNames = activityClassifyQueryService.listOrgsOptionalName(Lists.newArrayList(fid));
-		model.addAttribute("activityClassifyNames", activityClassifyNames);
+		List<Classify> classifies = classifyQueryService.listOrgClassifies(fid);
+		List<String> classifyNames = Optional.ofNullable(classifies).orElse(Lists.newArrayList()).stream().map(Classify::getName).collect(Collectors.toList());
+		model.addAttribute("activityClassifyNames", classifyNames);
 		// 查询地区列表
 		List<GroupRegionFilter> groupRegionFilters;
 		String areaCode = "";

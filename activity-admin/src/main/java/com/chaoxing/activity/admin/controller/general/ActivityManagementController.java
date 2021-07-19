@@ -9,7 +9,7 @@ import com.chaoxing.activity.model.*;
 import com.chaoxing.activity.service.GroupService;
 import com.chaoxing.activity.service.WebTemplateService;
 import com.chaoxing.activity.service.activity.ActivityQueryService;
-import com.chaoxing.activity.service.activity.classify.ActivityClassifyHandleService;
+import com.chaoxing.activity.service.activity.classify.ClassifyHandleService;
 import com.chaoxing.activity.service.activity.engine.ActivityEngineQueryService;
 import com.chaoxing.activity.service.activity.manager.ActivityCreatePermissionService;
 import com.chaoxing.activity.service.activity.template.TemplateQueryService;
@@ -47,7 +47,7 @@ public class ActivityManagementController {
 	@Resource
 	private GroupService groupService;
 	@Resource
-	private ActivityClassifyHandleService activityClassifyHandleService;
+	private ClassifyHandleService classifyHandleService;
 	@Resource
 	private ActivityCreatePermissionService activityCreatePermissionService;
 	@Resource
@@ -103,9 +103,9 @@ public class ActivityManagementController {
 		// 活动形式列表
 		model.addAttribute("activityTypes", activityQueryService.listActivityType());
 		// 活动分类列表范围
-		activityClassifyHandleService.cloneSystemClassify(fid);
+		classifyHandleService.cloneSystemClassifyToOrg(fid);
 		ActivityCreatePermissionDTO activityCreatePermission = activityCreatePermissionService.getGroupClassifyByUserPermission(fid, loginUser.getUid());
-		model.addAttribute("activityClassifies", activityCreatePermission.getActivityClassifies());
+		model.addAttribute("activityClassifies", activityCreatePermission.getClassifies());
 		model.addAttribute("existNoLimitPermission", activityCreatePermission.getExistNoLimitPermission());
 		model.addAttribute("groupType", activityCreatePermission.getGroupType());
 		// 报名签到

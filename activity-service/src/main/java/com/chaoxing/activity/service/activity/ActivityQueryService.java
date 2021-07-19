@@ -17,10 +17,10 @@ import com.chaoxing.activity.dto.query.ActivityQueryDTO;
 import com.chaoxing.activity.dto.query.MhActivityCalendarQueryDTO;
 import com.chaoxing.activity.mapper.*;
 import com.chaoxing.activity.model.*;
-import com.chaoxing.activity.service.activity.classify.ActivityClassifyQueryService;
+import com.chaoxing.activity.service.activity.classify.ClassifyQueryService;
 import com.chaoxing.activity.service.activity.manager.ActivityManagerQueryService;
-import com.chaoxing.activity.service.manager.wfw.WfwAreaApiService;
 import com.chaoxing.activity.service.manager.module.SignApiService;
+import com.chaoxing.activity.service.manager.wfw.WfwAreaApiService;
 import com.chaoxing.activity.util.DateUtils;
 import com.chaoxing.activity.util.constant.DateFormatConstant;
 import com.chaoxing.activity.util.constant.DateTimeFormatterConstant;
@@ -72,7 +72,7 @@ public class ActivityQueryService {
 	@Resource
 	private ActivityManagerQueryService activityManagerQueryService;
 	@Resource
-	private ActivityClassifyQueryService activityClassifyQueryService;
+	private ClassifyQueryService classifyQueryService;
 	@Resource
 	private TableFieldDetailMapper tableFieldDetailMapper;
 
@@ -666,15 +666,15 @@ public class ActivityQueryService {
 				.in(Activity::getId, activityIds)
 		);
 		if (CollectionUtils.isNotEmpty(activities)) {
-			List<Integer> activityClassifyIds = activities.stream().map(Activity::getActivityClassifyId).collect(Collectors.toList());
-			List<ActivityClassify> activityClassifies = activityClassifyQueryService.listByIds(activityClassifyIds);
-			if (CollectionUtils.isNotEmpty(activityClassifies)) {
-				Map<Integer, ActivityClassify> activityClassifyIdMap = activityClassifies.stream().collect(Collectors.toMap(ActivityClassify::getId, v -> v, (v1, v2) -> v2));
+			List<Integer> classifyIds = activities.stream().map(Activity::getActivityClassifyId).collect(Collectors.toList());
+			List<Classify> classifies = classifyQueryService.listByIds(classifyIds);
+			if (CollectionUtils.isNotEmpty(classifies)) {
+				Map<Integer, Classify> classifyIdMap = classifies.stream().collect(Collectors.toMap(Classify::getId, v -> v, (v1, v2) -> v2));
 				for (Activity activity : activities) {
 					Integer activityClassifyId = activity.getActivityClassifyId();
-					ActivityClassify activityClassify = activityClassifyIdMap.get(activityClassifyId);
-					if (activityClassify != null) {
-						activity.setActivityClassifyName(activityClassify.getName());
+					Classify classify = classifyIdMap.get(activityClassifyId);
+					if (classify != null) {
+						activity.setActivityClassifyName(classify.getName());
 					}
 				}
 			}

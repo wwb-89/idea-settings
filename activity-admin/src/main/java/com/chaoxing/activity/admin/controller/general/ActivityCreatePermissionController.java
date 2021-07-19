@@ -3,12 +3,12 @@ package com.chaoxing.activity.admin.controller.general;
 import com.chaoxing.activity.admin.util.LoginUtils;
 import com.chaoxing.activity.dto.OrgRoleDTO;
 import com.chaoxing.activity.dto.manager.wfw.WfwGroupDTO;
-import com.chaoxing.activity.model.ActivityClassify;
+import com.chaoxing.activity.model.Classify;
 import com.chaoxing.activity.model.OrgConfig;
-import com.chaoxing.activity.service.activity.classify.ActivityClassifyQueryService;
+import com.chaoxing.activity.service.activity.classify.ClassifyQueryService;
 import com.chaoxing.activity.service.manager.OrganizationalStructureApiService;
-import com.chaoxing.activity.service.manager.wfw.WfwContactApiService;
 import com.chaoxing.activity.service.manager.WfwGroupApiService;
+import com.chaoxing.activity.service.manager.wfw.WfwContactApiService;
 import com.chaoxing.activity.service.org.OrgConfigService;
 import com.chaoxing.activity.util.annotation.LoginRequired;
 import org.springframework.stereotype.Controller;
@@ -36,7 +36,7 @@ public class ActivityCreatePermissionController {
     @Resource
     private OrganizationalStructureApiService organizationalStructureApiService;
     @Resource
-    private ActivityClassifyQueryService activityClassifyQueryService;
+    private ClassifyQueryService classifyQueryService;
     @Resource
     private WfwGroupApiService wfwGroupApiService;
     @Resource
@@ -49,7 +49,7 @@ public class ActivityCreatePermissionController {
     public String index(HttpServletRequest request, Model model, Integer wfwfid, Integer unitId, Integer state, Integer fid) {
         Integer realFid = Optional.ofNullable(wfwfid).orElse(Optional.ofNullable(unitId).orElse(Optional.ofNullable(state).orElse(Optional.ofNullable(fid).orElse(LoginUtils.getLoginUser(request).getFid()))));
         List<OrgRoleDTO> roleList = organizationalStructureApiService.listOrgRoles(realFid);
-        List<ActivityClassify> classifyList = activityClassifyQueryService.listOrgAffiliation(realFid);
+        List<Classify> classifies = classifyQueryService.listOrgClassifies(realFid);
         OrgConfig orgConfig = orgConfigService.getByFid(realFid);
         String signUpScopeType = Optional.ofNullable(orgConfig).map(OrgConfig::getSignUpScopeType).orElse("");
         // 微服务组织架构
@@ -64,7 +64,7 @@ public class ActivityCreatePermissionController {
         model.addAttribute("fid", realFid);
         model.addAttribute("groupType", signUpScopeType);
         model.addAttribute("wfwGroups", wfwGroups);
-        model.addAttribute("classifyList", classifyList);
+        model.addAttribute("classifyList", classifies);
         model.addAttribute("roleList", roleList);
         return "pc/permission/index";
     }

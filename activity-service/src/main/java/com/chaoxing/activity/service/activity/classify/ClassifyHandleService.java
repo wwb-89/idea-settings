@@ -232,4 +232,26 @@ public class ClassifyHandleService {
 		);
 	}
 
+	/**获取或新增活动类型
+	 * @Description 
+	 * @author wwb
+	 * @Date 2021-07-19 19:42:28
+	 * @param fid
+	 * @param classifyName
+	 * @return com.chaoxing.activity.model.Classify
+	*/
+	@Transactional(rollbackFor = Exception.class)
+	public Classify getOrAddOrgClassify(Integer fid, String classifyName) {
+		Classify classify = classifyQueryService.getOrAddByName(classifyName);
+		OrgClassify orgClassify = classifyQueryService.getByClassifyIdAndFid(classify.getId(), fid);
+		if (orgClassify == null) {
+			orgClassifyMapper.insert(OrgClassify.builder()
+					.classifyId(classify.getId())
+					.fid(fid)
+					.sequence(classifyQueryService.getOrgMaxSequence(fid))
+					.build());
+		}
+		return classify;
+	}
+
 }

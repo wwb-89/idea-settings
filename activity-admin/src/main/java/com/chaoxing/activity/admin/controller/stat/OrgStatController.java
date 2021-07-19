@@ -3,10 +3,11 @@ package com.chaoxing.activity.admin.controller.stat;
 import com.chaoxing.activity.admin.util.LoginUtils;
 import com.chaoxing.activity.dto.manager.wfw.WfwGroupDTO;
 import com.chaoxing.activity.dto.manager.wfwform.WfwFormFilterDTO;
+import com.chaoxing.activity.model.Classify;
 import com.chaoxing.activity.model.OrgTableField;
 import com.chaoxing.activity.model.TableField;
 import com.chaoxing.activity.model.TableFieldDetail;
-import com.chaoxing.activity.service.activity.classify.ActivityClassifyQueryService;
+import com.chaoxing.activity.service.activity.classify.ClassifyQueryService;
 import com.chaoxing.activity.service.manager.PassportApiService;
 import com.chaoxing.activity.service.manager.WfwGroupApiService;
 import com.chaoxing.activity.service.tablefield.TableFieldQueryService;
@@ -43,7 +44,7 @@ public class OrgStatController {
     private TableFieldQueryService tableFieldQueryService;
 
     @Resource
-    private ActivityClassifyQueryService activityClassifyQueryService;
+    private ClassifyQueryService classifyQueryService;
     @Resource
     private PassportApiService passportApiService;
 
@@ -103,7 +104,8 @@ public class OrgStatController {
         realFid = Optional.ofNullable(realFid).orElse(LoginUtils.getLoginUser(request).getFid());
         List<TableFieldDetail> tableFieldDetails = tableFieldQueryService.listTableFieldDetail(TableField.Type.ACTIVITY_STAT, TableField.AssociatedType.ORG);
         List<OrgTableField> orgTableFields = tableFieldQueryService.listOrgTableField(realFid, TableField.Type.ACTIVITY_STAT, TableField.AssociatedType.ORG);
-        List<WfwFormFilterDTO> classifyOptions = activityClassifyQueryService.listOrgOptions(realFid);
+        List<Classify> classifies = classifyQueryService.listOrgClassifies(realFid);
+        List<WfwFormFilterDTO> classifyOptions = WfwFormFilterDTO.buildFromClassifies(classifies);
         Integer tableFieldId = Optional.ofNullable(tableFieldDetails).orElse(Lists.newArrayList()).stream().findFirst().map(TableFieldDetail::getTableFieldId).orElse(null);
         // 微服务组织架构
         List<WfwGroupDTO> wfwGroups = wfwGroupApiService.listGroupByFid(realFid);
