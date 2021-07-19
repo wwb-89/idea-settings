@@ -20,7 +20,7 @@ import java.util.Optional;
  */
 @Controller
 @RequestMapping("market")
-public class ActivityMarketController {
+public class MarketController {
 
 	/**活动市场管理主页
 	 * @Description 

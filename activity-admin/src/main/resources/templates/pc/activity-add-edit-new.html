@@ -685,8 +685,6 @@
                 signUpParticipateScopeTreeObj: null,
                 // 活动标示
                 activityFlag: [[${activityFlag}]],
-                // 活动标示报名签到模块
-                activityFlagSignModules: [[${activityFlagSignModules}]],
                 // 活动已经关联的报名签到的模块列表
                 activitySignModules: [[${activitySignModules}]],
                 // 当前操作的对象
@@ -760,7 +758,6 @@
                         timingReleaseTimeStr: "",
                         startTime: activityApp.generateActivityDefaultStartTime(),
                         endTime: activityApp.generateActivityDefaultEndTime(),
-                        enableSign: true,
                         activityFlag: $this.activityFlag,
                     };
                 } else {
@@ -770,8 +767,6 @@
                     $this.activity.releaseTime = null;
                     $this.activity.startTime = $this.activity.startTimeStr;
                     $this.activity.endTime = $this.activity.endTimeStr;
-                    // 报名签到永远是启用的
-                    $this.activity.enableSign = true;
 
                     if ($this.activity.activityComponentValues) {
                         $($this.activity.activityComponentValues).each(function () {
@@ -829,7 +824,7 @@
                 ];
                 if (activityApp.isEmpty($this.sign.id)) {
                     // 生成新的报名签到
-                    $this.sign = signApp.newSign($this.activityFlagSignModules);
+                    $this.sign = signApp.newSign();
                     // 根据模板组件关联关系，初始化数据
                     $($this.templateComponents).each(function () {
                         if (this.code == 'sign_up' || this.code == 'company_sign_up') {
@@ -871,12 +866,9 @@
                         }
                     });
                     // 报名
+                    debugger;
                     $($this.sign.signUps).each(function (i) {
                         if (!activityApp.isEmpty(this.id)) {
-                            // this.startTime = this.startTimestamp;
-                            // this.endTime = this.endTimestamp;
-                            this.createTime = "";
-                            this.updateTime = "";
                             if (this.wfwParticipateScopes) {
                                 $(this.wfwParticipateScopes).each(function () {
                                     if (this.leaf && $this.virtualNodeMap[this.externalId]) {
@@ -913,12 +905,6 @@
                     });
                     // 签到、签退
                     $($this.sign.signIns).each(function() {
-                        if (!activityApp.isEmpty(this.id)) {
-                            // this.startTime = this.startTimestamp;
-                            // this.endTime = this.endTimestamp;
-                            this.createTime = "";
-                            this.updateTime = "";
-                        }
                         $this.$set($this.signInMap, this.originId, $.extend({}, this));
                     });
                     $(signInTplComponentIds).each(function (i) {
@@ -942,7 +928,6 @@
                     item.enable = !item.deleted;
                     $this.$set(item, "typeName", item.type == 'sign_in' ? '签到' : '签退');
                     item.btnName = item.type == 'sign_in' ? '签到' : '签退';
-                    // $this.$set(item, "name", item.type == 'sign_in' ? '签到' : '签退');
                     if (!activityApp.isEmpty(item.startTime)) {
                         $this.$set(item, "timeScope", [item.startTime, item.endTime]);
                     }
