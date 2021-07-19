@@ -322,7 +322,7 @@
                                             <el-radio v-model="signUpMap[item.id].enableWfwParticipateScope" :label="true" name="active-type">自定义</el-radio>
                                         </div>
                                         <div class="join-select" v-show="signUpMap[item.id].enableWfwParticipateScope">
-                                            <img src="/static/pc/assets/images/add-circle.png" th:src="@{/pc/assets/images/add-circle.png}" class="add-range" @click="toAddSignUpParticipateScope(it)">
+                                            <img src="/static/pc/assets/images/add-circle.png" th:src="@{/pc/assets/images/add-circle.png}" class="add-range" @click="toAddSignUpParticipateScope(item.id, it)">
                                             <span v-if="signUpMap[item.id].wfwParticipateScopes.length <= 0">请选择</span>
                                             <div class="add-tags" v-else>
                                                 <span v-for="(scope, scopeIndex) of signUpMap[item.id].wfwParticipateScopes">{{scope.externalName}}<i class="del_btn" @click="deleteSignUpParticipateScope(item.id, it.id, scopeIndex)"></i></span>
