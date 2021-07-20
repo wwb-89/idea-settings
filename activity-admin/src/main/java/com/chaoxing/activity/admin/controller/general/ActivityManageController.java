@@ -119,7 +119,6 @@ public class ActivityManageController {
 		createParamDTO.setActivityComponentValues(activityComponentValues);
 		createParamDTO.setIntroduction(activityDetail.getIntroduction());
 		model.addAttribute("activity", createParamDTO);
-		model.addAttribute("lastViewUrl", request.getHeader("Referer"));
 		model.addAttribute("templateComponents", activityEngineQueryService.listTemplateComponentTree(activity.getTemplateId()));
 		// 活动类型列表
 		model.addAttribute("activityTypes", activityQueryService.listActivityType());

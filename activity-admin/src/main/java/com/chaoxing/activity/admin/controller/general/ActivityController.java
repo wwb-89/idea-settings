@@ -103,7 +103,7 @@ public class ActivityController {
 		Integer fid = loginUser.getFid();
 		Template template = templateQueryService.getTemplateByMarketIdOrActivityFlag(marketId, Activity.ActivityFlagEnum.fromValue(flag));
 		Integer templateId = Optional.ofNullable(template).map(Template::getId).orElse(null);
-		model.addAttribute("lastViewUrl", request.getHeader("Referer"));
+		model.addAttribute("marketId", marketId);
 		model.addAttribute("strict", strict);
 		model.addAttribute("templateId", template.getId());
 		// 加载模版对应的组件列表

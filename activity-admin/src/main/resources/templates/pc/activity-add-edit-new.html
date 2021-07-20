@@ -653,6 +653,7 @@
             data: {
                 fid: [[${session._login_user_.fid}]],
                 templateId: [[${templateId}]],
+                marketId: [[${marketId}]],
                 activity: [[${activity}]],
                 templateComponents: [[${templateComponents}]],
                 tplComponentPartitions: [],
@@ -793,8 +794,8 @@
                         openWork: false,
                         originType: "",
                         origin: "",
-                        marketId: "",
                         templateId: $this.templateId,
+                        marketId: $this.marketId,
                         introduction: "",
                         webTemplateId: '',
                         // 目前数据接收实体没有以下字段
@@ -1322,6 +1323,10 @@
                     // 定时发布
                     if ($this.activity.timingRelease && activityApp.isEmpty($this.activity.timingReleaseTime)) {
                         app.showMsg("请选择发布时间");
+                        return false;
+                    }
+                    if (activityApp.isEmpty($this.activity.webTemplateId)) {
+                        app.showMsg("请选择活动展示页");
                         return false;
                     }
                     // 报名验证
