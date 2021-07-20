@@ -1515,10 +1515,7 @@
                     });
                 },
                 returnBack: function () {
-                    var $this = this;
-                    if (!$this.isEmbedded) {
-                        window.parent.location.href = window.location.href;
-                    }
+                    window.history.back();
                 },
                 // 选中活动的日期范围
                 selectActivityTime: function (obj) {
