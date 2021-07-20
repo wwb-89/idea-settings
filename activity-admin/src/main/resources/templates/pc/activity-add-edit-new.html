@@ -71,6 +71,7 @@
                         <label class="label"><img src="/static/pc/assets/images/required.png" th:src="@{/pc/assets/images/required.png}" class="required-img" v-if="item.required">{{item.name}}</label>
                         <div class="input-box">
                             <el-input type="text" placeholder="请填写信息，简短的名称" v-model.trim="activity.name" maxlength="50" show-word-limit></el-input>
+                            <span class="tips">{{item.introduction}}</span>
                         </div>
                     </div>
                     <div class="form-item" v-else-if="item.code == 'activity_time_scope'">
@@ -91,8 +92,9 @@
                                 <img style="margin: 0 8px;" slot="range-separator" src="/static/pc/assets/images/swap-right.png" th:src="@{/pc/assets/images/swap-right.png}">
                             </el-date-picker>
                             <span class="date-piker-icon">
-                            <img src="/static/pc/assets/images/calendar.png" th:src="@{/pc/assets/images/calendar.png}">
-                        </span>
+                                <img src="/static/pc/assets/images/calendar.png" th:src="@{/pc/assets/images/calendar.png}">
+                            </span>
+                            <span class="tips">{{item.introduction}}</span>
                         </div>
                     </div>
                     <div class="form-item align-start" v-else-if="item.code == 'activity_cover'">
@@ -107,12 +109,14 @@
                                 <span>格式：jpg、png、gif</span>
                                 <button id="cover-upload-btn" class="cancle-btn upload">上传文件</button>
                             </div>
+                            <span class="tips">{{item.introduction}}</span>
                         </div>
                     </div>
                     <div class="form-item" v-else-if="item.code == 'activity_organisers'">
                         <label class="label"><img src="/static/pc/assets/images/required.png" th:src="@{/pc/assets/images/required.png}" class="required-img" v-if="item.required">{{item.name}}</label>
                         <div class="input-box" style="width: 400px;">
                             <el-input type="text" placeholder="请填写主办方" v-model.trim="activity.organisers" maxlength="20"></el-input>
+                            <span class="tips">{{item.introduction}}</span>
                         </div>
                     </div>
                     <template v-else-if="item.code == 'activity_type'">
@@ -120,6 +124,7 @@
                             <label class="label"><img src="/static/pc/assets/images/required.png" th:src="@{/pc/assets/images/required.png}" class="required-img" v-if="item.required">{{item.name}}</label>
                             <div class="input-box">
                                 <el-radio v-for="(activityType, index) of activityTypes" :key="'activity-type-' + index" v-model="activity.activityType" :label="activityType.value" name="active-type">{{activityType.name}}</el-radio>
+                                <span class="tips">{{item.introduction}}</span>
                             </div>
                         </div>
                         <div class="form-item" v-show="activity.activityType == 'offline'">
@@ -156,6 +161,7 @@
                                     </el-option>
                                 </el-select>
                             </div>
+                            <span class="tips">{{item.introduction}}</span>
                         </div>
                     </div>
 
@@ -164,7 +170,7 @@
                         <div class="input-box setForm">
                             <input type="number" v-model.trim="activity.integralValue" min="0" placeholder="请输入" class="score-input">
                             <span class="score">分</span>
-                            <span>参与者成绩合格时，即可获取相应积分</span>
+                            <span class="tips">{{item.introduction}}</span>
                         </div>
                     </div>
                     <!--学时-->
@@ -173,7 +179,7 @@
                         <div class="input-box setForm">
                             <input type="number" min="0" step="0.1" v-model.trim="activity.period" @blur="periodChange" placeholder="请输入" class="score-input">
                             <span class="score">学时</span>
-                            <span>参与者成绩合格时，即可获取相应学时</span>
+                            <span class="tips">{{item.introduction}}</span>
                         </div>
                     </div>
                     <!--学分-->
@@ -182,7 +188,7 @@
                         <div class="input-box setForm">
                             <input type="number" min="0" step="0.1" v-model.trim="activity.credit" @blur="creditChange" placeholder="请输入" class="score-input">
                             <span class="score">学分</span>
-                            <span>参与者成绩合格时，即可获取相应学分</span>
+                            <span class="tips">{{item.introduction}}</span>
                         </div>
                     </div>
                     <!--参与时长上限-->
@@ -191,7 +197,7 @@
                         <div class="input-box setForm">
                             <input type="number" min="1" step="1" v-model.trim="activity.timeLengthUpperLimit" placeholder="不限" class="score-input">
                             <span class="score">小时</span>
-                            <span>参与者通过签到和签退获取的参与时长不会超过该数值</span>
+                            <span class="tips">{{item.introduction}}</span>
                         </div>
                     </div>
                     <div class="form-item last marginTop16" v-else-if="item.code == 'activity_release_scope'" v-show="isShowActivityParticipateScope()">
@@ -210,18 +216,19 @@
                                 </div>
                                 <img src="/static/pc/assets/images/edit-3.png" th:src="@{/pc/assets/images/edit-3.png}" @click="toAddParticipateScope">
                             </div>
+                            <span class="tips">{{item.introduction}}</span>
                         </div>
                     </div>
                     <!--征集设置-->
                     <div class="form-item" v-else-if="item.code == 'work'" v-show="isShowWork()">
-                        <label class="label">作品征集</label>
+                        <label class="label">{{item.name}}</label>
                         <div class="input-box">
                             <el-switch v-model="activity.openWork" class="examine-switch"></el-switch>
-                            <span>开启后，参与者可以在活动中提交作品，管理员在征集模块中进行审核评分推优等操作</span>
+                            <span class="tips">{{item.introduction}}</span>
                         </div>
                     </div>
                     <div class="form-item cancel-margin marginTop16" v-else-if="item.code == 'tags'" v-show="isShowActivityFlag()">
-                        <label class="label">标签</label>
+                        <label class="label">{{item.name}}</label>
                         <div class="input-box wrap">
                             <!--添加满3个后，隐藏添加按钮-->
                             <div class="type-item" v-for="(tag, index) of tags" :key="'tag-' + index">{{tag}}<div class="del_btn" @click="deleteTag(index)"></div></div>
@@ -229,14 +236,15 @@
                                 <div class="add_btn"></div>
                                 添加
                             </div>
+                            <span class="tips">{{item.introduction}}</span>
                         </div>
                     </div>
                     <div v-else-if="item.code == 'activity_rating'" v-show="activity.activityFlag == 'second_classroom'">
                         <div class="form-item">
-                            <label class="label">活动评价</label>
+                            <label class="label">{{item.name}}</label>
                             <div class="input-box">
                                 <el-switch v-model="activity.openRating" class="examine-switch"></el-switch>
-                                <span>参与者可以对活动进行评价</span>
+                                <span>{{item.introduction}}</span>
                             </div>
                         </div>
                         <div class="form-item" v-show="activity.openRating">
@@ -253,7 +261,7 @@
                             <label class="label">{{item.name}}</label>
                             <div class="input-box">
                                 <el-switch v-model="activity.timingRelease" class="examine-switch"></el-switch>
-                                <span>开启后，可以按照设置的时间自动发布活动</span>
+                                <span class="tips">{{item.introduction}}</span>
                             </div>
                         </div>
 
@@ -278,18 +286,19 @@
                     </template>
 
                     <div class="form-item align-start" v-else-if="item.code == 'introduction'" v-show="isShowIntroduction()">
-                        <label class="label">简介</label>
+                        <label class="label">{{item.name}}</label>
                         <div class="input-box">
                             <!-- 笔记编辑器 -->
                             <div class="wrap ueditor">
                                 <script type="text/plain" id="container" name="content"></script>
                             </div>
+                            <span class="tips">{{item.introduction}}</span>
                         </div>
                     </div>
                     <!--报名设置列表-->
                     <div v-else-if="signUpMap[item.id] && (item.code == 'sign_up' || item.code =='company_sign_up')">
                         <div class="set-box">
-                            <div class="title set">{{signUpMap[item.id].name ? signUpMap[item.id].name : '报名'}}</div>
+                            <div class="title set">{{item.name}}</div>
                             <el-switch v-model="signUpMap[item.id].enable" class="section-switch" @change="signUpEnableChanged(item.id)"></el-switch>
                         </div>
                         <!-- 点击参与设置 -->
@@ -315,6 +324,7 @@
                                         <span class="date-piker-icon">
                                             <img src="/static/pc/assets/images/time.png" th:src="@{/pc/assets/images/time.png}">
                                         </span>
+                                        <span class="tips">{{it.introduction}}</span>
                                     </div>
                                 </div>
                                 <!-- todo 微服务和通讯录应区分开 -->
@@ -325,6 +335,7 @@
                                             <el-radio v-model="signUpMap[item.id].enableWfwParticipateScope" :label="false" name="active-type">不限</el-radio>
                                             <el-radio v-model="signUpMap[item.id].enableWfwParticipateScope" :label="true" name="active-type">自定义</el-radio>
                                         </div>
+                                        <span class="tips">{{it.introduction}}</span>
                                         <div class="join-select" v-show="signUpMap[item.id].enableWfwParticipateScope">
                                             <img src="/static/pc/assets/images/add-circle.png" th:src="@{/pc/assets/images/add-circle.png}" class="add-range" @click="toAddSignUpParticipateScope(item.id, it)">
                                             <span v-if="signUpMap[item.id].wfwParticipateScopes.length <= 0">请选择</span>
@@ -341,6 +352,7 @@
                                             <el-radio v-model="signUpMap[item.id].enableContactsParticipateScope" :label="false" name="active-type">不限</el-radio>
                                             <el-radio v-model="signUpMap[item.id].enableContactsParticipateScope" :label="true" name="active-type">自定义</el-radio>
                                         </div>
+                                        <span class="tips">{{it.introduction}}</span>
                                         <div class="join-select" v-show="signUpMap[item.id].enableContactsParticipateScope">
                                             <img src="/static/pc/assets/images/add-circle.png" th:src="@{/pc/assets/images/add-circle.png}" class="add-range" @click="toAddSignUpParticipateScope(item.id, it)">
                                             <span v-if="signUpMap[item.id].contactsParticipateScopes.length <= 0">请选择</span>
@@ -357,6 +369,7 @@
                                             <el-radio v-model="signUpMap[item.id].limitPerson" :label="false" name="active-type">不限</el-radio>
                                             <el-radio v-model="signUpMap[item.id].limitPerson" :label="true" name="active-type">自定义</el-radio>
                                         </div>
+                                        <span class="tips">{{it.introduction}}</span>
                                         <input v-show="signUpMap[item.id].limitPerson" v-model="signUpMap[item.id].personLimit" type="number" min="1" step="1" maxlength="10" placeholder="请输入正整数" class="person"><span class="person-span" v-show="signUpMap[item.id].limitPerson">人</span>
                                     </div>
                                 </div>
@@ -365,7 +378,7 @@
                                     <div class="input-box column">
                                         <div class="set-box">
                                             <el-switch v-model="signUpMap[item.id].fillInfo"></el-switch>
-                                            <span class="tips">开启后，报名者需填写信息</span>
+                                            <span class="tips">{{it.introduction}}</span>
                                         </div>
                                         <div class="set-box configurationForm" v-show="signUpMap[item.id].fillInfo" @click="toConfigForm(item.id)">
                                             <img src="/static/pc/assets/images/setting.png" th:src="@{/pc/assets/images/setting.png}">
@@ -377,21 +390,21 @@
                                     <label class="label"><img src="/static/pc/assets/images/required.png" th:src="@{/pc/assets/images/required.png}" class="required-img" v-if="it.required">{{it.name}}</label>
                                     <div class="input-box">
                                         <el-switch v-model="signUpMap[item.id].openAudit"></el-switch>
-                                        <span class="tips">报名需活动管理员审核</span>
+                                        <span class="tips">{{it.introduction}}</span>
                                     </div>
                                 </div>
                                 <div class="form-item" v-else-if="it.code == 'sign_up_public_list'">
                                     <label class="label"><img src="/static/pc/assets/images/required.png" th:src="@{/pc/assets/images/required.png}" class="required-img" v-if="it.required">{{it.name}}</label>
                                     <div class="input-box">
                                         <el-switch v-model="signUpMap[item.id].publicList"></el-switch>
-                                        <span class="tips">开启后，所有人都能看到报名人员名单</span>
+                                        <span class="tips">{{it.introduction}}</span>
                                     </div>
                                 </div>
                                 <div class="form-item" v-else-if="it.code == 'sign_up_cancel_signed_up'">
                                     <label class="label"><img src="/static/pc/assets/images/required.png" th:src="@{/pc/assets/images/required.png}" class="required-img" v-if="it.required">{{it.name}}</label>
                                     <div class="input-box">
                                         <el-switch v-model="signUpMap[item.id].endNotAllowCancel"></el-switch>
-                                        <span class="tips">开启后，报名结束后参与者不能取消报名</span>
+                                        <span class="tips">{{it.introduction}}</span>
                                     </div>
                                 </div>
                                 <div class="form-item" v-if="false">
@@ -405,9 +418,9 @@
                     </div>
 
                     <!--签到设置列表-->
-                    <div style="margin: 24px 0" v-else-if="signInMap[item.id] && (item.code == 'sign_in' || item.code == 'sign_out')">
+                    <div v-else-if="signInMap[item.id] && (item.code == 'sign_in' || item.code == 'sign_out')">
                         <div class="set-box">
-                            <div class="title set">{{signInMap[item.id].name}}</div>
+                            <div class="title set">{{item.name}}</div>
                             <el-switch v-model="signInMap[item.id].enable" class="section-switch" @change="signInEnableChanged(item.id)"></el-switch>
                         </div>
                         <!-- 点击参与设置 -->
@@ -482,12 +495,14 @@
                         <label class="label"><img src="/static/pc/assets/images/required.png" th:src="@{/pc/assets/images/required.png}" class="required-img" v-if="item.required">{{item.name}}</label>
                         <div class="input-box">
                             <el-input type="text" :placeholder="'请填写' + item.introduction" v-model.trim="activityComponentValueMap[item.id].value"></el-input>
+                            <span class="tips">{{item.introduction}}</span>
                         </div>
                     </div>
                     <div class="form-item" v-else-if="item.type == 'radio'">
                         <label class="label"><img src="/static/pc/assets/images/required.png" th:src="@{/pc/assets/images/required.png}" class="required-img" v-if="item.required">{{item.name}}</label>
                         <div class="input-box">
                             <el-radio v-for="ckItem in item.componentFields" :key="'component-field-' + ckItem.id" v-model="activityComponentValueMap[item.id].value" :label="ckItem.fieldName" name="active-type">{{ckItem.fieldName}}</el-radio>
+                            <span class="tips">{{item.introduction}}</span>
                         </div>
                     </div>
                     <div class="form-item" v-else-if="item.type == 'checkbox'">
@@ -498,6 +513,7 @@
                                     {{ckItem.fieldName}}
                                 </el-checkbox>
                             </el-checkbox-group>
+                            <span class="tips">{{item.introduction}}</span>
                         </div>
                     </div>
                 </template>

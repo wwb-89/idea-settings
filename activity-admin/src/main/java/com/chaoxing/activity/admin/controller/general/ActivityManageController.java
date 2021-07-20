@@ -7,10 +7,7 @@ import com.chaoxing.activity.dto.activity.ActivityCreateParamDTO;
 import com.chaoxing.activity.dto.manager.sign.SignActivityManageIndexDTO;
 import com.chaoxing.activity.dto.manager.sign.create.SignCreateParamDTO;
 import com.chaoxing.activity.dto.manager.wfw.WfwAreaDTO;
-import com.chaoxing.activity.model.Activity;
-import com.chaoxing.activity.model.ActivityFlagSignModule;
-import com.chaoxing.activity.model.ActivitySignModule;
-import com.chaoxing.activity.model.WebTemplate;
+import com.chaoxing.activity.model.*;
 import com.chaoxing.activity.service.WebTemplateService;
 import com.chaoxing.activity.service.activity.ActivityQueryService;
 import com.chaoxing.activity.service.activity.ActivityValidationService;
@@ -116,9 +113,11 @@ public class ActivityManageController {
 	public String edit(Model model, @PathVariable Integer activityId, HttpServletRequest request, Integer step, @RequestParam(defaultValue = "0") Integer strict) {
 		LoginUserDTO loginUser = LoginUtils.getLoginUser(request);
 		Activity activity = activityValidationService.manageAble(activityId, loginUser.getUid());
+		ActivityDetail activityDetail = activityQueryService.getDetailByActivityId(activity.getId());
 		List<ActivityComponentValueDTO> activityComponentValues = activityComponentValueService.listActivityComponentValuesByActivity(activityId);
 		ActivityCreateParamDTO createParamDTO = activity.buildActivityCreateParam();
 		createParamDTO.setActivityComponentValues(activityComponentValues);
+		createParamDTO.setIntroduction(activityDetail.getIntroduction());
 		model.addAttribute("activity", createParamDTO);
 		model.addAttribute("lastViewUrl", request.getHeader("Referer"));
 		model.addAttribute("templateComponents", activityEngineQueryService.listTemplateComponentTree(activity.getTemplateId()));
