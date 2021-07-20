@@ -78,7 +78,7 @@
                 <el-table v-if="tbodyHeight > 0"
                           class="table-box"
                           :data="activities"
-                          :height="tbodyHeight"
+                          :max-height="tbodyHeight"
                           :empty-text="loaded && activities.length === 0 ? '暂无数据' : '数据加载中'"
                           @filter-change="filterChange"
                           @sort-change="sortChange">
@@ -188,7 +188,7 @@
                         </template>
                     </el-table-column>
                 </el-table>
-                <el-pagination v-show="pages > 1" background layout="prev, pager, next" :total="total" :page-size="queryParams.pageSize" :current-page="queryParams.pageNum" @current-change="changePage" style="text-align: center;"></el-pagination>
+                <el-pagination class="fixPage" v-show="pages > 1" background layout="prev, pager, next" :total="total" :page-size="queryParams.pageSize" :current-page="queryParams.pageNum" @current-change="changePage" style="text-align: center;"></el-pagination>
             </div>
         </div>
         <!-- 表格内容 -->
