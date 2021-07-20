@@ -1,12 +1,15 @@
 package com.chaoxing.activity.admin.controller.general;
 
 import com.chaoxing.activity.admin.util.LoginUtils;
+import com.chaoxing.activity.model.ActivityMarket;
+import com.chaoxing.activity.service.activity.market.ActivityMarketQueryService;
 import com.chaoxing.activity.util.annotation.LoginRequired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 
+import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import java.util.Optional;
 
@@ -22,6 +25,9 @@ import java.util.Optional;
 @RequestMapping("market")
 public class MarketController {
 
+	@Resource
+	private ActivityMarketQueryService activityMarketQueryService;
+
 	/**活动市场管理主页
 	 * @Description 
 	 * @author wwb
@@ -30,10 +36,12 @@ public class MarketController {
 	 * @param model
 	 * @return java.lang.String
 	*/
+	@LoginRequired
 	@RequestMapping("{marketId}")
 	public String index(HttpServletRequest request, Model model, @PathVariable Integer marketId) {
-		model.addAttribute("marketId", marketId);
-		return "redirect:/?marketId="+ marketId;
+		ActivityMarket market = activityMarketQueryService.getById(marketId);
+		model.addAttribute("market", market);
+		return "pc/market/market-index";
 	}
 
 	/**微服务创建营应用页面

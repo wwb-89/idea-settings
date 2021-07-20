@@ -24,6 +24,8 @@ public class ActivityMarketCreateParamDTO {
 	private String name;
 	/** 图标云盘id */
 	private String iconCloudId;
+	/** icon url */
+	private String iconUrl;
 	/** 机构id */
 	private Integer fid;
 	/** 分类id（微服务创建使用） */
@@ -33,6 +35,7 @@ public class ActivityMarketCreateParamDTO {
 		return ActivityMarket.builder()
 				.name(getName())
 				.iconCloudId(getIconCloudId())
+				.iconUrl(getIconUrl())
 				.fid(getFid())
 				.build();
 	}

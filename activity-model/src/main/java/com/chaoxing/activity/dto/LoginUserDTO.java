@@ -49,7 +49,7 @@ public class LoginUserDTO {
 	public OperateUserDTO buildOperateUserDTO() {
 		return OperateUserDTO.builder()
 				.uid(getUid())
-				.userName(buildOperateUserDTO().getUserName())
+				.userName(getRealName())
 				.fid(getFid())
 				.orgName(getOrgName())
 				.build();

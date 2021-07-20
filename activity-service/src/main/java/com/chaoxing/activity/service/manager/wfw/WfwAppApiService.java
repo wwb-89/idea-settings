@@ -29,7 +29,7 @@ public class WfwAppApiService {
 	private static final String NEW_APP_URL = "http://v1.chaoxing.com/appInter/addApp";
 	private static final Integer DEFAULT_OPEN_TYPE = 14;
 
-	@Resource
+	@Resource(name = "restTemplateProxy")
 	private RestTemplate restTemplate;
 
 	/**创建应用

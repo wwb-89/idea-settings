@@ -345,6 +345,25 @@
         }
         return today.getTime() > timestamp;
     };
+    /**
+     * 是否被嵌入
+     * @returns {boolean}
+     */
+    activityApp.prototype.isEmbedded = function () {
+        return window.parent !== window;
+    };
+    /**
+     * 手动出发resize
+     */
+    activityApp.prototype.resize = function () {
+        if(document.createEvent) {
+            var event = document.createEvent("HTMLEvents");
+            event.initEvent("resize", true, true);
+            window.dispatchEvent(event);
+        } else if(document.createEventObject) {
+            window.fireEvent("onresize");
+        }
+    };
     W['activityApp'] = new activityApp();
 })(window, jQuery, JSON);
 Array.prototype.remove = function (val) {
