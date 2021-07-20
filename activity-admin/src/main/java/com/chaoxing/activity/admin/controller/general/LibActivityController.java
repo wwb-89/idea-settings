@@ -20,10 +20,10 @@ import java.util.Optional;
  */
 @Controller
 @RequestMapping({"lib", "bas", "edu"})
-public class LibActivityManagementController {
+public class LibActivityController {
 
 	@Resource
-	private ActivityManagementController activityManagementController;
+	private ActivityController activityManagementController;
 
 	/**活动管理主页
 	 * @Description 

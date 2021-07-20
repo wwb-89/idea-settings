@@ -28,7 +28,7 @@ import java.util.List;
  */
 @Controller
 @RequestMapping("activity/{activityId}/manager")
-public class ActivityManagerManageController {
+public class ActivityManagerController {
 
 	@Resource
 	private ActivityValidationService activityValidationService;

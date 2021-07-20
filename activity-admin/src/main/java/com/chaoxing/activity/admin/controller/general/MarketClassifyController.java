@@ -22,7 +22,7 @@ import java.util.List;
  */
 @Controller
 @RequestMapping("market/{marketId}/classify")
-public class MarketClassifyManageController {
+public class MarketClassifyController {
 
 	@Resource
 	private ClassifyQueryService classifyQueryService;

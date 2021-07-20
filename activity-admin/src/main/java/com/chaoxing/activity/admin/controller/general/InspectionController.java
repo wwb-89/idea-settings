@@ -29,7 +29,7 @@ import java.util.List;
  */
 @Controller
 @RequestMapping("activity/{activityId}/inspection")
-public class InspectionManageController {
+public class InspectionController {
 
 	@Resource
 	private ActivityValidationService activityValidationService;

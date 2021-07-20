@@ -29,7 +29,7 @@ import java.util.Optional;
  */
 @Controller
 @RequestMapping("activity/{activityId}/results/manage")
-public class ResultsManageController {
+public class ResultsController {
 
 	@Resource
 	private TableFieldQueryService tableFieldQueryService;

@@ -23,10 +23,10 @@ import java.util.Optional;
 @Slf4j
 @Controller
 @RequestMapping({"general", ""})
-public class GeneralActivityManagementController {
+public class GeneralActivityController {
 
 	@Resource
-	private ActivityManagementController activityManagementController;
+	private ActivityController activityController;
 
 	/**活动管理主页
 	 * @Description
@@ -46,7 +46,7 @@ public class GeneralActivityManagementController {
 	@RequestMapping("")
 	public String index(HttpServletRequest request, Model model, Integer marketId, String code, Integer wfwfid, Integer unitId, Integer state, Integer fid, @RequestParam(defaultValue = "0") Integer strict, String flag) {
 		Integer realFid = Optional.ofNullable(wfwfid).orElse(Optional.ofNullable(unitId).orElse(Optional.ofNullable(state).orElse(Optional.ofNullable(fid).orElse(LoginUtils.getLoginUser(request).getFid()))));
-		return activityManagementController.index(model, marketId, code, realFid, strict, flag);
+		return activityController.index(model, marketId, code, realFid, strict, flag);
 	}
 
 	/**活动新增页面
@@ -61,7 +61,7 @@ public class GeneralActivityManagementController {
 	*/
 	@GetMapping("activity/add")
 	public String add(HttpServletRequest request, Model model, Integer marketId, String flag, String code) {
-		return activityManagementController.add(request, model, marketId, flag, code);
+		return activityController.add(request, model, marketId, flag, code);
 	}
 
 }

@@ -21,7 +21,7 @@ import javax.servlet.http.HttpServletRequest;
  */
 @Controller
 @RequestMapping("activity/{activityId}/rating")
-public class ActivityRatingManageController {
+public class ActivityRatingController {
 
     @Resource
     private ActivityQueryService activityQueryService;

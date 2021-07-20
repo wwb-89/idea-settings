@@ -39,7 +39,7 @@ import java.util.stream.Collectors;
  * @date 2020-12-25 10:13:11
  */
 @Component
-public class ActivityManagementController {
+public class ActivityController {
 
 	@Resource
 	private ActivityQueryService activityQueryService;
@@ -65,6 +65,7 @@ public class ActivityManagementController {
 	private ClassifyHandleService classifyHandleService;
 	@Resource
 	private ClassifyQueryService classifyQueryService;
+
 	/**新活动管理主页
 	 * @Description
 	 * @author wwb
