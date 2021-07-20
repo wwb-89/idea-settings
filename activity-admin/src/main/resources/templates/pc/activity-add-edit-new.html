@@ -52,7 +52,7 @@
 <div class="page" id="activity-vue" v-cloak>
     <!-- 创建/编辑活动头部 -->
     <div class="top flex" id="create">
-        <div class="go-back" @click="returnBack" v-show="notFrame"><i class="icon-back"></i><span>返回</span></div>
+        <div class="go-back" @click="returnBack" v-show="isEmbedded"><i class="icon-back"></i><span>返回</span></div>
         <div class="name-txt">{{activity.id ? '编辑' : '创建'}}活动</div>
         <button v-if="activity.id" type="button" class="create-btn" @click="save">保存</button>
         <button v-else type="button" class="create-btn"  @click="nextStep">保存</button>
@@ -634,12 +634,12 @@
                 fid: [[${session._login_user_.fid}]],
                 templateId: [[${templateId}]],
                 activity: [[${activity}]],
-                lastViewUrl: [[${lastViewUrl}]],
                 templateComponents: [[${templateComponents}]],
                 tplComponentPartitions: [],
                 // 基本信息块第一次出现位置
                 basicAppearIndex: 0,
                 templateComponentMap: {},
+                isEmbedded: activityApp.isEmbedded(),
                 tags: [],
                 // 模板列表
                 webTemplates: [[${webTemplates}]],
@@ -954,9 +954,6 @@
                 // $this.initWfwGroups();
             },
             computed: {
-                notFrame: function () {
-                    return window.parent === window;
-                },
                 // 虚拟节点map，即非叶子节点复制本身作为其叶子节点，该叶子节点即为虚拟节点
                 virtualNodeMap: function () {
                     var $this = this;
@@ -1458,8 +1455,9 @@
                             app.noticeActivityChange($this.activity.id);
                             var activityId = data.data;
                             $this.$set($this.activity, "id", activityId);
-                            $this.returnBack();
-                        } else {
+                            app.showMsg("创建成功", function () {
+                                window.close();
+                            });                        } else {
                             var errorMessage = data.message;
                             if (activityApp.isEmpty(errorMessage)) {
                                 errorMessage = "创建失败";
@@ -1498,13 +1496,9 @@
                             app.noticeActivityChange($this.activity.id);
                             var activityData = data.data;
                             $this.$set($this.sign, "id", activityData.signId);
-                            if (activityApp.isEmpty($this.activity.pageId)) {
-                                $this.returnBack();
-                            } else {
-                                app.showMsg("修改成功", function () {
-                                    window.close();
-                                });
-                            }
+                            app.showMsg("修改成功", function () {
+                                window.close();
+                            });
                         } else {
                             var errorMessage = data.message;
                             if (activityApp.isEmpty(errorMessage)) {
@@ -1518,10 +1512,8 @@
                 },
                 returnBack: function () {
                     var $this = this;
-                    if (!$this.notFrame) {
+                    if (!$this.isEmbedded) {
                         window.parent.location.href = window.location.href;
-                    } else {
-                        window.location.replace($this.lastViewUrl);
                     }
                 },
                 // 选中活动的日期范围
