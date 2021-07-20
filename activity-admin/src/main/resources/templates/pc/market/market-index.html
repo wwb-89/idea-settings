@@ -32,11 +32,10 @@
 	</div>
 	<!--右侧内容栏-->
 	<div class="iframe-content">
-		<iframe id="content" :src="menus[0].url" scrolling="no" width="100%" frameborder="0"></iframe>
+		<iframe id="content" src="" width="100%" frameborder="0"></iframe>
 	</div>
 </div>
 <div th:replace="pc/include/common_js :: common_js(~{::script})">
-	<script src="/static/pc/assets/lib/set-iframe-height-parent-min.js" th:src="@{/pc/assets/lib/set-iframe-height-parent-min.js}"></script>
 	<script th:inline="javascript">
         vm = new Vue({
 	        el: "#vm",
@@ -45,10 +44,20 @@
 		        menus: [
 			        {"name": "活动管理", url: ctx + "/?marketId=[[${market.id}]]", active: true},
 			        {"name": "分类管理", url: ctx + "/market/[[${market.id}]]/classify", active: false}
-		        ]
+		        ],
+		        url: ""
 	        },
             mounted: function () {
-                $("#content").height($(window).height() - 68 - 20 - 50 - 5);
+                var $this = this;
+                $this.resetFrameHeight();
+                $this.url = $this.menus[0].url;
+            },
+            watch: {
+                "url": function () {
+                    var $this = this;
+                    $this.resetFrameHeight();
+                    $("#content")[0].src = $this.url;
+                }
             },
 	        methods: {
 	            // 激活菜单
@@ -62,7 +71,10 @@
                         $this.$set($this.menus[i], "active", false);
                     });
                     $this.$set($this.menus[index], "active", true);
-                    $("#content")[0].src = menu.url;
+                    $this.url = menu.url;
+                },
+                resetFrameHeight: function () {
+                    $("#content").height($(window).height() - 68 - 20 - 50 - 5);
                 }
 	        }
         });
