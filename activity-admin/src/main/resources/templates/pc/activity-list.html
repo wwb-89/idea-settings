@@ -50,7 +50,7 @@
                         <div class="count-info fl">
                             <span class="color999">共 {{ total }} 个</span>
                         </div>
-                        <div class="setting-box">
+                        <div class="setting-box" v-show="marketId">
                             <el-dropdown :hide-on-click="false" trigger="click">
                                 <el-tooltip class="item" effect="dark" content="显示字段" placement="top">
                                     <span class="icon-setting fs16"></span>

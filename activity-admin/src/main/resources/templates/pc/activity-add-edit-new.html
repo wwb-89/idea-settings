@@ -1460,8 +1460,9 @@
                             var activityId = data.data;
                             $this.$set($this.activity, "id", activityId);
                             app.showMsg("创建成功", function () {
-                                window.close();
-                            });                        } else {
+                                $this.returnBack();
+                            });
+                        } else {
                             var errorMessage = data.message;
                             if (activityApp.isEmpty(errorMessage)) {
                                 errorMessage = "创建失败";
@@ -1501,7 +1502,7 @@
                             var activityData = data.data;
                             $this.$set($this.sign, "id", activityData.signId);
                             app.showMsg("修改成功", function () {
-                                window.close();
+                                $this.returnBack();
                             });
                         } else {
                             var errorMessage = data.message;
@@ -1515,7 +1516,12 @@
                     });
                 },
                 returnBack: function () {
-                    window.history.back();
+                    var $this = this;
+                    if ($this.isEmbedded) {
+                        window.history.back();
+                    } else {
+                        window.close();
+                    }
                 },
                 // 选中活动的日期范围
                 selectActivityTime: function (obj) {
