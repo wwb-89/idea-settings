@@ -2,6 +2,7 @@
     //width: auto;
     //margin: 0 30px;
     //padding-bottom: 50px;
+    padding-top: 68px;
 }
 
 button {
@@ -78,7 +79,11 @@ select {
     padding: 0 24px;
     color: #666666;
     box-sizing: border-box;
-    position: relative;
+    position: fixed;
+    z-index: 999;
+    top: 0;
+    left: 0;
+    right: 0;
     .go-back{
         display: flex;
         cursor: pointer;
