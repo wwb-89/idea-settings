@@ -60,8 +60,8 @@ public class GeneralActivityController {
 	 * @return java.lang.String
 	*/
 	@GetMapping("activity/add")
-	public String add(HttpServletRequest request, Model model, Integer marketId, String flag, String code) {
-		return activityController.add(request, model, marketId, flag, code);
+	public String add(HttpServletRequest request, Model model, Integer marketId, String flag, String code, @RequestParam(defaultValue = "0") Integer strict) {
+		return activityController.add(request, model, marketId, flag, code, strict);
 	}
 
 }

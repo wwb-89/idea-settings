@@ -133,7 +133,7 @@ public class ActivityHandleService {
 		// 保存自定义组件值
 		activityComponentValueService.saveActivityComponentValues(activityId, activityCreateParamDto.getActivityComponentValues());
 		// 保存门户模板
-		MhCloneResultDTO mhCloneResult = bindWebTemplate(activityId, activity.getWebTemplateId(), loginUser);
+		MhCloneResultDTO mhCloneResult = bindWebTemplate(activityId, activityCreateParamDto.getWebTemplateId(), loginUser);
 
 		inspectionConfigHandleService.initInspectionConfig(activityId);
 		activityStatSummaryHandlerService.init(activityId);

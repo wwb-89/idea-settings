@@ -57,8 +57,8 @@ public class LibActivityController {
 	 * @return java.lang.String
 	*/
 	@GetMapping("activity/add")
-	public String add(Model model, HttpServletRequest request, Integer templateId, String flag, String code) {
-		return activityManagementController.add(request, model, templateId, flag, code);
+	public String add(Model model, HttpServletRequest request, Integer templateId, String flag, String code, Integer strict) {
+		return activityManagementController.add(request, model, templateId, flag, code, strict);
 	}
 
 }

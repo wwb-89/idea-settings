@@ -52,17 +52,17 @@
 <div class="page" id="activity-vue" v-cloak>
     <!-- 创建/编辑活动头部 -->
     <div class="top flex" id="create">
-        <div class="go-back" @click="returnBack"><i class="icon-back"></i><span>返回</span></div>
+        <div class="go-back" @click="returnBack" v-show="notFrame"><i class="icon-back"></i><span>返回</span></div>
         <div class="name-txt">{{activity.id ? '编辑' : '创建'}}活动</div>
         <button v-if="activity.id" type="button" class="create-btn" @click="save">保存</button>
         <button v-else type="button" class="create-btn"  @click="nextStep">保存</button>
     </div>
     <!-- 创建活动头部 -->
     <div v-show="templateComponents && activity">
-        <div class="info box">
+        <div class="info box" v-for="(tplComponents, tplIdx) in tplComponentPartitions">
             <form action="" onsubmit="return false;">
-                <div class="title">基本信息</div>
-                <template v-for="(item, index) in templateComponents">
+                <div class="title" v-if="tplIdx == basicAppearIndex">基本信息</div>
+                <template v-for="(item, index) in tplComponents">
                     <div class="form-item" v-if="item.code == 'activity_name'">
                         <label class="label"><img src="/static/pc/assets/images/required.png" th:src="@{/pc/assets/images/required.png}" class="required-img" v-if="item.required">{{item.name}}</label>
                         <div class="input-box">
@@ -285,7 +285,7 @@
                     <!--报名设置列表-->
                     <div v-else-if="signUpMap[item.id] && (item.code == 'sign_up' || item.code =='company_sign_up')">
                         <div class="set-box">
-                            <div class="title set">{{signUpMap[item.id].name ? signUpMap[item.id].name : '报名'}}设置</div>
+                            <div class="title set">{{signUpMap[item.id].name ? signUpMap[item.id].name : '报名'}}</div>
                             <el-switch v-model="signUpMap[item.id].enable" class="section-switch" @change="signUpEnableChanged(item.id)"></el-switch>
                         </div>
                         <!-- 点击参与设置 -->
@@ -403,7 +403,7 @@
                     <!--签到设置列表-->
                     <div style="margin: 24px 0" v-else-if="signInMap[item.id] && (item.code == 'sign_in' || item.code == 'sign_out')">
                         <div class="set-box">
-                            <div class="title set">{{signInMap[item.id].name}}设置</div>
+                            <div class="title set">{{signInMap[item.id].name}}</div>
                             <el-switch v-model="signInMap[item.id].enable" class="section-switch" @change="signInEnableChanged(item.id)"></el-switch>
                         </div>
                         <!-- 点击参与设置 -->
@@ -509,7 +509,7 @@
                     <li :class="{current: operateWebTemplateId == webTemplate.id}" v-for="(webTemplate, index) of webTemplates" :key="'web-templates' + index" @click="selectTemplate(index)">
                         <div class="img-inner-box">
                             <img :src="webTemplate.coverUrl" class="img">
-                            <div class="magnifier" @click.prevent="previewTemplate(index)"><i></i></div>
+                            <div class="magnifier" @click="previewTemplate(index, $event)"><i></i></div>
                         </div>
                         <p class="overHidden1">{{webTemplate.name}}</p>
                     </li>
@@ -590,7 +590,7 @@
         <div class="dailog">
             <div class="header">
                 <span>参与范围</span>
-                <img src="/static/pc/assets/images/close.png" th:src="@{/pc/assets/images/close.png}" @click="signUpParticipateWindowShow = false" class="close">
+                <img src="/static/pc/assets/images/close.png" th:src="@{/pc/assets/images/close.png}" @click="cancelSignUpParticipateScope" class="close">
             </div>
             <div class="body">
                 <div class="tree">
@@ -625,6 +625,7 @@
     <script src="/static/pc/assets/component/activity-participate-scope.js" th:src="@{/pc/assets/component/activity-participate-scope.js}"></script>
     <script src="/static/pc/assets/component/confirm.js" th:src="@{/pc/assets/component/confirm.js}"></script>
     <script src="/static/pc/assets/lib/jqthumb.min.js" th:src="@{/pc/assets/lib/jqthumb.min.js}"></script>
+    <script src="/static/pc/assets/lib/set-iframe-height-child.js" th:src="@{/pc/assets/lib/set-iframe-height-child.js}"></script>
 
     <script th:inline="javascript">
         activityVue = new Vue({
@@ -635,6 +636,9 @@
                 activity: [[${activity}]],
                 lastViewUrl: [[${lastViewUrl}]],
                 templateComponents: [[${templateComponents}]],
+                tplComponentPartitions: [],
+                // 基本信息块第一次出现位置
+                basicAppearIndex: 0,
                 templateComponentMap: {},
                 tags: [],
                 // 模板列表
@@ -708,6 +712,8 @@
                 if (activityApp.isEmpty($this.activitySignModules)) {
                     $this.activitySignModules = [];
                 }
+                var tplComponents = [];
+                var n = 0, setBasicAppearIndex = false;
                 $($this.templateComponents).each(function() {
                     var _this = this;
                     $this.templateComponentMap[_this.id] = _this;
@@ -716,6 +722,24 @@
                             $this.templateComponentMap[this.id] = this;
                         });
                     }
+                    var singlePartition = this.code == 'sign_up' || this.code == 'company_sign_up' || this.code == 'sign_in' || this.code == 'sign_out';
+                    if (!setBasicAppearIndex && !singlePartition) {
+                        $this.basicAppearIndex = n;
+                        setBasicAppearIndex = true;
+                    }
+                    if (singlePartition) {
+                        if (tplComponents.length > 0) {
+                            $this.tplComponentPartitions.push(tplComponents)
+                            tplComponents = [];
+                        }
+                        $this.tplComponentPartitions.push([$.extend({}, this)])
+                    } else {
+                        tplComponents.push($.extend({}, this));
+                        if (n == $this.templateComponents.length - 1) {
+                            $this.tplComponentPartitions.push(tplComponents)
+                        }
+                    }
+                    n++;
                 });
                 if (activityApp.isEmpty($this.activity)) {
                     // 新增活动
@@ -930,6 +954,9 @@
                 // $this.initWfwGroups();
             },
             computed: {
+                notFrame: function () {
+                    return window.parent === window;
+                },
                 // 虚拟节点map，即非叶子节点复制本身作为其叶子节点，该叶子节点即为虚拟节点
                 virtualNodeMap: function () {
                     var $this = this;
@@ -1491,7 +1518,11 @@
                 },
                 returnBack: function () {
                     var $this = this;
-                    window.location.replace($this.lastViewUrl);
+                    if (!$this.notFrame) {
+                        window.parent.location.href = window.location.href;
+                    } else {
+                        window.location.replace($this.lastViewUrl);
+                    }
                 },
                 // 选中活动的日期范围
                 selectActivityTime: function (obj) {
@@ -1500,7 +1531,7 @@
                     $this.activity.endTimeStamp = obj[1];
                 },
                 // 选中报名的时间范围
-                selectSignUpTime: function (tplComponentId, obj) {
+                selectSignUpTime: function (hastplComponentId, obj) {
                     var $this = this;
                     $this.$set($this.signUpMap[tplComponentId], "startTime", obj[0]);
                     $this.$set($this.signUpMap[tplComponentId], "endTime", obj[1]);
@@ -1512,8 +1543,9 @@
                     $this.$set($this.signInMap[tplComponentId], "endTime", obj[1]);
                 },
                 // 预览模板
-                previewTemplate: function (index) {
+                previewTemplate: function (index, e) {
                     var $this = this;
+                    e.stopPropagation();
                     var webTemplate = $this.webTemplates[index];
                     window.open(webTemplate.previewUrl);
                 },
@@ -1585,10 +1617,10 @@
                 toAddSignUpParticipateScope: function(signUpTplComponentId, templateComponent){
                     var $this = this;
                     $this.operateSignUpOriginId = signUpTplComponentId;
+                    $this.currGroupType = templateComponent.code == 'wfw_participation_scope' ? 'wfw' : 'contacts';
                     $this.currWfwGroups = templateComponent.code == 'wfw_participation_scope' ? $this.wfwGroups : $this.contactGroups;
                     $this.initWfwGroups();
                     $this.signUpParticipateWindowShow = true;
-                    $this.currGroupType = templateComponent.code == 'wfw_participation_scope' ? 'wfw' : 'contact';
                     if(!$this.signUpParticipateScopeTreeObj){
                         $this.initGroupTree();
                     }
@@ -1622,6 +1654,7 @@
                     var signUp = $this.signUpMap[$this.operateSignUpOriginId];
 
                     var signUpParticipateScopes = (signUp && ($this.currGroupType == 'wfw' ? signUp.wfwParticipateScopes : signUp.contactsParticipateScopes)) || [];
+
                     // 获取所有父节点
                     for(var i = 0; i < signUpParticipateScopes.length; i++) {
                         var item = signUpParticipateScopes[i];
@@ -1672,15 +1705,16 @@
                     });
                     $(pNodes).each(function () {
                         if (!this.externalPid || !pNodeMap[this.externalPid]) {
-                            scopes.push($.extend({}, this, {groupType: $this.groupType}));
+                            scopes.push($.extend({}, this, {groupType: $this.currGroupType}));
                         }
                     });
-                    if ($this.currGroupType == 'contact') {
+                    if ($this.currGroupType == 'contacts') {
                         $this.$set($this.signUpMap[$this.operateSignUpOriginId], "contactsParticipateScopes", scopes);
                     } else {
                         $this.$set($this.signUpMap[$this.operateSignUpOriginId], "wfwParticipateScopes", scopes);
                     }
-                    $this.signUpParticipateWindowShow = false;
+                    // $this.signUpParticipateWindowShow = false;
+                    $this.cancelSignUpParticipateScope();
                 },
                 deleteSignUpParticipateScope: function (signUpTplComponentId, templateComponent, scopeIndex) {
                     var $this = this;
