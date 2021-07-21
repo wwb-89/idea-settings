@@ -43,18 +43,6 @@ public class WfwAppCreateParamDTO {
 				.fid(activityMarket.getFid())
 				.appUrl(activityMarket.buildAppUrl())
 				.pcUrl(activityMarket.buildPcUrl())
-				.adminUrl(activityMarket.buildAdminUrl())
-				.build();
-	}
-
-	public static WfwAppCreateParamDTO buildManageAppFromActivityMarket(ActivityMarket activityMarket, Integer classifyId) {
-		return WfwAppCreateParamDTO.builder()
-				.name(activityMarket.getName() + "管理")
-				.iconUrl(activityMarket.getIconUrl())
-				.classifyId(classifyId)
-				.fid(activityMarket.getFid())
-				.appUrl("")
-				.pcUrl(activityMarket.buildMarketmanageUrl())
 				.adminUrl(activityMarket.buildMarketmanageUrl())
 				.build();
 	}

@@ -78,10 +78,6 @@ public class ActivityMarket {
         return buildAppUrl();
     }
 
-    public String buildAdminUrl() {
-        return "http://manage.hd.chaoxing.com?marketId=" + getId();
-    }
-
     public String buildMarketmanageUrl() {
         return "http://manage.hd.chaoxing.com/market/" + getId();
     }
