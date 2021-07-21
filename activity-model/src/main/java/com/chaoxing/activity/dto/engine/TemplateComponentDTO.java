@@ -57,6 +57,8 @@ public class TemplateComponentDTO {
 
     private List<ComponentField> componentFields;
 
+    private List<String> fieldValues;
+
     private SignUpCondition signUpCondition;
 
     private Integer originId;
