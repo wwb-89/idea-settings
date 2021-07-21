@@ -26,7 +26,7 @@ import java.util.Optional;
 public class WfwAppApiService {
 
 	/** 创建应用的url */
-	private static final String APP_URL = "http://v0.chaoxing.com/appInter/addApp";
+	private static final String APP_URL = "http://v1.chaoxing.com/appInter/addApp";
 	private static final Integer DEFAULT_OPEN_TYPE = 14;
 
 	@Resource(name = "restTemplateProxy")
