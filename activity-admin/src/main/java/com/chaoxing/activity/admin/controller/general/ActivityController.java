@@ -107,7 +107,7 @@ public class ActivityController {
 		model.addAttribute("strict", strict);
 		model.addAttribute("templateId", template.getId());
 		// 加载模版对应的组件列表
-		model.addAttribute("templateComponents", activityEngineQueryService.listTemplateComponentTree(templateId));
+		model.addAttribute("templateComponents", activityEngineQueryService.listTemplateComponentTree(templateId, template.getFid()));
 		// 活动形式列表
 		model.addAttribute("activityTypes", activityQueryService.listActivityType());
 		// 活动分类列表范围

@@ -119,7 +119,7 @@ public class ActivityManageController {
 		createParamDTO.setActivityComponentValues(activityComponentValues);
 		createParamDTO.setIntroduction(activityDetail.getIntroduction());
 		model.addAttribute("activity", createParamDTO);
-		model.addAttribute("templateComponents", activityEngineQueryService.listTemplateComponentTree(activity.getTemplateId()));
+		model.addAttribute("templateComponents", activityEngineQueryService.listTemplateComponentTree(activity.getTemplateId(), activity.getCreateFid()));
 		// 活动类型列表
 		model.addAttribute("activityTypes", activityQueryService.listActivityType());
 		// 活动分类列表范围

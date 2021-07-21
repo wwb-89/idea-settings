@@ -47,7 +47,6 @@ public class ActivityEngineQueryService {
     @Resource
     private TemplateQueryService templateQueryService;
 
-
     public ActivityEngineDTO findEngineTemplateInfo(Integer templateId) {
         // 查询模板数据
         Template template = templateMapper.selectById(templateId);
@@ -151,7 +150,7 @@ public class ActivityEngineQueryService {
         return templateComponents;
     }
 
-    public List<TemplateComponentDTO> listTemplateComponentTree(Integer templateId) {
+    public List<TemplateComponentDTO> listTemplateComponentTree(Integer templateId, Integer fid) {
         List<TemplateComponentDTO> templateComponents = templateComponentMapper.listTemplateComponentInfo(templateId);
 
         List<Integer> chooseComponentIds = templateComponents.stream()
@@ -168,6 +167,9 @@ public class ActivityEngineQueryService {
             templateComponents.forEach(v -> {
                 if (CollectionUtils.isNotEmpty(componentFieldMap.get(v.getComponentId()))) {
                     v.setComponentFields(componentFieldMap.get(v.getComponentId()));
+                }
+                if (StringUtils.isNotBlank(v.getType()) && Objects.equals(v.getType(), Component.DataOriginEnum.FORM.getValue())) {
+                    v.setFieldValues(wfwFormApiService.listFormFieldValue(fid, Integer.parseInt(v.getOriginIdentify()), v.getFieldFlag()));
                 }
             });
         }

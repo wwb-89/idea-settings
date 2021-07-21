@@ -139,7 +139,14 @@
                     <div class="form-item cancel-margin" v-else-if="item.code == 'activity_classify'">
                         <label class="label"><img src="/static/pc/assets/images/required.png" th:src="@{/pc/assets/images/required.png}" class="required-img" v-if="item.required">{{item.name}}</label>
                         <div class="input-box wrap">
-                            <template v-if="strict != 1">
+                            <div class="select-activity" v-if="marketId || strict == 1">
+                                <el-select v-model="activity.activityClassifyId" placeholder="请选择">
+                                    <el-option v-for="item in activityClassifies" :key="item.id" :label="item.name"
+                                               :value="item.id">
+                                    </el-option>
+                                </el-select>
+                            </div>
+                            <template v-else>
                                 <div :class="{'type-item': true, 'paddingR0': (!activityClassify.system), 'active': activityClassify.selected}" v-for="(activityClassify, index) of activityClassifies" :key="'activity-classify-' + index" @click="selectActivityClassify(index)">{{activityClassify.name}}
                                     <div class="more-box" v-if="!activityClassify.system">
                                         <div class="more-btn"></div>
@@ -154,13 +161,6 @@
                                     新增
                                 </div>
                             </template>
-                            <div class="select-activity" v-if="strict == 1">
-                                <el-select v-model="activity.activityClassifyId" placeholder="请选择">
-                                    <el-option v-for="item in activityClassifies" :key="item.id" :label="item.name"
-                                               :value="item.id">
-                                    </el-option>
-                                </el-select>
-                            </div>
                             <span class="tips">{{item.introduction}}</span>
                         </div>
                     </div>
@@ -501,7 +501,8 @@
                     <div class="form-item" v-else-if="item.type == 'radio'">
                         <label class="label"><img src="/static/pc/assets/images/required.png" th:src="@{/pc/assets/images/required.png}" class="required-img" v-if="item.required">{{item.name}}</label>
                         <div class="input-box">
-                            <el-radio v-for="ckItem in item.componentFields" :key="'component-field-' + ckItem.id" v-model="activityComponentValueMap[item.id].value" :label="ckItem.fieldName" name="active-type">{{ckItem.fieldName}}</el-radio>
+                            <el-radio v-if="item.dataOrigin == 'custom'" v-for="ckItem in item.componentFields" :key="'component-field-' + ckItem.id" v-model="activityComponentValueMap[item.id].value" :label="ckItem.fieldName" name="active-type">{{ckItem.fieldName}}</el-radio>
+                            <el-radio v-else-if="item.dataOrigin == 'form'" v-for="value in item.fieldValues" :key="'component-field-' + value" v-model="activityComponentValueMap[item.id].value" :label="value" name="active-type">{{value}}</el-radio>
                             <span class="tips">{{item.introduction}}</span>
                         </div>
                     </div>
@@ -509,8 +510,11 @@
                         <label class="label"><img src="/static/pc/assets/images/required.png" th:src="@{/pc/assets/images/required.png}" class="required-img" v-if="item.required">{{item.name}}</label>
                         <div class="input-box">
                             <el-checkbox-group v-model="activityComponentValueMap[item.id].value">
-                                <el-checkbox v-for="ckItem in item.componentFields" :key="'component-field-' + ckItem.id" :label="ckItem.fieldName" name="active-type">
+                                <el-checkbox v-if="item.dataOrigin == 'custom'" v-for="ckItem in item.componentFields" :key="'component-field-' + ckItem.id" :label="ckItem.fieldName" name="active-type">
                                     {{ckItem.fieldName}}
+                                </el-checkbox>
+                                <el-checkbox v-else-if="item.dataOrigin == 'form'" v-for="value in item.fieldValues" :key="'component-field-' + value" :label="value" name="active-type">
+                                    {{value}}
                                 </el-checkbox>
                             </el-checkbox-group>
                             <span class="tips">{{item.introduction}}</span>
@@ -1321,7 +1325,7 @@
                         return false;
                     }
                     // 定时发布
-                    if ($this.activity.timingRelease && activityApp.isEmpty($this.activity.timingReleaseTime)) {
+                    if ($this.activity.timingRelease && activityApp.isEmpty($this.activity.timingReleaseTimeStamp)) {
                         app.showMsg("请选择发布时间");
                         return false;
                     }
