@@ -191,3 +191,11 @@ UPDATE t_activity t,
 SET t.activity_classify_id = t1.new_classify_id
 WHERE
     t.id = t1.id;
+-- 报名条件启用表
+CREATE TABLE `t_sign_up_condition_enable`  (
+   `id` int(0) NOT NULL AUTO_INCREMENT COMMENT '主键',
+   `activity_id` int(0) NULL COMMENT '活动id',
+   `template_component_id` int(0) NULL COMMENT '报名条件模版组件id',
+   PRIMARY KEY (`id`),
+   INDEX `idx_primary`(`activity_id`, `template_component_id`)
+) COMMENT = '报名条件启用表';
