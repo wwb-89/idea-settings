@@ -2,17 +2,18 @@ package com.chaoxing.activity.admin.controller.general;
 
 import com.chaoxing.activity.admin.util.LoginUtils;
 import com.chaoxing.activity.dto.LoginUserDTO;
-import com.chaoxing.activity.dto.activity.ActivityComponentValueDTO;
 import com.chaoxing.activity.dto.activity.ActivityCreateParamDTO;
 import com.chaoxing.activity.dto.manager.sign.SignActivityManageIndexDTO;
 import com.chaoxing.activity.dto.manager.sign.create.SignCreateParamDTO;
 import com.chaoxing.activity.dto.manager.wfw.WfwAreaDTO;
-import com.chaoxing.activity.model.*;
+import com.chaoxing.activity.model.Activity;
+import com.chaoxing.activity.model.ActivityFlagSignModule;
+import com.chaoxing.activity.model.ActivitySignModule;
+import com.chaoxing.activity.model.WebTemplate;
 import com.chaoxing.activity.service.WebTemplateService;
 import com.chaoxing.activity.service.activity.ActivityQueryService;
 import com.chaoxing.activity.service.activity.ActivityValidationService;
 import com.chaoxing.activity.service.activity.classify.ClassifyQueryService;
-import com.chaoxing.activity.service.activity.engine.ActivityComponentValueService;
 import com.chaoxing.activity.service.activity.engine.ActivityEngineQueryService;
 import com.chaoxing.activity.service.activity.manager.ActivityCreatePermissionService;
 import com.chaoxing.activity.service.activity.scope.ActivityScopeQueryService;
@@ -61,8 +62,6 @@ public class ActivityManageController {
 	private OrgService orgService;
 	@Resource
 	private ActivityEngineQueryService activityEngineQueryService;
-	@Resource
-	private ActivityComponentValueService activityComponentValueService;
 	@Resource
 	private ClassifyQueryService classifyQueryService;
 	@Resource
@@ -113,11 +112,7 @@ public class ActivityManageController {
 	public String edit(Model model, @PathVariable Integer activityId, HttpServletRequest request, Integer step, @RequestParam(defaultValue = "0") Integer strict) {
 		LoginUserDTO loginUser = LoginUtils.getLoginUser(request);
 		Activity activity = activityValidationService.manageAble(activityId, loginUser.getUid());
-		ActivityDetail activityDetail = activityQueryService.getDetailByActivityId(activity.getId());
-		List<ActivityComponentValueDTO> activityComponentValues = activityComponentValueService.listActivityComponentValuesByActivity(activityId);
-		ActivityCreateParamDTO createParamDTO = activity.buildActivityCreateParam();
-		createParamDTO.setActivityComponentValues(activityComponentValues);
-		createParamDTO.setIntroduction(activityDetail.getIntroduction());
+		ActivityCreateParamDTO createParamDTO = activityQueryService.packageActivityCreateParamByActivity(activity);
 		model.addAttribute("activity", createParamDTO);
 		model.addAttribute("templateComponents", activityEngineQueryService.listTemplateComponentTree(activity.getTemplateId(), activity.getCreateFid()));
 		// 活动类型列表

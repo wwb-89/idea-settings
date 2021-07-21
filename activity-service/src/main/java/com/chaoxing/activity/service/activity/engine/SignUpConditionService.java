@@ -1,6 +1,7 @@
 package com.chaoxing.activity.service.activity.engine;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.chaoxing.activity.mapper.SignUpConditionEnableMapper;
 import com.chaoxing.activity.mapper.SignUpConditionMapper;
@@ -15,6 +16,7 @@ import com.google.common.collect.Lists;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
 import java.util.List;
@@ -185,5 +187,38 @@ public class SignUpConditionService {
 				.eq(SignUpConditionEnable::getActivityId, activityId)
 		);
 		return Optional.ofNullable(signUpConditionEnables).orElse(Lists.newArrayList()).stream().map(SignUpConditionEnable::getTemplateComponentId).collect(Collectors.toList());
+	}
+
+	/**更新活动报名的报名条件启用
+	* @Description
+	* @author huxiaolong
+	* @Date 2021-07-21 19:19:15
+	* @param activityId
+	* @param signUpTplComponentIds
+	* @return void
+	*/
+	@Transactional(rollbackFor = Exception.class)
+	public void updateActivitySignUpEnables(Integer activityId, List<Integer> signUpTplComponentIds) {
+		// 先删除
+		signUpConditionEnableMapper.delete(new QueryWrapper<SignUpConditionEnable>().lambda().eq(SignUpConditionEnable::getActivityId, activityId));
+		// 新增
+		saveActivitySignUpEnables(activityId, signUpTplComponentIds);
+	}
+
+	/**新增活动报名的报名条件启用
+	 * @Description
+	 * @author huxiaolong
+	 * @Date 2021-07-21 19:14:37
+	 * @param activityId
+	 * @param signUpTplComponentIds
+	 * @return void
+	 */
+	@Transactional(rollbackFor = Exception.class)
+	public void saveActivitySignUpEnables(Integer activityId, List<Integer> signUpTplComponentIds) {
+		if (CollectionUtils.isEmpty(signUpTplComponentIds)) {
+			return;
+		}
+		List<SignUpConditionEnable> waitSaveEnables = signUpTplComponentIds.stream().map(v -> SignUpConditionEnable.builder().activityId(activityId).templateComponentId(v).build()).collect(Collectors.toList());
+		signUpConditionEnableMapper.batchAdd(waitSaveEnables);
 	}
 }

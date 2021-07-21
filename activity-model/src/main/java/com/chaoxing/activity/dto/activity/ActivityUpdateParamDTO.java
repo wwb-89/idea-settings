@@ -105,6 +105,8 @@ public class ActivityUpdateParamDTO {
 
 	/** 活动组件值对象列表 */
 	private List<ActivityComponentValueDTO> activityComponentValues;
+	/** 活动报名条件启用模板组件id列表 */
+	private List<Integer> sucTemplateComponentIds;
 
 	/**构建活动
 	 * @Description 

@@ -407,6 +407,13 @@
                                         <span class="tips">{{it.introduction}}</span>
                                     </div>
                                 </div>
+                                <div class="form-item" v-else-if="it.code == 'sign_up_condition'">
+                                    <label class="label"><img src="/static/pc/assets/images/required.png" th:src="@{/pc/assets/images/required.png}" class="required-img" v-if="it.required">{{it.name}}</label>
+                                    <div class="input-box">
+                                        <el-switch v-model="signUpConditionActiveMap[it.id]"></el-switch>
+                                        <span class="tips">{{it.introduction}}</span>
+                                    </div>
+                                </div>
                                 <div class="form-item" v-if="false">
                                     <label class="label position"><img src="/static/pc/assets/images/required.png" th:src="@{/pc/assets/images/required.png}" class="required-img">按钮名称</label>
                                     <div class="input-box btn-name">
@@ -696,6 +703,7 @@
                 sign: [[${sign}]],
                 // 报名: { originId: signUp }
                 signUpMap: {},
+                signUpConditionActiveMap: {},
                 // 签到: { originId: signIn }
                 signInMap: {},
                 // 签到方式
@@ -744,6 +752,9 @@
                     $this.templateComponentMap[_this.id] = _this;
                     if (_this.children && _this.children.length > 0) {
                         $(_this.children).each(function () {
+                            if (this.code == 'sign_up_condition') {
+                                $this.signUpConditionActiveMap[this.id] = false;
+                            }
                             $this.templateComponentMap[this.id] = this;
                         });
                     }
@@ -816,6 +827,13 @@
                             }
                             $this.$set($this.activityComponentValueMap, this.templateComponentId, componentField);
                         });
+                    }
+                    if ($this.activity.sucTemplateComponentIds) {
+                        var sucTemplateComponentIds = $this.activity.sucTemplateComponentIds;
+                        for (var i = 0; i < sucTemplateComponentIds.length; i++) {
+                            var tplComponentId = sucTemplateComponentIds[i];
+                            $this.signUpConditionActiveMap[tplComponentId] = true;
+                        }
                     }
                 }
                 $this.$set($this.activity, "timeScope", [$this.activity.startTimeStamp, $this.activity.endTimeStamp]);
@@ -1433,6 +1451,20 @@
                     var url = ctx + "/activity/" + $this.activity.id + "/edit";
                     window.location.replace(url);
                 },
+                packageSignUpConditionEnable: function () {
+                    var $this = this;
+                    var keys = Object.keys($this.signUpConditionActiveMap);
+                    if (keys.length == 0) {
+                        return null;
+                    }
+                    var sucTemplateComponentIds = [];
+                    for (var i = 0; i < keys.length; i++) {
+                        var tplComponentId = keys[i];
+                        if ($this.signUpConditionActiveMap[tplComponentId]) {
+                            sucTemplateComponentIds.push(tplComponentId)
+                        }
+                    }
+                },
                 packageSubmitSign: function () {
                     var $this = this;
                     var waitSubmitSignUps = [], waitSubmitSignIns = [];
@@ -1474,6 +1506,7 @@
                     var url = ctx + "/api/activity/new";
                     var sign = $this.packageSubmitSign();
                     $this.activity.introduction = app.getUEditorContent();
+                    $this.activity.sucTemplateComponentIds =  $this.packageSignUpConditionEnable();
                     var params = {
                         activityJsonStr: activityApp.getJsonStr($this.activity),
                         participateScopeJsonStr: activityApp.getJsonStr($this.participatedOrgs),
@@ -1510,6 +1543,7 @@
                     }
                     var url = ctx + "/api/activity/edit";
                     var sign = $this.packageSubmitSign();
+                    $this.activity.sucTemplateComponentIds =  $this.packageSignUpConditionEnable();
                     $this.activity.activityComponentValues = [];
                     $.each($this.activityComponentValueMap, function (key, item) {
                         item.value = item.value && item.value instanceof Array ? item.value.join(',') : item.value;

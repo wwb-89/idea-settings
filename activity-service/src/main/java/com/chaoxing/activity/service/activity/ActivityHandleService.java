@@ -17,6 +17,7 @@ import com.chaoxing.activity.mapper.ActivityMapper;
 import com.chaoxing.activity.model.*;
 import com.chaoxing.activity.service.WebTemplateService;
 import com.chaoxing.activity.service.activity.engine.ActivityComponentValueService;
+import com.chaoxing.activity.service.activity.engine.SignUpConditionService;
 import com.chaoxing.activity.service.activity.manager.ActivityManagerService;
 import com.chaoxing.activity.service.activity.module.ActivityModuleService;
 import com.chaoxing.activity.service.activity.scope.ActivityScopeService;
@@ -97,6 +98,8 @@ public class ActivityHandleService {
 	private ActivityComponentValueService activityComponentValueService;
 
 	@Resource
+	private SignUpConditionService signUpConditionService;
+	@Resource
 	private SignApiService signApiService;
 	@Resource
 	private MhApiService mhApiService;
@@ -130,6 +133,8 @@ public class ActivityHandleService {
 		activity.beforeCreate(loginUser.getUid(), loginUser.getRealName(), loginUser.getFid(), loginUser.getOrgName());
 		activityMapper.insert(activity);
 		Integer activityId = activity.getId();
+		// 保存活动报名的报名条件启用
+		signUpConditionService.saveActivitySignUpEnables(activityId, activityCreateParamDto.getSucTemplateComponentIds());
 		// 保存自定义组件值
 		activityComponentValueService.saveActivityComponentValues(activityId, activityCreateParamDto.getActivityComponentValues());
 		// 保存门户模板
@@ -238,6 +243,8 @@ public class ActivityHandleService {
 					.set(Activity::getTimeLengthUpperLimit, activity.getTimeLengthUpperLimit())
 					.set(Activity::getIntegral, activity.getIntegral())
 			);
+			// 更新
+			signUpConditionService.updateActivitySignUpEnables(activityId, activityUpdateParamDto.getSucTemplateComponentIds());
 			// 更新自定义组件的值
 			activityComponentValueService.updateActivityComponentValues(activityId, activityUpdateParamDto.getActivityComponentValues());
 			// 更新活动状态

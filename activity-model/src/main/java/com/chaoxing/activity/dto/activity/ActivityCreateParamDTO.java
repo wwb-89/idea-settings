@@ -97,6 +97,9 @@ public class ActivityCreateParamDTO {
 
 	/** 活动组件值对象列表 */
 	private List<ActivityComponentValueDTO> activityComponentValues;
+
+	/** 活动报名条件启用模板组件id列表 */
+	private List<Integer> sucTemplateComponentIds;
 	/** 操作用户 */
 	private LoginUserDTO loginUser;
 

@@ -9,4 +9,15 @@
     <sql id="Base_Column_List">
         t.id, t.activity_id, t.template_component_id
     </sql>
+    <insert id="batchAdd">
+        INSERT INTO t_sign_up_condition_enable ( activity_id, template_component_id )
+        VALUES
+        <foreach collection="waitSaveEnables" index="key" item="item" open="" close="" separator=",">
+            (
+                #{item.activityId},
+                #{item.templateComponentId}
+            )
+        </foreach>
+    </insert>
+
 </mapper>

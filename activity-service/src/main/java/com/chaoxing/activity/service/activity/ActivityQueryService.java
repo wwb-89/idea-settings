@@ -6,6 +6,8 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.chaoxing.activity.dto.LoginUserDTO;
+import com.chaoxing.activity.dto.activity.ActivityComponentValueDTO;
+import com.chaoxing.activity.dto.activity.ActivityCreateParamDTO;
 import com.chaoxing.activity.dto.activity.ActivitySignedUpDTO;
 import com.chaoxing.activity.dto.activity.ActivityTypeDTO;
 import com.chaoxing.activity.dto.manager.sign.SignStatDTO;
@@ -18,6 +20,7 @@ import com.chaoxing.activity.dto.query.MhActivityCalendarQueryDTO;
 import com.chaoxing.activity.mapper.*;
 import com.chaoxing.activity.model.*;
 import com.chaoxing.activity.service.activity.classify.ClassifyQueryService;
+import com.chaoxing.activity.service.activity.engine.ActivityComponentValueService;
 import com.chaoxing.activity.service.activity.manager.ActivityManagerQueryService;
 import com.chaoxing.activity.service.manager.module.SignApiService;
 import com.chaoxing.activity.service.manager.wfw.WfwAreaApiService;
@@ -32,6 +35,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
@@ -76,6 +80,10 @@ public class ActivityQueryService {
 	@Resource
 	private TableFieldDetailMapper tableFieldDetailMapper;
 
+	@Resource
+	private ActivityComponentValueService activityComponentValueService;
+	@Autowired
+	private SignUpConditionEnableMapper signUpConditionEnableMapper;
 
 	/**查询参与的活动
 	 * @Description 
@@ -726,4 +734,31 @@ public class ActivityQueryService {
 		return activities.stream().findFirst().orElse(null);
 	}
 
+	/**对活动其他关联数据进一步查询封装
+	* @Description 
+	* @author huxiaolong
+	* @Date 2021-07-21 19:22:35
+	* @param activity
+	* @return com.chaoxing.activity.dto.activity.ActivityCreateParamDTO
+	*/
+	public ActivityCreateParamDTO packageActivityCreateParamByActivity(Activity activity) {
+		if (activity == null) {
+			return ActivityCreateParamDTO.buildDefault();
+		}
+		Integer activityId = activity.getId();
+		ActivityCreateParamDTO createParamDTO = activity.buildActivityCreateParam();
+
+		ActivityDetail activityDetail = getDetailByActivityId(activityId);
+		createParamDTO.setIntroduction(activityDetail.getIntroduction());
+
+		List<ActivityComponentValueDTO> activityComponentValues = activityComponentValueService.listActivityComponentValuesByActivity(activityId);
+		createParamDTO.setActivityComponentValues(activityComponentValues);
+
+		List<Integer> signUpConditionEnables = signUpConditionEnableMapper.selectList(new QueryWrapper<SignUpConditionEnable>()
+				.lambda()
+				.eq(SignUpConditionEnable::getActivityId, activityId))
+				.stream().map(SignUpConditionEnable::getTemplateComponentId).collect(Collectors.toList());
+		createParamDTO.setSucTemplateComponentIds(signUpConditionEnables);
+		return createParamDTO;
+	}
 }
