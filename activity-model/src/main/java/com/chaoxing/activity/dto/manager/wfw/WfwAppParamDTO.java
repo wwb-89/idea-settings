@@ -6,10 +6,10 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-/**微服务应用创建参数对象
+/**微服务应用参数对象
  * @author wwb
  * @version ver 1.0
- * @className WfwAppCreateParamDTO
+ * @className WfwAppParamDTO
  * @description
  * @blame wwb
  * @date 2021-07-16 16:00:19
@@ -18,8 +18,10 @@ import lombok.NoArgsConstructor;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class WfwAppCreateParamDTO {
+public class WfwAppParamDTO {
 
+	/** 应用id */
+	private Integer id;
 	/** 应用名称 */
 	private String name;
 	/** 应用图标url */
@@ -35,8 +37,9 @@ public class WfwAppCreateParamDTO {
 	/** 应用管理端地址 */
 	private String adminUrl;
 
-	public static WfwAppCreateParamDTO buildFromActivityMarket(ActivityMarket activityMarket, Integer classifyId) {
-		return WfwAppCreateParamDTO.builder()
+	public static WfwAppParamDTO buildFromActivityMarket(ActivityMarket activityMarket, Integer classifyId) {
+		return WfwAppParamDTO.builder()
+				.id(activityMarket.getWfwAppId())
 				.name(activityMarket.getName())
 				.iconUrl(activityMarket.getIconUrl())
 				.classifyId(classifyId)

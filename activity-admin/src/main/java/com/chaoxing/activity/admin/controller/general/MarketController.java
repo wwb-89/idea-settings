@@ -1,6 +1,8 @@
 package com.chaoxing.activity.admin.controller.general;
 
 import com.chaoxing.activity.admin.util.LoginUtils;
+import com.chaoxing.activity.dto.activity.market.ActivityMarketCreateParamDTO;
+import com.chaoxing.activity.dto.activity.market.ActivityMarketUpdateParamDTO;
 import com.chaoxing.activity.model.ActivityMarket;
 import com.chaoxing.activity.service.activity.market.ActivityMarketQueryService;
 import com.chaoxing.activity.util.annotation.LoginRequired;
@@ -56,13 +58,21 @@ public class MarketController {
 	*/
 	@LoginRequired
 	@RequestMapping("new/from-wfw")
-	public String newFromWfw(HttpServletRequest request, Model model, Integer classifyId, Integer fid) {
-		String referer = request.getHeader("referer");
+	public String newFromWfw(HttpServletRequest request, Model model, Integer classifyId, Integer fid, String backUrl) {
 		fid = Optional.ofNullable(fid).orElse(LoginUtils.getLoginUser(request).getFid());
-		model.addAttribute("classifyId", classifyId);
-		model.addAttribute("fid", fid);
-		model.addAttribute("referer", referer);
-		return "pc/market/wfw-new-market";
+		ActivityMarketCreateParamDTO market = ActivityMarketCreateParamDTO.build(fid, classifyId);
+		model.addAttribute("market", market);
+		model.addAttribute("backUrl", backUrl);
+		return "pc/market/wfw-market";
+	}
+
+	@LoginRequired
+	@RequestMapping("update/from-wfw")
+	public String updateFromWfw(HttpServletRequest request, Model model, Integer classifyId, Integer fid, Integer id, String backUrl) {
+		ActivityMarketUpdateParamDTO market = activityMarketQueryService.getByWfwAppId(id);
+		model.addAttribute("market", market);
+		model.addAttribute("backUrl", backUrl);
+		return "pc/market/wfw-market";
 	}
 
 }

@@ -110,15 +110,13 @@
 			data: {
 				ctx: ctx,
 				iconWindowShow: false,
-				market: {
-					name: "",
-					iconCloudId: "4b7269d11dcf4465ca533d2cfaf1d70e",
-					iconUrl: "http://p.ananas.chaoxing.com/star3/origin/4b7269d11dcf4465ca533d2cfaf1d70e",
-					fid: [[${fid}]],
-					classifyId: [[${classifyId}]],
-					referer: [[${referer}]]
-				}
+				market: [[${market}]],
+				backUrl: [[${backUrl}]]
 			},
+            created: function () {
+				var $this = this;
+                $this.perfectMarket();
+            },
 			mounted: function () {
 				var $this = this;
 				//图标库细滚动条
@@ -136,6 +134,15 @@
 				$this.initUploader();
 			},
 			methods: {
+                perfectMarket: function () {
+					var $this = this;
+                    if (activityApp.isEmpty($this.market.iconUrl)) {
+                        $this.$set($this.market, "iconUrl", "http://p.ananas.chaoxing.com/star3/origin/" + $this.market.iconCloudId);
+                    }
+                    if (activityApp.isEmpty($this.market.name)) {
+                        $this.$set($this.market, "name", "");
+                    }
+                },
 				initUploader: function () {
 					var $this = this;
 					$this.uploader = WebUploader.create({
@@ -252,11 +259,13 @@
 						return false;
 					}
 					var url = ctx + "/api/market/new/from-wfw";
+                    if (!activityApp.isEmpty($this.market.id)) {
+                        url = ctx + "/api/market/update/from-wfw";
+                    }
 					app.ajaxPostWithLoading(url, $this.market, function (data) {
 						if (data.success) {
 							app.showMsg("发布成功", function () {
-								var backUrl = activityApp.getUrlParamter("backUrl");
-								window.location = backUrl;
+								window.location = $this.backUrl;
 							});
 						} else {
 							var message = data.message;
@@ -272,8 +281,7 @@
 				// 返回
 				back: function () {
 					var $this = this;
-					var backUrl = activityApp.getUrlParamter("backUrl");
-					window.location = backUrl;
+					window.location = $this.backUrl;
 				}
 			}
 		});

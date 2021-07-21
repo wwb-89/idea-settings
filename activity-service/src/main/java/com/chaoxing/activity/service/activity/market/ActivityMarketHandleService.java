@@ -4,7 +4,7 @@ import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.chaoxing.activity.dto.OperateUserDTO;
 import com.chaoxing.activity.dto.activity.market.ActivityMarketCreateParamDTO;
 import com.chaoxing.activity.dto.activity.market.ActivityMarketUpdateParamDTO;
-import com.chaoxing.activity.dto.manager.wfw.WfwAppCreateParamDTO;
+import com.chaoxing.activity.dto.manager.wfw.WfwAppParamDTO;
 import com.chaoxing.activity.mapper.ActivityMarketMapper;
 import com.chaoxing.activity.model.Activity;
 import com.chaoxing.activity.model.ActivityMarket;
@@ -56,6 +56,7 @@ public class ActivityMarketHandleService {
 	public ActivityMarket add(ActivityMarketCreateParamDTO activityMarketCreateParamDto, OperateUserDTO operateUserDto) {
 		ActivityMarket activityMarket = activityMarketCreateParamDto.buildActivityMarket();
 		activityMarket.perfectCreator(operateUserDto);
+		activityMarket.perfectSequence(activityMarketMapper.getMaxSequence(operateUserDto.getFid()));
 		activityMarketMapper.insert(activityMarket);
 		Integer marketId = activityMarket.getId();
 		// 给市场克隆一个通用模版
@@ -75,14 +76,37 @@ public class ActivityMarketHandleService {
 	public ActivityMarket addFromWfw(ActivityMarketCreateParamDTO activityMarketCreateParamDto, OperateUserDTO operateUserDto) {
 		ActivityMarket activityMarket = add(activityMarketCreateParamDto, operateUserDto);
 		// 创建微服务应用
-		addWfwApp(activityMarket, activityMarketCreateParamDto.getClassifyId());
+		Integer wfwAppId = addWfwApp(activityMarket, activityMarketCreateParamDto.getClassifyId());
+		// 绑定应用的微服务id
+		activityMarket.bindWfwApp(wfwAppId);
+		update(ActivityMarketUpdateParamDTO.buildFromActivityMarket(activityMarket));
 		return activityMarket;
 	}
 
-	private void addWfwApp(ActivityMarket activityMarket, Integer classifyId) {
-		// 应用
-		WfwAppCreateParamDTO wfwAppCreateParamDto = WfwAppCreateParamDTO.buildFromActivityMarket(activityMarket, classifyId);
-		wfwAppApiService.newApp(wfwAppCreateParamDto);
+	private Integer addWfwApp(ActivityMarket activityMarket, Integer classifyId) {
+		WfwAppParamDTO wfwAppParamDTO = WfwAppParamDTO.buildFromActivityMarket(activityMarket, classifyId);
+		return wfwAppApiService.newApp(wfwAppParamDTO);
+	}
+
+	/**修改活动市场
+	 * @Description 
+	 * @author wwb
+	 * @Date 2021-07-21 14:46:31
+	 * @param activityMarketUpdateParamDto
+	 * @return com.chaoxing.activity.model.ActivityMarket
+	*/
+	@Transactional(rollbackFor = Exception.class)
+	public ActivityMarket updateFromWfw(ActivityMarketUpdateParamDTO activityMarketUpdateParamDto) {
+		ActivityMarket activityMarket = activityMarketUpdateParamDto.buildActivityMarket();
+		activityMarketMapper.updateById(activityMarket);
+		// 修改微服务应用
+		updateWfwApp(activityMarket, activityMarketUpdateParamDto.getClassifyId());
+		return activityMarket;
+	}
+
+	private void updateWfwApp(ActivityMarket activityMarket, Integer classifyId) {
+		WfwAppParamDTO wfwAppParamDTO = WfwAppParamDTO.buildFromActivityMarket(activityMarket, classifyId);
+		wfwAppApiService.updateApp(wfwAppParamDTO);
 	}
 
 	/**创建活动市场
@@ -104,6 +128,18 @@ public class ActivityMarketHandleService {
 		templateHandleService.cloneTemplate(marketId, templateQueryService.getSystemTemplateIdByActivityFlag(activityFlagEnum));
 	}
 
+	/**更新活动市场
+	 * @Description 
+	 * @author wwb
+	 * @Date 2021-07-21 11:49:56
+	 * @param activityMarketUpdateParamDto
+	 * @return void
+	*/
+	public void update(ActivityMarketUpdateParamDTO activityMarketUpdateParamDto) {
+		ActivityMarket activityMarket = activityMarketUpdateParamDto.buildActivityMarket();
+		activityMarketMapper.updateById(activityMarket);
+	}
+
 	/**创建活动市场
 	 * @Description 
 	 * @author wwb
@@ -116,7 +152,8 @@ public class ActivityMarketHandleService {
 	@Transactional(rollbackFor = Exception.class)
 	public void add(Integer fid, String activityFlag, OperateUserDTO operateUserDto) {
 		Activity.ActivityFlagEnum activityFlagEnum = Activity.ActivityFlagEnum.fromValue(activityFlag);
-		ActivityMarketCreateParamDTO activityMarketCreateParamDto = ActivityMarketCreateParamDTO.build(activityFlagEnum.getName(), ActivityMarket.DEFAULT_MARKET_ICON_CLOUD_ID, fid);
+		ActivityMarketCreateParamDTO activityMarketCreateParamDto = ActivityMarketCreateParamDTO.build(fid, null);
+		activityMarketCreateParamDto.setName(activityFlagEnum.getName());
 		ApplicationContextHolder.getBean(ActivityMarketHandleService.class).add(activityMarketCreateParamDto, activityFlagEnum, operateUserDto);
 	}
 

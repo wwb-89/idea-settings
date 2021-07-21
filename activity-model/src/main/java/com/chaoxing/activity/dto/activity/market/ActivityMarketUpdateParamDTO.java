@@ -26,26 +26,36 @@ public class ActivityMarketUpdateParamDTO {
 	private String name;
 	/** 图标云盘id */
 	private String iconCloudId;
+	/** 图标url */
+	private String iconUrl;
 	/** 机构id */
 	private Integer fid;
 	/** 分类id（微服务创建使用） */
 	private Integer classifyId;
+	/** 微服务应用id */
+	private Integer wfwAppId;
 
 	public ActivityMarket buildActivityMarket() {
 		return ActivityMarket.builder()
 				.id(getId())
 				.name(getName())
 				.iconCloudId(getIconCloudId())
+				.iconUrl(getIconUrl())
 				.fid(getFid())
+				.iconCloudId(getIconCloudId())
+				.wfwAppId(getWfwAppId())
 				.build();
 	}
 
-	public ActivityMarketUpdateParamDTO buildFromActivityMarket(ActivityMarket activityMarket) {
+	public static ActivityMarketUpdateParamDTO buildFromActivityMarket(ActivityMarket activityMarket) {
 		return ActivityMarketUpdateParamDTO.builder()
 				.id(activityMarket.getId())
 				.name(activityMarket.getName())
 				.iconCloudId(activityMarket.getIconCloudId())
+				.iconUrl(activityMarket.getIconUrl())
 				.fid(activityMarket.getFid())
+				.iconCloudId(activityMarket.getIconCloudId())
+				.wfwAppId(activityMarket.getWfwAppId())
 				.build();
 	}
 

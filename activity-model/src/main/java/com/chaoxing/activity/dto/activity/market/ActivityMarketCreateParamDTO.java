@@ -20,6 +20,8 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class ActivityMarketCreateParamDTO {
 
+	private static final String DEFAULT_ICON_CLOUD_ID = "4b7269d11dcf4465ca533d2cfaf1d70e";
+
 	/** 市场名称 */
 	private String name;
 	/** 图标云盘id */
@@ -40,11 +42,11 @@ public class ActivityMarketCreateParamDTO {
 				.build();
 	}
 
-	public static ActivityMarketCreateParamDTO build(String name, String iconCloudId, Integer fid) {
+	public static ActivityMarketCreateParamDTO build(Integer fid, Integer classifyId) {
 		return ActivityMarketCreateParamDTO.builder()
-				.name(name)
-				.iconCloudId(iconCloudId)
+				.iconCloudId(DEFAULT_ICON_CLOUD_ID)
 				.fid(fid)
+				.classifyId(classifyId)
 				.build();
 	}
 

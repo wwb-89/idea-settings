@@ -19,4 +19,13 @@
         t.id, t.name, t.icon_cloud_id, t.icon_url, t.fid, t.wfw_app_id, t.sequence, t.is_deleted, t.create_time, t.create_uid,
         t.update_time, t.update_uid
     </sql>
+
+    <select id="getMaxSequence" resultType="java.lang.Integer">
+        SELECT
+            CASE WHEN ISNULL( MAX( t.sequence ) ) THEN 1 ELSE MAX( t.sequence ) + 1 END
+        FROM
+            t_activity_market t
+        WHERE
+            t.fid = #{fid}
+    </select>
 </mapper>

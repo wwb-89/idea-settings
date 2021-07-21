@@ -31,8 +31,6 @@ import java.util.Optional;
 @TableName(value = "t_activity_market")
 public class ActivityMarket {
 
-    public static final String DEFAULT_MARKET_ICON_CLOUD_ID = "71671238af412498403560b27ee17f38";
-
     /** 主键; column: id*/
     @TableId(type = IdType.AUTO)
     private Integer id;
@@ -64,10 +62,18 @@ public class ActivityMarket {
         setCreateUid(operateUserDto.getUid());
     }
 
+    public void perfectSequence(Integer sequence) {
+        setSequence(sequence);
+    }
+
     public void updateValidate(OperateUserDTO operateUserDto) {
         Optional.ofNullable(getId()).orElseThrow(() -> new BusinessException("活动市场id不能为空"));
         Optional.ofNullable(getName()).filter(StringUtils::isNotBlank).orElseThrow(() -> new BusinessException("名称不能为空"));
         Optional.ofNullable(getFid()).filter(v -> Objects.equals(v, operateUserDto.getFid())).orElseThrow(() -> new BusinessException("无权限"));
+    }
+
+    public void bindWfwApp(Integer wfwAppId) {
+        setWfwAppId(wfwAppId);
     }
 
     public String buildAppUrl() {

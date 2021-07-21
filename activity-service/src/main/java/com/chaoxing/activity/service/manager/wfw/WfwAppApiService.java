@@ -2,7 +2,7 @@ package com.chaoxing.activity.service.manager.wfw;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
-import com.chaoxing.activity.dto.manager.wfw.WfwAppCreateParamDTO;
+import com.chaoxing.activity.dto.manager.wfw.WfwAppParamDTO;
 import com.chaoxing.activity.util.exception.BusinessException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -26,7 +26,7 @@ import java.util.Optional;
 public class WfwAppApiService {
 
 	/** 创建应用的url */
-	private static final String NEW_APP_URL = "http://v1.chaoxing.com/appInter/addApp";
+	private static final String APP_URL = "http://v0.chaoxing.com/appInter/addApp";
 	private static final Integer DEFAULT_OPEN_TYPE = 14;
 
 	@Resource(name = "restTemplateProxy")
@@ -37,10 +37,38 @@ public class WfwAppApiService {
 	 * @author wwb
 	 * @Date 2021-07-16 16:08:25
 	 * @param wfwAppCreateParamDto
+	 * @return java.lang.Integer 应用id
+	*/
+	public Integer newApp(WfwAppParamDTO wfwAppCreateParamDto) {
+		String result = restTemplate.postForObject(APP_URL, buildParams(wfwAppCreateParamDto), String.class);
+		JSONObject jsonObject = JSON.parseObject(result);
+		boolean status = Optional.ofNullable(jsonObject.getBoolean("status")).orElse(false);
+		if (status) {
+			return jsonObject.getInteger("appId");
+		}else {
+			throw new BusinessException(jsonObject.getString("msg"));
+		}
+	}
+
+	/**更新应用
+	 * @Description 
+	 * @author wwb
+	 * @Date 2021-07-21 14:53:32
+	 * @param wfwAppCreateParamDto
 	 * @return void
 	*/
-	public void newApp(WfwAppCreateParamDTO wfwAppCreateParamDto) {
+	public void updateApp(WfwAppParamDTO wfwAppCreateParamDto) {
+		String result = restTemplate.postForObject(APP_URL, buildParams(wfwAppCreateParamDto), String.class);
+		JSONObject jsonObject = JSON.parseObject(result);
+		boolean status = Optional.ofNullable(jsonObject.getBoolean("status")).orElse(false);
+		if (!status) {
+			throw new BusinessException(jsonObject.getString("msg"));
+		}
+	}
+
+	private MultiValueMap<String, Object> buildParams(WfwAppParamDTO wfwAppCreateParamDto) {
 		MultiValueMap<String, Object> params = new LinkedMultiValueMap<>();
+		params.add("id", wfwAppCreateParamDto.getId());
 		params.add("openType", DEFAULT_OPEN_TYPE);
 		params.add("classifyId", wfwAppCreateParamDto.getClassifyId());
 		params.add("fid", wfwAppCreateParamDto.getFid());
@@ -49,12 +77,7 @@ public class WfwAppApiService {
 		params.add("openAddr", wfwAppCreateParamDto.getAppUrl());
 		params.add("pcUrl", wfwAppCreateParamDto.getPcUrl());
 		params.add("backUrl", wfwAppCreateParamDto.getAdminUrl());
-		String result = restTemplate.postForObject(NEW_APP_URL, params, String.class);
-		JSONObject jsonObject = JSON.parseObject(result);
-		boolean status = Optional.ofNullable(jsonObject.getBoolean("status")).orElse(false);
-		if (!status) {
-			throw new BusinessException(jsonObject.getString("msg"));
-		}
+		return params;
 	}
 
 }
