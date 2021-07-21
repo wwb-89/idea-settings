@@ -157,4 +157,16 @@ public class TemplateQueryService {
 		);
 	}
 
+	/**根据templateComponentId查询子列表
+	 * @Description 
+	 * @author wwb
+	 * @Date 2021-07-21 18:50:41
+	 * @param templateComponentId
+	 * @return java.util.List<com.chaoxing.activity.model.TemplateComponent>
+	*/
+	public List<TemplateComponent> listSubTemplateComponent(Integer templateComponentId) {
+		return templateComponentMapper.selectList(new LambdaQueryWrapper<TemplateComponent>()
+				.eq(TemplateComponent::getPid, templateComponentId));
+	}
+
 }
