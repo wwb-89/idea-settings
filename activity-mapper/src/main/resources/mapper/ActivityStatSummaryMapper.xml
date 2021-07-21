@@ -25,7 +25,7 @@
             t1.activity_classify_id as activityClassifyId,
             t1.create_user_name as activityCreator,
             t1.create_uid as activityCreateUid,
-            t1.integral_value as integral,
+            t1.integral as integral,
             t1.start_time as startTime,
             t1.end_time as endTime,
             t.signed_in_num as signedInNum,

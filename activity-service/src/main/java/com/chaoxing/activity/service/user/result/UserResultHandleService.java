@@ -50,13 +50,13 @@ public class UserResultHandleService {
     private UserResultQualifiedChangeEventService userResultQualifiedChangeEventService;
 
     /**更新用户成绩
-     * @Description 
+     * @Description
      * @author wwb
      * @Date 2021-06-24 15:11:30
      * @param uid
      * @param activityId
      * @return void
-    */
+     */
     public void updateUserResult(Integer uid, Integer activityId) {
         BigDecimal score = calUserActivityScore(uid, activityId);
         UserResult existUserResult = userResultQueryService.getUserResult(uid, activityId);
@@ -78,24 +78,24 @@ public class UserResultHandleService {
     }
 
     /**新增用户成绩
-     * @Description 
+     * @Description
      * @author wwb
      * @Date 2021-06-24 15:09:39
      * @param userResult
      * @return void
-    */
+     */
     public void addUserResult(UserResult userResult) {
         userResultMapper.insert(userResult);
     }
 
     /**计算用户成绩
-     * @Description 
+     * @Description
      * @author wwb
      * @Date 2021-06-24 15:13:29
      * @param uid
      * @param activityId
      * @return java.math.BigDecimal
-    */
+     */
     private BigDecimal calUserActivityScore(Integer uid, Integer activityId) {
         // 查询考核配置
         List<InspectionConfigDetail> inspectionConfigDetails = inspectionConfigQueryService.listDetailByActivityId(activityId);
@@ -246,12 +246,12 @@ public class UserResultHandleService {
     }
 
     /**合格自动判定
-     * @Description 
+     * @Description
      * @author wwb
      * @Date 2021-06-25 15:43:59
      * @param activityId
      * @return void
-    */
+     */
     @Transactional(rollbackFor = Exception.class)
     public void qualifiedAutoDecide(Integer activityId) {
         // 验证是不是自动判定
@@ -268,7 +268,7 @@ public class UserResultHandleService {
         List<Integer> qualifiedUids = listAutoDecideQualifiedUid(activityId, inspectionConfig);
         // 先全部判定为不合格
         userResultMapper.update(null, new UpdateWrapper<UserResult>()
-            .lambda()
+                .lambda()
                 .eq(UserResult::getActivityId, activityId)
                 .set(UserResult::getQualifiedStatus, UserResult.QualifiedStatusEnum.NOT_QUALIFIED.getValue())
                 .set(UserResult::getAutoQualifiedStatus, UserResult.QualifiedStatusEnum.NOT_QUALIFIED.getValue())
