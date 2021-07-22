@@ -3,16 +3,15 @@ package com.chaoxing.activity.api.controller.mh;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.chaoxing.activity.dto.RestRespDTO;
+import com.chaoxing.activity.dto.manager.mh.MhGeneralAppResultDataDTO;
 import com.chaoxing.activity.dto.manager.sign.SignStatDTO;
 import com.chaoxing.activity.dto.manager.sign.SignUp;
 import com.chaoxing.activity.dto.manager.sign.UserSignParticipationStatDTO;
-import com.chaoxing.activity.dto.manager.mh.MhGeneralAppResultDataDTO;
 import com.chaoxing.activity.model.Activity;
 import com.chaoxing.activity.service.activity.ActivityQueryService;
 import com.chaoxing.activity.service.activity.ActivityValidationService;
 import com.chaoxing.activity.service.activity.flag.ActivityFlagValidateService;
 import com.chaoxing.activity.service.manager.module.SignApiService;
-import com.chaoxing.activity.util.BaiduMapUtils;
 import com.chaoxing.activity.util.constant.ActivityMhUrlConstant;
 import com.chaoxing.activity.util.constant.DateTimeFormatterConstant;
 import com.chaoxing.activity.util.constant.UrlConstant;
@@ -126,15 +125,8 @@ public class ActivityMhV2ApiController {
 			}
 		}
 		// 活动地点
-		String activityAddress = "";
-		String activityAddressLink = "";
-		String activityType = activity.getActivityType();
-		Activity.ActivityTypeEnum activityTypeEnum = Activity.ActivityTypeEnum.fromValue(activityType);
-		if (Activity.ActivityTypeEnum.OFFLINE.equals(activityTypeEnum)) {
-			// 线下活动才有活动地点
-			activityAddress = Optional.ofNullable(activity.getAddress()).orElse("") + Optional.ofNullable(activity.getDetailAddress()).orElse("");
-			activityAddressLink = BaiduMapUtils.generateAddressUrl(activity.getLongitude(), activity.getDimension(), activity.getName(), activityAddress);
-		}
+		String activityAddress = Optional.ofNullable(activity.getAddress()).orElse("") + Optional.ofNullable(activity.getDetailAddress()).orElse("");;
+		String activityAddressLink = "https://api.hd.chaoxing.com/redirect/activity/"+ activityId +"/address";
 		mhGeneralAppResultDataFields.add(buildField("活动地点", activityAddress, "104"));
 		// 活动地点链接（线下的活动有）
 		mhGeneralAppResultDataFields.add(buildField("活动地点链接", activityAddressLink, "117"));

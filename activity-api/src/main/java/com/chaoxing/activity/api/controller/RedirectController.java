@@ -4,11 +4,20 @@ import com.chaoxing.activity.model.Activity;
 import com.chaoxing.activity.model.DataPushRecord;
 import com.chaoxing.activity.service.activity.ActivityQueryService;
 import com.chaoxing.activity.service.data.DataPushRecordQueryService;
+import com.chaoxing.activity.util.BaiduMapUtils;
+import com.chaoxing.activity.util.UserAgentUtils;
 import com.chaoxing.activity.util.constant.UrlConstant;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 import javax.annotation.Resource;
+import javax.servlet.http.HttpServletRequest;
+import java.io.UnsupportedEncodingException;
+import java.math.BigDecimal;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
+import java.util.Optional;
 
 /**
  * @author wwb
@@ -61,6 +70,34 @@ public class RedirectController {
         Integer fid = activity.getCreateFid();
         String url = String.format(UrlConstant.DUAL_SELECT_INDEX_URL, activity.getId(), fid);
         return "redirect:" + url;
+    }
+
+    /**跳转到活动地址详情
+     * @Description
+     * 1、pc端跳转到百度地图
+     * 2、移动端跳转到
+     * @author wwb
+     * @Date 2021-07-22 09:40:25
+     * @param request
+     * @param activityId
+     * @return java.lang.String
+    */
+    @RequestMapping("activity/{activityId}/address")
+    public String activityAddressDetail(HttpServletRequest request, @PathVariable Integer activityId) throws UnsupportedEncodingException {
+        Activity activity = activityQueryService.getById(activityId);
+        String activityAddress = Optional.ofNullable(activity.getAddress()).orElse("") + Optional.ofNullable(activity.getDetailAddress()).orElse("");
+        activityAddress = URLEncoder.encode(activityAddress, StandardCharsets.UTF_8.name());
+        BigDecimal lng = activity.getLongitude();
+        BigDecimal lat = activity.getDimension();
+        if (UserAgentUtils.isMobileAccess(request)) {
+            String url = "https://reading.chaoxing.com/qd/map/location?address=%s&lng=%s&lat=%s";
+            url = String.format(url, activityAddress, lng, lat);
+            return "redirect:" + url;
+        } else {
+            String name = URLEncoder.encode(activity.getName(), StandardCharsets.UTF_8.name());
+            String activityAddressLink = BaiduMapUtils.generateAddressUrl(lng, lat, name, activityAddress);
+            return "redirect:" + activityAddressLink;
+        }
     }
 
 }
