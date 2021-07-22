@@ -172,7 +172,7 @@ public class SignUpConditionService {
 		// 从表单中的字段中拉取uid列表
 		List<Integer> uids = wfwFormApiService.listFormFieldUid(fid, Integer.parseInt(originIdentify), fieldName);
 		boolean exist = uids.contains(uid);
-		return !(exist ^ Optional.ofNullable(signUpCondition.getAllowSignedUp()).orElse(true));
+		return exist == Optional.ofNullable(signUpCondition.getAllowSignedUp()).orElse(true);
 	}
 
 	/**查询活动启用的报名条件模版组件id

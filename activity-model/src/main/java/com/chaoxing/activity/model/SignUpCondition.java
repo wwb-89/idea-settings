@@ -41,7 +41,7 @@ public class SignUpCondition {
     private String originIdentify;
     /** 字段名; column: field_name*/
     private String fieldName;
-    /** 是否允许报名; column: is_allow_signed_up*/
+    /** 是否允许报名（记录存在的时候）; column: is_allow_signed_up*/
     @TableField(value = "is_allow_signed_up")
     private Boolean allowSignedUp;
 
