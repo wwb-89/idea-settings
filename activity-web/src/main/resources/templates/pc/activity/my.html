@@ -222,7 +222,7 @@
 				// 创建活动
 				toAdd: function () {
 					var $this = this;
-					window.open("http://manage.hd.chaoxing.com/activity/add?code=" + $this.areaCode);
+					window.open("https://manage.hd.chaoxing.com/activity/add?code=" + $this.areaCode);
 				},
 				changeTab: function (index) {
 					var $this = this;
@@ -490,7 +490,7 @@
 					var activity = $this.managings[$this.operateIndex];
 					if (activityApp.isEmpty(activity.pageId)) {
 						app.showMsg("活动未创建完成，请选择活动模板", function () {
-							var url = "http://manage.hd.chaoxing.com/activity/" + activity.id + "/edit?step=2";
+							var url = "https://manage.hd.chaoxing.com/activity/" + activity.id + "/edit?step=2";
 							window.open(url);
 						});
 						return;
@@ -598,7 +598,7 @@
 				toEdit: function (index, e) {
 					var $this = this;
 					var activity = $this.managings[index];
-					var url = "http://manage.hd.chaoxing.com/activity/" + activity.id + "/edit";
+					var url = "https://manage.hd.chaoxing.com/activity/" + activity.id + "/edit";
 					window.open(url);
 				}
 			}

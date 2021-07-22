@@ -13,7 +13,7 @@
     }
 
     /** 活动管理的域名 */
-    activityApp.prototype.manage_domain = "http://manage.hd.chaoxing.com";
+    activityApp.prototype.manage_domain = "https://manage.hd.chaoxing.com";
 
     /** 新增图标的地址 */
     activityApp.prototype.add_icon_url = "http://p.ananas.chaoxing.com/star3/origin/1424584b7802e81c1e2db2e89b855c4f";
@@ -325,7 +325,7 @@
      * @returns {string}
      */
     activityApp.prototype.getActivityManageIndexUrl = function (activityId) {
-        return "http://manage.hd.chaoxing.com/activity/" + activityId;
+        return "https://manage.hd.chaoxing.com/activity/" + activityId;
     };
     W['activityApp'] = new activityApp();
 })(window, jQuery, JSON);
