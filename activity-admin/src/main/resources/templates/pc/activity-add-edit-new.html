@@ -671,6 +671,7 @@
                 // 基本信息块第一次出现位置
                 basicAppearIndex: 0,
                 templateComponentMap: {},
+                needInitEditor: false,
                 isEmbedded: activityApp.isEmbedded(),
                 tags: [],
                 // 模板列表
@@ -750,10 +751,13 @@
                 $($this.templateComponents).each(function() {
                     var _this = this;
                     $this.templateComponentMap[_this.id] = _this;
+                    if (this.code == 'introduction') {
+                        $this.needInitEditor =true
+                    }
                     if (_this.children && _this.children.length > 0) {
                         $(_this.children).each(function () {
                             if (this.code == 'sign_up_condition') {
-                                $this.signUpConditionActiveMap[this.id] = false;
+                                $this.$set($this.signUpConditionActiveMap, this.id, false);
                             }
                             $this.templateComponentMap[this.id] = this;
                         });
@@ -832,7 +836,7 @@
                         var sucTemplateComponentIds = $this.activity.sucTemplateComponentIds;
                         for (var i = 0; i < sucTemplateComponentIds.length; i++) {
                             var tplComponentId = sucTemplateComponentIds[i];
-                            $this.signUpConditionActiveMap[tplComponentId] = true;
+                            $this.$set($this.signUpConditionActiveMap, tplComponentId, true);
                         }
                     }
                 }
@@ -991,7 +995,9 @@
             mounted: function () {
                 var $this = this;
                 // 初始化笔记便假期
-                app.initUEditor($this.activity.introduction);
+                if ($this.needInitEditor) {
+                    app.initUEditor($this.activity.introduction);
+                }
                 $this.initUploader();
                 $this.handleImg();
                 // $this.initWfwGroups();
@@ -1464,6 +1470,7 @@
                             sucTemplateComponentIds.push(tplComponentId)
                         }
                     }
+                    return sucTemplateComponentIds;
                 },
                 packageSubmitSign: function () {
                     var $this = this;
