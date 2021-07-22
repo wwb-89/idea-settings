@@ -47,12 +47,10 @@
                                 <!-- 活动名称：activity_name -->
                                 <template v-if="item.code == 'activity_name'">
                                     <el-input type="text" placeholder="请填写" maxlength="20" show-word-limit readonly></el-input>
-                                    <span class="tips third">{{item.introduction}}</span>
                                 </template>
                                 <!-- 主办方：activity_organisers -->
                                 <template v-else-if="item.code == 'activity_organisers'">
                                     <el-input style="width: 400px" type="text" placeholder="请填写主办方" maxlength="20" readonly></el-input>
-                                    <span class="tips third">{{item.introduction}}</span>
                                 </template>
                                 <!-- 活动时间：activity_time_scope -->
                                 <template v-else-if="item.code == 'activity_time_scope'">
@@ -68,7 +66,6 @@
                                         <img style="margin: 0 8px;" slot="range-separator" src="/static/pc/assets/images/swap-right.png" th:src="@{/pc/assets/images/swap-right.png}">
                                     </el-date-picker>
                                     <span class="date-piker-icon"><img src="/static/pc/assets/images/calendar.png" th:src="@{/pc/assets/images/calendar.png}"></span>
-                                    <span class="tips third">{{item.introduction}}</span>
                                 </template>
                                 <!-- 活动封面：activity_cover -->
                                 <template v-else-if="item.code == 'activity_cover'">
@@ -88,7 +85,6 @@
                                         <el-radio v-model="radio1" label="1" name="active-type" class="radio-item" readonly>线下活动</el-radio>
                                         <el-radio label="2" name="active-type" class="radio-item" readonly>线上活动</el-radio>
                                     </div>
-                                    <span class="tips third">{{item.introduction}}</span>
                                     <div class="address-box">
                                         <el-input type="text" placeholder="请输入活动地点" autocomplete="off" class="address-input" readonly></el-input>
                                         <img src="/static/pc/assets/images/location.png" th:src="@{/pc/assets/images/location.png}" alt="" class="address-icon">
@@ -104,22 +100,22 @@
                                 <template v-else-if="item.code == 'period'">
                                     <el-input type="number" min="0" step="0.1" v-model="scoreNum" placeholder="请输入" readonly></el-input>
                                     <span class="score">学时</span>
-                                    <span class="tips third">{{item.introduction}}</span>
+                                    <span class="tips first">{{item.introduction}}</span>
                                 </template>
                                 <template v-else-if="item.code == 'credit'">
                                     <el-input type="number" min="0" step="0.1" v-model="scoreNum" placeholder="请输入" readonly></el-input>
-                                    <span class="score">学分</span>
-                                    <span class="tips third">{{item.introduction}}</span>
+                                    <span class="score">first</span>
+                                    <span class="tips first">{{item.introduction}}</span>
                                 </template>
                                 <template v-else-if="item.code == 'integral'">
                                     <el-input type="number" min="0" v-model="scoreNum"placeholder="请输入" readonly></el-input>
                                     <span class="score">分</span>
-                                    <span class="tips third">{{item.introduction}}</span>
+                                    <span class="tips first">{{item.introduction}}</span>
                                 </template>
                                 <template v-else-if="item.code == 'max_participate_time_length'">
                                     <el-input type="number" min="1" step="1" v-model="scoreNum" placeholder="不限" readonly></el-input>
                                     <span class="score">小时</span>
-                                    <span class="tips third">{{item.introduction}}</span>
+                                    <span class="tips first">{{item.introduction}}</span>
                                 </template>
                                 <template v-else-if="item.code == 'activity_rating'">
                                     <el-input type="text" placeholder="活动评价" readonly></el-input>
@@ -130,7 +126,6 @@
                                     <div class="type-item">
                                         <i class="add_btn"></i>新增
                                     </div>
-                                    <span class="tips third">{{item.introduction}}</span>
                                 </template>
                                 <!-- 发布范围：activity_release_scope -->
                                 <template v-else-if="item.code == 'activity_release_scope'">
