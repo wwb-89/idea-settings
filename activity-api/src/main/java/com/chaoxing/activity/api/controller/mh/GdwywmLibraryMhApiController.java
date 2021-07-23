@@ -63,14 +63,8 @@ public class GdwywmLibraryMhApiController {
         List<MhGeneralAppResultDataDTO> mhGeneralAppResultDataDtos = Lists.newArrayList();
         jsonObject.put("results", mhGeneralAppResultDataDtos);
         // 报名、签到人数
-        Boolean enableSign = activity.getEnableSign();
-        enableSign = Optional.ofNullable(enableSign).orElse(Boolean.FALSE);
-        if (enableSign) {
-            Integer signId = activity.getSignId();
-            mhGeneralAppResultDataDtos.addAll(packageBtns(activity, signId, uid, isManager));
-        } else if (isManager) {
-            mhGeneralAppResultDataDtos.add(buildBtn("管理", activityQueryService.getActivityManageUrl(activity.getId())));
-        }
+        Integer signId = activity.getSignId();
+        mhGeneralAppResultDataDtos.addAll(packageBtns(activity, signId, uid, isManager));
         return RestRespDTO.success(jsonObject);
     }
 
