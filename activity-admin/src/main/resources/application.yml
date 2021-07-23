@@ -2,7 +2,7 @@ spring:
   application:
     name: activity-engine
   profiles:
-    active: dev
+    active: local
   thymeleaf:
     cache: false
     mode: HTML
