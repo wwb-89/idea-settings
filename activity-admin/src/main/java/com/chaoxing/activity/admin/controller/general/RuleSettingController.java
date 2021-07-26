@@ -3,6 +3,7 @@ package com.chaoxing.activity.admin.controller.general;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 import javax.servlet.http.HttpServletRequest;
@@ -16,7 +17,7 @@ import javax.servlet.http.HttpServletRequest;
  */
 @Slf4j
 @Controller
-@RequestMapping()
+@RequestMapping("market/{marketId}/rule")
 public class RuleSettingController {
 
 
@@ -27,8 +28,8 @@ public class RuleSettingController {
     * @param
     * @return java.lang.String
     */
-    @RequestMapping("rule/setting")
-    public String index(HttpServletRequest request, Model model, Integer marketId) {
+    @RequestMapping("")
+    public String index(HttpServletRequest request, Model model, @PathVariable Integer marketId) {
         model.addAttribute("marketId", marketId);
         return "pc/rule/setting";
     }
