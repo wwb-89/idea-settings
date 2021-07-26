@@ -41,6 +41,10 @@ body, html {
   width: 162px;
 }
 
+.marginL16 {
+  margin-left: 16px;
+}
+
 .edit-box .edit-icon {
   display: inline-block;
   width: 16px;
