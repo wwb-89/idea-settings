@@ -137,6 +137,17 @@ public class TemplateQueryService {
 					.eq(Template::getActivityFlag, activityFlagEnum.getValue()));
 			return Optional.ofNullable(systemTemplates).orElse(Lists.newArrayList()).stream().findFirst().orElse(null);
 		}
+		return getMarketFirstTemplate(marketId);
+	}
+
+	/**获取活动市场第一个模板
+	* @Description 
+	* @author huxiaolong
+	* @Date 2021-07-26 17:31:49
+	* @param marketId
+	* @return com.chaoxing.activity.model.Template
+	*/
+	public Template getMarketFirstTemplate(Integer marketId) {
 		List<Template> marketTemplates = templateMapper.selectList(new LambdaQueryWrapper<Template>()
 				.eq(Template::getMarketId, marketId));
 		return Optional.ofNullable(marketTemplates).orElse(Lists.newArrayList()).stream().findFirst().orElse(null);

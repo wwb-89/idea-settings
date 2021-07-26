@@ -911,7 +911,6 @@
                             signUpTplComponentIds.push(this.id);
                         } else if (this.code == 'sign_in' || this.code == 'sign_out') {
                             signInTplComponentIds.push(this.id);
-                            $this.templateComponentMap[this.id] = this.code;
                         } else if ((this.type == 'radio' || this.type == 'checkbox' || this.type == 'text') && !$this.activityComponentValueMap[this.id]) {
                             $this.$set($this.activityComponentValueMap, this.id, {
                                 templateComponentId: this.id,
@@ -942,7 +941,6 @@
                                     }
                                 });
                             }
-
                         }
                         $this.$set($this.sign.signUps[i], "endNotAllowCancel", !this.endAllowCancel);
                         var tplComponentId = $this.sign.signUps[i].originId;
@@ -1596,7 +1594,7 @@
                     $this.activity.endTimeStamp = obj[1];
                 },
                 // 选中报名的时间范围
-                selectSignUpTime: function (hastplComponentId, obj) {
+                selectSignUpTime: function (tplComponentId, obj) {
                     var $this = this;
                     $this.$set($this.signUpMap[tplComponentId], "startTime", obj[0]);
                     $this.$set($this.signUpMap[tplComponentId], "endTime", obj[1]);

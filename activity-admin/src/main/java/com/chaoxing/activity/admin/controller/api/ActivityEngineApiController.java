@@ -7,7 +7,6 @@ import com.chaoxing.activity.dto.RestRespDTO;
 import com.chaoxing.activity.dto.engine.ActivityEngineDTO;
 import com.chaoxing.activity.model.Component;
 import com.chaoxing.activity.service.activity.engine.ActivityEngineHandleService;
-import com.chaoxing.activity.service.activity.engine.ActivityEngineQueryService;
 import com.chaoxing.activity.util.annotation.LoginRequired;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -29,24 +28,7 @@ import javax.servlet.http.HttpServletRequest;
 public class ActivityEngineApiController {
 
     @Resource
-    private ActivityEngineQueryService activityEngineQueryService;
-
-    @Resource
     private ActivityEngineHandleService activityEngineHandleService;
-
-
-    /**获取模板详细信息(模板信息、模板组件、组件列表)
-    * @Description
-    * @author huxiaolong
-    * @Date 2021-07-08 17:24:12
-    * @param templateId
-    * @return com.chaoxing.activity.dto.RestRespDTO
-    */
-    @PostMapping("template/{templateId}/info")
-    public RestRespDTO listOrgComponent(@PathVariable Integer templateId) {
-        return RestRespDTO.success(activityEngineQueryService.findEngineTemplateInfo(templateId));
-    }
-
 
     @PostMapping("component/submit")
     public RestRespDTO addCustomComponent(HttpServletRequest request, String componentStr) {

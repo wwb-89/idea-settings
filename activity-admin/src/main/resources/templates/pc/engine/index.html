@@ -13,23 +13,14 @@
 <body>
     <div class="field-setting" id="field-setting" v-cloak>
         <div class="top-con-light">
-            <div class="go-back fl" v-show="loaded && currTemplateId" @click="returnBack"><i class="icon-back"></i><span>返回</span></div>
-            <div class="name-txt">{{loaded && currTemplateId ? '字段编辑' : '模板选择'}}</div>
-            <div class="look-div fr" v-show="loaded && currTemplateId" @click="publish">
+<!--            <div class="go-back fl" @click="returnBack"><i class="icon-back"></i><span>返回</span></div>-->
+            <div class="name-txt">字段编辑</div>
+            <div class="look-div fr" @click="publish">
                 <div class="btn-width80px-color2">发布</div>
             </div>
         </div>
         <div class="content">
-            <div class="w-900px choose-mould" v-show="!loaded || !currTemplateId">
-                <p class="title">请选择模版</p>
-                <ul class="mould">
-                    <li class="mould-item" v-for="template in templates" @click="templateChange(template.id)">
-                        <div class="img-box"><img src="/static/pc/assets/images/yq-design/cover.png" th:src="@{/pc/assets/images/yq-design/cover.png}" alt=""></div>
-                        <p>{{template.name}}</p>
-                    </li>
-                </ul>
-            </div>
-            <div class="w-900px info-box" style="display: block;" v-show="currTemplateId && loaded">
+            <div class="w-900px info-box" style="display: block;">
                 <form action="" id="drag-box">
                     <!-- 基本信息 -->
                     <div class="title">
@@ -644,10 +635,10 @@
                 data: {
                     fid: [[${fid}]],
                     marketId: [[${marketId}]],
-                    templates: [[${templates}]],
+                    currTemplateId: [[${templateId}]],
+                    templateInfo: [[${templateInfo}]],
                     wfwForms: [[${wfwForms}]],
                     wfwFormFields: [],
-                    currTemplateId: null,
                     originTemplateId: null,
                     template: {},
                     components: [],
@@ -704,8 +695,46 @@
                 mounted: function () {
                     var $this = this;
                     // app.initUEditor("");
+                    $this.initData();
                 },
                 methods:{
+                    initData: function () {
+                        var $this = this;
+                        var { template, components, templateComponents } = $this.templateInfo
+                        $this.originTemplateId = template.originTemplateId || template.id;
+                        $this.template = template;
+                        // 置空componentMap
+                        $this.componentMap = {};
+                        // 初始化父节点对应子节点列表
+                        $this.pidChildrenMap = {};
+                        var checkedComponentIds = [];
+                        $(templateComponents).each(function () {
+                            checkedComponentIds.push(this.componentId);
+                        });
+                        $(components).each(function () {
+                            $this.componentMap[this.id] = this;
+                            // 新增是否选中属性，默认true
+                            this.checked = true;
+                            // 填充父节点对应子节点列表数据
+                            if (!$this.pidChildrenMap[this.pid]) {
+                                $this.pidChildrenMap[this.pid] = [];
+                            }
+                            $this.pidChildrenMap[this.pid].push(this);
+                        });
+                        $this.components = components;
+                        $this.templateComponents = templateComponents;
+                        $this.calShowComponents();
+                        $this.initComponentTypeList();
+                        $this.$nextTick(function () {
+                            $this.init();
+                            $this.fixRightEndBtnStyle();
+                            $('.jqthumbImg').jqthumb({
+                                width: '100%',
+                                height: '100%'
+                            });
+                            $this.initMouseEnterField();
+                        })
+                    },
                     init: function () {
                         $("#drag-box").sortable({
                             scroll: true,
@@ -770,65 +799,6 @@
                             var right = $('.w-900px.info-box').offset().left + 50
                             $('#add-circle').css('right', right)
                         })
-                    },
-                    templateChange: function (templateId) {
-                        var $this = this;
-                        $this.currTemplateId = templateId;
-                        $this.loadTemplateInfo();
-                    },
-                    // 选择模板，加载对应组件、模板组件数据
-                    loadTemplateInfo: function () {
-                        var $this = this;
-                        var url = ctx + "/api/activity/engine/template/" + $this.currTemplateId + "/info";
-                        $this.loaded = false;
-                        app.ajaxPost(url, {}, function (res) {
-                            $this.loaded = true;
-                            if (res.success) {
-                                var { template, components, templateComponents } = res.data
-                                $this.originTemplateId = template.originTemplateId || template.id;
-                                $this.template = template;
-                                // 置空componentMap
-                                $this.componentMap = {};
-                                // 初始化父节点对应子节点列表
-                                $this.pidChildrenMap = {};
-                                var checkedComponentIds = [];
-                                $(templateComponents).each(function () {
-                                    checkedComponentIds.push(this.componentId);
-                                });
-                                $(components).each(function () {
-                                    $this.componentMap[this.id] = this;
-                                    // 新增是否选中属性，默认true
-                                    this.checked = true;
-                                    // 填充父节点对应子节点列表数据
-                                    if (!$this.pidChildrenMap[this.pid]) {
-                                        $this.pidChildrenMap[this.pid] = [];
-                                    }
-                                    $this.pidChildrenMap[this.pid].push(this);
-                                });
-                                $this.components = components;
-                                $this.templateComponents = templateComponents;
-                                $this.calShowComponents();
-                                $this.initComponentTypeList();
-                                $this.$nextTick(function () {
-                                    $this.init();
-                                    $this.fixRightEndBtnStyle();
-                                    $('.jqthumbImg').jqthumb({
-                                        width: '100%',
-                                        height: '100%'
-                                    });
-                                    $this.initMouseEnterField();
-                                })
-                            } else {
-                                var errorMessage = res.message;
-                                if (activityApp.isEmpty(errorMessage)) {
-                                    errorMessage = "加载模板数据失败";
-                                }
-                                app.showMsg(errorMessage);
-                            }
-                        }, function () {
-                            $this.loaded = true;
-                            app.showMsg("加载模板数据失败");
-                        });
                     },
                     // 根据关联关系，处理展示出来的模板组件
                     calShowComponents: function() {
@@ -1387,7 +1357,7 @@
                         app.ajaxPost(url, param, function (res) {
                             if (res.success) {
                                 app.showMsg("发布成功", function () {
-                                    window.location.reload();
+                                    window.close();
                                 });
                             } else {
                                 var errorMessage = res.message;
