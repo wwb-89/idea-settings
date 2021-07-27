@@ -1,6 +1,8 @@
 package com.chaoxing.activity.model;
 
+import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableField;
+import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -25,6 +27,7 @@ import java.time.LocalDateTime;
 public class Classify {
 
     /** 主键; column: id*/
+    @TableId(type = IdType.AUTO)
     private Integer id;
     /** 分类名称; column: name*/
     private String name;

@@ -119,9 +119,10 @@ public class ActivityController {
 		}
 		// 报名签到
 		model.addAttribute("sign", SignCreateParamDTO.builder().build());
-		if (StringUtils.isBlank(flag)) {
-			flag = templateQueryService.getActivityFlagByTemplateId(templateId);
-		}
+//		if (StringUtils.isBlank(flag)) {
+//			flag = templateQueryService.getActivityFlagByTemplateId(templateId);
+//		}
+		flag = Optional.of(template).map(Template::getActivityFlag).orElse(flag);
 		// 模板列表
 		model.addAttribute("webTemplates", webTemplateService.listAvailable(fid, flag));
 		model.addAttribute("areaCode", Optional.ofNullable(code).filter(StringUtils::isNotBlank).map(groupService::getByCode).map(Group::getAreaCode).orElse(""));

@@ -168,7 +168,7 @@ public class ActivityEngineQueryService {
                 if (CollectionUtils.isNotEmpty(componentFieldMap.get(v.getComponentId()))) {
                     v.setComponentFields(componentFieldMap.get(v.getComponentId()));
                 }
-                if (StringUtils.isNotBlank(v.getType()) && Objects.equals(v.getType(), Component.DataOriginEnum.FORM.getValue())) {
+                if (StringUtils.isNotBlank(v.getDataOrigin()) && Objects.equals(v.getDataOrigin(), Component.DataOriginEnum.FORM.getValue())) {
                     v.setFieldValues(wfwFormApiService.listFormFieldValue(fid, Integer.parseInt(v.getOriginIdentify()), v.getFieldFlag()));
                 }
             });
