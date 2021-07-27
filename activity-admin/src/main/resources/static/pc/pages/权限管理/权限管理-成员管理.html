@@ -95,13 +95,14 @@
                 <div class="body">
                     <div class="choose-list fl">
                         <div class="search">
-                            <el-input type="text" class="search-ipt" placeholder="姓名/手机号" v-model="addIptValue" @input="addIptValueHandle"></el-input>
+                            <el-input type="text" class="search-ipt" placeholder="姓名/手机号" v-model="addIptValue" @input="addIptValueHandle" @focus="handleFocus" @blur="handleBlur"></el-input>
                             <i class="icon close" v-show="closeValue" @click="clearIptValue"></i>
                             <i class="icon search-icon"></i>
                         </div>
                         <div class="crumb">
                             <ul class="clear">
-                                <li class="back-item">全部<i class="icon-right"></i> </li>
+                                <li class="back-item"><span>全部</span><i class="icon-right"></i> </li>
+                                <li class="back-item"><span>名称超长省略名称超长省略</span><i class="icon-right"></i> </li>
                                 <li>通讯录1</li>
                             </ul>
                         </div>
@@ -133,14 +134,14 @@
                                 </div>
                                 <img class="right-img" src="../../assets/images/chevron-right.png" alt="">
                             </div>
-                            <div :class='["catalog-item",checked==true ? "bgc-blue" : ""]'>
+                            <div :class='["catalog-item",checked==true ? "bgc-blue" : ""]' @click="handleChecked(checked)">
                                 <div class="catalog-photo">
                                     <img src="../../assets/images/catalog-tx.png" alt="">
                                 </div>
                                 <div class="catalog-title">
                                     小组名称
                                 </div>
-                                <el-checkbox class="right-check" v-model="checked"></el-checkbox>
+                                <el-checkbox class="right-check" v-model="checked" @change="handleChecked(checked)"></el-checkbox>
                             </div>
                             <div :class='["catalog-item",checked1==true ? "bgc-blue" : ""]'>
                                 <div class="catalog-photo">
@@ -241,10 +242,10 @@
                                 </div>
                                 <el-checkbox class="right-check" v-model="checked2"></el-checkbox>
                             </div>
-                        </div>
-                        <div class="loading">
-                            <img src="../../assets/images/Spinner-1s-200px.svg" alt="">
-                            <span>加载中...</span>
+                            <div class="loading">
+                                <img src="../../assets/images/Spinner-1s-200px.svg" alt="">
+                                <span>加载中...</span>
+                            </div>
                         </div>
                         <div class="empty-content" style="display: none;">
                             无搜索结果
@@ -452,15 +453,28 @@
                 this.addIptValue = "";
                 this.closeValue = false;
             },
+            // 输入框聚焦时
+            handleFocus: function (){
+                $('.search').addClass('focus')
+            },
+            // 输入框失焦时
+            handleBlur: function (){
+                $('.search').removeClass('focus')
+            },
             initScroll: function () {
-                $(".item-choosed,.choose-list").niceScroll({
+                $(".catalog-list").niceScroll({
                     cursorborder: "",
                     cursorwidth: 8,
                     cursorcolor: "#DADADA",
                     boxzoom: false,
                     autohidemode: true
                 });
-                $(".item-choosed,.choose-list").getNiceScroll().resize();
+                $(".catalog-list").getNiceScroll().resize();
+            },
+            // 整行点击选择
+            handleChecked: function(checked){
+                // 将列表的选择状态传过来 下面改变传过来的值 checked
+                this.checked = !this.checked
             }
         }
     });
