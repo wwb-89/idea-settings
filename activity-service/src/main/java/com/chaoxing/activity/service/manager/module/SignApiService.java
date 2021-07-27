@@ -64,8 +64,6 @@ public class SignApiService {
 	private static final String STAT_SIGN_ACTIVITY_MANAGE_INDEX_URL = SIGN_API_DOMAIN + "/stat/sign/%d/activity-index";
 	/** 统计报名签到报名成功数量url */
 	private static final String STAT_SIGNED_UP_NUM = SIGN_API_DOMAIN + "/stat/sign/signed-up-num";
-	/** 活动块详情统计信息url */
-	private static final String ACTIVITY_BLOCK_DETAIL_STAT_URL = SIGN_API_DOMAIN + "/stat/sign/activity-block-detail?signId=%s&uid=%s";
 	/** 用户已报名的报名签到列表url */
 	private static final String USER_SIGNED_UP_URL = SIGN_API_DOMAIN + "/stat/sign/user-signed-up/%d";
 	/** 通知已收藏url */
@@ -117,11 +115,6 @@ public class SignApiService {
 	/** 配置机构的表单 */
 	private static final String ORG_FORM_CONFIG_URL = SIGN_API_DOMAIN + "/org/form/config";
 
-	/** 查询用户在报名签到下的报名列表 */
-	private static final String USER_SIGNED_UP_LIST_URL = SIGN_API_DOMAIN + "/stat/user/%d/sign/%d/signed-up";
-	/** 查询用户在报名签到下的签到记录（排除未签到） */
-	private static final String USER_EXCLUDE_NOT_SIGNED_IN_URL = SIGN_API_DOMAIN + "/stat/user/%d/sign/%d/exclude-not-signed-in";
-	
 	/** 通知报名签到用户成绩合格变更 */
 	private static final String NOTICE_SIGN_USER_RESULT_QUALIFIED_CHANGE_URL = SIGN_API_DOMAIN + "/sign/%d/user/%d/result/qualified/changed";
 
