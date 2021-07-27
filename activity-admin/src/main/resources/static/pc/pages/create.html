@@ -99,15 +99,19 @@
                 <div class="input-box">
                     <div class="img-box">
                         <img src="../assets/images/img.png" alt="" class="cover-img jqthumbImg">
+                        <div class="clear-cover">清除封面</div>
                     </div>
                     <div class="font-box">
                         <span>建议尺寸：1080x500</span>
                         <span>大小：小于5M</span>
                         <span>格式：jpg、png、gif</span>
-                        <input type="file" class="upload-btn" accept="image/gif, image/jpg, image/png"
+                        <div class="btn-box">
+                            <input type="file" class="upload-btn" accept="image/gif, image/jpg, image/png"
                                onchange="showImg(this)"/>
-                        <!--<div class="cancle-btn upload">上传文件</div>-->
-                        <button onclick="uploadImage(this)" class="cancle-btn upload">上传文件</button>
+                            <!--<div class="cancle-btn upload">上传文件</div>-->
+                            <button onclick="uploadImage(this)" class="cancle-btn upload">上传文件</button>
+                            <div class="cancle-btn picture-btn" @click="pictureShow=true">图片库</div>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -1006,6 +1010,61 @@
             </div>
         </div>
     </div>
+    <!-- 图片库弹窗 start -->
+    <div class="dailog-box1" v-show="pictureShow">
+        <div class="dailog picture-dialog">
+            <div class="header">
+                <span>图片库</span>
+                <img src="../assets/images/close.png" alt="" @click="pictureShow=false" class="close">
+            </div>
+            <div class="body">
+                <div class="picture-box">
+                    <!-- 选中的图片加上 current 类名-->
+                    <div class="item-box current">
+                        <div class="img-box"><img src="../assets/images/example.jpg" alt="" class="jqthumbImg"></div>
+                        <i class="select-pic"></i>
+                    </div>
+                    <div class="item-box">
+                        <div class="img-box"><img src="../assets/images/example.jpg" alt="" class="jqthumbImg"></div>
+                        <i class="select-pic"></i>
+                    </div>
+                    <div class="item-box">
+                        <div class="img-box"><img src="../assets/images/example.jpg" alt="" class="jqthumbImg"></div>
+                        <i class="select-pic"></i>
+                    </div>
+                    <div class="item-box">
+                        <div class="img-box"><img src="../assets/images/example.jpg" alt="" class="jqthumbImg"></div>
+                        <i class="select-pic"></i>
+                    </div>
+                    <div class="item-box">
+                        <div class="img-box"><img src="../assets/images/example.jpg" alt="" class="jqthumbImg"></div>
+                        <i class="select-pic"></i>
+                    </div>
+                    <div class="item-box">
+                        <div class="img-box"><img src="../assets/images/example.jpg" alt="" class="jqthumbImg"></div>
+                        <i class="select-pic"></i>
+                    </div>
+                    <div class="item-box">
+                        <div class="img-box"><img src="../assets/images/example.jpg" alt="" class="jqthumbImg"></div>
+                        <i class="select-pic"></i>
+                    </div>
+                    <div class="item-box">
+                        <div class="img-box"><img src="../assets/images/example.jpg" alt="" class="jqthumbImg"></div>
+                        <i class="select-pic"></i>
+                    </div>
+                    <div class="item-box">
+                        <div class="img-box"><img src="../assets/images/example.jpg" alt="" class="jqthumbImg"></div>
+                        <i class="select-pic"></i>
+                    </div>
+                </div>
+            </div>
+            <div class="footer">
+                <div class="normal-btn cancle" @click="handleCancle">取消</div>
+                <div class="normal-btn after-sure">确定</div>
+            </div>
+        </div>
+    </div>
+    <!-- 图片库弹窗 end -->
 
     <!--音视频播放-start-->
     <script type="text/javascript" src="https://noteyd.chaoxing.com/res/js/common/easydialog.min.js"></script>
@@ -1209,6 +1268,7 @@
             messageContentPop: false,
             notice:'',
             checkValue:[],
+            pictureShow:false,
         },
         mounted: function () {
             // this.initMap()

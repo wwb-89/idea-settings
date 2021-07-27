@@ -249,10 +249,10 @@
 }
 
 .choose-dialog .choose-list {
-    overflow: auto;
+    overflow: hidden;
     width: 353px;
     /*min-height: 532px;*/
-    max-height: 532px;
+    /* max-height: 532px; */
     margin-top: 12px;
     padding-left: 24px;
     border-right: 1px solid #F0F0F0;
@@ -268,7 +268,9 @@
     border: 1px solid #e9e9e9;
     border-radius: 15px;
 }
-
+.choose-dialog .search.focus{
+    border: 1px solid #0084FF;
+}
 .choose-dialog .search .search-ipt {
     border: none;
     position: absolute;
@@ -292,15 +294,27 @@
     background: url("../images/icon-cancel.png") center center no-repeat;
 }
 
+.choose-dialog .search .close:hover{
+    background: url("../images/icon-cancel-hover.png") center center no-repeat;
+}
+
 .choose-dialog .search .search-icon {
     right: 10px;
     margin-top: 6px;
     background: url("../images/icon-search.png") center center no-repeat;
 }
 
+.choose-dialog .search .search-icon:hover{
+    background: url("../images/icon-search-hover.png") center center no-repeat;
+}
+
 .crumb {
-    margin-top: 12px;
-    height: 18px;
+    margin-top: 8px;
+    /* height: 18px; */
+}
+
+.crumb>ul{
+    overflow: hidden;
 }
 
 .crumb>ul>li {
@@ -309,6 +323,7 @@
     line-height: 18px;
     color: #999999;
     margin-right: 6px;
+    margin-top: 4px;
 }
 
 .crumb .back-item {
@@ -316,8 +331,19 @@
     color: #0084FF;
 }
 
+.crumb .back-item>span{
+    display: inline-block;
+    vertical-align: top;
+    max-width: 91px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    word-break: break-all;
+}
 .catalog-list {
     margin-top: 8px;
+    height: 464px;
+    overflow: auto;
 }
 
 .catalog-list .catalog-item {
@@ -416,6 +442,7 @@
 .choose-dialog .item-choosed .catalog-list {
     width: 100%;
     margin-top: 0;
+    height: 500px;
 }
 
 .choose-dialog .item-choosed .catalog-item {
