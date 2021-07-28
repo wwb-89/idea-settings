@@ -30,6 +30,9 @@ html,body{
     }
 }
 .normal-btn{
+    display: flex;
+    align-items: center;
+    justify-content: center;
     box-sizing: border-box;
     height: 30px;
     line-height: 30px;
