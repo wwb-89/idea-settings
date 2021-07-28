@@ -12,91 +12,31 @@
 </head>
 <body>
     <div class="rule-setting" id="rule-setting" v-cloak>
-        <div class="item-block" v-show="false">
+        <div class="item-block">
             <div class="item-title">黑名单规则</div>
             <form action="" class="el-form">
                 <div class="form-item">
                     <label class="label">违约上限</label>
                     <div class="input-box">
-                        <span class="lineTips">每个用户</span>
-                        <el-select v-model="timeListValue" size="small" class="width120" placeholder="请选择">
-                            <el-option v-for="item in timeListOptions" :key="item.value" :label="item.label" :value="item.value">
-                            </el-option>
-                        </el-select>
-                        <span class="lineTips">违约上限</span>
-                        <el-select v-model="limitValue" size="small" class="width120" placeholder="请选择">
-                            <el-option v-for="item in limitOptions" :key="item.value" :label="item.label" :value="item.value">
-                            </el-option>
-                        </el-select>
-                        <span class="lineTips">次</span>
+                        <span class="lineTips">已报名的活动，用户未签到或未签退</span>
+                        <el-input type="number" size="small" class="marginL16 width80" v-model.trim="blacklistRule.notSignInUpperLimit" placeholder="不限" @blur="updateBlacklistRule"></el-input>
+                        <span class="lineTips">次进入黑名单</span>
                         <p class="bottomTips">达到违约上限后会将用户加入黑名单，加入黑名单的用户不能报名新的活动</p>
                     </div>
                 </div>
                 <div class="form-item">
                     <label class="label">自动移除黑名单</label>
                     <div class="input-box">
-                        <el-switch v-model="valueSwitch"></el-switch>
+                        <el-switch v-model="blacklistRule.enableAutoRemove"></el-switch>
                         <p class="rightTips">开启后，可以设置自动移除黑名单的规则</p>
-                        <div class="select-box">
-                            <el-select v-model="dayValue" size="small" class="width80" placeholder="请选择">
-                                <el-option v-for="item in dayOptions" :key="item.value" :label="item.label" :value="item.value">
-                                </el-option>
-                            </el-select>
-                            <span class="lineTips">后自动移除黑名单</span>  
+                        <div class="select-box" v-show="blacklistRule.enableAutoRemove">
+                            <el-input type="number" size="small" class="width80" v-model.trim="blacklistRule.autoRemoveHours" placeholder="整数" @blur="updateBlacklistRule"></el-input>
+                            <span class="lineTips">小时后自动移除黑名单</span>
                         </div>
                     </div>
                 </div>
             </form>
         </div>
-        <div class="item-block" v-show="false">
-            <div class="item-title">报名规则</div>
-            <form action="" class="el-form">
-                <div class="form-item">
-                    <label class="label">报名限制</label>
-                    <div class="input-box">
-                        <span class="lineTips">可同时报名</span>
-                        <el-select v-model="limitValue" size="small" class="width120" placeholder="请选择">
-                            <el-option v-for="item in limitOptions" :key="item.value" :label="item.label" :value="item.value">
-                            </el-option>
-                        </el-select>
-                        <span class="lineTips">个活动</span>
-                        <p class="bottomTips">可限制用户同时报名参加的活动数量，达到限制后需等活动结束、取消报名或报名审批被拒绝后才能报名新的活动</p>
-                    </div>
-                </div>
-            </form>
-        </div>
-        <p class="more-set" @click="moreClick" v-show="false"><span>更多设置</span><i class="arrow-down"></i></p>
-<!--        <div class="item-block" v-show="moreShow">-->
-        <div class="item-block" v-show="false">
-            <div class="item-title">数据推送设置</div>
-            <p class="titleTips">推送用户行为数据字段配置</p>
-            <form action="" class="el-form">
-                <div class="form-item">
-                    <div class="data-item">
-                        <div class="txt-box">
-                            <p class="name">活动数据</p>
-                            <p class="desc">推送活动基本信息数据到表单</p>
-                        </div>
-                        <div class="edit-box">
-                            <i class="edit-icon"></i>
-                            <i class="delete-icon" @click="ifCancelPop=true"></i>
-                        </div>
-                    </div>
-                    <div class="data-item">
-                        <div class="txt-box">
-                            <p class="name">用户行为数据</p>
-                            <p class="desc">推送用户行为数据字段配置</p>
-                        </div>
-                        <div class="edit-box">
-                            <i class="edit-icon"></i>
-                            <i class="delete-icon" @click="ifCancelPop=true"></i>
-                        </div>
-                    </div>
-                    <p class="new-add" @click="dataPushPop=true"><i class="add-icon"></i><span>新增推送</span></p>
-                </div>
-            </form>
-        </div>
-<!--        <div class="item-block" v-show="moreShow">-->
         <div class="item-block">
             <div class="item-title">活动字段设置</div>
             <p class="titleTips">创建活动页面的字段和更多报名条件设置</p>
@@ -112,212 +52,106 @@
                 </div>
             </form>
         </div>
-        <!--确认删除数据弹窗-->
-        <div class="dialog-box" v-if="ifCancelPop">
-            <div class="confirm_dialog">
-                <span class="icon"><img src="/static/pc/assets/images/warning.png" th:src="@{/pc/assets/images/warning.png}"></span>
-                <span class="text">删除数据推送后可能会导致看到不到活动信息，确定删除吗？</span>
-                <div class="btn">
-                    <span class="cancel" @click="ifCancelPop = false">保留</span>
-                    <span class="ok">移除</span>
-                </div>
-            </div>
-        </div>
-        <!-- 数据推送弹窗 -->
-        <div class="dialog-box" v-if="dataPushPop">
-            <div class="dialog-wrap data-push">
-                <div class="header">
-                    <span class="color333">数据推送</span>
-                    <img src="/static/pc/assets/images/close.png" th:src="@{/pc/assets/images/close.png}" @click="dataPushPop = false">
-                </div>
-                <div class="dialog-content">
-                    <div class="first-step" v-show="firstShow && !otherShow">
-                        <div class="input-box">
-                            <el-input type="text" size="small" placeholder="标题（必填）" v-model="title" maxlength="8" show-word-limit></el-input>
-                        </div>
-                        <div class="input-box">
-                            <el-input type="text" size="small" placeholder="说明" v-model="explain" maxlength="40" show-word-limit></el-input>
-                        </div>
-                        <div class="input-box">
-                            <label class="label">推送到表单</label>
-                            <el-select v-model="formValue" size="small" placeholder="请选择关联表单" class="width362">
-                                <el-option v-for="item in limitOptions" :key="item.value" :label="item.label" :value="item.value">
-                                </el-option>
-                            </el-select>
-                        </div>
-                    </div>
-                    <div class="second-step" v-show="!firstShow && !otherShow">
-                        <div class="title-box">
-                            <span>目标表单</span>
-                            <span>选择字段</span>
-                        </div>
-                        <div class="data-box">
-                            <div class="start-name overHidden1">社团成员社团成员社团</div>
-                            <p class="dataTips">推送数据</p>
-                            <el-select v-model="selectValue" size="small" placeholder="请选择" class="width152" @change="selectChange">
-                                <el-option v-for="item in selectOptions" :key="item.value" :label="item.label" :value="item.value">
-                                </el-option>
-                            </el-select>
-                        </div>
-                        <div class="data-box">
-                            <div class="start-name overHidden1">组织架构</div>
-                            <p class="dataTips">推送数据</p>
-                            <el-select v-model="formValue" size="small" placeholder="请选择" class="width152">
-                                <el-option v-for="item in limitOptions" :key="item.value" :label="item.label" :value="item.value">
-                                </el-option>
-                            </el-select>
-                        </div>
-                        <div class="data-box">
-                            <div class="start-name overHidden1">活动名称</div>
-                            <p class="dataTips">推送数据</p>
-                            <el-select v-model="formValue" size="small" placeholder="请选择" class="width152">
-                                <el-option v-for="item in limitOptions" :key="item.value" :label="item.label" :value="item.value">
-                                </el-option>
-                            </el-select>
-                        </div>
-                        <div class="data-box">
-                            <div class="start-name overHidden1">主办方</div>
-                            <p class="dataTips">推送数据</p>
-                            <el-select v-model="formValue" size="small" placeholder="请选择" class="width152">
-                                <el-option v-for="item in limitOptions" :key="item.value" :label="item.label" :value="item.value">
-                                </el-option>
-                            </el-select>
-                        </div>
-                        <div class="data-box">
-                            <div class="start-name overHidden1">参与范围</div>
-                            <p class="dataTips">推送数据</p>
-                            <el-select v-model="formValue" size="small" placeholder="请选择" class="width152">
-                                <el-option v-for="item in limitOptions" :key="item.value" :label="item.label" :value="item.value">
-                                </el-option>
-                            </el-select>
-                        </div>
-                        <div class="data-box">
-                            <div class="start-name overHidden1">考核项目</div>
-                            <p class="dataTips">推送数据</p>
-                            <div class="start-name overHidden1">积分</div>
-                            <div class="edit-box">
-                                <i class="edit-icon"></i>
-                                <i class="delete-icon"></i>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="other-form" v-show="otherShow">
-                        <div class="input-box">
-                            <label class="label">来源表单</label>
-                            <el-select v-model="formValue" size="small" placeholder="请选择" class="width162">
-                                <el-option v-for="item in limitOptions" :key="item.value" :label="item.label" :value="item.value">
-                                </el-option>
-                            </el-select>
-                        </div>
-                        <div class="input-box">
-                            <label class="label">满足条件</label>
-                            <el-select v-model="formValue" size="small" placeholder="请选择" class="width162">
-                                <el-option v-for="item in limitOptions" :key="item.value" :label="item.label" :value="item.value">
-                                </el-option>
-                            </el-select>
-                            <p class="dataTips">等于</p>
-                            <el-select v-model="formValue" size="small" placeholder="请选择" class="width162">
-                                <el-option v-for="item in limitOptions" :key="item.value" :label="item.label" :value="item.value">
-                                </el-option>
-                            </el-select>
-                        </div>
-                        <div class="input-box">
-                            <label class="label">获取字段</label>
-                            <div class="el-select">
-                                <el-select v-model="formValue" size="small" placeholder="请选择" class="width162">
-                                    <el-option v-for="item in limitOptions" :key="item.value" :label="item.label" :value="item.value">
-                                    </el-option>
-                                </el-select>
-                                <p class="bottomTips">获取到多条数据默认取第一条，空数据不会推送值</p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="footer">
-                    <div v-show="firstShow">
-                        <span class="btn btn-border" @click="dataPushPop = false">取消</span>
-                        <span class="btn" :class="title && explain && formValue? 'btn-normal' : 'btn-forbid'" @click="firstShow=false">下一步</span>
-                    </div>
-                    <div v-show="!firstShow || otherShow">
-                        <span class="btn btn-border">上一步</span>
-                        <span class="btn btn-normal">完成</span>
-                    </div>
-                </div>
-            </div>
-        </div>
     </div>
     <div th:replace="pc/include/common_js :: common_js(~{::script})">
         <script type="text/javascript" src="/static/pc/assets/lib/element-ui/lib/index.js" th:src="@{/pc/assets/lib/element-ui/lib/index.js}"></script>
         <script th:inline="javascript">
             var vm = new Vue({
                 el: '#rule-setting',
-                data: function () {
-                    return {
-                        marketId: [[${marketId}]],
-                        timeListValue:'1',
-                        timeListOptions: [{
-                            value: '1',
-                            label: '全部时间'
-                        }, {
-                            value: '2',
-                            label: '一个月'
-                        }],
-                        limitValue:'1',
-                        limitOptions: [{
-                            value: '1',
-                            label: '不限'
-                        }, {
-                            value: '2',
-                            label: '5'
-                        }],
-                        valueSwitch:true,
-                        dayValue:'1',
-                        dayOptions:[{
-                            value: '1',
-                            label: '三天'
-                        }, {
-                            value: '2',
-                            label: '四天'
-                        }],
-                        ifCancelPop:false,
-                        dataPushPop:false,
-                        title:'',
-                        explain:'',
-                        formValue:'',
-                        firstShow:true,
-                        otherShow:false,
-                        selectValue:'',
-                        selectOptions:[{
-                            value: '1',
-                            label: '参与者'
-                        },{
-                            value: '2',
-                            label: '组织架构'
-                        },{
-                            value: '3',
-                            label: '活动名称'
-                        }],
-                        moreShow:false
+                data: {
+                    marketId: [[${marketId}]],
+                    oldBlacklistRule: null,
+                    blacklistRule: [[${blacklistRule}]]
+                },
+                created: function () {
+                    var $this = this;
+                    if (activityApp.isEmpty($this.blacklistRule.autoRemoveHours)) {
+                        $this.$set($this.blacklistRule, "autoRemoveHours", 24);
                     }
                 },
-                methods:{
+                mounted: function () {
+                    var $this = this;
+                    $this.oldBlacklistRule = $.extend({}, $this.blacklistRule);
+                },
+                watch: {
+                    "blacklistRule.notSignInUpperLimit": function (newVal, oldVal) {
+                        var $this = this;
+                        if (activityApp.isEmpty(oldVal)) {
+                            oldVal = "";
+                        }
+                        if (!activityApp.isEmpty(newVal)) {
+                            try {
+                                newVal = parseInt(newVal);
+                            } catch (e) {
+                            }
+                        }
+                        if (!/^[1-9]\d{0,1}$/.test(newVal) && !activityApp.isEmpty(newVal)) {
+                            $this.$set($this.blacklistRule, "notSignInUpperLimit", oldVal);
+                        }
+                    },
+                    "blacklistRule.autoRemoveHours": function (newVal, oldVal) {
+                        var $this = this;
+                        if (!activityApp.isEmpty(newVal)) {
+                            try {
+                                newVal = parseInt(newVal);
+                            } catch (e) {
+                            }
+                        }
+                        if (!/^[1-9]\d{0,2}$/.test(newVal) && !activityApp.isEmpty(newVal)) {
+                            $this.$set($this.blacklistRule, "autoRemoveHours", oldVal);
+                        }
+                    },
+                    "blacklistRule.enableAutoRemove": function () {
+                        var $this = this;
+                        $this.updateBlacklistRule();
+                    }
+                },
+                methods: {
+                    resetBlacklistRule: function () {
+                        var $this = this;
+                        $this.blacklistRule = $.extend({}, $this.oldBlacklistRule);
+                    },
+                    validateBlacklistRuleInput: function () {
+                        var $this = this;
+                        if ($this.blacklistRule.enableAutoRemove && activityApp.isEmpty($this.blacklistRule.autoRemoveHours)) {
+                            app.showMsg("黑名单自动移除时间不能为空");
+                            $this.resetBlacklistRule();
+                            return false;
+                        }
+                        return true;
+                    },
+                    updateBlacklistRule: function () {
+                        var $this = this;
+                        if (activityApp.getJsonStr($this.oldBlacklistRule) == activityApp.getJsonStr($this.blacklistRule)) {
+                            return;
+                        }
+                        if (!$this.validateBlacklistRuleInput()) {
+                            return;
+                        }
+                        var url = ctx + "/market/" + $this.marketId + "/blacklist/rule/update";
+                        app.ajaxPostWithLoading(url, $this.blacklistRule, function (data) {
+                            if (data.success) {
+                                $this.oldBlacklistRule = $.extend({}, $this.blacklistRule);
+                            } else {
+                                var message = data.message;
+                                if (activityApp.isEmpty(message)) {
+                                    message = "黑名单规则更新失败";
+                                }
+                                app.showMsg(message);
+                                $this.resetBlacklistRule();
+                            }
+                        }, function () {
+                            app.showMsg("黑名单规则更新失败");
+                            $this.resetBlacklistRule();
+                        });
+                    },
                     toConfigActivityField: function () {
                         var $this = this;
                         var url = ctx + "/market/" + $this.marketId + "/template";
                         window.open(url);
-                    },
-                    moreClick:function(){
-                        $('.more-set .arrow-down').toggleClass('active')
-                        this.moreShow = !this.moreShow
-                    },
-                    selectChange:function(){
-                        if(this.selectValue == 1){
-                            this.firstShow = false
-                            this.otherShow = true
-                        }
                     }
                 }
-            })
+            });
         </script>
     </div>
 </body>

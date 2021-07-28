@@ -36,8 +36,8 @@ public class BlacklistRule {
     /** 是否启用自动移除; column: is_enable_auto_remove*/
     @TableField(value = "is_enable_auto_remove")
     private Boolean enableAutoRemove;
-    /** 自动移除天数; column: auto_remove_days*/
-    private Integer autoRemoveDays;
+    /** 自动移除小时数; column: auto_remove_hours*/
+    private Integer autoRemoveHours;
     /** 创建时间; column: create_time*/
     private LocalDateTime createTime;
     /** 更新时间; column: update_time*/

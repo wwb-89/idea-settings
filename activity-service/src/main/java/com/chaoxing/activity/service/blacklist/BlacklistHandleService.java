@@ -178,9 +178,9 @@ public class BlacklistHandleService {
         // 删除
         removeBlacklist(marketId, uids);
         List<Blacklist> blacklists = BlacklistRecord.buildbuildBlacklist(matchBlacklistRecords.stream().filter(v -> uids.contains(v.getUid())).collect(Collectors.toList()));
-        Integer autoRemoveDays = blacklistRule.getAutoRemoveDays();
+        Integer autoRemoveHours = blacklistRule.getAutoRemoveHours();
         if (CollectionUtils.isNotEmpty(blacklists)) {
-            blacklists.forEach(v -> v.setEffectiveDays(autoRemoveDays));
+            blacklists.forEach(v -> v.setEffectiveHours(autoRemoveHours));
             blacklistMapper.batchAdd(blacklists);
         }
         // 黑名单记录置为已处理
@@ -189,7 +189,7 @@ public class BlacklistHandleService {
                 .in(BlacklistRecord::getUid, matchBlacklistRecords.stream().map(BlacklistRecord::getUid).collect(Collectors.toList()))
         );
         // 通知到时间后自动移除
-        LocalDateTime removeTime = LocalDateTime.now().plusDays(autoRemoveDays);
+        LocalDateTime removeTime = LocalDateTime.now().plusHours(autoRemoveHours);
         for (Blacklist blacklist : blacklists) {
             blacklistAutoRemoveQueueService.push(new BlacklistAutoRemoveQueueService.QueueParamDTO(blacklist.getMarketId(), blacklist.getUid(), removeTime));
         }

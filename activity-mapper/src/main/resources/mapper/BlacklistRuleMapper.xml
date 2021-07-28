@@ -6,12 +6,12 @@
         <result column="market_id" jdbcType="INTEGER" property="marketId" />
         <result column="not_sign_in_upper_limit" jdbcType="INTEGER" property="notSignInUpperLimit" />
         <result column="is_enable_auto_remove" jdbcType="BIT" property="enableAutoRemove" />
-        <result column="auto_remove_days" jdbcType="INTEGER" property="autoRemoveDays" />
+        <result column="auto_remove_hours" jdbcType="INTEGER" property="autoRemoveHours" />
         <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
         <result column="update_time" jdbcType="TIMESTAMP" property="updateTime" />
     </resultMap>
     <sql id="Base_Column_List">
-        t.id, t.market_id, t.not_sign_in_upper_limit, t.is_enable_auto_remove, t.auto_remove_days, 
+        t.id, t.market_id, t.not_sign_in_upper_limit, t.is_enable_auto_remove, t.auto_remove_hours,
         t.create_time, t.update_time
     </sql>
 </mapper>

@@ -38,8 +38,8 @@ public class Blacklist {
     private Integer defaultNum;
     /** 加入方式; column: join_type*/
     private String joinType;
-    /** 有效天数; column: effective_days*/
-    private Integer effectiveDays;
+    /** 有效小时数; column: effective_hours*/
+    private Integer effectiveHours;
     /** 创建时间; column: create_time*/
     private LocalDateTime createTime;
     /** 更新时间; column: update_time*/
