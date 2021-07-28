@@ -229,7 +229,7 @@ public class ActivityHandleService {
 			// 更新报名签到
 			Integer signId = existActivity.getSignId();
 			signCreateParam.setId(signId);
-			SignCreateResultDTO signCreateResultDto = handleSign(activity, signCreateParam, loginUser);
+			handleSign(activity, signCreateParam, loginUser);
 			// 征集相关
 			handleWork(activity, loginUser);
 			// 处理活动相关
@@ -247,8 +247,6 @@ public class ActivityHandleService {
 			signUpConditionService.updateActivitySignUpEnables(activityId, activityUpdateParamDto.getSucTemplateComponentIds());
 			// 更新自定义组件的值
 			activityComponentValueService.updateActivityComponentValues(activityId, activityUpdateParamDto.getActivityComponentValues());
-			// 更新活动状态
-			activityStatusService.statusUpdate(existActivity);
 			ActivityDetail activityDetail = activityQueryService.getDetailByActivityId(activityId);
 			if (activityDetail == null) {
 				activityDetail = activityUpdateParamDto.buildActivityDetail();
@@ -558,6 +556,7 @@ public class ActivityHandleService {
 	 * @param status
 	 * @return void
 	 */
+	@Transactional(rollbackFor = Exception.class)
 	public void updateActivityStatus(Integer activityId, Activity.StatusEnum status) {
 		activityMapper.update(null, new UpdateWrapper<Activity>()
 				.lambda()
@@ -567,6 +566,8 @@ public class ActivityHandleService {
 		if (Objects.equals(Activity.StatusEnum.ENDED, status)) {
 			// 当活动结束时触发用户合格判定
 			activityInspectionResultDecideQueueService.push(activityId);
+			// 触发黑名单判定
+
 		}
 	}
 

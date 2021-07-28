@@ -4,15 +4,12 @@ import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.chaoxing.activity.dto.OrgFormConfigDTO;
-import com.chaoxing.activity.dto.manager.sign.SignStatDTO;
-import com.chaoxing.activity.dto.manager.sign.UserSignParticipationStatDTO;
-import com.chaoxing.activity.dto.manager.sign.SignActivityManageIndexDTO;
-import com.chaoxing.activity.dto.manager.sign.SignParticipateScopeDTO;
-import com.chaoxing.activity.dto.manager.sign.UserSignStatSummaryDTO;
+import com.chaoxing.activity.dto.manager.sign.*;
 import com.chaoxing.activity.dto.manager.sign.create.SignCreateParamDTO;
 import com.chaoxing.activity.dto.manager.sign.create.SignCreateResultDTO;
 import com.chaoxing.activity.dto.manager.sign.create.SignUpCreateParamDTO;
 import com.chaoxing.activity.dto.stat.SignActivityStatDTO;
+import com.chaoxing.activity.dto.stat.UserNotSignedInNumStatDTO;
 import com.chaoxing.activity.model.ActivityStatSummary;
 import com.chaoxing.activity.util.CookieUtils;
 import com.chaoxing.activity.util.exception.BusinessException;
@@ -78,6 +75,8 @@ public class SignApiService {
 
 	/** 统计活动报名签到对应的活动统计汇总记录url */
 	private static final String STAT_ACTIVITY_SUMMARY_URL = SIGN_API_DOMAIN + "/stat/sign/%d/activity-stat-summary";
+	/** 统计活动报名签到用户的未签数量 */
+	private static final String STAT_ACTIVITY_USER_NOT_SIGNED_IN_NUM = SIGN_API_DOMAIN + "/sign/%d/user-not-signed-in-num";
 
 	/** 根据外资源部externalIds查询报名签到signIds集合url  */
 	private static final String LIST_SIGN_ID_BY_PARTICIPATE_SCOPES_URL = SIGN_API_DOMAIN + "/sign/list/signIds/by-participate-scope";
@@ -756,6 +755,20 @@ public class SignApiService {
 		return resultHandle(jsonObject, () -> jsonObject.getInteger("data"), (message) -> {
 			throw new BusinessException(message);
 		});
+	}
+
+	/**统计用户未签到次数
+	 * @Description 
+	 * @author wwb
+	 * @Date 2021-07-27 20:04:14
+	 * @param signId
+	 * @return java.util.List<com.chaoxing.activity.dto.stat.UserNotSignedInNumStatDTO>
+	*/
+	public List<UserNotSignedInNumStatDTO> statUserNotSignedInNum(Integer signId) {
+		String url = String.format(STAT_ACTIVITY_USER_NOT_SIGNED_IN_NUM, signId);
+		String result = restTemplate.getForObject(url, String.class);
+		JSONObject jsonObject = JSON.parseObject(result);
+		return resultHandle(jsonObject, () -> JSON.parseArray(jsonObject.getString("data"), UserNotSignedInNumStatDTO.class), (message) -> new BusinessException(message));
 	}
 
 }

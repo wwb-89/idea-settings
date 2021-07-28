@@ -5,11 +5,24 @@
         <id column="id" jdbcType="INTEGER" property="id" />
         <result column="market_id" jdbcType="INTEGER" property="marketId" />
         <result column="uid" jdbcType="INTEGER" property="uid" />
-        <result column="join_time" jdbcType="TIMESTAMP" property="joinTime" />
+        <result column="user_name" jdbcType="VARCHAR" property="userName" />
+        <result column="account" jdbcType="VARCHAR" property="account" />
+        <result column="default_num" jdbcType="INTEGER" property="defaultNum" />
+        <result column="join_type" jdbcType="VARCHAR" property="joinType" />
+        <result column="effective_days" jdbcType="INTEGER" property="effectiveDays" />
         <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
         <result column="update_time" jdbcType="TIMESTAMP" property="updateTime" />
     </resultMap>
     <sql id="Base_Column_List">
-        t.id, t.market_id, t.uid, t.join_time, t.create_time, t.update_time
+        t.id, t.market_id, t.uid, t.user_name, t.account, t.default_num, t.join_type, t.effective_days, t.create_time, t.update_time
     </sql>
+
+    <insert id="batchAdd">
+        INSERT INTO t_blacklist ( market_id, uid, user_name, account, default_num, join_type, effective_days )
+        VALUES
+            <foreach collection="blacklists" index="key" item="value" open="" close="" separator=",">
+                ( #{value.marketId}, #{value.uid}, #{value.userName}, #{value.account}, #{value.defaultNum}, #{value.joinType}, #{value.effectiveDays} )
+            </foreach>
+    </insert>
+
 </mapper>

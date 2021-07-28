@@ -3,12 +3,10 @@ package com.chaoxing.activity.model;
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import java.time.LocalDateTime;
+import java.util.Objects;
 
 /**
  * 黑名单表
@@ -32,11 +30,46 @@ public class Blacklist {
     private Integer marketId;
     /** 用户id; column: uid*/
     private Integer uid;
-    /** 加入黑名单时间; column: join_time*/
-    private LocalDateTime joinTime;
+    /** 姓名; column: user_name*/
+    private String userName;
+    /** 账号; column: account*/
+    private String account;
+    /** 违约次数; column: default_num*/
+    private Integer defaultNum;
+    /** 加入方式; column: join_type*/
+    private String joinType;
+    /** 有效天数; column: effective_days*/
+    private Integer effectiveDays;
     /** 创建时间; column: create_time*/
     private LocalDateTime createTime;
     /** 更新时间; column: update_time*/
     private LocalDateTime updateTime;
+
+    @Getter
+    public enum JoinTypeEnum {
+
+        /** 自动 */
+        AUTO("自动", "auto"),
+        MANUAL("手动", "manual");
+
+        private final String name;
+        private final String value;
+
+        JoinTypeEnum(String name, String value) {
+            this.name = name;
+            this.value = value;
+        }
+
+        public static JoinTypeEnum fromValue(String value) {
+            JoinTypeEnum[] values = JoinTypeEnum.values();
+            for (JoinTypeEnum joinTypeEnum : values) {
+                if (Objects.equals(joinTypeEnum.getValue(), value)) {
+                    return joinTypeEnum;
+                }
+            }
+            return null;
+        }
+
+    }
 
 }
