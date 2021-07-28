@@ -312,6 +312,16 @@ body {
   text-align: center;
 }
 
+.el-pagination.fixPage {
+  position: fixed;
+  background-color: white;
+  left: 0;
+  right: 0;
+  bottom: 16px;
+  width: 100%;
+  z-index: 2;
+}
+
 .el-pager li {
   border-radius: 2px !important;
   font-size: 14px !important;
@@ -946,7 +956,7 @@ body {
 .tab-content-box .tab-item {
   position: relative;
   overflow: hidden;
-  padding: 16px 24px;
+  padding: 16px 24px 48px 24px;
 }
 
 .el-popper .popper__arrow {

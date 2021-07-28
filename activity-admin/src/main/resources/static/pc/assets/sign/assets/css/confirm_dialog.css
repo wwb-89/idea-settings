@@ -107,7 +107,7 @@
 .dialog-wrap{
     border-radius: 8px;
     background: #FFFFFF;
-    z-index: 3;
+    z-index: 5;
     position: absolute;
     top: 50%;
     left: 50%;
@@ -185,5 +185,5 @@
     left: 0;
     right: 0;
     bottom: 0;
-    z-index: 2;
+    z-index: 4;
 }
