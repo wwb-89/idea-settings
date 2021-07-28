@@ -1,6 +1,9 @@
 body, html {
     background: #fff;
 }
+.color333{
+    color: #333;
+}
 .item-block{
     margin-top: 24px;
     font-size: 0;
@@ -80,6 +83,16 @@ body, html {
             }
             .select-box{
                 margin-top: 8px;
+                .lineTips{
+                    padding: 3px 0;
+                }
+                .el-input--small .el-input__inner{
+                    height: 28px;
+                    line-height: 28px;
+                }
+                .el-input--small .el-input__icon{
+                    line-height: 28px;
+                }
             }
             .width80{
                 margin-right: 16px;
@@ -160,8 +173,13 @@ body, html {
                 line-height: 20px;
                 color: #0084FF;
             }
+            &:hover{
+                opacity: 0.8;
+            }
         }
         .configure{
+            display: inline-block;
+            vertical-align: top;
             cursor: pointer;
             height: 32px;
             line-height: 32px;
@@ -178,6 +196,9 @@ body, html {
                 font-size: 14px;
                 color: #0084FF;
             }
+            &:hover{
+                opacity: 0.8;
+            }
         }
     }
 }
@@ -186,9 +207,19 @@ body, html {
     min-width: 820px;
     box-sizing: border-box;
     .more-set{
+        display: inline-block;
+        vertical-align: top;
         height: 20px;
         margin-top: 24px;
         cursor: pointer;
+        &:hover{
+            span{
+                color: #0084FF;
+            }
+            .arrow-down{
+                background: url(../images/yq-design/arrow-down-hover.png);
+            }
+        }
         span{
             display: inline-block;
             vertical-align: top;

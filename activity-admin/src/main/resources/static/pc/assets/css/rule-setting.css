@@ -3,6 +3,10 @@ body, html {
   background: #fff;
 }
 
+.color333 {
+  color: #333;
+}
+
 .item-block {
   margin-top: 24px;
   font-size: 0;
@@ -97,6 +101,19 @@ body, html {
 
 .el-form .form-item .input-box .select-box {
   margin-top: 8px;
+}
+
+.el-form .form-item .input-box .select-box .lineTips {
+  padding: 3px 0;
+}
+
+.el-form .form-item .input-box .select-box .el-input--small .el-input__inner {
+  height: 28px;
+  line-height: 28px;
+}
+
+.el-form .form-item .input-box .select-box .el-input--small .el-input__icon {
+  line-height: 28px;
 }
 
 .el-form .form-item .input-box .width80 {
@@ -195,7 +212,13 @@ body, html {
   color: #0084FF;
 }
 
+.el-form .form-item .new-add:hover {
+  opacity: 0.8;
+}
+
 .el-form .form-item .configure {
+  display: inline-block;
+  vertical-align: top;
   cursor: pointer;
   height: 32px;
   line-height: 32px;
@@ -216,6 +239,10 @@ body, html {
   color: #0084FF;
 }
 
+.el-form .form-item .configure:hover {
+  opacity: 0.8;
+}
+
 .rule-setting {
   padding: 0 32px 32px;
   min-width: 820px;
@@ -225,9 +252,19 @@ body, html {
 }
 
 .rule-setting .more-set {
+  display: inline-block;
+  vertical-align: top;
   height: 20px;
   margin-top: 24px;
   cursor: pointer;
+}
+
+.rule-setting .more-set:hover span {
+  color: #0084FF;
+}
+
+.rule-setting .more-set:hover .arrow-down {
+  background: url(../images/yq-design/arrow-down-hover.png);
 }
 
 .rule-setting .more-set span {

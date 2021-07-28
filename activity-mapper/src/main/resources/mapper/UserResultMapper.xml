@@ -18,31 +18,31 @@
 
     <select id="pageUserResult" resultType="com.chaoxing.activity.dto.UserResultDTO">
         SELECT
-            t.uid as uid,
-            t.real_name as realName,
-            t.student_no as studentNo,
-            t.mobile as mobile,
-            t.activity_id as activityId,
-            t.signed_in_num as signedInNum,
-            ( CASE WHEN t.sign_in_num > 0 THEN ( CONVERT ( (t.signed_in_num / t.sign_in_num) * 100, DECIMAL ( 10, 2 ))) ELSE 0 END ) as signedInRate,
-            t.rating_num as ratingNum,
-            t1.qualified_status as qualifiedStatus,
-            t1.total_score as totalScore
+            t.qualified_status as qualifiedStatus,
+            t.total_score as totalScore,
+            t1.uid as uid,
+            t1.real_name as realName,
+            t1.student_no as studentNo,
+            t1.mobile as mobile,
+            t1.activity_id as activityId,
+            t1.signed_in_num as signedInNum,
+            ( CASE WHEN t1.sign_in_num > 0 THEN ( CONVERT ( (t1.signed_in_num / t1.sign_in_num) * 100, DECIMAL ( 10, 2 ))) ELSE 0 END ) as signedInRate,
+            t1.rating_num as ratingNum
         FROM
-            t_user_stat_summary t
+            t_user_result t
         LEFT JOIN
-            t_user_result t1
+            t_user_stat_summary t1
         ON
             t.activity_id = t1.activity_id AND t.uid = t1.uid
         WHERE
             t.activity_id = #{queryParam.activityId}
-            <if test="queryParam.sw != null and queryParam.sw != ''">
-                <bind name="swBind" value="'%' + queryParam.sw + '%'"/>
-                AND t.real_name like #{swBind}
-            </if>
-            <if test="queryParam.qualifiedStatus != null">
-                AND t1.qualified_status = #{queryParam.qualifiedStatus}
-            </if>
+        <if test="queryParam.sw != null and queryParam.sw != ''">
+            <bind name="swBind" value="'%' + queryParam.sw + '%'"/>
+            AND t1.real_name like #{swBind}
+        </if>
+        <if test="queryParam.qualifiedStatus != null">
+            AND t.qualified_status = #{queryParam.qualifiedStatus}
+        </if>
         <if test="queryParam.orderField != null and queryParam.orderField != ''">
             ORDER BY ${queryParam.orderField} <if test="queryParam.orderType != null">${queryParam.orderType.value}</if>
         </if>
