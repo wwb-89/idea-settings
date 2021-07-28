@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 	<meta charset="UTF-8">
-	<title>活动市场</title>
+	<title th:text="|${market.name}后台|">活动市场</title>
 	<link rel="stylesheet" href="/static/pc/assets/css/reset.css" th:href="@{/pc/assets/css/reset.css}">
 	<link rel="stylesheet" href="/static/pc/assets/css/public.css" th:href="@{/pc/assets/css/public.css}">
 	<link rel="stylesheet" href="/static/pc/assets/css/iframe.css" th:href="@{/pc/assets/css/iframe.css}">
@@ -16,7 +16,7 @@
 <div id="vm" v-cloak>
 	<!--顶部固定栏-->
 	<div class="topFixed">
-		<h2>{{market.name}}</h2>
+		<h2>{{market.name}}后台</h2>
 		<div class="user">
 			<img th:src="|http://photo.chaoxing.com/p/${session._login_user_.uid}_80|">
 			<p th:text="${session._login_user_.realName}">刘琼锦</p>
