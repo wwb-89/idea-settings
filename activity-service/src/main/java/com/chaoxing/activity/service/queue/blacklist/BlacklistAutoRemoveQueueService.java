@@ -6,7 +6,9 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.redisson.api.RedissonClient;
+import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
 import java.time.LocalDateTime;
@@ -19,6 +21,8 @@ import java.time.LocalDateTime;
  * @blame wwb
  * @date 2021-07-27 17:49:10
  */
+@Slf4j
+@Service
 public class BlacklistAutoRemoveQueueService implements IDelayedQueueService<BlacklistAutoRemoveQueueService.QueueParamDTO> {
 
     private static final String KEY = CacheConstant.QUEUE_CACHE_KEY_PREFIX + "blacklist_auto_remove";
