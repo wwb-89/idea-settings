@@ -14,7 +14,7 @@
     <div class="field-setting" id="field-setting" v-cloak>
         <div class="top-con-light">
 <!--            <div class="go-back fl" @click="returnBack"><i class="icon-back"></i><span>返回</span></div>-->
-            <div class="name-txt">字段编辑</div>
+            <div class="name-txt">字段设置</div>
             <div class="look-div fr" @click="publish">
                 <div class="btn-width80px-color2">发布</div>
             </div>
@@ -736,28 +736,23 @@
                         })
                     },
                     init: function () {
+                        var $this = this;
                         $("#drag-box").sortable({
                             scroll: true,
                             axis: "y",
-                            dalay: 300,
+                            delay: 300,
                             handle: ".icon-drag",
                             start: function (e1, e2) {
                                 $("#dragBubble").hide()
-                            },
-                            end: function (e1, e2) {
-                                debugger
                             }
                         });
                         $("#drag-box-inner").sortable({
                             scroll: true,
                             axis: "y",
-                            dalay: 300,
+                            delay: 300,
                             handle: ".icon-drag-inner",
                             start: function (e1, e2) {
                                 // $("#dragBubble").hide()
-                            },
-                            end: function (e1, e2) {
-                                debugger
                             }
                         });
                         $('.icon-drag').on('mouseenter', function (e) {
@@ -1345,6 +1340,42 @@
                     returnBack: function () {
                         window.location.reload();
                     },
+                    // 排序
+                    sortTplComponent: function () {
+                        var $this = this;
+                        var sortedMap = {}, insideSortedMap= {}, sequenceMap = {};
+                        var sequence = 0;
+                        $.each($(".icon-drag[id-key]"), function () {
+                            var idKey = $(this).attr("id-key");
+                            sortedMap[idKey] = sequence;
+                            sequence++;
+                        });
+                        $.each($(".icon-drag-inner[id-key]"), function () {
+                            var idKey = $(this).attr("id-key");
+                            var pidKey = $(this).attr("pid-key");
+                            if (!insideSortedMap[pidKey]) {
+                                insideSortedMap[pidKey] = {};
+                                sequenceMap[pidKey] = 0;
+                            }
+                            insideSortedMap[pidKey][idKey] = sequenceMap[pidKey];
+                            sequenceMap[pidKey]++;
+                        });
+                        $.each($this.showTemplateComponents, function () {
+                            var _this = this;
+                            _this.sequence = sortedMap[_this.id];
+                            if (_this.children) {
+                                $.each(_this.children, function () {
+                                    this.sequence = insideSortedMap[_this.id][this.id];
+                                });
+                            }
+                        });
+                        $.each($this.templateComponents, function () {
+                            this.sequence = sortedMap[this.id] || this.sequence;
+                            if (insideSortedMap[this.pid]) {
+                                this.sequence = insideSortedMap[this.pid][this.id];
+                            }
+                        });
+                    },
                     // 发布数据
                     publish: function () {
                         var $this = this;
@@ -1377,6 +1408,8 @@
                         var $this = this;
                         var template = $.extend({}, $this.template, { originTemplateId: $this.originTemplateId });
                         var templateComponents = [];
+                        // 进行排序
+                        $this.sortTplComponent();
                         $($this.showTemplateComponents).each(function () {
                             var _this = this;
                             var newChildren;
