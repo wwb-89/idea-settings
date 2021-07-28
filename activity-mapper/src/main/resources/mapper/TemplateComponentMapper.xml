@@ -51,6 +51,7 @@
             LEFT JOIN t_component t1 ON t.component_id = t1.id
         where
             t.template_id = #{templateId}
+            and t.is_deleted = 0
         ORDER BY
             t.sequence
     </select>
