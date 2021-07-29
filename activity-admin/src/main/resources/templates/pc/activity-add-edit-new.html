@@ -71,7 +71,7 @@
                         <label class="label"><img src="/static/pc/assets/images/required.png" th:src="@{/pc/assets/images/required.png}" class="required-img" v-if="item.required">{{item.name}}</label>
                         <div class="input-box">
                             <el-input type="text" placeholder="请填写信息，简短的名称" v-model.trim="activity.name" maxlength="50" show-word-limit></el-input>
-                            <span class="tips">{{item.introduction}}</span>
+                            <span class="tips" v-if="item.introduction">{{item.introduction}}</span>
                         </div>
                     </div>
                     <div class="form-item" v-else-if="item.code == 'activity_time_scope'">
@@ -94,7 +94,7 @@
                             <span class="date-piker-icon">
                                 <img src="/static/pc/assets/images/calendar.png" th:src="@{/pc/assets/images/calendar.png}">
                             </span>
-                            <span class="tips">{{item.introduction}}</span>
+                            <span class="tips" v-if="item.introduction">{{item.introduction}}</span>
                         </div>
                     </div>
                     <div class="form-item align-start" v-else-if="item.code == 'activity_cover'">
@@ -112,14 +112,14 @@
                                     <div class="cancle-btn picture-btn" @click="pictureShow = true">图片库</div>
                                 </div>
                             </div>
-                            <span class="tips">{{item.introduction}}</span>
+                            <span class="tips" v-if="item.introduction">{{item.introduction}}</span>
                         </div>
                     </div>
                     <div class="form-item" v-else-if="item.code == 'activity_organisers'">
                         <label class="label"><img src="/static/pc/assets/images/required.png" th:src="@{/pc/assets/images/required.png}" class="required-img" v-if="item.required">{{item.name}}</label>
                         <div class="input-box" style="width: 400px;">
                             <el-input type="text" placeholder="请填写主办方" v-model.trim="activity.organisers" maxlength="20"></el-input>
-                            <span class="tips">{{item.introduction}}</span>
+                            <span class="tips" v-if="item.introduction">{{item.introduction}}</span>
                         </div>
                     </div>
                     <template v-else-if="item.code == 'activity_type'">
@@ -127,7 +127,7 @@
                             <label class="label"><img src="/static/pc/assets/images/required.png" th:src="@{/pc/assets/images/required.png}" class="required-img" v-if="item.required">{{item.name}}</label>
                             <div class="input-box">
                                 <el-radio v-for="(activityType, index) of activityTypes" :key="'activity-type-' + index" v-model="activity.activityType" :label="activityType.value" name="active-type">{{activityType.name}}</el-radio>
-                                <span class="tips">{{item.introduction}}</span>
+                                <span class="tips" v-if="item.introduction">{{item.introduction}}</span>
                             </div>
                         </div>
                         <div class="form-item" v-show="activity.activityType == 'offline'">
@@ -142,14 +142,14 @@
                     <div class="form-item cancel-margin" v-else-if="item.code == 'activity_classify'">
                         <label class="label"><img src="/static/pc/assets/images/required.png" th:src="@{/pc/assets/images/required.png}" class="required-img" v-if="item.required">{{item.name}}</label>
                         <div class="input-box wrap">
-                            <div class="select-activity" v-if="marketId || strict == 1">
+                            <div class="select-activity" v-if="strict == 1">
                                 <el-select v-model="activity.activityClassifyId" placeholder="请选择">
                                     <el-option v-for="item in activityClassifies" :key="item.id" :label="item.name"
                                                :value="item.id">
                                     </el-option>
                                 </el-select>
                             </div>
-                            <template v-else>
+                            <template v-if="strict != 1">
                                 <div :class="{'type-item': true, 'paddingR0': (!activityClassify.system), 'active': activityClassify.selected}" v-for="(activityClassify, index) of activityClassifies" :key="'activity-classify-' + index" @click="selectActivityClassify(index)">{{activityClassify.name}}
                                     <div class="more-box" v-if="!activityClassify.system">
                                         <div class="more-btn"></div>
@@ -164,7 +164,7 @@
                                     新增
                                 </div>
                             </template>
-                            <span class="tips">{{item.introduction}}</span>
+                            <span class="tips" v-if="item.introduction">{{item.introduction}}</span>
                         </div>
                     </div>
 
@@ -173,7 +173,7 @@
                         <div class="input-box setForm">
                             <input type="number" v-model.trim="activity.integralValue" min="0" placeholder="请输入" class="score-input">
                             <span class="score">分</span>
-                            <span class="tips">{{item.introduction}}</span>
+                            <span class="tips" v-if="item.introduction">{{item.introduction}}</span>
                         </div>
                     </div>
                     <!--学时-->
@@ -182,7 +182,7 @@
                         <div class="input-box setForm">
                             <input type="number" min="0" step="0.1" v-model.trim="activity.period" @blur="periodChange" placeholder="请输入" class="score-input">
                             <span class="score">学时</span>
-                            <span class="tips">{{item.introduction}}</span>
+                            <span class="tips" v-if="item.introduction">{{item.introduction}}</span>
                         </div>
                     </div>
                     <!--学分-->
@@ -191,7 +191,7 @@
                         <div class="input-box setForm">
                             <input type="number" min="0" step="0.1" v-model.trim="activity.credit" @blur="creditChange" placeholder="请输入" class="score-input">
                             <span class="score">学分</span>
-                            <span class="tips">{{item.introduction}}</span>
+                            <span class="tips" v-if="item.introduction">{{item.introduction}}</span>
                         </div>
                     </div>
                     <!--参与时长上限-->
@@ -200,7 +200,7 @@
                         <div class="input-box setForm">
                             <input type="number" min="1" step="1" v-model.trim="activity.timeLengthUpperLimit" placeholder="不限" class="score-input">
                             <span class="score">小时</span>
-                            <span class="tips">{{item.introduction}}</span>
+                            <span class="tips" v-if="item.introduction">{{item.introduction}}</span>
                         </div>
                     </div>
                     <div class="form-item last marginTop16" v-else-if="item.code == 'activity_release_scope'" v-show="isShowActivityParticipateScope()">
@@ -219,7 +219,7 @@
                                 </div>
                                 <img src="/static/pc/assets/images/edit-3.png" th:src="@{/pc/assets/images/edit-3.png}" @click="toAddParticipateScope">
                             </div>
-                            <span class="tips">{{item.introduction}}</span>
+                            <span class="tips" v-if="item.introduction">{{item.introduction}}</span>
                         </div>
                     </div>
                     <!--征集设置-->
@@ -227,7 +227,7 @@
                         <label class="label">{{item.name}}</label>
                         <div class="input-box">
                             <el-switch v-model="activity.openWork" class="examine-switch"></el-switch>
-                            <span class="tips">{{item.introduction}}</span>
+                            <span class="tips" v-if="item.introduction">{{item.introduction}}</span>
                         </div>
                     </div>
                     <div class="form-item cancel-margin marginTop16" v-else-if="item.code == 'tags'" v-show="isShowActivityFlag()">
@@ -239,7 +239,7 @@
                                 <div class="add_btn"></div>
                                 添加
                             </div>
-                            <span class="tips">{{item.introduction}}</span>
+                            <span class="tips" v-if="item.introduction">{{item.introduction}}</span>
                         </div>
                     </div>
                     <div v-else-if="item.code == 'activity_rating'" v-show="activity.activityFlag == 'second_classroom'">
@@ -264,7 +264,7 @@
                             <label class="label">{{item.name}}</label>
                             <div class="input-box">
                                 <el-switch v-model="activity.timingRelease" class="examine-switch"></el-switch>
-                                <span class="tips">{{item.introduction}}</span>
+                                <span class="tips" v-if="item.introduction">{{item.introduction}}</span>
                             </div>
                         </div>
 
@@ -295,7 +295,7 @@
                             <div class="wrap ueditor">
                                 <script type="text/plain" id="container" name="content"></script>
                             </div>
-                            <span class="tips">{{item.introduction}}</span>
+                            <span class="tips" v-if="item.introduction">{{item.introduction}}</span>
                         </div>
                     </div>
                     <!--报名设置列表-->
@@ -327,7 +327,7 @@
                                         <span class="date-piker-icon">
                                             <img src="/static/pc/assets/images/time.png" th:src="@{/pc/assets/images/time.png}">
                                         </span>
-                                        <span class="tips">{{it.introduction}}</span>
+                                        <span class="tips" v-if="item.introduction">{{it.introduction}}</span>
                                     </div>
                                 </div>
                                 <!-- todo 微服务和通讯录应区分开 -->
@@ -338,7 +338,6 @@
                                             <el-radio v-model="signUpMap[item.id].enableWfwParticipateScope" :label="false" name="active-type">不限</el-radio>
                                             <el-radio v-model="signUpMap[item.id].enableWfwParticipateScope" :label="true" name="active-type">自定义</el-radio>
                                         </div>
-                                        <span class="tips">{{it.introduction}}</span>
                                         <div class="join-select" v-show="signUpMap[item.id].enableWfwParticipateScope">
                                             <img src="/static/pc/assets/images/add-circle.png" th:src="@{/pc/assets/images/add-circle.png}" class="add-range" @click="toAddSignUpParticipateScope(item.id, it)">
                                             <span v-if="signUpMap[item.id].wfwParticipateScopes.length <= 0">请选择</span>
@@ -355,7 +354,6 @@
                                             <el-radio v-model="signUpMap[item.id].enableContactsParticipateScope" :label="false" name="active-type">不限</el-radio>
                                             <el-radio v-model="signUpMap[item.id].enableContactsParticipateScope" :label="true" name="active-type">自定义</el-radio>
                                         </div>
-                                        <span class="tips">{{it.introduction}}</span>
                                         <div class="join-select" v-show="signUpMap[item.id].enableContactsParticipateScope">
                                             <img src="/static/pc/assets/images/add-circle.png" th:src="@{/pc/assets/images/add-circle.png}" class="add-range" @click="toAddSignUpParticipateScope(item.id, it)">
                                             <span v-if="signUpMap[item.id].contactsParticipateScopes.length <= 0">请选择</span>
@@ -372,7 +370,7 @@
                                             <el-radio v-model="signUpMap[item.id].limitPerson" :label="false" name="active-type">不限</el-radio>
                                             <el-radio v-model="signUpMap[item.id].limitPerson" :label="true" name="active-type">自定义</el-radio>
                                         </div>
-                                        <span class="tips">{{it.introduction}}</span>
+                                        <span class="tips" v-if="item.introduction">{{it.introduction}}</span>
                                         <input v-show="signUpMap[item.id].limitPerson" v-model="signUpMap[item.id].personLimit" type="number" min="1" step="1" maxlength="10" placeholder="请输入正整数" class="person"><span class="person-span" v-show="signUpMap[item.id].limitPerson">人</span>
                                     </div>
                                 </div>
@@ -381,7 +379,7 @@
                                     <div class="input-box column">
                                         <div class="set-box">
                                             <el-switch v-model="signUpMap[item.id].fillInfo"></el-switch>
-                                            <span class="tips">{{it.introduction}}</span>
+                                            <span class="tips" v-if="item.introduction">{{it.introduction}}</span>
                                         </div>
                                         <div class="set-box configurationForm" v-show="signUpMap[item.id].fillInfo" @click="toConfigForm(item.id)">
                                             <img src="/static/pc/assets/images/setting.png" th:src="@{/pc/assets/images/setting.png}">
@@ -393,28 +391,28 @@
                                     <label class="label"><img src="/static/pc/assets/images/required.png" th:src="@{/pc/assets/images/required.png}" class="required-img" v-if="it.required">{{it.name}}</label>
                                     <div class="input-box">
                                         <el-switch v-model="signUpMap[item.id].openAudit"></el-switch>
-                                        <span class="tips">{{it.introduction}}</span>
+                                        <span class="tips" v-if="item.introduction">{{it.introduction}}</span>
                                     </div>
                                 </div>
                                 <div class="form-item" v-else-if="it.code == 'sign_up_public_list'">
                                     <label class="label"><img src="/static/pc/assets/images/required.png" th:src="@{/pc/assets/images/required.png}" class="required-img" v-if="it.required">{{it.name}}</label>
                                     <div class="input-box">
                                         <el-switch v-model="signUpMap[item.id].publicList"></el-switch>
-                                        <span class="tips">{{it.introduction}}</span>
+                                        <span class="tips" v-if="item.introduction">{{it.introduction}}</span>
                                     </div>
                                 </div>
                                 <div class="form-item" v-else-if="it.code == 'sign_up_cancel_signed_up'">
                                     <label class="label"><img src="/static/pc/assets/images/required.png" th:src="@{/pc/assets/images/required.png}" class="required-img" v-if="it.required">{{it.name}}</label>
                                     <div class="input-box">
                                         <el-switch v-model="signUpMap[item.id].endNotAllowCancel"></el-switch>
-                                        <span class="tips">{{it.introduction}}</span>
+                                        <span class="tips" v-if="item.introduction">{{it.introduction}}</span>
                                     </div>
                                 </div>
                                 <div class="form-item" v-else-if="it.code == 'sign_up_condition'">
                                     <label class="label"><img src="/static/pc/assets/images/required.png" th:src="@{/pc/assets/images/required.png}" class="required-img" v-if="it.required">{{it.name}}</label>
                                     <div class="input-box">
                                         <el-switch v-model="signUpConditionActiveMap[it.id]"></el-switch>
-                                        <span class="tips">{{it.introduction}}</span>
+                                        <span class="tips" v-if="item.introduction">{{it.introduction}}</span>
                                     </div>
                                 </div>
                                 <div class="form-item" v-if="false">
@@ -490,7 +488,7 @@
                                 <label class="label">{{signInMap[item.id].typeName}}名单公开</label>
                                 <div class="input-box">
                                     <el-switch v-model="signInMap[item.id].publicList"></el-switch>
-                                    <span class="tips">开启后，所有人都能看到{{signInMap[item.id].typeName}}人员名单</span>
+                                    <span class="tips" v-if="item.introduction">开启后，所有人都能看到{{signInMap[item.id].typeName}}人员名单</span>
                                 </div>
                             </div>
                             <div class="form-item" v-if="false">
@@ -505,7 +503,7 @@
                         <label class="label"><img src="/static/pc/assets/images/required.png" th:src="@{/pc/assets/images/required.png}" class="required-img" v-if="item.required">{{item.name}}</label>
                         <div class="input-box">
                             <el-input type="text" :placeholder="'请填写' + item.introduction" v-model.trim="activityComponentValueMap[item.id].value"></el-input>
-                            <span class="tips">{{item.introduction}}</span>
+                            <span class="tips" v-if="item.introduction">{{item.introduction}}</span>
                         </div>
                     </div>
                     <div class="form-item" v-else-if="item.type == 'radio'">
@@ -513,7 +511,6 @@
                         <div class="input-box">
                             <el-radio v-if="item.dataOrigin == 'form'" v-for="value in item.fieldValues" v-model="activityComponentValueMap[item.id].value" :label="value" name="active-type">{{value}}</el-radio>
                             <el-radio v-if="item.dataOrigin == 'custom'" v-for="ckItem in item.componentFields" :key="'component-field-' + ckItem.id" v-model="activityComponentValueMap[item.id].value" :label="ckItem.fieldName" name="active-type">{{ckItem.fieldName}}</el-radio>
-                            <span class="tips">{{item.introduction}}</span>
                         </div>
                     </div>
                     <div class="form-item" v-else-if="item.type == 'checkbox'">
@@ -527,7 +524,6 @@
                                     {{value}}
                                 </el-checkbox>
                             </el-checkbox-group>
-                            <span class="tips">{{item.introduction}}</span>
                         </div>
                     </div>
                 </template>
@@ -716,8 +712,9 @@
                 uploader: null,
                 // 新增修改活动分类弹窗的显示
                 addEditActivityClassifyWindowShow: false,
+                addEditActivityClassifyIndex: null,
                 addEditActivityClassify: {
-                    id: null,
+                    classifyId: null,
                     name: ""
                 },
                 deleteActivityClassifyId: null,
@@ -878,6 +875,10 @@
                         // 目前数据接收实体没有以下字段
                         activityFlag: $this.activityFlag,
                     };
+                    // 展示模板页面 初始化默认选择第一个
+                    var firstWebTemplate = $this.webTemplates && $this.webTemplates[0];
+                    $this.operateWebTemplateId = firstWebTemplate && firstWebTemplate.id;
+                    $this.activity.webTemplateId = firstWebTemplate && firstWebTemplate.id;
                 } else {
                     // 修改活动
                     if ($this.activity.activityComponentValues) {
@@ -1270,7 +1271,10 @@
                 },
                 toAddActivityClassify: function () {
                     var $this = this;
-                    $this.addEditActivityClassify = {
+                    $this.addEditActivityClassify = $this.marketId ? {
+                        marketId: $this.marketId,
+                        name: ""
+                    } : {
                         fid: $this.fid,
                         name: ""
                     };
@@ -1280,10 +1284,15 @@
                     e.stopPropagation();
                     var $this = this;
                     var activityClassify = $this.activityClassifies[index];
-                    $this.addEditActivityClassify = {
+                    $this.addEditActivityClassifyIndex = index;
+                    $this.addEditActivityClassify = $this.marketId ? {
                         classifyId: activityClassify.id,
                         name: activityClassify.name,
-                        fid: $this.fid
+                        marketId: $this.marketId
+                    } : {
+                        classifyId: activityClassify.id,
+                        name: activityClassify.name,
+                        fid: $this.fid,
                     };
                     $this.addEditActivityClassifyWindowShow = true;
                 },
@@ -1292,15 +1301,22 @@
                     if (activityApp.isEmpty($this.addEditActivityClassify.name)) {
                         return;
                     }
-                    var isAdd = activityApp.isEmpty($this.addEditActivityClassify.id);
+                    var isAdd = activityApp.isEmpty($this.addEditActivityClassify.classifyId);
                     var tips = "新增";
-                    var url = ctx + "/api/org/" + $this.fid + "/classify/add";
+                    var orgUrl = ctx + "/api/org/" + $this.fid + "/classify/add";
+                    var marketUrl = ctx + "/api/market/" + $this.marketId + "/classify/add";
                     if (!isAdd) {
-                        url = ctx + "/api/org/" + $this.fid + "/classify/edit";
+                        orgUrl = ctx + "/api/org/" + $this.fid + "/classify/edit";
+                        marketUrl = ctx + "/api/market/" + $this.marketId + "/classify/update";
                         tips = "修改";
                     }
-                    var params = {
-                        classifyId: $this.addEditActivityClassify.id,
+                    var url = $this.marketId ? marketUrl : orgUrl;
+                    var params = $this.marketId ? {
+                        classifyId: $this.addEditActivityClassify.classifyId,
+                        name: $this.addEditActivityClassify.name,
+                        marketId: $this.marketId
+                    } : {
+                        classifyId: $this.addEditActivityClassify.classifyId,
                         name: $this.addEditActivityClassify.name,
                         fid: $this.fid
                     };
@@ -1311,13 +1327,9 @@
                                 data.selected = false;
                                 $this.activityClassifies.push(data);
                             } else {
-                                $($this.activityClassifies).each(function (i) {
-                                    if (this.id == data.id) {
-                                        data.selected = this.selected;
-                                        $this.activityClassifies.splice(i, 1, data);
-                                        return false;
-                                    }
-                                });
+                                data.selected = this.selected;
+                                $this.activityClassifies.splice($this.addEditActivityClassifyIndex, 1, data);
+                                $this.addEditActivityClassifyIndex = null;
                             }
                             $this.addEditActivityClassifyWindowShow = false;
                         } else {
@@ -1340,7 +1352,9 @@
                 },
                 deleteActivityClassifySubmit: function () {
                     var $this = this;
-                    var url = ctx + "/api/activity/classify/" + $this.deleteActivityClassifyId + "/delete";
+                    var orgUrl = ctx + "/api/org/" + $this.fid + "/classify/" + $this.deleteActivityClassifyId + "/delete";
+                    var marketUrl = ctx + "/api/market/" + $this.marketId + "/classify/" + $this.deleteActivityClassifyId + "/delete";
+                    var url = $this.marketId ? marketUrl : orgUrl;
                     app.ajaxPostWithLoading(url, {}, function (data) {
                         if (data.success) {
                             $this.$refs.deleteClassifyWindow.show = false;
