@@ -270,6 +270,15 @@ body {
 .el-pagination {
   margin-top: 16px;
   text-align: center;
+  &.fixPage {
+    position: fixed;
+    background-color: white;
+    left: 0;
+    right: 0;
+    bottom: 16px;
+    width: 100%;
+    z-index: 2;
+  }
 }
 
 .el-pager li {
@@ -812,7 +821,7 @@ body {
   .tab-item{
     position: relative;
     overflow: hidden;
-    padding: 16px 24px;
+    padding: 16px 24px 48px 24px;
   }
 }
 
