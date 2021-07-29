@@ -1,6 +1,9 @@
 package com.chaoxing.activity.service.blacklist;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.chaoxing.activity.dto.blacklist.BlacklistDTO;
+import com.chaoxing.activity.dto.query.BlacklistQueryDTO;
 import com.chaoxing.activity.mapper.BlacklistMapper;
 import com.chaoxing.activity.mapper.BlacklistRecordMapper;
 import com.chaoxing.activity.mapper.BlacklistRuleMapper;
@@ -109,6 +112,21 @@ public class BlacklistQueryService {
                 .eq(Blacklist::getJoinType, Blacklist.JoinTypeEnum.MANUAL.getValue())
         );
         return Optional.ofNullable(manualBlacklists).orElse(Lists.newArrayList()).stream().map(Blacklist::getUid).collect(Collectors.toList());
+    }
+
+    /**分页查询黑名单
+     * @Description 
+     * @author wwb
+     * @Date 2021-07-29 11:24:47
+     * @param page
+     * @param blacklistQueryDto
+     * @return com.baomidou.mybatisplus.extension.plugins.pagination.Page
+    */
+    public Page pagingBlacklist(Page page, BlacklistQueryDTO blacklistQueryDto) {
+        page = blacklistMapper.pageBlacklist(page, blacklistQueryDto);
+        List<BlacklistDTO> blacklistDtos = BlacklistDTO.buildFromBlacklist(page.getRecords());
+        page.setRecords(blacklistDtos);
+        return page;
     }
 
 }

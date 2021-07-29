@@ -18,11 +18,28 @@
     </sql>
 
     <insert id="batchAdd">
-        INSERT INTO t_blacklist ( market_id, uid, user_name, account, default_num, join_type, effective_days )
+        INSERT INTO t_blacklist ( market_id, uid, user_name, account, default_num, join_type, effective_hours )
         VALUES
             <foreach collection="blacklists" index="key" item="value" open="" close="" separator=",">
                 ( #{value.marketId}, #{value.uid}, #{value.userName}, #{value.account}, #{value.defaultNum}, #{value.joinType}, #{value.effectiveHours} )
             </foreach>
     </insert>
+
+    <select id="pageBlacklist" resultMap="BaseResultMap">
+        SELECT
+            <include refid="Base_Column_List"></include>
+        FROM
+            t_blacklist t
+        WHERE
+            t.market_id = #{blacklistQueryDto.marketId}
+            <if test="blacklistQueryDto.sw != null and blacklistQueryDto.sw != ''">
+                AND (
+                    t.user_name LIKE CONCAT( '%', #{blacklistQueryDto.sw}, '%' )
+                    OR t.account LIKE CONCAT( '%', #{blacklistQueryDto.sw}, '%' )
+                )
+            </if>
+        ORDER BY
+            t.create_time ${blacklistQueryDto.orderType.value}
+    </select>
 
 </mapper>

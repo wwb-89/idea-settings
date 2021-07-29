@@ -44,13 +44,14 @@ public class ActivityMarketValidationService {
 	 * @Date 2021-07-27 14:42:58
 	 * @param marketId
 	 * @param operateUserDto
-	 * @return void
+	 * @return com.chaoxing.activity.model.ActivityMarket
 	*/
-	public void manageAble(Integer marketId, OperateUserDTO operateUserDto) {
+	public ActivityMarket manageAble(Integer marketId, OperateUserDTO operateUserDto) {
 		ActivityMarket activityMarket = exist(marketId);
 		if (!Objects.equals(activityMarket.getFid(), operateUserDto.getFid())) {
 			throw new BusinessException("无权限");
 		}
+		return activityMarket;
 	}
 
 }

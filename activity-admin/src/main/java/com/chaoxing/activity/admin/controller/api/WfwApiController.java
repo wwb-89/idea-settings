@@ -3,12 +3,13 @@ package com.chaoxing.activity.admin.controller.api;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.chaoxing.activity.admin.util.LoginUtils;
 import com.chaoxing.activity.dto.LoginUserDTO;
+import com.chaoxing.activity.dto.OrgDTO;
 import com.chaoxing.activity.dto.RestRespDTO;
 import com.chaoxing.activity.dto.manager.wfw.WfwContacterDTO;
 import com.chaoxing.activity.dto.manager.wfw.WfwDepartmentDTO;
 import com.chaoxing.activity.dto.manager.wfw.WfwGroupDTO;
-import com.chaoxing.activity.service.manager.wfw.WfwContactApiService;
 import com.chaoxing.activity.service.manager.WfwGroupApiService;
+import com.chaoxing.activity.service.manager.wfw.WfwContactApiService;
 import com.chaoxing.activity.util.HttpServletRequestUtils;
 import com.chaoxing.activity.util.annotation.LoginRequired;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -62,6 +63,21 @@ public class WfwApiController {
 	public RestRespDTO listOrgGroup(@PathVariable Integer fid, Integer gid) {
 		List<WfwGroupDTO> wfwGroups = wfwGroupApiService.getGroupByGid(fid, gid);
 		return RestRespDTO.success(wfwGroups);
+	}
+
+	/**查询用户所有机构下包含通讯录的机构
+	 * @Description 
+	 * @author wwb
+	 * @Date 2021-07-29 19:17:35
+	 * @param request
+	 * @return com.chaoxing.activity.dto.RestRespDTO
+	*/
+	@LoginRequired
+	@RequestMapping("org/include-contacts")
+	public RestRespDTO includeContactsOrgs(HttpServletRequest request) {
+		LoginUserDTO loginUser = LoginUtils.getLoginUser(request);
+		List<OrgDTO> orgs = wfwContactApiService.listUserHaveContactsOrg(loginUser.getUid());
+		return RestRespDTO.success(orgs);
 	}
 
 	/**搜索联系人

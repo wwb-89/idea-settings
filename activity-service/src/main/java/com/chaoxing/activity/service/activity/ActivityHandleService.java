@@ -28,6 +28,7 @@ import com.chaoxing.activity.service.manager.module.SignApiService;
 import com.chaoxing.activity.service.manager.module.WorkApiService;
 import com.chaoxing.activity.service.queue.activity.ActivityInspectionResultDecideQueueService;
 import com.chaoxing.activity.service.queue.activity.ActivityWebsiteIdSyncQueueService;
+import com.chaoxing.activity.service.queue.blacklist.BlacklistAutoAddQueueService;
 import com.chaoxing.activity.util.DateUtils;
 import com.chaoxing.activity.util.DistributedLock;
 import com.chaoxing.activity.util.constant.ActivityMhUrlConstant;
@@ -96,6 +97,8 @@ public class ActivityHandleService {
 	private InspectionConfigHandleService inspectionConfigHandleService;
 	@Resource
 	private ActivityComponentValueService activityComponentValueService;
+	@Resource
+	private BlacklistAutoAddQueueService blacklistAutoAddQueueService;
 
 	@Resource
 	private SignUpConditionService signUpConditionService;
@@ -567,7 +570,7 @@ public class ActivityHandleService {
 			// 当活动结束时触发用户合格判定
 			activityInspectionResultDecideQueueService.push(activityId);
 			// 触发黑名单判定
-
+			blacklistAutoAddQueueService.push(new BlacklistAutoAddQueueService.QueueParamDTO(activityId));
 		}
 	}
 

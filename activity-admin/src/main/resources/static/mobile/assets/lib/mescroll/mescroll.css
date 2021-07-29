@@ -280,3 +280,6 @@ body {
 .mescroll-bar::-webkit-scrollbar-thumb:hover {
   background-color: #aaa;
 }
+.mescroll-bar {
+  overflow-x: hidden!important;
+}

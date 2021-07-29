@@ -76,7 +76,7 @@ public class SignApiService {
 	/** 统计活动报名签到对应的活动统计汇总记录url */
 	private static final String STAT_ACTIVITY_SUMMARY_URL = SIGN_API_DOMAIN + "/stat/sign/%d/activity-stat-summary";
 	/** 统计活动报名签到用户的未签数量 */
-	private static final String STAT_ACTIVITY_USER_NOT_SIGNED_IN_NUM = SIGN_API_DOMAIN + "/sign/%d/user-not-signed-in-num";
+	private static final String STAT_ACTIVITY_USER_NOT_SIGNED_IN_NUM = SIGN_API_DOMAIN + "/stat/sign/%d/user-not-signed-in-num";
 
 	/** 根据外资源部externalIds查询报名签到signIds集合url  */
 	private static final String LIST_SIGN_ID_BY_PARTICIPATE_SCOPES_URL = SIGN_API_DOMAIN + "/sign/list/signIds/by-participate-scope";

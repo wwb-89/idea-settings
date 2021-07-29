@@ -7,12 +7,14 @@ import com.chaoxing.activity.dto.OrgDTO;
 import com.chaoxing.activity.dto.manager.wfw.WfwContacterDTO;
 import com.chaoxing.activity.dto.manager.wfw.WfwDepartmentDTO;
 import com.chaoxing.activity.dto.manager.wfw.WfwGroupDTO;
+import com.chaoxing.activity.util.constant.CacheConstant;
 import com.chaoxing.activity.util.exception.BusinessException;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
@@ -74,13 +76,14 @@ public class WfwContactApiService {
 		}
 	}
 
-	/**用户通讯录在机构fid下的机构列表
+	/**通讯录架构下的机构部门信息
 	* @Description
 	* @author huxiaolong
 	* @Date 2021-06-17 10:45:52
 	* @param fid
 	* @return java.util.List<com.chaoxing.activity.dto.OrgDTO>
 	*/
+	@Cacheable(value = CacheConstant.CACHE_KEY_PREFIX + "org_contacts")
 	public List<WfwGroupDTO> listUserContactOrgsByFid(Integer fid) {
 		List<WfwDepartmentDTO> result = listOrgDepartment(fid, null);
 		return convert2WfwGroup(result);

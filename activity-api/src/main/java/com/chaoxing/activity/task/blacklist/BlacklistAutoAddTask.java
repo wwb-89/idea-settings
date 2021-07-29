@@ -7,7 +7,7 @@ import org.springframework.stereotype.Component;
 
 import javax.annotation.Resource;
 
-/**
+/**活动结束自动添加黑名单任务
  * @author wwb
  * @version ver 1.0
  * @className BlacklistAutoAddTask

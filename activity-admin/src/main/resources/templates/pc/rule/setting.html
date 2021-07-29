@@ -128,7 +128,7 @@
                         if (!$this.validateBlacklistRuleInput()) {
                             return;
                         }
-                        var url = ctx + "/market/" + $this.marketId + "/blacklist/rule/update";
+                        var url = ctx + "/api/market/" + $this.marketId + "/blacklist/rule/update";
                         app.ajaxPostWithLoading(url, $this.blacklistRule, function (data) {
                             if (data.success) {
                                 $this.oldBlacklistRule = $.extend({}, $this.blacklistRule);
@@ -147,7 +147,7 @@
                     },
                     toConfigActivityField: function () {
                         var $this = this;
-                        var url = ctx + "/market/" + $this.marketId + "/template";
+                        var url = ctx + "/api/market/" + $this.marketId + "/template";
                         window.open(url);
                     }
                 }

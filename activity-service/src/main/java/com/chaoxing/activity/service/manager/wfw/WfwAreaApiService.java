@@ -4,10 +4,12 @@ import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.chaoxing.activity.dto.manager.wfw.WfwAreaDTO;
 import com.chaoxing.activity.service.manager.PassportApiService;
+import com.chaoxing.activity.util.constant.CacheConstant;
 import com.chaoxing.activity.util.exception.BusinessException;
 import com.google.common.collect.Lists;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
@@ -48,6 +50,7 @@ public class WfwAreaApiService {
 	 * @param fid
 	 * @return java.util.List<com.chaoxing.activity.common.manager.dto.RegionalArchitectureDTO>
 	 */
+	@Cacheable(value = CacheConstant.CACHE_KEY_PREFIX + "org_wfw_area_code")
 	public List<WfwAreaDTO> listByFid(Integer fid) {
 		List<WfwAreaDTO> result;
 		List<String> codes = listCodeByFid(fid);

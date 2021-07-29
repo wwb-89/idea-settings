@@ -92,6 +92,7 @@ public class BlacklistHandleService {
         if (CollectionUtils.isEmpty(blacklistDtos)) {
             return;
         }
+        blacklistDtos.forEach(v -> v.setJoinType(Blacklist.JoinTypeEnum.MANUAL.getValue()));
         blacklistValidationService.manageAble(marketId, operateUserDto);
         List<Integer> uids = blacklistDtos.stream().map(BlacklistDTO::getUid).collect(Collectors.toList());
         // 删除
@@ -134,6 +135,9 @@ public class BlacklistHandleService {
                 .eq(Blacklist::getMarketId, marketId)
                 .in(Blacklist::getUid, uids)
         );
+        for (Integer uid : uids) {
+            blacklistAutoRemoveQueueService.remove(marketId, uid);
+        }
     }
 
     /**移除黑名单
@@ -144,11 +148,18 @@ public class BlacklistHandleService {
      * @param uids
      * @return void
     */
+    @Transactional(rollbackFor = Exception.class)
     public void removeBlacklist(Integer marketId, List<Integer> uids) {
+        if (CollectionUtils.isEmpty(uids)) {
+            return;
+        }
         blacklistMapper.delete(new LambdaUpdateWrapper<Blacklist>()
                 .eq(Blacklist::getMarketId, marketId)
                 .in(Blacklist::getUid, uids)
         );
+        for (Integer uid : uids) {
+            blacklistAutoRemoveQueueService.remove(marketId, uid);
+        }
     }
 
     /**自动添加黑名单
@@ -175,7 +186,7 @@ public class BlacklistHandleService {
         // 已经手动添加的忽略，其他的新增
         List<Integer> manualAddedUids = blacklistQueryService.listManualAddedUid(marketId);
         uids.removeAll(manualAddedUids);
-        // 删除
+        // 删除已经加入黑名单中的数据
         removeBlacklist(marketId, uids);
         List<Blacklist> blacklists = BlacklistRecord.buildbuildBlacklist(matchBlacklistRecords.stream().filter(v -> uids.contains(v.getUid())).collect(Collectors.toList()));
         Integer autoRemoveHours = blacklistRule.getAutoRemoveHours();
@@ -185,8 +196,9 @@ public class BlacklistHandleService {
         }
         // 黑名单记录置为已处理
         blacklistRecordMapper.update(null, new LambdaUpdateWrapper<BlacklistRecord>()
-            .eq(BlacklistRecord::getMarketId, marketId)
+                .eq(BlacklistRecord::getMarketId, marketId)
                 .in(BlacklistRecord::getUid, matchBlacklistRecords.stream().map(BlacklistRecord::getUid).collect(Collectors.toList()))
+                .set(BlacklistRecord::getHandled, true)
         );
         // 通知到时间后自动移除
         LocalDateTime removeTime = LocalDateTime.now().plusHours(autoRemoveHours);

@@ -1,6 +1,5 @@
 <!DOCTYPE html>
 <html lang="en" xmlns:th="http://www.thymeleaf.org/">
-
 <head>
     <title>管理员</title>
     <meta charset="UTF-8">
@@ -11,7 +10,7 @@
     <link rel="stylesheet" href="/static/pc/assets/css/dialog.css" th:href="@{/pc/assets/css/dialog.css}">
     <link rel="stylesheet" href="/static/pc/assets/css/organizer-manage.css" th:href="@{/pc/assets/css/organizer-manage.css}">
     <link rel="stylesheet" href="/static/mobile/assets/lib/mescroll/mescroll.css" th:href="@{/mobile/assets/lib/mescroll/mescroll.css}">
-    <style type="text/css">
+    <style>
         [v-cloak] {
             display: none;
         }
@@ -593,7 +592,7 @@
                     var url = ctx + "/api/wfw/department/" + crumb.id + "/contacter";
                     var params = {
                         pageNum: $this.departmentUserQueryParams.pageNum,
-                        pageSizeSize: $this.departmentUserQueryParams.pageSize
+                        pageSize: $this.departmentUserQueryParams.pageSize
                     };
                     app.ajaxPost(url, params, function (data) {
                         if (data.success) {
