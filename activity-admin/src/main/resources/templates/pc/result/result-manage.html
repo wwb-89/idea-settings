@@ -192,6 +192,7 @@
     </div>
     <!--修改合格状态弹窗-->
     <div class="dialog-box modifyPop" v-if="ifModifyPop">
+        <div class="masking" @click="ifModifyPop = false"></div>
         <div class="dialog-wrap">
             <div class="header">修改合格状态</div>
             <div class="dialog-content">
