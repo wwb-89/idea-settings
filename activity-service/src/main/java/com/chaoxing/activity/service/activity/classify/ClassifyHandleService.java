@@ -165,7 +165,7 @@ public class ClassifyHandleService {
 	 * @return void
 	*/
 	@Transactional(rollbackFor = Exception.class)
-	public void addMarketClassify(MarketClassifyCreateParamDTO marketClassifyCreateParamDto) {
+	public Classify addMarketClassify(MarketClassifyCreateParamDTO marketClassifyCreateParamDto) {
 		String name = marketClassifyCreateParamDto.getName();
 		Integer marketId = marketClassifyCreateParamDto.getMarketId();
 		classifyValidationService.classifyNameNotExistInMarket(name, marketId);
@@ -173,6 +173,7 @@ public class ClassifyHandleService {
 		// 查询当前最大的顺序
 		int maxSequence = classifyQueryService.getMarketMaxSequence(marketId);
 		marketClassifyMapper.insert(MarketClassify.buildFromClassify(classify, marketClassifyCreateParamDto.getMarketId(), maxSequence));
+		return classify;
 	}
 
 	/**修改活动市场活动分类
@@ -183,7 +184,7 @@ public class ClassifyHandleService {
 	 * @return void
 	*/
 	@Transactional(rollbackFor = Exception.class)
-	public void updateMarketClassify(MarketClassifyUpdateParamDTO marketClassifyUpdateParamDto) {
+	public Classify updateMarketClassify(MarketClassifyUpdateParamDTO marketClassifyUpdateParamDto) {
 		Integer oldClassifyId = marketClassifyUpdateParamDto.getClassifyId();
 		Integer marketId = marketClassifyUpdateParamDto.getMarketId();
 		MarketClassify oldMarketClassify = classifyValidationService.marketClassifyExist(marketId, oldClassifyId);
@@ -192,7 +193,7 @@ public class ClassifyHandleService {
 		Integer newClassifyId = newClassify.getId();
 		if (Objects.equals(newClassifyId, oldClassifyId)) {
 			// 新旧分类id相同，不做处理
-			return;
+			return newClassify;
 		}
 		// 删除旧的
 		deleteMarketClassify(marketClassifyUpdateParamDto);
@@ -200,6 +201,7 @@ public class ClassifyHandleService {
 		addMarketClassify(MarketClassifyCreateParamDTO.build(classifyName, marketId));
 		// 更新机构创建的活动中活动分类id
 		activityHandleService.updateMarketActivityClassifyId(marketId, oldClassifyId, newClassifyId);
+		return newClassify;
 	}
 
 	/**删除活动市场活动分类

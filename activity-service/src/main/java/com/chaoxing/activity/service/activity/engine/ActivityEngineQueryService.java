@@ -64,6 +64,7 @@ public class ActivityEngineQueryService {
                 .templateId(o.getTemplateId())
                 .signUpCondition(o.getSignUpCondition())
                 .sequence(o.getSequence())
+                .required(o.getRequired())
                 .build(), templateComponents);
         return ActivityEngineDTO.builder()
                 .template(template)

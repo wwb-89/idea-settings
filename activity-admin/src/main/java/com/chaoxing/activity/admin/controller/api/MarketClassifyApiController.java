@@ -3,6 +3,7 @@ package com.chaoxing.activity.admin.controller.api;
 import com.chaoxing.activity.dto.RestRespDTO;
 import com.chaoxing.activity.dto.activity.classify.MarketClassifyCreateParamDTO;
 import com.chaoxing.activity.dto.activity.classify.MarketClassifyUpdateParamDTO;
+import com.chaoxing.activity.model.Classify;
 import com.chaoxing.activity.service.activity.classify.ClassifyHandleService;
 import com.chaoxing.activity.util.annotation.LoginRequired;
 import com.google.common.collect.Lists;
@@ -41,8 +42,8 @@ public class MarketClassifyApiController {
 	@RequestMapping("add")
 	public RestRespDTO add(HttpServletRequest request, @PathVariable Integer marketId, MarketClassifyCreateParamDTO marketClassifyCreateParamDto) {
 		marketClassifyCreateParamDto.setMarketId(marketId);
-		classifyHandleService.addMarketClassify(marketClassifyCreateParamDto);
-		return RestRespDTO.success();
+		Classify classify = classifyHandleService.addMarketClassify(marketClassifyCreateParamDto);
+		return RestRespDTO.success(classify);
 	}
 
 	/**修改
@@ -55,8 +56,8 @@ public class MarketClassifyApiController {
 	*/
 	@RequestMapping("update")
 	public RestRespDTO update(HttpServletRequest request, MarketClassifyUpdateParamDTO marketClassifyUpdateParamDto) {
-		classifyHandleService.updateMarketClassify(marketClassifyUpdateParamDto);
-		return RestRespDTO.success();
+		Classify classify = classifyHandleService.updateMarketClassify(marketClassifyUpdateParamDto);
+		return RestRespDTO.success(classify);
 	}
 
 	/**删除

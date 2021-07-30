@@ -31,7 +31,7 @@
                             <i class="icon-drag" :pid-key="item.pid" :id-key="item.id"></i>
                             <div class="icon-div">
                                 <i class="icon-edit" @click="openEditDialog(index, item)"></i>
-                                <i class="icon-delete" v-show="!item.required" @click="removeComponentAssociate1(index, item)"></i>
+                                <i class="icon-delete" @click="removeComponentAssociate1(index, item)"></i>
                             </div>
                             <label :class="{ label: true, required: item.required }">{{item.name}}</label>
                             <div class="input-box">
@@ -41,7 +41,7 @@
                                 </template>
                                 <!-- 主办方：activity_organisers -->
                                 <template v-else-if="item.code == 'activity_organisers'">
-                                    <el-input style="width: 400px" type="text" placeholder="请填写主办方" maxlength="20" readonly></el-input>
+                                    <el-input style="width: 400px" type="text" placeholder="请填写" maxlength="20" readonly></el-input>
                                 </template>
                                 <!-- 活动时间：activity_time_scope -->
                                 <template v-else-if="item.code == 'activity_time_scope'">
@@ -91,26 +91,26 @@
                                 <template v-else-if="item.code == 'period'">
                                     <el-input type="number" min="0" step="0.1" v-model="scoreNum" placeholder="请输入" readonly></el-input>
                                     <span class="score">学时</span>
-                                    <span class="tips first">{{item.introduction}}</span>
+                                    <span class="tips first" v-if="item.introduction">{{item.introduction}}</span>
                                 </template>
                                 <template v-else-if="item.code == 'credit'">
                                     <el-input type="number" min="0" step="0.1" v-model="scoreNum" placeholder="请输入" readonly></el-input>
                                     <span class="score">first</span>
-                                    <span class="tips first">{{item.introduction}}</span>
+                                    <span class="tips first" v-if="item.introduction">{{item.introduction}}</span>
                                 </template>
                                 <template v-else-if="item.code == 'integral'">
                                     <el-input type="number" min="0" v-model="scoreNum"placeholder="请输入" readonly></el-input>
                                     <span class="score">分</span>
-                                    <span class="tips first">{{item.introduction}}</span>
+                                    <span class="tips first" v-if="item.introduction">{{item.introduction}}</span>
                                 </template>
                                 <template v-else-if="item.code == 'max_participate_time_length'">
                                     <el-input type="number" min="1" step="1" v-model="scoreNum" placeholder="不限" readonly></el-input>
                                     <span class="score">小时</span>
-                                    <span class="tips first">{{item.introduction}}</span>
+                                    <span class="tips first" v-if="item.introduction">{{item.introduction}}</span>
                                 </template>
                                 <template v-else-if="item.code == 'activity_rating'">
                                     <el-input type="text" placeholder="活动评价" readonly></el-input>
-                                    <span class="tips third">{{item.introduction}}</span>
+                                    <span class="tips third" v-if="item.introduction">{{item.introduction}}</span>
                                 </template>
                                 <!-- 标签：tags -->
                                 <template v-else-if="item.code == 'tags'">
@@ -123,7 +123,7 @@
                                     <div class="type-item">
                                         <div class="add_btn"></div>选择
                                     </div>
-                                    <span class="tips third">{{item.introduction}}</span>
+                                    <span class="tips third" v-if="item.introduction">{{item.introduction}}</span>
                                 </template>
                                 <!-- 定时发布：timing_release -->
                                 <template v-else-if="item.code == 'timing_release'">
@@ -140,21 +140,21 @@
                                 </template>
                                 <template v-else-if="item.type == 'text'">
                                     <el-input type="text" placeholder="请填写" maxlength="20" show-word-limit readonly></el-input>
-                                    <span class="tips third">{{item.introduction}}</span>
+                                    <span class="tips third" v-if="item.introduction">{{item.introduction}}</span>
                                 </template>
                                 <template v-else-if="item.type == 'radio'">
                                     <div>
                                         <el-radio v-model="radio1" label="1" name="active-type" class="radio-item" readonly>选项1</el-radio>
                                         <el-radio label="2" name="active-type" class="radio-item" readonly>选项2</el-radio>
                                     </div>
-                                    <span class="tips third">{{item.introduction}}</span>
+                                    <span class="tips third" v-if="item.introduction">{{item.introduction}}</span>
                                 </template>
                                 <template v-else-if="item.type == 'checkbox'">
                                     <el-checkbox-group v-model="typecheck" disabled>
                                         <el-checkbox label="选项1"  name="type"></el-checkbox>
                                         <el-checkbox label="选项" name="type"></el-checkbox>
                                     </el-checkbox-group>
-                                    <span class="tips third">{{item.introduction}}</span>
+                                    <span class="tips third" v-if="item.introduction">{{item.introduction}}</span>
                                 </template>
                             </div>
                         </div>
@@ -179,7 +179,7 @@
                                             <i class="icon-drag-inner" :pid-key="it.pid" :id-key="it.id"></i>
                                             <div class="icon-div-inner">
                                                 <i class="icon-edit" @click="openEditDialog1(index, idx, it)"></i>
-                                                <i class="icon-delete" v-show="!it.required" @click="removeComponentAssociate2(index, idx, it)"></i>
+                                                <i class="icon-delete" @click="removeComponentAssociate2(index, idx, it)"></i>
                                             </div>
                                             <label :class="{ label: true, required: it.required }">{{it.name}}</label>
                                             <div class="input-box">
@@ -345,7 +345,7 @@
                     </template>
 
                 </form>
-                <div class="add-circle" @click="addFieldDialog = true" id="add-circle"></div>
+                <div class="add-circle" @click="openAddFieldDialog" id="add-circle"></div>
             </div>
         </div>
         <!--拖拽排序的提示-->
@@ -363,10 +363,10 @@
         </div>
         <!-- 添加字段弹窗 -->
         <div class="dialog-mask" v-show="addFieldDialog">
-            <div class="dailog add-field">
+            <div class="dailog add-field" style="width: 550px">
                 <div class="header">
                     <span>添加字段</span>
-                    <i class="close" @click="addFieldDialog=false"></i>
+                    <i class="close" @click="closeAddFieldDialog"></i>
                 </div>
                 <div class="body">
                     <div class="down-list">
@@ -378,49 +378,40 @@
                             <li v-for="(item, index) in componentTypeList" @click="changeComponentType(index)">{{item.name}}</li>
                         </ul>
                     </div>
-                    <!-- todo style 有问题 -->
-                    <div :class="{'field-item': true, 'aready-add': item.checked && !item.multi }"
-                         style="width: 214px"
-                         v-for="(item, index) in  componentTypeList[activeCpTypeIndex] && componentTypeList[activeCpTypeIndex].components || []"
-                    >
+                    <div v-if="!item.checked || item.multi" class="field-item aready-add" v-for="(item, index) in  componentTypeList[activeCpTypeIndex] && componentTypeList[activeCpTypeIndex].components || []">
                         <p class="field overHidden1">{{item.name}}</p>
-                        <el-tooltip class="tooltip" effect="dark" :content="item.introduction" placement="top">
+                        <el-tooltip v-show="item.introduction" class="tooltip" effect="dark" :content="item.introduction" placement="top">
                             <i class="icon-info"></i>
                         </el-tooltip>
                         <div class="fr add-btn">
                             <i class="icon-add" v-if="item.code == 'sign_up_condition'" @click="openSignUpConditionDialog(index, item)"></i>
-                            <i class="icon-add" v-else-if="item.multi" @click="addComponentAssociate(index, item)"></i>
-                            <template v-else>
-                                <i class="icon-add" v-show="!item.checked" @click="addComponentAssociate(index, item)"></i>
-                                <span class="aready" v-show="item.checked">已添加</span>
-                                <span class="remove" style="display: none;" @click="removeComponentAssociate(index, item, $event)">移除</span>
-                            </template>
+                            <i class="icon-add" v-else @click="addComponentAssociate(index, item)"></i>
                         </div>
                     </div>
                     <template v-if="componentTypeList[activeCpTypeIndex] && componentTypeList[activeCpTypeIndex].virtualId == 0">
-                        <div class="field-item" style="width: 214px" @click="openTextDialog">
+                        <div class="field-item" @click="openTextDialog">
                             <p class="field overHidden1">文本字段</p>
                             <el-tooltip class="tooltip" effect="dark" content="说明文字单行效果" placement="top">
                                 <i class="icon-info"></i>
                             </el-tooltip>
                         </div>
-                        <div class="field-item" style="width: 214px" @click="openChooseEditDialog">
+                        <div class="field-item" @click="openChooseEditDialog">
                             <p class="field overHidden1">选择字段</p>
                             <el-tooltip class="tooltip" effect="dark" content="说明文字单行效果" placement="top">
                                 <i class="icon-info"></i>
                             </el-tooltip>
                         </div>
-                        <div class="field-item" style="width: 214px" @click="addFieldDialog=false,partitionDialog=true">
-                            <p class="field overHidden1">分区</p>
-                            <el-tooltip class="tooltip" effect="dark" content="说明文字单行效果" placement="top">
-                                <i class="icon-info"></i>
-                            </el-tooltip>
-                        </div>
+<!--                        <div class="field-item" @click="addFieldDialog=false,partitionDialog=true">-->
+<!--                            <p class="field overHidden1">分区</p>-->
+<!--                            <el-tooltip class="tooltip" effect="dark" content="说明文字单行效果" placement="top">-->
+<!--                                <i class="icon-info"></i>-->
+<!--                            </el-tooltip>-->
+<!--                        </div>-->
                     </template>
                 </div>
                 <div class="footer">
                     <div class="btn-box">
-                        <div class="normal-btn" @click="addFieldDialog = false">完成</div>
+                        <div class="normal-btn" @click="closeAddFieldDialog">完成</div>
                     </div>
                 </div>
             </div>
@@ -429,8 +420,8 @@
         <div class="dialog-mask" v-show="textDialog">
             <div class="dailog text-field">
                 <div class="header">
-                    <span>文本字段</span>
-                    <i class="close" @click="textDialog=false"></i>
+                    <span>{{editDialogTitle}}</span>
+                    <i class="close" @click="initEditData"></i>
                 </div>
                 <div class="body">
                     <div class="form">
@@ -444,8 +435,8 @@
                 </div>
                 <div class="footer">
                     <div class="btn-box">
-                        <div class="border-btn" @click="textDialog = false">取消</div>
-                        <div class="normal-btn" @click="confirmEditText">确定</div>
+                        <div class="border-btn" @click="initEditData">取消</div>
+                        <div :class="{'normal-btn': true, disable: !textEditItem.name}" @click="confirmEditText">确定</div>
                     </div>
                 </div>
             </div>
@@ -455,8 +446,8 @@
         <div class="dialog-mask" v-show="chooseDialog"> 
             <div class="dailog choose-field">
                 <div class="header">
-                    <span>选择字段</span>
-                    <i class="close" @click="chooseDialog = false"></i>
+                    <span>{{editDialogTitle}}</span>
+                    <i class="close" @click="initEditData"></i>
                 </div>
                 <div class="body">
                     <el-form class="form" label-width="72px">
@@ -519,8 +510,8 @@
                 </div>
                 <div class="footer">
                     <div class="btn-box">
-                        <div class="border-btn" @click="chooseDialog = false">取消</div>
-                        <div class="normal-btn" @click="confirmChooseEdit">确定</div>
+                        <div class="border-btn" @click="initEditData">取消</div>
+                        <div :class="{'normal-btn': true, disable: !chooseEditItem.name}" @click="confirmChooseEdit">确定</div>
                     </div>
                 </div>
             </div>
@@ -652,6 +643,10 @@
                     activeCpTypeName: '基本信息',
                     loaded: false,
                     delDialog:false,
+                    // 关闭编辑之前是否是添加字段
+                    closeBeforeAddField: false,
+                    // 添加报名组件时用的临时变量
+                    addSignUpTemplateComponent: null,
                     // 大组件删除时用到的临时变量
                     currRemoveItemIndex: null,
                     currRemoveItem: null,
@@ -662,6 +657,7 @@
                     textEditItem: {},
                     // 选择字段编辑所需变量
                     chooseEditItem: {},
+                    editDialogTitle: '',
                     // 报名条件字段编辑所需变量
                     signUpTemplateComponentItem: {},
                     signUpConditionItem: {},
@@ -698,6 +694,12 @@
                     $this.initData();
                 },
                 methods:{
+                    isDefaultSignUpAChildComponent: function (code) {
+                        return ["wfw_participation_scope", "sign_up_condition"].indexOf(code) == -1;
+                    },
+                    isRequiredSignUpChildComponent: function (code) {
+                        return ["sign_up_time_scope"].indexOf(code) != -1;
+                    },
                     initData: function () {
                         var $this = this;
                         var { template, components, templateComponents } = $this.templateInfo
@@ -712,14 +714,14 @@
                             checkedComponentIds.push(this.componentId);
                         });
                         $(components).each(function () {
-                            $this.componentMap[this.id] = this;
                             // 新增是否选中属性，默认true
-                            this.checked = true;
+                            this.checked = $this.isDefaultSignUpAChildComponent(this.code) && this.pid;
                             // 填充父节点对应子节点列表数据
                             if (!$this.pidChildrenMap[this.pid]) {
                                 $this.pidChildrenMap[this.pid] = [];
                             }
                             $this.pidChildrenMap[this.pid].push(this);
+                            $this.componentMap[this.id] = this;
                         });
                         $this.components = components;
                         $this.templateComponents = templateComponents;
@@ -795,6 +797,12 @@
                             $('#add-circle').css('right', right)
                         })
                     },
+                    showToast(){
+                        $('.toast-box').fadeIn();
+                        setTimeout(function () {
+                            $('.toast-box').fadeOut();
+                        },1500)
+                    },
                     // 根据关联关系，处理展示出来的模板组件
                     calShowComponents: function() {
                         var $this = this;
@@ -829,13 +837,13 @@
                     // 初始化组件类型列表 todo 待优化
                     initComponentTypeList: function () {
                         var $this = this;
-                        // tplCpCpIdMap =>   templateComponent 的  { pid : componentId }
-                        var tplCpCpIdMap = {};
+                        // tplComponentMap =>   templateComponent 的  { pid : templateComponent }
+                        var tplComponentMap = {};
                         // pidComponentIdsMap =>   templateComponent 的  pid : [componentId, ....]
                         var pidComponentIdsMap = {};
                         // 先根据templateComponent关系中，按 pid 分块组件
                         $($this.templateComponents).each(function () {
-                            tplCpCpIdMap[this.id] = this.componentId;
+                            tplComponentMap[this.id] = this;
                             if (!pidComponentIdsMap[this.pid]) {
                                 pidComponentIdsMap[this.pid] = [];
                             }
@@ -844,20 +852,19 @@
                         var tplCpPids = Object.keys(pidComponentIdsMap);
                         $(tplCpPids).each(function (i) {
                             var tplCpPid = tplCpPids[i];
-                            var componentId = tplCpCpIdMap[tplCpPid];
+                            var templateComponent = tplComponentMap[tplCpPid];
                             var components = []
                             if (tplCpPid == 0) {
                                 components = $.extend(true, [], $this.pidChildrenMap[0]);
                             } else {
-                                components = $.extend(true, [], $this.pidChildrenMap[componentId]);
+                                components = $.extend(true, [], $this.pidChildrenMap[templateComponent.componentId]);
                             }
                             $(components).each(function () {
                                 this.checked = pidComponentIdsMap[tplCpPid].indexOf(this.id) != -1;
                             })
-                            var parent = $this.componentMap[componentId];
                             var newType = {
-                                type: tplCpPid == 0 ? 'basic_info' : parent.code,
-                                name: tplCpPid == 0 ? '基本信息' : parent.name,
+                                type: tplCpPid == 0 ? 'basic_info' : templateComponent && templateComponent.code,
+                                name: tplCpPid == 0 ? '基本信息' : templateComponent && templateComponent.name,
                                 virtualId: tplCpPid,
                                 components: components
                             }
@@ -891,7 +898,12 @@
                         $this.$set(components[index], 'checked', true);
                         // 可重复添加组件(目前报名块、报名条件)
                         if (item.code == 'company_sign_up' || item.code == 'sign_up') {
-                            $this.addSignUpComponentAssociate(newTemplateComponent, item);
+                            $this.addSignUpTemplateComponent = newTemplateComponent;
+                            $this.setDialogTitle(item, "报名")
+                            $this.addFieldDialog = false;
+                            $this.textDialog = true;
+                            $this.textEditItem = $.extend({}, newTemplateComponent);
+                            return;
                         } else if (item.pid == 0) {
                             $this.addSysComponentAssociate(newTemplateComponent);
                         } else if (item.pid != 0) {
@@ -903,6 +915,7 @@
                                 height: '100%'
                             });
                         });
+                        app.showMsg("已添加");
                     },
                     addSignUpChildComponentAssociate: function (templateComponent) {
                         var $this = this;
@@ -923,11 +936,12 @@
                         $this.templateComponents.push(templateComponent)
                     },
                     // 新增报名组件
-                    addSignUpComponentAssociate: function (signUpTemplateComponent, component) {
+                    addSignUpComponentAssociate: function () {
                         var $this = this;
-                        var signUpId = signUpTemplateComponent.id;
+                        var signUpId = $this.addSignUpTemplateComponent.id;
+                        var signUpComponentId = $this.addSignUpTemplateComponent.componentId
                         // 拷贝一份子组件出来
-                        var childComponents = $.extend(true, [], $this.pidChildrenMap[component.id]);
+                        var childComponents = $.extend(true, [], $this.pidChildrenMap[signUpComponentId]);
                         var childTemplateComponents = [];
 
                         var childIdx = 1;
@@ -940,25 +954,25 @@
                                     componentId: this.id,
                                     name: this.name,
                                     introduction: this.introduction,
-                                    required: this.required,
+                                    required: $this.isRequiredSignUpChildComponent(this.code),
                                     sequence: childIdx++,
                                     code: this.code,
                                     type: this.type
                                 });
                             }
                         });
-                        signUpTemplateComponent.name = signUpTemplateComponent.name + '新';
-                        signUpTemplateComponent.children = childTemplateComponents;
-                        $this.templateComponents.push(signUpTemplateComponent);
+                        $this.addSignUpTemplateComponent.children = childTemplateComponents;
+                        $this.templateComponents.push($this.addSignUpTemplateComponent);
                         $this.templateComponents.pushArray(childTemplateComponents);
-                        $this.showTemplateComponents.push(signUpTemplateComponent);
+                        $this.showTemplateComponents.push($this.addSignUpTemplateComponent);
                         // 将报名添加到分类中
                         $this.componentTypeList.push({
-                            name: signUpTemplateComponent.name,
-                            type: signUpTemplateComponent.code,
-                            virtualId: signUpTemplateComponent.id,
+                            name: $this.addSignUpTemplateComponent.name,
+                            type: $this.addSignUpTemplateComponent.code,
+                            virtualId: $this.addSignUpTemplateComponent.id,
                             components: childComponents
                         });
+                        app.showMsg("已添加");
                     },
                     // 移除组件 item - component
                     removeComponentAssociate: function (index, item, e) {
@@ -1098,6 +1112,26 @@
                         $this.currRemoveItemIndex = null;
                         $this.delDialog = false;
                     },
+                    setDialogTitle: function (tplComponent, defaultTitle) {
+                        var $this = this;
+                        var component;
+                        if (tplComponent) {
+                            component = $.grep($this.components, function (it) {
+                                return it.id == tplComponent.componentId;
+                            })[0];
+                        }
+                        $this.editDialogTitle = (component && component.name) || defaultTitle;
+                    },
+                    openAddFieldDialog: function () {
+                        var $this = this;
+                        $this.addFieldDialog = true;
+                        $this.closeBeforeAddField = true;
+                    },
+                    closeAddFieldDialog: function () {
+                        var $this = this;
+                        $this.addFieldDialog = false;
+                        $this.closeBeforeAddField = false;
+                    },
                     // 主界面编辑时用到的统一弹窗方法
                     // index -> showTemplateComponents[index], item -> templateComponent
                     openEditDialog: function (index, item) {
@@ -1121,6 +1155,8 @@
                     // 打开文本字段弹窗
                     openTextDialog: function (index, item) {
                         var $this = this;
+                        $this.setDialogTitle(item, "文本字段")
+
                         $this.addFieldDialog = false;
                         $this.textDialog = true;
                         // 编辑
@@ -1139,6 +1175,8 @@
                     // 打开选择字段弹窗
                     openChooseEditDialog: function (index, item) {
                         var $this = this;
+                        $this.setDialogTitle(item, "选择字段")
+
                         $this.addFieldDialog = false;
                         $this.chooseDialog = true;
                         if (item) {
@@ -1165,6 +1203,8 @@
                     // 打开报名条件弹窗， 当 idx为undefined 时，是添加模板关联组件处新增报名条件， 此时 item: Component, 反之为 TemplateComponent
                     openSignUpConditionDialog: function (index, item, idx) {
                         var $this = this;
+                        $this.setDialogTitle(item, "报名条件")
+
                         $this.addFieldDialog = false;
                         $this.signUpDialog = true;
 
@@ -1201,6 +1241,20 @@
                     },
                     confirmEditText: function () {
                         var $this = this;
+                        if (!$this.textEditItem.name) {
+                            return;
+                        }
+
+                        // 新增报名
+                        if ($this.addSignUpTemplateComponent) {
+                            $this.addSignUpTemplateComponent.name = $this.textEditItem.name;
+                            $this.addSignUpTemplateComponent.introduction = $this.textEditItem.introduction;
+                            $this.addSignUpTemplateComponent.required = $this.textEditItem.required;
+                            $this.addSignUpComponentAssociate();
+                            $this.initEditData();
+                            return;
+                        }
+
                         // 自定义文本组件新增，需要处理
                         if (!$this.textEditItem.id) {
                             $this.submitCustomComponent($this.textEditItem)
@@ -1220,18 +1274,30 @@
                                 })[0];
                                 componentType.name = $this.textEditItem.name;
                             }
+                            $this.initEditData();
                         }
-                        $this.textDialog = false;
-                        $this.currEditIndex = null;
-                        $this.textEditItem = {};
                     },
                     confirmChooseEdit: function () {
                         var $this = this;
+                        if (!$this.chooseEditItem.name) {
+                            return;
+                        }
                         // 自定义文本组件新增，需要处理
                         $this.submitCustomComponent($this.chooseEditItem);
-                        $this.chooseDialog = false;
+                    },
+                    initEditData: function () {
+                        var $this = this;
                         $this.currEditIndex = null;
+                        // 初始化文本编辑
+                        $this.textDialog = false;
+                        $this.textEditItem = {};
+                        // 初始化选择编辑
+                        $this.chooseDialog = false;
                         $this.chooseEditItem = { fieldList: [] };
+                        $this.editDialogTitle = "";
+                        $this.addSignUpTemplateComponent = null;
+                        // 回到添加字段页面
+                        $this.addFieldDialog = $this.closeBeforeAddField;
                     },
                     confirmSignUpCondition: function () {
                         var $this = this;
@@ -1288,6 +1354,7 @@
                                     // 针对数据更新之后处理
                                     $this.editedComponent(component);
                                 }
+                                $this.initEditData();
                             } else {
                                 var errorMessage = res.message;
                                 if (activityApp.isEmpty(errorMessage)) {
@@ -1318,6 +1385,12 @@
                         for (i = 0; i < components.length; i++) {
                             if (components[i].id == component.id) {
                                 components[i] = component;
+                                break;
+                            }
+                        }
+                        for (i = 0; i < $this.components.length; i++) {
+                            if ($this.components[i].id == component.id) {
+                                $this.components[i] = component;
                                 break;
                             }
                         }
