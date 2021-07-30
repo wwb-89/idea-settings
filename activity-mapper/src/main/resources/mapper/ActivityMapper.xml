@@ -157,14 +157,23 @@
             t_activity t
         WHERE
             (
-            t.create_fid = #{params.topFid}
-            OR(
-                    t.create_fid IN
-                    <foreach collection="params.fids" index="key" item="value" open="(" close=")" separator=",">
-                        #{value}
-                    </foreach>
+                (
+                <choose>
+                    <when test="params.marketId != null">
+                        t.market_id = #{params.marketId}
+                    </when>
+                    <otherwise>
+                        t.create_fid IN
+                        <foreach collection="params.fids" index="key" item="value" open="(" close=")" separator=",">
+                            #{value}
+                        </foreach>
+                    </otherwise>
+                </choose>
                     AND t.is_released = 1
                 )
+                <if test="params.marketId == null">
+                    OR t.create_fid = #{params.topFid}
+                </if>
             )
             <choose>
                 <when test="params.status != null">
@@ -184,13 +193,17 @@
         GROUP BY
             t.id
         ORDER BY
-        <if test="params.orderField != null and params.orderField != ''">
-            ${params.orderField} ${params.orderType},
-        </if>
-        <if test="params.orderField == null or params.orderField == ''">
-            t.create_time DESC,
-        </if>
-            t.create_fid <![CDATA[<>]]> #{params.topFid}
+        <trim suffixOverrides=",">
+            <if test="params.orderField != null and params.orderField != ''">
+                ${params.orderField} ${params.orderType},
+            </if>
+            <if test="params.orderField == null or params.orderField == ''">
+                t.create_time DESC,
+            </if>
+            <if test="params.marketId == null">
+                t.create_fid <![CDATA[<>]]> #{params.topFid},
+            </if>
+        </trim>
     </select>
 
     <!--查询创建的活动-->
@@ -201,7 +214,14 @@
             t_activity t
         WHERE
             t.create_uid = #{params.createUid}
-            AND t.create_fid = #{params.createWfwfid}
+            <choose>
+                <when test="params.marketId != null">
+                    AND t.market_id = #{params.marketId}
+                </when>
+                <otherwise>
+                    AND t.create_fid = #{params.createWfwfid}
+                </otherwise>
+            </choose>
             <choose>
                 <when test="params.status != null">
                     AND t.`status` = #{params.status}
