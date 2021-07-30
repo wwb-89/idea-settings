@@ -165,7 +165,7 @@ public class ClassifyHandleService {
 	 * @return void
 	*/
 	@Transactional(rollbackFor = Exception.class)
-	public void addMarketClassify(MarketClassifyCreateParamDTO marketClassifyCreateParamDto) {
+	public Classify addMarketClassify(MarketClassifyCreateParamDTO marketClassifyCreateParamDto) {
 		String name = marketClassifyCreateParamDto.getName();
 		Integer marketId = marketClassifyCreateParamDto.getMarketId();
 		classifyValidationService.classifyNameNotExistInMarket(name, marketId);
@@ -173,6 +173,7 @@ public class ClassifyHandleService {
 		// 查询当前最大的顺序
 		int maxSequence = classifyQueryService.getMarketMaxSequence(marketId);
 		marketClassifyMapper.insert(MarketClassify.buildFromClassify(classify, marketClassifyCreateParamDto.getMarketId(), maxSequence));
+		return classify;
 	}
 
 	/**修改活动市场活动分类

@@ -42,8 +42,8 @@ public class MarketClassifyApiController {
 	@RequestMapping("add")
 	public RestRespDTO add(HttpServletRequest request, @PathVariable Integer marketId, MarketClassifyCreateParamDTO marketClassifyCreateParamDto) {
 		marketClassifyCreateParamDto.setMarketId(marketId);
-		classifyHandleService.addMarketClassify(marketClassifyCreateParamDto);
-		return RestRespDTO.success();
+		Classify classify = classifyHandleService.addMarketClassify(marketClassifyCreateParamDto);
+		return RestRespDTO.success(classify);
 	}
 
 	/**修改

@@ -70,7 +70,7 @@
                     <div class="form-item" v-if="item.code == 'activity_name'">
                         <label class="label"><img src="/static/pc/assets/images/required.png" th:src="@{/pc/assets/images/required.png}" class="required-img" v-if="item.required">{{item.name}}</label>
                         <div class="input-box">
-                            <el-input type="text" placeholder="请填写信息，简短的名称" v-model.trim="activity.name" maxlength="50" show-word-limit></el-input>
+                            <el-input type="text" placeholder="请填写" v-model.trim="activity.name" maxlength="50" show-word-limit></el-input>
                             <span class="tips" v-if="item.introduction">{{item.introduction}}</span>
                         </div>
                     </div>
@@ -118,7 +118,7 @@
                     <div class="form-item" v-else-if="item.code == 'activity_organisers'">
                         <label class="label"><img src="/static/pc/assets/images/required.png" th:src="@{/pc/assets/images/required.png}" class="required-img" v-if="item.required">{{item.name}}</label>
                         <div class="input-box" style="width: 400px;">
-                            <el-input type="text" placeholder="请填写主办方" v-model.trim="activity.organisers" maxlength="20"></el-input>
+                            <el-input type="text" placeholder="请填写" v-model.trim="activity.organisers" maxlength="20"></el-input>
                             <span class="tips" v-if="item.introduction">{{item.introduction}}</span>
                         </div>
                     </div>
