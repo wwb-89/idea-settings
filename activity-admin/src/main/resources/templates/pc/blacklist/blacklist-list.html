@@ -47,7 +47,7 @@
 					</div>
 
 				</div>
-				<el-table v-if="tbodyHeight > 0" class="table-box" :data="blacklists" :max-height="tbodyHeight" ref="blacklistTable" @selection-change="selectionChange">
+				<el-table v-if="tbodyHeight > 0" class="table-box" :data="blacklists" :max-height="tbodyHeight" ref="blacklistTable" @selection-change="selectionChange" @sort-change="changeOrderField">
 					<el-table-column align="left" fixed type="selection" width="24"></el-table-column>
 					<el-table-column align="left" fixed prop="userName" label="姓名" min-width="82"></el-table-column>
 					<el-table-column align="left" prop="account" label="账号" min-width="120"></el-table-column>
@@ -278,6 +278,15 @@
 					}, function () {
 						app.showMsg("操作失败");
 					});
+				},
+				changeOrderField: function (column) {
+					var $this = this;
+					if ("descending" == column.order) {
+						$this.queryParams.orderType = "DESC";
+					} else {
+						$this.queryParams.orderType = "ASC";
+					}
+					$this.loadData();
 				}
 			}
 		})

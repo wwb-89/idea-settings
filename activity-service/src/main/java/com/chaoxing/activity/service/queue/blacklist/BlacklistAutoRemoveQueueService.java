@@ -31,7 +31,11 @@ public class BlacklistAutoRemoveQueueService implements IDelayedQueueService<Bla
     private RedissonClient redissonClient;
 
     public void push(QueueParamDTO queueParamDto) {
-        push(redissonClient, KEY, queueParamDto, queueParamDto.getRemoveTime());
+        LocalDateTime removeTime = queueParamDto.getRemoveTime();
+        queueParamDto.setRemoveTime(null);
+        // 先删除
+        remove(queueParamDto.getMarketId(), queueParamDto.getUid());
+        push(redissonClient, KEY, queueParamDto, removeTime);
     }
 
     public QueueParamDTO pop() throws InterruptedException {
@@ -39,7 +43,7 @@ public class BlacklistAutoRemoveQueueService implements IDelayedQueueService<Bla
     }
 
     public void remove(Integer marketId, Integer uid) {
-        remove(redissonClient, KEY, new QueueParamDTO(marketId, uid, LocalDateTime.now()));
+        remove(redissonClient, KEY, new QueueParamDTO(marketId, uid, null));
     }
 
     @Data
