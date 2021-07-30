@@ -417,12 +417,53 @@
   overflow: auto;
 }
 
+.dailog.add-field .body .item-tab {
+  padding-top: 4px;
+}
+
+.dailog.add-field .body .item-tab .item-list li {
+  margin: 0 12px 12px 0;
+  padding: 4px 12px;
+  border-radius: 4px;
+  color: rgba(0, 0, 0, 0.6);
+  background-color: rgba(0, 0, 0, 0.04);
+  display: inline-block;
+  font-size: 14px;
+}
+
+.dailog.add-field .body .item-tab .item-list li.active {
+  color: #0084FF;
+  background-color: rgba(0, 132, 255, 0.1);
+}
+
+.dailog.add-field .body .field-title {
+  padding: 8px 0;
+  font-size: 0;
+}
+
+.dailog.add-field .body .field-title .txt1 {
+  font-size: 16px;
+  color: #333333;
+  font-weight: 500;
+  line-height: 22px;
+  display: inline-block;
+  vertical-align: middle;
+}
+
+.dailog.add-field .body .field-title .txt2 {
+  font-size: 13px;
+  color: #999999;
+  line-height: 22px;
+  display: inline-block;
+  vertical-align: middle;
+  margin-left: 12px;
+}
+
 .dailog.add-field .field-item {
   position: relative;
   display: inline-block;
   vertical-align: top;
   width: 223px;
-  height: 36px;
   background: #FFFFFF;
   border: 1px solid #E9E9E9;
   -webkit-box-sizing: border-box;
@@ -431,17 +472,34 @@
   border-radius: 4px;
   margin: 8px 0;
   margin-right: 24px;
-  padding: 8px 12px;
+  padding: 12px 14px;
   line-height: 20px;
   cursor: pointer;
 }
 
-.dailog.add-field .field-item:nth-child(2n + 1) {
+.dailog.add-field .field-item:nth-child(2n) {
   margin-right: 0;
 }
 
 .dailog.add-field .field-item:hover {
-  background: #F8F8F8;
+  background: #F2FAFF;
+  border: 1px solid #82C3FF;
+}
+
+.dailog.add-field .field-item:hover .field {
+  color: #0084FF;
+}
+
+.dailog.add-field .field-item:hover .icon-add {
+  opacity: 1;
+}
+
+.dailog.add-field .field-item:hover .icon-info {
+  opacity: 1;
+  background-image: url(../images/yq-design/info-hover1.png);
+  background-size: 100% 100%;
+  width: 14px;
+  height: 14px;
 }
 
 .dailog.add-field .field-item .field {
@@ -461,6 +519,7 @@
   height: 16px;
   background-image: url(../images/yq-design/info.png);
   cursor: pointer;
+  opacity: 0;
 }
 
 .dailog.add-field .field-item .icon-info:hover {
@@ -474,6 +533,7 @@
   height: 18px;
   background-image: url(../images/yq-design/plus-circle.png);
   cursor: pointer;
+  opacity: 0;
 }
 
 .dailog.add-field .field-item .aready {
@@ -1144,11 +1204,15 @@
 }
 
 .field-setting .info-box .drag-box-inner {
-  border: 2px dashed #E9E9E9;
+  border: 2px dashed transparent;
   border-radius: 4px;
   -webkit-box-sizing: border-box;
      -moz-box-sizing: border-box;
           box-sizing: border-box;
+}
+
+.field-setting .info-box .drag-box-inner:hover {
+  border: 2px dashed #E9E9E9;
 }
 
 .field-setting .info-box .sort-item-inner {

@@ -437,100 +437,103 @@
                     <i class="close" @click="addFieldDialog=false"></i>
                 </div>
                 <div class="body">
-                    <div class="down-list">
-                        <p class="down-btn">
-                            <span>基本信息</span>
-                            <i class="down-icon"></i>
-                        </p>
+                    <!-- tab -->
+                    <div class="item-tab">
                         <ul class="item-list">
-                            <li>基本信息</li>
+                            <li class="active">基本信息</li>
                             <li>学生报名</li>
                             <li>企业报名</li>
                         </ul>
                     </div>
-                    <div class="field-item">
-                        <p class="field overHidden1">参与范围</p>
-                        <el-tooltip class="tooltip" effect="dark" content="说明文字单行效果" placement="top">
-                            <i class="icon-info"></i>
-                        </el-tooltip>
-                        <div class="fr add-btn">
-                            <i class="icon-add"></i>
-                            <span class="aready" style="display: none;">已添加</span>
-                            <span class="remove" style="display: none;">移除</span>
+                    <div class="field-title">
+                        <span class="txt1">基础字段</span>
+                        <span class="txt2">一个模板只能添加一次</span>
+                    </div>
+                    <div>
+                        <div class="field-item">
+                            <p class="field overHidden1">参与范围</p>
+                            <el-tooltip class="tooltip" effect="dark" content="说明文字单行效果" placement="top">
+                                <i class="icon-info"></i>
+                            </el-tooltip>
+                            <div class="fr add-btn">
+                                <i class="icon-add"></i>
+                                <span class="aready" style="display: none;">已添加</span>
+                                <span class="remove" style="display: none;">移除</span>
+                            </div>
                         </div>
-                    </div>
-                    <div class="field-item aready-add">
-                        <p class="field overHidden1">活动时间活动时间活动</p>
-                        <el-tooltip class="tooltip" effect="dark" content="说明文字单行效果" placement="top">
-                            <i class="icon-info"></i>
-                        </el-tooltip>
-                        <div class="fr add-btn">
-                            <i class="icon-add" style="display: none;"></i>
-                            <span class="aready">已添加</span>
-                            <span class="remove" style="display: none;">移除</span>
+                        <div class="field-item aready-add">
+                            <p class="field overHidden1">活动时间活动时间活动</p>
+                            <el-tooltip class="tooltip" effect="dark" content="说明文字单行效果" placement="top">
+                                <i class="icon-info"></i>
+                            </el-tooltip>
+                            <div class="fr add-btn">
+                                <i class="icon-add" style="display: none;"></i>
+                                <span class="aready">已添加</span>
+                                <span class="remove" style="display: none;">移除</span>
+                            </div>
                         </div>
-                    </div>
-                    <div class="field-item">
-                        <p class="field overHidden1">活动时间活动时间活动</p>
-                        <el-tooltip class="tooltip" effect="dark" content="说明文字多行效果说明文字多行效果说明文字多行效果说明文字多行效果说明文字多行效果" placement="top">
-                            <i class="icon-info"></i>
-                        </el-tooltip>
-                        <div class="fr add-btn">
-                            <i class="icon-add"></i>
-                            <span class="aready" style="display: none;">已添加</span>
-                            <span class="remove" style="display: none;">移除</span>
+                        <div class="field-item">
+                            <p class="field overHidden1">活动时间活动时间活动</p>
+                            <el-tooltip class="tooltip" effect="dark" content="说明文字多行效果说明文字多行效果说明文字多行效果说明文字多行效果说明文字多行效果" placement="top">
+                                <i class="icon-info"></i>
+                            </el-tooltip>
+                            <div class="fr add-btn">
+                                <i class="icon-add"></i>
+                                <span class="aready" style="display: none;">已添加</span>
+                                <span class="remove" style="display: none;">移除</span>
+                            </div>
                         </div>
-                    </div>
-                    <div class="field-item">
-                        <p class="field overHidden1">活动标签</p>
-                        <el-tooltip class="tooltip" effect="dark" content="说明文字单行效果" placement="top">
-                            <i class="icon-info"></i>
-                        </el-tooltip>
-                        <div class="fr add-btn">
-                            <i class="icon-add"></i>
-                            <span class="aready" style="display: none;">已添加</span>
-                            <span class="remove" style="display: none;">移除</span>
+                        <div class="field-item">
+                            <p class="field overHidden1">活动标签</p>
+                            <el-tooltip class="tooltip" effect="dark" content="说明文字单行效果" placement="top">
+                                <i class="icon-info"></i>
+                            </el-tooltip>
+                            <div class="fr add-btn">
+                                <i class="icon-add"></i>
+                                <span class="aready" style="display: none;">已添加</span>
+                                <span class="remove" style="display: none;">移除</span>
+                            </div>
                         </div>
-                    </div>
-                    <div class="field-item">
-                        <p class="field overHidden1">活动形式</p>
-                        <el-tooltip class="tooltip" effect="dark" content="说明文字单行效果" placement="top">
-                            <i class="icon-info"></i>
-                        </el-tooltip>
-                        <div class="fr add-btn">
-                            <i class="icon-add"></i>
-                            <span class="aready" style="display: none;">已添加</span>
-                            <span class="remove" style="display: none;">移除</span>
+                        <div class="field-item">
+                            <p class="field overHidden1">活动形式</p>
+                            <el-tooltip class="tooltip" effect="dark" content="说明文字单行效果" placement="top">
+                                <i class="icon-info"></i>
+                            </el-tooltip>
+                            <div class="fr add-btn">
+                                <i class="icon-add"></i>
+                                <span class="aready" style="display: none;">已添加</span>
+                                <span class="remove" style="display: none;">移除</span>
+                            </div>
                         </div>
-                    </div>
-                    <div class="field-item">
-                        <p class="field overHidden1">活动类型</p>
-                        <el-tooltip class="tooltip" effect="dark" content="说明文字单行效果" placement="top">
-                            <i class="icon-info"></i>
-                        </el-tooltip>
-                        <div class="fr add-btn">
-                            <i class="icon-add"></i>
-                            <span class="aready" style="display: none;">已添加</span>
-                            <span class="remove" style="display: none;">移除</span>
+                        <div class="field-item">
+                            <p class="field overHidden1">活动类型</p>
+                            <el-tooltip class="tooltip" effect="dark" content="说明文字单行效果" placement="top">
+                                <i class="icon-info"></i>
+                            </el-tooltip>
+                            <div class="fr add-btn">
+                                <i class="icon-add"></i>
+                                <span class="aready" style="display: none;">已添加</span>
+                                <span class="remove" style="display: none;">移除</span>
+                            </div>
                         </div>
-                    </div>
-                    <div class="field-item" @click="addFieldDialog=false,textDialog=true">
-                        <p class="field overHidden1">文本字段</p>
-                        <el-tooltip class="tooltip" effect="dark" content="说明文字单行效果" placement="top">
-                            <i class="icon-info"></i>
-                        </el-tooltip>
-                    </div>
-                    <div class="field-item" @click="addFieldDialog=false,chooseDialog=true">
-                        <p class="field overHidden1">选择字段</p>
-                        <el-tooltip class="tooltip" effect="dark" content="说明文字单行效果" placement="top">
-                            <i class="icon-info"></i>
-                        </el-tooltip>
-                    </div>
-                    <div class="field-item" @click="addFieldDialog=false,partitionDialog=true">
+                        <div class="field-item" @click="addFieldDialog=false,textDialog=true">
+                            <p class="field overHidden1">文本字段</p>
+                            <el-tooltip class="tooltip" effect="dark" content="说明文字单行效果" placement="top">
+                                <i class="icon-info"></i>
+                            </el-tooltip>
+                        </div>
+                        <div class="field-item" @click="addFieldDialog=false,chooseDialog=true">
+                            <p class="field overHidden1">选择字段</p>
+                            <el-tooltip class="tooltip" effect="dark" content="说明文字单行效果" placement="top">
+                                <i class="icon-info"></i>
+                            </el-tooltip>
+                        </div>
+                        <div class="field-item" @click="addFieldDialog=false,partitionDialog=true">
                         <p class="field overHidden1">分区</p>
                         <el-tooltip class="tooltip" effect="dark" content="说明文字单行效果" placement="top">
                             <i class="icon-info"></i>
                         </el-tooltip>
+                    </div>
                     </div>
                 </div>
                 <div class="footer">
@@ -991,7 +994,7 @@
             /* 右下角加号的位置 */
             var right = $('.w-900px.info-box').offset().left + 50
             $('#add-circle').css('right',right)
-            $(window).resize(function () {   
+            $(window).resize(function () {
                 var right = $('.w-900px.info-box').offset().left + 50
                 $('#add-circle').css('right',right)
             })
