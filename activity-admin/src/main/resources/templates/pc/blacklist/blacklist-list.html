@@ -74,8 +74,8 @@
 		</div>
 	</div>
 	<!--移除弹窗-->
-	<vue-confirm-common ref="removeWindow" :message="'确认移除？'" :cancel="'取消'" :sure="'移除'" @callback="removeSubmit"></vue-confirm-common>
-	<vue-confirm-common ref="batchRemoveWindow" :message="'确认移除？'" :cancel="'取消'" :sure="'移除'" @callback="batchRemoveSubmit"></vue-confirm-common>
+	<vue-confirm-common ref="removeWindow" :message="'确定移除吗？'" :cancel="'保留'" :sure="'移除'" @callback="removeSubmit"></vue-confirm-common>
+	<vue-confirm-common ref="batchRemoveWindow" :message="'确定移除吗？'" :cancel="'保留'" :sure="'移除'" @callback="batchRemoveSubmit"></vue-confirm-common>
 	<!--人员选择-->
 	<vue-user-select ref="userSelectWindow" @callback="userSelectSubmit"></vue-user-select>
 </div>
