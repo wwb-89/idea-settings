@@ -3,7 +3,7 @@ Vue.component("vue-user-select", {
 	template:
 		"<div class='dialog-mask' v-show='show'>" +
 		"    <div class='dailog choose-dialog'>" +
-		"        <div class='header'>" +
+		"        <div class='header' style='padding:unset;'>" +
 		"            <span>选择人员</span>" +
 		"            <i class='close' @click='show = false'></i>" +
 		"        </div>" +
@@ -29,7 +29,7 @@ Vue.component("vue-user-select", {
 			"                        <div class='catalog-photo'>" +
 			"                            <img :src=\"ctx + '/pc/assets/images/catalog1.png'\">" +
 			"                        </div>" +
-			"                        <div class='catalog-title lineH20'>{{org.name}}</div>" +
+			"                        <div class='catalog-title'>{{org.name}}</div>" +
 			"                        <img class='right-img' :src=\"ctx + '/pc/assets/images/chevron-right.png'\">" +
 			"                    </div>" +
 			/*部门列表*/
@@ -124,6 +124,15 @@ Vue.component("vue-user-select", {
 	created: function () {
 		var $this = this;
 		$this.loadOrgs();
+	},
+	watch: {
+		"searching": function () {
+			var $this = this;
+			if ($this.searching && $this.mescroll) {
+				// 隐藏"-到底了-"
+				$this.mescroll.endUpScroll(false);
+			}
+		}
 	},
 	methods: {
 		//加载机构列表
