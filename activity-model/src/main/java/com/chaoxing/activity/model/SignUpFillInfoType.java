@@ -88,8 +88,8 @@ public class SignUpFillInfoType {
     public enum WfwFormTemplateEnum {
 
         /** 通用 */
-        NORMAL("通用", "normal", "", ""),
-        DUAL_SELECT_COMPANY("双选会企业报名", "dual_select_company", "", "");
+        NORMAL("通用", "normal", "deptManager_hdcp", "SObtv7P3d$UVuBkTjg"),
+        DUAL_SELECT_COMPANY("双选会企业报名", "dual_select_company", "deptManager_hdcp", "SObtv7P3d$UVuBkTjg");
 
         private final String name;
         private final String value;
