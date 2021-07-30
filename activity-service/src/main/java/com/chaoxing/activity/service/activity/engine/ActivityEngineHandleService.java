@@ -5,6 +5,7 @@ import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.chaoxing.activity.dto.engine.ActivityEngineDTO;
 import com.chaoxing.activity.mapper.*;
 import com.chaoxing.activity.model.*;
+import com.chaoxing.activity.service.manager.WfwFormApiService;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.compress.utils.Lists;
@@ -38,6 +39,8 @@ public class ActivityEngineHandleService {
     private ComponentFieldMapper componentFieldMapper;
     @Autowired
     private SignUpConditionMapper signUpConditionMapper;
+    @Autowired
+    private WfwFormApiService wfwFormApiService;
 
     /**处理引擎模板组件相关数据(新增/更新)
     * @Description
@@ -114,11 +117,11 @@ public class ActivityEngineHandleService {
     * @return com.chaoxing.activity.model.Component
     */
     @Transactional(rollbackFor = Exception.class)
-    public Component handleCustomComponent(Integer uid, Component component) {
+    public Component handleCustomComponent(Integer uid, Integer fid, Component component) {
         if (component.getId() == null) {
-            return saveCustomComponent(uid, component);
+            return saveCustomComponent(uid, fid, component);
         }
-        return updateCustomComponent(uid, component);
+        return updateCustomComponent(uid, fid, component);
     }
 
     /**
@@ -130,7 +133,7 @@ public class ActivityEngineHandleService {
     * @return com.chaoxing.activity.model.Component
     */
     @Transactional(rollbackFor = Exception.class)
-    public Component updateCustomComponent(Integer uid, Component component) {
+    public Component updateCustomComponent(Integer uid, Integer fid, Component component) {
         component.setUpdateUid(uid);
         componentMapper.updateById(component);
         if (Objects.equals(component.getDataOrigin(), Component.DataOriginEnum.CUSTOM.getValue())
@@ -143,6 +146,8 @@ public class ActivityEngineHandleService {
                 v.setComponentId(component.getId());
             });
             componentFieldMapper.batchAdd(component.getFieldList());
+        } else if (Objects.equals(component.getDataOrigin(), Component.DataOriginEnum.FORM.getValue())) {
+            component.setFormFieldValues(wfwFormApiService.listFormFieldValue(fid, Integer.parseInt(component.getOriginIdentify()), component.getFieldFlag()));
         }
         return component;
     }
@@ -156,7 +161,7 @@ public class ActivityEngineHandleService {
     * @return java.util.Map<java.lang.Integer,com.chaoxing.activity.model.Component>
     */
     @Transactional(rollbackFor = Exception.class)
-    public Component saveCustomComponent(Integer uid, Component component) {
+    public Component saveCustomComponent(Integer uid, Integer fid, Component component) {
         component.setCreateUid(uid);
         component.setUpdateUid(uid);
         componentMapper.insert(component);
@@ -170,6 +175,9 @@ public class ActivityEngineHandleService {
                 field.setComponentId(component.getId());
             }
             componentFieldMapper.batchAdd(fieldList);
+            component.setFieldList(fieldList);
+        } else if (Objects.equals(component.getDataOrigin(), Component.DataOriginEnum.FORM.getValue())) {
+            component.setFormFieldValues(wfwFormApiService.listFormFieldValue(fid, Integer.parseInt(component.getOriginIdentify()), component.getFieldFlag()));
         }
         return component;
     }

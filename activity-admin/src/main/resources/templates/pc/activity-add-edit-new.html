@@ -168,7 +168,7 @@
                         </div>
                     </div>
 
-                    <div class="form-item" v-else-if="item.code == 'integral'" v-show="activity.activityFlag == 'second_classroom'">
+                    <div class="form-item" v-else-if="item.code == 'integral'">
                         <label class="label"><img src="/static/pc/assets/images/required.png" th:src="@{/pc/assets/images/required.png}" class="required-img" v-if="item.required">{{item.name}}</label>
                         <div class="input-box setForm">
                             <input type="number" v-model.trim="activity.integralValue" min="0" placeholder="请输入" class="score-input">
@@ -177,7 +177,7 @@
                         </div>
                     </div>
                     <!--学时-->
-                    <div class="form-item" v-else-if="item.code == 'period'" v-show="isShowPeriodCredit()">
+                    <div class="form-item" v-else-if="item.code == 'period'">
                         <label class="label"><img src="/static/pc/assets/images/required.png" th:src="@{/pc/assets/images/required.png}" class="required-img" v-if="item.required">{{item.name}}</label>
                         <div class="input-box setForm">
                             <input type="number" min="0" step="0.1" v-model.trim="activity.period" @blur="periodChange" placeholder="请输入" class="score-input">
@@ -186,7 +186,7 @@
                         </div>
                     </div>
                     <!--学分-->
-                    <div class="form-item" v-else-if="item.code == 'credit'" v-show="isShowPeriodCredit()">
+                    <div class="form-item" v-else-if="item.code == 'credit'">
                         <label class="label"><img src="/static/pc/assets/images/required.png" th:src="@{/pc/assets/images/required.png}" class="required-img" v-if="item.required">{{item.name}}</label>
                         <div class="input-box setForm">
                             <input type="number" min="0" step="0.1" v-model.trim="activity.credit" @blur="creditChange" placeholder="请输入" class="score-input">
@@ -195,7 +195,7 @@
                         </div>
                     </div>
                     <!--参与时长上限-->
-                    <div class="form-item" v-else-if="item.code == 'max_participate_time_length'" v-show="isShowTimeLengthUpperLimit()">
+                    <div class="form-item" v-else-if="item.code == 'max_participate_time_length'">
                         <label class="label"><img src="/static/pc/assets/images/required.png" th:src="@{/pc/assets/images/required.png}" class="required-img" v-if="item.required">{{item.name}}</label>
                         <div class="input-box setForm">
                             <input type="number" min="1" step="1" v-model.trim="activity.timeLengthUpperLimit" placeholder="不限" class="score-input">
@@ -203,7 +203,7 @@
                             <span class="tips" v-if="item.introduction">{{item.introduction}}</span>
                         </div>
                     </div>
-                    <div class="form-item last marginTop16" v-else-if="item.code == 'activity_release_scope'" v-show="isShowActivityParticipateScope()">
+                    <div class="form-item last marginTop16" v-else-if="item.code == 'activity_release_scope'">
                         <label class="label"><img src="/static/pc/assets/images/required.png" th:src="@{/pc/assets/images/required.png}" class="required-img" v-if="item.required">{{item.name}}</label>
                         <div class="input-box wrap">
                             <!--添加范围后显示后面这项-->
@@ -223,14 +223,14 @@
                         </div>
                     </div>
                     <!--征集设置-->
-                    <div class="form-item" v-else-if="item.code == 'work'" v-show="isShowWork()">
+                    <div class="form-item" v-else-if="item.code == 'work'">
                         <label class="label">{{item.name}}</label>
                         <div class="input-box">
                             <el-switch v-model="activity.openWork" class="examine-switch"></el-switch>
                             <span class="tips" v-if="item.introduction">{{item.introduction}}</span>
                         </div>
                     </div>
-                    <div class="form-item cancel-margin marginTop16" v-else-if="item.code == 'tags'" v-show="isShowActivityFlag()">
+                    <div class="form-item cancel-margin marginTop16" v-else-if="item.code == 'tags'">
                         <label class="label">{{item.name}}</label>
                         <div class="input-box wrap">
                             <!--添加满3个后，隐藏添加按钮-->
@@ -242,7 +242,7 @@
                             <span class="tips" v-if="item.introduction">{{item.introduction}}</span>
                         </div>
                     </div>
-                    <div v-else-if="item.code == 'activity_rating'" v-show="activity.activityFlag == 'second_classroom'">
+                    <div v-else-if="item.code == 'activity_rating'">
                         <div class="form-item">
                             <label class="label">{{item.name}}</label>
                             <div class="input-box">
@@ -288,7 +288,7 @@
                         </div>
                     </template>
 
-                    <div class="form-item align-start" v-else-if="item.code == 'introduction'" v-show="isShowIntroduction()">
+                    <div class="form-item align-start" v-else-if="item.code == 'introduction'">
                         <label class="label">{{item.name}}</label>
                         <div class="input-box">
                             <!-- 笔记编辑器 -->
@@ -520,7 +520,7 @@
                                 <el-checkbox v-if="item.dataOrigin == 'custom'" v-for="ckItem in item.componentFields" :key="'component-field-' + ckItem.id" :label="ckItem.fieldName" name="active-type">
                                     {{ckItem.fieldName}}
                                 </el-checkbox>
-                                <el-checkbox v-else-if="item.dataOrigin == 'form'" v-for="value in item.fieldValues" :key="'component-field-' + value" :label="value" name="active-type">
+                                <el-checkbox v-if="item.dataOrigin == 'form'" v-for="value in item.fieldValues" :key="'component-field-' + value" :label="value" name="active-type">
                                     {{value}}
                                 </el-checkbox>
                             </el-checkbox-group>
@@ -768,14 +768,9 @@
                 activePicIndex: 0,
                 pictureCloudIds: [
                     'aa5d1e5450f5b2cfa43c66f045ae0651',
-                    '6e8c1f1c32167039a79875ecf1486634',
-                    'd93f28503b2e024c5805999ed6b82cf0',
-                    '72db20c0c2ca1ef20902af8322a3cd5f',
-                    '88eb82a54de4555ab692003ea5efa102',
                     '2a3eed5a76cf12791cba01cbad531b52',
                     '7195ced41ff6d2f6eed097289a940e06',
                     'f888bdefb86b4d20921ea9348bad0296',
-                    '81614c233456e79edb1ed720bbaac6bf',
                     'b08076f7034d7b0c9797911a2bf415cf',
                     '8c4f75497953435411be2300e55232fc',
                     '3b1a0ad40411c3c087d082899887850e',
@@ -785,11 +780,8 @@
                     '3c4b222ae3ef12bccc65ae76f082f2d7',
                     '1b2defd466bdf6ee44a4bb5ff58f34be',
                     'fd1e913908999e18acf9db71050e8bf2',
-                    '27db4a020c1fc30a8e4cc7e8d1f36a3b',
-                    'fb099dc822965b5580320a338efcdb08',
                     'c14a07f03301e9996825ec3faf6b6757',
                     '7e27cd8fdbd70b41ce5ef021517a59ad',
-                    '0c471dd31714d63dbb3d0463d6702605',
                     '0e70e8ff055094b9ef16937fcb2e1137'
                 ],
                 pictureShow: false,
@@ -1428,11 +1420,11 @@
                         app.showMsg("分类不能为空");
                         return false;
                     }
-                    // 发布范围
-                    if ($this.isShowActivityParticipateScope() && (activityApp.isEmpty($this.participatedOrgs) || $this.participatedOrgs.length < 1)) {
-                        app.showMsg("请选择发布范围");
-                        return false;
-                    }
+                    // 发布范围  todo 暂时屏蔽
+                    // if ($this.isShowActivityParticipateScope() && (activityApp.isEmpty($this.participatedOrgs) || $this.participatedOrgs.length < 1)) {
+                    //     app.showMsg("请选择发布范围");
+                    //     return false;
+                    // }
                     // 定时发布
                     if ($this.activity.timingRelease && activityApp.isEmpty($this.activity.timingReleaseTimeStamp)) {
                         app.showMsg("请选择发布时间");
@@ -1878,12 +1870,6 @@
                 isShowActivityFlag: function () {
                     var $this = this;
                     var hides = ["dual_select", "second_classroom"];
-                    return hides.indexOf($this.activity.activityFlag) == -1;
-                },
-                // 活动是否显示发布范围
-                isShowActivityParticipateScope: function () {
-                    var $this = this;
-                    var hides = ["second_classroom", "dual_select", "volunteer"];
                     return hides.indexOf($this.activity.activityFlag) == -1;
                 },
                 // 是否显示学时、学分
