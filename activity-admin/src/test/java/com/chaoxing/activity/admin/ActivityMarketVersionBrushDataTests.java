@@ -71,6 +71,7 @@ public class ActivityMarketVersionBrushDataTests {
 					.set(Activity::getTemplateId, template.getId())
 			);
 		});
+
 	}
 
 }

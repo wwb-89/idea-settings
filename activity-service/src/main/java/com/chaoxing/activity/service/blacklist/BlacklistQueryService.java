@@ -129,4 +129,20 @@ public class BlacklistQueryService {
         return page;
     }
 
+    /**查询用户黑名单信息
+     * @Description 
+     * @author wwb
+     * @Date 2021-07-30 14:30:02
+     * @param uid
+     * @param marketId
+     * @return com.chaoxing.activity.model.Blacklist
+    */
+    public Blacklist getUserBlacklist(Integer uid, Integer marketId) {
+        List<Blacklist> blacklists = blacklistMapper.selectList(new LambdaQueryWrapper<Blacklist>()
+                .eq(Blacklist::getMarketId, marketId)
+                .eq(Blacklist::getUid, uid)
+        );
+        return Optional.ofNullable(blacklists).orElse(Lists.newArrayList()).stream().findFirst().orElse(null);
+    }
+
 }
