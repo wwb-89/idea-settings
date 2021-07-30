@@ -153,28 +153,7 @@ public class ActivityEngineQueryService {
 
     public List<TemplateComponentDTO> listTemplateComponentTree(Integer templateId, Integer fid) {
         List<TemplateComponentDTO> templateComponents = templateComponentMapper.listTemplateComponentInfo(templateId);
-
-        List<Integer> chooseComponentIds = templateComponents.stream()
-                .filter(v -> StringUtils.isNotBlank(v.getType()) && Objects.equals(v.getDataOrigin(), Component.DataOriginEnum.CUSTOM.getValue()))
-                .map(TemplateComponentDTO::getComponentId)
-                .collect(Collectors.toList());
-        Map<Integer, List<ComponentField>> componentFieldMap = Maps.newHashMap();
-        if (CollectionUtils.isNotEmpty(chooseComponentIds)) {
-            List<ComponentField> componentFields = componentFieldMapper.selectList(new QueryWrapper<ComponentField>().lambda().in(ComponentField::getComponentId, chooseComponentIds));
-            componentFields.forEach(v -> {
-                componentFieldMap.computeIfAbsent(v.getComponentId(), k -> Lists.newArrayList());
-                componentFieldMap.get(v.getComponentId()).add(v);
-            });
-            templateComponents.forEach(v -> {
-                if (CollectionUtils.isNotEmpty(componentFieldMap.get(v.getComponentId()))) {
-                    v.setComponentFields(componentFieldMap.get(v.getComponentId()));
-                }
-                if (StringUtils.isNotBlank(v.getDataOrigin()) && Objects.equals(v.getDataOrigin(), Component.DataOriginEnum.FORM.getValue())) {
-                    v.setFieldValues(wfwFormApiService.listFormFieldValue(fid, Integer.parseInt(v.getOriginIdentify()), v.getFieldFlag()));
-                }
-            });
-        }
-
+        buildComponentFieldsAndFieldValues(fid, templateComponents);
         List<TemplateComponentDTO> trees = Lists.newArrayList();
         templateComponents.forEach(v -> {
             if (Objects.equals(v.getPid(), 0)) {
@@ -190,5 +169,36 @@ public class ActivityEngineQueryService {
             });
         });
         return trees;
+    }
+
+    /**查询封装自定义选择组件componentFields 自定义选项和 fieldValues表单选项
+    * @Description
+    * @author huxiaolong
+    * @Date 2021-07-30 18:28:55
+    * @param fid
+    * @param templateComponents
+    * @return void
+    */
+    private void buildComponentFieldsAndFieldValues(Integer fid, List<TemplateComponentDTO> templateComponents) {
+        List<Integer> chooseComponentIds = templateComponents.stream()
+                .filter(v -> StringUtils.isNotBlank(v.getType()) && Objects.equals(v.getDataOrigin(), Component.DataOriginEnum.CUSTOM.getValue()))
+                .map(TemplateComponentDTO::getComponentId)
+                .collect(Collectors.toList());
+        Map<Integer, List<ComponentField>> componentFieldMap = Maps.newHashMap();
+        if (CollectionUtils.isNotEmpty(chooseComponentIds)) {
+            List<ComponentField> componentFields = componentFieldMapper.selectList(new QueryWrapper<ComponentField>().lambda().in(ComponentField::getComponentId, chooseComponentIds));
+            componentFields.forEach(v -> {
+                componentFieldMap.computeIfAbsent(v.getComponentId(), k -> Lists.newArrayList());
+                componentFieldMap.get(v.getComponentId()).add(v);
+            });
+        }
+        templateComponents.forEach(v -> {
+            if (CollectionUtils.isNotEmpty(componentFieldMap.get(v.getComponentId()))) {
+                v.setComponentFields(componentFieldMap.get(v.getComponentId()));
+            }
+            if (StringUtils.isNotBlank(v.getDataOrigin()) && Objects.equals(v.getDataOrigin(), Component.DataOriginEnum.FORM.getValue())) {
+                v.setFieldValues(wfwFormApiService.listFormFieldValue(fid, Integer.parseInt(v.getOriginIdentify()), v.getFieldFlag()));
+            }
+        });
     }
 }

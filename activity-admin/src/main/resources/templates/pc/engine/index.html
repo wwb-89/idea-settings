@@ -144,15 +144,15 @@
                                 </template>
                                 <template v-else-if="item.type == 'radio'">
                                     <div>
-                                        <el-radio v-model="radio1" label="1" name="active-type" class="radio-item" readonly>选项1</el-radio>
-                                        <el-radio label="2" name="active-type" class="radio-item" readonly>选项2</el-radio>
+                                        <el-radio v-for="value in chooseComponentValuesMap[item.componentId] || []" v-model="radio1" :label="value" name="active-type" class="radio-item" readonly>
+                                            {{value}}
+                                        </el-radio>
                                     </div>
                                     <span class="tips third" v-if="item.introduction">{{item.introduction}}</span>
                                 </template>
                                 <template v-else-if="item.type == 'checkbox'">
                                     <el-checkbox-group v-model="typecheck" disabled>
-                                        <el-checkbox label="选项1"  name="type"></el-checkbox>
-                                        <el-checkbox label="选项" name="type"></el-checkbox>
+                                        <el-checkbox v-for="value in chooseComponentValuesMap[item.componentId] || []" :label="value"  name="type"></el-checkbox>
                                     </el-checkbox-group>
                                     <span class="tips third" v-if="item.introduction">{{item.introduction}}</span>
                                 </template>
@@ -369,14 +369,15 @@
                     <i class="close" @click="closeAddFieldDialog"></i>
                 </div>
                 <div class="body">
-                    <div class="down-list">
-                        <p class="down-btn">
-                            <span>{{activeCpTypeName}}</span>
-                            <i class="down-icon"></i>
-                        </p>
+                    <!-- tab -->
+                    <div class="item-tab">
                         <ul class="item-list">
-                            <li v-for="(item, index) in componentTypeList" @click="changeComponentType(index)">{{item.name}}</li>
+                            <li :class="{active: activeCpTypeIndex == index}" v-for="(item, index) in componentTypeList" @click="changeComponentType(index)">{{item.name}}</li>
                         </ul>
+                    </div>
+                    <div class="field-title">
+                        <span class="txt1">{{activeCpTypeName}}</span>
+                        <span class="txt2" v-show="activeCpTypeName == '基本信息'">一个模板只能添加一次</span>
                     </div>
                     <div v-if="!item.checked || item.multi" class="field-item aready-add" v-for="(item, index) in  componentTypeList[activeCpTypeIndex] && componentTypeList[activeCpTypeIndex].components || []">
                         <p class="field overHidden1">{{item.name}}</p>
@@ -388,18 +389,17 @@
                             <i class="icon-add" v-else @click="addComponentAssociate(index, item)"></i>
                         </div>
                     </div>
-                    <template v-if="componentTypeList[activeCpTypeIndex] && componentTypeList[activeCpTypeIndex].virtualId == 0">
-                        <div class="field-item" @click="openTextDialog">
-                            <p class="field overHidden1">文本字段</p>
-                            <el-tooltip class="tooltip" effect="dark" content="说明文字单行效果" placement="top">
-                                <i class="icon-info"></i>
-                            </el-tooltip>
+                    <div>
+                        <div class="field-title" v-if="activeCpTypeName == '基本信息'">
+                            <span class="txt1">高级字段</span>
                         </div>
-                        <div class="field-item" @click="openChooseEditDialog">
-                            <p class="field overHidden1">选择字段</p>
-                            <el-tooltip class="tooltip" effect="dark" content="说明文字单行效果" placement="top">
-                                <i class="icon-info"></i>
-                            </el-tooltip>
+                    </div>
+                    <template v-if="componentTypeList[activeCpTypeIndex] && componentTypeList[activeCpTypeIndex].virtualId == 0">
+                        <div class="field-item" @click="openTextDialog" style="margin-right: 24px">
+                            <p class="field overHidden1">自定义输入框</p>
+                        </div>
+                        <div class="field-item" @click="openChooseEditDialog" style="margin-right: 0">
+                            <p class="field overHidden1">自定义选择器</p>
                         </div>
 <!--                        <div class="field-item" @click="addFieldDialog=false,partitionDialog=true">-->
 <!--                            <p class="field overHidden1">分区</p>-->
@@ -634,6 +634,8 @@
                     template: {},
                     components: [],
                     componentMap: {},
+                    // 选择组件关联关系值列表map
+                    chooseComponentValuesMap: {},
                     // 父组件id：子组件列表
                     pidChildrenMap: {},
                     templateComponents: [],
@@ -715,7 +717,8 @@
                         });
                         $(components).each(function () {
                             // 新增是否选中属性，默认true
-                            this.checked = $this.isDefaultSignUpAChildComponent(this.code) && this.pid;
+                            this.checked = !!($this.isDefaultSignUpAChildComponent(this.code) && this.pid);
+                            $this.packageChooseComponentValues(this);
                             // 填充父节点对应子节点列表数据
                             if (!$this.pidChildrenMap[this.pid]) {
                                 $this.pidChildrenMap[this.pid] = [];
@@ -736,6 +739,20 @@
                             });
                             $this.initMouseEnterField();
                         })
+                    },
+                    // 根据组件component, 填充自定义选择组件和选项值的关联
+                    packageChooseComponentValues: function (component) {
+                        var $this = this;
+                        if (!component) {
+                            return;
+                        }
+                        if (component.type && (component.type == 'radio' || component.type == 'checkbox')) {
+                            if (component.dataOrigin == 'custom') {
+                                $this.chooseComponentValuesMap[component.id] = $.map(component.fieldList, function (item) { return item.fieldName; })
+                            } else {
+                                $this.chooseComponentValuesMap[component.id] = component.formFieldValues;
+                            }
+                        }
                     },
                     init: function () {
                         var $this = this;
@@ -972,7 +989,7 @@
                             virtualId: $this.addSignUpTemplateComponent.id,
                             components: childComponents
                         });
-                        app.showMsg("已添加");
+                        app.showMsg("添加成功");
                     },
                     // 移除组件 item - component
                     removeComponentAssociate: function (index, item, e) {
@@ -1368,6 +1385,7 @@
                     },
                     addedComponent: function (component) {
                         var $this = this;
+                        $this.packageChooseComponentValues(component);
                         component.checked = true;
                         var componentType = $.grep($this.componentTypeList, function (it, index) {
                             return it.virtualId == 0;
@@ -1378,6 +1396,7 @@
                     },
                     editedComponent: function (component) {
                         var $this = this;
+                        $this.packageChooseComponentValues(component);
                         var componentType = $.grep($this.componentTypeList, function (it, index) {
                             return it.virtualId == 0;
                         })[0];

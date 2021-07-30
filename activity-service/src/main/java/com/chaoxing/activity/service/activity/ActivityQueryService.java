@@ -237,8 +237,10 @@ public class ActivityQueryService {
 			activityManageQuery.setCreateWfwfid(activityManageQuery.getFid());
 			page = activityMapper.pageCreated(page, activityManageQuery);
 		} else {
-			List<Integer> fids = wfwAreaApiService.listSubFid(activityManageQuery.getFid());
-			activityManageQuery.setFids(fids);
+			if (activityManageQuery.getMarketId() == null) {
+				List<Integer> fids = wfwAreaApiService.listSubFid(activityManageQuery.getFid());
+				activityManageQuery.setFids(fids);
+			}
 			page = activityMapper.pageManaging(page, activityManageQuery);
 		}
 		List<Activity> activities = page.getRecords();
