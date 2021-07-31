@@ -167,9 +167,9 @@
                         <foreach collection="params.fids" index="key" item="value" open="(" close=")" separator=",">
                             #{value}
                         </foreach>
+                        AND t.is_released = 1
                     </otherwise>
                 </choose>
-                    AND t.is_released = 1
                 )
                 <if test="params.marketId == null">
                     OR t.create_fid = #{params.topFid}
