@@ -200,8 +200,6 @@ public class WfwFormApprovalApiService {
         activity.setTemplateId(templateId);
         WfwAreaDTO wfwRegionalArchitecture = wfwAreaApiService.buildWfwRegionalArchitecture(fid);
         Integer activityId = activityHandleService.add(activity, signCreateParam, Lists.newArrayList(wfwRegionalArchitecture), loginUser);
-        // 门户克隆模版
-        activityHandleService.bindWebTemplate(activityId, webTemplate.getId(), loginUser);
         // 发布
         activityHandleService.release(activityId, loginUser);
     }
