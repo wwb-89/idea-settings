@@ -1,7 +1,7 @@
 package com.chaoxing.activity.service.activity.market;
 
 import com.chaoxing.activity.dto.OperateUserDTO;
-import com.chaoxing.activity.model.ActivityMarket;
+import com.chaoxing.activity.model.Market;
 import com.chaoxing.activity.util.exception.BusinessException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -13,17 +13,17 @@ import java.util.Optional;
 /**
  * @author wwb
  * @version ver 1.0
- * @className ActivityMarketValidationService
+ * @className MarketValidationService
  * @description
  * @blame wwb
  * @date 2021-04-12 11:13:54
  */
 @Slf4j
 @Service
-public class ActivityMarketValidationService {
+public class MarketValidationService {
 
 	@Resource
-	private ActivityMarketQueryService activityMarketQueryService;
+	private MarketQueryService marketQueryService;
 
 	/**活动市场存在
 	 * @Description 
@@ -32,8 +32,8 @@ public class ActivityMarketValidationService {
 	 * @param marketId
 	 * @return com.chaoxing.activity.model.ActivityMarket
 	*/
-	public ActivityMarket exist(Integer marketId) {
-		ActivityMarket activityMarket = activityMarketQueryService.getById(marketId);
+	public Market exist(Integer marketId) {
+		Market activityMarket = marketQueryService.getById(marketId);
 		Optional.ofNullable(activityMarket).orElseThrow(() -> new BusinessException("活动市场不存在"));
 		return activityMarket;
 	}
@@ -46,8 +46,8 @@ public class ActivityMarketValidationService {
 	 * @param operateUserDto
 	 * @return com.chaoxing.activity.model.ActivityMarket
 	*/
-	public ActivityMarket manageAble(Integer marketId, OperateUserDTO operateUserDto) {
-		ActivityMarket activityMarket = exist(marketId);
+	public Market manageAble(Integer marketId, OperateUserDTO operateUserDto) {
+		Market activityMarket = exist(marketId);
 		if (!Objects.equals(activityMarket.getFid(), operateUserDto.getFid())) {
 			throw new BusinessException("无权限");
 		}

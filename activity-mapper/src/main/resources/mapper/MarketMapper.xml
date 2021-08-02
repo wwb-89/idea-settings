@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="com.chaoxing.activity.mapper.ActivityMarketMapper">
-    <resultMap id="BaseResultMap" type="com.chaoxing.activity.model.ActivityMarket">
+<mapper namespace="com.chaoxing.activity.mapper.MarketMapper">
+    <resultMap id="BaseResultMap" type="com.chaoxing.activity.model.Market">
         <id column="id" jdbcType="INTEGER" property="id" />
         <result column="name" jdbcType="VARCHAR" property="name" />
         <result column="icon_cloud_id" jdbcType="VARCHAR" property="iconCloudId" />
@@ -24,7 +24,7 @@
         SELECT
             CASE WHEN ISNULL( MAX( t.sequence ) ) THEN 1 ELSE MAX( t.sequence ) + 1 END
         FROM
-            t_activity_market t
+            t_market t
         WHERE
             t.fid = #{fid}
     </select>

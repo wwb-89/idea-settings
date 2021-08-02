@@ -4,9 +4,9 @@ import com.chaoxing.activity.admin.util.LoginUtils;
 import com.chaoxing.activity.dto.LoginUserDTO;
 import com.chaoxing.activity.dto.activity.market.ActivityMarketCreateParamDTO;
 import com.chaoxing.activity.dto.activity.market.ActivityMarketUpdateParamDTO;
-import com.chaoxing.activity.model.ActivityMarket;
-import com.chaoxing.activity.service.activity.market.ActivityMarketQueryService;
-import com.chaoxing.activity.service.activity.market.ActivityMarketValidationService;
+import com.chaoxing.activity.model.Market;
+import com.chaoxing.activity.service.activity.market.MarketQueryService;
+import com.chaoxing.activity.service.activity.market.MarketValidationService;
 import com.chaoxing.activity.util.annotation.LoginRequired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -30,9 +30,9 @@ import java.util.Optional;
 public class MarketController {
 
 	@Resource
-	private ActivityMarketQueryService activityMarketQueryService;
+	private MarketQueryService marketQueryService;
 	@Resource
-	private ActivityMarketValidationService activityMarketValidationService;
+	private MarketValidationService marketValidationService;
 
 	/**活动市场管理主页
 	 * @Description 
@@ -46,7 +46,7 @@ public class MarketController {
 	@RequestMapping("{marketId}")
 	public String index(HttpServletRequest request, Model model, @PathVariable Integer marketId) {
 		LoginUserDTO loginUser = LoginUtils.getLoginUser(request);
-		ActivityMarket market = activityMarketValidationService.manageAble(marketId, loginUser.buildOperateUserDTO());
+		Market market = marketValidationService.manageAble(marketId, loginUser.buildOperateUserDTO());
 		model.addAttribute("market", market);
 		return "pc/market/market-index";
 	}
@@ -74,7 +74,7 @@ public class MarketController {
 	@LoginRequired
 	@RequestMapping("update/from-wfw")
 	public String updateFromWfw(HttpServletRequest request, Model model, Integer classifyId, Integer fid, Integer id, String backUrl) {
-		ActivityMarketUpdateParamDTO market = activityMarketQueryService.getByWfwAppId(id);
+		ActivityMarketUpdateParamDTO market = marketQueryService.getByWfwAppId(id);
 		model.addAttribute("market", market);
 		model.addAttribute("backUrl", backUrl);
 		return "pc/market/wfw-market";

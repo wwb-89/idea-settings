@@ -1,7 +1,7 @@
 package com.chaoxing.activity.service.blacklist;
 
 import com.chaoxing.activity.dto.OperateUserDTO;
-import com.chaoxing.activity.service.activity.market.ActivityMarketValidationService;
+import com.chaoxing.activity.service.activity.market.MarketValidationService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
@@ -20,7 +20,7 @@ import javax.annotation.Resource;
 public class BlacklistValidationService {
 
     @Resource
-    private ActivityMarketValidationService activityMarketValidationService;
+    private MarketValidationService activityMarketValidationService;
 
     /**是否有权限
      * @Description 

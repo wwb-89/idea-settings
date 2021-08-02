@@ -1,6 +1,6 @@
 package com.chaoxing.activity.dto.manager.wfw;
 
-import com.chaoxing.activity.model.ActivityMarket;
+import com.chaoxing.activity.model.Market;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -37,7 +37,7 @@ public class WfwAppParamDTO {
 	/** 应用管理端地址 */
 	private String adminUrl;
 
-	public static WfwAppParamDTO buildFromActivityMarket(ActivityMarket activityMarket, Integer classifyId) {
+	public static WfwAppParamDTO buildFromActivityMarket(Market activityMarket, Integer classifyId) {
 		return WfwAppParamDTO.builder()
 				.id(activityMarket.getWfwAppId())
 				.name(activityMarket.getName())

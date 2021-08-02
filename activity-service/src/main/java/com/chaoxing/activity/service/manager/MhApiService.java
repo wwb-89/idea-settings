@@ -18,9 +18,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
 import javax.annotation.Resource;
-import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 
 /**门户api
  * @author wwb
@@ -34,9 +34,10 @@ import java.util.Objects;
 @Service
 public class MhApiService {
 
-	public static final DateTimeFormatter DATE_TIME_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
-	/** 克隆模板的url http://mh.chaoxing.com/web-others/{templateId}/cloneActivity?wfwfid=&activityId=&uid= */
+	/** 根据模版id（templateId）克隆模板的url http://mh.chaoxing.com/web-others/{templateId}/cloneActivity?wfwfid=&activityId=&uid= */
 	private static final String CLONE_TEMPLATE_URL = ActivityMhUrlConstant.MH_DOMAIN + "/web-others/%d/cloneActivity?wfwfid=%d&uid=%d&websiteName=%s";
+	/** 根据网站id（website_id）克隆模版url */
+	private static final String CLONE_TEMPLATE_URL_BY_WEBSITE_ID = ActivityMhUrlConstant.MH_DOMAIN + "/web-others/%d/cloneActivityNew?wfwfid=%d&uid=%d&websiteName=%s";
 	/** 更新网站title url http://portal.chaoxing.com/web-others/{pageId}/page-name?name={name}&uid={uid} */
 	private static final String UPDATE_WEB_TITLE_URL = ActivityMhUrlConstant.MH_DOMAIN + "/web-others/%d/page-name?name=%s&uid=%d";
 	/** 根据pageId查询website */
@@ -59,7 +60,15 @@ public class MhApiService {
 	public MhCloneResultDTO cloneTemplate(MhCloneParamDTO mhCloneParam) {
 		Integer fid = mhCloneParam.getWfwfid();
 		Integer uid = mhCloneParam.getUid();
-		String url = String.format(CLONE_TEMPLATE_URL, mhCloneParam.getTemplateId(), fid, uid, mhCloneParam.getWebsiteName());
+		Integer templateId = mhCloneParam.getTemplateId();
+		String url;
+		if (templateId != null) {
+			url = String.format(CLONE_TEMPLATE_URL, mhCloneParam.getTemplateId(), fid, uid, mhCloneParam.getWebsiteName());
+		} else {
+			Integer websiteId = mhCloneParam.getWebsiteId();
+			Optional.ofNullable(websiteId).orElseThrow(() -> new BusinessException("模版id或网站id不能为空"));
+			url = String.format(CLONE_TEMPLATE_URL_BY_WEBSITE_ID, websiteId, fid, uid, mhCloneParam.getWebsiteName());
+		}
 		Integer originPageId = mhCloneParam.getOriginPageId();
 		if (originPageId != null) {
 			url += "&originPageId=" + originPageId;

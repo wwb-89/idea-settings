@@ -6,7 +6,7 @@ import com.chaoxing.activity.dto.OperateUserDTO;
 import com.chaoxing.activity.mapper.ActivityMapper;
 import com.chaoxing.activity.model.Activity;
 import com.chaoxing.activity.model.Template;
-import com.chaoxing.activity.service.activity.market.ActivityMarketHandleService;
+import com.chaoxing.activity.service.activity.market.MarketHandleService;
 import com.chaoxing.activity.service.activity.template.TemplateQueryService;
 import org.apache.commons.collections4.CollectionUtils;
 import org.junit.jupiter.api.Test;
@@ -37,7 +37,7 @@ public class ActivityMarketVersionBrushDataTests {
 	@Resource
 	private ActivityMapper activityMapper;
 	@Resource
-	private ActivityMarketHandleService activityMarketHandleService;
+	private MarketHandleService marketHandleService;
 	@Resource
 	private TemplateQueryService templateQueryService;
 
@@ -52,7 +52,7 @@ public class ActivityMarketVersionBrushDataTests {
 		// 找到所有的fid以及关联的活动标识列表key:fid, value:activityFlags
 		Map<Integer, Set<String>> fidActivityFlagSetRelation = allActivities.stream().collect(Collectors.groupingBy(Activity::getCreateFid, Collectors.mapping(Activity::getActivityFlag, Collectors.toSet())));
 		fidActivityFlagSetRelation.forEach((fid, activityFlags) -> activityFlags.forEach(activityFlag -> {
-			activityMarketHandleService.add(fid, activityFlag, operateUserDto);
+			marketHandleService.add(fid, activityFlag, operateUserDto);
 		}));
 	}
 

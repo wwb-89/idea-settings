@@ -2,7 +2,7 @@ package com.chaoxing.activity.admin.controller.general;
 
 import com.chaoxing.activity.admin.util.LoginUtils;
 import com.chaoxing.activity.dto.LoginUserDTO;
-import com.chaoxing.activity.service.activity.market.ActivityMarketValidationService;
+import com.chaoxing.activity.service.activity.market.MarketValidationService;
 import com.chaoxing.activity.util.annotation.LoginRequired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -24,7 +24,7 @@ import javax.servlet.http.HttpServletRequest;
 public class BlacklistController {
 
 	@Resource
-	private ActivityMarketValidationService marketValidationService;
+	private MarketValidationService marketValidationService;
 
 	@LoginRequired
 	@RequestMapping("list")

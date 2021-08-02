@@ -31,6 +31,8 @@ public class WebTemplate {
     private Integer id;
     /** 模板id; column: template_id*/
     private Integer templateId;
+    /** 网站id; column: website_id*/
+    private Integer websiteId;
     /** 模板名称; column: name*/
     private String name;
     /** 活动形式; column: activity_type*/

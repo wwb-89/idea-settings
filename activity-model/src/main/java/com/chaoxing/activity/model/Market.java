@@ -18,7 +18,7 @@ import java.util.Optional;
 
 /**
  * 活动市场表
- * @className: ActivityMarket, table_name: t_activity_market
+ * @className: Market, table_name: t_market
  * @Description: 
  * @author: mybatis generator
  * @date: 2021-04-11 11:06:42
@@ -28,8 +28,8 @@ import java.util.Optional;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@TableName(value = "t_activity_market")
-public class ActivityMarket {
+@TableName(value = "t_market")
+public class Market {
 
     /** 主键; column: id*/
     @TableId(type = IdType.AUTO)

@@ -6,7 +6,7 @@ import com.chaoxing.activity.mapper.TemplateMapper;
 import com.chaoxing.activity.model.*;
 import com.chaoxing.activity.service.activity.engine.SignUpConditionService;
 import com.chaoxing.activity.service.activity.engine.SignUpFillInfoTypeService;
-import com.chaoxing.activity.service.activity.market.ActivityMarketQueryService;
+import com.chaoxing.activity.service.activity.market.MarketQueryService;
 import com.chaoxing.activity.util.exception.BusinessException;
 import com.google.common.collect.Lists;
 import lombok.extern.slf4j.Slf4j;
@@ -38,7 +38,7 @@ public class TemplateHandleService {
 	private TemplateComponentMapper templateComponentMapper;
 
 	@Resource
-	private ActivityMarketQueryService activityMarketQueryService;
+	private MarketQueryService activityMarketQueryService;
 	@Resource
 	private TemplateQueryService templateQueryService;
 	@Resource
@@ -90,7 +90,7 @@ public class TemplateHandleService {
 	*/
 	@Transactional(rollbackFor = Exception.class)
 	public void cloneTemplate(Integer marketId, Integer originTemplateId) {
-		ActivityMarket activityMarket = activityMarketQueryService.getById(marketId);
+		Market activityMarket = activityMarketQueryService.getById(marketId);
 		Template originTemplate = templateQueryService.getById(originTemplateId);
 		Optional.ofNullable(originTemplate).orElseThrow(() -> new BusinessException("模版不存在"));
 

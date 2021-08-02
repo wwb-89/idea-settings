@@ -5,7 +5,7 @@ import com.chaoxing.activity.dto.LoginUserDTO;
 import com.chaoxing.activity.dto.RestRespDTO;
 import com.chaoxing.activity.dto.activity.market.ActivityMarketCreateParamDTO;
 import com.chaoxing.activity.dto.activity.market.ActivityMarketUpdateParamDTO;
-import com.chaoxing.activity.service.activity.market.ActivityMarketHandleService;
+import com.chaoxing.activity.service.activity.market.MarketHandleService;
 import com.chaoxing.activity.util.annotation.LoginRequired;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -26,7 +26,7 @@ import javax.servlet.http.HttpServletRequest;
 public class MarketApiController {
 
 	@Resource
-	private ActivityMarketHandleService activityMarketHandleService;
+	private MarketHandleService marketHandleService;
 
 	/**创建活动市场（来源：微服务）
 	 * @Description 
@@ -39,7 +39,7 @@ public class MarketApiController {
 	@RequestMapping("new/from-wfw")
 	public RestRespDTO newFromWfw(HttpServletRequest request, ActivityMarketCreateParamDTO activityMarketCreateParamDto) {
 		LoginUserDTO loginUser = LoginUtils.getLoginUser(request);
-		activityMarketHandleService.addFromWfw(activityMarketCreateParamDto, loginUser.buildOperateUserDTO());
+		marketHandleService.addFromWfw(activityMarketCreateParamDto, loginUser.buildOperateUserDTO());
 		return RestRespDTO.success();
 	}
 
@@ -54,7 +54,7 @@ public class MarketApiController {
 	@LoginRequired
 	@RequestMapping("update/from-wfw")
 	public RestRespDTO updateFromWfw(HttpServletRequest request, ActivityMarketUpdateParamDTO activityMarketUpdateParamDto) {
-		activityMarketHandleService.updateFromWfw(activityMarketUpdateParamDto);
+		marketHandleService.updateFromWfw(activityMarketUpdateParamDto);
 		return RestRespDTO.success();
 	}
 
