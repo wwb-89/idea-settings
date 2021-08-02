@@ -1,13 +1,24 @@
 package com.chaoxing.activity.api.controller;
 
+import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.chaoxing.activity.api.vo.ActivityStatSummaryVO;
+import com.chaoxing.activity.api.vo.UserSignUpStatusVo;
+import com.chaoxing.activity.api.vo.UserSignUpVo;
+import com.chaoxing.activity.api.vo.UserStatSummaryVO;
 import com.chaoxing.activity.dto.RestRespDTO;
+import com.chaoxing.activity.dto.UserResultDTO;
 import com.chaoxing.activity.dto.activity.ActivityExternalDTO;
+import com.chaoxing.activity.dto.manager.sign.UserSignUpDTO;
 import com.chaoxing.activity.dto.manager.wfw.WfwAreaDTO;
 import com.chaoxing.activity.dto.query.ActivityQueryDTO;
+import com.chaoxing.activity.dto.query.UserResultQueryDTO;
+import com.chaoxing.activity.dto.query.admin.ActivityStatSummaryQueryDTO;
+import com.chaoxing.activity.dto.stat.ActivityStatSummaryDTO;
 import com.chaoxing.activity.model.Activity;
 import com.chaoxing.activity.model.Group;
 import com.chaoxing.activity.model.LoginCustom;
+import com.chaoxing.activity.model.UserStatSummary;
 import com.chaoxing.activity.service.GroupService;
 import com.chaoxing.activity.service.LoginService;
 import com.chaoxing.activity.service.activity.ActivityIsAboutStartHandleService;
@@ -15,14 +26,20 @@ import com.chaoxing.activity.service.activity.ActivityQueryService;
 import com.chaoxing.activity.service.activity.ActivityValidationService;
 import com.chaoxing.activity.service.activity.collection.ActivityCollectionHandleService;
 import com.chaoxing.activity.service.activity.collection.ActivityCollectionQueryService;
+import com.chaoxing.activity.service.activity.stat.ActivityStatSummaryQueryService;
+import com.chaoxing.activity.service.manager.module.SignApiService;
 import com.chaoxing.activity.service.manager.wfw.WfwCoordinateApiService;
 import com.chaoxing.activity.service.manager.wfw.WfwAreaApiService;
+import com.chaoxing.activity.service.stat.UserStatSummaryQueryService;
+import com.chaoxing.activity.service.user.result.UserResultQueryService;
 import com.chaoxing.activity.service.util.Model2DtoService;
 import com.chaoxing.activity.util.HttpServletRequestUtils;
 import com.chaoxing.activity.util.constant.CookieConstant;
 import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.BeanUtils;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
@@ -31,7 +48,9 @@ import java.io.UnsupportedEncodingException;
 import java.math.BigDecimal;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
+import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -70,6 +89,14 @@ public class ActivityApiController {
 	private ActivityValidationService activityValidationService;
 	@Resource
 	private ActivityCollectionHandleService activityCollectionHandleService;
+	@Resource
+	private ActivityStatSummaryQueryService activityStatSummaryQueryService;
+	@Resource
+	private UserStatSummaryQueryService userStatSummaryQueryService;
+	@Resource
+	private UserResultQueryService userResultQueryService;
+	@Resource
+	private SignApiService signApiService;
 
 	/**组活动推荐
 	 * @Description 
@@ -315,4 +342,110 @@ public class ActivityApiController {
 		return RestRespDTO.success(activityQueryService.getByWebsiteId(websiteId));
 	}
 
+	/**根据fid或marketId查询活动统计接口
+	* @Description
+	* @author huxiaolong
+	* @Date 2021-08-02 14:36:23
+	* @param fid
+	* @param marketId
+	* @return
+	*/
+	@RequestMapping("activity/stat/summary")
+	public RestRespDTO pageActivityStatResult(HttpServletRequest request, Integer fid, Integer marketId) {
+		Page page = HttpServletRequestUtils.buid(request);
+		page = activityStatSummaryQueryService.activityStatSummaryPage(page, ActivityStatSummaryQueryDTO.builder().fid(fid).marketId(marketId).build());
+
+		List<ActivityStatSummaryDTO> records = page.getRecords();
+		List<ActivityStatSummaryVO> activityStatSummaryVOList = Lists.newArrayList();
+		if (CollectionUtils.isNotEmpty(records)) {
+			records.forEach(v -> {
+				activityStatSummaryVOList.add(ActivityStatSummaryVO.buildActivityStatSummaryVo(v));
+			});
+			page.setRecords(activityStatSummaryVOList);
+		}
+		return RestRespDTO.success(page);
+	}
+
+	/**根据活动activityId查询成绩考核接口
+	* @Description
+	* @author huxiaolong
+	* @Date 2021-08-02 14:36:23
+	* @param activityId
+	* @return
+	*/
+	@RequestMapping("activity/{activityId}/result")
+	public RestRespDTO pageActivityUserResult(HttpServletRequest request, @PathVariable Integer activityId) {
+		Page page = HttpServletRequestUtils.buid(request);
+		return RestRespDTO.success(userResultQueryService.pageUserResult(page, UserResultQueryDTO.builder().activityId(activityId).build()));
+	}
+
+	/**根据fid 或 marketId 或者 uid(uids) 查询用户统计结果接口
+	* @Description
+	* @author huxiaolong
+	* @Date 2021-08-02 14:36:23
+	* @param fid
+	* @param marketId
+	* @param uids
+	* @return
+	*/
+	@RequestMapping("user/stat")
+	public RestRespDTO pageUserStatResult(HttpServletRequest request, Integer fid, Integer marketId, String uids) {
+		Page page = HttpServletRequestUtils.buid(request);
+		page = userStatSummaryQueryService.pageUserStatResult(page, fid, marketId, uids);
+		List<UserStatSummary> records = page.getRecords();
+		List<UserStatSummaryVO> userStatSummaryVOList = Lists.newArrayList();
+		if (CollectionUtils.isNotEmpty(records)) {
+			records.forEach(v -> {
+				userStatSummaryVOList.add(UserStatSummaryVO.buildUserStatSummaryVO(v));
+			});
+			page.setRecords(userStatSummaryVOList);
+		}
+		return RestRespDTO.success(page);
+	}
+
+	/**根据活动activityId 和 uid(uids) 查询用户报名情况接口
+	* @Description
+	* @author huxiaolong
+	* @Date 2021-08-02 14:36:23
+	* @param activityId
+	* @param uids
+	* @return
+	*/
+	@RequestMapping("activity/{activityId}/user/sign-up")
+	public RestRespDTO pageActivityUserSignUpResult(Integer activityId, String uids) {
+		Activity activity = activityQueryService.getById(activityId);
+		List<Integer> uidList = Lists.newArrayList();
+		if (StringUtils.isNotBlank(uids)) {
+			uidList = Arrays.stream(uids.split(",")).map(Integer::valueOf).collect(Collectors.toList());
+		}
+		List<UserSignUpDTO> userSignUpDTOList = signApiService.listUserSignUpBySignIdUids(activity.getSignId(), uidList);
+		return RestRespDTO.success(transToUserSignUpStatus(userSignUpDTOList));
+	}
+
+	/**
+	 * 转换用户报名信息
+	 * @param userSignUpDTOList
+	 * @return
+	 */
+	private List<UserSignUpStatusVo> transToUserSignUpStatus(List<UserSignUpDTO> userSignUpDTOList) {
+		if (CollectionUtils.isEmpty(userSignUpDTOList)) {
+			return Lists.newArrayList();
+		}
+		Map<Integer, UserSignUpStatusVo> userSignUpStatusMap = Maps.newHashMap();
+
+		userSignUpDTOList.forEach(v -> {
+			UserSignUpStatusVo userSignUpStatusVo = userSignUpStatusMap.get(v.getUid());
+			if (userSignUpStatusVo == null) {
+				userSignUpStatusVo = UserSignUpStatusVo.builder()
+						.uid(v.getUid())
+						.uname(v.getUname())
+						.userName(v.getUserName())
+						.userSignUps(Lists.newArrayList())
+						.build();
+			}
+			userSignUpStatusVo.getUserSignUps().add(UserSignUpVo.buildUserSignUp(v));
+			userSignUpStatusMap.put(v.getUid(), userSignUpStatusVo);
+		});
+		return Lists.newArrayList(userSignUpStatusMap.values());
+	}
 }

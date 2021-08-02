@@ -15,32 +15,45 @@
         t.activity_id, t.signed_in_num, t.sign_in_rate, t.qualified_num,  t.signed_up_num, t.avg_participate_time_length, t.create_time, t.update_time
     </sql>
 
+    <sql id="activityStatColumnList">
+        t1.id as activityId,
+        t1.sign_id as signId,
+        t1.name as activityName,
+        t1.preview_url as activityPreviewUrl,
+        t1.status as activityStatus,
+        t1.activity_classify_id as activityClassifyId,
+        t1.create_user_name as activityCreator,
+        t1.create_uid as activityCreateUid,
+        t1.integral as integral,
+        t1.start_time as startTime,
+        t1.end_time as endTime,
+        t.signed_in_num as signedInNum,
+        t.sign_in_rate as signInRate,
+        t.qualified_num as qualifiedNum,
+        t.signed_up_num as signedUpNum,
+        t.avg_participate_time_length as avgParticipateTimeLength,
+        t.create_time as createTime,
+        t.update_time as updateTime,
+        (CASE WHEN ISNULL(t2.score) THEN 0 ELSE t2.score END) rateScore,
+        (CASE WHEN ISNULL(t2.score_num) THEN 0 ELSE t2.score_num END) rateNum
+    </sql>
+
     <select id="activityStatSummaryPage" resultType="com.chaoxing.activity.dto.stat.ActivityStatSummaryDTO">
         SELECT
-            t1.id as activityId,
-            t1.sign_id as signId,
-            t1.name as activityName,
-            t1.preview_url as activityPreviewUrl,
-            t1.status as activityStatus,
-            t1.activity_classify_id as activityClassifyId,
-            t1.create_user_name as activityCreator,
-            t1.create_uid as activityCreateUid,
-            t1.integral as integral,
-            t1.start_time as startTime,
-            t1.end_time as endTime,
-            t.signed_in_num as signedInNum,
-            t.sign_in_rate as signInRate,
-            t.qualified_num as qualifiedNum,
-            t.signed_up_num as signedUpNum,
-            t.avg_participate_time_length as avgParticipateTimeLength,
-            t.create_time as createTime,
-            t.update_time as updateTime,
-            (CASE WHEN ISNULL(t2.score) THEN 0 ELSE t2.score END) rateScore,
-            (CASE WHEN ISNULL(t2.score_num) THEN 0 ELSE t2.score_num END) rateNum
+            <include refid="activityStatColumnList"></include>
         FROM
             t_activity_stat_summary t
             INNER JOIN t_activity t1 ON t1.id = t.activity_id
-            AND t1.create_fid = #{queryItem.fid}
+            <choose>
+                <when test="marketId != null">
+                    AND t1.market_id = #{queryItem.marketId}
+                </when>
+                <otherwise>
+                    <if test="fid != null">
+                        AND t1.create_fid = #{queryItem.marketId.fid}
+                    </if>
+                </otherwise>
+            </choose>
             AND t1.status != 0
             <if test="queryItem.name != null and queryItem.name != ''">
                 <bind name="nameBind" value="'%' + queryItem.name + '%'"/>

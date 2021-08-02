@@ -67,6 +67,8 @@ public class SignApiService {
 	private static final String NOTICE_COLLECTED_URL = SIGN_API_DOMAIN + "/sign/%d/notice/collected";
 	/** 报名签到参与范围描述yrl */
 	private static final String SIGN_PARTICIPATE_SCOPE_DESCRIBE_URL = SIGN_API_DOMAIN + "/sign/%d/scope/describe";
+	/** 报名签到下用户报名信息 */
+	private static final String SIGN_USER_SIGN_UP_URL = SIGN_API_DOMAIN + "/sign/%d/user/sign-up";
 
 	/** 取消报名 */
 	private static final String CANCEL_SIGN_UP_URL = SIGN_API_DOMAIN + "/sign-up/%d/cancel";
@@ -769,6 +771,26 @@ public class SignApiService {
 		String result = restTemplate.getForObject(url, String.class);
 		JSONObject jsonObject = JSON.parseObject(result);
 		return resultHandle(jsonObject, () -> JSON.parseArray(jsonObject.getString("data"), UserNotSignedInNumStatDTO.class), (message) -> new BusinessException(message));
+	}
+
+	/**查询报名签到下各报名的用户报名情况
+	 * @Description
+	 * @author wwb
+	 * @Date 2021-07-27 20:04:14
+	 * @param signId
+	 * @return java.util.List<com.chaoxing.activity.dto.stat.UserNotSignedInNumStatDTO>
+	*/
+	public List<UserSignUpDTO> listUserSignUpBySignIdUids(Integer signId, List<Integer> uids) {
+		String url = String.format(SIGN_USER_SIGN_UP_URL, signId);
+		HttpHeaders httpHeaders = new HttpHeaders();
+		httpHeaders.setContentType(MediaType.APPLICATION_JSON);
+		HttpEntity<String> httpEntity = new HttpEntity<>(JSON.toJSONString(uids), httpHeaders);
+		String result = restTemplate.postForObject(url, httpEntity, String.class);
+
+		JSONObject jsonObject = JSON.parseObject(result);
+		return resultHandle(jsonObject, () -> JSON.parseArray(jsonObject.getString("data"), UserSignUpDTO.class), (message) -> {
+			throw new BusinessException(message);
+		});
 	}
 
 }

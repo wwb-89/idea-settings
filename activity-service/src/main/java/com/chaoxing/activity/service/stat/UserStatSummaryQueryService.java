@@ -19,10 +19,12 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
 import java.math.BigDecimal;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -279,4 +281,23 @@ public class UserStatSummaryQueryService {
 		return page;
 	}
 
+	/**分页查询用户统计
+	* @Description
+	* @author huxiaolong
+	* @Date 2021-08-02 15:21:30
+	* @param page
+	* @param fid
+	* @param marketId
+	* @param uids
+	* @return com.baomidou.mybatisplus.extension.plugins.pagination.Page<com.chaoxing.activity.model.UserStatSummary>
+	*/
+	public Page<UserStatSummary> pageUserStatResult(Page<UserStatSummary> page, Integer fid, Integer marketId, String uids) {
+		List<Integer> uidList = null;
+		if (StringUtils.isNotBlank(uids)) {
+			uidList = Arrays.stream(uids.split(",")).map(Integer::valueOf).collect(Collectors.toList());
+			page.setSize(uidList.size());
+		}
+		page = userStatSummaryMapper.pageUserStatResult(page, fid, marketId, uidList);
+		return page;
+	}
 }

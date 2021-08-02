@@ -23,6 +23,8 @@ public class ActivityStatSummaryQueryDTO {
 
     private Integer fid;
 
+    private Integer marketId;
+
     private String name;
 
     private Integer orderFieldId;

@@ -88,11 +88,9 @@ public class ActivityStatSummaryQueryService {
     * @return void
     */
     private void packagePageData(Page<ActivityStatSummaryDTO> page) {
-        List<Integer> activityIds = Lists.newArrayList();
         List<Integer> signIds = Lists.newArrayList();
         Set<Integer> classifyIds = Sets.newHashSet();
         for (ActivityStatSummaryDTO record : page.getRecords()) {
-            activityIds.add(record.getActivityId());
             if (record.getSignId() != null) {
                 signIds.add(record.getSignId());
             }

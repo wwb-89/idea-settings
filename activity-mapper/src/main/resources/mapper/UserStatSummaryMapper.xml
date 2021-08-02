@@ -122,4 +122,56 @@
             AND t.is_valid = 1
     </select>
 
+    <select id="pageUserStatResult" resultType="com.chaoxing.activity.model.UserStatSummary">
+        SELECT
+        t.*,
+        ( CASE WHEN signInNum > 0 THEN ( CONVERT ( (signedInNum / signInNum) * 100, DECIMAL ( 10, 2 ))) ELSE 0 END ) signedInRate
+        FROM (
+        SELECT
+        t.uid uid,
+        t.uname uname,
+        t.real_name realName,
+        t.mobile mobile,
+        t.student_no studentNo,
+        t.organization_structure organizationStructure,
+        COUNT( 1 ) participateActivityNum,
+        SUM( t.sign_up_num) signUpNum,
+        SUM( t.signed_up_num) signedUpNum,
+        SUM( t.sign_in_num ) signInNum,
+        SUM( t.signed_in_num ) signedInNum,
+        SUM( t.rating_num ) ratingNum,
+        SUM( t.integral ) integral,
+        SUM( t2.qualified_status ) qualifiedNum,
+        SUM( t.participate_time_length ) participateTimeLength
+        FROM
+        t_user_stat_summary t
+        INNER JOIN t_activity t1 ON t.activity_id = t1.id
+        <choose>
+            <when test="marketId != null">
+                AND t1.market_id = #{marketId}
+            </when>
+            <otherwise>
+                <if test="fid != null">
+                    AND t1.create_fid = #{fid}
+                </if>
+            </otherwise>
+        </choose>
+        AND t1.`status` IN (1, 2, 3, 4)
+        LEFT JOIN t_user_result t2 ON t.activity_id = t2.activity_id
+        AND t.uid = t2.uid
+        WHERE
+        1 = 1
+        <if test="uidList != null and uidList.size() != 0">
+            AND t.uid IN
+            <foreach collection="uidList" index="key" item="value" open="(" close=")" separator=",">
+                #{value}
+            </foreach>
+        </if>
+        GROUP BY
+        t.uid
+        ) t
+        ORDER BY
+            t1.create_time
+    </select>
+
 </mapper>

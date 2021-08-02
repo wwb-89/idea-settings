@@ -66,4 +66,15 @@ public interface UserStatSummaryMapper extends BaseMapper<UserStatSummary> {
     */
     Integer countUserTotalTimeLength(@Param("uid") Integer uid);
 
+    /**分页查询用户参加的活动
+    * @Description
+    * @author huxiaolong
+    * @Date 2021-08-02 15:16:37
+    * @param page
+    * @param fid
+    * @param marketId
+    * @param uidList
+    * @return com.baomidou.mybatisplus.extension.plugins.pagination.Page<?>
+    */
+    Page<UserStatSummary> pageUserStatResult(Page<UserStatSummary> page, @Param("fid") Integer fid, @Param("marketId") Integer marketId, @Param("uidList") List<Integer> uidList);
 }
