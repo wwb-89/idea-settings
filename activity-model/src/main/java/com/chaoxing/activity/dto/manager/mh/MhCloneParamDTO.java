@@ -21,7 +21,10 @@ import java.util.List;
 @AllArgsConstructor
 public class MhCloneParamDTO {
 
+	/** 模版id */
 	private Integer templateId;
+	/** 网站id */
+	private Integer websiteId;
 	/** 网站名称 */
 	private String websiteName;
 	private Integer wfwfid;

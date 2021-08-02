@@ -448,6 +448,7 @@ public class ActivityHandleService {
 		WebTemplate webTemplate = webTemplateService.webTemplateExist(webTemplateId);
 		MhCloneParamDTO mhCloneParam = new MhCloneParamDTO();
 		mhCloneParam.setTemplateId(webTemplate.getTemplateId());
+		mhCloneParam.setWebsiteId(webTemplate.getWebsiteId());
 		mhCloneParam.setWebsiteName(activity.getName());
 		mhCloneParam.setOriginPageId(webTemplate.getOriginPageId());
 		mhCloneParam.setUid(loginUser.getUid());

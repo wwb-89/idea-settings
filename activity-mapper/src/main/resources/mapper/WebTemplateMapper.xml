@@ -3,6 +3,8 @@
 <mapper namespace="com.chaoxing.activity.mapper.WebTemplateMapper">
     <resultMap id="BaseResultMap" type="com.chaoxing.activity.model.WebTemplate">
         <id column="id" jdbcType="INTEGER" property="id" />
+        <result column="template_id" jdbcType="INTEGER" property="templateId" />
+        <result column="website_id" jdbcType="INTEGER" property="websiteId" />
         <result column="name" jdbcType="VARCHAR" property="name" />
         <result column="activity_type" jdbcType="VARCHAR" property="activityType" />
         <result column="cover_url" jdbcType="VARCHAR" property="coverUrl" />
@@ -16,7 +18,7 @@
         <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
     </resultMap>
     <sql id="Base_Column_List">
-        t.id, t.name, t.activity_type, t.cover_url, t.preview_url, t.origin_page_id, t.is_system, t.affiliation_area_code, t.affiliation_fid, t.sequence, t.is_deleted, t.create_time
+        t.id, t.template_id, t.website_id, t.name, t.activity_type, t.cover_url, t.preview_url, t.origin_page_id, t.is_system, t.affiliation_area_code, t.affiliation_fid, t.sequence, t.is_deleted, t.create_time
     </sql>
 
     <select id="listAffiliation" resultMap="BaseResultMap">
