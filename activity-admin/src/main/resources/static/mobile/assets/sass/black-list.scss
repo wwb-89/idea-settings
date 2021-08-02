@@ -1,0 +1,50 @@
+body,html{
+    background: #F2F4F7;
+}
+.black-list{
+    .content{
+        height: 14.125rem;
+        background: #ffffff;
+        padding: 2.75rem 0;
+        box-sizing: border-box;
+        .warning{
+            display: inline-block;
+            vertical-align: top;
+            width: 2.5rem;
+            height: 2.5rem;
+        }
+        .text1{
+            font-size: 1.25rem;
+            line-height: 1.75rem;
+            text-align: center; 
+            color: #333333;
+            margin-top: .75rem;
+        }
+        .text2{
+            font-size: .9375rem;
+            line-height: 1.3125rem;
+            text-align: center;
+            color: #666666;
+            margin-top: .5rem;
+        }
+        .text3{
+            color: #FBA233;
+            margin-left: .375rem;
+        }
+    }
+    .go-index{
+        display: inline-block;
+        width: 18.75rem;
+        height: 2.8125rem;
+        text-align: center;
+        line-height: 2.75rem;
+        font-size: 1.0625rem;
+        color: #FFFFFF;
+        margin: 2.5rem auto;
+        background: #FFFFFF;
+        border: 1px solid #0084FF;
+        border-radius: 1.5625rem;
+        color: #0084FF;
+        cursor: pointer;
+    }
+}
