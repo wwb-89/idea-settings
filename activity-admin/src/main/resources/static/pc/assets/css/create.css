@@ -2134,3 +2134,14 @@ input.btn-name,
   height: 27px;
   background: url(../images/select-yes.png);
 }
+
+.special-style {
+  padding-top: 50px;
+  width: 900px;
+  margin: 0 auto;
+}
+
+.special-style .top {
+  height: 50px;
+  border-radius: 0;
+}
