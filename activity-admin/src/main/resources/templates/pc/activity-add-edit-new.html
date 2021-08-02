@@ -536,7 +536,7 @@
             </div>
             <div class="cover-list">
                 <ul>
-                    <li :class="{current: operateWebTemplateId == webTemplate.id}" v-for="(webTemplate, index) of webTemplates" :key="'web-templates' + index" @click="selectTemplate(index)">
+                    <li :class="{current: operateWebTemplateId == webTemplate.id}" v-for="(webTemplate, index) of webTemplates" :key="'web-templates' + index" v-if="!webTemplate.deleted" @click="selectTemplate(index)">
                         <div class="img-inner-box">
                             <img :src="webTemplate.coverUrl" class="img">
                             <div class="magnifier" @click="previewTemplate(index, $event)"><i></i></div>
