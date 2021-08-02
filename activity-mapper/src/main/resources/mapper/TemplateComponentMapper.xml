@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.chaoxing.activity.mapper.TemplateComponentMapper">
+    <resultMap id="BaseResultMap" type="com.chaoxing.activity.model.TemplateComponent">
+        <id column="id" jdbcType="INTEGER" property="id" />
+        <result column="pid" jdbcType="INTEGER" property="pid" />
+        <result column="template_id" jdbcType="INTEGER" property="templateId" />
+        <result column="component_id" jdbcType="INTEGER" property="componentId" />
+        <result column="name" jdbcType="VARCHAR" property="name" />
+        <result column="introduction" jdbcType="VARCHAR" property="introduction" />
+        <result column="is_required" jdbcType="BIT" property="required" />
+        <result column="sequence" jdbcType="INTEGER" property="sequence" />
+        <result column="is_deleted" jdbcType="INTEGER" property="deleted" />
+    </resultMap>
+    <sql id="Base_Column_List">
+        t.id, t.template_id, t.pid, t.component_id, t.name, t.introduction, t.is_required, t.sequence, is_deleted
+    </sql>
+
+    <insert id="batchAdd" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO
+            t_template_component ( template_id, pid, component_id, `name`, introduction, is_required, `sequence` )
+        VALUES
+        <foreach collection="templateComponents" item="item" open="" close="" separator=",">
+            (
+                #{item.templateId},
+                #{item.pid},
+                #{item.componentId},
+                #{item.name},
+                #{item.introduction},
+                #{item.required},
+                #{item.sequence}
+            )
+        </foreach>
+    </insert>
+    <select id="listTemplateComponentInfo" resultType="com.chaoxing.activity.dto.engine.TemplateComponentDTO">
+        SELECT
+            t.id,
+            t.pid,
+            t.component_id as componentId,
+            t.template_id as templateId,
+            t.name,
+            t.introduction,
+            t.is_required as required,
+            t1.code,
+            t1.type,
+            t1.data_origin as dataOrigin,
+            t1.origin_identify as originIdentify,
+            t1.field_flag as fieldFlag
+        FROM
+            t_template_component t
+            LEFT JOIN t_component t1 ON t.component_id = t1.id
+        where
+            t.template_id = #{templateId}
+            and t.is_deleted = 0
+        ORDER BY
+            t.sequence
+    </select>
+
+
+</mapper>

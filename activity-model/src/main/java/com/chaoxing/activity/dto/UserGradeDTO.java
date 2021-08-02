@@ -32,6 +32,6 @@ public class UserGradeDTO {
     private String activityName;
     /** 总分(积分) */
     private BigDecimal totalScore;
-
-     List<UserActionRecord> userActionRecords;
+    /** 用户行为记录 */
+    private List<UserActionRecord> userActionRecords;
 }

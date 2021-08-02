@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<title>黑名单</title>
+	<meta charset="UTF-8">
+	<meta name="renderer" content="webkit">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<link rel="stylesheet" href="/static/pc/assets/sign/assets/icomoon/style.css" th:href="@{/pc/assets/sign/assets/icomoon/style.css}">
+	<link rel="stylesheet" href="/static/pc/assets/lib/element-ui/lib/theme-chalk/index.css" th:href="@{/pc/assets/lib/element-ui/lib/theme-chalk/index.css}">
+	<link rel="stylesheet" href="/static/pc/assets/lib/zTree_v3/css/zTreeStyle/zTreeStyle.css" th:href="@{/pc/assets/lib/zTree_v3/css/zTreeStyle/zTreeStyle.css}">
+	<link rel="stylesheet" href="/static/pc/assets/sign/assets/css/commonTable.css" th:href="@{/pc/assets/sign/assets/css/commonTable.css}">
+	<link rel="stylesheet" href="/static/pc/assets/sign/assets/css/confirm_dialog.css" th:href="@{/pc/assets/sign/assets/css/confirm_dialog.css}">
+	<link rel="stylesheet" href="/static/pc/assets/css/choose-dialog.css" th:href="@{/pc/assets/css/choose-dialog.css}">
+	<link rel="stylesheet" href="/static/pc/assets/css/limits-manage.css" th:href="@{/pc/assets/css/limits-manage.css}">
+	<link rel="stylesheet" href="/static/mobile/assets/lib/mescroll/mescroll.css" th:href="@{/mobile/assets/lib/mescroll/mescroll.css}">
+	<style>
+        [v-cloak] {
+            display: none;
+        }
+	</style>
+</head>
+<body>
+<div id="vm" v-cloak>
+	<div style="display: block">
+		<!-- 选项卡内容 -->
+		<div class="tab-content-box">
+			<div class="tab-item">
+				<div class="operate-box">
+					<!-- 操作栏 -->
+					<div class="table-operate-box fs0">
+						<el-button type="primary" class="btn-bg-blue export-btn" round @click="toAdd"><i class="el-icon-plus inlineMiddle"></i><span class="inlineMiddle">添加</span></el-button>
+						<el-button class="btn-customize" round v-show="selectedNum > 0" @click="batchRemove">移除</el-button>
+						<el-button class="btn-customize disabled" round disabled="disabled" v-show="selectedNum < 1">移除</el-button>
+						<el-button class="btn-customize" round v-show="false">导出</el-button>
+						<div class="search-Box">
+							<el-input placeholder="搜索" icon="search" class="search" suffix-icon="el-icon-search" v-model.trim="sw" @keyup.enter.native="search"></el-input>
+							<i class="icon-cancel btn-cancel fs16" v-show="sw" @click="clearSearch"></i>
+						</div>
+					</div>
+					<!-- 计数栏 -->
+					<div class="table-count-box fs12">
+						<div class="count-info fl">
+							<span class="colorBlue marginr8">已选择 {{selectedNum}} 人</span>
+							<span class="color999">共 {{total}} 人</span>
+						</div>
+						<div class="clear"></div>
+					</div>
+
+				</div>
+				<el-table v-if="tbodyHeight > 0" class="table-box" :data="blacklists" :max-height="tbodyHeight" ref="blacklistTable" @selection-change="selectionChange" @sort-change="changeOrderField">
+					<el-table-column align="left" fixed type="selection" width="24"></el-table-column>
+					<el-table-column align="left" fixed prop="userName" label="姓名" min-width="82"></el-table-column>
+					<el-table-column align="left" prop="account" label="账号" min-width="120"></el-table-column>
+					<el-table-column align="left" sortable label="添加时间" min-width="80">
+						<template slot-scope="scope">
+							{{scope.row.createTimestamp| timestampFormat}}
+						</template>
+					</el-table-column>
+					<el-table-column align="left" label="描述" min-width="280">
+						<template slot-scope="scope">
+							{{scope.row | description}}
+						</template>
+					</el-table-column>
+					<el-table-column align="left" fixed="right" label="操作" min-width="80">
+						<template slot-scope="scope">
+							<div>
+								<el-button type="text" size="middle" @click="remove(scope.row.uid)">移除</el-button>
+							</div>
+						</template>
+					</el-table-column>
+				</el-table>
+				<el-pagination class="fixPage" v-show="pages > 0" background layout="prev, pager, next" :total="total" :page-size="queryParams.pageSize" :current-page="queryParams.pageNum" @current-change="changePage" style="text-align: center;"></el-pagination>
+			</div>
+		</div>
+	</div>
+	<!--移除弹窗-->
+	<vue-confirm-common ref="removeWindow" :message="'确定移除吗？'" :cancel="'保留'" :sure="'移除'" @callback="removeSubmit"></vue-confirm-common>
+	<vue-confirm-common ref="batchRemoveWindow" :message="'确定移除吗？'" :cancel="'保留'" :sure="'移除'" @callback="batchRemoveSubmit"></vue-confirm-common>
+	<!--人员选择-->
+	<vue-user-select ref="userSelectWindow" @callback="userSelectSubmit"></vue-user-select>
+</div>
+<div th:replace="pc/include/common_js :: common_js(~{::script})">
+	<script src="/static/pc/assets/lib/element-ui/lib/index.js" th:src="@{/pc/assets/lib/element-ui/lib/index.js}"></script>
+	<script src="/static/pc/assets/component/confirm-common.js" th:src="@{/pc/assets/component/confirm-common.js}"></script>
+	<script src="/static/pc/assets/component/user-select.js" th:src="@{/pc/assets/component/user-select.js}"></script>
+	<script src="/static/pc/assets/lib/set-iframe-height-child.js" th:src="@{/pc/assets/lib/set-iframe-height-child.js}"></script>
+	<script src="/static/mobile/assets/lib/mescroll/mescroll.js" th:src="@{/mobile/assets/lib/mescroll/mescroll.js}"></script>
+	<script th:inline="javascript">
+		var now = new Date();
+		var nowTimestamp = now.getTime();
+		Vue.filter('description', function (blacklist) {
+			if (blacklist.joinType == 'manual') {
+				return "手动添加";
+			}
+			var unlockTime = blacklist.createTimestamp + blacklist.effectiveHours * 60 * 60 * 1000;
+			var remainingMinutes = (unlockTime - nowTimestamp) / (60 * 60 * 1000);
+			remainingMinutes = Math.floor(remainingMinutes);
+			remainingMinutes = remainingMinutes < 1 ? 1 : remainingMinutes;
+			return "违约" + blacklist.defaultNum + "次，剩余"+ remainingMinutes +"小时自动解除";
+		});
+		vm = new Vue({
+			el: '#vm',
+			data: {
+				marketId: [[${marketId}]],
+				blacklists: [],
+				loaded: false,
+				// 总记录数
+				total: 0,
+				// 总页数
+				pages: 0,
+				sw: "",
+				queryParams: {
+					pageNum: 1,
+					pageSize: 10,
+					sw: "",
+					orderType: "DESC"
+				},
+				selectedNum: 0,
+				bodyHeight: $(window).height(),
+				tbodyHeight: 0,
+				operateUid: 0
+			},
+			mounted: function () {
+				var $this = this;
+				var headH = $('.header-box').height();
+				var operateH = $('.operate-box').height();
+				$this.tbodyHeight = $this.bodyHeight - (headH + operateH + 48 + 16 + 32);
+				$this.loadData();
+			},
+			methods: {
+				loadData: function () {
+					var $this = this;
+					var url = ctx + "/api/market/" + $this.marketId + "/blacklist/list";
+					$this.blacklists = [];
+					$this.loaded = true;
+					app.ajaxPostWithLoading(url, $this.queryParams, function (data) {
+						if (data.success) {
+							$this.loaded = false;
+							$this.blacklists = data.data.records;
+							$this.total = data.data.total;
+							$this.pages = data.data.pages;
+						} else {
+							var message = data.message;
+							if (activityApp.isEmpty(message)) {
+								message = "加载黑名单失败";
+							}
+							app.showMsg(message);
+						}
+					}, function () {
+						app.showMsg("加载黑名单失败");
+					});
+				},
+				changePage: function (pageNum) {
+					var $this = this;
+					$this.queryParams.pageNum = pageNum;
+					$this.loadData();
+				},
+				// 搜索
+				search: function () {
+					var $this = this;
+					$this.queryParams.sw = $this.sw;
+					$this.queryParams.pageNum = 1;
+					$this.loadData();
+				},
+				// 清空搜索
+				clearSearch: function () {
+					var $this = this;
+					$this.sw = "";
+					if ($this.queryParams.sw != $this.sw) {
+						$this.queryParams.sw = $this.sw;
+						// 重新搜索
+						$this.search();
+					}
+				},
+				selectionChange: function (val) {
+					var $this = this;
+					$this.selectedNum = val.length;
+				},
+				remove: function (uid) {
+					var $this = this;
+					$this.operateUid = uid;
+					$this.$refs.removeWindow.show = true;
+				},
+				batchRemove: function () {
+					var $this = this;
+					$this.$refs.batchRemoveWindow.show = true;
+				},
+				removeSubmit: function () {
+					var $this = this;
+					var url = ctx + "/api/market/" + $this.marketId + "/blacklist/remove";
+					var params = {
+						uid: $this.operateUid
+					};
+					app.ajaxPostWithLoading(url, params, function (data) {
+						if (data.success) {
+							app.showMsg("操作成功", function () {
+								$this.loadData();
+							});
+						} else {
+							var message = data.message;
+							if (activityApp.isEmpty(message)) {
+								message = "操作失败";
+							}
+							app.showMsg(message);
+						}
+					}, function () {
+						app.showMsg("操作失败");
+					});
+				},
+				batchRemoveSubmit: function () {
+					var $this = this;
+					var url = ctx + "/api/market/" + $this.marketId + "/blacklist/remove/batch";
+					var selection = $this.$refs.blacklistTable.selection;
+					if (selection.length < 1) {
+						app.showMsg("请勾选需要移除的数据");
+						return;
+					}
+					var uids = [];
+					$(selection).each(function () {
+						uids.push(this.uid);
+					});
+					var params = {
+						uids: uids
+					};
+					app.ajaxPostWithLoading(url, params, function (data) {
+						if (data.success) {
+							app.showMsg("操作成功", function () {
+								$this.loadData();
+							});
+						} else {
+							var message = data.message;
+							if (activityApp.isEmpty(message)) {
+								message = "操作失败";
+							}
+							app.showMsg(message);
+						}
+					}, function () {
+						app.showMsg("操作失败");
+					});
+				},
+				toAdd: function () {
+					var $this = this;
+					$this.$refs.userSelectWindow.show = true;
+				},
+				userSelectSubmit: function () {
+					var $this = this;
+					var selectedUsers = $this.$refs.userSelectWindow.selectedUsers;
+					var users = [];
+					$(selectedUsers).each(function () {
+						users.push({
+							marketId: $this.marketId,
+							uid: this.puid,
+							userName: this.name,
+							account: this.uname,
+							defaultNum: 0
+						});
+					});
+					$this.add(users);
+				},
+				add: function (users) {
+					var $this = this;
+					var url = ctx + "/api/market/" + $this.marketId + "/blacklist/add/batch";
+					var params = {
+						blacklistDtosJson: activityApp.getJsonStr(users)
+					};
+					app.ajaxPostWithLoading(url, params, function (data) {
+						if (data.success) {
+							app.showMsg("操作成功", function () {
+								window.location.reload();
+							});
+						} else {
+							var message = data.message;
+							if (activityApp.isEmpty(message)) {
+								message = "操作失败";
+							}
+							app.showMsg(message);
+						}
+					}, function () {
+						app.showMsg("操作失败");
+					});
+				},
+				changeOrderField: function (column) {
+					var $this = this;
+					if ("descending" == column.order) {
+						$this.queryParams.orderType = "DESC";
+					} else {
+						$this.queryParams.orderType = "ASC";
+					}
+					$this.loadData();
+				}
+			}
+		})
+	</script>
+</div>
+</body>
+</html>

@@ -18,31 +18,13 @@
      * @param activityFlagSignModules
      * @returns {{notes: string, defaultSignUpId: null, signIn: {btnName: string, fillInfoFormId: null, address: string, publicList: boolean, startTimeStr: string, scanCodeWay: number, signId: null, way: number, endTimeStr: string, fillInfo: boolean, name: string, startTime: null, id: null, endTime: null, dimension: null, longitude: null}, name: string, signOut: *, id: null, signUp: {btnName: string, fillInfoFormId: null, limitPerson: boolean, publicList: boolean, startTimeStr: string, signId: null, openAudit: boolean, endTimeStr: string, personLimit: number, fillInfo: boolean, startTime: null, id: null, endTime: null}, defaultSignInId: null}}
      */
-    signApp.prototype.newSign = function (activityFlagSignModules) {
-        var $this = this;
-        var signUps = [];
-        var signIns = [];
-        if (!activityApp.isEmpty(activityFlagSignModules)) {
-            $(activityFlagSignModules).each(function () {
-                var moduleType = this.moduleType;
-                if ($this.signUpModuleType == moduleType) {
-                    // 报名
-                    signUps.push($this.newSignUp(this));
-                }else if ($this.signInModuleType == moduleType) {
-                    // 签到
-                    signIns.push($this.newSignIn(this));
-                } else if ($this.signOutModuleType == moduleType) {
-                    // 签退
-                    signIns.push($this.newSignOut(this));
-                }
-            });
-        }
+    signApp.prototype.newSign = function () {
         return {
             id: null,
             name: "",
             notes: "",
-            signUps: signUps,
-            signIns: signIns
+            signUps: [],
+            signIns: []
         };
     };
 
@@ -51,20 +33,11 @@
      * @param activityFlagSignModule
      * @returns {{btnName: string, fillInfoFormId: null, limitPerson: boolean, publicList: boolean, moduleName: (*|string), signId: null, deleted: boolean, openAudit: boolean, personLimit: number, fillInfo: boolean, startTime: number, id: null, endTime: number, endTimestamp: string, startTimestamp: string}}
      */
-    signApp.prototype.newSignUp = function (activityFlagSignModule) {
-        $this = this;
-        if (activityApp.isEmpty(activityFlagSignModule)) {
-            activityFlagSignModule = {
-                moduleName: "报名",
-                enableLimitParticipateScope: false,
-                limitParticipateScopeType: "",
-                customSignUpType: ""
-            }
-        }
+    signApp.prototype.newSignUp = function (tplComponent) {
         return {
             id: null,
             signId: null,
-            name: activityFlagSignModule.moduleName ? activityFlagSignModule.moduleName : "报名",
+            name: tplComponent.name ? tplComponent.name : "报名",
             openAudit: false,
             startTime: new Date(activityApp.generateActivityDefaultStartTime()).getTime(),
             startTimestamp: "",
@@ -75,15 +48,15 @@
             fillInfo: false,
             fillInfoFormId: null,
             publicList: false,
-            btnName: activityFlagSignModule.btnName ? activityFlagSignModule.btnName : "报名参与",
+            btnName: "报名参与",
             endAllowCancel: true,
             endNotAllowCancel: false,
-            enableLimitParticipateScope: activityFlagSignModule.enableLimitParticipateScope,
-            limitParticipateScope: false,
-            limitParticipateScopeType: activityFlagSignModule.limitParticipateScopeType,
+            enableWfwParticipateScope: false,
+            enableContactsParticipateScope: false,
             activityFlag: "",
-            customSignUpType: activityFlagSignModule.customSignUpType,
             participateScopes: [],
+            wfwParticipateScopes: [],
+            contactsParticipateScopes: [],
             deleted: false,
             // deleted取反
             enable: true
@@ -95,20 +68,14 @@
      * @param activityFlagSignModule
      * @returns {{btnName: string, fillInfoFormId: null, address: string, publicList: boolean, moduleName: (*|string), scanCodeWay: number, type: string, signId: null, way: number, deleted: boolean, fillInfo: boolean, name: string, detailAddress: string, startTime: number, id: null, endTime: number, endTimestamp: string, dimension: null, startTimestamp: string, longitude: null}}
      */
-    signApp.prototype.newSignIn = function (activityFlagSignModule) {
-        var $this = this;
+    signApp.prototype.newSignIn = function (tplComponent) {
         var now = new Date();
-        if (activityApp.isEmpty(activityFlagSignModule)) {
-            activityFlagSignModule = {
-                moduleName: "签到"
-            }
-        }
         return {
             id: null,
             signId: null,
-            name: activityFlagSignModule.moduleName ? activityFlagSignModule.moduleName : "签到",
-            type: $this.signInModuleType,
-            typeName: "签到",
+            name: tplComponent.name ? tplComponent.name : "签到",
+            type: tplComponent.code == 'sign_in' ? "sign_in" : "sign_out",
+            typeName: tplComponent.code == 'sign_in' ? "签到" : "签退",
             startTime: now.getTime(),
             startTimestamp: "",
             endTime: (new Date(now.getTime() + 2 * 60 * 60 * 1000)).getTime(),

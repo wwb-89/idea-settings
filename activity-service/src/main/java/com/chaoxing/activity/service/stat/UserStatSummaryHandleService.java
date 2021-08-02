@@ -3,7 +3,7 @@ package com.chaoxing.activity.service.stat;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.chaoxing.activity.dto.manager.PassportUserDTO;
-import com.chaoxing.activity.dto.sign.UserSignStatSummaryDTO;
+import com.chaoxing.activity.dto.manager.sign.UserSignStatSummaryDTO;
 import com.chaoxing.activity.mapper.UserStatSummaryMapper;
 import com.chaoxing.activity.model.Activity;
 import com.chaoxing.activity.model.UserStatSummary;
@@ -146,7 +146,7 @@ public class UserStatSummaryHandleService {
                 .eq(UserStatSummary::getUid, uid)
                 .eq(UserStatSummary::getActivityId, activityId)
         );
-        BigDecimal integral = activity.getIntegralValue();
+        BigDecimal integral = activity.getIntegral();
         integral = Optional.ofNullable(integral).orElse(BigDecimal.ZERO);
         if (!isQualified) {
             integral = BigDecimal.ZERO;

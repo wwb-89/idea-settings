@@ -195,7 +195,11 @@
         if (!$this.isEmpty(coverUrl)) {
             return activity.coverUrl;
         }
-        return "http://p.ananas.chaoxing.com/star3/origin/" + coverCloudId;
+        return $this.buildCloudImgUrl(coverCloudId);
+    };
+
+    activityApp.prototype.buildCloudImgUrl = function (cloudId) {
+        return "http://p.ananas.chaoxing.com/star3/origin/" + cloudId;
     };
 
     /**
@@ -253,6 +257,22 @@
         var date = new Date();
         var dateObj = $this.millisecond2DateObj(date.getTime());
         return dateObj.year + "-" + dateObj.month + "-" + dateObj.day + " " + "00:00:00";
+    };
+    /**
+     * 生成活动的默认开始时间
+     * @returns {string}
+     */
+    activityApp.prototype.generateActivityDefaultStartTimeStamp = function () {
+        var $this = this;
+        return new Date().getTime();
+    };
+    /**
+     * 生成活动的默认结束时间
+     * @returns {string}
+     */
+    activityApp.prototype.generateActivityDefaultEndTimeStamp = function () {
+        var $this = this;
+        return new Date(new Date().setMonth(new Date().getMonth() + 1)).getTime();
     };
     /**
      * 生成活动的默认结束时间
@@ -324,6 +344,25 @@
             today = new Date(Date.parse(todayStr.replace(/-/g, "/")));
         }
         return today.getTime() > timestamp;
+    };
+    /**
+     * 是否被嵌入
+     * @returns {boolean}
+     */
+    activityApp.prototype.isEmbedded = function () {
+        return window.parent !== window;
+    };
+    /**
+     * 手动出发resize
+     */
+    activityApp.prototype.resize = function () {
+        if(document.createEvent) {
+            var event = document.createEvent("HTMLEvents");
+            event.initEvent("resize", true, true);
+            window.dispatchEvent(event);
+        } else if(document.createEventObject) {
+            window.fireEvent("onresize");
+        }
     };
     W['activityApp'] = new activityApp();
 })(window, jQuery, JSON);

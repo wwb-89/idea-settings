@@ -12,10 +12,6 @@ import com.chaoxing.activity.service.activity.ActivityValidationService;
 import com.chaoxing.activity.service.queue.activity.ActivityInspectionResultDecideQueueService;
 import com.chaoxing.activity.service.queue.user.UserResultQueueService;
 import com.chaoxing.activity.service.user.result.UserResultQueryService;
-import com.chaoxing.activity.util.constant.CommonConstant;
-import com.chaoxing.activity.util.enums.UserActionEnum;
-import com.chaoxing.activity.util.enums.UserActionTypeEnum;
-import com.google.common.collect.Lists;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.stereotype.Service;
@@ -76,33 +72,8 @@ public class InspectionConfigHandleService {
 		inspectionConfigMapper.insert(inspectionConfig);
 		Integer configId = inspectionConfig.getId();
 		// 构建默认的积分规则
-		List<InspectionConfigDetail> inspectionConfigDetails = buildDefaultInspectionConfigDetails();
-
-		if (CollectionUtils.isNotEmpty(inspectionConfigDetails)) {
-			inspectionConfigDetails.forEach(inspectionConfigDetail -> inspectionConfigDetail.setConfigId(configId));
-			// 批量新增
-			inspectionConfigDetailMapper.batchAdd(inspectionConfigDetails);
-		}
-	}
-
-	/**默认启用签到
-	 * @Description 签到一次得5分，无上限
-	 * @author wwb
-	 * @Date 2021-07-01 14:27:11
-	 * @param
-	 * @return java.util.List<com.chaoxing.activity.model.InspectionConfigDetail>
-	*/
-	private List<InspectionConfigDetail> buildDefaultInspectionConfigDetails() {
-		List<InspectionConfigDetail> inspectionConfigDetails = Lists.newArrayList();
-		InspectionConfigDetail inspectionConfigDetail = InspectionConfigDetail.builder()
-				.actionType(UserActionTypeEnum.SIGN_IN.getValue())
-				.action(UserActionEnum.SIGNED_IN.getValue())
-				.score(CommonConstant.DEFAULT_SIGNED_IN_SCORE)
-				.upperLimit(null)
-				.deleted(false)
-				.build();
-		inspectionConfigDetails.add(inspectionConfigDetail);
-		return inspectionConfigDetails;
+		InspectionConfigDetail inspectionConfigDetail = InspectionConfigDetail.buildDefault(configId);
+		inspectionConfigDetailMapper.insert(inspectionConfigDetail);
 	}
 
 	/**配置
@@ -159,11 +130,8 @@ public class InspectionConfigHandleService {
 			}
 		}
 		// 如果活动已经结束需要重新判定成绩
-		Integer status = activity.getStatus();
-		if (Objects.equals(Activity.StatusEnum.ENDED.getValue(), status)) {
-			if (standardChanged) {
-				activityInspectionResultDecideQueueService.push(activityId);
-			}
+		if (activity.isEnded() && standardChanged) {
+			activityInspectionResultDecideQueueService.push(activityId);
 		}
 	}
 
@@ -213,19 +181,13 @@ public class InspectionConfigHandleService {
 			if (oldValue == null) {
 				return true;
 			}
-			BigDecimal score = value.getScore();
-			score = Optional.ofNullable(score).orElse(BigDecimal.ZERO);
-			BigDecimal upperLimit = value.getUpperLimit();
-			upperLimit = Optional.ofNullable(upperLimit).orElse(BigDecimal.ZERO);
-			Boolean deleted = value.getDeleted();
-			deleted = Optional.ofNullable(deleted).orElse(false);
+			BigDecimal score = Optional.ofNullable(value.getScore()).orElse(BigDecimal.ZERO);
+			BigDecimal upperLimit = Optional.ofNullable(value.getUpperLimit()).orElse(BigDecimal.ZERO);
+			Boolean deleted = Optional.ofNullable(value.getDeleted()).orElse(false);
 
-			BigDecimal oldScore = oldValue.getScore();
-			oldScore = Optional.ofNullable(oldScore).orElse(BigDecimal.ZERO);
-			BigDecimal oldUpperLimit = oldValue.getUpperLimit();
-			oldUpperLimit = Optional.ofNullable(oldUpperLimit).orElse(BigDecimal.ZERO);
-			Boolean oldDeleted = oldValue.getDeleted();
-			oldDeleted = Optional.ofNullable(oldDeleted).orElse(false);
+			BigDecimal oldScore = Optional.ofNullable(oldValue.getScore()).orElse(BigDecimal.ZERO);
+			BigDecimal oldUpperLimit = Optional.ofNullable(oldValue.getUpperLimit()).orElse(BigDecimal.ZERO);
+			Boolean oldDeleted = Optional.ofNullable(oldValue.getDeleted()).orElse(false);
 			if (score.compareTo(oldScore) != 0) {
 				return true;
 			}

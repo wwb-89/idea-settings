@@ -6,21 +6,24 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.chaoxing.activity.dto.LoginUserDTO;
+import com.chaoxing.activity.dto.activity.ActivityComponentValueDTO;
+import com.chaoxing.activity.dto.activity.ActivityCreateParamDTO;
 import com.chaoxing.activity.dto.activity.ActivitySignedUpDTO;
 import com.chaoxing.activity.dto.activity.ActivityTypeDTO;
 import com.chaoxing.activity.dto.manager.sign.SignStatDTO;
-import com.chaoxing.activity.dto.manager.sign.SignUp;
-import com.chaoxing.activity.dto.module.SignAddEditDTO;
+import com.chaoxing.activity.dto.manager.sign.UserSignUpStatusStatDTO;
+import com.chaoxing.activity.dto.manager.sign.create.SignCreateParamDTO;
+import com.chaoxing.activity.dto.manager.sign.create.SignUpCreateParamDTO;
 import com.chaoxing.activity.dto.query.ActivityManageQueryDTO;
 import com.chaoxing.activity.dto.query.ActivityQueryDTO;
 import com.chaoxing.activity.dto.query.MhActivityCalendarQueryDTO;
-import com.chaoxing.activity.dto.sign.UserSignUpStatusStatDTO;
 import com.chaoxing.activity.mapper.*;
 import com.chaoxing.activity.model.*;
-import com.chaoxing.activity.service.activity.classify.ActivityClassifyQueryService;
+import com.chaoxing.activity.service.activity.classify.ClassifyQueryService;
+import com.chaoxing.activity.service.activity.engine.ActivityComponentValueService;
 import com.chaoxing.activity.service.activity.manager.ActivityManagerQueryService;
-import com.chaoxing.activity.service.manager.WfwRegionalArchitectureApiService;
 import com.chaoxing.activity.service.manager.module.SignApiService;
+import com.chaoxing.activity.service.manager.wfw.WfwAreaApiService;
 import com.chaoxing.activity.util.DateUtils;
 import com.chaoxing.activity.util.constant.DateFormatConstant;
 import com.chaoxing.activity.util.constant.DateTimeFormatterConstant;
@@ -32,6 +35,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
@@ -66,16 +70,20 @@ public class ActivityQueryService {
 	private ActivitySignModuleMapper activitySignModuleMapper;
 
 	@Resource
-	private WfwRegionalArchitectureApiService wfwRegionalArchitectureApiService;
+	private WfwAreaApiService wfwAreaApiService;
 	@Resource
 	private SignApiService signApiService;
 	@Resource
 	private ActivityManagerQueryService activityManagerQueryService;
 	@Resource
-	private ActivityClassifyQueryService activityClassifyQueryService;
+	private ClassifyQueryService classifyQueryService;
 	@Resource
 	private TableFieldDetailMapper tableFieldDetailMapper;
 
+	@Resource
+	private ActivityComponentValueService activityComponentValueService;
+	@Autowired
+	private SignUpConditionEnableMapper signUpConditionEnableMapper;
 
 	/**查询参与的活动
 	 * @Description 
@@ -208,16 +216,7 @@ public class ActivityQueryService {
 	 * @return java.util.List<com.chaoxing.activity.dto.activity.ActivityTypeDTO>
 	*/
 	public List<ActivityTypeDTO> listActivityType() {
-		List<ActivityTypeDTO> result = new ArrayList<>();
-		Activity.ActivityTypeEnum[] values = Activity.ActivityTypeEnum.values();
-		for (Activity.ActivityTypeEnum value : values) {
-			ActivityTypeDTO activityType = ActivityTypeDTO.builder()
-					.name(value.getName())
-					.value(value.getValue())
-					.build();
-			result.add(activityType);
-		}
-		return result;
+		return Arrays.stream(Activity.ActivityTypeEnum.values()).map(ActivityTypeDTO::buildFromActivityTypeEnum).collect(Collectors.toList());
 	}
 
 	/**查询管理的活动列表
@@ -230,22 +229,18 @@ public class ActivityQueryService {
 	 * @return com.baomidou.mybatisplus.extension.plugins.pagination.Page<com.chaoxing.activity.model.Activity>
 	*/
 	public Page<Activity> listManaging(Page<Activity> page, ActivityManageQueryDTO activityManageQuery, LoginUserDTO loginUser) {
-		Integer strict = activityManageQuery.getStrict();
-		strict = Optional.ofNullable(strict).orElse(0);
-		if (activityManageQuery.getOrderFieldId() != null) {
-			TableFieldDetail field = tableFieldDetailMapper.selectById(activityManageQuery.getOrderFieldId());
-			if (field != null) {
-				activityManageQuery.setOrderField(field.getCode());
-			}
-		}
+		Integer strict = Optional.ofNullable(activityManageQuery.getStrict()).orElse(0);
+		activityManageQuery.setOrderField(Optional.ofNullable(activityManageQuery.getOrderFieldId()).map(tableFieldDetailMapper::selectById).map(TableFieldDetail::getCode).orElse(""));
 		if (strict.compareTo(1) == 0) {
 			// 严格模式
 			activityManageQuery.setCreateUid(loginUser.getUid());
 			activityManageQuery.setCreateWfwfid(activityManageQuery.getFid());
 			page = activityMapper.pageCreated(page, activityManageQuery);
 		} else {
-			List<Integer> fids = wfwRegionalArchitectureApiService.listSubFid(activityManageQuery.getFid());
-			activityManageQuery.setFids(fids);
+			if (activityManageQuery.getMarketId() == null) {
+				List<Integer> fids = wfwAreaApiService.listSubFid(activityManageQuery.getFid());
+				activityManageQuery.setFids(fids);
+			}
 			page = activityMapper.pageManaging(page, activityManageQuery);
 		}
 		List<Activity> activities = page.getRecords();
@@ -257,28 +252,11 @@ public class ActivityQueryService {
 	}
 
 	private void packageSignedUpNum(List<Activity> activities) {
-		if (CollectionUtils.isNotEmpty(activities)) {
-			// 查询报名人数
-			List<Integer> signIds = Lists.newArrayList();
-			for (Activity activity : activities) {
-				// 处理活动时间范围
-				activity.setActivityStartEndTime(DateUtils.activityTimeScope(activity.getStartTime(), activity.getEndTime()));
-				Integer signId = activity.getSignId();
-				if (signId != null) {
-					signIds.add(signId);
-				}
-			}
+		List<Integer> signIds = Optional.ofNullable(activities).orElse(Lists.newArrayList()).stream().map(Activity::getSignId).filter(v -> v != null).collect(Collectors.toList());
+		if (CollectionUtils.isNotEmpty(signIds)) {
 			List<SignStatDTO> signStats = signApiService.statSignSignedUpNum(signIds);
 			Map<Integer, Integer> signIdSignedUpNumMap = signStats.stream().collect(Collectors.toMap(SignStatDTO::getId, SignStatDTO::getSignedUpNum, (v1, v2) -> v2));
-			for (Activity activity : activities) {
-				Integer signId = activity.getSignId();
-				Integer signedUpNum = 0;
-				if (signId != null) {
-					signedUpNum = signIdSignedUpNumMap.get(signId);
-				}
-				signedUpNum = Optional.ofNullable(signedUpNum).orElse(0);
-				activity.setSignedUpNum(signedUpNum);
-			}
+			activities.forEach(activity -> activity.setSignedUpNum(Optional.ofNullable(activity.getSignId()).map(signIdSignedUpNumMap::get).orElse(0)));
 		}
 	}
 
@@ -671,25 +649,18 @@ public class ActivityQueryService {
 	* @author huxiaolong
 	* @Date 2021-05-31 11:25:37
 	* @param signId
-	* @return com.chaoxing.activity.dto.manager.sign.SignUp
+	* @return com.chaoxing.activity.dto.sign.create.SignUpCreateParamDTO
 	*/
-	public SignUp getActivitySignUp(Integer signId) {
+	public SignUpCreateParamDTO getActivitySignUp(Integer signId) {
 		if (signId == null) {
 			return null;
 		}
-		SignAddEditDTO signAddEditDTO = signApiService.getById(signId);
-		SignUp validSignUp = null;
-		if (signAddEditDTO == null || CollectionUtils.isEmpty(signAddEditDTO.getSignUps())) {
+		SignCreateParamDTO signCreateParam = signApiService.getById(signId);
+		List<SignUpCreateParamDTO> signUps = Optional.ofNullable(signCreateParam).map(SignCreateParamDTO::getSignUps).orElse(Lists.newArrayList());
+		if (CollectionUtils.isEmpty(signUps)) {
 			return null;
 		}
-		List<SignUp> signUps = signAddEditDTO.getSignUps();
-		for (SignUp signUp : signUps) {
-			if (!signUp.getDeleted()) {
-				validSignUp = signUp;
-				break;
-			}
-		}
-		return validSignUp;
+		return signUps.get(0);
 	}
 
 	/**根据活动id列表查询活动列表
@@ -705,15 +676,15 @@ public class ActivityQueryService {
 				.in(Activity::getId, activityIds)
 		);
 		if (CollectionUtils.isNotEmpty(activities)) {
-			List<Integer> activityClassifyIds = activities.stream().map(Activity::getActivityClassifyId).collect(Collectors.toList());
-			List<ActivityClassify> activityClassifies = activityClassifyQueryService.listByIds(activityClassifyIds);
-			if (CollectionUtils.isNotEmpty(activityClassifies)) {
-				Map<Integer, ActivityClassify> activityClassifyIdMap = activityClassifies.stream().collect(Collectors.toMap(ActivityClassify::getId, v -> v, (v1, v2) -> v2));
+			List<Integer> classifyIds = activities.stream().map(Activity::getActivityClassifyId).collect(Collectors.toList());
+			List<Classify> classifies = classifyQueryService.listByIds(classifyIds);
+			if (CollectionUtils.isNotEmpty(classifies)) {
+				Map<Integer, Classify> classifyIdMap = classifies.stream().collect(Collectors.toMap(Classify::getId, v -> v, (v1, v2) -> v2));
 				for (Activity activity : activities) {
 					Integer activityClassifyId = activity.getActivityClassifyId();
-					ActivityClassify activityClassify = activityClassifyIdMap.get(activityClassifyId);
-					if (activityClassify != null) {
-						activity.setActivityClassifyName(activityClassify.getName());
+					Classify classify = classifyIdMap.get(activityClassifyId);
+					if (classify != null) {
+						activity.setActivityClassifyName(classify.getName());
 					}
 				}
 			}
@@ -750,19 +721,6 @@ public class ActivityQueryService {
 		return activityDetails.stream().findFirst().orElse(null);
 	}
 
-	/**填充简介
-	 * @Description 
-	 * @author wwb
-	 * @Date 2021-06-18 14:28:57
-	 * @param activity
-	 * @return void
-	*/
-	public void fillIntroduction(Activity activity) {
-		Integer id = activity.getId();
-		ActivityDetail activityDetail = getDetailByActivityId(id);
-		activity.setIntroduction(Optional.ofNullable(activityDetail).map(ActivityDetail::getIntroduction).orElse(""));
-	}
-
 	/**根据作品征集id查询活动
 	 * @Description 
 	 * @author wwb
@@ -778,4 +736,31 @@ public class ActivityQueryService {
 		return activities.stream().findFirst().orElse(null);
 	}
 
+	/**对活动其他关联数据进一步查询封装
+	* @Description 
+	* @author huxiaolong
+	* @Date 2021-07-21 19:22:35
+	* @param activity
+	* @return com.chaoxing.activity.dto.activity.ActivityCreateParamDTO
+	*/
+	public ActivityCreateParamDTO packageActivityCreateParamByActivity(Activity activity) {
+		if (activity == null) {
+			return ActivityCreateParamDTO.buildDefault();
+		}
+		Integer activityId = activity.getId();
+		ActivityCreateParamDTO createParamDTO = activity.buildActivityCreateParam();
+
+		ActivityDetail activityDetail = getDetailByActivityId(activityId);
+		createParamDTO.setIntroduction(activityDetail.getIntroduction());
+
+		List<ActivityComponentValueDTO> activityComponentValues = activityComponentValueService.listActivityComponentValuesByActivity(activityId);
+		createParamDTO.setActivityComponentValues(activityComponentValues);
+
+		List<Integer> signUpConditionEnables = signUpConditionEnableMapper.selectList(new QueryWrapper<SignUpConditionEnable>()
+				.lambda()
+				.eq(SignUpConditionEnable::getActivityId, activityId))
+				.stream().map(SignUpConditionEnable::getTemplateComponentId).collect(Collectors.toList());
+		createParamDTO.setSucTemplateComponentIds(signUpConditionEnables);
+		return createParamDTO;
+	}
 }

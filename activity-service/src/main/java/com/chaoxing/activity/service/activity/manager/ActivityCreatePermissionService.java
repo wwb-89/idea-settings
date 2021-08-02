@@ -4,17 +4,17 @@ import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.chaoxing.activity.dto.manager.ActivityCreatePermissionDTO;
-import com.chaoxing.activity.dto.manager.WfwDepartmentDTO;
-import com.chaoxing.activity.dto.manager.WfwGroupDTO;
-import com.chaoxing.activity.dto.manager.sign.SignUpParticipateScope;
+import com.chaoxing.activity.dto.manager.sign.SignUpParticipateScopeDTO;
+import com.chaoxing.activity.dto.manager.wfw.WfwDepartmentDTO;
+import com.chaoxing.activity.dto.manager.wfw.WfwGroupDTO;
 import com.chaoxing.activity.mapper.ActivityCreatePermissionMapper;
-import com.chaoxing.activity.model.ActivityClassify;
 import com.chaoxing.activity.model.ActivityCreatePermission;
+import com.chaoxing.activity.model.Classify;
 import com.chaoxing.activity.model.OrgConfig;
-import com.chaoxing.activity.service.activity.classify.ActivityClassifyQueryService;
+import com.chaoxing.activity.service.activity.classify.ClassifyQueryService;
 import com.chaoxing.activity.service.manager.MoocApiService;
-import com.chaoxing.activity.service.manager.WfwContactApiService;
 import com.chaoxing.activity.service.manager.WfwGroupApiService;
+import com.chaoxing.activity.service.manager.wfw.WfwContactApiService;
 import com.chaoxing.activity.service.org.OrgConfigService;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
@@ -23,7 +23,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanUtils;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -45,19 +44,14 @@ public class ActivityCreatePermissionService {
 
     @Resource
     private WfwGroupApiService wfwGroupApiService;
-
     @Resource
     private WfwContactApiService wfwContactApiService;
-
     @Resource
-    private ActivityClassifyQueryService activityClassifyQueryService;
-
+    private ClassifyQueryService classifyQueryService;
     @Resource
     private MoocApiService moocApiService;
-
-    @Autowired
+    @Resource
     private ActivityCreatePermissionMapper activityCreatePermissionMapper;
-
     @Resource
     private OrgConfigService orgConfigService;
 
@@ -214,10 +208,10 @@ public class ActivityCreatePermissionService {
             wfwGroups = wfwContactApiService.listUserContactOrgsByFid(fid);
         }
 
-        List<ActivityClassify> activityClassifies = activityClassifyQueryService.listOrgOptional(fid);
+        List<Classify> classifies = classifyQueryService.listOrgClassifies(fid);
         // 若查出的角色配置权限数量少于userRoleIds的数量 证明有未配置权限的角色，则以该角色最大权限返回数据
         if (createPermissions.size() < userRoleIds.size()) {
-            activityCreatePermission.setActivityClassifies(activityClassifies);
+            activityCreatePermission.setClassifies(classifies);
             activityCreatePermission.setWfwGroups(wfwGroupApiService.buildWfwGroups(wfwGroups));
             return activityCreatePermission;
         }
@@ -226,7 +220,7 @@ public class ActivityCreatePermissionService {
         boolean setAllReleaseScope = Boolean.FALSE;
         boolean setManageGroupScope = Boolean.FALSE;
         boolean setClassifyScope = Boolean.FALSE;
-        Set<SignUpParticipateScope> releaseScopes = Sets.newHashSet();
+        Set<SignUpParticipateScopeDTO> releaseScopes = Sets.newHashSet();
         List<Integer> manageGroupIds = Lists.newArrayList();
         Set<Integer> classifyIdSet = Sets.newHashSet();
         for (ActivityCreatePermission permission : createPermissions) {
@@ -251,13 +245,13 @@ public class ActivityCreatePermissionService {
                     }
                     // 获取用户角色发布范围并集
                     if (StringUtils.isNotBlank(permission.getSignUpScope())) {
-                        releaseScopes.addAll(JSON.parseArray(permission.getSignUpScope(), SignUpParticipateScope.class));
+                        releaseScopes.addAll(JSON.parseArray(permission.getSignUpScope(), SignUpParticipateScopeDTO.class));
                     }
                 }
             }
             if (!setClassifyScope) {
                 if (permission.getAllActivityClassify()) {
-                    activityCreatePermission.setActivityClassifies(activityClassifies);
+                    activityCreatePermission.setClassifies(classifies);
                     setClassifyScope = Boolean.TRUE;
                 }
                 // 获取用户角色活动类型范围并集
@@ -272,13 +266,13 @@ public class ActivityCreatePermissionService {
         if (!setAllReleaseScope) {
             // 基于不存在角色有不限的发布范围，若有设置基于管理的角色，查询管理的组织架构，构建和发布范围一致的实体
             if (setManageGroupScope) {
-                List<SignUpParticipateScope> additionalReleaseScopes = packageReleaseScopes(manageGroupIds, wfwGroups);
+                List<SignUpParticipateScopeDTO> additionalReleaseScopes = packageReleaseScopes(manageGroupIds, wfwGroups);
                 releaseScopes.addAll(additionalReleaseScopes);
             }
             activityCreatePermission.setWfwGroups(buildWfwGroups(releaseScopes, wfwGroups));
         }
         if (!setClassifyScope) {
-            activityCreatePermission.setActivityClassifies(listActivityClassify(classifyIdSet, activityClassifies));
+            activityCreatePermission.setClassifies(listActivityClassify(classifyIdSet, classifies));
         }
         activityCreatePermission.setExistNoLimitPermission(Boolean.FALSE);
         return activityCreatePermission;
@@ -290,16 +284,16 @@ public class ActivityCreatePermissionService {
     * @Date 2021-06-04 18:12:52
     * @param manageGroupIds
     * @param wfwGroups
-    * @return java.util.List<com.chaoxing.activity.dto.manager.sign.SignUpParticipateScope>
+    * @return java.util.List<com.chaoxing.activity.dto.sign.SignUpParticipateScopeDTO>
     */
-    private List<SignUpParticipateScope> packageReleaseScopes(List<Integer> manageGroupIds, List<WfwGroupDTO> wfwGroups) {
-        List<SignUpParticipateScope> scopes = Lists.newArrayList();
+    private List<SignUpParticipateScopeDTO> packageReleaseScopes(List<Integer> manageGroupIds, List<WfwGroupDTO> wfwGroups) {
+        List<SignUpParticipateScopeDTO> scopes = Lists.newArrayList();
         for (WfwGroupDTO group : wfwGroups) {
             Integer groupId = Integer.valueOf(group.getId());
             Integer gid = StringUtils.isBlank(group.getGid()) ? null : Integer.valueOf(group.getGid());
             Boolean isLeaf = group.getSoncount() == null || group.getSoncount() != 0;
             if (manageGroupIds.contains(groupId)) {
-                scopes.add(SignUpParticipateScope.builder()
+                scopes.add(SignUpParticipateScopeDTO.builder()
                         .externalId(groupId)
                         .externalPid(gid)
                         .externalName(group.getGroupname())
@@ -319,7 +313,7 @@ public class ActivityCreatePermissionService {
     * @param wfwGroups
     * @return java.util.List<com.chaoxing.activity.dto.manager.WfwGroupDTO>
     */
-    private List<WfwGroupDTO> buildWfwGroups(Set<SignUpParticipateScope> releaseScopes, List<WfwGroupDTO> wfwGroups) {
+    private List<WfwGroupDTO> buildWfwGroups(Set<SignUpParticipateScopeDTO> releaseScopes, List<WfwGroupDTO> wfwGroups) {
         // wfwGroups 转换为map
         Map<Integer, WfwGroupDTO> wfwGroupMap = Maps.newHashMap();
         for (WfwGroupDTO group : wfwGroups) {
@@ -331,7 +325,7 @@ public class ActivityCreatePermissionService {
         Set<Integer> scopeGroupIdSet = Sets.newHashSet();
         Map<Integer, Boolean> scopeGroupMap = Maps.newHashMap();
 
-        for (SignUpParticipateScope scope : releaseScopes) {
+        for (SignUpParticipateScopeDTO scope : releaseScopes) {
             Integer externalId = scope.getExternalId();
             scopeGroupIdSet.add(externalId);
             scopeGroupMap.put(externalId, scope.getLeaf());
@@ -430,12 +424,12 @@ public class ActivityCreatePermissionService {
     * @author huxiaolong
     * @Date 2021-06-03 15:44:28
     * @param classifyIdSet
-    * @param activityClassifies
-    * @return java.util.List<com.chaoxing.activity.model.ActivityClassify>
+    * @param classifies
+    * @return java.util.List<com.chaoxing.activity.model.Classify>
     */
-    private List<ActivityClassify> listActivityClassify(Set<Integer> classifyIdSet, List<ActivityClassify> activityClassifies) {
-        List<ActivityClassify> result = Lists.newArrayList();
-        for (ActivityClassify classify: activityClassifies) {
+    private List<Classify> listActivityClassify(Set<Integer> classifyIdSet, List<Classify> classifies) {
+        List<Classify> result = Lists.newArrayList();
+        for (Classify classify: classifies) {
             if (classifyIdSet.contains(classify.getId())) {
                 result.add(classify);
             }

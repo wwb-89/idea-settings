@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org/">
+<head>
+    <title>规则设置</title>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="/static/pc/assets/lib/element-ui/lib/theme-chalk/index.css" th:href="@{/pc/assets/lib/element-ui/lib/theme-chalk/index.css}">
+    <link rel="stylesheet" href="/static/pc/assets/css/public.css" th:href="@{/pc/assets/css/public.css}">
+    <link rel="stylesheet" href="/static/pc/assets/css/confirm_dialog.css" th:href="@{/pc/assets/css/confirm_dialog.css}">
+    <link rel="stylesheet" href="/static/pc/assets/css/rule-setting.css" th:href="@{/pc/assets/css/rule-setting.css}">
+</head>
+<body>
+    <div class="rule-setting" id="rule-setting" v-cloak>
+        <div class="item-block">
+            <div class="item-title">黑名单规则</div>
+            <form action="" class="el-form">
+                <div class="form-item">
+                    <label class="label">违约上限</label>
+                    <div class="input-box">
+                        <span class="lineTips">已报名的活动，用户未签到或未签退</span>
+                        <el-input type="number" size="small" class="marginL16 width80" v-model.trim="blacklistRule.notSignInUpperLimit" placeholder="不限" @blur="updateBlacklistRule"></el-input>
+                        <span class="lineTips">次进入黑名单</span>
+                        <p class="bottomTips">达到违约上限后会将用户加入黑名单，加入黑名单的用户不能报名新的活动</p>
+                    </div>
+                </div>
+                <div class="form-item">
+                    <label class="label">自动移除黑名单</label>
+                    <div class="input-box">
+                        <el-switch v-model="blacklistRule.enableAutoRemove"></el-switch>
+                        <p class="rightTips">开启后，可以设置自动移除黑名单的规则</p>
+                        <div class="select-box" v-show="blacklistRule.enableAutoRemove">
+                            <el-input type="number" size="small" class="width80" v-model.trim="blacklistRule.autoRemoveHours" placeholder="整数" @blur="updateBlacklistRule"></el-input>
+                            <span class="lineTips">小时后自动移除黑名单</span>
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div>
+        <div class="item-block">
+            <div class="item-title">活动字段设置</div>
+            <p class="titleTips">创建活动页面的字段和更多报名条件设置</p>
+            <form action="" class="el-form">
+                <div class="form-item">
+                    <label class="label">活动字段</label>
+                    <div class="input-box">
+                        <p class="configure">
+                            <i class="icon-set"></i>
+                            <span style="cursor:pointer;" @click="toConfigActivityField">设置</span>
+                        </p>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+    <div th:replace="pc/include/common_js :: common_js(~{::script})">
+        <script type="text/javascript" src="/static/pc/assets/lib/element-ui/lib/index.js" th:src="@{/pc/assets/lib/element-ui/lib/index.js}"></script>
+        <script th:inline="javascript">
+            var vm = new Vue({
+                el: '#rule-setting',
+                data: {
+                    marketId: [[${marketId}]],
+                    oldBlacklistRule: null,
+                    blacklistRule: [[${blacklistRule}]]
+                },
+                created: function () {
+                    var $this = this;
+                    if (activityApp.isEmpty($this.blacklistRule.autoRemoveHours)) {
+                        $this.$set($this.blacklistRule, "autoRemoveHours", 24);
+                    }
+                },
+                mounted: function () {
+                    var $this = this;
+                    $this.oldBlacklistRule = $.extend({}, $this.blacklistRule);
+                },
+                watch: {
+                    "blacklistRule.notSignInUpperLimit": function (newVal, oldVal) {
+                        var $this = this;
+                        if (activityApp.isEmpty(oldVal)) {
+                            oldVal = "";
+                        }
+                        if (!activityApp.isEmpty(newVal)) {
+                            try {
+                                newVal = parseInt(newVal);
+                            } catch (e) {
+                            }
+                        }
+                        if (!/^[1-9]\d{0,1}$/.test(newVal) && !activityApp.isEmpty(newVal)) {
+                            $this.$set($this.blacklistRule, "notSignInUpperLimit", oldVal);
+                        }
+                    },
+                    "blacklistRule.autoRemoveHours": function (newVal, oldVal) {
+                        var $this = this;
+                        if (!activityApp.isEmpty(newVal)) {
+                            try {
+                                newVal = parseInt(newVal);
+                            } catch (e) {
+                            }
+                        }
+                        if (!/^[1-9]\d{0,2}$/.test(newVal) && !activityApp.isEmpty(newVal)) {
+                            $this.$set($this.blacklistRule, "autoRemoveHours", oldVal);
+                        }
+                    },
+                    "blacklistRule.enableAutoRemove": function () {
+                        var $this = this;
+                        $this.updateBlacklistRule();
+                    }
+                },
+                methods: {
+                    resetBlacklistRule: function () {
+                        var $this = this;
+                        $this.blacklistRule = $.extend({}, $this.oldBlacklistRule);
+                    },
+                    validateBlacklistRuleInput: function () {
+                        var $this = this;
+                        if ($this.blacklistRule.enableAutoRemove && activityApp.isEmpty($this.blacklistRule.autoRemoveHours)) {
+                            app.showMsg("黑名单自动移除时间不能为空");
+                            $this.resetBlacklistRule();
+                            return false;
+                        }
+                        return true;
+                    },
+                    updateBlacklistRule: function () {
+                        var $this = this;
+                        if (activityApp.getJsonStr($this.oldBlacklistRule) == activityApp.getJsonStr($this.blacklistRule)) {
+                            return;
+                        }
+                        if (!$this.validateBlacklistRuleInput()) {
+                            return;
+                        }
+                        var url = ctx + "/api/market/" + $this.marketId + "/blacklist/rule/update";
+                        app.ajaxPostWithLoading(url, $this.blacklistRule, function (data) {
+                            if (data.success) {
+                                $this.oldBlacklistRule = $.extend({}, $this.blacklistRule);
+                            } else {
+                                var message = data.message;
+                                if (activityApp.isEmpty(message)) {
+                                    message = "黑名单规则更新失败";
+                                }
+                                app.showMsg(message);
+                                $this.resetBlacklistRule();
+                            }
+                        }, function () {
+                            app.showMsg("黑名单规则更新失败");
+                            $this.resetBlacklistRule();
+                        });
+                    },
+                    toConfigActivityField: function () {
+                        var $this = this;
+                        var url = ctx + "/market/" + $this.marketId + "/template";
+                        window.open(url);
+                    }
+                }
+            });
+        </script>
+    </div>
+</body>
+</html>

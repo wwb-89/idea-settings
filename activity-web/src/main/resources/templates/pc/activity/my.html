@@ -71,7 +71,7 @@
 					<li v-for="(activity, index) of collecteds" :key="'activity-' + index">
 						<div class="inner">
 							<div class="img-box">
-								<p :class="{'tips': true, 'color1': (activity.status == 3), 'color2': (activity.status == 2), 'color3': (activity.status == 4)}">{{activity.status | myActivityStatusInstructions}}</p>
+								<p :class="{'tips': true, 'color1': (activity.status == 3), 'color2': (activity.status == 2 || activity.status == 1), 'color3': (activity.status == 4)}">{{activity.status | myActivityStatusInstructions}}</p>
 								<div class="js-crop-img">
 									<img :src="activity | getCloudImgUrl">
 								</div>
@@ -95,7 +95,7 @@
 					<li v-for="(activity, index) of managings" :key="'activity-' + index">
 						<div class="inner">
 							<div class="img-box">
-								<p :class="{'tips': true, 'color1': (activity.status == 3), 'color2': (activity.status == 2), 'color3': (activity.status == 4)}">{{activity.status | myActivityStatusInstructions}}</p>
+								<p :class="{'tips': true, 'color1': (activity.status == 3), 'color2': (activity.status == 2 || activity.status == 1), 'color3': (activity.status == 4)}">{{activity.status | myActivityStatusInstructions}}</p>
 								<div class="js-crop-img">
 									<img :src="activity | getCloudImgUrl">
 								</div>

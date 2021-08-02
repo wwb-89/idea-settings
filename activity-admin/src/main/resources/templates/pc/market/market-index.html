@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title th:text="|${market.name}后台|">活动市场</title>
+	<link rel="stylesheet" href="/static/pc/assets/css/reset.css" th:href="@{/pc/assets/css/reset.css}">
+	<link rel="stylesheet" href="/static/pc/assets/css/public.css" th:href="@{/pc/assets/css/public.css}">
+	<link rel="stylesheet" href="/static/pc/assets/css/iframe.css" th:href="@{/pc/assets/css/iframe.css}">
+	<style>
+		[v-cloak] {
+			display: none;
+        }
+	</style>
+</head>
+<body class="overHidden1">
+<div id="vm" v-cloak>
+	<!--顶部固定栏-->
+	<div class="topFixed">
+		<h2>{{market.name}}后台</h2>
+		<div class="user">
+			<img th:src="|http://photo.chaoxing.com/p/${session._login_user_.uid}_80|">
+			<p th:text="${session._login_user_.realName}">刘琼锦</p>
+		</div>
+	</div>
+	<!--左侧固定栏-->
+	<div class="leftFixed" id="left-navigation">
+		<div class="menu">
+			<ul>
+				<li v-for="(menu, index) of menus" :key="'menu-' + index" :class="{'current': menu.active}" @click="activeMenu(index)">{{menu.name}}</li>
+			</ul>
+		</div>
+	</div>
+	<!--右侧内容栏-->
+	<div class="iframe-content">
+		<iframe id="content" src="" width="100%" frameborder="0"></iframe>
+	</div>
+</div>
+<div th:replace="pc/include/common_js :: common_js(~{::script})">
+	<script th:inline="javascript">
+        vm = new Vue({
+	        el: "#vm",
+	        data: {
+                market: [[${market}]],
+		        menus: [
+			        {"name": "活动管理", url: ctx + "/?marketId=[[${market.id}]]", active: true},
+			        {"name": "规则设置", url: ctx + "/market/[[${market.id}]]/rule", active: false},
+			        {"name": "黑名单", url: ctx + "/market/[[${market.id}]]/blacklist/list", active: false}
+		        ],
+		        url: ""
+	        },
+            mounted: function () {
+                var $this = this;
+                $this.resetFrameHeight();
+                $this.url = $this.menus[0].url;
+            },
+            watch: {
+                "url": function () {
+                    var $this = this;
+                    $this.resetFrameHeight();
+                    $("#content")[0].src = $this.url;
+                }
+            },
+	        methods: {
+	            // 激活菜单
+                activeMenu: function (index) {
+                    var $this = this;
+                    var menu = $this.menus[index];
+                    if (menu.active) {
+                        return;
+                    }
+                    $($this.menus).each(function (i) {
+                        $this.$set($this.menus[i], "active", false);
+                    });
+                    $this.$set($this.menus[index], "active", true);
+                    $this.url = menu.url;
+                },
+                resetFrameHeight: function () {
+                    $("#content").height($(window).height() - 68 - 20 - 50 - 5);
+                }
+	        }
+        });
+	</script>
+</div>
+</body>
+</html>

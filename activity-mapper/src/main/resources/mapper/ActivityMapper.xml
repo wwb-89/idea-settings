@@ -20,7 +20,6 @@
         <result column="period" jdbcType="DECIMAL" property="period" />
         <result column="credit" jdbcType="DECIMAL" property="credit" />
         <result column="time_length_upper_limit" jdbcType="INTEGER" property="timeLengthUpperLimit" />
-        <result column="is_enable_sign" jdbcType="BIT" property="enableSign" />
         <result column="sign_id" jdbcType="INTEGER" property="signId" />
         <result column="web_template_id" jdbcType="INTEGER" property="webTemplateId" />
         <result column="website_id" jdbcType="INTEGER" property="websiteId" />
@@ -32,8 +31,6 @@
         <result column="is_released" jdbcType="BIT" property="released" />
         <result column="release_time" jdbcType="TIMESTAMP" property="releaseTime" />
         <result column="release_uid" jdbcType="INTEGER" property="releaseUid" />
-        <result column="is_open_audit" jdbcType="BIT" property="openAudit" />
-        <result column="audit_status" jdbcType="INTEGER" property="auditStatus" />
         <result column="create_uid" jdbcType="INTEGER" property="createUid" />
         <result column="create_user_name" jdbcType="INTEGER" property="createUserName" />
         <result column="create_fid" jdbcType="INTEGER" property="createFid" />
@@ -42,22 +39,24 @@
         <result column="tags" jdbcType="INTEGER" property="tags" />
         <result column="is_open_rating" jdbcType="BIT" property="openRating" />
         <result column="is_rating_need_audit" jdbcType="BIT" property="ratingNeedAudit" />
-        <result column="integral_value" jdbcType="DECIMAL" property="integralValue" />
+        <result column="integral" jdbcType="DECIMAL" property="integral" />
         <result column="activity_flag" jdbcType="VARCHAR" property="activityFlag" />
         <result column="is_open_work" jdbcType="VARCHAR" property="openWork" />
         <result column="work_id" jdbcType="VARCHAR" property="workId" />
         <result column="origin_type" jdbcType="VARCHAR" property="originType" />
         <result column="origin" jdbcType="VARCHAR" property="origin" />
+        <result column="market_id" jdbcType="INTEGER" property="marketId" />
+        <result column="template_id" jdbcType="INTEGER" property="templateId" />
         <result column="status" jdbcType="INTEGER" property="status" />
         <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
         <result column="update_time" jdbcType="TIMESTAMP" property="updateTime" />
     </resultMap>
     <sql id="Base_Column_List">
         t.id, t.name, t.start_time, t.end_time, t.start_date, t.end_date, t.cover_cloud_id, t.cover_url, t.organisers, t.activity_type, t.address, t.detail_address,
-        t.longitude, t.dimension, t.activity_classify_id, t.period, t.credit, t.time_length_upper_limit, t.is_enable_sign, t.sign_id, t.web_template_id, t.website_id, t.page_id, t.preview_url, t.edit_url,
-        t.is_timing_release, t.timing_release_time, t.is_released, t.release_time, t.release_uid, t.is_open_audit, t.audit_status, t.create_uid, t.create_user_name, t.create_fid, t.create_area_code,
-        t.create_org_name, t.tags, t.is_open_rating, t.is_rating_need_audit, t.activity_flag, t.integral_value, t.is_open_work, t.work_id,
-        t.origin_type, t.origin, t.status, t.create_time, t.update_time
+        t.longitude, t.dimension, t.activity_classify_id, t.period, t.credit, t.time_length_upper_limit, t.sign_id, t.web_template_id, t.website_id, t.page_id, t.preview_url, t.edit_url,
+        t.is_timing_release, t.timing_release_time, t.is_released, t.release_time, t.release_uid, t.create_uid, t.create_user_name, t.create_fid, t.create_area_code,
+        t.create_org_name, t.tags, t.is_open_rating, t.is_rating_need_audit, t.activity_flag, t.integral, t.is_open_work, t.work_id,
+        t.origin_type, t.origin, t.market_id, t.template_id, t.status, t.create_time, t.update_time
     </sql>
 
     <select id="pageParticipate" resultMap="BaseResultMap">
@@ -66,21 +65,28 @@
         FROM
             t_activity t
             INNER JOIN t_activity_scope t1 ON t.id = t1.activity_id
-            <if test="params.fids != null and params.fids.size() != 0">
-                AND t1.fid IN
-                <foreach collection="params.fids" index="key" item="value" open="(" close=")" separator=",">
-                    #{value}
-                </foreach>
-            </if>
+            <choose>
+                <when test="params.marketId != null">
+                    AND t.market_id = #{params.marketId}
+                </when>
+                <otherwise>
+                    <if test="params.fids != null and params.fids.size() != 0">
+                        AND t1.fid IN
+                        <foreach collection="params.fids" index="key" item="value" open="(" close=")" separator=",">
+                            #{value}
+                        </foreach>
+                    </if>
+                </otherwise>
+            </choose>
             <!--类型-->
             <choose>
                 <when test="params.activityClassifyId != null">
-                    INNER JOIN t_activity_classify t3 ON t.activity_classify_id = t3.id
+                    INNER JOIN t_classify t3 ON t.activity_classify_id = t3.id
                     AND t3.id = #{params.activityClassifyId}
                 </when>
                 <otherwise>
                     <if test="params.activityClassifyName != null and params.activityClassifyName != ''">
-                        INNER JOIN t_activity_classify t3 ON t.activity_classify_id = t3.id
+                        INNER JOIN t_classify t3 ON t.activity_classify_id = t3.id
                         AND t3.name = #{params.activityClassifyName}
                     </if>
                 </otherwise>
@@ -151,14 +157,23 @@
             t_activity t
         WHERE
             (
-            t.create_fid = #{params.topFid}
-            OR(
-                    t.create_fid IN
-                    <foreach collection="params.fids" index="key" item="value" open="(" close=")" separator=",">
-                        #{value}
-                    </foreach>
-                    AND t.is_released = 1
+                (
+                <choose>
+                    <when test="params.marketId != null">
+                        t.market_id = #{params.marketId}
+                    </when>
+                    <otherwise>
+                        t.create_fid IN
+                        <foreach collection="params.fids" index="key" item="value" open="(" close=")" separator=",">
+                            #{value}
+                        </foreach>
+                        AND t.is_released = 1
+                    </otherwise>
+                </choose>
                 )
+                <if test="params.marketId == null">
+                    OR t.create_fid = #{params.topFid}
+                </if>
             )
             <choose>
                 <when test="params.status != null">
@@ -178,13 +193,17 @@
         GROUP BY
             t.id
         ORDER BY
-        <if test="params.orderField != null and params.orderField != ''">
-            ${params.orderField} ${params.orderType},
-        </if>
-        <if test="params.orderField == null or params.orderField == ''">
-            t.create_time DESC,
-        </if>
-            t.create_fid <![CDATA[<>]]> #{params.topFid}
+        <trim suffixOverrides=",">
+            <if test="params.orderField != null and params.orderField != ''">
+                ${params.orderField} ${params.orderType},
+            </if>
+            <if test="params.orderField == null or params.orderField == ''">
+                t.create_time DESC,
+            </if>
+            <if test="params.marketId == null">
+                t.create_fid <![CDATA[<>]]> #{params.topFid},
+            </if>
+        </trim>
     </select>
 
     <!--查询创建的活动-->
@@ -195,7 +214,14 @@
             t_activity t
         WHERE
             t.create_uid = #{params.createUid}
-            AND t.create_fid = #{params.createWfwfid}
+            <choose>
+                <when test="params.marketId != null">
+                    AND t.market_id = #{params.marketId}
+                </when>
+                <otherwise>
+                    AND t.create_fid = #{params.createWfwfid}
+                </otherwise>
+            </choose>
             <choose>
                 <when test="params.status != null">
                     AND t.`status` = #{params.status}
@@ -287,7 +313,7 @@
             <foreach collection="params.fids" index="key" item="value" open="(" close=")" separator=",">
                 #{value}
             </foreach>
-            LEFT JOIN t_activity_classify t2 ON t.activity_classify_id = t2.id
+            LEFT JOIN t_classify t2 ON t.activity_classify_id = t2.id
         WHERE
             <!--状态-->
             t.`status` IN ( 2, 3, 4 )
@@ -323,7 +349,7 @@
             t1.`name` activityClassifyName
         FROM
             t_activity t
-            LEFT JOIN t_activity_classify t1 ON t.activity_classify_id = t1.id
+            LEFT JOIN t_classify t1 ON t.activity_classify_id = t1.id
         WHERE
             <!--状态-->
             t.create_fid = #{params.topFid}
@@ -402,7 +428,7 @@
             t1.`name` activityClassifyName
         FROM
             t_activity t
-            LEFT JOIN t_activity_classify t1 ON t.activity_classify_id = t1.id
+            LEFT JOIN t_classify t1 ON t.activity_classify_id = t1.id
         WHERE
             t.sign_id = #{signId}
         LIMIT 1
@@ -414,10 +440,9 @@
             t1.`name` activityClassifyName
         FROM
             t_activity t
-            LEFT JOIN t_activity_classify t1 ON t.activity_classify_id = t1.id
+            LEFT JOIN t_classify t1 ON t.activity_classify_id = t1.id
         WHERE
             t.id = #{id}
-        LIMIT 1
     </select>
 
     <select id="listOrgCreated" resultMap="BaseResultMap">
@@ -453,7 +478,7 @@
             count( 1 ) AS typeNum
         FROM
             t_activity t
-            LEFT JOIN t_activity_classify tac ON t.activity_classify_id = tac.id
+            LEFT JOIN t_classify tac ON t.activity_classify_id = tac.id
         WHERE
             t.id in
             <foreach collection="activityIds" item="activityId" open="(" close=")" separator=",">

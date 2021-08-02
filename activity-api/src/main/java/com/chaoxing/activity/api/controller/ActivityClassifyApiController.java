@@ -3,9 +3,9 @@ package com.chaoxing.activity.api.controller;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.chaoxing.activity.dto.RestRespDTO;
-import com.chaoxing.activity.model.ActivityClassify;
-import com.chaoxing.activity.service.activity.classify.ActivityClassifyHandleService;
-import com.chaoxing.activity.service.activity.classify.ActivityClassifyQueryService;
+import com.chaoxing.activity.model.Classify;
+import com.chaoxing.activity.service.activity.classify.ClassifyHandleService;
+import com.chaoxing.activity.service.activity.classify.ClassifyQueryService;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -21,14 +21,15 @@ import java.util.List;
  * @blame wwb
  * @date 2021-04-23 18:45:53
  */
+@Deprecated
 @RestController
 @RequestMapping("activity/classify")
 public class ActivityClassifyApiController {
 
     @Resource
-    private ActivityClassifyHandleService activityClassifyHandleService;
+    private ClassifyQueryService classifyQueryService;
     @Resource
-    private ActivityClassifyQueryService activityClassifyQueryService;
+    private ClassifyHandleService classifyHandleService;
 
     /**给指定的机构克隆系统活动类型
      * @Description 
@@ -42,7 +43,7 @@ public class ActivityClassifyApiController {
         JSONObject jsonObject = JSON.parseObject(data);
         List<Integer> fids = JSON.parseArray(jsonObject.getString("fids"), Integer.class);
         for (Integer fid : fids) {
-            activityClassifyHandleService.cloneSystemClassifyNoCheck(fid);
+            classifyHandleService.cloneSystemClassifyToOrg(fid);
         }
         return RestRespDTO.success();
     }
@@ -56,9 +57,9 @@ public class ActivityClassifyApiController {
     */
     @RequestMapping("list")
     public RestRespDTO listOrgClassify(Integer fid) {
-        activityClassifyHandleService.cloneSystemClassify(fid);
-        List<ActivityClassify> activityClassifies = activityClassifyQueryService.listOrgOptional(fid);
-        return RestRespDTO.success(activityClassifies);
+        classifyHandleService.cloneSystemClassifyToOrg(fid);
+        List<Classify> classifies = classifyQueryService.listOrgClassifies(fid);
+        return RestRespDTO.success(classifies);
     }
 
 }

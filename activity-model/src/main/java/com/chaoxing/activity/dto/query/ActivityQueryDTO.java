@@ -25,6 +25,8 @@ public class ActivityQueryDTO {
 	private String sw;
 	/** 参与的fid列表 */
 	private List<Integer> fids;
+	/** 活动市场id */
+	private Integer marketId;
 	/** 置顶的fid（查询的结果该机构的数据靠前） */
 	private Integer topFid;
 	/** 活动分类id（与活动分类名称互斥） */

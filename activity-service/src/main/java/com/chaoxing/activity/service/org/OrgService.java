@@ -1,6 +1,6 @@
 package com.chaoxing.activity.service.org;
 
-import com.chaoxing.activity.service.manager.WfwRegionalArchitectureApiService;
+import com.chaoxing.activity.service.manager.wfw.WfwAreaApiService;
 import com.chaoxing.activity.util.constant.WebTemplateCustomConfigConstant;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
@@ -23,7 +23,7 @@ import java.util.List;
 public class OrgService {
 
     @Resource
-    private WfwRegionalArchitectureApiService wfwRegionalArchitectureApiService;
+    private WfwAreaApiService wfwAreaApiService;
 
     /**是否是定制机构
      * @Description 
@@ -33,7 +33,7 @@ public class OrgService {
      * @return boolean
     */
     public boolean isCustomOrg(Integer fid) {
-        List<String> codes = wfwRegionalArchitectureApiService.listCodeByFid(fid);
+        List<String> codes = wfwAreaApiService.listCodeByFid(fid);
         return isCustomOrg(codes);
     }
 

@@ -46,4 +46,13 @@ public class LoginUserDTO {
 				.build();
 	}
 
+	public OperateUserDTO buildOperateUserDTO() {
+		return OperateUserDTO.builder()
+				.uid(getUid())
+				.userName(getRealName())
+				.fid(getFid())
+				.orgName(getOrgName())
+				.build();
+	}
+
 }

@@ -1,6 +1,6 @@
 package com.chaoxing.activity.task.activity;
 
-import com.chaoxing.activity.service.activity.ActivityStatusUpdateService;
+import com.chaoxing.activity.service.activity.ActivityStatusService;
 import com.chaoxing.activity.service.queue.activity.ActivityStatusUpdateQueueService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -23,7 +23,7 @@ public class ActivityStatusUpdateTask {
 	@Resource
 	private ActivityStatusUpdateQueueService activityStatusUpdateQueueService;
 	@Resource
-	private ActivityStatusUpdateService activityStatusUpdateService;
+	private ActivityStatusService activityStatusService;
 
 	/**更新活动状态
 	 * @Description 
@@ -39,7 +39,7 @@ public class ActivityStatusUpdateTask {
 			return;
 		}
 		try {
-			activityStatusUpdateService.statusUpdate(queueParam.getActivityId());
+			activityStatusService.statusUpdate(queueParam.getActivityId());
 		} catch (Exception e) {
 			e.printStackTrace();
 			activityStatusUpdateQueueService.pushStartTime(queueParam);
@@ -60,7 +60,7 @@ public class ActivityStatusUpdateTask {
 			return;
 		}
 		try {
-			activityStatusUpdateService.statusUpdate(queueParam.getActivityId());
+			activityStatusService.statusUpdate(queueParam.getActivityId());
 		} catch (Exception e) {
 			e.printStackTrace();
 			activityStatusUpdateQueueService.pushEndTime(queueParam);

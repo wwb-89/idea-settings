@@ -6,7 +6,7 @@ import com.chaoxing.activity.mapper.WebTemplateAppDataMapper;
 import com.chaoxing.activity.mapper.WebTemplateAppMapper;
 import com.chaoxing.activity.mapper.WebTemplateMapper;
 import com.chaoxing.activity.model.*;
-import com.chaoxing.activity.service.manager.WfwRegionalArchitectureApiService;
+import com.chaoxing.activity.service.manager.wfw.WfwAreaApiService;
 import com.chaoxing.activity.service.org.OrgService;
 import com.chaoxing.activity.util.enums.MhAppDataSourceEnum;
 import com.chaoxing.activity.util.enums.MhAppTypeEnum;
@@ -42,7 +42,7 @@ public class WebTemplateService {
 	private WebTemplateActivityFlagMapper webTemplateActivityFlagMapper;
 
 	@Resource
-	private WfwRegionalArchitectureApiService wfwRegionalArchitectureApiService;
+	private WfwAreaApiService wfwAreaApiService;
 	@Resource
 	private OrgService orgService;
 
@@ -154,7 +154,7 @@ public class WebTemplateService {
 	public List<WebTemplate> listAvailable(Integer fid, String activityFlag) {
 		List<WebTemplate> webTemplates = Lists.newArrayList();
 		// 查询机构所属的code
-		List<String> codes = wfwRegionalArchitectureApiService.listCodeByFid(fid);
+		List<String> codes = wfwAreaApiService.listCodeByFid(fid);
 		// 先查询机构和区域特有的
 		List<WebTemplate> orgAffiliations = webTemplateMapper.listAffiliation(codes, fid);
 		if (CollectionUtils.isNotEmpty(orgAffiliations)) {

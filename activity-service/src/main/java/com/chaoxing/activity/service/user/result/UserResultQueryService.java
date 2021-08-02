@@ -10,7 +10,6 @@ import com.chaoxing.activity.model.Activity;
 import com.chaoxing.activity.model.TableField;
 import com.chaoxing.activity.model.TableFieldDetail;
 import com.chaoxing.activity.model.UserResult;
-import com.chaoxing.activity.service.inspection.InspectionConfigQueryService;
 import com.chaoxing.activity.service.tablefield.TableFieldQueryService;
 import com.google.common.collect.Lists;
 import lombok.extern.slf4j.Slf4j;
@@ -20,6 +19,7 @@ import org.springframework.stereotype.Service;
 import javax.annotation.Resource;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 /**用户成绩查询服务
@@ -40,10 +40,6 @@ public class UserResultQueryService {
 	@Resource
 	private TableFieldQueryService tableFieldQueryService;
 
-	@Resource
-	private InspectionConfigQueryService inspectionConfigQueryService;
-
-
 	/**用户成绩是否合格
 	 * @Description 
 	 * @author wwb
@@ -58,12 +54,7 @@ public class UserResultQueryService {
 				.eq(UserResult::getUid, uid)
 				.eq(UserResult::getActivityId, activityId)
 		);
-		if (CollectionUtils.isEmpty(userResults)) {
-			return false;
-		}
-		UserResult userResult = userResults.get(0);
-		Integer qualifiedStatus = userResult.getQualifiedStatus();
-		return Objects.equals(UserResult.QualifiedStatusEnum.QUALIFIED.getValue(), qualifiedStatus);
+		return Objects.equals(UserResult.QualifiedStatusEnum.QUALIFIED.getValue(), Optional.ofNullable(userResults).orElse(Lists.newArrayList()).stream().findFirst().map(UserResult::getQualifiedStatus).orElse(null));
 	}
 
 	/**获取用户成绩合格的描述
@@ -80,15 +71,8 @@ public class UserResultQueryService {
 				.eq(UserResult::getUid, uid)
 				.eq(UserResult::getActivityId, activityId)
 		);
-		UserResult.QualifiedStatusEnum qualifiedStatusEnum = null;
-		if (CollectionUtils.isNotEmpty(userResults)) {
-			UserResult userResult = userResults.get(0);
-			qualifiedStatusEnum = UserResult.QualifiedStatusEnum.fromValue(userResult.getQualifiedStatus());
-		}
-		if (qualifiedStatusEnum == null) {
-			qualifiedStatusEnum = UserResult.QualifiedStatusEnum.WAIT;
-		}
-		return qualifiedStatusEnum.getName();
+		Integer qualifiedStatus = Optional.ofNullable(userResults).orElse(Lists.newArrayList()).stream().findFirst().map(UserResult::getQualifiedStatus).orElse(null);
+		return Optional.ofNullable(UserResult.QualifiedStatusEnum.fromValue(qualifiedStatus)).orElse(UserResult.QualifiedStatusEnum.WAIT).getName();
 	}
 
 	/**获取用户成绩
@@ -185,11 +169,7 @@ public class UserResultQueryService {
 						break;
 					case "qualifiedStatus":
 						UserResult.QualifiedStatusEnum qualifiedStatusEnum = UserResult.QualifiedStatusEnum.fromValue(record.getQualifiedStatus());
-						if (qualifiedStatusEnum == null) {
-							itemData.add("");
-						} else {
-							itemData.add(qualifiedStatusEnum.getName());
-						}
+						itemData.add(Optional.ofNullable(qualifiedStatusEnum).map(UserResult.QualifiedStatusEnum::getName).orElse(""));
 						break;
 					default:
 
@@ -209,14 +189,11 @@ public class UserResultQueryService {
 	 */
 	public ExportDataDTO packageExportData(UserResultQueryDTO queryParam) {
 		List<TableFieldDetail> tableFieldDetails = tableFieldQueryService.listActivityShowTableFieldDetail(queryParam.getActivityId(), TableField.Type.RESULT_MANAGE, TableField.AssociatedType.ACTIVITY);
-		ExportDataDTO exportData = new ExportDataDTO();
-		Page<UserResultDTO> page = new Page<>(1, Integer.MAX_VALUE);
-		page = pageUserResult(page, queryParam);
-		List<List<String>> headers = listResultInspectionHeader(tableFieldDetails);
-		exportData.setHeaders(headers);
-		List<List<String>> data = listData(page.getRecords(), tableFieldDetails);
-		exportData.setData(data);
-		return exportData;
+		Page<UserResultDTO> page = pageUserResult(new Page<>(1, Integer.MAX_VALUE), queryParam);
+		return ExportDataDTO.builder()
+				.headers(listResultInspectionHeader(tableFieldDetails))
+				.data(listData(page.getRecords(), tableFieldDetails))
+				.build();
 	}
 
 	/**根据活动id查询所有的活动成绩
@@ -263,9 +240,6 @@ public class UserResultQueryService {
 				.eq(UserResult::getQualifiedStatus, UserResult.QualifiedStatusEnum.QUALIFIED.getValue())
 				.select(UserResult::getUid)
 		);
-		if (CollectionUtils.isNotEmpty(userResults)) {
-			return userResults.stream().map(UserResult::getUid).collect(Collectors.toList());
-		}
-		return Lists.newArrayList();
+		return Optional.ofNullable(userResults).orElse(Lists.newArrayList()).stream().map(UserResult::getUid).collect(Collectors.toList());
 	}
 }

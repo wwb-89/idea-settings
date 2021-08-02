@@ -1,0 +1,291 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>创建应用</title>
+	<!--图标库的 start-->
+	<link rel="stylesheet" href="/static/pc/IconLibrary/css/global.css" th:href="@{/pc/IconLibrary/css/global.css}">
+	<link rel="stylesheet" href="/static/pc/IconLibrary/css/jquery.mCustomScrollbar.min.css" th:href="@{/pc/IconLibrary/css/jquery.mCustomScrollbar.min.css}">
+	<link rel="stylesheet" href="/static/pc/IconLibrary/css/space-poupop.css" th:href="@{/pc/IconLibrary/css/space-poupop.css}">
+	<!--图标库的 end-->
+	<link rel="stylesheet" href="/static/pc/assets/lib/element-ui/lib/theme-chalk/index.css" th:href="@{/pc/assets/lib/element-ui/lib/theme-chalk/index.css}">
+	<link rel="stylesheet" href="/static/pc/assets/lib/webuploader/webuploader.css" th:href="@{/pc/assets/lib/webuploader/webuploader.css}">
+	<link rel="stylesheet" href="/static/pc/assets/css/public.css" th:href="@{/pc/assets/css/public.css}">
+	<link rel="stylesheet" href="/static/pc/assets/css/engine-design.css" th:href="@{/pc/assets/css/engine-design.css}">
+	<style type="text/css">
+		[v-cloak] {
+			display: none;
+        }
+	</style>
+</head>
+<body>
+<div class="basic-setting" id="vm" v-cloak>
+	<div class="top-con">
+		<div class="go-back white-border-btn" @click="back"><i></i><span>返回</span></div>
+		<div class="name-txt">活动</div>
+		<div class="look-div fr">
+			<div class="btn-width80px-color2" @click="release">发布</div>
+		</div>
+	</div>
+	<div class="content">
+		<div class="w-900px basic-con">
+			<form action="" onsubmit="return false;">
+				<div class="input-box">
+					<label class="label">应用名称</label>
+					<el-input type="name" v-model.trim="market.name" placeholder="请输入"></el-input>
+				</div>
+				<div class="input-box">
+					<label class="label">应用图标</label>
+					<div class="icon-box">
+						<div class="img-box">
+							<img :src="market.iconUrl" id="appIconImg">
+						</div>
+						<div class="text-box fr">
+							<p>建议尺寸256px*256px，500KB以内的PNG、GIF、JPG图片</p>
+							<div class="btn-box">
+								<div class="" id="upload-btn">上传</div>
+								<div class="border-btn" @click="iconWindowShow=true">从图标库选择</div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</form>
+			<!--<div class="fixedTips">规则和字段配置请创建应用后在 应用详情 > 后台 中配置</div>-->
+		</div>
+	</div>
+	<!--图标库-->
+	<div class="iconLibrary-box" v-show="iconWindowShow">
+		<div class="pouop iconLibrary" id="iconLibrary">
+			<div class="pu-top">
+				<h3>图标图</h3>
+			</div>
+			<div class="pu-con">
+				<div class="app-color">
+					<h6>选择颜色</h6>
+					<div class="color-list">
+						<ul>
+							<li class="active" data-color="28A7FF" style="background: #28A7FF"></li>
+							<li data-color="5B7EFF" style="background: #5B7EFF"></li>
+							<li data-color="9261FF" style="background: #9261FF"></li>
+							<li data-color="C872EB" style="background: #C872EB"></li>
+							<li data-color="FF83A5" style="background: #FF83A5"></li>
+							<li data-color="FF9064" style="background: #FF9064"></li>
+							<li data-color="FF6B6B" style="background: #FF6B6B"></li>
+							<li data-color="FFBF29" style="background: #FFBF29"></li>
+							<li data-color="68CD1E" style="background: #68CD1E"></li>
+							<li data-color="0AC16D" style="background: #0AC16D"></li>
+							<li data-color="0ED2B3" style="background: #0ED2B3"></li>
+							<li data-color="BBBBBB" style="background: #BBBBBB"></li>
+						</ul>
+					</div>
+				</div>
+				<div class="app-icon-list" id="app-icon-list">
+					<ul>
+						<li v-for="(i, index) of 116">
+							<div class="icon">
+								<img class="iconBg" src="/static/pc/IconLibrary/images/iconBg/28A7FF.svg" th:src="@{/pc/IconLibrary/images/iconBg/28A7FF.svg}">
+								<img class="iconImg" :src="ctx + '/pc/IconLibrary/images/icons/icon' + i + '.png'">
+							</div>
+						</li>
+					</ul>
+				</div>
+			</div>
+			<div class="pu-bot" style="padding-top:17px;">
+				<span class="cancle" @click="iconWindowShow=false">取消</span>
+				<span class="confirm" @click="imgCreate">确认</span>
+			</div>
+		</div>
+	</div>
+</div>
+<div th:replace="pc/include/common_js :: common_js(~{::script})">
+	<script src="/static/pc/assets/lib/element-ui/lib/index.js" th:src="@{/pc/assets/lib/element-ui/lib/index.js}"></script>
+	<script src="/static/pc/assets/lib/jqthumb.min.js" th:src="@{/pc/assets/lib/jqthumb.min.js}"></script>
+	<script src="/static/pc/assets/lib/webuploader/webuploader.js" th:src="@{/pc/assets/lib/webuploader/webuploader.js}"></script>
+	<script src="/static/pc/IconLibrary/js/jquery.mCustomScrollbar.concat.min.js" th:src="@{/pc/IconLibrary/js/jquery.mCustomScrollbar.concat.min.js}"></script>
+	<script th:inline="javascript">
+		var vm = new Vue({
+			el: "#vm",
+			data: {
+				ctx: ctx,
+				iconWindowShow: false,
+				market: [[${market}]],
+				backUrl: [[${backUrl}]]
+			},
+            created: function () {
+				var $this = this;
+                $this.perfectMarket();
+            },
+			mounted: function () {
+				var $this = this;
+				//图标库细滚动条
+				$("#app-icon-list").mCustomScrollbar({scrollbarPosition: "outside"});
+				// 改变图标库的背景色
+				$(".iconLibrary .color-list").on('click', 'ul li', function () {
+					$(this).addClass('active').siblings().removeClass('active');
+					var dataColor = $(this).attr('data-color');
+					$("#app-icon-list ul li img.iconBg").attr('src', ctx + '/pc/IconLibrary/images/iconBg/' + dataColor + '.svg');
+				});
+				// 图标库切换
+				$(".iconLibrary .app-icon-list").on("click", "  ul li", function () {
+					$(this).addClass("cur").siblings().removeClass('cur');
+				});
+				$this.initUploader();
+			},
+			methods: {
+                perfectMarket: function () {
+					var $this = this;
+                    if (activityApp.isEmpty($this.market.iconUrl)) {
+                        $this.$set($this.market, "iconUrl", "http://p.ananas.chaoxing.com/star3/origin/" + $this.market.iconCloudId);
+                    }
+                    if (activityApp.isEmpty($this.market.name)) {
+                        $this.$set($this.market, "name", "");
+                    }
+                },
+				initUploader: function () {
+					var $this = this;
+					$this.uploader = WebUploader.create({
+						// swf文件路径
+						swf: ctx + "/pc/assets/lib/webuploader/Uploader.swf",
+						// 文件接收服务端。
+						server: ctx + "/api/upload/img",
+						// 选择文件的按钮。可选。
+						// 内部根据当前运行是创建，可能是input元素，也可能是flash.
+						pick: "#upload-btn",
+						// 不压缩image, 默认如果是jpeg，文件上传前会压缩一把再上传！
+						resize: false,
+						auto: true,
+						// 只允许选择图片文件。
+						accept: {
+							title: 'Images',
+							extensions: 'gif,jpg,jpeg,bmp,png',
+							mimeTypes: 'image/*'
+						}
+					});
+					$this.uploader.on("startUpload", function (file, response) {
+						// 上传完成
+						$this.activityCoverUploading = true;
+					});
+					$this.uploader.on("uploadSuccess", function (file, response) {
+						$this.handleUploadResult(response);
+					});
+					$this.uploader.on("uploadComplete", function (file, response) {
+						// 上传完成
+						$this.activityCoverUploading = false;
+					});
+					$this.uploader.on("uploadError", function (file, reason) {
+						app.showMsg(reason);
+					});
+				},
+				//   图片合并
+				imgCreate: function () {
+					var iconBg = $("#app-icon-list ul li.cur").find('.iconBg').attr('src');
+					var iconImg = $("#app-icon-list ul li.cur").find('.iconImg').attr('src');
+					this.drawAndShareImage(iconBg, iconImg);
+				},
+				drawAndShareImage: function (iconBg, iconImg) {
+					var $this = this;
+					var canvas = document.createElement("canvas");
+					canvas.width = 700;
+					canvas.height = 700;
+					var context = canvas.getContext("2d");
+					context.rect(0, 0, canvas.width, canvas.height);
+					context.fillStyle = 'rgba(255, 255, 255, 0)';
+					context.fill();
+					var myImage = new Image();
+					//背景图片 你自己本地的图片或者在线图片
+					myImage.src = iconBg;
+					myImage.crossOrigin = 'Anonymous';
+					myImage.onload = function () {
+						context.drawImage(myImage, 0, 0, 700, 700);
+						var myImage2 = new Image();
+						myImage2.src = iconImg;  //你自己本地的图片或者在线图片
+						myImage2.crossOrigin = 'Anonymous';
+						myImage2.onload = function () {
+							context.drawImage(myImage2, 0, 0, 700, 700);
+							var base64 = canvas.toDataURL("image/png");
+							// 上传到后台
+							$this.uploadBase64(base64);
+						}
+						$this.iconWindowShow = !$this.iconWindowShow;
+					}
+				},
+				uploadBase64: function (base64) {
+					var $this = this;
+					var url = ctx + "/api/upload/img/base64";
+					var params = {
+						base64: base64
+					};
+					app.ajaxPostWithLoading(url, params, function (data) {
+						$this.handleUploadResult(data);
+					}, function () {
+						app.showMsg("上传图片失败");
+					});
+				},
+				handleUploadResult: function (data) {
+					var $this = this;
+					if (data.success) {
+						var data = data.data;
+						data = activityApp.getJsonObject(data);
+						var result = data.result;
+						if (result == 1) {
+							var cloudId = data.objectid;
+							$this.$set($this.market, "iconUrl", activityApp.buildCloudImgUrl(cloudId));
+							$this.$set($this.market, "iconCloudId", cloudId);
+						} else {
+							app.showMsg("上传失败");
+						}
+					} else {
+						var errorMessage = data.message;
+						if (activityApp.isEmpty(errorMessage)) {
+							errorMessage = "上传图标失败";
+						}
+						app.showMsg(errorMessage);
+					}
+				},
+				validateInput: function () {
+					var $this = this;
+					if (activityApp.isEmpty($this.market.name)) {
+						app.showMsg("应用名称不能为空");
+						return false;
+					}
+					return true;
+				},
+				// 发布应用
+				release: function () {
+					var $this = this;
+					if (!$this.validateInput()) {
+						return false;
+					}
+					var url = ctx + "/api/market/new/from-wfw";
+                    if (!activityApp.isEmpty($this.market.id)) {
+                        url = ctx + "/api/market/update/from-wfw";
+                    }
+					app.ajaxPostWithLoading(url, $this.market, function (data) {
+						if (data.success) {
+							app.showMsg("发布成功", function () {
+								window.location = $this.backUrl;
+							});
+						} else {
+							var message = data.message;
+							if (activityApp.isEmpty(message)) {
+								message = "发布失败";
+							}
+							app.showMsg(message);
+						}
+					}, function () {
+						app.showMsg("发布失败");
+					});
+				},
+				// 返回
+				back: function () {
+					var $this = this;
+					window.location = $this.backUrl;
+				}
+			}
+		});
+	</script>
+</div>
+</body>
+</html>

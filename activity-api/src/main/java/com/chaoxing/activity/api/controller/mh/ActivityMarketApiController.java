@@ -8,11 +8,11 @@ import com.chaoxing.activity.api.util.MhPreParamsUtils;
 import com.chaoxing.activity.dto.RestRespDTO;
 import com.chaoxing.activity.dto.query.ActivityQueryDTO;
 import com.chaoxing.activity.model.Activity;
-import com.chaoxing.activity.model.ActivityClassify;
+import com.chaoxing.activity.model.Classify;
 import com.chaoxing.activity.service.activity.ActivityCoverUrlSyncService;
 import com.chaoxing.activity.service.activity.ActivityQueryService;
-import com.chaoxing.activity.service.activity.classify.ActivityClassifyQueryService;
-import com.chaoxing.activity.service.manager.WfwRegionalArchitectureApiService;
+import com.chaoxing.activity.service.activity.classify.ClassifyQueryService;
+import com.chaoxing.activity.service.manager.wfw.WfwAreaApiService;
 import com.chaoxing.activity.util.constant.DateTimeFormatterConstant;
 import com.chaoxing.activity.util.exception.BusinessException;
 import com.google.common.collect.Lists;
@@ -41,9 +41,9 @@ public class ActivityMarketApiController {
 	@Resource
 	private ActivityQueryService activityQueryService;
 	@Resource
-	private ActivityClassifyQueryService activityClassifyQueryService;
+	private ClassifyQueryService classifyQueryService;
 	@Resource
-	private WfwRegionalArchitectureApiService wfwRegionalArchitectureApiService;
+	private WfwAreaApiService wfwAreaApiService;
 	@Resource
 	private ActivityCoverUrlSyncService activityCoverUrlSyncService;
 
@@ -85,7 +85,7 @@ public class ActivityMarketApiController {
 				.statusList(statusList)
 				.activityClassifyId(activityClassifyId)
 				.build();
-		List<Integer> fids = wfwRegionalArchitectureApiService.listSubFid(wfwfid);
+		List<Integer> fids = wfwAreaApiService.listSubFid(wfwfid);
 		activityQuery.setFids(fids);
 		Page<Activity> page = new Page(pageNum, pageSize);
 		page = activityQueryService.listParticipate(page, activityQuery);
@@ -174,7 +174,7 @@ public class ActivityMarketApiController {
 				.topFid(wfwfid)
 				.activityClassifyId(activityClassifyId)
 				.build();
-		List<Integer> fids = wfwRegionalArchitectureApiService.listSubFid(wfwfid);
+		List<Integer> fids = wfwAreaApiService.listSubFid(wfwfid);
 		activityQuery.setFids(fids);
 		Page<Activity> page = new Page(pageNum, pageSize);
 		page = activityQueryService.listParticipate(page, activityQuery);
@@ -248,15 +248,15 @@ public class ActivityMarketApiController {
 		}
 		List<Integer> wfwfids = Lists.newArrayList();
 		wfwfids.add(wfwfid);
-		List<ActivityClassify> activityClassifies = activityClassifyQueryService.listOrgsOptional(wfwfids);
+		List<Classify> classifies = classifyQueryService.listByFids(wfwfids);
 		JSONObject jsonObject = new JSONObject();
 		JSONArray activityClassifyJsonArray = new JSONArray();
 		jsonObject.put("classifies", activityClassifyJsonArray);
-		if (CollectionUtils.isNotEmpty(activityClassifies)) {
-			for (ActivityClassify activityClassify : activityClassifies) {
+		if (CollectionUtils.isNotEmpty(classifies)) {
+			for (Classify classify : classifies) {
 				JSONObject item = new JSONObject();
-				item.put("id", activityClassify.getId());
-				item.put("name", activityClassify.getName());
+				item.put("id", classify.getId());
+				item.put("name", classify.getName());
 				activityClassifyJsonArray.add(item);
 			}
 		}

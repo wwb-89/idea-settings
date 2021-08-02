@@ -2,7 +2,7 @@ package com.chaoxing.activity.model;
 
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableName;
-import com.chaoxing.activity.dto.manager.WfwRegionalArchitectureDTO;
+import com.chaoxing.activity.dto.manager.wfw.WfwAreaDTO;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -51,11 +51,11 @@ public class ActivityScope {
     /** 顺序; column: sort*/
     private Integer sort;
 
-    public static List<WfwRegionalArchitectureDTO> convert2WfwRegionalArchitectures(List<ActivityScope> activityScopes) {
-        List<WfwRegionalArchitectureDTO> wfwRegionalArchitectures = new ArrayList<>();
+    public static List<WfwAreaDTO> convert2WfwRegionalArchitectures(List<ActivityScope> activityScopes) {
+        List<WfwAreaDTO> wfwRegionalArchitectures = new ArrayList<>();
         if (CollectionUtils.isNotEmpty(activityScopes)) {
             for (ActivityScope activityScope : activityScopes) {
-                WfwRegionalArchitectureDTO wfwRegionalArchitecture = WfwRegionalArchitectureDTO.builder()
+                WfwAreaDTO wfwRegionalArchitecture = WfwAreaDTO.builder()
                         .id(activityScope.getHierarchyId())
                         .name(activityScope.getName())
                         .pid(activityScope.getHierarchyPid())

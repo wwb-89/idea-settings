@@ -5,7 +5,7 @@ import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.chaoxing.activity.dto.RestRespDTO;
-import com.chaoxing.activity.dto.manager.WfwRegionalArchitectureDTO;
+import com.chaoxing.activity.dto.manager.wfw.WfwAreaDTO;
 import com.chaoxing.activity.dto.manager.mh.MhGeneralAppResultDataDTO;
 import com.chaoxing.activity.dto.manager.sign.SignStatDTO;
 import com.chaoxing.activity.dto.query.MhActivityCalendarQueryDTO;
@@ -13,7 +13,7 @@ import com.chaoxing.activity.model.Activity;
 import com.chaoxing.activity.model.ActivityDetail;
 import com.chaoxing.activity.service.activity.ActivityCoverUrlSyncService;
 import com.chaoxing.activity.service.activity.ActivityQueryService;
-import com.chaoxing.activity.service.manager.WfwRegionalArchitectureApiService;
+import com.chaoxing.activity.service.manager.wfw.WfwAreaApiService;
 import com.chaoxing.activity.service.manager.module.SignApiService;
 import com.chaoxing.activity.util.constant.CommonConstant;
 import com.chaoxing.activity.util.constant.DateFormatConstant;
@@ -62,7 +62,7 @@ public class ActivityMhAppController {
 	@Resource
 	private SignApiService signApiService;
 	@Resource
-	private WfwRegionalArchitectureApiService wfwRegionalArchitectureApiService;
+	private WfwAreaApiService wfwAreaApiService;
 
 	@Resource
 	private RestTemplate restTemplate;
@@ -186,27 +186,19 @@ public class ActivityMhAppController {
 	@RequestMapping("activity/{activityId}/sign/btn")
 	public RestRespDTO signInUp(@PathVariable Integer activityId, @RequestBody String data) {
 		Activity activity = activityQueryService.getById(activityId);
-		Boolean enableSign = activity.getEnableSign();
-		if (enableSign) {
-			// 请求签到报名
-			String url = String.format(QD_BTN_URL, activity.getSignId(), activityId);
-			HttpHeaders httpHeaders = new HttpHeaders();
-			httpHeaders.setContentType(MediaType.APPLICATION_JSON);
-			HttpEntity<String> httpEntity = new HttpEntity<>(data, httpHeaders);
-			String result = restTemplate.postForObject(url, httpEntity, String.class);
-			JSONObject jsonObject = JSON.parseObject(result);
-			Boolean success = jsonObject.getBoolean("success");
-			success = Optional.ofNullable(success).orElse(false);
-			if (success) {
-				return RestRespDTO.success(jsonObject.getJSONObject("data"));
-			} else {
-				return RestRespDTO.error(jsonObject.getString("message"));
-			}
+		// 请求签到报名
+		String url = String.format(QD_BTN_URL, activity.getSignId(), activityId);
+		HttpHeaders httpHeaders = new HttpHeaders();
+		httpHeaders.setContentType(MediaType.APPLICATION_JSON);
+		HttpEntity<String> httpEntity = new HttpEntity<>(data, httpHeaders);
+		String result = restTemplate.postForObject(url, httpEntity, String.class);
+		JSONObject jsonObject = JSON.parseObject(result);
+		Boolean success = jsonObject.getBoolean("success");
+		success = Optional.ofNullable(success).orElse(false);
+		if (success) {
+			return RestRespDTO.success(jsonObject.getJSONObject("data"));
 		} else {
-			// 直接返回信息给门户，返回空数据
-			JSONObject jsonObject = new JSONObject();
-			jsonObject.put("results", new ArrayList<>());
-			return RestRespDTO.success(jsonObject);
+			return RestRespDTO.error(jsonObject.getString("message"));
 		}
 	}
 
@@ -303,18 +295,18 @@ public class ActivityMhAppController {
 		Integer wfwfid = jsonObject.getInteger("wfwfid");
 		Optional.ofNullable(wfwfid).orElseThrow(() -> new BusinessException("wfwfid不能为空"));
 		List<Integer> fids = Lists.newArrayList();
-		List<WfwRegionalArchitectureDTO> wfwRegionalArchitectures = Lists.newArrayList();
+		List<WfwAreaDTO> wfwRegionalArchitectures = Lists.newArrayList();
 		try {
 			if (StringUtils.isNotBlank(areaCode)) {
-				wfwRegionalArchitectures = wfwRegionalArchitectureApiService.listByCode(areaCode);
+				wfwRegionalArchitectures = wfwAreaApiService.listByCode(areaCode);
 			} else {
-				wfwRegionalArchitectures = wfwRegionalArchitectureApiService.listByFid(wfwfid);
+				wfwRegionalArchitectures = wfwAreaApiService.listByFid(wfwfid);
 			}
 		} catch (Exception e) {
 			log.error("活动日历error: {}", e.getMessage());
 		}
 		if (CollectionUtils.isNotEmpty(wfwRegionalArchitectures)) {
-			List<Integer> subFids = wfwRegionalArchitectures.stream().map(WfwRegionalArchitectureDTO::getFid).collect(Collectors.toList());
+			List<Integer> subFids = wfwRegionalArchitectures.stream().map(WfwAreaDTO::getFid).collect(Collectors.toList());
 			fids.addAll(subFids);
 		} else {
 			fids.add(wfwfid);

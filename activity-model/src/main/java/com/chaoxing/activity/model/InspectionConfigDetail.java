@@ -4,6 +4,9 @@ import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
+import com.chaoxing.activity.util.constant.CommonConstant;
+import com.chaoxing.activity.util.enums.UserActionEnum;
+import com.chaoxing.activity.util.enums.UserActionTypeEnum;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -11,7 +14,6 @@ import lombok.NoArgsConstructor;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
-import java.util.Date;
 
 /**
  * 考核配置详情
@@ -48,5 +50,16 @@ public class InspectionConfigDetail {
     private LocalDateTime createTime;
     /** 更新时间; column: update_time*/
     private LocalDateTime updateTime;
+
+    public static InspectionConfigDetail buildDefault(Integer configId) {
+        return InspectionConfigDetail.builder()
+                .configId(configId)
+                .actionType(UserActionTypeEnum.SIGN_IN.getValue())
+                .action(UserActionEnum.SIGNED_IN.getValue())
+                .score(CommonConstant.DEFAULT_SIGNED_IN_SCORE)
+                .upperLimit(null)
+                .deleted(false)
+                .build();
+    }
 
 }

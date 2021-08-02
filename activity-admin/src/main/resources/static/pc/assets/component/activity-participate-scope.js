@@ -74,7 +74,7 @@ Vue.component('vue-activity-participate-scope', {
         // 加载机构列表
         loadOrgs: function () {
             var $this = this;
-            var url = ctx + "/api/regional-architecture/list";
+            var url = ctx + "/api/area/list";
             app.ajaxPost(url, {fid: $this.fid}, function (data) {
                 if (data.success) {
                     $this.loaded = true;

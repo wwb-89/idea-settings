@@ -1,7 +1,6 @@
 package com.chaoxing.activity.service.activity.collection;
 
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
-import com.chaoxing.activity.dto.LoginUserDTO;
 import com.chaoxing.activity.mapper.ActivityCollectionMapper;
 import com.chaoxing.activity.model.ActivityCollection;
 import lombok.extern.slf4j.Slf4j;
@@ -30,19 +29,6 @@ public class ActivityCollectionHandleService {
 	/**收藏
 	 * @Description 
 	 * @author wwb
-	 * @Date 2021-01-28 15:39:06
-	 * @param activityId
-	 * @param loginUser
-	 * @return void
-	*/
-	public void collect(Integer activityId, LoginUserDTO loginUser) {
-		Integer uid = loginUser.getUid();
-		collect(activityId, uid);
-	}
-
-	/**收藏
-	 * @Description 
-	 * @author wwb
 	 * @Date 2021-01-28 20:44:52
 	 * @param activityId
 	 * @param uid
@@ -56,18 +42,6 @@ public class ActivityCollectionHandleService {
 					.build();
 			activityCollectionMapper.insert(activityCollection);
 		}
-	}
-
-	/**取消收藏
-	 * @Description 
-	 * @author wwb
-	 * @Date 2021-01-28 15:35:17
-	 * @param activityId
-	 * @param loginUser
-	 * @return void
-	*/
-	public void cancelCollect(Integer activityId, LoginUserDTO loginUser) {
-		cancelCollect(activityId, loginUser.getUid());
 	}
 
 	/**取消收藏

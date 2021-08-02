@@ -11,7 +11,6 @@ import org.springframework.stereotype.Service;
 import javax.annotation.Resource;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 /**
@@ -255,13 +254,12 @@ public class TableFieldQueryService {
     * @Description
     * @author huxiaolong
     * @Date 2021-06-30 15:43:30
-    * @param fid
-    * @param activityFlag
+    * @param marketId
     * @param type
     * @param associatedType
     * @return java.util.List<com.chaoxing.activity.model.MarketTableField>
     */
-    public List<MarketTableField> listMarketTableField(Integer fid, String activityFlag, TableField.Type type, TableField.AssociatedType associatedType) {
+    public List<MarketTableField> listMarketTableField(Integer marketId, TableField.Type type, TableField.AssociatedType associatedType) {
         List<MarketTableField> result = Lists.newArrayList();
         // 根据type和associatedType查询TableField
         TableField tableField = getTableField(type, associatedType);
@@ -269,24 +267,21 @@ public class TableFieldQueryService {
             return result;
         }
         Integer tableFieldId = tableField.getId();
-        return listMarketTableField(fid, activityFlag, tableFieldId);
+        return listMarketTableField(marketId, tableFieldId);
     }
 
     /**
     * @Description
     * @author huxiaolong
     * @Date 2021-06-30 15:45:34
-    * @param fid
-    * @param activityFlag
+    * @param marketId
     * @param tableFieldId
     * @return java.util.List<com.chaoxing.activity.model.MarketTableField>
     */
-    private List<MarketTableField> listMarketTableField(Integer fid, String activityFlag, Integer tableFieldId) {
-        Activity.ActivityFlagEnum flagEnum = Optional.ofNullable(Activity.ActivityFlagEnum.fromValue(activityFlag)).orElse(Activity.ActivityFlagEnum.NORMAL);
+    private List<MarketTableField> listMarketTableField(Integer marketId, Integer tableFieldId) {
         // 活动市场对应的字段配置列表
         return marketTableFieldMapper.selectList(new QueryWrapper<MarketTableField>().lambda()
-                .eq(MarketTableField::getFid, fid)
-                .eq(MarketTableField::getActivityFlag, flagEnum.getValue())
+                .eq(MarketTableField::getMarketId, marketId)
                 .eq(MarketTableField::getTableFieldId, tableFieldId)
                 .orderByAsc(MarketTableField::getSequence));
     }

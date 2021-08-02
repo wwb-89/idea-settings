@@ -5,17 +5,19 @@ import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
+import com.chaoxing.activity.dto.activity.ActivityCreateParamDTO;
 import com.chaoxing.activity.util.LocalDateTimeDeserializer;
 import com.chaoxing.activity.util.LocalDateTimeSerializer;
-import com.chaoxing.activity.util.constant.CommonConstant;
 import com.chaoxing.activity.util.exception.BusinessException;
 import lombok.*;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.ZoneOffset;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 
 /**
  * 活动表
@@ -71,9 +73,6 @@ public class Activity {
     private BigDecimal credit;
     /** 参与时长上限（小时）; column: time_length_upper_limit*/
     private Integer timeLengthUpperLimit;
-    /** 是否启用签到报名; column: is_enable_sign*/
-    @TableField(value = "is_enable_sign")
-    private Boolean enableSign;
     /** 签到报名id; column: sign_id*/
     private Integer signId;
     /** 网页模板id; column: web_template_id*/
@@ -100,11 +99,6 @@ public class Activity {
     private LocalDateTime releaseTime;
     /** 发布人id; column: release_uid*/
     private Integer releaseUid;
-    /** 是否开启审核; column: is_open_audit*/
-    @TableField(value = "is_open_audit")
-    private Boolean openAudit;
-    /** 审核状态。0：审核不通过，1：审核通过，2：待审核; column: audit_status*/
-    private Integer auditStatus;
     /** 创建人id; column: create_uid*/
     private Integer createUid;
     /** 创建人姓名; column: create_user_name*/
@@ -123,9 +117,9 @@ public class Activity {
     /** 评价是否需要审核; column: is_rating_need_audit */
     @TableField(value = "is_rating_need_audit")
     private Boolean ratingNeedAudit;
-    /** 积分值; column: integral_value*/
-    private BigDecimal integralValue;
-    /** 活动标示，通用、第二课堂、双选会等; column: activity_flag*/
+    /** 积分值; column: integral*/
+    private BigDecimal integral;
+    /** 活动标识; column: activity_flag*/
     private String activityFlag;
     /** 是否开启作品征集; column: is_open_work*/
     @TableField(value = "is_open_work")
@@ -136,6 +130,10 @@ public class Activity {
     private String originType;
     /** 来源值; column: origin*/
     private String origin;
+    /** 市场id; column: market_id*/
+    private Integer marketId;
+    /** 模版id; column: template_id*/
+    private Integer templateId;
     /** 状态。0：已删除，1：待发布，2：已发布，3：进行中，4：已结束; column: status*/
     private Integer status;
     /** 创建时间; column: create_time*/
@@ -146,9 +144,6 @@ public class Activity {
     private LocalDateTime updateTime;
 
     // 附加
-    /** 活动详情 */
-    @TableField(exist = false)
-    private String introduction;
     /** 开始时间字符串 */
     @TableField(exist = false)
     private String startTimeStr;
@@ -167,9 +162,6 @@ public class Activity {
     /** 管理员uid列表 */
     @TableField(exist = false)
     private List<Integer> managerUids;
-    /** 起止时间 */
-    @TableField(exist = false)
-    private String activityStartEndTime;
 
     @Getter
     public enum OriginTypeEnum {
@@ -263,40 +255,6 @@ public class Activity {
         }
     }
 
-    /**活动状态枚举
-     * @className Activity
-     * @description
-     * @author wwb
-     * @blame wwb
-     * @date 2021-03-29 10:49:06
-     * @version ver 1.0
-     */
-    @Getter
-    public enum AuditStatusEnum {
-        /** 已删除 */
-        NOT_PASS("未通过", 0),
-        PASSED("已通过", 1),
-        WAIT_AUDIT("待审核", 2);
-
-        private final String name;
-        private final Integer value;
-
-        AuditStatusEnum(String name, Integer value) {
-            this.name = name;
-            this.value = value;
-        }
-
-        public static AuditStatusEnum fromValue(Integer value) {
-            AuditStatusEnum[] values = AuditStatusEnum.values();
-            for (AuditStatusEnum auditStatusEnum : values) {
-                if (Objects.equals(auditStatusEnum.getValue(), value)) {
-                    return auditStatusEnum;
-                }
-            }
-            return null;
-        }
-    }
-
     /** 活动标示枚举
      * @className Activity
      * @description 
@@ -339,19 +297,6 @@ public class Activity {
 
     }
 
-    public static Activity buildDefault() {
-        return Activity.builder()
-                .name("")
-                .coverCloudId(CommonConstant.ACTIVITY_DEFAULT_COVER_CLOUD_ID)
-                .organisers("")
-                .address("")
-                .detailAddress("")
-                .enableSign(true)
-                .openWork(false)
-                .openAudit(false)
-                .build();
-    }
-
     public static String getStatusDescription(Integer status) {
         StatusEnum statusEnum = StatusEnum.fromValue(status);
         switch (statusEnum) {
@@ -369,4 +314,94 @@ public class Activity {
         }
     }
 
+    /**发布
+     * @Description 
+     * @author wwb
+     * @Date 2021-07-06 11:04:18
+     * @param releaseUid
+     * @return void
+    */
+    public void release(Integer releaseUid) {
+        setReleased(true);
+        setReleaseUid(releaseUid);
+        LocalDateTime now = LocalDateTime.now();
+        setReleaseTime(now);
+    }
+
+    /**取消发布
+     * @Description 
+     * @author wwb
+     * @Date 2021-07-06 11:06:35
+     * @param
+     * @return void
+    */
+    public void cancelRelease() {
+        setReleased(false);
+        setReleaseUid(null);
+        setReleaseTime(null);
+    }
+
+    public void delete() {
+        setStatus(StatusEnum.DELETED.getValue());
+    }
+
+    public void coverCloudIdChange() {
+        setCoverUrl("");
+    }
+
+    public void beforeCreate(Integer uid, String userName, Integer fid, String orgName) {
+        setStatus(Activity.StatusEnum.WAIT_RELEASE.getValue());
+        setReleased(false);
+        setCreateUid(uid);
+        setCreateUserName(userName);
+        setCreateFid(fid);
+        setCreateOrgName(orgName);
+    }
+
+    public boolean isEnded() {
+        return Objects.equals(StatusEnum.ENDED.getValue(), getStatus());
+    }
+
+
+    /**构建活动对象
+    * @Description
+    * @author huxiaolong
+    * @Date 2021-07-19 10:42:48
+    * @param
+    * @return com.chaoxing.activity.dto.activity.ActivityCreateParamDTO
+    */
+    public ActivityCreateParamDTO buildActivityCreateParam() {
+        return ActivityCreateParamDTO.builder()
+                .id(id)
+                .name(getName())
+                .startTimeStamp(startTime == null ? null : startTime.toInstant(ZoneOffset.of("+8")).toEpochMilli())
+                .endTimeStamp(endTime == null ? null : endTime.toInstant(ZoneOffset.of("+8")).toEpochMilli())
+                .coverCloudId(coverCloudId)
+                .coverUrl(coverUrl)
+                .organisers(organisers)
+                .activityType(activityType)
+                .address(address)
+                .detailAddress(detailAddress)
+                .longitude(longitude)
+                .dimension(dimension)
+                .activityClassifyId(activityClassifyId)
+                .period(period)
+                .credit(credit)
+                .timeLengthUpperLimit(timeLengthUpperLimit)
+                .timingRelease(timingRelease)
+                .timingReleaseTimeStamp(Optional.ofNullable(timingReleaseTime).map(v -> timingReleaseTime.toInstant(ZoneOffset.of("+8")).toEpochMilli()).orElse(null))
+//                .openAudit()
+                .createAreaCode(createAreaCode)
+                .tags(tags)
+                .openRating(openRating)
+                .ratingNeedAudit(ratingNeedAudit)
+                .integral(integral)
+                .openWork(openWork)
+                .originType(originType)
+                .origin(origin)
+                .webTemplateId(webTemplateId)
+                .previewUrl(previewUrl)
+                .editUrl(editUrl)
+                .build();
+    }
 }

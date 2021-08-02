@@ -1,7 +1,7 @@
 package com.chaoxing.activity.api.controller.form;
 
 import com.chaoxing.activity.dto.RestRespDTO;
-import com.chaoxing.activity.dto.manager.form.FormCreateActivity;
+import com.chaoxing.activity.dto.manager.wfwform.WfwFormCreateActivity;
 import com.chaoxing.activity.service.queue.activity.FormActivityCreateQueueService;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -38,7 +38,7 @@ public class FormActivityApiController {
      */
     @RequestMapping("create")
     public RestRespDTO formCreateActivity(@RequestParam Integer deptId, Integer formId, @RequestParam(value = "indexID") Integer formUserId, String flag, Integer templateId) {
-        FormCreateActivity formCreateActivity = FormCreateActivity.builder()
+        WfwFormCreateActivity formCreateActivity = WfwFormCreateActivity.builder()
                 .fid(deptId)
                 .formId(formId)
                 .formUserId(formUserId)

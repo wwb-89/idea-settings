@@ -1,6 +1,6 @@
 package com.chaoxing.activity.vo.manager;
 
-import lombok.Getter;
+import lombok.*;
 
 /**微服务表单vo
  * @author wwb
@@ -10,6 +10,15 @@ import lombok.Getter;
  * @blame wwb
  * @date 2021-07-08 15:41:31
  */
-@Getter
+@Data
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 public class WfwFormVO {
+
+	/** 表单id */
+	private Integer id;
+	/** 表单名称 */
+	private String name;
+
 }

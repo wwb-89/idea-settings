@@ -5,7 +5,6 @@ import com.chaoxing.activity.dto.LoginUserDTO;
 import com.chaoxing.activity.mapper.ActivityTableFieldMapper;
 import com.chaoxing.activity.mapper.MarketTableFieldMapper;
 import com.chaoxing.activity.mapper.OrgTableFieldMapper;
-import com.chaoxing.activity.model.Activity;
 import com.chaoxing.activity.model.ActivityTableField;
 import com.chaoxing.activity.model.MarketTableField;
 import com.chaoxing.activity.model.OrgTableField;
@@ -16,7 +15,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
 import java.util.List;
-import java.util.Optional;
 
 /**
  * @author wwb
@@ -96,19 +94,16 @@ public class TableFieldHandleService {
     }
 
     @Transactional(rollbackFor = Exception.class)
-    public void marketTableFieldConfig(Integer fid, String activityFlag, Integer tableFieldId, List<MarketTableField> marketTableFields, LoginUserDTO loginUser) {
-        Activity.ActivityFlagEnum flagEnum = Optional.ofNullable(Activity.ActivityFlagEnum.fromValue(activityFlag)).orElse(Activity.ActivityFlagEnum.NORMAL);
+    public void marketTableFieldConfig(Integer marketId, Integer tableFieldId, List<MarketTableField> marketTableFields, LoginUserDTO loginUser) {
         // 删除历史
         marketTableFieldMapper.delete(new UpdateWrapper<MarketTableField>()
                 .lambda()
-                .eq(MarketTableField::getFid, fid)
-                .eq(MarketTableField::getActivityFlag, flagEnum.getValue())
+                .eq(MarketTableField::getMarketId, marketId)
                 .eq(MarketTableField::getTableFieldId, tableFieldId)
         );
         if (CollectionUtils.isNotEmpty(marketTableFields)) {
             for (MarketTableField marketTableField : marketTableFields) {
-                marketTableField.setFid(fid);
-                marketTableField.setActivityFlag(flagEnum.getValue());
+                marketTableField.setMarketId(marketId);
                 marketTableField.setTableFieldId(tableFieldId);
                 marketTableField.setCreateUid(loginUser.getUid());
                 marketTableField.setUpdateUid(loginUser.getUid());

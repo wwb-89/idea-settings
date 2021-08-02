@@ -44,7 +44,10 @@ public class ActivityStatusUpdateQueueService implements IDelayedQueueService<Ac
 	}
 
 	public void pushStartTime(QueueParamDTO queueParam) {
-		push(redissonClient, START_TIME_CACHE_KEY, queueParam, queueParam.getTime());
+		LocalDateTime time = queueParam.getTime();
+		queueParam.setTime(null);
+		remove(redissonClient, START_TIME_CACHE_KEY, queueParam);
+		push(redissonClient, START_TIME_CACHE_KEY, queueParam, time);
 	}
 
 	public QueueParamDTO popStartTime() throws InterruptedException {
@@ -52,7 +55,10 @@ public class ActivityStatusUpdateQueueService implements IDelayedQueueService<Ac
 	}
 
 	public void pushEndTime(QueueParamDTO queueParam) {
-		push(redissonClient, END_TIME_CACHE_KEY, queueParam, queueParam.getTime());
+		LocalDateTime time = queueParam.getTime();
+		queueParam.setTime(null);
+		remove(redissonClient, END_TIME_CACHE_KEY, queueParam);
+		push(redissonClient, END_TIME_CACHE_KEY, queueParam, time);
 	}
 
 	public QueueParamDTO popEndTime() throws InterruptedException {

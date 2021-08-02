@@ -5,16 +5,21 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.chaoxing.activity.admin.util.LoginUtils;
 import com.chaoxing.activity.dto.LoginUserDTO;
 import com.chaoxing.activity.dto.RestRespDTO;
-import com.chaoxing.activity.dto.manager.WfwRegionalArchitectureDTO;
+import com.chaoxing.activity.dto.activity.ActivityCreateParamDTO;
+import com.chaoxing.activity.dto.activity.ActivityUpdateParamDTO;
+import com.chaoxing.activity.dto.manager.wfw.WfwAreaDTO;
 import com.chaoxing.activity.dto.manager.mh.MhCloneResultDTO;
-import com.chaoxing.activity.dto.module.SignAddEditDTO;
 import com.chaoxing.activity.dto.query.ActivityManageQueryDTO;
+import com.chaoxing.activity.dto.manager.sign.create.SignCreateParamDTO;
 import com.chaoxing.activity.model.Activity;
 import com.chaoxing.activity.service.activity.ActivityHandleService;
 import com.chaoxing.activity.service.activity.ActivityQueryService;
 import com.chaoxing.activity.util.HttpServletRequestUtils;
 import com.chaoxing.activity.util.annotation.LoginRequired;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
@@ -51,13 +56,11 @@ public class ActivityApiController {
 	@PostMapping("new")
 	public RestRespDTO create(HttpServletRequest request, String activityJsonStr, String participateScopeJsonStr, String signJsonStr) {
 		LoginUserDTO loginUser = LoginUtils.getLoginUser(request);
-		Activity activity = JSON.parseObject(activityJsonStr, Activity.class);
-		List<WfwRegionalArchitectureDTO> wfwRegionalArchitectures = JSON.parseArray(participateScopeJsonStr, WfwRegionalArchitectureDTO.class);
-		// 本期不开启审核
-		activity.setOpenAudit(false);
-		SignAddEditDTO signAddEdit = JSON.parseObject(signJsonStr, SignAddEditDTO.class);
-		activityHandleService.add(activity, signAddEdit, wfwRegionalArchitectures, loginUser);
-		return RestRespDTO.success(activity);
+		ActivityCreateParamDTO activityCreateParamDto = JSON.parseObject(activityJsonStr, ActivityCreateParamDTO.class);
+		List<WfwAreaDTO> wfwRegionalArchitectures = JSON.parseArray(participateScopeJsonStr, WfwAreaDTO.class);
+		SignCreateParamDTO signAddEdit = JSON.parseObject(signJsonStr, SignCreateParamDTO.class);
+		Integer activityId = activityHandleService.add(activityCreateParamDto, signAddEdit, wfwRegionalArchitectures, loginUser);
+		return RestRespDTO.success(activityId);
 	}
 
 	/**修改活动
@@ -74,12 +77,11 @@ public class ActivityApiController {
 	@PostMapping("edit")
 	public RestRespDTO edit(HttpServletRequest request, String activityJsonStr, String participateScopeJsonStr, String signJsonStr) {
 		LoginUserDTO loginUser = LoginUtils.getLoginUser(request);
-		Activity activity = JSON.parseObject(activityJsonStr, Activity.class);
-		List<WfwRegionalArchitectureDTO> wfwRegionalArchitectures = JSON.parseArray(participateScopeJsonStr, WfwRegionalArchitectureDTO.class);
-		// 本期不开启审核
-		SignAddEditDTO signAddEdit = JSON.parseObject(signJsonStr, SignAddEditDTO.class);
-		activityHandleService.edit(activity, signAddEdit, wfwRegionalArchitectures, loginUser);
-		return RestRespDTO.success(activity);
+		ActivityUpdateParamDTO activityUpdateParamDto = JSON.parseObject(activityJsonStr, ActivityUpdateParamDTO.class);
+		List<WfwAreaDTO> wfwRegionalArchitectures = JSON.parseArray(participateScopeJsonStr, WfwAreaDTO.class);
+		SignCreateParamDTO signAddEdit = JSON.parseObject(signJsonStr, SignCreateParamDTO.class);
+		activityHandleService.edit(activityUpdateParamDto, signAddEdit, wfwRegionalArchitectures, loginUser);
+		return RestRespDTO.success(activityUpdateParamDto);
 	}
 
 	/**删除活动

@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import javax.annotation.Resource;
 import java.util.List;
+import java.util.Optional;
 
 /**活动评价api服务
  * @author wwb
@@ -45,10 +46,7 @@ public class ActivityRatingApiController {
 		Integer signId = jsonObject.getInteger("signId");
 		List<Integer> uids = JSON.parseArray(jsonObject.getString("uids"), Integer.class);
 		Activity activity = activityQueryService.getBySignId(signId);
-		List<ActivityRatingDetail> activityRatingDetails = Lists.newArrayList();
-		if (activity != null) {
-			activityRatingDetails = activityRatingQueryService.listDetail(activity.getId(), uids);
-		}
+		List<ActivityRatingDetail> activityRatingDetails = Optional.ofNullable(activity).map(v -> activityRatingQueryService.listDetail(v.getId(), uids)).orElse(Lists.newArrayList());
 		return RestRespDTO.success(activityRatingDetails);
 	}
 

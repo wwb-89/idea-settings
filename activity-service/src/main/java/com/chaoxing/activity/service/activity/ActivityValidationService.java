@@ -3,7 +3,7 @@ package com.chaoxing.activity.service.activity;
 import com.chaoxing.activity.dto.LoginUserDTO;
 import com.chaoxing.activity.model.Activity;
 import com.chaoxing.activity.service.activity.manager.ActivityManagerValidationService;
-import com.chaoxing.activity.service.manager.WfwRegionalArchitectureApiService;
+import com.chaoxing.activity.service.manager.wfw.WfwAreaApiService;
 import com.chaoxing.activity.util.exception.ActivityNotExistException;
 import com.chaoxing.activity.util.exception.ActivityReleasedException;
 import com.chaoxing.activity.util.exception.BusinessException;
@@ -32,7 +32,7 @@ public class ActivityValidationService {
 	@Resource
 	private ActivityQueryService activityQueryService;
 	@Resource
-	private WfwRegionalArchitectureApiService wfwRegionalArchitectureApiService;
+	private WfwAreaApiService wfwAreaApiService;
 	@Resource
 	private ActivityManagerValidationService activityManagerValidationService;
 
@@ -80,6 +80,31 @@ public class ActivityValidationService {
 		}
 		activity.setTimingRelease(timingRelease);
 		activity.setTimingReleaseTime(timingReleaseTime);
+		String originType = activity.getOriginType();
+		if (StringUtils.isBlank(originType)) {
+			activity.setOriginType(Activity.OriginTypeEnum.NORMAL.getValue());
+		}
+		// 活动形式
+		String activityType = activity.getActivityType();
+		Activity.ActivityTypeEnum activityTypeEnum = Activity.ActivityTypeEnum.fromValue(activityType);
+		if (Activity.ActivityTypeEnum.ONLINE.equals(activityTypeEnum)) {
+			activity.setAddress(null);
+			activity.setLongitude(null);
+			activity.setDimension(null);
+		}
+	}
+
+	/**更新活动的输入验证
+	 * @Description 
+	 * @author wwb
+	 * @Date 2021-07-13 18:32:58
+	 * @param activity
+	 * @return void
+	*/
+	public void updateInputValidate(Activity activity) {
+		Integer activityId = activity.getId();
+		Optional.ofNullable(activityId).orElseThrow(() -> new BusinessException("活动id不能为空"));
+		addInputValidate(activity);
 	}
 
 	/**活动必须存在
@@ -161,7 +186,7 @@ public class ActivityValidationService {
 	*/
 	public boolean isOrgInManageScope(Integer fid, LoginUserDTO loginUser) {
 		Integer loginUserFid = loginUser.getFid();
-		List<Integer> manageFids = wfwRegionalArchitectureApiService.listSubFid(loginUserFid);
+		List<Integer> manageFids = wfwAreaApiService.listSubFid(loginUserFid);
 		return manageFids.contains(fid);
 	}
 
@@ -302,7 +327,7 @@ public class ActivityValidationService {
 			isCurrentOrgCreated = true;
 		}
 		// 活动是不是下级机构创建的
-		List<Integer> subFids = wfwRegionalArchitectureApiService.listSubFid(fid);
+		List<Integer> subFids = wfwAreaApiService.listSubFid(fid);
 		if (!manager && !isCurrentOrgCreated && !subFids.contains(createFid)) {
 			// 自己是活动的管理员、是本机构创建的、是自己机构的下级机构创建的
 			throw new BusinessException("无权限");

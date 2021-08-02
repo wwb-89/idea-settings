@@ -1,23 +1,25 @@
 <!DOCTYPE html>
 <html lang="en" xmlns:th="http://www.thymeleaf.org/">
-
 <head>
     <title>管理员</title>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="/static/pc/assets/lib/element-ui/lib/theme-chalk/index.css" th:href="@{/pc/assets/lib/element-ui/lib/theme-chalk/index.css}">
+    <link rel="stylesheet" href="/static/pc/assets/lib/zTree_v3/css/zTreeStyle/zTreeStyle.css" th:href="@{/pc/assets/lib/zTree_v3/css/zTreeStyle/zTreeStyle.css}">
     <link rel="stylesheet" href="/static/pc/assets/lib/layui/css/layui.css" th:href="@{/pc/assets/lib/layui/css/layui.css}">
     <link rel="stylesheet" href="/static/pc/assets/css/public.css" th:href="@{/pc/assets/css/public.css}">
-    <link rel="stylesheet" href="/static/pc/assets/css/dialog.css" th:href="@{/pc/assets/css/dialog.css}">
+    <link rel="stylesheet" href="/static/pc/assets/sign/assets/css/confirm_dialog.css" th:href="@{/pc/assets/sign/assets/css/confirm_dialog.css}">
+    <link rel="stylesheet" href="/static/pc/assets/css/choose-dialog.css" th:href="@{/pc/assets/css/choose-dialog.css}">
     <link rel="stylesheet" href="/static/pc/assets/css/organizer-manage.css" th:href="@{/pc/assets/css/organizer-manage.css}">
+    <link rel="stylesheet" href="/static/pc/assets/css/limits-manage.css" th:href="@{/pc/assets/css/limits-manage.css}">
     <link rel="stylesheet" href="/static/mobile/assets/lib/mescroll/mescroll.css" th:href="@{/mobile/assets/lib/mescroll/mescroll.css}">
-    <style type="text/css">
+    <style>
         [v-cloak] {
             display: none;
         }
     </style>
 </head>
-<body >
+<body>
 <div class="manage-container" id="activity-manager-vue" v-cloak>
     <div class="manage-header">
         管理员
@@ -59,111 +61,13 @@
             暂无内容
         </div>
     </div>
-    <!--添加弹框-->
-    <div class="dailog-box1" v-show="addShow">
-        <div class="dailog choose-dialog">
-            <div class="header">
-                <span>选择人员</span>
-                <img th:src="@{/pc/assets/images/close.png}" class="close" @click="addShow = false">
-            </div>
-            <div class="body clear">
-                <div class="choose-list fl mescroll" id="mescroll-container" >
-                    <div>
-                        <div class="search">
-                            <input class="search-ipt" type="text" placeholder="姓名" v-model.trim="sw" @focus="swFocus" @blur="swBlur" @keyup.enter="search">
-                            <i class="icon close" v-show="sw" @click="clearSearch"></i>
-                            <i class="icon search-icon" @click="search"></i>
-                        </div>
-                        <div class="crumb">
-                            <ul class="clear" v-if="!sw">
-                                <li :class="{'back-item': (index < crumbs.length - 1)}" v-for="(crumb, index) of crumbs" :key="'crumb-' + index" @click="expandCrumb(index)">{{crumb.name}}{{index < crumbs.length - 1 ? ' > ' : ''}}</li>
-                            </ul>
-                        </div>
-                        <template v-if="!inSearch">
-                            <div class="catalog-list">
-                                <!--机构-->
-                                <template v-if="crumbs[crumbs.length - 1].type == 'all'">
-                                    <div class="catalog-item" v-for="(org, index) of orgs" :key="'org-' + index" @click="expandOrg(index)">
-                                        <div class="catalog-photo">
-                                            <img th:src="@{/pc/assets/images/catalog1.png}">
-                                        </div>
-                                        <div class="catalog-title">{{org.name}}</div>
-                                        <img class="right-img" th:src="@{/pc/assets/images/icon-right.png}">
-                                    </div>
-                                </template>
-                                <!--下级部门-->
-                                <template v-if="crumbs[crumbs.length - 1].type == 'org' || crumbs[crumbs.length - 1].type == 'supperDepartment'">
-                                    <template v-for="(department, index) of departments">
-                                        <div class="catalog-item" @click="expandDepartment(index)">
-                                            <div class="catalog-photo">
-                                                <img th:src="@{/pc/assets/images/catalog1.png}">
-                                            </div>
-                                            <div class="catalog-title">
-                                                {{department.name}}
-                                            </div>
-                                            <img class="right-img" th:src="@{/pc/assets/images/icon-right.png}">
-                                        </div>
-                                    </template>
-                                </template>
-                                <!--部门下的用户-->
-                                <template v-if="crumbs[crumbs.length - 1].type == 'department'">
-                                    <div v-for="(user, index) of departmentUsers" :key="'user-' + index" :class='{"catalog-item":true,"bgc-blue": user.checked}'>
-                                        <div class="catalog-photo">
-                                            <img :src="'http://photo.chaoxing.com/p/' + user.puid + '_80'">
-                                        </div>
-                                        <div class="catalog-title">
-                                            {{user.name}}
-                                        </div>
-                                        <el-checkbox class="right-check" v-model="user.checked" :disabled="isCreator(user.puid)" @change="changeDepartmentUserCheck(index)"></el-checkbox>
-                                    </div>
-                                </template>
-                            </div>
-                        </template>
-                        <!--关键字搜索-->
-                        <template v-else>
-                            <div class="catalog-list">
-                                <div v-for="(user, index) of searchUsers" :class='{"catalog-item":true,"bgc-blue": user.checked}' :key="'user-' + index">
-                                    <div class="catalog-photo">
-                                        <img :src="'http://photo.chaoxing.com/p/' + user.puid + '_80'">
-                                    </div>
-                                    <div class="catalog-title">
-                                        {{user.name}}
-                                    </div>
-                                    <el-checkbox class="right-check" v-model="user.checked" :disabled="isCreator(user.puid)" @change="changeSearchUserChecked(index)"></el-checkbox>
-                                </div>
-                            </div>
-                        </template>
-                        <div class="empty-content" v-show="searchLoaded && searchUsers.length < 1">
-                            无搜索结果
-                        </div>
-                    </div>
-                </div>
-                <div class="item-choosed fl">
-                    <div class="choose-number">已选{{checkedDepartmentUsers.length}}人</div>
-                    <div class="catalog-list">
-                        <div class="catalog-item" v-for="(user, index) of checkedDepartmentUsers" :key="'user-' + index">
-                            <div class="catalog-photo">
-                                <img :src="'http://photo.chaoxing.com/p/' + user.puid + '_80'">
-                            </div>
-                            <div class="catalog-title">
-                                {{user.name}}
-                            </div>
-                            <div class="del-img" @click="removeCheckedDepartmentUser(index)"></div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="footer">
-                <div class="normal-btn cancle" @click="addShow = false">取消</div>
-                <div class="normal-btn before-sure" v-if="checkedDepartmentUsers.length < 1">完成</div>
-                <div class="normal-btn after-sure" v-else @click="batchAddSubmit">完成</div>
-            </div>
-        </div>
-    </div>
+
     <!-- 移除弹窗 -->
     <vue-confirm ref="deleteWindow" :message="'确定移除吗？'" :cancel="'取消'" :sure="'移除'" @callback="deleteSubmit"></vue-confirm>
     <!--批量移除弹窗-->
     <vue-confirm ref="batchDeleteWindow" :message="'确定移除吗？'" :cancel="'取消'" :sure="'移除'" @callback="batchDeleteSubmit"></vue-confirm>
+    <!--人员选择-->
+    <vue-user-select ref="userSelectWindow" @callback="userSelectSubmit"></vue-user-select>
 </div>
 </body>
 <th:block th:replace="pc/include/common_js :: common_js(~{::script})">
@@ -171,6 +75,7 @@
     <script src="/static/pc/assets/lib/element-ui/lib/index.js" th:src="@{/pc/assets/lib/element-ui/lib/index.js}"></script>
     <script src="/static/pc/assets/lib/layui/layui.js" th:src="@{/pc/assets/lib/layui/layui.js}"></script>
     <script src="/static/pc/assets/component/confirm.js" th:src="@{/pc/assets/component/confirm.js}"></script>
+    <script src="/static/pc/assets/component/user-select.js" th:src="@{/pc/assets/component/user-select.js}"></script>
     <script src="/static/mobile/assets/lib/mescroll/mescroll.js" th:src="@{/mobile/assets/lib/mescroll/mescroll.js}"></script>
     <script th:inline="javascript">
         activityManagerVue = new Vue({
@@ -186,43 +91,7 @@
                     pageSize: 10
                 },
                 allChecked: false,
-
-                loaded: false,
-                crumbs: [
-                    {name: "全部", type: "all", id: ""}
-                ],
-                currentDepartmentId: "",
-                orgs: [[${orgs}]],
-                // 所有的部门，下级部门从里面遍历
-                allDepartments: [],
-                departments: [],
-                niceScroll: null,
-                // 搜索相关
-                sw: "",
-                searchUserQueryParams: {
-                    sw: "",
-                    pageNum: 1,
-                    pageSize: 1000
-                },
-                searchUsers: [],
-                searchLoaded: false,
-                //输入框获取了焦点获赞sw不为空则认为在搜索
-                inSearch: false,
-
-                // 组织架构通讯录相关
-                departmentUserMescroll: null,
-                departmentUserQueryParams: {
-                    pageNum: 1,
-                    pageSize: 10
-                },
-                departmentUsers: [],
-                // 选中的部门用户
-                checkedDepartmentUsers: [],
-
-                //添加弹出框
-                addShow: false,
-                // 输入框清空按钮是否显示
-                operateIndex: -1
+                loaded: false
             },
             created: function () {
                 var $this = this;
@@ -255,16 +124,6 @@
                         }
                     });
                     return allCheckEnable;
-                }
-            },
-            watch: {
-                "sw": function () {
-                    var $this = this;
-                    if (activityApp.isEmpty($this.sw)) {
-                        $this.searchLoaded = false;
-                    } else {
-                        $this.inSearch = true;
-                    }
                 }
             },
             methods: {
@@ -314,85 +173,23 @@
                     });
                     $this.allChecked = allChecked;
                 },
-                initDepartmentUserMescroll: function () {
+                toAdd: function () {
                     var $this = this;
-                    if (activityApp.isEmpty($this.departmentUserMescroll)) {
-                        $this.departmentUserMescroll = new MeScroll("mescroll-container", {
-                            //上拉加载的配置项
-                            up: {
-                                callback: function () {
-                                    $this.loadDepartmentUser();
-                                },
-                                isBounce: false,
-                                noMoreSize: 3,
-                                htmlNodata: '<div class="loadMore loading"><p style="display: block" class="loadEndText"></p></div>',
-                                lazyLoad: {
-                                    use: false
-                                }
-                            }
-                        });
-                    } else {
-                        $this.departmentUsers = [];
-                        $this.departmentUserQueryParams.pageNum = 1;
-                        $this.departmentUserMescroll.resetUpScroll();
-                    }
+                    $this.$refs.userSelectWindow.show = true;
                 },
-                swFocus: function () {
+                userSelectSubmit: function () {
                     var $this = this;
-                    $this.inSearch = true;
-                },
-                swBlur: function () {
-                    var $this = this;
-                    if (activityApp.isEmpty($this.sw)) {
-                        $this.inSearch = false;
-                    }
-                },
-                search: function () {
-                    var $this = this;
-                    var url = ctx + "/api/wfw/contacter/search";
-                    $this.searchUserQueryParams.sw = $this.sw;
-                    app.ajaxPostWithLoading(url, $this.searchUserQueryParams, function (data) {
-                        if (data.success) {
-                            $this.searchLoaded = true;
-                            var searchUsers = data.data.records;
-                            $(searchUsers).each(function () {
-                                this.checked = $this.isNeedChecked(this.puid);
-                            });
-                            $this.searchUsers = searchUsers;
-                            $this.$nextTick(function () {
-                                $(".item-choosed,.choose-list").getNiceScroll().resize();
-                            });
-                        } else {
-                            var errorMessage = data.message;
-                            app.showMsg(errorMessage);
-                        }
-                    }, function () {
-                        app.showMsg("加载失败");
-                    });
-
-                },
-                clearSearch: function () {
-                    var $this = this;
-                    $this.searchLoaded = false;
-                    if ($this.departmentUserQueryParams.sw != $this.sw) {
-                        $this.sw = "";
-                    } else {
-                        $this.search();
-                    }
-                    $this.inSearch = false;
-                },
-                batchAddSubmit: function () {
-                    var $this = this;
-                    var managers = [];
-                    $($this.checkedDepartmentUsers).each(function () {
-                        managers.push({
+                    var selectedUsers = $this.$refs.userSelectWindow.selectedUsers;
+                    var users = [];
+                    $(selectedUsers).each(function () {
+                        users.push({
                             activityId: $this.activityId,
                             uid: this.puid,
                             userName: this.name
                         });
                     });
                     var url = ctx + "/api/activity/" + $this.activityId + "/manager/add/batch";
-                    app.ajaxPostWithPayload(url, JSON.stringify(managers), function (data) {
+                    app.ajaxPostWithPayload(url, JSON.stringify(users), function (data) {
                         if (data.success) {
                             $this.addShow = false;
                             app.showMsg("操作成功", function () {
@@ -455,233 +252,6 @@
                     }, function () {
                         app.showMsg("操作失败");
                     }, '');
-                },
-                initNiceScroll: function () {
-                    var $this = this;
-                    if (activityApp.isEmpty($this.niceScroll)) {
-                        $this.niceScroll = $(".item-choosed,.choose-list").niceScroll({
-                            cursorborder: "",
-                            cursorwidth: 8,
-                            cursorcolor: "#DADADA",
-                            boxzoom: false,
-                            autohidemode: true
-                        });
-                        $(".item-choosed,.choose-list").getNiceScroll().resize();
-                    }
-                },
-                toAdd: function () {
-                    var $this = this;
-                    $this.addShow = true;
-                    $this.$nextTick(function () {
-                        $this.initNiceScroll();
-                    });
-                },
-                // 展开面包屑
-                expandCrumb: function (index) {
-                    var $this = this;
-                    if (index == $this.crumbs.length - 1) {
-                        // 点击的最后一级
-                        return;
-                    }
-                    // 移除后面的面包屑
-                    $this.crumbs.splice(index + 1);
-                    var crumb = $this.crumbs[index];
-                    switch (crumb.type) {
-                        case "all":
-                            break;
-                        case "org":
-                            // 筛选level为1的部门
-                            var departments = [];
-                            $($this.allDepartments).each(function () {
-                                if (this.level == 1) {
-                                    departments.push(this);
-                                }
-                            });
-                            $this.departments = departments;
-                            break;
-                        case "supperDepartment":
-                            // 筛选当前面包屑下的部门
-                            var id = crumb.id;
-                            var departments = [];
-                            $($this.allDepartments).each(function () {
-                                if (this.pid == id) {
-                                    departments.push(this);
-                                }
-                            });
-                            $this.departments = departments;
-                            break;
-                        case "department":
-                            $this.initDepartmentUserMescroll();
-                            break;
-                        default:
-
-                    }
-                },
-                // 展开机构
-                expandOrg: function (index) {
-                    var $this = this;
-                    var org = $this.orgs[index];
-                    var fid = org.fid;
-                    // 加入面包屑
-                    $this.crumbs.push(
-                        {name: org.name, type: "org", id: fid}
-                    );
-                    // 加载部门列表
-                    $this.currentDepartmentId = "";
-                    $this.loadDepartment(fid);
-                },
-                // 加载机构下的部门
-                loadDepartment: function (fid) {
-                    var $this = this;
-                    var url = ctx + "/api/wfw/org/" + fid + "/department";
-                    app.ajaxPost(url, {}, function (data) {
-                        if (data.success) {
-                            var allDepartments = data.data.records;
-                            $this.allDepartments = allDepartments;
-                            // 筛选level为1的部门列表
-                            var departments = [];
-                            $(allDepartments).each(function () {
-                                if (this.level == 1) {
-                                    departments.push(this);
-                                }
-                            });
-                            $this.departments = departments;
-                        } else {
-                            var errorMessage = data.message;
-                            if (activityApp.isEmpty(errorMessage)) {
-                                errorMessage = "加载部门失败";
-                            }
-                            app.showMsg(errorMessage);
-                        }
-                    }, function () {
-                        app.showMsg("加载部门失败");
-                    });
-                },
-                // 展开部门
-                expandDepartment: function (index) {
-                    var $this = this;
-                    var department = $this.departments[index];
-                    var id = department.id;
-                    // 下级部门的数量
-                    var subdeptcount = department.subdeptcount;
-                    var haveSubDepartment = subdeptcount > 0;
-                    // 面包屑添加
-                    $this.crumbs.push({
-                        id: id,
-                        name: department.name,
-                        type: haveSubDepartment ? "supperDepartment" : "department"
-                    });
-                    if (haveSubDepartment) {
-                        // 筛选下级
-                        var departments = [];
-                        $($this.allDepartments).each(function () {
-                            if (this.pid == id) {
-                                departments.push(this);
-                            }
-                        });
-                        $this.departments = departments;
-                    } else {
-                        // 加载部门下的员工
-                        $this.initDepartmentUserMescroll();
-                    }
-                },
-                // 加载部门用户列表
-                loadDepartmentUser: function () {
-                    var $this = this;
-                    // 当前选中的部门
-                    var crumb = $this.crumbs[$this.crumbs.length - 1];
-                    var url = ctx + "/api/wfw/department/" + crumb.id + "/contacter";
-                    var params = {
-                        pageNum: $this.departmentUserQueryParams.pageNum,
-                        pageSizeSize: $this.departmentUserQueryParams.pageSize
-                    };
-                    app.ajaxPost(url, params, function (data) {
-                        if (data.success) {
-                            $this.departmentUserQueryParams.pageNum++;
-                            var departmentUsers = data.data.records;
-                            $(departmentUsers).each(function () {
-                                this.checked = $this.isNeedChecked(this.puid);
-                            });
-                            // 是否被选中
-                            $this.departmentUsers.pushArray(departmentUsers);
-                            $this.departmentUserMescroll.endBySize(departmentUsers.length, data.data.total);
-                            $this.$nextTick(function () {
-                                $(".item-choosed,.choose-list").getNiceScroll().resize();
-                            });
-                        } else {
-                            var errorMessage = data.message;
-                            app.showMsg(errorMessage);
-                        }
-                    }, function () {
-                        app.showMsg("加载失败");
-                    });
-                },
-                // 是否需要被选中
-                isNeedChecked: function (uid) {
-                    var $this = this;
-                    var exist = false;
-                    $($this.checkedDepartmentUsers).each(function () {
-                        if (uid == this.puid) {
-                            exist = true;
-                            return false;
-                        }
-                    });
-                    if (!exist) {
-                        $($this.managers).each(function () {
-                            if (uid == this.uid) {
-                                exist = true;
-                                return false;
-                            }
-                        });
-                    }
-                    return exist;
-                },
-                changeSearchUserChecked: function (index) {
-                    var $this = this;
-                    var user = $this.searchUsers[index];
-                    var uid = user.puid;
-                    if (user.checked) {
-                        $this.checkedDepartmentUsers.push(user);
-                    } else {
-                        $($this.checkedDepartmentUsers).each(function (i) {
-                            if (uid == this.puid) {
-                                $this.checkedDepartmentUsers.splice(i, 1);
-                                return false;
-                            }
-                        });
-                    }
-                },
-                changeDepartmentUserCheck: function (index) {
-                    var $this = this;
-                    var user = $this.departmentUsers[index];
-                    var uid = user.puid;
-                    if (user.checked) {
-                        $this.checkedDepartmentUsers.push(user);
-                    } else {
-                        $($this.checkedDepartmentUsers).each(function (i) {
-                            if (uid == this.puid) {
-                                $this.checkedDepartmentUsers.splice(i, 1);
-                                return false;
-                            }
-                        });
-                    }
-                },
-                removeCheckedDepartmentUser: function (index) {
-                    var $this = this;
-                    var checkedDepartmentUser = $this.checkedDepartmentUsers[index];
-                    $this.checkedDepartmentUsers.splice(index, 1);
-                    $($this.departmentUsers).each(function (i) {
-                        if (checkedDepartmentUser.puid == this.puid) {
-                            $this.$set($this.departmentUsers[i], "checked", false);
-                            return false;
-                        }
-                    });
-                    $($this.searchUsers).each(function (i) {
-                        if (checkedDepartmentUser.puid == this.puid) {
-                            $this.$set($this.searchUsers[i], "checked", false);
-                            return false;
-                        }
-                    });
                 }
             }
         });

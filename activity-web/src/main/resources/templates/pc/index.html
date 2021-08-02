@@ -32,7 +32,7 @@
             <div class="typeItem" >
                 <span class="title">类型</span>
                 <ul>
-                    <li :class="{'active': item.selected}" v-for="(item, index) of activityClassifies" @click="changeActivityClassifySelected(index)">{{item.name}}</li>
+                    <li :class="{'active': item.selected}" v-for="(item, index) of classifies" @click="changeActivityClassifySelected(index)">{{item.name}}</li>
                 </ul>
             </div>
             <div class="typeItem" >
@@ -102,9 +102,9 @@
             el: '#activity-vue',
             data: {
                 fids: [[${fids}]],
-                activityClassifyNames: [[${activityClassifyNames}]],
+                classifyNames: [[${classifyNames}]],
                 activityQueryDates: [[${activityQueryDates}]],
-                activityClassifies: [],
+                classifies: [],
                 regions: [[${regions}]],
                 areaCode: [[${areaCode}]],
                 statuses: [],
@@ -124,9 +124,9 @@
             },
             created: function () {
                 var $this = this;
-                $this.activityClassifies.push({name: "全部",value: "", selected: true});
-                $($this.activityClassifyNames).each(function () {
-                    $this.activityClassifies.push({name: this,value: this,selected: false});
+                $this.classifies.push({name: "全部",value: "", selected: true});
+                $($this.classifyNames).each(function () {
+                    $this.classifies.push({name: this,value: this,selected: false});
                 });
                 $($this.activityQueryDates).each(function (i) {
                     $this.$set($this.activityQueryDates[i], "selected", i == 0);
@@ -186,10 +186,10 @@
                 //改变选中状态
                 changeActivityClassifySelected: function(index){
                     var $this = this;
-                    $($this.activityClassifies).each(function (i) {
-                        $this.$set($this.activityClassifies[i], "selected", i == index);
+                    $($this.classifies).each(function (i) {
+                        $this.$set($this.classifies[i], "selected", i == index);
                     });
-                    $this.queryParams.activityClassifyName = $this.activityClassifies[index].value;
+                    $this.queryParams.activityClassifyName = $this.classifies[index].value;
                     $this.queryParams.pageNum = 1;
                     $this.loadData();
                 },
@@ -235,6 +235,7 @@
                         status: "",
                         areaCode: $this.areaCode,
                         topFid: [[${topFid}]],
+                        marketId: [[${marketId}]],
                         flag: [[${flag}]]
                     };
                 },

@@ -3,15 +3,15 @@ package com.chaoxing.activity.web.controller.api.outer;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.chaoxing.activity.dto.RestRespDTO;
 import com.chaoxing.activity.dto.activity.ActivityExternalDTO;
-import com.chaoxing.activity.dto.manager.WfwRegionalArchitectureDTO;
+import com.chaoxing.activity.dto.manager.wfw.WfwAreaDTO;
 import com.chaoxing.activity.dto.query.ActivityQueryDTO;
 import com.chaoxing.activity.model.Activity;
 import com.chaoxing.activity.service.activity.collection.ActivityCollectionHandleService;
 import com.chaoxing.activity.service.activity.collection.ActivityCollectionValidateService;
 import com.chaoxing.activity.service.activity.ActivityQueryService;
 import com.chaoxing.activity.service.activity.ActivityIsAboutStartHandleService;
-import com.chaoxing.activity.service.manager.WfwCoordinateApiService;
-import com.chaoxing.activity.service.manager.WfwRegionalArchitectureApiService;
+import com.chaoxing.activity.service.manager.wfw.WfwCoordinateApiService;
+import com.chaoxing.activity.service.manager.wfw.WfwAreaApiService;
 import com.chaoxing.activity.service.util.Model2DtoService;
 import com.chaoxing.activity.util.HttpServletRequestUtils;
 import com.chaoxing.activity.util.constant.CommonConstant;
@@ -48,7 +48,7 @@ public class ActivityApiController {
 	@Resource
 	private ActivityQueryService activityQueryService;
 	@Resource
-	private WfwRegionalArchitectureApiService wfwRegionalArchitectureApiService;
+	private WfwAreaApiService wfwAreaApiService;
 	@Resource
 	private Model2DtoService model2DtoService;
 	@Resource
@@ -103,12 +103,12 @@ public class ActivityApiController {
 	 */
 	private RestRespDTO recommend(HttpServletRequest request, String areaCode, @RequestParam Integer fid) {
 		List<Integer> fids = Lists.newArrayList();
-		List<WfwRegionalArchitectureDTO> wfwRegionalArchitectures = Lists.newArrayList();
+		List<WfwAreaDTO> wfwRegionalArchitectures = Lists.newArrayList();
 		if (StringUtils.isNotBlank(areaCode)) {
-			wfwRegionalArchitectures = wfwRegionalArchitectureApiService.listByCode(areaCode);
+			wfwRegionalArchitectures = wfwAreaApiService.listByCode(areaCode);
 		}
 		if (CollectionUtils.isNotEmpty(wfwRegionalArchitectures)) {
-			List<Integer> subFids = wfwRegionalArchitectures.stream().map(WfwRegionalArchitectureDTO::getFid).collect(Collectors.toList());
+			List<Integer> subFids = wfwRegionalArchitectures.stream().map(WfwAreaDTO::getFid).collect(Collectors.toList());
 			fids.addAll(subFids);
 		} else {
 			fids.add(fid);

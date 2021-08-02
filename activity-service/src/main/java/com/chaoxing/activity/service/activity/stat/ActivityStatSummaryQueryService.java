@@ -2,13 +2,16 @@ package com.chaoxing.activity.service.activity.stat;
 
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.chaoxing.activity.dto.export.ExportDataDTO;
+import com.chaoxing.activity.dto.manager.sign.SignParticipateScopeDTO;
 import com.chaoxing.activity.dto.query.admin.ActivityStatSummaryQueryDTO;
-import com.chaoxing.activity.dto.sign.SignParticipateScopeDTO;
 import com.chaoxing.activity.dto.stat.ActivityStatSummaryDTO;
-import com.chaoxing.activity.mapper.ActivityClassifyMapper;
 import com.chaoxing.activity.mapper.ActivityStatSummaryMapper;
 import com.chaoxing.activity.mapper.TableFieldDetailMapper;
-import com.chaoxing.activity.model.*;
+import com.chaoxing.activity.model.Activity;
+import com.chaoxing.activity.model.Classify;
+import com.chaoxing.activity.model.TableField;
+import com.chaoxing.activity.model.TableFieldDetail;
+import com.chaoxing.activity.service.activity.classify.ClassifyQueryService;
 import com.chaoxing.activity.service.manager.module.SignApiService;
 import com.chaoxing.activity.service.tablefield.TableFieldQueryService;
 import com.chaoxing.activity.util.DateUtils;
@@ -20,7 +23,10 @@ import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 /**
@@ -35,7 +41,7 @@ import java.util.stream.Collectors;
 public class ActivityStatSummaryQueryService {
 
     @Resource
-    private ActivityClassifyMapper activityClassifyMapper;
+    private ClassifyQueryService classifyQueryService;
     @Resource
     private ActivityStatSummaryMapper activityStatSummaryMapper;
     @Resource
@@ -105,8 +111,8 @@ public class ActivityStatSummaryQueryService {
 
         Map<Integer, String> classifyMap = Maps.newHashMap();
         if (CollectionUtils.isNotEmpty(classifyIds)) {
-            List<ActivityClassify> classifies = activityClassifyMapper.listByIds(classifyIds);
-            classifyMap = classifies.stream().collect(Collectors.toMap(ActivityClassify::getId, ActivityClassify::getName, (v1, v2) -> v2));
+            List<Classify> classifies = classifyQueryService.listByIds(new ArrayList<>(classifyIds));
+            classifyMap = classifies.stream().collect(Collectors.toMap(Classify::getId, Classify::getName, (v1, v2) -> v2));
         }
         for (ActivityStatSummaryDTO record : page.getRecords()) {
             Integer classifyId = record.getActivityClassifyId();

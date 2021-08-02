@@ -2,8 +2,7 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.chaoxing.activity.mapper.MarketTableFieldMapper">
     <resultMap id="BaseResultMap" type="com.chaoxing.activity.model.MarketTableField">
-        <result column="fid" jdbcType="INTEGER" property="fid" />
-        <result column="activity_flag" jdbcType="VARCHAR" property="activityFlag" />
+        <result column="market_id" jdbcType="INTEGER" property="marketId" />
         <result column="table_field_id" jdbcType="INTEGER" property="tableFieldId" />
         <result column="table_field_detail_id" jdbcType="INTEGER" property="tableFieldDetailId" />
         <result column="is_top" jdbcType="BIT" property="top" />
@@ -16,12 +15,11 @@
 
 
     <insert id="batchAdd">
-        INSERT INTO t_market_table_field ( fid, activity_flag, table_field_id, table_field_detail_id, is_top, sequence, create_uid, update_uid )
+        INSERT INTO t_market_table_field ( market_id, table_field_id, table_field_detail_id, is_top, sequence, create_uid, update_uid )
         VALUES
         <foreach collection="marketTableFields" index="key" item="value" open="" close="" separator=",">
             (
-            #{value.fid},
-            #{value.activityFlag},
+            #{value.marketId},
             #{value.tableFieldId},
             #{value.tableFieldDetailId},
             #{value.top},
