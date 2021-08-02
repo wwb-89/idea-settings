@@ -2,8 +2,8 @@ package com.chaoxing.activity.service.activity.market;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.chaoxing.activity.dto.activity.market.ActivityMarketUpdateParamDTO;
-import com.chaoxing.activity.mapper.ActivityMarketMapper;
-import com.chaoxing.activity.model.ActivityMarket;
+import com.chaoxing.activity.mapper.MarketMapper;
+import com.chaoxing.activity.model.Market;
 import com.chaoxing.activity.util.exception.BusinessException;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
@@ -15,17 +15,17 @@ import java.util.List;
 /**
  * @author wwb
  * @version ver 1.0
- * @className ActivityMarketQueryService
+ * @className MarketQueryService
  * @description
  * @blame wwb
  * @date 2021-04-12 11:12:46
  */
 @Slf4j
 @Service
-public class ActivityMarketQueryService {
+public class MarketQueryService {
 
 	@Resource
-	private ActivityMarketMapper activityMarketMapper;
+	private MarketMapper activityMarketMapper;
 	
 	/**根据id查询
 	 * @Description 
@@ -34,10 +34,10 @@ public class ActivityMarketQueryService {
 	 * @param activityMarketId
 	 * @return com.chaoxing.activity.model.ActivityMarket
 	*/
-	public ActivityMarket getById(Integer activityMarketId) {
-		return activityMarketMapper.selectOne(new LambdaQueryWrapper<ActivityMarket>()
-				.eq(ActivityMarket::getId, activityMarketId)
-				.eq(ActivityMarket::getDeleted, false)
+	public Market getById(Integer activityMarketId) {
+		return activityMarketMapper.selectOne(new LambdaQueryWrapper<Market>()
+				.eq(Market::getId, activityMarketId)
+				.eq(Market::getDeleted, false)
 		);
 	}
 
@@ -49,13 +49,13 @@ public class ActivityMarketQueryService {
 	 * @return com.chaoxing.activity.dto.activity.market.ActivityMarketUpdateParamDTO
 	*/
 	public ActivityMarketUpdateParamDTO getByWfwAppId(Integer wfwAppId) {
-		List<ActivityMarket> markets = activityMarketMapper.selectList(new LambdaQueryWrapper<ActivityMarket>()
-				.eq(ActivityMarket::getWfwAppId, wfwAppId)
+		List<Market> markets = activityMarketMapper.selectList(new LambdaQueryWrapper<Market>()
+				.eq(Market::getWfwAppId, wfwAppId)
 		);
 		if (CollectionUtils.isEmpty(markets)) {
 			throw new BusinessException("活动市场不存在");
 		}
-		ActivityMarket market = markets.get(0);
+		Market market = markets.get(0);
 		return ActivityMarketUpdateParamDTO.buildFromActivityMarket(market);
 	}
 

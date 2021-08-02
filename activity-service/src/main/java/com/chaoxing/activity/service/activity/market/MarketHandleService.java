@@ -5,9 +5,9 @@ import com.chaoxing.activity.dto.OperateUserDTO;
 import com.chaoxing.activity.dto.activity.market.ActivityMarketCreateParamDTO;
 import com.chaoxing.activity.dto.activity.market.ActivityMarketUpdateParamDTO;
 import com.chaoxing.activity.dto.manager.wfw.WfwAppParamDTO;
-import com.chaoxing.activity.mapper.ActivityMarketMapper;
+import com.chaoxing.activity.mapper.MarketMapper;
 import com.chaoxing.activity.model.Activity;
-import com.chaoxing.activity.model.ActivityMarket;
+import com.chaoxing.activity.model.Market;
 import com.chaoxing.activity.service.activity.template.TemplateHandleService;
 import com.chaoxing.activity.service.activity.template.TemplateQueryService;
 import com.chaoxing.activity.service.manager.wfw.WfwAppApiService;
@@ -23,20 +23,20 @@ import java.util.Optional;
 /**
  * @author wwb
  * @version ver 1.0
- * @className ActivityMarketHandleService
+ * @className MarketHandleService
  * @description
  * @blame wwb
  * @date 2021-04-12 11:13:02
  */
 @Slf4j
 @Service
-public class ActivityMarketHandleService {
+public class MarketHandleService {
 
 	@Resource
-	private ActivityMarketMapper activityMarketMapper;
+	private MarketMapper activityMarketMapper;
 
 	@Resource
-	private ActivityMarketQueryService activityMarketQueryService;
+	private MarketQueryService activityMarketQueryService;
 	@Resource
 	private TemplateHandleService templateHandleService;
 	@Resource
@@ -53,8 +53,8 @@ public class ActivityMarketHandleService {
 	 * @return com.chaoxing.activity.model.ActivityMarket
 	*/
 	@Transactional(rollbackFor = Exception.class)
-	public ActivityMarket add(ActivityMarketCreateParamDTO activityMarketCreateParamDto, OperateUserDTO operateUserDto) {
-		ActivityMarket activityMarket = activityMarketCreateParamDto.buildActivityMarket();
+	public Market add(ActivityMarketCreateParamDTO activityMarketCreateParamDto, OperateUserDTO operateUserDto) {
+		Market activityMarket = activityMarketCreateParamDto.buildActivityMarket();
 		activityMarket.perfectCreator(operateUserDto);
 		activityMarket.perfectSequence(activityMarketMapper.getMaxSequence(operateUserDto.getFid()));
 		activityMarketMapper.insert(activityMarket);
@@ -73,8 +73,8 @@ public class ActivityMarketHandleService {
 	 * @return com.chaoxing.activity.model.ActivityMarket
 	*/
 	@Transactional(rollbackFor = Exception.class)
-	public ActivityMarket addFromWfw(ActivityMarketCreateParamDTO activityMarketCreateParamDto, OperateUserDTO operateUserDto) {
-		ActivityMarket activityMarket = add(activityMarketCreateParamDto, operateUserDto);
+	public Market addFromWfw(ActivityMarketCreateParamDTO activityMarketCreateParamDto, OperateUserDTO operateUserDto) {
+		Market activityMarket = add(activityMarketCreateParamDto, operateUserDto);
 		// 创建微服务应用
 		Integer wfwAppId = addWfwApp(activityMarket, activityMarketCreateParamDto.getClassifyId());
 		// 绑定应用的微服务id
@@ -83,7 +83,7 @@ public class ActivityMarketHandleService {
 		return activityMarket;
 	}
 
-	private Integer addWfwApp(ActivityMarket activityMarket, Integer classifyId) {
+	private Integer addWfwApp(Market activityMarket, Integer classifyId) {
 		WfwAppParamDTO wfwAppParamDTO = WfwAppParamDTO.buildFromActivityMarket(activityMarket, classifyId);
 		return wfwAppApiService.newApp(wfwAppParamDTO);
 	}
@@ -96,15 +96,15 @@ public class ActivityMarketHandleService {
 	 * @return com.chaoxing.activity.model.ActivityMarket
 	*/
 	@Transactional(rollbackFor = Exception.class)
-	public ActivityMarket updateFromWfw(ActivityMarketUpdateParamDTO activityMarketUpdateParamDto) {
-		ActivityMarket activityMarket = activityMarketUpdateParamDto.buildActivityMarket();
+	public Market updateFromWfw(ActivityMarketUpdateParamDTO activityMarketUpdateParamDto) {
+		Market activityMarket = activityMarketUpdateParamDto.buildActivityMarket();
 		activityMarketMapper.updateById(activityMarket);
 		// 修改微服务应用
 		updateWfwApp(activityMarket, activityMarketUpdateParamDto.getClassifyId());
 		return activityMarket;
 	}
 
-	private void updateWfwApp(ActivityMarket activityMarket, Integer classifyId) {
+	private void updateWfwApp(Market activityMarket, Integer classifyId) {
 		WfwAppParamDTO wfwAppParamDTO = WfwAppParamDTO.buildFromActivityMarket(activityMarket, classifyId);
 		wfwAppApiService.updateApp(wfwAppParamDTO);
 	}
@@ -120,7 +120,7 @@ public class ActivityMarketHandleService {
 	*/
 	@Transactional(rollbackFor = Exception.class)
 	public void add(ActivityMarketCreateParamDTO activityMarketCreateParamDto, Activity.ActivityFlagEnum activityFlagEnum, OperateUserDTO operateUserDto) {
-		ActivityMarket activityMarket = activityMarketCreateParamDto.buildActivityMarket();
+		Market activityMarket = activityMarketCreateParamDto.buildActivityMarket();
 		activityMarket.perfectCreator(operateUserDto);
 		activityMarketMapper.insert(activityMarket);
 		Integer marketId = activityMarket.getId();
@@ -136,7 +136,7 @@ public class ActivityMarketHandleService {
 	 * @return void
 	*/
 	public void update(ActivityMarketUpdateParamDTO activityMarketUpdateParamDto) {
-		ActivityMarket activityMarket = activityMarketUpdateParamDto.buildActivityMarket();
+		Market activityMarket = activityMarketUpdateParamDto.buildActivityMarket();
 		activityMarketMapper.updateById(activityMarket);
 	}
 
@@ -154,7 +154,7 @@ public class ActivityMarketHandleService {
 		Activity.ActivityFlagEnum activityFlagEnum = Activity.ActivityFlagEnum.fromValue(activityFlag);
 		ActivityMarketCreateParamDTO activityMarketCreateParamDto = ActivityMarketCreateParamDTO.build(fid, null);
 		activityMarketCreateParamDto.setName(activityFlagEnum.getName());
-		ApplicationContextHolder.getBean(ActivityMarketHandleService.class).add(activityMarketCreateParamDto, activityFlagEnum, operateUserDto);
+		ApplicationContextHolder.getBean(MarketHandleService.class).add(activityMarketCreateParamDto, activityFlagEnum, operateUserDto);
 	}
 
 	/**更新活动市场
@@ -166,12 +166,12 @@ public class ActivityMarketHandleService {
 	 * @return void
 	*/
 	public void update(ActivityMarketUpdateParamDTO activityMarketUpdateParamDto, OperateUserDTO operateUserDto) {
-		ActivityMarket activityMarket = activityMarketUpdateParamDto.buildActivityMarket();
+		Market activityMarket = activityMarketUpdateParamDto.buildActivityMarket();
 		Integer marketId = activityMarket.getId();
 		Optional.ofNullable(activityMarketQueryService.getById(marketId)).orElseThrow(() -> new BusinessException("活动市场不存在"));
 		activityMarket.updateValidate(operateUserDto);
-		activityMarketMapper.update(activityMarket, new LambdaUpdateWrapper<ActivityMarket>()
-			.eq(ActivityMarket::getId, activityMarket.getId())
+		activityMarketMapper.update(activityMarket, new LambdaUpdateWrapper<Market>()
+			.eq(Market::getId, activityMarket.getId())
 		);
 	}
 

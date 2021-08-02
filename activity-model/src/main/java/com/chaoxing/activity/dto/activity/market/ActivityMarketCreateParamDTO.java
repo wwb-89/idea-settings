@@ -1,6 +1,6 @@
 package com.chaoxing.activity.dto.activity.market;
 
-import com.chaoxing.activity.model.ActivityMarket;
+import com.chaoxing.activity.model.Market;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -33,8 +33,8 @@ public class ActivityMarketCreateParamDTO {
 	/** 分类id（微服务创建使用） */
 	private Integer classifyId;
 
-	public ActivityMarket buildActivityMarket() {
-		return ActivityMarket.builder()
+	public Market buildActivityMarket() {
+		return Market.builder()
 				.name(getName())
 				.iconCloudId(getIconCloudId())
 				.iconUrl(getIconUrl())

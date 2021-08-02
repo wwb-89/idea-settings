@@ -1,6 +1,6 @@
 package com.chaoxing.activity.dto.activity.market;
 
-import com.chaoxing.activity.model.ActivityMarket;
+import com.chaoxing.activity.model.Market;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -35,8 +35,8 @@ public class ActivityMarketUpdateParamDTO {
 	/** 微服务应用id */
 	private Integer wfwAppId;
 
-	public ActivityMarket buildActivityMarket() {
-		return ActivityMarket.builder()
+	public Market buildActivityMarket() {
+		return Market.builder()
 				.id(getId())
 				.name(getName())
 				.iconCloudId(getIconCloudId())
@@ -47,7 +47,7 @@ public class ActivityMarketUpdateParamDTO {
 				.build();
 	}
 
-	public static ActivityMarketUpdateParamDTO buildFromActivityMarket(ActivityMarket activityMarket) {
+	public static ActivityMarketUpdateParamDTO buildFromActivityMarket(Market activityMarket) {
 		return ActivityMarketUpdateParamDTO.builder()
 				.id(activityMarket.getId())
 				.name(activityMarket.getName())
