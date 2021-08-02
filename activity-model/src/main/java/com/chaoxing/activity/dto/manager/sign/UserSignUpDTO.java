@@ -38,7 +38,7 @@ public class UserSignUpDTO {
     /** 报名时间 */
     private LocalDateTime signUpTime;
     /** 报名状态 */
-    private Integer signUpStatus;
+    private String signUpStatus;
     /** 报名创建时间 */
     private LocalDateTime createTime;
     /** 报名修改时间*/

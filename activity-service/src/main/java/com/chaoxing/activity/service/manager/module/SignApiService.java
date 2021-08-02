@@ -780,7 +780,7 @@ public class SignApiService {
 	 * @param signId
 	 * @return java.util.List<com.chaoxing.activity.dto.stat.UserNotSignedInNumStatDTO>
 	*/
-	public List<UserSignUpDTO> listUserSignUpBySignIdUids(Integer signId, List<Integer> uids) {
+	public String listUserSignUpBySignIdUids(Integer signId, List<Integer> uids) {
 		String url = String.format(SIGN_USER_SIGN_UP_URL, signId);
 		HttpHeaders httpHeaders = new HttpHeaders();
 		httpHeaders.setContentType(MediaType.APPLICATION_JSON);
@@ -788,7 +788,7 @@ public class SignApiService {
 		String result = restTemplate.postForObject(url, httpEntity, String.class);
 
 		JSONObject jsonObject = JSON.parseObject(result);
-		return resultHandle(jsonObject, () -> JSON.parseArray(jsonObject.getString("data"), UserSignUpDTO.class), (message) -> {
+		return resultHandle(jsonObject, () -> jsonObject.getString("data"), (message) -> {
 			throw new BusinessException(message);
 		});
 	}

@@ -2,10 +2,7 @@ package com.chaoxing.activity.api.controller;
 
 import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
-import com.chaoxing.activity.api.vo.ActivityStatSummaryVO;
-import com.chaoxing.activity.api.vo.UserSignUpStatusVo;
-import com.chaoxing.activity.api.vo.UserSignUpVo;
-import com.chaoxing.activity.api.vo.UserStatSummaryVO;
+import com.chaoxing.activity.api.vo.*;
 import com.chaoxing.activity.dto.RestRespDTO;
 import com.chaoxing.activity.dto.UserResultDTO;
 import com.chaoxing.activity.dto.activity.ActivityExternalDTO;
@@ -39,7 +36,6 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.BeanUtils;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
@@ -376,7 +372,17 @@ public class ActivityApiController {
 	@RequestMapping("{activityId}/result")
 	public RestRespDTO pageActivityUserResult(HttpServletRequest request, @PathVariable Integer activityId) {
 		Page page = HttpServletRequestUtils.buid(request);
-		return RestRespDTO.success(userResultQueryService.pageUserResult(page, UserResultQueryDTO.builder().activityId(activityId).build()));
+		page = userResultQueryService.pageUserResult(page, UserResultQueryDTO.builder().activityId(activityId).build());
+		List<UserResultDTO> records = page.getRecords();
+		List<UserResultVO> userResultVOList = Lists.newArrayList();
+		if (CollectionUtils.isNotEmpty(records)) {
+			records.forEach(v -> {
+				userResultVOList.add(UserResultVO.buildUserResult(v));
+			});
+			page.setRecords(userResultVOList);
+		}
+
+		return RestRespDTO.success(page);
 	}
 
 	/**根据fid 或 marketId 或者 uid(uids) 查询用户统计结果接口
@@ -418,34 +424,7 @@ public class ActivityApiController {
 		if (StringUtils.isNotBlank(uids)) {
 			uidList = Arrays.stream(uids.split(",")).map(Integer::valueOf).collect(Collectors.toList());
 		}
-		List<UserSignUpDTO> userSignUpDTOList = signApiService.listUserSignUpBySignIdUids(activity.getSignId(), uidList);
-		return RestRespDTO.success(transToUserSignUpStatus(userSignUpDTOList));
-	}
-
-	/**
-	 * 转换用户报名信息
-	 * @param userSignUpDTOList
-	 * @return
-	 */
-	private List<UserSignUpStatusVo> transToUserSignUpStatus(List<UserSignUpDTO> userSignUpDTOList) {
-		if (CollectionUtils.isEmpty(userSignUpDTOList)) {
-			return Lists.newArrayList();
-		}
-		Map<Integer, UserSignUpStatusVo> userSignUpStatusMap = Maps.newHashMap();
-
-		userSignUpDTOList.forEach(v -> {
-			UserSignUpStatusVo userSignUpStatusVo = userSignUpStatusMap.get(v.getUid());
-			if (userSignUpStatusVo == null) {
-				userSignUpStatusVo = UserSignUpStatusVo.builder()
-						.uid(v.getUid())
-						.uname(v.getUname())
-						.userName(v.getUserName())
-						.userSignUps(Lists.newArrayList())
-						.build();
-			}
-			userSignUpStatusVo.getUserSignUps().add(UserSignUpVo.buildUserSignUp(v));
-			userSignUpStatusMap.put(v.getUid(), userSignUpStatusVo);
-		});
-		return Lists.newArrayList(userSignUpStatusMap.values());
+		String data = signApiService.listUserSignUpBySignIdUids(activity.getSignId(), uidList);
+		return RestRespDTO.success(JSON.parseArray(data, UserSignUpStatusVo.class));
 	}
 }
