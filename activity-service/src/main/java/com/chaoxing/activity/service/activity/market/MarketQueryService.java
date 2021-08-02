@@ -25,7 +25,7 @@ import java.util.List;
 public class MarketQueryService {
 
 	@Resource
-	private MarketMapper activityMarketMapper;
+	private MarketMapper marketMapper;
 	
 	/**根据id查询
 	 * @Description 
@@ -35,7 +35,7 @@ public class MarketQueryService {
 	 * @return com.chaoxing.activity.model.ActivityMarket
 	*/
 	public Market getById(Integer activityMarketId) {
-		return activityMarketMapper.selectOne(new LambdaQueryWrapper<Market>()
+		return marketMapper.selectOne(new LambdaQueryWrapper<Market>()
 				.eq(Market::getId, activityMarketId)
 				.eq(Market::getDeleted, false)
 		);
@@ -49,7 +49,7 @@ public class MarketQueryService {
 	 * @return com.chaoxing.activity.dto.activity.market.ActivityMarketUpdateParamDTO
 	*/
 	public ActivityMarketUpdateParamDTO getByWfwAppId(Integer wfwAppId) {
-		List<Market> markets = activityMarketMapper.selectList(new LambdaQueryWrapper<Market>()
+		List<Market> markets = marketMapper.selectList(new LambdaQueryWrapper<Market>()
 				.eq(Market::getWfwAppId, wfwAppId)
 		);
 		if (CollectionUtils.isEmpty(markets)) {
@@ -57,6 +57,20 @@ public class MarketQueryService {
 		}
 		Market market = markets.get(0);
 		return ActivityMarketUpdateParamDTO.buildFromActivityMarket(market);
+	}
+
+	/**查询机构下的活动市场列表
+	 * @Description 
+	 * @author wwb
+	 * @Date 2021-08-02 19:15:25
+	 * @param fid
+	 * @return java.util.List<com.chaoxing.activity.model.Market>
+	*/
+	public List<Market> listByFid(Integer fid) {
+		return marketMapper.selectList(new LambdaQueryWrapper<Market>()
+				.eq(Market::getFid, fid)
+				.eq(Market::getDeleted, false)
+		);
 	}
 
 }

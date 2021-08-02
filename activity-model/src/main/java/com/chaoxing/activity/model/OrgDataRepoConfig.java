@@ -31,6 +31,9 @@ public class OrgDataRepoConfig {
     private Integer id;
     /** 机构fid; column: fid*/
     private Integer fid;
+    /** 是否指定活动市场; column: is_specify_market*/
+    @TableField(value = "is_specify_market")
+    private Boolean specifyMarket;
     /** 是否被删除; column: is_deleted*/
     @TableField(value = "is_deleted")
     private Boolean deleted;

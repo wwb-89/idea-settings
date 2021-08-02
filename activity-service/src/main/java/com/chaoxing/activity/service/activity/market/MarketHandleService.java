@@ -33,7 +33,7 @@ import java.util.Optional;
 public class MarketHandleService {
 
 	@Resource
-	private MarketMapper activityMarketMapper;
+	private MarketMapper marketMapper;
 
 	@Resource
 	private MarketQueryService activityMarketQueryService;
@@ -56,8 +56,8 @@ public class MarketHandleService {
 	public Market add(ActivityMarketCreateParamDTO activityMarketCreateParamDto, OperateUserDTO operateUserDto) {
 		Market activityMarket = activityMarketCreateParamDto.buildActivityMarket();
 		activityMarket.perfectCreator(operateUserDto);
-		activityMarket.perfectSequence(activityMarketMapper.getMaxSequence(operateUserDto.getFid()));
-		activityMarketMapper.insert(activityMarket);
+		activityMarket.perfectSequence(marketMapper.getMaxSequence(operateUserDto.getFid()));
+		marketMapper.insert(activityMarket);
 		Integer marketId = activityMarket.getId();
 		// 给市场克隆一个通用模版
 		templateHandleService.cloneTemplate(marketId, templateQueryService.getSystemTemplateIdByActivityFlag(Activity.ActivityFlagEnum.NORMAL));
@@ -98,7 +98,7 @@ public class MarketHandleService {
 	@Transactional(rollbackFor = Exception.class)
 	public Market updateFromWfw(ActivityMarketUpdateParamDTO activityMarketUpdateParamDto) {
 		Market activityMarket = activityMarketUpdateParamDto.buildActivityMarket();
-		activityMarketMapper.updateById(activityMarket);
+		marketMapper.updateById(activityMarket);
 		// 修改微服务应用
 		updateWfwApp(activityMarket, activityMarketUpdateParamDto.getClassifyId());
 		return activityMarket;
@@ -122,7 +122,7 @@ public class MarketHandleService {
 	public void add(ActivityMarketCreateParamDTO activityMarketCreateParamDto, Activity.ActivityFlagEnum activityFlagEnum, OperateUserDTO operateUserDto) {
 		Market activityMarket = activityMarketCreateParamDto.buildActivityMarket();
 		activityMarket.perfectCreator(operateUserDto);
-		activityMarketMapper.insert(activityMarket);
+		marketMapper.insert(activityMarket);
 		Integer marketId = activityMarket.getId();
 		// 给市场克隆一个通用模版
 		templateHandleService.cloneTemplate(marketId, templateQueryService.getSystemTemplateIdByActivityFlag(activityFlagEnum));
@@ -137,7 +137,7 @@ public class MarketHandleService {
 	*/
 	public void update(ActivityMarketUpdateParamDTO activityMarketUpdateParamDto) {
 		Market activityMarket = activityMarketUpdateParamDto.buildActivityMarket();
-		activityMarketMapper.updateById(activityMarket);
+		marketMapper.updateById(activityMarket);
 	}
 
 	/**创建活动市场
@@ -170,7 +170,7 @@ public class MarketHandleService {
 		Integer marketId = activityMarket.getId();
 		Optional.ofNullable(activityMarketQueryService.getById(marketId)).orElseThrow(() -> new BusinessException("活动市场不存在"));
 		activityMarket.updateValidate(operateUserDto);
-		activityMarketMapper.update(activityMarket, new LambdaUpdateWrapper<Market>()
+		marketMapper.update(activityMarket, new LambdaUpdateWrapper<Market>()
 			.eq(Market::getId, activityMarket.getId())
 		);
 	}

@@ -384,7 +384,7 @@
                     if (activityApp.isEmpty(flag)) {
                         flag = "";
                     }
-                    var url = activityApp.getRelativeUrl("/activity/add?code=" + $this.code + "&marketId=" + marketId + "&flag=" + flag + "&strict=" + $this.strict);
+                    var url = activityApp.getRelativeUrl("/activity/add?code=" + $this.code + "&marketId=" + marketId + "&flag=" + flag + "&strict=" + $this.strict + "&fullScreen=" + activityApp.getUrlParamter("fullScreen"));
                     if (activityApp.isEmbedded()) {
                         window.location = url;
                     } else {
@@ -393,7 +393,7 @@
                 },
                 toEdit: function (id) {
                     var $this = this;
-                    var url = ctx + "/activity/" + id + "/edit?strict=" + $this.strict;
+                    var url = ctx + "/activity/" + id + "/edit?strict=" + $this.strict + "&fullScreen=" + activityApp.getUrlParamter("fullScreen");
                     if (activityApp.isEmbedded()) {
                         window.location = url;
                     } else {

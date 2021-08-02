@@ -4,11 +4,12 @@
     <resultMap id="BaseResultMap" type="com.chaoxing.activity.model.OrgDataRepoConfig">
         <id column="id" jdbcType="INTEGER" property="id" />
         <result column="fid" jdbcType="INTEGER" property="fid" />
+        <result column="is_specify_market" jdbcType="BIT" property="specifyMarket" />
         <result column="is_deleted" jdbcType="BIT" property="deleted" />
         <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
         <result column="update_time" jdbcType="TIMESTAMP" property="updateTime" />
     </resultMap>
     <sql id="Base_Column_List">
-        t.id, t.fid, t.is_deleted, t.create_time, t.update_time
+        t.id, t.fid, t.is_specify_market, t.is_deleted, t.create_time, t.update_time
     </sql>
 </mapper>
