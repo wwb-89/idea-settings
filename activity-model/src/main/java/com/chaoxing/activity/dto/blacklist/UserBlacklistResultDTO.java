@@ -45,12 +45,12 @@ public class UserBlacklistResultDTO {
 			return buildEmpty(uid);
 		}
 		LocalDateTime createTime = blacklist.getCreateTime();
-		createTime.plusHours(Optional.ofNullable(blacklist.getEffectiveHours()).orElse(0));
+		LocalDateTime unlockTime = createTime.plusHours(Optional.ofNullable(blacklist.getEffectiveHours()).orElse(0));
 		return UserBlacklistResultDTO.builder()
 				.uid(blacklist.getUid())
 				.whetherInBlacklist(true)
 				.joinType(blacklist.getJoinType())
-				.unlockTime(DateUtils.date2Timestamp(createTime))
+				.unlockTime(DateUtils.date2Timestamp(unlockTime))
 				.build();
 	}
 
