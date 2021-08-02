@@ -49,7 +49,7 @@
 </head>
 
 <body>
-<div class="page" id="activity-vue" v-cloak>
+<div :class="{'page': true, 'special-style': (!fullScreen)}" id="activity-vue" v-cloak>
     <!-- 创建/编辑活动头部 -->
     <div class="top flex" id="create">
         <div class="go-back" @click="returnBack">
@@ -785,7 +785,7 @@
                     '0e70e8ff055094b9ef16937fcb2e1137'
                 ],
                 pictureShow: false,
-            },
+                fullScreen: activityApp.getUrlParamter("fullScreen")            },
             created: function () {
                 var $this = this;
                 // 解决跨域

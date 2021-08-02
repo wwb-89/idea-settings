@@ -2,6 +2,7 @@ package com.chaoxing.activity.service.org;
 
 import com.chaoxing.activity.dto.OrgFormConfigDTO;
 import com.chaoxing.activity.model.OrgConfig;
+import com.chaoxing.activity.model.OrgDataRepoConfig;
 import com.chaoxing.activity.model.OrgDataRepoConfigDetail;
 import com.chaoxing.activity.service.manager.SecondClassroomApiService;
 import com.chaoxing.activity.service.manager.module.SignApiService;
@@ -45,7 +46,8 @@ public class OrgFormConfigService {
 	 * @return com.chaoxing.activity.dto.OrgFormConfigDTO
 	*/
 	public OrgFormConfigDTO getByFid(Integer fid) {
-		// 活动配置
+		OrgDataRepoConfig orgDataRepoConfig = orgDataRepoConfigQueryService.getByFid(fid);
+		// 活动配置详情
 		OrgDataRepoConfigDetail activityConfig = orgDataRepoConfigQueryService.getOrgConfigDetail(fid, OrgDataRepoConfigDetail.DataTypeEnum.ACTIVITY, OrgDataRepoConfigDetail.RepoTypeEnum.FORM);
 		// 参与时长配置
 		OrgDataRepoConfigDetail participateTimeLengthConfig = orgDataRepoConfigQueryService.getOrgConfigDetail(fid, OrgDataRepoConfigDetail.DataTypeEnum.PARTICIPATE_TIME_LENGTH, OrgDataRepoConfigDetail.RepoTypeEnum.FORM);
@@ -55,6 +57,7 @@ public class OrgFormConfigService {
 		OrgFormConfigDTO secondClassroomOrgFormConfig = secondClassroomApiService.getOrgFormConfig(fid);
 		OrgConfig orgConfig = orgConfigService.getByFid(fid);
 		return OrgFormConfigDTO.builder()
+				.specifyMarket(Optional.ofNullable(orgDataRepoConfig).map(OrgDataRepoConfig::getSpecifyMarket).orElse(false))
 				.activityDataFormId(Optional.ofNullable(activityConfig).map(v -> Integer.parseInt(v.getRepo())).orElse(null))
 				.participateTimeLengthFormId(Optional.ofNullable(participateTimeLengthConfig).map(v -> Integer.parseInt(v.getRepo())).orElse(null))
 				.userParticipateRecordFormId(Optional.ofNullable(signOrgFormConfig).map(OrgFormConfigDTO::getUserParticipateRecordFormId).orElse(null))

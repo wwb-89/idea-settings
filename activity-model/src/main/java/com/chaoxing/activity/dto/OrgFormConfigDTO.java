@@ -29,6 +29,8 @@ public class OrgFormConfigDTO {
 
 	/** 机构fid */
 	private Integer fid;
+	/** 是否指定活动市场 */
+	private Boolean specifyMarket;
 	/** 活动数据表单 */
 	private Integer activityDataFormId;
 	/** 参与时长表单 */

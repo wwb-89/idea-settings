@@ -4,6 +4,8 @@ import com.chaoxing.activity.admin.util.LoginUtils;
 import com.chaoxing.activity.dto.LoginUserDTO;
 import com.chaoxing.activity.dto.OrgFormConfigDTO;
 import com.chaoxing.activity.dto.manager.sign.SignUpScopeTypeDTO;
+import com.chaoxing.activity.model.Market;
+import com.chaoxing.activity.service.activity.market.MarketQueryService;
 import com.chaoxing.activity.service.manager.PassportApiService;
 import com.chaoxing.activity.service.org.OrgFormConfigService;
 import com.chaoxing.activity.util.annotation.LoginRequired;
@@ -31,6 +33,8 @@ public class OrgFormConfigController {
 	private OrgFormConfigService orgFormConfigService;
 	@Resource
 	private PassportApiService passportApiService;
+	@Resource
+	private MarketQueryService marketQueryService;
 
 	/**机构表单配置页面
 	 * @Description 
@@ -53,6 +57,9 @@ public class OrgFormConfigController {
 		// 报名使用的组织架构
 		List<SignUpScopeTypeDTO> signUpScopeTypes = SignUpScopeTypeDTO.fromSignUpScopeTypeEnum();
 		model.addAttribute("signUpScopeTypes", signUpScopeTypes);
+		// 查询机构下的市场列表
+		List<Market> markets = marketQueryService.listByFid(fid);
+		model.addAttribute("markets", markets);
 		return "pc/config/org-form";
 	}
 

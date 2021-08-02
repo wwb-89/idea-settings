@@ -2136,9 +2136,8 @@ input.btn-name,
 }
 
 .special-style {
-  padding-top: 50px;
-  width: 900px;
-  margin: 0 auto;
+  padding: 50px 200px 0px;
+  min-width: 900px;
 }
 
 .special-style .top {
