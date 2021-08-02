@@ -82,7 +82,7 @@ public class WebTemplateService {
 	*/
 	public WebTemplate webTemplateExist(Integer id) {
 		WebTemplate webTemplate = getById(id);
-		Optional.ofNullable(webTemplate).orElseThrow(() -> new BusinessException("网页模板不存在"));
+		Optional.ofNullable(webTemplate).orElseThrow(() -> new BusinessException("网页模板不存在:" + id));
 		return webTemplate;
 	}
 
