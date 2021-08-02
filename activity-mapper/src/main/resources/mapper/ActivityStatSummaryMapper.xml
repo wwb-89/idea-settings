@@ -45,12 +45,12 @@
             t_activity_stat_summary t
             INNER JOIN t_activity t1 ON t1.id = t.activity_id
             <choose>
-                <when test="marketId != null">
+                <when test="queryItem.marketId != null">
                     AND t1.market_id = #{queryItem.marketId}
                 </when>
                 <otherwise>
-                    <if test="fid != null">
-                        AND t1.create_fid = #{queryItem.marketId.fid}
+                    <if test="queryItem.fid != null">
+                        AND t1.create_fid = #{queryItem.fid}
                     </if>
                 </otherwise>
             </choose>

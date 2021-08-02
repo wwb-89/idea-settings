@@ -350,7 +350,7 @@ public class ActivityApiController {
 	* @param marketId
 	* @return
 	*/
-	@RequestMapping("activity/stat/summary")
+	@RequestMapping("stat/summary")
 	public RestRespDTO pageActivityStatResult(HttpServletRequest request, Integer fid, Integer marketId) {
 		Page page = HttpServletRequestUtils.buid(request);
 		page = activityStatSummaryQueryService.activityStatSummaryPage(page, ActivityStatSummaryQueryDTO.builder().fid(fid).marketId(marketId).build());
@@ -373,7 +373,7 @@ public class ActivityApiController {
 	* @param activityId
 	* @return
 	*/
-	@RequestMapping("activity/{activityId}/result")
+	@RequestMapping("{activityId}/result")
 	public RestRespDTO pageActivityUserResult(HttpServletRequest request, @PathVariable Integer activityId) {
 		Page page = HttpServletRequestUtils.buid(request);
 		return RestRespDTO.success(userResultQueryService.pageUserResult(page, UserResultQueryDTO.builder().activityId(activityId).build()));
@@ -411,8 +411,8 @@ public class ActivityApiController {
 	* @param uids
 	* @return
 	*/
-	@RequestMapping("activity/{activityId}/user/sign-up")
-	public RestRespDTO pageActivityUserSignUpResult(Integer activityId, String uids) {
+	@RequestMapping("{activityId}/user/sign-up")
+	public RestRespDTO pageActivityUserSignUpResult(@PathVariable Integer activityId, String uids) {
 		Activity activity = activityQueryService.getById(activityId);
 		List<Integer> uidList = Lists.newArrayList();
 		if (StringUtils.isNotBlank(uids)) {
