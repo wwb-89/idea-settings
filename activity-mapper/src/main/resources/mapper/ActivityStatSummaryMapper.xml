@@ -27,6 +27,10 @@
         t1.integral as integral,
         t1.start_time as startTime,
         t1.end_time as endTime,
+        t1.cover_url as coverUrl,
+        t1.address as address,
+        t1.detail_address as detailAddress,
+        t3.introduction as introduction,
         t.signed_in_num as signedInNum,
         t.sign_in_rate as signInRate,
         t.qualified_num as qualifiedNum,
@@ -75,6 +79,7 @@
                 </foreach>
             </if>
             LEFT JOIN t_activity_rating t2 ON t.activity_id = t2.activity_id
+            LEFT JOIN t_activity_detail t3 ON t.activity_id = t3.activity_id
         GROUP BY
             t1.id
         <if test="queryItem.orderField != null and queryItem.orderField != ''">

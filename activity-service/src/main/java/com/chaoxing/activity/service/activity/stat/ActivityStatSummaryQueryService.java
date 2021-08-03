@@ -1,17 +1,19 @@
 package com.chaoxing.activity.service.activity.stat;
 
+import cn.hutool.http.HtmlUtil;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.chaoxing.activity.dto.activity.ActivityCollectionDTO;
 import com.chaoxing.activity.dto.export.ExportDataDTO;
 import com.chaoxing.activity.dto.manager.sign.SignParticipateScopeDTO;
+import com.chaoxing.activity.dto.manager.sign.create.SignCreateParamDTO;
 import com.chaoxing.activity.dto.query.admin.ActivityStatSummaryQueryDTO;
 import com.chaoxing.activity.dto.stat.ActivityStatSummaryDTO;
 import com.chaoxing.activity.mapper.ActivityStatSummaryMapper;
 import com.chaoxing.activity.mapper.TableFieldDetailMapper;
-import com.chaoxing.activity.model.Activity;
-import com.chaoxing.activity.model.Classify;
-import com.chaoxing.activity.model.TableField;
-import com.chaoxing.activity.model.TableFieldDetail;
+import com.chaoxing.activity.model.*;
+import com.chaoxing.activity.service.activity.ActivityStatQueryService;
 import com.chaoxing.activity.service.activity.classify.ClassifyQueryService;
+import com.chaoxing.activity.service.activity.collection.ActivityCollectionQueryService;
 import com.chaoxing.activity.service.manager.module.SignApiService;
 import com.chaoxing.activity.service.tablefield.TableFieldQueryService;
 import com.chaoxing.activity.util.DateUtils;
@@ -20,7 +22,9 @@ import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
+import org.springframework.web.util.HtmlUtils;
 
 import javax.annotation.Resource;
 import java.util.ArrayList;
@@ -50,6 +54,10 @@ public class ActivityStatSummaryQueryService {
     private SignApiService signApiService;
     @Resource
     private TableFieldQueryService tableFieldQueryService;
+    @Resource
+    private ActivityCollectionQueryService activityCollectionQueryService;
+    @Resource
+    private ActivityStatQueryService activityStatQueryService;
 
     /**对活动统计汇总进行分页查询
     * @Description
@@ -89,24 +97,32 @@ public class ActivityStatSummaryQueryService {
     */
     private void packagePageData(Page<ActivityStatSummaryDTO> page) {
         List<Integer> signIds = Lists.newArrayList();
+        List<Integer> activityIds = Lists.newArrayList();
         Set<Integer> classifyIds = Sets.newHashSet();
-        for (ActivityStatSummaryDTO record : page.getRecords()) {
-            if (record.getSignId() != null) {
-                signIds.add(record.getSignId());
-            }
-            if (record.getActivityClassifyId() != null) {
-                classifyIds.add(record.getActivityClassifyId());
-            }
+        page.getRecords().forEach(v -> {
+            activityIds.add(v.getActivityId());
             // 起止时间
-            record.setActivityStartEndTime(DateUtils.activityTimeScope(record.getStartTime(), record.getEndTime()));
-        }
+            v.setActivityStartEndTime(DateUtils.activityTimeScope(v.getStartTime(), v.getEndTime()));
+            if (StringUtils.isNotBlank(v.getIntroduction())) {
+                // 去除introduction中的标签
+                v.setIntroduction(HtmlUtil.cleanHtmlTag(v.getIntroduction()));
+            }
+            if (v.getSignId() != null) {
+                signIds.add(v.getSignId());
+            }
+            if (v.getActivityClassifyId() != null) {
+                classifyIds.add(v.getActivityClassifyId());
+            }
+        });
 
-        List<SignParticipateScopeDTO> signParticipateScopes = signApiService.listSignParticipateScopeBySignIds(signIds);
-        Map<Integer, String> signParticipateScopeMap = Maps.newHashMap();
-        for (SignParticipateScopeDTO item : signParticipateScopes) {
-            signParticipateScopeMap.put(item.getSignId(), item.getExternalName());
-        }
-
+        // 查询活动对应的参与范围
+        Map<Integer, String> signParticipateScopeMap = signApiService.listSignParticipateScopeBySignIds(signIds).stream().collect(Collectors.toMap(SignParticipateScopeDTO::getSignId, SignParticipateScopeDTO::getExternalName, (v1, v2) -> v1));
+        // 查询活动对应的报名
+        Map<Integer, SignCreateParamDTO> signMaps = signApiService.listByIds(signIds).stream().collect(Collectors.toMap(SignCreateParamDTO::getId, v -> v, (v1, v2) -> v1));
+        // 查询活动对应的收藏数
+        Map<Integer, Integer> activityCollectedNumMap = activityCollectionQueryService.statCollectedByActivityIds(activityIds).stream().collect(Collectors.toMap(ActivityCollectionDTO::getActivityId, ActivityCollectionDTO::getCollectedNum, (v1, v2) -> v1));
+        // 查询活动对应浏览数
+        Map<Integer, Integer> activityPvMap = activityStatQueryService.listActivityPVByActivityIds(activityIds).stream().collect(Collectors.toMap(ActivityStat::getActivityId, ActivityStat::getPv, (v1, v2) -> v1));
         Map<Integer, String> classifyMap = Maps.newHashMap();
         if (CollectionUtils.isNotEmpty(classifyIds)) {
             List<Classify> classifies = classifyQueryService.listByIds(new ArrayList<>(classifyIds));
@@ -115,6 +131,12 @@ public class ActivityStatSummaryQueryService {
         for (ActivityStatSummaryDTO record : page.getRecords()) {
             Integer classifyId = record.getActivityClassifyId();
             Integer signId = record.getSignId();
+            // 收藏数
+            record.setCollectNum(activityCollectedNumMap.get(record.getActivityId()));
+            // 报名
+            record.setSignUp(signMaps.get(signId).getSignUps().get(0));
+            // 浏览数
+            record.setPv(activityPvMap.get(record.getActivityId()));
             if (classifyId != null) {
                 record.setActivityClassify(classifyMap.get(classifyId));
             }

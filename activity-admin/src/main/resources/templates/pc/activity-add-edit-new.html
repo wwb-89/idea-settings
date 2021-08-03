@@ -327,7 +327,7 @@
                                         <span class="date-piker-icon">
                                             <img src="/static/pc/assets/images/time.png" th:src="@{/pc/assets/images/time.png}">
                                         </span>
-                                        <span class="tips" v-if="item.introduction">{{it.introduction}}</span>
+                                        <span class="tips" v-if="it.introduction">{{it.introduction}}</span>
                                     </div>
                                 </div>
                                 <!-- todo 微服务和通讯录应区分开 -->
@@ -370,7 +370,7 @@
                                             <el-radio v-model="signUpMap[item.id].limitPerson" :label="false" name="active-type">不限</el-radio>
                                             <el-radio v-model="signUpMap[item.id].limitPerson" :label="true" name="active-type">自定义</el-radio>
                                         </div>
-                                        <span class="tips" v-if="item.introduction">{{it.introduction}}</span>
+                                        <span class="tips" v-if="it.introduction">{{it.introduction}}</span>
                                         <input v-show="signUpMap[item.id].limitPerson" v-model="signUpMap[item.id].personLimit" type="number" min="1" step="1" maxlength="10" placeholder="请输入正整数" class="person"><span class="person-span" v-show="signUpMap[item.id].limitPerson">人</span>
                                     </div>
                                 </div>
@@ -379,7 +379,7 @@
                                     <div class="input-box column">
                                         <div class="set-box">
                                             <el-switch v-model="signUpMap[item.id].fillInfo"></el-switch>
-                                            <span class="tips" v-if="item.introduction">{{it.introduction}}</span>
+                                            <span class="tips" v-if="it.introduction">{{it.introduction}}</span>
                                         </div>
                                         <div class="set-box configurationForm" v-show="signUpMap[item.id].fillInfo" @click="toConfigForm(item.id)">
                                             <img src="/static/pc/assets/images/setting.png" th:src="@{/pc/assets/images/setting.png}">
@@ -391,28 +391,28 @@
                                     <label class="label"><img src="/static/pc/assets/images/required.png" th:src="@{/pc/assets/images/required.png}" class="required-img" v-if="it.required">{{it.name}}</label>
                                     <div class="input-box">
                                         <el-switch v-model="signUpMap[item.id].openAudit"></el-switch>
-                                        <span class="tips" v-if="item.introduction">{{it.introduction}}</span>
+                                        <span class="tips" v-if="it.introduction">{{it.introduction}}</span>
                                     </div>
                                 </div>
                                 <div class="form-item" v-else-if="it.code == 'sign_up_public_list'">
                                     <label class="label"><img src="/static/pc/assets/images/required.png" th:src="@{/pc/assets/images/required.png}" class="required-img" v-if="it.required">{{it.name}}</label>
                                     <div class="input-box">
                                         <el-switch v-model="signUpMap[item.id].publicList"></el-switch>
-                                        <span class="tips" v-if="item.introduction">{{it.introduction}}</span>
+                                        <span class="tips" v-if="it.introduction">{{it.introduction}}</span>
                                     </div>
                                 </div>
                                 <div class="form-item" v-else-if="it.code == 'sign_up_cancel_signed_up'">
                                     <label class="label"><img src="/static/pc/assets/images/required.png" th:src="@{/pc/assets/images/required.png}" class="required-img" v-if="it.required">{{it.name}}</label>
                                     <div class="input-box">
                                         <el-switch v-model="signUpMap[item.id].endNotAllowCancel"></el-switch>
-                                        <span class="tips" v-if="item.introduction">{{it.introduction}}</span>
+                                        <span class="tips" v-if="it.introduction">{{it.introduction}}</span>
                                     </div>
                                 </div>
                                 <div class="form-item" v-else-if="it.code == 'sign_up_condition'">
                                     <label class="label"><img src="/static/pc/assets/images/required.png" th:src="@{/pc/assets/images/required.png}" class="required-img" v-if="it.required">{{it.name}}</label>
                                     <div class="input-box">
                                         <el-switch v-model="signUpConditionActiveMap[it.id]"></el-switch>
-                                        <span class="tips" v-if="item.introduction">{{it.introduction}}</span>
+                                        <span class="tips" v-if="it.introduction">{{it.introduction}}</span>
                                     </div>
                                 </div>
                                 <div class="form-item" v-if="false">

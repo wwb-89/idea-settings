@@ -12,5 +12,23 @@
     <sql id="Base_Column_List">
         t.id, t.uid, t.activity_id, t.is_deleted, t.create_time, t.update_time
     </sql>
+    <select id="statCollectedByActivityIds"
+            resultType="com.chaoxing.activity.dto.activity.ActivityCollectionDTO">
+        SELECT
+            activity_id as activityId,
+            count( 1 ) as collectedNum
+        FROM
+            t_activity_collection
+        WHERE
+            is_deleted = 0
+            AND activity_id in
+            <foreach collection="activityIds" item="value" open="(" close=")" separator=",">
+                #{value}
+            </foreach>
+        GROUP BY
+            activity_id
+        ORDER BY
+            activity_id
+    </select>
 
 </mapper>
