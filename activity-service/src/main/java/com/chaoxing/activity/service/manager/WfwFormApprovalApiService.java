@@ -197,8 +197,7 @@ public class WfwFormApprovalApiService {
         if (webTemplate == null) {
             throw new BusinessException("通过活动申报创建活动指定的门户模版不存在");
         }
-        activity.setTemplateId(templateId);
-        log.error(JSON.toJSONString(activity));
+        activity.setWebTemplateId(templateId);
         WfwAreaDTO wfwRegionalArchitecture = wfwAreaApiService.buildWfwRegionalArchitecture(fid);
         Integer activityId = activityHandleService.add(activity, signCreateParam, Lists.newArrayList(wfwRegionalArchitecture), loginUser);
         // 发布
