@@ -1,5 +1,6 @@
 package com.chaoxing.activity.admin.controller.api;
 
+import com.alibaba.fastjson.JSON;
 import com.chaoxing.activity.admin.util.LoginUtils;
 import com.chaoxing.activity.dto.LoginUserDTO;
 import com.chaoxing.activity.dto.OrgFormConfigDTO;
@@ -32,12 +33,13 @@ public class OrgFormApiConfigController {
 	 * @author wwb
 	 * @Date 2021-06-08 17:36:54
 	 * @param request
-	 * @param orgFormConfig
+	 * @param orgFormConfigJsonStr
 	 * @return com.chaoxing.activity.dto.RestRespDTO
 	*/
 	@LoginRequired
 	@RequestMapping
-	public RestRespDTO configForm(HttpServletRequest request, OrgFormConfigDTO orgFormConfig) {
+	public RestRespDTO configForm(HttpServletRequest request, String orgFormConfigJsonStr) {
+		OrgFormConfigDTO orgFormConfig = JSON.parseObject(orgFormConfigJsonStr, OrgFormConfigDTO.class);
 		LoginUserDTO loginUser = LoginUtils.getLoginUser(request);
 		orgFormConfig.setFid(loginUser.getFid());
 		orgFormConfigService.configOrgForm(orgFormConfig);

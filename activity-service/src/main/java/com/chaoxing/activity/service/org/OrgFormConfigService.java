@@ -13,6 +13,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
+import java.util.List;
 import java.util.Optional;
 
 /**机构表单配置服务
@@ -56,6 +57,7 @@ public class OrgFormConfigService {
 		// 从第二课堂获取表单
 		OrgFormConfigDTO secondClassroomOrgFormConfig = secondClassroomApiService.getOrgFormConfig(fid);
 		OrgConfig orgConfig = orgConfigService.getByFid(fid);
+		List<Integer> checkedMarketIds = orgDataRepoConfigQueryService.listMarketIdByFid(fid);
 		return OrgFormConfigDTO.builder()
 				.specifyMarket(Optional.ofNullable(orgDataRepoConfig).map(OrgDataRepoConfig::getSpecifyMarket).orElse(false))
 				.activityDataFormId(Optional.ofNullable(activityConfig).map(v -> Integer.parseInt(v.getRepo())).orElse(null))
@@ -68,6 +70,7 @@ public class OrgFormConfigService {
 				.userScoreFormId(Optional.ofNullable(secondClassroomOrgFormConfig).map(OrgFormConfigDTO::getUserScoreFormId).orElse(null))
 				.userResultFormId(Optional.ofNullable(secondClassroomOrgFormConfig).map(OrgFormConfigDTO::getUserResultFormId).orElse(null))
 				.signUpScopeType(Optional.ofNullable(orgConfig).map(OrgConfig::getSignUpScopeType).orElse(""))
+				.checkedMarketIds(checkedMarketIds)
 				.build();
 	}
 
@@ -82,9 +85,10 @@ public class OrgFormConfigService {
 	public void configOrgForm(OrgFormConfigDTO orgFormConfig) {
 		Integer fid = orgFormConfig.getFid();
 		Integer activityDataFormId = orgFormConfig.getActivityDataFormId();
-		orgDataRepoConfigHandleService.addOrUpdate(fid, activityDataFormId == null ? "" : String.valueOf(activityDataFormId), OrgDataRepoConfigDetail.DataTypeEnum.ACTIVITY, OrgDataRepoConfigDetail.RepoTypeEnum.FORM);
+		Boolean specifyMarket = Optional.ofNullable(orgFormConfig.getSpecifyMarket()).orElse(false);
+		orgDataRepoConfigHandleService.addOrUpdate(fid, specifyMarket, activityDataFormId == null ? "" : String.valueOf(activityDataFormId), OrgDataRepoConfigDetail.DataTypeEnum.ACTIVITY, OrgDataRepoConfigDetail.RepoTypeEnum.FORM);
 		Integer participateTimeLengthFormId = orgFormConfig.getParticipateTimeLengthFormId();
-		orgDataRepoConfigHandleService.addOrUpdate(fid, participateTimeLengthFormId == null ? "" : String.valueOf(participateTimeLengthFormId), OrgDataRepoConfigDetail.DataTypeEnum.PARTICIPATE_TIME_LENGTH, OrgDataRepoConfigDetail.RepoTypeEnum.FORM);
+		orgDataRepoConfigHandleService.addOrUpdate(fid, specifyMarket, participateTimeLengthFormId == null ? "" : String.valueOf(participateTimeLengthFormId), OrgDataRepoConfigDetail.DataTypeEnum.PARTICIPATE_TIME_LENGTH, OrgDataRepoConfigDetail.RepoTypeEnum.FORM);
 		signApiService.configOrgForm(orgFormConfig);
 		OrgConfig orgConfig = OrgConfig.builder()
 				.fid(orgFormConfig.getFid())
@@ -93,6 +97,8 @@ public class OrgFormConfigService {
 				.build();
 		orgConfigService.config(orgConfig);
 		secondClassroomApiService.configOrgForm(orgFormConfig);
+		List<Integer> checkedMarketIds = orgFormConfig.getCheckedMarketIds();
+		orgDataRepoConfigHandleService.updateOrgMarketDataPush(fid, checkedMarketIds);
 	}
 
 }

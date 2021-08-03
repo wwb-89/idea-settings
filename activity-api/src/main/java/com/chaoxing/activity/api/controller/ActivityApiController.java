@@ -2,11 +2,13 @@ package com.chaoxing.activity.api.controller;
 
 import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
-import com.chaoxing.activity.api.vo.*;
+import com.chaoxing.activity.api.vo.ActivityStatSummaryVO;
+import com.chaoxing.activity.api.vo.UserResultVO;
+import com.chaoxing.activity.api.vo.UserSignUpStatusVo;
+import com.chaoxing.activity.api.vo.UserStatSummaryVO;
 import com.chaoxing.activity.dto.RestRespDTO;
 import com.chaoxing.activity.dto.UserResultDTO;
 import com.chaoxing.activity.dto.activity.ActivityExternalDTO;
-import com.chaoxing.activity.dto.manager.sign.UserSignUpDTO;
 import com.chaoxing.activity.dto.manager.wfw.WfwAreaDTO;
 import com.chaoxing.activity.dto.query.ActivityQueryDTO;
 import com.chaoxing.activity.dto.query.UserResultQueryDTO;
@@ -25,15 +27,14 @@ import com.chaoxing.activity.service.activity.collection.ActivityCollectionHandl
 import com.chaoxing.activity.service.activity.collection.ActivityCollectionQueryService;
 import com.chaoxing.activity.service.activity.stat.ActivityStatSummaryQueryService;
 import com.chaoxing.activity.service.manager.module.SignApiService;
-import com.chaoxing.activity.service.manager.wfw.WfwCoordinateApiService;
 import com.chaoxing.activity.service.manager.wfw.WfwAreaApiService;
+import com.chaoxing.activity.service.manager.wfw.WfwCoordinateApiService;
 import com.chaoxing.activity.service.stat.UserStatSummaryQueryService;
 import com.chaoxing.activity.service.user.result.UserResultQueryService;
 import com.chaoxing.activity.service.util.Model2DtoService;
 import com.chaoxing.activity.util.HttpServletRequestUtils;
 import com.chaoxing.activity.util.constant.CookieConstant;
 import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.web.bind.annotation.*;
@@ -46,7 +47,6 @@ import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -427,4 +427,5 @@ public class ActivityApiController {
 		String data = signApiService.listUserSignUpBySignIdUids(activity.getSignId(), uidList);
 		return RestRespDTO.success(JSON.parseArray(data, UserSignUpStatusVo.class));
 	}
+
 }

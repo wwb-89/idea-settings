@@ -27,20 +27,21 @@
 	</div>
 	<div class="info box">
 		<form action="">
-			<!--<div class="form-item">
+			<div class="form-item">
 				<label class="label">指定活动市场</label>
 				<div class="input-box">
-					<el-switch v-model="orgFormConfig.openAudit"></el-switch>
+					<el-switch v-model="orgFormConfig.specifyMarket"></el-switch>
 					<span class="tips">指定的活动市场的数据才会被推送</span>
 				</div>
+			</div>
+			<div class="form-item" v-show="orgFormConfig.specifyMarket">
+				<label class="label"></label>
 				<div class="input-box">
-					<el-checkbox-group>
-						<el-checkbox label="ckItem.fieldName" name="active-type">
-							{{ckItem.fieldName}}
-						</el-checkbox>
-					</el-checkbox-group>
+					<el-checkbox v-for="(market, index) of markets" :key="'market-' + market.id" :label="market.name" v-model="market.checked">
+						{{market.name}}
+					</el-checkbox>
 				</div>
-			</div>-->
+			</div>
 			<div class="form-item">
 				<label class="label">活动参与审核</label>
 				<div class="input-box">
@@ -129,13 +130,31 @@
 			data: {
 				orgName: [[${orgName}]],
 				orgFormConfig: [[${orgFormConfig}]],
-				signUpScopeTypes: [[${signUpScopeTypes}]]
+				signUpScopeTypes: [[${signUpScopeTypes}]],
+				markets: [[${markets}]],
+				// 选中的市场id列表
+                checkedMarketIds: [[${checkedMarketIds}]]
 			},
+            created: function () {
+			    var $this = this;
+                $($this.markets).each(function (i) {
+                    $this.$set($this.markets[i], "checked", $this.orgFormConfig.checkedMarketIds.indexOf(this.id) > -1);
+                });
+            },
 			methods: {
 				save: function () {
 					var $this = this;
 					var url = ctx + "/api/org/form/config";
-					app.ajaxPostWithLoading(url, $this.orgFormConfig, function (data) {
+                    var checkedMarketIds = [];
+                    $($this.markets).each(function () {
+                        if (this.checked) {
+                            checkedMarketIds.push(this.id);
+                        }
+                    });
+                    $this.orgFormConfig.checkedMarketIds = checkedMarketIds;
+					app.ajaxPostWithLoading(url, {
+                        orgFormConfigJsonStr: activityApp.getJsonStr($this.orgFormConfig)
+					}, function (data) {
 						if (data.success) {
 							app.showMsg("保存成功", function () {
 								window.location.reload();

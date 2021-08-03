@@ -1,5 +1,6 @@
 package com.chaoxing.activity.task.activity;
 
+import com.alibaba.fastjson.JSON;
 import com.chaoxing.activity.dto.manager.wfwform.WfwFormCreateActivity;
 import com.chaoxing.activity.service.manager.WfwFormApprovalApiService;
 import com.chaoxing.activity.service.queue.activity.FormActivityCreateQueueService;
@@ -32,6 +33,7 @@ public class ActivityCreateFromApprovalTask {
         if (formCreateActivity == null) {
             return;
         }
+        log.info("根据表单信息: {}创建活动", JSON.toJSONString(formCreateActivity));
         try {
             formApprovalApiService.createActivity(formCreateActivity.getFid(),
                     formCreateActivity.getFormId(),

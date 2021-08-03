@@ -8,6 +8,7 @@ import com.chaoxing.activity.model.Market;
 import com.chaoxing.activity.service.activity.market.MarketQueryService;
 import com.chaoxing.activity.service.manager.PassportApiService;
 import com.chaoxing.activity.service.org.OrgFormConfigService;
+import com.chaoxing.activity.service.repoconfig.OrgDataRepoConfigQueryService;
 import com.chaoxing.activity.util.annotation.LoginRequired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -35,6 +36,8 @@ public class OrgFormConfigController {
 	private PassportApiService passportApiService;
 	@Resource
 	private MarketQueryService marketQueryService;
+	@Resource
+	private OrgDataRepoConfigQueryService orgDataRepoConfigQueryService;
 
 	/**机构表单配置页面
 	 * @Description 

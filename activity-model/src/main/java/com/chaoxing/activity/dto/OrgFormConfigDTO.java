@@ -5,6 +5,8 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.List;
+
 /**机构表单配置对象
  * @author wwb
  * @version ver 1.0
@@ -55,5 +57,7 @@ public class OrgFormConfigDTO {
 	private String timeLengthAppealUrl;
 	/** 学分申述url */
 	private String creditAppealUrl;
+	/** 选中的活动市场id列表 */
+	private List<Integer> checkedMarketIds;
 
 }

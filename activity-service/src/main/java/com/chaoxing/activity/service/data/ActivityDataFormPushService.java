@@ -48,6 +48,8 @@ public class ActivityDataFormPushService {
     private DataPushRecordQueryService dataPushRecordQueryService;
     @Resource
     private DataPushRecordHandleService dataPushRecordHandleService;
+    @Resource
+    private DataPushValidationService dataPushValidationService;
 
     /**推送数据
      * @Description 
@@ -63,6 +65,10 @@ public class ActivityDataFormPushService {
             return;
         }
         Integer createFid = activity.getCreateFid();
+        if (!dataPushValidationService.pushAble(createFid, activity.getMarketId())) {
+            // 是否允许推送
+            return;
+        }
         OrgDataRepoConfigDetail.RepoTypeEnum repoType = OrgDataRepoConfigDetail.RepoTypeEnum.FORM;
         OrgDataRepoConfigDetail.DataTypeEnum dataType = OrgDataRepoConfigDetail.DataTypeEnum.ACTIVITY;
         OrgDataRepoConfigDetail orgConfigDetail = orgDataRepoConfigQueryService.getOrgConfigDetail(createFid, dataType, repoType);

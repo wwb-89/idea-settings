@@ -1,10 +1,14 @@
 package com.chaoxing.activity.service.repoconfig;
 
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.chaoxing.activity.mapper.OrgDataRepoConfigDetailMapper;
 import com.chaoxing.activity.mapper.OrgDataRepoConfigMapper;
+import com.chaoxing.activity.mapper.OrgMarketDataPushMapper;
 import com.chaoxing.activity.model.OrgDataRepoConfig;
 import com.chaoxing.activity.model.OrgDataRepoConfigDetail;
+import com.chaoxing.activity.model.OrgMarketDataPush;
+import com.google.common.collect.Lists;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.stereotype.Service;
@@ -12,6 +16,8 @@ import org.springframework.stereotype.Service;
 import javax.annotation.Resource;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
+import java.util.stream.Collectors;
 
 /**机构数据仓库配置查询service
  * @author huxiaolong
@@ -20,7 +26,6 @@ import java.util.Objects;
  * @date 2021/5/19 2:38 下午
  * <p>
  */
-
 @Slf4j
 @Service
 public class OrgDataRepoConfigQueryService {
@@ -29,6 +34,8 @@ public class OrgDataRepoConfigQueryService {
     private OrgDataRepoConfigMapper orgDataRepoConfigMapper;
     @Resource
     private OrgDataRepoConfigDetailMapper orgDataRepoConfigDetailMapper;
+    @Resource
+    private OrgMarketDataPushMapper orgMarketDataPushMapper;
 
      /**根据机构fid和数据类型type查找对应的数据仓库配置详情
      * @Description
@@ -100,6 +107,21 @@ public class OrgDataRepoConfigQueryService {
             return orgDataRepoConfigDetails.get(0);
         }
         return null;
+    }
+
+    /**根据fid查询机构下配置了数据推送的活动市场id列表
+     * @Description 
+     * @author wwb
+     * @Date 2021-08-03 11:30:29
+     * @param fid
+     * @return java.util.List<java.lang.Integer>
+    */
+    public List<Integer> listMarketIdByFid(Integer fid) {
+        List<OrgMarketDataPush> orgMarketDataPushes = orgMarketDataPushMapper.selectList(new LambdaQueryWrapper<OrgMarketDataPush>()
+                .eq(OrgMarketDataPush::getFid, fid)
+                .select(OrgMarketDataPush::getMarketId)
+        );
+        return Optional.ofNullable(orgMarketDataPushes).orElse(Lists.newArrayList()).stream().map(OrgMarketDataPush::getMarketId).collect(Collectors.toList());
     }
 
 }

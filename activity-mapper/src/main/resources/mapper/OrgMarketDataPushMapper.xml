@@ -5,4 +5,13 @@
         <result column="fid" jdbcType="INTEGER" property="fid" />
         <result column="market_id" jdbcType="INTEGER" property="marketId" />
     </resultMap>
+
+    <insert id="batchAdd">
+        INSERT INTO t_org_market_data_push ( fid, market_id )
+        VALUES
+            <foreach collection="marketIds" index="key" item="value" open="" close="" separator=",">
+                ( #{fid}, #{value} )
+            </foreach>
+    </insert>
+
 </mapper>
