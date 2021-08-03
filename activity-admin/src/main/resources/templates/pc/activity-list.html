@@ -458,10 +458,12 @@
                             $this.handleOperationSequence(data.data.records);
                             $this.activities = data.data.records;
                             $this.$nextTick(function () {
-                                $(".jqthumbImg").jqthumb({
-                                    width: "100%",
-                                    height: "100%"
-                                });
+                                setTimeout(function () {
+                                    $(".jqthumbImg img").jqthumb({
+                                        width: "100%",
+                                        height: "100%"
+                                    });
+                                }, 300)
                             });
                             $this.total = data.data.total;
                             $this.pages = data.data.pages;
