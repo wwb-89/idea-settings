@@ -2144,3 +2144,6 @@ input.btn-name,
   height: 50px;
   border-radius: 0;
 }
+.date-range-icon {
+  margin: auto 4px;
+}

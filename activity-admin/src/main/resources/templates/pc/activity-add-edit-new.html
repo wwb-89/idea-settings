@@ -77,23 +77,27 @@
                     <div class="form-item" v-else-if="item.code == 'activity_time_scope'">
                         <label class="label"><img src="/static/pc/assets/images/required.png" th:src="@{/pc/assets/images/required.png}" class="required-img" v-if="item.required">{{item.name}}</label>
                         <div class="input-box">
-                            <el-date-picker v-model="activity.timeScope"
-                                            type="datetimerange"
-                                            format="yyyy-MM-dd HH:mm"
-                                            value-format="timestamp"
-                                            prefix-icon="disable"
-                                            :clearable="false"
-                                            :editable="false"
-                                            unlink-panels
-                                            start-placeholder="开始时间"
-                                            end-placeholder="结束时间"
-                                            :default-time="['00:00:00', '23:59:59']"
-                                            @input="selectActivityTime">
-                                <img style="margin: 0 8px;" slot="range-separator" src="/static/pc/assets/images/swap-right.png" th:src="@{/pc/assets/images/swap-right.png}">
+                            <el-date-picker
+                                    v-model="activity.startTimeStamp"
+                                    type="datetime"
+                                    format="yyyy-MM-dd HH:mm"
+                                    value-format="timestamp"
+                                    :clearable="false"
+                                    :editable="false"
+                                    :default-time="['00:00:00']"
+                                    placeholder="开始时间">
                             </el-date-picker>
-                            <span class="date-piker-icon">
-                                <img src="/static/pc/assets/images/calendar.png" th:src="@{/pc/assets/images/calendar.png}">
-                            </span>
+                            <span class="date-range-icon"><img src="/static/pc/assets/images/swap-right.png" th:src="@{/pc/assets/images/swap-right.png}"></span>
+                            <el-date-picker
+                                    v-model="activity.endTimeStamp"
+                                    type="datetime"
+                                    format="yyyy-MM-dd HH:mm"
+                                    value-format="timestamp"
+                                    :clearable="false"
+                                    :editable="false"
+                                    :default-time="['23:59:59']"
+                                    placeholder="结束时间">
+                            </el-date-picker>
                             <span class="tips" v-if="item.introduction">{{item.introduction}}</span>
                         </div>
                     </div>
@@ -310,23 +314,27 @@
                                 <div class="form-item" v-if="it.code == 'sign_up_time_scope'">
                                     <label class="label"><img src="/static/pc/assets/images/required.png" th:src="@{/pc/assets/images/required.png}" class="required-img" v-if="it.required">{{it.name}}</label>
                                     <div class="input-box">
-                                        <el-date-picker v-model="signUpMap[item.id] && signUpMap[item.id].timeScope"
-                                                        type="datetimerange"
-                                                        format="yyyy-MM-dd HH:mm"
-                                                        value-format="timestamp"
-                                                        :clearable="false"
-                                                        :editable="false"
-                                                        unlink-panels
-                                                        prefix-icon="disable"
-                                                        start-placeholder="开始时间"
-                                                        end-placeholder="结束时间"
-                                                        :default-time="['00:00:00', '23:59:59']"
-                                                        @input="selectSignUpTime(item.id, $event)">
-                                            <img style="margin: 0 8px;" slot="range-separator" src="/static/pc/assets/images/swap-right.png" th:src="@{/pc/assets/images/swap-right.png}">
+                                        <el-date-picker
+                                                v-model="signUpMap[item.id] && signUpMap[item.id].startTime"
+                                                type="datetime"
+                                                format="yyyy-MM-dd HH:mm"
+                                                value-format="timestamp"
+                                                :clearable="false"
+                                                :editable="false"
+                                                :default-time="['00:00:00']"
+                                                placeholder="开始时间">
                                         </el-date-picker>
-                                        <span class="date-piker-icon">
-                                            <img src="/static/pc/assets/images/time.png" th:src="@{/pc/assets/images/time.png}">
-                                        </span>
+                                        <span class="date-range-icon"><img src="/static/pc/assets/images/swap-right.png" th:src="@{/pc/assets/images/swap-right.png}"></span>
+                                        <el-date-picker
+                                                v-model="signUpMap[item.id] && signUpMap[item.id].endTime"
+                                                type="datetime"
+                                                format="yyyy-MM-dd HH:mm"
+                                                value-format="timestamp"
+                                                :clearable="false"
+                                                :editable="false"
+                                                :default-time="['23:59:59']"
+                                                placeholder="结束时间">
+                                        </el-date-picker>
                                         <span class="tips" v-if="it.introduction">{{it.introduction}}</span>
                                     </div>
                                 </div>
@@ -465,23 +473,27 @@
                             <div class="form-item">
                                 <label class="label"><img src="/static/pc/assets/images/required.png" th:src="@{/pc/assets/images/required.png}" class="required-img">{{signInMap[item.id].typeName}}时间</label>
                                 <div class="input-box">
-                                    <el-date-picker v-model="signInMap[item.id] && signInMap[item.id].timeScope"
-                                                    type="datetimerange"
-                                                    format="yyyy-MM-dd HH:mm"
-                                                    value-format="timestamp"
-                                                    :clearable="false"
-                                                    :editable="false"
-                                                    unlink-panels
-                                                    prefix-icon="disable"
-                                                    start-placeholder="开始时间"
-                                                    end-placeholder="结束时间"
-                                                    :default-time="['00:00:00', '23:59:59']"
-                                                    @input="selectSignInTime(item.id, $event)">
-                                        <img style="margin: 0 8px;" slot="range-separator" src="/static/pc/assets/images/swap-right.png" th:src="@{/pc/assets/images/swap-right.png}">
+                                    <el-date-picker
+                                            v-model="signInMap[item.id] && signInMap[item.id].startTime"
+                                            type="datetime"
+                                            format="yyyy-MM-dd HH:mm"
+                                            value-format="timestamp"
+                                            :clearable="false"
+                                            :editable="false"
+                                            :default-time="['00:00:00']"
+                                            placeholder="开始时间">
                                     </el-date-picker>
-                                    <span class="date-piker-icon">
-                            <img src="/static/pc/assets/images/time.png" th:src="@{/pc/assets/images/time.png}">
-                        </span>
+                                    <span class="date-range-icon"><img src="/static/pc/assets/images/swap-right.png" th:src="@{/pc/assets/images/swap-right.png}"></span>
+                                    <el-date-picker
+                                            v-model="signInMap[item.id] && signInMap[item.id].endTime"
+                                            type="datetime"
+                                            format="yyyy-MM-dd HH:mm"
+                                            value-format="timestamp"
+                                            :clearable="true"
+                                            :editable="false"
+                                            :default-time="['23:59:59']"
+                                            placeholder="不限">
+                                    </el-date-picker>
                                 </div>
                             </div>
                             <div class="form-item">
@@ -764,7 +776,6 @@
                         return activityApp.isBeforeToday(time.getTime());
                     }
                 },
-                customOrg: [[${customOrg}]],
                 activePicIndex: -1,
                 pictureCloudIds: [
                     'aa5d1e5450f5b2cfa43c66f045ae0651',
@@ -955,7 +966,7 @@
                 } else {
                     // 报名签到
                     var signUpTplComponentIds = [],
-                        signInTplComponentIds = [];
+                            signInTplComponentIds = [];
 
                     $($this.templateComponents).each(function () {
                         if (this.code == 'sign_up' || this.code == 'company_sign_up') {
@@ -1412,6 +1423,10 @@
                         app.showMsg("活动结束时间不能为空");
                         return false;
                     }
+                    if ($this.activity.startTimeStamp >= $this.activity.endTimeStamp) {
+                        app.showMsg("活动开始时间必须小于结束时间");
+                        return false;
+                    }
                     if (activityApp.isEmpty($this.activity.coverCloudId)) {
                         app.showMsg("请上传封面");
                         return false;
@@ -1447,6 +1462,10 @@
                             }
                             if (activityApp.isEmpty(signUp.endTime)) {
                                 app.showMsg(signUp + "结束时间不能为空");
+                                return false;
+                            }
+                            if (signUp.startTime >= signUp.endTime) {
+                                app.showMsg(signUp + "开始时间必须小于结束时间");
                                 return false;
                             }
                             // 参与范围
@@ -1511,8 +1530,8 @@
                                 app.showMsg(signIn.name + "开始时间不能为空");
                                 return false;
                             }
-                            if (activityApp.isEmpty(signIn.endTime)) {
-                                app.showMsg(signIn.name + "结束时间不能为空");
+                            if (!activityApp.isEmpty(signIn.endTime) && signIn.startTime >= signIn.endTime) {
+                                app.showMsg(signIn.name + "开始时间必须小于结束时间");
                                 return false;
                             }
                             if (signIn.fillInfo) {
@@ -1661,18 +1680,6 @@
                         window.close();
                     }
                 },
-                // 选中活动的日期范围
-                selectActivityTime: function (obj) {
-                    var $this = this;
-                    $this.activity.startTimeStamp = obj[0];
-                    $this.activity.endTimeStamp = obj[1];
-                },
-                // 选中报名的时间范围
-                selectSignUpTime: function (tplComponentId, obj) {
-                    var $this = this;
-                    $this.$set($this.signUpMap[tplComponentId], "startTime", obj[0]);
-                    $this.$set($this.signUpMap[tplComponentId], "endTime", obj[1]);
-                },
                 // 选中签到的时间范围
                 selectSignInTime: function (tplComponentId, obj) {
                     var $this = this;
@@ -1719,7 +1726,7 @@
                     if (!activityApp.isEmpty(signUp.fillInfoFormId)) {
                         formId = signUp.fillInfoFormId;
                     }
-                    var url = "http://reading.chaoxing.com/qd/form/config?formId=" + formId;
+                    var url = "//reading.chaoxing.com/qd/form/config?formId=" + formId;
                     $('body').addClass('scroll');
                     $this.formConfigLayerIndex = layer.open({
                         title: "表单配置",
@@ -1860,36 +1867,6 @@
                     } else {
                         $this.signUpMap[signUpTplComponentId].contactsParticipateScopes.splice(scopeIndex, 1);
                     }
-                },
-                // 活动是否显示标签
-                isShowActivityFlag: function () {
-                    var $this = this;
-                    var hides = ["dual_select", "second_classroom"];
-                    return hides.indexOf($this.activity.activityFlag) == -1;
-                },
-                // 是否显示学时、学分
-                isShowPeriodCredit: function () {
-                    var $this = this;
-                    var shows = ["teacher"];
-                    return shows.indexOf($this.activity.activityFlag) != -1;
-                },
-                // 是否限制作品征集
-                isShowWork: function () {
-                    var $this = this;
-                    var hides = ["second_classroom", "teacher", "volunteer", "dual_select"];
-                    return hides.indexOf($this.activity.activityFlag) == -1;
-                },
-                // 是否显示参与时长上限
-                isShowTimeLengthUpperLimit() {
-                    var $this = this;
-                    var shows = ["volunteer"];
-                    return shows.indexOf($this.activity.activityFlag) != -1;
-                },
-                // 是否显示简介
-                isShowIntroduction: function () {
-                    var $this = this;
-                    var hides = ["dual_select"];
-                    return hides.indexOf($this.activity.activityFlag) == -1 && !$this.customOrg;
                 }
             }
         });

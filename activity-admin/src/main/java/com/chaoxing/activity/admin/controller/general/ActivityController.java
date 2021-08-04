@@ -132,8 +132,6 @@ public class ActivityController {
 		List<WfwAreaDTO> wfwAreaDtos = wfwAreaApiService.listByFid(fid);
 		List<WfwAreaDTO> participatedOrgs = Optional.ofNullable(wfwAreaDtos).orElse(Lists.newArrayList()).stream().filter(v -> Objects.equals(v.getFid(), fid)).collect(Collectors.toList());
 		model.addAttribute("participatedOrgs", participatedOrgs);
-		// 是不是定制机构
-		model.addAttribute("isCustomOrg", orgService.isCustomOrg(fid));
 		return "pc/activity-add-edit-new";
 	}
 

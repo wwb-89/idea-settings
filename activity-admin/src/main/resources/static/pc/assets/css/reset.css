@@ -12,11 +12,11 @@
     color: #FFF;
 }
 .el-input__prefix{
-    right: 5px;
-    left: unset;
+    /*right: 5px;*/
+    /*left: unset;*/
 }
 .el-input--prefix .el-input__inner {
-    padding-left: 14px;
+    /*padding-left: 14px;*/
     border: 1px solid #e9e9e9;
     
 }

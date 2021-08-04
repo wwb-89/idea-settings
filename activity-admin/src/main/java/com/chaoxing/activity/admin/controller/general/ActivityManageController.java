@@ -161,9 +161,6 @@ public class ActivityManageController {
 		List<ActivitySignModule> activitySignModules = activityQueryService.listByActivityId(activityId);
 		model.addAttribute("activitySignModules", activitySignModules);
 		model.addAttribute("strict", strict);
-		// 是不是定制机构：定制机构不显示简介
-		boolean customOrg = orgService.isCustomOrg(activity.getCreateFid());
-		model.addAttribute("customOrg", customOrg);
 		return "pc/activity-add-edit-new";
 	}
 
