@@ -29,21 +29,27 @@
                 <div class="form-item" v-if="it.code == 'sign_up_time_scope'">
                     <label class="label cover"><img src="/static/pc/assets/images/required.png" th:src="@{/pc/assets/images/required.png}" class="required-img" v-if="it.required">{{it.name}}</label>
                     <div class="input-box">
-                        <el-date-picker v-model="signUpMap[item.id] && signUpMap[item.id].timeScope"
-                                        type="datetimerange"
-                                        format="yyyy-MM-dd HH:mm"
-                                        value-format="timestamp"
-                                        :clearable="false"
-                                        :editable="false"
-                                        unlink-panels
-                                        prefix-icon="disable"
-                                        start-placeholder="开始时间"
-                                        end-placeholder="结束时间"
-                                        :default-time="['00:00:00', '23:59:59']"
-                                        @input="selectSignUpTime(item.id, $event)">
-                            <img style="margin: 0 8px;" slot="range-separator" src="/static/pc/assets/images/swap-right.png" th:src="@{/pc/assets/images/swap-right.png}">
+                        <el-date-picker
+                                v-model="signUpMap[item.id] && signUpMap[item.id].startTime"
+                                type="datetime"
+                                format="yyyy-MM-dd HH:mm"
+                                value-format="timestamp"
+                                :clearable="false"
+                                :editable="false"
+                                :default-time="['00:00:00']"
+                                placeholder="开始时间">
                         </el-date-picker>
-                        <span class="date-piker-icon">
+                        <span class="date-range-icon"><img src="/static/pc/assets/images/swap-right.png" th:src="@{/pc/assets/images/swap-right.png}"></span>
+                        <el-date-picker
+                                v-model="signUpMap[item.id] && signUpMap[item.id].endTime"
+                                type="datetime"
+                                format="yyyy-MM-dd HH:mm"
+                                value-format="timestamp"
+                                :clearable="false"
+                                :editable="false"
+                                :default-time="['23:59:59']"
+                                placeholder="结束时间">
+                        </el-date-picker>
                         <img src="/static/pc/assets/images/time.png" th:src="@{/pc/assets/images/time.png}">
                     </span>
                         <span class="tips" v-if="it.introduction">{{it.introduction}}</span>

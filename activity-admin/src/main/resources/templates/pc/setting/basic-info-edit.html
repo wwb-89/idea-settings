@@ -66,23 +66,27 @@
             <div class="form-item" v-else-if="item.code == 'activity_time_scope'">
                 <label class="label"><img src="/static/pc/assets/images/required.png" th:src="@{/pc/assets/images/required.png}" class="required-img" v-if="item.required">{{item.name}}</label>
                 <div class="input-box">
-                    <el-date-picker v-model="activity.timeScope"
-                                    type="datetimerange"
-                                    format="yyyy-MM-dd HH:mm"
-                                    value-format="timestamp"
-                                    prefix-icon="disable"
-                                    :clearable="false"
-                                    :editable="false"
-                                    unlink-panels
-                                    start-placeholder="开始时间"
-                                    end-placeholder="结束时间"
-                                    :default-time="['00:00:00', '23:59:59']"
-                                    @input="selectActivityTime">
-                        <img style="margin: 0 8px;" slot="range-separator" src="/static/pc/assets/images/swap-right.png" th:src="@{/pc/assets/images/swap-right.png}">
+                    <el-date-picker
+                            v-model="activity.startTimeStamp"
+                            type="datetime"
+                            format="yyyy-MM-dd HH:mm"
+                            value-format="timestamp"
+                            :clearable="false"
+                            :editable="false"
+                            :default-time="['00:00:00']"
+                            placeholder="开始时间">
                     </el-date-picker>
-                    <span class="date-piker-icon">
-                                <img src="/static/pc/assets/images/calendar.png" th:src="@{/pc/assets/images/calendar.png}">
-                            </span>
+                    <span class="date-range-icon"><img src="/static/pc/assets/images/swap-right.png" th:src="@{/pc/assets/images/swap-right.png}"></span>
+                    <el-date-picker
+                            v-model="activity.endTimeStamp"
+                            type="datetime"
+                            format="yyyy-MM-dd HH:mm"
+                            value-format="timestamp"
+                            :clearable="false"
+                            :editable="false"
+                            :default-time="['23:59:59']"
+                            placeholder="结束时间">
+                    </el-date-picker>
                     <span class="tips" v-if="item.introduction">{{item.introduction}}</span>
                 </div>
             </div>
