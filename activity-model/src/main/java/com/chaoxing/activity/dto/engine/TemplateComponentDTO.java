@@ -9,6 +9,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.springframework.beans.BeanUtils;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -88,5 +89,31 @@ public class TemplateComponentDTO {
         // 给父组件填充子组件列表
         Optional.ofNullable(parentTemplateComponents).orElse(Lists.newArrayList()).stream().forEach(templateComponent -> templateComponent.setChildren(Optional.ofNullable(clonedTemplateComponents).orElse(Lists.newArrayList()).stream().filter(v -> Objects.equals(templateComponent.getOriginId(), v.getPid())).collect(Collectors.toList())));
         return parentTemplateComponents;
+    }
+
+
+    /**构建父子关系的树结构
+    * @Description
+    * @author huxiaolong
+    * @Date 2021-08-04 17:13:12
+    * @param templateComponents
+    * @return java.util.List<com.chaoxing.activity.dto.engine.TemplateComponentDTO>
+    */
+    public static List<TemplateComponentDTO> buildTrees(List<TemplateComponentDTO> templateComponents) {
+        List<TemplateComponentDTO> trees = org.apache.commons.compress.utils.Lists.newArrayList();
+        templateComponents.forEach(v -> {
+            if (Objects.equals(v.getPid(), 0)) {
+                trees.add(v);
+            }
+            templateComponents.forEach(v1 -> {
+                if (!Objects.equals(v1.getPid(), 0) && Objects.equals(v1.getPid(), v.getId())) {
+                    if (v.getChildren() == null) {
+                        v.setChildren(new ArrayList<>());
+                    }
+                    v.getChildren().add(v1);
+                }
+            });
+        });
+        return trees;
     }
 }

@@ -95,6 +95,10 @@ public class ActivityCreateParamDTO {
 
 	private Integer webTemplateId;
 
+	// 预览显示使用
+	private String activityClassifyName;
+
+
 	/** 活动组件值对象列表 */
 	private List<ActivityComponentValueDTO> activityComponentValues;
 

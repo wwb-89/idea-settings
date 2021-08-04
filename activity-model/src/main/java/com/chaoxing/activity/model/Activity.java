@@ -402,6 +402,7 @@ public class Activity {
                 .webTemplateId(webTemplateId)
                 .previewUrl(previewUrl)
                 .editUrl(editUrl)
+                .activityClassifyName(activityClassifyName)
                 .build();
     }
 }

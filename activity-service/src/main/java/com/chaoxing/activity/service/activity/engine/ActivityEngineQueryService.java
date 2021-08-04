@@ -151,24 +151,50 @@ public class ActivityEngineQueryService {
         return templateComponents;
     }
 
+    /**查询模板组件关联数据，并安装父子结构进行树结构封装
+    * @Description
+    * @author huxiaolong
+    * @Date 2021-08-03 16:20:36
+    * @param templateId
+    * @param fid
+    * @return java.util.List<com.chaoxing.activity.dto.engine.TemplateComponentDTO>
+    */
     public List<TemplateComponentDTO> listTemplateComponentTree(Integer templateId, Integer fid) {
         List<TemplateComponentDTO> templateComponents = templateComponentMapper.listTemplateComponentInfo(templateId);
         buildComponentFieldsAndFieldValues(fid, templateComponents);
-        List<TemplateComponentDTO> trees = Lists.newArrayList();
-        templateComponents.forEach(v -> {
-            if (Objects.equals(v.getPid(), 0)) {
-                trees.add(v);
-            }
-            templateComponents.forEach(v1 -> {
-                if (!Objects.equals(v1.getPid(), 0) && Objects.equals(v1.getPid(), v.getId())) {
-                    if (v.getChildren() == null) {
-                        v.setChildren(new ArrayList<>());
-                    }
-                    v.getChildren().add(v1);
-                }
-            });
-        });
-        return trees;
+        return TemplateComponentDTO.buildTrees(templateComponents);
+    }
+
+    /**查询基本信息组件关联数据(不含报名、签到)
+    * @Description
+    * @author huxiaolong
+    * @Date 2021-08-03 16:21:49
+    * @param templateId
+    * @param fid
+    * @return java.util.List<com.chaoxing.activity.dto.engine.TemplateComponentDTO>
+    */
+    public List<TemplateComponentDTO> listBasicInfoTemplateComponents(Integer templateId, Integer fid) {
+        List<TemplateComponentDTO> templateComponents = templateComponentMapper.listTemplateComponentInfo(templateId)
+                .stream()
+                .filter(v -> v.getPid() == 0 && !Objects.equals(v.getCode(), "sign_in") && !Objects.equals(v.getCode(), "sign_out") && !Objects.equals(v.getCode(), "sign_up") && !Objects.equals(v.getCode(), "company_sign_up"))
+                .collect(Collectors.toList());
+        buildComponentFieldsAndFieldValues(fid, templateComponents);
+        return templateComponents;
+    }
+
+    /**查询报名信息组件关联数据(不含基本信息、签到)
+    * @Description
+    * @author huxiaolong
+    * @Date 2021-08-04 17:14:57
+    * @param templateId
+    * @return java.util.List<com.chaoxing.activity.dto.engine.TemplateComponentDTO>
+    */
+    public List<TemplateComponentDTO> listSignUpTemplateComponents(Integer templateId) {
+        List<TemplateComponentDTO> templateComponents = templateComponentMapper.listTemplateComponentInfo(templateId)
+                .stream()
+                .filter(v -> v.getPid() != 0 || Objects.equals(v.getCode(), "sign_up") || Objects.equals(v.getCode(), "company_sign_up"))
+                .collect(Collectors.toList());
+        return TemplateComponentDTO.buildTrees(templateComponents);
     }
 
     /**查询封装自定义选择组件componentFields 自定义选项和 fieldValues表单选项

@@ -133,8 +133,6 @@ public class ActivityStatSummaryQueryService {
             Integer signId = record.getSignId();
             // 收藏数
             record.setCollectNum(activityCollectedNumMap.get(record.getActivityId()));
-            // 报名
-            record.setSignUp(signMaps.get(signId).getSignUps().get(0));
             // 浏览数
             record.setPv(activityPvMap.get(record.getActivityId()));
             if (classifyId != null) {
@@ -142,6 +140,8 @@ public class ActivityStatSummaryQueryService {
             }
             if (signId != null) {
                 record.setParticipateScope(signParticipateScopeMap.get(signId));
+                // 报名
+                record.setSignUp(signMaps.get(signId).getSignUps().get(0));
             }
         }
     }

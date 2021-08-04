@@ -1,0 +1,950 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org/">
+<head>
+    <meta charset="UTF-8">
+    <title>基本信息</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="/static/pc/assets/lib/element-ui/lib/theme-chalk/index.css" th:href="@{/pc/assets/lib/element-ui/lib/theme-chalk/index.css}">
+    <link rel="stylesheet" href="/static/pc/assets/lib/zTree_v3/css/zTreeStyle/zTreeStyle.css" th:href="@{/pc/assets/lib/zTree_v3/css/zTreeStyle/zTreeStyle.css}">
+    <link rel="stylesheet" href="/static/pc/assets/css/reset.css" th:href="@{/pc/assets/css/reset.css}">
+    <link rel="stylesheet" href="/static/pc/assets/icomoon/style.css" th:href="@{/pc/assets/icomoon/style.css}">
+    <link rel="stylesheet" href="/static/pc/assets/css/public.css" th:href="@{/pc/assets/css/public.css}">
+    <link rel="stylesheet" href="/static/pc/assets/css/create.css" th:href="@{/pc/assets/css/create.css}">
+    <link rel="stylesheet" href="https://noteyd.chaoxing.com/res/css/pc/note/richtext_detail.css">
+
+    <link rel="stylesheet" href="/static/pc/assets/lib/layui/css/layui.css" th:href="@{/pc/assets/lib/layui/css/layui.css}">
+    <link rel="stylesheet" href="/static/pc/assets/css/set.css" th:href="@{/pc/assets/css/set.css}">
+
+    <style type="text/css">
+        body .create-class .layui-layer-btn0{
+            width: 30px;
+            height: 30px;
+            border: 1px solid #82c3ff;
+            border-radius: 15px;
+            font-size: 13px;
+            margin: 5px 10px 0 5px;
+            color: #0084ff;
+            background: #ffffff;
+            line-height: 30px;
+        }
+        body .create-class .layui-layer-btn1{
+            width: 30px !important;
+            height: 30px !important;
+            border: 1px solid #82c3ff !important;
+            border-radius: 15px !important;
+            font-size: 13px;
+            margin: 5px 5px 0 10px;
+            color: #ffffff;
+            background: #0084ff;
+            line-height: 30px;
+        }
+        .webuploader-element-invisible {
+            display: none;
+        }
+        .webuploader-pick {
+            color: #0084FF!important;
+            background: unset!important;
+            padding: unset!important;
+        }
+        [v-cloak] {
+            display: none;
+        }
+    </style>
+</head>
+
+<body>
+<div id="activity-vue" v-cloak>
+    <form action="" class="basic-show" onsubmit="return false;">
+        <template v-for="(item, index) in templateComponents">
+            <div class="form-item" v-if="item.code == 'activity_name'">
+                <label class="label"><img src="/static/pc/assets/images/required.png" th:src="@{/pc/assets/images/required.png}" class="required-img" v-if="item.required">{{item.name}}</label>
+                <div class="input-box">
+                    <el-input type="text" placeholder="请填写" v-model.trim="activity.name" maxlength="50" show-word-limit></el-input>
+                    <span class="tips" v-if="item.introduction">{{item.introduction}}</span>
+                </div>
+            </div>
+            <div class="form-item" v-else-if="item.code == 'activity_time_scope'">
+                <label class="label"><img src="/static/pc/assets/images/required.png" th:src="@{/pc/assets/images/required.png}" class="required-img" v-if="item.required">{{item.name}}</label>
+                <div class="input-box">
+                    <el-date-picker v-model="activity.timeScope"
+                                    type="datetimerange"
+                                    format="yyyy-MM-dd HH:mm"
+                                    value-format="timestamp"
+                                    prefix-icon="disable"
+                                    :clearable="false"
+                                    :editable="false"
+                                    unlink-panels
+                                    start-placeholder="开始时间"
+                                    end-placeholder="结束时间"
+                                    :default-time="['00:00:00', '23:59:59']"
+                                    @input="selectActivityTime">
+                        <img style="margin: 0 8px;" slot="range-separator" src="/static/pc/assets/images/swap-right.png" th:src="@{/pc/assets/images/swap-right.png}">
+                    </el-date-picker>
+                    <span class="date-piker-icon">
+                                <img src="/static/pc/assets/images/calendar.png" th:src="@{/pc/assets/images/calendar.png}">
+                            </span>
+                    <span class="tips" v-if="item.introduction">{{item.introduction}}</span>
+                </div>
+            </div>
+            <div class="form-item align-start" v-else-if="item.code == 'activity_cover'">
+                <label class="label cover"><img src="/static/pc/assets/images/required.png" th:src="@{/pc/assets/images/required.png}" class="required-img" v-if="item.required">{{item.name}}</label>
+                <div class="input-box">
+                    <div class="img-box">
+                        <img :src="activity | getCloudImgUrl" class="cover-img jqthumbImg">
+                    </div>
+                    <div class="font-box">
+                        <span>建议尺寸：540*280</span>
+                        <span>大小：小于5M</span>
+                        <span>格式：jpg、png、gif</span>
+                        <div class="btn-box">
+                            <button id="cover-upload-btn" class="cancle-btn upload">上传文件</button>
+                            <div class="cancle-btn picture-btn" @click="pictureShow = true">图片库</div>
+                        </div>
+                    </div>
+                    <span class="tips" v-if="item.introduction">{{item.introduction}}</span>
+                </div>
+            </div>
+            <div class="form-item" v-else-if="item.code == 'activity_organisers'">
+                <label class="label"><img src="/static/pc/assets/images/required.png" th:src="@{/pc/assets/images/required.png}" class="required-img" v-if="item.required">{{item.name}}</label>
+                <div class="input-box" style="width: 400px;">
+                    <el-input type="text" placeholder="请填写" v-model.trim="activity.organisers" maxlength="20"></el-input>
+                    <span class="tips" v-if="item.introduction">{{item.introduction}}</span>
+                </div>
+            </div>
+            <template v-else-if="item.code == 'activity_type'">
+                <div class="form-item">
+                    <label class="label"><img src="/static/pc/assets/images/required.png" th:src="@{/pc/assets/images/required.png}" class="required-img" v-if="item.required">{{item.name}}</label>
+                    <div class="input-box">
+                        <el-radio v-for="(activityType, index) of activityTypes" :key="'activity-type-' + index" v-model="activity.activityType" :label="activityType.value" name="active-type">{{activityType.name}}</el-radio>
+                        <span class="tips" v-if="item.introduction">{{item.introduction}}</span>
+                    </div>
+                </div>
+                <div class="form-item" v-show="activity.activityType == 'offline'">
+                    <label class="label">位置</label>
+                    <div class="input-box">
+                        <input type="text" readonly required lay-verify="required" v-model.trim="activity.address" placeholder="请选择地点" autocomplete="off" class="layui-input name show-addr" style="cursor: pointer;" @click="showActivityMap">
+                        <img src="/static/pc/assets/images/location.png" th:src="@{/pc/assets/images/location.png}" class="length icon">
+                        <input type="text" v-model.trim="activity.detailAddress" lay-verify="required" placeholder="详细地址，例：E5栋1308室" autocomplete="off" class="layui-input name show-addr-detailed">
+                    </div>
+                </div>
+            </template>
+            <div class="form-item cancel-margin" v-else-if="item.code == 'activity_classify'">
+                <label class="label"><img src="/static/pc/assets/images/required.png" th:src="@{/pc/assets/images/required.png}" class="required-img" v-if="item.required">{{item.name}}</label>
+                <div class="input-box wrap">
+                    <div class="select-activity" v-if="strict == 1">
+                        <el-select v-model="activity.activityClassifyId" placeholder="请选择">
+                            <el-option v-for="item in activityClassifies" :key="item.id" :label="item.name"
+                                       :value="item.id">
+                            </el-option>
+                        </el-select>
+                    </div>
+                    <template v-if="strict != 1">
+                        <div :class="{'type-item': true, 'paddingR0': (!activityClassify.system), 'active': activityClassify.selected}" v-for="(activityClassify, index) of activityClassifies" :key="'activity-classify-' + index" @click="selectActivityClassify(index)">{{activityClassify.name}}
+                            <div class="more-box" v-if="!activityClassify.system">
+                                <div class="more-btn"></div>
+                                <div class="edit-box">
+                                    <div @click="toEditActivityClassify(index, $event)">编辑</div>
+                                    <div @click="toDeleteActivityClassify(index, $event)">删除</div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="type-item add" @click="toAddActivityClassify">
+                            <div class="add_btn"></div>
+                            新增
+                        </div>
+                    </template>
+                    <span class="tips" v-if="item.introduction">{{item.introduction}}</span>
+                </div>
+            </div>
+
+            <div class="form-item" v-else-if="item.code == 'integral'">
+                <label class="label"><img src="/static/pc/assets/images/required.png" th:src="@{/pc/assets/images/required.png}" class="required-img" v-if="item.required">{{item.name}}</label>
+                <div class="input-box setForm">
+                    <input type="number" v-model.trim="activity.integralValue" min="0" placeholder="请输入" class="score-input">
+                    <span class="score">分</span>
+                    <span class="tips" v-if="item.introduction">{{item.introduction}}</span>
+                </div>
+            </div>
+            <!--学时-->
+            <div class="form-item" v-else-if="item.code == 'period'">
+                <label class="label"><img src="/static/pc/assets/images/required.png" th:src="@{/pc/assets/images/required.png}" class="required-img" v-if="item.required">{{item.name}}</label>
+                <div class="input-box setForm">
+                    <input type="number" min="0" step="0.1" v-model.trim="activity.period" @blur="periodChange" placeholder="请输入" class="score-input">
+                    <span class="score">学时</span>
+                    <span class="tips" v-if="item.introduction">{{item.introduction}}</span>
+                </div>
+            </div>
+            <!--学分-->
+            <div class="form-item" v-else-if="item.code == 'credit'">
+                <label class="label"><img src="/static/pc/assets/images/required.png" th:src="@{/pc/assets/images/required.png}" class="required-img" v-if="item.required">{{item.name}}</label>
+                <div class="input-box setForm">
+                    <input type="number" min="0" step="0.1" v-model.trim="activity.credit" @blur="creditChange" placeholder="请输入" class="score-input">
+                    <span class="score">学分</span>
+                    <span class="tips" v-if="item.introduction">{{item.introduction}}</span>
+                </div>
+            </div>
+            <!--参与时长上限-->
+            <div class="form-item" v-else-if="item.code == 'max_participate_time_length'">
+                <label class="label"><img src="/static/pc/assets/images/required.png" th:src="@{/pc/assets/images/required.png}" class="required-img" v-if="item.required">{{item.name}}</label>
+                <div class="input-box setForm">
+                    <input type="number" min="1" step="1" v-model.trim="activity.timeLengthUpperLimit" placeholder="不限" class="score-input">
+                    <span class="score">小时</span>
+                    <span class="tips" v-if="item.introduction">{{item.introduction}}</span>
+                </div>
+            </div>
+            <div class="form-item last marginTop16" v-else-if="item.code == 'activity_release_scope'">
+                <label class="label"><img src="/static/pc/assets/images/required.png" th:src="@{/pc/assets/images/required.png}" class="required-img" v-if="item.required">{{item.name}}</label>
+                <div class="input-box wrap">
+                    <!--添加范围后显示后面这项-->
+                    <div v-show="participatedOrgs.length < 1">
+                        <div class="type-item add" @click="toAddParticipateScope">
+                            <div class="add_btn"></div>
+                            添加
+                        </div>
+                    </div>
+                    <div class="already_add" v-show="participatedOrgs.length > 0">
+                        <div>
+                            已选择{{participatedOrgs.length}}个单位
+                        </div>
+                        <img src="/static/pc/assets/images/edit-3.png" th:src="@{/pc/assets/images/edit-3.png}" @click="toAddParticipateScope">
+                    </div>
+                    <span class="tips" v-if="item.introduction">{{item.introduction}}</span>
+                </div>
+            </div>
+            <!--征集设置-->
+            <div class="form-item" v-else-if="item.code == 'work'">
+                <label class="label">{{item.name}}</label>
+                <div class="input-box">
+                    <el-switch v-model="activity.openWork" class="examine-switch"></el-switch>
+                    <span class="tips" v-if="item.introduction">{{item.introduction}}</span>
+                </div>
+            </div>
+            <div class="form-item cancel-margin marginTop16" v-else-if="item.code == 'tags'">
+                <label class="label">{{item.name}}</label>
+                <div class="input-box wrap">
+                    <!--添加满3个后，隐藏添加按钮-->
+                    <div class="type-item" v-for="(tag, index) of tags" :key="'tag-' + index">{{tag}}<div class="del_btn" @click="deleteTag(index)"></div></div>
+                    <div class="type-item add" @click="toAddTag">
+                        <div class="add_btn"></div>
+                        添加
+                    </div>
+                    <span class="tips" v-if="item.introduction">{{item.introduction}}</span>
+                </div>
+            </div>
+            <div v-else-if="item.code == 'activity_rating'">
+                <div class="form-item">
+                    <label class="label">{{item.name}}</label>
+                    <div class="input-box">
+                        <el-switch v-model="activity.openRating" class="examine-switch"></el-switch>
+                        <span>{{item.introduction}}</span>
+                    </div>
+                </div>
+                <div class="form-item" v-show="activity.openRating">
+                    <label class="label">评价需审核</label>
+                    <div class="input-box">
+                        <el-switch v-model="activity.ratingNeedAudit" class="examine-switch"></el-switch>
+                        <span>开启后，审核后的评价才能展示在评价列表</span>
+                    </div>
+                </div>
+            </div>
+            <!--定时发布-->
+            <template v-else-if="item.code == 'timing_release'">
+                <div class="form-item">
+                    <label class="label">{{item.name}}</label>
+                    <div class="input-box">
+                        <el-switch v-model="activity.timingRelease" class="examine-switch"></el-switch>
+                        <span class="tips" v-if="item.introduction">{{item.introduction}}</span>
+                    </div>
+                </div>
+
+                <div class="form-item" v-show="activity.timingRelease">
+                    <label class="label"></label>
+                    <div class="input-box">
+                        <el-date-picker v-model="activity.timingReleaseTimeStamp"
+                                        type="datetime"
+                                        placeholder="发布时间"
+                                        format="yyyy-MM-dd HH:mm"
+                                        value-format="timestamp"
+                                        prefix-icon="disable"
+                                        :clearable="false"
+                                        :editable="false"
+                                        :picker-options="timingReleasePickerOption">
+                        </el-date-picker>
+                        <span class="date-piker-icon" style="left: 192px;">
+                            <img src="/static/pc/assets/images/calendar.png" th:src="@{/pc/assets/images/calendar.png}">
+                        </span>
+                    </div>
+                </div>
+            </template>
+
+            <div class="form-item align-start" v-else-if="item.code == 'introduction'">
+                <label class="label">{{item.name}}</label>
+                <div class="input-box">
+                    <!-- 笔记编辑器 -->
+                    <div class="wrap ueditor">
+                        <script type="text/plain" id="container" name="content"></script>
+                    </div>
+                    <span class="tips" v-if="item.introduction">{{item.introduction}}</span>
+                </div>
+            </div>
+            <div class="form-item" v-else-if="item.type == 'text'">
+                <label class="label"><img src="/static/pc/assets/images/required.png" th:src="@{/pc/assets/images/required.png}" class="required-img" v-if="item.required">{{item.name}}</label>
+                <div class="input-box">
+                    <el-input type="text" :placeholder="'请填写' + item.introduction" v-model.trim="activityComponentValueMap[item.id].value"></el-input>
+                    <span class="tips" v-if="item.introduction">{{item.introduction}}</span>
+                </div>
+            </div>
+            <div class="form-item" v-else-if="item.type == 'radio'">
+                <label class="label"><img src="/static/pc/assets/images/required.png" th:src="@{/pc/assets/images/required.png}" class="required-img" v-if="item.required">{{item.name}}</label>
+                <div class="input-box">
+                    <el-radio v-if="item.dataOrigin == 'form'" v-for="value in item.fieldValues" v-model="activityComponentValueMap[item.id].value" :label="value" name="active-type">{{value}}</el-radio>
+                    <el-radio v-if="item.dataOrigin == 'custom'" v-for="ckItem in item.componentFields" :key="'component-field-' + ckItem.id" v-model="activityComponentValueMap[item.id].value" :label="ckItem.fieldName" name="active-type">{{ckItem.fieldName}}</el-radio>
+                </div>
+            </div>
+            <div class="form-item" v-else-if="item.type == 'checkbox'">
+                <label class="label"><img src="/static/pc/assets/images/required.png" th:src="@{/pc/assets/images/required.png}" class="required-img" v-if="item.required">{{item.name}}</label>
+                <div class="input-box">
+                    <el-checkbox-group v-model="activityComponentValueMap[item.id].value">
+                        <el-checkbox v-if="item.dataOrigin == 'custom'" v-for="ckItem in item.componentFields" :key="'component-field-' + ckItem.id" :label="ckItem.fieldName" name="active-type">
+                            {{ckItem.fieldName}}
+                        </el-checkbox>
+                        <el-checkbox v-if="item.dataOrigin == 'form'" v-for="value in item.fieldValues" :key="'component-field-' + value" :label="value" name="active-type">
+                            {{value}}
+                        </el-checkbox>
+                    </el-checkbox-group>
+                </div>
+            </div>
+        </template>
+
+        <div class="btn-box">
+            <button class="btn-main btn-width-80" @click="submitForm">保存</button>
+            <button class="btn-second-normal btn-width-80">取消</button>
+        </div>
+    </form>
+
+    <!-- 新增活动分类和自定义选项的弹出框 -->
+    <div class="dailog-box1" v-show="addEditActivityClassifyWindowShow">
+        <div class="dailog">
+            <div class="header">
+                <span>分类</span>
+                <div @click="addEditActivityClassifyWindowShow = false">
+                    <img src="/static/pc/assets/images/close.png" th:src="@{/pc/assets/images/close.png}" class="close">
+                </div>
+            </div>
+            <div class="body">
+                <el-input type="text" class="fenlei-input" v-model.trim="addEditActivityClassify.name" placeholder="请输入" maxlength="10" show-word-limit></el-input>
+            </div>
+            <div class="footer">
+                <div class="normal-btn cancle" @click="addEditActivityClassifyWindowShow = false">取消</div>
+                <div :class="{'normal-btn': true, 'before-sure': !addEditActivityClassify.name, 'after-sure': addEditActivityClassify.name}" @click="addEditActivityClassifySubmit">确定</div>
+            </div>
+        </div>
+    </div>
+    <!--新增标签弹窗-->
+    <div class="dailog-box1" v-show="addTagWindowShow">
+        <div class="dailog">
+            <div class="header">
+                <span>标签</span>
+                <div @click="addTagWindowShow = false">
+                    <img src="/static/pc/assets/images/close.png" th:src="@{/pc/assets/images/close.png}" class="close">
+                </div>
+            </div>
+            <div class="body">
+                <el-input type="text" class="fenlei-input" v-model.trim="addTag" placeholder="请输入" maxlength="6" show-word-limit></el-input>
+            </div>
+            <div class="footer">
+                <div class="normal-btn cancle" @click="addTagWindowShow = false">取消</div>
+                <div :class="{'normal-btn': true, 'before-sure': !addTag, 'after-sure': addTag}" @click="addTagSubmit">确定</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 图片库弹窗 start -->
+    <div class="dailog-box1" v-show="pictureShow">
+        <div class="dailog picture-dialog">
+            <div class="header">
+                <span>图片库</span>
+                <img src="/static/pc/assets/images/close.png" th:src="@{/pc/assets/images/close.png}" @click="pictureShow = false" class="close">
+            </div>
+            <div class="body">
+                <div class="picture-box">
+                    <!-- 选中的图片加上 current 类名-->
+                    <div :class="{'item-box': true, current: activePicIndex == index }" v-for="(cloudId, index) in pictureCloudIds" @click="activePicIndex = index">
+                        <div class="img-box">
+                            <img :src="'http://p.ananas.chaoxing.com/star3/origin/' + cloudId" alt="" class="jqthumbImg">
+                        </div>
+                        <i class="select-pic"></i>
+                    </div>
+                </div>
+            </div>
+            <div class="footer">
+                <div class="normal-btn cancle" @click="cancelPicSelect">取消</div>
+                <div class="normal-btn after-sure" @click="confirmPicSelect">确定</div>
+            </div>
+        </div>
+    </div>
+    <!-- 图片库弹窗 end -->
+
+    <!-- 删除分类弹窗 -->
+    <vue-confirm ref="deleteClassifyWindow" :message="'确认删除此分类'" :cancel="'保留'" :sure="'删除'" @callback="deleteActivityClassifySubmit"></vue-confirm>
+    <!--删除标签标签-->
+    <vue-confirm ref="deleteTagWindow" :message="'确认删除此标签'" :cancel="'保留'" :sure="'删除'" @callback="deleteTagSubmit"></vue-confirm>
+    <!-- 活动地图弹窗 -->
+    <vue-map ref="activityMap" :map-dom-id="'activity-map'" :title="'设置地点'" @callback="activityAddressSure"></vue-map>
+    <!-- 活动发布范围弹窗 -->
+    <vue-activity-participate-scope :fid="fid" ref="activityParticipateScopeWindow" @callback="updateParticipatedOrgs"></vue-activity-participate-scope>
+    <!--预览url复制容器-->
+    <input type="text" id="template-preview-url-input" v-model.trim="activity.previewUrl" style="position: absolute; top: -100px; height: 1px;">
+</div>
+<div th:replace="pc/include/common_js :: common_js(~{::script})">
+    <script src="//api.map.baidu.com/api?v=3.0&ak=aG5nWGO5m5tkVhBHGuVppoIRfKbyp5H3"></script>
+    <script src="https://noteyd.chaoxing.com/res/plugin/ueditor4thirdparty/rich.text.util.js"></script>
+    <script type="text/javascript">
+        RichTextUitl.loadEditorProfile();
+    </script>
+    <script src="/static/pc/assets/lib/zTree_v3/js/jquery.ztree.core.js" th:src="@{/pc/assets/lib/zTree_v3/js/jquery.ztree.core.js}"></script>
+    <script src="/static/pc/assets/lib/zTree_v3/js/jquery.ztree.excheck.min.js" th:src="@{/pc/assets/lib/zTree_v3/js/jquery.ztree.excheck.min.js}"></script>
+    <script src="/static/pc/assets/lib/zTree_v3/js/jquery.ztree.exedit.js" th:src="@{/pc/assets/lib/zTree_v3/js/jquery.ztree.exedit.js}"></script>
+    <script src="/static/pc/assets/lib/element-ui/lib/index.js" th:src="@{/pc/assets/lib/element-ui/lib/index.js}"></script>
+    <script src="/static/pc/assets/lib/webuploader/webuploader.js" th:src="@{/pc/assets/lib/webuploader/webuploader.js}"></script>
+    <script src="/static/pc/assets/component/map.js" th:src="@{/pc/assets/component/map.js}"></script>
+    <script src="/static/pc/assets/component/activity-participate-scope.js" th:src="@{/pc/assets/component/activity-participate-scope.js}"></script>
+    <script src="/static/pc/assets/component/confirm.js" th:src="@{/pc/assets/component/confirm.js}"></script>
+    <script src="/static/pc/assets/lib/jqthumb.min.js" th:src="@{/pc/assets/lib/jqthumb.min.js}"></script>
+    <script src="/static/pc/assets/lib/set-iframe-height-child.js" th:src="@{/pc/assets/lib/set-iframe-height-child.js}"></script>
+    <script th:inline="javascript">
+        activityVue = new Vue({
+            el: "#activity-vue",
+            data: {
+                fid: [[${session._login_user_.fid}]],
+                templateId: [[${templateId}]],
+                marketId: [[${marketId}]],
+                activity: [[${activity}]],
+                templateComponents: [[${templateComponents}]],
+                needInitEditor: false,
+                isEmbedded: activityApp.isEmbedded(),
+                tags: [],
+                activityTypes: [[${activityTypes}]],
+                activityClassifies: [[${activityClassifies}]],
+                // 文件上传
+                uploader: null,
+                // 新增修改活动分类弹窗的显示
+                addEditActivityClassifyWindowShow: false,
+                addEditActivityClassifyIndex: null,
+                addEditActivityClassify: {
+                    classifyId: null,
+                    name: ""
+                },
+                deleteActivityClassifyId: null,
+                // 标签
+                addTagWindowShow: false,
+                addTag: "",
+                deleteActivityTagIndex: "",
+                // 参与机构列表
+                participatedOrgs: [[${participatedOrgs}]],
+                activityComponentValueMap: {},
+                strict: [[${strict}]],
+                // 活动封面上传中
+                activityCoverUploading: false,
+                timingReleasePickerOption: {
+                    disabledDate: function (time) {
+                        return activityApp.isBeforeToday(time.getTime());
+                    }
+                },
+                activePicIndex: -1,
+                pictureCloudIds: [
+                    'aa5d1e5450f5b2cfa43c66f045ae0651',
+                    '2a3eed5a76cf12791cba01cbad531b52',
+                    '7195ced41ff6d2f6eed097289a940e06',
+                    'f888bdefb86b4d20921ea9348bad0296',
+                    'b08076f7034d7b0c9797911a2bf415cf',
+                    '8c4f75497953435411be2300e55232fc',
+                    '3b1a0ad40411c3c087d082899887850e',
+                    'be63693eccef0fdf98186090da101b6f',
+                    'bf9860bb0a78f9756f0090ad8747a19d',
+                    '65d6b3bb09de4624dfb788f9cb637506',
+                    '3c4b222ae3ef12bccc65ae76f082f2d7',
+                    '1b2defd466bdf6ee44a4bb5ff58f34be',
+                    'fd1e913908999e18acf9db71050e8bf2',
+                    'c14a07f03301e9996825ec3faf6b6757',
+                    '7e27cd8fdbd70b41ce5ef021517a59ad',
+                    '0e70e8ff055094b9ef16937fcb2e1137'
+                ],
+                pictureShow: false
+            },
+            created: function () {
+                var $this = this;
+                // 解决跨域
+                document.domain = "chaoxing.com";
+                var templateComponentMap = {};
+                $($this.templateComponents).each(function() {
+                    var _this = this;
+                    templateComponentMap[_this.id] = _this;
+                    if (this.code == 'introduction') {
+                        $this.needInitEditor =true
+                    }
+                });
+
+                // 修改活动
+                if ($this.activity.activityComponentValues) {
+                    $($this.activity.activityComponentValues).each(function () {
+                        var componentField = $.extend({}, this);
+                        var tplComponentItem = templateComponentMap[this.templateComponentId];
+                        if (componentField.value && tplComponentItem.type == 'checkbox') {
+                            componentField.value = componentField.value.split(',');
+                        }
+                        $this.$set($this.activityComponentValueMap, this.templateComponentId, componentField);
+                    });
+                }
+
+                $this.$set($this.activity, "timeScope", [$this.activity.startTimeStamp, $this.activity.endTimeStamp]);
+                // 标签
+                var tags = $this.activity.tags;
+                if (activityApp.isEmpty(tags)) {
+                    tags = [];
+                } else {
+                    tags = tags.split(",");
+                }
+                $this.tags = tags;
+                $($this.activityTypes).each(function (i) {
+                    if ($this.activity.activityType == this.value) {
+                        $this.$set($this.activityTypes[i], "selected", true);
+                    } else {
+                        $this.$set($this.activityTypes[i], "selected", false);
+                    }
+                });
+                var selectedActivityClassifyId = $this.activity.activityClassifyId;
+                $($this.activityClassifies).each(function (i) {
+                    if (this.id == selectedActivityClassifyId) {
+                        $this.$set($this.activityClassifies[i], "selected", true);
+                    } else {
+                        $this.$set($this.activityClassifies[i], "selected", false);
+                    }
+                });
+
+                if (activityApp.isEmpty($this.participatedOrgs)) {
+                    $this.participatedOrgs = [];
+                }
+            },
+            mounted: function () {
+                var $this = this;
+                // 初始化笔记便假期
+                if ($this.needInitEditor) {
+                    app.initUEditor($this.activity.introduction);
+                }
+                $this.initUploader();
+                $this.handleImg();
+                // $this.initWfwGroups();
+            },
+            computed: {
+                // 虚拟节点map，即非叶子节点复制本身作为其叶子节点，该叶子节点即为虚拟节点
+                virtualNodeMap: function () {
+                    var $this = this;
+                    var nodeMap = {};
+                    $($this.currWfwGroups).each(function () {
+                        if (this.id !== this.virtualId) {
+                            nodeMap[this.id] = this;
+                        }
+                    });
+                    return nodeMap;
+                }
+            },
+            methods: {
+                initWfwGroups: function () {
+                    var $this = this;
+                    var nodeSoncountMap = {}
+                    $($this.currWfwGroups).each(function () {
+                        var _this = this;
+                        _this.chkDisabled = false;
+                        var actualSoncount = 0;
+                        $($this.currWfwGroups).each(function () {
+                            if (_this.id !== this.id && _this.id === this.gid) {
+                                actualSoncount++;
+                            }
+                        });
+                        nodeSoncountMap[_this.id] = actualSoncount;
+                    });
+
+                    $($this.currWfwGroups).each(function () {
+                        // 若一个非叶子节点无自身的虚拟叶子节点，则该节点不可选中
+                        var nonLeaf = this.soncount && this.soncount !== 0;
+                        if ((nonLeaf && !$this.virtualNodeMap[this.id]) || (this.id === this.virtualId && this.soncount !== nodeSoncountMap[this.id])) {
+                            this.chkDisabled = true;
+                        }
+                    });
+                },
+                periodChange: function () {
+                    var $this = this;
+                    var period = $this.activity.period;
+                    if (activityApp.isEmpty(period)) {
+                        period = 0;
+                    } else {
+                        period = parseFloat(period).toFixed(1);
+                    }
+                    $this.$set($this.activity, "period", period);
+                },
+                creditChange: function () {
+                    var $this = this;
+                    var credit = $this.activity.credit;
+                    if (activityApp.isEmpty(credit)) {
+                        credit = 0;
+                    } else {
+                        credit = parseFloat(credit).toFixed(1);
+                    }
+                    $this.$set($this.activity, "credit", credit);
+                },
+                cancelPicSelect: function () {
+                    var $this = this;
+                    $this.pictureShow = false;
+                    $this.activePicIndex = 0;
+                },
+                confirmPicSelect: function () {
+                    var $this = this;
+                    var cloudId = $this.pictureCloudIds[$this.activePicIndex];
+                    $this.$set($this.activity, "coverUrl", "http://p.ananas.chaoxing.com/star3/origin/" + cloudId + ".jpg");
+                    $this.$set($this.activity, "coverCloudId", cloudId);
+                    $this.$nextTick(function () {
+                        $this.handleImg();
+                    });
+                    $this.cancelPicSelect();
+                },
+                handleImg: function () {
+                    $('.jqthumbImg').jqthumb({
+                        width: '100%',
+                        height: '100%'
+                    });
+                },
+                // 初始化文件上传
+                initUploader: function () {
+                    var $this = this;
+                    $this.uploader = WebUploader.create({
+                        // swf文件路径
+                        swf: ctx + "/pc/assets/lib/webuploader/Uploader.swf",
+                        // 文件接收服务端。
+                        server: ctx + "/api/upload/img",
+                        // 选择文件的按钮。可选。
+                        // 内部根据当前运行是创建，可能是input元素，也可能是flash.
+                        pick: "#cover-upload-btn",
+                        // 不压缩image, 默认如果是jpeg，文件上传前会压缩一把再上传！
+                        resize: false,
+                        auto: true,
+                        duplicate: true,
+                        // 只允许选择图片文件。
+                        accept: {
+                            title: 'Images',
+                            extensions: 'gif,jpg,jpeg,bmp,png',
+                            mimeTypes: 'image/*'
+                        }
+                    });
+                    $this.uploader.on("startUpload", function (file, response) {
+                        // 上传完成
+                        $this.activityCoverUploading = true;
+                    });
+                    $this.uploader.on("uploadSuccess", function (file, response) {
+                        if (response.success) {
+                            var data = response.data;
+                            data = activityApp.getJsonObject(data);
+                            var result = data.result;
+                            if (result == 1) {
+                                var cloudId = data.objectid;
+                                $this.$set($this.activity, "coverUrl", "");
+                                $this.$set($this.activity, "coverCloudId", cloudId);
+                                $this.$nextTick(function () {
+                                    $this.handleImg();
+                                });
+                            } else {
+                                app.showMsg("上传失败");
+                            }
+                        } else {
+                            var errorMessage = response.message;
+                            if (activityApp.isEmpty(errorMessage)) {
+                                errorMessage = "上传失败";
+                            }
+                            app.showMsg(errorMessage);
+                        }
+                    });
+                    $this.uploader.on("uploadComplete", function (file, response) {
+                        // 上传完成
+                        $this.activityCoverUploading = false;
+                    });
+                    $this.uploader.on("uploadError", function (file, reason) {
+                        app.showMsg(reason);
+                    });
+                },
+                // 修改活动类型
+                changeActivityType: function (index) {
+                    var $this = this;
+                    var activityType = $this.activityTypes[index];
+                    $this.activity.activityType = activityType.value;
+                },
+                // 显示发布范围弹窗
+                toAddParticipateScope: function () {
+                    var $this = this;
+                    $this.$refs.activityParticipateScopeWindow.showWindow($this.participatedOrgs);
+                },
+                // 更新发布范围的机构
+                updateParticipatedOrgs: function () {
+                    var $this = this;
+                    $this.participatedOrgs = $this.$refs.activityParticipateScopeWindow.selectedOrgs;
+                },
+                // 显示百度地图
+                showActivityMap: function () {
+                    var $this = this;
+                    $this.$refs.activityMap.show = true;
+                },
+                // 确定活动地址
+                activityAddressSure: function () {
+                    var $this = this;
+                    if (activityApp.isEmpty($this.$refs.activityMap.longitude) || activityApp.isEmpty($this.$refs.activityMap.dimension)) {
+                        app.showMsg("请选择地址");
+                        return;
+                    }
+                    $this.activity.address = $this.$refs.activityMap.address;
+                    $this.activity.longitude = $this.$refs.activityMap.longitude;
+                    $this.activity.dimension = $this.$refs.activityMap.dimension;
+                },
+                selectActivityClassify: function (index) {
+                    var $this = this;
+                    $($this.activityClassifies).each(function (i) {
+                        if (i == index) {
+                            $this.$set($this.activityClassifies[i], "selected", true);
+                            $this.activity.activityClassifyId = this.id;
+                        } else {
+                            $this.$set($this.activityClassifies[i], "selected", false);
+                        }
+                    });
+                },
+                toAddActivityClassify: function () {
+                    var $this = this;
+                    $this.addEditActivityClassify = $this.marketId ? {
+                        marketId: $this.marketId,
+                        name: ""
+                    } : {
+                        fid: $this.fid,
+                        name: ""
+                    };
+                    $this.addEditActivityClassifyWindowShow = true;
+                },
+                toEditActivityClassify: function (index, e) {
+                    e.stopPropagation();
+                    var $this = this;
+                    var activityClassify = $this.activityClassifies[index];
+                    $this.addEditActivityClassifyIndex = index;
+                    $this.addEditActivityClassify = $this.marketId ? {
+                        classifyId: activityClassify.id,
+                        name: activityClassify.name,
+                        marketId: $this.marketId
+                    } : {
+                        classifyId: activityClassify.id,
+                        name: activityClassify.name,
+                        fid: $this.fid,
+                    };
+                    $this.addEditActivityClassifyWindowShow = true;
+                },
+                addEditActivityClassifySubmit: function () {
+                    var $this = this;
+                    if (activityApp.isEmpty($this.addEditActivityClassify.name)) {
+                        return;
+                    }
+                    var isAdd = activityApp.isEmpty($this.addEditActivityClassify.classifyId);
+                    var tips = "新增";
+                    var orgUrl = ctx + "/api/org/" + $this.fid + "/classify/add";
+                    var marketUrl = ctx + "/api/market/" + $this.marketId + "/classify/add";
+                    if (!isAdd) {
+                        orgUrl = ctx + "/api/org/" + $this.fid + "/classify/edit";
+                        marketUrl = ctx + "/api/market/" + $this.marketId + "/classify/update";
+                        tips = "修改";
+                    }
+                    var url = $this.marketId ? marketUrl : orgUrl;
+                    var params = $this.marketId ? {
+                        classifyId: $this.addEditActivityClassify.classifyId,
+                        name: $this.addEditActivityClassify.name,
+                        marketId: $this.marketId
+                    } : {
+                        classifyId: $this.addEditActivityClassify.classifyId,
+                        name: $this.addEditActivityClassify.name,
+                        fid: $this.fid
+                    };
+                    app.ajaxPostWithLoading(url, params, function (data) {
+                        if (data.success) {
+                            var data = data.data;
+                            if (isAdd) {
+                                data.selected = false;
+                                $this.activityClassifies.push(data);
+                            } else {
+                                data.selected = this.selected;
+                                $this.activityClassifies.splice($this.addEditActivityClassifyIndex, 1, data);
+                                $this.addEditActivityClassifyIndex = null;
+                            }
+                            $this.addEditActivityClassifyWindowShow = false;
+                        } else {
+                            var errorMessage = data.message;
+                            if (activityApp.isEmpty(errorMessage)) {
+                                errorMessage = tips + "分类失败";
+                            }
+                            app.showMsg(errorMessage);
+                        }
+                    }, function () {
+                        app.showMsg(tips + "分类失败");
+                    });
+                },
+                toDeleteActivityClassify: function (index, e) {
+                    e.stopPropagation();
+                    var $this = this;
+                    var activityClassify = $this.activityClassifies[index];
+                    $this.deleteActivityClassifyId = activityClassify.id;
+                    $this.$refs.deleteClassifyWindow.show = true;
+                },
+                deleteActivityClassifySubmit: function () {
+                    var $this = this;
+                    var orgUrl = ctx + "/api/org/" + $this.fid + "/classify/" + $this.deleteActivityClassifyId + "/delete";
+                    var marketUrl = ctx + "/api/market/" + $this.marketId + "/classify/" + $this.deleteActivityClassifyId + "/delete";
+                    var url = $this.marketId ? marketUrl : orgUrl;
+                    app.ajaxPostWithLoading(url, {}, function (data) {
+                        if (data.success) {
+                            $this.$refs.deleteClassifyWindow.show = false;
+                            $($this.activityClassifies).each(function (i) {
+                                if (this.id == $this.deleteActivityClassifyId) {
+                                    if (this.selected) {
+                                        $this.activity.activityClassifyId = null;
+                                    }
+                                    $this.activityClassifies.splice(i, 1);
+                                    return false;
+                                }
+                            });
+                        } else {
+                            var errorMessage = data.errorMessage;
+                            if (activityApp.isEmpty(errorMessage)) {
+                                errorMessage = "删除分类失败";
+                            }
+                            app.showMsg(errorMessage);
+                        }
+                    }, function () {
+                        app.showMsg("删除分类失败");
+                    });
+                },
+                // 添加标签
+                toAddTag: function () {
+                    var $this = this;
+                    $this.addTagWindowShow = true;
+                },
+                addTagSubmit: function () {
+                    var $this = this;
+                    if ($this.tags.indexOf($this.addTag) > -1) {
+                        app.showMsg("标签已存在");
+                        return;
+                    }
+                    $this.tags.push($this.addTag);
+                    $this.activity.tags = $this.tags.join(",");
+                    $this.addTag = "";
+                    $this.addTagWindowShow = false;
+                },
+                deleteTag: function (index) {
+                    var $this = this;
+                    $this.deleteTagIndex = index;
+                    $this.$refs.deleteTagWindow.show = true;
+                },
+                deleteTagSubmit: function () {
+                    var $this = this;
+                    $this.tags.splice($this.deleteTagIndex, 1);
+                    $this.activity.tags = $this.tags.join(",");
+                    $this.$refs.deleteTagWindow.show = false;
+                },
+                submitForm: function () {
+                    var $this = this;
+                    if (!$this.validateForm()) {
+                        return;
+                    }
+                    if ($this.activityCoverUploading) {
+                        app.showMsg("正在上传封面");
+                        return;
+                    }
+                    var url = ctx + "/api/activity/setting/basic-info";
+                    $this.activity.activityComponentValues = [];
+                    $.each($this.activityComponentValueMap, function (key, item) {
+                        item.value = item.value && item.value instanceof Array ? item.value.join(',') : item.value;
+                        $this.activity.activityComponentValues.push(item);
+                    });
+                    $this.activity.introduction = app.getUEditorContent();
+                    var params = {
+                        activityJsonStr: activityApp.getJsonStr($this.activity),
+                        participateScopeJsonStr: activityApp.getJsonStr($this.participatedOrgs),
+                    };
+                    app.ajaxPostWithLoading(url, params, function (data) {
+                        if (data.success) {
+                            app.noticeActivityChange($this.activity.id);
+                            app.showMsg("修改成功", function () {
+                                $this.returnBack();
+                            });
+                        } else {
+                            var errorMessage = data.message;
+                            if (activityApp.isEmpty(errorMessage)) {
+                                errorMessage = "修改失败";
+                            }
+                            app.showMsg(errorMessage);
+                        }
+                    }, function () {
+                        app.showMsg("修改失败");
+                    });
+                },
+                // 验证输入
+                validateForm: function () {
+                    var $this = this;
+                    if (activityApp.isEmpty($this.activity.name)) {
+                        app.showMsg("活动名称不能为空");
+                        return false;
+                    }
+                    if (activityApp.isEmpty($this.activity.startTimeStamp)) {
+                        app.showMsg("活动开始时间不能为空");
+                        return false;
+                    }
+                    if (activityApp.isEmpty($this.activity.endTimeStamp)) {
+                        app.showMsg("活动结束时间不能为空");
+                        return false;
+                    }
+                    if (activityApp.isEmpty($this.activity.coverCloudId)) {
+                        app.showMsg("请上传封面");
+                        return false;
+                    }
+                    if (activityApp.isEmpty($this.activity.activityClassifyId)) {
+                        app.showMsg("分类不能为空");
+                        return false;
+                    }
+                    // 发布范围  todo 暂时屏蔽
+                    // if ($this.isShowActivityParticipateScope() && (activityApp.isEmpty($this.participatedOrgs) || $this.participatedOrgs.length < 1)) {
+                    //     app.showMsg("请选择发布范围");
+                    //     return false;
+                    // }
+                    // 定时发布
+                    if ($this.activity.timingRelease && activityApp.isEmpty($this.activity.timingReleaseTimeStamp)) {
+                        app.showMsg("请选择发布时间");
+                        return false;
+                    }
+                    if (activityApp.isEmpty($this.activity.webTemplateId)) {
+                        app.showMsg("请选择活动展示页");
+                        return false;
+                    }
+                    return true;
+                },
+                returnBack: function () {
+                    var $this = this;
+                    if ($this.isEmbedded) {
+                        window.history.back();
+                    } else {
+                        window.close();
+                    }
+                },
+                // 选中活动的日期范围
+                selectActivityTime: function (obj) {
+                    var $this = this;
+                    $this.activity.startTimeStamp = obj[0];
+                    $this.activity.endTimeStamp = obj[1];
+                },
+            }
+        });
+
+    </script>
+</div>
+<div th:replace="pc/include/note_editor :: note_editor"></div>
+</body>
+</html>

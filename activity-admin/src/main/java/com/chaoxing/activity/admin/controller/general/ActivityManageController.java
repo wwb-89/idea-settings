@@ -109,7 +109,7 @@ public class ActivityManageController {
 	 * @return java.lang.String
 	 */
 	@GetMapping("{activityId}/edit")
-	public String edit(Model model, @PathVariable Integer activityId, HttpServletRequest request, Integer step, @RequestParam(defaultValue = "0") Integer strict) {
+	public String edit(Model model, @PathVariable Integer activityId, HttpServletRequest request, @RequestParam(defaultValue = "0") Integer strict) {
 		LoginUserDTO loginUser = LoginUtils.getLoginUser(request);
 		Activity activity = activityValidationService.manageAble(activityId, loginUser.getUid());
 		ActivityCreateParamDTO createParamDTO = activityQueryService.packageActivityCreateParamByActivity(activity);
@@ -143,7 +143,6 @@ public class ActivityManageController {
 			webTemplates = webTemplateService.listAvailable(loginUser.getFid(), activity.getActivityFlag());
 		}
 		model.addAttribute("webTemplates", webTemplates);
-		model.addAttribute("step", step);
 		// 活动发布范围
 		List<WfwAreaDTO> wfwRegionalArchitectures = activityScopeQueryService.listByActivityId(activityId);
 		model.addAttribute("participatedOrgs", wfwRegionalArchitectures);

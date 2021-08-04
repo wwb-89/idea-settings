@@ -342,14 +342,13 @@ public class ActivityApiController {
 	* @Description
 	* @author huxiaolong
 	* @Date 2021-08-02 14:36:23
-	* @param fid
-	* @param marketId
+	* @param statSummaryQueryItem
 	* @return
 	*/
 	@RequestMapping("stat/summary")
-	public RestRespDTO pageActivityStatResult(HttpServletRequest request, Integer fid, Integer marketId) {
+	public RestRespDTO pageActivityStatResult(HttpServletRequest request, ActivityStatSummaryQueryDTO statSummaryQueryItem) {
 		Page page = HttpServletRequestUtils.buid(request);
-		page = activityStatSummaryQueryService.activityStatSummaryPage(page, ActivityStatSummaryQueryDTO.builder().fid(fid).marketId(marketId).build());
+		page = activityStatSummaryQueryService.activityStatSummaryPage(page, statSummaryQueryItem);
 
 		List<ActivityStatSummaryDTO> records = page.getRecords();
 		List<ActivityStatSummaryVO> activityStatSummaryVOList = Lists.newArrayList();

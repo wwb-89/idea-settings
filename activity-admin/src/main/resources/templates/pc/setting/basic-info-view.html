@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org/">
+
+<head>
+    <meta charset="UTF-8">
+    <title>基本信息</title>
+    <link rel="stylesheet" href="/static/pc/assets/lib/layui/css/layui.css" th:href="@{/pc/assets/lib/layui/css/layui.css}">
+    <link rel="stylesheet" href="/static/pc/assets/lib/element-ui/lib/theme-chalk/index.css" th:href="@{/pc/assets/lib/element-ui/lib/theme-chalk/index.css}">
+    <link rel="stylesheet" href="/static/pc/assets/icomoon/style.css" th:href="@{/pc/assets/icomoon/style.css}">
+    <link rel="stylesheet" href="/static/pc/assets/css/common.css" th:href="@{/pc/assets/css/common.css}">
+    <link rel="stylesheet" href="/static/pc/assets/css/set.css" th:href="@{/pc/assets/css/set.css}">
+</head>
+
+<body>
+    <div id="basicInfoVue" v-cloak>
+        <el-form class="basic-show" ref="form" label-width="74px">
+            <template v-for="item in templateComponents">
+                <template v-if="item.code == 'activity_type'">
+                    <el-form-item :label="item.name">
+                        <div class="txt">{{activity.activityType == "offline" ? "线下" : "线上"}}</div>
+                    </el-form-item>
+                    <el-form-item v-show="activity.activityType == 'offline'" label="位置">
+                        <div class="txt">{{activity.address || ""}}{{activity.detailAddress || ""}}</div>
+                    </el-form-item>
+                </template>
+                <el-form-item v-else-if="item.code == 'introduction'" :label="item.name">
+                    <div class="input-box">
+                        <!-- 笔记编辑器 -->
+                        <div class="wrap ueditor">
+                            <script type="text/plain" id="container" name="content"></script>
+                        </div>
+                    </div>
+                </el-form-item>
+                <el-form-item v-else-if="['work', 'activity_rating'].indexOf(item.code) == -1 " :label="item.name">
+                    <div class="img-box js-crop-img" v-if="item.code == 'activity_cover'">
+                        <img :src="activity | getCloudImgUrl" class="cover-img jqthumbImg" height="100%">
+                    </div>
+                    <div class="txt" v-else>
+                        <template v-if="item.code == 'activity_name'">
+                            {{activity.name}}
+                        </template>
+                        <template v-else-if="item.code == 'activity_time_scope'">
+                            {{activity.startTimeStamp | timestampScopeFormat(activity.endTimeStamp)}}
+                        </template>
+                        <template v-else-if="item.code == 'activity_organisers'">
+                            {{activity.organisers}}
+                        </template>
+                        <template v-else-if="item.code == 'activity_type'">
+                            {{activity.activityType}}
+                        </template>
+                        <template v-else-if="item.code == 'activity_classify'">
+                            {{activity.activityClassifyName}}
+                        </template>
+                        <template v-else-if="item.code == 'integral'">
+                            {{activity.integral}}
+                        </template>
+                        <template v-else-if="item.code == 'period'">
+                            {{activity.period}}
+                        </template>
+                        <template v-else-if="item.code == 'credit'">
+                            {{activity.credit}}
+                        </template>
+                        <template v-else-if="item.code == 'max_participate_time_length'">
+                            {{activity.timeLengthUpperLimit}}
+                        </template>
+                        <template v-else-if="item.code == 'activity_release_scope'">
+                            {{participateScopes}}
+                        </template>
+                        <template v-else-if="item.code == 'tags'">
+                            {{activity.tags}}
+                        </template>
+                        <template v-else-if="item.code == 'timing_release'">
+                            {{activity.timingReleaseTimeStamp | timestampFormat}}
+                        </template>
+                        <template v-else-if="item.type == 'text' || item.type == 'checkbox' || item.type == 'radio'">
+                            {{activityComponentValueMap[item.id] && activityComponentValueMap[item.id].value}}
+                        </template>
+                    </div>
+                </el-form-item>
+            </template>
+            <el-form-item label="页面配置">
+                <div class="txt">
+                    <p class="width498 overHidden1">{{activity.previewUrl}}</p>
+                    <button class="btn-second-small" @click="configPage">页面配置</button>
+                </div>
+            </el-form-item>
+            <button class="btn-main btn-width-80 edit-btn">编辑</button>
+        </el-form>
+
+    </div>
+    <div th:replace="pc/include/common_js :: common_js(~{::script})">
+        <!--引入js-->
+        <script type="text/javascript" src="https://api.map.baidu.com/api?v=3.0&ak=aG5nWGO5m5tkVhBHGuVppoIRfKbyp5H3">
+        </script>
+        <script src="/static/pc/assets/lib/layui/layui.js" th:src="@{/pc/assets/lib/layui/layui.js}"></script>
+        <script src="/static/pc/assets/lib/element-ui/lib/index.js" th:src="@{/pc/assets/lib/element-ui/lib/index.js}"></script>
+        <script src="/static/pc/assets/lib/jquery.nicescroll.min.js" th:src="@{/pc/assets/lib/jquery.nicescroll.min.js}"></script>
+        <script src="/static/pc/assets/lib/jqthumb.min.js" th:src="@{/pc/assets/lib/jqthumb.min.js}"></script>
+        <script src="/static/pc/assets/js/create-active.js" th:src="@{/pc/assets/js/create-active.js}"></script>
+        <script src="/static/pc/assets/js/main.js" th:src="@{/pc/assets/js/main.js}"></script>
+        <script src="/static/pc/assets/js/common.js" th:src="@{/pc/assets/js/common.js}"></script>
+        <!-- 笔记编辑器 -->
+        <script src="https://noteyd.chaoxing.com/res/plugin/ueditor4thirdparty/rich.text.util.js"></script>
+        <script type="text/javascript">
+            RichTextUitl.loadEditorProfile();
+        </script>
+        <script th:inline="javascript">
+            var vm = new Vue({
+                el: '#basicInfoVue',
+                data: function () {
+                    return {
+                        activity: [[${activity}]],
+                        templateComponents: [[${templateComponents}]],
+                        participateScopes: [[${participateScopes}]],
+                        activityComponentValueMap: {},
+                        needInitEditor: false,
+                        showMore:true
+                    }
+                },
+                created: function () {
+                    var $this = this;
+                    var templateComponentMap = {};
+                    $($this.templateComponents).each(function() {
+                        templateComponentMap[this.id] = this;
+                        if (this.code == 'introduction') {
+                            $this.needInitEditor =true
+                        }
+                    });
+                    if ($this.activity.activityComponentValues) {
+                        $($this.activity.activityComponentValues).each(function () {
+                            var componentField = $.extend({}, this);
+                            $this.$set($this.activityComponentValueMap, this.templateComponentId, componentField);
+                        });
+                    }
+
+                },
+                mounted: function () {
+                    var $this = this;
+                    // 初始化笔记编辑器
+                    if ($this.needInitEditor) {
+                        app.initUEditor($this.activity.introduction);
+                    }
+                },
+                methods: {
+                    //    展开更多
+                    showMoreFun:function (){
+                        this.showMore = !this.showMore;
+                    },
+                    // 配置页面
+                    configPage: function () {
+                        var $this = this;
+                        window.open($this.activity.editUrl);
+                    },
+                }
+            });
+        </script>
+    </div>
+
+
+
+</body>
+
+
+</html>

@@ -175,7 +175,7 @@
                     <div class="form-item" v-else-if="item.code == 'integral'">
                         <label class="label"><img src="/static/pc/assets/images/required.png" th:src="@{/pc/assets/images/required.png}" class="required-img" v-if="item.required">{{item.name}}</label>
                         <div class="input-box setForm">
-                            <input type="number" v-model.trim="activity.integralValue" min="0" placeholder="请输入" class="score-input">
+                            <input type="number" v-model.trim="activity.integral" min="0" placeholder="请输入" class="score-input">
                             <span class="score">分</span>
                             <span class="tips" v-if="item.introduction">{{item.introduction}}</span>
                         </div>
@@ -717,8 +717,6 @@
                 areaCode: [[${areaCode}]],
                 activityTypes: [[${activityTypes}]],
                 activityClassifies: [[${activityClassifies}]],
-                // 组织架构类型
-                groupType: [[${groupType}]],
                 currGroupType: 'wfw',
                 // 文件上传
                 uploader: null,
@@ -1504,8 +1502,6 @@
                                     return false;
                                 }
                             }
-                            // 取消报名设置
-                            signUp.endAllowCancel = !signUp.endNotAllowCancel;
                             if (activityApp.isEmpty(signUp.btnName)) {
                                 app.showMsg(signUp.name + "按钮名称不能为空");
                                 return false;
@@ -1570,9 +1566,9 @@
                     $.each(signUpMap, function (key, item) {
                         // 新增，且未开启报名，则不提交
                         if ((!item.id && !item.deleted) || item.id) {
+                            // 取消报名设置
+                            item.endAllowCancel = !item.endNotAllowCancel;
                             waitSubmitSignUps.push(item);
-                        }
-                        if (item.id) {
                         }
                     });
                     $.each(signInMap, function (key, item) {

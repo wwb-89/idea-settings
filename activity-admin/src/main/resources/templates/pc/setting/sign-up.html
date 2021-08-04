@@ -1,0 +1,572 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org/">
+
+<head>
+    <meta charset="UTF-8">
+    <title>报名设置</title>
+    <link rel="stylesheet" href="/static/pc/assets/lib/layui/css/layui.css" th:href="@{/pc/assets/lib/layui/css/layui.css}">
+    <link rel="stylesheet" href="/static/pc/assets/lib/element-ui/lib/theme-chalk/index.css" th:href="@{/pc/assets/lib/element-ui/lib/theme-chalk/index.css}">
+    <link rel="stylesheet" href="/static/pc/assets/lib/zTree_v3/css/zTreeStyle/zTreeStyle.css" th:href="@{/pc/assets/lib/zTree_v3/css/zTreeStyle/zTreeStyle.css}">
+    <link rel="stylesheet" href="/static/pc/assets/lib/webuploader/webuploader.css" th:href="@{/pc/assets/lib/webuploader/webuploader.css}">
+    <link rel="stylesheet" href="/static/pc/assets/icomoon/style.css" th:href="@{/pc/assets/icomoon/style.css}">
+    <link rel="stylesheet" href="/static/pc/assets/css/reset.css" th:href="@{/pc/assets/css/reset.css}">
+    <link rel="stylesheet" href="/static/pc/assets/css/public.css" th:href="@{/pc/assets/css/public.css}">
+    <link rel="stylesheet" href="/static/pc/assets/css/common.css" th:href="@{/pc/assets/css/common.css}">
+    <link rel="stylesheet" href="/static/pc/assets/css/set.css" th:href="@{/pc/assets/css/set.css}">
+</head>
+<body>
+    <div id="signUpVue" v-cloak>
+        <el-form class="basic-set" ref="form" v-for="(item, index) in templateComponents">
+            <div class="form-item">
+                <label class="label">在线报名</label>
+                <div class="input-box">
+                    <div class="set-box">
+                        <el-switch v-model="signUpMap[item.id].enable" class="section-switch" @change="signUpEnableChanged(item.id)"></el-switch>
+                        <span class="tips">{{item.introduction}}</span>
+                    </div>
+                </div>
+            </div>
+            <template v-for="(it, idx) in item.children">
+                <div class="form-item" v-if="it.code == 'sign_up_time_scope'">
+                    <label class="label cover"><img src="/static/pc/assets/images/required.png" th:src="@{/pc/assets/images/required.png}" class="required-img" v-if="it.required">{{it.name}}</label>
+                    <div class="input-box">
+                        <el-date-picker v-model="signUpMap[item.id] && signUpMap[item.id].timeScope"
+                                        type="datetimerange"
+                                        format="yyyy-MM-dd HH:mm"
+                                        value-format="timestamp"
+                                        :clearable="false"
+                                        :editable="false"
+                                        unlink-panels
+                                        prefix-icon="disable"
+                                        start-placeholder="开始时间"
+                                        end-placeholder="结束时间"
+                                        :default-time="['00:00:00', '23:59:59']"
+                                        @input="selectSignUpTime(item.id, $event)">
+                            <img style="margin: 0 8px;" slot="range-separator" src="/static/pc/assets/images/swap-right.png" th:src="@{/pc/assets/images/swap-right.png}">
+                        </el-date-picker>
+                        <span class="date-piker-icon">
+                        <img src="/static/pc/assets/images/time.png" th:src="@{/pc/assets/images/time.png}">
+                    </span>
+                        <span class="tips" v-if="it.introduction">{{it.introduction}}</span>
+                    </div>
+                </div>
+                <!-- wfw参与范围 -->
+                <div class="form-item flexStart" v-else-if="it.code == 'wfw_participation_scope'">
+                    <label class="label"><img src="/static/pc/assets/images/required.png" th:src="@{/pc/assets/images/required.png}" class="required-img" v-if="it.required">{{it.name}}</label>
+                    <div class="input-box" style="display: block">
+                        <div :class="{'autoRange': (!signUpMap[item.id].enableWfwParticipateScope)}">
+                            <el-radio v-model="signUpMap[item.id].enableWfwParticipateScope" :label="false" name="active-type">不限</el-radio>
+                            <el-radio v-model="signUpMap[item.id].enableWfwParticipateScope" :label="true" name="active-type">自定义</el-radio>
+                        </div>
+                        <div class="join-select" v-show="signUpMap[item.id].enableWfwParticipateScope">
+                            <img src="/static/pc/assets/images/add-circle.png" th:src="@{/pc/assets/images/add-circle.png}" class="add-range" @click="toAddSignUpParticipateScope(item.id, it)">
+                            <span v-if="signUpMap[item.id].wfwParticipateScopes.length <= 0">请选择</span>
+                            <div class="add-tags" v-else>
+                                <span v-for="(scope, scopeIndex) of signUpMap[item.id].wfwParticipateScopes">{{scope.externalName}}<i class="del_btn" @click="deleteSignUpParticipateScope(item.id, it, scopeIndex)"></i></span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- contacts参与范围 -->
+                <div class="form-item flexStart" v-else-if="it.code == 'contacts_participation_scope'">
+                    <label class="label"><img src="/static/pc/assets/images/required.png" th:src="@{/pc/assets/images/required.png}" class="required-img" v-if="it.required">{{it.name}}</label>
+                    <div class="input-box" style="display: block">
+                        <div :class="{'autoRange': (!signUpMap[item.id].enableContactsParticipateScope)}">
+                            <el-radio v-model="signUpMap[item.id].enableContactsParticipateScope" :label="false" name="active-type">不限</el-radio>
+                            <el-radio v-model="signUpMap[item.id].enableContactsParticipateScope" :label="true" name="active-type">自定义</el-radio>
+                        </div>
+                        <div class="join-select" v-show="signUpMap[item.id].enableContactsParticipateScope">
+                            <img src="/static/pc/assets/images/add-circle.png" th:src="@{/pc/assets/images/add-circle.png}" class="add-range" @click="toAddSignUpParticipateScope(item.id, it)">
+                            <span v-if="signUpMap[item.id].contactsParticipateScopes.length <= 0">请选择</span>
+                            <div class="add-tags" v-else>
+                                <span v-for="(scope, scopeIndex) of signUpMap[item.id].contactsParticipateScopes">{{scope.externalName}}<i class="del_btn" @click="deleteSignUpParticipateScope(item.id, it, scopeIndex)"></i></span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="form-item" v-else-if="it.code == 'sign_up_person_limit'">
+                    <label class="label"><img src="/static/pc/assets/images/required.png" th:src="@{/pc/assets/images/required.png}" class="required-img" v-if="it.required">{{it.name}}</label>
+                    <div class="input-box">
+                        <div class="select-person-radio">
+                            <el-radio v-model="signUpMap[item.id].limitPerson" :label="false" name="active-type">不限</el-radio>
+                            <el-radio v-model="signUpMap[item.id].limitPerson" :label="true" name="active-type">自定义</el-radio>
+                        </div>
+                        <span class="tips" v-if="it.introduction">{{it.introduction}}</span>
+                        <input v-show="signUpMap[item.id].limitPerson" v-model="signUpMap[item.id].personLimit" type="number" min="1" step="1" maxlength="10" placeholder="请输入正整数" class="person"><span class="person-span" v-show="signUpMap[item.id].limitPerson">人</span>
+                    </div>
+                </div>
+                <div class="form-item align-start" v-else-if="it.code == 'sign_up_fill_info'">
+                    <label class="label" style="line-height: 20px;"><img src="/static/pc/assets/images/required.png" th:src="@{/pc/assets/images/required.png}" class="required-img" v-if="it.required">{{it.name}}</label>
+                    <div class="input-box column">
+                        <div class="set-box">
+                            <el-switch v-model="signUpMap[item.id].fillInfo"></el-switch>
+                            <span class="tips" v-if="it.introduction">{{it.introduction}}</span>
+                        </div>
+                        <div class="set-box configurationForm" v-show="signUpMap[item.id].fillInfo" @click="toConfigForm(item.id)">
+                            <img src="/static/pc/assets/images/setting.png" th:src="@{/pc/assets/images/setting.png}">
+                            <span class="tips set-information">配置填报信息</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="form-item" v-else-if="it.code == 'sign_up_review'">
+                    <label class="label"><img src="/static/pc/assets/images/required.png" th:src="@{/pc/assets/images/required.png}" class="required-img" v-if="it.required">{{it.name}}</label>
+                    <div class="input-box">
+                        <div class="set-box">
+                            <el-switch v-model="signUpMap[item.id].openAudit"></el-switch>
+                            <span class="tips" v-if="it.introduction">{{it.introduction}}</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="form-item" v-else-if="it.code == 'sign_up_public_list'">
+                    <label class="label"><img src="/static/pc/assets/images/required.png" th:src="@{/pc/assets/images/required.png}" class="required-img" v-if="it.required">{{it.name}}</label>
+                    <div class="input-box">
+                        <div class="set-box">
+                            <el-switch v-model="signUpMap[item.id].publicList"></el-switch>
+                            <span class="tips" v-if="it.introduction">{{it.introduction}}</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="form-item" v-else-if="it.code == 'sign_up_cancel_signed_up'">
+                    <label class="label"><img src="/static/pc/assets/images/required.png" th:src="@{/pc/assets/images/required.png}" class="required-img" v-if="it.required">{{it.name}}</label>
+                    <div class="input-box">
+                        <div class="set-box">
+                            <el-switch v-model="signUpMap[item.id].endNotAllowCancel"></el-switch>
+                            <span class="tips" v-if="it.introduction">{{it.introduction}}</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="form-item" v-else-if="it.code == 'sign_up_condition'">
+                    <label class="label"><img src="/static/pc/assets/images/required.png" th:src="@{/pc/assets/images/required.png}" class="required-img" v-if="it.required">{{it.name}}</label>
+                    <div class="input-box">
+                        <div class="set-box">
+                            <el-switch v-model="signUpConditionActiveMap[it.id]"></el-switch>
+                            <span class="tips" v-if="it.introduction">{{it.introduction}}</span>
+                        </div>
+                    </div>
+                </div>
+            </template>
+
+            <div class="btn-box">
+                <button class="btn-main btn-width-80" @click="submitForm">保存</button>
+                <button class="btn-second-normal btn-width-80">取消</button>
+            </div>
+        </el-form>
+
+        <!-- 报名参与范围弹窗 -->
+        <div class="dailog-box1" v-show="signUpParticipateWindowShow">
+            <div class="dailog">
+                <div class="header">
+                    <span>参与范围</span>
+                    <img src="/static/pc/assets/images/close.png" th:src="@{/pc/assets/images/close.png}" @click="cancelSignUpParticipateScope" class="close">
+                </div>
+                <div class="body">
+                    <div class="tree">
+                        <div class="tree-head">
+                            <span>选择参与的范围</span>
+                        </div>
+                        <div class="tree-box">
+                            <div id="sign-up-participate-scope-tree" class="ztree"></div>
+                        </div>
+                    </div>
+                </div>
+                <div class="footer">
+                    <div class="normal-btn cancle" @click="cancelSignUpParticipateScope">取消</div>
+                    <div class="normal-btn after-sure" @click="sureSignUpParticipateScope">发布</div>
+                </div>
+            </div>
+        </div>
+
+
+        <!-- 警告类弹框 -->
+        <el-dialog
+                :visible.sync="DialogVisible"
+                :show-close=false
+                :center=true
+                width="304px"
+                class="warnDialog">
+            <div class="warn"><img src="/static/pc/assets/images/warning.png" th:src="@{/pc/assets/images/warning.png}" alt=""></div>
+            <p class="center-txt">还有编辑内容未保存，确定离开吗？</p>
+            <span slot="footer" class="dialog-footer center-footer">
+            <el-button class="btn-second-normal btn-width-80" @click="DialogVisible = false">继续编辑</el-button>
+            <el-button class="btn-main"  @click="DialogVisible = false">离开</el-button>
+          </span>
+        </el-dialog>
+    </div>
+    <div th:replace="pc/include/common_js :: common_js(~{::script})">
+        <script src="/static/pc/assets/lib/layui/layui.js" th:src="@{/pc/assets/lib/layui/layui.js}"></script>
+        <script src="/static/pc/assets/lib/element-ui/lib/index.js" th:src="@{/pc/assets/lib/element-ui/lib/index.js}"></script>
+        <script src="/static/pc/assets/lib/jquery.nicescroll.min.js" th:src="@{/pc/assets/lib/jquery.nicescroll.min.js}"></script>
+        <script src="/static/pc/assets/lib/jqthumb.js" th:src="@{/pc/assets/lib/jqthumb.js}"></script>
+        <script src="/static/pc/assets/js/common.js" th:src="@{/pc/assets/js/common.js}"></script>
+        <script src="/static/pc/assets/js/create-active.js" th:src="@{/pc/assets/js/create-active.js}"></script>
+        <script src="/static/pc/assets/js/main.js" th:src="@{/pc/assets/js/main.js}"></script>
+        <script src="/static/pc/assets/lib/zTree_v3/js/jquery.ztree.core.js" th:src="@{/pc/assets/lib/zTree_v3/js/jquery.ztree.core.js}"></script>
+        <script src="/static/pc/assets/lib/zTree_v3/js/jquery.ztree.excheck.js" th:src="@{/pc/assets/lib/zTree_v3/js/jquery.ztree.excheck.js}"></script>
+        <script src="/static/pc/assets/lib/zTree_v3/js/jquery.ztree.exedit.js" th:src="@{/pc/assets/lib/zTree_v3/js/jquery.ztree.exedit.js}"></script>
+        <script type="text/javascript" src="/static/pc/assets/lib/webuploader/webuploader.min.js" th:src="@{/pc/assets/lib/webuploader/webuploader.min.js}"></script>
+        <script th:inline="javascript">
+            var vm = new Vue({
+                el: '#signUpVue',
+                data: function () {
+                    return {
+                        activity: [[${activity}]],
+                        sign: [[${sign}]],
+                        templateComponents: [[${templateComponents}]],
+                        templateComponentMap: {},
+
+                        // 报名: { originId: signUp }
+                        signUpMap: {},
+                        // 报名条件
+                        signUpConditionActiveMap: {},
+                        // 报名参与范围
+                        signUpParticipateWindowShow: false,
+                        wfwGroups: [[${wfwGroups}]],
+                        contactGroups: [[${contactGroups}]],
+                        currWfwGroups: [],
+                        signUpParticipateScopeTreeObj: null,
+                        // 当前操作的对象
+                        operateSignUpOriginId: -1,
+                        // 当前选择的参与范围类型
+                        currGroupType: '',
+                        DialogVisible:false,
+                    }
+                },
+                created: function () {
+                    var $this = this;
+                    // 解决跨域
+                    document.domain = "chaoxing.com";
+                    var templateComponentMap = {}, signUpTplComponentIds = [];
+                    $($this.templateComponents).each(function() {
+                        var _this = this;
+                        templateComponentMap[_this.id] = _this;
+                        signUpTplComponentIds.push(_this.id);
+
+                        if (_this.children && _this.children.length > 0) {
+                            $(_this.children).each(function () {
+                                if (this.code == 'sign_up_condition') {
+                                    $this.$set($this.signUpConditionActiveMap, this.id, false);
+                                }
+                                templateComponentMap[this.id] = this;
+                            });
+                        }
+                    });
+
+                    if ($this.activity.sucTemplateComponentIds) {
+                        var sucTemplateComponentIds = $this.activity.sucTemplateComponentIds;
+                        for (var i = 0; i < sucTemplateComponentIds.length; i++) {
+                            var tplComponentId = sucTemplateComponentIds[i];
+                            $this.$set($this.signUpConditionActiveMap, tplComponentId, true);
+                        }
+                    }
+
+                    // 报名
+                    $($this.sign.signUps).each(function (i) {
+                        if (!activityApp.isEmpty(this.id)) {
+                            if (this.wfwParticipateScopes) {
+                                $(this.wfwParticipateScopes).each(function () {
+                                    if (this.leaf && $this.virtualNodeMap[this.externalId]) {
+                                        this.virtualId = $this.virtualNodeMap[this.externalId].virtualId;
+                                    } else {
+                                        this.virtualId = this.externalId;
+                                    }
+                                });
+                            }
+                            if (this.contactsParticipateScopes) {
+                                $(this.contactsParticipateScopes).each(function () {
+                                    if (this.leaf && $this.virtualNodeMap[this.externalId]) {
+                                        this.virtualId = $this.virtualNodeMap[this.externalId].virtualId;
+                                    } else {
+                                        this.virtualId = this.externalId;
+                                    }
+                                });
+                            }
+                        }
+                        $this.$set($this.sign.signUps[i], "endNotAllowCancel", !this.endAllowCancel);
+                        $this.$set($this.sign.signUps[i], "enable", !this.deleted);
+
+                        if (!activityApp.isEmpty($this.sign.signUps[i].startTime)) {
+                            // 若报名签到非不限制
+                            $this.$set($this.sign.signUps[i], "timeScope", [this.startTime, this.endTime]);
+                        }
+                        var tplComponentId = $this.sign.signUps[i].originId;
+                        $this.$set($this.signUpMap, tplComponentId, $this.sign.signUps[i]);
+                    });
+
+                    $(signUpTplComponentIds).each(function (i) {
+                        var originId = signUpTplComponentIds[i];
+                        if (!$this.signUpMap[originId]) {
+                            var signUp = signApp.newSignUp(templateComponentMap[originId]);
+                            signUp.originId = originId;
+                            signUp.deleted = true;
+                            signUp.enable = !signUp.deleted;
+                            $this.$set(signUp, "timeScope", [signUp.startTime, signUp.endTime]);
+                            $this.$set($this.signUpMap, originId, signUp);
+                        }
+                    });
+                },
+                mounted: function () {
+
+                },
+                computed: {
+                    // 虚拟节点map，即非叶子节点复制本身作为其叶子节点，该叶子节点即为虚拟节点
+                    virtualNodeMap: function () {
+                        var $this = this;
+                        var nodeMap = {};
+                        $($this.currWfwGroups).each(function () {
+                            if (this.id !== this.virtualId) {
+                                nodeMap[this.id] = this;
+                            }
+                        });
+                        return nodeMap;
+                    }
+                },
+                methods: {
+                    initWfwGroups: function () {
+                        var $this = this;
+                        var nodeSoncountMap = {}
+                        $($this.currWfwGroups).each(function () {
+                            var _this = this;
+                            _this.chkDisabled = false;
+                            var actualSoncount = 0;
+                            $($this.currWfwGroups).each(function () {
+                                if (_this.id !== this.id && _this.id === this.gid) {
+                                    actualSoncount++;
+                                }
+                            });
+                            nodeSoncountMap[_this.id] = actualSoncount;
+                        });
+
+                        $($this.currWfwGroups).each(function () {
+                            // 若一个非叶子节点无自身的虚拟叶子节点，则该节点不可选中
+                            var nonLeaf = this.soncount && this.soncount !== 0;
+                            if ((nonLeaf && !$this.virtualNodeMap[this.id]) || (this.id === this.virtualId && this.soncount !== nodeSoncountMap[this.id])) {
+                                this.chkDisabled = true;
+                            }
+                        });
+                    },
+                    signUpEnableChanged: function (tplComponentId) {
+                        var $this = this;
+                        $this.$set($this.signUpMap[tplComponentId], "deleted", !$this.signUpMap[tplComponentId].enable);
+                    },
+                    packageSignUpConditionEnable: function () {
+                        var $this = this;
+                        var keys = Object.keys($this.signUpConditionActiveMap);
+                        if (keys.length == 0) {
+                            return null;
+                        }
+                        var sucTemplateComponentIds = [];
+                        for (var i = 0; i < keys.length; i++) {
+                            var tplComponentId = keys[i];
+                            if ($this.signUpConditionActiveMap[tplComponentId]) {
+                                sucTemplateComponentIds.push(tplComponentId)
+                            }
+                        }
+                        return sucTemplateComponentIds;
+                    },
+                    packageSubmitSign: function () {
+                        var $this = this;
+                        var waitSubmitSignUps = [];
+                        var signUpMap = $.extend({}, $this.signUpMap);
+                        $.each(signUpMap, function (key, item) {
+                            // 新增，且未开启报名，则不提交
+                            if ((!item.id && !item.deleted) || item.id) {
+                                item.endAllowCancel = !item.endNotAllowCancel;
+                                waitSubmitSignUps.push(item);
+                            }
+                        });
+                        return $.extend({}, $this.sign, { signUps: waitSubmitSignUps });
+                    },
+                    // 选中报名的时间范围
+                    selectSignUpTime: function (tplComponentId, obj) {
+                        var $this = this;
+                        $this.$set($this.signUpMap[tplComponentId], "startTime", obj[0]);
+                        $this.$set($this.signUpMap[tplComponentId], "endTime", obj[1]);
+                    },
+                    // 表单
+                    toConfigForm: function (tplComponentId) {
+                        var $this = this;
+                        $this.operateSignUpOriginId = tplComponentId;
+                        var signUp = $this.signUpMap[tplComponentId];
+                        var formId = "";
+                        if (!activityApp.isEmpty(signUp.fillInfoFormId)) {
+                            formId = signUp.fillInfoFormId;
+                        }
+                        var url = "http://reading.chaoxing.com/qd/form/config?formId=" + formId;
+                        $('body').addClass('scroll');
+                        $this.formConfigLayerIndex = layer.open({
+                            title: "表单配置",
+                            skin: "create-class",
+                            type: 2,
+                            content: [url, "no"],
+                            area: ["600px", "680px"],
+                            btn: ["取消", "完成"],
+                            btnAlign: "c",
+                            yes: function (index) {
+                                var signUp = $this.signUpMap[tplComponentId];
+                                if (signUp.fillInfo && activityApp.isEmpty(signUp.fillInfoFormId)) {
+                                    $this.$set($this.signUpMap[tplComponentId], "fillInfo", false);
+                                }
+                                // 关闭表单填写
+                                app.closeLayerPop(index);
+                            },
+                            btn2: function () {
+                                $("#layui-layer-iframe" + $this.formConfigLayerIndex)[0].contentWindow.submit();
+                                return false;
+                            },
+                            end: function () {
+                                $('body').removeClass('scroll');
+                            }
+                        })
+                    },
+                    closeFormConfigLayer: function (formId) {
+                        var $this = this;
+                        app.closeLayerPop($this.formConfigLayerIndex);
+                        $this.$set($this.signUpMap[$this.operateSignUpOriginId], "fillInfoFormId", formId);
+                    },
+                    toAddSignUpParticipateScope: function(signUpTplComponentId, templateComponent){
+                        var $this = this;
+                        $this.operateSignUpOriginId = signUpTplComponentId;
+                        $this.currGroupType = templateComponent.code == 'wfw_participation_scope' ? 'wfw' : 'contacts';
+                        $this.currWfwGroups = templateComponent.code == 'wfw_participation_scope' ? $this.wfwGroups : $this.contactGroups;
+                        $this.initWfwGroups();
+                        $this.signUpParticipateWindowShow = true;
+                        if(!$this.signUpParticipateScopeTreeObj){
+                            $this.initGroupTree();
+                        }
+                    },
+                    initGroupTree: function () {
+                        var $this = this;
+                        $($this.currWfwGroups).each(function () {
+                            this.isParent = this.soncount > 0;
+                        })
+                        var setting = {
+                            check: {
+                                enable: true
+                            },
+                            data: {
+                                simpleData: {
+                                    enable: true,
+                                    idKey: "virtualId",
+                                    pIdKey: "gid",
+                                },
+                                key: {
+                                    name: "groupname"
+                                },
+                                keep: {
+                                    parent: true
+                                }
+                            },
+                            callback: {}
+                        };
+                        $this.signUpParticipateScopeTreeObj = $.fn.zTree.init($("#sign-up-participate-scope-tree"), setting, $this.currWfwGroups);
+
+                        var signUp = $this.signUpMap[$this.operateSignUpOriginId];
+
+                        var signUpParticipateScopes = (signUp && ($this.currGroupType == 'wfw' ? signUp.wfwParticipateScopes : signUp.contactsParticipateScopes)) || [];
+
+                        // 获取所有父节点
+                        for(var i = 0; i < signUpParticipateScopes.length; i++) {
+                            var item = signUpParticipateScopes[i];
+                            $this.signUpParticipateScopeTreeObj.checkNode($this.signUpParticipateScopeTreeObj.getNodeByParam("virtualId", item.virtualId, null), true, !item.leaf);
+                        }
+
+                    },
+                    cancelSignUpParticipateScope: function () {
+                        var $this = this;
+                        if ($this.signUpParticipateScopeTreeObj) {
+                            $this.signUpParticipateScopeTreeObj.destroy();
+                            $this.signUpParticipateScopeTreeObj = null;
+                        }
+                        $this.currWfwGroups = [];
+                        $this.currGroupType = 'wfw';
+                        $this.signUpParticipateWindowShow = false
+                    },
+                    // 确认选择报名参与范围
+                    sureSignUpParticipateScope: function () {
+                        var $this = this;
+                        var zTree = $.fn.zTree.getZTreeObj("sign-up-participate-scope-tree");
+                        var nodeArr = zTree.getCheckedNodes(true);
+                        //首先保存 搜索父节点被全选的，在看非父节点被选中的(非父节点的父节点被全选，则不保存该条记录)
+                        var scopes = [];
+                        var pNodes = [];
+                        var pNodeMap = {};
+                        var cNodes = [];
+                        $(nodeArr).each(function () {
+                            // 半选状态
+                            var half = this.getCheckStatus().half;
+                            // 只记录全选的
+                            if (!half) {
+                                var node = { externalId: this.id, virtualId: this.virtualId, externalPid: this.gid, externalName: this.groupname, leaf: !this.isParent };
+                                // 如果是非叶子结点节点
+                                if (this.isParent) {
+                                    pNodes.push(node);
+                                    pNodeMap[node.virtualId] = node;
+                                } else {
+                                    cNodes.push(node);
+                                }
+                            }
+                        });
+                        $(cNodes).each(function () {
+                            if (!this.externalPid || !pNodeMap[this.externalPid]) {
+                                pNodes.push(this);
+                                pNodeMap[this.virtualId] = this;
+                            }
+                        });
+                        $(pNodes).each(function () {
+                            if (!this.externalPid || !pNodeMap[this.externalPid]) {
+                                scopes.push($.extend({}, this, {groupType: $this.currGroupType}));
+                            }
+                        });
+                        if ($this.currGroupType == 'contacts') {
+                            $this.$set($this.signUpMap[$this.operateSignUpOriginId], "contactsParticipateScopes", scopes);
+                        } else {
+                            $this.$set($this.signUpMap[$this.operateSignUpOriginId], "wfwParticipateScopes", scopes);
+                        }
+                        $this.cancelSignUpParticipateScope();
+                    },
+                    deleteSignUpParticipateScope: function (signUpTplComponentId, templateComponent, scopeIndex) {
+                        var $this = this;
+                        if (templateComponent.code == 'wfw_participation_scope') {
+                            $this.signUpMap[signUpTplComponentId].wfwParticipateScopes.splice(scopeIndex, 1);
+                        } else {
+                            $this.signUpMap[signUpTplComponentId].contactsParticipateScopes.splice(scopeIndex, 1);
+                        }
+                    },
+                    submitForm: function () {
+                        var $this = this;
+                        var url = ctx + "/api/activity/setting/sign-up";
+                        var sign = $this.packageSubmitSign();
+                        var sucTemplateComponentIds =  $this.packageSignUpConditionEnable();
+                        var params = {
+                            activityId: $this.activity.id,
+                            sucTemplateComponentIdStr: activityApp.getJsonStr(sucTemplateComponentIds),
+                            signJsonStr: activityApp.getJsonStr(sign)
+                        };
+                        app.ajaxPostWithLoading(url, params, function (data) {
+                            if (data.success) {
+                                app.showMsg("修改成功", function () {
+                                    $this.returnBack();
+                                });
+                            } else {
+                                var errorMessage = data.message;
+                                if (activityApp.isEmpty(errorMessage)) {
+                                    errorMessage = "修改失败";
+                                }
+                                app.showMsg(errorMessage);
+                            }
+                        }, function () {
+                            app.showMsg("修改失败");
+                        });
+                    }
+                }
+            });
+            /**
+             * 关闭表单配置页面
+             */
+            function closeFormConfigLayer(formId) {
+                vm.closeFormConfigLayer(formId);
+            }
+        </script>
+    </div>
+</body>
+</html>

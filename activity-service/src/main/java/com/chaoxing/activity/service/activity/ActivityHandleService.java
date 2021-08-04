@@ -272,6 +272,91 @@ public class ActivityHandleService {
 		});
 	}
 
+	/**更新活动基本信息
+	 * @Description
+	 * @author huxiaolong
+	 * @Date 2021-08-04 17:16:50
+	 * @param activityUpdateParamDto
+	 * @param wfwRegionalArchitectureDtos
+	 * @param loginUser
+	 * @return void
+	 */
+	@Transactional(rollbackFor = Exception.class)
+	public void updateActivityBasicInfo(ActivityUpdateParamDTO activityUpdateParamDto, final List<WfwAreaDTO> wfwRegionalArchitectureDtos, LoginUserDTO loginUser) {
+		Activity activity = activityUpdateParamDto.buildActivity();
+		activityValidationService.updateInputValidate(activity);
+		if (CollectionUtils.isEmpty(wfwRegionalArchitectureDtos)) {
+			throw new BusinessException("请选择发布范围");
+		}
+		Integer activityId = activity.getId();
+		String activityEditLockKey = getActivityEditLockKey(activityId);
+		distributedLock.lock(activityEditLockKey, () -> {
+			Activity existActivity = activityValidationService.editAble(activityId, loginUser);
+			// 征集相关
+			handleWork(activity, loginUser);
+			// 处理活动相关
+			if (!Objects.equals(existActivity.getCoverCloudId(), activity.getCoverCloudId())) {
+				activity.coverCloudIdChange();
+			}
+			activityMapper.update(activity, new LambdaUpdateWrapper<Activity>()
+					.eq(Activity::getId, activity.getId())
+					// 一些可能为null的字段需要设置
+					.set(Activity::getTimingReleaseTime, activity.getTimingReleaseTime())
+					.set(Activity::getTimeLengthUpperLimit, activity.getTimeLengthUpperLimit())
+					.set(Activity::getIntegral, activity.getIntegral())
+			);
+			// 更新自定义组件的值
+			activityComponentValueService.updateActivityComponentValues(activityId, activityUpdateParamDto.getActivityComponentValues());
+			ActivityDetail activityDetail = activityQueryService.getDetailByActivityId(activityId);
+			if (activityDetail == null) {
+				activityDetail = activityUpdateParamDto.buildActivityDetail();
+				activityDetailMapper.insert(activityDetail);
+			} else {
+				activityDetailMapper.update(null, new UpdateWrapper<ActivityDetail>()
+						.lambda()
+						.eq(ActivityDetail::getId, activityDetail.getId())
+						.set(ActivityDetail::getIntroduction, activityUpdateParamDto.getIntroduction())
+				);
+			}
+			// 处理发布范围
+			activityScopeService.batchAdd(activityId, wfwRegionalArchitectureDtos);
+			// 活动改变
+			activityChangeEventService.dataChange(activity, existActivity, loginUser);
+			return null;
+		}, e -> {
+			log.error("更新活动:{} error:{}", JSON.toJSONString(activity), e.getMessage());
+			throw new BusinessException("更新活动失败");
+		});
+	}
+
+	/**更新报名设置信息
+	* @Description
+	* @author huxiaolong
+	* @Date 2021-08-04 17:15:42
+	* @param activityId
+	* @param sucTemplateComponentIds 开启报名条件templateComponentId
+	* @param signCreateParam
+	* @param loginUser
+	* @return void
+	*/
+	@Transactional(rollbackFor = Exception.class)
+	public void updateSignUp(Integer activityId, List<Integer> sucTemplateComponentIds, SignCreateParamDTO signCreateParam, LoginUserDTO loginUser) {
+		String activityEditLockKey = getActivityEditLockKey(activityId);
+		distributedLock.lock(activityEditLockKey, () -> {
+			Activity existActivity = activityValidationService.editAble(activityId, loginUser);
+			// 更新报名签到
+			signCreateParam.setId(existActivity.getSignId());
+			handleSign(existActivity, signCreateParam, loginUser);
+			// 更新
+			signUpConditionService.updateActivitySignUpEnables(activityId, sucTemplateComponentIds);
+			return null;
+		}, e -> {
+			log.error("更新报名:{} error:{}", JSON.toJSONString(signCreateParam.getSignUps()), e.getMessage());
+			throw new BusinessException("更新活动失败");
+		});
+	}
+
+
 	/**发布活动
 	 * @Description
 	 * @author wwb
