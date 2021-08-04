@@ -347,6 +347,46 @@ body {
     display: flex;
     align-items: center;
   }
+  .btn-box-margin {
+    margin-top: 20px;
+  }
+  /*固定宽度*/
+  .btn-width-80 {
+    width: 80px;
+  }
+  .btn-main {
+    padding: 0 14px;
+    -webkit-box-sizing: border-box;-moz-box-sizing: border-box;-ms-box-sizing: border-box;-o-box-sizing: border-box;-khtml-box-sizing: border-box;box-sizing: border-box;
+    font-size: 13px;
+    height: 30px;
+    line-height: 30px;
+    color: #FFFFFF;
+    background: #0084FF;
+    border-radius: 30px;
+    border: none;
+    cursor: pointer;
+    font-weight: 400;
+    &:hover {
+      background: rgba(0, 132, 255, 0.8);
+      color: #FFFFFF;
+    }
+  }
+  .btn-second-normal {
+    height: 30px;
+    line-height: 30px;
+    border: 1px solid #82C3FF;
+    box-sizing: border-box;
+    border-radius: 999px;
+    color: #0084FF;
+    font-size: 13px;
+    padding: 0 12px;
+    background: #ffffff;
+    cursor: pointer;
+    font-weight: 400;
+    &:hover {
+      background: #EBF5FF;
+    }
+  }
 }
 .address-dialog {
   .el-dialog {
