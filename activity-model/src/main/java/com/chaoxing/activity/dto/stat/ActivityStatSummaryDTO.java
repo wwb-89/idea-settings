@@ -1,5 +1,6 @@
 package com.chaoxing.activity.dto.stat;
 
+import com.chaoxing.activity.dto.manager.sign.create.SignUpCreateParamDTO;
 import com.chaoxing.activity.util.DateUtils;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -68,5 +69,19 @@ public class ActivityStatSummaryDTO {
     private LocalDateTime updateTime;
     /** 起止时间 */
     private String activityStartEndTime;
+    /** 封面地址 */
+    private String coverUrl;
+    /** 活动简介 */
+    private String introduction;
+    /** 活动地址 */
+    private String address;
+    /** 活动详细地址 */
+    private String detailAddress;
+    /** 活动下的报名(暂定第一个报名) */
+    private SignUpCreateParamDTO signUp;
+    /** 收藏数 */
+    private Integer collectNum;
+    /** 浏览数 */
+    private Integer pv;
 
 }

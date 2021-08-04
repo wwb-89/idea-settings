@@ -1,6 +1,7 @@
 package com.chaoxing.activity.service.manager.module;
 
 import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.chaoxing.activity.dto.OrgFormConfigDTO;
@@ -55,6 +56,8 @@ public class SignApiService {
 	private static final String UPDATE_URL = SIGN_API_DOMAIN + "/sign/update";
 	/** 获取签到报名信息的地址 */
 	private static final String DETAIL_URL = SIGN_API_DOMAIN + "/sign/%d/detail";
+	/** 获取签到报名信息的地址 */
+	private static final String LIST_DETAIL_URL = SIGN_API_DOMAIN + "/sign/list/detail";
 	/** 参与情况 */
 	private static final String PARTICIPATION_URL = SIGN_API_DOMAIN + "/sign/%d/signed-up";
 	/** 统计报名签到在活动管理首页需要的信息 */
@@ -199,6 +202,25 @@ public class SignApiService {
 			return signCreateParam;
 		}, (message) -> {
 			log.error("根据签到报名id:{}查询签到报名失败:{}", signId, message);
+			throw new BusinessException(message);
+		});
+	}
+
+	/**根据报名签到signIds，获取签到报名信息
+	* @Description
+	* @author huxiaolong
+	* @Date 2021-08-03 11:35:54
+	* @param signIds
+	* @return com.chaoxing.activity.dto.manager.sign.create.SignCreateParamDTO
+	*/
+	public List<SignCreateParamDTO> listByIds(List<Integer> signIds) {
+		HttpHeaders httpHeaders = new HttpHeaders();
+		httpHeaders.setContentType(MediaType.APPLICATION_JSON);
+		HttpEntity<String> httpEntity = new HttpEntity<>(JSON.toJSONString(signIds), httpHeaders);
+		String result = restTemplate.postForObject(LIST_DETAIL_URL, httpEntity, String.class);
+		JSONObject jsonObject = JSON.parseObject(result);
+		return resultHandle(jsonObject, () -> JSONArray.parseArray(jsonObject.getString("data"), SignCreateParamDTO.class), (message) -> {
+			log.error("根据签到报名id:{}查询签到报名失败:{}", signIds, message);
 			throw new BusinessException(message);
 		});
 	}

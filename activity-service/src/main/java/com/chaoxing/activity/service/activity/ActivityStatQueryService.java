@@ -603,4 +603,18 @@ public class ActivityStatQueryService {
 		List<ActivityStat> regionalActivityStats =  activityStatMapper.listActivityStatByFids(fids, startDate, endDate);
 		return convert2RegionalStat(resultMap, regionalActivityStats);
 	}
+
+	/**根据活动ids查询活动对应的浏览量
+	* @Description
+	* @author huxiaolong
+	* @Date 2021-08-03 15:37:28
+	* @param activityIds
+	* @return java.util.List<com.chaoxing.activity.model.ActivityStat>
+	*/
+	public List<ActivityStat> listActivityPVByActivityIds(List<Integer> activityIds) {
+		if (CollectionUtils.isEmpty(activityIds)) {
+			return Lists.newArrayList();
+		}
+		return activityStatMapper.listActivityPVByActivityIds(activityIds);
+	}
 }

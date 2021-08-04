@@ -63,4 +63,13 @@ public interface ActivityStatMapper extends BaseMapper<ActivityStat> {
     * @return java.util.List<com.chaoxing.activity.model.ActivityStat>
     */
     List<ActivityStat> listActivityStatByFids(@Param("fids") List<Integer> fids, @Param("startDate") String startDate, @Param("endDate")String endDate);
+
+    /**根据活动ids查询活动对应的浏览量
+    * @Description
+    * @author huxiaolong
+    * @Date 2021-08-03 15:32:52
+    * @param
+    * @return java.util.List<com.chaoxing.activity.model.ActivityStat>
+    */
+    List<ActivityStat> listActivityPVByActivityIds(@Param("activityIds") List<Integer> activityIds);
 }

@@ -1,5 +1,6 @@
 package com.chaoxing.activity.api.vo;
 
+import com.chaoxing.activity.dto.manager.sign.create.SignUpCreateParamDTO;
 import com.chaoxing.activity.dto.stat.ActivityStatSummaryDTO;
 import com.chaoxing.activity.model.Activity;
 import lombok.AllArgsConstructor;
@@ -59,27 +60,60 @@ public class ActivityStatSummaryVO {
     private Integer signedUpNum;
     /** 平均参与时长(分钟); */
     private Integer avgParticipateTimeLength;
+    /** 起止时间 */
+    private String activityStartEndTime;
+    /** 封面地址 */
+    private String coverUrl;
+    /** 活动简介 */
+    private String introduction;
+    /** 活动地址 */
+    private String address;
+    /** 活动总名额 */
+    private Integer personLimit;
+    /** 浏览数 */
+    private Integer pv;
+    /** 收藏数 */
+    private Integer collectNum;
+    /** 是否开启报名 */
+    private Boolean openSignUp;
+    /** 去报名地址 */
+    private String signUpUrl;
 
-    public static ActivityStatSummaryVO buildActivityStatSummaryVo(ActivityStatSummaryDTO activityStatSummaryDTO) {
+
+    public static ActivityStatSummaryVO buildActivityStatSummaryVo(ActivityStatSummaryDTO actStatSummary) {
+        Integer personLimit = null;
+        if (actStatSummary.getSignUp() != null) {
+            personLimit  = actStatSummary.getSignUp().getPersonLimit();
+        }
+        String signUpUrl = "https://reading.chaoxing.com/qd/sign/" + actStatSummary.getSignId() + "/to-sign-up";
         return ActivityStatSummaryVO.builder()
-                .activityId(activityStatSummaryDTO.getActivityId())
-                .signId(activityStatSummaryDTO.getSignId())
-                .activityName(activityStatSummaryDTO.getActivityName())
-                .activityPreviewUrl(activityStatSummaryDTO.getActivityPreviewUrl())
-                .activityStatus(Activity.StatusEnum.fromValue(activityStatSummaryDTO.getActivityStatus()).getName())
-                .activityClassify(activityStatSummaryDTO.getActivityClassify())
-                .activityCreator(activityStatSummaryDTO.getActivityCreator())
-                .participateScope(activityStatSummaryDTO.getParticipateScope())
-                .integral(activityStatSummaryDTO.getIntegral())
-                .startTime(Optional.ofNullable(activityStatSummaryDTO.getStartTime()).map(v -> v.toInstant(ZoneOffset.of("+8")).toEpochMilli()).orElse(null))
-                .endTime(Optional.ofNullable(activityStatSummaryDTO.getEndTime()).map(v -> v.toInstant(ZoneOffset.of("+8")).toEpochMilli()).orElse(null))
-                .rateNum(activityStatSummaryDTO.getRateNum())
-                .rateScore(activityStatSummaryDTO.getRateScore())
-                .signedInNum(activityStatSummaryDTO.getSignedInNum())
-                .signInRate(activityStatSummaryDTO.getSignInRate())
-                .qualifiedNum(activityStatSummaryDTO.getQualifiedNum())
-                .signedUpNum(activityStatSummaryDTO.getSignedUpNum())
-                .avgParticipateTimeLength(activityStatSummaryDTO.getAvgParticipateTimeLength())
+                .activityId(actStatSummary.getActivityId())
+                .signId(actStatSummary.getSignId())
+                .activityName(actStatSummary.getActivityName())
+                .activityPreviewUrl(actStatSummary.getActivityPreviewUrl())
+                .activityStatus(Activity.StatusEnum.fromValue(actStatSummary.getActivityStatus()).getName())
+                .activityClassify(actStatSummary.getActivityClassify())
+                .activityCreator(actStatSummary.getActivityCreator())
+                .participateScope(actStatSummary.getParticipateScope())
+                .integral(actStatSummary.getIntegral())
+                .startTime(Optional.ofNullable(actStatSummary.getStartTime()).map(v -> v.toInstant(ZoneOffset.of("+8")).toEpochMilli()).orElse(null))
+                .endTime(Optional.ofNullable(actStatSummary.getEndTime()).map(v -> v.toInstant(ZoneOffset.of("+8")).toEpochMilli()).orElse(null))
+                .rateNum(actStatSummary.getRateNum())
+                .rateScore(actStatSummary.getRateScore())
+                .signedInNum(actStatSummary.getSignedInNum())
+                .signInRate(actStatSummary.getSignInRate())
+                .qualifiedNum(actStatSummary.getQualifiedNum())
+                .signedUpNum(actStatSummary.getSignedUpNum())
+                .avgParticipateTimeLength(actStatSummary.getAvgParticipateTimeLength())
+                .activityStartEndTime(actStatSummary.getActivityStartEndTime())
+                .coverUrl(actStatSummary.getCoverUrl())
+                .introduction(actStatSummary.getIntroduction())
+                .address(Optional.ofNullable(actStatSummary.getAddress()).orElse("").concat(Optional.ofNullable(actStatSummary.getDetailAddress()).orElse("")))
+                .personLimit(personLimit)
+                .openSignUp(actStatSummary.getSignUp() != null)
+                .signUpUrl(signUpUrl)
+                .collectNum(actStatSummary.getCollectNum())
+                .pv(actStatSummary.getPv())
                 .build();
     }
 }

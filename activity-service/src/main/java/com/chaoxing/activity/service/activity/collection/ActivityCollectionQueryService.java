@@ -1,6 +1,7 @@
 package com.chaoxing.activity.service.activity.collection;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.chaoxing.activity.dto.activity.ActivityCollectionDTO;
 import com.chaoxing.activity.mapper.ActivityCollectionMapper;
 import com.chaoxing.activity.model.ActivityCollection;
 import com.google.common.collect.Lists;
@@ -62,6 +63,20 @@ public class ActivityCollectionQueryService {
 			return activityCollections.stream().map(ActivityCollection::getUid).collect(Collectors.toList());
 		}
 		return Lists.newArrayList();
+	}
+	
+	/**根据activityIds，统计对应活动收藏的用户数量
+	* @Description 
+	* @author huxiaolong
+	* @Date 2021-08-03 14:23:40
+	* @param activityIds
+	* @return java.util.List<com.chaoxing.activity.dto.activity.ActivityCollectionDTO>
+	*/
+	public List<ActivityCollectionDTO> statCollectedByActivityIds(List<Integer> activityIds) {
+		if (CollectionUtils.isEmpty(activityIds)) {
+			return Lists.newArrayList();
+		}
+		return activityCollectionMapper.statCollectedByActivityIds(activityIds);
 	}
 
 }
