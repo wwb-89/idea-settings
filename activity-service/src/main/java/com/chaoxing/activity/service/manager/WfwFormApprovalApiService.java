@@ -108,6 +108,9 @@ public class WfwFormApprovalApiService {
         if (success) {
             jsonObject = jsonObject.getJSONObject("data");
             JSONArray data = jsonObject.getJSONArray("formUserList");
+            if (data.size() < 1) {
+                return null;
+            }
             return JSON.parseObject(data.getJSONObject(0).toJSONString(), WfwFormDTO.class);
         } else {
             String errorMessage = jsonObject.getString("msg");
@@ -173,6 +176,9 @@ public class WfwFormApprovalApiService {
     public void createActivity(Integer fid, Integer formId, Integer formUserId, String flag, Integer templateId) {
         // 获取表单数据
         WfwFormDTO formData = getFormData(fid, formId, formUserId);
+        if (formData == null) {
+            return;
+        }
         if (!Objects.equals(formData.getAprvStatusTypeId(), CommonConstant.FORM_APPROVAL_AGREE_VALUE)) {
             // 审批不通过的忽略
             return;
