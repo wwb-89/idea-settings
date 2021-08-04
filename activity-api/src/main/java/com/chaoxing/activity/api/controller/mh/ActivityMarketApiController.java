@@ -116,13 +116,19 @@ public class ActivityMarketApiController {
 				name.put("key", "活动名称");
 				name.put("value", record.getName());
 				fields.add(name);
-				// 时间
-				JSONObject time = new JSONObject();
-				time.put("flag", "100");
-				time.put("key", "活动时间");
+				// 开始时间
+				JSONObject startTime = new JSONObject();
+				startTime.put("flag", "6");
+				startTime.put("key", "活动时间");
+				startTime.put("value", DateTimeFormatterConstant.YYYY_MM_DD_HH_MM.format(record.getStartTime()));
+				fields.add(startTime);
 
-				time.put("value", DateTimeFormatterConstant.YYYY_MM_DD_HH_MM.format(record.getStartTime()) + " ~ " + DateTimeFormatterConstant.YYYY_MM_DD_HH_MM.format(record.getEndTime()));
-				fields.add(time);
+				JSONObject endTime = new JSONObject();
+				endTime.put("flag", "101");
+				endTime.put("key", "活动时间");
+				endTime.put("value", DateTimeFormatterConstant.YYYY_MM_DD_HH_MM.format(record.getEndTime()));
+				fields.add(endTime);
+
 				// 地点
 				JSONObject address = new JSONObject();
 				address.put("flag", "102");
