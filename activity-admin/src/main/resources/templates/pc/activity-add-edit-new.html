@@ -1529,11 +1529,6 @@
                     }
                     return true;
                 },
-                preStep: function () {
-                    var $this = this;
-                    var url = ctx + "/activity/" + $this.activity.id + "/edit";
-                    window.location.replace(url);
-                },
                 packageSignUpConditionEnable: function () {
                     var $this = this;
                     var keys = Object.keys($this.signUpConditionActiveMap);
