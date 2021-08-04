@@ -63,9 +63,23 @@
                 <bind name="nameBind" value="'%' + queryItem.name + '%'"/>
                 AND (t1.name like #{nameBind} or t1.create_user_name like #{nameBind})
             </if>
-            <if test="queryItem.startTime != null and queryItem.startTime != '' and queryItem.endTime != null and queryItem.endTime != ''">
+            <choose>
+                <when test="queryItem.startTime != null and queryItem.startTime != '' and queryItem.endTime != null and queryItem.endTime != ''">
                 AND ((t1.start_time between #{queryItem.startTime} and #{queryItem.endTime}) or (t1.end_time between #{queryItem.startTime} and #{queryItem.endTime}))
-            </if>
+                </when>
+                <otherwise>
+                    <choose>
+                        <when test="queryItem.startTime != null and queryItem.startTime != ''">
+                            AND t1.end_time &gt;= #{queryItem.startTime}
+                        </when>
+                        <otherwise>
+                            <if test="queryItem.endTime != null and queryItem.endTime != ''">
+                                AND t1.start_time &lt;= #{queryItem.endTime}
+                            </if>
+                        </otherwise>
+                    </choose>
+                </otherwise>
+            </choose>
             <if test="queryItem.activityStatus != null">
                 AND t1.status = #{queryItem.activityStatus}
             </if>
