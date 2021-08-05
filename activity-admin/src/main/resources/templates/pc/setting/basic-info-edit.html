@@ -216,11 +216,17 @@
                 </div>
             </div>
             <!--征集设置-->
-            <div class="form-item" v-else-if="item.code == 'work'">
+            <div class="form-item align-start" v-else-if="item.code == 'work'">
                 <label class="label">{{item.name}}</label>
-                <div class="input-box">
-                    <el-switch v-model="activity.openWork" class="examine-switch"></el-switch>
-                    <span class="tips" v-if="item.introduction">{{item.introduction}}</span>
+                <div class="input-box column">
+                    <div class="set-box">
+                        <el-switch v-model="activity.openWork" class="examine-switch"></el-switch>
+                        <span class="tips" v-if="item.introduction">{{item.introduction}}</span>
+                    </div>
+                    <div class="set-box configurationForm" v-show="activity.openWork" @click="workManage">
+                        <img src="/static/pc/assets/images/setting.png" th:src="@{/pc/assets/images/setting.png}">
+                        <span class="tips set-information">征集设置</span>
+                    </div>
                 </div>
             </div>
             <div class="form-item cancel-margin marginTop16" v-else-if="item.code == 'tags'">
@@ -551,6 +557,16 @@
                         }
                     });
                     return nodeMap;
+                }
+            },
+            watch: {
+                // 作品征集开关
+                "activity.openWork": function () {
+                    var $this = this;
+                    if (!$this.activity.workId && $this.activity.openWork) {
+                        // 创建作品征集
+                        $this.addWork();
+                    }
                 }
             },
             methods: {
@@ -944,6 +960,34 @@
                     $this.activity.startTimeStamp = obj[0];
                     $this.activity.endTimeStamp = obj[1];
                 },
+                // 创建作品征集
+                addWork: function () {
+                    var $this = this;
+                    var url = ctx + "/api/work/new";
+                    app.ajaxPostWithLoading(url, {}, function (data) {
+                        if (data.success) {
+                            $this.activity.workId = data.data;
+                        } else {
+                            var message = data.message;
+                            if (activityApp.isEmpty(message)) {
+                                message = "开启作品征集失败";
+                            }
+                            app.showMsg(message, function () {
+                                $this.$set($this.activity, "openWork", false);
+                            });
+                        }
+                    }, function () {
+                        app.showMsg("开启作品征集失败", function () {
+                            $this.$set($this.activity, "openWork", false);
+                        });
+                    });
+                },
+                // 作品征集管理
+                workManage: function () {
+                    var $this = this;
+                    var url = activityApp.getWorkManageUrl($this.activity.workId);
+                    window.open(url);
+                }
             }
         });
 
