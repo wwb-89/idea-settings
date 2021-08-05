@@ -1,5 +1,7 @@
 package com.chaoxing.activity.admin.controller.api;
 
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONArray;
 import com.chaoxing.activity.admin.util.LoginUtils;
 import com.chaoxing.activity.dto.LoginUserDTO;
 import com.chaoxing.activity.dto.RestRespDTO;
@@ -30,8 +32,8 @@ public class ActivityCreatePermissionApiController {
 
     @LoginRequired
     @PostMapping("/{roleId}")
-    public RestRespDTO getPermissionByFidRoleId(Integer fid, @PathVariable Integer roleId) {
-        return RestRespDTO.success(activityCreatePermissionService.getPermissionByFidRoleId(fid, roleId));
+    public RestRespDTO getPermissionByFidRoleId(Integer fid, Integer marketId, @PathVariable Integer roleId) {
+        return RestRespDTO.success(activityCreatePermissionService.getPermissionByFidRoleId(fid, marketId, roleId));
     }
 
     @LoginRequired
@@ -46,21 +48,20 @@ public class ActivityCreatePermissionApiController {
 
     @LoginRequired
     @PostMapping("/edit")
-    public RestRespDTO edit(HttpServletRequest request, ActivityCreatePermission activityCreatePermission, Boolean clear) {
+    public RestRespDTO edit(HttpServletRequest request, ActivityCreatePermission activityCreatePermission) {
         LoginUserDTO loginUser = LoginUtils.getLoginUser(request);
         activityCreatePermission.setUpdateUid(loginUser.getUid());
-        if (clear != null && clear) {
-            activityCreatePermissionService.clearOtherDiffGroupPermission(loginUser.getUid(), activityCreatePermission.getFid());
-        }
         activityCreatePermissionService.edit(activityCreatePermission);
         return RestRespDTO.success();
     }
 
     @LoginRequired
     @PostMapping("/batchConfig")
-    public RestRespDTO batchConfig(HttpServletRequest request, @RequestBody List<ActivityCreatePermission> activityCreatePermissionList) {
+    public RestRespDTO batchConfig(HttpServletRequest request, String roleIds, String config) {
         LoginUserDTO loginUser = LoginUtils.getLoginUser(request);
-        activityCreatePermissionService.batchConfigPermission(loginUser.getUid(), activityCreatePermissionList);
+        ActivityCreatePermission permissionConfig = JSON.parseObject(config, ActivityCreatePermission.class);
+        List<Integer> roleIdList = JSONArray.parseArray(roleIds, Integer.class);
+        activityCreatePermissionService.batchConfigPermission(loginUser.getUid(), roleIdList, permissionConfig);
         return RestRespDTO.success();
     }
 }

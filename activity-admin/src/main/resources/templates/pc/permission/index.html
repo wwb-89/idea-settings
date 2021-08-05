@@ -65,19 +65,38 @@
                             </div>
                         </div>
                         <div class="form-item">
-                            <label class="label">报名范围</label>
+                            <label class="label">组织架构范围</label>
                             <div class="input-box">
-                                <el-radio v-model="config.signUpScopeType" :label="1" class="radio-item">不限</el-radio>
-                                <el-radio v-model="config.signUpScopeType" :label="2" class="radio-item">作为主管的范围</el-radio>
-                                <el-radio v-model="config.signUpScopeType" :label="3" class="radio-item">自定义</el-radio>
+                                <el-radio v-model="config.wfwSignUpScopeType" :label="1" class="radio-item">不限</el-radio>
+                                <el-radio v-model="config.wfwSignUpScopeType" :label="2" class="radio-item">作为主管的范围</el-radio>
+                                <el-radio v-model="config.wfwSignUpScopeType" :label="3" class="radio-item">自定义</el-radio>
                                 <div class="select-box">
-                                    <p class="tips" v-show="config.signUpScopeType == 1">可以选择本单位下的所有组织架构</p>
-                                    <p class="tips" v-show="config.signUpScopeType == 2">用户在组织架构中作为部门主管的管理范围，可以在“人员管理/组织架构”中进行设置</p>
-                                    <div class="add-scope" v-show="config.signUpScopeType == 3">
+                                    <p class="tips" v-show="config.wfwSignUpScopeType == 1">可以选择本单位下的所有组织架构</p>
+                                    <p class="tips" v-show="config.wfwSignUpScopeType == 2">用户在组织架构中作为部门主管的管理范围，可以在“人员管理/组织架构”中进行设置</p>
+                                    <div class="add-scope" v-show="config.wfwSignUpScopeType == 3">
                                         <p class="text" style="display: none;">请选择</p>
-                                        <i class="add-circle" @click="openReleaseScopeDialog"></i>
+                                        <i class="add-circle" @click="openReleaseScopeDialog('wfw')"></i>
                                         <div class="add-tags" style="min-height: 30px">
-                                            <span class="item" v-for="(group, index) in releaseScopes">{{group.externalName}}<i class="del-btn" @click="removeReleaseScope(index)"></i></span>
+                                            <span class="item" v-for="(group, index) in wfwReleaseScopes">{{group.externalName}}<i class="del-btn" @click="removeWfwReleaseScope(index)"></i></span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-item">
+                            <label class="label">通讯录范围</label>
+                            <div class="input-box">
+                                <el-radio v-model="config.contactsSignUpScopeType" :label="1" class="radio-item">不限</el-radio>
+                                <el-radio v-model="config.contactsSignUpScopeType" :label="2" class="radio-item">作为主管的范围</el-radio>
+                                <el-radio v-model="config.contactsSignUpScopeType" :label="3" class="radio-item">自定义</el-radio>
+                                <div class="select-box">
+                                    <p class="tips" v-show="config.contactsSignUpScopeType == 1">可以选择本单位下的所有组织架构</p>
+                                    <p class="tips" v-show="config.contactsSignUpScopeType == 2">用户在组织架构中作为部门主管的管理范围，可以在“人员管理/组织架构”中进行设置</p>
+                                    <div class="add-scope" v-show="config.contactsSignUpScopeType == 3">
+                                        <p class="text" style="display: none;">请选择</p>
+                                        <i class="add-circle" @click="openReleaseScopeDialog('contacts')"></i>
+                                        <div class="add-tags" style="min-height: 30px">
+                                            <span class="item" v-for="(group, index) in contactsReleaseScopes">{{group.externalName}}<i class="del-btn" @click="removeContactsReleaseScope(index)"></i></span>
                                         </div>
                                     </div>
                                 </div>
@@ -87,8 +106,8 @@
                 </div>
                 <div class="footer">
                     <div class="btn-box">
-                        <div class="border-btn" @click="cancelConfig">取消</div>
-                        <div class="normal-btn" @click="judgeSubmit">确定</div>
+                        <div class="border-btn" @click="settingDialog = false">取消</div>
+                        <div class="normal-btn" @click="submitPermissionConfig">确定</div>
                     </div>
                 </div>
             </div>
@@ -113,7 +132,7 @@
                 </div>
                 <div class="footer">
                     <div class="btn-box">
-                        <div class="border-btn" @click="releaseDialog=false">取消</div>
+                        <div class="border-btn" @click="closeReleaseScopeConfig">取消</div>
                         <div class="normal-btn" @click="confirmReleaseScopeChange">确定</div>
                     </div>
                 </div>
@@ -134,20 +153,25 @@
                 data: function () {
                     return {
                         fid: [[${fid}]],
+                        marketId: [[${marketId}]],
                         roleList: [[${roleList}]],
                         classifyList: [[${classifyList}]],
                         wfwGroups: [[${wfwGroups}]],
-                        groupType: [[${groupType}]],
-                        activeRoleName: '',
+                        contactsGroups: [[${contactsGroups}]],
+                        currGroups: [],
+                        currGroupType: "",
+                        activeRoleName: "",
                         config: {
                             fid: [[${fid}]],
-                            groupType: [[${groupType}]],
                             allActivityClassify: true,
                             activityClassifyScope: [],
-                            signUpScopeType: 1,
-                            signUpScope: ''
+                            wfwSignUpScopeType: 1,
+                            contactsSignUpScopeType: 1,
+                            wfwSignUpScope: "",
+                            contactsSignUpScope: ""
                         },
-                        releaseScopes: [],
+                        wfwReleaseScopes: [],
+                        contactsReleaseScopes: [],
                         organizationTreeObj: null,
                         isBatch: false,
                         multipleChecked: false,
@@ -173,17 +197,6 @@
                             });
                         }
                         return ids;
-                    },
-                    // 虚拟节点map，即非叶子节点复制本身作为其叶子节点，该叶子节点即为虚拟节点
-                    virtualNodeMap: function () {
-                        var $this = this;
-                        var nodeMap = {};
-                        $($this.wfwGroups).each(function () {
-                            if (this.id !== this.virtualId) {
-                                nodeMap[this.id] = this;
-                            }
-                        });
-                        return nodeMap;
                     }
                 },
                 methods: {
@@ -218,9 +231,21 @@
                         var $this = this;
                         $this.config.activityClassifyScope = value ? $this.classifyIds : [];
                     },
-                    openReleaseScopeDialog: function () {
+                    // 虚拟节点map，即非叶子节点复制本身作为其叶子节点，该叶子节点即为虚拟节点
+                    buildVirtualNodeMap: function (currGroups) {
+                        var nodeMap = {};
+                        $(currGroups).each(function () {
+                            if (this.id !== this.virtualId) {
+                                nodeMap[this.id] = this;
+                            }
+                        });
+                        return nodeMap;
+                    },
+                    openReleaseScopeDialog: function (groupType) {
                         var $this = this;
                         $this.releaseDialog = true;
+                        $this.currGroupType = groupType;
+                        $this.currGroups = $.extend(true, [], groupType == "wfw" ? $this.wfwGroups : $this.contactsGroups)
                         $this.initTree();
                     },
                     batchConfig: function () {
@@ -231,9 +256,11 @@
                         $this.releaseScopes = [];
                         $this.config = {
                             fid: $this.fid,
-                            groupType: $this.groupType,
-                            signUpScopeType: 1,
-                            signUpScope: '',
+                            marketId: $this.marketId,
+                            wfwSignUpScopeType: 1,
+                            contactsSignUpScopeType: 1,
+                            wfwSignUpScope: '',
+                            contactsSignUpScope: '',
                             allActivityClassify: true,
                             activityClassifyScope: $this.classifyIds
                         };
@@ -245,16 +272,31 @@
                         $this.settingDialog = true;
                         $this.activeRoleName = role.roleName;
                         // 初始化已选报名范围
-                        $this.releaseScopes = [];
+                        $this.wfwReleaseScopes = [];
+                        $this.contactsReleaseScopes = [];
                         var url = ctx + '/api/activity/create/permission/' + role.roleid;
-                        app.ajaxPostWithLoading(url, { fid: $this.fid }, function (data) {
+                        var params = {
+                            fid: $this.fid,
+                            marketId: $this.marketId
+                        };
+                        app.ajaxPostWithLoading(url, params, function (data) {
                             if (data.success) {
                                 var record = data.data;
                                 if (record) {
-                                    $this.releaseScopes = activityApp.getJsonObject(record.signUpScope || '[]');
-                                    $($this.releaseScopes).each(function () {
-                                        if (this.leaf && $this.virtualNodeMap[this.externalId]) {
-                                            this.virtualId = $this.virtualNodeMap[this.externalId].virtualId;
+                                    $this.wfwReleaseScopes = activityApp.getJsonObject(record.wfwSignUpScope || '[]');
+                                    $this.contactsReleaseScopes = activityApp.getJsonObject(record.contactsSignUpScope || '[]');
+                                    var wfwVirtualNodeMap = $this.buildVirtualNodeMap($this.wfwGroups);
+                                    var contactsVirtualNodeMap = $this.buildVirtualNodeMap($this.contactsGroups);
+                                    $($this.wfwReleaseScopes).each(function () {
+                                        if (this.leaf && wfwVirtualNodeMap[this.externalId]) {
+                                            this.virtualId = wfwVirtualNodeMap[this.externalId].virtualId;
+                                        } else {
+                                            this.virtualId = this.externalId;
+                                        }
+                                    });
+                                    $($this.contactsReleaseScopes).each(function () {
+                                        if (this.leaf && contactsVirtualNodeMap[this.externalId]) {
+                                            this.virtualId = contactsVirtualNodeMap[this.externalId].virtualId;
                                         } else {
                                             this.virtualId = this.externalId;
                                         }
@@ -275,10 +317,12 @@
                                 } else {
                                     var defaultAllPermission = {
                                         fid: $this.fid,
+                                        marketId: $this.marketId,
                                         roleId: role.roleid,
-                                        signUpScopeType: 1,
-                                        groupType: $this.groupType,
-                                        signUpScope: '',
+                                        wfwSignUpScopeType: 1,
+                                        contactsSignUpScopeType: 1,
+                                        wfwSignUpScope: '',
+                                        contactsSignUpScope: '',
                                         allActivityClassify: true,
                                         activityClassifyScope: $this.classifyIds
                                     }
@@ -297,57 +341,37 @@
                             $this.loading = false
                         });
                     },
-                    // 确定配置提交
-                    judgeSubmit: function () {
-                        var $this = this;
-                        var config = $.extend({}, $this.config);
-                        // 判断是否组织架构类型不同
-                        var diffGroupType = config.groupType && config.groupType != $this.groupType;
-                        if (diffGroupType) {
-                            $this.$refs.updateWindow.show = true;
-                            return;
-                        }
-                        $this.submitPermissionConfig();
+                    packageSubmitConfig: function () {
+                        var $this = this, config = $.extend({}, $this.config);
+                        var wfwSignUpScope = config.wfwSignUpScopeType == 3 ? $.map($this.wfwReleaseScopes, function (item) {
+                            return { externalId: item.externalId, externalName: item.externalName, leaf: item.leaf };
+                        }) : [];
+                        var contactsSignUpScope = config.contactsSignUpScopeType == 3 ? $.map($this.contactsReleaseScopes, function (item) {
+                            return { externalId: item.externalId, externalName: item.externalName, leaf: item.leaf };
+                        }) : [];
+
+                        config.wfwSignUpScope = activityApp.getJsonStr(wfwSignUpScope);
+                        config.contactsSignUpScope = activityApp.getJsonStr(contactsSignUpScope);
+                        config.activityClassifyScope = config.allActivityClassify ? "" : (config.activityClassifyScope ? config.activityClassifyScope.join(",") : "");
+                        return config;
                     },
+                    // 确定配置提交
                     submitPermissionConfig: function () {
                         var $this = this;
-                        var config = $.extend({}, $this.config);
-                        // 判断是否组织架构类型不同
-                        var diffGroupType = config.groupType && config.groupType != $this.groupType;
-                        // 将当前配置的机构类型设置为 机构的组织架构类型
-                        config.groupType = $this.groupType;
-                        var signUpScope = []
-                        if (config.signUpScopeType == 3) {
-                            $($this.releaseScopes).each(function () {
-                                signUpScope.push({ externalId: this.externalId, externalName: this.externalName, leaf: this.leaf });
-                            });
-                        }
-                        config.signUpScope = activityApp.getJsonStr(signUpScope);
-                        if (config.allActivityClassify) {
-                            config.activityClassifyScope = '';
-                        } else {
-                            if (config.activityClassifyScope) {
-                                config.activityClassifyScope = config.activityClassifyScope.join(',');
-                            }
-                        }
+                        var config = $this.packageSubmitConfig();
+
                         if ($this.isBatch) {
-                            var submitData = [];
-                            $($this.roleList).each(function () {
-                                if (this.checked) {
-                                    submitData.push($.extend({}, config, { roleId: this.roleid }));
-                                }
-                            });
-                            $this.batchConfigSubmit(submitData)
+                            $this.batchConfigSubmit(config)
                         } else {
-                            $this.singleConfigSubmit(config, diffGroupType)
+                            $this.singleConfigSubmit(config)
                         }
-                        $this.cancelConfig()
+                        $this.settingDialog = false;
                     },
                     // 单个配置保存
-                    singleConfigSubmit: function (config, isDiffGroupType) {
+                    singleConfigSubmit: function (config) {
                         var $this = this;
-                        var addUrl = ctx + '/api/activity/create/permission/add';
-                        var editUrl = ctx + '/api/activity/create/permission/edit?clear=' + isDiffGroupType;
+                        var addUrl = ctx + "/api/activity/create/permission/add";
+                        var editUrl = ctx + "/api/activity/create/permission/edit";
                         var url = !config.id ? addUrl : editUrl;
                         app.ajaxPostWithLoading(url, config, function (data) {
                             if (data.success) {
@@ -364,9 +388,20 @@
                         });
                     },
                     // 批量配置保存
-                    batchConfigSubmit: function (submitData) {
+                    batchConfigSubmit: function (config) {
+                        var $this = this;
+                        var roleIds = [];
+                        $($this.roleList).each(function () {
+                            if (this.checked) {
+                                roleIds.push(this.roleid);
+                            }
+                        });
                         var url = ctx + '/api/activity/create/permission/batchConfig';
-                        app.ajaxPostWithPayload(url, JSON.stringify(submitData), function (data) {
+                        var submitData = {
+                            config: JSON.stringify(config),
+                            roleIds: activityApp.getJsonStr(roleIds)
+                        }
+                        app.ajaxPostWithPayload(url, submitData, function (data) {
                             if (data.success) {
                                 app.showMsg("操作成功");
                             } else {
@@ -380,18 +415,20 @@
                             app.showMsg("操作失败");
                         });
                     },
-                    cancelConfig: function () {
+                    closeReleaseScopeConfig: function () {
                         var $this = this;
                         if ($this.organizationTreeObj) {
                             $this.organizationTreeObj.destroy();
                             $this.organizationTreeObj = null;
                         }
-                        $this.settingDialog = false;
+                        $this.currGroups = [];
+                        $this.currGroupType = "";
+                        $this.releaseDialog = false;
                     },
                     /* 渲染z-tree */
                     organizationTreeFun() {
                         var $this = this;
-                        $($this.wfwGroups).each(function () {
+                        $($this.currGroups).each(function () {
                             this.isParent = this.soncount > 0;
                         });
                         var setting = {
@@ -414,10 +451,12 @@
                             },
                             callback: {},
                         };
-                        $this.organizationTreeObj = $.fn.zTree.init($("#organizationTree"), setting, $this.wfwGroups);
+                        $this.organizationTreeObj = $.fn.zTree.init($("#organizationTree"), setting, $this.currGroups);
+                        var releaseScopes = ($this.currGroupType == "wfw" ? $this.wfwReleaseScopes : $this.contactsReleaseScopes) || []
+
                         // 获取所有父节点
-                        for(var i = 0; i < $this.releaseScopes.length; i++) {
-                            var item = $this.releaseScopes[i];
+                        for(var i = 0; i < releaseScopes.length; i++) {
+                            var item = releaseScopes[i];
                             var node = $this.organizationTreeObj.getNodeByParam("virtualId", item.virtualId, null);
                             if (node) {
                                 $this.organizationTreeObj.checkNode(node, true, !item.leaf);
@@ -460,8 +499,12 @@
                                 scopes.push(this);
                             }
                         });
-                        $this.releaseScopes = scopes;
-                        $this.releaseDialog = false;
+                        if ($this.currGroupType == "wfw") {
+                            $this.wfwReleaseScopes = scopes;
+                        } else {
+                            $this.contactsReleaseScopes = scopes;
+                        }
+                        $this.closeReleaseScopeConfig();
                     },
                     removeReleaseScope: function (index) {
                         var $this = this;

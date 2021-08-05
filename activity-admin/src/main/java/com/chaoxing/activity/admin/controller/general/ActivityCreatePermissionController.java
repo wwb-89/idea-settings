@@ -11,6 +11,7 @@ import com.chaoxing.activity.service.manager.WfwGroupApiService;
 import com.chaoxing.activity.service.manager.wfw.WfwContactApiService;
 import com.chaoxing.activity.service.org.OrgConfigService;
 import com.chaoxing.activity.util.annotation.LoginRequired;
+import org.apache.commons.compress.utils.Lists;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -41,29 +42,25 @@ public class ActivityCreatePermissionController {
     private WfwGroupApiService wfwGroupApiService;
     @Resource
     private WfwContactApiService wfwContactApiService;
-    @Resource
-    private OrgConfigService orgConfigService;
 
     @LoginRequired
     @RequestMapping("")
-    public String index(HttpServletRequest request, Model model, Integer wfwfid, Integer unitId, Integer state, Integer fid) {
+    public String index(HttpServletRequest request, Model model, Integer wfwfid, Integer unitId, Integer state, Integer fid, Integer marketId) {
         Integer realFid = Optional.ofNullable(wfwfid).orElse(Optional.ofNullable(unitId).orElse(Optional.ofNullable(state).orElse(Optional.ofNullable(fid).orElse(LoginUtils.getLoginUser(request).getFid()))));
         List<OrgRoleDTO> roleList = organizationalStructureApiService.listOrgRoles(realFid);
-        List<Classify> classifies = classifyQueryService.listOrgClassifies(realFid);
-        OrgConfig orgConfig = orgConfigService.getByFid(realFid);
-        String signUpScopeType = Optional.ofNullable(orgConfig).map(OrgConfig::getSignUpScopeType).orElse("");
-        // 微服务组织架构
-        List<WfwGroupDTO> wfwGroups;
-        if (Objects.equals(signUpScopeType, OrgConfig.SignUpScopeType.CONTACTS.getValue())) {
-            wfwGroups = wfwContactApiService.listUserContactOrgsByFid(realFid);
-        }else {
-            signUpScopeType = OrgConfig.SignUpScopeType.WFW.getValue();
-            wfwGroups = wfwGroupApiService.listGroupByFid(realFid);
-            wfwGroups = wfwGroupApiService.buildWfwGroups(wfwGroups);
+        List<Classify> classifies;
+        if (marketId != null) {
+            classifies = classifyQueryService.listMarketClassifies(marketId);
+        } else {
+            classifies = classifyQueryService.listOrgClassifies(realFid);
         }
+        // 微服务组织架构
+        List<WfwGroupDTO> wfwGroups = WfwGroupDTO.perfectWfwGroups(wfwGroupApiService.listGroupByFid(realFid));
+        List<WfwGroupDTO> contactsGroups = wfwContactApiService.listUserContactOrgsByFid(realFid);
         model.addAttribute("fid", realFid);
-        model.addAttribute("groupType", signUpScopeType);
+        model.addAttribute("marketId", marketId);
         model.addAttribute("wfwGroups", wfwGroups);
+        model.addAttribute("contactsGroups", contactsGroups);
         model.addAttribute("classifyList", classifies);
         model.addAttribute("roleList", roleList);
         return "pc/permission/index";

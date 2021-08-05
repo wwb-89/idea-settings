@@ -2,8 +2,10 @@ package com.chaoxing.activity.admin.controller.general;
 
 import com.chaoxing.activity.admin.util.LoginUtils;
 import com.chaoxing.activity.dto.LoginUserDTO;
+import com.chaoxing.activity.dto.manager.ActivityCreatePermissionDTO;
 import com.chaoxing.activity.dto.manager.sign.create.SignCreateParamDTO;
 import com.chaoxing.activity.dto.manager.wfw.WfwAreaDTO;
+import com.chaoxing.activity.dto.manager.wfw.WfwGroupDTO;
 import com.chaoxing.activity.model.*;
 import com.chaoxing.activity.service.GroupService;
 import com.chaoxing.activity.service.WebTemplateService;
@@ -11,11 +13,11 @@ import com.chaoxing.activity.service.activity.ActivityQueryService;
 import com.chaoxing.activity.service.activity.classify.ClassifyHandleService;
 import com.chaoxing.activity.service.activity.classify.ClassifyQueryService;
 import com.chaoxing.activity.service.activity.engine.ActivityEngineQueryService;
+import com.chaoxing.activity.service.activity.manager.ActivityCreatePermissionService;
 import com.chaoxing.activity.service.activity.template.TemplateQueryService;
 import com.chaoxing.activity.service.manager.WfwGroupApiService;
 import com.chaoxing.activity.service.manager.wfw.WfwAreaApiService;
 import com.chaoxing.activity.service.manager.wfw.WfwContactApiService;
-import com.chaoxing.activity.service.org.OrgService;
 import com.chaoxing.activity.service.tablefield.TableFieldQueryService;
 import com.chaoxing.activity.util.constant.CommonConstant;
 import com.google.common.collect.Lists;
@@ -54,8 +56,6 @@ public class ActivityController {
 	@Resource
 	private WfwAreaApiService wfwAreaApiService;
 	@Resource
-	private OrgService orgService;
-	@Resource
 	private TableFieldQueryService tableFieldQueryService;
 	@Resource
 	private ActivityEngineQueryService activityEngineQueryService;
@@ -65,6 +65,8 @@ public class ActivityController {
 	private ClassifyHandleService classifyHandleService;
 	@Resource
 	private ClassifyQueryService classifyQueryService;
+	@Resource
+	private ActivityCreatePermissionService activityCreatePermissionService;
 
 	/**新活动管理主页
 	 * @Description
@@ -111,12 +113,15 @@ public class ActivityController {
 		// 活动形式列表
 		model.addAttribute("activityTypes", activityQueryService.listActivityType());
 		// 活动分类列表范围
-		if (marketId == null) {
-			classifyHandleService.cloneSystemClassifyToOrg(fid);
-			model.addAttribute("activityClassifies", classifyQueryService.listOrgClassifies(fid));
-		} else {
-			model.addAttribute("activityClassifies", classifyQueryService.listMarketClassifies(marketId));
-		}
+//		if (marketId == null) {
+//			classifyHandleService.cloneSystemClassifyToOrg(fid);
+//			model.addAttribute("activityClassifies", classifyQueryService.listOrgClassifies(fid));
+//		} else {
+//			model.addAttribute("activityClassifies", classifyQueryService.listMarketClassifies(marketId));
+//		}
+		// 当前用户创建活动权限
+		ActivityCreatePermissionDTO permission = activityCreatePermissionService.getActivityCreatePermission(fid, marketId, loginUser.getUid());
+		model.addAttribute("activityClassifies", permission.getClassifies());
 		// 报名签到
 		model.addAttribute("sign", SignCreateParamDTO.builder().build());
 		flag = Optional.of(template).map(Template::getActivityFlag).orElse(flag);
@@ -124,9 +129,11 @@ public class ActivityController {
 		model.addAttribute("webTemplates", webTemplateService.listAvailable(fid, flag));
 		model.addAttribute("areaCode", Optional.ofNullable(code).filter(StringUtils::isNotBlank).map(groupService::getByCode).map(Group::getAreaCode).orElse(""));
 		// 微服务组织架构
-		model.addAttribute("wfwGroups", wfwGroupApiService.buildWfwGroups(wfwGroupApiService.listGroupByFid(fid)));
+//		model.addAttribute("wfwGroups", WfwGroupDTO.perfectWfwGroups(wfwGroupApiService.listGroupByFid(fid)));
+		model.addAttribute("wfwGroups", permission.getWfwGroups());
 		// 通讯录组织架构
-		model.addAttribute("contactGroups", wfwGroupApiService.buildWfwGroups(wfwContactApiService.listUserContactOrgsByFid(fid)));
+//		model.addAttribute("contactGroups", WfwGroupDTO.perfectWfwGroups(wfwContactApiService.listUserContactOrgsByFid(fid)));
+		model.addAttribute("contactGroups", permission.getContactsGroups());
 		model.addAttribute("activityFlag", flag);
 		// 发布范围默认选中当前机构
 		List<WfwAreaDTO> wfwAreaDtos = wfwAreaApiService.listByFid(fid);

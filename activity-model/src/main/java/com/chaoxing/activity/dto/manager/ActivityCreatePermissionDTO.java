@@ -23,15 +23,20 @@ import java.util.List;
 @AllArgsConstructor
 public class ActivityCreatePermissionDTO {
 
-    /** 是否存在不限的发布范围角色权限 */
-    private Boolean existNoLimitPermission;
+    /** 微服务发布范围不受限 */
+    private Boolean wfwReleaseScopeNoLimit;
+
+    /** 通讯录发布范围不受限 */
+    private Boolean contactsReleaseScopeNoLimit;
+
     /**
      * 组织架构
      */
     private List<WfwGroupDTO> wfwGroups;
-
-    /** 组织架构类型 */
-    private String groupType;
+    /**
+     * 组织架构
+     */
+    private List<WfwGroupDTO> contactsGroups;
 
     /**
      * 活动类型
@@ -40,10 +45,11 @@ public class ActivityCreatePermissionDTO {
 
     public static ActivityCreatePermissionDTO buildDefault() {
         return ActivityCreatePermissionDTO.builder()
-                .existNoLimitPermission(Boolean.TRUE)
+                .wfwReleaseScopeNoLimit(Boolean.FALSE)
+                .contactsReleaseScopeNoLimit(Boolean.FALSE)
                 .wfwGroups(Lists.newArrayList())
+                .contactsGroups(Lists.newArrayList())
                 .classifies(Lists.newArrayList())
-                .groupType("wfw")
                 .build();
     }
 }

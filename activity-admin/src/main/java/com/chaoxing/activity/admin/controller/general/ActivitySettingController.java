@@ -6,6 +6,7 @@ import com.chaoxing.activity.dto.activity.ActivityCreateParamDTO;
 import com.chaoxing.activity.dto.blacklist.BlacklistRuleDTO;
 import com.chaoxing.activity.dto.manager.sign.create.SignCreateParamDTO;
 import com.chaoxing.activity.dto.manager.wfw.WfwAreaDTO;
+import com.chaoxing.activity.dto.manager.wfw.WfwGroupDTO;
 import com.chaoxing.activity.model.*;
 import com.chaoxing.activity.service.WebTemplateService;
 import com.chaoxing.activity.service.activity.ActivityQueryService;
@@ -139,9 +140,9 @@ public class ActivitySettingController {
         model.addAttribute("sign", sign);
         // 报名范围
         // 微服务组织架构
-        model.addAttribute("wfwGroups", wfwGroupApiService.buildWfwGroups(wfwGroupApiService.listGroupByFid(loginUser.getFid())));
+        model.addAttribute("wfwGroups", WfwGroupDTO.perfectWfwGroups(wfwGroupApiService.listGroupByFid(loginUser.getFid())));
         // 通讯录组织架构
-        model.addAttribute("contactGroups", wfwGroupApiService.buildWfwGroups(wfwContactApiService.listUserContactOrgsByFid(loginUser.getFid())));
+        model.addAttribute("contactGroups", WfwGroupDTO.perfectWfwGroups(wfwContactApiService.listUserContactOrgsByFid(loginUser.getFid())));
         String activityFlag = activity.getActivityFlag();
         model.addAttribute("activityFlag", activityFlag);
         return "pc/setting/sign-up";

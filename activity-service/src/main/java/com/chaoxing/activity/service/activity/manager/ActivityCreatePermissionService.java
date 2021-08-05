@@ -63,10 +63,11 @@ public class ActivityCreatePermissionService {
     * @param roleId
     * @return com.chaoxing.activity.model.ActivityCreatePermission
     */
-    public ActivityCreatePermission getPermissionByFidRoleId(Integer fid, Integer roleId) {
+    public ActivityCreatePermission getPermissionByFidRoleId(Integer fid, Integer marketId, Integer roleId) {
         List<ActivityCreatePermission> activityCreatePermissions = activityCreatePermissionMapper.selectList(new QueryWrapper<ActivityCreatePermission>()
                 .lambda()
-                .eq(ActivityCreatePermission::getFid, fid)
+                .eq(marketId == null, ActivityCreatePermission::getFid, fid)
+                .eq(marketId != null, ActivityCreatePermission::getMarketId, marketId)
                 .eq(ActivityCreatePermission::getRoleId, roleId));
         if (CollectionUtils.isNotEmpty(activityCreatePermissions)) {
             return activityCreatePermissions.get(0);
@@ -103,67 +104,56 @@ public class ActivityCreatePermissionService {
     * @author huxiaolong
     * @Date 2021-06-02 16:17:46
     * @param uid
-    * @param activityCreatePermissionList
+    * @param roleIds
+    * @param permissionConfig
     * @return void
     */
     @Transactional(rollbackFor = Exception.class)
-    public void batchConfigPermission(Integer uid, List<ActivityCreatePermission> activityCreatePermissionList) {
-        if (CollectionUtils.isEmpty(activityCreatePermissionList)) {
+    public void batchConfigPermission(Integer uid, List<Integer> roleIds, ActivityCreatePermission permissionConfig) {
+        if (CollectionUtils.isEmpty(roleIds)) {
             return;
         }
-        ActivityCreatePermission commonConfig = activityCreatePermissionList.get(0);
-        Integer fid = commonConfig.getFid();
-
-        List<Integer> roleIds = activityCreatePermissionList.stream().map(ActivityCreatePermission::getRoleId).collect(Collectors.toList());
+        Integer fid = permissionConfig.getFid();
+        Integer marketId = permissionConfig.getMarketId();
         List<ActivityCreatePermission> existPermissions = activityCreatePermissionMapper.selectList(new QueryWrapper<ActivityCreatePermission>()
                 .lambda()
-                .eq(ActivityCreatePermission::getFid, fid)
+                .eq(marketId == null, ActivityCreatePermission::getFid, fid)
+                .eq(marketId != null, ActivityCreatePermission::getMarketId, marketId)
                 .in(ActivityCreatePermission::getRoleId, roleIds)
                 .eq(ActivityCreatePermission::getDeleted, Boolean.FALSE));
 
         // 更新数据
         List<Integer> existIds = Lists.newArrayList();
         List<Integer> existRoleIds = Lists.newArrayList();
+        existPermissions.forEach(v -> {
+            existIds.add(v.getId());
+            existRoleIds.add(v.getRoleId());
+        });
 
-        for (ActivityCreatePermission permission : existPermissions) {
-            existIds.add(permission.getId());
-            existRoleIds.add(permission.getRoleId());
-        }
-
-        OrgConfig orgConfig = orgConfigService.getByFid(fid);
-        int count = activityCreatePermissionMapper.selectCount(new QueryWrapper<ActivityCreatePermission>().lambda().ne(ActivityCreatePermission::getGroupType, orgConfig.getSignUpScopeType()));
-        // 若存在与机构类型不匹配的权限配置，则清空并修改机构类型
-        if (count != 0) {
-            clearOtherDiffGroupPermission(uid, fid);
-        }
         // 批量更新数据
         if (!existIds.isEmpty()) {
             activityCreatePermissionMapper.update(null, new UpdateWrapper<ActivityCreatePermission>()
                     .lambda()
                     .in(ActivityCreatePermission::getId, existIds)
-                    .set(ActivityCreatePermission::getAllActivityClassify, commonConfig.getAllActivityClassify())
-                    .set(ActivityCreatePermission::getActivityClassifyScope, commonConfig.getActivityClassifyScope())
-                    .set(ActivityCreatePermission::getSignUpScopeType, commonConfig.getSignUpScopeType())
-                    .set(ActivityCreatePermission::getSignUpScope, commonConfig.getSignUpScope())
+                    .set(ActivityCreatePermission::getAllActivityClassify, permissionConfig.getAllActivityClassify())
+                    .set(ActivityCreatePermission::getActivityClassifyScope, permissionConfig.getActivityClassifyScope())
+                    .set(ActivityCreatePermission::getWfwSignUpScope, permissionConfig.getWfwSignUpScope())
+                    .set(ActivityCreatePermission::getWfwSignUpScopeType, permissionConfig.getWfwSignUpScopeType())
+                    .set(ActivityCreatePermission::getContactsSignUpScope, permissionConfig.getContactsSignUpScope())
+                    .set(ActivityCreatePermission::getContactsSignUpScopeType, permissionConfig.getContactsSignUpScopeType())
                     .set(ActivityCreatePermission::getUpdateUid, uid)
                     .set(ActivityCreatePermission::getUpdateTime, LocalDateTime.now()));
         }
 
         roleIds.removeAll(existRoleIds);
         if (!roleIds.isEmpty()) {
-            List<ActivityCreatePermission> waitSavePermissions = Lists.newArrayList();
-            for (Integer roleId : roleIds) {
-                waitSavePermissions.add(ActivityCreatePermission.builder()
-                        .fid(fid)
-                        .roleId(roleId)
-                        .allActivityClassify(commonConfig.getAllActivityClassify())
-                        .activityClassifyScope(commonConfig.getActivityClassifyScope())
-                        .signUpScopeType(commonConfig.getSignUpScopeType())
-                        .signUpScope(commonConfig.getSignUpScope())
-                        .createUid(uid)
-                        .updateUid(uid)
-                        .build());
-            }
+            List<ActivityCreatePermission> waitSavePermissions = roleIds.stream().map(v -> {
+                ActivityCreatePermission acp = ActivityCreatePermission.buildActivityCreatePermission(permissionConfig);
+                acp.setRoleId(v);
+                acp.setCreateUid(uid);
+                acp.setUpdateUid(uid);
+                return acp;
+            }).collect(Collectors.toList());
             activityCreatePermissionMapper.batchAdd(waitSavePermissions);
         }
     }
@@ -176,7 +166,7 @@ public class ActivityCreatePermissionService {
     * @param uid
     * @return void
     */
-    public ActivityCreatePermissionDTO getGroupClassifyByUserPermission(Integer fid, Integer uid) {
+    public ActivityCreatePermissionDTO getActivityCreatePermission(Integer fid, Integer marketId, Integer uid) {
         ActivityCreatePermissionDTO activityCreatePermission = ActivityCreatePermissionDTO.buildDefault();
         // 查询用户的角色id
         List<Integer> userRoleIds = moocApiService.getUserRoleIds(fid, uid);
@@ -184,98 +174,110 @@ public class ActivityCreatePermissionService {
         if (CollectionUtils.isEmpty(userRoleIds)) {
             return activityCreatePermission;
         }
-        OrgConfig orgConfig = orgConfigService.getByFid(fid);
         List<ActivityCreatePermission> createPermissions = activityCreatePermissionMapper.selectList(new QueryWrapper<ActivityCreatePermission>()
                 .lambda()
-                .eq(ActivityCreatePermission::getFid, fid)
+                .eq(marketId == null, ActivityCreatePermission::getFid, fid)
+                .eq(marketId != null, ActivityCreatePermission::getMarketId, marketId)
                 .in(ActivityCreatePermission::getRoleId, userRoleIds)
                 .eq(ActivityCreatePermission::getDeleted, Boolean.FALSE));
-        String groupType = "";
-        if (CollectionUtils.isNotEmpty(createPermissions)) {
-            groupType = createPermissions.get(0).getGroupType();
-        } else if (orgConfig != null) {
-            groupType = orgConfig.getSignUpScopeType();
-        }
-        if (StringUtils.isBlank(groupType)) {
-            groupType = OrgConfig.SignUpScopeType.WFW.getValue();
-        }
-        activityCreatePermission.setGroupType(groupType);
 
-        List<WfwGroupDTO> wfwGroups = Lists.newArrayList();
-        if (Objects.equals(OrgConfig.SignUpScopeType.WFW.getValue(), groupType)) {
-            wfwGroups = wfwGroupApiService.listGroupByFid(fid);
-        } else if (Objects.equals(OrgConfig.SignUpScopeType.CONTACTS.getValue(), groupType)) {
-            wfwGroups = wfwContactApiService.listUserContactOrgsByFid(fid);
-        }
+        List<WfwGroupDTO> wfwGroups = wfwGroupApiService.listGroupByFid(fid);
+        List<WfwGroupDTO> contactsGroups = wfwContactApiService.listUserContactOrgsByFid(fid);
 
-        List<Classify> classifies = classifyQueryService.listOrgClassifies(fid);
+        List<Classify> classifies;
+        if (marketId != null) {
+            classifies = classifyQueryService.listMarketClassifies(marketId);
+        } else {
+            classifies = classifyQueryService.listOrgClassifies(fid);
+        }
         // 若查出的角色配置权限数量少于userRoleIds的数量 证明有未配置权限的角色，则以该角色最大权限返回数据
         if (createPermissions.size() < userRoleIds.size()) {
             activityCreatePermission.setClassifies(classifies);
-            activityCreatePermission.setWfwGroups(wfwGroupApiService.buildWfwGroups(wfwGroups));
+            activityCreatePermission.setWfwGroups(WfwGroupDTO.perfectWfwGroups(wfwGroups));
+            activityCreatePermission.setContactsGroups(WfwGroupDTO.perfectWfwGroups(contactsGroups));
             return activityCreatePermission;
         }
 
-        // 标识，判断是否设置全量权限范围, setManageGroupScope: 是否已经查找设置主管管理权限，若设置了置位true， 限制只查询一次
-        boolean setAllReleaseScope = Boolean.FALSE;
-        boolean setManageGroupScope = Boolean.FALSE;
-        boolean setClassifyScope = Boolean.FALSE;
-        Set<SignUpParticipateScopeDTO> releaseScopes = Sets.newHashSet();
-        List<Integer> manageGroupIds = Lists.newArrayList();
-        Set<Integer> classifyIdSet = Sets.newHashSet();
-        for (ActivityCreatePermission permission : createPermissions) {
-            if (setAllReleaseScope && setClassifyScope) {
-                return activityCreatePermission;
-            }
-            // 若有角色配置为不限，则以该配置返回角色权限数据
-            if (!setAllReleaseScope) {
-                if (Objects.equals(permission.getSignUpScopeType(), ActivityCreatePermission.SignUpScopeType.NO_LIMIT.getValue())) {
-                    activityCreatePermission.setWfwGroups(wfwGroupApiService.buildWfwGroups(wfwGroups));
-                    setAllReleaseScope = Boolean.TRUE;
-                }
-                if (!setAllReleaseScope) {
-                    if (!setManageGroupScope && Objects.equals(permission.getSignUpScopeType(), ActivityCreatePermission.SignUpScopeType.COMPETENT_RANGE.getValue())) {
-                        if (Objects.equals(permission.getGroupType(), OrgConfig.SignUpScopeType.WFW.getValue())) {
-                            manageGroupIds = wfwGroupApiService.listUserManageGroupIdByFid(fid, uid);
-                        } else if (Objects.equals(permission.getGroupType(), OrgConfig.SignUpScopeType.CONTACTS.getValue())) {
-                            List<WfwDepartmentDTO> departments = wfwContactApiService.listManagerDepartment(fid, uid);
-                            manageGroupIds = departments.stream().map(WfwDepartmentDTO::getId).collect(Collectors.toList());
-                        }
-                        setManageGroupScope = Boolean.TRUE;
-                    }
-                    // 获取用户角色发布范围并集
-                    if (StringUtils.isNotBlank(permission.getSignUpScope())) {
-                        releaseScopes.addAll(JSON.parseArray(permission.getSignUpScope(), SignUpParticipateScopeDTO.class));
-                    }
-                }
-            }
-            if (!setClassifyScope) {
-                if (permission.getAllActivityClassify()) {
-                    activityCreatePermission.setClassifies(classifies);
-                    setClassifyScope = Boolean.TRUE;
-                }
-                // 获取用户角色活动类型范围并集
-                if (StringUtils.isNotBlank(permission.getActivityClassifyScope())) {
-                    List<String> splitIds = Arrays.asList(permission.getActivityClassifyScope().split(","));
-                    List<Integer> ids = Lists.newArrayList();
-                    CollectionUtils.collect(splitIds, Integer::valueOf, ids);
-                    classifyIdSet.addAll(ids);
-                }
-            }
-        }
-        if (!setAllReleaseScope) {
-            // 基于不存在角色有不限的发布范围，若有设置基于管理的角色，查询管理的组织架构，构建和发布范围一致的实体
-            if (setManageGroupScope) {
-                List<SignUpParticipateScopeDTO> additionalReleaseScopes = packageReleaseScopes(manageGroupIds, wfwGroups);
-                releaseScopes.addAll(additionalReleaseScopes);
-            }
-            activityCreatePermission.setWfwGroups(buildWfwGroups(releaseScopes, wfwGroups));
-        }
-        if (!setClassifyScope) {
-            activityCreatePermission.setClassifies(listActivityClassify(classifyIdSet, classifies));
-        }
-        activityCreatePermission.setExistNoLimitPermission(Boolean.FALSE);
+        activityCreatePermission.setWfwGroups(buildWfwReleaseScopes(fid, uid, createPermissions, wfwGroups));
+        activityCreatePermission.setContactsGroups(buildContactsReleaseScopes(fid, uid, createPermissions, wfwGroups));
+        activityCreatePermission.setClassifies(buildClassifies(classifies, createPermissions));
         return activityCreatePermission;
+    }
+
+    private List<WfwGroupDTO> buildWfwReleaseScopes(Integer fid, Integer uid, List<ActivityCreatePermission> permissions, List<WfwGroupDTO> wfwGroups) {
+        boolean hasSetManageGroupScope = Boolean.FALSE;
+        List<Integer> manageGroupIds = Lists.newArrayList();
+        Set<SignUpParticipateScopeDTO> wfwReleaseScopes = Sets.newHashSet();
+        for (ActivityCreatePermission permission : permissions) {
+            if (Objects.equals(permission.getWfwSignUpScopeType(), ActivityCreatePermission.SignUpScopeType.NO_LIMIT.getValue())) {
+                return WfwGroupDTO.perfectWfwGroups(wfwGroups);
+            }
+            if (!hasSetManageGroupScope && Objects.equals(permission.getWfwSignUpScopeType(), ActivityCreatePermission.SignUpScopeType.COMPETENT_RANGE.getValue())) {
+                manageGroupIds = wfwGroupApiService.listUserManageGroupIdByFid(fid, uid);
+                hasSetManageGroupScope = Boolean.TRUE;
+            }
+            // 获取用户角色发布范围并集
+            if (StringUtils.isNotBlank(permission.getWfwSignUpScope())) {
+                wfwReleaseScopes.addAll(JSON.parseArray(permission.getWfwSignUpScope(), SignUpParticipateScopeDTO.class));
+            }
+        }
+        // 如果其中角色有配置了作为管理的发布范围，则需要补充管理的组织架构
+        if (hasSetManageGroupScope) {
+            List<SignUpParticipateScopeDTO> additionalReleaseScopes = packageParticipateScopes(manageGroupIds, wfwGroups);
+            wfwReleaseScopes.addAll(additionalReleaseScopes);
+        }
+        return buildWfwGroups(wfwReleaseScopes, wfwGroups);
+    }
+
+    private List<WfwGroupDTO> buildContactsReleaseScopes(Integer fid, Integer uid, List<ActivityCreatePermission> permissions, List<WfwGroupDTO> contactsGroups) {
+        boolean hasSetManageGroupScope = Boolean.FALSE;
+        List<Integer> manageGroupIds = Lists.newArrayList();
+        Set<SignUpParticipateScopeDTO> contactsReleaseScopes = Sets.newHashSet();
+        for (ActivityCreatePermission permission : permissions) {
+            if (Objects.equals(permission.getContactsSignUpScopeType(), ActivityCreatePermission.SignUpScopeType.NO_LIMIT.getValue())) {
+                return WfwGroupDTO.perfectWfwGroups(contactsGroups);
+            }
+            if (!hasSetManageGroupScope && Objects.equals(permission.getContactsSignUpScopeType(), ActivityCreatePermission.SignUpScopeType.COMPETENT_RANGE.getValue())) {
+                List<WfwDepartmentDTO> departments = wfwContactApiService.listManagerDepartment(fid, uid);
+                manageGroupIds = departments.stream().map(WfwDepartmentDTO::getId).collect(Collectors.toList());
+                hasSetManageGroupScope = Boolean.TRUE;
+            }
+            // 获取用户角色发布范围并集
+            if (StringUtils.isNotBlank(permission.getContactsSignUpScope())) {
+                contactsReleaseScopes.addAll(JSON.parseArray(permission.getContactsSignUpScope(), SignUpParticipateScopeDTO.class));
+            }
+        }
+        // 如果其中角色有配置了作为管理的发布范围，则需要补充管理的组织架构
+        if (hasSetManageGroupScope) {
+            List<SignUpParticipateScopeDTO> additionalReleaseScopes = packageParticipateScopes(manageGroupIds, contactsGroups);
+            contactsReleaseScopes.addAll(additionalReleaseScopes);
+        }
+        return buildWfwGroups(contactsReleaseScopes, contactsGroups);
+    }
+
+    /**根据权限中的活动类型范围并集，获取过滤权限下的活动类型列表
+    * @Description
+    * @author huxiaolong
+    * @Date 2021-08-05 18:39:50
+    * @param classifies
+    * @param permissions
+    * @return java.util.List<com.chaoxing.activity.model.Classify>
+    */
+    private List<Classify> buildClassifies(List<Classify> classifies, List<ActivityCreatePermission> permissions) {
+        Set<Integer> classifyIdSet = Sets.newHashSet();
+        for (ActivityCreatePermission permission : permissions) {
+            if (permission.getAllActivityClassify()) {
+                return classifies;
+            }
+            // 获取用户角色活动类型范围并集
+            if (StringUtils.isNotBlank(permission.getActivityClassifyScope())) {
+                List<String> splitIds = Arrays.asList(permission.getActivityClassifyScope().split(","));
+                List<Integer> ids = Lists.newArrayList();
+                CollectionUtils.collect(splitIds, Integer::valueOf, ids);
+                classifyIdSet.addAll(ids);
+            }
+        }
+        return classifies.stream().filter(v -> classifyIdSet.contains(v.getId())).collect(Collectors.toList());
     }
 
     /**根据管理的机构id，构建发布范围实体
@@ -286,7 +288,7 @@ public class ActivityCreatePermissionService {
     * @param wfwGroups
     * @return java.util.List<com.chaoxing.activity.dto.sign.SignUpParticipateScopeDTO>
     */
-    private List<SignUpParticipateScopeDTO> packageReleaseScopes(List<Integer> manageGroupIds, List<WfwGroupDTO> wfwGroups) {
+    private List<SignUpParticipateScopeDTO> packageParticipateScopes(List<Integer> manageGroupIds, List<WfwGroupDTO> wfwGroups) {
         List<SignUpParticipateScopeDTO> scopes = Lists.newArrayList();
         for (WfwGroupDTO group : wfwGroups) {
             Integer groupId = Integer.valueOf(group.getId());
@@ -417,36 +419,5 @@ public class ActivityCreatePermissionService {
         result.add(pGroup);
         resultIdSet.add(Integer.valueOf(pGroup.getId()));
         recursionSearchChildGroup(pGroup, wfwGroups, result, resultIdSet);
-    }
-
-    /**根据权限中的活动类型范围并集，获取过滤权限下的活动类型列表
-     * @Description 
-    * @author huxiaolong
-    * @Date 2021-06-03 15:44:28
-    * @param classifyIdSet
-    * @param classifies
-    * @return java.util.List<com.chaoxing.activity.model.Classify>
-    */
-    private List<Classify> listActivityClassify(Set<Integer> classifyIdSet, List<Classify> classifies) {
-        List<Classify> result = Lists.newArrayList();
-        for (Classify classify: classifies) {
-            if (classifyIdSet.contains(classify.getId())) {
-                result.add(classify);
-            }
-        }
-        return result;
-    }
-
-    @Transactional(rollbackFor = Exception.class)
-    public void clearOtherDiffGroupPermission(Integer uid, Integer fid) {
-        OrgConfig orgConfig = orgConfigService.getByFid(fid);
-        activityCreatePermissionMapper.update(null, new UpdateWrapper<ActivityCreatePermission>()
-                .lambda()
-                .eq(ActivityCreatePermission::getFid, fid)
-                .set(ActivityCreatePermission::getGroupType, orgConfig.getSignUpScopeType())
-                .set(ActivityCreatePermission::getSignUpScopeType, ActivityCreatePermission.SignUpScopeType.NO_LIMIT.getValue())
-                .set(ActivityCreatePermission::getSignUpScope, null)
-                .set(ActivityCreatePermission::getUpdateUid, uid)
-                .set(ActivityCreatePermission::getUpdateTime, LocalDateTime.now()));
     }
 }

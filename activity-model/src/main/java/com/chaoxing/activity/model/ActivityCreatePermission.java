@@ -30,6 +30,8 @@ public class ActivityCreatePermission {
     private Integer id;
     /** 所属机构id; column: fid*/
     private Integer fid;
+    /** 市场id; column: market_id*/
+    private Integer marketId;
     /** 角色id; column: role_id*/
     private Integer roleId;
     /** 是否全选; column: is_all_activity_classify*/
@@ -37,10 +39,10 @@ public class ActivityCreatePermission {
     private Boolean allActivityClassify;
     /** 活动类型范围，以","分割的活动类型id列表; column: activity_classify_scope*/
     private String activityClassifyScope;
-    /** 组织机构类型; column: group_type*/
-    private String groupType;
-    /** 报名范围类型; column: sign_up_scope_type*/
-    private Integer signUpScopeType;
+    /** 报名范围类型; column: wfw_sign_up_scope_type*/
+    private Integer wfwSignUpScopeType;
+    /** 报名范围类型; column: contacts_sign_up_scope_type*/
+    private Integer contactsSignUpScopeType;
     /** 是否被删除; column: is_deleted*/
     @TableField(value = "is_deleted")
     private Boolean deleted;
@@ -54,8 +56,10 @@ public class ActivityCreatePermission {
     private LocalDateTime updateTime;
     /** 更新人id; column: update_uid*/
     private Integer updateUid;
-    /** 报名范围。以","分割的id列表; column: sign_up_scope*/
-    private String signUpScope;
+    /** 报名范围。以","分割的id列表; column: wfw_sign_up_scope*/
+    private String wfwSignUpScope;
+    /** 报名范围。以","分割的id列表; column: contacts_sign_up_scope*/
+    private String contactsSignUpScope;
 
     /**
     * @Description
@@ -89,4 +93,16 @@ public class ActivityCreatePermission {
         }
     }
 
+    public static ActivityCreatePermission buildActivityCreatePermission(ActivityCreatePermission permission) {
+        return ActivityCreatePermission.builder()
+                .fid(permission.getFid())
+                .marketId(permission.getMarketId())
+                .allActivityClassify(permission.getAllActivityClassify())
+                .activityClassifyScope(permission.getActivityClassifyScope())
+                .wfwSignUpScope(permission.getWfwSignUpScope())
+                .wfwSignUpScopeType(permission.getWfwSignUpScopeType())
+                .contactsSignUpScope(permission.getContactsSignUpScope())
+                .contactsSignUpScopeType(permission.getContactsSignUpScopeType())
+                .build();
+    }
 }

@@ -1,11 +1,15 @@
 package com.chaoxing.activity.dto.manager.wfw;
 
+import com.google.common.collect.Lists;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.apache.commons.collections4.CollectionUtils;
+import org.springframework.beans.BeanUtils;
 
 import java.util.List;
+import java.util.UUID;
 
 /**
  * @author xhl
@@ -34,4 +38,24 @@ public class WfwGroupDTO {
     private Integer groupLevel;
     /** 下级 */
     private List<WfwGroupDTO> children;
+
+    public static List<WfwGroupDTO> perfectWfwGroups(List<WfwGroupDTO> wfwGroups) {
+        List<WfwGroupDTO> result = Lists.newArrayList();
+        if (CollectionUtils.isEmpty(wfwGroups)) {
+            return result;
+        }
+        for (WfwGroupDTO group : wfwGroups) {
+            group.setVirtualId(group.getId());
+            result.add(group);
+            if (group.getSoncount() > 0) {
+                WfwGroupDTO item = new WfwGroupDTO();
+                BeanUtils.copyProperties(group, item);
+                item.setVirtualId(UUID.randomUUID().toString().trim().replaceAll("-", ""));
+                item.setSoncount(0);
+                item.setGid(item.getId());
+                result.add(item);
+            }
+        }
+        return result;
+    }
 }

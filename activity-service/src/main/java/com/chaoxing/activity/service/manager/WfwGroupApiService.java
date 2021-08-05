@@ -99,34 +99,7 @@ public class WfwGroupApiService {
         }
         return wfwGroupResult;
     }
-
-    /**全量返回组织架构列表前进行的处理
-     * @Description
-     * @author huxiaolong
-     * @Date 2021-06-03 14:49:07
-     * @param wfwGroups
-     * @return void
-     */
-    public List<WfwGroupDTO> buildWfwGroups(List<WfwGroupDTO> wfwGroups) {
-        List<WfwGroupDTO> result = Lists.newArrayList();
-        if (CollectionUtils.isEmpty(wfwGroups)) {
-            return result;
-        }
-        for (WfwGroupDTO group : wfwGroups) {
-            group.setVirtualId(group.getId());
-            result.add(group);
-            if (group.getSoncount() > 0) {
-                WfwGroupDTO item = new WfwGroupDTO();
-                BeanUtils.copyProperties(group, item);
-                item.setVirtualId(UUID.randomUUID().toString().trim().replaceAll("-", ""));
-                item.setSoncount(0);
-                item.setGid(item.getId());
-                result.add(item);
-            }
-        }
-        return result;
-    }
-
+    
     private List<WfwGroupDTO> listSub(Map<String, List<WfwGroupDTO>> gidGroups, String gid, Integer level) {
         List<WfwGroupDTO> result = gidGroups.get(gid);
         if (CollectionUtils.isNotEmpty(result)) {
