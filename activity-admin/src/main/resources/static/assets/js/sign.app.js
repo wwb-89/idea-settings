@@ -51,6 +51,8 @@
             btnName: "报名参与",
             endAllowCancel: true,
             endNotAllowCancel: false,
+            notAllowCancelType: "after_sign_up_end",
+            notAllowCancelDays: 0,
             enableWfwParticipateScope: false,
             enableContactsParticipateScope: false,
             activityFlag: "",
