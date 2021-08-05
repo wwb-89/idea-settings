@@ -5,7 +5,6 @@ import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
-import com.chaoxing.activity.dto.activity.ActivityCreateParamDTO;
 import com.chaoxing.activity.util.LocalDateTimeDeserializer;
 import com.chaoxing.activity.util.LocalDateTimeSerializer;
 import com.chaoxing.activity.util.exception.BusinessException;
@@ -14,10 +13,8 @@ import lombok.*;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.time.ZoneOffset;
 import java.util.List;
 import java.util.Objects;
-import java.util.Optional;
 
 /**
  * 活动表
@@ -362,47 +359,4 @@ public class Activity {
         return Objects.equals(StatusEnum.ENDED.getValue(), getStatus());
     }
 
-
-    /**构建活动对象
-    * @Description
-    * @author huxiaolong
-    * @Date 2021-07-19 10:42:48
-    * @param
-    * @return com.chaoxing.activity.dto.activity.ActivityCreateParamDTO
-    */
-    public ActivityCreateParamDTO buildActivityCreateParam() {
-        return ActivityCreateParamDTO.builder()
-                .id(id)
-                .name(getName())
-                .startTimeStamp(startTime == null ? null : startTime.toInstant(ZoneOffset.of("+8")).toEpochMilli())
-                .endTimeStamp(endTime == null ? null : endTime.toInstant(ZoneOffset.of("+8")).toEpochMilli())
-                .coverCloudId(coverCloudId)
-                .coverUrl(coverUrl)
-                .organisers(organisers)
-                .activityType(activityType)
-                .address(address)
-                .detailAddress(detailAddress)
-                .longitude(longitude)
-                .dimension(dimension)
-                .activityClassifyId(activityClassifyId)
-                .period(period)
-                .credit(credit)
-                .timeLengthUpperLimit(timeLengthUpperLimit)
-                .timingRelease(timingRelease)
-                .timingReleaseTimeStamp(Optional.ofNullable(timingReleaseTime).map(v -> timingReleaseTime.toInstant(ZoneOffset.of("+8")).toEpochMilli()).orElse(null))
-//                .openAudit()
-                .createAreaCode(createAreaCode)
-                .tags(tags)
-                .openRating(openRating)
-                .ratingNeedAudit(ratingNeedAudit)
-                .integral(integral)
-                .openWork(openWork)
-                .originType(originType)
-                .origin(origin)
-                .webTemplateId(webTemplateId)
-                .previewUrl(previewUrl)
-                .editUrl(editUrl)
-                .activityClassifyName(activityClassifyName)
-                .build();
-    }
 }

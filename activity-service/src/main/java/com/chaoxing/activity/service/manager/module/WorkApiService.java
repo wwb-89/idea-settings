@@ -75,6 +75,19 @@ public class WorkApiService {
 		}
 	}
 
+	/**创建一个默认的作品征集
+	 * @Description 
+	 * @author wwb
+	 * @Date 2021-08-05 16:37:51
+	 * @param uid
+	 * @param fid
+	 * @return java.lang.Integer
+	*/
+	public Integer createDefault(Integer uid, Integer fid) {
+		WorkFormDTO workFormDto = WorkFormDTO.buildDefault(uid, fid);
+		return create(workFormDto);
+	}
+
 	/**清空活动发布范围缓存
 	 * @Description
 	 * @author wwb

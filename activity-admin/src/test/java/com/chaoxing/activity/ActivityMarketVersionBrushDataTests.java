@@ -1,4 +1,4 @@
-package com.chaoxing.activity.admin;
+package com.chaoxing.activity;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;

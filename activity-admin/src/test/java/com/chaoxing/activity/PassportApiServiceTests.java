@@ -1,4 +1,4 @@
-package com.chaoxing.activity.admin;
+package com.chaoxing.activity;
 
 import com.chaoxing.activity.dto.manager.PassportUserDTO;
 import com.chaoxing.activity.service.manager.PassportApiService;

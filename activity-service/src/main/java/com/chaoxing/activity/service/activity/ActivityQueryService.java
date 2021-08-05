@@ -748,7 +748,7 @@ public class ActivityQueryService {
 			return ActivityCreateParamDTO.buildDefault();
 		}
 		Integer activityId = activity.getId();
-		ActivityCreateParamDTO createParamDTO = activity.buildActivityCreateParam();
+		ActivityCreateParamDTO createParamDTO = ActivityCreateParamDTO.buildFromActivity(activity);
 
 		ActivityDetail activityDetail = getDetailByActivityId(activityId);
 		createParamDTO.setIntroduction(activityDetail.getIntroduction());

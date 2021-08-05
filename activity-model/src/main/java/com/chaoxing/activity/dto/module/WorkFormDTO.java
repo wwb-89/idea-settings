@@ -1,9 +1,12 @@
 package com.chaoxing.activity.dto.module;
 
+import com.chaoxing.activity.util.DateUtils;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+
+import java.time.LocalDateTime;
 
 /**作品征集表单对象
  * @author wwb
@@ -31,5 +34,17 @@ public class WorkFormDTO {
 	private Long startTime;
 	/** 结束时间 */
 	private Long endTime;
+
+	public static WorkFormDTO buildDefault(Integer uid, Integer fid) {
+		LocalDateTime startTime = LocalDateTime.now();
+		LocalDateTime endTime = startTime.plusMonths(1);
+		return WorkFormDTO.builder()
+				.name("作品征集")
+				.uid(uid)
+				.wfwfid(fid)
+				.startTime(DateUtils.date2Timestamp(startTime))
+				.endTime(DateUtils.date2Timestamp(endTime))
+				.build();
+	}
 
 }

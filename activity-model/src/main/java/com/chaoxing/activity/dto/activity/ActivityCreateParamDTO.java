@@ -12,6 +12,7 @@ import lombok.NoArgsConstructor;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.time.ZoneOffset;
 import java.util.List;
 import java.util.Optional;
 
@@ -78,6 +79,8 @@ public class ActivityCreateParamDTO {
 	private BigDecimal integral;
 	/** 是否开启作品征集 */
 	private Boolean openWork;
+	/** 作品征集id */
+	private Integer workId;
 	/** 来源类型 */
 	private String originType;
 	/** 来源值 */
@@ -142,8 +145,55 @@ public class ActivityCreateParamDTO {
 				.ratingNeedAudit(getRatingNeedAudit())
 				.integral(getIntegral())
 				.openWork(getOpenWork())
+				.workId(getWorkId())
 				.marketId(getMarketId())
 				.templateId(getTemplateId())
+				.build();
+	}
+
+	/**构建活动对象
+	 * @Description
+	 * @author huxiaolong
+	 * @Date 2021-07-19 10:42:48
+	 * @param activity
+	 * @return com.chaoxing.activity.dto.activity.ActivityCreateParamDTO
+	 */
+	public static ActivityCreateParamDTO buildFromActivity(Activity activity) {
+		LocalDateTime startTime = activity.getStartTime();
+		LocalDateTime endTime = activity.getEndTime();
+		LocalDateTime timingReleaseTime = activity.getTimingReleaseTime();
+		return ActivityCreateParamDTO.builder()
+				.id(activity.getId())
+				.name(activity.getName())
+				.startTimeStamp(startTime == null ? null : startTime.toInstant(ZoneOffset.of("+8")).toEpochMilli())
+				.endTimeStamp(endTime == null ? null : endTime.toInstant(ZoneOffset.of("+8")).toEpochMilli())
+				.coverCloudId(activity.getCoverCloudId())
+				.coverUrl(activity.getCoverUrl())
+				.organisers(activity.getOrganisers())
+				.activityType(activity.getActivityType())
+				.address(activity.getAddress())
+				.detailAddress(activity.getDetailAddress())
+				.longitude(activity.getLongitude())
+				.dimension(activity.getDimension())
+				.activityClassifyId(activity.getActivityClassifyId())
+				.period(activity.getPeriod())
+				.credit(activity.getCredit())
+				.timeLengthUpperLimit(activity.getTimeLengthUpperLimit())
+				.timingRelease(activity.getTimingRelease())
+				.timingReleaseTimeStamp(Optional.ofNullable(timingReleaseTime).map(v -> timingReleaseTime.toInstant(ZoneOffset.of("+8")).toEpochMilli()).orElse(null))
+				.createAreaCode(activity.getCreateAreaCode())
+				.tags(activity.getTags())
+				.openRating(activity.getOpenRating())
+				.ratingNeedAudit(activity.getRatingNeedAudit())
+				.integral(activity.getIntegral())
+				.openWork(activity.getOpenWork())
+				.workId(activity.getWorkId())
+				.originType(activity.getOriginType())
+				.origin(activity.getOrigin())
+				.webTemplateId(activity.getWebTemplateId())
+				.previewUrl(activity.getPreviewUrl())
+				.editUrl(activity.getEditUrl())
+				.activityClassifyName(activity.getActivityClassifyName())
 				.build();
 	}
 

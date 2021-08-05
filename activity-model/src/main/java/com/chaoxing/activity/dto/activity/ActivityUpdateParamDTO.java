@@ -143,6 +143,7 @@ public class ActivityUpdateParamDTO {
 				.ratingNeedAudit(getRatingNeedAudit())
 				.integral(getIntegral())
 				.openWork(getOpenWork())
+				.workId(getWorkId())
 				.build();
 	}
 

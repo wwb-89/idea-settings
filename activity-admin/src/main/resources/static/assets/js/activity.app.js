@@ -364,6 +364,14 @@
             window.fireEvent("onresize");
         }
     };
+    /**
+     * 返回作品征集的管理地址
+     * @param workId
+     * @returns {string}
+     */
+    activityApp.prototype.getWorkManageUrl = function (workId) {
+        return "http://reading.chaoxing.com/zj//manage/activity/" + workId + "/new?isHideHeader=true";
+    };
     W['activityApp'] = new activityApp();
 })(window, jQuery, JSON);
 Array.prototype.remove = function (val) {

@@ -104,7 +104,6 @@ public class ActivityManageController {
 	 * @param model
 	 * @param activityId
 	 * @param request
-	 * @param step
 	 * @param strict
 	 * @return java.lang.String
 	 */
