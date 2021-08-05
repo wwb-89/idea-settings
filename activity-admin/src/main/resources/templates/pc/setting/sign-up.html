@@ -145,7 +145,7 @@
                             <el-radio-group v-model="signUpMap[item.id].notAllowCancelType">
                                 <el-radio v-for="(item, index) of notAllowCancelTypes" :key="'not-allow-cancel-type' + index" :label="item.value">{{item.label}}</el-radio>
                             </el-radio-group>
-                            <input type="number" min="0" step="1" v-model="signUpMap[item.id].notAllowCancelDays" style="margin-left: 8px; width: 120px" class="score-input">天
+                            <input type="number" min="0" step="1" v-model="signUpMap[item.id].notAllowCancelDays" style="margin-left: 8px; width: 120px" class="score-input" @blur="cancelSignUpDaysValidate(item.id)">天
                         </div>
                     </div>
                 </template>
@@ -301,7 +301,7 @@
                             }
                         }
                         $this.$set($this.sign.signUps[i], "endNotAllowCancel", !this.endAllowCancel);
-                        if (!this.endAllowCancel) {
+                        if (!this.endAllowCancel && !this.notAllowCancelType) {
                             $this.$set($this.sign.signUps[i], "notAllowCancelType", $this.notAllowCancelTypes[0].value);
                             $this.$set($this.sign.signUps[i], "notAllowCancelDays", 0);
                         }
@@ -372,6 +372,16 @@
                         if ($this.signUpMap[signUpTplComponentId].endNotAllowCancel && !$this.signUpMap[signUpTplComponentId].notAllowCancelType) {
                             $this.$set($this.signUpMap[signUpTplComponentId], "notAllowCancelType", $this.notAllowCancelTypes[0].value);
                             $this.$set($this.signUpMap[signUpTplComponentId], "notAllowCancelDays", 0);
+                        }
+                    },
+                    cancelSignUpDaysValidate: function (signUpTplComponentId) {
+                        var $this = this;
+                        var days = $this.signUpMap[signUpTplComponentId].notAllowCancelDays || 0;
+
+                        try {
+                            $this.signUpMap[signUpTplComponentId].notAllowCancelDays = parseInt(days);
+                        } catch (e) {
+                            $this.signUpMap[signUpTplComponentId].notAllowCancelDays = 0;
                         }
                     },
                     signUpEnableChanged: function (tplComponentId) {
