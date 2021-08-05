@@ -7,7 +7,6 @@ import com.chaoxing.activity.dto.manager.ActivityCreatePermissionDTO;
 import com.chaoxing.activity.dto.manager.sign.SignActivityManageIndexDTO;
 import com.chaoxing.activity.dto.manager.sign.create.SignCreateParamDTO;
 import com.chaoxing.activity.dto.manager.wfw.WfwAreaDTO;
-import com.chaoxing.activity.dto.manager.wfw.WfwGroupDTO;
 import com.chaoxing.activity.model.Activity;
 import com.chaoxing.activity.model.ActivityFlagSignModule;
 import com.chaoxing.activity.model.ActivitySignModule;
@@ -118,12 +117,6 @@ public class ActivityManageController {
 		model.addAttribute("templateComponents", activityEngineQueryService.listTemplateComponentTree(activity.getTemplateId(), activity.getCreateFid()));
 		// 活动类型列表
 		model.addAttribute("activityTypes", activityQueryService.listActivityType());
-		// 活动分类列表范围
-//		if (activity.getMarketId() == null) {
-//			model.addAttribute("activityClassifies", classifyQueryService.listOrgClassifies(activity.getCreateFid()));
-//		} else {
-//			model.addAttribute("activityClassifies", classifyQueryService.listMarketClassifies(activity.getMarketId()));
-//		}
 		// 当前用户创建活动权限
 		ActivityCreatePermissionDTO permission = activityCreatePermissionService.getActivityCreatePermission(loginUser.getFid(), activity.getMarketId(), loginUser.getUid());
 		model.addAttribute("activityClassifies", permission.getClassifies());
@@ -152,10 +145,8 @@ public class ActivityManageController {
 		model.addAttribute("participatedOrgs", wfwRegionalArchitectures);
 		// 报名范围
 		// 微服务组织架构
-//		model.addAttribute("wfwGroups", WfwGroupDTO.perfectWfwGroups(wfwGroupApiService.listGroupByFid(fid)));
 		model.addAttribute("wfwGroups", permission.getWfwGroups());
 		// 通讯录组织架构
-//		model.addAttribute("contactGroups", WfwGroupDTO.perfectWfwGroups(wfwContactApiService.listUserContactOrgsByFid(fid)));
 		model.addAttribute("contactGroups", permission.getContactsGroups());
 		String activityFlag = activity.getActivityFlag();
 		model.addAttribute("activityFlag", activityFlag);
