@@ -34,11 +34,14 @@ public class SignUpFillInfoType {
     private Integer templateComponentId;
     /** 类型; column: type*/
     private String type;
+    /** 表单id; column: form_id*/
+    private Integer formId;
 
     public SignUpFillInfoType cloneToNewTemplateComponentId(Integer templateComponentId) {
         return SignUpFillInfoType.builder()
                 .templateComponentId(templateComponentId)
                 .type(getType())
+                .formId(getFormId())
                 .build();
     }
 
@@ -50,9 +53,8 @@ public class SignUpFillInfoType {
     public enum TypeEnum {
 
         /** 普通表单 */
-        FORM("普通表单", "form"),
-        DUAL_SELECT_FORM("双选会表单", "dual_select_form"),
-        WFW_FORM("微服务表单", "wfw_form");
+        FORM("普通采集表单", "form"),
+        WFW_FORM("万能表单", "wfw_form");
 
         private String name;
         private String value;

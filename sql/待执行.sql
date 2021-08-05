@@ -7,3 +7,5 @@ CREATE TABLE `t_org_market_data_push`  (
     INDEX `idx_primary`(`fid`)
 ) COMMENT = '机构市场数据推送';
 ALTER TABLE t_org_data_repo_config ADD is_specify_market TINYINT(1) DEFAULT 0 COMMENT "是否指定活动市场";
+
+ALTER TABLE t_sign_up_fill_info_type ADD form_id INT(11) COMMENT '表单id';
