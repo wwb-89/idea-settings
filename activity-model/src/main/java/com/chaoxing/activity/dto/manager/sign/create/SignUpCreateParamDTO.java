@@ -50,6 +50,10 @@ public class SignUpCreateParamDTO {
 	private String btnName;
 	/** 是否报名结束后允许取消报名 */
 	private Boolean endAllowCancel;
+	/** 不允许取消报名的类型 */
+	private String notAllowCancelType;
+	/** 不允许取消报名的天数; */
+	private Integer notAllowCancelDays;
 	/** 是否开启微服务参与范围 */
 	private Boolean enableWfwParticipateScope;
 	/** 是否开启通讯录参与范围 */
@@ -109,7 +113,32 @@ public class SignUpCreateParamDTO {
 			}
 			return null;
 		}
+	}
 
+	@Getter
+	public enum NotAllowCancelTypeEnum {
+
+		/** 报名结束后 */
+		AFTER_SIGN_UP_END("报名结束后", "after_sign_up_end"),
+		AFTER_ACTIVITY_END("活动结束后", "after_activity_end"),
+		BEFORE_ACTIVITY_START("活动开始前", "before_activity_start");
+
+		private final String name;
+		private final String value;
+
+		NotAllowCancelTypeEnum(String name, String value) {
+			this.name = name;
+			this.value = value;
+		}
+		public static NotAllowCancelTypeEnum fromValue(String value) {
+			NotAllowCancelTypeEnum[] values = NotAllowCancelTypeEnum.values();
+			for (NotAllowCancelTypeEnum notAllowCancelType : values) {
+				if (Objects.equals(notAllowCancelType.getValue(), value)) {
+					return notAllowCancelType;
+				}
+			}
+			return null;
+		}
 	}
 
 }
