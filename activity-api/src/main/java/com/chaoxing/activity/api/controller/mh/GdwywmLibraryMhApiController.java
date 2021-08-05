@@ -138,9 +138,7 @@ public class GdwywmLibraryMhApiController {
             result.add(buildBtn("管理", activityQueryService.getActivityManageUrl(activity.getId())));
         }
         if (openWork && workId != null) {
-            if (signedUp || !existSignUp) {
-                result.add(buildBtn("提交作品", getWorkIndexUrl(workId)));
-            }
+            result.add(buildBtn("提交作品", getWorkIndexUrl(workId)));
         }
         if (existSignUp && showSignUpBtn) {
             if (canSignUp) {
