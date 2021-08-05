@@ -120,7 +120,7 @@ public class SignUpCreateParamDTO {
 
 		/** 报名结束后 */
 		AFTER_SIGN_UP_END("报名结束后", "after_sign_up_end"),
-		AFTER_ACTIVITY_END("活动结束后", "after_activity_end"),
+		AFTER_ACTIVITY_START("活动开始后", "after_activity_start"),
 		BEFORE_ACTIVITY_START("活动开始前", "before_activity_start");
 
 		private final String name;
