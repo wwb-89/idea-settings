@@ -135,7 +135,7 @@
                     <div class="form-item">
                         <label class="label"><img src="/static/pc/assets/images/required.png" th:src="@{/pc/assets/images/required.png}" class="required-img" v-if="it.required">{{it.name}}</label>
                         <div class="input-box">
-                            <el-switch v-model="signUpMap[item.id].endNotAllowCancel"></el-switch>
+                            <el-switch v-model="signUpMap[item.id].endNotAllowCancel" @change="endNotAllowCancelChange(item.id)"></el-switch>
                             <span class="tips" v-if="it.introduction">{{it.introduction}}</span>
                         </div>
                     </div>
@@ -301,6 +301,10 @@
                             }
                         }
                         $this.$set($this.sign.signUps[i], "endNotAllowCancel", !this.endAllowCancel);
+                        if (!this.endAllowCancel) {
+                            $this.$set($this.sign.signUps[i], "notAllowCancelType", $this.notAllowCancelTypes[0].value);
+                            $this.$set($this.sign.signUps[i], "notAllowCancelDays", 0);
+                        }
                         $this.$set($this.sign.signUps[i], "enable", !this.deleted);
 
                         if (!activityApp.isEmpty($this.sign.signUps[i].startTime)) {
@@ -362,6 +366,13 @@
                                 this.chkDisabled = true;
                             }
                         });
+                    },
+                    endNotAllowCancelChange: function (signUpTplComponentId) {
+                        var $this = this;
+                        if ($this.signUpMap[signUpTplComponentId].endNotAllowCancel && !$this.signUpMap[signUpTplComponentId].notAllowCancelType) {
+                            $this.$set($this.signUpMap[signUpTplComponentId], "notAllowCancelType", $this.notAllowCancelTypes[0].value);
+                            $this.$set($this.signUpMap[signUpTplComponentId], "notAllowCancelDays", 0);
+                        }
                     },
                     signUpEnableChanged: function (tplComponentId) {
                         var $this = this;

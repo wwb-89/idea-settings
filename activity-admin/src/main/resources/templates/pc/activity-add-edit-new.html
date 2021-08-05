@@ -420,7 +420,7 @@
                                     <div class="form-item">
                                         <label class="label"><img src="/static/pc/assets/images/required.png" th:src="@{/pc/assets/images/required.png}" class="required-img" v-if="it.required">{{it.name}}</label>
                                         <div class="input-box">
-                                            <el-switch v-model="signUpMap[item.id].endNotAllowCancel"></el-switch>
+                                            <el-switch v-model="signUpMap[item.id].endNotAllowCancel" @change="endNotAllowCancelChange(item.id)"></el-switch>
                                             <span class="tips" v-if="it.introduction">{{it.introduction}}</span>
                                         </div>
                                     </div>
@@ -1026,6 +1026,10 @@
                             }
                         }
                         $this.$set($this.sign.signUps[i], "endNotAllowCancel", !this.endAllowCancel);
+                        if (!this.endAllowCancel) {
+                            $this.$set($this.sign.signUps[i], "notAllowCancelType", $this.notAllowCancelTypes[0].value);
+                            $this.$set($this.sign.signUps[i], "notAllowCancelDays", 0);
+                        }
                         var tplComponentId = $this.sign.signUps[i].originId;
                         $this.$set($this.signUpMap, tplComponentId, $this.sign.signUps[i]);
                     });
@@ -1135,6 +1139,13 @@
                             this.chkDisabled = true;
                         }
                     });
+                },
+                endNotAllowCancelChange: function (signUpTplComponentId) {
+                    var $this = this;
+                    if ($this.signUpMap[signUpTplComponentId].endNotAllowCancel && !$this.signUpMap[signUpTplComponentId].notAllowCancelType) {
+                        $this.$set($this.signUpMap[signUpTplComponentId], "notAllowCancelType", $this.notAllowCancelTypes[0].value);
+                        $this.$set($this.signUpMap[signUpTplComponentId], "notAllowCancelDays", 0);
+                    }
                 },
                 periodChange: function () {
                     var $this = this;
@@ -1527,6 +1538,13 @@
                                     return false;
                                 }
                             }
+                            if (signUp.endNotAllowCancel) {
+                                if (activityApp.isEmpty(signUp.notAllowCancelType)) {
+                                    app.showMsg("请选择"+ signUp.name +"不允许取消报名时间");
+                                    return false;
+                                }
+                            }
+
                             if (signUp.fillInfo) {
                                 if (activityApp.isEmpty(signUp.fillInfoFormId)) {
                                     app.showMsg("请配置"+ signUp.name +"填报信息");
@@ -1889,7 +1907,6 @@
                     } else {
                         $this.$set($this.signUpMap[$this.operateSignUpOriginId], "wfwParticipateScopes", scopes);
                     }
-                    // $this.signUpParticipateWindowShow = false;
                     $this.cancelSignUpParticipateScope();
                 },
                 deleteSignUpParticipateScope: function (signUpTplComponentId, templateComponent, scopeIndex) {
