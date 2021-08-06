@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org/">
+
+<head>
+    <meta charset="UTF-8">
+    <title>阅读活动统计-活动概况/用户数据</title>
+    <link rel="stylesheet" href="/static/pc/assets/lib/layui/css/layui.css" th:href="@{/pc/assets/lib/layui/css/layui.css}">
+    <link rel="stylesheet" href="/static/pc/assets/lib/element-ui/lib/theme-chalk/index.css" th:href="@{/pc/assets/lib/element-ui/lib/theme-chalk/index.css}">
+    <link rel="stylesheet" href="/static/pc/assets/icomoon/style.css" th:href="@{/pc/assets/icomoon/style.css}">
+    <link rel="stylesheet" href="/static/pc/assets/css/common.css" th:href="@{/pc/assets/css/common.css}">
+    <link rel="stylesheet" href="/static/pc/assets/css/set.css" th:href="@{/pc/assets/css/set.css}">
+    <style>
+        [v-cloak]{
+            display: none;
+        }
+    </style>
+</head>
+
+<body>
+<div class="page-container" id="vue" v-cloak>
+    <div class="activity-tab flex">
+        <ul class="flex">
+            <li v-for="(item,index) in tabs" :key="'tab-' + index" :class="{active: item.active}" @click="tabChange(index)">
+                {{item.name}}
+            </li>
+        </ul>
+    </div>
+    <div class="tab">
+        <iframe id="content" src="" width="100%" height="800px" frameborder="no"></iframe>
+    </div>
+</div>
+
+<div th:replace="pc/include/common_js :: common_js(~{::script})">
+    <!--引入js-->
+    <script src="/static/pc/assets/lib/layui/layui.js" th:src="@{/pc/assets/lib/layui/layui.js}"></script>
+    <script src="/static/pc/assets/lib/element-ui/lib/index.js" th:src="@{/pc/assets/lib/element-ui/lib/index.js}"></script>
+    <script src="/static/pc/assets/lib/jquery.nicescroll.min.js" th:src="@{/pc/assets/lib/jquery.nicescroll.min.js}"></script>
+    <script src="/static/pc/assets/js/main.js" th:src="@{/pc/assets/js/main.js}"></script>
+    <script th:inline="javascript">
+        var vm = new Vue({
+            el: '#vue',
+            data: function () {
+                return {
+                    url: "",
+                    tabs:[
+                        {name:'管理员设置', url: ctx + "/activity/[[${activityId}]]/manager", active: true},
+                        {name:'报名设置', url: ctx + "/activity/[[${activityId}]]/setting/sign-up", active: false},
+                        {name:'基本信息', url: ctx + "/activity/[[${activityId}]]/setting/basic-info/view", active: false},
+                        // {name:'模块设置', url: ctx + "/activity/[[${activityId}]]/setting/"},
+                    ]
+                }
+            },
+            created: function () {
+            },
+            mounted: function () {
+                var $this = this;
+                $this.url = $this.tabs[0].url;
+            },
+            watch: {
+                url: function () {
+                    var $this = this;
+                    $("#content")[0].src = $this.url;
+                }
+            },
+            methods: {
+                tabChange:function (index){
+                    var $this = this;
+                    var tab = $this.tabs[index];
+                    if (tab.active) {
+                        return;
+                    }
+                    $($this.tabs).each(function (i) {
+                        $this.$set($this.tabs[i], "active", false);
+                    });
+                    $this.$set($this.tabs[index], "active", true);
+                    $this.url = tab.url;
+                },
+
+            }
+        });
+    </script>
+</div>
+</body>
+
+</html>

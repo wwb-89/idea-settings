@@ -328,7 +328,7 @@
 
         <div class="btn-box">
             <button class="btn-main btn-width-80" @click="submitForm">保存</button>
-            <button class="btn-second-normal btn-width-80">取消</button>
+            <button class="btn-second-normal btn-width-80" @click="toViewPage">取消</button>
         </div>
     </form>
 
@@ -894,7 +894,7 @@
                         if (data.success) {
                             app.noticeActivityChange($this.activity.id);
                             app.showMsg("修改成功", function () {
-                                $this.returnBack();
+                                $this.toViewPage();
                             });
                         } else {
                             var errorMessage = data.message;
@@ -946,13 +946,8 @@
                     }
                     return true;
                 },
-                returnBack: function () {
-                    var $this = this;
-                    if ($this.isEmbedded) {
-                        window.history.back();
-                    } else {
-                        window.close();
-                    }
+                toViewPage: function () {
+                    window.location.href = ctx + "/activity/[[${activityId}]]/setting/basic-info/view"
                 },
                 // 选中活动的日期范围
                 selectActivityTime: function (obj) {

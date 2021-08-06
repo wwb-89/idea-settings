@@ -61,6 +61,12 @@ public class ActivitySettingController {
     @Resource
     private WfwContactApiService wfwContactApiService;
 
+    @RequestMapping("index")
+    public String settingIndex(HttpServletRequest request, Model model, @PathVariable Integer activityId) {
+        model.addAttribute("activityId", activityId);
+        return "pc/activity/setting/index";
+    }
+
     /**基本信息设置页面
     * @Description 
     * @author huxiaolong
@@ -91,7 +97,7 @@ public class ActivitySettingController {
         String activityFlag = activity.getActivityFlag();
         model.addAttribute("activityFlag", activityFlag);
         model.addAttribute("strict", strict);
-        return "pc/setting/basic-info-edit";
+        return "pc/activity/setting/basic-info-edit";
     }
 
     /**基本信息设置页面
@@ -112,7 +118,7 @@ public class ActivitySettingController {
         model.addAttribute("templateComponents", activityEngineQueryService.listBasicInfoTemplateComponents(activity.getTemplateId(), activity.getCreateFid()));
         List<String> participateScopes = activityScopeQueryService.listByActivityId(activityId).stream().map(WfwAreaDTO::getName).collect(Collectors.toList());
         model.addAttribute("participateScopes", StringUtils.join(participateScopes, ","));
-        return "pc/setting/basic-info-view";
+        return "pc/activity/setting/basic-info-view";
     }
 
     /**报名设置编辑页面
@@ -145,6 +151,6 @@ public class ActivitySettingController {
         model.addAttribute("contactGroups", WfwGroupDTO.perfectWfwGroups(wfwContactApiService.listUserContactOrgsByFid(loginUser.getFid())));
         String activityFlag = activity.getActivityFlag();
         model.addAttribute("activityFlag", activityFlag);
-        return "pc/setting/sign-up";
+        return "pc/activity/setting/sign-up";
     }
 }

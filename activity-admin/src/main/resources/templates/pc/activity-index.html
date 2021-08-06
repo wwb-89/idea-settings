@@ -39,12 +39,6 @@
                     <img :src="menus.resultsManage.defaultIconUrl" v-else>
                     <span>{{menus.resultsManage.name}}</span>
                 </div>
-                <!--管理员-->
-                <div :class="{'item': true, 'active': menus.managerManage.selected}" th:if="${isCreator}" @click="toManagerManage">
-                    <img :src="menus.managerManage.activeIconUrl" v-if="menus.managerManage.selected">
-                    <img :src="menus.managerManage.defaultIconUrl" v-else>
-                    <span>{{menus.managerManage.name}}</span>
-                </div>
             </div>
             <div class="message menu-item" v-if="signActivityManageIndex.signUpExist">
                 <!--发通知-->
@@ -60,6 +54,14 @@
                     <img :src="menus.stat.activeIconUrl" v-if="menus.stat.selected">
                     <img :src="menus.stat.defaultIconUrl" v-else>
                     <span>{{menus.stat.name}}</span>
+                </div>
+            </div>
+            <div class="statistics menu-item">
+                <!--设置-->
+                <div :class="{'item': true, 'active': menus.setting.selected}" th:if="${isCreator}" @click="toSetting">
+                    <img :src="menus.setting.activeIconUrl" v-if="menus.setting.selected">
+                    <img :src="menus.setting.defaultIconUrl" v-else>
+                    <span>{{menus.setting.name}}</span>
                 </div>
             </div>
         </div>
@@ -87,11 +89,11 @@
                     signUpList: {name: "报名名单", defaultIconUrl: ctx + "/pc/assets/images/icon-name-list-default.png", activeIconUrl: ctx + "/pc/assets/images/icon-name-list-active.png", url: "//reading.chaoxing.com/qd/manage/sign-up?signId=" + [[${signActivityManageIndex.signId}]], selected: false},
                     signInManage: {name: "签到管理", defaultIconUrl: ctx + "/pc/assets/images/icon-sign-in-default.png", activeIconUrl: ctx + "/pc/assets/images/icon-sign-in-active.png", url: "//reading.chaoxing.com/qd/manage/sign-in/list?signId=" + [[${signActivityManageIndex.signId}]], selected: false},
                     resultsManage: {name: "考核管理", defaultIconUrl: ctx + "/pc/assets/images/icon-grade-manage-default.png", activeIconUrl: ctx + "/pc/assets/images/icon-grade-manage-active.png", url: ctx + "/activity/" + [[${activity.id}]] + "/results/manage", selected: false},
-                    managerManage: {name: "管理员", defaultIconUrl: ctx + "/pc/assets/images/icon-organizer-default.png", activeIconUrl: ctx + "/pc/assets/images/icon-organizer-active.png", url: ctx + "/activity/" + [[${activity.id}]] + "/manager", selected: false},
                     // 通知
                     notice: {name: "发通知", defaultIconUrl: ctx + "/pc/assets/images/icon-notice-default.png", activeIconUrl: ctx + "/pc/assets/images/icon-notice-active.png", url: "//reading.chaoxing.com/qd/manage/notice/add?signId=" + [[${signActivityManageIndex.signId}]], selected: false},
                     // 统计
-                    stat: {name: "统计", defaultIconUrl: ctx + "/pc/assets/images/icon-statistics-default.png", activeIconUrl: ctx + "/pc/assets/images/icon-statistics-active.png", url: ctx + "/activity/" + [[${activity.id}]] + "/stat", selected: false}
+                    stat: {name: "统计", defaultIconUrl: ctx + "/pc/assets/images/icon-statistics-default.png", activeIconUrl: ctx + "/pc/assets/images/icon-statistics-active.png", url: ctx + "/activity/" + [[${activity.id}]] + "/stat", selected: false},
+                    setting: {name: "设置", defaultIconUrl: ctx + "/pc/assets/images/icon-organizer-default.png", activeIconUrl: ctx + "/pc/assets/images/icon-organizer-active.png", url: ctx + "/activity/" + [[${activity.id}]] + "/setting/index", selected: false}
                 },
                 iframeUrl: ""
             },
@@ -189,10 +191,10 @@
                     var $this = this;
                     $this.selectMenu("resultsManage");
                 },
-                // 管理员
-                toManagerManage: function () {
+                // 设置
+                toSetting: function () {
                     var $this = this;
-                    $this.selectMenu("managerManage");
+                    $this.selectMenu("setting");
                 },
                 // 发通知
                 toAddNotice: function () {
