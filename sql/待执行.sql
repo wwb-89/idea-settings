@@ -11,3 +11,10 @@ DROP TABLE t_activity_classify_new;
 DROP TABLE t_activity_flag_sign_module;
 DROP TABLE t_activity_sign_module;
 
+CREATE TABLE `t_activity_menu_config`  (
+    `id` int(11) NOT NULL AUTO_INCREMENT COMMENT '主键',
+    `activity_id` int(11) NULL COMMENT '活动id',
+    `menu` varchar(50) NULL COMMENT '菜单',
+    PRIMARY KEY (`id`),
+    INDEX `idx_primary`(`activity_id`)
+) COMMENT = '活动菜单配置表';

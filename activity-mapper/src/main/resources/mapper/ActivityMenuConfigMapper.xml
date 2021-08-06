@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.chaoxing.activity.mapper.ActivityMenuConfigMapper">
+    <resultMap id="BaseResultMap" type="com.chaoxing.activity.model.ActivityMenuConfig">
+        <id column="id" jdbcType="INTEGER" property="id" />
+        <result column="activity_id" jdbcType="INTEGER" property="activityId" />
+        <result column="menu" jdbcType="VARCHAR" property="menu" />
+    </resultMap>
+    <sql id="Base_Column_List">
+        t.id, t.activity_id, t.menu
+    </sql>
+
+    <insert id="batchAdd">
+        INSERT INTO t_activity_menu_config ( activity_id, menu )
+        VALUES
+            <foreach collection="activityMenuConfigs" index="key" item="value" open="" close="" separator=",">
+                ( #{value.activityId}, #{value.menu} )
+            </foreach>
+    </insert>
+
+</mapper>
