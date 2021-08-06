@@ -5,6 +5,7 @@ import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.chaoxing.activity.dto.LoginUserDTO;
 import com.chaoxing.activity.dto.activity.ActivityCreateParamDTO;
+import com.chaoxing.activity.dto.activity.ActivityMenuDTO;
 import com.chaoxing.activity.dto.activity.ActivityUpdateParamDTO;
 import com.chaoxing.activity.dto.manager.mh.MhCloneParamDTO;
 import com.chaoxing.activity.dto.manager.mh.MhCloneResultDTO;
@@ -18,13 +19,13 @@ import com.chaoxing.activity.service.WebTemplateService;
 import com.chaoxing.activity.service.activity.engine.ActivityComponentValueService;
 import com.chaoxing.activity.service.activity.engine.SignUpConditionService;
 import com.chaoxing.activity.service.activity.manager.ActivityManagerService;
+import com.chaoxing.activity.service.activity.menu.ActivityMenuService;
 import com.chaoxing.activity.service.activity.module.ActivityModuleService;
 import com.chaoxing.activity.service.activity.scope.ActivityScopeService;
 import com.chaoxing.activity.service.event.ActivityChangeEventService;
 import com.chaoxing.activity.service.inspection.InspectionConfigHandleService;
 import com.chaoxing.activity.service.manager.MhApiService;
 import com.chaoxing.activity.service.manager.module.SignApiService;
-import com.chaoxing.activity.service.manager.module.WorkApiService;
 import com.chaoxing.activity.service.queue.activity.ActivityInspectionResultDecideQueueService;
 import com.chaoxing.activity.service.queue.activity.ActivityWebsiteIdSyncQueueService;
 import com.chaoxing.activity.service.queue.blacklist.BlacklistAutoAddQueueService;
@@ -83,8 +84,6 @@ public class ActivityHandleService {
 	@Resource
 	private ActivityManagerService activityManagerService;
 	@Resource
-	private WorkApiService workApiService;
-	@Resource
 	private ActivityWebsiteIdSyncQueueService activityWebsiteIdSyncQueueService;
 	@Resource
 	private ActivityStatSummaryHandlerService activityStatSummaryHandlerService;
@@ -96,6 +95,8 @@ public class ActivityHandleService {
 	private ActivityComponentValueService activityComponentValueService;
 	@Resource
 	private BlacklistAutoAddQueueService blacklistAutoAddQueueService;
+	@Resource
+	private ActivityMenuService activityMenuService;
 
 	@Resource
 	private SignUpConditionService signUpConditionService;
@@ -143,6 +144,8 @@ public class ActivityHandleService {
 		// 活动详情
 		ActivityDetail activityDetail = activityCreateParamDto.buildActivityDetail(activityId);
 		activityDetailMapper.insert(activityDetail);
+		// 活动菜单配置
+		activityMenuService.configActivityMenu(activityId, activityMenuService.listMenu().stream().map(ActivityMenuDTO::getValue).collect(Collectors.toList()));
 		// 添加管理员
 		ActivityManager activityManager = ActivityManager.buildCreator(activity);
 		activityManagerService.add(activityManager, loginUser);
