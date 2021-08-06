@@ -370,7 +370,7 @@
      * @returns {string}
      */
     activityApp.prototype.getWorkManageUrl = function (workId) {
-        return "http://reading.chaoxing.com/zj//manage/activity/" + workId + "/new?isHideHeader=true";
+        return "http://reading.chaoxing.com/zj//manage/activity/" + workId + "/new?isHideHeader=false";
     };
     W['activityApp'] = new activityApp();
 })(window, jQuery, JSON);
