@@ -170,12 +170,7 @@ public class ActivitySettingController {
     public String menuSetting(Model model, @PathVariable Integer activityId) {
         model.addAttribute("activityId", activityId);
         model.addAttribute("activityMenus", activityMenuService.listActivityMenuConfig(activityId));
-        model.addAttribute("menuList", Arrays.stream(ActivityMenuEnum.values()).map(v -> {
-            Map<String, String> m = Maps.newHashMap();
-            m.put("name", v.getName());
-            m.put("value", v.getValue());
-            return m;
-        }).collect(Collectors.toList()));
+        model.addAttribute("menuList", activityMenuService.listMenu());
         return "pc/activity/setting/menu";
     }
 }
