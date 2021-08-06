@@ -73,8 +73,8 @@ public class MarketController {
 
 	@LoginRequired
 	@RequestMapping("update/from-wfw")
-	public String updateFromWfw(HttpServletRequest request, Model model, Integer classifyId, Integer fid, Integer id, String backUrl) {
-		ActivityMarketUpdateParamDTO market = marketQueryService.getByWfwAppId(id);
+	public String updateFromWfw(HttpServletRequest request, Model model, Integer classifyId, Integer fid, Integer appId, String backUrl) {
+		ActivityMarketUpdateParamDTO market = marketQueryService.getByWfwAppId(appId);
 		model.addAttribute("market", market);
 		model.addAttribute("backUrl", backUrl);
 		return "pc/market/wfw-market";
