@@ -35,7 +35,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanUtils;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
@@ -64,10 +63,6 @@ public class ActivityQueryService {
 	private ActivityDetailMapper activityDetailMapper;
 	@Resource
 	private ActivityRatingDetailMapper activityRatingDetailMapper;
-	@Resource
-	private ActivityFlagSignModuleMapper activityFlagSignModuleMapper;
-	@Resource
-	private ActivitySignModuleMapper activitySignModuleMapper;
 
 	@Resource
 	private WfwAreaApiService wfwAreaApiService;
@@ -82,7 +77,7 @@ public class ActivityQueryService {
 
 	@Resource
 	private ActivityComponentValueService activityComponentValueService;
-	@Autowired
+	@Resource
 	private SignUpConditionEnableMapper signUpConditionEnableMapper;
 
 	/**查询参与的活动
@@ -454,34 +449,6 @@ public class ActivityQueryService {
 		return activityMapper.selectList(new QueryWrapper<Activity>()
 			.lambda()
 				.ne(Activity::getStatus, Activity.StatusEnum.DELETED.getValue())
-		);
-	}
-
-	/**根据flag查询
-	 * @Description 
-	 * @author wwb
-	 * @Date 2021-03-30 09:46:45
-	 * @param activityFlag
-	 * @return java.util.List<com.chaoxing.activity.model.ActivityFlagSignModule>
-	*/
-	public List<ActivityFlagSignModule> listSignModuleByFlag(String activityFlag) {
-		return activityFlagSignModuleMapper.selectList(new QueryWrapper<ActivityFlagSignModule>()
-			.lambda()
-				.eq(ActivityFlagSignModule::getActivityFlag, activityFlag)
-		);
-	}
-
-	/**根据活动id查询
-	 * @Description 
-	 * @author wwb
-	 * @Date 2021-03-30 18:14:10
-	 * @param activityId
-	 * @return java.util.List<com.chaoxing.activity.model.ActivitySignModule>
-	*/
-	public List<ActivitySignModule> listByActivityId(Integer activityId) {
-		return activitySignModuleMapper.selectList(new QueryWrapper<ActivitySignModule>()
-				.lambda()
-				.eq(ActivitySignModule::getActivityId, activityId)
 		);
 	}
 

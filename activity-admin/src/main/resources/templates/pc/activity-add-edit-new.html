@@ -783,8 +783,6 @@
                 signUpParticipateScopeTreeObj: null,
                 // 活动标示
                 activityFlag: [[${activityFlag}]],
-                // 活动已经关联的报名签到的模块列表
-                activitySignModules: [[${activitySignModules}]],
                 // 当前操作的对象
                 operateSignUpOriginId: -1,
                 operateSignInOriginId: -1,
@@ -822,9 +820,6 @@
                 var $this = this;
                 // 解决跨域
                 document.domain = "chaoxing.com";
-                if (activityApp.isEmpty($this.activitySignModules)) {
-                    $this.activitySignModules = [];
-                }
                 var tplComponents = [];
                 var n = 0, setBasicAppearIndex = false;
                 $($this.templateComponents).each(function() {

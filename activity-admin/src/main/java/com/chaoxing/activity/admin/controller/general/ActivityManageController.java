@@ -8,20 +8,14 @@ import com.chaoxing.activity.dto.manager.sign.SignActivityManageIndexDTO;
 import com.chaoxing.activity.dto.manager.sign.create.SignCreateParamDTO;
 import com.chaoxing.activity.dto.manager.wfw.WfwAreaDTO;
 import com.chaoxing.activity.model.Activity;
-import com.chaoxing.activity.model.ActivityFlagSignModule;
-import com.chaoxing.activity.model.ActivitySignModule;
 import com.chaoxing.activity.model.WebTemplate;
 import com.chaoxing.activity.service.WebTemplateService;
 import com.chaoxing.activity.service.activity.ActivityQueryService;
 import com.chaoxing.activity.service.activity.ActivityValidationService;
-import com.chaoxing.activity.service.activity.classify.ClassifyQueryService;
 import com.chaoxing.activity.service.activity.engine.ActivityEngineQueryService;
 import com.chaoxing.activity.service.activity.manager.ActivityCreatePermissionService;
 import com.chaoxing.activity.service.activity.scope.ActivityScopeQueryService;
-import com.chaoxing.activity.service.manager.WfwGroupApiService;
 import com.chaoxing.activity.service.manager.module.SignApiService;
-import com.chaoxing.activity.service.manager.wfw.WfwContactApiService;
-import com.chaoxing.activity.service.org.OrgService;
 import com.chaoxing.activity.util.UserAgentUtils;
 import com.google.common.collect.Lists;
 import org.springframework.stereotype.Controller;
@@ -60,15 +54,7 @@ public class ActivityManageController {
 	@Resource
 	private ActivityValidationService activityValidationService;
 	@Resource
-	private OrgService orgService;
-	@Resource
 	private ActivityEngineQueryService activityEngineQueryService;
-	@Resource
-	private ClassifyQueryService classifyQueryService;
-	@Resource
-	private WfwGroupApiService wfwGroupApiService;
-	@Resource
-	private WfwContactApiService wfwContactApiService;
 
 	/**活动管理主页
 	 * @Description 
@@ -150,12 +136,6 @@ public class ActivityManageController {
 		model.addAttribute("contactGroups", permission.getContactsGroups());
 		String activityFlag = activity.getActivityFlag();
 		model.addAttribute("activityFlag", activityFlag);
-		// flag配置的报名签到的模块
-		List<ActivityFlagSignModule> activityFlagSignModules = activityQueryService.listSignModuleByFlag(activityFlag);
-		model.addAttribute("activityFlagSignModules", activityFlagSignModules);
-		// 活动关联的报名签到模块列表
-		List<ActivitySignModule> activitySignModules = activityQueryService.listByActivityId(activityId);
-		model.addAttribute("activitySignModules", activitySignModules);
 		model.addAttribute("strict", strict);
 		return "pc/activity-add-edit-new";
 	}
