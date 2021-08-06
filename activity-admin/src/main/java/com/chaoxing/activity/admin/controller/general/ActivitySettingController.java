@@ -3,21 +3,21 @@ package com.chaoxing.activity.admin.controller.general;
 import com.chaoxing.activity.admin.util.LoginUtils;
 import com.chaoxing.activity.dto.LoginUserDTO;
 import com.chaoxing.activity.dto.activity.ActivityCreateParamDTO;
-import com.chaoxing.activity.dto.blacklist.BlacklistRuleDTO;
 import com.chaoxing.activity.dto.manager.sign.create.SignCreateParamDTO;
 import com.chaoxing.activity.dto.manager.wfw.WfwAreaDTO;
 import com.chaoxing.activity.dto.manager.wfw.WfwGroupDTO;
 import com.chaoxing.activity.model.*;
-import com.chaoxing.activity.service.WebTemplateService;
 import com.chaoxing.activity.service.activity.ActivityQueryService;
 import com.chaoxing.activity.service.activity.ActivityValidationService;
 import com.chaoxing.activity.service.activity.classify.ClassifyQueryService;
 import com.chaoxing.activity.service.activity.engine.ActivityEngineQueryService;
+import com.chaoxing.activity.service.activity.menu.ActivityMenuService;
 import com.chaoxing.activity.service.activity.scope.ActivityScopeQueryService;
 import com.chaoxing.activity.service.manager.WfwGroupApiService;
 import com.chaoxing.activity.service.manager.module.SignApiService;
 import com.chaoxing.activity.service.manager.wfw.WfwContactApiService;
-import com.google.common.collect.Lists;
+import com.chaoxing.activity.util.enums.ActivityMenuEnum;
+import com.google.common.collect.Maps;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Controller;
@@ -28,7 +28,9 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
+import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -60,9 +62,11 @@ public class ActivitySettingController {
     private WfwGroupApiService wfwGroupApiService;
     @Resource
     private WfwContactApiService wfwContactApiService;
+    @Resource
+    private ActivityMenuService activityMenuService;
 
     @RequestMapping("index")
-    public String settingIndex(HttpServletRequest request, Model model, @PathVariable Integer activityId) {
+    public String settingIndex(Model model, @PathVariable Integer activityId) {
         model.addAttribute("activityId", activityId);
         return "pc/activity/setting/index";
     }
@@ -152,5 +156,26 @@ public class ActivitySettingController {
         String activityFlag = activity.getActivityFlag();
         model.addAttribute("activityFlag", activityFlag);
         return "pc/activity/setting/sign-up";
+    }
+
+    /**报名设置编辑页面
+    * @Description
+    * @author huxiaolong
+    * @Date 2021-08-03 16:13:03
+    * @param model
+    * @param activityId
+    * @return java.lang.String
+    */
+    @RequestMapping("menu")
+    public String menuSetting(Model model, @PathVariable Integer activityId) {
+        model.addAttribute("activityId", activityId);
+        model.addAttribute("activityMenus", activityMenuService.listActivityMenuConfig(activityId));
+        model.addAttribute("menuList", Arrays.stream(ActivityMenuEnum.values()).map(v -> {
+            Map<String, String> m = Maps.newHashMap();
+            m.put("name", v.getName());
+            m.put("value", v.getValue());
+            return m;
+        }).collect(Collectors.toList()));
+        return "pc/activity/setting/menu";
     }
 }

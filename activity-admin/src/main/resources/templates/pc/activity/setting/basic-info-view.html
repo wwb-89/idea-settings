@@ -188,6 +188,8 @@
                 },
                 created: function () {
                     var $this = this;
+                    document.domain = "chaoxing.com";
+
                     var templateComponentMap = {};
                     RichTextUitl.loadDetailPageProfile();
                     $this.activity.introduction = RichTextUitl.beforeSetRtfContent($this.activity.introduction);

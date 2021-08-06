@@ -9,6 +9,7 @@ import com.chaoxing.activity.dto.activity.ActivityUpdateParamDTO;
 import com.chaoxing.activity.dto.manager.sign.create.SignCreateParamDTO;
 import com.chaoxing.activity.dto.manager.wfw.WfwAreaDTO;
 import com.chaoxing.activity.service.activity.ActivityHandleService;
+import com.chaoxing.activity.service.activity.menu.ActivityMenuService;
 import com.chaoxing.activity.util.annotation.LoginRequired;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -33,6 +34,9 @@ public class ActivitySettingApiController {
     @Resource
     private ActivityHandleService activityHandleService;
 
+    @Resource
+    private ActivityMenuService activityMenuService;
+
     /**活动基本信息修改
      * @Description
      * @author huxiaolong
@@ -44,7 +48,7 @@ public class ActivitySettingApiController {
      */
     @LoginRequired
     @PostMapping("basic-info")
-    public RestRespDTO edit(HttpServletRequest request, String activityJsonStr, String participateScopeJsonStr) {
+    public RestRespDTO basicInfoEdit(HttpServletRequest request, String activityJsonStr, String participateScopeJsonStr) {
         LoginUserDTO loginUser = LoginUtils.getLoginUser(request);
         ActivityUpdateParamDTO activityUpdateParamDto = JSON.parseObject(activityJsonStr, ActivityUpdateParamDTO.class);
         List<WfwAreaDTO> wfwRegionalArchitectures = JSON.parseArray(participateScopeJsonStr, WfwAreaDTO.class);
@@ -61,13 +65,31 @@ public class ActivitySettingApiController {
      */
     @LoginRequired
     @PostMapping("sign-up")
-    public RestRespDTO edit(HttpServletRequest request, Integer activityId, String sucTemplateComponentIdStr, String signJsonStr) {
+    public RestRespDTO signUpEdit(HttpServletRequest request, Integer activityId, String sucTemplateComponentIdStr, String signJsonStr) {
         LoginUserDTO loginUser = LoginUtils.getLoginUser(request);
         SignCreateParamDTO signAddEdit = JSON.parseObject(signJsonStr, SignCreateParamDTO.class);
         List<Integer> sucTemplateComponentIds = JSONArray.parseArray(sucTemplateComponentIdStr, Integer.class);
         activityHandleService.updateSignUp(activityId, sucTemplateComponentIds, signAddEdit, loginUser);
         return RestRespDTO.success();
     }
+
+    /**更新模块设置
+    * @Description
+    * @author huxiaolong
+    * @Date 2021-08-06 17:09:54
+    * @param activityId
+    * @param menus
+    * @return com.chaoxing.activity.dto.RestRespDTO
+    */
+    @PostMapping("menu")
+    public RestRespDTO updateMenus(Integer activityId, String menus) {
+        List<String> menuList = JSONArray.parseArray(menus, String.class);
+        activityMenuService.configActivityMenu(activityId, menuList);
+        return RestRespDTO.success();
+    }
+
+
+
 
 
 

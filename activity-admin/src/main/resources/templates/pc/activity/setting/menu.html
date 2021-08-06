@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org/">
+
+<head>
+    <meta charset="UTF-8">
+    <title>模块设置</title>
+    <link rel="stylesheet" href="/static/pc/assets/lib/layui/css/layui.css" th:href="@{/pc/assets/lib/layui/css/layui.css}">
+    <link rel="stylesheet" href="/static/pc/assets/lib/element-ui/lib/theme-chalk/index.css" th:href="@{/pc/assets/lib/element-ui/lib/theme-chalk/index.css}">
+    <link rel="stylesheet" href="/static/pc/assets/lib/zTree_v3/css/zTreeStyle/zTreeStyle.css" th:href="@{/pc/assets/lib/zTree_v3/css/zTreeStyle/zTreeStyle.css}">
+    <link rel="stylesheet" href="/static/pc/assets/icomoon/style.css" th:href="@{/pc/assets/icomoon/style.css}">
+    <link rel="stylesheet" href="/static/pc/assets/css/common.css" th:href="@{/pc/assets/css/common.css}">
+    <link rel="stylesheet" href="/static/pc/assets/css/set.css" th:href="@{/pc/assets/css/set.css}">
+    <style>
+        [v-cloak]{
+            display: none;
+        }
+    </style>
+</head>
+<body>
+<div id="vue" v-cloak>
+    <el-form class="basic-set"  ref="form" onsubmit="return false;">
+        <div class="form-item">
+            <label class="label">导航模块</label>
+            <div class="input-box">
+                <div class="check-list">
+                    <el-checkbox-group v-model="checkedMenus" class="fl" @change="changeMenu">
+                        <el-checkbox v-for="item in menuList" :label="item.value" :key="item.value">{{item.name}}</el-checkbox>
+                    </el-checkbox-group>
+                </div>
+            </div>
+        </div>
+
+<!--        <div class="btn-box-margin">-->
+<!--            <button class="btn-main btn-width-80" @click="submitForm">保存</button>-->
+<!--            <button class="btn-second-normal btn-width-80">取消</button>-->
+<!--        </div>-->
+
+    </el-form>
+</div>
+<div th:replace="pc/include/common_js :: common_js(~{::script})">
+    <script src="/static/pc/assets/lib/layui/layui.js" th:src="@{/pc/assets/lib/layui/layui.js}"></script>
+    <script src="/static/pc/assets/lib/element-ui/lib/index.js" th:src="@{/pc/assets/lib/element-ui/lib/index.js}"></script>
+    <script th:inline="javascript">
+        var vm = new Vue({
+            el: '#vue',
+            data: function () {
+                return {
+                    activityId: [[${activityId}]],
+                    menuList: [[${menuList}]],
+                    activityMenus: [[${activityMenus}]] || [],
+                    checkedMenus:[],
+                }
+            },
+            created: function () {
+                document.domain = "chaoxing.com";
+            },
+            mounted: function () {
+                var $this = this;
+                $this.checkedMenus = $.map($this.activityMenus, function (item) {
+                    return item.menu;
+                });
+            },
+            methods: {
+                changeMenu: function (values) {
+                    var $this = this;
+                    var url = ctx + "/api/activity/setting/menu";
+                    var params = {
+                        activityId: $this.activityId,
+                        menus: activityApp.getJsonStr(values)
+                    };
+                    app.ajaxPostWithLoading(url, params, function (data) {
+                        if (!data.success) {
+                            var errorMessage = data.message;
+                            if (activityApp.isEmpty(errorMessage)) {
+                                errorMessage = "更新失败";
+                            }
+                            app.showMsg(errorMessage);
+                        }
+                    }, function () {
+                        app.showMsg("更新失败");
+                    });
+                }
+            }
+        });
+    </script>
+</div>
+</body>
+
+
+</html>

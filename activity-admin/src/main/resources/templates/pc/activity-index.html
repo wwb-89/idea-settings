@@ -18,21 +18,21 @@
             <span th:text="${activity.name}" style="cursor: pointer;" @click="activityHome">成都少儿阅读活动</span>
         </div>
         <div class="menu">
-            <div class="entry menu-item">
+            <div class="entry menu-item" v-show="menuShow('sign_up') || menuShow('sign_in')">
                 <!--报名名单-->
-                <div :class="{'item': true, 'active': menus.signUpList.selected}" v-if="signActivityManageIndex.signUpExist" @click="toSignUpList">
+                <div :class="{'item': true, 'active': menus.signUpList.selected}" v-if="signActivityManageIndex.signUpExist" @click="toSignUpList" v-show="menuShow('sign_up')">
                     <img :src="menus.signUpList.activeIconUrl" v-if="menus.signUpList.selected">
                     <img :src="menus.signUpList.defaultIconUrl" v-else>
                     <span>{{menus.signUpList.name}}</span>
                 </div>
                 <!--签到管理-->
-                <div :class="{'item': true, 'active': menus.signInManage.selected}" @click="toSignInManage">
+                <div :class="{'item': true, 'active': menus.signInManage.selected}" @click="toSignInManage" v-show="menuShow('sign_in')">
                     <img :src="menus.signInManage.activeIconUrl" v-if="menus.signInManage.selected">
                     <img :src="menus.signInManage.defaultIconUrl" v-else>
                     <span>{{menus.signInManage.name}}</span>
                 </div>
             </div>
-            <div class="entry menu-item">
+            <div class="entry menu-item" v-show="menuShow('results_manage')">
                 <!--考核管理-->
                 <div :class="{'item': true, 'active': menus.resultsManage.selected}" v-if="signActivityManageIndex.signUpExist || signActivityManageIndex.signInExist" @click="toResultsManage">
                     <img :src="menus.resultsManage.activeIconUrl" v-if="menus.resultsManage.selected">
@@ -48,7 +48,7 @@
                     <span>{{menus.notice.name}}</span>
                 </div>
             </div>
-            <div class="statistics menu-item">
+            <div class="statistics menu-item" v-show="menuShow('stat')">
                 <!--统计-->
                 <div :class="{'item': true, 'active': menus.stat.selected}" @click="toStat">
                     <img :src="menus.stat.activeIconUrl" v-if="menus.stat.selected">
@@ -84,6 +84,7 @@
                 activity: [[${activity}]],
                 loginUser: [[${session._login_user_}]],
                 signActivityManageIndex: [[${signActivityManageIndex}]],
+                activityMenus: [[${activityMenus}]],
                 menus: {
                     // 报名签到
                     signUpList: {name: "报名名单", defaultIconUrl: ctx + "/pc/assets/images/icon-name-list-default.png", activeIconUrl: ctx + "/pc/assets/images/icon-name-list-active.png", url: "//reading.chaoxing.com/qd/manage/sign-up?signId=" + [[${signActivityManageIndex.signId}]], selected: false},
@@ -124,6 +125,9 @@
                 }
             },
             methods: {
+                menuShow: function (menu) {
+                    return this.activityMenus.indexOf(menu) != -1;
+                },
                 // 活动首页
                 activityHome: function () {
                     var $this = this;

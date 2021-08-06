@@ -8,12 +8,14 @@ import com.chaoxing.activity.dto.manager.sign.SignActivityManageIndexDTO;
 import com.chaoxing.activity.dto.manager.sign.create.SignCreateParamDTO;
 import com.chaoxing.activity.dto.manager.wfw.WfwAreaDTO;
 import com.chaoxing.activity.model.Activity;
+import com.chaoxing.activity.model.ActivityMenuConfig;
 import com.chaoxing.activity.model.WebTemplate;
 import com.chaoxing.activity.service.WebTemplateService;
 import com.chaoxing.activity.service.activity.ActivityQueryService;
 import com.chaoxing.activity.service.activity.ActivityValidationService;
 import com.chaoxing.activity.service.activity.engine.ActivityEngineQueryService;
 import com.chaoxing.activity.service.activity.manager.ActivityCreatePermissionService;
+import com.chaoxing.activity.service.activity.menu.ActivityMenuService;
 import com.chaoxing.activity.service.activity.scope.ActivityScopeQueryService;
 import com.chaoxing.activity.service.manager.module.SignApiService;
 import com.chaoxing.activity.util.UserAgentUtils;
@@ -28,6 +30,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * @author wwb
@@ -55,6 +58,8 @@ public class ActivityManageController {
 	private ActivityValidationService activityValidationService;
 	@Resource
 	private ActivityEngineQueryService activityEngineQueryService;
+	@Resource
+	private ActivityMenuService activityMenuService;
 
 	/**活动管理主页
 	 * @Description 
@@ -77,6 +82,7 @@ public class ActivityManageController {
 		// 是不是创建者
 		boolean creator = activityValidationService.isCreator(activity, operateUid);
 		model.addAttribute("isCreator", creator);
+		model.addAttribute("activityMenus", activityMenuService.listActivityMenuConfig(activityId).stream().map(ActivityMenuConfig::getMenu).collect(Collectors.toList()));
 		if (UserAgentUtils.isMobileAccess(request)) {
 			return "mobile/activity-index";
 		} else {

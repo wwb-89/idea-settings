@@ -20,28 +20,23 @@
 <body>
 <div class="administrators" id="activity-vue" v-cloak>
     <div class="index-list">
-        <div class="item" v-if="signActivityManageIndex.signUpExist" @click="signUpList">
+        <div class="item" v-if="signActivityManageIndex.signUpExist" @click="signUpList" v-show="menuShow('sign_up')">
             <img src="/static/mobile/assets/images/admin/allWorks.png" th:src="@{/mobile/assets/images/admin/allWorks.png}">
             <p class="flTxt">{{signActivityManageIndex.signUpIds.length > 1 ? '报名项目' : '报名名单'}}</p>
             <p class="frTxt" v-show="signActivityManageIndex.signUpIds.length == 1">已报名 {{signActivityManageIndex.signUpNum}}</p>
             <i :class="{'icon-arrow-r': true, 'marginAuto': (signActivityManageIndex.signUpIds.length > 1)}"></i>
         </div>
-        <div class="item" @click="signInManage">
+        <div class="item" @click="signInManage" v-show="menuShow('sign_in')">
             <img src="/static/mobile/assets/images/admin/sign-in.png" th:src="@{/mobile/assets/images/admin/sign-in.png}">
             <p class="flTxt">签到管理</p>
             <i class="icon-arrow-r marginAuto"></i>
         </div>
-        <div class="item" v-if="(signActivityManageIndex.signUpExist || signActivityManageIndex.signInExist)" @click="resultsManage">
+        <div class="item" v-if="(signActivityManageIndex.signUpExist || signActivityManageIndex.signInExist)" @click="resultsManage" v-show="menuShow('results_manage')">
             <img src="/static/mobile/assets/images/admin/score-icon.png" th:src="@{/mobile/assets/images/admin/score-icon.png}">
             <p class="flTxt">考核管理</p>
             <i class="icon-arrow-r marginAuto"></i>
         </div>
-        <div class="item" th:if="${isCreator}" @click="manager">
-            <img src="/static/mobile/assets/images/admin/manager.png" th:src="@{/mobile/assets/images/admin/manager.png}">
-            <p class="flTxt">管理员</p>
-            <i class="icon-arrow-r marginAuto"></i>
-        </div>
-        <div class="item" th:if="${isCreator}" @click="stat">
+        <div class="item" th:if="${isCreator}" @click="stat" v-show="menuShow('stat')">
             <img src="/static/mobile/assets/images/admin/statistics.png" th:src="@{/mobile/assets/images/admin/statistics.png}">
             <p class="flTxt">统计</p>
             <i class="icon-arrow-r marginAuto"></i>
@@ -76,9 +71,13 @@
                 el: "#activity-vue",
                 data: {
                     activity: [[${activity}]],
+                    activityMenus: [[${activityMenus}]],
                     signActivityManageIndex: [[${signActivityManageIndex}]]
                 },
                 methods: {
+                    menuShow: function (menu) {
+                        return this.activityMenus.indexOf(menu) != -1;
+                    },
                     // 报名名单
                     signUpList: function () {
                         var $this = this;
@@ -99,12 +98,6 @@
                         var $this = this;
                         // var url = "https://reading.chaoxing.com/qd/m/manage/results?signId=" + $this.signActivityManageIndex.signId;
                         var url = ctx + "/activity/" + [[${activity.id}]] + "/results/manage"
-                        app.openUrl(url);
-                    },
-                    // 管理员
-                    manager: function () {
-                        var $this = this;
-                        var url = ctx + "/activity/" + $this.activity.id + "/manager"
                         app.openUrl(url);
                     },
                     // 统计
