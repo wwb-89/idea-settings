@@ -65,12 +65,6 @@
                 </div>
             </div>
         </div>
-        <div class="edit" v-if="isActivityCreator()">
-            <div class="item" @click="toEdit">
-                <img src="/static/pc/assets/images/icon-edit-default.png" th:src="@{/pc/assets/images/icon-edit-default.png}">
-                <span>编辑活动</span>
-            </div>
-        </div>
     </div>
     <div class="content">
         <iframe id="content" src=""></iframe>
@@ -94,7 +88,7 @@
                     notice: {name: "发通知", defaultIconUrl: ctx + "/pc/assets/images/icon-notice-default.png", activeIconUrl: ctx + "/pc/assets/images/icon-notice-active.png", url: "//reading.chaoxing.com/qd/manage/notice/add?signId=" + [[${signActivityManageIndex.signId}]], selected: false},
                     // 统计
                     stat: {name: "统计", defaultIconUrl: ctx + "/pc/assets/images/icon-statistics-default.png", activeIconUrl: ctx + "/pc/assets/images/icon-statistics-active.png", url: ctx + "/activity/" + [[${activity.id}]] + "/stat", selected: false},
-                    setting: {name: "设置", defaultIconUrl: ctx + "/pc/assets/images/icon-organizer-default.png", activeIconUrl: ctx + "/pc/assets/images/icon-organizer-active.png", url: ctx + "/activity/" + [[${activity.id}]] + "/setting/index", selected: false}
+                    setting: {name: "设置", defaultIconUrl: ctx + "/pc/assets/images/setting-default.png", activeIconUrl: ctx + "/pc/assets/images/setting-active.png", url: ctx + "/activity/" + [[${activity.id}]] + "/setting/index", selected: false}
                 },
                 iframeUrl: ""
             },
