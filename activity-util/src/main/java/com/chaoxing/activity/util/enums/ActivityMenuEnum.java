@@ -18,7 +18,8 @@ public enum ActivityMenuEnum {
     /** "报名名单" */
     SIGN_UP("报名名单", "sign_up"),
     SIGN_IN("签到管理", "sign_in"),
-    RESULTS_MANAGE("考核管理", "results_manage");
+    RESULTS_MANAGE("考核管理", "results_manage"),
+    STAT("统计", "stat");
 
     private final String name;
     private final String value;
