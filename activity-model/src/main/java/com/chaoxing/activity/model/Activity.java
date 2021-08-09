@@ -139,6 +139,9 @@ public class Activity {
     /** 修改时间; column: update_time*/
     @JSONField(serializeUsing = LocalDateTimeSerializer.class, deserializeUsing = LocalDateTimeDeserializer.class)
     private LocalDateTime updateTime;
+    /** 是否置顶; column: is_top*/
+    @TableField(value = "is_top")
+    private Boolean top;
 
     // 附加
     /** 开始时间字符串 */
