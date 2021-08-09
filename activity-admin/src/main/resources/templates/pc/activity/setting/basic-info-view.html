@@ -29,66 +29,89 @@
                     <el-form-item :label="item.name">
                         <div class="txt">{{activity.activityType == "offline" ? "线下" : "线上"}}</div>
                     </el-form-item>
-                    <el-form-item v-show="activity.activityType == 'offline'" label="位置">
+                    <el-form-item v-show="activity.activityType == 'offline' && (isNotEmpty(activity.address) || isNotEmpty(activity.detailAddress))" label="位置">
                         <div class="txt">{{activity.address || ""}}{{activity.detailAddress || ""}}</div>
                     </el-form-item>
                 </template>
-                <el-form-item v-else-if="item.code == 'introduction'" :label="item.name">
+                <el-form-item v-else-if="item.code == 'introduction'" v-show="isNotEmpty(activity.introduction)" :label="item.name">
                     <div class="input-box">
                         <div class="richtext" v-html="activity.introduction"></div>
                     </div>
                 </el-form-item>
-                <el-form-item v-else-if="['work', 'activity_rating'].indexOf(item.code) == -1 " :label="item.name">
-                    <div class="img-box js-crop-img" v-if="item.code == 'activity_cover'">
+                <el-form-item :label="item.name" v-else-if="item.code == 'activity_name'" v-show="isNotEmpty(activity.name)">
+                    <div class="txt">
+                        {{activity.name}}
+                    </div>
+                </el-form-item>
+                <el-form-item :label="item.name" v-else-if="item.code == 'activity_cover'" v-show="isNotEmpty(activity.coverUrl) || isNotEmpty(activity.coverCloudId)">
+                    <div class="img-box js-crop-img">
                         <img :src="activity | getCloudImgUrl" class="cover-img jqthumbImg" height="100%">
                     </div>
-                    <div class="txt" v-else>
-                        <template v-if="item.code == 'activity_name'">
-                            {{activity.name}}
-                        </template>
-                        <template v-else-if="item.code == 'activity_time_scope'">
-                            {{activity.startTimeStamp | timestampScopeFormat(activity.endTimeStamp)}}
-                        </template>
-                        <template v-else-if="item.code == 'activity_organisers'">
-                            {{activity.organisers}}
-                        </template>
-                        <template v-else-if="item.code == 'activity_type'">
-                            {{activity.activityType}}
-                        </template>
-                        <template v-else-if="item.code == 'activity_classify'">
-                            {{activity.activityClassifyName}}
-                        </template>
-                        <template v-else-if="item.code == 'integral'">
-                            {{activity.integral}}
-                        </template>
-                        <template v-else-if="item.code == 'period'">
-                            {{activity.period}}
-                        </template>
-                        <template v-else-if="item.code == 'credit'">
-                            {{activity.credit}}
-                        </template>
-                        <template v-else-if="item.code == 'max_participate_time_length'">
-                            {{activity.timeLengthUpperLimit}}
-                        </template>
-                        <template v-else-if="item.code == 'activity_release_scope'">
-                            {{participateScopes}}
-                        </template>
-                        <template v-else-if="item.code == 'tags'">
-                            {{activity.tags}}
-                        </template>
-                        <template v-else-if="item.code == 'timing_release'">
-                            {{activity.timingReleaseTimeStamp | timestampFormat}}
-                        </template>
-                        <template v-else-if="item.type == 'text' || item.type == 'checkbox' || item.type == 'radio'">
-                            {{activityComponentValueMap[item.id] && activityComponentValueMap[item.id].value}}
-                        </template>
+                </el-form-item>
+                <el-form-item :label="item.name" v-else-if="item.code == 'activity_time_scope'" v-show="isNotEmpty(activity.startTimeStamp)">
+                    <div class="txt">
+                        {{activity.startTimeStamp | timestampScopeFormat(activity.endTimeStamp)}}
+                    </div>
+                </el-form-item>
+                <el-form-item :label="item.name" v-else-if="item.code == 'activity_organisers'" v-show="isNotEmpty(activity.organisers)">
+                    <div class="txt">
+                        {{activity.organisers}}
+                    </div>
+                </el-form-item>
+                <el-form-item :label="item.name" v-else-if="item.code == 'activity_type'" v-show="isNotEmpty(activity.activityType)">
+                    <div class="txt">
+                        {{activity.activityType}}
+                    </div>
+                </el-form-item>
+                <el-form-item :label="item.name" v-else-if="item.code == 'activity_classify'" v-show="isNotEmpty(activity.activityClassifyName)">
+                    <div class="txt">
+                        {{activity.activityClassifyName}}
+                    </div>
+                </el-form-item>
+                <el-form-item :label="item.name" v-else-if="item.code == 'integral'" v-show="isNotEmpty(activity.integral)">
+                    <div class="txt">
+                        {{activity.integral}}
+                    </div>
+                </el-form-item>
+                <el-form-item :label="item.name" v-else-if="item.code == 'period'" v-show="isNotEmpty(activity.period)">
+                    <div class="txt">
+                        {{activity.period}}
+                    </div>
+                </el-form-item>
+                <el-form-item :label="item.name" v-else-if="item.code == 'credit'" v-show="isNotEmpty(activity.credit)">
+                    <div class="txt">
+                        {{activity.credit}}
+                    </div>
+                </el-form-item>
+                <el-form-item :label="item.name" v-else-if="item.code == 'max_participate_time_length'" v-show="isNotEmpty(activity.timeLengthUpperLimit)">
+                    <div class="txt">
+                        {{activity.timeLengthUpperLimit}}
+                    </div>
+                </el-form-item>
+                <el-form-item :label="item.name" v-else-if="item.code == 'activity_release_scope'" v-show="isNotEmpty(activity.participateScopes)">
+                    <div class="txt">
+                        {{participateScopes | releaseScopeFormat}}
+                    </div>
+                </el-form-item>
+                <el-form-item :label="item.name" v-else-if="item.code == 'tags'" v-show="isNotEmpty(activity.tags)">
+                    <div class="txt">
+                        {{activity.tags}}
+                    </div>
+                </el-form-item>
+                <el-form-item :label="item.name" v-else-if="item.code == 'timing_release'" v-show="isNotEmpty(activity.timingReleaseTimeStamp)">
+                    <div class="txt">
+                        {{activity.timingReleaseTimeStamp | timestampFormat}}
+                    </div>
+                </el-form-item>
+                <el-form-item :label="item.name" v-else-if="item.type == 'text' || item.type == 'checkbox' || item.type == 'radio'" v-show="isNotEmpty(activityComponentValueMap[item.id].value)">
+                    <div class="txt">
+                        {{activityComponentValueMap[item.id] && activityComponentValueMap[item.id].value}}
                     </div>
                 </el-form-item>
             </template>
             <el-form-item label="页面配置">
                 <div class="txt">
                     <p class="width498 overHidden1">{{activity.previewUrl}}</p>
-                    <button class="btn-second-small" @click="configPage">页面配置</button>
                 </div>
             </el-form-item>
             <button class="btn-main btn-width-80 edit-btn" @click="toEditPage">编辑</button>
@@ -174,6 +197,15 @@
         <script type="text/javascript" src="https://noteyd.chaoxing.com/res/plugin/smusic/js/smusic.js"></script>
         <script type="text/javascript" src="https://noteyd.chaoxing.com/res/pc/js/media.js"></script>
         <script th:inline="javascript">
+            Vue.filter("releaseScopeFormat", function (value) {
+                if (!value) {
+                    return "";
+                }
+                if (value.length >= 5) {
+                    return value.slice(0, 4).join(",").concat("等" + value.length + "个单位");
+                }
+                return value.join(",");
+            })
             var vm = new Vue({
                 el: '#basicInfoVue',
                 data: function () {
@@ -208,22 +240,21 @@
                 },
                 mounted: function () {
                     var $this = this;
-                    // 初始化笔记编辑器
-                    // if ($this.needInitEditor) {
-                    //     var content =
-                    //     $("#editor").html(content);
-                    //     // app.initUEditor($this.activity.introduction);
-                    // }
+                    $this.handleImg();
                 },
                 methods: {
+                    isNotEmpty: function (value) {
+                        return !activityApp.isEmpty(value);
+                    },
+                    handleImg: function () {
+                        $('.jqthumbImg').jqthumb({
+                            width: '100%',
+                            height: '100%'
+                        });
+                    },
                     //    展开更多
                     showMoreFun:function (){
                         this.showMore = !this.showMore;
-                    },
-                    // 配置页面
-                    configPage: function () {
-                        var $this = this;
-                        window.open($this.activity.editUrl);
                     },
                     toEditPage: function () {
                         window.location.href = ctx + "/activity/[[${activityId}]]/setting/basic-info/edit"
