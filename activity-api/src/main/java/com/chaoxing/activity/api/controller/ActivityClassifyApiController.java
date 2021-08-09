@@ -6,6 +6,7 @@ import com.chaoxing.activity.dto.RestRespDTO;
 import com.chaoxing.activity.model.Classify;
 import com.chaoxing.activity.service.activity.classify.ClassifyHandleService;
 import com.chaoxing.activity.service.activity.classify.ClassifyQueryService;
+import com.chaoxing.activity.util.exception.BusinessException;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -49,16 +50,24 @@ public class ActivityClassifyApiController {
     }
 
     /**查询机构可选的活动分类列表
-     * @Description 
+     * @Description 表单活动申报创建活动使用
      * @author wwb
      * @Date 2021-05-19 11:54:17
-     * @param fid
+     * @param fid 与活动市场id二选一
+     * @param marketId 与fid二选一
      * @return com.chaoxing.activity.dto.RestRespDTO
     */
     @RequestMapping("list")
-    public RestRespDTO listOrgClassify(Integer fid) {
-        classifyHandleService.cloneSystemClassifyToOrg(fid);
-        List<Classify> classifies = classifyQueryService.listOrgClassifies(fid);
+    public RestRespDTO listOrgClassify(Integer fid, Integer marketId) {
+        List<Classify> classifies;
+        if (marketId != null) {
+            classifies = classifyQueryService.listMarketClassifies(marketId);
+        } else if (fid != null) {
+            classifyHandleService.cloneSystemClassifyToOrg(fid);
+            classifies = classifyQueryService.listOrgClassifies(fid);
+        } else {
+            throw new BusinessException("机构id或市场id不能同时为空");
+        }
         return RestRespDTO.success(classifies);
     }
 

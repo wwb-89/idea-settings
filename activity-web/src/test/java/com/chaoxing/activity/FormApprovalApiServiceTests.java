@@ -42,7 +42,7 @@ public class FormApprovalApiServiceTests {
         Integer formId = 17251;
         Integer formUserId = 1959060;
         Integer templateId = null;
-        formApprovalApiService.createActivity(fid, formId, formUserId, Activity.ActivityFlagEnum.NORMAL.getValue(), templateId);
+        formApprovalApiService.createActivity(fid, formId, formUserId, null, Activity.ActivityFlagEnum.NORMAL.getValue(), templateId);
     }
 
 }

@@ -25,6 +25,8 @@ public class WfwFormCreateActivity {
     private Integer formId;
     /** 表单记录id */
     private Integer formUserId;
+    /** 活动市场id */
+    private Integer marketId;
     /** 活动标识 */
     private String flag;
     /** 使用的模版id */

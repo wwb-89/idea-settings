@@ -12,13 +12,13 @@ import com.chaoxing.activity.dto.manager.sign.create.SignInCreateParamDTO;
 import com.chaoxing.activity.dto.manager.sign.create.SignUpCreateParamDTO;
 import com.chaoxing.activity.dto.manager.wfw.WfwAreaDTO;
 import com.chaoxing.activity.dto.manager.wfwform.WfwFormDTO;
-import com.chaoxing.activity.model.Activity;
-import com.chaoxing.activity.model.Classify;
-import com.chaoxing.activity.model.WebTemplate;
+import com.chaoxing.activity.model.*;
 import com.chaoxing.activity.service.WebTemplateService;
 import com.chaoxing.activity.service.activity.ActivityHandleService;
 import com.chaoxing.activity.service.activity.ActivityQueryService;
 import com.chaoxing.activity.service.activity.classify.ClassifyHandleService;
+import com.chaoxing.activity.service.activity.market.MarketQueryService;
+import com.chaoxing.activity.service.activity.template.TemplateQueryService;
 import com.chaoxing.activity.service.manager.module.SignApiService;
 import com.chaoxing.activity.service.manager.wfw.WfwAreaApiService;
 import com.chaoxing.activity.service.util.FormUtils;
@@ -42,6 +42,7 @@ import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
+import java.util.stream.Collectors;
 
 /**微服务表单审批api服务
  * @author wwb
@@ -79,11 +80,15 @@ public class WfwFormApprovalApiService {
     @Resource
     private ActivityHandleService activityHandleService;
     @Resource
+    private MarketQueryService marketQueryService;
+    @Resource
     private WfwAreaApiService wfwAreaApiService;
     @Resource
     private WebTemplateService webTemplateService;
     @Resource
     private SignApiService signApiService;
+    @Resource
+    private TemplateQueryService templateQueryService;
 
     @Resource(name = "restTemplateProxy")
     private RestTemplate restTemplate;
@@ -169,11 +174,13 @@ public class WfwFormApprovalApiService {
      * @param fid
      * @param formId
      * @param formUserId
-     * @param templateId
+     * @param marketId
+     * @param flag
+     * @param webTemplateId 门户网页模版id
      * @return void
     */
     @Transactional(rollbackFor = Exception.class)
-    public void createActivity(Integer fid, Integer formId, Integer formUserId, String flag, Integer templateId) {
+    public void createActivity(Integer fid, Integer formId, Integer formUserId, Integer marketId, String flag, Integer webTemplateId) {
         // 获取表单数据
         WfwFormDTO formData = getFormData(fid, formId, formUserId);
         if (formData == null) {
@@ -196,14 +203,32 @@ public class WfwFormApprovalApiService {
         if (activityFlag == null) {
             activityFlag = Activity.ActivityFlagEnum.NORMAL;
         }
-        // TODO 根据活动标识设置模版和市场id
         // 使用指定的模板
-        templateId = Optional.ofNullable(templateId).orElse(CommonConstant.DEFAULT_FROM_FORM_CREATE_ACTIVITY_TEMPLATE_ID);
-        WebTemplate webTemplate = webTemplateService.getById(templateId);
+        webTemplateId = Optional.ofNullable(webTemplateId).orElse(CommonConstant.DEFAULT_FROM_FORM_CREATE_ACTIVITY_TEMPLATE_ID);
+        WebTemplate webTemplate = webTemplateService.getById(webTemplateId);
         if (webTemplate == null) {
             throw new BusinessException("通过活动申报创建活动指定的门户模版不存在");
         }
-        activity.setWebTemplateId(templateId);
+        activity.setWebTemplateId(webTemplateId);
+        // 设置活动市场
+        if (marketId != null) {
+            List<Market> markets = marketQueryService.listByFid(fid);
+            if (CollectionUtils.isEmpty(markets)) {
+                log.error("机构:{} 活动市场不存在", fid);
+                return;
+            }
+            if (!markets.stream().map(Market::getId).collect(Collectors.toList()).contains(marketId)) {
+                log.error("机构:{} 活动市场:{} 不存在", fid, marketId);
+                return;
+            }
+            activity.setMarketId(marketId);
+            Template template = templateQueryService.getMarketFirstTemplate(marketId);
+            if (template == null) {
+                log.error("活动市场:{}下不存在模版", marketId);
+                return;
+            }
+            activity.setTemplateId(template.getId());
+        }
         WfwAreaDTO wfwRegionalArchitecture = wfwAreaApiService.buildWfwRegionalArchitecture(fid);
         Integer activityId = activityHandleService.add(activity, signCreateParam, Lists.newArrayList(wfwRegionalArchitecture), loginUser);
         // 发布

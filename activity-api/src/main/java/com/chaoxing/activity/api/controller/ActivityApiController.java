@@ -20,7 +20,6 @@ import com.chaoxing.activity.model.LoginCustom;
 import com.chaoxing.activity.model.UserStatSummary;
 import com.chaoxing.activity.service.GroupService;
 import com.chaoxing.activity.service.LoginService;
-import com.chaoxing.activity.service.activity.ActivityIsAboutStartHandleService;
 import com.chaoxing.activity.service.activity.ActivityQueryService;
 import com.chaoxing.activity.service.activity.ActivityValidationService;
 import com.chaoxing.activity.service.activity.collection.ActivityCollectionHandleService;
@@ -79,8 +78,6 @@ public class ActivityApiController {
 	private LoginService loginService;
 	@Resource
 	private ActivityCollectionQueryService activityCollectionQueryService;
-	@Resource
-	private ActivityIsAboutStartHandleService activityIsAboutStartHandleService;
 	@Resource
 	private ActivityValidationService activityValidationService;
 	@Resource

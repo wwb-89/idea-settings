@@ -38,6 +38,7 @@ public class ActivityCreateFromApprovalTask {
             formApprovalApiService.createActivity(formCreateActivity.getFid(),
                     formCreateActivity.getFormId(),
                     formCreateActivity.getFormUserId(),
+                    formCreateActivity.getMarketId(),
                     formCreateActivity.getFlag(),
                     formCreateActivity.getTemplateId());
         } catch (Exception e) {

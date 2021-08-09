@@ -38,15 +38,17 @@ public class FormActivityApiController {
      * @param deptId
      * @param formId
      * @param formUserId
+     * @param marketId 活动市场id
      * @param templateId 需要使用的模版id
      * @return com.chaoxing.activity.dto.RestRespDTO
      */
     @RequestMapping("create")
-    public RestRespDTO formCreateActivity(@RequestParam Integer deptId, Integer formId, @RequestParam(value = "indexID") Integer formUserId, String flag, Integer templateId) {
+    public RestRespDTO formCreateActivity(@RequestParam Integer deptId, Integer formId, @RequestParam(value = "indexID") Integer formUserId, String flag, Integer marketId, Integer templateId) {
         WfwFormCreateActivity formCreateActivity = WfwFormCreateActivity.builder()
                 .fid(deptId)
                 .formId(formId)
                 .formUserId(formUserId)
+                .marketId(marketId)
                 .flag(flag)
                 .templateId(templateId)
                 .build();
