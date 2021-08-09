@@ -121,7 +121,7 @@ public class ActivitySettingController {
         model.addAttribute("activity", createParamDTO);
         model.addAttribute("templateComponents", activityEngineQueryService.listBasicInfoTemplateComponents(activity.getTemplateId(), activity.getCreateFid()));
         List<String> participateScopes = activityScopeQueryService.listByActivityId(activityId).stream().map(WfwAreaDTO::getName).collect(Collectors.toList());
-        model.addAttribute("participateScopes", StringUtils.join(participateScopes, ","));
+        model.addAttribute("participateScopes", participateScopes);
         return "pc/activity/setting/basic-info-view";
     }
 

@@ -15,7 +15,7 @@
 <div class="container" id="activity-vue" v-cloak>
     <div class="slider">
         <div class="title">
-            <span th:text="${activity.name}" style="cursor: pointer;" @click="activityHome">成都少儿阅读活动</span>
+            <span th:text="${activity.name}" style="cursor: pointer;" @click="activityHome"></span>
         </div>
         <div class="menu">
             <div class="entry menu-item" v-show="menuShow('sign_up') || menuShow('sign_in')">

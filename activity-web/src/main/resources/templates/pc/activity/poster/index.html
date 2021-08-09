@@ -15,7 +15,7 @@
         <div id="capture">
             <div class="poster-box">
                 <div class="img-box">
-                    <img :src="activity.coverCloudId | imgUrlFilter">
+                    <img :src="activity.coverCloudId | imgUrlFilter" class="jqthumbImg">
                 </div>
                 <div class="text-box">
                     <p class="text-title marginb6">{{activity.name}}</p>
@@ -51,6 +51,7 @@
     <div th:replace="pc/include/common_js :: common_js(~{::script})">
         <script src="/static/pc/assets/lib/qrcode.min.js"  th:src="@{/pc/assets/lib/qrcode.min.js}"></script>
         <script src="/static/pc/assets/lib/html2canvas.min.js" th:src="@{/pc/assets/lib/html2canvas.min.js}"></script>
+        <script src="/static/pc/assets/lib/jqthumb.min.js" th:src="@{/pc/assets/lib/jqthumb.min.js}"></script>
         <script th:inline="javascript">
             Vue.filter("imgUrlFilter", function (cloudId) {
                 return ctx + '/cloud-proxy/image/' + cloudId;
@@ -80,6 +81,7 @@
                 mounted: function () {
                     var $this = this;
                     $this.init();
+                    $this.handleImg();
                 },
                 methods: {
                     init: function () {
@@ -96,6 +98,12 @@
                             height: 128,
                             colorDark : "#000000",
                             colorLight : "#ffffff",
+                        });
+                    },
+                    handleImg: function () {
+                        $('.jqthumbImg').jqthumb({
+                            width: '100%',
+                            height: '100%'
                         });
                     },
                     getHeight: function (el, lineHeight) {

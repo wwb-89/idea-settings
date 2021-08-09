@@ -430,7 +430,9 @@
                                             <el-radio-group v-model="signUpMap[item.id].notAllowCancelType">
                                                 <el-radio v-for="(item, index) of notAllowCancelTypes" :key="'not-allow-cancel-type' + index" :label="item.value">{{item.label}}</el-radio>
                                             </el-radio-group>
-                                            <input type="number" min="0" step="1" v-model="signUpMap[item.id].notAllowCancelDays" style="margin-left: 8px" class="score-input" @blur="cancelSignUpDaysValidate(item.id)">天
+                                            <template v-if="signUpMap[item.id].notAllowCancelType == 'before_activity_start'">
+                                                <input type="number" min="0" step="1" v-model="signUpMap[item.id].notAllowCancelDays" style="margin-left: 8px" class="score-input" @blur="cancelSignUpDaysValidate(item.id)">天
+                                            </template>
                                         </div>
                                     </div>
                                 </template>
