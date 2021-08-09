@@ -1,0 +1,1 @@
+ALTER TABLE t_activity ADD is_top TINYINT(1) DEFAULT 0 COMMENT '是否置顶';
