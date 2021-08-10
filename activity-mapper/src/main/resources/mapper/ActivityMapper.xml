@@ -50,14 +50,13 @@
         <result column="status" jdbcType="INTEGER" property="status" />
         <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
         <result column="update_time" jdbcType="TIMESTAMP" property="updateTime" />
-        <result column="is_top" jdbcType="BIT" property="top" />
     </resultMap>
     <sql id="Base_Column_List">
         t.id, t.name, t.start_time, t.end_time, t.start_date, t.end_date, t.cover_cloud_id, t.cover_url, t.organisers, t.activity_type, t.address, t.detail_address,
         t.longitude, t.dimension, t.activity_classify_id, t.period, t.credit, t.time_length_upper_limit, t.sign_id, t.web_template_id, t.website_id, t.page_id, t.preview_url, t.edit_url,
         t.is_timing_release, t.timing_release_time, t.is_released, t.release_time, t.release_uid, t.create_uid, t.create_user_name, t.create_fid, t.create_area_code,
         t.create_org_name, t.tags, t.is_open_rating, t.is_rating_need_audit, t.activity_flag, t.integral, t.is_open_work, t.work_id,
-        t.origin_type, t.origin, t.market_id, t.template_id, t.status, t.create_time, t.update_time, t.is_top
+        t.origin_type, t.origin, t.market_id, t.template_id, t.status, t.create_time, t.update_time
     </sql>
 
     <select id="pageParticipate" resultMap="BaseResultMap">
