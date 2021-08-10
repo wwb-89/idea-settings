@@ -1,7 +1,9 @@
 package com.chaoxing.activity.task.activity;
 
 import com.chaoxing.activity.dto.LoginUserDTO;
+import com.chaoxing.activity.model.Activity;
 import com.chaoxing.activity.service.activity.ActivityHandleService;
+import com.chaoxing.activity.service.activity.ActivityQueryService;
 import com.chaoxing.activity.service.queue.activity.ActivityTimingReleaseQueueService;
 import com.chaoxing.activity.util.exception.ActivityNotExistException;
 import com.chaoxing.activity.util.exception.ActivityReleasedException;
@@ -27,6 +29,8 @@ public class ActivityTimingReleaseTask {
 	private ActivityTimingReleaseQueueService activityTimingReleaseQueueService;
 	@Resource
 	private ActivityHandleService activityHandleService;
+	@Resource
+	private ActivityQueryService activityQueryService;
 
 	@Scheduled(fixedDelay = 1L)
 	public void release() throws InterruptedException {
@@ -35,9 +39,10 @@ public class ActivityTimingReleaseTask {
 			return;
 		}
 		Integer activityId = queueParam.getActivityId();
+		Activity activity = activityQueryService.getById(activityId);
 		LoginUserDTO loginUser = queueParam.getLoginUser();
 		try {
-			activityHandleService.release(activityId, loginUser);
+			activityHandleService.release(activityId, activity.getMarketId(), loginUser);
 		} catch (Exception e) {
 			e.printStackTrace();
 			if (!isIgnoreException(e)) {

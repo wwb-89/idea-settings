@@ -14,6 +14,7 @@ import com.chaoxing.activity.dto.manager.sign.create.SignCreateResultDTO;
 import com.chaoxing.activity.dto.manager.wfw.WfwAreaDTO;
 import com.chaoxing.activity.mapper.ActivityDetailMapper;
 import com.chaoxing.activity.mapper.ActivityMapper;
+import com.chaoxing.activity.mapper.ActivityMarketMapper;
 import com.chaoxing.activity.model.*;
 import com.chaoxing.activity.service.WebTemplateService;
 import com.chaoxing.activity.service.activity.engine.ActivityComponentValueService;
@@ -97,7 +98,8 @@ public class ActivityHandleService {
 	private BlacklistAutoAddQueueService blacklistAutoAddQueueService;
 	@Resource
 	private ActivityMenuService activityMenuService;
-
+	@Resource
+	private ActivityMarketService activityMarketService;
 	@Resource
 	private SignUpConditionService signUpConditionService;
 	@Resource
@@ -146,6 +148,9 @@ public class ActivityHandleService {
 		activityDetailMapper.insert(activityDetail);
 		// 活动菜单配置
 		activityMenuService.configActivityMenu(activityId, activityMenuService.listMenu().stream().map(ActivityMenuDTO::getValue).collect(Collectors.toList()));
+		// 若活动由市场所建，新增活动市场与活动关联
+		activityMarketService.add(activity);
+		// 默认添加活动市场管理
 		// 添加管理员
 		ActivityManager activityManager = ActivityManager.buildCreator(activity);
 		activityManagerService.add(activityManager, loginUser);
@@ -333,10 +338,18 @@ public class ActivityHandleService {
 	 * @return void
 	 */
 	@Transactional(rollbackFor = Exception.class)
-	public void release(Integer activityId, LoginUserDTO loginUser) {
+	public void release(Integer activityId, Integer marketId, LoginUserDTO loginUser) {
 		Activity activity = activityValidationService.releaseAble(activityId, loginUser);
 		activity.release(loginUser.getUid());
-		activityStatusService.updateReleaseStatus(activity);
+		// 当非市场发布活动或当前市场的活动发布活动，均可修改活动状态
+		if (marketId == null || Objects.equals(marketId, activity.getMarketId())) {
+			activityStatusService.updateReleaseStatus(activity);
+		}
+		// 修改活动-市场状态信息
+		if (marketId != null) {
+			activityMarketService.updateMarketActivityStatus(marketId, activity);
+		}
+
 	}
 
 	/**取消发布（下架）
@@ -348,10 +361,17 @@ public class ActivityHandleService {
 	 * @return void
 	 */
 	@Transactional(rollbackFor = Exception.class)
-	public void cancelRelease(Integer activityId, LoginUserDTO loginUser) {
+	public void cancelRelease(Integer activityId, Integer marketId, LoginUserDTO loginUser) {
 		Activity activity = activityValidationService.cancelReleaseAble(activityId, loginUser);
 		activity.cancelRelease();
-		activityStatusService.updateReleaseStatus(activity);
+		// 当非市场发布活动或当前市场的活动发布活动，均可修改活动状态
+		if (marketId == null || Objects.equals(marketId, activity.getMarketId())) {
+			activityStatusService.updateReleaseStatus(activity);
+		}
+		// 修改活动-市场状态信息
+		if (marketId != null) {
+			activityMarketService.updateMarketActivityStatus(marketId, activity);
+		}
 	}
 
 	/**删除活动
@@ -363,17 +383,26 @@ public class ActivityHandleService {
 	 * @return void
 	 */
 	@Transactional(rollbackFor = Exception.class)
-	public void delete(Integer activityId, LoginUserDTO loginUser) {
-		// 验证是否能删除
-		Activity activity = activityValidationService.deleteAble(activityId, loginUser);
-		activity.delete();
-		activityMapper.update(null, new UpdateWrapper<Activity>()
-				.lambda()
-				.eq(Activity::getId, activityId)
-				.set(Activity::getStatus, activity.getStatus())
-		);
-		// 活动状态改变
-		activityChangeEventService.statusChange(activity);
+	public void delete(Integer activityId, Integer marketId, LoginUserDTO loginUser) {
+		Activity activity =  activityValidationService.activityExist(activityId);
+		boolean isCreateMarket = Objects.equals(marketId, activity.getMarketId());
+		// 当非市场发布活动或当前市场的活动发布活动，均可修改活动状态
+		if (marketId == null || isCreateMarket) {
+			// 验证是否能删除
+			activity = activityValidationService.deleteAble(activityId, loginUser);
+			activity.delete();
+			activityMapper.update(null, new UpdateWrapper<Activity>()
+					.lambda()
+					.eq(Activity::getId, activityId)
+					.set(Activity::getStatus, activity.getStatus())
+			);
+			// 活动状态改变
+			activityChangeEventService.statusChange(activity);
+		}
+		// 修改活动-市场状态信息
+		if (marketId != null) {
+			activityMarketService.remove(activityId, marketId, isCreateMarket);
+		}
 	}
 
 	/**绑定模板
@@ -731,4 +760,35 @@ public class ActivityHandleService {
 		);
 	}
 
+	/**置顶活动
+	* @Description
+	* @author huxiaolong
+	* @Date 2021-08-10 17:44:18
+	* @param activityId
+	* @param marketId
+	* @return void
+	*/
+	@Transactional
+	public void setActivityTop(Integer activityId, Integer marketId) {
+		if (activityId == null || marketId == null) {
+			return;
+		}
+		activityMarketService.updateActivityTop(activityId, marketId, Boolean.TRUE);
+	}
+
+	/**取消活动置顶
+	* @Description 
+	* @author huxiaolong
+	* @Date 2021-08-10 17:44:06
+	* @param activityId
+	* @param marketId
+	* @return void
+	*/
+	@Transactional
+	public void cancelActivityTop(Integer activityId, Integer marketId) {
+		if (activityId == null || marketId == null) {
+			return;
+		}
+		activityMarketService.updateActivityTop(activityId, marketId, Boolean.FALSE);
+	}
 }

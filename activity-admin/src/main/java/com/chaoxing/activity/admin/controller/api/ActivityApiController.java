@@ -16,10 +16,8 @@ import com.chaoxing.activity.service.activity.ActivityHandleService;
 import com.chaoxing.activity.service.activity.ActivityQueryService;
 import com.chaoxing.activity.util.HttpServletRequestUtils;
 import com.chaoxing.activity.util.annotation.LoginRequired;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.apache.ibatis.annotations.Param;
+import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
@@ -94,9 +92,9 @@ public class ActivityApiController {
 	*/
 	@LoginRequired
 	@PostMapping("{activityId}/delete")
-	public RestRespDTO delele(HttpServletRequest request, @PathVariable Integer activityId) {
+	public RestRespDTO delele(HttpServletRequest request, @PathVariable Integer activityId, Integer marketId) {
 		LoginUserDTO loginUser = LoginUtils.getLoginUser(request);
-		activityHandleService.delete(activityId, loginUser);
+		activityHandleService.delete(activityId, marketId, loginUser);
 		return RestRespDTO.success();
 	}
 
@@ -135,8 +133,38 @@ public class ActivityApiController {
 		return RestRespDTO.success(page);
 	}
 
+	/**置顶活动
+	* @Description
+	* @author huxiaolong
+	* @Date 2021-08-10 17:37:11
+	* @param activityId
+	* @param marketId
+	* @return com.chaoxing.activity.dto.RestRespDTO
+	*/
+	@LoginRequired
+	@PostMapping("{activityId}/set-top")
+	public RestRespDTO setActivityTop(@PathVariable Integer activityId, @RequestParam("marketId") Integer marketId) {
+		activityHandleService.setActivityTop(activityId, marketId);
+		return RestRespDTO.success();
+	}
+
+	/**取消活动置顶
+	* @Description
+	* @author huxiaolong
+	* @Date 2021-08-10 17:37:11
+	* @param activityId
+	* @param marketId
+	* @return com.chaoxing.activity.dto.RestRespDTO
+	*/
+	@LoginRequired
+	@PostMapping("{activityId}/cancel-top")
+	public RestRespDTO cancelActivityTop(@PathVariable Integer activityId, @RequestParam("marketId") Integer marketId) {
+		activityHandleService.cancelActivityTop(activityId, marketId);
+		return RestRespDTO.success();
+	}
+
 	/**发布活动
-	 * @Description 
+	 * @Description
 	 * @author wwb
 	 * @Date 2020-11-20 11:04:53
 	 * @param request
@@ -145,9 +173,9 @@ public class ActivityApiController {
 	*/
 	@LoginRequired
 	@PostMapping("{activityId}/release")
-	public RestRespDTO release(HttpServletRequest request, @PathVariable Integer activityId) {
+	public RestRespDTO release(HttpServletRequest request, @PathVariable Integer activityId, Integer marketId) {
 		LoginUserDTO loginUser = LoginUtils.getLoginUser(request);
-		activityHandleService.release(activityId, loginUser);
+		activityHandleService.release(activityId, marketId, loginUser);
 		return RestRespDTO.success();
 	}
 
@@ -161,9 +189,9 @@ public class ActivityApiController {
 	*/
 	@LoginRequired
 	@PostMapping("{activityId}/release/cancel")
-	public RestRespDTO cancelRelease(HttpServletRequest request, @PathVariable Integer activityId) {
+	public RestRespDTO cancelRelease(HttpServletRequest request, @PathVariable Integer activityId, Integer marketId) {
 		LoginUserDTO loginUser = LoginUtils.getLoginUser(request);
-		activityHandleService.cancelRelease(activityId, loginUser);
+		activityHandleService.cancelRelease(activityId, marketId, loginUser);
 		return RestRespDTO.success();
 	}
 

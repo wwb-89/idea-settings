@@ -230,13 +230,19 @@ public class ActivityQueryService {
 			// 严格模式
 			activityManageQuery.setCreateUid(loginUser.getUid());
 			activityManageQuery.setCreateWfwfid(activityManageQuery.getFid());
-			page = activityMapper.pageCreated(page, activityManageQuery);
+			if (activityManageQuery.getMarketId() == null) {
+				page = activityMapper.pageCreated(page, activityManageQuery);
+			} else {
+				page = activityMapper.pageCreatedByMarket(page, activityManageQuery);
+			}
 		} else {
 			if (activityManageQuery.getMarketId() == null) {
 				List<Integer> fids = wfwAreaApiService.listSubFid(activityManageQuery.getFid());
 				activityManageQuery.setFids(fids);
+				page = activityMapper.pageManaging(page, activityManageQuery);
+			} else {
+				page = activityMapper.pageManagingByMarket(page, activityManageQuery);
 			}
-			page = activityMapper.pageManaging(page, activityManageQuery);
 		}
 		List<Activity> activities = page.getRecords();
 		// 封装报名的数量

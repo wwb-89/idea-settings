@@ -253,6 +253,9 @@
                     edit: {name: "编辑", value: "edit"},
                     delete: {name: "删除", value: "delete"},
                     manage: {name: "管理", value: "manage"},
+                    setTop: {name: "置顶", value: "setTop"},
+                    cancelSetTop: {name: "置顶", value: "cancelSetTop"},
+                    configPage: {name: "页面配置", value: "configPage"},
                     release: {name: "发布", value: "release"},
                     cancelRelease: {name: "下架", value: "cancelRelease"},
                     dualSelectStatExport: {name: "导出投递数据", value: "dualSelectStatExport"}
@@ -370,6 +373,12 @@
                                     }
                                     break;
                                 default:
+                            }
+                            if (isCurrentOrgCreated || $this.marketId) {
+                                activity.operations.push($this.operations.configPage);
+                            }
+                            if ($this.marketId) {
+                                activity.operations.push($this.operations.setTop);
                             }
                         });
                     }
@@ -494,6 +503,15 @@
                         case "dualSelectStatExport":
                             $this.toDualSelectStatExport(id, activity.createFid);
                             break;
+                        case "setTop":
+                            $this.toSetTop(id, activity.createFid);
+                            break;
+                        case "cancelSetTop":
+                            $this.cancelSetTop(id, activity.createFid);
+                            break;
+                        case "configPage":
+                            $this.configPage(activity);
+                            break;
                         default:
                     }
                 },
@@ -505,7 +523,7 @@
                 },
                 deleteSubmit: function () {
                     var $this = this;
-                    var url = ctx + "/api/activity/" + $this.operateActivityId + "/delete"
+                    var url = ctx + "/api/activity/" + $this.operateActivityId + "/delete/?marketId=" + $this.marketId;
                     app.ajaxPostWithLoading(url, {}, function (data) {
                         if (data.success) {
                             $this.$refs.deleteWindow.show = false;
@@ -541,7 +559,7 @@
                         return;
                     }
                     $this.$refs.releaseWindow.show = false;
-                    var url = ctx + "/api/activity/" + $this.operateActivityId + "/release";
+                    var url = ctx + "/api/activity/" + $this.operateActivityId + "/release/?marketId=" + $this.marketId;
                     app.ajaxPostWithLoading(url, {}, function (data) {
                         if (data.success) {
                             app.showMsg("发布成功", function () {
@@ -582,6 +600,40 @@
                     var url = ctx + "/activity/" + $this.operateActivityId + "/edit?step=2";
                     window.open(url);
                 },
+                toSetTop: function () {
+                    var $this = this;
+                    var url = ctx + "/api/activity/" + $this.operateActivityId + "/set-top/?marketId=" + $this.marketId;
+                    app.ajaxPostWithLoading(url, {}, function (data) {
+                        if (data.success) {
+                            $this.loadData();
+                        } else {
+                            var errorMessage = data.message;
+                            if (activityApp.isEmpty(errorMessage)) {
+                                errorMessage = "置顶失败";
+                            }
+                            app.showMsg(errorMessage);
+                        }
+                    }, function () {
+                        app.showMsg("置顶失败");
+                    });
+                },
+                cancelSetTop: function () {
+                    var $this = this;
+                    var url = ctx + "/api/activity/" + $this.operateActivityId + "/cancel-top/?marketId=" + $this.marketId;
+                    app.ajaxPostWithLoading(url, {}, function (data) {
+                        if (data.success) {
+                            $this.loadData();
+                        } else {
+                            var errorMessage = data.message;
+                            if (activityApp.isEmpty(errorMessage)) {
+                                errorMessage = "取消置顶失败";
+                            }
+                            app.showMsg(errorMessage);
+                        }
+                    }, function () {
+                        app.showMsg("取消置顶失败");
+                    });
+                },
                 toCancelRelease: function (id) {
                     var $this = this;
                     $this.operateActivityId = id;
@@ -590,7 +642,7 @@
                 cancelRelease: function () {
                     var $this = this;
                     $this.$refs.canReleaseWindow.show = false;
-                    var url = ctx + "/api/activity/" + $this.operateActivityId + "/release/cancel";
+                    var url = ctx + "/api/activity/" + $this.operateActivityId + "/release/cancel/?marketId=" + $this.marketId;
                     app.ajaxPostWithLoading(url, {}, function (data) {
                         if (data.success) {
                             app.showMsg("下架成功", function () {
