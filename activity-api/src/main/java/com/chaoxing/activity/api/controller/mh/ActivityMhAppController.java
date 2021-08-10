@@ -402,7 +402,7 @@ public class ActivityMhAppController {
 			if (statusEnum != null) {
 				String statusDescription = statusEnum.getName();
 				if (Objects.equals(Activity.StatusEnum.RELEASED, statusEnum)) {
-					statusDescription = "未开始";
+					statusDescription = "预告";
 				}
 				mhGeneralAppResultDataFields.add(MhGeneralAppResultDataDTO.MhGeneralAppResultDataFieldDTO.builder()
 						.value(statusDescription)
