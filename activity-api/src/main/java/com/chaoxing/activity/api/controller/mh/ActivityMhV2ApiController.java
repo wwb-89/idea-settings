@@ -25,10 +25,8 @@ import org.springframework.web.bind.annotation.RestController;
 
 import javax.annotation.Resource;
 import java.util.List;
-import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 /**门户活动接口服务
  * @author wwb
@@ -135,14 +133,14 @@ public class ActivityMhV2ApiController {
 		mhGeneralAppResultDataFields.add(buildField("海报", "海报", "130"));
 		mhGeneralAppResultDataFields.add(buildField("海报", String.format(ActivityMhUrlConstant.ACTIVITY_POSTERS_URL, activity.getId()), "131"));
 		// 需要的flag列表
-		final List<String> flags = Lists.newArrayList("0", "1", "2", "3", "4", "5", "6", "100", "101", "102", "103", "104", "105", "106", "107", "108", "109", "110", "111", "112", "113", "114", "115", "116", "117", "118", "130", "131");
+		/*final List<String> flags = Lists.newArrayList("0", "1", "2", "3", "4", "5", "6", "100", "101", "102", "103", "104", "105", "106", "107", "108", "109", "110", "111", "112", "113", "114", "115", "116", "117", "118", "130", "131");
 		Map<String, MhGeneralAppResultDataDTO.MhGeneralAppResultDataFieldDTO> flagFieldRelation = mhGeneralAppResultDataFields.stream().collect(Collectors.toMap(MhGeneralAppResultDataDTO.MhGeneralAppResultDataFieldDTO::getFlag, v -> v, (v1, v2) -> v2));
 		mhGeneralAppResultDataFields = Lists.newArrayList();
 		for (String flag : flags) {
 			MhGeneralAppResultDataDTO.MhGeneralAppResultDataFieldDTO field = flagFieldRelation.get(flag);
 			field = Optional.ofNullable(field).orElse(buildField("", "", flag));
 			mhGeneralAppResultDataFields.add(field);
-		}
+		}*/
 		mhGeneralAppResultDataDTO.setFields(mhGeneralAppResultDataFields);
 		return RestRespDTO.success(jsonObject);
 	}
