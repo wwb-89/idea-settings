@@ -76,5 +76,8 @@ public class UserStatSummary {
     /** 签到率 */
     @TableField(exist = false)
     private BigDecimal signedInRate;
+    /** 总得分 */
+    @TableField(exist = false)
+    private BigDecimal totalScore;
     
 }

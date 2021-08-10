@@ -49,6 +49,8 @@ public class UserStatSummaryVO {
     private BigDecimal integral;
     /** 参与时长; column: participate_time_length*/
     private Integer participateTimeLength;
+    /** 总得分 */
+    private BigDecimal totalScore;
 
     // 附加
     /** 是否合格 */
@@ -79,6 +81,7 @@ public class UserStatSummaryVO {
                 .qualifiedNum(userStatSummary.getQualifiedNum())
                 .participateActivityNum(userStatSummary.getParticipateActivityNum())
                 .signedInRate(userStatSummary.getSignedInRate())
+                .totalScore(userStatSummary.getTotalScore())
                 .build();
     }
 
