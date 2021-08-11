@@ -274,6 +274,7 @@ public class UserStatSummaryQueryService {
 				userParticipateActivity.setHaveRating(ratingNum != null && ratingNum > 0);
 				userParticipateActivity.setQualified(userStatSummary.getQualified());
 				userParticipateActivity.setIntegral(userStatSummary.getIntegral());
+				userParticipateActivity.setTotalScore(userStatSummary.getTotalScore());
 				userParticipateActivities.add(userParticipateActivity);
 			}
 			page.setRecords(userParticipateActivities);

@@ -59,5 +59,7 @@ public class UserParticipateActivityDTO {
 	private BigDecimal integral;
 	/** 更新时间 */
 	private Long updateTime;
+	/** 总得分 */
+	private BigDecimal totalScore;
 
 }
