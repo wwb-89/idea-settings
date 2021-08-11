@@ -436,6 +436,13 @@
                                         </div>
                                     </div>
                                 </template>
+                                <div class="form-item" v-else-if="it.code == 'on_site_sign_up'">
+                                    <label class="label"><img src="/static/pc/assets/images/required.png" th:src="@{/pc/assets/images/required.png}" class="required-img" v-if="it.required">{{it.name}}</label>
+                                    <div class="input-box">
+                                        <el-switch v-model="signUpMap[item.id].onSiteSignUp"></el-switch>
+                                        <span class="tips" v-if="it.introduction">{{it.introduction}}</span>
+                                    </div>
+                                </div>
                                 <div class="form-item" v-else-if="it.code == 'sign_up_condition'">
                                     <label class="label"><img src="/static/pc/assets/images/required.png" th:src="@{/pc/assets/images/required.png}" class="required-img" v-if="it.required">{{it.name}}</label>
                                     <div class="input-box">
@@ -906,6 +913,9 @@
                         $($this.activity.activityComponentValues).each(function () {
                             var componentField = $.extend({}, this);
                             var tplComponentItem = $this.templateComponentMap[this.templateComponentId];
+                            if (!tplComponentItem) {
+                                return true;
+                            }
                             if (componentField.value && tplComponentItem.type == 'checkbox') {
                                 componentField.value = componentField.value.split(',');
                             }

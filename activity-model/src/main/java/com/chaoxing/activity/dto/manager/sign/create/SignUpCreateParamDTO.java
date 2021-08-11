@@ -1,5 +1,6 @@
 package com.chaoxing.activity.dto.manager.sign.create;
 
+import com.baomidou.mybatisplus.annotation.TableField;
 import com.chaoxing.activity.dto.manager.sign.SignUpParticipateScopeDTO;
 import com.chaoxing.activity.util.DateUtils;
 import lombok.*;
@@ -54,6 +55,8 @@ public class SignUpCreateParamDTO {
 	private String notAllowCancelType;
 	/** 不允许取消报名的天数; */
 	private Integer notAllowCancelDays;
+	/** 是否开启现场报名; */
+	private Boolean onSiteSignUp;
 	/** 是否开启微服务参与范围 */
 	private Boolean enableWfwParticipateScope;
 	/** 是否开启通讯录参与范围 */
@@ -84,6 +87,7 @@ public class SignUpCreateParamDTO {
 				.publicList(false)
 				.btnName("报名参与")
 				.endAllowCancel(true)
+				.onSiteSignUp(false)
 				.enableWfwParticipateScope(false)
 				.enableContactsParticipateScope(false)
 				.deleted(false)
