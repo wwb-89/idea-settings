@@ -84,21 +84,22 @@ public class ActivityMarketService {
         );
     }
 
-    /**
+    /**isCreateMarket市场id和活动市场id是否一致，isCreateMarket为true，则更新所有，否则仅更新当前市场活动为删除状态
     * @Description 
     * @author huxiaolong
     * @Date 2021-08-10 17:49:17
     * @param activityId
     * @param marketId
-    * @param removeAll
+    * @param isCreateMarket
     * @return void
     */
     @Transactional(rollbackFor = Exception.class)
-    public void remove(Integer activityId, Integer marketId, boolean removeAll) {
-        if (removeAll) {
-            activityMarketMapper.delete(new QueryWrapper<ActivityMarket>().lambda().eq(ActivityMarket::getActivityId, activityId));
-            return;
-        }
-        activityMarketMapper.delete(new QueryWrapper<ActivityMarket>().lambda().eq(ActivityMarket::getActivityId, activityId).eq(ActivityMarket::getMarketId, marketId));
+    public void remove(Integer activityId, Integer marketId, boolean isCreateMarket) {
+        activityMarketMapper.update(null, new UpdateWrapper<ActivityMarket>()
+                .lambda()
+                .eq(ActivityMarket::getActivityId, activityId)
+                .eq(!isCreateMarket, ActivityMarket::getMarketId, marketId)
+                .set(ActivityMarket::getStatus, Activity.StatusEnum.DELETED.getValue())
+        );
     }
 }

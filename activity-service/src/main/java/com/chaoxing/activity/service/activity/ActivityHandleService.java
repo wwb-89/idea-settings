@@ -339,14 +339,16 @@ public class ActivityHandleService {
 	 */
 	@Transactional(rollbackFor = Exception.class)
 	public void release(Integer activityId, Integer marketId, LoginUserDTO loginUser) {
-		Activity activity = activityValidationService.releaseAble(activityId, loginUser);
-		activity.release(loginUser.getUid());
+		Activity activity = activityValidationService.activityExist(activityId);
 		// 当非市场发布活动或当前市场的活动发布活动，均可修改活动状态
 		if (marketId == null || Objects.equals(marketId, activity.getMarketId())) {
+			activity = activityValidationService.releaseAble(activityId, loginUser);
+			activity.release(loginUser.getUid());
 			activityStatusService.updateReleaseStatus(activity);
 		}
 		// 修改活动-市场状态信息
 		if (marketId != null) {
+			activity.release(loginUser.getUid());
 			activityMarketService.updateMarketActivityStatus(marketId, activity);
 		}
 
@@ -362,14 +364,16 @@ public class ActivityHandleService {
 	 */
 	@Transactional(rollbackFor = Exception.class)
 	public void cancelRelease(Integer activityId, Integer marketId, LoginUserDTO loginUser) {
-		Activity activity = activityValidationService.cancelReleaseAble(activityId, loginUser);
-		activity.cancelRelease();
+		Activity activity = activityValidationService.activityExist(activityId);
 		// 当非市场发布活动或当前市场的活动发布活动，均可修改活动状态
 		if (marketId == null || Objects.equals(marketId, activity.getMarketId())) {
+			activity = activityValidationService.cancelReleaseAble(activity, loginUser);
+			activity.cancelRelease();
 			activityStatusService.updateReleaseStatus(activity);
 		}
 		// 修改活动-市场状态信息
 		if (marketId != null) {
+			activity.cancelRelease();
 			activityMarketService.updateMarketActivityStatus(marketId, activity);
 		}
 	}
