@@ -212,7 +212,7 @@
             <include refid="Base_Column_List"></include>, t.start_time as startTime, t.end_Time as endTime
         FROM
             t_activity t
-        LEF JOIN t_activity_market t1 ON t1.activity_id = t.id
+            LEFT JOIN t_activity_market t1 ON t1.activity_id = t.id
         WHERE
             t1.market_id = #{params.marketId}
             <choose>
