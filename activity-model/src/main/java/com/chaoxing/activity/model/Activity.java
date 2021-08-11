@@ -159,6 +159,8 @@ public class Activity {
     /** 管理员uid列表 */
     @TableField(exist = false)
     private List<Integer> managerUids;
+    @TableField(exist = false)
+    private Boolean top;
 
     @Getter
     public enum OriginTypeEnum {

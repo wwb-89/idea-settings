@@ -254,7 +254,7 @@
                     delete: {name: "删除", value: "delete"},
                     manage: {name: "管理", value: "manage"},
                     setTop: {name: "置顶", value: "setTop"},
-                    cancelSetTop: {name: "置顶", value: "cancelSetTop"},
+                    cancelSetTop: {name: "取消置顶", value: "cancelSetTop"},
                     configPage: {name: "页面配置", value: "configPage"},
                     release: {name: "发布", value: "release"},
                     cancelRelease: {name: "下架", value: "cancelRelease"},
@@ -336,7 +336,9 @@
                                             if (isDualSelect) {
                                                 activity.operations.push($this.operations.dualSelectStatExport);
                                             }
-                                            activity.operations.push($this.operations.delete);
+                                            if (!$this.marketId) {
+                                                activity.operations.push($this.operations.delete);
+                                            }
                                         }
                                     }
                                     break;
@@ -374,11 +376,16 @@
                                     break;
                                 default:
                             }
-                            if (isCurrentOrgCreated || $this.marketId) {
+                            if (manager || isCurrentOrgCreated) {
                                 activity.operations.push($this.operations.configPage);
                             }
                             if ($this.marketId) {
-                                activity.operations.push($this.operations.setTop);
+                                if (activity.top) {
+                                    activity.operations.push($this.operations.cancelSetTop);
+                                } else {
+                                    activity.operations.push($this.operations.setTop);
+                                }
+                                activity.operations.push($this.operations.delete);
                             }
                         });
                     }
@@ -600,9 +607,9 @@
                     var url = ctx + "/activity/" + $this.operateActivityId + "/edit?step=2";
                     window.open(url);
                 },
-                toSetTop: function () {
+                toSetTop: function (activityId) {
                     var $this = this;
-                    var url = ctx + "/api/activity/" + $this.operateActivityId + "/set-top/?marketId=" + $this.marketId;
+                    var url = ctx + "/api/activity/" + activityId + "/set-top/?marketId=" + $this.marketId;
                     app.ajaxPostWithLoading(url, {}, function (data) {
                         if (data.success) {
                             $this.loadData();
@@ -617,9 +624,9 @@
                         app.showMsg("置顶失败");
                     });
                 },
-                cancelSetTop: function () {
+                cancelSetTop: function (activityId) {
                     var $this = this;
-                    var url = ctx + "/api/activity/" + $this.operateActivityId + "/cancel-top/?marketId=" + $this.marketId;
+                    var url = ctx + "/api/activity/" + activityId + "/cancel-top/?marketId=" + $this.marketId;
                     app.ajaxPostWithLoading(url, {}, function (data) {
                         if (data.success) {
                             $this.loadData();

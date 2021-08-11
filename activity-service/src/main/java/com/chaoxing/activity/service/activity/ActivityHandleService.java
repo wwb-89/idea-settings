@@ -386,7 +386,7 @@ public class ActivityHandleService {
 	public void delete(Integer activityId, Integer marketId, LoginUserDTO loginUser) {
 		Activity activity =  activityValidationService.activityExist(activityId);
 		boolean isCreateMarket = Objects.equals(marketId, activity.getMarketId());
-		// 当非市场发布活动或当前市场的活动发布活动，均可修改活动状态
+		// marketId为空 或者 当前marketId 和 活动marketId 一致时，进行活动真实删除，需要验证是否能删除；
 		if (marketId == null || isCreateMarket) {
 			// 验证是否能删除
 			activity = activityValidationService.deleteAble(activityId, loginUser);
@@ -399,7 +399,7 @@ public class ActivityHandleService {
 			// 活动状态改变
 			activityChangeEventService.statusChange(activity);
 		}
-		// 修改活动-市场状态信息
+		// marketId不为空，删除活动-市场关联，isCreateMarket: true，则需要删除所有关联
 		if (marketId != null) {
 			activityMarketService.remove(activityId, marketId, isCreateMarket);
 		}
