@@ -316,9 +316,13 @@ public class ActivityValidationService {
 	*/
 	public Activity releaseAble(Integer activityId, LoginUserDTO loginUser) {
 		Activity activity = activityExist(activityId);
+		return releaseAble(activity, loginUser);
+	}
+
+	public Activity releaseAble(Activity activity, LoginUserDTO loginUser) {
 		Boolean released = activity.getReleased();
 		if (released) {
-			throw new ActivityReleasedException(activityId);
+			throw new ActivityReleasedException(activity.getId());
 		}
 		Integer createFid = activity.getCreateFid();
 		// 是不是创建者
@@ -376,6 +380,10 @@ public class ActivityValidationService {
 	*/
 	public Activity cancelReleaseAble(Integer activityId, LoginUserDTO loginUser) {
 		Activity activity = activityExist(activityId);
+		return cancelReleaseAble(activity, loginUser);
+	}
+
+	public Activity cancelReleaseAble(Activity activity, LoginUserDTO loginUser) {
 		Boolean released = activity.getReleased();
 		if (!released) {
 			throw new BusinessException("活动已下架");
