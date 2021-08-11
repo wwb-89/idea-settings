@@ -206,6 +206,86 @@
         </trim>
     </select>
 
+    <!--查询管理的活动-->
+    <select id="pageManagingByMarket" resultMap="BaseResultMap">
+        SELECT
+            <include refid="Base_Column_List"></include>, t.start_time as startTime, t.end_Time as endTime
+        FROM
+            t_activity t
+        LEF JOIN t_activity_market t1 ON t1.activity_id = t.id
+        WHERE
+            t1.market_id = #{params.marketId}
+            <choose>
+                <when test="params.status != null">
+                    AND t1.`status` = #{params.status}
+                </when>
+                <otherwise>
+                    AND t1.`status` > 0
+                </otherwise>
+            </choose>
+            <if test="params.sw != null and params.sw != ''">
+                AND (
+                t.name LIKE CONCAT('%', #{params.sw} , '%')
+                OR t.create_user_name LIKE CONCAT('%', #{params.sw} , '%')
+                OR t.create_org_name LIKE CONCAT('%', #{params.sw} , '%')
+                )
+            </if>
+        GROUP BY
+            t.id
+        ORDER BY
+            <trim suffixOverrides=",">
+                t1.is_top DESC,
+                <if test="params.orderField != null and params.orderField != ''">
+                    ${params.orderField} ${params.orderType},
+                </if>
+                <if test="params.orderField == null or params.orderField == ''">
+                    t.create_time DESC,
+                </if>
+                <if test="params.marketId == null">
+                    t.create_fid <![CDATA[<>]]> #{params.topFid},
+                </if>
+            </trim>
+    </select>
+
+    <select id="pageCreatedByMarket" resultMap="BaseResultMap">
+        SELECT
+            <include refid="Base_Column_List"></include>, t.start_time as startTime, t.end_Time as endTime
+        FROM
+            t_activity t
+        LEF JOIN t_activity_market t1 ON t1.activity_id = t.id
+        WHERE
+            t1.market_id = #{params.marketId}
+            AND t.create_uid = #{params.createUid}
+        <choose>
+                <when test="params.status != null">
+                    AND t1.`status` = #{params.status}
+                </when>
+                <otherwise>
+                    AND t1.`status` > 0
+                </otherwise>
+            </choose>
+            <if test="params.sw != null and params.sw != ''">
+                AND (
+                t.name LIKE CONCAT('%', #{params.sw} , '%')
+                OR t.create_user_name LIKE CONCAT('%', #{params.sw} , '%')
+                OR t.create_org_name LIKE CONCAT('%', #{params.sw} , '%')
+                )
+            </if>
+        GROUP BY
+            t.id
+        ORDER BY
+            <trim suffixOverrides=",">
+                t1.is_top DESC,
+                <if test="params.orderField != null and params.orderField != ''">
+                    ${params.orderField} ${params.orderType}
+                </if>
+                <if test="params.orderField == null or params.orderField == ''">
+                    t.create_time DESC
+                </if>
+            </trim>
+
+    </select>
+
     <!--查询创建的活动-->
     <select id="pageCreated" resultMap="BaseResultMap">
         SELECT

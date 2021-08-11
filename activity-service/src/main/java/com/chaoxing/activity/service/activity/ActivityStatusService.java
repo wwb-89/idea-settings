@@ -33,34 +33,6 @@ public class ActivityStatusService {
 	@Resource
 	private ActivityChangeEventService activityChangeEventService;
 
-	/**计算活动状态
-	 * @Description 
-	 * @author wwb
-	 * @Date 2020-12-10 19:36:50
-	 * @param activity
-	 * @return java.lang.Integer
-	*/
-	private Activity.StatusEnum calActivityStatus(Activity activity) {
-		LocalDateTime startTime = activity.getStartTime();
-		LocalDateTime endTime = activity.getEndTime();
-		LocalDateTime now = LocalDateTime.now();
-		boolean guessEnded = now.isAfter(endTime);
-		boolean guessOnGoing = (now.isAfter(startTime) || now.isEqual(startTime)) && (now.isBefore(endTime) || now.isEqual(endTime));
-		if (activity.getReleased()) {
-			if (guessEnded) {
-				// 已结束
-				return Activity.StatusEnum.ENDED;
-			}
-			// 已发布的活动才处理状态
-			if (guessOnGoing) {
-				return Activity.StatusEnum.ONGOING;
-			} else {
-				return Activity.StatusEnum.RELEASED;
-			}
-		} else {
-			return Activity.StatusEnum.WAIT_RELEASE;
-		}
-	}
 
 	/**活动状态更新
 	 * @Description 
@@ -82,7 +54,7 @@ public class ActivityStatusService {
 	*/
 	public void statusUpdate(Activity activity) {
 		if (activity != null) {
-			Activity.StatusEnum status = calActivityStatus(activity);
+			Activity.StatusEnum status = Activity.calActivityStatus(activity);
 			activityHandleService.updateActivityStatus(activity.getId(), status);
 		}
 	}

@@ -184,7 +184,6 @@ public class Activity {
             }
             return null;
         }
-
     }
 
     @Getter
@@ -357,6 +356,35 @@ public class Activity {
 
     public boolean isEnded() {
         return Objects.equals(StatusEnum.ENDED.getValue(), getStatus());
+    }
+
+    /**计算活动状态
+     * @Description
+     * @author wwb
+     * @Date 2020-12-10 19:36:50
+     * @param activity
+     * @return java.lang.Integer
+     */
+    public static Activity.StatusEnum calActivityStatus(Activity activity) {
+        LocalDateTime startTime = activity.getStartTime();
+        LocalDateTime endTime = activity.getEndTime();
+        LocalDateTime now = LocalDateTime.now();
+        boolean guessEnded = now.isAfter(endTime);
+        boolean guessOnGoing = (now.isAfter(startTime) || now.isEqual(startTime)) && (now.isBefore(endTime) || now.isEqual(endTime));
+        if (activity.getReleased()) {
+            if (guessEnded) {
+                // 已结束
+                return Activity.StatusEnum.ENDED;
+            }
+            // 已发布的活动才处理状态
+            if (guessOnGoing) {
+                return Activity.StatusEnum.ONGOING;
+            } else {
+                return Activity.StatusEnum.RELEASED;
+            }
+        } else {
+            return Activity.StatusEnum.WAIT_RELEASE;
+        }
     }
 
 }

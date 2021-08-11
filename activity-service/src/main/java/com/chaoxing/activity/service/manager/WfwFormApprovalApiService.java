@@ -232,7 +232,7 @@ public class WfwFormApprovalApiService {
         WfwAreaDTO wfwRegionalArchitecture = wfwAreaApiService.buildWfwRegionalArchitecture(fid);
         Integer activityId = activityHandleService.add(activity, signCreateParam, Lists.newArrayList(wfwRegionalArchitecture), loginUser);
         // 发布
-        activityHandleService.release(activityId, loginUser);
+        activityHandleService.release(activityId, marketId, loginUser);
     }
 
     /**获取需要创建的活动

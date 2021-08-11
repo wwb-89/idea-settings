@@ -280,7 +280,7 @@ public class ActivityValidationService {
 	}
 
 	/**能删除活动
-	 * @Description 
+	 * @Description
 	 * @author wwb
 	 * @Date 2020-11-11 16:08:08
 	 * @param activityId
@@ -288,7 +288,10 @@ public class ActivityValidationService {
 	 * @return com.chaoxing.activity.model.Activity
 	*/
 	public Activity deleteAble(Integer activityId, LoginUserDTO loginUser) {
-		Activity activity = activityExist(activityId);
+		return deleteAble(activityExist(activityId), loginUser);
+	}
+
+	public Activity deleteAble(Activity activity, LoginUserDTO loginUser) {
 		Integer createFid = activity.getCreateFid();
 		// 是不是创建者
 		boolean creator = isCreator(activity, loginUser.getUid());
