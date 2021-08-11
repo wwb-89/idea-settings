@@ -9,3 +9,12 @@ CREATE TABLE `t_activity_market`  (
     INDEX `idx_primary`(`activity_id`, `market_id`),
     INDEX `idx_market_id`(`market_id`)
 ) COMMENT = '活动与活动市场关联表';
+INSERT INTO t_activity_market ( activity_id, market_id, STATUS, is_released, is_top )
+SELECT
+    t.id,
+    t.market_id,
+    t.`status`,
+    t.is_released,
+    0
+FROM
+    t_activity t;
