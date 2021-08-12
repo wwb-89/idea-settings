@@ -2,13 +2,14 @@ package com.chaoxing.activity.api.controller;
 
 import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
-import com.chaoxing.activity.api.vo.ActivityStatSummaryVO;
-import com.chaoxing.activity.api.vo.UserResultVO;
-import com.chaoxing.activity.api.vo.UserSignUpStatusVo;
-import com.chaoxing.activity.api.vo.UserStatSummaryVO;
+import com.chaoxing.activity.api.util.LoginUtils;
+import com.chaoxing.activity.api.vo.*;
+import com.chaoxing.activity.dto.LoginUserDTO;
 import com.chaoxing.activity.dto.RestRespDTO;
 import com.chaoxing.activity.dto.UserResultDTO;
+import com.chaoxing.activity.dto.activity.ActivityCreateDTO;
 import com.chaoxing.activity.dto.activity.ActivityExternalDTO;
+import com.chaoxing.activity.dto.manager.PassportUserDTO;
 import com.chaoxing.activity.dto.manager.wfw.WfwAreaDTO;
 import com.chaoxing.activity.dto.query.ActivityQueryDTO;
 import com.chaoxing.activity.dto.query.UserResultQueryDTO;
@@ -20,11 +21,13 @@ import com.chaoxing.activity.model.LoginCustom;
 import com.chaoxing.activity.model.UserStatSummary;
 import com.chaoxing.activity.service.GroupService;
 import com.chaoxing.activity.service.LoginService;
+import com.chaoxing.activity.service.activity.ActivityHandleService;
 import com.chaoxing.activity.service.activity.ActivityQueryService;
 import com.chaoxing.activity.service.activity.ActivityValidationService;
 import com.chaoxing.activity.service.activity.collection.ActivityCollectionHandleService;
 import com.chaoxing.activity.service.activity.collection.ActivityCollectionQueryService;
 import com.chaoxing.activity.service.activity.stat.ActivityStatSummaryQueryService;
+import com.chaoxing.activity.service.manager.PassportApiService;
 import com.chaoxing.activity.service.manager.module.SignApiService;
 import com.chaoxing.activity.service.manager.wfw.WfwAreaApiService;
 import com.chaoxing.activity.service.manager.wfw.WfwCoordinateApiService;
@@ -46,6 +49,7 @@ import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -90,6 +94,10 @@ public class ActivityApiController {
 	private UserResultQueryService userResultQueryService;
 	@Resource
 	private SignApiService signApiService;
+	@Resource
+	private ActivityHandleService activityHandleService;
+	@Resource
+	private PassportApiService passportApiService;
 
 	/**组活动推荐
 	 * @Description 
@@ -423,5 +431,54 @@ public class ActivityApiController {
 		String data = signApiService.listUserSignUpBySignIdUids(activity.getSignId(), uidList);
 		return RestRespDTO.success(JSON.parseArray(data, UserSignUpStatusVo.class));
 	}
+	
+	/**
+	* @Description 
+	* @author huxiaolong
+	* @Date 2021-08-12 17:50:53
+	* @param activityCreateDTO
+	* @return com.chaoxing.activity.dto.RestRespDTO
+	*/
+	@RequestMapping("new/with-shared")
+	public RestRespDTO newSharedActivity(@RequestBody ActivityCreateDTO activityCreateDTO) {
+		PassportUserDTO passportUserDTO = passportApiService.getByUid(activityCreateDTO.getUid());
+		Integer fid = activityCreateDTO.getFid();
+		WfwAreaDTO wfwArea = Optional.ofNullable(wfwAreaApiService.listByFid(fid)).orElse(Lists.newArrayList()).stream().filter(v -> Objects.equals(v.getFid(), fid)).findFirst().orElse(new WfwAreaDTO());
+		LoginUserDTO loginUserDTO = LoginUserDTO.buildDefault(Integer.valueOf(passportUserDTO.getUid()), passportUserDTO.getRealName(), fid, wfwArea.getName());
+		Activity activity = activityHandleService.newSharedActivity(activityCreateDTO, loginUserDTO);
+		return RestRespDTO.success(activity);
+	}
+	
+	/**
+	* @Description 
+	* @author huxiaolong
+	* @Date 2021-08-12 17:50:59
+	* @param fid
+	* @param activityId
+	* @param uid
+	* @return com.chaoxing.activity.dto.RestRespDTO
+	*/
+	@RequestMapping("{activityId}/delete/with-shared")
+	public RestRespDTO sharedNewActivity(Integer fid, @PathVariable Integer activityId, Integer uid) {
+		activityHandleService.deleteActivityUnderFid(fid, activityId, uid);
+		return RestRespDTO.success();
+	}
+
+	/**
+	* @Description 
+	* @author huxiaolong
+	* @Date 2021-08-12 18:04:34
+	* @param activityId
+* @param fid
+* @param uid
+* @param released
+	* @return com.chaoxing.activity.dto.RestRespDTO
+	*/
+	@RequestMapping("{activityId}/update/release-status")
+	public RestRespDTO updateActivityReleaseStatus(@PathVariable Integer activityId, Integer fid, Integer uid, boolean released) {
+		activityHandleService.updateActivityReleaseStatus(fid, activityId, uid, released);
+		return RestRespDTO.success();
+	}
+
 
 }

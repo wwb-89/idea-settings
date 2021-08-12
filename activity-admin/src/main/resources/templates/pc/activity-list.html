@@ -530,7 +530,8 @@
                 },
                 deleteSubmit: function () {
                     var $this = this;
-                    var url = ctx + "/api/activity/" + $this.operateActivityId + "/delete/?marketId=" + $this.marketId;
+                    var marketId = $this.marketId || "";
+                    var url = ctx + "/api/activity/" + $this.operateActivityId + "/delete/?marketId=" + marketId;
                     app.ajaxPostWithLoading(url, {}, function (data) {
                         if (data.success) {
                             $this.$refs.deleteWindow.show = false;
@@ -566,7 +567,8 @@
                         return;
                     }
                     $this.$refs.releaseWindow.show = false;
-                    var url = ctx + "/api/activity/" + $this.operateActivityId + "/release/?marketId=" + $this.marketId;
+                    var marketId = $this.marketId || "";
+                    var url = ctx + "/api/activity/" + $this.operateActivityId + "/release/?marketId=" + marketId;
                     app.ajaxPostWithLoading(url, {}, function (data) {
                         if (data.success) {
                             app.showMsg("发布成功", function () {
@@ -609,7 +611,8 @@
                 },
                 toSetTop: function (activityId) {
                     var $this = this;
-                    var url = ctx + "/api/activity/" + activityId + "/set-top/?marketId=" + $this.marketId;
+                    var marketId = $this.marketId || "";
+                    var url = ctx + "/api/activity/" + activityId + "/set-top/?marketId=" + marketId;
                     app.ajaxPostWithLoading(url, {}, function (data) {
                         if (data.success) {
                             $this.loadData();
@@ -626,7 +629,8 @@
                 },
                 cancelSetTop: function (activityId) {
                     var $this = this;
-                    var url = ctx + "/api/activity/" + activityId + "/cancel-top/?marketId=" + $this.marketId;
+                    var marketId = $this.marketId || "";
+                    var url = ctx + "/api/activity/" + activityId + "/cancel-top/?marketId=" + marketId;
                     app.ajaxPostWithLoading(url, {}, function (data) {
                         if (data.success) {
                             $this.loadData();
@@ -649,7 +653,8 @@
                 cancelRelease: function () {
                     var $this = this;
                     $this.$refs.canReleaseWindow.show = false;
-                    var url = ctx + "/api/activity/" + $this.operateActivityId + "/release/cancel/?marketId=" + $this.marketId;
+                    var marketId = $this.marketId || "";
+                    var url = ctx + "/api/activity/" + $this.operateActivityId + "/release/cancel/?marketId=" + marketId;
                     app.ajaxPostWithLoading(url, {}, function (data) {
                         if (data.success) {
                             app.showMsg("下架成功", function () {

@@ -5,6 +5,8 @@ import com.chaoxing.activity.model.Market;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
+import java.util.List;
+
 /**
  * @className: MarketMapper
  * @Description:
@@ -24,4 +26,13 @@ public interface MarketMapper extends BaseMapper<Market> {
     */
     Integer getMaxSequence(@Param("fid") Integer fid);
 
+    /**
+    * @Description 
+    * @author huxiaolong
+    * @Date 2021-08-12 18:10:53
+    * @param fid
+* @param activityId
+    * @return java.util.List<java.lang.Integer>
+    */
+    List<Integer> listMarketIdsByActivityIdFid(@Param("fid") Integer fid, @Param("activityId") Integer activityId);
 }

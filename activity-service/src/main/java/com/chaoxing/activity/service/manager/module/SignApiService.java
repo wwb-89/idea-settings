@@ -97,6 +97,8 @@ public class SignApiService {
 
 	/** 报名名单url */
 	private static final String SIGN_UP_USER_LIST_URL = SIGN_WEB_DOMAIN + "/sign-up/%d/user-list";
+	/** 提供信息表单字符串，创建报名表单url */
+	private static final String CONFIG_FORM_WITH_FIELDS = SIGN_WEB_DOMAIN + "/api/form/config/from-fields";
 	/** 用户报名签到参与情况url */
 	private static final String USER_SIGN_PARTICIPATION_URL = SIGN_API_DOMAIN + "/stat/sign/%d/user-participation?uid=%s";
 	/** 根据signId列表查询报名的人数 */
@@ -811,6 +813,25 @@ public class SignApiService {
 
 		JSONObject jsonObject = JSON.parseObject(result);
 		return resultHandle(jsonObject, () -> jsonObject.getString("data"), (message) -> {
+			throw new BusinessException(message);
+		});
+	}
+
+	/**提供信息表单字符串，创建报名表单
+	* @Description
+	* @author huxiaolong
+	* @Date 2021-08-12 15:35:09
+	* @param fields
+	* @return java.lang.String
+	*/
+	public Integer createFormFillWithFields(String fields) {
+		HttpHeaders httpHeaders = new HttpHeaders();
+		httpHeaders.setContentType(MediaType.APPLICATION_JSON);
+		HttpEntity<String> httpEntity = new HttpEntity<>(fields, httpHeaders);
+		String result = restTemplate.postForObject(CONFIG_FORM_WITH_FIELDS, httpEntity, String.class);
+
+		JSONObject jsonObject = JSON.parseObject(result);
+		return resultHandle(jsonObject, () -> jsonObject.getInteger("data"), (message) -> {
 			throw new BusinessException(message);
 		});
 	}

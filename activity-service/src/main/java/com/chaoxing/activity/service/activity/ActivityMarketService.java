@@ -2,13 +2,21 @@ package com.chaoxing.activity.service.activity;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
+import com.chaoxing.activity.dto.OperateUserDTO;
 import com.chaoxing.activity.mapper.ActivityMarketMapper;
+import com.chaoxing.activity.mapper.MarketMapper;
 import com.chaoxing.activity.model.Activity;
 import com.chaoxing.activity.model.ActivityMarket;
+import com.chaoxing.activity.model.Market;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.compress.utils.Lists;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.yaml.snakeyaml.error.Mark;
+
+import java.util.List;
 
 /**
  * @author huxiaolong
@@ -23,6 +31,8 @@ public class ActivityMarketService {
 
     @Autowired
     private ActivityMarketMapper activityMarketMapper;
+    @Autowired
+    private MarketMapper marketMapper;
 
     /***
     * @Description 
@@ -43,6 +53,52 @@ public class ActivityMarketService {
                 .status(activity.getStatus())
                 .top(Boolean.FALSE)
                 .build());
+    }
+    /**
+    * @Description 
+    * @author huxiaolong
+    * @Date 2021-08-12 15:53:04
+    * @param activity
+    * @return void
+    */
+    @Transactional(rollbackFor = Exception.class)
+    public void shareActivityToFids(Activity activity, List<Integer> sharedFids, OperateUserDTO operateUser) {
+        add(activity);
+        Market originMarket = marketMapper.selectById(activity.getMarketId());
+        List<Integer> marketIds = Lists.newArrayList();
+        sharedFids.forEach(v -> {
+            Market currMarket = marketMapper.selectList(new QueryWrapper<Market>()
+                    .lambda()
+                    .eq(Market::getName, originMarket.getName())
+                    .eq(Market::getDeleted, Boolean.FALSE)
+                    .eq(Market::getFid, v)).stream().findFirst().orElse(null);
+            if (currMarket == null) {
+                currMarket = Market.cloneMarket(originMarket, v);
+                currMarket.perfectCreator(operateUser);
+                marketMapper.insert(currMarket);
+            }
+            marketIds.add(currMarket.getId());
+        });
+
+        batchAddActivityMarkets(activity, marketIds);
+    }
+
+    @Transactional(rollbackFor = Exception.class)
+    public void batchAddActivityMarkets(Activity activity, List<Integer> marketIds) {
+        if (CollectionUtils.isEmpty(marketIds)) {
+            return;
+        }
+        List<ActivityMarket> activityMarkets = Lists.newArrayList();
+        marketIds.forEach(v -> {
+            activityMarkets.add(ActivityMarket.builder()
+                    .activityId(activity.getId())
+                    .marketId(v)
+                    .released(activity.getReleased())
+                    .status(activity.getStatus())
+                    .top(Boolean.FALSE)
+                    .build());
+        });
+        activityMarketMapper.batchAdd(activityMarkets);
     }
 
     /**

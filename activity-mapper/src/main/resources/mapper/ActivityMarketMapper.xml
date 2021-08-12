@@ -12,4 +12,21 @@
     <sql id="Base_Column_List">
         t.id, t.activity_id, t.market_id, t.status, t.is_released, t.is_top
     </sql>
+
+
+    <insert id="batchAdd">
+        INSERT INTO
+            t_activity_market ( activity_id, market_id, `status`, is_released, is_top )
+        VALUES
+        <foreach collection="activityMarkets" index="key" item="item" open="" close="" separator=",">
+            (
+             #{item.activityId},
+             #{item.marketId},
+             #{item.status},
+             #{item.released},
+             #{item.top}
+            )
+        </foreach>
+
+    </insert>
 </mapper>

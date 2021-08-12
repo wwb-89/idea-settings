@@ -88,4 +88,15 @@ public class Market {
         return "http://manage.hd.chaoxing.com/market/" + getId();
     }
 
+    public static Market cloneMarket(Market originMarket, Integer fid) {
+        return Market.builder()
+                .name(originMarket.getName())
+                .iconCloudId(originMarket.getIconCloudId())
+                .iconUrl(originMarket.getIconUrl())
+                .fid(fid)
+                .sequence(originMarket.getSequence())
+                .deleted(originMarket.getDeleted())
+                .build();
+    }
+
 }

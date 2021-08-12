@@ -11,6 +11,7 @@ import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * @author wwb
@@ -71,6 +72,17 @@ public class MarketQueryService {
 				.eq(Market::getFid, fid)
 				.eq(Market::getDeleted, false)
 		);
+	}
+
+	/**查询机构下的对应活动的活动市场列表id
+	 * @Description
+	 * @author wwb
+	 * @Date 2021-08-02 19:15:25
+	 * @param fid
+	 * @return java.util.List<com.chaoxing.activity.model.Market>
+	*/
+	public List<Integer> listMarketIdsByActivityIdFid(Integer fid, Integer activityId) {
+		return marketMapper.listMarketIdsByActivityIdFid(fid, activityId);
 	}
 
 }
