@@ -402,7 +402,7 @@ public class ActivityHandleService {
 	@Transactional(rollbackFor = Exception.class)
 	public void updateActivityReleaseStatus(Integer activityId, Integer fid, Integer uid, boolean released) {
 		LoginUserDTO loginUser = LoginUserDTO.buildDefault(uid, "", fid, "");
-		List<Integer> marketIdsUnderFid = marketQueryService.listByFid(fid).stream().map(Market::getId).collect(Collectors.toList());
+		List<Integer> marketIdsUnderFid = marketQueryService.listMarketIdsByActivityIdFid(fid, activityId);
 		if (released) {
 			marketIdsUnderFid.forEach(marketId -> {
 				release(activityId, marketId, loginUser);
