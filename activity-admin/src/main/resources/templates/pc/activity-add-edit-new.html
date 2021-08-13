@@ -901,6 +901,7 @@
                     $this.operateWebTemplateId = firstWebTemplate && firstWebTemplate.id;
                     $this.activity.webTemplateId = firstWebTemplate && firstWebTemplate.id;
                 } else {
+                    $this.marketId = $this.activity.marketId;
                     // 修改活动
                     if ($this.activity.activityComponentValues) {
                         $($this.activity.activityComponentValues).each(function () {
