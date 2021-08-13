@@ -2,7 +2,6 @@ package com.chaoxing.activity.api.controller;
 
 import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
-import com.chaoxing.activity.api.util.LoginUtils;
 import com.chaoxing.activity.api.vo.*;
 import com.chaoxing.activity.dto.LoginUserDTO;
 import com.chaoxing.activity.dto.RestRespDTO;
