@@ -18,7 +18,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
@@ -69,7 +68,7 @@ public class IndexController {
 	 * @param marketId 市场id
 	 * @return java.lang.String
 	 */
-	@GetMapping("")
+	@RequestMapping("")
 	public String index(HttpServletRequest request, Model model, Integer wfwfid, Integer unitId, Integer state, Integer fid, Integer banner, String style, @RequestParam(defaultValue = "") String flag, Integer marketId) {
 		Integer realFid = Optional.ofNullable(wfwfid).orElse(Optional.ofNullable(unitId).orElse(Optional.ofNullable(state).orElse(fid)));
 		style = Optional.ofNullable(style).filter(StringUtils::isNotBlank).orElse(DEFAULT_STYLE);
@@ -94,7 +93,7 @@ public class IndexController {
 	 * @param marketId 市场id
 	 * @return java.lang.String
 	 */
-	@GetMapping("lib")
+	@RequestMapping("lib")
 	public String libIndex(HttpServletRequest request, Model model, String code, Integer wfwfid, Integer unitId, Integer state, Integer fid, Integer pageId, Integer banner, String style, @RequestParam(defaultValue = "") String flag, Integer marketId) {
 		Integer realFid = Optional.ofNullable(wfwfid).orElse(Optional.ofNullable(unitId).orElse(Optional.ofNullable(state).orElse(fid)));
 		return handleData(request, model, code, realFid, pageId, banner, style, flag, marketId);
@@ -118,7 +117,7 @@ public class IndexController {
 	 * @param marketId 市场id
 	 * @return java.lang.String
 	 */
-	@GetMapping("bas")
+	@RequestMapping("bas")
 	public String basIndex(HttpServletRequest request, Model model, String code, Integer wfwfid, Integer unitId, Integer state, Integer fid, Integer pageId, Integer banner, String style, @RequestParam(defaultValue = "") String flag, Integer marketId) {
 		Integer realFid = Optional.ofNullable(wfwfid).orElse(Optional.ofNullable(unitId).orElse(Optional.ofNullable(state).orElse(fid)));
 		style = Optional.ofNullable(style).filter(StringUtils::isNotBlank).orElse(DEFAULT_STYLE);
@@ -143,7 +142,7 @@ public class IndexController {
 	 * @param marketId 市场id
 	 * @return java.lang.String
 	 */
-	@GetMapping("edu")
+	@RequestMapping("edu")
 	public String eduIndex(HttpServletRequest request, Model model, String code, Integer wfwfid, Integer unitId, Integer state, Integer fid, Integer pageId, Integer banner, String style, @RequestParam(defaultValue = "") String flag, Integer marketId) {
 		Integer realFid = Optional.ofNullable(wfwfid).orElse(Optional.ofNullable(unitId).orElse(Optional.ofNullable(state).orElse(fid)));
 		style = Optional.ofNullable(style).filter(StringUtils::isNotBlank).orElse(DEFAULT_STYLE);
