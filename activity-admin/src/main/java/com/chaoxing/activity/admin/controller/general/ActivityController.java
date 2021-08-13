@@ -5,7 +5,6 @@ import com.chaoxing.activity.dto.LoginUserDTO;
 import com.chaoxing.activity.dto.manager.ActivityCreatePermissionDTO;
 import com.chaoxing.activity.dto.manager.sign.create.SignCreateParamDTO;
 import com.chaoxing.activity.dto.manager.wfw.WfwAreaDTO;
-import com.chaoxing.activity.dto.manager.wfw.WfwGroupDTO;
 import com.chaoxing.activity.model.*;
 import com.chaoxing.activity.service.GroupService;
 import com.chaoxing.activity.service.WebTemplateService;
@@ -113,12 +112,6 @@ public class ActivityController {
 		// 活动形式列表
 		model.addAttribute("activityTypes", activityQueryService.listActivityType());
 		// 活动分类列表范围
-//		if (marketId == null) {
-//			classifyHandleService.cloneSystemClassifyToOrg(fid);
-//			model.addAttribute("activityClassifies", classifyQueryService.listOrgClassifies(fid));
-//		} else {
-//			model.addAttribute("activityClassifies", classifyQueryService.listMarketClassifies(marketId));
-//		}
 		// 当前用户创建活动权限
 		ActivityCreatePermissionDTO permission = activityCreatePermissionService.getActivityCreatePermission(fid, marketId, loginUser.getUid());
 		model.addAttribute("activityClassifies", permission.getClassifies());
@@ -129,10 +122,8 @@ public class ActivityController {
 		model.addAttribute("webTemplates", webTemplateService.listAvailable(fid, flag));
 		model.addAttribute("areaCode", Optional.ofNullable(code).filter(StringUtils::isNotBlank).map(groupService::getByCode).map(Group::getAreaCode).orElse(""));
 		// 微服务组织架构
-//		model.addAttribute("wfwGroups", WfwGroupDTO.perfectWfwGroups(wfwGroupApiService.listGroupByFid(fid)));
 		model.addAttribute("wfwGroups", permission.getWfwGroups());
 		// 通讯录组织架构
-//		model.addAttribute("contactGroups", WfwGroupDTO.perfectWfwGroups(wfwContactApiService.listUserContactOrgsByFid(fid)));
 		model.addAttribute("contactGroups", permission.getContactsGroups());
 		model.addAttribute("activityFlag", flag);
 		// 发布范围默认选中当前机构
