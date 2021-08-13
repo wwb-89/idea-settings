@@ -11,9 +11,9 @@
     <mask>*.jsp</mask>
     <mask>*.properties</mask>
     <mask>*.yml</mask>
-    <mask>*mapper.xml</mask>
     <mask>*.xml</mask>
     <mask>*.html</mask>
+    <mask>*mapper.xml</mask>
     <mask>*.java</mask>
   </component>
 </application>
