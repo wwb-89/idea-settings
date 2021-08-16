@@ -194,6 +194,8 @@ public class ActivityCreateParamDTO {
 				.previewUrl(activity.getPreviewUrl())
 				.editUrl(activity.getEditUrl())
 				.activityClassifyName(activity.getActivityClassifyName())
+				.marketId(activity.getMarketId())
+				.templateId(activity.getTemplateId())
 				.build();
 	}
 
