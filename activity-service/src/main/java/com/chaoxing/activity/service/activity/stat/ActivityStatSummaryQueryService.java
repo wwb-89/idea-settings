@@ -141,7 +141,9 @@ public class ActivityStatSummaryQueryService {
             if (signId != null) {
                 record.setParticipateScope(signParticipateScopeMap.get(signId));
                 // 报名
-                record.setSignUp(signMaps.get(signId).getSignUps().get(0));
+                if (signMaps.get(signId) != null && CollectionUtils.isNotEmpty(signMaps.get(signId).getSignUps())) {
+                    record.setSignUp(signMaps.get(signId).getSignUps().get(0));
+                }
             }
         }
     }
