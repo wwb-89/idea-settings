@@ -24,7 +24,8 @@ FROM
     t_component t
 WHERE
     ( t.CODE = 'sign_up' OR t.CODE = 'company_sign_up' )
-  AND t.is_system = 1
+  AND t.is_system = 1;
+
 INSERT INTO t_activity_market ( activity_id, market_id, STATUS, is_released, is_top )
 SELECT
     t.id,
