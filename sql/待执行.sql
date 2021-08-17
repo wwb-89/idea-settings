@@ -35,3 +35,5 @@ SELECT
     0
 FROM
     t_activity t;
+
+ALTER TABLE t_sign_up_fill_info_type change COLUMN form_id template_type VARCHAR(50) COMMENT '模板类型';

@@ -5,17 +5,17 @@
         <id column="id" jdbcType="INTEGER" property="id" />
         <result column="template_component_id" jdbcType="INTEGER" property="templateComponentId" />
         <result column="type" jdbcType="VARCHAR" property="type" />
-        <result column="form_id" jdbcType="INTEGER" property="formId" />
+        <result column="template_type" jdbcType="VARCHAR" property="templateType" />
     </resultMap>
     <sql id="Base_Column_List">
-        t.id, t.template_component_id, t.type, t.form_id
+        t.id, t.template_component_id, t.type, t.tempalte_type
     </sql>
 
     <insert id="batchAdd">
-        INSERT INTO t_sign_up_fill_info_type ( template_component_id, `type`, form_id )
+        INSERT INTO t_sign_up_fill_info_type ( template_component_id, `type`, tempalte_type )
         VALUES
             <foreach collection="signUpFillInfoTypes" index="key" item="value" open="" close="" separator=",">
-                ( #{value.templateComponentId}, #{value.type}, #{value.formId} )
+                ( #{value.templateComponentId}, #{value.type}, #{value.templateType} )
             </foreach>
     </insert>
 

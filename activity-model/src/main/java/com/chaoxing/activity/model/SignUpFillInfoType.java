@@ -34,14 +34,14 @@ public class SignUpFillInfoType {
     private Integer templateComponentId;
     /** 类型; column: type*/
     private String type;
-    /** 表单id; column: form_id*/
-    private Integer formId;
+    /** 模板类型; column: template_type*/
+    private String templateType;
 
     public SignUpFillInfoType cloneToNewTemplateComponentId(Integer templateComponentId) {
         return SignUpFillInfoType.builder()
                 .templateComponentId(templateComponentId)
                 .type(getType())
-                .formId(getFormId())
+                .templateType(getType())
                 .build();
     }
 

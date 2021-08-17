@@ -40,6 +40,8 @@ public class ActivityEngineHandleService {
     @Autowired
     private SignUpConditionMapper signUpConditionMapper;
     @Autowired
+    private SignUpFillInfoTypeMapper signUpFillInfoTypeMapper;
+    @Autowired
     private WfwFormApiService wfwFormApiService;
 
     /**处理引擎模板组件相关数据(新增/更新)
@@ -198,26 +200,37 @@ public class ActivityEngineHandleService {
         templateComponents.forEach(v -> v.setTemplateId(templateId));
         templateComponentMapper.batchAdd(templateComponents);
         templateComponents.forEach(v -> {
-            if (v.getSignUpCondition() != null) {
-                v.getSignUpCondition().setTemplateComponentId(v.getId());
-                signUpConditionMapper.insert(v.getSignUpCondition());
-            }
+            handleSignUpConditionFillInfoType(v);
             if (CollectionUtils.isNotEmpty(v.getChildren())) {
                 v.getChildren().forEach(v1 -> {
                     v1.setPid(v.getId());
                     v1.setTemplateId(templateId);
                 });
                 templateComponentMapper.batchAdd(v.getChildren());
-                v.getChildren().forEach(v1 -> {
-                    if (v1.getSignUpCondition() != null) {
-                        v1.getSignUpCondition().setTemplateComponentId(v1.getId());
-                        signUpConditionMapper.insert(v1.getSignUpCondition());
-                    }
-                });
+                v.getChildren().forEach(this::handleSignUpConditionFillInfoType);
             }
         });
     }
-    
+
+    /**
+    * @Description 
+    * @author huxiaolong
+    * @Date 2021-08-17 14:58:58
+    * @param templateComponent
+    * @return void
+    */
+    @Transactional(rollbackFor = Exception.class)
+    public void handleSignUpConditionFillInfoType (TemplateComponent templateComponent) {
+        if (templateComponent.getSignUpCondition() != null) {
+            templateComponent.getSignUpCondition().setTemplateComponentId(templateComponent.getId());
+            signUpConditionMapper.insert(templateComponent.getSignUpCondition());
+        }
+        if (templateComponent.getSignUpFillInfoType() != null) {
+            templateComponent.getSignUpFillInfoType().setTemplateComponentId(templateComponent.getId());
+            signUpFillInfoTypeMapper.insert(templateComponent.getSignUpFillInfoType());
+        }
+    }
+
     /**更新模板组件关联
     * @Description 
     * @author huxiaolong
@@ -239,12 +252,21 @@ public class ActivityEngineHandleService {
             BeanUtils.copyProperties(v, tplComponent);
             templateComponentMapper.updateById(tplComponent);
             SignUpCondition suc = v.getSignUpCondition();
+            SignUpFillInfoType signUpFillInfoType = v.getSignUpFillInfoType();
             if (suc != null) {
                 suc.setTemplateComponentId(tplComponent.getId());
-                if (v.getSignUpCondition().getId() == null) {
+                if (suc.getId() == null) {
                     signUpConditionMapper.insert(suc);
                 } else {
                     signUpConditionMapper.updateById(suc);
+                }
+            }
+            if (signUpFillInfoType != null) {
+                signUpFillInfoType.setTemplateComponentId(tplComponent.getId());
+                if (signUpFillInfoType.getId() == null) {
+                    signUpFillInfoTypeMapper.insert(signUpFillInfoType);
+                } else {
+                    signUpFillInfoTypeMapper.updateById(signUpFillInfoType);
                 }
             }
         });
