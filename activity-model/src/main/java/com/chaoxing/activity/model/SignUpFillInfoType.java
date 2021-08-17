@@ -76,4 +76,42 @@ public class SignUpFillInfoType {
 
     }
 
+    /** 万能表单模版类型
+     * @className SignUpFillInfoType
+     * @description 
+     * @author wwb
+     * @blame wwb
+     * @date 2021-08-17 10:58:16
+     * @version ver 1.0
+     */
+    @Getter
+    public enum WfwFormTemplateEnum {
+
+        /** 通用 */
+        NORMAL("通用", "normal", "", ""),
+        DUAL_SELECT_COMPANY("双选会企业报名", "dual_select_company", "", "");
+
+        private final String name;
+        private final String value;
+        private final String sign;
+        private final String key;
+
+        WfwFormTemplateEnum(String name, String value, String sign, String key) {
+            this.name = name;
+            this.value = value;
+            this.sign = sign;
+            this.key = key;
+        }
+
+        public static WfwFormTemplateEnum fromValue(String value) {
+            WfwFormTemplateEnum[] values = WfwFormTemplateEnum.values();
+            for (WfwFormTemplateEnum wfwFormTemplateEnum : values) {
+                if (Objects.equals(wfwFormTemplateEnum.getValue(), value)) {
+                    return wfwFormTemplateEnum;
+                }
+            }
+            return null;
+        }
+    }
+
 }
