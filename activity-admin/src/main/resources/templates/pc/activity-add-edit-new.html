@@ -396,7 +396,11 @@
                                             <el-switch v-model="signUpMap[item.id].fillInfo"></el-switch>
                                             <span class="tips" v-if="it.introduction">{{it.introduction}}</span>
                                         </div>
-                                        <div class="set-box configurationForm" v-show="signUpMap[item.id].fillInfo" @click="toConfigForm(item.id)">
+                                        <div v-if="fillInfoTypeMap[it.id] && fillInfoTypeMap[it.id].type == 'form'" class="set-box configurationForm" v-show="signUpMap[item.id].fillInfo" @click="toConfigForm(item.id)">
+                                            <img src="/static/pc/assets/images/setting.png" th:src="@{/pc/assets/images/setting.png}">
+                                            <span class="tips set-information">配置填报信息</span>
+                                        </div>
+                                        <div v-else class="set-box configurationForm" v-show="signUpMap[item.id].fillInfo" @click="toWfwFormConfig(it.id)">
                                             <img src="/static/pc/assets/images/setting.png" th:src="@{/pc/assets/images/setting.png}">
                                             <span class="tips set-information">配置填报信息</span>
                                         </div>
@@ -768,6 +772,8 @@
                 sign: [[${sign}]],
                 // 报名: { originId: signUp }
                 signUpMap: {},
+                // 报名信息填写类型: { templateComponentId: signUpFillInfoType }
+                fillInfoTypeMap: {},
                 signUpConditionActiveMap: {},
                 notAllowCancelTypes: [
                     {value: 'after_sign_up_end', label: '报名结束后'},
@@ -824,7 +830,8 @@
                     '0e70e8ff055094b9ef16937fcb2e1137'
                 ],
                 pictureShow: false,
-                fullScreen: activityApp.getUrlParamter("fullScreen")            },
+                fullScreen: activityApp.getUrlParamter("fullScreen")
+            },
             created: function () {
                 var $this = this;
                 // 解决跨域
@@ -841,6 +848,8 @@
                         $(_this.children).each(function () {
                             if (this.code == 'sign_up_condition') {
                                 $this.$set($this.signUpConditionActiveMap, this.id, false);
+                            } else if (this.code == 'sign_up_fill_info' && this.signUpFillInfoType) {
+                                $this.fillInfoTypeMap[this.id] = this.signUpFillInfoType
                             }
                             $this.templateComponentMap[this.id] = this;
                         });
@@ -1093,6 +1102,8 @@
                 }
                 $this.initUploader();
                 $this.handleImg();
+                // window.addEventListener('message', function (e) {
+                // }, false)
                 // $this.initWfwGroups();
             },
             computed: {
@@ -1820,6 +1831,30 @@
                             $('body').removeClass('scroll');
                         }
                     })
+                },
+                // 万能表单
+                toWfwFormConfig: function (tplComponentId) {
+                    var $this = this;
+                    var url = ctx + '/api/wfw-form/build/create-url';
+                    var templateType = ($this.fillInfoTypeMap[tplComponentId] && $this.fillInfoTypeMap[tplComponentId].templateType) || '';
+                    var params = {
+                        fid: $this.fid,
+                        uid: [[${session._login_user_.uid}]],
+                        templateType: templateType
+                    }
+                    app.ajaxPost(url,params, function (res) {
+                        if (res.success) {
+                            window.open(res.data);
+                        } else {
+                            var errorMessage = res.message;
+                            if (activityApp.isEmpty(errorMessage)) {
+                                errorMessage = "获取表单配置地址失败";
+                            }
+                            app.showMsg(errorMessage);
+                        }
+                    }, function () {
+                        app.showMsg("获取表单配置地址失败");
+                    });
                 },
                 closeFormConfigLayer: function (formId) {
                     var $this = this;

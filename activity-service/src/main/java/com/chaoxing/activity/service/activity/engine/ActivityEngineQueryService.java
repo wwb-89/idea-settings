@@ -231,6 +231,9 @@ public class ActivityEngineQueryService {
             if (CollectionUtils.isNotEmpty(componentFieldMap.get(v.getComponentId()))) {
                 v.setComponentFields(componentFieldMap.get(v.getComponentId()));
             }
+            if (StringUtils.isNotBlank(v.getCode()) && Objects.equals(v.getCode(), "sign_up_fill_info")) {
+                v.setSignUpFillInfoType(signUpFillInfoTypeService.getByTemplateComponentId(v.getId()));
+            }
             if (StringUtils.isNotBlank(v.getDataOrigin()) && Objects.equals(v.getDataOrigin(), Component.DataOriginEnum.FORM.getValue())) {
                 v.setFieldValues(wfwFormApiService.listFormFieldValue(fid, Integer.parseInt(v.getOriginIdentify()), v.getFieldFlag()));
             }

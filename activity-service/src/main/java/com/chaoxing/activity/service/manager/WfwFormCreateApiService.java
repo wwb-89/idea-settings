@@ -1,5 +1,7 @@
 package com.chaoxing.activity.service.manager;
 
+import com.chaoxing.activity.model.SignUpFillInfoType;
+import com.chaoxing.activity.util.exception.BusinessException;
 import com.google.common.collect.Maps;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.codec.digest.DigestUtils;
@@ -50,7 +52,7 @@ public class WfwFormCreateApiService {
 		params.put("sign", SIGN);
 		params.put("isCopy", 0);
 		params.put("formType", 2);
-		String enc = getEnc(params);
+		String enc = getEnc(params, KEY);
 		params.put("enc", enc);
 		// 封装url
 		String url = CREATE_URL + "?";
@@ -60,7 +62,39 @@ public class WfwFormCreateApiService {
 		return url;
 	}
 
-	private String getEnc(Map<String, Object> params) {
+	/**构建表单创建地址
+	* @Description
+	* @author huxiaolong
+	* @Date 2021-08-17 17:49:15
+	* @param fid
+	* @param uid
+	* @param templateType
+	* @return java.lang.String
+	*/
+	public String buildCreateFormUrl(Integer fid, Integer uid, String templateType) {
+		SignUpFillInfoType.WfwFormTemplateEnum wfwFormTemplateEnum = SignUpFillInfoType.WfwFormTemplateEnum.fromValue(templateType);
+		if (wfwFormTemplateEnum == null) {
+			throw new BusinessException("模板类型：" + templateType + "不存在!");
+		}
+		Map<String, Object> params = Maps.newTreeMap();
+		params.put("fid", fid);
+		params.put("uid", uid);
+		LocalDateTime now = LocalDateTime.now();
+		params.put("datetime", now.format(DATE_TIME_FORMATTER));
+		params.put("sign", wfwFormTemplateEnum.getSign());
+		params.put("isCopy", 0);
+		params.put("formType", 2);
+		String enc = getEnc(params, wfwFormTemplateEnum.getKey());
+		params.put("enc", enc);
+		// 封装url
+		StringBuilder url = new StringBuilder(CREATE_URL + "?");
+		for (Map.Entry<String, Object> entry : params.entrySet()) {
+			url.append(entry.getKey()).append("=").append(entry.getValue()).append("&");
+		}
+		return url.toString();
+	}
+
+	private String getEnc(Map<String, Object> params, String key) {
 		StringBuilder endBuilder = new StringBuilder();
 		for (Map.Entry<String, Object> entry : params.entrySet()) {
 			endBuilder.append("[");
@@ -70,7 +104,7 @@ public class WfwFormCreateApiService {
 			endBuilder.append("]");
 		}
 		endBuilder.append("[");
-		endBuilder.append(KEY);
+		endBuilder.append(key);
 		endBuilder.append("]");
 		return DigestUtils.md5Hex(endBuilder.toString());
 	}
