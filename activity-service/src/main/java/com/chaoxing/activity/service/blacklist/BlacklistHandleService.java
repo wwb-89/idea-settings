@@ -172,6 +172,10 @@ public class BlacklistHandleService {
     @Transactional(rollbackFor = Exception.class)
     public void autoAddBlacklist(Integer marketId) {
         BlacklistRule blacklistRule = blacklistQueryService.getBlacklistRuleByMarketId(marketId);
+        if (blacklistRule == null) {
+            // 市场没有配置黑名单规则（当一个市场创建后可能没有黑名单规则数据）
+            return;
+        }
         Integer notSignInUpperLimit = blacklistRule.getNotSignInUpperLimit();
         if (notSignInUpperLimit == null) {
             return;
