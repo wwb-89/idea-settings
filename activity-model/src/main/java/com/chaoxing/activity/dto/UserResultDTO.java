@@ -1,5 +1,6 @@
 package com.chaoxing.activity.dto;
 
+import com.chaoxing.activity.util.MobileUtils;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -22,34 +23,30 @@ public class UserResultDTO {
 
     /** 用户id */
     private Integer uid;
-
     /** 用户真实姓名 */
     private String realName;
-
     /** 学号 */
     private String studentNo;
-
     /** 手机号 */
     private String mobile;
-
     /** 活动id */
     private Integer activityId;
-
     /** 签到数 */
     private Integer signedInNum;
-
     /** 签到率 */
     private BigDecimal signedInRate;
-
     /** 评论数 */
     private Integer ratingNum;
-
     /** 总分(积分) */
     private Integer totalScore;
-
     /** 奖项 */
     private String prize;
-
     /** 状态: 0：不合格，1：合格，2：待处理 */
     private Integer qualifiedStatus;
+
+    public void setMobile(String mobile) {
+        // 手机号脱敏
+        this.mobile = MobileUtils.desensitization(mobile);
+    }
+
 }
