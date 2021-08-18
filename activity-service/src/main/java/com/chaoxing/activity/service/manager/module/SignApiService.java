@@ -96,6 +96,8 @@ public class SignApiService {
 	private static final String USER_IS_SIGNED_UP_URL = SIGN_API_DOMAIN + "/sign/%d/is-signed-up?uid=%d";
 	/** 用户报名签到统计汇总 */
 	private static final String USER_SIGN_STAT_SUMMARY_URL = SIGN_API_DOMAIN + "/stat/user/%d/sign/%d/sign-stat-summary";
+	/** 用户报名成功的报名签到id列表 */
+	private static final String USER_SIGNED_UP_SIGN_ID_URL = SIGN_API_DOMAIN + "/stat/user/%d/signId/signed-up";
 
 	/** 报名名单url */
 	private static final String SIGN_UP_USER_LIST_URL = SIGN_WEB_DOMAIN + "/sign-up/%d/user-list";
@@ -850,6 +852,20 @@ public class SignApiService {
 		String result = restTemplate.getForObject(url, String.class);
 		JSONObject jsonObject = JSON.parseObject(result);
 		return resultHandle(jsonObject, () -> jsonObject.getInteger("data"), (message) -> new BusinessException(message));
+	}
+
+	/**查询用户报名成功的报名签到id列表
+	 * @Description 
+	 * @author wwb
+	 * @Date 2021-08-18 18:01:16
+	 * @param uid
+	 * @return java.util.List<java.lang.Integer>
+	*/
+	public List<Integer> listUserSignedUpSignIds(Integer uid) {
+		String url = String.format(USER_SIGNED_UP_SIGN_ID_URL, uid);
+		String result = restTemplate.getForObject(url, String.class);
+		JSONObject jsonObject = JSON.parseObject(result);
+		return resultHandle(jsonObject, () -> JSON.parseArray(jsonObject.getString("data"), Integer.class), (message) -> new BusinessException(message));
 	}
 
 }

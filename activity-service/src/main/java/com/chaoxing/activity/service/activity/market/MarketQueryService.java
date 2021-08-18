@@ -32,12 +32,12 @@ public class MarketQueryService {
 	 * @Description 
 	 * @author wwb
 	 * @Date 2021-04-12 11:23:54
-	 * @param activityMarketId
+	 * @param marketId
 	 * @return com.chaoxing.activity.model.ActivityMarket
 	*/
-	public Market getById(Integer activityMarketId) {
+	public Market getById(Integer marketId) {
 		return marketMapper.selectOne(new LambdaQueryWrapper<Market>()
-				.eq(Market::getId, activityMarketId)
+				.eq(Market::getId, marketId)
 				.eq(Market::getDeleted, false)
 		);
 	}

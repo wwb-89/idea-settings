@@ -736,4 +736,21 @@ public class ActivityQueryService {
 		createParamDTO.setSucTemplateComponentIds(signUpConditionEnables);
 		return createParamDTO;
 	}
+
+	/**根据报名签到id列表和活动市场id统计正在进行中的活动数量
+	 * @Description 
+	 * @author wwb
+	 * @Date 2021-08-18 18:20:04
+	 * @param marketId
+	 * @param signIds
+	 * @return java.lang.Integer
+	*/
+	public Integer countIngActivityNumBySignIds(Integer marketId, List<Integer> signIds) {
+		return activityMapper.selectCount(new LambdaQueryWrapper<Activity>()
+				.eq(Activity::getMarketId, marketId)
+				.in(Activity::getSignId, signIds)
+				.eq(Activity::getStatus, Activity.StatusEnum.ONGOING.getValue())
+		);
+	}
+
 }

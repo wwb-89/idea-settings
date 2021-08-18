@@ -7,6 +7,7 @@ import com.chaoxing.activity.dto.activity.market.ActivityMarketCreateParamDTO;
 import com.chaoxing.activity.dto.activity.market.ActivityMarketUpdateParamDTO;
 import com.chaoxing.activity.service.activity.market.MarketHandleService;
 import com.chaoxing.activity.util.annotation.LoginRequired;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -55,6 +56,23 @@ public class MarketApiController {
 	@RequestMapping("update/from-wfw")
 	public RestRespDTO updateFromWfw(HttpServletRequest request, ActivityMarketUpdateParamDTO activityMarketUpdateParamDto) {
 		marketHandleService.updateFromWfw(activityMarketUpdateParamDto);
+		return RestRespDTO.success();
+	}
+
+	/**更新同时报名活动数量限制
+	 * @Description 
+	 * @author wwb
+	 * @Date 2021-08-18 16:17:43
+	 * @param request
+	 * @param marketId
+	 * @param signUpActivityLimit
+	 * @return com.chaoxing.activity.dto.RestRespDTO
+	*/
+	@LoginRequired
+	@RequestMapping("{marketId}/update/sign-up-activity-limit")
+	public RestRespDTO updateSignUpActivityLimit(HttpServletRequest request, @PathVariable Integer marketId, Integer signUpActivityLimit) {
+		LoginUserDTO loginUser = LoginUtils.getLoginUser(request);
+		marketHandleService.updateSignUpActivityLimit(marketId, signUpActivityLimit, loginUser.buildOperateUserDTO());
 		return RestRespDTO.success();
 	}
 

@@ -43,3 +43,5 @@ INSERT INTO `activity_engine`.`t_component`(`id`, `pid`, `name`, `code`, `is_req
 DELETE FROM t_component WHERE id IN (14, 15);
 UPDATE t_template_component t SET t.component_id = 39 WHERE t.component_id = 14;
 UPDATE t_template_component t SET t.is_deleted = 1 WHERE t.component_id = 15;
+ALTER TABLE t_market ADD sign_up_activity_limit INT(11) DEFAULT 0 COMMENT '同时报名活动数限制';
+
