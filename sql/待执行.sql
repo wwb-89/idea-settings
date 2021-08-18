@@ -37,3 +37,9 @@ FROM
     t_activity t;
 
 ALTER TABLE t_sign_up_fill_info_type change COLUMN form_id template_type VARCHAR(50) COMMENT '模板类型';
+
+-- 签到签退组件合并成签到组件
+INSERT INTO `activity_engine`.`t_component`(`id`, `pid`, `name`, `code`, `is_required`, `introduction`, `is_system`, `is_multi`, `type`, `data_origin`, `origin_identify`, `field_flag`, `template_id`, `create_time`, `create_uid`, `update_time`, `update_uid`) VALUES (39, 0, '签到', 'sign_in_out', 0, '可以发布和编辑本次活动的签到', 1, 0, NULL, NULL, NULL, NULL, NULL, '2021-08-17 19:34:05', 25418810, '2021-08-17 19:36:33', 25418810);
+DELETE FROM t_component WHERE id IN (14, 15);
+UPDATE t_template_component t SET t.component_id = 39 WHERE t.component_id = 14;
+UPDATE t_template_component t SET t.is_deleted = 1 WHERE t.component_id = 15;
