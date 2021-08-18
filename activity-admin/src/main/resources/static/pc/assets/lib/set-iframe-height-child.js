@@ -1,4 +1,6 @@
-(function() {
+'use strict';
+
+(function () {
   'use strict';
 
   if (!window.parent || parent === self) {
@@ -8,7 +10,7 @@
   var iframeId = parseInt(Math.random() * 99999999);
 
   try {
-    iframeId = (self.frameElement && self.frameElement.getAttribute('data-set-iframe-height_id')) || iframeId;
+    iframeId = self.frameElement && self.frameElement.getAttribute('data-set-iframe-height_id') || iframeId;
   } catch (e) {}
 
   window.addEventListener('message', onMessage);
@@ -21,23 +23,17 @@
     var D = document;
 
     var matches = navigator.userAgent.match(/MSIE (\d)/);
-    if (matches && parseInt(matches[1], 10) <=10) {
+    if (matches && parseInt(matches[1], 10) <= 10) {
 
       return Math.max(D.body.scrollHeight, D.documentElement.scrollHeight);
     }
-
-    return Math.min(
-      Math.max(D.body.offsetHeight, D.documentElement.offsetHeight),
-      Math.max(
-        Math.max(D.body.scrollHeight, D.documentElement.scrollHeight),
-        Math.max(D.body.clientHeight, D.documentElement.clientHeight)
-      )
-    );
+    var height = Math.min(Math.max(D.body.offsetHeight, D.documentElement.offsetHeight), Math.max(Math.max(D.body.scrollHeight, D.documentElement.scrollHeight), Math.max(D.body.clientHeight, D.documentElement.clientHeight)));
+    return height;
   }
 
   function postHeight(height) {
     if (parent.postMessage) {
-      parent.postMessage('setIframeHeight::{ "iframeSrc": "'+document.location.href+'", "iframeId": "'+iframeId+'", "iframeReferrer": "'+document.referrer+'", "height":'+height+' }', '*');
+      parent.postMessage('setIframeHeight::{ "iframeSrc": "' + document.location.href + '", "iframeId": "' + iframeId + '", "iframeReferrer": "' + document.referrer + '", "height":' + height + ' }', '*');
 
       // amp-iframe resize request (https://github.com/ampproject/amphtml/blob/master/extensions/amp-iframe/amp-iframe.md#-amp-iframe)
       parent.postMessage({
@@ -55,8 +51,8 @@
       if (data.length === 2) {
         var params;
         try {
-          params = JSON.parse(data[1])
-        } catch (err) { };
+          params = JSON.parse(data[1]);
+        } catch (err) {};
 
         if (params && params !== data[1]) {
           var eventName = data[0];
@@ -71,7 +67,7 @@
   }
 
   function triggerCustomEvent(element, eventName, eventData) {
-    const e = document.createEvent('CustomEvent');
+    var e = document.createEvent('CustomEvent');
     e.initCustomEvent(eventName, true, true, eventData);
     element.dispatchEvent(e);
   }

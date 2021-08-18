@@ -92,10 +92,12 @@ Vue.component('vue-sign-map', {
                         });
                         // 选中第一个
                         var item = activityApp.getJsonObject(histories[0]);
-                        $this.address = item.address + item.title;
-                        $this.longitude = item.point.lng;
-                        $this.dimension = item.point.lat;
-                        $this.selectedItem = item;
+                        if (item) {
+                            $this.address = item.address + item.title;
+                            $this.longitude = item.point.lng;
+                            $this.dimension = item.point.lat;
+                            $this.selectedItem = item;
+                        }
                     }
                     $this.querySearchAsync("", $this.cb);
                 }

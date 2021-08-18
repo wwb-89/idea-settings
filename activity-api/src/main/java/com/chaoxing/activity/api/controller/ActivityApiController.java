@@ -260,6 +260,9 @@ public class ActivityApiController {
 	@RequestMapping("manager-judge")
 	public RestRespDTO isManager(@RequestParam Integer signId, @RequestParam Integer uid) {
 		Activity activity = activityQueryService.getBySignId(signId);
+		if (activity == null) {
+			return RestRespDTO.success(true);
+		}
 		boolean manager = activityValidationService.isManageAble(activity.getId(), uid);
 		return RestRespDTO.success(manager);
 	}

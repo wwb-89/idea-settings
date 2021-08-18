@@ -82,6 +82,8 @@ public class SignApiService {
 	private static final String STAT_ACTIVITY_SUMMARY_URL = SIGN_API_DOMAIN + "/stat/sign/%d/activity-stat-summary";
 	/** 统计活动报名签到用户的未签数量 */
 	private static final String STAT_ACTIVITY_USER_NOT_SIGNED_IN_NUM = SIGN_API_DOMAIN + "/stat/sign/%d/user-not-signed-in-num";
+	/** 获取报名签到下的签到数量 */
+	private static final String COUNT_SIGN_SIGN_IN_NUM_URL = SIGN_API_DOMAIN + "/sign/%d/sign-in/num";
 
 	/** 根据外资源部externalIds查询报名签到signIds集合url  */
 	private static final String LIST_SIGN_ID_BY_PARTICIPATE_SCOPES_URL = SIGN_API_DOMAIN + "/sign/list/signIds/by-participate-scope";
@@ -834,6 +836,20 @@ public class SignApiService {
 		return resultHandle(jsonObject, () -> jsonObject.getInteger("data"), (message) -> {
 			throw new BusinessException(message);
 		});
+	}
+
+	/**获取报名签到下的签到数量
+	 * @Description 
+	 * @author wwb
+	 * @Date 2021-08-18 11:12:06
+	 * @param signId
+	 * @return java.lang.Integer
+	*/
+	public Integer countSignInNum(Integer signId) {
+		String url = String.format(COUNT_SIGN_SIGN_IN_NUM_URL, signId);
+		String result = restTemplate.getForObject(url, String.class);
+		JSONObject jsonObject = JSON.parseObject(result);
+		return resultHandle(jsonObject, () -> jsonObject.getInteger("data"), (message) -> new BusinessException(message));
 	}
 
 }

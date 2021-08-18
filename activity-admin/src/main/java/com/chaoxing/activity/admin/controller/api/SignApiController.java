@@ -6,6 +6,7 @@ import com.chaoxing.activity.dto.RestRespDTO;
 import com.chaoxing.activity.service.manager.module.SignApiService;
 import com.chaoxing.activity.util.annotation.LoginRequired;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -51,6 +52,12 @@ public class SignApiController {
 		LoginUserDTO loginUser = LoginUtils.getLoginUser(request);
 		signApiService.deleteSignInPositionHistory(loginUser.getUid(), loginUser.getFid(), jsonStr);
 		return RestRespDTO.success();
+	}
+
+	@LoginRequired
+	@RequestMapping("{signId}/sign-in/num")
+	public RestRespDTO countSignInNum(@PathVariable Integer signId) {
+		return RestRespDTO.success(signApiService.countSignInNum(signId));
 	}
 
 }

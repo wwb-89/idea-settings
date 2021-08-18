@@ -23,8 +23,7 @@
             id: null,
             name: "",
             notes: "",
-            signUps: [],
-            signIns: []
+            signUps: []
         };
     };
 
