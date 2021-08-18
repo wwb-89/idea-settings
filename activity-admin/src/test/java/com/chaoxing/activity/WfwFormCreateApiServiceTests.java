@@ -26,4 +26,13 @@ public class WfwFormCreateApiServiceTests {
         System.out.println(url);
     }
 
+    @Test
+    public void getFormAdminUrl() {
+        Integer formId = 94570;
+        Integer fid = 117211;
+        Integer uid = 25418810;
+        String adminUrl = wfwFormCreateApiService.getFormAdminUrl(formId, fid, uid);
+        System.out.println(adminUrl);
+    }
+
 }
