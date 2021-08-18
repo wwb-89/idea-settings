@@ -5,13 +5,13 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.chaoxing.activity.mapper.SignUpConditionEnableMapper;
 import com.chaoxing.activity.mapper.SignUpConditionMapper;
-import com.chaoxing.activity.model.Activity;
-import com.chaoxing.activity.model.SignUpCondition;
-import com.chaoxing.activity.model.SignUpConditionEnable;
-import com.chaoxing.activity.model.TemplateComponent;
+import com.chaoxing.activity.model.*;
 import com.chaoxing.activity.service.activity.ActivityQueryService;
+import com.chaoxing.activity.service.activity.market.MarketQueryService;
 import com.chaoxing.activity.service.activity.template.TemplateQueryService;
 import com.chaoxing.activity.service.manager.WfwFormApiService;
+import com.chaoxing.activity.service.manager.module.SignApiService;
+import com.chaoxing.activity.util.exception.BusinessException;
 import com.google.common.collect.Lists;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
@@ -46,6 +46,10 @@ public class SignUpConditionService {
 	private TemplateQueryService templateQueryService;
 	@Resource
 	private ActivityQueryService activityQueryService;
+	@Resource
+	private MarketQueryService marketQueryService;
+	@Resource
+	private SignApiService signApiService;
 
 	/**新增报名条件
 	 * @Description 
@@ -141,17 +145,44 @@ public class SignUpConditionService {
 	 * @param templateComponentId 报名的模版组件id
 	 * @return boolean
 	*/
-	public boolean whetherCanSignUp(Integer uid, Integer signId, Integer templateComponentId) {
+	public void userCanSignUp(Integer uid, Integer signId, Integer templateComponentId) {
 		List<SignUpCondition> signUpConditions = listBySignUp(signId, templateComponentId);
-		if (CollectionUtils.isEmpty(signUpConditions)) {
-			return true;
-		}
-		for (SignUpCondition signUpCondition : signUpConditions) {
-			if (whetherCanSignUp(signUpCondition, uid)) {
-				return true;
+		boolean signUpConditionValidate = false;
+		if (CollectionUtils.isNotEmpty(signUpConditions)) {
+			for (SignUpCondition signUpCondition : signUpConditions) {
+				if (whetherCanSignUp(signUpCondition, uid)) {
+					signUpConditionValidate = true;
+					break;
+				}
 			}
+		}else {
+			signUpConditionValidate = true;
 		}
-		return false;
+		if (!signUpConditionValidate) {
+			throw new BusinessException("不满足报名条件");
+		}
+		// 验证活动市场的报名限制
+		Activity activity = activityQueryService.getBySignId(signId);
+		Integer marketId = Optional.ofNullable(activity).map(Activity::getMarketId).orElse(null);
+		if (marketId == null) {
+			return;
+		}
+		Market market = marketQueryService.getById(marketId);
+		Integer signUpActivityLimit = Optional.ofNullable(market).map(Market::getSignUpActivityLimit).orElse(0);
+		if (signUpActivityLimit < 1) {
+			// 没做限制
+			return;
+		}
+		// 查询用户报名的活动（正在进行的）数量：先查询报名的signId列表，根据signId列表查询正在进行的活动数量
+		List<Integer> signedUpSignIds = signApiService.listUserSignedUpSignIds(uid);
+		if (CollectionUtils.isEmpty(signedUpSignIds)) {
+			return;
+		}
+		// 根据报名成功的报名签到id列表查询进行中的活动数量
+		Integer signedUpActivityNum = activityQueryService.countIngActivityNumBySignIds(marketId, signedUpSignIds);
+		if (signedUpActivityNum.compareTo(signedUpActivityNum) >= 0) {
+			throw new BusinessException("同时报名活动数超过限制");
+		}
 	}
 
 	/**是否可以报名

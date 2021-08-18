@@ -33,7 +33,8 @@ public class ValidationApiService {
 	*/
 	@RequestMapping("sign-up-able")
 	public RestRespDTO signUpAble(Integer uid, Integer signId, Integer templateComponentId) {
-		return RestRespDTO.success(signUpConditionService.whetherCanSignUp(uid, signId, templateComponentId));
+		signUpConditionService.userCanSignUp(uid, signId, templateComponentId);
+		return RestRespDTO.success();
 	}
 
 }
