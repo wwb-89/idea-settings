@@ -45,6 +45,7 @@
             limitPerson: false,
             personLimit: 100,
             fillInfo: false,
+            formType: 'form',
             fillInfoFormId: null,
             openAddr: null,
             pcUrl: null,
