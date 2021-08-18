@@ -20,8 +20,10 @@ import com.chaoxing.activity.dto.query.MhActivityCalendarQueryDTO;
 import com.chaoxing.activity.mapper.*;
 import com.chaoxing.activity.model.*;
 import com.chaoxing.activity.service.activity.classify.ClassifyQueryService;
+import com.chaoxing.activity.service.activity.component.ComponentQueryService;
 import com.chaoxing.activity.service.activity.engine.ActivityComponentValueService;
 import com.chaoxing.activity.service.activity.manager.ActivityManagerQueryService;
+import com.chaoxing.activity.service.activity.template.TemplateQueryService;
 import com.chaoxing.activity.service.manager.module.SignApiService;
 import com.chaoxing.activity.service.manager.wfw.WfwAreaApiService;
 import com.chaoxing.activity.util.DateUtils;
@@ -73,12 +75,16 @@ public class ActivityQueryService {
 	@Resource
 	private ClassifyQueryService classifyQueryService;
 	@Resource
+	private TemplateQueryService templateQueryService;
+	@Resource
 	private TableFieldDetailMapper tableFieldDetailMapper;
 
 	@Resource
 	private ActivityComponentValueService activityComponentValueService;
 	@Resource
 	private SignUpConditionEnableMapper signUpConditionEnableMapper;
+	@Resource
+	private ComponentQueryService componentQueryService;
 
 	/**查询参与的活动
 	 * @Description 
@@ -751,6 +757,55 @@ public class ActivityQueryService {
 				.in(Activity::getSignId, signIds)
 				.eq(Activity::getStatus, Activity.StatusEnum.ONGOING.getValue())
 		);
+	}
+
+	/**获取活动的字段code与名称的关系
+	 * @Description 
+	 * @author wwb
+	 * @Date 2021-08-18 20:11:10
+	 * @param activityId
+	 * @return java.util.Map<java.lang.String,java.lang.String>
+	*/
+	public Map<String, String> getFieldCodeNameRelation(Integer activityId) {
+		Activity activity = getById(activityId);
+		return getFieldCodeNameRelation(activity);
+	}
+
+	/**获取活动的字段code与名称的关系
+	 * @Description 
+	 * @author wwb
+	 * @Date 2021-08-18 20:16:42
+	 * @param activity
+	 * @return java.util.Map<java.lang.String,java.lang.String>
+	*/
+	public Map<String, String> getFieldCodeNameRelation(Activity activity) {
+		Map<String, String> fieldCodeNameRelation = Maps.newHashMap();
+		if (activity == null) {
+			return fieldCodeNameRelation;
+		}
+		Integer templateId = activity.getTemplateId();
+		if (templateId == null) {
+			String activityFlag = activity.getActivityFlag();
+			templateId = templateQueryService.getSystemTemplateIdByActivityFlag(Activity.ActivityFlagEnum.fromValue(activityFlag));
+		}
+		if (templateId == null) {
+			return fieldCodeNameRelation;
+		}
+		// 查询模版关联的组件
+		List<TemplateComponent> templateComponents = templateQueryService.listTemplateComponentByTemplateId(templateId);
+		Map<Integer, String> componentIdNameRelation = templateComponents.stream().collect(Collectors.toMap(TemplateComponent::getComponentId, TemplateComponent::getName));
+		List<Integer> componentIds = Optional.ofNullable(templateComponents).orElse(Lists.newArrayList()).stream().map(TemplateComponent::getComponentId).collect(Collectors.toList());
+		Map<Integer, String> componentIdCodeRelation;
+		if (CollectionUtils.isNotEmpty(componentIds)) {
+			List<Component> components = componentQueryService.listByIds(componentIds);
+			componentIdCodeRelation = components.stream().collect(Collectors.toMap(Component::getId, Component::getCode));
+		} else {
+			componentIdCodeRelation = Maps.newHashMap();
+		}
+		componentIdCodeRelation.forEach((k, v) -> {
+			fieldCodeNameRelation.put(v, componentIdNameRelation.get(k));
+		});
+		return fieldCodeNameRelation;
 	}
 
 }

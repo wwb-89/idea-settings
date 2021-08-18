@@ -41,4 +41,17 @@ public class ComponentQueryService {
 		return Optional.ofNullable(components).orElse(Lists.newArrayList()).stream().findFirst().orElse(null);
 	}
 
+	/**根据id列表查询
+	 * @Description 
+	 * @author wwb
+	 * @Date 2021-08-18 20:28:37
+	 * @param componentIds
+	 * @return java.util.List<com.chaoxing.activity.model.Component>
+	*/
+	public List<Component> listByIds(List<Integer> componentIds) {
+		return componentMapper.selectList(new LambdaQueryWrapper<Component>()
+				.in(Component::getId, componentIds)
+		);
+	}
+
 }
