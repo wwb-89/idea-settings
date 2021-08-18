@@ -54,8 +54,8 @@ public class WfwFormApiController {
 	* @return com.chaoxing.activity.dto.RestRespDTO
 	*/
 	@RequestMapping("build/create-url")
-	public RestRespDTO listWfwFormField(@RequestParam Integer fid, @RequestParam Integer uid, @RequestParam String templateType) {
-		return RestRespDTO.success(formCreateApiService.buildCreateFormUrl(fid, uid, templateType));
+	public RestRespDTO listWfwFormField(@RequestParam Integer fid, @RequestParam Integer uid, @RequestParam String templateType, Integer formId) {
+		return RestRespDTO.success(formCreateApiService.buildCreateFormUrl(fid, uid, formId, templateType));
 	}
 
 }

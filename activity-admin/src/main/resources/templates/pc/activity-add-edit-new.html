@@ -396,11 +396,11 @@
                                             <el-switch v-model="signUpMap[item.id].fillInfo"></el-switch>
                                             <span class="tips" v-if="it.introduction">{{it.introduction}}</span>
                                         </div>
-                                        <div v-if="fillInfoTypeMap[it.id] && fillInfoTypeMap[it.id].type == 'form'" class="set-box configurationForm" v-show="signUpMap[item.id].fillInfo" @click="toConfigForm(item.id)">
+                                        <div v-if="signUpMap[item.id].formType == 'form'" class="set-box configurationForm" v-show="signUpMap[item.id].fillInfo" @click="toConfigForm(item.id)">
                                             <img src="/static/pc/assets/images/setting.png" th:src="@{/pc/assets/images/setting.png}">
                                             <span class="tips set-information">配置填报信息</span>
                                         </div>
-                                        <div v-else class="set-box configurationForm" v-show="signUpMap[item.id].fillInfo" @click="toWfwFormConfig(it.id)">
+                                        <div v-else class="set-box configurationForm" v-show="signUpMap[item.id].fillInfo" @click="toWfwFormConfig(item.id)">
                                             <img src="/static/pc/assets/images/setting.png" th:src="@{/pc/assets/images/setting.png}">
                                             <span class="tips set-information">配置填报信息</span>
                                         </div>
@@ -849,7 +849,8 @@
                             if (this.code == 'sign_up_condition') {
                                 $this.$set($this.signUpConditionActiveMap, this.id, false);
                             } else if (this.code == 'sign_up_fill_info' && this.signUpFillInfoType) {
-                                $this.fillInfoTypeMap[this.id] = this.signUpFillInfoType
+                                // 一个报名目前只有一个报名信息填写，故map的映射为 { signUpTplComponentId : signUpFillInfoType }
+                                $this.fillInfoTypeMap[_this.id] = this.signUpFillInfoType
                             }
                             $this.templateComponentMap[this.id] = this;
                         });
@@ -1003,9 +1004,7 @@
 
                 } else {
                     // 报名签到
-                    var signUpTplComponentIds = [],
-                            signInTplComponentIds = [];
-
+                    var signUpTplComponentIds = [], signInTplComponentIds = [];
                     $($this.templateComponents).each(function () {
                         if (this.code == 'sign_up' || this.code == 'company_sign_up') {
                             signUpTplComponentIds.push(this.id);
@@ -1080,6 +1079,11 @@
                         // 若报名签到非不限制
                         $this.$set(item, "timeScope", [item.startTime, item.endTime]);
                     }
+                    if (activityApp.isEmpty($this.sign.id)) {
+                        // 仅在新增的时候，根据signUpTplComponentId 初始化formType
+                        var formType = $this.fillInfoTypeMap[item.originId] && $this.fillInfoTypeMap[item.originId].type
+                        item.formType = formType || 'form'
+                    }
                 });
                 $.each($this.signInMap, function (key, item) {
                     item.enable = !item.deleted;
@@ -1102,9 +1106,15 @@
                 }
                 $this.initUploader();
                 $this.handleImg();
-                // window.addEventListener('message', function (e) {
-                // }, false)
-                // $this.initWfwGroups();
+                window.addEventListener('message', function (e) {
+                    var { data } = activityApp.getJsonObject(e.data);
+                    var originId = $this.operateSignUpOriginId;
+                    $this.$set($this.signUpMap[originId], 'openAddr', data.openAddr);
+                    $this.$set($this.signUpMap[originId], 'pcUrl', data.pcUrl);
+                    $this.$set($this.signUpMap[originId], 'wechatUrl', data.wechatUrl);
+                    $this.$set($this.signUpMap[originId], 'fillInfoFormId', data.formId);
+                }, false)
+                $this.initWfwGroups();
             },
             computed: {
                 // 虚拟节点map，即非叶子节点复制本身作为其叶子节点，该叶子节点即为虚拟节点
@@ -1833,13 +1843,20 @@
                     })
                 },
                 // 万能表单
-                toWfwFormConfig: function (tplComponentId) {
+                toWfwFormConfig: function (signUpTplComponentId) {
                     var $this = this;
+                    var signUp = $this.signUpMap[signUpTplComponentId];
+                    var formId = "";
+                    $this.operateSignUpOriginId = signUpTplComponentId;
+                    if (!activityApp.isEmpty(signUp.fillInfoFormId)) {
+                        formId = signUp.fillInfoFormId;
+                    }
                     var url = ctx + '/api/wfw-form/build/create-url';
-                    var templateType = ($this.fillInfoTypeMap[tplComponentId] && $this.fillInfoTypeMap[tplComponentId].templateType) || '';
+                    var templateType = ($this.fillInfoTypeMap[signUpTplComponentId] && $this.fillInfoTypeMap[signUpTplComponentId].templateType) || '';
                     var params = {
                         fid: $this.fid,
                         uid: [[${session._login_user_.uid}]],
+                        formId: formId,
                         templateType: templateType
                     }
                     app.ajaxPost(url,params, function (res) {

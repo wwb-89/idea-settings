@@ -71,7 +71,7 @@ public class WfwFormCreateApiService {
 	* @param templateType
 	* @return java.lang.String
 	*/
-	public String buildCreateFormUrl(Integer fid, Integer uid, String templateType) {
+	public String buildCreateFormUrl(Integer fid, Integer uid, Integer formId, String templateType) {
 		SignUpFillInfoType.WfwFormTemplateEnum wfwFormTemplateEnum = SignUpFillInfoType.WfwFormTemplateEnum.fromValue(templateType);
 		if (wfwFormTemplateEnum == null) {
 			throw new BusinessException("模板类型：" + templateType + "不存在!");
@@ -79,6 +79,9 @@ public class WfwFormCreateApiService {
 		Map<String, Object> params = Maps.newTreeMap();
 		params.put("fid", fid);
 		params.put("uid", uid);
+		if (formId != null) {
+			params.put("formId", formId);
+		}
 		LocalDateTime now = LocalDateTime.now();
 		params.put("datetime", now.format(DATE_TIME_FORMATTER));
 		params.put("sign", wfwFormTemplateEnum.getSign());

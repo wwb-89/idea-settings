@@ -45,6 +45,12 @@ public class SignUpCreateParamDTO {
 	private String formType;
 	/** 填写信息的表单id */
 	private Integer fillInfoFormId;
+	/** 万能表单地址1; column: open_addr*/
+	private String openAddr;
+	/** 万能表单地址2; column: pc_url*/
+	private String pcUrl;
+	/** 万能表单地址3; column: wechat_url*/
+	private String wechatUrl;
 	/** 是否公开报名名单 */
 	private Boolean publicList;
 	/** 报名按钮名称 */
