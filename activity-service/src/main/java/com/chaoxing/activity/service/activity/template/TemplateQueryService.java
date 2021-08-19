@@ -82,6 +82,7 @@ public class TemplateQueryService {
 	public List<TemplateComponent> listTemplateComponentByTemplateId(Integer templateId) {
 		return templateComponentMapper.selectList(new LambdaQueryWrapper<TemplateComponent>()
 				.eq(TemplateComponent::getTemplateId, templateId)
+				.eq(TemplateComponent::getDeleted, false)
 		);
 	}
 
