@@ -203,6 +203,11 @@ public class ActivityEngineQueryService {
                 .stream()
                 .filter(v -> v.getPid() != 0 || Objects.equals(v.getCode(), "sign_up") || Objects.equals(v.getCode(), "company_sign_up"))
                 .collect(Collectors.toList());
+        templateComponents.forEach(v -> {
+            if (StringUtils.isNotBlank(v.getCode()) && Objects.equals(v.getCode(), "sign_up_fill_info")) {
+                v.setSignUpFillInfoType(signUpFillInfoTypeService.getByTemplateComponentId(v.getId()));
+            }
+        });
         return TemplateComponentDTO.buildTrees(templateComponents);
     }
 
