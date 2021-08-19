@@ -57,5 +57,9 @@ public class WfwFormApiController {
 	public RestRespDTO getWfwFormCreateUrl(@RequestParam Integer fid, @RequestParam Integer uid, @RequestParam String templateType, Integer formId) {
 		return RestRespDTO.success(formCreateApiService.buildCreateFormUrl(fid, uid, formId, templateType));
 	}
+	@RequestMapping("build/manage-url")
+	public RestRespDTO getWfwFormManageUrl(@RequestParam Integer fid, @RequestParam Integer uid, @RequestParam Integer formId) {
+		return RestRespDTO.success(formCreateApiService.getFormAdminUrl(formId, fid, uid));
+	}
 
 }

@@ -178,6 +178,32 @@
                 // 报名名单
                 toSignUpList: function () {
                     var $this = this;
+                    var signUp = $this.signActivityManageIndex.signUps && $this.signActivityManageIndex.signUps[0];
+                    if (signUp && signUp.formType == 'wfw_form' && signUp.fillInfoFormId) {
+                        var params = {
+                            fid: $this.loginUser.fid,
+                            uid: $this.loginUser.uid,
+                            formId: signUp.fillInfoFormId
+                        }
+                        var url = ctx + "/api/wfw-form/build/manage-url";
+                        app.ajaxPost(url, params, function (res) {
+                            if (res.success) {
+                                $("#content")[0].src = res.data;
+                                $("#content")[0].onload = function() {
+                                    $this.resizePageHeight();
+                                };
+                            } else {
+                                var errorMessage = res.message;
+                                if (signApp.isEmpty(errorMessage)) {
+                                    errorMessage = "获取表单管理地址失败";
+                                }
+                                app.showMsg(errorMessage);
+                            }
+                        }, function () {
+                            app.showMsg("获取表单管理地址失败");
+                        });
+                        return;
+                    }
                     $this.selectMenu("signUpList");
                 },
                 // 签到管理
