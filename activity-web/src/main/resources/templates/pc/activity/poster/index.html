@@ -19,7 +19,7 @@
                 </div>
                 <div class="text-box">
                     <p class="text-title marginb6">{{activity.name}}</p>
-                    <dl class="text-list marginb6">
+                    <dl class="text-list marginb6" v-if="fieldCodeNameRelation['activity_time_scope']">
                        <dt class="label">{{fieldCodeNameRelation['activity_time_scope']}}&nbsp;&nbsp;&nbsp;&nbsp;</dt>
                        <dd class="info"> {{ activity.startTime | timestampScopeFormat(activity.endTime, 'YYYY-MM-DD HH:mm') }}</dd>
                     </dl>
@@ -31,7 +31,7 @@
                         <dt class="label">活动地点&nbsp;&nbsp;&nbsp;&nbsp;</dt>
                         <dd class="info">{{activityAddress}}</dd>
                     </dl>
-                    <dl class="text-list marginb6">
+                    <dl class="text-list marginb6" v-if="fieldCodeNameRelation['activity_organisers'] && activity.organisers">
                         <dt class="label">{{fieldCodeNameRelation['activity_organisers']}}&nbsp;&nbsp;&nbsp;&nbsp;</dt>
                         <dd class="info">{{activity.organisers}}</dd>
                     </dl>
