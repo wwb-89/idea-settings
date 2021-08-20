@@ -11,20 +11,8 @@ CREATE TABLE `t_activity_market`  (
 ) COMMENT = '活动与活动市场关联表';
 
 -- 新增现场报名子组件
-INSERT INTO t_component ( pid, `name`, `code`, introduction, is_system, is_multi, create_uid, update_uid ) SELECT
-    t.id,
-    '现场报名',
-    'on_site_sign_up',
-    '',
-    t.is_system,
-    0,
-    t.create_uid,
-    t.update_uid
-FROM
-    t_component t
-WHERE
-    ( t.CODE = 'sign_up' OR t.CODE = 'company_sign_up' )
-  AND t.is_system = 1;
+INSERT INTO `activity_engine`.`t_component`(`id`, `pid`, `name`, `code`, `is_required`, `introduction`, `is_system`, `is_multi`, `type`, `data_origin`, `origin_identify`, `field_flag`, `template_id`, `create_time`, `create_uid`, `update_time`, `update_uid`) VALUES (41, 12, '现场报名', 'on_site_sign_up', 1, '', 1, 0, NULL, NULL, NULL, NULL, NULL, '2021-08-18 14:19:07', 25418810, '2021-08-20 16:40:37', 25418810);
+INSERT INTO `activity_engine`.`t_component`(`id`, `pid`, `name`, `code`, `is_required`, `introduction`, `is_system`, `is_multi`, `type`, `data_origin`, `origin_identify`, `field_flag`, `template_id`, `create_time`, `create_uid`, `update_time`, `update_uid`) VALUES (42, 13, '现场报名', 'on_site_sign_up', 1, '', 1, 0, NULL, NULL, NULL, NULL, NULL, '2021-08-18 14:19:07', 25418810, '2021-08-20 16:40:46', 25418810);
 
 INSERT INTO t_activity_market ( activity_id, market_id, STATUS, is_released, is_top )
 SELECT
@@ -44,4 +32,5 @@ DELETE FROM t_component WHERE id IN (14, 15);
 UPDATE t_template_component t SET t.component_id = 39 WHERE t.component_id = 14;
 UPDATE t_template_component t SET t.is_deleted = 1 WHERE t.component_id = 15;
 ALTER TABLE t_market ADD sign_up_activity_limit INT(11) DEFAULT 0 COMMENT '同时报名活动数限制';
+INSERT INTO `activity_engine`.`t_component`(`id`, `pid`, `name`, `code`, `is_required`, `introduction`, `is_system`, `is_multi`, `type`, `data_origin`, `origin_identify`, `field_flag`, `template_id`, `create_time`, `create_uid`, `update_time`, `update_uid`) VALUES (40, 0, '分区', 'partition', 0, NULL, 1, 1, NULL, NULL, NULL, NULL, NULL, '2021-08-20 15:20:44', NULL, '2021-08-20 15:21:41', NULL);
 

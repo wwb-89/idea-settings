@@ -66,8 +66,8 @@
         <div v-show="templateComponents && activity">
             <div class="info box" v-for="(tplComponents, tplIdx) in tplComponentPartitions">
                 <form action="" onsubmit="return false;">
-                    <div class="title" v-if="tplIdx == basicAppearIndex">基本信息</div>
                     <template v-for="(item, index) in tplComponents">
+                        <div class="title" v-if="item.code == 'partition'">{{item.name}}</div>
                         <div class="form-item" v-if="item.code == 'activity_name'">
                             <label class="label"><img src="/static/pc/assets/images/required.png" th:src="@{/pc/assets/images/required.png}" class="required-img" v-if="item.required">{{item.name}}</label>
                             <div class="input-box">
@@ -675,7 +675,7 @@
     <script src="/static/pc/assets/lib/set-iframe-height-parent.js" th:src="@{/pc/assets/lib/set-iframe-height-parent.js}"></script>
     <script src="/static/pc/assets/lib/set-iframe-height-child.js" th:src="@{/pc/assets/lib/set-iframe-height-child.js}"></script>
     <script th:inline="javascript">
-        activityVue = new Vue({
+        vm = new Vue({
             el: "#activity-vue",
             data: {
                 fid: [[${session._login_user_.fid}]],
@@ -684,8 +684,6 @@
                 activity: [[${activity}]],
                 templateComponents: [[${templateComponents}]],
                 tplComponentPartitions: [],
-                // 基本信息块第一次出现位置
-                basicAppearIndex: 0,
                 templateComponentMap: {},
                 needInitEditor: false,
                 isEmbedded: activityApp.isEmbedded(),
@@ -812,13 +810,14 @@
                         }
                     }
                 });
-                var tplComponents = [];
-                var n = 0, setBasicAppearIndex = false;
-                $($this.templateComponents).each(function() {
+                var partitionIndexs = [];
+                // 前一个是不是特殊分区（报名属于特殊分区）
+                var isPreSpecialPartition = false;
+                $($this.templateComponents).each(function(i) {
                     var _this = this;
                     $this.templateComponentMap[_this.id] = _this;
                     if (this.code == 'introduction') {
-                        $this.needInitEditor =true
+                        $this.needInitEditor = true;
                     }
                     if (_this.children && _this.children.length > 0) {
                         $(_this.children).each(function () {
@@ -831,24 +830,20 @@
                             $this.templateComponentMap[this.id] = this;
                         });
                     }
-                    var singlePartition = this.code == 'sign_up' || this.code == 'company_sign_up';
-                    if (!setBasicAppearIndex && !singlePartition) {
-                        $this.basicAppearIndex = n;
-                        setBasicAppearIndex = true;
+                    var isPartition = this.code == 'sign_up' || this.code == 'company_sign_up' || this.code == 'partition';
+                    if (isPartition) {
+                        partitionIndexs.push(i);
+                    }else if (isPreSpecialPartition) {
+                        partitionIndexs.push(i);
                     }
-                    if (singlePartition) {
-                        if (tplComponents.length > 0) {
-                            $this.tplComponentPartitions.push(tplComponents)
-                            tplComponents = [];
-                        }
-                        $this.tplComponentPartitions.push([$.extend({}, this)])
+                    if (this.code == 'sign_up' || this.code == 'company_sign_up') {
+                        isPreSpecialPartition = true;
                     } else {
-                        tplComponents.push($.extend({}, this));
-                        if (n == $this.templateComponents.length - 1) {
-                            $this.tplComponentPartitions.push(tplComponents)
-                        }
+                        isPreSpecialPartition = false;
                     }
-                    n++;
+                });
+                $(partitionIndexs).each(function (i) {
+                    $this.tplComponentPartitions.push($this.templateComponents.slice(i == 0 ? 0 : partitionIndexs[i], i == partitionIndexs.length - 1 ? $this.templateComponents.length : partitionIndexs[i + 1]));
                 });
                 if (activityApp.isEmpty($this.activity)) {
                     // 新增活动
@@ -2025,7 +2020,7 @@
          * 关闭表单配置页面
          */
         function closeFormConfigLayer(formId) {
-            activityVue.closeFormConfigLayer(formId);
+            vm.closeFormConfigLayer(formId);
         }
     </script>
 </div>
