@@ -33,4 +33,10 @@ UPDATE t_template_component t SET t.component_id = 39 WHERE t.component_id = 14;
 UPDATE t_template_component t SET t.is_deleted = 1 WHERE t.component_id = 15;
 ALTER TABLE t_market ADD sign_up_activity_limit INT(11) DEFAULT 0 COMMENT '同时报名活动数限制';
 INSERT INTO `activity_engine`.`t_component`(`id`, `pid`, `name`, `code`, `is_required`, `introduction`, `is_system`, `is_multi`, `type`, `data_origin`, `origin_identify`, `field_flag`, `template_id`, `create_time`, `create_uid`, `update_time`, `update_uid`) VALUES (40, 0, '分区', 'partition', 0, NULL, 1, 1, NULL, NULL, NULL, NULL, NULL, '2021-08-20 15:20:44', NULL, '2021-08-20 15:21:41', NULL);
-
+INSERT INTO `activity_engine`.`t_template_component` ( `pid`, `template_id`, `component_id`, `name`, `introduction`, `is_required`, `sequence`, `is_deleted` );
+SELECT 0, t.id, 40, '基本信息', '', 0, -1, 0 FROM t_template t WHERE t.id > 10000;
+INSERT INTO `activity_engine`.`t_template_component`(`id`, `pid`, `template_id`, `component_id`, `name`, `introduction`, `is_required`, `sequence`, `is_deleted`) VALUES (104, 0, 1, 40, '基本信息', '', 0, -1, 0);
+INSERT INTO `activity_engine`.`t_template_component`(`id`, `pid`, `template_id`, `component_id`, `name`, `introduction`, `is_required`, `sequence`, `is_deleted`) VALUES (105, 0, 2, 40, '基本信息', '', 0, -1, 0);
+INSERT INTO `activity_engine`.`t_template_component`(`id`, `pid`, `template_id`, `component_id`, `name`, `introduction`, `is_required`, `sequence`, `is_deleted`) VALUES (106, 0, 3, 40, '基本信息', '', 0, -1, 0);
+INSERT INTO `activity_engine`.`t_template_component`(`id`, `pid`, `template_id`, `component_id`, `name`, `introduction`, `is_required`, `sequence`, `is_deleted`) VALUES (107, 0, 4, 40, '基本信息', '', 0, -1, 0);
+INSERT INTO `activity_engine`.`t_template_component`(`id`, `pid`, `template_id`, `component_id`, `name`, `introduction`, `is_required`, `sequence`, `is_deleted`) VALUES (108, 0, 5, 40, '基本信息', '', 0, -1, 0);
