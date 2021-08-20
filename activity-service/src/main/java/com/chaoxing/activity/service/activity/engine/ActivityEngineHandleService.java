@@ -68,10 +68,10 @@ public class ActivityEngineHandleService {
                     .updateUid(uid)
                     .build();
             activityEngineDTO.setTemplate(newTemplate);
-            saveOperation(newTemplate, templateComponents, activityEngineDTO.getCustomComponentIds(), activityEngineDTO.getDelCustomComponentIds());
+            saveOperation(newTemplate, templateComponents, activityEngineDTO.getCustomComponentIds());
             return;
         }
-        updateOperation(template, templateComponents, activityEngineDTO.getDelTemplateComponentIds(), activityEngineDTO.getDelTemplateComponentIds());
+        updateOperation(template, templateComponents, activityEngineDTO.getDelTemplateComponentIds());
     }
 
     /**新增操作(新增模板、新增组件、新增模板组件关联关系)
@@ -83,19 +83,17 @@ public class ActivityEngineHandleService {
     * @return void
     */
     @Transactional(rollbackFor = Exception.class)
-    public void saveOperation(Template template, List<TemplateComponent> templateComponents, List<Integer> customComponentIds, List<Integer> delCustomComponentIds) {
+    public void saveOperation(Template template, List<TemplateComponent> templateComponents, List<Integer> customComponentIds) {
         // 保存模板
         templateMapper.insert(template);
         // 保存模板组件关联关系
         saveTemplateComponent(template.getId(), templateComponents);
         // 更新自定义组件关联templateId
         componentHandleService.relatedComponentWithTemplateId(template.getId(), customComponentIds);
-        // 删除指定自定义组件
-        componentHandleService.deleteCustomComponents(delCustomComponentIds);
     }
 
     @Transactional(rollbackFor = Exception.class)
-    public void updateOperation(Template template, List<TemplateComponent> templateComponents, List<Integer> delTemplateComponentIds, List<Integer> delCustomComponentIds) {
+    public void updateOperation(Template template, List<TemplateComponent> templateComponents, List<Integer> delTemplateComponentIds) {
         // 更新模板
         templateMapper.updateById(template);
         // 保存模板组件关联关系
@@ -107,8 +105,6 @@ public class ActivityEngineHandleService {
                     .in(TemplateComponent::getId, delTemplateComponentIds)
                     .set(TemplateComponent::getDeleted, Boolean.TRUE));
         }
-        // 删除指定自定义组件
-        componentHandleService.deleteCustomComponents(delCustomComponentIds);
     }
 
     /**

@@ -720,7 +720,6 @@
                     signUpConditionAdd: false,
                     customComponentIds: [],
                     delTemplateComponentIds: [],
-                    delCustomComponentIds: [],
                     scoreNum: 0,
                     radio1:'1',
                     activityType:'创新创业',
@@ -1100,14 +1099,6 @@
                             return it.virtualId == 0;
                         })[0];
                         var components = componentType.components;
-                        // 如果是自定义组件， 进行后台删除，并且移除组件列表
-                        if (item.type) {
-                            $this.delCustomComponentIds.push(item.componentId)
-                            componentType.components = $.grep(components, function (it) {
-                                return it.id != item.componentId;
-                            });
-                            return;
-                        }
                         $(components).each(function () {
                             if (this.id == item.componentId) {
                                 this.checked = false;
@@ -1593,7 +1584,6 @@
                             template: template,
                             customComponentIds: $this.customComponentIds,
                             templateComponents: templateComponents,
-                            delCustomComponentIds: $this.delCustomComponentIds,
                             delTemplateComponentIds: $this.delTemplateComponentIds
                         }
                     },
