@@ -897,7 +897,7 @@ public class ActivityHandleService {
 		activityScopeService.batchAdd(activityId, wfwAreaApiService.listByFid(createFid));
 		// 活动改变
 		activityChangeEventService.dataChange(activity, null, loginUser);
-		return activity;
+		return activityQueryService.getById(activityId);
 
 	}
 }

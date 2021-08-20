@@ -95,6 +95,7 @@ public class Market {
                 .name(originMarket.getName())
                 .iconCloudId(originMarket.getIconCloudId())
                 .iconUrl(originMarket.getIconUrl())
+                .signUpActivityLimit(originMarket.getSignUpActivityLimit())
                 .fid(fid)
                 .sequence(originMarket.getSequence())
                 .deleted(originMarket.getDeleted())
