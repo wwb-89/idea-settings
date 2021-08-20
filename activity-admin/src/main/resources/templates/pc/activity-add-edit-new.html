@@ -1478,10 +1478,6 @@
                         app.showMsg("请上传封面");
                         return false;
                     }
-                    if (activityApp.isEmpty($this.activity.activityClassifyId)) {
-                        app.showMsg("分类不能为空");
-                        return false;
-                    }
                     // 发布范围  todo 暂时屏蔽
                     // if ($this.isShowActivityParticipateScope() && (activityApp.isEmpty($this.participatedOrgs) || $this.participatedOrgs.length < 1)) {
                     //     app.showMsg("请选择发布范围");

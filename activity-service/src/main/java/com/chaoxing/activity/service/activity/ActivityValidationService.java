@@ -63,10 +63,6 @@ public class ActivityValidationService {
 		if (StringUtils.isEmpty(coverCloudId)) {
 			throw new BusinessException("活动封面不能为空");
 		}
-		Integer activityClassifyId = activity.getActivityClassifyId();
-		if (activityClassifyId == null) {
-			throw new BusinessException("活动分类不能为空");
-		}
 		// 定时发布活动
 		Boolean timingRelease = activity.getTimingRelease();
 		timingRelease = Optional.ofNullable(timingRelease).orElse(false);
