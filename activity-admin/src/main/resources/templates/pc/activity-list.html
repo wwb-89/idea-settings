@@ -171,8 +171,7 @@
                         >
                         </el-table-column>
                     </template>
-                    <el-table-column label="操作" fixed="right"
-                                     min-width="180">
+                    <el-table-column label="操作" fixed="right" min-width="180">
                         <template slot-scope="scope">
                             <div class="more-three-link">
                                 <el-button type="text" v-if="index < 3" v-for="(operation, index) of scope.row.operations" :key="'operation-' + index" @click="operateProxy(scope.row, operation.value)">{{operation.name}}</el-button>
@@ -294,7 +293,6 @@
                 var operateH = $('.operate-box').height();
                 $this.tbodyHeight = $this.bodyHeight - (headH + operateH + 48 + 16 + 32);
 
-                $this.bindEvents();
                 $this.loadData();
                 $this.reSortSettingData();
                 // 监听活动的创建，当创建或者编辑活动后重新加载数据
@@ -303,18 +301,6 @@
                 });
             },
             methods: {
-                bindEvents: function () {
-                    $(document).on("click", ".status", function () {
-                        $('.filters').toggle();
-                        $('.el-down').toggleClass('rotate')
-                    });
-                    $(document).on("mouseover", ".manage-more-btn", function () {
-                        $(this).children('.more').show();
-                    });
-                    $(document).on("mouseout", ".manage-more-btn", function () {
-                        $(this).children('.more').hide();
-                    });
-                },
                 // 处理操作顺序
                 handleOperationSequence: function (activities) {
                     var $this = this;
@@ -385,7 +371,7 @@
                                 } else {
                                     activity.operations.push($this.operations.setTop);
                                 }
-                                activity.operations.push($this.operations.delete);
+                                // activity.operations.push($this.operations.delete);
                             }
                         });
                     }

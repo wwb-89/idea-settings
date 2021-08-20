@@ -8,11 +8,11 @@
         <result column="template_type" jdbcType="VARCHAR" property="templateType" />
     </resultMap>
     <sql id="Base_Column_List">
-        t.id, t.template_component_id, t.type, t.tempalte_type
+        t.id, t.template_component_id, t.type, t.template_type
     </sql>
 
     <insert id="batchAdd">
-        INSERT INTO t_sign_up_fill_info_type ( template_component_id, `type`, tempalte_type )
+        INSERT INTO t_sign_up_fill_info_type ( template_component_id, `type`, template_type )
         VALUES
             <foreach collection="signUpFillInfoTypes" index="key" item="value" open="" close="" separator=",">
                 ( #{value.templateComponentId}, #{value.type}, #{value.templateType} )
