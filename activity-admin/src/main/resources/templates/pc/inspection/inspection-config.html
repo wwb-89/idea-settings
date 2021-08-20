@@ -32,7 +32,7 @@
 							<el-radio label="manual">手动评审</el-radio>
 							<el-radio label="places">按名额</el-radio>
 							<el-radio label="scale">按比例</el-radio>
-							<el-radio label="score">达到积分</el-radio>
+							<el-radio label="score">按得分</el-radio>
 						</el-radio-group>
 						<p class="decTips" v-show="inspectionConfig.passDecideWay == 'manual'">管理员在成绩管理中手动评审合格状态</p>
 						<div class="radio-box" v-show="inspectionConfig.passDecideWay == 'places'">
@@ -48,7 +48,7 @@
 							<p class="decTips">如果得分相同，则优先将先达到该分数者判定为合格</p>
 						</div>
 						<div class="radio-box" v-show="inspectionConfig.passDecideWay == 'score'">
-							<span class="lineTips">活动积分达到</span>
+							<span class="lineTips">活动得分达到</span>
 							<el-input type="number" step="1" maxlength="10" class="short-input" v-model="score"></el-input>
 							<span class="lineTips">分，判定为合格</span>
 						</div>
@@ -57,7 +57,7 @@
 			</form>
 		</div>
 		<div class="white-block">
-			<p class="item-name">积分规则</p>
+			<p class="item-name">得分规则</p>
 			<form action="" class="el-form" onsubmit="return false;">
 				<div class="form-item" v-for="(userActionType, index) of userActionTypes" :key="'user-action-type-' + index">
 					<label class="label">{{userActionType.name}}</label>
@@ -218,7 +218,7 @@
 						$(userActions).each(function () {
 							if (userActionType.enable && activityApp.isEmpty(this.score)) {
 								detailValidated = false;
-								app.showMsg("请完善" + this.name + "积分规则");
+								app.showMsg("请完善" + this.name + "得分规则");
 								return false;
 							}
 						});
