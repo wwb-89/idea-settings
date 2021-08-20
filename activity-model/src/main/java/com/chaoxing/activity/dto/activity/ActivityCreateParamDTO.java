@@ -98,7 +98,7 @@ public class ActivityCreateParamDTO {
 
 	private Integer webTemplateId;
 
-	// 预览显示使用
+	/** 预览显示使用 */
 	private String activityClassifyName;
 
 

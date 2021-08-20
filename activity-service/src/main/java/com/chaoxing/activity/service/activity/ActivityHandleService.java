@@ -16,7 +16,6 @@ import com.chaoxing.activity.dto.manager.sign.create.SignUpCreateParamDTO;
 import com.chaoxing.activity.dto.manager.wfw.WfwAreaDTO;
 import com.chaoxing.activity.mapper.ActivityDetailMapper;
 import com.chaoxing.activity.mapper.ActivityMapper;
-import com.chaoxing.activity.mapper.ActivityMarketMapper;
 import com.chaoxing.activity.model.*;
 import com.chaoxing.activity.service.WebTemplateService;
 import com.chaoxing.activity.service.activity.engine.ActivityComponentValueService;
@@ -826,7 +825,7 @@ public class ActivityHandleService {
 	* @param marketId
 	* @return void
 	*/
-	@Transactional
+	@Transactional(rollbackFor = Exception.class)
 	public void setActivityTop(Integer activityId, Integer marketId) {
 		if (activityId == null || marketId == null) {
 			return;
