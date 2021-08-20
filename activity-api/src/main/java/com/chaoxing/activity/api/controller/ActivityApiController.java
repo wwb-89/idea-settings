@@ -450,6 +450,21 @@ public class ActivityApiController {
 		Activity activity = activityHandleService.newSharedActivity(activityCreateDTO, loginUserDTO);
 		return RestRespDTO.success(activity);
 	}
+
+	/**更新部分活动信息
+	* @Description 
+	* @author huxiaolong
+	* @Date 2021-08-20 17:46:27
+	* @param activityCreateDTO
+	* @return com.chaoxing.activity.dto.RestRespDTO
+	*/
+	@RequestMapping("{activityId}/partial-info/update")
+	public RestRespDTO updatePartialActivityInfo(@RequestBody ActivityCreateDTO activityCreateDTO) {
+		PassportUserDTO passportUserDTO = passportApiService.getByUid(activityCreateDTO.getUid());
+		LoginUserDTO loginUserDTO = LoginUserDTO.buildDefault(activityCreateDTO.getUid(), passportUserDTO.getRealName(), activityCreateDTO.getFid(), "");
+		activityHandleService.updatePartialActivityInfo(activityCreateDTO, loginUserDTO);
+		return RestRespDTO.success();
+	}
 	
 	/**
 	* @Description 
@@ -471,9 +486,9 @@ public class ActivityApiController {
 	* @author huxiaolong
 	* @Date 2021-08-12 18:04:34
 	* @param activityId
-* @param fid
-* @param uid
-* @param released
+	* @param fid
+	* @param uid
+	* @param released
 	* @return com.chaoxing.activity.dto.RestRespDTO
 	*/
 	@RequestMapping("{activityId}/update/release-status")
@@ -481,6 +496,8 @@ public class ActivityApiController {
 		activityHandleService.updateActivityReleaseStatus(fid, activityId, uid, released);
 		return RestRespDTO.success();
 	}
+
+
 
 
 }

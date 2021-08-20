@@ -720,7 +720,7 @@
                     signUpConditionAdd: false,
                     customComponentIds: [],
                     delTemplateComponentIds: [],
-
+                    delCustomComponentIds: [],
                     scoreNum: 0,
                     radio1:'1',
                     activityType:'创新创业',
@@ -1070,50 +1070,6 @@
                         });
                         app.showMsg("添加成功");
                     },
-                    // 移除组件 item - component
-                    removeComponentAssociate: function (index, item, e) {
-                        var $this = this;
-                        var componentType = $this.componentTypeList[$this.activeCpTypeIndex];
-                        var components = componentType.components;
-                        // 每一个类有一个对应的virtualId，该 virtualId 为类下组件关联关系 templateComponent 的pid
-                        var currTypeVirtualId = componentType.virtualId;
-
-                        var target = e.target;
-                        // 样式改变
-                        $(target).hide();
-                        $this.$set(components[index], 'checked', false)
-                        var waitRemoveItems = $.grep($this.templateComponents, function (it) {
-                            return it.pid == currTypeVirtualId && it.componentId == item.id;
-                        });
-                        var waitRemoveTplCpIds = [];
-                        $(waitRemoveItems).each(function () {
-                            waitRemoveTplCpIds.push(this.id);
-                            if ( typeof this.id == 'number') {
-                                $this.delTemplateComponentIds.push(this.id);
-                            }
-                        });
-                        $this.templateComponents = $.grep($this.templateComponents, function (it) {
-                            return waitRemoveTplCpIds.indexOf(it.id) == -1;
-                        });
-                        // 基本信息的移除
-                        if (item.pid == 0) {
-                            $this.showTemplateComponents = $.grep($this.showTemplateComponents, function (it) {
-                                return it.componentId != item.id;
-                            });
-                        } else { // 报名组件信息的移除
-                            $($this.showTemplateComponents).each(function () {
-                                var _this = this;
-                                if (_this.id == currTypeVirtualId) {
-                                    if (_this.children) {
-                                        _this.children = $.grep(_this.children, function (it, index) {
-                                            return it.componentId != item.id;
-                                        });
-                                    }
-                                    return false;
-                                }
-                            });
-                        }
-                    },
                     // 配置页面基础信息关联移除操作 --> 主要针对 pid = 0 item : templateComponent
                     removeComponentAssociate1: function (index, item) {
                         var $this = this;
@@ -1144,6 +1100,14 @@
                             return it.virtualId == 0;
                         })[0];
                         var components = componentType.components;
+                        // 如果是自定义组件， 进行后台删除，并且移除组件列表
+                        if (item.type) {
+                            $this.delCustomComponentIds.push(item.componentId)
+                            componentType.components = $.grep(components, function (it) {
+                                return it.id != item.componentId;
+                            });
+                            return;
+                        }
                         $(components).each(function () {
                             if (this.id == item.componentId) {
                                 this.checked = false;
@@ -1629,6 +1593,7 @@
                             template: template,
                             customComponentIds: $this.customComponentIds,
                             templateComponents: templateComponents,
+                            delCustomComponentIds: $this.delCustomComponentIds,
                             delTemplateComponentIds: $this.delTemplateComponentIds
                         }
                     },

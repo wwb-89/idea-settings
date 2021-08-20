@@ -33,6 +33,7 @@ import com.chaoxing.activity.service.manager.wfw.WfwAreaApiService;
 import com.chaoxing.activity.service.queue.activity.ActivityInspectionResultDecideQueueService;
 import com.chaoxing.activity.service.queue.activity.ActivityWebsiteIdSyncQueueService;
 import com.chaoxing.activity.service.queue.blacklist.BlacklistAutoAddQueueService;
+import com.chaoxing.activity.util.DateUtils;
 import com.chaoxing.activity.util.DistributedLock;
 import com.chaoxing.activity.util.constant.ActivityMhUrlConstant;
 import com.chaoxing.activity.util.constant.ActivityModuleConstant;
@@ -51,6 +52,8 @@ import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
@@ -849,6 +852,14 @@ public class ActivityHandleService {
 		activityMarketService.updateActivityTop(activityId, marketId, Boolean.FALSE);
 	}
 
+	/**todo 待调整
+	* @Description
+	* @author huxiaolong
+	* @Date 2021-08-20 19:53:36
+	* @param activityCreateDTO
+	* @param loginUser
+	* @return com.chaoxing.activity.model.Activity
+	*/
 	@Transactional(rollbackFor = Exception.class)
 	public Activity newSharedActivity(ActivityCreateDTO activityCreateDTO, LoginUserDTO loginUser) {
 		Integer createFid = activityCreateDTO.getFid();
@@ -897,6 +908,47 @@ public class ActivityHandleService {
 		// 活动改变
 		activityChangeEventService.dataChange(activity, null, loginUser);
 		return activityQueryService.getById(activityId);
+
+	}
+
+	/**todo 待调整
+	* @Description 
+	* @author huxiaolong
+	* @Date 2021-08-20 18:40:04
+	* @param activityCreateDTO
+	* @return void
+	*/
+	public void updatePartialActivityInfo(ActivityCreateDTO activityCreateDTO, LoginUserDTO loginUser) {
+		ActivityCreateParamDTO activityCreateParam = activityCreateDTO.getActivityInfo();
+		Integer activityId = activityCreateParam.getId();
+		String activityEditLockKey = getActivityEditLockKey(activityId);
+		distributedLock.lock(activityEditLockKey, () -> {
+			Activity existActivity = activityValidationService.editAble(activityId, loginUser);
+			LocalDateTime startTime = Optional.ofNullable(activityCreateParam.getStartTimeStamp()).map(DateUtils::timestamp2Date).orElse(null);
+			LocalDate startDate = Optional.ofNullable(startTime).map(LocalDateTime::toLocalDate).orElse(null);
+			LocalDateTime endTime = Optional.ofNullable(activityCreateParam.getEndTimeStamp()).map(DateUtils::timestamp2Date).orElse(null);
+			LocalDate endDate = Optional.ofNullable(endTime).map(LocalDateTime::toLocalDate).orElse(null);
+			activityMapper.update(null, new UpdateWrapper<Activity>()
+					.lambda()
+					.eq(Activity::getId, activityId)
+					.set(startTime != null, Activity::getStartTime, startTime)
+					.set(startDate != null, Activity::getStartDate, startDate)
+					.set(endTime != null, Activity::getEndTime, endTime)
+					.set(endDate != null, Activity::getEndDate, endDate)
+					.set(activityCreateParam.getAddress() != null, Activity::getAddress, activityCreateParam.getAddress())
+					.set(activityCreateParam.getAddress() != null, Activity::getDetailAddress, activityCreateParam.getAddress())
+					.set(activityCreateParam.getOrganisers() != null, Activity::getDetailAddress, activityCreateParam.getOrganisers()));
+
+			Activity newActivity = activityQueryService.getById(activityId);
+			if (startTime != null || endTime != null) {
+				// 活动改变
+				activityChangeEventService.dataChange(newActivity, existActivity, loginUser);
+			}
+			return null;
+		}, e -> {
+			log.error("更新活动:{} error:{}", JSON.toJSONString(activityCreateParam), e.getMessage());
+			throw new BusinessException("更新活动失败");
+		});
 
 	}
 }

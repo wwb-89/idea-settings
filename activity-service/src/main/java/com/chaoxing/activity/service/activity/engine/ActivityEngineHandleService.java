@@ -5,15 +5,19 @@ import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.chaoxing.activity.dto.engine.ActivityEngineDTO;
 import com.chaoxing.activity.mapper.*;
 import com.chaoxing.activity.model.*;
+import com.chaoxing.activity.service.activity.component.ComponentHandleService;
 import com.chaoxing.activity.service.manager.WfwFormApiService;
+import io.swagger.models.auth.In;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.compress.utils.Lists;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.annotation.Resource;
 import java.util.Collection;
 import java.util.List;
 import java.util.Objects;
@@ -33,10 +37,8 @@ public class ActivityEngineHandleService {
     private TemplateMapper templateMapper;
     @Autowired
     private TemplateComponentMapper templateComponentMapper;
-    @Autowired
-    private ComponentMapper componentMapper;
-    @Autowired
-    private ComponentFieldMapper componentFieldMapper;
+    @Resource
+    private ComponentHandleService componentHandleService;
     @Autowired
     private SignUpConditionMapper signUpConditionMapper;
     @Autowired
@@ -57,7 +59,7 @@ public class ActivityEngineHandleService {
         if (template.getSystem() && template.getFid() == null) {
             // todo 临时测试，默认新建一个template
             Template newTemplate = Template.builder()
-                    .name("自建测试模板")
+                    .name("通用组件模板")
                     .fid(fid)
                     .marketId(marketId)
                     .originTemplateId(template.getOriginTemplateId())
@@ -66,10 +68,10 @@ public class ActivityEngineHandleService {
                     .updateUid(uid)
                     .build();
             activityEngineDTO.setTemplate(newTemplate);
-            saveOperation(newTemplate, templateComponents, activityEngineDTO.getCustomComponentIds());
+            saveOperation(newTemplate, templateComponents, activityEngineDTO.getCustomComponentIds(), activityEngineDTO.getDelCustomComponentIds());
             return;
         }
-        updateOperation(template, templateComponents, activityEngineDTO.getDelTemplateComponentIds());
+        updateOperation(template, templateComponents, activityEngineDTO.getDelTemplateComponentIds(), activityEngineDTO.getDelTemplateComponentIds());
     }
 
     /**新增操作(新增模板、新增组件、新增模板组件关联关系)
@@ -81,33 +83,32 @@ public class ActivityEngineHandleService {
     * @return void
     */
     @Transactional(rollbackFor = Exception.class)
-    public void saveOperation(Template template, List<TemplateComponent> templateComponents, List<Integer> customComponentIds) {
+    public void saveOperation(Template template, List<TemplateComponent> templateComponents, List<Integer> customComponentIds, List<Integer> delCustomComponentIds) {
         // 保存模板
         templateMapper.insert(template);
         // 保存模板组件关联关系
         saveTemplateComponent(template.getId(), templateComponents);
         // 更新自定义组件关联templateId
-        if (CollectionUtils.isNotEmpty(customComponentIds)) {
-            componentMapper.update(null, new UpdateWrapper<Component>()
-                    .lambda()
-                    .in(Component::getId, customComponentIds)
-                    .set(Component::getTemplateId, template.getId()));
-        }
+        componentHandleService.relatedComponentWithTemplateId(template.getId(), customComponentIds);
+        // 删除指定自定义组件
+        componentHandleService.deleteCustomComponents(delCustomComponentIds);
     }
 
     @Transactional(rollbackFor = Exception.class)
-    public void updateOperation(Template template, List<TemplateComponent> templateComponents, List<Integer> delTemplateComponentIds) {
+    public void updateOperation(Template template, List<TemplateComponent> templateComponents, List<Integer> delTemplateComponentIds, List<Integer> delCustomComponentIds) {
         // 更新模板
         templateMapper.updateById(template);
         // 保存模板组件关联关系
         updateTemplateComponent(template.getId(), templateComponents);
-
+        // 取消组件关联关系
         if (CollectionUtils.isNotEmpty(delTemplateComponentIds)) {
             templateComponentMapper.update(null, new UpdateWrapper<TemplateComponent>()
                     .lambda()
                     .in(TemplateComponent::getId, delTemplateComponentIds)
                     .set(TemplateComponent::getDeleted, Boolean.TRUE));
         }
+        // 删除指定自定义组件
+        componentHandleService.deleteCustomComponents(delCustomComponentIds);
     }
 
     /**
@@ -136,22 +137,7 @@ public class ActivityEngineHandleService {
     */
     @Transactional(rollbackFor = Exception.class)
     public Component updateCustomComponent(Integer uid, Integer fid, Component component) {
-        component.setUpdateUid(uid);
-        componentMapper.updateById(component);
-        if (Objects.equals(component.getDataOrigin(), Component.DataOriginEnum.CUSTOM.getValue())
-                && CollectionUtils.isNotEmpty(component.getFieldList())) {
-            componentFieldMapper.delete(new QueryWrapper<ComponentField>().lambda().eq(ComponentField::getComponentId, component.getId()));
-
-            component.getFieldList().forEach(v -> {
-                v.setCreateUid(uid);
-                v.setUpdateUid(uid);
-                v.setComponentId(component.getId());
-            });
-            componentFieldMapper.batchAdd(component.getFieldList());
-        } else if (Objects.equals(component.getDataOrigin(), Component.DataOriginEnum.FORM.getValue())) {
-            component.setFormFieldValues(wfwFormApiService.listFormFieldValue(fid, Integer.parseInt(component.getOriginIdentify()), component.getFieldFlag()));
-        }
-        return component;
+        return componentHandleService.updateCustomComponent(uid, fid, component);
     }
 
     /**新增自定义组件
@@ -164,24 +150,7 @@ public class ActivityEngineHandleService {
     */
     @Transactional(rollbackFor = Exception.class)
     public Component saveCustomComponent(Integer uid, Integer fid, Component component) {
-        component.setCreateUid(uid);
-        component.setUpdateUid(uid);
-        componentMapper.insert(component);
-        List<ComponentField> fieldList = component.getFieldList();
-        component = componentMapper.selectById(component.getId());
-        if (Objects.equals(component.getDataOrigin(), Component.DataOriginEnum.CUSTOM.getValue())
-                && CollectionUtils.isNotEmpty(fieldList)) {
-            for (ComponentField field : fieldList) {
-                field.setCreateUid(uid);
-                field.setUpdateUid(uid);
-                field.setComponentId(component.getId());
-            }
-            componentFieldMapper.batchAdd(fieldList);
-            component.setFieldList(fieldList);
-        } else if (Objects.equals(component.getDataOrigin(), Component.DataOriginEnum.FORM.getValue())) {
-            component.setFormFieldValues(wfwFormApiService.listFormFieldValue(fid, Integer.parseInt(component.getOriginIdentify()), component.getFieldFlag()));
-        }
-        return component;
+        return componentHandleService.saveCustomComponent(uid, fid, component);
     }
 
     /**新增模板组件关联

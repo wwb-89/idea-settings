@@ -975,7 +975,12 @@
                     });
                     // 报名
                     $($this.sign.signUps).each(function (i) {
-                        if (!activityApp.isEmpty(this.id)) {
+                        $this.$set($this.sign.signUps[i], "endNotAllowCancel", !this.endAllowCancel);
+                        if (!this.endAllowCancel && !this.notAllowCancelType) {
+                            $this.$set($this.sign.signUps[i], "notAllowCancelType", $this.notAllowCancelTypes[0].value);
+                            $this.$set($this.sign.signUps[i], "notAllowCancelDays", 0);
+                        }
+                        if (!activityApp.isEmpty(this.id) && signUpTplComponentIds.indexOf(this.originId) != -1) {
                             if (this.wfwParticipateScopes) {
                                 $(this.wfwParticipateScopes).each(function () {
                                     if (this.leaf && $this.virtualNodeMap[this.externalId]) {
@@ -994,14 +999,9 @@
                                     }
                                 });
                             }
+                            var tplComponentId = $this.sign.signUps[i].originId;
+                            $this.$set($this.signUpMap, tplComponentId, $this.sign.signUps[i]);
                         }
-                        $this.$set($this.sign.signUps[i], "endNotAllowCancel", !this.endAllowCancel);
-                        if (!this.endAllowCancel && !this.notAllowCancelType) {
-                            $this.$set($this.sign.signUps[i], "notAllowCancelType", $this.notAllowCancelTypes[0].value);
-                            $this.$set($this.sign.signUps[i], "notAllowCancelDays", 0);
-                        }
-                        var tplComponentId = $this.sign.signUps[i].originId;
-                        $this.$set($this.signUpMap, tplComponentId, $this.sign.signUps[i]);
                     });
 
                     $(signUpTplComponentIds).each(function (i) {
@@ -1015,7 +1015,9 @@
                     });
                     // 签到、签退
                     $($this.sign.signIns).each(function() {
-                        $this.$set($this.signInMap, this.originId, $.extend({}, this));
+                        if (signInTplComponentIds.indexOf(this.originId) != -1) {
+                            $this.$set($this.signInMap, this.originId, $.extend({}, this));
+                        }
                     });
                     $(signInTplComponentIds).each(function (i) {
                         var originId = signInTplComponentIds[i];
