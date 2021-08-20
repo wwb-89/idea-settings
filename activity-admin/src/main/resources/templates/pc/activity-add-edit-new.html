@@ -420,7 +420,7 @@
                                             </div>
                                         </div>
                                     </div>
-                                    <div class="form-item" v-else-if="it.code == 'sign_up_review'">
+                                    <div class="form-item" v-else-if="it.code == 'sign_up_review'" v-show="signUpMap[item.id].formType == 'form'">
                                         <label class="label"><img src="/static/pc/assets/images/required.png" th:src="@{/pc/assets/images/required.png}" class="required-img" v-if="it.required">{{it.name}}</label>
                                         <div class="input-box">
                                             <el-switch v-model="signUpMap[item.id].openAudit"></el-switch>
