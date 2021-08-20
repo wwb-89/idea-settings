@@ -755,7 +755,7 @@ public class ActivityQueryService {
 		return activityMapper.selectCount(new LambdaQueryWrapper<Activity>()
 				.eq(Activity::getMarketId, marketId)
 				.in(Activity::getSignId, signIds)
-				.eq(Activity::getStatus, Activity.StatusEnum.ONGOING.getValue())
+				.ne(Activity::getStatus, Activity.StatusEnum.ENDED.getValue())
 		);
 	}
 
