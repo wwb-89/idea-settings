@@ -873,6 +873,7 @@ public class ActivityHandleService {
 		// 处理活动的状态, 新增的活动都是待发布的
 		activity.beforeCreate(loginUser.getUid(), loginUser.getRealName(), createFid, loginUser.getOrgName());
 		activity.setMarketId(createMarketId);
+		activity.setActivityFlag("propaganda_meeting");
 		activityMapper.insert(activity);
 		Integer activityId = activity.getId();
 		// 保存门户模板
