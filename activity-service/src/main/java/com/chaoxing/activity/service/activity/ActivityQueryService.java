@@ -793,7 +793,7 @@ public class ActivityQueryService {
 		}
 		// 查询模版关联的组件
 		List<TemplateComponent> templateComponents = templateQueryService.listTemplateComponentByTemplateId(templateId);
-		Map<Integer, String> componentIdNameRelation = templateComponents.stream().collect(Collectors.toMap(TemplateComponent::getComponentId, TemplateComponent::getName));
+		Map<Integer, String> componentIdNameRelation = templateComponents.stream().collect(Collectors.toMap(TemplateComponent::getComponentId, TemplateComponent::getName, (v1, v2) -> v2));
 		List<Integer> componentIds = Optional.ofNullable(templateComponents).orElse(Lists.newArrayList()).stream().map(TemplateComponent::getComponentId).collect(Collectors.toList());
 		Map<Integer, String> componentIdCodeRelation;
 		if (CollectionUtils.isNotEmpty(componentIds)) {
