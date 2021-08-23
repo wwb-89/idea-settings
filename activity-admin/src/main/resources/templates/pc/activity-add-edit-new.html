@@ -208,6 +208,7 @@
                                 <span class="tips" v-if="item.introduction">{{item.introduction}}</span>
                             </div>
                         </div>
+                        <!--发布范围-->
                         <div class="form-item last marginTop16" v-else-if="item.code == 'activity_release_scope'">
                             <label class="label"><img src="/static/pc/assets/images/required.png" th:src="@{/pc/assets/images/required.png}" class="required-img" v-if="item.required">{{item.name}}</label>
                             <div class="input-box wrap">
