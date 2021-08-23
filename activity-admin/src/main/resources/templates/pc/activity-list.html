@@ -371,7 +371,12 @@
                                 } else {
                                     activity.operations.push($this.operations.setTop);
                                 }
-                                // activity.operations.push($this.operations.delete);
+                                var existDelete = $.grep(activity.operations, function (it) {
+                                    return it.value == "delete";
+                                });
+                                if (!existDelete) {
+                                    activity.operations.push($this.operations.delete);
+                                }
                             }
                         });
                     }
