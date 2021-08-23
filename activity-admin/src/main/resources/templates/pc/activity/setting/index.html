@@ -43,9 +43,9 @@
                 return {
                     url: "",
                     tabs:[
-                        {name:'管理员设置', url: ctx + "/activity/[[${activityId}]]/manager", active: true},
+                        {name:'基本信息', url: ctx + "/activity/[[${activityId}]]/setting/basic-info/view", active: true},
                         {name:'报名设置', url: ctx + "/activity/[[${activityId}]]/setting/sign-up", active: false},
-                        {name:'基本信息', url: ctx + "/activity/[[${activityId}]]/setting/basic-info/view", active: false},
+                        {name:'管理员设置', url: ctx + "/activity/[[${activityId}]]/manager", active: false},
                         {name:'模块设置', url: ctx + "/activity/[[${activityId}]]/setting/menu", active: false},
                     ]
                 }
