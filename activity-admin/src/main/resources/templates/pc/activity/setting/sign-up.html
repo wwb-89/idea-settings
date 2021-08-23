@@ -52,7 +52,7 @@
                     </div>
                 </div>
             </div>
-            <template v-for="(it, idx) in item.children">
+            <template v-if="signUpMap[item.id].enable" v-for="(it, idx) in item.children">
                 <div class="form-item" v-if="it.code == 'sign_up_time_scope'">
                     <label class="label cover"><img src="/static/pc/assets/images/required.png" th:src="@{/pc/assets/images/required.png}" class="required-img" v-if="it.required">{{it.name}}</label>
                     <div class="input-box">
@@ -164,25 +164,33 @@
                     <div class="form-item">
                         <label class="label"><img src="/static/pc/assets/images/required.png" th:src="@{/pc/assets/images/required.png}" class="required-img" v-if="it.required">{{it.name}}</label>
                         <div class="input-box">
-                            <el-switch v-model="signUpMap[item.id].endNotAllowCancel" @change="endNotAllowCancelChange(item.id)"></el-switch>
-                            <span class="tips" v-if="it.introduction">{{it.introduction}}</span>
+                            <div class="set-box">
+                                <el-switch v-model="signUpMap[item.id].endNotAllowCancel" @change="endNotAllowCancelChange(item.id)"></el-switch>
+                                <span class="tips" v-if="it.introduction">{{it.introduction}}</span>
+                            </div>
                         </div>
                     </div>
                     <div class="form-item" v-show="signUpMap[item.id].endNotAllowCancel">
                         <label class="label"></label>
                         <div class="input-box" >
-                            <el-radio-group v-model="signUpMap[item.id].notAllowCancelType">
-                                <el-radio v-for="(item, index) of notAllowCancelTypes" :key="'not-allow-cancel-type' + index" :label="item.value">{{item.label}}</el-radio>
-                            </el-radio-group>
-                            <input type="number" min="0" step="1" v-model="signUpMap[item.id].notAllowCancelDays" style="margin-left: 8px; width: 120px" class="score-input" @blur="cancelSignUpDaysValidate(item.id)">天
+                            <div class="set-box">
+                                <el-radio-group v-model="signUpMap[item.id].notAllowCancelType">
+                                    <el-radio v-for="(item, index) of notAllowCancelTypes" :key="'not-allow-cancel-type' + index" :label="item.value">{{item.label}}</el-radio>
+                                </el-radio-group>
+                                <template v-if="signUpMap[item.id].notAllowCancelType == 'before_activity_start'">
+                                    <input type="number" min="0" step="1" v-model="signUpMap[item.id].notAllowCancelDays" style="margin-left: 8px; width: 120px; padding-left: 10px" class="score-input" @blur="cancelSignUpDaysValidate(item.id)">天
+                                </template>
+                            </div>
                         </div>
                     </div>
                 </template>
                 <div class="form-item" v-else-if="it.code == 'on_site_sign_up'">
                     <label class="label"><img src="/static/pc/assets/images/required.png" th:src="@{/pc/assets/images/required.png}" class="required-img" v-if="it.required">{{it.name}}</label>
                     <div class="input-box">
-                        <el-switch v-model="signUpMap[item.id].onSiteSignUp"></el-switch>
-                        <span class="tips" v-if="it.introduction">{{it.introduction}}</span>
+                        <div class="set-box">
+                            <el-switch v-model="signUpMap[item.id].onSiteSignUp"></el-switch>
+                            <span class="tips" v-if="it.introduction">{{it.introduction}}</span>
+                        </div>
                     </div>
                 </div>
                 <div class="form-item" v-else-if="it.code == 'sign_up_condition'">
