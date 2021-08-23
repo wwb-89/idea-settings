@@ -779,7 +779,8 @@ public class ActivityQueryService {
 	 * @return java.util.Map<java.lang.String,java.lang.String>
 	*/
 	public Map<String, String> getFieldCodeNameRelation(Activity activity) {
-		Map<String, String> fieldCodeNameRelation = Maps.newHashMap();
+		// 系统组件code与名称的关联
+		Map<String, String> fieldCodeNameRelation = componentQueryService.getSystemComponentCodeNameRelation();
 		if (activity == null) {
 			return fieldCodeNameRelation;
 		}
@@ -794,6 +795,7 @@ public class ActivityQueryService {
 		// 查询模版关联的组件
 		List<TemplateComponent> templateComponents = templateQueryService.listTemplateComponentByTemplateId(templateId);
 		Map<Integer, String> componentIdNameRelation = templateComponents.stream().collect(Collectors.toMap(TemplateComponent::getComponentId, TemplateComponent::getName, (v1, v2) -> v2));
+		// 没有关联的组件使用系统默认组件的名称来填充
 		List<Integer> componentIds = Optional.ofNullable(templateComponents).orElse(Lists.newArrayList()).stream().map(TemplateComponent::getComponentId).collect(Collectors.toList());
 		Map<Integer, String> componentIdCodeRelation;
 		if (CollectionUtils.isNotEmpty(componentIds)) {
