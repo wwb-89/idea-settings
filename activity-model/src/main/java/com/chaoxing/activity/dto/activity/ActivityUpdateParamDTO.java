@@ -59,7 +59,7 @@ public class ActivityUpdateParamDTO {
 	/** 学分 */
 	private BigDecimal credit;
 	/** 参与时长上限（小时） */
-	private Integer timeLengthUpperLimit;
+	private BigDecimal timeLengthUpperLimit;
 	/** 签到报名id */
 	private Integer signId;
 	/** 网页模板id */

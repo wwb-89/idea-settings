@@ -800,7 +800,7 @@ public class ActivityQueryService {
 		Map<Integer, String> componentIdCodeRelation;
 		if (CollectionUtils.isNotEmpty(componentIds)) {
 			List<Component> components = componentQueryService.listByIds(componentIds);
-			componentIdCodeRelation = components.stream().collect(Collectors.toMap(Component::getId, Component::getCode));
+			componentIdCodeRelation = components.stream().collect(Collectors.toMap(Component::getId, v -> StringUtils.isBlank(v.getCode()) ? "" : v.getCode()));
 		} else {
 			componentIdCodeRelation = Maps.newHashMap();
 		}

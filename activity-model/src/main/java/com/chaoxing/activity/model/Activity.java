@@ -69,7 +69,7 @@ public class Activity {
     /** 学分; column: credit*/
     private BigDecimal credit;
     /** 参与时长上限（小时）; column: time_length_upper_limit*/
-    private Integer timeLengthUpperLimit;
+    private BigDecimal timeLengthUpperLimit;
     /** 签到报名id; column: sign_id*/
     private Integer signId;
     /** 网页模板id; column: web_template_id*/

@@ -60,7 +60,7 @@ public class ActivityCreateParamDTO {
 	/** 学分 */
 	private BigDecimal credit;
 	/** 参与时长上限（小时） */
-	private Integer timeLengthUpperLimit;
+	private BigDecimal timeLengthUpperLimit;
 	/** 是否定时发布 */
 	private Boolean timingRelease;
 	/** 定时发布时间 */

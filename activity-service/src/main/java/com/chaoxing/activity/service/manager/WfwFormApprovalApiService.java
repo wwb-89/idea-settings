@@ -321,7 +321,7 @@ public class WfwFormApprovalApiService {
         // 最大参与时长
         String timeLengthUpperLimitStr = FormUtils.getValue(formData, "time_length_upper_limit");
         if (StringUtils.isNotBlank(timeLengthUpperLimitStr)) {
-            Integer timeLengthUpperLimit = Integer.parseInt(timeLengthUpperLimitStr);
+            BigDecimal timeLengthUpperLimit = BigDecimal.valueOf(Double.parseDouble(timeLengthUpperLimitStr));
             activityCreateParamDto.setTimeLengthUpperLimit(timeLengthUpperLimit);
         }
         activityCreateParamDto.buildLoginUser(formData.getUid(), formData.getUname(), fid, orgName);
