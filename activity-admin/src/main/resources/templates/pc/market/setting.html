@@ -35,7 +35,9 @@
                     <label class="label">违约上限</label>
                     <div class="input-box">
                         <span class="lineTips">已报名的活动，用户未签到或未签退</span>
-                        <el-input type="number" size="small" class="marginL16 width80" v-model.trim="blacklistRule.notSignInUpperLimit" placeholder="不限" @blur="updateBlacklistRule"></el-input>
+                        <el-select v-model="blacklistRule.notSignInUpperLimit" size="small" class="width120" placeholder="不限" @change="updateBlacklistRule">
+                            <el-option v-for="(item, index) of blacklistNumbers" :key="'blacklist-number-' + index" :label="item.name" :value="item.value"></el-option>
+                        </el-select>
                         <span class="lineTips">次进入黑名单</span>
                         <p class="bottomTips">活动结束后才会计入违约，加入黑名单的用户不能报名新的活动</p>
                     </div>
@@ -80,7 +82,8 @@
                     blacklistRule: [[${blacklistRule}]],
                     oldSignUpActivityLimit: [[${signUpActivityLimit}]],
                     signUpActivityLimit: [[${signUpActivityLimit}]],
-                    signUpActivityLimits: []
+                    signUpActivityLimits: [],
+                    blacklistNumbers: []
                 },
                 created: function () {
                     var $this = this;
@@ -98,7 +101,20 @@
                         {name: "7", value: 7},
                         {name: "8", value: 8},
                         {name: "9", value: 9},
-                        {name: "10", value: 10},
+                        {name: "10", value: 10}
+                    ];
+                    $this.blacklistNumbers = [
+                        {name: "不限", value: 0},
+                        {name: "1", value: 1},
+                        {name: "2", value: 2},
+                        {name: "3", value: 3},
+                        {name: "4", value: 4},
+                        {name: "5", value: 5},
+                        {name: "6", value: 6},
+                        {name: "7", value: 7},
+                        {name: "8", value: 8},
+                        {name: "9", value: 9},
+                        {name: "10", value: 10}
                     ];
                 },
                 mounted: function () {
