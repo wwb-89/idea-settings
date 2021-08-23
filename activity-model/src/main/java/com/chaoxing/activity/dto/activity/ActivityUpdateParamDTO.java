@@ -11,6 +11,7 @@ import org.springframework.beans.BeanUtils;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.time.ZoneOffset;
 import java.util.List;
 import java.util.Optional;
 
@@ -176,5 +177,45 @@ public class ActivityUpdateParamDTO {
 				.introduction(getIntroduction())
 				.build();
 	}
+
+	/**构建待更新的宣讲会实体
+	 * @Description
+	 * @author huxiaolong
+	 * @Date 2021-08-23 16:08:39
+	 * @param activity
+	 * @param waitUpdateInfo
+	 * @return com.chaoxing.activity.dto.activity.ActivityUpdateParamDTO
+	 */
+	public static ActivityUpdateParamDTO buildActivityUpdateParam(Activity activity, ActivityCreateParamDTO waitUpdateInfo) {
+		Long startTime = Optional.of(waitUpdateInfo.getStartTimeStamp()).orElse(Optional.ofNullable(activity.getStartTime()).map(v -> v.toInstant(ZoneOffset.of("+8")).toEpochMilli()).orElse(null));
+		Long endTime = Optional.of(waitUpdateInfo.getEndTimeStamp()).orElse(Optional.ofNullable(activity.getEndTime()).map(v -> v.toInstant(ZoneOffset.of("+8")).toEpochMilli()).orElse(null));
+
+		return ActivityUpdateParamDTO.builder()
+				.id(activity.getId())
+				.name(activity.getName())
+				.startTimeStamp(startTime)
+				.endTimeStamp(endTime)
+				.coverCloudId(activity.getCoverCloudId())
+				.organisers(Optional.ofNullable(waitUpdateInfo.getOrganisers()).orElse(activity.getOrganisers()))
+				.activityType(activity.getActivityType())
+				.address(Optional.ofNullable(waitUpdateInfo.getAddress()).orElse(activity.getAddress()))
+				.detailAddress(Optional.ofNullable(waitUpdateInfo.getDetailAddress()).orElse(activity.getDetailAddress()))
+				.longitude(activity.getLongitude())
+				.dimension(activity.getDimension())
+				.activityClassifyId(activity.getActivityClassifyId())
+				.period(activity.getPeriod())
+				.credit(activity.getCredit())
+				.timeLengthUpperLimit(activity.getTimeLengthUpperLimit())
+				.timingRelease(activity.getTimingRelease())
+				.timingReleaseTimeStamp(Optional.ofNullable(activity.getTimingReleaseTime()).map(v -> v.toInstant(ZoneOffset.of("+8")).toEpochMilli()).orElse(null))
+				.tags(activity.getTags())
+				.openRating(activity.getOpenRating())
+				.ratingNeedAudit(activity.getRatingNeedAudit())
+				.integral(activity.getIntegral())
+				.openWork(activity.getOpenWork())
+				.workId(activity.getWorkId())
+				.build();
+	}
+
 
 }

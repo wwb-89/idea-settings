@@ -54,6 +54,7 @@ import org.springframework.transaction.annotation.Transactional;
 import javax.annotation.Resource;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.ZoneOffset;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
@@ -852,7 +853,7 @@ public class ActivityHandleService {
 		activityMarketService.updateActivityTop(activityId, marketId, Boolean.FALSE);
 	}
 
-	/**todo 待调整
+	/**
 	* @Description
 	* @author huxiaolong
 	* @Date 2021-08-20 19:53:36
@@ -865,10 +866,9 @@ public class ActivityHandleService {
 		Integer createFid = activityCreateDTO.getFid();
 		Integer createMarketId = activityCreateDTO.getMarketId();
 		ActivityCreateParamDTO activityCreateParam = activityCreateDTO.getActivityInfo();
-		Activity activity = activityCreateParam.buildActivity();
-		// 新增活动输入验证
-		activityValidationService.addInputValidate(activity);
-		SignCreateParamDTO signCreateParam = SignCreateParamDTO.builder().name(activity.getName()).build();
+		activityCreateParam.setMarketId(createMarketId);
+		// 判断是否开启报名、报名填报信息
+		SignCreateParamDTO signCreateParam = SignCreateParamDTO.builder().name(activityCreateParam.getName()).build();
 		if (activityCreateDTO.getOpenSignUp()) {
 			SignUpCreateParamDTO signUpCreateParam = SignUpCreateParamDTO.buildDefault();
 			signUpCreateParam.setFillInfo(activityCreateDTO.getOpenFillFormInfo());
@@ -877,38 +877,16 @@ public class ActivityHandleService {
 			}
 			signCreateParam.setSignUps(Lists.newArrayList(signUpCreateParam));
 		}
-		// 添加报名签到
-		SignCreateResultDTO signCreateResult = handleSign(activity, signCreateParam, loginUser);
-		activity.setSignId(signCreateResult.getSignId());
-		// 处理活动的状态, 新增的活动都是待发布的
-		activity.beforeCreate(loginUser.getUid(), loginUser.getRealName(), createFid, loginUser.getOrgName());
-		activity.setMarketId(createMarketId);
-		activity.setActivityFlag("propaganda_meeting");
-		activityMapper.insert(activity);
-		Integer activityId = activity.getId();
-		// 保存门户模板
-		bindWebTemplate(activityId, activityCreateParam.getWebTemplateId(), loginUser);
-		inspectionConfigHandleService.initInspectionConfig(activityId);
-		activityStatSummaryHandlerService.init(activityId);
-		// 活动详情
-		ActivityDetail activityDetail = activityCreateParam.buildActivityDetail(activityId);
-		activityDetailMapper.insert(activityDetail);
-		// 活动菜单配置
-		activityMenuService.configActivityMenu(activityId, activityMenuService.listMenu().stream().map(ActivityMenuDTO::getValue).collect(Collectors.toList()));
+
+		// todo 活动标识activityFlag propaganda_meeting 宣讲会是否需要设置
+		Integer activityId = this.add(activityCreateParam, signCreateParam, wfwAreaApiService.listByFid(createFid), loginUser);
 		// 若活动由市场所建，新增活动市场与活动关联，共享活动到其他机构
 		List<Integer> shareFids = Optional.of(activityCreateDTO.getSharedFids()).filter(StringUtils::isNotBlank)
 				.map(v -> Arrays.stream(v.split(",")).map(Integer::valueOf).collect(Collectors.toList())).orElse(Lists.newArrayList());
-		activityMarketService.shareActivityToFids(activity, shareFids, loginUser.buildOperateUserDTO());
-		// 默认添加活动市场管理
-		// 添加管理员
-		ActivityManager activityManager = ActivityManager.buildCreator(activity);
-		activityManagerService.add(activityManager, loginUser);
-		// 处理发布范围
-		activityScopeService.batchAdd(activityId, wfwAreaApiService.listByFid(createFid));
-		// 活动改变
-		activityChangeEventService.dataChange(activity, null, loginUser);
-		return activityQueryService.getById(activityId);
 
+		Activity activity = activityQueryService.getById(activityId);
+		activityMarketService.shareActivityToFids(activity, shareFids, loginUser.buildOperateUserDTO());
+		return activity;
 	}
 
 	/**todo 待调整
@@ -919,36 +897,15 @@ public class ActivityHandleService {
 	* @return void
 	*/
 	public void updatePartialActivityInfo(ActivityCreateDTO activityCreateDTO, LoginUserDTO loginUser) {
-		ActivityCreateParamDTO activityCreateParam = activityCreateDTO.getActivityInfo();
-		Integer activityId = activityCreateParam.getId();
-		String activityEditLockKey = getActivityEditLockKey(activityId);
-		distributedLock.lock(activityEditLockKey, () -> {
-			Activity existActivity = activityValidationService.editAble(activityId, loginUser);
-			LocalDateTime startTime = Optional.ofNullable(activityCreateParam.getStartTimeStamp()).map(DateUtils::timestamp2Date).orElse(null);
-			LocalDate startDate = Optional.ofNullable(startTime).map(LocalDateTime::toLocalDate).orElse(null);
-			LocalDateTime endTime = Optional.ofNullable(activityCreateParam.getEndTimeStamp()).map(DateUtils::timestamp2Date).orElse(null);
-			LocalDate endDate = Optional.ofNullable(endTime).map(LocalDateTime::toLocalDate).orElse(null);
-			activityMapper.update(null, new UpdateWrapper<Activity>()
-					.lambda()
-					.eq(Activity::getId, activityId)
-					.set(startTime != null, Activity::getStartTime, startTime)
-					.set(startDate != null, Activity::getStartDate, startDate)
-					.set(endTime != null, Activity::getEndTime, endTime)
-					.set(endDate != null, Activity::getEndDate, endDate)
-					.set(activityCreateParam.getAddress() != null, Activity::getAddress, activityCreateParam.getAddress())
-					.set(activityCreateParam.getAddress() != null, Activity::getDetailAddress, activityCreateParam.getAddress())
-					.set(activityCreateParam.getOrganisers() != null, Activity::getDetailAddress, activityCreateParam.getOrganisers()));
-
-			Activity newActivity = activityQueryService.getById(activityId);
-			if (startTime != null || endTime != null) {
-				// 活动改变
-				activityChangeEventService.dataChange(newActivity, existActivity, loginUser);
-			}
-			return null;
-		}, e -> {
-			log.error("更新活动:{} error:{}", JSON.toJSONString(activityCreateParam), e.getMessage());
-			throw new BusinessException("更新活动失败");
-		});
-
+		ActivityCreateParamDTO activityParam = activityCreateDTO.getActivityInfo();
+		Activity activity = activityQueryService.getById(activityParam.getId());
+		// 报名签到
+		Integer signId = activity.getSignId();
+		SignCreateParamDTO sign = SignCreateParamDTO.builder().build();
+		if (signId != null) {
+			sign = signApiService.getById(signId);
+		}
+		ActivityUpdateParamDTO activityUpdateParam = ActivityUpdateParamDTO.buildActivityUpdateParam(activity, activityParam);
+		this.edit(activityUpdateParam, sign, wfwAreaApiService.listByFid(activityCreateDTO.getFid()), loginUser);
 	}
 }
