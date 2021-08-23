@@ -32,7 +32,7 @@
 
     <select id="listMarketIdsByActivityIdFid" resultType="java.lang.Integer">
         SELECT
-            t.market_id
+            t.id
         FROM
             t_market t
         LEFT JOIN
