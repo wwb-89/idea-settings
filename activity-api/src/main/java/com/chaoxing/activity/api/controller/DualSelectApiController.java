@@ -5,6 +5,7 @@ import com.chaoxing.activity.service.activity.ActivityQueryService;
 import com.chaoxing.activity.util.constant.UrlConstant;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.servlet.view.RedirectView;
 
 import javax.annotation.Resource;
 
@@ -33,11 +34,11 @@ public class DualSelectApiController {
 	 * @return java.lang.String
 	*/
 	@RequestMapping("forward")
-	public String forward(Integer pageId) {
+	public RedirectView forward(Integer pageId) {
 		Activity activity = activityQueryService.getByPageId(pageId);
 		Integer fid = activity.getCreateFid();
 		String url = String.format(UrlConstant.DUAL_SELECT_INDEX_URL, activity.getId(), fid);
-		return "redirect:" + url;
+		return new RedirectView(url);
 	}
 
 }
