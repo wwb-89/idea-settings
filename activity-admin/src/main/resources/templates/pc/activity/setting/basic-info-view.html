@@ -24,7 +24,28 @@
 <body>
     <div id="basicInfoVue" v-cloak>
         <el-form class="basic-show" ref="form" label-width="74px" onsubmit="return false">
-            <template v-if="templateComponents.length > 0" v-for="item in templateComponents">
+            <template v-for="(code, index) in additionRequiredFields">
+                <el-form-item label="名称" v-if="code == 'activity_name'">
+                    <div class="txt">{{activity.name}}</div>
+                </el-form-item>
+                <el-form-item label="时间" v-else-if="code == 'activity_time_scope'">
+                    <div class="txt">{{activity.startTimeStamp | timestampScopeFormat(activity.endTimeStamp)}}</div>
+                </el-form-item>
+                <template v-else-if="code == 'activity_type'">
+                    <el-form-item label="形式">
+                        <div class="txt">{{activity.activityType == "offline" ? "线下" : (activity.activityType == "online" ? "线上" : "")}}</div>
+                    </el-form-item>
+                    <el-form-item v-show="activity.activityType != 'online'" label="位置">
+                        <div class="txt">{{activity.address || ""}}{{activity.detailAddress || ""}}</div>
+                    </el-form-item>
+                </template>
+                <el-form-item label="封面" v-else-if="code == 'activity_cover'">
+                    <div class="img-box js-crop-img" v-if="isNotEmpty(activity.coverUrl) || isNotEmpty(activity.coverCloudId)">
+                        <img :src="activity | getCloudImgUrl" class="cover-img jqthumbImg" height="100%">
+                    </div>
+                </el-form-item>
+            </template>
+            <template v-for="item in templateComponents">
                 <template v-if="item.code == 'activity_type'">
                     <el-form-item :label="item.name">
                         <div class="txt">{{activity.activityType == "offline" ? "线下" : (activity.activityType == "online" ? "线上" : "")}}</div>
@@ -104,13 +125,7 @@
                     </div>
                 </el-form-item>
             </template>
-            <template v-else>
-                <el-form-item label="名称"><div class="txt">{{activity.name}}</div></el-form-item>
-                <el-form-item label="时间"><div class="txt">{{activity.startTimeStamp | timestampScopeFormat(activity.endTimeStamp)}}</div></el-form-item>
-                <el-form-item label="形式"><div class="txt">{{activity.activityType == "offline" ? "线下" : (activity.activityType == "online" ? "线上" : "")}}</div></el-form-item>
-                <el-form-item label="封面"><div class="txt"></div></el-form-item>
-            </template>
-            <div class="footer" v-if="templateComponents.length > 0">
+            <div class="footer">
                 <div class="btn-box">
                     <button class="btn-main btn-width-80 edit-btn" @click="toEditPage">编辑</button>
                     <button class="btn-second-normal btn-width-80" @click="toWebTemplateConfig">页面配置</button>
@@ -213,6 +228,7 @@
                     return {
                         activity: [[${activity}]],
                         templateComponents: [[${templateComponents}]],
+                        additionRequiredFields: [], // 补充必填字段
                         participateScopes: [[${participateScopes}]],
                         activityComponentValueMap: {},
                         needInitEditor: false,
@@ -226,10 +242,21 @@
                     var templateComponentMap = {};
                     RichTextUitl.loadDetailPageProfile();
                     $this.activity.introduction = RichTextUitl.beforeSetRtfContent($this.activity.introduction);
+                    var requiredFieldCodes = ['activity_name', 'activity_time_scope', 'activity_cover', 'activity_type'];
+                    var existRequiredFieldCodes = []; // 已存在必填字段
                     $($this.templateComponents).each(function() {
+                        if (requiredFieldCodes.indexOf(this.code) != -1) {
+                            existRequiredFieldCodes.push(this.code);
+                        }
                         templateComponentMap[this.id] = this;
                         if (this.code == 'introduction') {
-                            $this.needInitEditor =true
+                            $this.needInitEditor = true
+                        }
+                    });
+                    $(requiredFieldCodes).each(function (i) {
+                        var code = requiredFieldCodes[i];
+                        if (existRequiredFieldCodes.indexOf(code) == -1) {
+                            $this.additionRequiredFields.push(code);
                         }
                     });
                     if ($this.activity.activityComponentValues) {
