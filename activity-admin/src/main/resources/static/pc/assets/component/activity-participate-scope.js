@@ -51,7 +51,7 @@ Vue.component('vue-activity-participate-scope', {
             $this.zTree.expandAll(false);
             $this.selectedOrgs = [];
             var checkedFids = [];
-            if (!activityApp.isEmpty(participatedOrgs) && participatedOrgs.length > 0) {
+            if (participatedOrgs && participatedOrgs.length > 0) {
                 $(participatedOrgs).each(function () {
                     checkedFids.push(this.fid);
                 });
@@ -111,8 +111,9 @@ Vue.component('vue-activity-participate-scope', {
                 if (pids.indexOf(org.id) > -1) {
                     // 有下级
                     var newOrg = $.extend({}, org);
-                    newOrg.virtualId = null;
+                    newOrg.virtualId = -1;
                     newOrg.pid = org.id;
+                    newOrg.children = null;
                     result.push(newOrg);
                 }
             });

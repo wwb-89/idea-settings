@@ -13,13 +13,31 @@
 <body>
     <div class="rule-setting" id="rule-setting" v-cloak>
         <div class="item-block">
+            <div class="item-title">报名规则</div>
+            <form action="" class="el-form">
+                <div class="form-item">
+                    <label class="label">报名限制</label>
+                    <div class="input-box">
+                        <span class="lineTips">可同时报名</span>
+                        <el-select v-model="signUpActivityLimit" size="small" class="width120" placeholder="不限">
+                            <el-option v-for="(item, index) of signUpActivityLimits" :key="'sign_up_activity_limit-' + index" :label="item.name" :value="item.value"></el-option>
+                        </el-select>
+                        <span class="lineTips">个活动</span>
+                        <p class="bottomTips">可限制用户同时报名参加的活动数量，达到限制后需等活动结束、取消报名或报名审批被拒绝后才能报名新的活动</p>
+                    </div>
+                </div>
+            </form>
+        </div>
+        <div class="item-block">
             <div class="item-title">黑名单规则</div>
             <form action="" class="el-form">
                 <div class="form-item">
                     <label class="label">违约上限</label>
                     <div class="input-box">
                         <span class="lineTips">已报名的活动，用户未签到或未签退</span>
-                        <el-input type="number" size="small" class="marginL16 width80" v-model.trim="blacklistRule.notSignInUpperLimit" placeholder="不限" @blur="updateBlacklistRule"></el-input>
+                        <el-select v-model="blacklistRule.notSignInUpperLimit" size="small" class="width120" placeholder="不限" @change="updateBlacklistRule">
+                            <el-option v-for="(item, index) of blacklistNumbers" :key="'blacklist-number-' + index" :label="item.name" :value="item.value"></el-option>
+                        </el-select>
                         <span class="lineTips">次进入黑名单</span>
                         <p class="bottomTips">活动结束后才会计入违约，加入黑名单的用户不能报名新的活动</p>
                     </div>
@@ -61,13 +79,43 @@
                 data: {
                     marketId: [[${marketId}]],
                     oldBlacklistRule: null,
-                    blacklistRule: [[${blacklistRule}]]
+                    blacklistRule: [[${blacklistRule}]],
+                    oldSignUpActivityLimit: [[${signUpActivityLimit}]],
+                    signUpActivityLimit: [[${signUpActivityLimit}]],
+                    signUpActivityLimits: [],
+                    blacklistNumbers: []
                 },
                 created: function () {
                     var $this = this;
                     if (activityApp.isEmpty($this.blacklistRule.autoRemoveHours)) {
                         $this.$set($this.blacklistRule, "autoRemoveHours", 24);
                     }
+                    $this.signUpActivityLimits = [
+                        {name: "不限", value: 0},
+                        {name: "1", value: 1},
+                        {name: "2", value: 2},
+                        {name: "3", value: 3},
+                        {name: "4", value: 4},
+                        {name: "5", value: 5},
+                        {name: "6", value: 6},
+                        {name: "7", value: 7},
+                        {name: "8", value: 8},
+                        {name: "9", value: 9},
+                        {name: "10", value: 10}
+                    ];
+                    $this.blacklistNumbers = [
+                        {name: "不限", value: 0},
+                        {name: "1", value: 1},
+                        {name: "2", value: 2},
+                        {name: "3", value: 3},
+                        {name: "4", value: 4},
+                        {name: "5", value: 5},
+                        {name: "6", value: 6},
+                        {name: "7", value: 7},
+                        {name: "8", value: 8},
+                        {name: "9", value: 9},
+                        {name: "10", value: 10}
+                    ];
                 },
                 mounted: function () {
                     var $this = this;
@@ -104,6 +152,13 @@
                     "blacklistRule.enableAutoRemove": function () {
                         var $this = this;
                         $this.updateBlacklistRule();
+                    },
+                    "signUpActivityLimit": function (newVal, oldVal) {
+                        var $this = this;
+                        if (newVal != $this.oldSignUpActivityLimit) {
+                            $this.oldSignUpActivityLimit = oldVal;
+                            $this.signUpActivityLimitChange();
+                        }
                     }
                 },
                 methods: {
@@ -149,6 +204,28 @@
                         var $this = this;
                         var url = ctx + "/market/" + $this.marketId + "/template";
                         window.open(url);
+                    },
+                    signUpActivityLimitChange: function () {
+                        var $this = this;
+                        var url = ctx + "/api/market/" + $this.marketId + "/update/sign-up-activity-limit";
+                        var params = {
+                            signUpActivityLimit: $this.signUpActivityLimit
+                        };
+                        app.ajaxPostWithLoading(url, params, function (data) {
+                            if (data.success) {
+
+                            } else {
+                                var message = data.message;
+                                if (activityApp.isEmpty(message)) {
+                                    message = "更新报名限制失败";
+                                }
+                                app.showMsg(message);
+                                $this.signUpActivityLimit = $this.oldSignUpActivityLimit;
+                            }
+                        }, function () {
+                            app.showMsg("更新报名限制失败");
+                            $this.signUpActivityLimit = $this.oldSignUpActivityLimit;
+                        });
                     }
                 }
             });

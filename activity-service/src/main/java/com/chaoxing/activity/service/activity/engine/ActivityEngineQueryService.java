@@ -38,10 +38,10 @@ public class ActivityEngineQueryService {
     private ComponentMapper componentMapper;
     @Autowired
     private ComponentFieldMapper componentFieldMapper;
-    @Autowired
-    private SignUpConditionMapper signUpConditionMapper;
-    @Autowired
-    private SignUpFillInfoTypeMapper signUpFillInfoTypeMapper;
+    @Resource
+    private SignUpConditionService signUpConditionService;
+    @Resource
+    private SignUpFillInfoTypeService signUpFillInfoTypeService;
     @Resource
     private WfwFormApiService wfwFormApiService;
     @Resource
@@ -62,9 +62,10 @@ public class ActivityEngineQueryService {
                 .introduction(o.getIntroduction())
                 .componentId(o.getComponentId())
                 .templateId(o.getTemplateId())
-                .signUpCondition(o.getSignUpCondition())
                 .sequence(o.getSequence())
                 .required(o.getRequired())
+                .signUpCondition(o.getSignUpCondition())
+                .signUpFillInfoType(o.getSignUpFillInfoType())
                 .build(), templateComponents);
         return ActivityEngineDTO.builder()
                 .template(template)
@@ -134,20 +135,28 @@ public class ActivityEngineQueryService {
     public List<TemplateComponentDTO> listTemplateComponentByTemplateId(Integer templateId) {
         List<TemplateComponentDTO> templateComponents = templateComponentMapper.listTemplateComponentInfo(templateId);
         // 报名条件templateComponentIds
-        List<Integer> sucTplComponentIds = templateComponents.stream()
-                .filter(v -> v.getPid() != 0 && Objects.equals(v.getCode(), "sign_up_condition"))
-                .map(TemplateComponentDTO::getId)
-                .collect(Collectors.toList());
-        if (CollectionUtils.isNotEmpty(sucTplComponentIds)) {
-            Map<Integer, SignUpCondition> signUpConditionMap = signUpConditionMapper.selectList(new QueryWrapper<SignUpCondition>()
-                    .lambda()
-                    .in(SignUpCondition::getTemplateComponentId, sucTplComponentIds))
-                    .stream()
-                    .collect(Collectors.toMap(SignUpCondition::getTemplateComponentId, v -> v, (v1, v2) -> v2));
-            templateComponents.forEach(v -> {
+        List<Integer> sucTplComponentIds = Lists.newArrayList();
+        // 报名信息填写类型templateComponentIds
+        List<Integer> sufiTplComponentIds = Lists.newArrayList();
+        templateComponents.forEach(v -> {
+            if (v.getPid() != 0 && Objects.equals(v.getCode(), Component.SystemComponentCodeEnum.SIGN_UP_CONDITION.getValue())) {
+                sucTplComponentIds.add(v.getId());
+            } else if (v.getPid() != 0 && Objects.equals(v.getCode(), Component.SystemComponentCodeEnum.SIGN_UP_FILL_INFO.getValue())) {
+                sufiTplComponentIds.add(v.getId());
+            }
+        });
+        Map<Integer, SignUpCondition> signUpConditionMap = signUpConditionService.listByTemplateComponentIds(sucTplComponentIds).stream()
+                .collect(Collectors.toMap(SignUpCondition::getTemplateComponentId, v -> v, (v1, v2) -> v2));
+        Map<Integer, SignUpFillInfoType> signUpFillInfoTypeMap = signUpFillInfoTypeService.listByTemplateComponentIds(sufiTplComponentIds).stream()
+                .collect(Collectors.toMap(SignUpFillInfoType::getTemplateComponentId, v -> v, (v1, v2) -> v2));
+        templateComponents.forEach(v -> {
+            if (!signUpConditionMap.isEmpty()) {
                 v.setSignUpCondition(Optional.ofNullable(signUpConditionMap.get(v.getId())).orElse(null));
-            });
-        }
+            }
+            if (!signUpFillInfoTypeMap.isEmpty()) {
+                v.setSignUpFillInfoType(Optional.ofNullable(signUpFillInfoTypeMap.get(v.getId())).orElse(null));
+            }
+        });
         return templateComponents;
     }
 
@@ -176,7 +185,10 @@ public class ActivityEngineQueryService {
     public List<TemplateComponentDTO> listBasicInfoTemplateComponents(Integer templateId, Integer fid) {
         List<TemplateComponentDTO> templateComponents = templateComponentMapper.listTemplateComponentInfo(templateId)
                 .stream()
-                .filter(v -> v.getPid() == 0 && !Objects.equals(v.getCode(), "sign_in") && !Objects.equals(v.getCode(), "sign_out") && !Objects.equals(v.getCode(), "sign_up") && !Objects.equals(v.getCode(), "company_sign_up"))
+                .filter(v -> v.getPid() == 0
+                        && !Objects.equals(v.getCode(), Component.SystemComponentCodeEnum.SIGN_IN_OUT.getValue())
+                        && !Objects.equals(v.getCode(), Component.SystemComponentCodeEnum.SIGN_UP.getValue())
+                        && !Objects.equals(v.getCode(), Component.SystemComponentCodeEnum.COMPANY_SIGN_UP.getValue()))
                 .collect(Collectors.toList());
         buildComponentFieldsAndFieldValues(fid, templateComponents);
         return templateComponents;
@@ -192,8 +204,13 @@ public class ActivityEngineQueryService {
     public List<TemplateComponentDTO> listSignUpTemplateComponents(Integer templateId) {
         List<TemplateComponentDTO> templateComponents = templateComponentMapper.listTemplateComponentInfo(templateId)
                 .stream()
-                .filter(v -> v.getPid() != 0 || Objects.equals(v.getCode(), "sign_up") || Objects.equals(v.getCode(), "company_sign_up"))
+                .filter(v -> v.getPid() != 0 || Objects.equals(v.getCode(), Component.SystemComponentCodeEnum.SIGN_UP.getValue()) || Objects.equals(v.getCode(), Component.SystemComponentCodeEnum.COMPANY_SIGN_UP.getValue()))
                 .collect(Collectors.toList());
+        templateComponents.forEach(v -> {
+            if (StringUtils.isNotBlank(v.getCode()) && Objects.equals(v.getCode(), Component.SystemComponentCodeEnum.SIGN_UP_FILL_INFO.getValue())) {
+                v.setSignUpFillInfoType(signUpFillInfoTypeService.getByTemplateComponentId(v.getId()));
+            }
+        });
         return TemplateComponentDTO.buildTrees(templateComponents);
     }
 
@@ -221,6 +238,9 @@ public class ActivityEngineQueryService {
         templateComponents.forEach(v -> {
             if (CollectionUtils.isNotEmpty(componentFieldMap.get(v.getComponentId()))) {
                 v.setComponentFields(componentFieldMap.get(v.getComponentId()));
+            }
+            if (StringUtils.isNotBlank(v.getCode()) && Objects.equals(v.getCode(), Component.SystemComponentCodeEnum.SIGN_UP_FILL_INFO.getValue())) {
+                v.setSignUpFillInfoType(signUpFillInfoTypeService.getByTemplateComponentId(v.getId()));
             }
             if (StringUtils.isNotBlank(v.getDataOrigin()) && Objects.equals(v.getDataOrigin(), Component.DataOriginEnum.FORM.getValue())) {
                 v.setFieldValues(wfwFormApiService.listFormFieldValue(fid, Integer.parseInt(v.getOriginIdentify()), v.getFieldFlag()));

@@ -117,6 +117,9 @@ public class UserResultQueryService {
 	 */
 	private List<List<String>> listResultInspectionHeader(List<TableFieldDetail> tableFieldDetails) {
 		List<List<String>> headers = Lists.newArrayList();
+		List<String> activityHeader = Lists.newArrayList();
+		activityHeader.add("活动id");
+		headers.add(activityHeader);
 		for (TableFieldDetail tableFieldDetail : tableFieldDetails) {
 			List<String> header = Lists.newArrayList();
 			header.add(tableFieldDetail.getName());
@@ -146,7 +149,6 @@ public class UserResultQueryService {
 			List<String> itemData = Lists.newArrayList();
 			itemData.add(String.valueOf(record.getActivityId()));
 			for (TableFieldDetail tableFieldDetail : tableFieldDetails) {
-				itemData.add(String.valueOf(record.getActivityId()));
 				String code = tableFieldDetail.getCode();
 				switch (code) {
 					case "realName":
@@ -170,6 +172,12 @@ public class UserResultQueryService {
 					case "qualifiedStatus":
 						UserResult.QualifiedStatusEnum qualifiedStatusEnum = UserResult.QualifiedStatusEnum.fromValue(record.getQualifiedStatus());
 						itemData.add(Optional.ofNullable(qualifiedStatusEnum).map(UserResult.QualifiedStatusEnum::getName).orElse(""));
+						break;
+					case "studentNo":
+						itemData.add(record.getStudentNo());
+						break;
+					case "mobile":
+						itemData.add(record.getMobile());
 						break;
 					default:
 

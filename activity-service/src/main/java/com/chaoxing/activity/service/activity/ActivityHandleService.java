@@ -4,6 +4,7 @@ import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.chaoxing.activity.dto.LoginUserDTO;
+import com.chaoxing.activity.dto.activity.ActivityCreateDTO;
 import com.chaoxing.activity.dto.activity.ActivityCreateParamDTO;
 import com.chaoxing.activity.dto.activity.ActivityMenuDTO;
 import com.chaoxing.activity.dto.activity.ActivityUpdateParamDTO;
@@ -11,6 +12,7 @@ import com.chaoxing.activity.dto.manager.mh.MhCloneParamDTO;
 import com.chaoxing.activity.dto.manager.mh.MhCloneResultDTO;
 import com.chaoxing.activity.dto.manager.sign.create.SignCreateParamDTO;
 import com.chaoxing.activity.dto.manager.sign.create.SignCreateResultDTO;
+import com.chaoxing.activity.dto.manager.sign.create.SignUpCreateParamDTO;
 import com.chaoxing.activity.dto.manager.wfw.WfwAreaDTO;
 import com.chaoxing.activity.mapper.ActivityDetailMapper;
 import com.chaoxing.activity.mapper.ActivityMapper;
@@ -19,6 +21,7 @@ import com.chaoxing.activity.service.WebTemplateService;
 import com.chaoxing.activity.service.activity.engine.ActivityComponentValueService;
 import com.chaoxing.activity.service.activity.engine.SignUpConditionService;
 import com.chaoxing.activity.service.activity.manager.ActivityManagerService;
+import com.chaoxing.activity.service.activity.market.MarketQueryService;
 import com.chaoxing.activity.service.activity.menu.ActivityMenuService;
 import com.chaoxing.activity.service.activity.module.ActivityModuleService;
 import com.chaoxing.activity.service.activity.scope.ActivityScopeService;
@@ -26,9 +29,11 @@ import com.chaoxing.activity.service.event.ActivityChangeEventService;
 import com.chaoxing.activity.service.inspection.InspectionConfigHandleService;
 import com.chaoxing.activity.service.manager.MhApiService;
 import com.chaoxing.activity.service.manager.module.SignApiService;
+import com.chaoxing.activity.service.manager.wfw.WfwAreaApiService;
 import com.chaoxing.activity.service.queue.activity.ActivityInspectionResultDecideQueueService;
 import com.chaoxing.activity.service.queue.activity.ActivityWebsiteIdSyncQueueService;
 import com.chaoxing.activity.service.queue.blacklist.BlacklistAutoAddQueueService;
+import com.chaoxing.activity.util.DateUtils;
 import com.chaoxing.activity.util.DistributedLock;
 import com.chaoxing.activity.util.constant.ActivityMhUrlConstant;
 import com.chaoxing.activity.util.constant.ActivityModuleConstant;
@@ -41,13 +46,19 @@ import com.chaoxing.activity.util.exception.BusinessException;
 import com.google.common.collect.Lists;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.ZoneOffset;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 /**数据处理服务
@@ -97,7 +108,8 @@ public class ActivityHandleService {
 	private BlacklistAutoAddQueueService blacklistAutoAddQueueService;
 	@Resource
 	private ActivityMenuService activityMenuService;
-
+	@Resource
+	private ActivityMarketService activityMarketService;
 	@Resource
 	private SignUpConditionService signUpConditionService;
 	@Resource
@@ -106,6 +118,10 @@ public class ActivityHandleService {
 	private MhApiService mhApiService;
 	@Resource
 	private DistributedLock distributedLock;
+	@Resource
+	private WfwAreaApiService wfwAreaApiService;
+	@Resource
+	private MarketQueryService marketQueryService;
 
 	/**新增活动
 	 * @Description
@@ -146,6 +162,9 @@ public class ActivityHandleService {
 		activityDetailMapper.insert(activityDetail);
 		// 活动菜单配置
 		activityMenuService.configActivityMenu(activityId, activityMenuService.listMenu().stream().map(ActivityMenuDTO::getValue).collect(Collectors.toList()));
+		// 若活动由市场所建，新增活动市场与活动关联
+		activityMarketService.add(activity);
+		// 默认添加活动市场管理
 		// 添加管理员
 		ActivityManager activityManager = ActivityManager.buildCreator(activity);
 		activityManagerService.add(activityManager, loginUser);
@@ -333,10 +352,19 @@ public class ActivityHandleService {
 	 * @return void
 	 */
 	@Transactional(rollbackFor = Exception.class)
-	public void release(Integer activityId, LoginUserDTO loginUser) {
-		Activity activity = activityValidationService.releaseAble(activityId, loginUser);
-		activity.release(loginUser.getUid());
-		activityStatusService.updateReleaseStatus(activity);
+	public void release(Integer activityId, Integer marketId, LoginUserDTO loginUser) {
+		Activity activity = activityValidationService.activityExist(activityId);
+		// 当非市场发布活动或当前市场的活动发布活动，均可修改活动状态
+		if (marketId == null || Objects.equals(marketId, activity.getMarketId())) {
+			activity = activityValidationService.releaseAble(activityId, loginUser);
+			activity.release(loginUser.getUid());
+			activityStatusService.updateReleaseStatus(activity);
+		}
+		// 修改活动-市场状态信息
+		if (marketId != null) {
+			activity.release(loginUser.getUid());
+			activityMarketService.updateMarketActivityStatus(marketId, activity);
+		}
 	}
 
 	/**取消发布（下架）
@@ -348,10 +376,45 @@ public class ActivityHandleService {
 	 * @return void
 	 */
 	@Transactional(rollbackFor = Exception.class)
-	public void cancelRelease(Integer activityId, LoginUserDTO loginUser) {
-		Activity activity = activityValidationService.cancelReleaseAble(activityId, loginUser);
-		activity.cancelRelease();
-		activityStatusService.updateReleaseStatus(activity);
+	public void cancelRelease(Integer activityId, Integer marketId, LoginUserDTO loginUser) {
+		Activity activity = activityValidationService.activityExist(activityId);
+		// 当非市场发布活动或当前市场的活动发布活动，均可修改活动状态
+		if (marketId == null || Objects.equals(marketId, activity.getMarketId())) {
+			activity = activityValidationService.cancelReleaseAble(activity, loginUser);
+			activity.cancelRelease();
+			activityStatusService.updateReleaseStatus(activity);
+		}
+		// 修改活动-市场状态信息
+		if (marketId != null) {
+			activity.cancelRelease();
+			activityMarketService.updateMarketActivityStatus(marketId, activity);
+		}
+	}
+
+
+	/**更新fid下所有market的中活动id为activityId的活动
+	* @Description
+	* @author huxiaolong
+	* @Date 2021-08-12 17:42:15
+	* @param activityId
+	* @param fid
+	* @param uid
+	* @param released
+	* @return void
+	*/
+	@Transactional(rollbackFor = Exception.class)
+	public void updateActivityReleaseStatus(Integer activityId, Integer fid, Integer uid, boolean released) {
+		LoginUserDTO loginUser = LoginUserDTO.buildDefault(uid, "", fid, "");
+		List<Integer> marketIdsUnderFid = marketQueryService.listMarketIdsByActivityIdFid(fid, activityId);
+		if (released) {
+			marketIdsUnderFid.forEach(marketId -> {
+				release(activityId, marketId, loginUser);
+			});
+			return;
+		}
+		marketIdsUnderFid.forEach(marketId -> {
+			cancelRelease(activityId, marketId, loginUser);
+		});
 	}
 
 	/**删除活动
@@ -363,17 +426,44 @@ public class ActivityHandleService {
 	 * @return void
 	 */
 	@Transactional(rollbackFor = Exception.class)
-	public void delete(Integer activityId, LoginUserDTO loginUser) {
-		// 验证是否能删除
-		Activity activity = activityValidationService.deleteAble(activityId, loginUser);
-		activity.delete();
-		activityMapper.update(null, new UpdateWrapper<Activity>()
-				.lambda()
-				.eq(Activity::getId, activityId)
-				.set(Activity::getStatus, activity.getStatus())
-		);
-		// 活动状态改变
-		activityChangeEventService.statusChange(activity);
+	public void delete(Integer activityId, Integer marketId, LoginUserDTO loginUser) {
+		Activity activity =  activityValidationService.activityExist(activityId);
+		boolean isCreateMarket = Objects.equals(marketId, activity.getMarketId());
+		// marketId为空 或者 当前marketId 和 活动marketId 一致时，进行活动真实删除，需要验证是否能删除；
+		if (marketId == null || isCreateMarket) {
+			// 验证是否能删除
+			activity = activityValidationService.deleteAble(activityId, loginUser);
+			activity.delete();
+			activityMapper.update(null, new UpdateWrapper<Activity>()
+					.lambda()
+					.eq(Activity::getId, activityId)
+					.set(Activity::getStatus, activity.getStatus())
+			);
+			// 活动状态改变
+			activityChangeEventService.statusChange(activity);
+		}
+		// marketId不为空，删除活动-市场关联，isCreateMarket: true，则需要删除所有关联
+		if (marketId != null) {
+			activityMarketService.remove(activityId, marketId, isCreateMarket);
+		}
+	}
+
+	/**删除fid下所有market的中活动id为activityId的活动
+	* @Description
+	* @author huxiaolong
+	* @Date 2021-08-12 17:40:07
+	* @param fid
+	* @param activityId
+	* @param uid
+	* @return com.chaoxing.activity.model.Activity
+	*/
+	@Transactional(rollbackFor = Exception.class)
+	public void deleteActivityUnderFid(Integer fid, Integer activityId, Integer uid) {
+		LoginUserDTO loginUser = LoginUserDTO.buildDefault(uid, "", fid, "");
+		List<Integer> marketIdsUnderFid = marketQueryService.listMarketIdsByActivityIdFid(fid, activityId);
+		marketIdsUnderFid.forEach(marketId -> {
+			delete(activityId, marketId, loginUser);
+		});
 	}
 
 	/**绑定模板
@@ -731,4 +821,91 @@ public class ActivityHandleService {
 		);
 	}
 
+	/**置顶活动
+	* @Description
+	* @author huxiaolong
+	* @Date 2021-08-10 17:44:18
+	* @param activityId
+	* @param marketId
+	* @return void
+	*/
+	@Transactional(rollbackFor = Exception.class)
+	public void setActivityTop(Integer activityId, Integer marketId) {
+		if (activityId == null || marketId == null) {
+			return;
+		}
+		activityMarketService.updateActivityTop(activityId, marketId, Boolean.TRUE);
+	}
+
+	/**取消活动置顶
+	* @Description 
+	* @author huxiaolong
+	* @Date 2021-08-10 17:44:06
+	* @param activityId
+	* @param marketId
+	* @return void
+	*/
+	@Transactional(rollbackFor = Exception.class)
+	public void cancelActivityTop(Integer activityId, Integer marketId) {
+		if (activityId == null || marketId == null) {
+			return;
+		}
+		activityMarketService.updateActivityTop(activityId, marketId, Boolean.FALSE);
+	}
+
+	/**
+	* @Description
+	* @author huxiaolong
+	* @Date 2021-08-20 19:53:36
+	* @param activityCreateDTO
+	* @param loginUser
+	* @return com.chaoxing.activity.model.Activity
+	*/
+	@Transactional(rollbackFor = Exception.class)
+	public Activity newSharedActivity(ActivityCreateDTO activityCreateDTO, LoginUserDTO loginUser) {
+		Integer createFid = activityCreateDTO.getFid();
+		Integer createMarketId = activityCreateDTO.getMarketId();
+		ActivityCreateParamDTO activityCreateParam = activityCreateDTO.getActivityInfo();
+		activityCreateParam.setMarketId(createMarketId);
+		// 判断是否开启报名、报名填报信息
+		SignCreateParamDTO signCreateParam = SignCreateParamDTO.builder().name(activityCreateParam.getName()).build();
+		if (activityCreateDTO.getOpenSignUp()) {
+			SignUpCreateParamDTO signUpCreateParam = SignUpCreateParamDTO.buildDefault();
+			signUpCreateParam.setFillInfo(activityCreateDTO.getOpenFillFormInfo());
+			if (activityCreateDTO.getOpenFillFormInfo()) {
+				signUpCreateParam.setFillInfoFormId(signApiService.createFormFillWithFields(activityCreateDTO.getFillFormInfo()));
+			}
+			signCreateParam.setSignUps(Lists.newArrayList(signUpCreateParam));
+		}
+
+		// todo 活动标识activityFlag propaganda_meeting 宣讲会是否需要设置
+		Integer activityId = this.add(activityCreateParam, signCreateParam, wfwAreaApiService.listByFid(createFid), loginUser);
+		// 若活动由市场所建，新增活动市场与活动关联，共享活动到其他机构
+		List<Integer> shareFids = Optional.of(activityCreateDTO.getSharedFids()).filter(StringUtils::isNotBlank)
+				.map(v -> Arrays.stream(v.split(",")).map(Integer::valueOf).collect(Collectors.toList())).orElse(Lists.newArrayList());
+
+		Activity activity = activityQueryService.getById(activityId);
+		activityMarketService.shareActivityToFids(activity, shareFids, loginUser.buildOperateUserDTO());
+		return activity;
+	}
+
+	/**todo 待调整
+	* @Description 
+	* @author huxiaolong
+	* @Date 2021-08-20 18:40:04
+	* @param activityCreateDTO
+	* @return void
+	*/
+	public void updatePartialActivityInfo(ActivityCreateDTO activityCreateDTO, LoginUserDTO loginUser) {
+		ActivityCreateParamDTO activityParam = activityCreateDTO.getActivityInfo();
+		Activity activity = activityQueryService.getById(activityParam.getId());
+		// 报名签到
+		Integer signId = activity.getSignId();
+		SignCreateParamDTO sign = SignCreateParamDTO.builder().build();
+		if (signId != null) {
+			sign = signApiService.getById(signId);
+		}
+		ActivityUpdateParamDTO activityUpdateParam = ActivityUpdateParamDTO.buildActivityUpdateParam(activity, activityParam);
+		this.edit(activityUpdateParam, sign, wfwAreaApiService.listByFid(activityCreateDTO.getFid()), loginUser);
+	}
 }

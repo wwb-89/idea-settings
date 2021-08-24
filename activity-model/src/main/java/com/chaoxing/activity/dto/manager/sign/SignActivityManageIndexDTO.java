@@ -1,5 +1,6 @@
 package com.chaoxing.activity.dto.manager.sign;
 
+import com.chaoxing.activity.dto.manager.sign.create.SignUpCreateParamDTO;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -27,6 +28,8 @@ public class SignActivityManageIndexDTO {
 	private Boolean signUpExist;
 	/** 报名id */
 	private List<Integer> signUpIds;
+	/** 报名 */
+	private List<SignUpCreateParamDTO> signUps;
 	/** 签到存在 */
 	private Boolean signInExist;
 	/** 报名人数 */

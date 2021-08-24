@@ -3,11 +3,9 @@ package com.chaoxing.activity.admin.controller.api;
 import com.chaoxing.activity.dto.RestRespDTO;
 import com.chaoxing.activity.dto.manager.wfwform.WfwFormFieldDTO;
 import com.chaoxing.activity.service.manager.WfwFormApiService;
+import com.chaoxing.activity.service.manager.WfwFormCreateApiService;
 import com.chaoxing.activity.vo.manager.WfwFormFieldVO;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
 import java.util.List;
@@ -28,6 +26,9 @@ public class WfwFormApiController {
 	@Resource
 	private WfwFormApiService formApiService;
 
+	@Resource
+	private WfwFormCreateApiService formCreateApiService;
+
 	/**查询微服务表单的字段列表
 	 * @Description 
 	 * @author wwb
@@ -40,6 +41,35 @@ public class WfwFormApiController {
 	public RestRespDTO listWfwFormField(@PathVariable Integer formId, @RequestParam Integer fid) {
 		List<WfwFormFieldDTO> formFields = formApiService.listFormField(fid, formId);
 		return RestRespDTO.success(formFields.stream().map(WfwFormFieldVO::buildFromWfwFormFieldDTO).collect(Collectors.toList()));
+	}
+
+
+	/**获取构建表单创建地址
+	* @Description
+	* @author huxiaolong
+	* @Date 2021-08-17 17:50:13
+	* @param fid
+	* @param uid
+	* @param templateType
+	* @return com.chaoxing.activity.dto.RestRespDTO
+	*/
+	@RequestMapping("build/create-url")
+	public RestRespDTO getWfwFormCreateUrl(@RequestParam Integer fid, @RequestParam Integer uid, @RequestParam String templateType, Integer formId) {
+		return RestRespDTO.success(formCreateApiService.buildCreateFormUrl(fid, uid, formId, templateType));
+	}
+
+	/**获取表单管理地址
+	* @Description
+	* @author huxiaolong
+	* @Date 2021-08-20 14:59:36
+	* @param fid
+	* @param uid
+	* @param formId
+	* @return com.chaoxing.activity.dto.RestRespDTO
+	*/
+	@RequestMapping("build/manage-url")
+	public RestRespDTO getWfwFormManageUrl(@RequestParam Integer fid, @RequestParam Integer uid, @RequestParam Integer formId) {
+		return RestRespDTO.success(formCreateApiService.getFormAdminUrl(formId, fid, uid));
 	}
 
 }

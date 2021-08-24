@@ -60,7 +60,7 @@ public class ActivityCreateParamDTO {
 	/** 学分 */
 	private BigDecimal credit;
 	/** 参与时长上限（小时） */
-	private Integer timeLengthUpperLimit;
+	private BigDecimal timeLengthUpperLimit;
 	/** 是否定时发布 */
 	private Boolean timingRelease;
 	/** 定时发布时间 */
@@ -98,7 +98,7 @@ public class ActivityCreateParamDTO {
 
 	private Integer webTemplateId;
 
-	// 预览显示使用
+	/** 预览显示使用 */
 	private String activityClassifyName;
 
 

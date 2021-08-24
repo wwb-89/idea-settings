@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
+import java.util.Map;
 
 /**活动海报前端控制器
  * @author huxiaolong
@@ -31,9 +32,10 @@ public class ActivityPosterController {
     public String index(HttpServletRequest request, Model model, @PathVariable Integer activityId) {
         Activity activity = activityQueryService.getById(activityId);
         SignUpCreateParamDTO signUp = activityQueryService.getActivitySignUp(activity.getSignId());
+        Map<String, String> fieldCodeNameRelation = activityQueryService.getFieldCodeNameRelation(activity);
+        model.addAttribute("fieldCodeNameRelation", fieldCodeNameRelation);
         model.addAttribute("activity", activity);
         model.addAttribute("signUp", signUp);
-
         if (UserAgentUtils.isMobileAccess(request)) {
             return "mobile/activity/poster/index";
         } else {

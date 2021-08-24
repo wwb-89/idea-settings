@@ -337,6 +337,9 @@ public class ActivityCreatePermissionService {
 
         for (Integer groupId : scopeGroupIdSet) {
             WfwGroupDTO group = wfwGroupMap.get(groupId);
+            if (group == null) {
+                continue;
+            }
             result.add(group);
             resultIdSet.add(groupId);
             // 递归查找父级节点

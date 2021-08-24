@@ -232,7 +232,7 @@ public class WfwFormApprovalApiService {
         WfwAreaDTO wfwRegionalArchitecture = wfwAreaApiService.buildWfwRegionalArchitecture(fid);
         Integer activityId = activityHandleService.add(activity, signCreateParam, Lists.newArrayList(wfwRegionalArchitecture), loginUser);
         // 发布
-        activityHandleService.release(activityId, loginUser);
+        activityHandleService.release(activityId, marketId, loginUser);
     }
 
     /**获取需要创建的活动
@@ -321,7 +321,7 @@ public class WfwFormApprovalApiService {
         // 最大参与时长
         String timeLengthUpperLimitStr = FormUtils.getValue(formData, "time_length_upper_limit");
         if (StringUtils.isNotBlank(timeLengthUpperLimitStr)) {
-            Integer timeLengthUpperLimit = Integer.parseInt(timeLengthUpperLimitStr);
+            BigDecimal timeLengthUpperLimit = BigDecimal.valueOf(Double.parseDouble(timeLengthUpperLimitStr));
             activityCreateParamDto.setTimeLengthUpperLimit(timeLengthUpperLimit);
         }
         activityCreateParamDto.buildLoginUser(formData.getUid(), formData.getUname(), fid, orgName);

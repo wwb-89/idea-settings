@@ -43,6 +43,8 @@ public class MarketHandleService {
 	private TemplateQueryService templateQueryService;
 	@Resource
 	private WfwAppApiService wfwAppApiService;
+	@Resource
+	private MarketValidationService marketValidationService;
 
 	/**创建活动市场
 	 * @Description 
@@ -172,6 +174,23 @@ public class MarketHandleService {
 		activityMarket.updateValidate(operateUserDto);
 		marketMapper.update(activityMarket, new LambdaUpdateWrapper<Market>()
 			.eq(Market::getId, activityMarket.getId())
+		);
+	}
+
+	/**更新同时报名活动数量限制
+	 * @Description 
+	 * @author wwb
+	 * @Date 2021-08-18 16:16:46
+	 * @param marketId
+	 * @param signUpActivityLimit
+	 * @param operateUserDto
+	 * @return void
+	*/
+	public void updateSignUpActivityLimit(Integer marketId, Integer signUpActivityLimit, OperateUserDTO operateUserDto) {
+		marketValidationService.manageAble(marketId, operateUserDto);
+		marketMapper.update(null, new LambdaUpdateWrapper<Market>()
+				.eq(Market::getId, marketId)
+				.set(Market::getSignUpActivityLimit, signUpActivityLimit)
 		);
 	}
 

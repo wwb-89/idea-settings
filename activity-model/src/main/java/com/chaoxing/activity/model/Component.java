@@ -126,4 +126,32 @@ public class Component {
         return getSystem();
     }
 
+    /** 系统组件枚举
+     * @className Component
+     * @description 
+     * @author wwb
+     * @blame wwb
+     * @date 2021-08-20 17:54:40
+     * @version ver 1.0
+     */
+    @Getter
+    public enum SystemComponentCodeEnum {
+
+        /** 报名条件 */
+        SIGN_UP_CONDITION("报名条件", "sign_up_condition"),
+        SIGN_UP_FILL_INFO("报名填报信息", "sign_up_fill_info"),
+        COMPANY_SIGN_UP("企业报名", "company_sign_up"),
+        SIGN_UP("报名", "sign_up"),
+        SIGN_IN_OUT("签到", "sign_in_out");
+
+        private final String name;
+        private final String value;
+
+        SystemComponentCodeEnum(String name, String value) {
+            this.name = name;
+            this.value = value;
+        }
+
+    }
+
 }

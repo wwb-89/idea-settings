@@ -63,10 +63,6 @@ public class ActivityValidationService {
 		if (StringUtils.isEmpty(coverCloudId)) {
 			throw new BusinessException("活动封面不能为空");
 		}
-		Integer activityClassifyId = activity.getActivityClassifyId();
-		if (activityClassifyId == null) {
-			throw new BusinessException("活动分类不能为空");
-		}
 		// 定时发布活动
 		Boolean timingRelease = activity.getTimingRelease();
 		timingRelease = Optional.ofNullable(timingRelease).orElse(false);
@@ -280,7 +276,7 @@ public class ActivityValidationService {
 	}
 
 	/**能删除活动
-	 * @Description 
+	 * @Description
 	 * @author wwb
 	 * @Date 2020-11-11 16:08:08
 	 * @param activityId
@@ -288,7 +284,10 @@ public class ActivityValidationService {
 	 * @return com.chaoxing.activity.model.Activity
 	*/
 	public Activity deleteAble(Integer activityId, LoginUserDTO loginUser) {
-		Activity activity = activityExist(activityId);
+		return deleteAble(activityExist(activityId), loginUser);
+	}
+
+	public Activity deleteAble(Activity activity, LoginUserDTO loginUser) {
 		Integer createFid = activity.getCreateFid();
 		// 是不是创建者
 		boolean creator = isCreator(activity, loginUser.getUid());
@@ -313,9 +312,13 @@ public class ActivityValidationService {
 	*/
 	public Activity releaseAble(Integer activityId, LoginUserDTO loginUser) {
 		Activity activity = activityExist(activityId);
+		return releaseAble(activity, loginUser);
+	}
+
+	public Activity releaseAble(Activity activity, LoginUserDTO loginUser) {
 		Boolean released = activity.getReleased();
 		if (released) {
-			throw new ActivityReleasedException(activityId);
+			throw new ActivityReleasedException(activity.getId());
 		}
 		Integer createFid = activity.getCreateFid();
 		// 是不是创建者
@@ -373,6 +376,10 @@ public class ActivityValidationService {
 	*/
 	public Activity cancelReleaseAble(Integer activityId, LoginUserDTO loginUser) {
 		Activity activity = activityExist(activityId);
+		return cancelReleaseAble(activity, loginUser);
+	}
+
+	public Activity cancelReleaseAble(Activity activity, LoginUserDTO loginUser) {
 		Boolean released = activity.getReleased();
 		if (!released) {
 			throw new BusinessException("活动已下架");

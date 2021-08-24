@@ -82,6 +82,8 @@ public class SignApiService {
 	private static final String STAT_ACTIVITY_SUMMARY_URL = SIGN_API_DOMAIN + "/stat/sign/%d/activity-stat-summary";
 	/** 统计活动报名签到用户的未签数量 */
 	private static final String STAT_ACTIVITY_USER_NOT_SIGNED_IN_NUM = SIGN_API_DOMAIN + "/stat/sign/%d/user-not-signed-in-num";
+	/** 获取报名签到下的签到数量 */
+	private static final String COUNT_SIGN_SIGN_IN_NUM_URL = SIGN_API_DOMAIN + "/sign/%d/sign-in/num";
 
 	/** 根据外资源部externalIds查询报名签到signIds集合url  */
 	private static final String LIST_SIGN_ID_BY_PARTICIPATE_SCOPES_URL = SIGN_API_DOMAIN + "/sign/list/signIds/by-participate-scope";
@@ -94,9 +96,13 @@ public class SignApiService {
 	private static final String USER_IS_SIGNED_UP_URL = SIGN_API_DOMAIN + "/sign/%d/is-signed-up?uid=%d";
 	/** 用户报名签到统计汇总 */
 	private static final String USER_SIGN_STAT_SUMMARY_URL = SIGN_API_DOMAIN + "/stat/user/%d/sign/%d/sign-stat-summary";
+	/** 用户报名成功的报名签到id列表 */
+	private static final String USER_SIGNED_UP_SIGN_ID_URL = SIGN_API_DOMAIN + "/stat/user/%d/signId/signed-up";
 
 	/** 报名名单url */
 	private static final String SIGN_UP_USER_LIST_URL = SIGN_WEB_DOMAIN + "/sign-up/%d/user-list";
+	/** 提供信息表单字符串，创建报名表单url */
+	private static final String CONFIG_FORM_WITH_FIELDS = SIGN_WEB_DOMAIN + "/api/form/config/from-fields";
 	/** 用户报名签到参与情况url */
 	private static final String USER_SIGN_PARTICIPATION_URL = SIGN_API_DOMAIN + "/stat/sign/%d/user-participation?uid=%s";
 	/** 根据signId列表查询报名的人数 */
@@ -813,6 +819,53 @@ public class SignApiService {
 		return resultHandle(jsonObject, () -> jsonObject.getString("data"), (message) -> {
 			throw new BusinessException(message);
 		});
+	}
+
+	/**提供信息表单字符串，创建报名表单
+	* @Description
+	* @author huxiaolong
+	* @Date 2021-08-12 15:35:09
+	* @param fields
+	* @return java.lang.String
+	*/
+	public Integer createFormFillWithFields(String fields) {
+		HttpHeaders httpHeaders = new HttpHeaders();
+		httpHeaders.setContentType(MediaType.APPLICATION_JSON);
+		HttpEntity<String> httpEntity = new HttpEntity<>(fields, httpHeaders);
+		String result = restTemplate.postForObject(CONFIG_FORM_WITH_FIELDS, httpEntity, String.class);
+
+		JSONObject jsonObject = JSON.parseObject(result);
+		return resultHandle(jsonObject, () -> jsonObject.getInteger("data"), (message) -> {
+			throw new BusinessException(message);
+		});
+	}
+
+	/**获取报名签到下的签到数量
+	 * @Description 
+	 * @author wwb
+	 * @Date 2021-08-18 11:12:06
+	 * @param signId
+	 * @return java.lang.Integer
+	*/
+	public Integer countSignInNum(Integer signId) {
+		String url = String.format(COUNT_SIGN_SIGN_IN_NUM_URL, signId);
+		String result = restTemplate.getForObject(url, String.class);
+		JSONObject jsonObject = JSON.parseObject(result);
+		return resultHandle(jsonObject, () -> jsonObject.getInteger("data"), (message) -> new BusinessException(message));
+	}
+
+	/**查询用户报名成功的报名签到id列表
+	 * @Description 
+	 * @author wwb
+	 * @Date 2021-08-18 18:01:16
+	 * @param uid
+	 * @return java.util.List<java.lang.Integer>
+	*/
+	public List<Integer> listUserSignedUpSignIds(Integer uid) {
+		String url = String.format(USER_SIGNED_UP_SIGN_ID_URL, uid);
+		String result = restTemplate.getForObject(url, String.class);
+		JSONObject jsonObject = JSON.parseObject(result);
+		return resultHandle(jsonObject, () -> JSON.parseArray(jsonObject.getString("data"), Integer.class), (message) -> new BusinessException(message));
 	}
 
 }

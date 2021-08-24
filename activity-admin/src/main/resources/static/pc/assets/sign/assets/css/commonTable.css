@@ -856,7 +856,7 @@ body {
 }
 
 .el-dropdown-menu .el-dropdown-menu__item {
-  padding: 8px 16px;
+  /*padding: 8px 16px;*/
   line-height: 20px;
 }
 
