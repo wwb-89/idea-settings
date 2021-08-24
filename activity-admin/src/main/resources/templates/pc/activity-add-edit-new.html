@@ -451,6 +451,7 @@
                                                 </el-radio-group>
                                                 <template v-if="signUpMap[item.id].notAllowCancelType == 'custom'">
                                                     <el-date-picker
+                                                            style="margin-left: 10px"
                                                             v-model="signUpMap[item.id].notAllowCancelTime"
                                                             type="datetime"
                                                             format="yyyy-MM-dd HH:mm"
