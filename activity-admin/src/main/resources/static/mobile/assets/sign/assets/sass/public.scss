@@ -501,15 +501,7 @@ input{
 }
 @font-face {
   font-family: D-DIN;
-  src: url('../fontFamily/D-DIN.otf')
-  , url('../fontFamily/D-DIN-Bold.otf')
-  , url('../fontFamily/D-DINCondensed.otf')
-  , url('../fontFamily/D-DINCondensed-Bold.otf')
-  , url('../fontFamily/D-DINExp.otf')
-  , url('../fontFamily/D-DINExp-Bold.otf')
-  , url('../fontFamily/D-DINExp-Italic.otf')
-  , url('../fontFamily/SIL Open Font License.txt')
-  , url('../fontFamily/D-DIN-Italic.otf');
+  src: url('../fontFamily/D-DIN-Bold.otf');
   /* IE9+ */
 }
 
