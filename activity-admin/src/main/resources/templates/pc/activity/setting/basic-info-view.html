@@ -110,7 +110,7 @@
                 <el-form-item label="形式"><div class="txt">{{activity.activityType == "offline" ? "线下" : (activity.activityType == "online" ? "线上" : "")}}</div></el-form-item>
                 <el-form-item label="封面"><div class="txt"></div></el-form-item>
             </template>
-            <div class="footer">
+            <div class="footer" v-if="templateComponents.length > 0">
                 <div class="btn-box">
                     <button class="btn-main btn-width-80 edit-btn" @click="toEditPage">编辑</button>
                     <button class="btn-second-normal btn-width-80" @click="toWebTemplateConfig">页面配置</button>
