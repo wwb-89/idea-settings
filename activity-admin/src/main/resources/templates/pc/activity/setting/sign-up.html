@@ -42,170 +42,171 @@
 </head>
 <body>
     <div id="signUpVue" v-cloak>
-        <el-form class="basic-set" ref="form" v-for="(item, index) in templateComponents">
-            <div class="form-item">
-                <label class="label">{{item.name}}</label>
-                <div class="input-box">
-                    <div class="set-box">
-                        <el-switch v-model="signUpMap[item.id].enable" class="section-switch" @change="signUpEnableChanged(item.id)"></el-switch>
-                        <span class="tips">{{item.introduction}}</span>
-                    </div>
-                </div>
-            </div>
-            <template v-if="signUpMap[item.id].enable" v-for="(it, idx) in item.children">
-                <div class="form-item" v-if="it.code == 'sign_up_time_scope'">
-                    <label class="label cover"><img src="/static/pc/assets/images/required.png" th:src="@{/pc/assets/images/required.png}" class="required-img" v-if="it.required">{{it.name}}</label>
+        <el-form class="basic-set" ref="form">
+            <div v-for="(item, index) in templateComponents">
+                <div class="form-item">
+                    <label class="label">{{item.name}}</label>
                     <div class="input-box">
-                        <el-date-picker
-                                v-model="signUpMap[item.id] && signUpMap[item.id].startTime"
-                                type="datetime"
-                                format="yyyy-MM-dd HH:mm"
-                                value-format="timestamp"
-                                :clearable="false"
-                                :editable="false"
-                                :default-time="['00:00:00']"
-                                placeholder="开始时间">
-                        </el-date-picker>
-                        <span class="date-range-icon" style="line-height: 29px"><img src="/static/pc/assets/images/swap-right.png" th:src="@{/pc/assets/images/swap-right.png}"></span>
-                        <el-date-picker
-                                v-model="signUpMap[item.id] && signUpMap[item.id].endTime"
-                                type="datetime"
-                                format="yyyy-MM-dd HH:mm"
-                                value-format="timestamp"
-                                :clearable="false"
-                                :editable="false"
-                                :default-time="['23:59:59']"
-                                placeholder="结束时间">
-                        </el-date-picker>
-                        <span class="tips" v-if="it.introduction">{{it.introduction}}</span>
+                        <div class="set-box">
+                            <el-switch v-model="signUpMap[item.id].enable" class="section-switch" @change="signUpEnableChanged(item.id)"></el-switch>
+                            <span class="tips">{{item.introduction}}</span>
+                        </div>
                     </div>
                 </div>
-                <!-- wfw参与范围 -->
-                <div class="form-item flexStart" v-else-if="it.code == 'wfw_participation_scope'">
-                    <label class="label"><img src="/static/pc/assets/images/required.png" th:src="@{/pc/assets/images/required.png}" class="required-img" v-if="it.required">{{it.name}}</label>
-                    <div class="input-box" style="display: block">
-                        <div :class="{'autoRange': (!signUpMap[item.id].enableWfwParticipateScope)}">
-                            <el-radio v-model="signUpMap[item.id].enableWfwParticipateScope" :label="false" name="active-type">不限</el-radio>
-                            <el-radio v-model="signUpMap[item.id].enableWfwParticipateScope" :label="true" name="active-type">自定义</el-radio>
+                <template v-if="signUpMap[item.id].enable" v-for="(it, idx) in item.children">
+                    <div class="form-item" v-if="it.code == 'sign_up_time_scope'">
+                        <label class="label cover"><img src="/static/pc/assets/images/required.png" th:src="@{/pc/assets/images/required.png}" class="required-img" v-if="it.required">{{it.name}}</label>
+                        <div class="input-box">
+                            <el-date-picker
+                                    v-model="signUpMap[item.id] && signUpMap[item.id].startTime"
+                                    type="datetime"
+                                    format="yyyy-MM-dd HH:mm"
+                                    value-format="timestamp"
+                                    :clearable="false"
+                                    :editable="false"
+                                    :default-time="['00:00:00']"
+                                    placeholder="开始时间">
+                            </el-date-picker>
+                            <span class="date-range-icon" style="line-height: 29px"><img src="/static/pc/assets/images/swap-right.png" th:src="@{/pc/assets/images/swap-right.png}"></span>
+                            <el-date-picker
+                                    v-model="signUpMap[item.id] && signUpMap[item.id].endTime"
+                                    type="datetime"
+                                    format="yyyy-MM-dd HH:mm"
+                                    value-format="timestamp"
+                                    :clearable="false"
+                                    :editable="false"
+                                    :default-time="['23:59:59']"
+                                    placeholder="结束时间">
+                            </el-date-picker>
+                            <span class="tips" v-if="it.introduction">{{it.introduction}}</span>
                         </div>
-                        <div class="join-select" v-show="signUpMap[item.id].enableWfwParticipateScope">
-                            <img src="/static/pc/assets/images/add-circle.png" th:src="@{/pc/assets/images/add-circle.png}" class="add-range" @click="toAddSignUpParticipateScope(item.id, it)">
-                            <span v-if="signUpMap[item.id].wfwParticipateScopes.length <= 0">请选择</span>
-                            <div class="add-tags" v-else>
-                                <span v-for="(scope, scopeIndex) of signUpMap[item.id].wfwParticipateScopes">{{scope.externalName}}<i class="del_btn" @click="deleteSignUpParticipateScope(item.id, it, scopeIndex)"></i></span>
+                    </div>
+                    <!-- wfw参与范围 -->
+                    <div class="form-item flexStart" v-else-if="it.code == 'wfw_participation_scope'">
+                        <label class="label"><img src="/static/pc/assets/images/required.png" th:src="@{/pc/assets/images/required.png}" class="required-img" v-if="it.required">{{it.name}}</label>
+                        <div class="input-box" style="display: block">
+                            <div :class="{'autoRange': (!signUpMap[item.id].enableWfwParticipateScope)}">
+                                <el-radio v-model="signUpMap[item.id].enableWfwParticipateScope" :label="false" name="active-type">不限</el-radio>
+                                <el-radio v-model="signUpMap[item.id].enableWfwParticipateScope" :label="true" name="active-type">自定义</el-radio>
+                            </div>
+                            <div class="join-select" v-show="signUpMap[item.id].enableWfwParticipateScope">
+                                <img src="/static/pc/assets/images/add-circle.png" th:src="@{/pc/assets/images/add-circle.png}" class="add-range" @click="toAddSignUpParticipateScope(item.id, it)">
+                                <span v-if="signUpMap[item.id].wfwParticipateScopes.length <= 0">请选择</span>
+                                <div class="add-tags" v-else>
+                                    <span v-for="(scope, scopeIndex) of signUpMap[item.id].wfwParticipateScopes">{{scope.externalName}}<i class="del_btn" @click="deleteSignUpParticipateScope(item.id, it, scopeIndex)"></i></span>
+                                </div>
                             </div>
                         </div>
                     </div>
-                </div>
-                <!-- contacts参与范围 -->
-                <div class="form-item flexStart" v-else-if="it.code == 'contacts_participation_scope'">
-                    <label class="label"><img src="/static/pc/assets/images/required.png" th:src="@{/pc/assets/images/required.png}" class="required-img" v-if="it.required">{{it.name}}</label>
-                    <div class="input-box" style="display: block">
-                        <div :class="{'autoRange': (!signUpMap[item.id].enableContactsParticipateScope)}">
-                            <el-radio v-model="signUpMap[item.id].enableContactsParticipateScope" :label="false" name="active-type">不限</el-radio>
-                            <el-radio v-model="signUpMap[item.id].enableContactsParticipateScope" :label="true" name="active-type">自定义</el-radio>
-                        </div>
-                        <div class="join-select" v-show="signUpMap[item.id].enableContactsParticipateScope">
-                            <img src="/static/pc/assets/images/add-circle.png" th:src="@{/pc/assets/images/add-circle.png}" class="add-range" @click="toAddSignUpParticipateScope(item.id, it)">
-                            <span v-if="signUpMap[item.id].contactsParticipateScopes.length <= 0">请选择</span>
-                            <div class="add-tags" v-else>
-                                <span v-for="(scope, scopeIndex) of signUpMap[item.id].contactsParticipateScopes">{{scope.externalName}}<i class="del_btn" @click="deleteSignUpParticipateScope(item.id, it, scopeIndex)"></i></span>
+                    <!-- contacts参与范围 -->
+                    <div class="form-item flexStart" v-else-if="it.code == 'contacts_participation_scope'">
+                        <label class="label"><img src="/static/pc/assets/images/required.png" th:src="@{/pc/assets/images/required.png}" class="required-img" v-if="it.required">{{it.name}}</label>
+                        <div class="input-box" style="display: block">
+                            <div :class="{'autoRange': (!signUpMap[item.id].enableContactsParticipateScope)}">
+                                <el-radio v-model="signUpMap[item.id].enableContactsParticipateScope" :label="false" name="active-type">不限</el-radio>
+                                <el-radio v-model="signUpMap[item.id].enableContactsParticipateScope" :label="true" name="active-type">自定义</el-radio>
+                            </div>
+                            <div class="join-select" v-show="signUpMap[item.id].enableContactsParticipateScope">
+                                <img src="/static/pc/assets/images/add-circle.png" th:src="@{/pc/assets/images/add-circle.png}" class="add-range" @click="toAddSignUpParticipateScope(item.id, it)">
+                                <span v-if="signUpMap[item.id].contactsParticipateScopes.length <= 0">请选择</span>
+                                <div class="add-tags" v-else>
+                                    <span v-for="(scope, scopeIndex) of signUpMap[item.id].contactsParticipateScopes">{{scope.externalName}}<i class="del_btn" @click="deleteSignUpParticipateScope(item.id, it, scopeIndex)"></i></span>
+                                </div>
                             </div>
                         </div>
                     </div>
-                </div>
-                <div class="form-item" v-else-if="it.code == 'sign_up_person_limit'">
-                    <label class="label"><img src="/static/pc/assets/images/required.png" th:src="@{/pc/assets/images/required.png}" class="required-img" v-if="it.required">{{it.name}}</label>
-                    <div class="input-box">
-                        <div class="select-person-radio">
-                            <el-radio v-model="signUpMap[item.id].limitPerson" :label="false" name="active-type">不限</el-radio>
-                            <el-radio v-model="signUpMap[item.id].limitPerson" :label="true" name="active-type">自定义</el-radio>
-                        </div>
-                        <span class="tips" v-if="it.introduction">{{it.introduction}}</span>
-                        <input v-show="signUpMap[item.id].limitPerson" v-model="signUpMap[item.id].personLimit" type="number" min="1" step="1" maxlength="10" placeholder="请输入正整数" class="person"><span class="person-span" v-show="signUpMap[item.id].limitPerson">人</span>
-                    </div>
-                </div>
-                <div class="form-item align-start" v-else-if="it.code == 'sign_up_fill_info'">
-                    <label class="label"><img src="/static/pc/assets/images/required.png" th:src="@{/pc/assets/images/required.png}" class="required-img" v-if="it.required">{{it.name}}</label>
-                    <div class="input-box column">
-                        <div class="set-box">
-                            <el-switch v-model="signUpMap[item.id].fillInfo"></el-switch>
+                    <div class="form-item" v-else-if="it.code == 'sign_up_person_limit'">
+                        <label class="label"><img src="/static/pc/assets/images/required.png" th:src="@{/pc/assets/images/required.png}" class="required-img" v-if="it.required">{{it.name}}</label>
+                        <div class="input-box">
+                            <div class="select-person-radio">
+                                <el-radio v-model="signUpMap[item.id].limitPerson" :label="false" name="active-type">不限</el-radio>
+                                <el-radio v-model="signUpMap[item.id].limitPerson" :label="true" name="active-type">自定义</el-radio>
+                            </div>
                             <span class="tips" v-if="it.introduction">{{it.introduction}}</span>
-                        </div>
-                        <div v-if="signUpMap[item.id].formType == 'form'" class="set-box configurationForm" v-show="signUpMap[item.id].fillInfo" @click="toConfigForm(item.id)">
-                            <img src="/static/pc/assets/images/setting.png" th:src="@{/pc/assets/images/setting.png}">
-                            <span class="tips set-information">配置填报信息</span>
-                        </div>
-                        <div v-else class="set-box configurationForm" v-show="signUpMap[item.id].fillInfo" @click="toWfwFormConfig(item.id)">
-                            <img src="/static/pc/assets/images/setting.png" th:src="@{/pc/assets/images/setting.png}">
-                            <span class="tips set-information">配置填报信息</span>
+                            <input v-show="signUpMap[item.id].limitPerson" v-model="signUpMap[item.id].personLimit" type="number" min="1" step="1" maxlength="10" placeholder="请输入正整数" class="person"><span class="person-span" v-show="signUpMap[item.id].limitPerson">人</span>
                         </div>
                     </div>
-                </div>
-                <div class="form-item" v-else-if="it.code == 'sign_up_review'">
-                    <label class="label"><img src="/static/pc/assets/images/required.png" th:src="@{/pc/assets/images/required.png}" class="required-img" v-if="it.required">{{it.name}}</label>
-                    <div class="input-box">
-                        <div class="set-box">
-                            <el-switch v-model="signUpMap[item.id].openAudit"></el-switch>
-                            <span class="tips" v-if="it.introduction">{{it.introduction}}</span>
+                    <div class="form-item align-start" v-else-if="it.code == 'sign_up_fill_info'">
+                        <label class="label"><img src="/static/pc/assets/images/required.png" th:src="@{/pc/assets/images/required.png}" class="required-img" v-if="it.required">{{it.name}}</label>
+                        <div class="input-box column">
+                            <div class="set-box">
+                                <el-switch v-model="signUpMap[item.id].fillInfo"></el-switch>
+                                <span class="tips" v-if="it.introduction">{{it.introduction}}</span>
+                            </div>
+                            <div v-if="signUpMap[item.id].formType == 'form'" class="set-box configurationForm" v-show="signUpMap[item.id].fillInfo" @click="toConfigForm(item.id)">
+                                <img src="/static/pc/assets/images/setting.png" th:src="@{/pc/assets/images/setting.png}">
+                                <span class="tips set-information">配置填报信息</span>
+                            </div>
+                            <div v-else class="set-box configurationForm" v-show="signUpMap[item.id].fillInfo" @click="toWfwFormConfig(item.id)">
+                                <img src="/static/pc/assets/images/setting.png" th:src="@{/pc/assets/images/setting.png}">
+                                <span class="tips set-information">配置填报信息</span>
+                            </div>
                         </div>
                     </div>
-                </div>
-                <div class="form-item" v-else-if="it.code == 'sign_up_public_list'">
-                    <label class="label"><img src="/static/pc/assets/images/required.png" th:src="@{/pc/assets/images/required.png}" class="required-img" v-if="it.required">{{it.name}}</label>
-                    <div class="input-box">
-                        <div class="set-box">
-                            <el-switch v-model="signUpMap[item.id].publicList"></el-switch>
-                            <span class="tips" v-if="it.introduction">{{it.introduction}}</span>
-                        </div>
-                    </div>
-                </div>
-                <template v-else-if="it.code == 'sign_up_cancel_signed_up'">
-                    <div class="form-item">
+                    <div class="form-item" v-else-if="it.code == 'sign_up_review'">
                         <label class="label"><img src="/static/pc/assets/images/required.png" th:src="@{/pc/assets/images/required.png}" class="required-img" v-if="it.required">{{it.name}}</label>
                         <div class="input-box">
                             <div class="set-box">
-                                <el-switch v-model="signUpMap[item.id].endNotAllowCancel" @change="endNotAllowCancelChange(item.id)"></el-switch>
+                                <el-switch v-model="signUpMap[item.id].openAudit"></el-switch>
                                 <span class="tips" v-if="it.introduction">{{it.introduction}}</span>
                             </div>
                         </div>
                     </div>
-                    <div class="form-item" v-show="signUpMap[item.id].endNotAllowCancel">
-                        <label class="label"></label>
-                        <div class="input-box" >
+                    <div class="form-item" v-else-if="it.code == 'sign_up_public_list'">
+                        <label class="label"><img src="/static/pc/assets/images/required.png" th:src="@{/pc/assets/images/required.png}" class="required-img" v-if="it.required">{{it.name}}</label>
+                        <div class="input-box">
                             <div class="set-box">
-                                <el-radio-group v-model="signUpMap[item.id].notAllowCancelType">
-                                    <el-radio v-for="(item, index) of notAllowCancelTypes" :key="'not-allow-cancel-type' + index" :label="item.value">{{item.label}}</el-radio>
-                                </el-radio-group>
-                                <template v-if="signUpMap[item.id].notAllowCancelType == 'before_activity_start'">
-                                    <input type="number" min="0" step="1" v-model="signUpMap[item.id].notAllowCancelDays" style="margin-left: 8px; width: 120px; padding-left: 10px" class="score-input" @blur="cancelSignUpDaysValidate(item.id)">天
-                                </template>
+                                <el-switch v-model="signUpMap[item.id].publicList"></el-switch>
+                                <span class="tips" v-if="it.introduction">{{it.introduction}}</span>
+                            </div>
+                        </div>
+                    </div>
+                    <template v-else-if="it.code == 'sign_up_cancel_signed_up'">
+                        <div class="form-item">
+                            <label class="label"><img src="/static/pc/assets/images/required.png" th:src="@{/pc/assets/images/required.png}" class="required-img" v-if="it.required">{{it.name}}</label>
+                            <div class="input-box">
+                                <div class="set-box">
+                                    <el-switch v-model="signUpMap[item.id].endNotAllowCancel" @change="endNotAllowCancelChange(item.id)"></el-switch>
+                                    <span class="tips" v-if="it.introduction">{{it.introduction}}</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-item" v-show="signUpMap[item.id].endNotAllowCancel">
+                            <label class="label"></label>
+                            <div class="input-box" >
+                                <div class="set-box">
+                                    <el-radio-group v-model="signUpMap[item.id].notAllowCancelType">
+                                        <el-radio v-for="(item, index) of notAllowCancelTypes" :key="'not-allow-cancel-type' + index" :label="item.value">{{item.label}}</el-radio>
+                                    </el-radio-group>
+                                    <template v-if="signUpMap[item.id].notAllowCancelType == 'before_activity_start'">
+                                        <input type="number" min="0" step="1" v-model="signUpMap[item.id].notAllowCancelDays" style="margin-left: 8px; width: 120px; padding-left: 10px" class="score-input" @blur="cancelSignUpDaysValidate(item.id)">天
+                                    </template>
+                                </div>
+                            </div>
+                        </div>
+                    </template>
+                    <div class="form-item" v-else-if="it.code == 'on_site_sign_up'">
+                        <label class="label"><img src="/static/pc/assets/images/required.png" th:src="@{/pc/assets/images/required.png}" class="required-img" v-if="it.required">{{it.name}}</label>
+                        <div class="input-box">
+                            <div class="set-box">
+                                <el-switch v-model="signUpMap[item.id].onSiteSignUp"></el-switch>
+                                <span class="tips" v-if="it.introduction">{{it.introduction}}</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-item" v-else-if="it.code == 'sign_up_condition'">
+                        <label class="label"><img src="/static/pc/assets/images/required.png" th:src="@{/pc/assets/images/required.png}" class="required-img" v-if="it.required">{{it.name}}</label>
+                        <div class="input-box">
+                            <div class="set-box">
+                                <el-switch v-model="signUpConditionActiveMap[it.id]"></el-switch>
+                                <span class="tips" v-if="it.introduction">{{it.introduction}}</span>
                             </div>
                         </div>
                     </div>
                 </template>
-                <div class="form-item" v-else-if="it.code == 'on_site_sign_up'">
-                    <label class="label"><img src="/static/pc/assets/images/required.png" th:src="@{/pc/assets/images/required.png}" class="required-img" v-if="it.required">{{it.name}}</label>
-                    <div class="input-box">
-                        <div class="set-box">
-                            <el-switch v-model="signUpMap[item.id].onSiteSignUp"></el-switch>
-                            <span class="tips" v-if="it.introduction">{{it.introduction}}</span>
-                        </div>
-                    </div>
-                </div>
-                <div class="form-item" v-else-if="it.code == 'sign_up_condition'">
-                    <label class="label"><img src="/static/pc/assets/images/required.png" th:src="@{/pc/assets/images/required.png}" class="required-img" v-if="it.required">{{it.name}}</label>
-                    <div class="input-box">
-                        <div class="set-box">
-                            <el-switch v-model="signUpConditionActiveMap[it.id]"></el-switch>
-                            <span class="tips" v-if="it.introduction">{{it.introduction}}</span>
-                        </div>
-                    </div>
-                </div>
-            </template>
 
-            <el-divider v-if="index !== templateComponents.length - 1"></el-divider>
-
+                <el-divider v-if="index !== templateComponents.length - 1"></el-divider>
+            </div>
             <div class="btn-box-margin">
                 <button class="btn-main btn-width-80" @click="submitForm">保存</button>
             </div>
@@ -295,6 +296,7 @@
                         // 当前选择的参与范围类型
                         currGroupType: '',
                         DialogVisible:false,
+                        wfwFormConfigWindow: null
                     }
                 },
                 created: function () {
@@ -309,7 +311,8 @@
                             $this.$set($this.signUpMap[originId], 'pcUrl', data.pcUrl);
                             $this.$set($this.signUpMap[originId], 'wechatUrl', data.wechatUrl);
                             $this.$set($this.signUpMap[originId], 'fillInfoFormId', data.formId);
-                        }else {
+                            $this.wfwFormConfigWindow.close();
+                        } else {
                             try {
                                 var data = activityApp.getJsonObject(e.data);
                                 if ("sign_in_list" == data.type) {
@@ -553,7 +556,7 @@
                         }
                         app.ajaxPost(url,params, function (res) {
                             if (res.success) {
-                                window.open(res.data);
+                                $this.wfwFormConfigWindow = window.open(res.data);
                             } else {
                                 var errorMessage = res.message;
                                 if (activityApp.isEmpty(errorMessage)) {
