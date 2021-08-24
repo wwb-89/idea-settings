@@ -771,7 +771,8 @@
                 fullScreen: activityApp.getUrlParamter("fullScreen"),
                 showSignInListIframe: false,
                 scrollHeight: 0,
-                signInNum: 0
+                signInNum: 0,
+                wfwFormConfigWindow: null
             },
             created: function () {
                 var $this = this;
@@ -785,6 +786,7 @@
                         $this.$set($this.signUpMap[originId], 'pcUrl', data.pcUrl);
                         $this.$set($this.signUpMap[originId], 'wechatUrl', data.wechatUrl);
                         $this.$set($this.signUpMap[originId], 'fillInfoFormId', data.formId);
+                        $this.wfwFormConfigWindow.close();
                     }else {
                         try {
                             var data = activityApp.getJsonObject(e.data);
@@ -1815,7 +1817,7 @@
                     }
                     app.ajaxPost(url,params, function (res) {
                         if (res.success) {
-                            window.open(res.data);
+                            $this.wfwFormConfigWindow = window.open(res.data);
                         } else {
                             var errorMessage = res.message;
                             if (activityApp.isEmpty(errorMessage)) {
