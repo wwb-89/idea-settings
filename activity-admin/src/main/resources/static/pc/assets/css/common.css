@@ -98,15 +98,7 @@
 /* 特殊字体库 */
 @font-face {
     font-family: D-DIN;
-    src: url('../fontDIN/D-DIN.otf')
-    , url('../fontDIN/D-DIN-Bold.otf')
-    , url('../fontDIN/D-DINCondensed.otf')
-    , url('../fontDIN/D-DINCondensed-Bold.otf')
-    , url('../fontDIN/D-DINExp.otf')
-    , url('../fontDIN/D-DINExp-Bold.otf')
-    , url('../fontDIN/D-DINExp-Italic.otf')
-    , url('../fontDIN/SIL Open Font License.txt')
-    , url('../fontDIN/D-DIN-Italic.otf');
+    src: url("../fontDIN/D-DIN-Bold.otf");
 }
 
 
