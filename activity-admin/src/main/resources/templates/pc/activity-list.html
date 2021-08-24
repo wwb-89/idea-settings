@@ -322,9 +322,7 @@
                                             if (isDualSelect) {
                                                 activity.operations.push($this.operations.dualSelectStatExport);
                                             }
-                                            if (!$this.marketId) {
-                                                activity.operations.push($this.operations.delete);
-                                            }
+                                            activity.operations.push($this.operations.delete);
                                         }
                                     }
                                     break;
@@ -371,10 +369,10 @@
                                 } else {
                                     activity.operations.push($this.operations.setTop);
                                 }
-                                var existDelete = $.grep(activity.operations, function (it) {
+                                var existDeletes = $.grep(activity.operations, function (it) {
                                     return it.value == "delete";
                                 });
-                                if (!existDelete) {
+                                if (!existDeletes || existDeletes.length === 0) {
                                     activity.operations.push($this.operations.delete);
                                 }
                             }

@@ -60,7 +60,7 @@ public class SignUpCreateParamDTO {
 	/** 不允许取消报名的类型 */
 	private String notAllowCancelType;
 	/** 不允许取消报名的天数; */
-	private Integer notAllowCancelDays;
+	private Long notAllowCancelTime;
 	/** 是否开启现场报名; */
 	private Boolean onSiteSignUp;
 	/** 是否开启微服务参与范围 */

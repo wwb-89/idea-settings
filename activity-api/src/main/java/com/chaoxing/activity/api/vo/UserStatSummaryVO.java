@@ -1,6 +1,7 @@
 package com.chaoxing.activity.api.vo;
 
 import com.chaoxing.activity.model.UserStatSummary;
+import com.chaoxing.activity.util.DateUtils;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -72,7 +73,7 @@ public class UserStatSummaryVO {
                 .studentNo(userStatSummary.getStudentNo())
                 .organizationStructure(userStatSummary.getOrganizationStructure())
                 .signedUpNum(userStatSummary.getSignedUpNum())
-                .signUpTime(Optional.ofNullable(userStatSummary.getSignUpTime()).map(v -> v.toInstant(ZoneOffset.of("+8")).toEpochMilli()).orElse(null))
+                .signUpTime(DateUtils.date2Timestamp(userStatSummary.getSignUpTime()))
                 .signedInNum(userStatSummary.getSignedInNum())
                 .ratingNum(userStatSummary.getRatingNum())
                 .integral(userStatSummary.getIntegral())

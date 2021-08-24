@@ -180,7 +180,7 @@ public class ActivityCreateParamDTO {
 				.credit(activity.getCredit())
 				.timeLengthUpperLimit(activity.getTimeLengthUpperLimit())
 				.timingRelease(activity.getTimingRelease())
-				.timingReleaseTimeStamp(Optional.ofNullable(timingReleaseTime).map(v -> timingReleaseTime.toInstant(ZoneOffset.of("+8")).toEpochMilli()).orElse(null))
+				.timingReleaseTimeStamp(timingReleaseTime == null ? null : timingReleaseTime.toInstant(ZoneOffset.of("+8")).toEpochMilli())
 				.createAreaCode(activity.getCreateAreaCode())
 				.tags(activity.getTags())
 				.openRating(activity.getOpenRating())

@@ -447,10 +447,19 @@
                                             <label class="label"></label>
                                             <div class="input-box" >
                                                 <el-radio-group v-model="signUpMap[item.id].notAllowCancelType">
-                                                    <el-radio v-for="(item, index) of notAllowCancelTypes" :key="'not-allow-cancel-type' + index" :label="item.value">{{item.label}}</el-radio>
+                                                    <el-radio v-for="(type, i) of notAllowCancelTypes" :key="'not-allow-cancel-type' + i" :label="type.value" @change="notAllowCancelTypeChange(item.id)">{{type.label}}</el-radio>
                                                 </el-radio-group>
-                                                <template v-if="signUpMap[item.id].notAllowCancelType == 'before_activity_start'">
-                                                    <input type="number" min="0" step="1" v-model="signUpMap[item.id].notAllowCancelDays" style="margin-left: 8px" class="score-input" @blur="cancelSignUpDaysValidate(item.id)">天
+                                                <template v-if="signUpMap[item.id].notAllowCancelType == 'custom'">
+                                                    <el-date-picker
+                                                            v-model="signUpMap[item.id].notAllowCancelTime"
+                                                            type="datetime"
+                                                            format="yyyy-MM-dd HH:mm"
+                                                            value-format="timestamp"
+                                                            :clearable="false"
+                                                            :editable="false"
+                                                            :default-time="['00:00:00']"
+                                                            placeholder="不可取消报名时间">
+                                                    </el-date-picker>
                                                 </template>
                                             </div>
                                         </div>
@@ -724,7 +733,7 @@
                 notAllowCancelTypes: [
                     {value: 'after_sign_up_end', label: '报名结束后'},
                     {value: 'after_activity_start', label: '活动开始后'},
-                    {value: 'before_activity_start', label: '活动开始前'}
+                    {value: 'custom', label: '自定义'}
                 ],
                 // 签到: { originId: signIn }
                 signInMap: {},
@@ -979,7 +988,6 @@
                         $this.$set($this.sign.signUps[i], "endNotAllowCancel", !this.endAllowCancel);
                         if (!this.endAllowCancel && !this.notAllowCancelType) {
                             $this.$set($this.sign.signUps[i], "notAllowCancelType", $this.notAllowCancelTypes[0].value);
-                            $this.$set($this.sign.signUps[i], "notAllowCancelDays", 0);
                         }
                         if (!activityApp.isEmpty(this.id) && signUpTplComponentIds.indexOf(this.originId) != -1) {
                             if (this.wfwParticipateScopes) {
@@ -1118,21 +1126,18 @@
                         }
                     });
                 },
-                cancelSignUpDaysValidate: function (signUpTplComponentId) {
-                    var $this = this;
-                    var days = $this.signUpMap[signUpTplComponentId].notAllowCancelDays || 0;
-
-                    try {
-                        $this.signUpMap[signUpTplComponentId].notAllowCancelDays = parseInt(days);
-                    } catch (e) {
-                        $this.signUpMap[signUpTplComponentId].notAllowCancelDays = 0;
-                    }
-                },
                 endNotAllowCancelChange: function (signUpTplComponentId) {
                     var $this = this;
                     if ($this.signUpMap[signUpTplComponentId].endNotAllowCancel && !$this.signUpMap[signUpTplComponentId].notAllowCancelType) {
                         $this.$set($this.signUpMap[signUpTplComponentId], "notAllowCancelType", $this.notAllowCancelTypes[0].value);
-                        $this.$set($this.signUpMap[signUpTplComponentId], "notAllowCancelDays", 0);
+                        $this.$set($this.signUpMap[signUpTplComponentId], "notAllowCancelTime", null);
+                    }
+                },
+                notAllowCancelTypeChange: function (signUpTplComponentId) {
+                    var $this = this;
+                    var value = $this.signUpMap[signUpTplComponentId].notAllowCancelType;
+                    if (value == "custom" && !$this.signUpMap[signUpTplComponentId].notAllowCancelTime) {
+                        $this.$set($this.signUpMap[signUpTplComponentId], "notAllowCancelTime", $this.activity.startTimeStamp);
                     }
                 },
                 periodChange: function () {
@@ -1524,6 +1529,10 @@
                             }
                             if (signUp.endNotAllowCancel) {
                                 if (activityApp.isEmpty(signUp.notAllowCancelType)) {
+                                    app.showMsg("请选择"+ signUp.name +"不允许取消报名类型");
+                                    return false;
+                                }
+                                if (activityApp.isEmpty(signUp.notAllowCancelTime)) {
                                     app.showMsg("请选择"+ signUp.name +"不允许取消报名时间");
                                     return false;
                                 }
