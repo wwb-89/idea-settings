@@ -24,12 +24,12 @@
 <body>
     <div id="basicInfoVue" v-cloak>
         <el-form class="basic-show" ref="form" label-width="74px" onsubmit="return false">
-            <template v-for="item in templateComponents">
+            <template v-if="templateComponents.length > 0" v-for="item in templateComponents">
                 <template v-if="item.code == 'activity_type'">
                     <el-form-item :label="item.name">
-                        <div class="txt">{{activity.activityType == "offline" ? "线下" : "线上"}}</div>
+                        <div class="txt">{{activity.activityType == "offline" ? "线下" : (activity.activityType == "online" ? "线上" : "")}}</div>
                     </el-form-item>
-                    <el-form-item v-show="activity.activityType == 'offline' && (isNotEmpty(activity.address) || isNotEmpty(activity.detailAddress))" label="位置">
+                    <el-form-item v-show="activity.activityType != 'online'" label="位置">
                         <div class="txt">{{activity.address || ""}}{{activity.detailAddress || ""}}</div>
                     </el-form-item>
                 </template>
@@ -38,17 +38,17 @@
                         <div class="richtext" v-html="activity.introduction"></div>
                     </div>
                 </el-form-item>
-                <el-form-item :label="item.name" v-else-if="item.code == 'activity_name'" v-show="isNotEmpty(activity.name)">
+                <el-form-item :label="item.name" v-else-if="item.code == 'activity_name'">
                     <div class="txt">
                         {{activity.name}}
                     </div>
                 </el-form-item>
-                <el-form-item :label="item.name" v-else-if="item.code == 'activity_cover'" v-show="isNotEmpty(activity.coverUrl) || isNotEmpty(activity.coverCloudId)">
-                    <div class="img-box js-crop-img">
+                <el-form-item :label="item.name" v-else-if="item.code == 'activity_cover'">
+                    <div class="img-box js-crop-img" v-if="isNotEmpty(activity.coverUrl) || isNotEmpty(activity.coverCloudId)">
                         <img :src="activity | getCloudImgUrl" class="cover-img jqthumbImg" height="100%">
                     </div>
                 </el-form-item>
-                <el-form-item :label="item.name" v-else-if="item.code == 'activity_time_scope'" v-show="isNotEmpty(activity.startTimeStamp)">
+                <el-form-item :label="item.name" v-else-if="item.code == 'activity_time_scope'">
                     <div class="txt">
                         {{activity.startTimeStamp | timestampScopeFormat(activity.endTimeStamp)}}
                     </div>
@@ -56,11 +56,6 @@
                 <el-form-item :label="item.name" v-else-if="item.code == 'activity_organisers'" v-show="isNotEmpty(activity.organisers)">
                     <div class="txt">
                         {{activity.organisers}}
-                    </div>
-                </el-form-item>
-                <el-form-item :label="item.name" v-else-if="item.code == 'activity_type'" v-show="isNotEmpty(activity.activityType)">
-                    <div class="txt">
-                        {{activity.activityType}}
                     </div>
                 </el-form-item>
                 <el-form-item :label="item.name" v-else-if="item.code == 'activity_classify'" v-show="isNotEmpty(activity.activityClassifyName)">
@@ -108,6 +103,12 @@
                         {{activityComponentValueMap[item.id] && activityComponentValueMap[item.id].value}}
                     </div>
                 </el-form-item>
+            </template>
+            <template v-else>
+                <el-form-item label="名称"><div class="txt">{{activity.name}}</div></el-form-item>
+                <el-form-item label="时间"><div class="txt">{{activity.startTimeStamp | timestampScopeFormat(activity.endTimeStamp)}}</div></el-form-item>
+                <el-form-item label="形式"><div class="txt">{{activity.activityType == "offline" ? "线下" : (activity.activityType == "online" ? "线上" : "")}}</div></el-form-item>
+                <el-form-item label="封面"><div class="txt"></div></el-form-item>
             </template>
             <div class="footer">
                 <div class="btn-box">
