@@ -540,6 +540,10 @@
                     // 万能表单
                     toWfwFormConfig: function (signUpTplComponentId) {
                         var $this = this;
+                        if ($this.wfwFormConfigWindow && !$this.wfwFormConfigWindow.closed) {
+                            app.showMsg("请先关闭上一个填报信息配置页面");
+                            return;
+                        }
                         var signUp = $this.signUpMap[signUpTplComponentId];
                         var formId = "";
                         $this.operateSignUpOriginId = signUpTplComponentId;
