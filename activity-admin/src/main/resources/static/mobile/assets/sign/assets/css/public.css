@@ -559,8 +559,8 @@ input {
 }
 
 @font-face {
-  font-family: DIN-Medium;
-  src: url("../fontFamily/DIN-Medium.ttf"), url("../fontFamily/DIN-Medium.eot");
+  font-family: D-DIN;
+  src:  url('../fontFamily/D-DIN-Bold.otf');
   /* IE9+ */
 }
 

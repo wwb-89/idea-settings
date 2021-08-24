@@ -97,8 +97,8 @@
 
 /* 特殊字体库 */
 @font-face {
-    font-family: DINNext;
-    src: url(../fontDIN/DINNextLTW23Medium.ttf); /* IE9+ */
+    font-family: D-DIN;
+    src: url("../fontDIN/D-DIN-Bold.otf");
 }
 
 
@@ -409,7 +409,7 @@ header{
     line-height: 30px;
     display: inline-block;
     vertical-align: middle;
-    font-family: DINNext;
+    font-family: D-DIN;
     letter-spacing: -2px;
 }
 .content1 .count-li .count-unit{
