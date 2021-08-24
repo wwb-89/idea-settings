@@ -458,7 +458,7 @@ public class ActivityApiController {
 	* @param activityCreateDTO
 	* @return com.chaoxing.activity.dto.RestRespDTO
 	*/
-	@RequestMapping("{activityId}/partial-info/update")
+	@RequestMapping("/partial-info/update")
 	public RestRespDTO updatePartialActivityInfo(@RequestBody ActivityCreateDTO activityCreateDTO) {
 		PassportUserDTO passportUserDTO = passportApiService.getByUid(activityCreateDTO.getUid());
 		LoginUserDTO loginUserDTO = LoginUserDTO.buildDefault(activityCreateDTO.getUid(), passportUserDTO.getRealName(), activityCreateDTO.getFid(), "");

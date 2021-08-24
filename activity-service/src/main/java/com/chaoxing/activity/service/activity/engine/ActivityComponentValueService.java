@@ -51,6 +51,9 @@ public class ActivityComponentValueService {
     @Transactional(rollbackFor = Exception.class)
     public void updateActivityComponentValues(Integer activityId, List<ActivityComponentValueDTO> activityComponentValues) {
         List<ActivityComponentValueDTO> waitSaveData = Lists.newArrayList();
+        if (CollectionUtils.isEmpty(activityComponentValues)) {
+            return;
+        }
         activityComponentValues.forEach(v -> {
             if (v.getId() == null) {
                 waitSaveData.add(v);
