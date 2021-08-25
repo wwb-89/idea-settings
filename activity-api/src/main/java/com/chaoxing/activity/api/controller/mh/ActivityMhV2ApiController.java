@@ -55,7 +55,7 @@ public class ActivityMhV2ApiController {
 	/**活动信息
 	 * @Description 
 	 * @author wwb
-	 * @Date 2021-08-25 16:01:04
+	 * @Date 2021-08-25 16:14:56
 	 * @param data
 	 * @return com.chaoxing.activity.dto.RestRespDTO
 	*/
