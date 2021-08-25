@@ -35,7 +35,7 @@
                     <label class="label">违约上限</label>
                     <div class="input-box">
                         <span class="lineTips">已报名的活动，用户未签到或未签退</span>
-                        <el-select v-model="blacklistRule.notSignInUpperLimit" size="small" class="width120" placeholder="不限" @change="signUpActivityLimitChange">
+                        <el-select v-model="blacklistRule.notSignInUpperLimit" size="small" class="width120" placeholder="不限">
                             <el-option v-for="(item, index) of blacklistNumbers" :key="'blacklist-number-' + index" :label="item.name" :value="item.value"></el-option>
                         </el-select>
                         <span class="lineTips">次进入黑名单</span>
@@ -104,7 +104,7 @@
                         {name: "10", value: 10}
                     ];
                     $this.blacklistNumbers = [
-                        {name: "不限", value: 0},
+                        {name: "不限", value: null},
                         {name: "1", value: 1},
                         {name: "2", value: 2},
                         {name: "3", value: 3},
