@@ -24,7 +24,7 @@
 <body>
     <div id="basicInfoVue" v-cloak>
         <el-form class="basic-show" ref="form" label-width="74px" onsubmit="return false">
-            <template v-for="(code, index) in additionRequiredFields">
+            <template v-if="additionRequiredFields.length > 0" v-for="(code, index) in additionRequiredFields">
                 <el-form-item label="名称" v-if="code == 'activity_name'">
                     <div class="txt">{{activity.name}}</div>
                 </el-form-item>
@@ -45,7 +45,7 @@
                     </div>
                 </el-form-item>
             </template>
-            <template v-for="item in templateComponents">
+            <template v-if="templateComponents.length > 0" v-for="item in templateComponents">
                 <template v-if="item.code == 'activity_type'">
                     <el-form-item :label="item.name">
                         <div class="txt">{{activity.activityType == "offline" ? "线下" : (activity.activityType == "online" ? "线上" : "")}}</div>
@@ -104,7 +104,7 @@
                         {{activity.timeLengthUpperLimit}}
                     </div>
                 </el-form-item>
-                <el-form-item :label="item.name" v-else-if="item.code == 'activity_release_scope'" v-show="isNotEmpty(activity.participateScopes)">
+                <el-form-item :label="item.name" v-else-if="item.code == 'activity_release_scope'" v-show="isNotEmpty(participateScopes)">
                     <div class="txt">
                         {{participateScopes | releaseScopeFormat}}
                     </div>

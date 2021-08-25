@@ -55,7 +55,7 @@
 <body>
 <div id="activity-vue" v-cloak>
     <form action="" class="basic-show" onsubmit="return false;">
-        <template v-for="(code, index) in additionRequiredFields">
+        <template v-if="additionRequiredFields.length > 0" v-for="(code, index) in additionRequiredFields">
             <div class="form-item" v-if="code == 'activity_name'">
                 <label class="label"><img src="/static/pc/assets/images/required.png" th:src="@{/pc/assets/images/required.png}" class="required-img">名称</label>
                 <div class="input-box">
@@ -122,7 +122,7 @@
                 </div>
             </div>
         </template>
-        <template v-for="(item, index) in templateComponents">
+        <template v-if="templateComponents.length > 0" v-for="(item, index) in templateComponents">
             <div class="form-item" v-if="item.code == 'activity_name'">
                 <label class="label"><img src="/static/pc/assets/images/required.png" th:src="@{/pc/assets/images/required.png}" class="required-img" v-if="item.required">{{item.name}}</label>
                 <div class="input-box">
