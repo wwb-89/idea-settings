@@ -566,6 +566,14 @@
                     if (this.code == 'introduction') {
                         $this.needInitEditor =true
                     }
+                    if (this.type == 'text' || this.type == 'checkbox' || this.type == 'radio') {
+                        $this.$set($this.activityComponentValueMap, this.id, {
+                            activityId: $this.activity.id,
+                            tplComponentId: this.id,
+                            componentId: this.componentId,
+                            value: ''
+                        })
+                    }
                 });
                 $(requiredFieldCodes).each(function (i) {
                     var code = requiredFieldCodes[i];
@@ -585,7 +593,6 @@
                         $this.$set($this.activityComponentValueMap, this.templateComponentId, componentField);
                     });
                 }
-
                 $this.$set($this.activity, "timeScope", [$this.activity.startTimeStamp, $this.activity.endTimeStamp]);
                 // 标签
                 var tags = $this.activity.tags;
