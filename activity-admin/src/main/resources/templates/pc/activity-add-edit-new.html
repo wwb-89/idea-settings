@@ -232,11 +232,11 @@
                         <div class="form-item align-start" v-else-if="item.code == 'sign_in_out'">
                             <label class="label">{{item.name}}</label>
                             <div class="input-box wrap">
-                                <div class="already_add" v-show="participatedOrgs.length > 0">
+                                <div class="already_add" v-show="participatedOrgs.length > 0" @click="toSignInList">
                                     <div>
                                         已发布{{signInNum}}个签到
                                     </div>
-                                    <img src="/static/pc/assets/images/edit-3.png" th:src="@{/pc/assets/images/edit-3.png}" @click="toSignInList">
+                                    <img src="/static/pc/assets/images/edit-3.png" th:src="@{/pc/assets/images/edit-3.png}">
                                 </div>
                                 <span class="tips" v-if="item.introduction">{{item.introduction}}</span>
                             </div>

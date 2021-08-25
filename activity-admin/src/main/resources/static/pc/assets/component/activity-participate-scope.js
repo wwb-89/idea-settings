@@ -15,7 +15,6 @@ Vue.component('vue-activity-participate-scope', {
         "            <div class='tree'>\n" +
         "                <div class='tree-head'>\n" +
         "                    <span>选择发布的范围</span>\n" +
-        "                    <div class='already'>已选<span style='margin-left: 5px;'>{{selectedOrgs.length}}</span></div>\n" +
         "                </div>\n" +
         "                <div class='tree-box'>\n" +
         "                    <div id='organizationTree' class='ztree'></div>\n" +

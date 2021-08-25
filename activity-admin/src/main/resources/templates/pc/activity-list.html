@@ -180,7 +180,7 @@
                                         <img src="/static/pc/assets/images/more-vertical2.png" th:src="@{/pc/assets/images/more-vertical2.png}">
                                       </span>
                                     <el-dropdown-menu slot="dropdown">
-                                        <el-dropdown-item v-if="index > 2" v-for="(operation, index) of scope.row.operations" :key="'operation-' + index"><p @click="operateProxy(scope.row, operation.value)">{{operation.name}}</p></el-dropdown-item>
+                                        <el-dropdown-item v-if="index > 2" v-for="(operation, index) of scope.row.operations" :key="'operation-' + index" @click.native="operateProxy(scope.row, operation.value)">{{operation.name}}</el-dropdown-item>
                                     </el-dropdown-menu>
                                 </el-dropdown>
                             </div>

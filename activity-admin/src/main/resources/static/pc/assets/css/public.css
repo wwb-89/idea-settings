@@ -1,4 +1,5 @@
 @charset "UTF-8";
+
 * {
   margin: 0;
   padding: 0;
@@ -367,4 +368,13 @@ input:-ms-input-placeholder, textarea:-ms-input-placeholder {
 .el-switch.is-checked .el-switch__core{
   border-color: #0084FF;
   background-color: #0084FF;
+}
+.marginRight24 {
+  margin-right: 24px;
+}
+.html{
+  background: #FFFFFF;
+}
+.layui-layer-shade {
+  background: rgba(255, 255, 255,0.5)!important;
 }
