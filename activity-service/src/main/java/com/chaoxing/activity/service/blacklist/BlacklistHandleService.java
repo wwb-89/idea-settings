@@ -73,8 +73,12 @@ public class BlacklistHandleService {
             blacklistRuleMapper.insert(blacklistRule);
         } else {
             // 修改
-            blacklistRule.setId(existBlacklistRule.getId());
-            blacklistRuleMapper.updateById(blacklistRule);
+            blacklistRuleMapper.update(null, new LambdaUpdateWrapper<BlacklistRule>()
+                    .eq(BlacklistRule::getId, existBlacklistRule.getId())
+                    .set(BlacklistRule::getNotSignInUpperLimit, blacklistRule.getNotSignInUpperLimit())
+                    .set(BlacklistRule::getEnableAutoRemove, blacklistRule.getEnableAutoRemove())
+                    .set(BlacklistRule::getAutoRemoveHours, blacklistRule.getAutoRemoveHours())
+            );
         }
     }
 

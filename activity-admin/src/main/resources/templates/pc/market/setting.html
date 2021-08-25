@@ -124,18 +124,7 @@
                 watch: {
                     "blacklistRule.notSignInUpperLimit": function (newVal, oldVal) {
                         var $this = this;
-                        if (activityApp.isEmpty(oldVal)) {
-                            oldVal = "";
-                        }
-                        if (!activityApp.isEmpty(newVal)) {
-                            try {
-                                newVal = parseInt(newVal);
-                            } catch (e) {
-                            }
-                        }
-                        if (!/^[1-9]\d{0,1}$/.test(newVal) && !activityApp.isEmpty(newVal)) {
-                            $this.$set($this.blacklistRule, "notSignInUpperLimit", oldVal);
-                        }
+                        $this.updateBlacklistRule();
                     },
                     "blacklistRule.autoRemoveHours": function (newVal, oldVal) {
                         var $this = this;
