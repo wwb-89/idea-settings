@@ -55,6 +55,21 @@ public class ActivityMhV2ApiController {
 	/**活动信息
 	 * @Description 
 	 * @author wwb
+	 * @Date 2021-08-25 16:01:04
+	 * @param data
+	 * @return com.chaoxing.activity.dto.RestRespDTO
+	*/
+	@RequestMapping("activity/info")
+	public RestRespDTO activityInfo(@RequestBody(required = false) String data) {
+		JSONObject params = JSON.parseObject(data);
+		Integer websiteId = params.getInteger("websiteId");
+		// 根据websiteId查询活动id
+		Activity activity = activityQueryService.getByWebsiteId(websiteId);
+		return activityInfo(activity.getId(), data);
+	}
+	/**活动信息
+	 * @Description 
+	 * @author wwb
 	 * @Date 2021-04-02 15:14:24
 	 * @param activityId
 	 * @param data
