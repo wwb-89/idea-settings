@@ -4,17 +4,17 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="../assets/lib/element-ui/lib/theme-chalk/index.css">
     <link rel="stylesheet" href="../assets/css/activityHomePage.css">
     <title>创建活动</title>
-    <style>
-    </style>
 </head>
 
 <body>
-    <div class="container">
+    <div class="container" id="vue">
         <div class="slider">
             <div class="title">
                 <span>成都少儿阅读活动</span>
+                <i class="icon-qr-code" v-on:click="dialogQrCodeVisible=true"></i>
             </div>
             <div class="menu">
                 <div class="entry menu-item">
@@ -72,41 +72,81 @@
             </div>
         </div>
         <div class="content">
-            <iframe id="ifr" src="test2.html"></iframe>
+<!--            <iframe id="ifr" src="test2.html"></iframe>-->
         </div>
+        <!--正常二维码-->
+        <el-dialog
+                :visible.sync="dialogQrCodeVisible"
+                    custom-class="qrCode-dialog"
+                width="428px"
+                center>
+            <div class="inner">
+                <div id="qrCode"></div>
+                <p class="tips">扫码访问</p>
+            </div>
+
+        </el-dialog>
     </div>
-
-    <script src="../assets/lib/jquery.min.js"></script>
-    <script>
-        window.onload = function () {
-            resizePageHeight();
-        };
-
-        function resizePageHeight () {
-            // container的最小高度
-            var containerMinHeight = $(".container").css("min-height");
-            containerMinHeight = containerMinHeight.replace(/px/gi, "");
-            var containerHeight = $(".container").height();
-            // 窗口的高度
-            var windowHeight = $(window).height() - 40;
-            // iframe的高度
-            var iframeHeight = $("#content").height();
-            // iframe中内容的真实高度
-            var iframeContentHeight = $("#content").contents().find("body").find("div:first-child").height() + 24;
-            // container应该取最大高度
-            var maxHeight = containerMinHeight > containerHeight ? containerMinHeight : containerHeight;
-            maxHeight = maxHeight > windowHeight ? maxHeight : windowHeight;
-            maxHeight = maxHeight > iframeHeight ? maxHeight : iframeHeight;
-            maxHeight = maxHeight > iframeContentHeight ? maxHeight : iframeContentHeight;
-            // 如果窗口高度能满足最大高度就是用窗口高度
-            if (windowHeight > iframeContentHeight) {
-                maxHeight = windowHeight;
-            }
-            $(".container").height(maxHeight);
-            $("#content").height(maxHeight);
-            $("#content").contents().find("body").height(maxHeight);
-        }
-    </script>
 </body>
-
 </html>
+<script type="text/javascript" src="../assets/lib/jquery.min.js"></script>
+<script src="../../assets/js/vue.min.js"></script>
+<script src="../assets/lib/layui/layui.js"></script>
+<script src="../assets/lib/element-ui/lib/index.js"></script>
+<script src="../assets/lib/jquery.qrcode.min.js"></script>
+<script>
+    window.onload = function () {
+        resizePageHeight();
+    };
+
+    function resizePageHeight () {
+        // container的最小高度
+        var containerMinHeight = $(".container").css("min-height");
+        containerMinHeight = containerMinHeight.replace(/px/gi, "");
+        var containerHeight = $(".container").height();
+        // 窗口的高度
+        var windowHeight = $(window).height() - 40;
+        // iframe的高度
+        var iframeHeight = $("#content").height();
+        // iframe中内容的真实高度
+        var iframeContentHeight = $("#content").contents().find("body").find("div:first-child").height() + 24;
+        // container应该取最大高度
+        var maxHeight = containerMinHeight > containerHeight ? containerMinHeight : containerHeight;
+        maxHeight = maxHeight > windowHeight ? maxHeight : windowHeight;
+        maxHeight = maxHeight > iframeHeight ? maxHeight : iframeHeight;
+        maxHeight = maxHeight > iframeContentHeight ? maxHeight : iframeContentHeight;
+        // 如果窗口高度能满足最大高度就是用窗口高度
+        if (windowHeight > iframeContentHeight) {
+            maxHeight = windowHeight;
+        }
+        $(".container").height(maxHeight);
+        $("#content").height(maxHeight);
+        $("#content").contents().find("body").height(maxHeight);
+    }
+
+    var vm = new Vue({
+        el: '#vue',
+        data: function () {
+            return {
+                dialogQrCodeVisible:true,
+            }
+        },
+        created: function () {
+
+
+        },
+        mounted: function () {
+            this.$nextTick(function (){
+                $('#qrCode').qrcode({
+                    text: "http://www.jq22.com",
+                    width: 300,
+                    height: 300
+                });
+            });
+
+        },
+        methods: {
+        }
+    });
+
+</script>
