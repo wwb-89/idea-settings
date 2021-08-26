@@ -4,6 +4,7 @@
     <title th:text="${activity.name}">活动主页</title>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="/static/pc/assets/lib/element-ui/lib/theme-chalk/index.css" th:href="@{/pc/assets/lib/element-ui/lib/theme-chalk/index.css}">
     <link rel="stylesheet" href="/static/pc/assets/css/activityHomePage.css" th:href="@{/pc/assets/css/activityHomePage.css}">
     <style type="text/css">
         [v-cloak] {
@@ -16,6 +17,7 @@
     <div class="slider">
         <div class="title">
             <span th:text="${activity.name}" style="cursor: pointer;" @click="activityHome"></span>
+            <i class="icon-qr-code" @click="showActivityHomeQrcode"></i>
         </div>
         <div class="menu">
             <div class="entry menu-item" v-show="menuShow('sign_up') || menuShow('sign_in')">
@@ -66,12 +68,25 @@
             </div>
         </div>
     </div>
+    <!--活动主页二维码-->
+    <el-dialog
+            :visible.sync="activityHomeQrcodeShow"
+            custom-class="qrCode-dialog"
+            width="428px"
+            center>
+        <div class="inner">
+            <div id="qrCode"></div>
+            <p class="tips">扫码访问</p>
+        </div>
+    </el-dialog>
     <div class="content">
         <iframe id="content" src=""></iframe>
     </div>
 </div>
 <div th:replace="pc/include/common_js :: common_js(~{::script})">
-
+    <script src="/static/pc/assets/lib/layui/layui.js" th:src="@{/pc/assets/lib/layui/layui.js}"></script>
+    <script src="/static/pc/assets/lib/element-ui/lib/index.js" th:src="@{/pc/assets/lib/element-ui/lib/index.js}"></script>
+    <script src="/static/pc/assets/lib/jquery.qrcode.min.js" th:src="@{/pc/assets/lib/jquery.qrcode.min.js}"></script>
     <script th:inline="javascript">
         activityVue = new Vue({
             el: "#activity-vue",
@@ -91,7 +106,9 @@
                     stat: {name: "统计", defaultIconUrl: ctx + "/pc/assets/images/icon-statistics-default.png", activeIconUrl: ctx + "/pc/assets/images/icon-statistics-active.png", url: ctx + "/activity/" + [[${activity.id}]] + "/stat", selected: false},
                     setting: {name: "设置", defaultIconUrl: ctx + "/pc/assets/images/setting-default.png", activeIconUrl: ctx + "/pc/assets/images/setting-active.png", url: ctx + "/activity/" + [[${activity.id}]] + "/setting/index", selected: false}
                 },
-                iframeUrl: ""
+                iframeUrl: "",
+                activityHomeQrcodeShow: false,
+                activityHomeQrcodeGenerated: false
             },
             created: function () {
                 var $this = this;
@@ -215,6 +232,26 @@
                 isActivityCreator: function () {
                     var $this = this;
                     return $this.loginUser.uid == $this.activity.createUid;
+                },
+                showActivityHomeQrcode: function () {
+                    var $this = this;
+                    $this.activityHomeQrcodeShow = true;
+                    $this.$nextTick(function () {
+                        $this.generareActivityHomeQrcode();
+                    });
+                },
+                generareActivityHomeQrcode: function () {
+                    var $this = this;
+                    if ($this.activityHomeQrcodeGenerated) {
+                        return;
+                    }
+                    var url = $this.activity.previewUrl;
+                    $("#qrCode").qrcode({
+                        text: url,
+                        width: 300,
+                        height: 300
+                    });
+                    $this.activityHomeQrcodeGenerated = true;
                 }
             }
         });
