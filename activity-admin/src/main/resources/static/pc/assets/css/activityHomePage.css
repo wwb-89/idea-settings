@@ -30,6 +30,7 @@ body {
     text-align: left;
     padding: 24px;
     display: flex;
+    align-items: center;
 }
 
 .slider .title span {
