@@ -510,7 +510,7 @@ public class ActivityApiController {
 	*/
 	@RequestMapping("/sync/from/wfw-form")
 	public RestRespDTO activitySyncOperate(ActivityFormSyncParamDTO activityFormSyncParam) {
-		ActivityFormSyncParamDTO.OperateTypeEnum operateTypeEnum = ActivityFormSyncParamDTO.OperateTypeEnum.fromValue(activityFormSyncParam.getOperateType());
+		ActivityFormSyncParamDTO.OperateTypeEnum operateTypeEnum = ActivityFormSyncParamDTO.OperateTypeEnum.fromValue(activityFormSyncParam.getOp());
 
 		switch (operateTypeEnum) {
 			case CREATE:

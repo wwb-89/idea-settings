@@ -71,9 +71,9 @@ public class ActivityFormSyncService {
 
     @Transactional(rollbackFor = Exception.class)
     public void syncCreateActivity(ActivityFormSyncParamDTO activityFormSyncParam) {
-        Integer fid = activityFormSyncParam.getFid();
+        Integer fid = activityFormSyncParam.getDeptId();
         Integer formId = activityFormSyncParam.getFormId();
-        Integer formUserId = activityFormSyncParam.getFormUserId();
+        Integer formUserId = activityFormSyncParam.getIndexID();
         // 判断活动是否存在，若存在，则返回，不进行活动创建
         if (activityQueryService.existActivityCreateByForm(formId, formUserId)) {
             return;
@@ -124,9 +124,9 @@ public class ActivityFormSyncService {
     */
     @Transactional(rollbackFor = Exception.class)
     public void syncUpdateActivity(ActivityFormSyncParamDTO activityFormSyncParam) {
-        Integer fid = activityFormSyncParam.getFid();
+        Integer fid = activityFormSyncParam.getDeptId();
         Integer formId = activityFormSyncParam.getFormId();
-        Integer formUserId = activityFormSyncParam.getFormUserId();
+        Integer formUserId = activityFormSyncParam.getIndexID();
         // 获取表单数据
         WfwFormDTO formUserRecord = wfwFormApiService.getFormData(fid, formId, formUserId);
         if (formUserRecord == null) {
@@ -168,9 +168,9 @@ public class ActivityFormSyncService {
     */
     @Transactional(rollbackFor = Exception.class)
     public void syncDeleteActivity(ActivityFormSyncParamDTO activityFormSyncParam) {
-        Integer fid = activityFormSyncParam.getFid();
+        Integer fid = activityFormSyncParam.getDeptId();
         Integer formId = activityFormSyncParam.getFormId();
-        Integer formUserId = activityFormSyncParam.getFormUserId();
+        Integer formUserId = activityFormSyncParam.getIndexID();
         // 获取表单数据
         WfwFormDTO formUserRecord = wfwFormApiService.getFormData(fid, formId, formUserId);
         // 获取活动创建者信息

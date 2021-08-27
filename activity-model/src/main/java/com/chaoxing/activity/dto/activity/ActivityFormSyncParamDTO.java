@@ -19,14 +19,15 @@ import java.util.Objects;
 @AllArgsConstructor
 public class ActivityFormSyncParamDTO {
 
-    private Integer fid;
-
+    /** 机构单位id */
+    private Integer deptId;
+    /** 表单id */
     private Integer formId;
-
-    private Integer formUserId;
-
-    private String operateType;
-
+    /** 表单记录id */
+    private Integer indexID;
+    /** 操作方式 */
+    private String op;
+    /** 网页模板id */
     private Integer webTemplateId;
 
     /**同步操作类型
@@ -39,9 +40,9 @@ public class ActivityFormSyncParamDTO {
     public enum OperateTypeEnum {
 
         /** 创建活动 */
-        CREATE("创建", "create"),
-        UPDATE("更新", "update"),
-        DELETE("删除", "delete");
+        CREATE("创建", "data_create"),
+        UPDATE("更新", "data_update"),
+        DELETE("删除", "data_remove");
 
         private final String name;
         private final String value;
