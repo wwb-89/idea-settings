@@ -47,7 +47,7 @@ public class WfwFormSyncOperateTask {
                     activityFormSyncService.syncUpdateActivity(fid, formId, formUserId, webTemplateId);
                     break;
                 case DELETE:
-                    activityFormSyncService.syncDeleteActivity(fid, formId, formUserId);
+                    activityFormSyncService.syncDeleteActivity(fid, formId, formUserId, queueParam.getUid());
                     break;
                 default:
             }

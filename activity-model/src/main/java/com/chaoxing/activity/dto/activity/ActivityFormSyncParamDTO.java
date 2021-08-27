@@ -25,6 +25,8 @@ public class ActivityFormSyncParamDTO {
     private Integer formId;
     /** 表单记录id */
     private Integer indexID;
+    /** 操作用户id */
+    private Integer uid;
     /** 操作方式 */
     private String op;
     /** 网页模板id */

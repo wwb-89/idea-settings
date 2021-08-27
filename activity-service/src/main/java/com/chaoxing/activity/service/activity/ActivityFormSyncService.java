@@ -4,7 +4,6 @@ import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.chaoxing.activity.dto.LoginUserDTO;
 import com.chaoxing.activity.dto.activity.ActivityCreateParamDTO;
-import com.chaoxing.activity.dto.activity.ActivityFormSyncParamDTO;
 import com.chaoxing.activity.dto.activity.ActivityUpdateParamDTO;
 import com.chaoxing.activity.dto.activity.classify.MarketClassifyCreateParamDTO;
 import com.chaoxing.activity.dto.manager.sign.create.SignCreateParamDTO;
@@ -186,23 +185,10 @@ public class ActivityFormSyncService {
     * @return void
     */
     @Transactional(rollbackFor = Exception.class)
-    public void syncDeleteActivity(Integer fid, Integer formId, Integer formUserId) {
-        // 获取表单数据
-        WfwFormDTO formUserRecord = wfwFormApiService.getFormData(fid, formId, formUserId);
-        if (formUserRecord == null) {
-            throw new BusinessException("未查询到记录为:" + formUserId + "的表单数据");
-        }
-        // 获取待删除活动id
-        Integer activityId = formUserRecord.getFormData().stream().filter(v -> Objects.equals(v.getAlias(), "activity_id")).map(u -> Optional.of(u.getValues().get(0)).map(v -> v.getInteger("val")).orElse(null)).findFirst().orElse(null);
+    public void syncDeleteActivity(Integer fid, Integer formId, Integer formUserId, Integer uid) {
         // 获取活动创建者信息
-        WfwAreaDTO orgInfo = Optional.ofNullable(wfwAreaApiService.listByFid(fid)).orElse(Lists.newArrayList()).stream().filter(v -> Objects.equals(v.getFid(), fid)).findFirst().orElse(new WfwAreaDTO());
-        LoginUserDTO loginUser = LoginUserDTO.buildDefault(formUserRecord.getUid(), formUserRecord.getUname(), fid, orgInfo.getName());
-        if (activityId == null) {
-            activityHandleService.deleteByOriginAndFormUserId(formId, formUserId, loginUser);
-            return;
-        }
-        Activity activity = activityQueryService.getById(activityId);
-        activityHandleService.delete(activityId, activity.getMarketId(), loginUser);
+        LoginUserDTO loginUser = LoginUserDTO.buildDefault(uid, "", fid, "");
+        activityHandleService.deleteByOriginAndFormUserId(formId, formUserId, loginUser);
     }
 
     /**从表单数据中获取参与人uids
