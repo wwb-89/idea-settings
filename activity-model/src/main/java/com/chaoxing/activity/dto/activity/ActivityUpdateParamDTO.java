@@ -149,6 +149,7 @@ public class ActivityUpdateParamDTO {
 				.integral(getIntegral())
 				.openWork(getOpenWork())
 				.workId(getWorkId())
+				.webTemplateId(getWebTemplateId())
 				.build();
 	}
 
@@ -220,6 +221,7 @@ public class ActivityUpdateParamDTO {
 				.integral(activity.getIntegral())
 				.openWork(activity.getOpenWork())
 				.workId(activity.getWorkId())
+				.webTemplateId(activity.getWebTemplateId())
 				.build();
 	}
 

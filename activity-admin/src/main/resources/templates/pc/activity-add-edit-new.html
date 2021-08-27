@@ -63,7 +63,7 @@
             </div>
             <div class="name-txt">{{activity.id ? '设置' : '新建'}}</div>
             <button v-if="activity.id" type="button" class="create-btn" @click="editSubmit">保存</button>
-            <button v-else type="button" class="create-btn"  @click="addSubmit">保存</button>
+            <button v-else type="button" class="create-btn" @click="addSubmit">保存</button>
         </div>
         <!-- 创建活动头部 -->
         <div v-show="templateComponents && activity">
@@ -317,7 +317,7 @@
                             </div>
                         </template>
                         <!--简介-->
-                        <div class="form-item align-start" v-else-if="item.code == 'introduction'">
+                        <div class="form-item align-start" style="margin-bottom: 0px;" v-else-if="item.code == 'introduction'">
                             <label class="label">{{item.name}}</label>
                             <div class="input-box">
                                 <!-- 笔记编辑器 -->
@@ -523,7 +523,26 @@
                     </template>
                 </form>
             </div>
-            <!--    活动展示页-->
+            <!--当前使用的模版-->
+            <div class="info box" v-if="activity.id && activity.webTemplateId && !isReselectConfig">
+                <div class="set-box">
+                    <div class="title">页面设置</div>
+                </div>
+                <div class="item-box" v-if="usedWebTemplate">
+                    <div class="page-demo">
+                        <img :src="usedWebTemplate.coverUrl" class="jqthumbImg">
+                    </div>
+                    <div class="pageset-right">
+                        <div class="copy-box">
+                            <a type="text" class="copy-link" :href="activity.previewUrl" target="_blank">{{activity.previewUrl}}</a>
+                            <a href="javascript:" class="copy" @click="copyTemplatePreviewUrl">复制</a>
+                        </div>
+                        <button type="button" class="cancle-btn btn-main" @click="configPage">页面配置</button>
+                        <button type="button" class="cancle-btn" @click="reselectTemplate">重新选择页面</button>
+                    </div>
+                </div>
+            </div>
+            <!--活动展示页-->
             <div class="info box" v-if="!activity.id">
                 <div class="set-box">
                     <div class="title">活动展示页<span>请选择你的活动呈现页面</span></div>
@@ -541,7 +560,24 @@
                     <div class="clear"></div>
                 </div>
             </div>
-
+            <!--重新选择活动展示页-->
+            <div class="info box" v-if="isReselectConfig">
+                <div class="set-box">
+                    <div class="title">活动展示页<span>请选择你的活动呈现页面</span></div>
+                </div>
+                <div class="cover-list">
+                    <ul>
+                        <li :class="{current: operateWebTemplateId == webTemplate.id}" v-for="(webTemplate, index) of webTemplates" :key="'web-templates' + index" v-if="!webTemplate.deleted" @click="selectTemplate(index)">
+                            <div class="img-inner-box">
+                                <img :src="webTemplate.coverUrl" class="img">
+                                <div class="magnifier" @click="previewTemplate(index, $event)"><i></i></div>
+                            </div>
+                            <p class="overHidden1">{{webTemplate.name}}</p>
+                        </li>
+                    </ul>
+                    <div class="clear"></div>
+                </div>
+            </div>
         </div>
         <!-- 新增活动分类和自定义选项的弹出框 -->
         <div class="dailog-box1" v-show="addEditActivityClassifyWindowShow">
@@ -579,25 +615,6 @@
                 </div>
             </div>
         </div>
-        <!--编辑页面就不到下一步了-->
-        <div class="info box" v-if="activity.id && activity.webTemplateId">
-            <div class="set-box">
-                <div class="title">页面设置</div>
-            </div>
-            <div class="item-box" v-if="activity.webTemplateId == webTemplate.id" v-for="(webTemplate, index) of webTemplates" :key="'web-templates' + index">
-                <div class="page-demo">
-                    <img :src="webTemplate.coverUrl" class="jqthumbImg">
-                </div>
-                <div class="pageset-right">
-                    <div class="copy-box">
-                        <a type="text" class="copy-link" :href="activity.previewUrl" target="_blank">{{activity.previewUrl}}</a>
-                        <a href="javascript:" class="copy" @click="copyTemplatePreviewUrl">复制</a>
-                    </div>
-                    <button type="button" class="cancle-btn" @click="configPage">页面配置</button>
-                </div>
-            </div>
-        </div>
-
         <!-- 图片库弹窗 start -->
         <div class="dailog-box1" v-show="pictureShow">
             <div class="dailog picture-dialog">
@@ -704,6 +721,10 @@
                 needInitEditor: false,
                 isEmbedded: activityApp.isEmbedded(),
                 tags: [],
+                // 是否重新选择模版
+                isReselectConfig: false,
+                // 使用的模版
+                usedWebTemplate: [[${usedWebTemplate}]],
                 // 模板列表
                 webTemplates: [[${webTemplates}]],
                 areaCode: [[${areaCode}]],
@@ -2020,6 +2041,11 @@
                     }, function () {
                         app.showMsg("获取已发布签到数量失败");
                     });
+                },
+                // 重新选择模版
+                reselectTemplate: function () {
+                    var $this = this;
+                    $this.isReselectConfig = true;
                 }
             }
         });

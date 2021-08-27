@@ -634,7 +634,7 @@ public class ActivityQueryService {
 		if (signId == null) {
 			return null;
 		}
-		SignCreateParamDTO signCreateParam = signApiService.getById(signId);
+		SignCreateParamDTO signCreateParam = signApiService.getCreateById(signId);
 		List<SignUpCreateParamDTO> signUps = Optional.ofNullable(signCreateParam).map(SignCreateParamDTO::getSignUps).orElse(Lists.newArrayList());
 		if (CollectionUtils.isEmpty(signUps)) {
 			return null;

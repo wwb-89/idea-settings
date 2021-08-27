@@ -52,7 +52,7 @@
                     <label class="label">{{item.name}}</label>
                     <div class="input-box">
                         <div class="set-box">
-                            <el-switch v-model="signUpMap[item.id].enable" class="section-switch" @change="signUpEnableChanged(item.id)"></el-switch>
+                            <el-switch v-model="signUpMap[item.id].enable" @change="signUpEnableChanged(item.id)"></el-switch>
                             <span class="tips">{{item.introduction}}</span>
                         </div>
                     </div>

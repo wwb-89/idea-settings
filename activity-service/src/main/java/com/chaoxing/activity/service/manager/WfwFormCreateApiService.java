@@ -39,33 +39,6 @@ public class WfwFormCreateApiService {
 	private RestTemplate restTemplate;
 
 	/**构建表单创建地址
-	 * @Description 
-	 * @author wwb
-	 * @Date 2021-08-05 14:11:21
-	 * @param fid
-	 * @param uid
-	 * @return java.lang.String
-	*/
-	public String buildCreateFormUrl(Integer fid, Integer uid) {
-		Map<String, Object> params = Maps.newTreeMap();
-		params.put("fid", fid);
-		params.put("uid", uid);
-		LocalDateTime now = LocalDateTime.now();
-		params.put("datetime", now.format(DATE_TIME_FORMATTER));
-		params.put("sign", SIGN);
-		params.put("isCopy", 0);
-		params.put("formType", 2);
-		String enc = getEnc(params, KEY);
-		params.put("enc", enc);
-		// 封装url
-		String url = CREATE_URL + "?";
-		for (Map.Entry<String, Object> entry : params.entrySet()) {
-			url += entry.getKey() + "=" + entry.getValue() + "&";
-		}
-		return url;
-	}
-
-	/**构建表单创建地址
 	* @Description
 	* @author huxiaolong
 	* @Date 2021-08-17 17:49:15

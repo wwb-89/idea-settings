@@ -22,7 +22,7 @@ public class WfwFormCreateApiServiceTests {
 
     @Test
     public void create() {
-        String url = wfwFormCreateApiService.buildCreateFormUrl(117211, 25418810);
+        String url = wfwFormCreateApiService.buildCreateFormUrl(117211, 25418810, null, "normal");
         System.out.println(url);
     }
 

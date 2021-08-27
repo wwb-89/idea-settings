@@ -154,7 +154,7 @@ public class ActivityIsAboutStartHandleService {
 		Integer signId = activity.getSignId();
 		List<SignUpCreateParamDTO> signUps = null;
 		if (signId != null) {
-			SignCreateParamDTO signCreateParam = signApiService.getById(signId);
+			SignCreateParamDTO signCreateParam = signApiService.getCreateById(signId);
 			signUps = signCreateParam.getSignUps();
 		}
 		String title = generateCollectedNoticeTitle(activity);

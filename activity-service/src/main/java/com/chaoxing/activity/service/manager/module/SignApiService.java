@@ -50,6 +50,8 @@ public class SignApiService {
 	private static final String SIGN_API_DOMAIN = "http://api.qd.reading.chaoxing.com";
 	/** 报名签到页面域名 */
 	private static final String SIGN_WEB_DOMAIN = "https://reading.chaoxing.com/qd";
+	/** 查询报名签到 */
+	private static final String SIGN_URL = SIGN_API_DOMAIN + "/sign/%d";
 	/** 创建签到报名的地址 */
 	private static final String CREATE_URL = SIGN_API_DOMAIN + "/sign/new";
 	/** 修改签到报名的地址 */
@@ -854,7 +856,9 @@ public class SignApiService {
 		String url = String.format(COUNT_SIGN_SIGN_IN_NUM_URL, signId);
 		String result = restTemplate.getForObject(url, String.class);
 		JSONObject jsonObject = JSON.parseObject(result);
-		return resultHandle(jsonObject, () -> jsonObject.getInteger("data"), (message) -> new BusinessException(message));
+		return resultHandle(jsonObject, () -> jsonObject.getInteger("data"), (message) -> {
+			throw new BusinessException(message);
+		});
 	}
 
 	/**查询用户报名成功的报名签到id列表
@@ -868,7 +872,18 @@ public class SignApiService {
 		String url = String.format(USER_SIGNED_UP_SIGN_ID_URL, uid);
 		String result = restTemplate.getForObject(url, String.class);
 		JSONObject jsonObject = JSON.parseObject(result);
-		return resultHandle(jsonObject, () -> JSON.parseArray(jsonObject.getString("data"), Integer.class), (message) -> new BusinessException(message));
+		return resultHandle(jsonObject, () -> JSON.parseArray(jsonObject.getString("data"), Integer.class), (message) -> {
+			throw new BusinessException(message);
+		});
+	}
+
+	public SignDTO getById(Integer signId) {
+		String url = String.format(SIGN_URL, signId);
+		String result = restTemplate.getForObject(url, String.class);
+		JSONObject jsonObject = JSON.parseObject(result);
+		return resultHandle(jsonObject, () -> JSON.parseObject(jsonObject.getString("data"), SignDTO.class), (message) -> {
+			throw new BusinessException(message);
+		});
 	}
 
 	/**用户直接报名

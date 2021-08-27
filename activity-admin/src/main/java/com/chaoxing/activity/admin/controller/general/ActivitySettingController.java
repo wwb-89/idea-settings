@@ -16,10 +16,7 @@ import com.chaoxing.activity.service.activity.scope.ActivityScopeQueryService;
 import com.chaoxing.activity.service.manager.WfwGroupApiService;
 import com.chaoxing.activity.service.manager.module.SignApiService;
 import com.chaoxing.activity.service.manager.wfw.WfwContactApiService;
-import com.chaoxing.activity.util.enums.ActivityMenuEnum;
-import com.google.common.collect.Maps;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -28,10 +25,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
-import java.util.Arrays;
 import java.util.List;
-import java.util.Map;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 /**
@@ -143,7 +137,7 @@ public class ActivitySettingController {
         Integer signId = activity.getSignId();
         SignCreateParamDTO sign = SignCreateParamDTO.builder().build();
         if (signId != null) {
-            sign = signApiService.getById(signId);
+            sign = signApiService.getCreateById(signId);
         }
         model.addAttribute("activity", createParamDTO);
         model.addAttribute("templateComponents", activityEngineQueryService.listSignUpTemplateComponents(activity.getTemplateId()));

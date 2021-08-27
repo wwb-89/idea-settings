@@ -33,7 +33,6 @@ import com.chaoxing.activity.service.manager.wfw.WfwAreaApiService;
 import com.chaoxing.activity.service.queue.activity.ActivityInspectionResultDecideQueueService;
 import com.chaoxing.activity.service.queue.activity.ActivityWebsiteIdSyncQueueService;
 import com.chaoxing.activity.service.queue.blacklist.BlacklistAutoAddQueueService;
-import com.chaoxing.activity.util.DateUtils;
 import com.chaoxing.activity.util.DistributedLock;
 import com.chaoxing.activity.util.constant.ActivityMhUrlConstant;
 import com.chaoxing.activity.util.constant.ActivityModuleConstant;
@@ -48,13 +47,9 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.ZoneOffset;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
@@ -153,7 +148,7 @@ public class ActivityHandleService {
 		// 保存自定义组件值
 		activityComponentValueService.saveActivityComponentValues(activityId, activityCreateParamDto.getActivityComponentValues());
 		// 保存门户模板
-		bindWebTemplate(activityId, activityCreateParamDto.getWebTemplateId(), loginUser);
+		bindWebTemplate(activity, activityCreateParamDto.getWebTemplateId(), loginUser);
 
 		inspectionConfigHandleService.initInspectionConfig(activityId);
 		activityStatSummaryHandlerService.init(activityId);
@@ -234,6 +229,8 @@ public class ActivityHandleService {
 					.set(Activity::getTimeLengthUpperLimit, activity.getTimeLengthUpperLimit())
 					.set(Activity::getIntegral, activity.getIntegral())
 			);
+			// 处理门户模版的绑定
+			bindWebTemplate(existActivity, activity.getWebTemplateId(), loginUser);
 			// 更新
 			signUpConditionService.updateActivitySignUpEnables(activityId, activityUpdateParamDto.getSucTemplateComponentIds());
 			// 更新自定义组件的值
@@ -466,42 +463,40 @@ public class ActivityHandleService {
 		});
 	}
 
-	/**绑定模板
+	/**绑定模版
 	 * @Description
 	 * 1、根据模板信息创建相应的模块
 	 * 2、传递模板id、wfwfid和活动id给门户克隆
 	 * 3、门户克隆完成后调用活动引擎的接口来获取每个应用的数据来更新模板对应的应用的数据
 	 * 4、完成后给活动引擎返回克隆后的应用的数据
 	 * @author wwb
-	 * @Date 2020-11-13 15:36:28
-	 * @param activityId
-	 * @param webTemplateId
+	 * @Date 2021-08-27 14:13:38
+	 * @param activity
+	 * @param newWebTemplateId
 	 * @param loginUser
-	 * @return com.chaoxing.activity.dto.mh.MhCloneResultDTO
-	 */
-	@Transactional(rollbackFor = Exception.class, propagation = Propagation.REQUIRED)
-	public MhCloneResultDTO bindWebTemplate(Integer activityId, Integer webTemplateId, LoginUserDTO loginUser) {
-		Activity activity = activityValidationService.activityExist(activityId);
-		// 如果已经选择了模板就不能再选择
-		Integer webTemplateId1 = activity.getWebTemplateId();
-		if (webTemplateId1 != null) {
-			throw new BusinessException("活动已经选择了模板");
+	 * @return void
+	*/
+	private void bindWebTemplate(Activity activity, Integer newWebTemplateId, LoginUserDTO loginUser) {
+		// 如果门户模版id没有变化则忽略绑定模版的操作
+		if (Objects.equals(activity.getWebTemplateId(), newWebTemplateId)) {
+			return;
 		}
+		Integer activityId = activity.getId();
 		// 创建模块
-		createModuleByWebTemplateId(activityId, webTemplateId, loginUser);
+		createModuleByWebTemplateId(activityId, newWebTemplateId, loginUser);
 		// 克隆
-		MhCloneParamDTO mhCloneParam = packageMhCloneParam(activity, webTemplateId, loginUser);
+		MhCloneParamDTO mhCloneParam = packageMhCloneParam(activity, newWebTemplateId, loginUser);
 		MhCloneResultDTO mhCloneResult = mhApiService.cloneTemplate(mhCloneParam);
 		activityMapper.update(null, new UpdateWrapper<Activity>()
 				.lambda()
 				.eq(Activity::getId, activityId)
-				.set(Activity::getWebTemplateId, webTemplateId)
+				.set(Activity::getWebTemplateId, newWebTemplateId)
 				.set(Activity::getPageId, mhCloneResult.getPageId())
 				.set(Activity::getPreviewUrl, mhCloneResult.getPreviewUrl())
 				.set(Activity::getEditUrl, mhCloneResult.getEditUrl())
+				.set(Activity::getWebsiteId, null)
 		);
 		activityWebsiteIdSyncQueueService.add(activityId);
-		return mhCloneResult;
 	}
 
 	/**创建模块
@@ -903,7 +898,7 @@ public class ActivityHandleService {
 		Integer signId = activity.getSignId();
 		SignCreateParamDTO sign = SignCreateParamDTO.builder().build();
 		if (signId != null) {
-			sign = signApiService.getById(signId);
+			sign = signApiService.getCreateById(signId);
 		}
 		ActivityUpdateParamDTO activityUpdateParam = ActivityUpdateParamDTO.buildActivityUpdateParam(activity, activityParam);
 		this.edit(activityUpdateParam, sign, wfwAreaApiService.listByFid(activityCreateDTO.getFid()), loginUser);

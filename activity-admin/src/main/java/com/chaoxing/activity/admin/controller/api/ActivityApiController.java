@@ -7,16 +7,14 @@ import com.chaoxing.activity.dto.LoginUserDTO;
 import com.chaoxing.activity.dto.RestRespDTO;
 import com.chaoxing.activity.dto.activity.ActivityCreateParamDTO;
 import com.chaoxing.activity.dto.activity.ActivityUpdateParamDTO;
-import com.chaoxing.activity.dto.manager.wfw.WfwAreaDTO;
-import com.chaoxing.activity.dto.manager.mh.MhCloneResultDTO;
-import com.chaoxing.activity.dto.query.ActivityManageQueryDTO;
 import com.chaoxing.activity.dto.manager.sign.create.SignCreateParamDTO;
+import com.chaoxing.activity.dto.manager.wfw.WfwAreaDTO;
+import com.chaoxing.activity.dto.query.ActivityManageQueryDTO;
 import com.chaoxing.activity.model.Activity;
 import com.chaoxing.activity.service.activity.ActivityHandleService;
 import com.chaoxing.activity.service.activity.ActivityQueryService;
 import com.chaoxing.activity.util.HttpServletRequestUtils;
 import com.chaoxing.activity.util.annotation.LoginRequired;
-import org.apache.ibatis.annotations.Param;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
@@ -96,23 +94,6 @@ public class ActivityApiController {
 		LoginUserDTO loginUser = LoginUtils.getLoginUser(request);
 		activityHandleService.delete(activityId, marketId, loginUser);
 		return RestRespDTO.success();
-	}
-
-	/**绑定/选择模板
-	 * @Description 
-	 * @author wwb
-	 * @Date 2020-11-13 15:38:14
-	 * @param request
-	 * @param activityId
-	 * @param webTemplateId
-	 * @return com.chaoxing.activity.dto.RestRespDTO
-	*/
-	@LoginRequired
-	@PostMapping("{activityId}/bind/template/{webTemplateId}")
-	public RestRespDTO bindWebTemplate(HttpServletRequest request, @PathVariable Integer activityId, @PathVariable Integer webTemplateId) {
-		LoginUserDTO loginUser = LoginUtils.getLoginUser(request);
-		MhCloneResultDTO mhCloneResult = activityHandleService.bindWebTemplate(activityId, webTemplateId, loginUser);
-		return RestRespDTO.success(mhCloneResult);
 	}
 
 	/**查询管理的活动列表
