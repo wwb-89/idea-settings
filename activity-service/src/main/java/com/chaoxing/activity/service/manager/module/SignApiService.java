@@ -203,7 +203,7 @@ public class SignApiService {
 	 * @param signId
 	 * @return com.chaoxing.activity.dto.sign.create.SignCreateParamDTO
 	*/
-	public SignCreateParamDTO getById(Integer signId) {
+	public SignCreateParamDTO getCreateById(Integer signId) {
 		String url = String.format(DETAIL_URL, signId);
 		String result = restTemplate.getForObject(url, String.class);
 		JSONObject jsonObject = JSON.parseObject(result);
@@ -419,7 +419,7 @@ public class SignApiService {
 	*/
 	public boolean isOpenSignUp(Integer signId) {
 		boolean isOpenSignUp = false;
-		SignCreateParamDTO signCreateParam = getById(signId);
+		SignCreateParamDTO signCreateParam = getCreateById(signId);
 		if (signCreateParam != null) {
 			List<SignUpCreateParamDTO> signUps = signCreateParam.getSignUps();
 			if (CollectionUtils.isNotEmpty(signUps)) {

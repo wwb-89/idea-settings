@@ -14,14 +14,13 @@ import com.chaoxing.activity.dto.manager.wfw.WfwAreaDTO;
 import com.chaoxing.activity.dto.manager.wfwform.WfwFormDTO;
 import com.chaoxing.activity.dto.manager.wfwform.WfwFormDataDTO;
 import com.chaoxing.activity.dto.manager.wfwform.WfwFormFieldDTO;
-import com.chaoxing.activity.model.*;
-import com.chaoxing.activity.service.WebTemplateService;
+import com.chaoxing.activity.model.Activity;
+import com.chaoxing.activity.model.Classify;
+import com.chaoxing.activity.model.MarketClassify;
+import com.chaoxing.activity.model.Template;
 import com.chaoxing.activity.service.activity.classify.ClassifyHandleService;
 import com.chaoxing.activity.service.activity.classify.ClassifyQueryService;
 import com.chaoxing.activity.service.activity.market.MarketHandleService;
-import com.chaoxing.activity.service.activity.market.MarketQueryService;
-import com.chaoxing.activity.service.activity.template.TemplateHandleService;
-import com.chaoxing.activity.service.activity.template.TemplateQueryService;
 import com.chaoxing.activity.service.manager.WfwFormApiService;
 import com.chaoxing.activity.service.manager.module.SignApiService;
 import com.chaoxing.activity.service.manager.wfw.WfwAreaApiService;
@@ -149,7 +148,7 @@ public class ActivityFormSyncService {
         Integer signId = activity.getSignId();
         SignCreateParamDTO sign = SignCreateParamDTO.builder().build();
         if (signId != null) {
-            sign = signApiService.getById(signId);
+            sign = signApiService.getCreateById(signId);
             // 判断是否开启签到，并默认封装签到
             SignInCreateParamDTO signInCreateParam = handleActivitySignIn(formUserRecord);
             if (CollectionUtils.isEmpty(sign.getSignIns()) && signInCreateParam != null) {
