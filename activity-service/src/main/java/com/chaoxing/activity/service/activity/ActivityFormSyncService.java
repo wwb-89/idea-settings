@@ -177,20 +177,6 @@ public class ActivityFormSyncService {
         activityHandleService.edit(activityUpdateParam, sign, defaultPublishAreas, loginUser);
     }
 
-    /**表单记录删除，同步删除活动
-    * @Description
-    * @author huxiaolong
-    * @Date 2021-08-26 16:54:02
-    * @param
-    * @return void
-    */
-    @Transactional(rollbackFor = Exception.class)
-    public void syncDeleteActivity(Integer fid, Integer formId, Integer formUserId, Integer uid) {
-        // 获取活动创建者信息
-        LoginUserDTO loginUser = LoginUserDTO.buildDefault(uid, "", fid, "");
-        activityHandleService.deleteByOriginAndFormUserId(formId, formUserId, loginUser);
-    }
-
     /**从表单数据中获取参与人uids
      * @Description
      * @author huxiaolong

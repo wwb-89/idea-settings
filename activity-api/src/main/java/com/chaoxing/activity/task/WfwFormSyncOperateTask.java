@@ -3,6 +3,7 @@ package com.chaoxing.activity.task;
 import com.chaoxing.activity.dto.activity.ActivityFormSyncParamDTO;
 import com.chaoxing.activity.dto.manager.wfwform.WfwFormDTO;
 import com.chaoxing.activity.service.activity.ActivityFormSyncService;
+import com.chaoxing.activity.service.activity.ActivityHandleService;
 import com.chaoxing.activity.service.activity.WfwFormSynOperateQueueService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -26,6 +27,8 @@ public class WfwFormSyncOperateTask {
     private WfwFormSynOperateQueueService wfwFormSynOperateQueueService;
     @Resource
     private ActivityFormSyncService activityFormSyncService;
+    @Resource
+    private ActivityHandleService activityHandleService;
 
     @Scheduled(fixedDelay = 1L)
     public void handleWfwUserSignUpInfoDelete() {
@@ -47,7 +50,7 @@ public class WfwFormSyncOperateTask {
                     activityFormSyncService.syncUpdateActivity(fid, formId, formUserId, webTemplateId);
                     break;
                 case DELETE:
-                    activityFormSyncService.syncDeleteActivity(fid, formId, formUserId, queueParam.getUid());
+                    activityHandleService.deleteByOriginAndFormUserId(formId, formUserId);
                     break;
                 default:
             }

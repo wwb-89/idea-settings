@@ -910,17 +910,28 @@ public class ActivityHandleService {
 	* @Date 2021-08-27 17:56:10
 	* @param formId
 	* @param formUserId
-	* @param loginUser
 	* @return void
 	*/
 	@Transactional(rollbackFor = Exception.class)
-	public void deleteByOriginAndFormUserId(Integer formId, Integer formUserId, LoginUserDTO loginUser) {
+	public void deleteByOriginAndFormUserId(Integer formId, Integer formUserId) {
 		if (formId == null || formUserId == null) {
 			return;
 		}
 		Activity activity = activityQueryService.getActivityByOriginAndFormUserId(formId, formUserId);
 		if (activity != null) {
-			delete(activity.getId(), activity.getMarketId(), loginUser);
+			activity.delete();
+			activityMapper.update(null, new UpdateWrapper<Activity>()
+					.lambda()
+					.eq(Activity::getId, activity.getId())
+					.set(Activity::getStatus, activity.getStatus())
+			);
+			// 活动状态改变
+			activityChangeEventService.statusChange(activity);
+
+			// marketId不为空，删除活动-市场关联，isCreateMarket: true，则需要删除所有关联
+			if (activity.getMarketId() != null) {
+				activityMarketService.remove(activity.getId(), activity.getMarketId(), true);
+			}
 		}
 	}
 }
