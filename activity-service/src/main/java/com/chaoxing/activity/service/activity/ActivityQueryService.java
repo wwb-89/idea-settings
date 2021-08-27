@@ -810,4 +810,19 @@ public class ActivityQueryService {
 		return fieldCodeNameRelation;
 	}
 
+	/**判断是否存在表单创建的活动
+	* @Description
+	* @author huxiaolong
+	* @Date 2021-08-26 16:42:46
+	* @param formId
+	* @param formUserId
+	* @return boolean
+	*/
+    public boolean existActivityCreateByForm(Integer formId, Integer formUserId) {
+    	if (formId == null || formUserId == null) {
+    		return false;
+		}
+    	int count = activityMapper.selectCount(new LambdaQueryWrapper<Activity>().eq(Activity::getOrigin, formId).eq(Activity::getOriginFormUserId, formUserId));
+    	return count >= 1;
+    }
 }

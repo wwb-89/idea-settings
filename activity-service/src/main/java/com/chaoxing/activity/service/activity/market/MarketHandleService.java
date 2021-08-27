@@ -1,6 +1,7 @@
 package com.chaoxing.activity.service.activity.market;
 
 import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
+import com.chaoxing.activity.dto.LoginUserDTO;
 import com.chaoxing.activity.dto.OperateUserDTO;
 import com.chaoxing.activity.dto.activity.market.ActivityMarketCreateParamDTO;
 import com.chaoxing.activity.dto.activity.market.ActivityMarketUpdateParamDTO;
@@ -8,6 +9,7 @@ import com.chaoxing.activity.dto.manager.wfw.WfwAppParamDTO;
 import com.chaoxing.activity.mapper.MarketMapper;
 import com.chaoxing.activity.model.Activity;
 import com.chaoxing.activity.model.Market;
+import com.chaoxing.activity.model.Template;
 import com.chaoxing.activity.service.activity.template.TemplateHandleService;
 import com.chaoxing.activity.service.activity.template.TemplateQueryService;
 import com.chaoxing.activity.service.manager.wfw.WfwAppApiService;
@@ -46,7 +48,25 @@ public class MarketHandleService {
 	@Resource
 	private MarketValidationService marketValidationService;
 
-	/**创建活动市场
+
+	/**单独创建活动市场
+	* @Description
+	* @author huxiaolong
+	* @Date 2021-08-25 15:32:59
+	* @param activityMarketCreateParamDto
+	* @param operateUserDto
+	* @return com.chaoxing.activity.model.Market
+	*/
+	@Transactional(rollbackFor = Exception.class)
+	public Market createMarket(ActivityMarketCreateParamDTO activityMarketCreateParamDto, OperateUserDTO operateUserDto) {
+		Market activityMarket = activityMarketCreateParamDto.buildActivityMarket();
+		activityMarket.perfectCreator(operateUserDto);
+		activityMarket.perfectSequence(marketMapper.getMaxSequence(operateUserDto.getFid()));
+		marketMapper.insert(activityMarket);
+		return activityMarket;
+	}
+
+	/**创建活动市场且克隆一个通用模板
 	 * @Description 
 	 * @author wwb
 	 * @Date 2021-07-14 16:34:09
@@ -56,10 +76,7 @@ public class MarketHandleService {
 	*/
 	@Transactional(rollbackFor = Exception.class)
 	public Market add(ActivityMarketCreateParamDTO activityMarketCreateParamDto, OperateUserDTO operateUserDto) {
-		Market activityMarket = activityMarketCreateParamDto.buildActivityMarket();
-		activityMarket.perfectCreator(operateUserDto);
-		activityMarket.perfectSequence(marketMapper.getMaxSequence(operateUserDto.getFid()));
-		marketMapper.insert(activityMarket);
+		Market activityMarket = ApplicationContextHolder.getBean(MarketHandleService.class).createMarket(activityMarketCreateParamDto, operateUserDto);
 		Integer marketId = activityMarket.getId();
 		// 给市场克隆一个通用模版
 		templateHandleService.cloneTemplate(marketId, templateQueryService.getSystemTemplateIdByActivityFlag(Activity.ActivityFlagEnum.NORMAL));
@@ -192,6 +209,34 @@ public class MarketHandleService {
 				.eq(Market::getId, marketId)
 				.set(Market::getSignUpActivityLimit, signUpActivityLimit)
 		);
+	}
+
+
+	/**根据机构id，活动标识查询模板,判断市场是否存在; 模板不存在则创建模板，市场不存在则创建市场
+	 * 返回模板(模板id, 市场id)
+	 * @Description
+	 * @author huxiaolong
+	 * @Date 2021-08-25 14:39:27
+	 * @param fid
+	 * @param activityFlagEnum
+	 * @return com.chaoxing.activity.model.Template
+	 */
+	@Transactional(rollbackFor = Exception.class)
+	public Template handleTemplateMarketByFidActivityFlag(Integer fid, Activity.ActivityFlagEnum activityFlagEnum, LoginUserDTO loginUserDTO) {
+		Template template = templateQueryService.getOrgTemplateByActivityFlag(fid, activityFlagEnum);
+		ActivityMarketCreateParamDTO marketCreateParam = ActivityMarketCreateParamDTO.builder().name(activityFlagEnum.getName().concat("活动市场")).fid(fid).build();
+		if (template == null) {
+			// 如果不存在fid对应的模板，证明无对应市场，先创建市场
+			ApplicationContextHolder.getBean(MarketHandleService.class).add(marketCreateParam, activityFlagEnum, loginUserDTO.buildOperateUserDTO());
+			return templateQueryService.getOrgTemplateByActivityFlag(fid, activityFlagEnum);
+		}
+		// 若有模板无市场，则建立对应市场
+		if (template.getMarketId() == null) {
+			Market market = ApplicationContextHolder.getBean(MarketHandleService.class).createMarket(marketCreateParam, loginUserDTO.buildOperateUserDTO());
+			template.setMarketId(market.getId());
+			templateHandleService.update(template);
+		}
+		return template;
 	}
 
 }

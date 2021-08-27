@@ -8,6 +8,7 @@ import com.chaoxing.activity.dto.RestRespDTO;
 import com.chaoxing.activity.dto.UserResultDTO;
 import com.chaoxing.activity.dto.activity.ActivityCreateDTO;
 import com.chaoxing.activity.dto.activity.ActivityExternalDTO;
+import com.chaoxing.activity.dto.activity.ActivityFormSyncParamDTO;
 import com.chaoxing.activity.dto.manager.PassportUserDTO;
 import com.chaoxing.activity.dto.manager.wfw.WfwAreaDTO;
 import com.chaoxing.activity.dto.query.ActivityQueryDTO;
@@ -20,6 +21,7 @@ import com.chaoxing.activity.model.LoginCustom;
 import com.chaoxing.activity.model.UserStatSummary;
 import com.chaoxing.activity.service.GroupService;
 import com.chaoxing.activity.service.LoginService;
+import com.chaoxing.activity.service.activity.ActivityFormSyncService;
 import com.chaoxing.activity.service.activity.ActivityHandleService;
 import com.chaoxing.activity.service.activity.ActivityQueryService;
 import com.chaoxing.activity.service.activity.ActivityValidationService;
@@ -97,6 +99,8 @@ public class ActivityApiController {
 	private ActivityHandleService activityHandleService;
 	@Resource
 	private PassportApiService passportApiService;
+	@Resource
+	private ActivityFormSyncService activityFormSyncService;
 
 	/**组活动推荐
 	 * @Description 
@@ -497,6 +501,31 @@ public class ActivityApiController {
 		return RestRespDTO.success();
 	}
 
+	/**
+	* @Description
+	* @author huxiaolong
+	* @Date 2021-08-26 16:46:53
+	* @param activityFormSyncParam
+	* @return com.chaoxing.activity.dto.RestRespDTO
+	*/
+	@RequestMapping("/sync/from/wfw-form")
+	public RestRespDTO activitySyncOperate(ActivityFormSyncParamDTO activityFormSyncParam) {
+		ActivityFormSyncParamDTO.OperateTypeEnum operateTypeEnum = ActivityFormSyncParamDTO.OperateTypeEnum.fromValue(activityFormSyncParam.getOperateType());
+
+		switch (operateTypeEnum) {
+			case CREATE:
+				activityFormSyncService.syncCreateActivity(activityFormSyncParam);
+				break;
+			case UPDATE:
+				activityFormSyncService.syncUpdateActivity(activityFormSyncParam);
+				break;
+			case DELETE:
+				activityFormSyncService.syncDeleteActivity(activityFormSyncParam);
+				break;
+			default:
+		}
+		return RestRespDTO.success();
+	}
 
 
 

@@ -99,6 +99,9 @@ public class SignApiService {
 	/** 用户报名成功的报名签到id列表 */
 	private static final String USER_SIGNED_UP_SIGN_ID_URL = SIGN_API_DOMAIN + "/stat/user/%d/signId/signed-up";
 
+	/** 用户直接报名接口地址 */
+	private static final String USERS_TO_SIGN_UP_URL = SIGN_API_DOMAIN + "/sign/%d/user/to-sign-up";
+
 	/** 报名名单url */
 	private static final String SIGN_UP_USER_LIST_URL = SIGN_WEB_DOMAIN + "/sign-up/%d/user-list";
 	/** 提供信息表单字符串，创建报名表单url */
@@ -866,6 +869,30 @@ public class SignApiService {
 		String result = restTemplate.getForObject(url, String.class);
 		JSONObject jsonObject = JSON.parseObject(result);
 		return resultHandle(jsonObject, () -> JSON.parseArray(jsonObject.getString("data"), Integer.class), (message) -> new BusinessException(message));
+	}
+
+	/**用户直接报名
+	* @Description
+	* @author huxiaolong
+	* @Date 2021-08-25 18:04:34
+	* @param signId
+	* @param uids
+	* @return void
+	*/
+	public void createUserSignUp(Integer signId, List<Integer> uids) {
+		if (CollectionUtils.isEmpty(uids)) {
+			return;
+		}
+		String url = String.format(USERS_TO_SIGN_UP_URL, signId);
+		HttpHeaders httpHeaders = new HttpHeaders();
+		httpHeaders.setContentType(MediaType.APPLICATION_JSON);
+		HttpEntity<String> httpEntity = new HttpEntity<>(JSON.toJSONString(uids), httpHeaders);
+		String result = restTemplate.postForObject(url, httpEntity, String.class);
+
+		JSONObject jsonObject = JSON.parseObject(result);
+		resultHandle(jsonObject, () -> null, (message) -> {
+			throw new BusinessException(message);
+		});
 	}
 
 }

@@ -97,6 +97,8 @@ public class ActivityUpdateParamDTO {
 	private String originType;
 	/** 来源值 */
 	private String origin;
+	/** 来源值记录id */
+	private Integer originFormUserId;
 	/** 市场id */
 	private Integer marketId;
 	/** 模版id */
@@ -139,6 +141,8 @@ public class ActivityUpdateParamDTO {
 				.timeLengthUpperLimit(getTimeLengthUpperLimit())
 				.timingRelease(getTimingRelease())
 				.timingReleaseTime(Optional.ofNullable(getTimingReleaseTimeStamp()).map(v -> DateUtils.timestamp2Date(getTimingReleaseTimeStamp())).orElse(null))
+				.origin(getOrigin())
+				.originFormUserId(getOriginFormUserId())
 				.tags(getTags())
 				.openRating(getOpenRating())
 				.ratingNeedAudit(getRatingNeedAudit())
@@ -209,6 +213,8 @@ public class ActivityUpdateParamDTO {
 				.timingRelease(activity.getTimingRelease())
 				.timingReleaseTimeStamp(Optional.ofNullable(activity.getTimingReleaseTime()).map(v -> v.toInstant(ZoneOffset.of("+8")).toEpochMilli()).orElse(null))
 				.tags(activity.getTags())
+				.origin(activity.getOrigin())
+				.originFormUserId(activity.getOriginFormUserId())
 				.openRating(activity.getOpenRating())
 				.ratingNeedAudit(activity.getRatingNeedAudit())
 				.integral(activity.getIntegral())

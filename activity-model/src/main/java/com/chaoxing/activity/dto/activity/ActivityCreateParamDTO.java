@@ -85,6 +85,8 @@ public class ActivityCreateParamDTO {
 	private String originType;
 	/** 来源值 */
 	private String origin;
+	/** 来源值记录id */
+	private Integer originFormUserId;
 	/** 市场id */
 	private Integer marketId;
 	/** 模版id */
@@ -100,6 +102,8 @@ public class ActivityCreateParamDTO {
 
 	/** 预览显示使用 */
 	private String activityClassifyName;
+
+	private Integer status;
 
 
 	/** 活动组件值对象列表 */
@@ -148,6 +152,7 @@ public class ActivityCreateParamDTO {
 				.workId(getWorkId())
 				.marketId(getMarketId())
 				.templateId(getTemplateId())
+				.status(getStatus())
 				.build();
 	}
 
@@ -190,6 +195,7 @@ public class ActivityCreateParamDTO {
 				.workId(activity.getWorkId())
 				.originType(activity.getOriginType())
 				.origin(activity.getOrigin())
+				.originFormUserId(activity.getOriginFormUserId())
 				.webTemplateId(activity.getWebTemplateId())
 				.previewUrl(activity.getPreviewUrl())
 				.editUrl(activity.getEditUrl())

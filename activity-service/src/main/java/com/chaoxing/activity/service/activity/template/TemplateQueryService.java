@@ -6,6 +6,8 @@ import com.chaoxing.activity.mapper.TemplateMapper;
 import com.chaoxing.activity.model.Activity;
 import com.chaoxing.activity.model.Template;
 import com.chaoxing.activity.model.TemplateComponent;
+import com.chaoxing.activity.service.activity.market.MarketHandleService;
+import com.chaoxing.activity.service.activity.market.MarketQueryService;
 import com.google.common.collect.Lists;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
@@ -65,11 +67,23 @@ public class TemplateQueryService {
 	 * @return java.lang.Integer
 	*/
 	public Integer getSystemTemplateIdByActivityFlag(Activity.ActivityFlagEnum activityFlagEnum) {
+		Template template = getSystemTemplateByActivityFlag(activityFlagEnum);
+		return template == null ? null : template.getId();
+	}
+
+	/**根据活动标识查询系统模版
+	* @Description 
+	* @author huxiaolong
+	* @Date 2021-08-25 14:45:22
+	* @param activityFlagEnum
+	* @return com.chaoxing.activity.model.Template
+	*/
+	public Template getSystemTemplateByActivityFlag(Activity.ActivityFlagEnum activityFlagEnum) {
 		List<Template> systemTemplates = templateMapper.selectList(new LambdaQueryWrapper<Template>()
 				.eq(Template::getSystem, true)
 				.eq(Template::getActivityFlag, activityFlagEnum.getValue())
 		);
-		return Optional.ofNullable(systemTemplates).orElse(Lists.newArrayList()).stream().findFirst().map(Template::getId).orElse(null);
+		return Optional.ofNullable(systemTemplates).orElse(Lists.newArrayList()).stream().findFirst().orElse(null);
 	}
 
 	/**根据模版id查询模版组件关联

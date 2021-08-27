@@ -127,6 +127,8 @@ public class Activity {
     private String originType;
     /** 来源值; column: origin*/
     private String origin;
+    /** 来源值记录id; column: origin_form_user_id*/
+    private Integer originFormUserId;
     /** 市场id; column: market_id*/
     private Integer marketId;
     /** 模版id; column: template_id*/
@@ -273,7 +275,9 @@ public class Activity {
         /** 教师发展 */
         TEACHER("教师发展", "teacher"),
         /** 志愿者服务 */
-        VOLUNTEER("志愿者服务", "volunteer");
+        VOLUNTEER("志愿者服务", "volunteer"),
+        /** 三会一课 */
+        THREE_CONFERENCE_ONE_LESSON("三会一课", "three_conference_one_lesson");
 
         private final String name;
         private final String value;
