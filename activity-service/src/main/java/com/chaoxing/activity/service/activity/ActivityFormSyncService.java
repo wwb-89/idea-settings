@@ -102,7 +102,10 @@ public class ActivityFormSyncService {
         // 默认开启报名
         signCreateParam.setSignUps(Lists.newArrayList(SignUpCreateParamDTO.buildDefault()));
         // 判断是否开启签到，并默认封装签到
-        handleActivitySignIn(formUserRecord, signCreateParam);
+        SignInCreateParamDTO signInCreateParam = handleActivitySignIn(formUserRecord);
+        if (signInCreateParam != null) {
+            signCreateParam.setSignIns(Lists.newArrayList(signInCreateParam));
+        }
         // 新增活动
         Integer activityId = activityHandleService.add(activityCreateParam, signCreateParam, defaultPublishAreas, loginUser);
         Activity activity = activityQueryService.getById(activityId);
@@ -140,14 +143,25 @@ public class ActivityFormSyncService {
         // 待更新数据
         ActivityUpdateParamDTO activityUpdateParam = new ActivityUpdateParamDTO();
         Activity activity = activityQueryService.getById(activityId);
-        activityUpdateParam.buildFromActivity(activity);
+        activityUpdateParam = activityUpdateParam.buildFromActivity(activity);
         buildActivityUpdateParamFromFormRecord(formUserRecord, activityUpdateParam);
         // 报名签到
         Integer signId = activity.getSignId();
         SignCreateParamDTO sign = SignCreateParamDTO.builder().build();
         if (signId != null) {
             sign = signApiService.getById(signId);
+            // 判断是否开启签到，并默认封装签到
+            SignInCreateParamDTO signInCreateParam = handleActivitySignIn(formUserRecord);
+            if (CollectionUtils.isEmpty(sign.getSignIns()) && signInCreateParam != null) {
+                sign.setSignIns(Lists.newArrayList(signInCreateParam));
+            } else if (CollectionUtils.isNotEmpty(sign.getSignIns()) && signInCreateParam == null) {
+                sign.getSignIns().get(0).setDeleted(Boolean.TRUE);
+            } else if (CollectionUtils.isNotEmpty(sign.getSignIns()) && signInCreateParam != null) {
+                sign.getSignIns().get(0).setName(signInCreateParam.getName());
+                sign.getSignIns().get(0).setWay(signInCreateParam.getWay());
+            }
         }
+
         // 获取参会者，更新参会者信息
         List<Integer> participateUids = listParticipateUidByRecord(formUserRecord);
         signApiService.createUserSignUp(activity.getSignId(), participateUids);
@@ -291,29 +305,27 @@ public class ActivityFormSyncService {
     * @author huxiaolong
     * @Date 2021-08-26 18:56:08
     * @param formUserRecord
-    * @param signCreateParam
     * @return void
     */
-    private void handleActivitySignIn(WfwFormDTO formUserRecord, SignCreateParamDTO signCreateParam) {
+    private SignInCreateParamDTO handleActivitySignIn(WfwFormDTO formUserRecord) {
         WfwFormDataDTO formatData = formUserRecord.getFormData().stream().filter(v -> Objects.equals(v.getAlias(), "open_sign_in")).findFirst().orElse(null);
-        if (formatData != null && CollectionUtils.isNotEmpty(formatData.getValues())) {
-            String openSignIn = formatData.getValues().get(0).getString("val");
-            if (!Objects.equals(openSignIn, "是")) {
-                return;
-            }
-            String way = formatData.getValues().get(1).getString("val");
-            List<SignInCreateParamDTO> signIns = Lists.newArrayList();
-            SignInCreateParamDTO signIn = SignInCreateParamDTO.buildDefaultSignIn();
-            if (Objects.equals(way, "普通签到")) {
-                signIns.add(signIn);
-            } else if (Objects.equals(way, "扫码签到")){
-                signIn.setWay(3);
-                signIn.setName("扫码签到");
-                signIns.add(signIn);
-            }
-            signCreateParam.setSignIns(signIns);
+        if (formatData == null || CollectionUtils.isEmpty(formatData.getValues())) {
+            return null;
         }
-
+        String openSignIn = formatData.getValues().get(0).getString("val");
+        if (!Objects.equals(openSignIn, "是")) {
+            return null;
+        }
+        String way = formatData.getValues().get(1).getString("val");
+        SignInCreateParamDTO signIn = SignInCreateParamDTO.buildDefaultSignIn();
+        if (Objects.equals(way, "普通签到")) {
+            signIn.setWay(1);
+            signIn.setName("直接签到");
+        } else if (Objects.equals(way, "扫码签到")){
+            signIn.setWay(3);
+            signIn.setName("扫码签到");
+        }
+        return signIn;
     }
 
     /**
