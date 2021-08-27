@@ -150,8 +150,7 @@ public class ActivityFormSyncService {
         }
         // 获取参会者，更新参会者信息
         List<Integer> participateUids = listParticipateUidByRecord(formUserRecord);
-//        signApiService.createUserSignUp(activity.getSignId(), participateUids);
-
+        signApiService.createUserSignUp(activity.getSignId(), participateUids);
         // 获取活动创建者信息
         List<WfwAreaDTO> defaultPublishAreas = wfwAreaApiService.listByFid(fid);
         WfwAreaDTO orgInfo = Optional.ofNullable(defaultPublishAreas).orElse(Lists.newArrayList()).stream().filter(v -> Objects.equals(v.getFid(), fid)).findFirst().orElse(new WfwAreaDTO());
