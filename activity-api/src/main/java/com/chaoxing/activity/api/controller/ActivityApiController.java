@@ -21,10 +21,7 @@ import com.chaoxing.activity.model.LoginCustom;
 import com.chaoxing.activity.model.UserStatSummary;
 import com.chaoxing.activity.service.GroupService;
 import com.chaoxing.activity.service.LoginService;
-import com.chaoxing.activity.service.activity.ActivityFormSyncService;
-import com.chaoxing.activity.service.activity.ActivityHandleService;
-import com.chaoxing.activity.service.activity.ActivityQueryService;
-import com.chaoxing.activity.service.activity.ActivityValidationService;
+import com.chaoxing.activity.service.activity.*;
 import com.chaoxing.activity.service.activity.collection.ActivityCollectionHandleService;
 import com.chaoxing.activity.service.activity.collection.ActivityCollectionQueryService;
 import com.chaoxing.activity.service.activity.stat.ActivityStatSummaryQueryService;
@@ -100,7 +97,7 @@ public class ActivityApiController {
 	@Resource
 	private PassportApiService passportApiService;
 	@Resource
-	private ActivityFormSyncService activityFormSyncService;
+	private WfwFormSynOperateQueueService wfwFormSynOperateQueueService;
 
 	/**组活动推荐
 	 * @Description 
@@ -510,20 +507,7 @@ public class ActivityApiController {
 	*/
 	@RequestMapping("/sync/from/wfw-form")
 	public RestRespDTO activitySyncOperate(ActivityFormSyncParamDTO activityFormSyncParam) {
-		ActivityFormSyncParamDTO.OperateTypeEnum operateTypeEnum = ActivityFormSyncParamDTO.OperateTypeEnum.fromValue(activityFormSyncParam.getOp());
-
-		switch (operateTypeEnum) {
-			case CREATE:
-				activityFormSyncService.syncCreateActivity(activityFormSyncParam);
-				break;
-			case UPDATE:
-				activityFormSyncService.syncUpdateActivity(activityFormSyncParam);
-				break;
-			case DELETE:
-				activityFormSyncService.syncDeleteActivity(activityFormSyncParam);
-				break;
-			default:
-		}
+		wfwFormSynOperateQueueService.addActivityFormSyncOperateTask(activityFormSyncParam);
 		return RestRespDTO.success();
 	}
 

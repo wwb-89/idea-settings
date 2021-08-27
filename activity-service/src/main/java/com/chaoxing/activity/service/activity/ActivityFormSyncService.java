@@ -69,18 +69,19 @@ public class ActivityFormSyncService {
     private SignApiService signApiService;
 
     @Transactional(rollbackFor = Exception.class)
-    public void syncCreateActivity(ActivityFormSyncParamDTO activityFormSyncParam) {
-        Integer fid = activityFormSyncParam.getDeptId();
-        Integer formId = activityFormSyncParam.getFormId();
-        Integer formUserId = activityFormSyncParam.getIndexID();
-        // 判断活动是否存在，若存在，则返回，不进行活动创建
-        if (activityQueryService.existActivityCreateByForm(formId, formUserId)) {
-            return;
-        }
+    public void syncCreateActivity(Integer fid, Integer formId, Integer formUserId, Integer webTemplateId) {
         // 获取表单数据
         WfwFormDTO formUserRecord = wfwFormApiService.getFormData(fid, formId, formUserId);
         if (formUserRecord == null) {
             throw new BusinessException("未查询到记录为:" + formUserId + "的表单数据");
+        }
+        // 判断活动是否存在，若存在，回写表单数据，并则返回；若不存在，则不进行活动创建
+        Activity activity;
+        if ((activity = activityQueryService.getActivityByOriginAndFormUserId(formId, formUserId)) != null) {
+            // 回写活动状态和活动id
+            String data = packagePushUpdateData(fid, formId, activity);
+            wfwFormApiService.updateFormData(formId, formUserId, data);
+            return;
         }
         // 获取活动创建者信息
         List<WfwAreaDTO> defaultPublishAreas = wfwAreaApiService.listByFid(fid);
@@ -90,12 +91,10 @@ public class ActivityFormSyncService {
         Template template = marketHandleService.handleTemplateMarketByFidActivityFlag(fid, Activity.ActivityFlagEnum.THREE_CONFERENCE_ONE_LESSON, loginUser);
         // 封装活动创建信息数据
         ActivityCreateParamDTO activityCreateParam = packageActivityCreateParam(formUserRecord, template);
-        activityCreateParam.setWebTemplateId(activityFormSyncParam.getWebTemplateId());
-//        activityCreateParam.setWebTemplateId(22);
+        activityCreateParam.setWebTemplateId(webTemplateId);
         activityCreateParam.setStatus(Activity.StatusEnum.RELEASED.getValue());
         activityCreateParam.setOrigin(String.valueOf(formId));
         activityCreateParam.setOriginFormUserId(formUserId);
-
         // 封装报名信息
         SignCreateParamDTO signCreateParam = SignCreateParamDTO.builder().name(activityCreateParam.getName()).build();
         // 默认开启报名
@@ -107,7 +106,7 @@ public class ActivityFormSyncService {
         }
         // 新增活动
         Integer activityId = activityHandleService.add(activityCreateParam, signCreateParam, defaultPublishAreas, loginUser);
-        Activity activity = activityQueryService.getById(activityId);
+        activity = activityQueryService.getById(activityId);
         // 获取参与者列表, 进行用户报名
         List<Integer> participateUids = listParticipateUidByRecord(formUserRecord);
         signApiService.createUserSignUp(activity.getSignId(), participateUids);
@@ -121,24 +120,42 @@ public class ActivityFormSyncService {
     * @Description
     * @author huxiaolong
     * @Date 2021-08-26 16:53:48
-    * @param activityFormSyncParam
     * @return void
     */
     @Transactional(rollbackFor = Exception.class)
-    public void syncUpdateActivity(ActivityFormSyncParamDTO activityFormSyncParam) {
-        Integer fid = activityFormSyncParam.getDeptId();
-        Integer formId = activityFormSyncParam.getFormId();
-        Integer formUserId = activityFormSyncParam.getIndexID();
+    public void syncUpdateActivity(Integer fid, Integer formId, Integer formUserId, Integer webTemplateId) {
         // 获取表单数据
         WfwFormDTO formUserRecord = wfwFormApiService.getFormData(fid, formId, formUserId);
         if (formUserRecord == null) {
-            return;
+            throw new BusinessException("未查询到记录为:" + formUserId + "的表单数据");
         }
         Integer activityId = formUserRecord.getFormData().stream().filter(v -> Objects.equals(v.getAlias(), "activity_id")).map(u -> Optional.of(u.getValues().get(0)).map(v -> v.getInteger("val")).orElse(null)).findFirst().orElse(null);
         if (activityId == null) {
-            // 记录信息中不存在活动id，不做操作
-            return;
+            Activity activity = activityQueryService.getActivityByOriginAndFormUserId(formId, formUserId);
+            // 若活动不存在，则新增
+            if (activity == null) {
+                syncCreateActivity(fid, formId, formUserId, webTemplateId);
+                return;
+            }
+            // 回写数据
+            String data = packagePushUpdateData(fid, formId, activity);
+            wfwFormApiService.updateFormData(formId, formUserId, data);
+            activityId = activity.getId();
         }
+        syncUpdateActivity(formUserRecord, fid, activityId);
+    }
+
+    /**
+    * @Description 
+    * @author huxiaolong
+    * @Date 2021-08-27 17:53:14
+    * @param formUserRecord
+    * @param fid
+    * @param activityId
+    * @return void
+    */
+    @Transactional(rollbackFor = Exception.class)
+    public void syncUpdateActivity(WfwFormDTO formUserRecord, Integer fid, Integer activityId) {
         // 待更新数据
         ActivityUpdateParamDTO activityUpdateParam = new ActivityUpdateParamDTO();
         Activity activity = activityQueryService.getById(activityId);
@@ -149,18 +166,7 @@ public class ActivityFormSyncService {
         SignCreateParamDTO sign = SignCreateParamDTO.builder().build();
         if (signId != null) {
             sign = signApiService.getCreateById(signId);
-            // 判断是否开启签到，并默认封装签到
-            SignInCreateParamDTO signInCreateParam = handleActivitySignIn(formUserRecord);
-            if (CollectionUtils.isEmpty(sign.getSignIns()) && signInCreateParam != null) {
-                sign.setSignIns(Lists.newArrayList(signInCreateParam));
-            } else if (CollectionUtils.isNotEmpty(sign.getSignIns()) && signInCreateParam == null) {
-                sign.getSignIns().get(0).setDeleted(Boolean.TRUE);
-            } else if (CollectionUtils.isNotEmpty(sign.getSignIns()) && signInCreateParam != null) {
-                sign.getSignIns().get(0).setName(signInCreateParam.getName());
-                sign.getSignIns().get(0).setWay(signInCreateParam.getWay());
-            }
         }
-
         // 获取参会者，更新参会者信息
         List<Integer> participateUids = listParticipateUidByRecord(formUserRecord);
         signApiService.createUserSignUp(activity.getSignId(), participateUids);
@@ -176,26 +182,27 @@ public class ActivityFormSyncService {
     * @Description
     * @author huxiaolong
     * @Date 2021-08-26 16:54:02
-    * @param activityFormSyncParam
+    * @param
     * @return void
     */
     @Transactional(rollbackFor = Exception.class)
-    public void syncDeleteActivity(ActivityFormSyncParamDTO activityFormSyncParam) {
-        Integer fid = activityFormSyncParam.getDeptId();
-        Integer formId = activityFormSyncParam.getFormId();
-        Integer formUserId = activityFormSyncParam.getIndexID();
+    public void syncDeleteActivity(Integer fid, Integer formId, Integer formUserId) {
         // 获取表单数据
         WfwFormDTO formUserRecord = wfwFormApiService.getFormData(fid, formId, formUserId);
+        if (formUserRecord == null) {
+            throw new BusinessException("未查询到记录为:" + formUserId + "的表单数据");
+        }
+        // 获取待删除活动id
+        Integer activityId = formUserRecord.getFormData().stream().filter(v -> Objects.equals(v.getAlias(), "activity_id")).map(u -> Optional.of(u.getValues().get(0)).map(v -> v.getInteger("val")).orElse(null)).findFirst().orElse(null);
         // 获取活动创建者信息
         WfwAreaDTO orgInfo = Optional.ofNullable(wfwAreaApiService.listByFid(fid)).orElse(Lists.newArrayList()).stream().filter(v -> Objects.equals(v.getFid(), fid)).findFirst().orElse(new WfwAreaDTO());
         LoginUserDTO loginUser = LoginUserDTO.buildDefault(formUserRecord.getUid(), formUserRecord.getUname(), fid, orgInfo.getName());
-        // 获取待删除活动id
-        Integer activityId = formUserRecord.getFormData().stream().filter(v -> Objects.equals(v.getAlias(), "activity_id")).map(u -> Optional.of(u.getValues().get(0)).map(v -> v.getInteger("val")).orElse(null)).findFirst().orElse(null);
         if (activityId == null) {
-            // 记录信息中不存在活动id，返回
+            activityHandleService.deleteByOriginAndFormUserId(formId, formUserId, loginUser);
             return;
         }
-        activityHandleService.delete(activityId, null, loginUser);
+        Activity activity = activityQueryService.getById(activityId);
+        activityHandleService.delete(activityId, activity.getMarketId(), loginUser);
     }
 
     /**从表单数据中获取参与人uids

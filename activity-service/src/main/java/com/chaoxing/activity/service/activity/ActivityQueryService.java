@@ -818,11 +818,10 @@ public class ActivityQueryService {
 	* @param formUserId
 	* @return boolean
 	*/
-    public boolean existActivityCreateByForm(Integer formId, Integer formUserId) {
+    public Activity getActivityByOriginAndFormUserId(Integer formId, Integer formUserId) {
     	if (formId == null || formUserId == null) {
-    		return false;
+    		return null;
 		}
-    	int count = activityMapper.selectCount(new LambdaQueryWrapper<Activity>().eq(Activity::getOrigin, formId).eq(Activity::getOriginFormUserId, formUserId));
-    	return count >= 1;
+    	return activityMapper.selectList(new LambdaQueryWrapper<Activity>().eq(Activity::getOrigin, formId).eq(Activity::getOriginFormUserId, formUserId)).stream().findFirst().orElse(null);
     }
 }

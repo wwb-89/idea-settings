@@ -903,4 +903,24 @@ public class ActivityHandleService {
 		ActivityUpdateParamDTO activityUpdateParam = ActivityUpdateParamDTO.buildActivityUpdateParam(activity, activityParam);
 		this.edit(activityUpdateParam, sign, wfwAreaApiService.listByFid(activityCreateDTO.getFid()), loginUser);
 	}
+
+	/**
+	* @Description 
+	* @author huxiaolong
+	* @Date 2021-08-27 17:56:10
+	* @param formId
+	* @param formUserId
+	* @param loginUser
+	* @return void
+	*/
+	@Transactional(rollbackFor = Exception.class)
+	public void deleteByOriginAndFormUserId(Integer formId, Integer formUserId, LoginUserDTO loginUser) {
+		if (formId == null || formUserId == null) {
+			return;
+		}
+		Activity activity = activityQueryService.getActivityByOriginAndFormUserId(formId, formUserId);
+		if (activity != null) {
+			delete(activity.getId(), activity.getMarketId(), loginUser);
+		}
+	}
 }
