@@ -23,6 +23,7 @@ import com.chaoxing.activity.service.activity.classify.ClassifyQueryService;
 import com.chaoxing.activity.service.activity.component.ComponentQueryService;
 import com.chaoxing.activity.service.activity.engine.ActivityComponentValueService;
 import com.chaoxing.activity.service.activity.manager.ActivityManagerQueryService;
+import com.chaoxing.activity.service.activity.market.MarketQueryService;
 import com.chaoxing.activity.service.activity.template.TemplateQueryService;
 import com.chaoxing.activity.service.manager.module.SignApiService;
 import com.chaoxing.activity.service.manager.wfw.WfwAreaApiService;
@@ -232,17 +233,24 @@ public class ActivityQueryService {
 	public Page<Activity> listManaging(Page<Activity> page, ActivityManageQueryDTO activityManageQuery, LoginUserDTO loginUser) {
 		Integer strict = Optional.ofNullable(activityManageQuery.getStrict()).orElse(0);
 		activityManageQuery.setOrderField(Optional.ofNullable(activityManageQuery.getOrderFieldId()).map(tableFieldDetailMapper::selectById).map(TableFieldDetail::getCode).orElse(""));
+		Integer marketId = activityManageQuery.getMarketId();
+		Activity.ActivityFlagEnum activityFlagEnum = Activity.ActivityFlagEnum.fromValue(activityManageQuery.getActivityFlag());
+		if (marketId == null && activityFlagEnum != null) {
+			Template template = templateQueryService.getOrgTemplateByActivityFlag(activityManageQuery.getFid(), activityFlagEnum);
+			marketId = Optional.of(template).map(Template::getMarketId).orElse(null);
+			activityManageQuery.setMarketId(marketId);
+		}
 		if (strict.compareTo(1) == 0) {
 			// 严格模式
 			activityManageQuery.setCreateUid(loginUser.getUid());
 			activityManageQuery.setCreateWfwfid(activityManageQuery.getFid());
-			if (activityManageQuery.getMarketId() == null) {
+			if (marketId == null) {
 				page = activityMapper.pageCreated(page, activityManageQuery);
 			} else {
 				page = activityMapper.pageCreatedByMarket(page, activityManageQuery);
 			}
 		} else {
-			if (activityManageQuery.getMarketId() == null) {
+			if (marketId == null) {
 				List<Integer> fids = wfwAreaApiService.listSubFid(activityManageQuery.getFid());
 				activityManageQuery.setFids(fids);
 				page = activityMapper.pageManaging(page, activityManageQuery);
