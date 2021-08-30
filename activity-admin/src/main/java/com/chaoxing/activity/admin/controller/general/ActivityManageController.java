@@ -74,7 +74,9 @@ public class ActivityManageController {
 	public String activityIndex(Model model, @PathVariable Integer activityId, HttpServletRequest request) {
 		LoginUserDTO loginUser = LoginUtils.getLoginUser(request);
 		Integer operateUid = loginUser.getUid();
-		Activity activity = activityValidationService.manageAble(activityId, operateUid);
+//		todo 暂时屏蔽校验
+//		Activity activity = activityValidationService.manageAble(activityId, operateUid);
+		Activity activity = activityValidationService.activityExist(activityId);
 		model.addAttribute("activity", activity);
 		Integer signId = activity.getSignId();
 		SignActivityManageIndexDTO signActivityManageIndex = signApiService.statSignActivityManageIndex(signId);
