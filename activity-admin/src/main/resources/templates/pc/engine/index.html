@@ -430,7 +430,7 @@
                         <el-input v-model="textEditItem.introduction" type="text" placeholder="辅助说明" maxlength="40" show-word-limit class="marginBottom24"></el-input>
                         <template v-if="textEditItem.code == 'activity_release_scope'">
                             <el-form-item label="数据来源" class="marginBottom20">
-                                <el-select v-model="textEditItem.type" placeholder="请选择">
+                                <el-select v-model="textEditItem.dataOrigin" placeholder="请选择">
                                     <el-option
                                             v-for="item in [{label: '区域架构', value: ''}, {label: '年级班级（基础教育）', value: 'interface'}]"
                                             :key="item.value"
@@ -440,8 +440,8 @@
                                     </el-option>
                                 </el-select>
                             </el-form-item>
-                            <el-form-item label="接口地址" class="marginBottom20" v-show="textEditItem.type == 'interface'">
-                                <el-input v-model="textEditItem.dataOrigin" type="text" placeholder="接口地址" class="marginBottom24"></el-input>
+                            <el-form-item label="接口地址" class="marginBottom20" v-show="textEditItem.dataOrigin == 'interface'">
+                                <el-input v-model="textEditItem.originIdentify" type="text" placeholder="接口地址" class="marginBottom24"></el-input>
                             </el-form-item>
                         </template>
                         <div class="switch-box" v-show="textEditItem.code != 'sign_up' && textEditItem.code != 'company_sign_up' && textEditItem.code != 'partition'">
@@ -1164,8 +1164,8 @@
                         if (item) {
                             $this.currEditIndex = index;
                             if (item.code == 'activity_release_scope') {
-                                item.type = '';
                                 item.dataOrigin = '';
+                                item.originIdentify = '';
                             }
                             $this.textEditItem = $.extend({}, item);
                             return;
@@ -1257,7 +1257,7 @@
                             app.showMsg("字段标题未填");
                             return;
                         }
-                        if ($this.textEditItem.code == 'activity_release_scope' && $this.textEditItem.type == 'interface' && activityApp.isEmpty($this.textEditItem.dataOrigin)) {
+                        if ($this.textEditItem.code == 'activity_release_scope' && $this.textEditItem.dataOrigin == 'interface' && activityApp.isEmpty($this.textEditItem.originIdentify)) {
                             app.showMsg("发布范围接口地址未填");
                             return;
                         }
