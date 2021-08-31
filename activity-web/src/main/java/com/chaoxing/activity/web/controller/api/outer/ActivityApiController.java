@@ -6,15 +6,14 @@ import com.chaoxing.activity.dto.activity.ActivityExternalDTO;
 import com.chaoxing.activity.dto.manager.wfw.WfwAreaDTO;
 import com.chaoxing.activity.dto.query.ActivityQueryDTO;
 import com.chaoxing.activity.model.Activity;
+import com.chaoxing.activity.service.activity.ActivityIsAboutStartHandleService;
+import com.chaoxing.activity.service.activity.ActivityQueryService;
 import com.chaoxing.activity.service.activity.collection.ActivityCollectionHandleService;
 import com.chaoxing.activity.service.activity.collection.ActivityCollectionValidateService;
-import com.chaoxing.activity.service.activity.ActivityQueryService;
-import com.chaoxing.activity.service.activity.ActivityIsAboutStartHandleService;
-import com.chaoxing.activity.service.manager.wfw.WfwCoordinateApiService;
 import com.chaoxing.activity.service.manager.wfw.WfwAreaApiService;
+import com.chaoxing.activity.service.manager.wfw.WfwCoordinateApiService;
 import com.chaoxing.activity.service.util.Model2DtoService;
 import com.chaoxing.activity.util.HttpServletRequestUtils;
-import com.chaoxing.activity.util.constant.CommonConstant;
 import com.chaoxing.activity.util.exception.BusinessException;
 import com.google.common.collect.Lists;
 import org.apache.commons.collections4.CollectionUtils;
@@ -137,11 +136,6 @@ public class ActivityApiController {
 	@RequestMapping("activity/address")
 	public RestRespDTO activityAddress(Integer pageId) {
 		Activity activity = activityQueryService.getByPageId(pageId);
-		// 没有经纬度则设置一个默认的
-		BigDecimal longitude = Optional.ofNullable(activity.getLongitude()).orElse(CommonConstant.DEFAULT_LONGITUDE);
-		BigDecimal dimension = Optional.ofNullable(activity.getDimension()).orElse(CommonConstant.DEFAULT_DIMENSION);
-		activity.setLongitude(longitude);
-		activity.setDimension(dimension);
 		return RestRespDTO.success(activity);
 	}
 
