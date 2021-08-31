@@ -386,7 +386,7 @@
                         <span class="txt1">{{activeCpTypeName}}</span>
                         <span class="txt2" v-show="activeCpTypeName == '基本信息'">一个模板只能添加一次</span>
                     </div>
-                    <div v-if="!item.checked || item.multi" class="field-item aready-add" v-for="(item, index) in  componentTypeList[activeCpTypeIndex] && componentTypeList[activeCpTypeIndex].components || []">
+                    <div class="field-item aready-add" v-for="(item, index) in (componentTypeList[activeCpTypeIndex] && componentTypeList[activeCpTypeIndex].components) || []" v-if="!item.checked || item.multi" >
                         <p class="field overHidden1">{{item.name}}</p>
                         <el-tooltip v-show="item.introduction" class="tooltip" effect="dark" :content="item.introduction" placement="top">
                             <i class="icon-info"></i>
@@ -408,12 +408,6 @@
                         <div class="field-item" @click="openChooseEditDialog" style="margin-right: 0">
                             <p class="field overHidden1">自定义选择器</p>
                         </div>
-<!--                        <div class="field-item" @click="addFieldDialog=false,partitionDialog=true">-->
-<!--                            <p class="field overHidden1">分区</p>-->
-<!--                            <el-tooltip class="tooltip" effect="dark" content="说明文字单行效果" placement="top">-->
-<!--                                <i class="icon-info"></i>-->
-<!--                            </el-tooltip>-->
-<!--                        </div>-->
                     </template>
                 </div>
                 <div class="footer">
@@ -853,7 +847,7 @@
                         $('.toast-box').fadeIn();
                         setTimeout(function () {
                             $('.toast-box').fadeOut();
-                        },1500)
+                        }, 1500)
                     },
                     // 根据关联关系，处理展示出来的模板组件
                     packageShowTplComponents: function(templateComponents) {
@@ -876,40 +870,43 @@
                             });
                         });
                     },
-                    // 初始化组件类型列表 todo 待优化
+                    // 初始化组件类型列表
                     initComponentTypeList: function (templateComponents) {
                         var $this = this;
-                        var typeMap = {};
-                        // 获取已选中的组件id
-                        var checkComponentIds = [];
-                        $(templateComponents).each(function () {
-                            if (checkComponentIds.indexOf(this.componentId) != -1) {
-                                checkComponentIds.push(this.componentId);
-                            }
-                            if (!typeMap[this.pid]) {
-                                typeMap[this.pid] = {
-                                    type: this.pid == 0 ? 'basic_info' : this.code,
-                                    name: this.pid == 0 ? '基本信息' : this.name,
-                                    virtualId: this.pid,
-                                    components: []
-                                }
-                            }
-                            var cmp = $this.componentMap[this.componentId];
-                            typeMap[this.pid].components.push(cmp);
-                        });
-                        if (Object.keys(typeMap).length == 0) {
-                            $this.componentTypeList.push({
+                        var typeMap = {
+                            '0': {
                                 type: 'basic_info',
                                 name: '基本信息',
                                 virtualId: 0,
                                 components: $this.pidChildrenMap[0]
-                            })
-                            return;
-                        }
+                            }
+                        };
+                        // 获取已选中的组件id
+                        var checkComponentIds = [];
+                        var tplPids = [];
+                        $(templateComponents).each(function () {
+                            if (this.pid && this.pid != 0 && tplPids.indexOf(this.pid) == -1) {
+                                tplPids.push(this.pid);
+                            }
+                            if (checkComponentIds.indexOf(this.componentId) == -1) {
+                                checkComponentIds.push(this.componentId);
+                            }
+                        });
+                        var mainTplComponents = $.grep(templateComponents, function(item) {
+                            return tplPids.indexOf(item.id) != -1;
+                        });
+                        $(mainTplComponents).each(function () {
+                            typeMap[this.id] = {
+                                type: this.code,
+                                name: this.name,
+                                virtualId: this.id,
+                                components: $this.pidChildrenMap[this.componentId]
+                            }
+                        });
                         $.each(typeMap, function (key, item) {
                             if (item.components) {
                                 $(item.components).each(function () {
-                                    this.checked = checkComponentIds.indexOf(this.id) == -1;
+                                    this.checked = checkComponentIds.indexOf(this.id) != -1;
                                 });
                             }
                             $this.componentTypeList.push(item);
@@ -919,6 +916,7 @@
                         var $this = this;
                         $this.activeCpTypeIndex = index;
                         $this.activeCpTypeName = $this.componentTypeList[index].name;
+                        $this.$forceUpdate();
                     },
                     handleTplComponentInnerAttr: function (templateComponent) {
                         var $this = this;
