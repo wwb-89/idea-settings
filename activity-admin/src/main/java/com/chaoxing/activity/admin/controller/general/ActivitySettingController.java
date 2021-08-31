@@ -3,6 +3,7 @@ package com.chaoxing.activity.admin.controller.general;
 import com.chaoxing.activity.admin.util.LoginUtils;
 import com.chaoxing.activity.dto.LoginUserDTO;
 import com.chaoxing.activity.dto.activity.ActivityCreateParamDTO;
+import com.chaoxing.activity.dto.manager.sign.SignActivityManageIndexDTO;
 import com.chaoxing.activity.dto.manager.sign.create.SignCreateParamDTO;
 import com.chaoxing.activity.dto.manager.wfw.WfwAreaDTO;
 import com.chaoxing.activity.dto.manager.wfw.WfwGroupDTO;
@@ -61,7 +62,12 @@ public class ActivitySettingController {
 
     @RequestMapping("index")
     public String settingIndex(Model model, @PathVariable Integer activityId) {
+//		todo 暂时屏蔽校验
+//		Activity activity = activityValidationService.manageAble(activityId, operateUid);
+        Activity activity = activityValidationService.activityExist(activityId);
+        SignActivityManageIndexDTO signActivityManageIndex = signApiService.statSignActivityManageIndex(activity.getSignId());
         model.addAttribute("activityId", activityId);
+        model.addAttribute("signActivityManageIndex", signActivityManageIndex);
         return "pc/activity/setting/index";
     }
 
