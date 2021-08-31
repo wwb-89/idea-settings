@@ -40,9 +40,3 @@ SET t.type = t1.type,
     t.field_flag = t1.field_flag
 WHERE
     t.component_id = t1.id AND t.template_id = t1.template_id
-
--- 删除t_component多余字段
-ALTER TABLE t_component DROP type;
-ALTER TABLE t_component DROP data_origin;
-ALTER TABLE t_component DROP origin_identify;
-ALTER TABLE t_component DROP field_flag;

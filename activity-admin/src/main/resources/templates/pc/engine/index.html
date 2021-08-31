@@ -21,7 +21,7 @@
         <div class="content">
             <div class="w-900px info-box" style="display: block;">
                 <form action="" id="drag-box">
-                    <template v-for="(item, index) in showTemplateComponents">
+                    <template v-for="(item, index) in templateComponents">
                         <div class="title sort-item" v-if="'partition' == item.code">
                             <i class="icon-drag" :pid-key="item.pid" :id-key="item.id"></i>
                             <div class="lable">{{item.name}}</div>
@@ -425,14 +425,30 @@
                     <i class="close" @click="initEditData"></i>
                 </div>
                 <div class="body">
-                    <div class="form">
+                    <el-form class="form" label-width="72px">
                         <el-input v-model="textEditItem.name" type="text" placeholder="标题" maxlength="8" show-word-limit class="marginBottom24"></el-input>
                         <el-input v-model="textEditItem.introduction" type="text" placeholder="辅助说明" maxlength="40" show-word-limit class="marginBottom24"></el-input>
+                        <template v-if="textEditItem.code == 'activity_release_scope'">
+                            <el-form-item label="数据来源" class="marginBottom20">
+                                <el-select v-model="textEditItem.type" placeholder="请选择">
+                                    <el-option
+                                            v-for="item in [{label: '区域架构', value: ''}, {label: '年级班级（基础教育）', value: 'interface'}]"
+                                            :key="item.value"
+                                            :label="item.label"
+                                            :value="item.value"
+                                    >
+                                    </el-option>
+                                </el-select>
+                            </el-form-item>
+                            <el-form-item label="接口地址" class="marginBottom20" v-show="textEditItem.type == 'interface'">
+                                <el-input v-model="textEditItem.dataOrigin" type="text" placeholder="接口地址" class="marginBottom24"></el-input>
+                            </el-form-item>
+                        </template>
                         <div class="switch-box" v-show="textEditItem.code != 'sign_up' && textEditItem.code != 'company_sign_up' && textEditItem.code != 'partition'">
                             <label class="label">必填项</label>
                             <el-switch class="switch" v-model="textEditItem.required"></el-switch>
                         </div>
-                    </div>
+                    </el-form>
                 </div>
                 <div class="footer">
                     <div class="btn-box">
@@ -442,7 +458,6 @@
                 </div>
             </div>
         </div>
-
         <!-- 选择字段弹窗 -->
         <div class="dialog-mask" v-show="chooseDialog"> 
             <div class="dailog choose-field">
@@ -455,7 +470,7 @@
                         <el-input v-model="chooseEditItem.name" type="text" placeholder="标题" maxlength="8" show-word-limit class="marginBottom24"></el-input>
                         <el-input v-model="chooseEditItem.introduction" type="text" placeholder="辅助说明" maxlength="40" show-word-limit class="marginBottom24"></el-input>
                         <el-form-item label="数据来源" class="marginBottom20">
-                            <el-select v-model="chooseEditItem.dataOrigin" placeholder="请选择">
+                            <el-select v-model="chooseEditItem.dataOrigin" placeholder="请选择" @change="changeDataOrigin">
                                 <el-option
                                         v-for="item in [{label: '自定义', value: 'custom'}, {label: '表单', value: 'form'}]"
                                         :key="item.value"
@@ -517,7 +532,6 @@
                 </div>
             </div>
         </div>
-
         <!-- 分区弹窗 -->
         <div class="dialog-mask" v-show="partitionDialog">
             <div class="dailog">
@@ -546,7 +560,6 @@
                 </div>
             </div>
         </div>
-
         <!-- 报名条件-->
         <div class="dialog-mask" v-show="signUpDialog">
             <div class="dailog">
@@ -683,7 +696,6 @@
                     pidChildrenMap: {},
                     currMaxSequence: 0,
                     templateComponents: [],
-                    showTemplateComponents: [],
                     componentTypeList: [],
                     activeCpTypeIndex: 0,
                     activeCpTypeName: '基本信息',
@@ -770,8 +782,7 @@
                         });
                         $(templateComponents).each(function () { $this.handleTplComponentInnerAttr(this); });
                         $this.components = components;
-                        $this.packageShowTplComponents(templateComponents);
-                        // $this.templateComponents = templateComponents;
+                        $this.packageTemplateComponents(templateComponents);
                         $this.initComponentTypeList(templateComponents);
                         $this.$nextTick(function () {
                             $this.init();
@@ -850,15 +861,15 @@
                         }, 1500)
                     },
                     // 根据关联关系，处理展示出来的模板组件
-                    packageShowTplComponents: function(templateComponents) {
+                    packageTemplateComponents: function(templateComponents) {
                         var $this = this;
                         var tmpArr = $.extend(true, [], templateComponents);
-                        $this.showTemplateComponents = [];
+                        $this.templateComponents = [];
                         // 封装处理展示的templateComponents，并把子组件放入父组件中
                         $(tmpArr).each(function () {
                             var _this = this;
                             if (!_this.pid || _this.pid == 0) {
-                                $this.showTemplateComponents.push(_this);
+                                $this.templateComponents.push(_this);
                             }
                             $(tmpArr).each(function () {
                                 if (this.pid && this.pid != 0 && _this.id == this.pid) {
@@ -874,34 +885,17 @@
                     initComponentTypeList: function (templateComponents) {
                         var $this = this;
                         var typeMap = {
-                            '0': {
-                                type: 'basic_info',
-                                name: '基本信息',
-                                virtualId: 0,
-                                components: $this.pidChildrenMap[0]
-                            }
+                            '0': { type: 'basic_info', name: '基本信息', virtualId: 0, components: $this.pidChildrenMap[0] }
                         };
                         // 获取已选中的组件id
-                        var checkComponentIds = [];
-                        var tplPids = [];
+                        var checkComponentIds = [], tplPids = [];
                         $(templateComponents).each(function () {
-                            if (this.pid && this.pid != 0 && tplPids.indexOf(this.pid) == -1) {
-                                tplPids.push(this.pid);
-                            }
-                            if (checkComponentIds.indexOf(this.componentId) == -1) {
-                                checkComponentIds.push(this.componentId);
-                            }
+                            if (this.pid && this.pid != 0 && tplPids.indexOf(this.pid) == -1) tplPids.push(this.pid);
+                            if (checkComponentIds.indexOf(this.componentId) == -1) checkComponentIds.push(this.componentId);
                         });
-                        var mainTplComponents = $.grep(templateComponents, function(item) {
-                            return tplPids.indexOf(item.id) != -1;
-                        });
+                        var mainTplComponents = $.grep(templateComponents, function(item) { return tplPids.indexOf(item.id) != -1; });
                         $(mainTplComponents).each(function () {
-                            typeMap[this.id] = {
-                                type: this.code,
-                                name: this.name,
-                                virtualId: this.id,
-                                components: $this.pidChildrenMap[this.componentId]
-                            }
+                            typeMap[this.id] = { type: this.code, name: this.name, virtualId: this.id, components: $this.pidChildrenMap[this.componentId] }
                         });
                         $.each(typeMap, function (key, item) {
                             if (item.components) {
@@ -916,7 +910,6 @@
                         var $this = this;
                         $this.activeCpTypeIndex = index;
                         $this.activeCpTypeName = $this.componentTypeList[index].name;
-                        $this.$forceUpdate();
                     },
                     handleTplComponentInnerAttr: function (templateComponent) {
                         var $this = this;
@@ -955,7 +948,10 @@
                             required: item.required,
                             sequence: $this.currMaxSequence,
                             code: item.code,
-                            type: item.type
+                            type: item.type,
+                            dataOrigin: item.dataOrigin,
+                            originIdentify: item.originIdentify,
+                            fieldFlag: item.fieldFlag
                         };
 
                         var components = componentType.components;
@@ -969,7 +965,7 @@
                             $this.textEditItem = $.extend({}, newTemplateComponent);
                             return;
                         } else if (item.pid == 0) {
-                            $this.showTemplateComponents.push(newTemplateComponent);
+                            $this.templateComponents.push(newTemplateComponent);
                         } else if (item.pid != 0) {
                             $this.addSignUpChildComponentAssociate(newTemplateComponent);
                         }
@@ -983,7 +979,7 @@
                     },
                     addSignUpChildComponentAssociate: function (templateComponent) {
                         var $this = this;
-                        $($this.showTemplateComponents).each(function () {
+                        $($this.templateComponents).each(function () {
                             if (this.id == templateComponent.pid) {
                                 if (!this.children) {
                                     $this.$set(this, 'children', [])
@@ -1022,7 +1018,7 @@
                             }
                         });
                         $this.$set($this.addSignUpTemplateComponent, 'children', childTemplateComponents);
-                        $this.showTemplateComponents.push($this.addSignUpTemplateComponent);
+                        $this.templateComponents.push($this.addSignUpTemplateComponent);
                         // 将报名添加到分类中
                         $this.componentTypeList.push({
                             name: $this.addSignUpTemplateComponent.name,
@@ -1039,7 +1035,7 @@
                             $this.delTemplateComponentIds.push(item.id);
                         }
                         // 移除展示模板组件关联记录
-                        $this.showTemplateComponents.splice(index, 1);
+                        $this.templateComponents.splice(index, 1);
                         // 如果是报名组件，则需要继续移除它的子组件
                         if (item.code == 'sign_up' || item.code == 'company_sign_up') {
                             $(item.children).each(function () {
@@ -1071,17 +1067,17 @@
                         });
                     },
                     // 配置页面报名信息关联移除操作 --> 主要针对 pid != 0
-                    // index -> showTemplateComponents[index],
-                    // idx -> showTemplateComponents[index].children[idx]
+                    // index -> templateComponents[index],
+                    // idx -> templateComponents[index].children[idx]
                     // item -> templateComponent
                     removeComponentAssociate2: function (index, idx, item) {
                         var $this = this;
                         // 移除展示模板组件关联记录
-                        var id = $this.showTemplateComponents[index].children[idx].id;
+                        var id = $this.templateComponents[index].children[idx].id;
                         if (typeof id == 'number') {
                             $this.delTemplateComponentIds.push(id);
                         }
-                        $this.showTemplateComponents[index].children.splice(idx, 1);
+                        $this.templateComponents[index].children.splice(idx, 1);
                         $this.$forceUpdate();   // 层级过深，删除双向绑定失效，通过forceUpdate重新渲染
                         var signUpTemplateComponentId = item.pid;
                         var componentType = $.grep($this.componentTypeList, function (it, index) {
@@ -1137,7 +1133,7 @@
                         $this.closeBeforeAddField = false;
                     },
                     // 主界面编辑时用到的统一弹窗方法
-                    // index -> showTemplateComponents[index], item -> templateComponent
+                    // index -> templateComponents[index], item -> templateComponent
                     openEditDialog: function (index, item) {
                         var $this = this;
                         if (item.type == 'radio' || item.type == 'checkbox') {
@@ -1147,12 +1143,13 @@
                         }
                     },
                     // 报名组件中的编辑
-                    // index -> showTemplateComponents[index], idx -> showTemplateComponents[index].children[idx]， item -> templateComponent
+                    // index -> templateComponents[index], idx -> templateComponents[index].children[idx]， item -> templateComponent
                     openEditDialog1: function (index, idx, item) {
                         var $this = this;
                         if (item.code == 'sign_up_condition' || item.code == 'sign_up_fill_info') {
                             $this.openChildComponentDialog(index, item, idx);
                         } else {    // 这里只存在报名的系统组件，不存在自定义组件
+                            $this.currEditSignUpInsideIndex = idx;
                             $this.openTextDialog(index, item);
                         }
                     },
@@ -1166,6 +1163,10 @@
                         // 编辑
                         if (item) {
                             $this.currEditIndex = index;
+                            if (item.code == 'activity_release_scope') {
+                                item.type = '';
+                                item.dataOrigin = '';
+                            }
                             $this.textEditItem = $.extend({}, item);
                             return;
                         }
@@ -1187,12 +1188,7 @@
                         if (item) {
                             $this.currEditIndex = index;
                             var cmp = $.grep($this.components, function (it) { return it.id == item.componentId; })[0];
-                            $this.chooseEditItem = $.extend({}, cmp, {
-                                type: item.type,
-                                dataOrigin: item.dataOrigin,
-                                originIdentify: item.originIdentify,
-                                fieldFlag: item.fieldFlag
-                            });
+                            $this.chooseEditItem = $.extend({}, cmp);
                             return;
                         }
                         $this.chooseEditItem = {
@@ -1225,7 +1221,7 @@
 
                         // item: templateComponent   此时该为编辑模板关系数据
                         if (idx || idx == 0) {
-                            $this.signUpTemplateComponentItem = $.extend({}, $this.showTemplateComponents[index].children[idx]);
+                            $this.signUpTemplateComponentItem = $.extend({}, $this.templateComponents[index].children[idx]);
                             if (item.code == "sign_up_condition") {
                                 $this.signUpConditionItem = $this.signUpTemplateComponentItem.signUpCondition;
                             } else if (item.code == "sign_up_fill_info") {
@@ -1258,6 +1254,11 @@
                     confirmEditText: function () {
                         var $this = this;
                         if (!$this.textEditItem.name) {
+                            app.showMsg("字段标题未填");
+                            return;
+                        }
+                        if ($this.textEditItem.code == 'activity_release_scope' && $this.textEditItem.type == 'interface' && activityApp.isEmpty($this.textEditItem.dataOrigin)) {
+                            app.showMsg("发布范围接口地址未填");
                             return;
                         }
 
@@ -1267,48 +1268,67 @@
                             $this.addSignUpTemplateComponent.introduction = $this.textEditItem.introduction;
                             $this.addSignUpTemplateComponent.required = $this.textEditItem.required;
                             $this.addSignUpComponentAssociate();
-                            $this.textDialog = false;
-                            $this.chooseDialog = false;
+                            $this.initEditData();
                             return;
                         }
 
                         // 自定义文本组件新增，需要处理
                         if (!$this.textEditItem.id) {
                             $this.submitCustomComponent($this.textEditItem)
-                        } else {
-                            // 普通文本编辑，不提交结果
-                            $this.showTemplateComponents[$this.currEditIndex] = $.extend({}, $this.textEditItem);
-                            // 如果是报名，需要更新类型列表的名字
-                            if ($this.textEditItem.code == 'sign_up' || $this.textEditItem.code == 'company_sign_up') {
-                                var componentType = $.grep($this.componentTypeList, function (it, index) {
-                                    return it.virtualId == $this.textEditItem.id;
-                                })[0];
-                                componentType.name = $this.textEditItem.name;
-                            }
-                            $this.initEditData();
+                            return;
                         }
+                        if ($this.currEditSignUpInsideIndex || $this.currEditSignUpInsideIndex == 0) {
+                            $this.templateComponents[$this.currEditIndex].children[$this.currEditSignUpInsideIndex] = $.extend({}, $this.textEditItem);
+                            $this.initEditData();
+                            return;
+                        }
+                        // 普通文本编辑，不提交结果
+                        $this.templateComponents[$this.currEditIndex] = $.extend({}, $this.textEditItem);
+                        // 如果是报名，需要更新类型列表的名字
+                        if ($this.textEditItem.code == 'sign_up' || $this.textEditItem.code == 'company_sign_up') {
+                            var componentType = $.grep($this.componentTypeList, function (it, index) {
+                                return it.virtualId == $this.textEditItem.id;
+                            })[0];
+                            componentType.name = $this.textEditItem.name;
+                        }
+                        $this.initEditData();
                     },
                     confirmChooseEdit: function () {
                         var $this = this;
                         if (!$this.chooseEditItem.name) {
                             return;
                         }
+                        if ($this.chooseEditItem.dataOrigin == 'custom') {
+                            $this.chooseEditItem.originIdentify = null;
+                            $this.chooseEditItem.fieldFlag = null;
+                        } else {
+                            $this.chooseEditItem.componentFields = null;
+                        }
                         // 自定义选择组件，需要实时处理
                         $this.submitCustomComponent($this.chooseEditItem);
                     },
                     initEditData: function () {
                         var $this = this;
-                        $this.currEditIndex = null;
-                        // 初始化文本编辑
+                        // 初始化编辑
                         $this.textDialog = false;
-                        $this.textEditItem = {};
-                        // 初始化选择编辑
                         $this.chooseDialog = false;
-                        $this.chooseEditItem = { componentFields: [] };
+                        $this.signUpDialog = false;
+                        $this.fillInfoDialog = false;
+                        $this.signUpConditionAdd = false;
                         $this.editDialogTitle = "";
+                        $this.currEditIndex = null;
+                        $this.currEditSignUpInsideIndex = null;
+                        $this.textEditItem = {};
+                        $this.chooseEditItem = { componentFields: [] };
+                        $this.signUpTemplateComponentItem = {};
+                        $this.signUpConditionItem = {};
+                        $this.signUpFillInfoTypeItem = {};
                         $this.addSignUpTemplateComponent = null;
                         // 回到添加字段页面
                         $this.addFieldDialog = $this.closeBeforeAddField;
+
+
+
                     },
                     confirmChildrenComponentEdit: function (code) {
                         var $this = this;
@@ -1320,16 +1340,19 @@
                         if ($this.signUpConditionAdd) {
                             $this.addSignUpChildComponentAssociate($this.signUpTemplateComponentItem);
                         } else {
-                            $this.showTemplateComponents[$this.currEditIndex].children[$this.currEditSignUpInsideIndex] = $.extend({}, $this.signUpTemplateComponentItem);
+                            $this.templateComponents[$this.currEditIndex].children[$this.currEditSignUpInsideIndex] = $.extend({}, $this.signUpTemplateComponentItem);
                         }
-                        $this.signUpDialog = false;
-                        $this.fillInfoDialog = false;
-                        $this.signUpConditionAdd = false;
-                        $this.currEditIndex = null;
-                        $this.currEditSignUpInsideIndex = null;
-                        $this.signUpTemplateComponentItem = {};
-                        $this.signUpConditionItem = {};
-                        $this.signUpFillInfoTypeItem = {};
+                        $this.initEditData();
+                    },
+                    changeDataOrigin: function (value) {
+                        var $this = this;
+                        if (value == 'custom' && !$this.chooseEditItem.componentFields) {
+                            $this.$set($this.chooseEditItem, 'componentFields', [{
+                                componentId: $this.chooseEditItem.id,
+                                fieldName: '',
+                                sequence: 1
+                            }]);
+                        }
                     },
                     selectForm: function (value) {
                         var $this = this;
@@ -1360,10 +1383,10 @@
                                 var component = res.data
                                 if (isAdd) {
                                     // 针对数据新增之后处理
-                                    $this.addedComponent(component, waitSubmitItem);
+                                    $this.addedComponent(component);
                                 } else {
                                     // 针对数据更新之后处理
-                                    $this.editedComponent(component, waitSubmitItem);
+                                    $this.editedComponent(component);
                                 }
                                 $this.initEditData();
                             } else {
@@ -1377,21 +1400,20 @@
                             app.showMsg("保存自定义组件失败");
                         });
                     },
-                    addedComponent: function (component, waitSubmitItem) {
+                    // 自定义组件新增后续处理
+                    addedComponent: function (component) {
                         var $this = this;
                         component.checked = true;
-                        var componentType = $.grep($this.componentTypeList, function (it, index) {
-                            return it.virtualId == 0;
-                        })[0];
+                        $this.components.push(component);
+                        var componentType = $.grep($this.componentTypeList, function (it) { return it.virtualId == 0; })[0];
                         componentType.components.push(component);
                         $this.addComponentAssociate(componentType.components.length - 1, component)
                         $this.customComponentIds.push(component.id);
                     },
+                    // 自定义组件更新后续处理
                     editedComponent: function (component) {
                         var $this = this;
-                        var componentType = $.grep($this.componentTypeList, function (it, index) {
-                            return it.virtualId == 0;
-                        })[0];
+                        var componentType = $.grep($this.componentTypeList, function (it) { return it.virtualId == 0; })[0];
                         var components = componentType.components, i;
                         for (i = 0; i < components.length; i++) {
                             if (components[i].id == component.id) {
@@ -1411,8 +1433,11 @@
                             required: component.required,
                             code: component.code,
                             type: component.type,
+                            dataOrigin: component.dataOrigin,
+                            originIdentify: component.originIdentify,
+                            fieldFlag: component.fieldFlag
                         };
-                        $this.showTemplateComponents[$this.currEditIndex] = $.extend({}, $this.showTemplateComponents[$this.currEditIndex], updatedAttrs);
+                        $this.templateComponents[$this.currEditIndex] = $.extend({}, $this.templateComponents[$this.currEditIndex], updatedAttrs);
                     },
                     // 返回
                     returnBack: function () {
@@ -1438,7 +1463,7 @@
                             insideSortedMap[pidKey][idKey] = sequenceMap[pidKey];
                             sequenceMap[pidKey]++;
                         });
-                        $.each($this.showTemplateComponents, function () {
+                        $.each($this.templateComponents, function () {
                             var _this = this;
                             _this.sequence = sortedMap[_this.id];
                             if (_this.children) {
@@ -1482,7 +1507,7 @@
                         var templateComponents = [];
                         // 进行排序
                         $this.sortTplComponent();
-                        $($this.showTemplateComponents).each(function () {
+                        $($this.templateComponents).each(function () {
                             var _this = this;
                             var newChildren;
                             if (_this.children) {
@@ -1516,6 +1541,10 @@
                                 introduction: _this.introduction,
                                 required: _this.required,
                                 sequence: _this.sequence,
+                                type: _this.type,
+                                dataOrigin: _this.dataOrigin,
+                                originIdentify: _this.originIdentify,
+                                fieldFlag: _this.fieldFlag,
                                 children: newChildren
                             });
                         });

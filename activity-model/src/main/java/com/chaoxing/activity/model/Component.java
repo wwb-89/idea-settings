@@ -45,6 +45,14 @@ public class Component {
     /** 是否支持多个组件; column: is_multi*/
     @TableField(value = "is_multi")
     private Boolean multi;
+    /** 组件类型。自定义组件才有类型：文本、单选、多选; column: type*/
+    private String type;
+    /** 数据来源; column: data_origin*/
+    private String dataOrigin;
+    /** 来源主键; column: origin_identify*/
+    private String originIdentify;
+    /** 字段标识; column: field_flag*/
+    private String fieldFlag;
     /** 模板; column: templateId*/
     private Integer templateId;
     /** 创建时间; column: create_time*/

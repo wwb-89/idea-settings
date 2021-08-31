@@ -14,6 +14,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Objects;
 
@@ -73,11 +74,22 @@ public class ComponentHandleService {
     */
     @Transactional(rollbackFor = Exception.class)
     public Component updateCustomComponent(Integer uid, Component component) {
-        component.setUpdateUid(uid);
-        componentMapper.updateById(component);
+        componentMapper.update(null, new UpdateWrapper<Component>().lambda()
+                .eq(Component::getId, component.getId())
+                .set(Component::getName, component.getName())
+                .set(Component::getIntroduction, component.getIntroduction())
+                .set(Component::getCode, component.getCode())
+                .set(Component::getRequired, component.getRequired())
+                .set(Component::getType, component.getType())
+                .set(Component::getDataOrigin, component.getDataOrigin())
+                .set(Component::getOriginIdentify, component.getOriginIdentify())
+                .set(Component::getFieldFlag, component.getFieldFlag())
+                .set(Component::getUpdateUid, uid)
+                .set(Component::getUpdateTime, LocalDateTime.now())
+        );
+        // 先删后加
+        componentFieldMapper.delete(new QueryWrapper<ComponentField>().lambda().eq(ComponentField::getComponentId, component.getId()));
         if (CollectionUtils.isNotEmpty(component.getComponentFields())) {
-            // 先删后加
-            componentFieldMapper.delete(new QueryWrapper<ComponentField>().lambda().eq(ComponentField::getComponentId, component.getId()));
             component.getComponentFields().forEach(v -> {
                 v.setCreateUid(uid);
                 v.setUpdateUid(uid);

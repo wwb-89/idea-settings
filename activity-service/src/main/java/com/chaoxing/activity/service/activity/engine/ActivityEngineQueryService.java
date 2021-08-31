@@ -32,8 +32,6 @@ import java.util.stream.Collectors;
 public class ActivityEngineQueryService {
 
     @Autowired
-    private TemplateMapper templateMapper;
-    @Autowired
     private TemplateComponentMapper templateComponentMapper;
     @Autowired
     private ComponentFieldMapper componentFieldMapper;
@@ -50,17 +48,12 @@ public class ActivityEngineQueryService {
 
     public ActivityEngineDTO findEngineTemplateInfo(Integer templateId) {
         // 查询模板数据
-        Template template = templateMapper.selectById(templateId);
+        Template template = templateQueryService.getById(templateId);
         // 查询组件数据
         List<Component> components = componentQueryService.listByTemplateId(templateId);
         // 查询模板组件关联关系
         List<TemplateComponentDTO> templateComponents = templateComponentMapper.listTemplateComponentInfo(templateId);
-        // 获取选择组件自定义的组件id
-        List<Integer> customChooseCptIds = templateComponents.stream()
-                .filter(v -> Component.TypeEnum.chooseType(v.getType()) && Objects.equals(v.getDataOrigin(), Component.DataOriginEnum.CUSTOM.getValue()))
-                .map(TemplateComponentDTO::getComponentId)
-                .collect(Collectors.toList());
-        packageCustomChooseOptions(components, customChooseCptIds);
+        packageCustomChooseOptions(components);
         packageTemplateComponents(templateComponents);
         return ActivityEngineDTO.builder()
                 .template(template)
@@ -70,9 +63,10 @@ public class ActivityEngineQueryService {
     }
 
 
-    private void packageCustomChooseOptions(List<Component> components, List<Integer> customIds) {
+    private void packageCustomChooseOptions(List<Component> components) {
+        // 获取选择组件自定义的选项
         components.forEach(v -> {
-            if (customIds.contains(v.getId())) {
+            if (Component.TypeEnum.chooseType(v.getType()) && Objects.equals(v.getDataOrigin(), Component.DataOriginEnum.CUSTOM.getValue())) {
                 // 自定义选项值列表
                 List<ComponentField> componentFields = componentFieldMapper.selectList(new QueryWrapper<ComponentField>()
                         .lambda()
@@ -107,22 +101,6 @@ public class ActivityEngineQueryService {
                 v.setSignUpFillInfoType(Optional.ofNullable(signUpFillInfoTypeMap.get(v.getId())).orElse(null));
             }
         });
-    }
-
-
-    /**根据机构fid，查询除系统模板外，其他模板
-    * @Description
-    * @author huxiaolong
-    * @Date 2021-07-06 14:35:58
-    * @param fid
-    * @return java.util.List<com.chaoxing.activity.model.Template>
-    */
-    public List<Template> listTemplateByFid(Integer fid, Integer marketId) {
-        return templateMapper.selectList(new QueryWrapper<Template>()
-                .lambda()
-                .eq(Template::getSystem, Boolean.TRUE)
-                .or(j -> j.eq(Template::getFid, fid).eq(Template::getMarketId, marketId))
-                .orderByAsc(Template::getSequence));
     }
 
     /**查询模板组件关联数据，并安装父子结构进行树结构封装
