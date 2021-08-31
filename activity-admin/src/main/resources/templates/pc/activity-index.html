@@ -34,9 +34,9 @@
                     <span>{{menus.signInManage.name}}</span>
                 </div>
             </div>
-            <div class="entry menu-item" v-show="menuShow('results_manage')">
+            <div class="entry menu-item" v-if="signActivityManageIndex.signUpExist || signActivityManageIndex.signInExist" v-show="menuShow('results_manage')">
                 <!--考核管理-->
-                <div :class="{'item': true, 'active': menus.resultsManage.selected}" v-if="signActivityManageIndex.signUpExist || signActivityManageIndex.signInExist" @click="toResultsManage">
+                <div :class="{'item': true, 'active': menus.resultsManage.selected}" @click="toResultsManage">
                     <img :src="menus.resultsManage.activeIconUrl" v-if="menus.resultsManage.selected">
                     <img :src="menus.resultsManage.defaultIconUrl" v-else>
                     <span>{{menus.resultsManage.name}}</span>
