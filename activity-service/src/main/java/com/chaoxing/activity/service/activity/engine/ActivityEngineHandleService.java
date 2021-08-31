@@ -55,7 +55,8 @@ public class ActivityEngineHandleService {
     */
     public void handleEngineTemplate(Integer fid, Integer marketId, Integer uid, ActivityEngineDTO activityEngineDTO) {
         Template template = activityEngineDTO.getTemplate();
-        List<TemplateComponent> templateComponents = activityEngineDTO.getTemplateComponents();
+//        List<TemplateComponent> templateComponents = activityEngineDTO.getTemplateComponents();
+        List<TemplateComponent> templateComponents = Lists.newArrayList();
         if (template.getSystem() && template.getFid() == null) {
             // todo 临时测试，默认新建一个template
             Template newTemplate = Template.builder()
@@ -116,11 +117,11 @@ public class ActivityEngineHandleService {
     * @return com.chaoxing.activity.model.Component
     */
     @Transactional(rollbackFor = Exception.class)
-    public Component handleCustomComponent(Integer uid, Integer fid, Component component) {
+    public Component handleCustomComponent(Integer uid, Component component) {
         if (component.getId() == null) {
-            return saveCustomComponent(uid, fid, component);
+            return saveCustomComponent(uid, component);
         }
-        return updateCustomComponent(uid, fid, component);
+        return updateCustomComponent(uid, component);
     }
 
     /**
@@ -132,8 +133,8 @@ public class ActivityEngineHandleService {
     * @return com.chaoxing.activity.model.Component
     */
     @Transactional(rollbackFor = Exception.class)
-    public Component updateCustomComponent(Integer uid, Integer fid, Component component) {
-        return componentHandleService.updateCustomComponent(uid, fid, component);
+    public Component updateCustomComponent(Integer uid, Component component) {
+        return componentHandleService.updateCustomComponent(uid, component);
     }
 
     /**新增自定义组件
@@ -145,8 +146,8 @@ public class ActivityEngineHandleService {
     * @return java.util.Map<java.lang.Integer,com.chaoxing.activity.model.Component>
     */
     @Transactional(rollbackFor = Exception.class)
-    public Component saveCustomComponent(Integer uid, Integer fid, Component component) {
-        return componentHandleService.saveCustomComponent(uid, fid, component);
+    public Component saveCustomComponent(Integer uid, Component component) {
+        return componentHandleService.saveCustomComponent(uid, component);
     }
 
     /**新增模板组件关联

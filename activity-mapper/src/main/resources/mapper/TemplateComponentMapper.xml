@@ -11,14 +11,18 @@
         <result column="is_required" jdbcType="BIT" property="required" />
         <result column="sequence" jdbcType="INTEGER" property="sequence" />
         <result column="is_deleted" jdbcType="INTEGER" property="deleted" />
+        <result column="type" jdbcType="VARCHAR" property="type" />
+        <result column="data_origin" jdbcType="VARCHAR" property="dataOrigin" />
+        <result column="origin_identify" jdbcType="VARCHAR" property="originIdentify" />
+        <result column="field_flag" jdbcType="VARCHAR" property="fieldFlag" />
     </resultMap>
     <sql id="Base_Column_List">
-        t.id, t.template_id, t.pid, t.component_id, t.name, t.introduction, t.is_required, t.sequence, is_deleted
+        t.id, t.template_id, t.pid, t.component_id, t.name, t.introduction, t.is_required, t.sequence, is_deleted, t.type, t.data_origin, t.origin_identify, t.field_flag
     </sql>
 
     <insert id="batchAdd" useGeneratedKeys="true" keyProperty="id">
         INSERT INTO
-            t_template_component ( template_id, pid, component_id, `name`, introduction, is_required, `sequence` )
+            t_template_component ( template_id, pid, component_id, `name`, introduction, is_required, `sequence`, `type`, data_origin, origin_identify, field_flag )
         VALUES
         <foreach collection="templateComponents" item="item" open="" close="" separator=",">
             (
@@ -28,7 +32,11 @@
                 #{item.name},
                 #{item.introduction},
                 #{item.required},
-                #{item.sequence}
+                #{item.sequence},
+                #{item.type},
+                #{item.dataOrigin},
+                #{item.originIdentify},
+                #{item.fieldFlag}
             )
         </foreach>
     </insert>
@@ -41,11 +49,11 @@
             t.name,
             t.introduction,
             t.is_required as required,
-            t1.code,
-            t1.type,
-            t1.data_origin as dataOrigin,
-            t1.origin_identify as originIdentify,
-            t1.field_flag as fieldFlag
+            t.type,
+            t.data_origin as dataOrigin,
+            t.origin_identify as originIdentify,
+            t.field_flag as fieldFlag,
+            t1.code
         FROM
             t_template_component t
             LEFT JOIN t_component t1 ON t.component_id = t1.id

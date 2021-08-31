@@ -34,7 +34,7 @@ public class ActivityEngineApiController {
     public RestRespDTO addCustomComponent(HttpServletRequest request, String componentStr) {
         LoginUserDTO loginUser = LoginUtils.getLoginUser(request);
         Component component = JSON.parseObject(componentStr, Component.class);
-        return RestRespDTO.success(activityEngineHandleService.handleCustomComponent(loginUser.getUid(), loginUser.getFid(), component));
+        return RestRespDTO.success(activityEngineHandleService.handleCustomComponent(loginUser.getUid(), component));
     }
 
     /**发布模板(新增/修改)

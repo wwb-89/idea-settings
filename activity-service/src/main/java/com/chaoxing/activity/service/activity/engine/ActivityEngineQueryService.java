@@ -5,6 +5,7 @@ import com.chaoxing.activity.dto.engine.ActivityEngineDTO;
 import com.chaoxing.activity.dto.engine.TemplateComponentDTO;
 import com.chaoxing.activity.mapper.*;
 import com.chaoxing.activity.model.*;
+import com.chaoxing.activity.service.activity.component.ComponentQueryService;
 import com.chaoxing.activity.service.activity.template.TemplateQueryService;
 import com.chaoxing.activity.service.manager.WfwFormApiService;
 import com.google.common.collect.Maps;
@@ -35,8 +36,6 @@ public class ActivityEngineQueryService {
     @Autowired
     private TemplateComponentMapper templateComponentMapper;
     @Autowired
-    private ComponentMapper componentMapper;
-    @Autowired
     private ComponentFieldMapper componentFieldMapper;
     @Resource
     private SignUpConditionService signUpConditionService;
@@ -46,33 +45,68 @@ public class ActivityEngineQueryService {
     private WfwFormApiService wfwFormApiService;
     @Resource
     private TemplateQueryService templateQueryService;
+    @Resource
+    private ComponentQueryService componentQueryService;
 
     public ActivityEngineDTO findEngineTemplateInfo(Integer templateId) {
         // 查询模板数据
         Template template = templateMapper.selectById(templateId);
         // 查询组件数据
-        List<Component> components = listComponentByTemplateId(templateId);
-        // 查询模板组件关联关系 todo 后续对前端进行处理，会移除templateComponents，直接使用showTemplateComponents
-        List<TemplateComponentDTO> showTplComponents = listTemplateComponentByTemplateId(templateId);
-        List<TemplateComponent> templateComponents = Lists.newArrayList();
-        CollectionUtils.collect(showTplComponents, o -> TemplateComponent.builder()
-                .id(o.getId())
-                .pid(o.getPid())
-                .name(o.getName())
-                .introduction(o.getIntroduction())
-                .componentId(o.getComponentId())
-                .templateId(o.getTemplateId())
-                .sequence(o.getSequence())
-                .required(o.getRequired())
-                .signUpCondition(o.getSignUpCondition())
-                .signUpFillInfoType(o.getSignUpFillInfoType())
-                .build(), templateComponents);
+        List<Component> components = componentQueryService.listByTemplateId(templateId);
+        // 查询模板组件关联关系
+        List<TemplateComponentDTO> templateComponents = templateComponentMapper.listTemplateComponentInfo(templateId);
+        // 获取选择组件自定义的组件id
+        List<Integer> customChooseCptIds = templateComponents.stream()
+                .filter(v -> Component.TypeEnum.chooseType(v.getType()) && Objects.equals(v.getDataOrigin(), Component.DataOriginEnum.CUSTOM.getValue()))
+                .map(TemplateComponentDTO::getComponentId)
+                .collect(Collectors.toList());
+        packageCustomChooseOptions(components, customChooseCptIds);
+        packageTemplateComponents(templateComponents);
         return ActivityEngineDTO.builder()
                 .template(template)
                 .components(components)
                 .templateComponents(templateComponents)
-                .showTemplateComponents(showTplComponents)
                 .build();
+    }
+
+
+    private void packageCustomChooseOptions(List<Component> components, List<Integer> customIds) {
+        components.forEach(v -> {
+            if (customIds.contains(v.getId())) {
+                // 自定义选项值列表
+                List<ComponentField> componentFields = componentFieldMapper.selectList(new QueryWrapper<ComponentField>()
+                        .lambda()
+                        .eq(ComponentField::getComponentId, v.getId()));
+                v.setComponentFields(componentFields);
+            }
+        });
+
+    }
+
+    private void packageTemplateComponents(List<TemplateComponentDTO> tplCompoenents) {
+        // 报名条件templateComponentIds
+        List<Integer> sucTplComponentIds = Lists.newArrayList();
+        // 报名信息填写类型templateComponentIds
+        List<Integer> sufiTplComponentIds = Lists.newArrayList();
+        tplCompoenents.forEach(v -> {
+            if (v.getPid() != 0 && Objects.equals(v.getCode(), Component.SystemComponentCodeEnum.SIGN_UP_CONDITION.getValue())) {
+                sucTplComponentIds.add(v.getId());
+            } else if (v.getPid() != 0 && Objects.equals(v.getCode(), Component.SystemComponentCodeEnum.SIGN_UP_FILL_INFO.getValue())) {
+                sufiTplComponentIds.add(v.getId());
+            }
+        });
+        Map<Integer, SignUpCondition> signUpConditionMap = signUpConditionService.listByTemplateComponentIds(sucTplComponentIds).stream()
+                .collect(Collectors.toMap(SignUpCondition::getTemplateComponentId, v -> v, (v1, v2) -> v2));
+        Map<Integer, SignUpFillInfoType> signUpFillInfoTypeMap = signUpFillInfoTypeService.listByTemplateComponentIds(sufiTplComponentIds).stream()
+                .collect(Collectors.toMap(SignUpFillInfoType::getTemplateComponentId, v -> v, (v1, v2) -> v2));
+        tplCompoenents.forEach(v -> {
+            if (!signUpConditionMap.isEmpty()) {
+                v.setSignUpCondition(Optional.ofNullable(signUpConditionMap.get(v.getId())).orElse(null));
+            }
+            if (!signUpFillInfoTypeMap.isEmpty()) {
+                v.setSignUpFillInfoType(Optional.ofNullable(signUpFillInfoTypeMap.get(v.getId())).orElse(null));
+            }
+        });
     }
 
 
@@ -89,75 +123,6 @@ public class ActivityEngineQueryService {
                 .eq(Template::getSystem, Boolean.TRUE)
                 .or(j -> j.eq(Template::getFid, fid).eq(Template::getMarketId, marketId))
                 .orderByAsc(Template::getSequence));
-    }
-
-    /**系统组件 + templateId 的自定义组件 = 组件集合
-    * @Description
-    * @author huxiaolong
-    * @Date 2021-07-07 15:31:05
-    * @param templateId
-    * @return void
-    */
-    public List<Component> listComponentByTemplateId(Integer templateId) {
-        // 系统组件(isSystem: true, templateId: null) + templateId 自身的组件
-        List<Component> components = componentMapper.selectList(new QueryWrapper<Component>()
-                .lambda()
-                .eq(Component::getTemplateId, templateId).or().eq(Component::getSystem, Boolean.TRUE));
-        for (Component component : components) {
-            if (component.isSystemComponent()) {
-                continue;
-            }
-            if (Objects.equals(component.getDataOrigin(), Component.DataOriginEnum.FORM.getValue())) {
-                // 表单
-                String originIdentify = component.getOriginIdentify();
-                String fieldFlag = component.getFieldFlag();
-                Template template = templateQueryService.getById(templateId);
-                List<String> fieldValues = wfwFormApiService.listFormFieldValue(template.getFid(), Integer.parseInt(originIdentify), fieldFlag);
-                component.setFormFieldValues(fieldValues);
-            } else {
-                // 自定义
-                List<ComponentField> componentFields = componentFieldMapper.selectList(new QueryWrapper<ComponentField>()
-                        .lambda()
-                        .eq(ComponentField::getComponentId, component.getId()));
-                component.setFieldList(componentFields);
-            }
-        }
-        return components;
-    }
-
-    /**
-    * @Description
-    * @author huxiaolong
-    * @Date 2021-07-07 15:30:53
-    * @param templateId
-    * @return void
-    */
-    public List<TemplateComponentDTO> listTemplateComponentByTemplateId(Integer templateId) {
-        List<TemplateComponentDTO> templateComponents = templateComponentMapper.listTemplateComponentInfo(templateId);
-        // 报名条件templateComponentIds
-        List<Integer> sucTplComponentIds = Lists.newArrayList();
-        // 报名信息填写类型templateComponentIds
-        List<Integer> sufiTplComponentIds = Lists.newArrayList();
-        templateComponents.forEach(v -> {
-            if (v.getPid() != 0 && Objects.equals(v.getCode(), Component.SystemComponentCodeEnum.SIGN_UP_CONDITION.getValue())) {
-                sucTplComponentIds.add(v.getId());
-            } else if (v.getPid() != 0 && Objects.equals(v.getCode(), Component.SystemComponentCodeEnum.SIGN_UP_FILL_INFO.getValue())) {
-                sufiTplComponentIds.add(v.getId());
-            }
-        });
-        Map<Integer, SignUpCondition> signUpConditionMap = signUpConditionService.listByTemplateComponentIds(sucTplComponentIds).stream()
-                .collect(Collectors.toMap(SignUpCondition::getTemplateComponentId, v -> v, (v1, v2) -> v2));
-        Map<Integer, SignUpFillInfoType> signUpFillInfoTypeMap = signUpFillInfoTypeService.listByTemplateComponentIds(sufiTplComponentIds).stream()
-                .collect(Collectors.toMap(SignUpFillInfoType::getTemplateComponentId, v -> v, (v1, v2) -> v2));
-        templateComponents.forEach(v -> {
-            if (!signUpConditionMap.isEmpty()) {
-                v.setSignUpCondition(Optional.ofNullable(signUpConditionMap.get(v.getId())).orElse(null));
-            }
-            if (!signUpFillInfoTypeMap.isEmpty()) {
-                v.setSignUpFillInfoType(Optional.ofNullable(signUpFillInfoTypeMap.get(v.getId())).orElse(null));
-            }
-        });
-        return templateComponents;
     }
 
     /**查询模板组件关联数据，并安装父子结构进行树结构封装
