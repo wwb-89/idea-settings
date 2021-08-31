@@ -189,7 +189,6 @@ public class ActivityStatSummaryQueryService {
             List<String> itemData = Lists.newArrayList();
             itemData.add(String.valueOf(record.getActivityId()));
             for (TableFieldDetail tableFieldDetail : tableFieldDetails) {
-                itemData.add(String.valueOf(record.getActivityId()));
                 String code = tableFieldDetail.getCode();
                 switch (code) {
                     case "activityName":
