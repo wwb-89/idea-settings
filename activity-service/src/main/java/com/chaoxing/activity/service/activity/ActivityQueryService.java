@@ -234,11 +234,8 @@ public class ActivityQueryService {
 		Integer strict = Optional.ofNullable(activityManageQuery.getStrict()).orElse(0);
 		activityManageQuery.setOrderField(Optional.ofNullable(activityManageQuery.getOrderFieldId()).map(tableFieldDetailMapper::selectById).map(TableFieldDetail::getCode).orElse(""));
 		Integer marketId = activityManageQuery.getMarketId();
-		Activity.ActivityFlagEnum activityFlagEnum = Activity.ActivityFlagEnum.fromValue(activityManageQuery.getActivityFlag());
-		if (marketId == null && activityFlagEnum != null) {
-			Template template = templateQueryService.getOrgTemplateByActivityFlag(activityManageQuery.getFid(), activityFlagEnum);
-			marketId = Optional.of(template).map(Template::getMarketId).orElse(null);
-			activityManageQuery.setMarketId(marketId);
+		if (marketId == null) {
+			marketId = templateQueryService.getMarketIdByTemplate(activityManageQuery.getFid(), activityManageQuery.getActivityFlag());
 		}
 		if (strict.compareTo(1) == 0) {
 			// 严格模式
@@ -305,12 +302,17 @@ public class ActivityQueryService {
 	 * @author wwb
 	 * @Date 2021-04-08 18:00:51
 	 * @param page
-	 * @param uid
 	 * @param sw
 	 * @return com.baomidou.mybatisplus.extension.plugins.pagination.Page<com.chaoxing.activity.model.Activity>
 	*/
-	public Page<Activity> pageManaged(Page<Activity> page, Integer uid, String sw) {
-		return activityMapper.pageUserManaged(page, uid, sw);
+	public Page<Activity> pageManaged(Page<Activity> page, LoginUserDTO loginUser, String sw, String flag) {
+		Integer marketId = templateQueryService.getMarketIdByTemplate(loginUser.getFid(), flag);
+		// 若flag不为空且市场id不存在，则查询结果为空
+		if (StringUtils.isNotBlank(flag) && marketId == null) {
+			page.setRecords(Lists.newArrayList());
+			return page;
+		}
+		return activityMapper.pageUserMarketManaged(page, loginUser.getUid(), sw, marketId);
 	}
 
 	/**根据活动id查询活动
@@ -390,7 +392,9 @@ public class ActivityQueryService {
 	 * @param sw
 	 * @return com.baomidou.mybatisplus.extension.plugins.pagination.Page
 	*/
-	public Page pageSignedUp(Page page, Integer uid, String sw) {
+	public Page pageSignedUp(Page page, LoginUserDTO loginUser, String sw, String flag) {
+		Integer uid = loginUser.getUid();
+		Integer fid = loginUser.getFid();
 		page = signApiService.pageUserSignedUp(page, uid, sw);
 		List records = page.getRecords();
 		if (CollectionUtils.isNotEmpty(records)) {
@@ -403,7 +407,13 @@ public class ActivityQueryService {
 				signIdSignedUpMap.put(signedUp.getSignId(), signedUp);
 			}
 			List<ActivitySignedUpDTO> activitySignedUps = Lists.newArrayList();
-			List<Activity> activities = activityMapper.listBySignIds(signIds);
+			Integer marketId = templateQueryService.getMarketIdByTemplate(fid, flag);
+			// 若flag不为空且市场id不存在，则查询结果为空
+			if (StringUtils.isNotBlank(flag) && marketId == null) {
+				page.setRecords(Lists.newArrayList());
+				return page;
+			}
+			List<Activity> activities = activityMapper.listByMarketSignIds(signIds, marketId);
 			if (CollectionUtils.isNotEmpty(activities)) {
 				for (Activity activity : activities) {
 					ActivitySignedUpDTO activitySignedUp = new ActivitySignedUpDTO();
@@ -432,8 +442,14 @@ public class ActivityQueryService {
 	 * @param sw
 	 * @return com.baomidou.mybatisplus.extension.plugins.pagination.Page<com.chaoxing.activity.model.Activity>
 	*/
-	public Page<Activity> pageCollected(Page page, Integer uid, String sw) {
-		return activityMapper.pageCollectedActivityId(page, uid, sw);
+	public Page<Activity> pageCollected(Page page, LoginUserDTO loginUser, String sw, String flag) {
+		Integer marketId = templateQueryService.getMarketIdByTemplate(loginUser.getFid(), flag);
+		// 若flag不为空且市场id不存在，则查询结果为空
+		if (StringUtils.isNotBlank(flag) && marketId == null) {
+			page.setRecords(Lists.newArrayList());
+			return page;
+		}
+		return activityMapper.pageMarketCollectedActivityId(page, loginUser.getUid(), sw, marketId);
 	}
 
 	/**获取活动管理url

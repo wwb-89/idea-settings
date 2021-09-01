@@ -2,6 +2,7 @@ package com.chaoxing.activity.web.controller;
 
 import com.chaoxing.activity.dto.ActivityQueryDateDTO;
 import com.chaoxing.activity.dto.LoginUserDTO;
+import com.chaoxing.activity.dto.activity.MyActivityParamDTO;
 import com.chaoxing.activity.model.Classify;
 import com.chaoxing.activity.model.Group;
 import com.chaoxing.activity.model.GroupRegionFilter;
@@ -23,6 +24,9 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -203,15 +207,21 @@ public class IndexController {
 	 * @Date 2021-01-27 14:59:23
 	 * @param request
 	 * @param model
-	 * @param areaCode
-	 * @param flag 活动标示：双选会、第二课堂等
+//	 * @param areaCode
+//	 * @param flag 活动标示：双选会、第二课堂等
 	 * @return java.lang.String
 	 */
 	@LoginRequired
 	@RequestMapping("my")
-	public String my(HttpServletRequest request, Model model, @RequestParam(defaultValue = "") String areaCode, @RequestParam(defaultValue = "") String flag) {
-		model.addAttribute("areaCode", areaCode);
-		model.addAttribute("flag", flag);
+	public String my(HttpServletRequest request, Model model, MyActivityParamDTO myActivityParam) throws UnsupportedEncodingException {
+		model.addAttribute("areaCode", myActivityParam.getAreaCode());
+		model.addAttribute("flag", myActivityParam.getFlag());
+		model.addAttribute("hide", myActivityParam.getHide());
+		model.addAttribute("title", StringUtils.isBlank(myActivityParam.getTitle()) ? "我的活动" : myActivityParam.getTitle());
+		model.addAttribute("managAble", myActivityParam.getManagAble());
+		String backUrl = URLEncoder.encode(myActivityParam.buildBackUrl("http://hd.chaoxing.com/my"), StandardCharsets.UTF_8.name());
+		myActivityParam.setWfwFormUrl(myActivityParam.getWfwFormUrl() + "&backurl=" + backUrl);
+		model.addAttribute("wfwFormUrl", myActivityParam.getWfwFormUrl());
 		if (UserAgentUtils.isMobileAccess(request)) {
 			return "mobile/my";
 		}

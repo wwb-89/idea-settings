@@ -56,7 +56,7 @@ public class WfwFormSyncOperateTask {
             }
         } catch (Exception e) {
             wfwFormSynOperateQueueService.addActivityFormSyncOperateTask(queueParam);
-            log.error(e.getMessage());
+//            log.error(e.getMessage());
         }
     }
 }

@@ -277,7 +277,7 @@ public class Activity {
         /** 志愿者服务 */
         VOLUNTEER("志愿者服务", "volunteer"),
         /** 三会一课 */
-        THREE_CONFERENCE_ONE_LESSON("三会一课", "three_conference_one_lesson");
+        THREE_CONFERENCE_ONE_LESSON("三会一课", "tcol");
 
         private final String name;
         private final String value;

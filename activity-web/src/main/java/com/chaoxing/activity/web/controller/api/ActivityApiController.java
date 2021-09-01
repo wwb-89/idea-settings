@@ -110,10 +110,10 @@ public class ActivityApiController {
 	*/
 	@LoginRequired
 	@RequestMapping("signed-up")
-	public RestRespDTO pageSignedUp(HttpServletRequest request, String sw) {
+	public RestRespDTO pageSignedUp(HttpServletRequest request, String sw, String flag) {
 		LoginUserDTO loginUser = LoginUtils.getLoginUser(request);
 		Page page = HttpServletRequestUtils.buid(request);
-		page = activityQueryService.pageSignedUp(page, loginUser.getUid(), sw);
+		page = activityQueryService.pageSignedUp(page, loginUser, sw, flag);
 		return RestRespDTO.success(page);
 	}
 
@@ -127,10 +127,10 @@ public class ActivityApiController {
 	*/
 	@LoginRequired
 	@RequestMapping("collected")
-	public RestRespDTO pageCollected(HttpServletRequest request, String sw) {
+	public RestRespDTO pageCollected(HttpServletRequest request, String sw, String flag) {
 		LoginUserDTO loginUser = LoginUtils.getLoginUser(request);
 		Page page = HttpServletRequestUtils.buid(request);
-		page = activityQueryService.pageCollected(page, loginUser.getUid(), sw);
+		page = activityQueryService.pageCollected(page, loginUser, sw, flag);
 		return RestRespDTO.success(page);
 	}
 

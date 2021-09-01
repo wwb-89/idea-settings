@@ -1,5 +1,5 @@
 -- 三会一课 模板及组件关联
-INSERT INTO `activity_engine`.`t_template` (`id`, `name`, `market_id`, `origin_template_id`, `is_system`, `activity_flag`, `fid`, `cover_url`, `sequence`, `create_time`, `create_uid`, `update_time`, `update_uid`) VALUES (6, '三会一课', NULL, NULL, 1, 'three_conference_one_lesson', NULL, '', 6, '2021-08-25 17:14:47', 172649568, '2021-08-25 17:15:47', 172649568);
+INSERT INTO `activity_engine`.`t_template` (`id`, `name`, `market_id`, `origin_template_id`, `is_system`, `activity_flag`, `fid`, `cover_url`, `sequence`, `create_time`, `create_uid`, `update_time`, `update_uid`) VALUES (6, '三会一课', NULL, NULL, 1, 'tcol', NULL, '', 6, '2021-08-25 17:14:47', 172649568, '2021-08-25 17:15:47', 172649568);
 
 
 

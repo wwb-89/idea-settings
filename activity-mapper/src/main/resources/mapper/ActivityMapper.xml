@@ -390,6 +390,31 @@
             t.create_time DESC
     </select>
 
+    <select id="pageUserMarketManaged" resultMap="BaseResultMap">
+        SELECT
+        <include refid="Base_Column_List"></include>
+        FROM
+            t_activity t
+            INNER JOIN t_activity_manager t1 ON t.id = t1.activity_id
+        <if test="marketId != null">
+        LEFT JOIN
+            t_activity_market t2 ON t2.activity_id = t.id
+        </if>
+            AND t1.uid = #{uid}
+        WHERE
+            t.`status` IN ( 1, 2, 3, 4 )
+            <if test="marketId != null">
+                AND t2.market_id = #{marketId}
+            </if>
+            <if test="sw != null and sw != ''">
+                AND t.`name` LIKE CONCAT( '%', #{sw}, '%' )
+            </if>
+        GROUP BY
+            t.id
+        ORDER BY
+            t.create_time DESC
+    </select>
+
     <select id="pageActivityCalendarParticipate" resultMap="BaseResultMap">
         SELECT
             <include refid="Base_Column_List"></include>,
@@ -495,6 +520,29 @@
             ,t.start_time DESC
     </select>
 
+  <select id="listByMarketSignIds" resultMap="BaseResultMap">
+        SELECT
+            <include refid="Base_Column_List"></include>
+        FROM
+            t_activity t
+        <if test="marketId != null">
+        LEFT JOIN
+            t_activity_market t1 ON t1.activity_id = t.id
+        </if>
+        WHERE
+            t.sign_id IN
+            <foreach collection="signIds" index="key" item="value" open="(" close=")" separator=",">
+                #{value}
+            </foreach>
+            <if test="marketId != null">
+                AND t1.market_id = #{marketId}
+            </if>
+            AND t.`status` IN (1, 2, 3, 4)
+        ORDER BY
+            FIELD( t.`status`, 3, 2, 1, 4 )
+            ,t.start_time DESC
+    </select>
+
     <select id="pageCollectedActivityId" resultMap="BaseResultMap">
         SELECT
             <include refid="Base_Column_List"></include>
@@ -508,6 +556,27 @@
             AND t.`name` LIKE CONCAT( '%', #{sw}, '%' )
         ORDER BY
             t1.create_time DESC
+    </select>
+
+    <select id="pageMarketCollectedActivityId" resultMap="BaseResultMap">
+        SELECT
+            <include refid="Base_Column_List"></include>
+        FROM
+        t_activity t
+        INNER JOIN t_activity_collection t1 ON t.id = t1.activity_id
+            AND t1.uid = #{uid}
+            AND t1.is_deleted = 0
+        <if test="marketId != null">
+        LEFT JOIN
+            t_activity_market t2 ON t2.activity_id = t.id
+        </if>
+        WHERE
+            t.`status` IN ( 1, 2, 3, 4 )
+        <if test="marketId != null">
+            AND t2.market_id = #{marketId}
+        </if>
+            AND t.`name` LIKE CONCAT( '%', #{sw}, '%' )
+        ORDER BY t1.create_time DESC
     </select>
 
     <select id="getBySignId" resultMap="BaseResultMap">
