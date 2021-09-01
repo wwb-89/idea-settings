@@ -6,7 +6,7 @@ import com.chaoxing.activity.dto.activity.ActivityExternalDTO;
 import com.chaoxing.activity.dto.manager.wfw.WfwAreaDTO;
 import com.chaoxing.activity.dto.query.ActivityQueryDTO;
 import com.chaoxing.activity.model.Activity;
-import com.chaoxing.activity.service.activity.ActivityIsAboutStartHandleService;
+import com.chaoxing.activity.service.activity.UserSignedUpNoticeHandleService;
 import com.chaoxing.activity.service.activity.ActivityQueryService;
 import com.chaoxing.activity.service.activity.collection.ActivityCollectionHandleService;
 import com.chaoxing.activity.service.activity.collection.ActivityCollectionValidateService;
@@ -57,7 +57,7 @@ public class ActivityApiController {
 	@Resource
 	private ActivityCollectionValidateService activityCollectionValidateService;
 	@Resource
-	private ActivityIsAboutStartHandleService activityStartNoticeHandleService;
+	private UserSignedUpNoticeHandleService activityStartNoticeHandleService;
 
 	/**组活动推荐
 	 * @Description

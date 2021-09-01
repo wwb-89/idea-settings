@@ -124,6 +124,7 @@ public class ActivityFormSyncService {
         activityCreateParam.setStatus(Activity.StatusEnum.RELEASED.getValue());
         activityCreateParam.setOrigin(String.valueOf(formId));
         activityCreateParam.setOriginFormUserId(formUserId);
+        activityCreateParam.setSignedUpNotice(true);
         // 封装报名信息
         SignCreateParamDTO signCreateParam = SignCreateParamDTO.builder().name(activityCreateParam.getName()).build();
         // 默认开启报名

@@ -1,8 +1,8 @@
 package com.chaoxing.activity.task.user;
 
 import com.chaoxing.activity.model.Activity;
-import com.chaoxing.activity.service.activity.ActivityIsAboutStartHandleService;
 import com.chaoxing.activity.service.activity.ActivityQueryService;
+import com.chaoxing.activity.service.event.UserSignedUpEventService;
 import com.chaoxing.activity.service.queue.IntegralPushQueueService;
 import com.chaoxing.activity.service.queue.activity.ActivityStatSummaryQueueService;
 import com.chaoxing.activity.service.queue.user.UserActionQueueService;
@@ -17,7 +17,6 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.Resource;
-import java.util.ArrayList;
 import java.util.Objects;
 
 /**用户行为任务
@@ -41,11 +40,11 @@ public class UserActionTask {
     @Resource
     private UserActionRecordQueueService userActionRecordQueueService;
     @Resource
-    private ActivityIsAboutStartHandleService activityIsAboutStartHandleService;
-    @Resource
     private IntegralPushQueueService integralPushQueueService;
     @Resource
     private UserRatingQueueService userRatingQueueService;
+    @Resource
+    private UserSignedUpEventService userSignedUpEventService;
 
     @Resource
     private ActivityQueryService activityQueryService;
@@ -78,7 +77,7 @@ public class UserActionTask {
                 userStatSummaryQueueService.pushUserSignStat(new UserStatSummaryQueueService.QueueParamDTO(uid, activityId));
                 if (Objects.equals(UserActionEnum.SIGNED_UP, queueParam.getUserAction())) {
                     // 报名成功
-                    activityIsAboutStartHandleService.sendSignedUpNotice(activity, new ArrayList(){{add(uid);}});
+                    userSignedUpEventService.handle(activity, uid);
                     // 推送积分
                     integralPushQueueService.push(new IntegralPushQueueService.IntegralPushDTO(uid, activity.getCreateFid(), IntegralOriginTypeEnum.VIEW_ACTIVITY.getValue(), String.valueOf(activityId), activity.getName()));
                 }

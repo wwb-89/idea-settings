@@ -141,6 +141,9 @@ public class Activity {
     /** 修改时间; column: update_time*/
     @JSONField(serializeUsing = LocalDateTimeSerializer.class, deserializeUsing = LocalDateTimeDeserializer.class)
     private LocalDateTime updateTime;
+    /** 报名成功是否发送通知; column: is_signed_up_notice*/
+    @TableField(value = "is_signed_up_notice")
+    private Boolean signedUpNotice;
 
     // 附加
     /** 开始时间字符串 */

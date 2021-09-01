@@ -104,6 +104,8 @@ public class ActivityCreateParamDTO {
 	private String activityClassifyName;
 
 	private Integer status;
+	/** 报名成功是否发送通知 */
+	private Boolean signedUpNotice;
 
 
 	/** 活动组件值对象列表 */
@@ -153,6 +155,7 @@ public class ActivityCreateParamDTO {
 				.marketId(getMarketId())
 				.templateId(getTemplateId())
 				.status(getStatus())
+				.signedUpNotice(getSignedUpNotice())
 				.build();
 	}
 
@@ -202,6 +205,7 @@ public class ActivityCreateParamDTO {
 				.activityClassifyName(activity.getActivityClassifyName())
 				.marketId(activity.getMarketId())
 				.templateId(activity.getTemplateId())
+				.signedUpNotice(activity.getSignedUpNotice())
 				.build();
 	}
 
