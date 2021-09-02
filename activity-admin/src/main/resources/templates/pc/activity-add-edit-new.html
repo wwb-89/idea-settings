@@ -215,19 +215,24 @@
                         <div class="form-item last marginTop16" v-else-if="item.code == 'activity_release_scope'">
                             <label class="label"><img src="/static/pc/assets/images/required.png" th:src="@{/pc/assets/images/required.png}" class="required-img" v-if="item.required">{{item.name}}</label>
                             <div class="input-box wrap">
-                                <!--添加范围后显示后面这项-->
-                                <div v-show="participatedOrgs.length < 1">
-                                    <div class="type-item add" @click="toAddParticipateScope">
-                                        <div class="add_btn"></div>
-                                        添加
+                                <el-select v-if="item.dataOrigin == 'interface'" multiple v-model="releaseClassIds" placeholder="请选择">
+                                    <el-option v-for="value in classList" :key="value.id" :label="value.name" :value="value.id"></el-option>
+                                </el-select>
+                                <template v-else>
+                                    <!--添加范围后显示后面这项-->
+                                    <div v-show="participatedOrgs.length < 1">
+                                        <div class="type-item add" @click="toAddParticipateScope">
+                                            <div class="add_btn"></div>
+                                            添加
+                                        </div>
                                     </div>
-                                </div>
-                                <div class="already_add" v-show="participatedOrgs.length > 0">
-                                    <div>
-                                        已选择{{participatedOrgs.length}}个单位
+                                    <div class="already_add" v-show="participatedOrgs.length > 0">
+                                        <div>
+                                            已选择{{participatedOrgs.length}}个单位
+                                        </div>
+                                        <img src="/static/pc/assets/images/edit-3.png" th:src="@{/pc/assets/images/edit-3.png}" @click="toAddParticipateScope">
                                     </div>
-                                    <img src="/static/pc/assets/images/edit-3.png" th:src="@{/pc/assets/images/edit-3.png}" @click="toAddParticipateScope">
-                                </div>
+                                </template>
                                 <span class="tips" v-if="item.introduction">{{item.introduction}}</span>
                             </div>
                         </div>
@@ -759,6 +764,11 @@
                 addTagWindowShow: false,
                 addTag: "",
                 deleteActivityTagIndex: "",
+                // 发布类型(org: 机构发布， class: 班级发布)
+                releaseType: "org",
+                classList: [],
+                // 参与班级id列表
+                releaseClassIds: [[${releaseClassIds}]],
                 // 参与机构列表
                 participatedOrgs: [[${participatedOrgs}]],
                 // 处理的模板id
@@ -855,6 +865,11 @@
                     if (this.code == 'introduction') {
                         $this.needInitEditor = true;
                     }
+                    if ($this.releaseType == "org" && this.code == 'activity_release_scope' && this.dataOrigin == 'interface') {
+                        $this.releaseType = "class";
+                        // 发布班级url不为空，则请求发布班级列表
+                        $this.loadReleaseClassData(this.originIdentify);
+                    }
                     if (_this.children && _this.children.length > 0) {
                         $(_this.children).each(function () {
                             if (this.code == 'sign_up_condition') {
@@ -875,13 +890,14 @@
                     if (this.code == 'sign_up' || this.code == 'company_sign_up') {
                         isPreSpecialPartition = true;
                     } else {
-                        isPreSpecialPartition = false;
+                                    eSpecialPartition = false;
                     }
                 });
                 $(partitionIndexs).each(function (i) {
                     $this.tplComponentPartitions.push($this.templateComponents.slice(i == 0 ? 0 : partitionIndexs[i], i == partitionIndexs.length - 1 ? $this.templateComponents.length : partitionIndexs[i + 1]));
                 });
                 if (activityApp.isEmpty($this.activity)) {
+                    $this.releaseClassIds = [];
                     // 新增活动
                     // 第一个分类的id
                     var firstActivityClassifyId = $this.activityClassifies[0] && $this.activityClassifies[0].id;
@@ -911,6 +927,7 @@
                         ratingNeedAudit: false,
                         integral: 0.0,
                         openWork: false,
+                        openReading: false,
                         originType: "",
                         origin: "",
                         templateId: $this.templateId,
@@ -1302,6 +1319,23 @@
                     var $this = this;
                     var activityType = $this.activityTypes[index];
                     $this.activity.activityType = activityType.value;
+                },
+                // 加载发布班级数据
+                loadReleaseClassData: function (dataUrl) {
+                    var $this = this;
+                    app.ajaxPostWithLoading(dataUrl, {}, function (data) {
+                        if (data.success) {
+                            $this.classList = data.data;
+                        } else {
+                            var errorMessage = data.message;
+                            if (activityApp.isEmpty(errorMessage)) {
+                                errorMessage = "获取班级列表失败";
+                            }
+                            app.showMsg(errorMessage);
+                        }
+                    }, function () {
+                        app.showMsg("获取班级列表失败");
+                    });
                 },
                 // 显示发布范围弹窗
                 toAddParticipateScope: function () {
@@ -1698,11 +1732,14 @@
                     var sign = $this.packageSubmitSign();
                     $this.activity.introduction = app.getUEditorContent();
                     $this.activity.sucTemplateComponentIds =  $this.packageSignUpConditionEnable();
+                    var participateScopeJsonStr = $this.releaseType == "org" ? activityApp.getJsonStr($this.participatedOrgs) : null;
+                    var releaseClassIdJsonStr = $this.releaseType == "class" ? activityApp.getJsonStr($this.releaseClassIds) : null;
                     var params = {
                         activityJsonStr: activityApp.getJsonStr($this.activity),
-                        participateScopeJsonStr: activityApp.getJsonStr($this.participatedOrgs),
+                        participateScopeJsonStr: participateScopeJsonStr,
+                        releaseClassIdJsonStr: releaseClassIdJsonStr,
                         signJsonStr: activityApp.getJsonStr(sign)
-                    };
+                    }
                     app.ajaxPostWithLoading(url, params, function (data) {
                         if (data.success) {
                             app.noticeActivityChange($this.activity.id);
@@ -1742,9 +1779,12 @@
                         $this.activity.activityComponentValues.push(item);
                     });
                     $this.activity.introduction = app.getUEditorContent();
+                    var participateScopeJsonStr = $this.releaseType == "org" ? activityApp.getJsonStr($this.participatedOrgs) : null;
+                    var releaseClassIdJsonStr = $this.releaseType == "class" ? activityApp.getJsonStr($this.releaseClassIds) : null;
                     var params = {
                         activityJsonStr: activityApp.getJsonStr($this.activity),
-                        participateScopeJsonStr: activityApp.getJsonStr($this.participatedOrgs),
+                        participateScopeJsonStr: participateScopeJsonStr,
+                        releaseClassIdJsonStr: releaseClassIdJsonStr,
                         signJsonStr: activityApp.getJsonStr(sign)
                     };
                     app.ajaxPostWithLoading(url, params, function (data) {

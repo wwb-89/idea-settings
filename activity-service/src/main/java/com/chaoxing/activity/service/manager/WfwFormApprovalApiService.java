@@ -230,7 +230,7 @@ public class WfwFormApprovalApiService {
             activity.setTemplateId(template.getId());
         }
         WfwAreaDTO wfwRegionalArchitecture = wfwAreaApiService.buildWfwRegionalArchitecture(fid);
-        Integer activityId = activityHandleService.add(activity, signCreateParam, Lists.newArrayList(wfwRegionalArchitecture), loginUser);
+        Integer activityId = activityHandleService.add(activity, signCreateParam, Lists.newArrayList(wfwRegionalArchitecture), null, loginUser);
         // 发布
         activityHandleService.release(activityId, marketId, loginUser);
     }

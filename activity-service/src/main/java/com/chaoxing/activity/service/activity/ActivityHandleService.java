@@ -24,6 +24,7 @@ import com.chaoxing.activity.service.activity.manager.ActivityManagerService;
 import com.chaoxing.activity.service.activity.market.MarketQueryService;
 import com.chaoxing.activity.service.activity.menu.ActivityMenuService;
 import com.chaoxing.activity.service.activity.module.ActivityModuleService;
+import com.chaoxing.activity.service.activity.scope.ActivityClassService;
 import com.chaoxing.activity.service.activity.scope.ActivityScopeService;
 import com.chaoxing.activity.service.event.ActivityChangeEventService;
 import com.chaoxing.activity.service.inspection.InspectionConfigHandleService;
@@ -82,6 +83,8 @@ public class ActivityHandleService {
 	@Resource
 	private ActivityScopeService activityScopeService;
 	@Resource
+	private ActivityClassService activityClassService;
+	@Resource
 	private WebTemplateService webTemplateService;
 	@Resource
 	private ActivityStatusService activityStatusService;
@@ -129,11 +132,11 @@ public class ActivityHandleService {
 	 * @return java.lang.Integer 活动id
 	 */
 	@Transactional(rollbackFor = Exception.class)
-	public Integer add(ActivityCreateParamDTO activityCreateParamDto, SignCreateParamDTO signCreateParamDto, List<WfwAreaDTO> wfwRegionalArchitectureDtos, LoginUserDTO loginUser) {
+	public Integer add(ActivityCreateParamDTO activityCreateParamDto, SignCreateParamDTO signCreateParamDto, List<WfwAreaDTO> wfwRegionalArchitectureDtos, List<Integer> releaseClassIds, LoginUserDTO loginUser) {
 		Activity activity = activityCreateParamDto.buildActivity();
 		// 新增活动输入验证
 		activityValidationService.addInputValidate(activity);
-		if (CollectionUtils.isEmpty(wfwRegionalArchitectureDtos)) {
+		if (CollectionUtils.isEmpty(wfwRegionalArchitectureDtos) && CollectionUtils.isEmpty(releaseClassIds)) {
 			throw new BusinessException("请选择发布范围");
 		}
 		// 添加报名签到
@@ -164,7 +167,11 @@ public class ActivityHandleService {
 		ActivityManager activityManager = ActivityManager.buildCreator(activity);
 		activityManagerService.add(activityManager, loginUser);
 		// 处理发布范围
-		activityScopeService.batchAdd(activityId, wfwRegionalArchitectureDtos);
+		if (CollectionUtils.isNotEmpty(releaseClassIds)) {
+			activityClassService.batchAddOrUpdate(activityId, releaseClassIds);
+		} else {
+			activityScopeService.batchAdd(activityId, wfwRegionalArchitectureDtos);
+		}
 		// 活动改变
 		activityChangeEventService.dataChange(activity, null, loginUser);
 		return activityId;
@@ -874,7 +881,7 @@ public class ActivityHandleService {
 		}
 
 		// todo 活动标识activityFlag propaganda_meeting 宣讲会是否需要设置
-		Integer activityId = this.add(activityCreateParam, signCreateParam, wfwAreaApiService.listByFid(createFid), loginUser);
+		Integer activityId = this.add(activityCreateParam, signCreateParam, wfwAreaApiService.listByFid(createFid), null, loginUser);
 		// 若活动由市场所建，新增活动市场与活动关联，共享活动到其他机构
 		List<Integer> shareFids = Optional.of(activityCreateDTO.getSharedFids()).filter(StringUtils::isNotBlank)
 				.map(v -> Arrays.stream(v.split(",")).map(Integer::valueOf).collect(Collectors.toList())).orElse(Lists.newArrayList());
