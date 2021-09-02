@@ -1,12 +1,15 @@
 package com.chaoxing.activity.api.controller;
 
+import com.chaoxing.activity.dto.RestRespDTO;
 import com.chaoxing.activity.model.Activity;
 import com.chaoxing.activity.model.DataPushRecord;
+import com.chaoxing.activity.service.activity.ActivityFormSyncService;
 import com.chaoxing.activity.service.activity.ActivityQueryService;
 import com.chaoxing.activity.service.data.DataPushRecordQueryService;
 import com.chaoxing.activity.util.BaiduMapUtils;
 import com.chaoxing.activity.util.UserAgentUtils;
 import com.chaoxing.activity.util.constant.UrlConstant;
+import com.chaoxing.activity.util.exception.BusinessException;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -35,6 +38,8 @@ public class RedirectController {
     private ActivityQueryService activityQueryService;
     @Resource
     private DataPushRecordQueryService dataPushRecordQueryService;
+    @Resource
+    private ActivityFormSyncService activityFormSyncService;
 
     /**根据表单行id重定向到活动的详情页面
      * @Description 
@@ -98,6 +103,48 @@ public class RedirectController {
             String activityAddressLink = BaiduMapUtils.generateAddressUrl(lng, lat, name, activityAddress);
             return "redirect:" + activityAddressLink;
         }
+    }
+
+    /**重定向到活动门户主页
+    * @Description
+    * @author huxiaolong
+    * @Date 2021-09-01 15:39:34
+    * @param fid
+    * @param formId
+    * @param formUserId
+    * @return java.lang.String
+    */
+    @RequestMapping("/activity-portal/from/wfw-form")
+    public String redirectToActivityPortal(Integer fid, Integer formId, Integer formUserId) {
+        Activity activity = activityFormSyncService.getActivityFromFormInfo(fid, formId, formUserId);
+        return "redirect:" + activity.getPreviewUrl();
+    }
+
+    /**重定向到活动管理主页
+    * @Description 
+    * @author huxiaolong
+    * @Date 2021-09-01 15:38:27
+    * @param fid
+    * @param formId
+    * @param formUserId
+    * @return java.lang.String
+    */
+    @RequestMapping("/activity-index/from/wfw-form")
+    public String redirectToActivityIndex(Integer fid, Integer formId, Integer formUserId) {
+        Activity activity = activityFormSyncService.getActivityFromFormInfo(fid, formId, formUserId);
+        return "redirect:http://manage.hd.chaoxing.com/activity/" + activity.getId();
+    }
+
+    @RequestMapping("/sign-in-list/from/wfw-form")
+    public String redirectToSignInList(Integer fid, Integer formId, Integer formUserId) {
+        Activity activity = activityFormSyncService.getActivityFromFormInfo(fid, formId, formUserId);
+        return "redirect:http://reading.chaoxing.com/qd/manage/sign-in/list?signId=" + activity.getSignId();
+    }
+
+    @RequestMapping("/sign-up-manage/from/wfw-form")
+    public String redirectToActivityIndex1(Integer fid, Integer formId, Integer formUserId) {
+        Activity activity = activityFormSyncService.getActivityFromFormInfo(fid, formId, formUserId);
+        return "redirect:http://reading.chaoxing.com/qd/manage/sign-up" + activity.getSignId();
     }
 
 }

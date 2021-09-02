@@ -11,6 +11,7 @@ import com.chaoxing.activity.util.DateUtils;
 import com.chaoxing.activity.util.constant.CommonConstant;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
@@ -18,11 +19,12 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
-/**活动通开始知处理服务
+/**用户报名成功通知处理程序
  * @author wwb
  * @version ver 1.0
- * @className ActivityIsAboutStartHandleService
+ * @className UserSignedUpNoticeHandleService
  * @description
  * 活动开始前一天需要发送通知
  * 通知对象：已报名活动的用户，已收藏活动的用户（且活动不需要报名）
@@ -31,13 +33,12 @@ import java.util.List;
  */
 @Slf4j
 @Service
-public class ActivityIsAboutStartHandleService {
+public class UserSignedUpNoticeHandleService {
 
 	/** 活动时间格式化 */
 	private static final DateTimeFormatter ACTIVITY_TIME_FORMATTER = DateTimeFormatter.ofPattern("yyyy年MM月dd日HH:mm");
 	/** 报名时间格式化 */
 	private static final DateTimeFormatter SIGN_UP_TIME_FORMATTER = DateTimeFormatter.ofPattern("yyyy年MM月dd日HH:mm");
-
 
 	@Resource
 	private SignApiService signApiService;
@@ -91,7 +92,7 @@ public class ActivityIsAboutStartHandleService {
 	 * @param uids
 	 * @return void
 	*/
-	public void sendSignedUpNotice(Activity activity, List<Integer> uids) {
+	public void sendSignedUpActivityIsAboutStartNotice(Activity activity, List<Integer> uids) {
 		if (isRedirectSendNotice(activity)) {
 			generateSignedUpNotice(activity, uids);
 		}
@@ -183,6 +184,22 @@ public class ActivityIsAboutStartHandleService {
 		return false;
 	}
 
+	/**用户报名成功发送通知
+	 * @Description 
+	 * @author wwb
+	 * @Date 2021-09-01 20:27:14
+	 * @param activity
+	 * @param uid
+	 * @return void
+	*/
+	public void userSignedUpNotice(Activity activity, Integer uid) {
+		String name = activity.getName();
+		String previewUrl = activity.getPreviewUrl();
+		String title = generateUserSignedUpNoticeTitle(activity);
+		String content = generateUserSignedUpNoticeContent(activity);
+		noticeApiService.sendNotice(title, content, NoticeDTO.generateAttachment(name, previewUrl), CommonConstant.NOTICE_SEND_UID, new ArrayList(){{add(uid);}});
+	}
+
 	private String generateSignedUpNoticeTitle(Activity activity) {
 		return "您报名的" + activity.getName() + "即将开始！";
 	}
@@ -205,5 +222,21 @@ public class ActivityIsAboutStartHandleService {
 		}
 		return content;
 	}
+
+	private String generateUserSignedUpNoticeTitle(Activity activity) {
+		return "成功报名活动 " + activity.getName();
+	}
+
+	private String generateUserSignedUpNoticeContent(Activity activity) {
+		String content = "您好，您已成功报名活动！\n";
+		content += "活动名称：" + activity.getName() + "\n";
+		String address = Optional.ofNullable(activity.getAddress()).filter(StringUtils::isNotBlank).orElse("") + Optional.ofNullable(activity.getDetailAddress()).filter(StringUtils::isNotBlank).orElse("");
+		if (StringUtils.isNotBlank(address)) {
+			content += "活动地点：" + address + "\n";
+		}
+		content += "会议时间：" + activity.getStartTime().format(ACTIVITY_TIME_FORMATTER) + "- " + activity.getEndTime().format(ACTIVITY_TIME_FORMATTER) + "\n";
+		return content;
+	}
+
 
 }

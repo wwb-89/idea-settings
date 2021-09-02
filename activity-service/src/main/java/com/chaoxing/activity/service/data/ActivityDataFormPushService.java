@@ -84,7 +84,7 @@ public class ActivityDataFormPushService {
         Integer status = activity.getStatus();
         Integer formId = Integer.parseInt(repo);
         // 是否需要删除数据
-        boolean delete = Objects.equals(Activity.StatusEnum.DELETED.getValue(), status) || !activity.getReleased();
+        boolean delete = Objects.equals(Activity.StatusEnum.DELETED.getValue(), status);
         if (delete) {
             if (dataPushRecord != null) {
                 dataPushRecordHandleService.delete(dataPushRecord.getId());

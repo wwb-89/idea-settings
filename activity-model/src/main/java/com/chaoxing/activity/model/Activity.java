@@ -141,6 +141,9 @@ public class Activity {
     /** 修改时间; column: update_time*/
     @JSONField(serializeUsing = LocalDateTimeSerializer.class, deserializeUsing = LocalDateTimeDeserializer.class)
     private LocalDateTime updateTime;
+    /** 报名成功是否发送通知; column: is_signed_up_notice*/
+    @TableField(value = "is_signed_up_notice")
+    private Boolean signedUpNotice;
 
     // 附加
     /** 开始时间字符串 */
@@ -277,7 +280,7 @@ public class Activity {
         /** 志愿者服务 */
         VOLUNTEER("志愿者服务", "volunteer"),
         /** 三会一课 */
-        THREE_CONFERENCE_ONE_LESSON("三会一课", "three_conference_one_lesson");
+        THREE_CONFERENCE_ONE_LESSON("三会一课", "tcol");
 
         private final String name;
         private final String value;

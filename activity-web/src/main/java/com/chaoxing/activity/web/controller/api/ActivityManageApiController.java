@@ -42,10 +42,10 @@ public class ActivityManageApiController {
 	 */
 	@LoginRequired
 	@RequestMapping("list")
-	public RestRespDTO pageManaged(HttpServletRequest request, String sw) {
+	public RestRespDTO pageManaged(HttpServletRequest request, String sw, String flag) {
 		LoginUserDTO loginUser = LoginUtils.getLoginUser(request);
 		Page page = HttpServletRequestUtils.buid(request);
-		page = activityQueryService.pageManaged(page, loginUser.getUid(), sw);
+		page = activityQueryService.pageManaged(page, loginUser, sw, flag);
 		return RestRespDTO.success(page);
 	}
 

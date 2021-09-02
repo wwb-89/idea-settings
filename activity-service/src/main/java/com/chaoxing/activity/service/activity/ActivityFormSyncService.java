@@ -67,6 +67,36 @@ public class ActivityFormSyncService {
     @Resource
     private SignApiService signApiService;
 
+
+
+    /**
+    * @Description
+    * @author huxiaolong
+    * @Date 2021-09-01 14:05:07
+    * @param fid
+    * @param formId
+    * @param formUserId
+    * @return com.chaoxing.activity.model.Activity
+    */
+    public Activity getActivityFromFormInfo(Integer fid, Integer formId, Integer formUserId) {
+        // 获取表单数据
+        WfwFormDTO formUserRecord = wfwFormApiService.getFormData(fid, formId, formUserId);
+        if (formUserRecord == null) {
+            throw new BusinessException("未查询到记录为:" + formUserId + "的表单数据");
+        }
+        Activity activity;
+        Integer activityId = formUserRecord.getFormData().stream().filter(v -> Objects.equals(v.getAlias(), "activity_id")).map(u -> Optional.of(u.getValues().get(0)).map(v -> v.getInteger("val")).orElse(null)).findFirst().orElse(null);
+        if (activityId == null) {
+            activity = activityQueryService.getActivityByOriginAndFormUserId(formId, formUserId);
+        } else {
+            activity = activityQueryService.getById(activityId);
+        }
+        if (activity == null) {
+            throw new BusinessException("表单记录对应活动不存在");
+        }
+        return activity;
+    }
+
     @Transactional(rollbackFor = Exception.class)
     public void syncCreateActivity(Integer fid, Integer formId, Integer formUserId, Integer webTemplateId) {
         // 获取表单数据
@@ -94,6 +124,7 @@ public class ActivityFormSyncService {
         activityCreateParam.setStatus(Activity.StatusEnum.RELEASED.getValue());
         activityCreateParam.setOrigin(String.valueOf(formId));
         activityCreateParam.setOriginFormUserId(formUserId);
+        activityCreateParam.setSignedUpNotice(true);
         // 封装报名信息
         SignCreateParamDTO signCreateParam = SignCreateParamDTO.builder().name(activityCreateParam.getName()).build();
         // 默认开启报名
@@ -105,6 +136,8 @@ public class ActivityFormSyncService {
         }
         // 新增活动
         Integer activityId = activityHandleService.add(activityCreateParam, signCreateParam, defaultPublishAreas, loginUser);
+        // 立即发布
+        activityHandleService.release(activityId, template.getMarketId(), loginUser);
         activity = activityQueryService.getById(activityId);
         // 获取参与者列表, 进行用户报名
         List<Integer> participateUids = listParticipateUidByRecord(formUserRecord);
@@ -175,6 +208,17 @@ public class ActivityFormSyncService {
         LoginUserDTO loginUser = LoginUserDTO.buildDefault(formUserRecord.getUid(), formUserRecord.getUname(), fid, orgInfo.getName());
         // 根据表单记录数据，更新活动数据
         activityHandleService.edit(activityUpdateParam, sign, defaultPublishAreas, loginUser);
+    }
+
+    /**
+    * @Description
+    * @author huxiaolong
+    * @Date 2021-09-01 12:03:34
+    * @param
+    * @return void
+    */
+    public void pushActivityData() {
+
     }
 
     /**从表单数据中获取参与人uids
@@ -278,6 +322,39 @@ public class ActivityFormSyncService {
         return result.toJSONString();
     }
 
+    /**封装回写数据
+     * @Description
+     * @author huxiaolong
+     * @Date 2021-08-26 18:16:25
+     * @param fid
+     * @param formId
+     * @param activity
+     * @return java.lang.String
+     */
+    private String packagePushCreateData(Integer fid, Integer formId, Activity activity) {
+        List<WfwFormFieldDTO> formFieldInfos = wfwFormApiService.listFormField(fid, formId);
+        JSONArray result = new JSONArray();
+        for (WfwFormFieldDTO formInfo : formFieldInfos) {
+            String alias = formInfo.getAlias();
+            JSONObject item = new JSONObject();
+            item.put("id", formInfo.getId());
+            item.put("compt", formInfo.getCompt());
+            item.put("comptId", formInfo.getId());
+            item.put("alias", alias);
+            JSONArray data = new JSONArray();
+            if (Objects.equals(alias, "activity_id")) {
+                data.add(activity.getId());
+                item.put("val", data);
+                result.add(item);
+            } else if (Objects.equals(alias, "status")) {
+                data.add(Activity.StatusEnum.fromValue(activity.getStatus()).getName());
+                item.put("val", data);
+                result.add(item);
+            }
+        }
+        return result.toJSONString();
+    }
+
     /**
     * @Description
     * @author huxiaolong
@@ -348,5 +425,4 @@ public class ActivityFormSyncService {
             activityUpdateParam.setEndTimeStamp(DateUtils.date2Timestamp(endTime));
         }
     }
-
 }

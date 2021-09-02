@@ -10,6 +10,7 @@ import com.chaoxing.activity.service.activity.market.MarketHandleService;
 import com.chaoxing.activity.service.activity.market.MarketQueryService;
 import com.google.common.collect.Lists;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 
@@ -116,7 +117,10 @@ public class TemplateQueryService {
 				.eq(Template::getOriginTemplateId, systemTemplateId)
 				.eq(Template::getFid, fid)
 		);
-		return Optional.ofNullable(orgTemplates).orElse(Lists.newArrayList()).stream().findFirst().orElse(null);
+		if (CollectionUtils.isEmpty(orgTemplates)) {
+			return null;
+		}
+		return orgTemplates.get(orgTemplates.size() - 1);
 	}
 
 	/**当templateId存在时，根据templateId查找；否则根据flag查找系统模板
@@ -193,6 +197,23 @@ public class TemplateQueryService {
 	public List<TemplateComponent> listSubTemplateComponent(Integer templateComponentId) {
 		return templateComponentMapper.selectList(new LambdaQueryWrapper<TemplateComponent>()
 				.eq(TemplateComponent::getPid, templateComponentId));
+	}
+
+	/**通过fid，活动标识查询模板，根据模板获取市场id
+	* @Description
+	* @author huxiaolong
+	* @Date 2021-09-01 11:52:12
+	* @param fid
+	* @param activityFlag
+	* @return java.lang.Integer
+	*/
+	public Integer getMarketIdByTemplate(Integer fid, String activityFlag) {
+		Activity.ActivityFlagEnum activityFlagEnum = Activity.ActivityFlagEnum.fromValue(activityFlag);
+		if (activityFlagEnum == null) {
+			return null;
+		}
+		Template template = getOrgTemplateByActivityFlag(fid, activityFlagEnum);
+		return Optional.ofNullable(template).map(Template::getMarketId).orElse(null);
 	}
 
 }
