@@ -7,6 +7,7 @@ import com.chaoxing.activity.dto.AddressDTO;
 import com.chaoxing.activity.dto.LoginUserDTO;
 import com.chaoxing.activity.dto.TimeScopeDTO;
 import com.chaoxing.activity.dto.activity.ActivityCreateParamDTO;
+import com.chaoxing.activity.dto.activity.market.ActivityMarketCreateParamDTO;
 import com.chaoxing.activity.dto.manager.sign.create.SignCreateParamDTO;
 import com.chaoxing.activity.dto.manager.sign.create.SignInCreateParamDTO;
 import com.chaoxing.activity.dto.manager.sign.create.SignUpCreateParamDTO;
@@ -17,6 +18,7 @@ import com.chaoxing.activity.service.WebTemplateService;
 import com.chaoxing.activity.service.activity.ActivityHandleService;
 import com.chaoxing.activity.service.activity.ActivityQueryService;
 import com.chaoxing.activity.service.activity.classify.ClassifyHandleService;
+import com.chaoxing.activity.service.activity.market.MarketHandleService;
 import com.chaoxing.activity.service.activity.market.MarketQueryService;
 import com.chaoxing.activity.service.activity.template.TemplateQueryService;
 import com.chaoxing.activity.service.manager.module.SignApiService;
@@ -89,6 +91,8 @@ public class WfwFormApprovalApiService {
     private SignApiService signApiService;
     @Resource
     private TemplateQueryService templateQueryService;
+    @Resource
+    private MarketHandleService marketHandleService;
 
     @Resource(name = "restTemplateProxy")
     private RestTemplate restTemplate;
@@ -198,11 +202,6 @@ public class WfwFormApprovalApiService {
         LoginUserDTO loginUser = activity.getLoginUser();
         // 根据表单数据创建报名签到
         SignCreateParamDTO signCreateParam = buildSignFromActivityApproval(formData, loginUser.getUid());
-        // 设置活动标识
-        Activity.ActivityFlagEnum activityFlag = Activity.ActivityFlagEnum.fromValue(flag);
-        if (activityFlag == null) {
-            activityFlag = Activity.ActivityFlagEnum.NORMAL;
-        }
         // 使用指定的模板
         webTemplateId = Optional.ofNullable(webTemplateId).orElse(CommonConstant.DEFAULT_FROM_FORM_CREATE_ACTIVITY_TEMPLATE_ID);
         WebTemplate webTemplate = webTemplateService.getById(webTemplateId);
@@ -211,7 +210,20 @@ public class WfwFormApprovalApiService {
         }
         activity.setWebTemplateId(webTemplateId);
         // 设置活动市场
-        if (marketId != null) {
+        if (marketId != null || StringUtils.isNotBlank(flag)) {
+            if (marketId ==  null) {
+                // 根据flag找到活动市场id
+                Activity.ActivityFlagEnum activityFlagEnum = Activity.ActivityFlagEnum.fromValue(flag);
+                if (activityFlagEnum == null) {
+                    return;
+                }
+                marketId = templateQueryService.getMarketIdByTemplate(fid, activityFlagEnum.getValue());
+                if (marketId == null) {
+                    // 创建一个模版
+                    Market market = marketHandleService.createMarket(ActivityMarketCreateParamDTO.build(fid, null), loginUser.buildOperateUserDTO());
+                    marketId = market.getId();
+                }
+            }
             List<Market> markets = marketQueryService.listByFid(fid);
             if (CollectionUtils.isEmpty(markets)) {
                 log.error("机构:{} 活动市场不存在", fid);
@@ -228,6 +240,7 @@ public class WfwFormApprovalApiService {
                 return;
             }
             activity.setTemplateId(template.getId());
+            activity.setActivityFlag(template.getActivityFlag());
         }
         WfwAreaDTO wfwRegionalArchitecture = wfwAreaApiService.buildWfwRegionalArchitecture(fid);
         Integer activityId = activityHandleService.add(activity, signCreateParam, Lists.newArrayList(wfwRegionalArchitecture), loginUser);
