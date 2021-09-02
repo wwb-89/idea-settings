@@ -56,7 +56,7 @@ public class WfwFormApiService {
 	private static final String GET_ORG_FORMS_URL = FORM_API_DOMAIN + "/api/apps/forms/app/list";
 	/** 获取表单字段信息url */
 	private static final String GET_FORM_DETAIL_URL = FORM_API_DOMAIN + "/api/apps/forms/app/config/values";
-	/** 获取表单数据url */
+	/** 获取表单数据url，第一次同步数据用， 接口每次调用会生成一个游标， 游标总数是有限的， 频率过高不适合使用 */
 	private static final String LIST_FORM_DATA_URL = FORM_API_DOMAIN + "/api/apps/forms/user/records/list";
 	/** 填写表单url */
 	private static final String FILL_FORM_URL = FORM_API_DOMAIN + "/api/apps/forms/user/save";
@@ -65,8 +65,10 @@ public class WfwFormApiService {
 	/** 删除表单记录url */
 	private static final String DELETE_FORM_RECORD_URL = FORM_API_DOMAIN + "/api/apps/forms/user/del";
 
-	/** 高级检索 */
+	/** 高级检索， 查询所有数据推荐 */
 	private static final String ADVANCED_SEARCH_URL = FORM_API_DOMAIN + "/api/apps/forms/user/advanced/search/list";
+
+	private static final String SEARCH_BY_FORM_USER_IDS_URL = FORM_API_DOMAIN + "/api/apps/forms/user/data/list";
 
 	@Resource(name = "restTemplateProxy")
 	private RestTemplate restTemplate;
@@ -251,6 +253,72 @@ public class WfwFormApiService {
 		return listFormData(fid, formId, "", null);
 	}
 
+	public Page<WfwFormDTO> wfwFormDataPageAdvanceSearch(Page<WfwFormDTO> page, Integer fid, Integer formId, String searchStr) {
+		if (page == null) {
+			page = new Page<>(1, DEFAULT_PAGE_SIZE_LIMIT);
+		}
+		// 创建encParamMap, 存储enc加密所需内容
+		TreeMap<String, Object> encParamMap = new TreeMap<>();
+		encParamMap.put("deptId", fid);
+		encParamMap.put("formId", formId);
+		encParamMap.put("cpage", page.getCurrent());
+		encParamMap.put("pageSize", page.getSize());
+		encParamMap.put("datetime", LocalDateTime.now().format(DATE_TIME_FORMATTER));
+		encParamMap.put("orderType", DEFAULT_ORDER_TYPE);
+		encParamMap.put("sign", SIGN);
+		String enc = getEnc(encParamMap);
+		encParamMap.put("enc", enc);
+		MultiValueMap<String, Object> paramMap = new LinkedMultiValueMap();
+		paramMap.setAll(encParamMap);
+		paramMap.add("searchStr", Optional.ofNullable(searchStr).orElse(""));
+
+		String result = restTemplate.postForObject(ADVANCED_SEARCH_URL, paramMap, String.class);
+		JSONObject resultObj = JSON.parseObject(result);
+
+		Boolean success = resultObj.getBoolean("success");
+		success = Optional.ofNullable(success).orElse(Boolean.FALSE);
+
+		if (success) {
+			JSONArray dataList = resultObj.getJSONObject("data").getJSONArray("dataList");
+			int totalRow = Integer.parseInt(resultObj.getString("totalRow"));
+			int totalPage = Integer.parseInt(resultObj.getString("totalPage"));
+			List<WfwFormDTO> records = WfwFormDTO.buildFromAdvanceResult(dataList);
+			page.setTotal(totalRow);
+			page.setPages(totalPage);
+			page.setRecords(records);
+			return page;
+		} else {
+			String errorMessage = resultObj.getString("msg");
+			log.error("获取在机构:{}下的表单:{}数据error:{}, url:{}", fid, formId, errorMessage, ADVANCED_SEARCH_URL);
+			throw new BusinessException(errorMessage);
+		}
+
+	}
+
+	/**通过高级检索获取表单全部数据
+	* @Description
+	* @author huxiaolong
+	* @Date 2021-09-02 14:22:42
+	* @param fid
+	* @param formId
+	* @return java.util.List<com.chaoxing.activity.dto.manager.wfwform.WfwFormDTO>
+	*/
+	public List<WfwFormDTO> listAllFormDataByAdvanceSearch(Integer fid, Integer formId) {
+		List<WfwFormDTO> result = Lists.newArrayList();
+		Page<WfwFormDTO> page = new Page<>(1, DEFAULT_PAGE_SIZE_LIMIT);
+		page = wfwFormDataPageAdvanceSearch(page, fid, formId, null);
+		result.addAll(page.getRecords());
+		long pages = page.getPages();
+		int maxQueryTime = 100;
+		while (page.getCurrent() < pages && maxQueryTime-- > 0) {
+			page.setCurrent(page.getCurrent() + 1);
+			page = wfwFormDataPageAdvanceSearch(page, fid, formId, null);
+			pages = page.getPages();
+			result.addAll(page.getRecords());
+		}
+		return result;
+	}
+
 	/**查询表单某个字段的值列表
 	 * @Description 
 	 * @author wwb
@@ -307,11 +375,50 @@ public class WfwFormApiService {
 	 * @return com.chaoxing.secondclassroom.dto.manager.form.FormDTO
 	 */
 	public WfwFormDTO getFormData(Integer fid, Integer formId, Integer dataId) {
-		List<WfwFormDTO> formData = listFormData(fid, formId, "", dataId);
+		List<WfwFormDTO> formData = listFormDataByFormUserIds(fid, formId, Optional.ofNullable(dataId).map(String::valueOf).orElse(null));
 		if (CollectionUtils.isNotEmpty(formData)) {
 			return formData.get(0);
 		}
 		return null;
+	}
+
+	/**根据formUserIds查询数据
+	* @Description
+	* @author huxiaolong
+	* @Date 2021-09-02 14:20:49
+	* @param fid
+	* @param formId
+	* @param formUserIds
+	* @return java.util.List<com.chaoxing.activity.dto.manager.wfwform.WfwFormDTO>
+	*/
+	public List<WfwFormDTO> listFormDataByFormUserIds(Integer fid, Integer formId, String formUserIds) {
+		List<WfwFormDTO> forms = Lists.newArrayList();
+		TreeMap<String, Object> paramsMap = Maps.newTreeMap();
+		paramsMap.put("deptId", fid);
+		paramsMap.put("formId", formId);
+		paramsMap.put("datetime", LocalDateTime.now().format(DATE_TIME_FORMATTER));
+		paramsMap.put("sign", SIGN);
+		paramsMap.put("formUserIds", Optional.ofNullable(formUserIds).orElse(""));
+		String enc = getEnc(paramsMap);
+		paramsMap.put("enc", enc);
+		MultiValueMap<String, Object> params = new LinkedMultiValueMap();
+		params.setAll(paramsMap);
+		String result = restTemplate.postForObject(SEARCH_BY_FORM_USER_IDS_URL, params, String.class);
+		JSONObject jsonObject = JSON.parseObject(result);
+		Boolean success = jsonObject.getBoolean("success");
+		success = Optional.ofNullable(success).orElse(Boolean.FALSE);
+		if (success) {
+			JSONArray data = jsonObject.getJSONObject("data").getJSONArray("formUserList");
+			if (data.size() > 0) {
+				List<WfwFormDTO> subForms = JSON.parseArray(data.toJSONString(), WfwFormDTO.class);
+				forms.addAll(subForms);
+			}
+			return forms;
+		} else {
+			String errorMessage = jsonObject.getString("msg");
+			log.error("根据url: {}, 参数: {}, 获取机构表单数据error: {}", LIST_FORM_DATA_URL, JSON.toJSONString(paramsMap));
+			throw new BusinessException(errorMessage);
+		}
 	}
 
 	/**获取表单数据
