@@ -93,6 +93,12 @@ public class ActivityUpdateParamDTO {
 	private Boolean openWork;
 	/** 作品征集id */
 	private Integer workId;
+	/** 是否开启阅读设置 */
+	private Boolean openReading;
+	/** 阅读id */
+	private Integer readingId;
+	/** 阅读模块id */
+	private Integer readingModuleId;
 	/** 来源类型 */
 	private String originType;
 	/** 来源值 */
@@ -149,6 +155,9 @@ public class ActivityUpdateParamDTO {
 				.integral(getIntegral())
 				.openWork(getOpenWork())
 				.workId(getWorkId())
+				.openReading(getOpenReading())
+				.readingId(getReadingId())
+				.readingModuleId(getReadingModuleId())
 				.webTemplateId(getWebTemplateId())
 				.build();
 	}
@@ -221,6 +230,9 @@ public class ActivityUpdateParamDTO {
 				.integral(activity.getIntegral())
 				.openWork(activity.getOpenWork())
 				.workId(activity.getWorkId())
+				.openReading(activity.getOpenReading())
+				.readingId(activity.getReadingId())
+				.readingModuleId(activity.getReadingModuleId())
 				.webTemplateId(activity.getWebTemplateId())
 				.build();
 	}

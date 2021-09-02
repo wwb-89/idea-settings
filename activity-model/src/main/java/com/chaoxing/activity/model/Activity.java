@@ -123,6 +123,13 @@ public class Activity {
     private Boolean openWork;
     /** 作品征集id; column: work_id*/
     private Integer workId;
+    /** 是否开启阅读设置 */
+    @TableField(value = "is_open_reading")
+    private Boolean openReading;
+    /** 阅读id */
+    private Integer readingId;
+    /** 阅读模块id */
+    private Integer readingModuleId;
     /** 来源类型; column: origin_type*/
     private String originType;
     /** 来源值; column: origin*/

@@ -43,6 +43,9 @@
         <result column="activity_flag" jdbcType="VARCHAR" property="activityFlag" />
         <result column="is_open_work" jdbcType="VARCHAR" property="openWork" />
         <result column="work_id" jdbcType="VARCHAR" property="workId" />
+        <result column="is_open_reading" jdbcType="BIT" property="openReading" />
+        <result column="reading_id" jdbcType="INTEGER" property="readingId" />
+        <result column="reading_module_id" jdbcType="INTEGER" property="readingModuleId" />
         <result column="origin_type" jdbcType="VARCHAR" property="originType" />
         <result column="origin" jdbcType="VARCHAR" property="origin" />
         <result column="origin_form_user_id" jdbcType="INTEGER" property="originFormUserId" />
@@ -57,14 +60,14 @@
         t.id, t.name, t.start_time, t.end_time, t.start_date, t.end_date, t.cover_cloud_id, t.cover_url, t.organisers, t.activity_type, t.address, t.detail_address,
         t.longitude, t.dimension, t.activity_classify_id, t.period, t.credit, t.time_length_upper_limit, t.sign_id, t.web_template_id, t.website_id, t.page_id, t.preview_url, t.edit_url,
         t.is_timing_release, t.timing_release_time, t.is_released, t.release_time, t.release_uid, t.create_uid, t.create_user_name, t.create_fid, t.create_area_code,
-        t.create_org_name, t.tags, t.is_open_rating, t.is_rating_need_audit, t.activity_flag, t.integral, t.is_open_work, t.work_id,
+        t.create_org_name, t.tags, t.is_open_rating, t.is_rating_need_audit, t.activity_flag, t.integral, t.is_open_work, t.work_id, t.is_open_reading, t.reading_id, t.reading_module_id,
         t.origin_type, t.origin, t.origin_form_user_id, t.market_id, t.template_id, t.status, t.create_time, t.update_time, t.is_signed_up_notice
     </sql>
     <sql id="Base_Market_Column_List">
         t.id, t.name, t.start_time, t.end_time, t.start_date, t.end_date, t.cover_cloud_id, t.cover_url, t.organisers, t.activity_type, t.address, t.detail_address,
         t.longitude, t.dimension, t.activity_classify_id, t.period, t.credit, t.time_length_upper_limit, t.sign_id, t.web_template_id, t.website_id, t.page_id, t.preview_url, t.edit_url,
         t.is_timing_release, t.timing_release_time, t1.is_released, t.release_time, t.release_uid, t.create_uid, t.create_user_name, t.create_fid, t.create_area_code,
-        t.create_org_name, t.tags, t.is_open_rating, t.is_rating_need_audit, t.activity_flag, t.integral, t.is_open_work, t.work_id,
+        t.create_org_name, t.tags, t.is_open_rating, t.is_rating_need_audit, t.activity_flag, t.integral, t.is_open_work, t.work_id, t.is_open_reading, t.reading_id, t.reading_module_id,
         t.origin_type, t.origin, t.origin_form_user_id, t.market_id, t.template_id, t1.status, t.create_time, t.update_time, t1.is_top AS top
     </sql>
 
