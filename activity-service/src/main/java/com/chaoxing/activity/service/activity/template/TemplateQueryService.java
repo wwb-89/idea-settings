@@ -6,8 +6,6 @@ import com.chaoxing.activity.mapper.TemplateMapper;
 import com.chaoxing.activity.model.Activity;
 import com.chaoxing.activity.model.Template;
 import com.chaoxing.activity.model.TemplateComponent;
-import com.chaoxing.activity.service.activity.market.MarketHandleService;
-import com.chaoxing.activity.service.activity.market.MarketQueryService;
 import com.google.common.collect.Lists;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
@@ -150,13 +148,17 @@ public class TemplateQueryService {
 	 * @return com.chaoxing.activity.model.Template
 	*/
 	public Template getTemplateByMarketIdOrActivityFlag(Integer marketId, Activity.ActivityFlagEnum activityFlagEnum) {
-		if (marketId == null) {
+		Template template = null;
+		if (marketId != null) {
+			template = getMarketFirstTemplate(marketId);
+		}
+		if (template == null) {
 			List<Template> systemTemplates = templateMapper.selectList(new LambdaQueryWrapper<Template>()
 					.eq(Template::getSystem, true)
 					.eq(Template::getActivityFlag, activityFlagEnum.getValue()));
-			return Optional.ofNullable(systemTemplates).orElse(Lists.newArrayList()).stream().findFirst().orElse(null);
+			template = Optional.ofNullable(systemTemplates).orElse(Lists.newArrayList()).stream().findFirst().orElse(null);
 		}
-		return getMarketFirstTemplate(marketId);
+		return template;
 	}
 
 	/**获取活动市场第一个模板

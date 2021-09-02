@@ -56,8 +56,6 @@ public class WfwFormApiService {
 	private static final String GET_ORG_FORMS_URL = FORM_API_DOMAIN + "/api/apps/forms/app/list";
 	/** 获取表单字段信息url */
 	private static final String GET_FORM_DETAIL_URL = FORM_API_DOMAIN + "/api/apps/forms/app/config/values";
-	/** 获取表单数据url，第一次同步数据用， 接口每次调用会生成一个游标， 游标总数是有限的， 频率过高不适合使用 */
-	private static final String LIST_FORM_DATA_URL = FORM_API_DOMAIN + "/api/apps/forms/user/records/list";
 	/** 填写表单url */
 	private static final String FILL_FORM_URL = FORM_API_DOMAIN + "/api/apps/forms/user/save";
 	/** 修改表单url */
@@ -142,7 +140,7 @@ public class WfwFormApiService {
 			return jsonObject.getJSONArray("data");
 		} else {
 			String errorMessage = jsonObject.getString("msg");
-			log.error("根据fid:{},表单id:{} 获取表单信息error:{}", fid, formId, errorMessage);
+			log.error("根据参数:{},获取表单信息error:{}", JSON.toJSONString(params), errorMessage);
 			throw new BusinessException(errorMessage);
 		}
 	}
@@ -177,7 +175,7 @@ public class WfwFormApiService {
 			return jsonObject.getInteger("formUserId");
 		} else {
 			String errorMessage = jsonObject.getString("msg");
-			log.info("填写表单error:{}", errorMessage);
+			log.error("根据参数{}, 填写表单error:{}", JSON.toJSONString(paramMap), errorMessage);
 			throw new BusinessException(errorMessage);
 		}
 	}
@@ -208,7 +206,7 @@ public class WfwFormApiService {
 		success = Optional.ofNullable(success).orElse(Boolean.FALSE);
 		if (!success) {
 			String errorMessage = jsonObject.getString("msg");
-			log.info("填写表单error:{}", errorMessage);
+			log.error("根据参数:{},更新表单表单数据error:{}", JSON.toJSONString(paramMap), errorMessage);
 			throw new BusinessException(errorMessage);
 		}
 	}
@@ -236,7 +234,7 @@ public class WfwFormApiService {
 		success = Optional.ofNullable(success).orElse(Boolean.FALSE);
 		if (!success) {
 			String errorMessage = jsonObject.getString("msg");
-			log.error("删除表单:{} 的记录:{} error:{}", formId, formUserId, errorMessage);
+			log.error("根据参数:{},删除表单记录error:{}", JSON.toJSONString(paramMap), errorMessage);
 			throw new BusinessException(errorMessage);
 		}
 	}
@@ -250,7 +248,19 @@ public class WfwFormApiService {
 	 * @return java.util.List<com.chaoxing.secondclassroom.dto.manager.form.FormDTO>
 	 */
 	public List<WfwFormDTO> listFormData(Integer fid, Integer formId) {
-		return listFormData(fid, formId, "", null);
+		List<WfwFormDTO> result = Lists.newArrayList();
+		Page<WfwFormDTO> page = new Page<>(1, DEFAULT_PAGE_SIZE_LIMIT);
+		page = wfwFormDataPageAdvanceSearch(page, fid, formId, null);
+		result.addAll(page.getRecords());
+		long pages = page.getPages();
+		int maxQueryTime = 100;
+		while (page.getCurrent() < pages && maxQueryTime-- > 0) {
+			page.setCurrent(page.getCurrent() + 1);
+			page = wfwFormDataPageAdvanceSearch(page, fid, formId, null);
+			pages = page.getPages();
+			result.addAll(page.getRecords());
+		}
+		return result;
 	}
 
 	public Page<WfwFormDTO> wfwFormDataPageAdvanceSearch(Page<WfwFormDTO> page, Integer fid, Integer formId, String searchStr) {
@@ -293,30 +303,6 @@ public class WfwFormApiService {
 			throw new BusinessException(errorMessage);
 		}
 
-	}
-
-	/**通过高级检索获取表单全部数据
-	* @Description
-	* @author huxiaolong
-	* @Date 2021-09-02 14:22:42
-	* @param fid
-	* @param formId
-	* @return java.util.List<com.chaoxing.activity.dto.manager.wfwform.WfwFormDTO>
-	*/
-	public List<WfwFormDTO> listAllFormDataByAdvanceSearch(Integer fid, Integer formId) {
-		List<WfwFormDTO> result = Lists.newArrayList();
-		Page<WfwFormDTO> page = new Page<>(1, DEFAULT_PAGE_SIZE_LIMIT);
-		page = wfwFormDataPageAdvanceSearch(page, fid, formId, null);
-		result.addAll(page.getRecords());
-		long pages = page.getPages();
-		int maxQueryTime = 100;
-		while (page.getCurrent() < pages && maxQueryTime-- > 0) {
-			page.setCurrent(page.getCurrent() + 1);
-			page = wfwFormDataPageAdvanceSearch(page, fid, formId, null);
-			pages = page.getPages();
-			result.addAll(page.getRecords());
-		}
-		return result;
 	}
 
 	/**查询表单某个字段的值列表
@@ -416,58 +402,7 @@ public class WfwFormApiService {
 			return forms;
 		} else {
 			String errorMessage = jsonObject.getString("msg");
-			log.error("根据url: {}, 参数: {}, 获取机构表单数据error: {}", LIST_FORM_DATA_URL, JSON.toJSONString(paramsMap));
-			throw new BusinessException(errorMessage);
-		}
-	}
-
-	/**获取表单数据
-	 * @Description
-	 * @author wwb
-	 * @Date 2021-03-09 12:33:50
-	 * @param fid
-	 * @param formId
-	 * @param scrollId 游标id
-	 * @param dataId 表单中记录id
-	 * @return java.util.List<com.chaoxing.secondclassroom.dto.manager.form.FormDTO>
-	 */
-	private List<WfwFormDTO> listFormData(Integer fid, Integer formId, String scrollId, Integer dataId) {
-		List<WfwFormDTO> forms = Lists.newArrayList();
-		Integer limit = DEFAULT_PAGE_SIZE_LIMIT;
-		TreeMap<String, Object> paramsMap = Maps.newTreeMap();
-		paramsMap.put("deptId", fid);
-		paramsMap.put("formId", formId);
-		paramsMap.put("datetime", LocalDateTime.now().format(DATE_TIME_FORMATTER));
-		paramsMap.put("orderType", DEFAULT_ORDER_TYPE);
-		paramsMap.put("limit", limit);
-		paramsMap.put("sign", SIGN);
-		paramsMap.put("formUserId", Optional.ofNullable(dataId).map(String::valueOf).orElse(""));
-		String enc = getEnc(paramsMap);
-		paramsMap.put("enc", enc);
-		paramsMap.put("scrollId", Optional.ofNullable(scrollId).orElse(""));
-		MultiValueMap<String, Object> params = new LinkedMultiValueMap();
-		params.setAll(paramsMap);
-		String result = restTemplate.postForObject(LIST_FORM_DATA_URL, params, String.class);
-		JSONObject jsonObject = JSON.parseObject(result);
-		Boolean success = jsonObject.getBoolean("success");
-		success = Optional.ofNullable(success).orElse(Boolean.FALSE);
-		if (success) {
-			jsonObject = jsonObject.getJSONObject("data");
-			JSONArray data = jsonObject.getJSONArray("data");
-			if (data.size() > 0) {
-				List<WfwFormDTO> subForms = JSON.parseArray(data.toJSONString(), WfwFormDTO.class);
-				// 判断数据有没有获取完
-				if (subForms.size() == limit) {
-					// 满一页
-					scrollId = jsonObject.getString("scrollId");
-					subForms.addAll(listFormData(fid, formId, scrollId, dataId));
-				}
-				forms.addAll(subForms);
-			}
-			return forms;
-		} else {
-			String errorMessage = jsonObject.getString("msg");
-			log.error("根据url: {}, 参数: {}, 获取机构表单数据error: {}", LIST_FORM_DATA_URL, JSON.toJSONString(paramsMap));
+			log.error("根据url: {}, 参数: {}, 获取机构表单数据error: {}", SEARCH_BY_FORM_USER_IDS_URL, JSON.toJSONString(paramsMap));
 			throw new BusinessException(errorMessage);
 		}
 	}
