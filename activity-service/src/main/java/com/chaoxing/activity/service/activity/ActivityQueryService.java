@@ -4,6 +4,7 @@ import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.chaoxing.activity.dto.LoginUserDTO;
 import com.chaoxing.activity.dto.activity.ActivityComponentValueDTO;
@@ -23,7 +24,6 @@ import com.chaoxing.activity.service.activity.classify.ClassifyQueryService;
 import com.chaoxing.activity.service.activity.component.ComponentQueryService;
 import com.chaoxing.activity.service.activity.engine.ActivityComponentValueService;
 import com.chaoxing.activity.service.activity.manager.ActivityManagerQueryService;
-import com.chaoxing.activity.service.activity.market.MarketQueryService;
 import com.chaoxing.activity.service.activity.template.TemplateQueryService;
 import com.chaoxing.activity.service.manager.module.SignApiService;
 import com.chaoxing.activity.service.manager.wfw.WfwAreaApiService;
@@ -848,4 +848,21 @@ public class ActivityQueryService {
 		}
     	return activityMapper.selectList(new LambdaQueryWrapper<Activity>().eq(Activity::getOrigin, formId).eq(Activity::getOriginFormUserId, formUserId)).stream().findFirst().orElse(null);
     }
+
+    /**查询机构创建的作品征集列表（未删除的活动）
+     * @Description 
+     * @author wwb
+     * @Date 2021-09-02 10:51:30
+     * @param fid
+     * @return java.util.List<java.lang.Integer>
+    */
+	public List<Integer> listOrgCreatedWorkId(Integer fid) {
+		List<Activity> onlyWorkIds = activityMapper.selectList(new LambdaQueryWrapper<Activity>()
+				.eq(Activity::getCreateFid, fid)
+				.ne(Activity::getStatus, Activity.StatusEnum.DELETED.getValue())
+				.select(Activity::getWorkId)
+		);
+		return Optional.ofNullable(onlyWorkIds).orElse(Lists.newArrayList()).stream().map(Activity::getWorkId).filter(v -> v != null).collect(Collectors.toList());
+	}
+
 }
