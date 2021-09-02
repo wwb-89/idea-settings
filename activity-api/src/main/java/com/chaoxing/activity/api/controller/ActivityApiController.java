@@ -2,7 +2,10 @@ package com.chaoxing.activity.api.controller;
 
 import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
-import com.chaoxing.activity.api.vo.*;
+import com.chaoxing.activity.api.vo.ActivityStatSummaryVO;
+import com.chaoxing.activity.api.vo.UserResultVO;
+import com.chaoxing.activity.api.vo.UserSignUpStatusVo;
+import com.chaoxing.activity.api.vo.UserStatSummaryVO;
 import com.chaoxing.activity.dto.LoginUserDTO;
 import com.chaoxing.activity.dto.RestRespDTO;
 import com.chaoxing.activity.dto.UserResultDTO;
@@ -21,7 +24,10 @@ import com.chaoxing.activity.model.LoginCustom;
 import com.chaoxing.activity.model.UserStatSummary;
 import com.chaoxing.activity.service.GroupService;
 import com.chaoxing.activity.service.LoginService;
-import com.chaoxing.activity.service.activity.*;
+import com.chaoxing.activity.service.activity.ActivityHandleService;
+import com.chaoxing.activity.service.activity.ActivityQueryService;
+import com.chaoxing.activity.service.activity.ActivityValidationService;
+import com.chaoxing.activity.service.activity.WfwFormSynOperateQueueService;
 import com.chaoxing.activity.service.activity.collection.ActivityCollectionHandleService;
 import com.chaoxing.activity.service.activity.collection.ActivityCollectionQueryService;
 import com.chaoxing.activity.service.activity.stat.ActivityStatSummaryQueryService;
@@ -511,6 +517,17 @@ public class ActivityApiController {
 		return RestRespDTO.success();
 	}
 
-
+	/**根据作品征集id查询活动标识
+	 * @Description 
+	 * @author wwb
+	 * @Date 2021-09-02 11:20:26
+	 * @param workId
+	 * @return com.chaoxing.activity.dto.RestRespDTO
+	*/
+	@RequestMapping("flag/from-work-id")
+	public RestRespDTO getFlagByWorkId(Integer workId) {
+		Activity activity = activityQueryService.getByWorkId(workId);
+		return RestRespDTO.success(Optional.ofNullable(activity).map(Activity::getActivityFlag).orElse(""));
+	}
 
 }
