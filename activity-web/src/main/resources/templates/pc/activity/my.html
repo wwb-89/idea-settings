@@ -208,13 +208,18 @@
                 if (!activityApp.isEmpty(hideStr)) {
 					$this.hideList = hideStr.split(',');
 				}
-            },
+				if ($this.managAble) {
+					$this.activeTabIndex = 'managing';
+				}
+			},
 			mounted: function () {
 				var $this = this;
-				$this.loadCollected();
-				$this.collectedLock = true;
-				$this.loadManaging();
-				$this.managingLock = true;
+				if (!$this.managAble) {
+					$this.loadCollected();
+					$this.collectedLock = true;
+					$this.loadManaging();
+					$this.managingLock = true;
+				}
 			},
 			methods: {
 				showTab: function (tabName) {

@@ -216,4 +216,15 @@ public class TemplateQueryService {
 		return Optional.ofNullable(template).map(Template::getMarketId).orElse(null);
 	}
 
+	/**判断模板是否存在报名组件
+	* @Description 
+	* @author huxiaolong
+	* @Date 2021-09-02 19:41:40
+	* @param templateId
+	* @return boolean
+	*/
+    public boolean exitSignUpComponent(Integer templateId) {
+    	int count = templateComponentMapper.countTemplateSignUp(templateId);
+    	return count > 0;
+    }
 }
