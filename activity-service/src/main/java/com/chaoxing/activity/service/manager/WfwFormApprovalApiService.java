@@ -151,7 +151,7 @@ public class WfwFormApprovalApiService {
         treeMap.put("deptId", fid);
         treeMap.put("formId", formId);
         treeMap.put("datetime", dateStr);
-        treeMap.put("pageSize", 100);
+        treeMap.put("pageSize", 10);
         treeMap.put("sign", SIGN);
         treeMap.put("enc", getEnc(treeMap));
         MultiValueMap<String, Object> params = new LinkedMultiValueMap<>();
@@ -220,7 +220,7 @@ public class WfwFormApprovalApiService {
                 marketId = templateQueryService.getMarketIdByTemplate(fid, activityFlagEnum.getValue());
                 if (marketId == null) {
                     // 创建一个模版
-                    Market market = marketHandleService.createMarket(ActivityMarketCreateParamDTO.build(fid, null), loginUser.buildOperateUserDTO());
+                    Market market = marketHandleService.add(ActivityMarketCreateParamDTO.build(fid, null), activityFlagEnum, loginUser.buildOperateUserDTO());
                     marketId = market.getId();
                 }
             }
