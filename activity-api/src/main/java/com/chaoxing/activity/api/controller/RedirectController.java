@@ -115,7 +115,7 @@ public class RedirectController {
     * @return java.lang.String
     */
     @RequestMapping("/activity-portal/from/wfw-form")
-    public String redirectToActivityIndex(Integer fid, Integer formId, Integer formUserId) {
+    public String redirectToActivityPortal(Integer fid, Integer formId, Integer formUserId) {
         Activity activity = activityFormSyncService.getActivityFromFormInfo(fid, formId, formUserId);
         return "redirect:" + activity.getPreviewUrl();
     }
@@ -130,9 +130,21 @@ public class RedirectController {
     * @return java.lang.String
     */
     @RequestMapping("/activity-index/from/wfw-form")
-    public String activitySyncOperate(Integer fid, Integer formId, Integer formUserId) {
+    public String redirectToActivityIndex(Integer fid, Integer formId, Integer formUserId) {
         Activity activity = activityFormSyncService.getActivityFromFormInfo(fid, formId, formUserId);
         return "redirect:http://manage.hd.chaoxing.com/activity/" + activity.getId();
+    }
+
+    @RequestMapping("/sign-in-list/from/wfw-form")
+    public String redirectToSignInList(Integer fid, Integer formId, Integer formUserId) {
+        Activity activity = activityFormSyncService.getActivityFromFormInfo(fid, formId, formUserId);
+        return "redirect:http://reading.chaoxing.com/qd/manage/sign-in/list?signId=" + activity.getSignId();
+    }
+
+    @RequestMapping("/sign-up-manage/from/wfw-form")
+    public String redirectToActivityIndex1(Integer fid, Integer formId, Integer formUserId) {
+        Activity activity = activityFormSyncService.getActivityFromFormInfo(fid, formId, formUserId);
+        return "redirect:http://reading.chaoxing.com/qd/manage/sign-up" + activity.getSignId();
     }
 
 }
