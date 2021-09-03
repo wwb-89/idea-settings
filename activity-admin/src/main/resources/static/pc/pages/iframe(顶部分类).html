@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <link rel="stylesheet" href="../assets/css/reset.css">
+    <link rel="stylesheet" href="../assets/css/public.css">
+    <link rel="stylesheet" href="../assets/css/iframe.css">
+</head>
+
+<body class="overHidden1">
+    <!--    顶部固定栏-->
+    <!-- <div class="topFixed">
+        <h2>活动管理后台</h2>
+        <div class="user">
+            <img src="">
+            <p>刘琼锦</p>
+        </div>
+    </div> -->
+
+    <!-- 没有嵌套时 -->
+
+    <!--    顶部分类栏-->
+    <!-- marTop88 -->
+    <div class="topTabs">
+        <div class="assess-header">
+            <div class="assess-title">
+                书香浙江 云享阅读——2020浙江省云阅读云阅读计划云阅读计划云阅读
+            </div>
+            <div class="assess-header-right">
+                <div class="login-container">
+                    <div class="after-login">
+                        <img class="login-tx" src="../assets/images/touxiang.png" alt="">
+                        <span class="user-name">王小明</span>
+                        <ul class="login-downlist-info">
+                            <li class="login-downlist-item">
+                                <a href="#">进入空间</a>
+                            </li>
+                            <li class="login-downlist-item">
+                                <a href="#">退出登录</a>
+                            </li>
+                        </ul>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+        <div class="menu">
+            <ul>
+                <li class="current">活动管理</li>
+                <li>活动管理</li>
+                <li>活动管理</li>
+            </ul>
+        </div>
+    </div>
+    <!--    右侧内容栏-->
+    <div class="iframe-bot-content">
+        <iframe src="./create.html" id="content" scrolling="auto" width="100%" frameborder="0"></iframe>
+    </div>
+</body>
+
+</html>
+<script src="../assets/lib/jquery.min.js"></script>
+<script src="../../assets/js/vue.min.js"></script>
+<!--<script src="../assets/lib/set-iframe-height-parent-min.js"></script>-->
+<script>
+    // vue
+    var app = new Vue({
+        el: '#app',
+        data: {},
+        mounted: function () {
+            $("#content").height($(window).height() - 68 - 20 - 50 - 5);
+        },
+        methods: {
+
+        },
+    })
+</script>
