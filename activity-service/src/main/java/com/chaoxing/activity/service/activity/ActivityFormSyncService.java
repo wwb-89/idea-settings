@@ -23,6 +23,7 @@ import com.chaoxing.activity.service.activity.market.MarketHandleService;
 import com.chaoxing.activity.service.manager.WfwFormApiService;
 import com.chaoxing.activity.service.manager.module.SignApiService;
 import com.chaoxing.activity.service.manager.wfw.WfwAreaApiService;
+import com.chaoxing.activity.util.ApplicationContextHolder;
 import com.chaoxing.activity.util.DateUtils;
 import com.chaoxing.activity.util.exception.BusinessException;
 import com.google.common.collect.Lists;
@@ -97,20 +98,24 @@ public class ActivityFormSyncService {
         return activity;
     }
 
-    @Transactional(rollbackFor = Exception.class)
     public void syncCreateActivity(Integer fid, Integer formId, Integer formUserId, Integer webTemplateId) {
+        Activity activity = ApplicationContextHolder.getBean(ActivityFormSyncService.class).createActivity(fid, formId, formUserId, webTemplateId);
+        // 回写数据
+        String data = packagePushUpdateData(fid, formId, activity);
+        wfwFormApiService.updateFormData(formId, formUserId, data);
+    }
+
+    @Transactional(rollbackFor = Exception.class)
+    public Activity createActivity(Integer fid, Integer formId, Integer formUserId, Integer webTemplateId) {
         // 获取表单数据
         WfwFormDTO formUserRecord = wfwFormApiService.getFormData(fid, formId, formUserId);
         if (formUserRecord == null) {
             throw new BusinessException("未查询到记录为:" + formUserId + "的表单数据");
         }
         // 判断活动是否存在，若存在，回写表单数据，并则返回；若不存在，则不进行活动创建
-        Activity activity;
-        if ((activity = activityQueryService.getActivityByOriginAndFormUserId(formId, formUserId)) != null) {
-            // 回写活动状态和活动id
-            String data = packagePushUpdateData(fid, formId, activity);
-            wfwFormApiService.updateFormData(formId, formUserId, data);
-            return;
+        Activity activity = activityQueryService.getActivityByOriginAndFormUserId(formId, formUserId);
+        if (activity != null) {
+            return activity;
         }
         // 获取活动创建者信息
         List<WfwAreaDTO> defaultPublishAreas = wfwAreaApiService.listByFid(fid);
@@ -143,10 +148,7 @@ public class ActivityFormSyncService {
         // 获取参与者列表, 进行用户报名
         List<Integer> participateUids = listParticipateUidByRecord(formUserRecord);
         signApiService.createUserSignUp(activity.getSignId(), participateUids);
-
-        // 回写数据
-        String data = packagePushUpdateData(fid, formId, activity);
-        wfwFormApiService.updateFormData(formId, formUserId, data);
+        return activity;
     }
 
     /**表单记录更新，同步更新活动
@@ -155,7 +157,6 @@ public class ActivityFormSyncService {
     * @Date 2021-08-26 16:53:48
     * @return void
     */
-    @Transactional(rollbackFor = Exception.class)
     public void syncUpdateActivity(Integer fid, Integer formId, Integer formUserId, Integer webTemplateId) {
         // 获取表单数据
         WfwFormDTO formUserRecord = wfwFormApiService.getFormData(fid, formId, formUserId);
@@ -165,10 +166,13 @@ public class ActivityFormSyncService {
         Activity activity = activityQueryService.getActivityByOriginAndFormUserId(formId, formUserId);
         // 若活动不存在，则新增
         if (activity == null) {
-            syncCreateActivity(fid, formId, formUserId, webTemplateId);
+            activity = ApplicationContextHolder.getBean(ActivityFormSyncService.class).createActivity(fid, formId, formUserId, webTemplateId);
         } else {
-            syncUpdateActivity(formUserRecord, fid, activity.getId());
+            activity = ApplicationContextHolder.getBean(ActivityFormSyncService.class).syncUpdateActivity(formUserRecord, fid, activity.getId());
         }
+        // 回写数据
+        String data = packagePushUpdateData(fid, formId, activity);
+        wfwFormApiService.updateFormData(formId, formUserId, data);
     }
 
     /**
@@ -181,7 +185,7 @@ public class ActivityFormSyncService {
     * @return void
     */
     @Transactional(rollbackFor = Exception.class)
-    public void syncUpdateActivity(WfwFormDTO formUserRecord, Integer fid, Integer activityId) {
+    public Activity syncUpdateActivity(WfwFormDTO formUserRecord, Integer fid, Integer activityId) {
         // 待更新数据
         ActivityUpdateParamDTO activityUpdateParam = new ActivityUpdateParamDTO();
         Activity activity = activityQueryService.getById(activityId);
@@ -201,7 +205,7 @@ public class ActivityFormSyncService {
         WfwAreaDTO orgInfo = Optional.ofNullable(defaultPublishAreas).orElse(Lists.newArrayList()).stream().filter(v -> Objects.equals(v.getFid(), fid)).findFirst().orElse(new WfwAreaDTO());
         LoginUserDTO loginUser = LoginUserDTO.buildDefault(formUserRecord.getUid(), formUserRecord.getUname(), fid, orgInfo.getName());
         // 根据表单记录数据，更新活动数据
-        activityHandleService.edit(activityUpdateParam, sign, defaultPublishAreas, loginUser);
+        return activityHandleService.edit(activityUpdateParam, sign, defaultPublishAreas, loginUser);
     }
 
     /**

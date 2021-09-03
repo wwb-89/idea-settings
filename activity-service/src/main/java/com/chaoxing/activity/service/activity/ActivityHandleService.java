@@ -204,7 +204,7 @@ public class ActivityHandleService {
 	 * @return void
 	 */
 	@Transactional(rollbackFor = Exception.class)
-	public void edit(ActivityUpdateParamDTO activityUpdateParamDto, SignCreateParamDTO signCreateParam, final List<WfwAreaDTO> wfwRegionalArchitectureDtos, LoginUserDTO loginUser) {
+	public Activity edit(ActivityUpdateParamDTO activityUpdateParamDto, SignCreateParamDTO signCreateParam, final List<WfwAreaDTO> wfwRegionalArchitectureDtos, LoginUserDTO loginUser) {
 		Activity activity = activityUpdateParamDto.buildActivity();
 		activityValidationService.updateInputValidate(activity);
 		if (CollectionUtils.isEmpty(wfwRegionalArchitectureDtos)) {
@@ -212,7 +212,7 @@ public class ActivityHandleService {
 		}
 		Integer activityId = activity.getId();
 		String activityEditLockKey = getActivityEditLockKey(activityId);
-		distributedLock.lock(activityEditLockKey, () -> {
+		return distributedLock.lock(activityEditLockKey, () -> {
 			Activity existActivity = activityValidationService.editAble(activityId, loginUser);
 			// 更新报名签到
 			Integer signId = existActivity.getSignId();
@@ -250,7 +250,7 @@ public class ActivityHandleService {
 			activityScopeService.batchAdd(activityId, wfwRegionalArchitectureDtos);
 			// 活动改变
 			activityChangeEventService.dataChange(activity, existActivity, loginUser);
-			return null;
+			return activity;
 		}, e -> {
 			log.error("更新活动:{} error:{}", JSON.toJSONString(activity), e.getMessage());
 			throw new BusinessException("更新活动失败");
