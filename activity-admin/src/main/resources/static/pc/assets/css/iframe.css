@@ -76,3 +76,124 @@
   padding-top: 88px;
   margin: 0 30px 0 0;
 }
+
+.topTabs.marTop88 {
+  margin-top: 88px;
+}
+
+.topTabs .menu {
+  padding: 0 20px;
+}
+
+.topTabs .menu ul {
+  font-size: 0;
+}
+
+.topTabs .menu ul li {
+  display: inline-block;
+  vertical-align: top;
+  margin-right: 2px;
+  width: 132px;
+  height: 45px;
+  text-align: center;
+  line-height: 45px;
+  padding: 0;
+  background: linear-gradient(180deg, #FFFFFF 0%, #F7F7F7 100%);
+  border-radius: 8px 8px 0px 0px;
+  color: rgba(0, 0, 0, 0.5);
+}
+
+.topTabs .menu li.current {
+  background: #FFFFFF;
+  color: #3D82F2;
+  border-left: none;
+}
+
+.iframe-bot-content {
+  padding: 0 20px 20px;
+}
+
+/* 头部 start*/
+.assess-header {
+  position: relative;
+  background: #3B5165;
+  height: 40px;
+  line-height: 40px;
+  padding: 9px 20px;
+  -webkit-box-sizing: border-box;
+  -moz-box-sizing: border-box;
+  box-sizing: border-box;
+}
+
+.assess-header .assess-title {
+  font-size: 16px;
+  font-weight: 500;
+  line-height: 22px;
+  color: #fff;
+  max-width: 100%;
+  text-align: center;
+}
+
+.assess-header .assess-header-right {
+  position: absolute;
+  top: 0;
+  right: 24px;
+}
+
+.assess-header .login-container .after-login {
+  cursor: pointer;
+  text-align: right;
+  -webkit-box-sizing: border-box;
+  -moz-box-sizing: border-box;
+  box-sizing: border-box;
+}
+
+.assess-header .login-container .after-login:hover .login-downlist-info {
+  display: block;
+}
+
+.assess-header .login-container .after-login .user-name {
+  display: inline-block;
+  vertical-align: top;
+  font-size: 13px;
+  color: #fff;
+}
+
+.assess-header .login-container .after-login .login-downlist-info {
+  -webkit-box-shadow: 0px 6px 16px -8px rgba(0, 0, 0, 0.08), 0px 9px 28px rgba(0, 0, 0, 0.05), 0px 12px 48px 16px rgba(0, 0, 0, 0.03);
+  box-shadow: 0px 6px 16px -8px rgba(0, 0, 0, 0.08), 0px 9px 28px rgba(0, 0, 0, 0.05), 0px 12px 48px 16px rgba(0, 0, 0, 0.03);
+  border-radius: 2px;
+  background-color: #FFFFFF;
+  padding: 2px 0;
+  display: none;
+}
+
+.assess-header .login-container .after-login .login-downlist-info .login-downlist-item {
+  padding: 8px 16px;
+  color: #333333;
+  line-height: 16px;
+  font-size: 14px;
+  text-align: center;
+}
+
+.assess-header .login-container .after-login .login-downlist-info .login-downlist-item a {
+  color: #333;
+}
+
+.assess-header .login-container .after-login .login-downlist-info .login-downlist-item:hover {
+  color: #0084FF;
+  background-color: #F8F8F8;
+}
+
+.assess-header .login-container .after-login .login-downlist-info .login-downlist-item:hover a {
+  color: #0084FF;
+}
+
+.assess-header .login-container .after-login .login-tx {
+  width: 24px;
+  height: 24px;
+  border-radius: 12px;
+  margin-top: 8px;
+}
+
+/* 头部 end*/

@@ -36,4 +36,13 @@ public interface TemplateComponentMapper extends BaseMapper<TemplateComponent> {
     * @return java.util.List<com.chaoxing.activity.dto.engine.TemplateComponentDTO>
     */
     List<TemplateComponentDTO> listTemplateComponentInfo(Integer templateId);
+
+    /**查询模板中报名组件数量
+    * @Description 
+    * @author huxiaolong
+    * @Date 2021-09-02 19:42:52
+    * @param templateId
+    * @return int
+    */
+    int countTemplateSignUp(@Param("templateId") Integer templateId);
 }

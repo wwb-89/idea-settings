@@ -14,6 +14,7 @@ import com.chaoxing.activity.service.activity.classify.ClassifyQueryService;
 import com.chaoxing.activity.service.activity.engine.ActivityEngineQueryService;
 import com.chaoxing.activity.service.activity.menu.ActivityMenuService;
 import com.chaoxing.activity.service.activity.scope.ActivityScopeQueryService;
+import com.chaoxing.activity.service.activity.template.TemplateQueryService;
 import com.chaoxing.activity.service.manager.WfwGroupApiService;
 import com.chaoxing.activity.service.manager.module.SignApiService;
 import com.chaoxing.activity.service.manager.wfw.WfwContactApiService;
@@ -59,15 +60,17 @@ public class ActivitySettingController {
     private WfwContactApiService wfwContactApiService;
     @Resource
     private ActivityMenuService activityMenuService;
+    @Resource
+    private TemplateQueryService templateQueryService;
 
     @RequestMapping("index")
     public String settingIndex(Model model, @PathVariable Integer activityId) {
 //		todo 暂时屏蔽校验
 //		Activity activity = activityValidationService.manageAble(activityId, operateUid);
         Activity activity = activityValidationService.activityExist(activityId);
-        SignActivityManageIndexDTO signActivityManageIndex = signApiService.statSignActivityManageIndex(activity.getSignId());
+
         model.addAttribute("activityId", activityId);
-        model.addAttribute("signActivityManageIndex", signActivityManageIndex);
+        model.addAttribute("openSignUp", templateQueryService.exitSignUpComponent(activity.getTemplateId()));
         return "pc/activity/setting/index";
     }
 

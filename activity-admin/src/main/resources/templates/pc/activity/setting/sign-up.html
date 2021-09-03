@@ -720,7 +720,7 @@
                         app.ajaxPostWithLoading(url, params, function (data) {
                             if (data.success) {
                                 app.showMsg("已保存", function () {
-                                    $this.returnBack();
+                                    window.location.reload();
                                 });
                             } else {
                                 var errorMessage = data.message;

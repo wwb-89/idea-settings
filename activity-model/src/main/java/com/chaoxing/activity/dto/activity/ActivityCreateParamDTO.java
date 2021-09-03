@@ -112,6 +112,8 @@ public class ActivityCreateParamDTO {
 	private Integer status;
 	/** 报名成功是否发送通知 */
 	private Boolean signedUpNotice;
+	/** 活动标识 */
+	private String activityFlag;
 
 
 	/** 活动组件值对象列表 */
@@ -165,6 +167,7 @@ public class ActivityCreateParamDTO {
 				.templateId(getTemplateId())
 				.status(getStatus())
 				.signedUpNotice(getSignedUpNotice())
+				.activityFlag(getActivityFlag())
 				.build();
 	}
 
@@ -218,6 +221,7 @@ public class ActivityCreateParamDTO {
 				.marketId(activity.getMarketId())
 				.templateId(activity.getTemplateId())
 				.signedUpNotice(activity.getSignedUpNotice())
+				.activityFlag(activity.getActivityFlag())
 				.build();
 	}
 

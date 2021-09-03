@@ -138,13 +138,14 @@ public class MarketHandleService {
 	 * @return void
 	*/
 	@Transactional(rollbackFor = Exception.class)
-	public void add(ActivityMarketCreateParamDTO activityMarketCreateParamDto, Activity.ActivityFlagEnum activityFlagEnum, OperateUserDTO operateUserDto) {
+	public Market add(ActivityMarketCreateParamDTO activityMarketCreateParamDto, Activity.ActivityFlagEnum activityFlagEnum, OperateUserDTO operateUserDto) {
 		Market activityMarket = activityMarketCreateParamDto.buildActivityMarket();
 		activityMarket.perfectCreator(operateUserDto);
 		marketMapper.insert(activityMarket);
 		Integer marketId = activityMarket.getId();
-		// 给市场克隆一个通用模版
+		// 给市场克隆一个模版
 		templateHandleService.cloneTemplate(marketId, templateQueryService.getSystemTemplateIdByActivityFlag(activityFlagEnum));
+		return activityMarket;
 	}
 
 	/**更新活动市场

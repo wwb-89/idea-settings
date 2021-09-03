@@ -48,7 +48,7 @@ public class MarketController {
 		LoginUserDTO loginUser = LoginUtils.getLoginUser(request);
 		Market market = marketValidationService.manageAble(marketId, loginUser.buildOperateUserDTO());
 		model.addAttribute("market", market);
-		return "pc/market/market-index";
+		return "pc/market/market-index-new";
 	}
 
 	/**微服务创建营应用页面

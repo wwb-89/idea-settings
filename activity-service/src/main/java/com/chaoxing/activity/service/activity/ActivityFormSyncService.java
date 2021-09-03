@@ -125,6 +125,7 @@ public class ActivityFormSyncService {
         activityCreateParam.setOrigin(String.valueOf(formId));
         activityCreateParam.setOriginFormUserId(formUserId);
         activityCreateParam.setSignedUpNotice(true);
+        activityCreateParam.setActivityFlag(Activity.ActivityFlagEnum.THREE_CONFERENCE_ONE_LESSON.getValue());
         // 封装报名信息
         SignCreateParamDTO signCreateParam = SignCreateParamDTO.builder().name(activityCreateParam.getName()).build();
         // 默认开启报名
@@ -161,20 +162,13 @@ public class ActivityFormSyncService {
         if (formUserRecord == null) {
             throw new BusinessException("未查询到记录为:" + formUserId + "的表单数据");
         }
-        Integer activityId = formUserRecord.getFormData().stream().filter(v -> Objects.equals(v.getAlias(), "activity_id")).map(u -> Optional.of(u.getValues().get(0)).map(v -> v.getInteger("val")).orElse(null)).findFirst().orElse(null);
-        if (activityId == null) {
-            Activity activity = activityQueryService.getActivityByOriginAndFormUserId(formId, formUserId);
-            // 若活动不存在，则新增
-            if (activity == null) {
-                syncCreateActivity(fid, formId, formUserId, webTemplateId);
-                return;
-            }
-            // 回写数据
-            String data = packagePushUpdateData(fid, formId, activity);
-            wfwFormApiService.updateFormData(formId, formUserId, data);
-            activityId = activity.getId();
+        Activity activity = activityQueryService.getActivityByOriginAndFormUserId(formId, formUserId);
+        // 若活动不存在，则新增
+        if (activity == null) {
+            syncCreateActivity(fid, formId, formUserId, webTemplateId);
+        } else {
+            syncUpdateActivity(formUserRecord, fid, activity.getId());
         }
-        syncUpdateActivity(formUserRecord, fid, activityId);
     }
 
     /**
@@ -255,7 +249,7 @@ public class ActivityFormSyncService {
         List<String> timeScopes = Lists.newArrayList();
         formData.forEach(v -> {
             List<JSONObject> values = v.getValues();
-            if (!values.isEmpty()) {
+            if (CollectionUtils.isNotEmpty(values)) {
                 JSONObject obj = values.get(0);
                 String attrValue = obj.getString("val");
                 if (Objects.equals("activity_name", v.getAlias())) {
@@ -395,7 +389,7 @@ public class ActivityFormSyncService {
         List<String> timeScopes = Lists.newArrayList();
         formUserRecord.getFormData().forEach(v -> {
             List<JSONObject> values = v.getValues();
-            if (!values.isEmpty()) {
+            if (CollectionUtils.isNotEmpty(values)) {
                 JSONObject obj = values.get(0);
                 String attrValue = obj.getString("val");
                 if (Objects.equals("activity_name", v.getAlias())) {
