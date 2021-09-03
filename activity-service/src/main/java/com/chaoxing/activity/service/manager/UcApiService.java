@@ -1,17 +1,32 @@
 package com.chaoxing.activity.service.manager;
 
+import cn.hutool.core.net.url.UrlQuery;
+import cn.hutool.core.util.URLUtil;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
+import com.chaoxing.activity.dto.RestRespDTO;
 import com.chaoxing.activity.dto.manager.UserExtraInfoDTO;
 import com.chaoxing.activity.dto.manager.uc.ClazzDTO;
 import com.chaoxing.activity.dto.manager.wfw.WfwClassDTO;
+import com.chaoxing.activity.util.CookieUtils;
+import com.chaoxing.activity.util.exception.BusinessException;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.compress.utils.Lists;
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
 import javax.annotation.Resource;
+import javax.servlet.http.Cookie;
+import javax.servlet.http.HttpServletRequest;
+import java.io.UnsupportedEncodingException;
+import java.net.URL;
+import java.net.URLDecoder;
+import java.nio.charset.StandardCharsets;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -96,4 +111,36 @@ public class UcApiService {
 		return Lists.newArrayList();
 	}
 
+	/**
+	* @Description
+	* @author huxiaolong
+	* @Date 2021-09-03 14:18:11
+	* @param request
+	* @param url
+	* @return java.util.List<java.lang.Object>
+	*/
+    public List<ClazzDTO> listTeacherTeachingClazz(HttpServletRequest request, String url) {
+		Integer fid = CookieUtils.getFid(request);
+		Integer uid = CookieUtils.getUid(request);
+		URL urlItem = URLUtil.url(url);
+		Map<CharSequence, CharSequence> urlQuery = UrlQuery.of(urlItem.getQuery(), StandardCharsets.UTF_8).getQueryMap();
+		if (StringUtils.isBlank(urlQuery.get("uid"))) {
+			urlQuery.put("uid", String.valueOf(uid));
+		}
+		if (StringUtils.isBlank(urlQuery.get("fid"))) {
+			urlQuery.put("fid", String.valueOf(fid));
+		}
+		String realUrl = StringUtils.isBlank(urlItem.getProtocol()) ? "http" : urlItem.getProtocol() + "://" + urlItem.getHost() + urlItem.getPath();
+
+		String result = restTemplate.getForObject(realUrl, String.class);
+		JSONObject jsonObject = JSON.parseObject(result);
+
+		if (jsonObject.getBoolean("success")) {
+			return JSON.parseArray(jsonObject.getJSONArray("data").toJSONString(), ClazzDTO.class);
+		} else {
+			String errorMessage = jsonObject.getString("message");
+			log.error("查询执教班级列表失败:{}", errorMessage);
+			throw new BusinessException(errorMessage);
+		}
+    }
 }

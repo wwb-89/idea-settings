@@ -161,6 +161,62 @@
             ,t.start_time DESC
     </select>
 
+
+    <select id="pageErdosParticipate" resultMap="BaseResultMap">
+        SELECT
+            <include refid="Base_Column_List"></include>
+        FROM
+            t_activity t
+        <if test="params.levelType == 'class'">
+            INNER JOIN t_activity_class t1 ON t.id = t1.activity_id
+        </if>
+        <if test="params.levelType == 'school' or params.levelType == 'region'">
+            INNER JOIN t_activity_scope t1 ON t.id = t1.activity_id
+            <choose>
+                <when test="params.marketId != null">
+                    AND t.market_id = #{params.marketId}
+                </when>
+                <otherwise>
+                    <if test="params.fids != null and params.fids.size() != 0">
+                        AND t1.fid IN
+                        <foreach collection="params.fids" index="key" item="value" open="(" close=")" separator=",">
+                            #{value}
+                        </foreach>
+                    </if>
+                </otherwise>
+            </choose>
+        </if>
+        <!--类型-->
+        <choose>
+            <when test="params.activityClassifyId != null">
+                INNER JOIN t_classify t3 ON t.activity_classify_id = t3.id
+                AND t3.id = #{params.activityClassifyId}
+            </when>
+            <otherwise>
+                <if test="params.activityClassifyName != null and params.activityClassifyName != ''">
+                    INNER JOIN t_classify t3 ON t.activity_classify_id = t3.id
+                    AND t3.name = #{params.activityClassifyName}
+                </if>
+            </otherwise>
+        </choose>
+        <where>
+            <if test="params.sw != null and params.sw != ''">
+                AND (
+                t.`name` LIKE CONCAT('%', #{params.sw}, '%')
+                OR t.organisers LIKE CONCAT('%', #{params.sw}, '%')
+                )
+            </if>
+        </where>
+        GROUP BY
+        t.id
+        ORDER BY
+        FIELD( t.`status`, 2, 3, 4 )
+        <if test="(params.levelType == 'school' or params.levelType == 'region') and params.topFid != null">
+            , t1.fid <![CDATA[<>]]> #{params.topFid}
+        </if>
+        ,t.start_time DESC
+    </select>
+
     <!--查询管理的活动-->
     <select id="pageManaging" resultMap="BaseResultMap">
         SELECT

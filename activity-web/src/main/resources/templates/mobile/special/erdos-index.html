@@ -1,0 +1,328 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org/">
+<head>
+    <title>活动市场</title>
+    <meta http-equiv="Content-type" content="text/html; charset=utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, minimal-ui" />
+    <meta name="format-detection" content="telephone=no, email=no">
+    <meta http-equiv="Pragma" content="no-cache" />
+    <meta http-equiv="cache-control" content="no-cache" />
+    <link rel="stylesheet" href="/static/mobile/assets/css/public.css" th:href="@{/mobile/assets/css/public.css}" />
+    <link rel="stylesheet" href="/static/mobile/assets/css/index.css" th:href="@{/mobile/assets/css/index.css}" />
+    <link rel="stylesheet" href="/static/mobile/assets/css/dialog.css" th:href="@{/mobile/assets/css/dialog.css}" />
+    <link rel="stylesheet" href="/static/mobile/assets/lib/mescroll/mescroll.css" th:href="@{/mobile/assets/lib/mescroll/mescroll.css}" />
+    <style type="text/css">
+        [v-cloak] {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+<div class="index" id="activity-vue" v-cloak>
+    <!-- 搜索 -->
+    <div class="topFixed">
+        <div class="searchbefore" v-show="!searchShow" @click="showSearchInput"><i></i><span>搜索</span></div>
+        <div class="searchDiv inputShow" v-show="searchShow">
+            <i class="searchIcon"></i>
+            <i class="delete" v-show="sw" @click="clearSearch"></i>
+            <input id="search" type="text" placeholder="搜索"  v-model.trim="sw" @focus="searchShow = true" @keyup.enter="search">
+        </div>
+        <!-- 已选状态 添加active -->
+        <div :class="{'filter': true, 'active': haveFilter}" v-show="!searchShow" @click="toFilter">
+            <i class="filterIcon"></i>筛选
+        </div>
+        <span class="Scancel" v-show="searchShow" @click="hideSearchInput">取消</span>
+    </div>
+    <div class="activity-list">
+        <ul>
+            <li v-for="(activity, index) of activities" :key="'activity-' + activity.id" @click="detail(index)">
+                <div class="img-box">
+                    <div class="mask"></div>
+                    <img :src="activity | getCloudImgUrl" class="jqthumbImg">
+                    <span :class="{'status': true, 'status1': (activity.status == 1), 'status2': (activity.status == 2), 'status3': (activity.status == 3), 'status4': (activity.status == 4)}">{{activity.status | activityStatusInstructions}}</span>
+                    <!--<p class="num"><i></i>1028</p>-->
+                </div>
+                <div class="info">
+                    <h2 class="title">{{activity.name}}</h2>
+                    <div class="time">
+                        <span>{{activity.startTime | timestampScopeFormat(activity.endTime)}}</span>
+                        <div class="clear"></div>
+                    </div>
+                    <p class="dec">{{activity.organisers}}</p>
+                    <p class="address" >{{activity.address}}{{activity.detailAddress ? activity.detailAddress : ''}}</p>
+                </div>
+            </li>
+        </ul>
+    </div>
+    <!-- 无结果 -->
+    <div class="noContent" v-show="loaded && activities.length < 1">
+        <p>无结果</p>
+    </div>
+    <!-- 弹出层 -->
+    <div class="pop" v-show="filterWindowShow">
+        <div class="popInner">
+            <div class="popList mescroll-touch">
+                <div class="list-item">
+                    <div class="title">级别</div>
+                    <ul>
+                        <li :class="{'active': item.selected}" v-for="(item, index) of levels" :key="'activity-level' + index" @click="changeActivityLevelSelected(index)">{{item.name}}</li>
+                    </ul>
+                    <div class="clear"></div>
+                </div>
+                <div class="list-item">
+                    <div class="title">类型</div>
+                    <ul>
+                        <li :class="{'active': activityClassify.selected}" v-for="(activityClassify, index) of classifies" :key="'activity-classify' + index" @click="changeActivityClassify(index)">{{activityClassify.name}}</li>
+                    </ul>
+                    <div class="clear"></div>
+                </div>
+            </div>
+            <div class="btn">
+                <a href="javascript:" class="btn-a btn-0" @click="filterCancel">取消</a>
+                <a href="javascript:" class="btn-a btn-1" @click="filterSure">确定</a>
+                <div class="clear"></div>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+<div th:replace="mobile/include/common_js :: common_js(~{::script})">
+    <script src="/static/pc/assets/lib/set-iframe-height-child.js" th:src="@{/pc/assets/lib/set-iframe-height-child.js}"></script>
+    <script src="/static/mobile/assets/lib/mescroll/mescroll.js" th:src="@{/mobile/assets/lib/mescroll/mescroll.js}"></script>
+    <script src="/static/mobile/assets/lib/jqthumb.min.js" th:src="@{/mobile/assets/lib/jqthumb.min.js}"></script>
+    <script th:inline="javascript">
+        function ready() {
+            activityVue = new Vue({
+                el: "#activity-vue",
+                data: {
+                    classifyNames: [[${classifyNames}]],
+                    levels: [],
+                    classifies: [],
+                    sw: "",
+                    queryParams: {},
+                    activities: [],
+                    loaded: false,
+                    mescroll: null,
+
+                    filterWindowShow: false,
+                    searchShow: false
+                },
+                created: function () {
+                    var $this = this;
+                    // 定制右上角菜单
+                    app.customMenu("", app.my_icon_url, {
+                        option: "activityVue.my();"
+                    });
+                    // 活动分类列表
+                    $($this.classifyNames).each(function () {
+                        $this.classifies.push({name: this, value: this, selected: false});
+                    });
+                    $this.classifies.splice(0, 0, {
+                        name: "全部",
+                        value: "",
+                        selected: true
+                    });
+                    //级别
+                    $this.levels = [
+                        {name: '班级', value: 'class', selected: true},
+                        {name: '学校', value: 'school', selected: false},
+                        {name: '区域', value: 'region', selected: false}
+                    ];
+                    $this.restQueryParams();
+                },
+                mounted: function () {
+                    var $this = this;
+                    $this.initMescroll();
+                },
+                computed: {
+                    // 是否筛选了条件
+                    haveFilter: function () {
+                        var $this = this;
+                        return !activityApp.isEmpty($this.queryParams.activityClassifyName) ||
+                                !activityApp.isEmpty($this.queryParams.levelType);
+                    }
+                },
+                methods: {
+                    // 显示搜索输入框
+                    showSearchInput: function () {
+                        var $this = this;
+                        $this.searchShow = true;
+                        $this.$nextTick(function () {
+                            $("#search").focus();
+                        });
+                    },
+                    // 隐藏搜索输入框
+                    hideSearchInput: function () {
+                        var $this = this;
+                        $this.searchShow = false;
+                        $this.sw = "";
+                        if ($this.sw != $this.queryParams.sw) {
+                            $this.search();
+                        }
+                    },
+                    clearSearch: function () {
+                        var $this = this;
+                        $this.sw = "";
+                    },
+                    // 重置查询条件
+                    restQueryParams: function () {
+                        var $this = this;
+                        $this.queryParams = {
+                            pageNum: 1,
+                            pageSize: 10,
+                            sw: "",
+                            activityClassifyName: "",
+                            levelType: "class",
+                            topFid: [[${topFid}]],
+                            marketId: [[${marketId}]]
+                        };
+                    },
+                    initMescroll: function () {
+                        var $this = this;
+                        if ($this.mescroll == null) {
+                            $this.mescroll = new MeScroll("body", {
+                                //第一个参数"mescroll"对应上面布局结构div的id (1.3.5版本支持传入dom对象)
+                                //如果您的下拉刷新是重置列表数据,那么down完全可以不用配置,具体用法参考第一个基础案例
+                                //解析: down.callback默认调用mescroll.resetUpScroll(),而resetUpScroll会将page.num=1,再触发up.callback
+                                down: {
+                                    use: false
+                                },
+                                up: {
+                                    callback: function () {
+                                        $this.loadData();
+                                    }, //上拉加载的回调
+                                    htmlNodata: '<p class="upwarp-nodata">-- 没有更多了 --</p>',
+                                    noMoreSize: 5, //如果列表已无数据,可设置列表的总数量要大于5才显示无更多数据; 避免列表数据过少(比如只有一条数据),显示无更多数据会不好看 这就是为什么无更多数据有时候不显示的原因.
+                                }
+                            });
+                        }
+                    },//加载数据渲染页面
+                    loadData: function () {
+                        var $this = this;
+                        var url = ctx + "/api/activity/list/erdos/participate";
+                        var params = $this.queryParams;
+                        $this.loaded = false;
+                        var params = {
+                            data: activityApp.getJsonStr(params),
+                            pageNum: $this.queryParams.pageNum,
+                            pageSize: $this.queryParams.pageSize,
+                        };
+                        app.ajaxPost(url, params, function (data) {
+                            if (data.success) {
+                                $this.loaded = true;
+                                $this.mescroll.endByPage(data.data.records.length, data.data.pages);
+                                $this.activities.pushArray(data.data.records);
+                                $this.$nextTick(function () {
+                                    $('.jqthumbImg').jqthumb({
+                                        width: '100%',
+                                        height: '100%'
+                                    });
+                                });
+                                $this.queryParams.pageNum++;
+                            } else {
+                                var errorMessage = data.message;
+                                if (activityApp.isEmpty(errorMessage)) {
+                                    errorMessage = "加载活动列表失败";
+                                }
+                                $this.mescroll.endErr();
+                                app.showMsg(errorMessage);
+                            }
+                        }, function () {
+                            $this.mescroll.endErr();
+                            app.showMsg("加载活动列表失败");
+                        });
+                    },
+                    showFilterWindow: function () {
+                        var $this = this;
+                        $this.filterWindowShow = true;
+                        $("body").addClass("overhidden");
+                    },
+                    hideFilterWindow: function () {
+                        var $this = this;
+                        $this.filterWindowShow = false;
+                        $("body").removeClass("overhidden");
+                    },
+                    toFilter: function () {
+                        var $this = this;
+                        $this.showFilterWindow();
+                    },
+                    changeActivityClassify: function (index) {
+                        var $this = this;
+                        $($this.classifies).each(function (i) {
+                            $this.$set($this.classifies[i], "selected", i == index);
+                        });
+                    },
+                    changeActivityLevelSelected: function (index) {
+                        var $this = this;
+                        $($this.levels).each(function (i) {
+                            $this.$set($this.levels[i], "selected", i == index);
+                        });
+                    },
+                    condition2QueryParams: function () {
+                        var $this = this;
+                        $($this.classifies).each(function () {
+                            if (this.selected) {
+                                $this.queryParams.activityClassifyName = this.value;
+                                return false;
+                            }
+                        });
+                        $($this.levels).each(function () {
+                            if (this.selected) {
+                                $this.queryParams.levelType = this.value;
+                                return false;
+                            }
+                        });
+                        $this.activities = [];
+                        $this.queryParams.pageNum = 1;
+                        $this.mescroll.setPageNum(2);
+                    },
+                    queryParams2Condition: function () {
+                        var $this = this;
+                        $($this.classifies).each(function (i) {
+                            $this.$set($this.classifies[i], "selected", this.value == $this.queryParams.activityClassifyName);
+                        });
+                        $($this.levels).each(function (i) {
+                            $this.$set($this.levels[i], "selected", this.value == $this.queryParams.levelType);
+                        });
+                    },
+                    filterCancel: function () {
+                        var $this = this;
+                        // 还原选择
+                        $this.queryParams2Condition();
+                        $this.hideFilterWindow();
+                    },
+                    filterSure: function () {
+                        var $this = this;
+                        // 还原选择
+                        $this.condition2QueryParams();
+                        $this.hideFilterWindow();
+                        // 查询
+                        $this.loadData();
+                    },
+                    search: function () {
+                        var $this = this;
+                        $this.condition2QueryParams();
+                        $this.queryParams.sw = $this.sw;
+                        $("#search-input").blur();
+                        $this.loadData();
+                    },
+                    detail: function (index) {
+                        var $this = this;
+                        var activity = $this.activities[index];
+                        var previewUrl = activity.previewUrl;
+                        if (!activityApp.isEmpty(previewUrl)) {
+                            // 回收积分
+                            activityApp.integralPush(activity.id, activity.name);
+                            app.openUrl(previewUrl);
+                        }
+                    },
+                    my: function () {
+                        var url = ctx + "/my";
+                        app.openUrl(url);
+                    }
+                }
+            });
+        }
+    </script>
+</div>
+</html>

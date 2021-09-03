@@ -101,6 +101,18 @@ public class ActivityQueryService {
 		return page;
 	}
 
+	/**鄂尔多斯可参与活动查询
+	* @Description
+	* @author huxiaolong
+	* @Date 2021-09-03 15:44:46
+	* @param page
+	* @param activityQuery
+	* @return com.baomidou.mybatisplus.extension.plugins.pagination.Page<com.chaoxing.activity.model.Activity>
+	*/
+	public Page<Activity> pageErdosParticipate(Page<Activity> page, ActivityQueryDTO activityQuery) {
+		return activityMapper.pageErdosParticipate(page, activityQuery);
+	}
+
 	/**活动日历查询
 	 * @Description 
 	 * @author wwb

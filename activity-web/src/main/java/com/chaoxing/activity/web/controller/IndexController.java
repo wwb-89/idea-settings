@@ -79,6 +79,50 @@ public class IndexController {
 		return handleData(request, model, null, realFid, null, banner, style, flag, marketId);
 	}
 
+	/**鄂尔多斯活动广场
+	* @Description 
+	* @author huxiaolong
+	* @Date 2021-09-03 15:41:33
+	* @param request
+	* @param model
+	* @param wfwfid
+	* @param unitId
+	* @param state
+	* @param fid
+	* @param flag
+	* @param marketId
+	* @return java.lang.String
+	*/
+	@RequestMapping("erdos")
+	public String erdosIndex(HttpServletRequest request, Model model, Integer wfwfid, Integer unitId, Integer state, Integer fid, @RequestParam(defaultValue = "") String flag, Integer marketId) {
+		Integer realFid = Optional.ofNullable(wfwfid).orElse(Optional.ofNullable(unitId).orElse(Optional.ofNullable(state).orElse(fid)));
+		return erdos(request, model, realFid, marketId);
+	}
+
+	private String erdos(HttpServletRequest request, Model model, Integer fid, Integer marketId) {
+		List<Classify> classifies;
+		if (marketId == null) {
+			if (fid == null) {
+				LoginUserDTO loginUser = LoginUtils.getLoginUser(request);
+				Optional.ofNullable(loginUser).orElseThrow(() -> new LoginRequiredException());
+				fid = loginUser.getFid();
+			}
+			classifies = classifyQueryService.listOrgClassifies(fid);
+		} else {
+			classifies = classifyQueryService.listMarketClassifies(marketId);
+		}
+		List<String> classifyNames = Optional.ofNullable(classifies).orElse(Lists.newArrayList()).stream().map(Classify::getName).collect(Collectors.toList());
+		model.addAttribute("classifyNames", classifyNames);
+		model.addAttribute("topFid", fid);
+		model.addAttribute("marketId", marketId);
+		if (UserAgentUtils.isMobileAccess(request)) {
+			return "mobile/special/erdos-index";
+		} else {
+			return "pc/special/erdos-index";
+		}
+
+	}
+
 	/**图书馆
 	 * @Description
 	 * @author wwb

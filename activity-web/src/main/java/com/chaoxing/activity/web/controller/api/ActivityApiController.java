@@ -26,6 +26,7 @@ import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -83,6 +84,42 @@ public class ActivityApiController {
 		activityQuery.setFids(fids);
 		Page<Activity> page = HttpServletRequestUtils.buid(request);
 		page = activityQueryService.listParticipate(page, activityQuery);
+		return RestRespDTO.success(page);
+	}
+
+	/**
+	* @Description 
+	* @author huxiaolong
+	* @Date 2021-09-03 15:47:34
+	* @param request
+	* @param data
+	* @return com.chaoxing.activity.dto.RestRespDTO
+	*/
+	@RequestMapping("list/erdos/participate")
+	public RestRespDTO list11(HttpServletRequest request, String data) {
+		ActivityQueryDTO activityQuery = JSON.parseObject(data, ActivityQueryDTO.class);
+		List<Integer> fids = new ArrayList<>();
+		List<WfwAreaDTO> wfwRegionalArchitectures;
+		Activity.ActivityFlagEnum activityFlagEnum = Activity.ActivityFlagEnum.fromValue(activityQuery.getLevelType());
+		if (activityFlagEnum != null &&
+				(Objects.equals(activityFlagEnum.getValue(), Activity.ActivityFlagEnum.SCHOOL.getValue()) ||
+						Objects.equals(activityFlagEnum.getValue(), Activity.ActivityFlagEnum.REGION.getValue()))) {
+			Integer topFid = activityQuery.getTopFid();
+			if (topFid == null) {
+				LoginUserDTO loginUser = LoginUtils.getLoginUser(request);
+				topFid = loginUser.getFid();
+			}
+			wfwRegionalArchitectures = wfwAreaApiService.listByFid(topFid);
+			if (CollectionUtils.isNotEmpty(wfwRegionalArchitectures)) {
+				List<Integer> subFids = wfwRegionalArchitectures.stream().map(WfwAreaDTO::getFid).collect(Collectors.toList());
+				fids.addAll(subFids);
+			} else {
+				fids.add(topFid);
+			}
+			activityQuery.setFids(fids);
+		}
+		Page<Activity> page = HttpServletRequestUtils.buid(request);
+		page = activityQueryService.pageErdosParticipate(page, activityQuery);
 		return RestRespDTO.success(page);
 	}
 
