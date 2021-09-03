@@ -74,8 +74,8 @@ public class UserApiController {
      * @param fid
      * @return com.chaoxing.activity.dto.RestRespDTO
     */
-    @RequestMapping("{uid}/clazz/teaching")
-    public RestRespDTO teachingClazz(@PathVariable Integer uid, @RequestParam Integer fid) {
+    @RequestMapping("clazz/teaching")
+    public RestRespDTO teachingClazz(@RequestParam Integer uid, @RequestParam Integer fid) {
         return RestRespDTO.success(ucApiService.listTeacherTeachingClazz(uid, fid));
     }
 
