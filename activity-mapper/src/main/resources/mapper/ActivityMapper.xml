@@ -181,8 +181,11 @@
     <!-- 活动查询where过滤条件 -->
     <sql id="erdosConditionSql">
         <where>
-            <if test="params.flag != null and params.flag != ''">
-                AND t.activity_flag = #{params.flag}
+            <if test="params.flags != null and params.flags.size() != 0">
+                AND t.activity_flag IN
+                <foreach collection="params.flags" index="key" item="value" open="(" close=")" separator=",">
+                    #{value}
+                </foreach>
             </if>
             <if test="params.sw != null and params.sw != ''">
                 AND (

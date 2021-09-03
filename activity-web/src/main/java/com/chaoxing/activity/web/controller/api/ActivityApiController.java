@@ -24,10 +24,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**活动api服务
@@ -96,9 +93,12 @@ public class ActivityApiController {
 	* @return com.chaoxing.activity.dto.RestRespDTO
 	*/
 	@RequestMapping("list/erdos/participate")
-	public RestRespDTO list11(HttpServletRequest request, String data) {
+	public RestRespDTO erdosParticipateActivities(HttpServletRequest request, String data) {
 		ActivityQueryDTO activityQuery = JSON.parseObject(data, ActivityQueryDTO.class);
 		List<Integer> fids = new ArrayList<>();
+		if (StringUtils.isNotBlank(activityQuery.getFlag())) {
+			activityQuery.setFlags(Arrays.asList(activityQuery.getFlag().split(",")));
+		}
 		// 获取区域机构
 		Integer topFid = activityQuery.getTopFid();
 		if (topFid == null) {

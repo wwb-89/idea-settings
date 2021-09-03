@@ -37,6 +37,8 @@ public class ActivityQueryDTO {
 	private String levelType;
 	/** 用户班级id */
 	private Integer userClassId;
+	/** 多活动标识 */
+	private List<String> flags;
 	/** 时间 */
 	private String date;
 	/** 状态 */
