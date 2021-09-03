@@ -3,6 +3,7 @@ package com.chaoxing.activity.admin.controller.general;
 import com.chaoxing.activity.admin.util.LoginUtils;
 import com.chaoxing.activity.dto.LoginUserDTO;
 import com.chaoxing.activity.dto.activity.ActivityCreateParamDTO;
+import com.chaoxing.activity.dto.manager.sign.SignActivityManageIndexDTO;
 import com.chaoxing.activity.dto.manager.sign.create.SignCreateParamDTO;
 import com.chaoxing.activity.dto.manager.wfw.WfwAreaDTO;
 import com.chaoxing.activity.dto.manager.wfw.WfwGroupDTO;
@@ -13,13 +14,11 @@ import com.chaoxing.activity.service.activity.classify.ClassifyQueryService;
 import com.chaoxing.activity.service.activity.engine.ActivityEngineQueryService;
 import com.chaoxing.activity.service.activity.menu.ActivityMenuService;
 import com.chaoxing.activity.service.activity.scope.ActivityScopeQueryService;
+import com.chaoxing.activity.service.activity.template.TemplateQueryService;
 import com.chaoxing.activity.service.manager.WfwGroupApiService;
 import com.chaoxing.activity.service.manager.module.SignApiService;
 import com.chaoxing.activity.service.manager.wfw.WfwContactApiService;
-import com.chaoxing.activity.util.enums.ActivityMenuEnum;
-import com.google.common.collect.Maps;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -28,10 +27,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
-import java.util.Arrays;
 import java.util.List;
-import java.util.Map;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 /**
@@ -64,10 +60,17 @@ public class ActivitySettingController {
     private WfwContactApiService wfwContactApiService;
     @Resource
     private ActivityMenuService activityMenuService;
+    @Resource
+    private TemplateQueryService templateQueryService;
 
     @RequestMapping("index")
     public String settingIndex(Model model, @PathVariable Integer activityId) {
+//		todo 暂时屏蔽校验
+//		Activity activity = activityValidationService.manageAble(activityId, operateUid);
+        Activity activity = activityValidationService.activityExist(activityId);
+
         model.addAttribute("activityId", activityId);
+        model.addAttribute("openSignUp", templateQueryService.exitSignUpComponent(activity.getTemplateId()));
         return "pc/activity/setting/index";
     }
 
@@ -143,7 +146,7 @@ public class ActivitySettingController {
         Integer signId = activity.getSignId();
         SignCreateParamDTO sign = SignCreateParamDTO.builder().build();
         if (signId != null) {
-            sign = signApiService.getById(signId);
+            sign = signApiService.getCreateById(signId);
         }
         model.addAttribute("activity", createParamDTO);
         model.addAttribute("templateComponents", activityEngineQueryService.listSignUpTemplateComponents(activity.getTemplateId()));

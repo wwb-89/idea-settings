@@ -46,6 +46,8 @@ public interface ActivityMapper extends BaseMapper<Activity> {
 	 */
 	Page<Activity> pageManaging(@Param("page") Page<?> page, @Param("params") ActivityManageQueryDTO activityManageQuery);
 
+	Page<Activity> pageManagingByMarket(@Param("page") Page<?> page, @Param("params") ActivityManageQueryDTO activityManageQuery);
+
 	/**
 	 * 查询创建的活动
 	 *
@@ -57,6 +59,8 @@ public interface ActivityMapper extends BaseMapper<Activity> {
 	 * @Date 2021-03-17 16:11:49
 	 */
 	Page<Activity> pageCreated(@Param("page") Page<?> page, @Param("params") ActivityManageQueryDTO activityManageQuery);
+
+	Page<Activity> pageCreatedByMarket(@Param("page") Page<?> page, @Param("params") ActivityManageQueryDTO activityManageQuery);
 
 	/**
 	 * 查询机构创建的或能参与的
@@ -95,6 +99,8 @@ public interface ActivityMapper extends BaseMapper<Activity> {
 	 * @Date 2021-04-08 18:01:23
 	 */
 	Page<Activity> pageUserManaged(@Param("page") Page<?> page, @Param("uid") Integer uid, @Param("sw") String sw);
+
+	Page<Activity> pageUserMarketManaged(@Param("page") Page<?> page, @Param("uid") Integer uid, @Param("sw") String sw, @Param("marketId") Integer marketId);
 
 	/**
 	 * 活动日历查询
@@ -141,6 +147,17 @@ public interface ActivityMapper extends BaseMapper<Activity> {
 	List<Activity> listBySignIds(@Param("signIds") List<Integer> signIds);
 
 	/**
+	 * 根据报名签到id列表查询
+	 *
+	 * @param signIds
+	 * @return java.util.List<com.chaoxing.activity.model.Activity>
+	 * @Description
+	 * @author wwb
+	 * @Date 2021-01-27 20:24:30
+	 */
+	List<Activity> listByMarketSignIds(@Param("signIds") List<Integer> signIds, @Param("marketId") Integer marketId);
+
+	/**
 	 * 分页查询报名的活动列表
 	 *
 	 * @param page
@@ -152,6 +169,8 @@ public interface ActivityMapper extends BaseMapper<Activity> {
 	 * @Date 2021-01-27 20:55:30
 	 */
 	Page<Activity> pageCollectedActivityId(@Param("page") Page<?> page, @Param("uid") Integer uid, @Param("sw") String sw);
+
+	Page<Activity> pageMarketCollectedActivityId(@Param("page") Page<?> page, @Param("uid") Integer uid, @Param("sw") String sw, @Param("marketId") Integer marketId);
 
 	/**
 	 * 根据报名签到id查询活动
@@ -224,4 +243,5 @@ public interface ActivityMapper extends BaseMapper<Activity> {
 	* @return java.util.List<java.lang.Integer>
 	*/
     List<Integer> listOrgsReleasedActivityId(@Param("fids") List<Integer> fids, @Param("startDate") String startDate, @Param("endDate") String endDate);
+
 }

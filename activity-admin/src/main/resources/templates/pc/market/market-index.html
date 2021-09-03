@@ -36,6 +36,7 @@
 	</div>
 </div>
 <div th:replace="pc/include/common_js :: common_js(~{::script})">
+<!--	<script src="/static/pc/assets/lib/set-iframe-height-parent.js" th:src="@{/pc/assets/lib/set-iframe-height-parent.js}"></script>-->
 	<script th:inline="javascript">
         vm = new Vue({
 	        el: "#vm",
@@ -48,6 +49,10 @@
 		        ],
 		        url: ""
 	        },
+            created: function () {
+                // 解决跨域
+                document.domain = "chaoxing.com";
+            },
             mounted: function () {
                 var $this = this;
                 $this.resetFrameHeight();
@@ -75,7 +80,7 @@
                     $this.url = menu.url;
                 },
                 resetFrameHeight: function () {
-                    $("#content").height($(window).height() - 68 - 20 - 50 - 5);
+                    $("#content").height($(window).height() - 68 - 20 - 5);
                 }
 	        }
         });

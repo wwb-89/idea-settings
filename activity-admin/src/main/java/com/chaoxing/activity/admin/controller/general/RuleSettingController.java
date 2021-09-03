@@ -2,6 +2,8 @@ package com.chaoxing.activity.admin.controller.general;
 
 import com.chaoxing.activity.dto.blacklist.BlacklistRuleDTO;
 import com.chaoxing.activity.model.BlacklistRule;
+import com.chaoxing.activity.model.Market;
+import com.chaoxing.activity.service.activity.market.MarketQueryService;
 import com.chaoxing.activity.service.blacklist.BlacklistQueryService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Controller;
@@ -27,6 +29,8 @@ public class RuleSettingController {
 
     @Resource
     private BlacklistQueryService blacklistQueryService;
+    @Resource
+    private MarketQueryService marketQueryService;
 
     /**规则配置主页
     * @Description
@@ -39,9 +43,11 @@ public class RuleSettingController {
     public String index(HttpServletRequest request, Model model, @PathVariable Integer marketId) {
         BlacklistRule blacklistRule = blacklistQueryService.getBlacklistRuleByMarketId(marketId);
         BlacklistRuleDTO blacklistRuleDto = Optional.ofNullable(blacklistRule).map(BlacklistRuleDTO::buildFromBlacklistRule).orElse(BlacklistRuleDTO.buildDefault(marketId));
+        Market market = marketQueryService.getById(marketId);
         model.addAttribute("blacklistRule", blacklistRuleDto);
         model.addAttribute("marketId", marketId);
-        return "pc/rule/setting";
+        model.addAttribute("signUpActivityLimit", Optional.ofNullable(market.getSignUpActivityLimit()).orElse(0));
+        return "pc/market/setting";
     }
 
 }

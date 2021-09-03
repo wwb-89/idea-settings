@@ -60,7 +60,7 @@ public class ActivityCreateParamDTO {
 	/** 学分 */
 	private BigDecimal credit;
 	/** 参与时长上限（小时） */
-	private Integer timeLengthUpperLimit;
+	private BigDecimal timeLengthUpperLimit;
 	/** 是否定时发布 */
 	private Boolean timingRelease;
 	/** 定时发布时间 */
@@ -85,6 +85,8 @@ public class ActivityCreateParamDTO {
 	private String originType;
 	/** 来源值 */
 	private String origin;
+	/** 来源值记录id */
+	private Integer originFormUserId;
 	/** 市场id */
 	private Integer marketId;
 	/** 模版id */
@@ -98,8 +100,14 @@ public class ActivityCreateParamDTO {
 
 	private Integer webTemplateId;
 
-	// 预览显示使用
+	/** 预览显示使用 */
 	private String activityClassifyName;
+
+	private Integer status;
+	/** 报名成功是否发送通知 */
+	private Boolean signedUpNotice;
+	/** 活动标识 */
+	private String activityFlag;
 
 
 	/** 活动组件值对象列表 */
@@ -148,6 +156,9 @@ public class ActivityCreateParamDTO {
 				.workId(getWorkId())
 				.marketId(getMarketId())
 				.templateId(getTemplateId())
+				.status(getStatus())
+				.signedUpNotice(getSignedUpNotice())
+				.activityFlag(getActivityFlag())
 				.build();
 	}
 
@@ -180,7 +191,7 @@ public class ActivityCreateParamDTO {
 				.credit(activity.getCredit())
 				.timeLengthUpperLimit(activity.getTimeLengthUpperLimit())
 				.timingRelease(activity.getTimingRelease())
-				.timingReleaseTimeStamp(Optional.ofNullable(timingReleaseTime).map(v -> timingReleaseTime.toInstant(ZoneOffset.of("+8")).toEpochMilli()).orElse(null))
+				.timingReleaseTimeStamp(timingReleaseTime == null ? null : timingReleaseTime.toInstant(ZoneOffset.of("+8")).toEpochMilli())
 				.createAreaCode(activity.getCreateAreaCode())
 				.tags(activity.getTags())
 				.openRating(activity.getOpenRating())
@@ -190,10 +201,15 @@ public class ActivityCreateParamDTO {
 				.workId(activity.getWorkId())
 				.originType(activity.getOriginType())
 				.origin(activity.getOrigin())
+				.originFormUserId(activity.getOriginFormUserId())
 				.webTemplateId(activity.getWebTemplateId())
 				.previewUrl(activity.getPreviewUrl())
 				.editUrl(activity.getEditUrl())
 				.activityClassifyName(activity.getActivityClassifyName())
+				.marketId(activity.getMarketId())
+				.templateId(activity.getTemplateId())
+				.signedUpNotice(activity.getSignedUpNotice())
+				.activityFlag(activity.getActivityFlag())
 				.build();
 	}
 

@@ -8,6 +8,7 @@
         <result column="icon_url" jdbcType="VARCHAR" property="iconUrl" />
         <result column="fid" jdbcType="INTEGER" property="fid" />
         <result column="wfw_app_id" jdbcType="INTEGER" property="wfwAppId" />
+        <result column="sign_up_activity_limit" jdbcType="INTEGER" property="signUpActivityLimit" />
         <result column="sequence" jdbcType="INTEGER" property="sequence" />
         <result column="is_deleted" jdbcType="BIT" property="deleted" />
         <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
@@ -16,7 +17,7 @@
         <result column="update_uid" jdbcType="INTEGER" property="updateUid" />
     </resultMap>
     <sql id="Base_Column_List">
-        t.id, t.name, t.icon_cloud_id, t.icon_url, t.fid, t.wfw_app_id, t.sequence, t.is_deleted, t.create_time, t.create_uid,
+        t.id, t.name, t.icon_cloud_id, t.icon_url, t.fid, t.wfw_app_id, t.sign_up_activity_limit, t.sequence, t.is_deleted, t.create_time, t.create_uid,
         t.update_time, t.update_uid
     </sql>
 
@@ -27,5 +28,18 @@
             t_market t
         WHERE
             t.fid = #{fid}
+    </select>
+
+    <select id="listMarketIdsByActivityIdFid" resultType="java.lang.Integer">
+        SELECT
+            t.id
+        FROM
+            t_market t
+        LEFT JOIN
+            t_activity_market t1 ON t1.market_id = t.id
+        WHERE
+            t.fid = #{fid}
+            AND t.is_deleted = 0
+            AND t1.activity_id = #{activityId}
     </select>
 </mapper>

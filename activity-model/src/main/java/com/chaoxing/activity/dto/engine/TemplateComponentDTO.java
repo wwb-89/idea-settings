@@ -2,6 +2,7 @@ package com.chaoxing.activity.dto.engine;
 
 import com.chaoxing.activity.model.ComponentField;
 import com.chaoxing.activity.model.SignUpCondition;
+import com.chaoxing.activity.model.SignUpFillInfoType;
 import com.google.common.collect.Lists;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -61,6 +62,8 @@ public class TemplateComponentDTO {
     private List<String> fieldValues;
 
     private SignUpCondition signUpCondition;
+
+    private SignUpFillInfoType signUpFillInfoType;
 
     private Integer originId;
 

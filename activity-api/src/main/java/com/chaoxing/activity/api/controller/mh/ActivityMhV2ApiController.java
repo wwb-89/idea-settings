@@ -25,6 +25,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import javax.annotation.Resource;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 
@@ -54,6 +55,21 @@ public class ActivityMhV2ApiController {
 	/**活动信息
 	 * @Description 
 	 * @author wwb
+	 * @Date 2021-08-25 16:14:56
+	 * @param data
+	 * @return com.chaoxing.activity.dto.RestRespDTO
+	*/
+	@RequestMapping("activity/info")
+	public RestRespDTO activityInfo(@RequestBody(required = false) String data) {
+		JSONObject params = JSON.parseObject(data);
+		Integer websiteId = params.getInteger("websiteId");
+		// 根据websiteId查询活动id
+		Activity activity = activityQueryService.getByWebsiteId(websiteId);
+		return activityInfo(activity.getId(), data);
+	}
+	/**活动信息
+	 * @Description 
+	 * @author wwb
 	 * @Date 2021-04-02 15:14:24
 	 * @param activityId
 	 * @param data
@@ -67,6 +83,7 @@ public class ActivityMhV2ApiController {
 			uid = params.getInteger("uid");
 		}
 		Activity activity = activityQueryService.getById(activityId);
+		Map<String, String> fieldCodeNameRelation = activityQueryService.getFieldCodeNameRelation(activity);
 		JSONObject jsonObject = new JSONObject();
 		MhGeneralAppResultDataDTO mhGeneralAppResultDataDTO = new MhGeneralAppResultDataDTO();
 		mhGeneralAppResultDataDTO.setType(3);
@@ -76,9 +93,9 @@ public class ActivityMhV2ApiController {
 		jsonObject.put("results", Lists.newArrayList(mhGeneralAppResultDataDTO));
 		List<MhGeneralAppResultDataDTO.MhGeneralAppResultDataFieldDTO> mhGeneralAppResultDataFields = Lists.newArrayList();
 		// 活动名称
-		mhGeneralAppResultDataFields.add(buildField("活动名称", activity.getName(), "1"));
+		mhGeneralAppResultDataFields.add(buildField(fieldCodeNameRelation.get("activity_name"), activity.getName(), "1"));
 		// 开始时间
-		mhGeneralAppResultDataFields.add(buildField("活动时间", DateTimeFormatterConstant.YYYY_MM_DD_HH_MM.format(activity.getStartTime()), "100"));
+		mhGeneralAppResultDataFields.add(buildField(fieldCodeNameRelation.get("activity_time_scope"), DateTimeFormatterConstant.YYYY_MM_DD_HH_MM.format(activity.getStartTime()), "100"));
 		// 结束时间
 		mhGeneralAppResultDataFields.add(buildField("活动结束时间", DateTimeFormatterConstant.YYYY_MM_DD_HH_MM.format(activity.getEndTime()), "101"));
 		// 报名、签到人数
@@ -89,7 +106,7 @@ public class ActivityMhV2ApiController {
 			SignStatDTO signStat = signApiService.getSignParticipation(signId);
 			if (signStat != null && CollectionUtils.isNotEmpty(signStat.getSignUpIds())) {
 				// 报名时间
-				mhGeneralAppResultDataFields.add(buildField("报名时间", DateTimeFormatterConstant.YYYY_MM_DD_HH_MM.format(signStat.getSignUpStartTime()), "102"));
+				mhGeneralAppResultDataFields.add(buildField(fieldCodeNameRelation.get("sign_up_time_scope"), DateTimeFormatterConstant.YYYY_MM_DD_HH_MM.format(signStat.getSignUpStartTime()), "102"));
 				mhGeneralAppResultDataFields.add(buildField("报名结束时间", DateTimeFormatterConstant.YYYY_MM_DD_HH_MM.format(signStat.getSignUpEndTime()), "103"));
 				Integer participateNum = signStat.getSignedUpNum();
 				String signedUpNumDescribe = String.valueOf(participateNum);
@@ -128,19 +145,10 @@ public class ActivityMhV2ApiController {
 		// 活动地点链接（线下的活动有）
 		mhGeneralAppResultDataFields.add(buildField("活动地点链接", activityAddressLink, "117"));
 		// 主办方
-		mhGeneralAppResultDataFields.add(buildField("主办方", activity.getOrganisers(), "105"));
+		mhGeneralAppResultDataFields.add(buildField(fieldCodeNameRelation.get("activity_organisers"), activity.getOrganisers(), "105"));
 		// 海报
 		mhGeneralAppResultDataFields.add(buildField("海报", "海报", "130"));
 		mhGeneralAppResultDataFields.add(buildField("海报", String.format(ActivityMhUrlConstant.ACTIVITY_POSTERS_URL, activity.getId()), "131"));
-		// 需要的flag列表
-		/*final List<String> flags = Lists.newArrayList("0", "1", "2", "3", "4", "5", "6", "100", "101", "102", "103", "104", "105", "106", "107", "108", "109", "110", "111", "112", "113", "114", "115", "116", "117", "118", "130", "131");
-		Map<String, MhGeneralAppResultDataDTO.MhGeneralAppResultDataFieldDTO> flagFieldRelation = mhGeneralAppResultDataFields.stream().collect(Collectors.toMap(MhGeneralAppResultDataDTO.MhGeneralAppResultDataFieldDTO::getFlag, v -> v, (v1, v2) -> v2));
-		mhGeneralAppResultDataFields = Lists.newArrayList();
-		for (String flag : flags) {
-			MhGeneralAppResultDataDTO.MhGeneralAppResultDataFieldDTO field = flagFieldRelation.get(flag);
-			field = Optional.ofNullable(field).orElse(buildField("", "", flag));
-			mhGeneralAppResultDataFields.add(field);
-		}*/
 		mhGeneralAppResultDataDTO.setFields(mhGeneralAppResultDataFields);
 		return RestRespDTO.success(jsonObject);
 	}

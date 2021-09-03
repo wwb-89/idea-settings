@@ -16,7 +16,7 @@
     </style>
 </head>
 <body>
-    <div class="personGrade" id="personGrade" v-cloak>
+    <div class="personGrade" id="vm" v-cloak>
         <div class="content">
             <div class="white-block header">
                 <div class="head-img">
@@ -43,7 +43,7 @@
                             </div>
                         </div>
                         <div class="right">
-                            <p class="title">{{ action.createTime | timestampFormat }}&nbsp;&nbsp;·&nbsp;&nbsp;{{action.title}}</p>
+                            <p class="title">{{ action.createTime | timestampFormat }}</p>
                             <div class="item">
                                 <div class="item-img">
                                     <img :src="ctx + '/pc/assets/images/' + getActionIcon(action)">
@@ -64,8 +64,7 @@
                                         <div class="description" v-if="action.remark" v-html="action.remark"></div>
                                     </template>
                                 </div>
-                                <p class="score under" v-if="action.actionDescription">{{action.actionDescription}}</p>
-
+                                <p :class="{'score': true, 'under': ('leave_signed_in' == action.action)}" v-if="action.actionDescription">{{action.actionDescription}}</p>
                             </div>
                         </div>
                     </div>
@@ -138,8 +137,8 @@
                 var dateObj = moment(timestamp);
                 return dateObj.format("YYYY.MM.DD HH:mm");
             });
-            var personGrade = new Vue({
-                el: '#personGrade',
+            vm = new Vue({
+                el: '#vm',
                 data: {
                     ctx: ctx,
                     uid: [[${uid}]],

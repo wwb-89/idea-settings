@@ -8,6 +8,7 @@ import com.chaoxing.activity.model.Template;
 import com.chaoxing.activity.model.TemplateComponent;
 import com.google.common.collect.Lists;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 
@@ -65,11 +66,23 @@ public class TemplateQueryService {
 	 * @return java.lang.Integer
 	*/
 	public Integer getSystemTemplateIdByActivityFlag(Activity.ActivityFlagEnum activityFlagEnum) {
+		Template template = getSystemTemplateByActivityFlag(activityFlagEnum);
+		return template == null ? null : template.getId();
+	}
+
+	/**根据活动标识查询系统模版
+	* @Description 
+	* @author huxiaolong
+	* @Date 2021-08-25 14:45:22
+	* @param activityFlagEnum
+	* @return com.chaoxing.activity.model.Template
+	*/
+	public Template getSystemTemplateByActivityFlag(Activity.ActivityFlagEnum activityFlagEnum) {
 		List<Template> systemTemplates = templateMapper.selectList(new LambdaQueryWrapper<Template>()
 				.eq(Template::getSystem, true)
 				.eq(Template::getActivityFlag, activityFlagEnum.getValue())
 		);
-		return Optional.ofNullable(systemTemplates).orElse(Lists.newArrayList()).stream().findFirst().map(Template::getId).orElse(null);
+		return Optional.ofNullable(systemTemplates).orElse(Lists.newArrayList()).stream().findFirst().orElse(null);
 	}
 
 	/**根据模版id查询模版组件关联
@@ -82,6 +95,7 @@ public class TemplateQueryService {
 	public List<TemplateComponent> listTemplateComponentByTemplateId(Integer templateId) {
 		return templateComponentMapper.selectList(new LambdaQueryWrapper<TemplateComponent>()
 				.eq(TemplateComponent::getTemplateId, templateId)
+				.eq(TemplateComponent::getDeleted, false)
 		);
 	}
 
@@ -101,7 +115,10 @@ public class TemplateQueryService {
 				.eq(Template::getOriginTemplateId, systemTemplateId)
 				.eq(Template::getFid, fid)
 		);
-		return Optional.ofNullable(orgTemplates).orElse(Lists.newArrayList()).stream().findFirst().orElse(null);
+		if (CollectionUtils.isEmpty(orgTemplates)) {
+			return null;
+		}
+		return orgTemplates.get(orgTemplates.size() - 1);
 	}
 
 	/**当templateId存在时，根据templateId查找；否则根据flag查找系统模板
@@ -131,13 +148,17 @@ public class TemplateQueryService {
 	 * @return com.chaoxing.activity.model.Template
 	*/
 	public Template getTemplateByMarketIdOrActivityFlag(Integer marketId, Activity.ActivityFlagEnum activityFlagEnum) {
-		if (marketId == null) {
+		Template template = null;
+		if (marketId != null) {
+			template = getMarketFirstTemplate(marketId);
+		}
+		if (template == null) {
 			List<Template> systemTemplates = templateMapper.selectList(new LambdaQueryWrapper<Template>()
 					.eq(Template::getSystem, true)
 					.eq(Template::getActivityFlag, activityFlagEnum.getValue()));
-			return Optional.ofNullable(systemTemplates).orElse(Lists.newArrayList()).stream().findFirst().orElse(null);
+			template = Optional.ofNullable(systemTemplates).orElse(Lists.newArrayList()).stream().findFirst().orElse(null);
 		}
-		return getMarketFirstTemplate(marketId);
+		return template;
 	}
 
 	/**获取活动市场第一个模板
@@ -180,4 +201,32 @@ public class TemplateQueryService {
 				.eq(TemplateComponent::getPid, templateComponentId));
 	}
 
+	/**通过fid，活动标识查询模板，根据模板获取市场id
+	* @Description
+	* @author huxiaolong
+	* @Date 2021-09-01 11:52:12
+	* @param fid
+	* @param activityFlag
+	* @return java.lang.Integer
+	*/
+	public Integer getMarketIdByTemplate(Integer fid, String activityFlag) {
+		Activity.ActivityFlagEnum activityFlagEnum = Activity.ActivityFlagEnum.fromValue(activityFlag);
+		if (activityFlagEnum == null) {
+			return null;
+		}
+		Template template = getOrgTemplateByActivityFlag(fid, activityFlagEnum);
+		return Optional.ofNullable(template).map(Template::getMarketId).orElse(null);
+	}
+
+	/**判断模板是否存在报名组件
+	* @Description 
+	* @author huxiaolong
+	* @Date 2021-09-02 19:41:40
+	* @param templateId
+	* @return boolean
+	*/
+    public boolean exitSignUpComponent(Integer templateId) {
+    	int count = templateComponentMapper.countTemplateSignUp(templateId);
+    	return count > 0;
+    }
 }

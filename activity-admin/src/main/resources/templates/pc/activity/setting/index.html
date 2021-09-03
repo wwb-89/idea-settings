@@ -20,7 +20,7 @@
 <div class="page-container" id="vue" v-cloak>
     <div class="activity-tab flex">
         <ul class="flex">
-            <li v-for="(item,index) in tabs" :key="'tab-' + index" :class="{active: item.active}" @click="tabChange(index)">
+            <li v-for="(item,index) in tabs" v-if="item.show" :key="'tab-' + index" :class="{active: item.active}" @click="tabChange(index)">
                 {{item.name}}
             </li>
         </ul>
@@ -42,16 +42,18 @@
             data: function () {
                 return {
                     url: "",
-                    tabs:[
-                        {name:'管理员设置', url: ctx + "/activity/[[${activityId}]]/manager", active: true},
-                        {name:'报名设置', url: ctx + "/activity/[[${activityId}]]/setting/sign-up", active: false},
-                        {name:'基本信息', url: ctx + "/activity/[[${activityId}]]/setting/basic-info/view", active: false},
-                        {name:'模块设置', url: ctx + "/activity/[[${activityId}]]/setting/menu", active: false},
-                    ]
+                    tabs:[]
                 }
             },
             created: function () {
+                var $this = this;
                 document.domain = "chaoxing.com";
+                $this.tabs.pushArray([
+                    {name:'基本信息', url: ctx + "/activity/[[${activityId}]]/setting/basic-info/view", active: true, show: true},
+                    {name:'报名设置', url: ctx + "/activity/[[${activityId}]]/setting/sign-up", active: false, show: [[${openSignUp}]]},
+                    {name:'管理员设置', url: ctx + "/activity/[[${activityId}]]/manager", active: false, show: true},
+                    {name:'模块设置', url: ctx + "/activity/[[${activityId}]]/setting/menu", active: false, show: true}
+                ])
             },
             mounted: function () {
                 var $this = this;

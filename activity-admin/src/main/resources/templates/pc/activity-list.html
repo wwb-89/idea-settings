@@ -171,8 +171,7 @@
                         >
                         </el-table-column>
                     </template>
-                    <el-table-column label="操作" fixed="right"
-                                     min-width="180">
+                    <el-table-column label="操作" fixed="right" min-width="180">
                         <template slot-scope="scope">
                             <div class="more-three-link">
                                 <el-button type="text" v-if="index < 3" v-for="(operation, index) of scope.row.operations" :key="'operation-' + index" @click="operateProxy(scope.row, operation.value)">{{operation.name}}</el-button>
@@ -181,7 +180,7 @@
                                         <img src="/static/pc/assets/images/more-vertical2.png" th:src="@{/pc/assets/images/more-vertical2.png}">
                                       </span>
                                     <el-dropdown-menu slot="dropdown">
-                                        <el-dropdown-item v-if="index > 2" v-for="(operation, index) of scope.row.operations" :key="'operation-' + index"><p @click="operateProxy(scope.row, operation.value)">{{operation.name}}</p></el-dropdown-item>
+                                        <el-dropdown-item v-if="index > 2" v-for="(operation, index) of scope.row.operations" :key="'operation-' + index" @click.native="operateProxy(scope.row, operation.value)">{{operation.name}}</el-dropdown-item>
                                     </el-dropdown-menu>
                                 </el-dropdown>
                             </div>
@@ -236,6 +235,7 @@
                     pageNum: 1,
                     pageSize: 8,
                     status: "",
+                    activityFlag: [[${flag}]],
                     // 严格模式 只查询自己创建的
                     strict: [[${strict}]],
                     sw: "",
@@ -253,6 +253,9 @@
                     edit: {name: "编辑", value: "edit"},
                     delete: {name: "删除", value: "delete"},
                     manage: {name: "管理", value: "manage"},
+                    setTop: {name: "置顶", value: "setTop"},
+                    cancelSetTop: {name: "取消置顶", value: "cancelSetTop"},
+                    configPage: {name: "页面配置", value: "configPage"},
                     release: {name: "发布", value: "release"},
                     cancelRelease: {name: "下架", value: "cancelRelease"},
                     dualSelectStatExport: {name: "导出投递数据", value: "dualSelectStatExport"}
@@ -291,7 +294,6 @@
                 var operateH = $('.operate-box').height();
                 $this.tbodyHeight = $this.bodyHeight - (headH + operateH + 48 + 16 + 32);
 
-                $this.bindEvents();
                 $this.loadData();
                 $this.reSortSettingData();
                 // 监听活动的创建，当创建或者编辑活动后重新加载数据
@@ -300,18 +302,6 @@
                 });
             },
             methods: {
-                bindEvents: function () {
-                    $(document).on("click", ".status", function () {
-                        $('.filters').toggle();
-                        $('.el-down').toggleClass('rotate')
-                    });
-                    $(document).on("mouseover", ".manage-more-btn", function () {
-                        $(this).children('.more').show();
-                    });
-                    $(document).on("mouseout", ".manage-more-btn", function () {
-                        $(this).children('.more').hide();
-                    });
-                },
                 // 处理操作顺序
                 handleOperationSequence: function (activities) {
                     var $this = this;
@@ -370,6 +360,22 @@
                                     }
                                     break;
                                 default:
+                            }
+                            if (manager) {
+                                activity.operations.push($this.operations.configPage);
+                            }
+                            if ($this.marketId) {
+                                if (activity.top) {
+                                    activity.operations.push($this.operations.cancelSetTop);
+                                } else {
+                                    activity.operations.push($this.operations.setTop);
+                                }
+                                var existDeletes = $.grep(activity.operations, function (it) {
+                                    return it.value == "delete";
+                                });
+                                if (!existDeletes || existDeletes.length === 0) {
+                                    activity.operations.push($this.operations.delete);
+                                }
                             }
                         });
                     }
@@ -494,6 +500,15 @@
                         case "dualSelectStatExport":
                             $this.toDualSelectStatExport(id, activity.createFid);
                             break;
+                        case "setTop":
+                            $this.toSetTop(id, activity.createFid);
+                            break;
+                        case "cancelSetTop":
+                            $this.cancelSetTop(id, activity.createFid);
+                            break;
+                        case "configPage":
+                            $this.configPage(activity);
+                            break;
                         default:
                     }
                 },
@@ -505,7 +520,8 @@
                 },
                 deleteSubmit: function () {
                     var $this = this;
-                    var url = ctx + "/api/activity/" + $this.operateActivityId + "/delete"
+                    var marketId = $this.marketId || "";
+                    var url = ctx + "/api/activity/" + $this.operateActivityId + "/delete/?marketId=" + marketId;
                     app.ajaxPostWithLoading(url, {}, function (data) {
                         if (data.success) {
                             $this.$refs.deleteWindow.show = false;
@@ -541,7 +557,8 @@
                         return;
                     }
                     $this.$refs.releaseWindow.show = false;
-                    var url = ctx + "/api/activity/" + $this.operateActivityId + "/release";
+                    var marketId = $this.marketId || "";
+                    var url = ctx + "/api/activity/" + $this.operateActivityId + "/release/?marketId=" + marketId;
                     app.ajaxPostWithLoading(url, {}, function (data) {
                         if (data.success) {
                             app.showMsg("发布成功", function () {
@@ -582,6 +599,42 @@
                     var url = ctx + "/activity/" + $this.operateActivityId + "/edit?step=2";
                     window.open(url);
                 },
+                toSetTop: function (activityId) {
+                    var $this = this;
+                    var marketId = $this.marketId || "";
+                    var url = ctx + "/api/activity/" + activityId + "/set-top/?marketId=" + marketId;
+                    app.ajaxPostWithLoading(url, {}, function (data) {
+                        if (data.success) {
+                            $this.loadData();
+                        } else {
+                            var errorMessage = data.message;
+                            if (activityApp.isEmpty(errorMessage)) {
+                                errorMessage = "置顶失败";
+                            }
+                            app.showMsg(errorMessage);
+                        }
+                    }, function () {
+                        app.showMsg("置顶失败");
+                    });
+                },
+                cancelSetTop: function (activityId) {
+                    var $this = this;
+                    var marketId = $this.marketId || "";
+                    var url = ctx + "/api/activity/" + activityId + "/cancel-top/?marketId=" + marketId;
+                    app.ajaxPostWithLoading(url, {}, function (data) {
+                        if (data.success) {
+                            $this.loadData();
+                        } else {
+                            var errorMessage = data.message;
+                            if (activityApp.isEmpty(errorMessage)) {
+                                errorMessage = "取消置顶失败";
+                            }
+                            app.showMsg(errorMessage);
+                        }
+                    }, function () {
+                        app.showMsg("取消置顶失败");
+                    });
+                },
                 toCancelRelease: function (id) {
                     var $this = this;
                     $this.operateActivityId = id;
@@ -590,7 +643,8 @@
                 cancelRelease: function () {
                     var $this = this;
                     $this.$refs.canReleaseWindow.show = false;
-                    var url = ctx + "/api/activity/" + $this.operateActivityId + "/release/cancel";
+                    var marketId = $this.marketId || "";
+                    var url = ctx + "/api/activity/" + $this.operateActivityId + "/release/cancel/?marketId=" + marketId;
                     app.ajaxPostWithLoading(url, {}, function (data) {
                         if (data.success) {
                             app.showMsg("下架成功", function () {

@@ -1,6 +1,6 @@
 package com.chaoxing.activity.task.activity;
 
-import com.chaoxing.activity.service.activity.ActivityIsAboutStartHandleService;
+import com.chaoxing.activity.service.activity.UserSignedUpNoticeHandleService;
 import com.chaoxing.activity.service.queue.activity.ActivityIsAboutToStartQueueService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -23,7 +23,7 @@ public class ActivityIsAboutToStartTask {
 	@Resource
 	private ActivityIsAboutToStartQueueService activityIsAboutToStartQueueService;
 	@Resource
-	private ActivityIsAboutStartHandleService activityIsAboutStartHandleService;
+	private UserSignedUpNoticeHandleService activityIsAboutStartHandleService;
 
 	/**活动即将开始
 	 * @Description 

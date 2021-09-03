@@ -19,7 +19,6 @@ import com.chaoxing.activity.service.activity.menu.ActivityMenuService;
 import com.chaoxing.activity.service.activity.scope.ActivityScopeQueryService;
 import com.chaoxing.activity.service.manager.module.SignApiService;
 import com.chaoxing.activity.util.UserAgentUtils;
-import com.google.common.collect.Lists;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -30,6 +29,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 /**
@@ -74,7 +74,9 @@ public class ActivityManageController {
 	public String activityIndex(Model model, @PathVariable Integer activityId, HttpServletRequest request) {
 		LoginUserDTO loginUser = LoginUtils.getLoginUser(request);
 		Integer operateUid = loginUser.getUid();
-		Activity activity = activityValidationService.manageAble(activityId, operateUid);
+//		todo 暂时屏蔽校验
+//		Activity activity = activityValidationService.manageAble(activityId, operateUid);
+		Activity activity = activityValidationService.activityExist(activityId);
 		model.addAttribute("activity", activity);
 		Integer signId = activity.getSignId();
 		SignActivityManageIndexDTO signActivityManageIndex = signApiService.statSignActivityManageIndex(signId);
@@ -116,21 +118,14 @@ public class ActivityManageController {
 		Integer signId = activity.getSignId();
 		SignCreateParamDTO sign = SignCreateParamDTO.builder().build();
 		if (signId != null) {
-			sign = signApiService.getById(signId);
+			sign = signApiService.getCreateById(signId);
 		}
 		model.addAttribute("sign", sign);
-		// 模板列表，如果选择过模版就查询选择的模版，否则查询可用的模版
+		// 模板列表，使用的模版和可选的模版
 		Integer webTemplateId = activity.getWebTemplateId();
-		List<WebTemplate> webTemplates;
-		if (webTemplateId != null) {
-			webTemplates = Lists.newArrayList();
-			WebTemplate webTemplate = webTemplateService.getById(webTemplateId);
-			if (webTemplate != null) {
-				webTemplates.add(webTemplate);
-			}
-		} else {
-			webTemplates = webTemplateService.listAvailable(loginUser.getFid(), activity.getActivityFlag());
-		}
+		WebTemplate usedWebTemplate = Optional.ofNullable(webTemplateId).map(v -> webTemplateService.getById(v)).orElse(null);
+		model.addAttribute("usedWebTemplate", usedWebTemplate);
+		List<WebTemplate> webTemplates = webTemplateService.listAvailable(loginUser.getFid(), activity.getActivityFlag());
 		model.addAttribute("webTemplates", webTemplates);
 		// 活动发布范围
 		List<WfwAreaDTO> wfwRegionalArchitectures = activityScopeQueryService.listByActivityId(activityId);

@@ -126,7 +126,9 @@ public class ActivityStatQueryService {
 	*/
 	public ActivityStatDTO activityStat(Integer activityId, LoginUserDTO loginUser) {
 		ActivityStatDTO activityStat = ActivityStatDTO.buildDefault();
-		Activity activity = activityValidationService.manageAble(activityId, loginUser.getUid());
+//		todo 暂时屏蔽校验
+//		Activity activity = activityValidationService.manageAble(activityId, loginUser.getUid());
+		Activity activity = activityValidationService.activityExist(activityId);
 		return activityStat(activityStat, activity);
 	}
 

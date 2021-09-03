@@ -3,9 +3,10 @@ package com.chaoxing.activity.service.user.action;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.chaoxing.activity.dto.UserGradeDTO;
 import com.chaoxing.activity.dto.manager.PassportUserDTO;
-import com.chaoxing.activity.dto.manager.sign.create.SignCreateParamDTO;
+import com.chaoxing.activity.dto.manager.sign.SignDTO;
+import com.chaoxing.activity.dto.manager.sign.SignInDTO;
+import com.chaoxing.activity.dto.manager.sign.SignUpDTO;
 import com.chaoxing.activity.dto.manager.sign.create.SignInCreateParamDTO;
-import com.chaoxing.activity.dto.manager.sign.create.SignUpCreateParamDTO;
 import com.chaoxing.activity.mapper.UserActionRecordMapper;
 import com.chaoxing.activity.model.*;
 import com.chaoxing.activity.service.activity.ActivityQueryService;
@@ -97,12 +98,12 @@ public class UserActionRecordQueryService {
 		List<UserActionRecord> userActionRecords = listUserValidActionRecord(uid, activityId);
 
 		// 获取报名签到信息
-		SignCreateParamDTO signCreateParam = signApiService.getById(activity.getSignId());
-		List<SignUpCreateParamDTO> signUps = signCreateParam.getSignUps();
-		List<SignInCreateParamDTO> signIns = signCreateParam.getSignIns();
+		SignDTO sign = signApiService.getById(activity.getSignId());
+		List<SignUpDTO> signUps = sign.getSignUps();
+		List<SignInDTO> signIns = sign.getSignIns();
 
-		Map<Integer, SignUpCreateParamDTO> signUpMap = signUps.stream().collect(Collectors.toMap(SignUpCreateParamDTO::getId, v -> v, (v1, v2) -> v2));
-		Map<Integer, SignInCreateParamDTO> signInMap = signIns.stream().collect(Collectors.toMap(SignInCreateParamDTO::getId, v -> v, (v1, v2) -> v2));
+		Map<Integer, SignUpDTO> signUpMap = signUps.stream().collect(Collectors.toMap(SignUpDTO::getId, v -> v, (v1, v2) -> v2));
+		Map<Integer, SignInDTO> signInMap = signIns.stream().collect(Collectors.toMap(SignInDTO::getId, v -> v, (v1, v2) -> v2));
 
 
 		List<Integer> ratingDetailIds = Lists.newArrayList();
@@ -133,12 +134,12 @@ public class UserActionRecordQueryService {
 				record.setName(userActionType.getName());
 				switch (userActionType) {
 					case SIGN_IN:
-						SignInCreateParamDTO signIn = signInMap.get(identityId);
+						SignInDTO signIn = signInMap.get(identityId);
 						record.setWay(Optional.ofNullable(signIn).map(v -> SignInCreateParamDTO.Way.fromValue(v.getWay())).map(SignInCreateParamDTO.Way::getValue).orElse(null));
-						record.setName(Optional.ofNullable(signIn).map(SignInCreateParamDTO::getName).orElse(""));
+						record.setName(Optional.ofNullable(signIn).map(SignInDTO::getName).orElse(""));
 						break;
 					case SIGN_UP:
-						record.setName(Optional.ofNullable(signUpMap.get(identityId)).map(SignUpCreateParamDTO::getName).orElse(""));
+						record.setName(Optional.ofNullable(signUpMap.get(identityId)).map(SignUpDTO::getName).orElse(""));
 						break;
 					case RATING:
 						record.setRatingDetail(ratingDetailMap.get(identityId));

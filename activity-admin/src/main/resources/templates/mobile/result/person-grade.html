@@ -40,10 +40,10 @@
                         <img class="left-icon" :src="ctx + '/mobile/assets/images/' + getActionIcon(action)">
                         <div class="left-line"></div>
                         <div class="info">
-                            <p class="time">{{ action.createTime | timestampFormat }}&nbsp;&nbsp;·&nbsp;&nbsp;{{action.title}}</p>
+                            <p class="time">{{ action.createTime | timestampFormat }}</p>
                             <div class="name">
                                 <p v-if="action.actionType !== 'rating'">{{action.name}}</p>
-                                <span class="color-red">{{action.actionDescription}}</span>
+                                <span :class="{'color-red': ('leave_signed_in' == action.action)}">{{action.actionDescription}}</span>
                             </div>
                             <template v-if="action.actionType === 'rating' && action.ratingDetail">
                                 <div class="star-box" data-name="star-box" :data-index="index"></div>

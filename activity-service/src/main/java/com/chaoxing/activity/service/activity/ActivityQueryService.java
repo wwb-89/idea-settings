@@ -4,6 +4,7 @@ import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.chaoxing.activity.dto.LoginUserDTO;
 import com.chaoxing.activity.dto.activity.ActivityComponentValueDTO;
@@ -20,8 +21,10 @@ import com.chaoxing.activity.dto.query.MhActivityCalendarQueryDTO;
 import com.chaoxing.activity.mapper.*;
 import com.chaoxing.activity.model.*;
 import com.chaoxing.activity.service.activity.classify.ClassifyQueryService;
+import com.chaoxing.activity.service.activity.component.ComponentQueryService;
 import com.chaoxing.activity.service.activity.engine.ActivityComponentValueService;
 import com.chaoxing.activity.service.activity.manager.ActivityManagerQueryService;
+import com.chaoxing.activity.service.activity.template.TemplateQueryService;
 import com.chaoxing.activity.service.manager.module.SignApiService;
 import com.chaoxing.activity.service.manager.wfw.WfwAreaApiService;
 import com.chaoxing.activity.util.DateUtils;
@@ -73,12 +76,16 @@ public class ActivityQueryService {
 	@Resource
 	private ClassifyQueryService classifyQueryService;
 	@Resource
+	private TemplateQueryService templateQueryService;
+	@Resource
 	private TableFieldDetailMapper tableFieldDetailMapper;
 
 	@Resource
 	private ActivityComponentValueService activityComponentValueService;
 	@Resource
 	private SignUpConditionEnableMapper signUpConditionEnableMapper;
+	@Resource
+	private ComponentQueryService componentQueryService;
 
 	/**查询参与的活动
 	 * @Description 
@@ -226,17 +233,27 @@ public class ActivityQueryService {
 	public Page<Activity> listManaging(Page<Activity> page, ActivityManageQueryDTO activityManageQuery, LoginUserDTO loginUser) {
 		Integer strict = Optional.ofNullable(activityManageQuery.getStrict()).orElse(0);
 		activityManageQuery.setOrderField(Optional.ofNullable(activityManageQuery.getOrderFieldId()).map(tableFieldDetailMapper::selectById).map(TableFieldDetail::getCode).orElse(""));
+		Integer marketId = activityManageQuery.getMarketId();
+		if (marketId == null) {
+			marketId = templateQueryService.getMarketIdByTemplate(activityManageQuery.getFid(), activityManageQuery.getActivityFlag());
+		}
 		if (strict.compareTo(1) == 0) {
 			// 严格模式
 			activityManageQuery.setCreateUid(loginUser.getUid());
 			activityManageQuery.setCreateWfwfid(activityManageQuery.getFid());
-			page = activityMapper.pageCreated(page, activityManageQuery);
+			if (marketId == null) {
+				page = activityMapper.pageCreated(page, activityManageQuery);
+			} else {
+				page = activityMapper.pageCreatedByMarket(page, activityManageQuery);
+			}
 		} else {
-			if (activityManageQuery.getMarketId() == null) {
+			if (marketId == null) {
 				List<Integer> fids = wfwAreaApiService.listSubFid(activityManageQuery.getFid());
 				activityManageQuery.setFids(fids);
+				page = activityMapper.pageManaging(page, activityManageQuery);
+			} else {
+				page = activityMapper.pageManagingByMarket(page, activityManageQuery);
 			}
-			page = activityMapper.pageManaging(page, activityManageQuery);
 		}
 		List<Activity> activities = page.getRecords();
 		// 封装报名的数量
@@ -285,12 +302,17 @@ public class ActivityQueryService {
 	 * @author wwb
 	 * @Date 2021-04-08 18:00:51
 	 * @param page
-	 * @param uid
 	 * @param sw
 	 * @return com.baomidou.mybatisplus.extension.plugins.pagination.Page<com.chaoxing.activity.model.Activity>
 	*/
-	public Page<Activity> pageManaged(Page<Activity> page, Integer uid, String sw) {
-		return activityMapper.pageUserManaged(page, uid, sw);
+	public Page<Activity> pageManaged(Page<Activity> page, LoginUserDTO loginUser, String sw, String flag) {
+		Integer marketId = templateQueryService.getMarketIdByTemplate(loginUser.getFid(), flag);
+		// 若flag不为空且市场id不存在，则查询结果为空
+		if (StringUtils.isNotBlank(flag) && marketId == null) {
+			page.setRecords(Lists.newArrayList());
+			return page;
+		}
+		return activityMapper.pageUserMarketManaged(page, loginUser.getUid(), sw, marketId);
 	}
 
 	/**根据活动id查询活动
@@ -370,7 +392,9 @@ public class ActivityQueryService {
 	 * @param sw
 	 * @return com.baomidou.mybatisplus.extension.plugins.pagination.Page
 	*/
-	public Page pageSignedUp(Page page, Integer uid, String sw) {
+	public Page pageSignedUp(Page page, LoginUserDTO loginUser, String sw, String flag) {
+		Integer uid = loginUser.getUid();
+		Integer fid = loginUser.getFid();
 		page = signApiService.pageUserSignedUp(page, uid, sw);
 		List records = page.getRecords();
 		if (CollectionUtils.isNotEmpty(records)) {
@@ -383,7 +407,13 @@ public class ActivityQueryService {
 				signIdSignedUpMap.put(signedUp.getSignId(), signedUp);
 			}
 			List<ActivitySignedUpDTO> activitySignedUps = Lists.newArrayList();
-			List<Activity> activities = activityMapper.listBySignIds(signIds);
+			Integer marketId = templateQueryService.getMarketIdByTemplate(fid, flag);
+			// 若flag不为空且市场id不存在，则查询结果为空
+			if (StringUtils.isNotBlank(flag) && marketId == null) {
+				page.setRecords(Lists.newArrayList());
+				return page;
+			}
+			List<Activity> activities = activityMapper.listByMarketSignIds(signIds, marketId);
 			if (CollectionUtils.isNotEmpty(activities)) {
 				for (Activity activity : activities) {
 					ActivitySignedUpDTO activitySignedUp = new ActivitySignedUpDTO();
@@ -412,8 +442,14 @@ public class ActivityQueryService {
 	 * @param sw
 	 * @return com.baomidou.mybatisplus.extension.plugins.pagination.Page<com.chaoxing.activity.model.Activity>
 	*/
-	public Page<Activity> pageCollected(Page page, Integer uid, String sw) {
-		return activityMapper.pageCollectedActivityId(page, uid, sw);
+	public Page<Activity> pageCollected(Page page, LoginUserDTO loginUser, String sw, String flag) {
+		Integer marketId = templateQueryService.getMarketIdByTemplate(loginUser.getFid(), flag);
+		// 若flag不为空且市场id不存在，则查询结果为空
+		if (StringUtils.isNotBlank(flag) && marketId == null) {
+			page.setRecords(Lists.newArrayList());
+			return page;
+		}
+		return activityMapper.pageMarketCollectedActivityId(page, loginUser.getUid(), sw, marketId);
 	}
 
 	/**获取活动管理url
@@ -622,7 +658,7 @@ public class ActivityQueryService {
 		if (signId == null) {
 			return null;
 		}
-		SignCreateParamDTO signCreateParam = signApiService.getById(signId);
+		SignCreateParamDTO signCreateParam = signApiService.getCreateById(signId);
 		List<SignUpCreateParamDTO> signUps = Optional.ofNullable(signCreateParam).map(SignCreateParamDTO::getSignUps).orElse(Lists.newArrayList());
 		if (CollectionUtils.isEmpty(signUps)) {
 			return null;
@@ -730,4 +766,103 @@ public class ActivityQueryService {
 		createParamDTO.setSucTemplateComponentIds(signUpConditionEnables);
 		return createParamDTO;
 	}
+
+	/**根据报名签到id列表和活动市场id统计正在进行中的活动数量
+	 * @Description 
+	 * @author wwb
+	 * @Date 2021-08-18 18:20:04
+	 * @param marketId
+	 * @param signIds
+	 * @return java.lang.Integer
+	*/
+	public Integer countIngActivityNumBySignIds(Integer marketId, List<Integer> signIds) {
+		return activityMapper.selectCount(new LambdaQueryWrapper<Activity>()
+				.eq(Activity::getMarketId, marketId)
+				.in(Activity::getSignId, signIds)
+				.ne(Activity::getStatus, Activity.StatusEnum.ENDED.getValue())
+		);
+	}
+
+	/**获取活动的字段code与名称的关系
+	 * @Description 
+	 * @author wwb
+	 * @Date 2021-08-18 20:11:10
+	 * @param activityId
+	 * @return java.util.Map<java.lang.String,java.lang.String>
+	*/
+	public Map<String, String> getFieldCodeNameRelation(Integer activityId) {
+		Activity activity = getById(activityId);
+		return getFieldCodeNameRelation(activity);
+	}
+
+	/**获取活动的字段code与名称的关系
+	 * @Description 
+	 * @author wwb
+	 * @Date 2021-08-18 20:16:42
+	 * @param activity
+	 * @return java.util.Map<java.lang.String,java.lang.String>
+	*/
+	public Map<String, String> getFieldCodeNameRelation(Activity activity) {
+		// 系统组件code与名称的关联
+		Map<String, String> fieldCodeNameRelation = componentQueryService.getSystemComponentCodeNameRelation();
+		if (activity == null) {
+			return fieldCodeNameRelation;
+		}
+		Integer templateId = activity.getTemplateId();
+		if (templateId == null) {
+			String activityFlag = activity.getActivityFlag();
+			templateId = templateQueryService.getSystemTemplateIdByActivityFlag(Activity.ActivityFlagEnum.fromValue(activityFlag));
+		}
+		if (templateId == null) {
+			return fieldCodeNameRelation;
+		}
+		// 查询模版关联的组件
+		List<TemplateComponent> templateComponents = templateQueryService.listTemplateComponentByTemplateId(templateId);
+		Map<Integer, String> componentIdNameRelation = templateComponents.stream().collect(Collectors.toMap(TemplateComponent::getComponentId, TemplateComponent::getName, (v1, v2) -> v2));
+		// 没有关联的组件使用系统默认组件的名称来填充
+		List<Integer> componentIds = Optional.ofNullable(templateComponents).orElse(Lists.newArrayList()).stream().map(TemplateComponent::getComponentId).collect(Collectors.toList());
+		Map<Integer, String> componentIdCodeRelation;
+		if (CollectionUtils.isNotEmpty(componentIds)) {
+			List<Component> components = componentQueryService.listByIds(componentIds);
+			componentIdCodeRelation = components.stream().collect(Collectors.toMap(Component::getId, v -> StringUtils.isBlank(v.getCode()) ? "" : v.getCode()));
+		} else {
+			componentIdCodeRelation = Maps.newHashMap();
+		}
+		componentIdCodeRelation.forEach((k, v) -> {
+			fieldCodeNameRelation.put(v, componentIdNameRelation.get(k));
+		});
+		return fieldCodeNameRelation;
+	}
+
+	/**判断是否存在表单创建的活动
+	* @Description
+	* @author huxiaolong
+	* @Date 2021-08-26 16:42:46
+	* @param formId
+	* @param formUserId
+	* @return boolean
+	*/
+    public Activity getActivityByOriginAndFormUserId(Integer formId, Integer formUserId) {
+    	if (formId == null || formUserId == null) {
+    		return null;
+		}
+    	return activityMapper.selectList(new LambdaQueryWrapper<Activity>().eq(Activity::getOrigin, formId).eq(Activity::getOriginFormUserId, formUserId)).stream().findFirst().orElse(null);
+    }
+
+    /**查询机构创建的作品征集列表（未删除的活动）
+     * @Description 
+     * @author wwb
+     * @Date 2021-09-02 10:51:30
+     * @param fid
+     * @return java.util.List<java.lang.Integer>
+    */
+	public List<Integer> listOrgCreatedWorkId(Integer fid) {
+		List<Activity> onlyWorkIds = activityMapper.selectList(new LambdaQueryWrapper<Activity>()
+				.eq(Activity::getCreateFid, fid)
+				.ne(Activity::getStatus, Activity.StatusEnum.DELETED.getValue())
+				.select(Activity::getWorkId)
+		);
+		return Optional.ofNullable(onlyWorkIds).orElse(Lists.newArrayList()).stream().map(Activity::getWorkId).filter(v -> v != null).collect(Collectors.toList());
+	}
+
 }

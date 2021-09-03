@@ -44,6 +44,8 @@ public class Market {
     private Integer fid;
     /** 微服务应用id; column: wfw_app_id*/
     private Integer wfwAppId;
+    /** 同时报名活动数限制; column: sign_up_activity_limit*/
+    private Integer signUpActivityLimit;
     /** 顺序; column: sequence*/
     private Integer sequence;
     /** 是否被删除; column: is_deleted*/
@@ -86,6 +88,18 @@ public class Market {
 
     public String buildMarketmanageUrl() {
         return "http://manage.hd.chaoxing.com/market/" + getId();
+    }
+
+    public static Market cloneMarket(Market originMarket, Integer fid) {
+        return Market.builder()
+                .name(originMarket.getName())
+                .iconCloudId(originMarket.getIconCloudId())
+                .iconUrl(originMarket.getIconUrl())
+                .signUpActivityLimit(originMarket.getSignUpActivityLimit())
+                .fid(fid)
+                .sequence(originMarket.getSequence())
+                .deleted(originMarket.getDeleted())
+                .build();
     }
 
 }

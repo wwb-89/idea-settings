@@ -1,6 +1,7 @@
 package com.chaoxing.activity.api.vo;
 
 import com.chaoxing.activity.dto.manager.sign.UserSignUpDTO;
+import com.chaoxing.activity.util.DateUtils;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -35,7 +36,7 @@ public class UserSignUpVo {
         return UserSignUpVo.builder()
                 .signUpId(userSignUpDTO.getSignUpId())
                 .signUpName(userSignUpDTO.getSignUpName())
-                .signUpTime(Optional.ofNullable(userSignUpDTO.getSignUpTime()).map(v -> v.toInstant(ZoneOffset.of("+8")).toEpochMilli()).orElse(null))
+                .signUpTime(DateUtils.date2Timestamp(userSignUpDTO.getSignUpTime()))
                 .signUpStatus(userSignUpDTO.getSignUpStatus())
                 .build();
     }

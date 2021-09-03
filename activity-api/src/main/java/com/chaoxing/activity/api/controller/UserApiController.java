@@ -4,6 +4,7 @@ import com.chaoxing.activity.dto.RestRespDTO;
 import com.chaoxing.activity.model.Activity;
 import com.chaoxing.activity.model.UserResult;
 import com.chaoxing.activity.service.activity.ActivityQueryService;
+import com.chaoxing.activity.service.manager.PassportApiService;
 import com.chaoxing.activity.service.user.result.UserResultQueryService;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -27,6 +28,8 @@ public class UserApiController {
     private ActivityQueryService activityQueryService;
     @Resource
     private UserResultQueryService userResultQueryService;
+    @Resource
+    private PassportApiService passportApiService;
 
     /**是否合格的描述
      * @Description 
@@ -44,6 +47,19 @@ public class UserApiController {
             resultQualifiedDescription = userResultQueryService.getResultQualifiedDescription(uid, activity.getId());
         }
         return RestRespDTO.success(resultQualifiedDescription);
+    }
+
+    /**根据uid获取用户姓名
+     * @Description 
+     * @author wwb
+     * @Date 2021-08-16 11:11:18
+     * @param uid
+     * @return com.chaoxing.activity.dto.RestRespDTO
+    */
+    @RequestMapping("{uid}/name")
+    public RestRespDTO userName(@PathVariable Integer uid) {
+        String userRealName = passportApiService.getUserRealName(uid);
+        return RestRespDTO.success(userRealName);
     }
 
 }

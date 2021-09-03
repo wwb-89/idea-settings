@@ -69,7 +69,7 @@ public class Activity {
     /** 学分; column: credit*/
     private BigDecimal credit;
     /** 参与时长上限（小时）; column: time_length_upper_limit*/
-    private Integer timeLengthUpperLimit;
+    private BigDecimal timeLengthUpperLimit;
     /** 签到报名id; column: sign_id*/
     private Integer signId;
     /** 网页模板id; column: web_template_id*/
@@ -127,6 +127,8 @@ public class Activity {
     private String originType;
     /** 来源值; column: origin*/
     private String origin;
+    /** 来源值记录id; column: origin_form_user_id*/
+    private Integer originFormUserId;
     /** 市场id; column: market_id*/
     private Integer marketId;
     /** 模版id; column: template_id*/
@@ -139,6 +141,9 @@ public class Activity {
     /** 修改时间; column: update_time*/
     @JSONField(serializeUsing = LocalDateTimeSerializer.class, deserializeUsing = LocalDateTimeDeserializer.class)
     private LocalDateTime updateTime;
+    /** 报名成功是否发送通知; column: is_signed_up_notice*/
+    @TableField(value = "is_signed_up_notice")
+    private Boolean signedUpNotice;
 
     // 附加
     /** 开始时间字符串 */
@@ -159,6 +164,8 @@ public class Activity {
     /** 管理员uid列表 */
     @TableField(exist = false)
     private List<Integer> managerUids;
+    @TableField(exist = false)
+    private Boolean top;
 
     @Getter
     public enum OriginTypeEnum {
@@ -184,7 +191,6 @@ public class Activity {
             }
             return null;
         }
-
     }
 
     @Getter
@@ -272,7 +278,9 @@ public class Activity {
         /** 教师发展 */
         TEACHER("教师发展", "teacher"),
         /** 志愿者服务 */
-        VOLUNTEER("志愿者服务", "volunteer");
+        VOLUNTEER("志愿者服务", "volunteer"),
+        /** 三会一课 */
+        THREE_CONFERENCE_ONE_LESSON("三会一课", "tcol");
 
         private final String name;
         private final String value;
@@ -357,6 +365,35 @@ public class Activity {
 
     public boolean isEnded() {
         return Objects.equals(StatusEnum.ENDED.getValue(), getStatus());
+    }
+
+    /**计算活动状态
+     * @Description
+     * @author wwb
+     * @Date 2020-12-10 19:36:50
+     * @param activity
+     * @return java.lang.Integer
+     */
+    public static Activity.StatusEnum calActivityStatus(Activity activity) {
+        LocalDateTime startTime = activity.getStartTime();
+        LocalDateTime endTime = activity.getEndTime();
+        LocalDateTime now = LocalDateTime.now();
+        boolean guessEnded = now.isAfter(endTime);
+        boolean guessOnGoing = (now.isAfter(startTime) || now.isEqual(startTime)) && (now.isBefore(endTime) || now.isEqual(endTime));
+        if (activity.getReleased()) {
+            if (guessEnded) {
+                // 已结束
+                return Activity.StatusEnum.ENDED;
+            }
+            // 已发布的活动才处理状态
+            if (guessOnGoing) {
+                return Activity.StatusEnum.ONGOING;
+            } else {
+                return Activity.StatusEnum.RELEASED;
+            }
+        } else {
+            return Activity.StatusEnum.WAIT_RELEASE;
+        }
     }
 
 }

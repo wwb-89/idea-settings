@@ -5,16 +5,16 @@ import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.chaoxing.activity.dto.RestRespDTO;
-import com.chaoxing.activity.dto.manager.wfw.WfwAreaDTO;
 import com.chaoxing.activity.dto.manager.mh.MhGeneralAppResultDataDTO;
 import com.chaoxing.activity.dto.manager.sign.SignStatDTO;
+import com.chaoxing.activity.dto.manager.wfw.WfwAreaDTO;
 import com.chaoxing.activity.dto.query.MhActivityCalendarQueryDTO;
 import com.chaoxing.activity.model.Activity;
 import com.chaoxing.activity.model.ActivityDetail;
 import com.chaoxing.activity.service.activity.ActivityCoverUrlSyncService;
 import com.chaoxing.activity.service.activity.ActivityQueryService;
-import com.chaoxing.activity.service.manager.wfw.WfwAreaApiService;
 import com.chaoxing.activity.service.manager.module.SignApiService;
+import com.chaoxing.activity.service.manager.wfw.WfwAreaApiService;
 import com.chaoxing.activity.util.constant.CommonConstant;
 import com.chaoxing.activity.util.constant.DateFormatConstant;
 import com.chaoxing.activity.util.constant.DateTimeFormatterConstant;
@@ -30,7 +30,6 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.RestTemplate;
 
 import javax.annotation.Resource;
-import java.math.BigDecimal;
 import java.text.ParseException;
 import java.time.LocalDateTime;
 import java.util.*;
@@ -439,11 +438,6 @@ public class ActivityMhAppController {
 	@RequestMapping("activity/address")
 	public RestRespDTO activityAddress(Integer pageId) {
 		Activity activity = activityQueryService.getByPageId(pageId);
-		// 没有经纬度则设置一个默认的
-		BigDecimal longitude = Optional.ofNullable(activity.getLongitude()).orElse(CommonConstant.DEFAULT_LONGITUDE);
-		BigDecimal dimension = Optional.ofNullable(activity.getDimension()).orElse(CommonConstant.DEFAULT_DIMENSION);
-		activity.setLongitude(longitude);
-		activity.setDimension(dimension);
 		return RestRespDTO.success(activity);
 	}
 

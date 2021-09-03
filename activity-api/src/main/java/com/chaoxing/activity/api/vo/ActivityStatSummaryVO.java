@@ -1,15 +1,14 @@
 package com.chaoxing.activity.api.vo;
 
-import com.chaoxing.activity.dto.manager.sign.create.SignUpCreateParamDTO;
 import com.chaoxing.activity.dto.stat.ActivityStatSummaryDTO;
 import com.chaoxing.activity.model.Activity;
+import com.chaoxing.activity.util.DateUtils;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.math.BigDecimal;
-import java.time.ZoneOffset;
 import java.util.Optional;
 
 /**
@@ -96,8 +95,8 @@ public class ActivityStatSummaryVO {
                 .activityCreator(actStatSummary.getActivityCreator())
                 .participateScope(actStatSummary.getParticipateScope())
                 .integral(actStatSummary.getIntegral())
-                .startTime(Optional.ofNullable(actStatSummary.getStartTime()).map(v -> v.toInstant(ZoneOffset.of("+8")).toEpochMilli()).orElse(null))
-                .endTime(Optional.ofNullable(actStatSummary.getEndTime()).map(v -> v.toInstant(ZoneOffset.of("+8")).toEpochMilli()).orElse(null))
+                .startTime(DateUtils.date2Timestamp(actStatSummary.getStartTime()))
+                .endTime(DateUtils.date2Timestamp(actStatSummary.getStartTime()))
                 .rateNum(actStatSummary.getRateNum())
                 .rateScore(actStatSummary.getRateScore())
                 .signedInNum(actStatSummary.getSignedInNum())

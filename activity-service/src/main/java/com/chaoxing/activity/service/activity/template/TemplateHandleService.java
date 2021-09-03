@@ -120,4 +120,18 @@ public class TemplateHandleService {
 		signUpFillInfoTypeService.batchAdd(signUpFillInfoTypes);
 	}
 
+	/**更新模板
+	* @Description 
+	* @author huxiaolong
+	* @Date 2021-08-25 15:35:43
+	* @param template
+	* @return void
+	*/
+	@Transactional(rollbackFor = Exception.class)
+    public void update(Template template) {
+		if (template == null || template.getId() == null) {
+			return;
+		}
+		templateMapper.updateById(template);
+    }
 }

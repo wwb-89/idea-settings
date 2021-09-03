@@ -13,7 +13,6 @@ import com.chaoxing.activity.service.activity.collection.ActivityCollectionHandl
 import com.chaoxing.activity.service.manager.wfw.WfwAreaApiService;
 import com.chaoxing.activity.util.HttpServletRequestUtils;
 import com.chaoxing.activity.util.annotation.LoginRequired;
-import com.chaoxing.activity.util.constant.CommonConstant;
 import com.chaoxing.activity.util.exception.BusinessException;
 import com.chaoxing.activity.web.util.LoginUtils;
 import org.apache.commons.collections4.CollectionUtils;
@@ -25,7 +24,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
-import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -99,11 +97,6 @@ public class ActivityApiController {
 	public RestRespDTO address(Integer pageId) {
 		Activity activity = activityQueryService.getByPageId(pageId);
 		Optional.ofNullable(activity).orElseThrow(() -> new BusinessException("活动不存在"));
-		// 没有经纬度则设置一个默认的
-		BigDecimal longitude = Optional.ofNullable(activity.getLongitude()).orElse(CommonConstant.DEFAULT_LONGITUDE);
-		BigDecimal dimension = Optional.ofNullable(activity.getDimension()).orElse(CommonConstant.DEFAULT_DIMENSION);
-		activity.setLongitude(longitude);
-		activity.setDimension(dimension);
 		return RestRespDTO.success(activity);
 	}
 
@@ -117,10 +110,10 @@ public class ActivityApiController {
 	*/
 	@LoginRequired
 	@RequestMapping("signed-up")
-	public RestRespDTO pageSignedUp(HttpServletRequest request, String sw) {
+	public RestRespDTO pageSignedUp(HttpServletRequest request, String sw, String flag) {
 		LoginUserDTO loginUser = LoginUtils.getLoginUser(request);
 		Page page = HttpServletRequestUtils.buid(request);
-		page = activityQueryService.pageSignedUp(page, loginUser.getUid(), sw);
+		page = activityQueryService.pageSignedUp(page, loginUser, sw, flag);
 		return RestRespDTO.success(page);
 	}
 
@@ -134,10 +127,10 @@ public class ActivityApiController {
 	*/
 	@LoginRequired
 	@RequestMapping("collected")
-	public RestRespDTO pageCollected(HttpServletRequest request, String sw) {
+	public RestRespDTO pageCollected(HttpServletRequest request, String sw, String flag) {
 		LoginUserDTO loginUser = LoginUtils.getLoginUser(request);
 		Page page = HttpServletRequestUtils.buid(request);
-		page = activityQueryService.pageCollected(page, loginUser.getUid(), sw);
+		page = activityQueryService.pageCollected(page, loginUser, sw, flag);
 		return RestRespDTO.success(page);
 	}
 

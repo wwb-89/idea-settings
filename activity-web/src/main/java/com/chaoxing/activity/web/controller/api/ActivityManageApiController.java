@@ -42,10 +42,10 @@ public class ActivityManageApiController {
 	 */
 	@LoginRequired
 	@RequestMapping("list")
-	public RestRespDTO pageManaged(HttpServletRequest request, String sw) {
+	public RestRespDTO pageManaged(HttpServletRequest request, String sw, String flag) {
 		LoginUserDTO loginUser = LoginUtils.getLoginUser(request);
 		Page page = HttpServletRequestUtils.buid(request);
-		page = activityQueryService.pageManaged(page, loginUser.getUid(), sw);
+		page = activityQueryService.pageManaged(page, loginUser, sw, flag);
 		return RestRespDTO.success(page);
 	}
 
@@ -59,9 +59,9 @@ public class ActivityManageApiController {
 	 */
 	@LoginRequired
 	@RequestMapping("{activityId}/release")
-	public RestRespDTO release(HttpServletRequest request, @PathVariable Integer activityId) {
+	public RestRespDTO release(HttpServletRequest request, @PathVariable Integer activityId, Integer marketId) {
 		LoginUserDTO loginUser = LoginUtils.getLoginUser(request);
-		activityHandleService.release(activityId, loginUser);
+		activityHandleService.release(activityId, marketId, loginUser);
 		return RestRespDTO.success();
 	}
 
@@ -75,9 +75,9 @@ public class ActivityManageApiController {
 	 */
 	@LoginRequired
 	@RequestMapping("{activityId}/release/cancel")
-	public RestRespDTO cancelRelease(HttpServletRequest request, @PathVariable Integer activityId) {
+	public RestRespDTO cancelRelease(HttpServletRequest request, @PathVariable Integer activityId, Integer marketId) {
 		LoginUserDTO loginUser = LoginUtils.getLoginUser(request);
-		activityHandleService.cancelRelease(activityId, loginUser);
+		activityHandleService.cancelRelease(activityId, marketId, loginUser);
 		return RestRespDTO.success();
 	}
 
@@ -91,9 +91,9 @@ public class ActivityManageApiController {
 	*/
 	@LoginRequired
 	@RequestMapping("{activityId}/delete")
-	public RestRespDTO delete(HttpServletRequest request, @PathVariable Integer activityId) {
+	public RestRespDTO delete(HttpServletRequest request, @PathVariable Integer activityId, Integer marketId) {
 		LoginUserDTO loginUser = LoginUtils.getLoginUser(request);
-		activityHandleService.delete(activityId, loginUser);
+		activityHandleService.delete(activityId, marketId, loginUser);
 		return RestRespDTO.success();
 	}
 

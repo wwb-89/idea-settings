@@ -5,15 +5,19 @@ import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.chaoxing.activity.dto.engine.ActivityEngineDTO;
 import com.chaoxing.activity.mapper.*;
 import com.chaoxing.activity.model.*;
+import com.chaoxing.activity.service.activity.component.ComponentHandleService;
 import com.chaoxing.activity.service.manager.WfwFormApiService;
+import io.swagger.models.auth.In;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.compress.utils.Lists;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.annotation.Resource;
 import java.util.Collection;
 import java.util.List;
 import java.util.Objects;
@@ -33,12 +37,12 @@ public class ActivityEngineHandleService {
     private TemplateMapper templateMapper;
     @Autowired
     private TemplateComponentMapper templateComponentMapper;
-    @Autowired
-    private ComponentMapper componentMapper;
-    @Autowired
-    private ComponentFieldMapper componentFieldMapper;
+    @Resource
+    private ComponentHandleService componentHandleService;
     @Autowired
     private SignUpConditionMapper signUpConditionMapper;
+    @Autowired
+    private SignUpFillInfoTypeMapper signUpFillInfoTypeMapper;
     @Autowired
     private WfwFormApiService wfwFormApiService;
 
@@ -55,7 +59,7 @@ public class ActivityEngineHandleService {
         if (template.getSystem() && template.getFid() == null) {
             // todo 临时测试，默认新建一个template
             Template newTemplate = Template.builder()
-                    .name("自建测试模板")
+                    .name("通用组件模板")
                     .fid(fid)
                     .marketId(marketId)
                     .originTemplateId(template.getOriginTemplateId())
@@ -85,12 +89,7 @@ public class ActivityEngineHandleService {
         // 保存模板组件关联关系
         saveTemplateComponent(template.getId(), templateComponents);
         // 更新自定义组件关联templateId
-        if (CollectionUtils.isNotEmpty(customComponentIds)) {
-            componentMapper.update(null, new UpdateWrapper<Component>()
-                    .lambda()
-                    .in(Component::getId, customComponentIds)
-                    .set(Component::getTemplateId, template.getId()));
-        }
+        componentHandleService.relatedComponentWithTemplateId(template.getId(), customComponentIds);
     }
 
     @Transactional(rollbackFor = Exception.class)
@@ -99,7 +98,7 @@ public class ActivityEngineHandleService {
         templateMapper.updateById(template);
         // 保存模板组件关联关系
         updateTemplateComponent(template.getId(), templateComponents);
-
+        // 取消组件关联关系
         if (CollectionUtils.isNotEmpty(delTemplateComponentIds)) {
             templateComponentMapper.update(null, new UpdateWrapper<TemplateComponent>()
                     .lambda()
@@ -134,22 +133,7 @@ public class ActivityEngineHandleService {
     */
     @Transactional(rollbackFor = Exception.class)
     public Component updateCustomComponent(Integer uid, Integer fid, Component component) {
-        component.setUpdateUid(uid);
-        componentMapper.updateById(component);
-        if (Objects.equals(component.getDataOrigin(), Component.DataOriginEnum.CUSTOM.getValue())
-                && CollectionUtils.isNotEmpty(component.getFieldList())) {
-            componentFieldMapper.delete(new QueryWrapper<ComponentField>().lambda().eq(ComponentField::getComponentId, component.getId()));
-
-            component.getFieldList().forEach(v -> {
-                v.setCreateUid(uid);
-                v.setUpdateUid(uid);
-                v.setComponentId(component.getId());
-            });
-            componentFieldMapper.batchAdd(component.getFieldList());
-        } else if (Objects.equals(component.getDataOrigin(), Component.DataOriginEnum.FORM.getValue())) {
-            component.setFormFieldValues(wfwFormApiService.listFormFieldValue(fid, Integer.parseInt(component.getOriginIdentify()), component.getFieldFlag()));
-        }
-        return component;
+        return componentHandleService.updateCustomComponent(uid, fid, component);
     }
 
     /**新增自定义组件
@@ -162,24 +146,7 @@ public class ActivityEngineHandleService {
     */
     @Transactional(rollbackFor = Exception.class)
     public Component saveCustomComponent(Integer uid, Integer fid, Component component) {
-        component.setCreateUid(uid);
-        component.setUpdateUid(uid);
-        componentMapper.insert(component);
-        List<ComponentField> fieldList = component.getFieldList();
-        component = componentMapper.selectById(component.getId());
-        if (Objects.equals(component.getDataOrigin(), Component.DataOriginEnum.CUSTOM.getValue())
-                && CollectionUtils.isNotEmpty(fieldList)) {
-            for (ComponentField field : fieldList) {
-                field.setCreateUid(uid);
-                field.setUpdateUid(uid);
-                field.setComponentId(component.getId());
-            }
-            componentFieldMapper.batchAdd(fieldList);
-            component.setFieldList(fieldList);
-        } else if (Objects.equals(component.getDataOrigin(), Component.DataOriginEnum.FORM.getValue())) {
-            component.setFormFieldValues(wfwFormApiService.listFormFieldValue(fid, Integer.parseInt(component.getOriginIdentify()), component.getFieldFlag()));
-        }
-        return component;
+        return componentHandleService.saveCustomComponent(uid, fid, component);
     }
 
     /**新增模板组件关联
@@ -198,26 +165,37 @@ public class ActivityEngineHandleService {
         templateComponents.forEach(v -> v.setTemplateId(templateId));
         templateComponentMapper.batchAdd(templateComponents);
         templateComponents.forEach(v -> {
-            if (v.getSignUpCondition() != null) {
-                v.getSignUpCondition().setTemplateComponentId(v.getId());
-                signUpConditionMapper.insert(v.getSignUpCondition());
-            }
+            handleSignUpConditionFillInfoType(v);
             if (CollectionUtils.isNotEmpty(v.getChildren())) {
                 v.getChildren().forEach(v1 -> {
                     v1.setPid(v.getId());
                     v1.setTemplateId(templateId);
                 });
                 templateComponentMapper.batchAdd(v.getChildren());
-                v.getChildren().forEach(v1 -> {
-                    if (v1.getSignUpCondition() != null) {
-                        v1.getSignUpCondition().setTemplateComponentId(v1.getId());
-                        signUpConditionMapper.insert(v1.getSignUpCondition());
-                    }
-                });
+                v.getChildren().forEach(this::handleSignUpConditionFillInfoType);
             }
         });
     }
-    
+
+    /**
+    * @Description 
+    * @author huxiaolong
+    * @Date 2021-08-17 14:58:58
+    * @param templateComponent
+    * @return void
+    */
+    @Transactional(rollbackFor = Exception.class)
+    public void handleSignUpConditionFillInfoType (TemplateComponent templateComponent) {
+        if (templateComponent.getSignUpCondition() != null) {
+            templateComponent.getSignUpCondition().setTemplateComponentId(templateComponent.getId());
+            signUpConditionMapper.insert(templateComponent.getSignUpCondition());
+        }
+        if (templateComponent.getSignUpFillInfoType() != null) {
+            templateComponent.getSignUpFillInfoType().setTemplateComponentId(templateComponent.getId());
+            signUpFillInfoTypeMapper.insert(templateComponent.getSignUpFillInfoType());
+        }
+    }
+
     /**更新模板组件关联
     * @Description 
     * @author huxiaolong
@@ -239,12 +217,21 @@ public class ActivityEngineHandleService {
             BeanUtils.copyProperties(v, tplComponent);
             templateComponentMapper.updateById(tplComponent);
             SignUpCondition suc = v.getSignUpCondition();
+            SignUpFillInfoType signUpFillInfoType = v.getSignUpFillInfoType();
             if (suc != null) {
                 suc.setTemplateComponentId(tplComponent.getId());
-                if (v.getSignUpCondition().getId() == null) {
+                if (suc.getId() == null) {
                     signUpConditionMapper.insert(suc);
                 } else {
                     signUpConditionMapper.updateById(suc);
+                }
+            }
+            if (signUpFillInfoType != null) {
+                signUpFillInfoType.setTemplateComponentId(tplComponent.getId());
+                if (signUpFillInfoType.getId() == null) {
+                    signUpFillInfoTypeMapper.insert(signUpFillInfoType);
+                } else {
+                    signUpFillInfoTypeMapper.updateById(signUpFillInfoType);
                 }
             }
         });

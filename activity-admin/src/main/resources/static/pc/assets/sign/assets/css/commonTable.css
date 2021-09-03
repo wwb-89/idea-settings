@@ -677,7 +677,7 @@ body {
 
 .table-search-box .el-range-editor .el-range-separator {
   line-height: 24px;
-  background-image: url("../../../../assets/images/swap-right.png");
+  background-image: url("../../assets/images/swap-right.png");
   background-size: auto auto;
   background-position: center center;
   background-repeat: no-repeat;
@@ -1047,4 +1047,54 @@ body {
 .dialog-box.modifyPop .dialog-content .item:hover {
   background: #F8F8F8;
   color: #0084FF;
+}
+
+/* 修改签到时间弹窗 */
+.el-dialog.changetime_dialog {
+  border-radius: 8px;
+}
+
+.el-dialog.changetime_dialog .el-dialog__header {
+  padding: 16px 0;
+}
+
+.el-dialog.changetime_dialog .el-dialog__header .el-dialog__title {
+  color: #333333;
+  font-weight: 600;
+}
+
+.el-dialog.changetime_dialog .el-dialog__body {
+  padding: 32px;
+  -webkit-box-sizing: border-box;
+  -moz-box-sizing: border-box;
+  box-sizing: border-box;
+  border-top: 1px solid #E9E9E9;
+  border-bottom: 1px solid #E9E9E9;
+  line-height: 32px;
+}
+
+.el-dialog.changetime_dialog .el-dialog__footer {
+  padding: 14px 0;
+}
+
+.el-dialog.changetime_dialog .el-dialog__footer .el-button {
+  border-radius: 30px;
+  padding: 6px 14px;
+  font-size: 13px;
+  line-height: 16px;
+}
+
+.el-dialog.changetime_dialog .el-dialog__footer .el-button--default {
+  color: #0084FF;
+  border: 1px solid #82C3FF;
+}
+
+.el-dialog.changetime_dialog .change-time-box .el-date-editor.el-input {
+  width: 100%;
+}
+
+.el-dialog.changetime_dialog .change-time-box .el-date-editor.el-input .el-input__inner {
+  height: 32px;
+  line-height: 32px;
+  border-radius: 2px;
 }

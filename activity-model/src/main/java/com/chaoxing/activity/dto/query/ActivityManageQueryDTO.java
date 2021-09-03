@@ -36,6 +36,8 @@ public class ActivityManageQueryDTO {
 	private String sw;
 	/** 是不是严格模式， 严格模式：只显示自己创建的活动 */
 	private Integer strict;
+	/** 活动标识 */
+	private String activityFlag;
 	/** 创建人id */
 	private Integer createUid;
 	/** 创建wfwfid */

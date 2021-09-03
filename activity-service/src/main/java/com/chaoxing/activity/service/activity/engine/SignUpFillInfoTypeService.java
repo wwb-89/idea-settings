@@ -54,5 +54,17 @@ public class SignUpFillInfoTypeService {
 			signUpFillInfoTypeMapper.batchAdd(signUpFillInfoTypes);
 		}
 	}
-
+	
+	/**根据templateComponentId查询对应的报名信息填写类型
+	* @Description 
+	* @author huxiaolong
+	* @Date 2021-08-17 18:23:48
+	* @param templateComponentId
+	* @return com.chaoxing.activity.model.SignUpFillInfoType
+	*/
+    public SignUpFillInfoType getByTemplateComponentId(Integer templateComponentId) {
+		return signUpFillInfoTypeMapper.selectList(new LambdaQueryWrapper<SignUpFillInfoType>()
+				.eq(SignUpFillInfoType::getTemplateComponentId, templateComponentId))
+				.stream().findFirst().orElse(null);
+    }
 }

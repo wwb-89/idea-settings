@@ -94,7 +94,8 @@
     <select id="pagingUserParticipate" resultMap="BaseResultMap">
         SELECT
             <include refid="Base_Column_List"></include>,
-            CASE WHEN t2.qualified_status IS NULL THEN NULL WHEN t2.qualified_status = 1 THEN TRUE ELSE FALSE END qualified
+            CASE WHEN t2.qualified_status IS NULL THEN NULL WHEN t2.qualified_status = 1 THEN TRUE ELSE FALSE END qualified,
+            t2.total_score totalScore
         FROM
             t_user_stat_summary t
             INNER JOIN t_activity t1 ON t.activity_id = t1.id

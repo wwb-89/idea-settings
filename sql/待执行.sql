@@ -1,2 +1,1 @@
-
-
+ALTER TABLE t_activity ADD COLUMN is_signed_up_notice TINYINT(1) DEFAULT 0 COMMENT '报名成功是否发送通知';

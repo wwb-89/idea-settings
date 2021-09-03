@@ -13,7 +13,6 @@
 <body>
     <div class="field-setting" id="field-setting" v-cloak>
         <div class="top-con-light">
-<!--            <div class="go-back fl" @click="returnBack"><i class="icon-back"></i><span>返回</span></div>-->
             <div class="name-txt">字段设置</div>
             <div class="look-div fr" @click="publish">
                 <div class="btn-width80px-color2">发布</div>
@@ -22,12 +21,16 @@
         <div class="content">
             <div class="w-900px info-box" style="display: block;">
                 <form action="" id="drag-box">
-                    <!-- 基本信息 -->
-                    <div class="title">
-                        <div class="lable">基本信息</div>
-                    </div>
                     <template v-for="(item, index) in showTemplateComponents">
-                        <div class="form-item sort-item" v-if="!['activity_address', 'company_sign_up', 'sign_up', 'sign_in', 'sign_out'].includes(item.code)">
+                        <div class="title sort-item" v-if="'partition' == item.code">
+                            <i class="icon-drag" :pid-key="item.pid" :id-key="item.id"></i>
+                            <div class="lable">{{item.name}}</div>
+                            <div class="icon-div">
+                                <i class="icon-edit" @click="openEditDialog(index, item)"></i>
+                                <i class="icon-delete" @click="removeComponentAssociate1(index, item)"></i>
+                            </div>
+                        </div>
+                        <div class="form-item sort-item" v-if="!['activity_address', 'partition', 'company_sign_up', 'sign_up', 'sign_in', 'sign_out'].includes(item.code)">
                             <i class="icon-drag" :pid-key="item.pid" :id-key="item.id"></i>
                             <div class="icon-div">
                                 <i class="icon-edit" @click="openEditDialog(index, item)"></i>
@@ -144,16 +147,16 @@
                                 </template>
                                 <template v-else-if="item.type == 'radio'">
                                     <div>
-                                        <el-radio v-for="value in chooseComponentValuesMap[item.componentId] || []" v-model="radio1" :label="value" name="active-type" class="radio-item" readonly>
-                                            {{value}}
-                                        </el-radio>
+                                        <el-select disabled v-model="typecheck" placeholder="请选择">
+                                            <el-option v-for="value in []" :key="value" :label="value" :value="value"></el-option>
+                                        </el-select>
                                     </div>
                                     <span class="tips third" v-if="item.introduction">{{item.introduction}}</span>
                                 </template>
                                 <template v-else-if="item.type == 'checkbox'">
-                                    <el-checkbox-group v-model="typecheck" disabled>
-                                        <el-checkbox v-for="value in chooseComponentValuesMap[item.componentId] || []" :label="value"  name="type"></el-checkbox>
-                                    </el-checkbox-group>
+                                    <el-select disabled v-model="typecheck" placeholder="请选择">
+                                        <el-option v-for="value in []" :key="value" :label="value" :value="value"></el-option>
+                                    </el-select>
                                     <span class="tips third" v-if="item.introduction">{{item.introduction}}</span>
                                 </template>
                             </div>
@@ -228,6 +231,10 @@
                                                     <p class="tips third">{{it.introduction}}</p>
                                                 </template>
                                                 <template v-else-if="it.code == 'sign_up_cancel_signed_up'">
+                                                    <el-switch class="switch fl marginTop6" disabled></el-switch>
+                                                    <p class="tips third">{{it.introduction}}</p>
+                                                </template>
+                                                <template v-else-if="it.code == 'on_site_sign_up'">
                                                     <el-switch class="switch fl marginTop6" disabled></el-switch>
                                                     <p class="tips third">{{it.introduction}}</p>
                                                 </template>
@@ -385,7 +392,7 @@
                             <i class="icon-info"></i>
                         </el-tooltip>
                         <div class="fr add-btn">
-                            <i class="icon-add" v-if="item.code == 'sign_up_condition'" @click="openSignUpConditionDialog(index, item)"></i>
+                            <i class="icon-add" v-if="item.code == 'sign_up_condition' || item.code == 'sign_up_fill_info'" @click="openChildComponentDialog(index, item)"></i>
                             <i class="icon-add" v-else @click="addComponentAssociate(index, item)"></i>
                         </div>
                     </div>
@@ -427,7 +434,7 @@
                     <div class="form">
                         <el-input v-model="textEditItem.name" type="text" placeholder="标题" maxlength="8" show-word-limit class="marginBottom24"></el-input>
                         <el-input v-model="textEditItem.introduction" type="text" placeholder="辅助说明" maxlength="40" show-word-limit class="marginBottom24"></el-input>
-                        <div class="switch-box" v-show="textEditItem.code != 'sign_up' || textEditItem.code != 'company_sign_up'">
+                        <div class="switch-box" v-show="textEditItem.code != 'sign_up' && textEditItem.code != 'company_sign_up' && textEditItem.code != 'partition'">
                             <label class="label">必填项</label>
                             <el-switch class="switch" v-model="textEditItem.required"></el-switch>
                         </div>
@@ -599,7 +606,48 @@
                 <div class="footer">
                     <div class="btn-box">
                         <div class="border-btn" @click="signUpDialog = false">取消</div>
-                        <div class="normal-btn " @click="confirmSignUpCondition">确定</div>
+                        <div class="normal-btn " @click="confirmChildrenComponentEdit('sign_up_condition')">确定</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- 报名信息填写-->
+        <div class="dialog-mask" v-show="fillInfoDialog">
+            <div class="dailog">
+                <div class="header">
+                    <span>报名信息</span>
+                    <i class="close" @click="fillInfoDialog = false"></i>
+                </div>
+                <div class="body">
+                    <el-form ref="form"  label-width="72px">
+                        <el-input v-model="signUpTemplateComponentItem.name" type="text" placeholder="标题（必填）" maxlength="8" show-word-limit class="marginBottom20"></el-input>
+                        <el-input v-model="signUpTemplateComponentItem.introduction" type="text" placeholder="说明" maxlength="40" show-word-limit class="marginBottom20"></el-input>
+                        <el-form-item label="类型" class="marginBottom20">
+                            <el-select v-model="signUpFillInfoTypeItem.type" placeholder="请选择关联表单">
+                                <el-option v-for="item in wfwFormTypes"
+                                        :key="item.value"
+                                        :label="item.label"
+                                        :value="item.value"
+                                >
+                                </el-option>
+                            </el-select>
+                        </el-form-item>
+                        <el-form-item label="模板" class="marginBottom20" v-show="signUpFillInfoTypeItem.type == 'wfw_form'">
+                            <el-select v-model="signUpFillInfoTypeItem.templateType" placeholder="请选择关联表单">
+                                <el-option v-for="item in wfwFormTemplateList"
+                                        :key="item.value"
+                                        :label="item.name"
+                                        :value="item.value"
+                                >
+                                </el-option>
+                            </el-select>
+                        </el-form-item>
+                    </el-form>
+                </div>
+                <div class="footer">
+                    <div class="btn-box">
+                        <div class="border-btn" @click="fillInfoDialog = false">取消</div>
+                        <div class="normal-btn " @click="confirmChildrenComponentEdit('sign_up_fill_info')">确定</div>
                     </div>
                 </div>
             </div>
@@ -611,8 +659,6 @@
         <script src="/static/pc/assets/lib/element-ui/lib/index.js" th:src="@{/pc/assets/lib/element-ui/lib/index.js}"></script>
         <script src="/static/pc/assets/lib/drag/sortTable.js" th:src="@{/pc/assets/lib/drag/sortTable.js}"></script>
         <script src="/static/pc/assets/lib/jqthumb.min.js" th:src="@{/pc/assets/lib/jqthumb.min.js}"></script>
-<!--        <script src="https://noteyd.chaoxing.com/res/plugin/ueditor4thirdparty/rich.text.util.js"></script>-->
-<!--        <script type="text/javascript">-->
         <script th:inline="javascript">
             var uuid = function () {
                 return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function (c) {
@@ -630,6 +676,11 @@
                     templateInfo: [[${templateInfo}]],
                     wfwForms: [[${wfwForms}]],
                     wfwFormFields: [],
+                    wfwFormTypes: [
+                        {label: "普通采集表单", value: "form"},
+                        {label: "万能表单", value: "wfw_form"}
+                    ],
+                    wfwFormTemplateList: [[${wfwFormTemplateList}]],
                     originTemplateId: null,
                     template: {},
                     components: [],
@@ -660,13 +711,15 @@
                     // 选择字段编辑所需变量
                     chooseEditItem: {},
                     editDialogTitle: '',
+                    // 报名信息字段
+                    fillInfoDialog: false,
+                    signUpFillInfoTypeItem: {},
                     // 报名条件字段编辑所需变量
                     signUpTemplateComponentItem: {},
                     signUpConditionItem: {},
                     signUpConditionAdd: false,
                     customComponentIds: [],
                     delTemplateComponentIds: [],
-
                     scoreNum: 0,
                     radio1:'1',
                     activityType:'创新创业',
@@ -831,6 +884,7 @@
                             // 封装component 详情到 templateComponent里面
                             this.code = componentItem.code;
                             this.type = componentItem.type;
+                            $this.handleTplComponentInnerAttr(this);
                             tmpTplComponents.push(this);
                         });
 
@@ -892,6 +946,28 @@
                         var $this = this;
                         $this.activeCpTypeIndex = index;
                         $this.activeCpTypeName = $this.componentTypeList[index].name;
+                    },
+                    handleTplComponentInnerAttr: function (templateComponent) {
+                        var $this = this;
+                        if (templateComponent.code == 'sign_up_condition' && !templateComponent.signUpCondition) {
+                            templateComponent.signUpCondition = $this.getInitSignUpCondition();
+                        } else if (templateComponent.code == 'sign_up_fill_info' && !templateComponent.signUpFillInfoType) {
+                            templateComponent.signUpFillInfoType = $this.getInitSignUpFillInfoType();
+                        }
+                    },
+                    getInitSignUpCondition: function () {
+                        return {
+                            fid: this.fid,
+                            originIdentify: '',
+                            fieldName: '',
+                            allowSignedUp: false
+                        }
+                    },
+                    getInitSignUpFillInfoType: function () {
+                        return {
+                            type: 'form',
+                            templateType: ''
+                        }
                     },
                     // 添加系统组件到模板 - item: Component
                     addComponentAssociate: function (index, item) {
@@ -964,7 +1040,7 @@
                         var childIdx = 1;
                         $(childComponents).each(function () {
                             if (this.checked) {
-                                childTemplateComponents.push({
+                                var childTplComponent = {
                                     id: uuid(),
                                     pid: signUpId,
                                     templateId: $this.currTemplateId,
@@ -975,10 +1051,12 @@
                                     sequence: childIdx++,
                                     code: this.code,
                                     type: this.type
-                                });
+                                };
+                                $this.handleTplComponentInnerAttr(childTplComponent);
+                                childTemplateComponents.push(childTplComponent);
                             }
                         });
-                        $this.addSignUpTemplateComponent.children = childTemplateComponents;
+                        $this.$set($this.addSignUpTemplateComponent, 'children', childTemplateComponents);
                         $this.templateComponents.push($this.addSignUpTemplateComponent);
                         $this.templateComponents.pushArray(childTemplateComponents);
                         $this.showTemplateComponents.push($this.addSignUpTemplateComponent);
@@ -990,53 +1068,6 @@
                             components: childComponents
                         });
                         app.showMsg("添加成功");
-                    },
-                    // 移除组件 item - component
-                    removeComponentAssociate: function (index, item, e) {
-                        var $this = this;
-                        var componentType = $this.componentTypeList[$this.activeCpTypeIndex];
-                        var components = componentType.components;
-                        // 每一个类有一个对应的virtualId，该 virtualId 为类下组件关联关系 templateComponent 的pid
-                        var currTypeVirtualId = componentType.virtualId;
-
-                        var target = e.target;
-                        // 样式改变
-                        $(target).hide();
-                        $this.$set(components[index], 'checked', false)
-                        // $this.templateComponents = $.grep($this.templateComponents, function (it) {
-                        //     return it.pid != currTypeVirtualId || it.componentId != item.id;
-                        // });
-                        var waitRemoveItems = $.grep($this.templateComponents, function (it) {
-                            return it.pid == currTypeVirtualId && it.componentId == item.id;
-                        });
-                        var waitRemoveTplCpIds = [];
-                        $(waitRemoveItems).each(function () {
-                            waitRemoveTplCpIds.push(this.id);
-                            if ( typeof this.id == 'number') {
-                                $this.delTemplateComponentIds.push(this.id);
-                            }
-                        });
-                        $this.templateComponents = $.grep($this.templateComponents, function (it) {
-                            return waitRemoveTplCpIds.indexOf(it.id) == -1;
-                        });
-                        // 基本信息的移除
-                        if (item.pid == 0) {
-                            $this.showTemplateComponents = $.grep($this.showTemplateComponents, function (it) {
-                                return it.componentId != item.id;
-                            });
-                        } else { // 报名组件信息的移除
-                            $($this.showTemplateComponents).each(function () {
-                                var _this = this;
-                                if (_this.id == currTypeVirtualId) {
-                                    if (_this.children) {
-                                        _this.children = $.grep(_this.children, function (it, index) {
-                                            return it.componentId != item.id;
-                                        });
-                                    }
-                                    return false;
-                                }
-                            });
-                        }
                     },
                     // 配置页面基础信息关联移除操作 --> 主要针对 pid = 0 item : templateComponent
                     removeComponentAssociate1: function (index, item) {
@@ -1163,8 +1194,8 @@
                     // index -> showTemplateComponents[index], idx -> showTemplateComponents[index].children[idx]， item -> templateComponent
                     openEditDialog1: function (index, idx, item) {
                         var $this = this;
-                        if (item.code == 'sign_up_condition') {
-                            $this.openSignUpConditionDialog(index, item, idx);
+                        if (item.code == 'sign_up_condition' || item.code == 'sign_up_fill_info') {
+                            $this.openChildComponentDialog(index, item, idx);
                         } else {    // 这里只存在报名的系统组件，不存在自定义组件
                             $this.openTextDialog(index, item);
                         }
@@ -1218,17 +1249,25 @@
                         };
                     },
                     // 打开报名条件弹窗， 当 idx为undefined 时，是添加模板关联组件处新增报名条件， 此时 item: Component, 反之为 TemplateComponent
-                    openSignUpConditionDialog: function (index, item, idx) {
+                    openChildComponentDialog: function (index, item, idx) {
                         var $this = this;
-                        $this.setDialogTitle(item, "报名条件")
-
                         $this.addFieldDialog = false;
-                        $this.signUpDialog = true;
+                        if (item.code == 'sign_up_condition') {
+                            $this.setDialogTitle(item, '报名条件')
+                            $this.signUpDialog = true;
+                        } else if (item.code == 'sign_up_fill_info') {
+                            $this.setDialogTitle(item, '报名信息填写')
+                            $this.fillInfoDialog = true;
+                        }
 
                         // item: templateComponent   此时该为编辑模板关系数据
                         if (idx || idx == 0) {
                             $this.signUpTemplateComponentItem = $.extend({}, $this.showTemplateComponents[index].children[idx]);
-                            $this.signUpConditionItem = $this.signUpTemplateComponentItem.signUpCondition;
+                            if (item.code == "sign_up_condition") {
+                                $this.signUpConditionItem = $this.signUpTemplateComponentItem.signUpCondition;
+                            } else if (item.code == "sign_up_fill_info") {
+                                $this.signUpFillInfoTypeItem = $this.signUpTemplateComponentItem.signUpFillInfoType;
+                            }
                             $this.currEditIndex = index;
                             $this.currEditSignUpInsideIndex = idx;
                             return;
@@ -1249,12 +1288,8 @@
                             code: item.code,
                             type: item.type
                         };
-                        $this.signUpConditionItem = {
-                            fid: $this.fid,
-                            originIdentify: '',
-                            fieldName: '',
-                            allowSignedUp: false
-                        }
+                        $this.signUpConditionItem = $this.getInitSignUpCondition();
+                        $this.signUpFillInfoTypeItem = $this.getInitSignUpFillInfoType();
                     },
                     confirmEditText: function () {
                         var $this = this;
@@ -1268,7 +1303,8 @@
                             $this.addSignUpTemplateComponent.introduction = $this.textEditItem.introduction;
                             $this.addSignUpTemplateComponent.required = $this.textEditItem.required;
                             $this.addSignUpComponentAssociate();
-                            $this.initEditData();
+                            $this.textDialog = false;
+                            $this.chooseDialog = false;
                             return;
                         }
 
@@ -1316,9 +1352,13 @@
                         // 回到添加字段页面
                         $this.addFieldDialog = $this.closeBeforeAddField;
                     },
-                    confirmSignUpCondition: function () {
+                    confirmChildrenComponentEdit: function (code) {
                         var $this = this;
-                        $this.signUpTemplateComponentItem.signUpCondition = $this.signUpConditionItem;
+                        if (code == "sign_up_condition") {
+                            $this.signUpTemplateComponentItem.signUpCondition = $this.signUpConditionItem;
+                        } else if (code == "sign_up_fill_info") {
+                            $this.signUpTemplateComponentItem.signUpFillInfoType = $this.signUpFillInfoTypeItem;
+                        }
                         if ($this.signUpConditionAdd) {
                             $this.addSignUpChildComponentAssociate($this.signUpTemplateComponentItem);
                         } else {
@@ -1329,13 +1369,15 @@
                                     return false;
                                 }
                             });
-                        };
+                        }
                         $this.signUpDialog = false;
+                        $this.fillInfoDialog = false;
                         $this.signUpConditionAdd = false;
                         $this.currEditIndex = null;
                         $this.currEditSignUpInsideIndex = null;
                         $this.signUpTemplateComponentItem = {};
                         $this.signUpConditionItem = {};
+                        $this.signUpFillInfoTypeItem = {};
                     },
                     selectForm: function (value) {
                         var $this = this;
@@ -1520,7 +1562,8 @@
                                         required: this.required,
                                         sequence: this.sequence,
                                         children: this.children,
-                                        signUpCondition: this.signUpCondition
+                                        signUpCondition: this.signUpCondition,
+                                        signUpFillInfoType: this.signUpFillInfoType
                                     })
                                 })
                             }

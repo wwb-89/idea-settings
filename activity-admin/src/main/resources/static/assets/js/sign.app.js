@@ -23,8 +23,7 @@
             id: null,
             name: "",
             notes: "",
-            signUps: [],
-            signIns: []
+            signUps: []
         };
     };
 
@@ -46,13 +45,17 @@
             limitPerson: false,
             personLimit: 100,
             fillInfo: false,
+            formType: 'form',
             fillInfoFormId: null,
+            openAddr: null,
+            pcUrl: null,
+            wechatUrl: null,
             publicList: false,
             btnName: "报名参与",
             endAllowCancel: true,
             endNotAllowCancel: false,
             notAllowCancelType: "after_sign_up_end",
-            notAllowCancelDays: 0,
+            notAllowCancelTime: null,
             enableWfwParticipateScope: false,
             enableContactsParticipateScope: false,
             activityFlag: "",
