@@ -85,8 +85,13 @@ public class WfwFormDTO {
 				JSONObject formDataItem = (JSONObject) v1;
 				WfwFormDataDTO wfwFormData = JSON.parseObject(formDataItem.toJSONString(), WfwFormDataDTO.class);
 				String valuesJson = JSON.parseObject(JSON.toJSONString(formDataItem.getJSONArray("groupValues").get(0))).getJSONArray("values").toJSONString();
-				List<JSONObject> values = JSON.parseArray(valuesJson, JSONObject.class);
-				wfwFormData.setValues(values);
+				JSONArray valuesArray = JSONArray.parseArray(valuesJson).getJSONArray(0);
+				List<JSONObject> resItemList = Lists.newArrayList();
+				valuesArray.forEach(v2 -> {
+					JSONObject o = (JSONObject) v2;
+					resItemList.add(o);
+				});
+				wfwFormData.setValues(resItemList);
 				wfwFormDataList.add(wfwFormData);
 			});
 			wfwForm.setFormData(wfwFormDataList);
