@@ -1,7 +1,6 @@
 package com.chaoxing.activity.task;
 
 import com.chaoxing.activity.dto.activity.ActivityFormSyncParamDTO;
-import com.chaoxing.activity.dto.manager.wfwform.WfwFormDTO;
 import com.chaoxing.activity.service.activity.ActivityFormSyncService;
 import com.chaoxing.activity.service.activity.ActivityHandleService;
 import com.chaoxing.activity.service.activity.WfwFormSynOperateQueueService;
@@ -56,7 +55,7 @@ public class WfwFormSyncOperateTask {
             }
         } catch (Exception e) {
             wfwFormSynOperateQueueService.addActivityFormSyncOperateTask(queueParam);
-//            log.error(e.getMessage());
+            e.printStackTrace();
         }
     }
 }
