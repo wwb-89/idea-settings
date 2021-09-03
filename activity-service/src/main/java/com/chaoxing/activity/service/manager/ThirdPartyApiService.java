@@ -1,21 +1,16 @@
 package com.chaoxing.activity.service.manager;
 
-import cn.hutool.core.net.url.UrlQuery;
-import cn.hutool.core.util.URLUtil;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
-import com.chaoxing.activity.dto.manager.uc.ClazzDTO;
 import com.chaoxing.activity.util.CookieUtils;
+import com.chaoxing.activity.util.URLUtils;
 import com.chaoxing.activity.util.exception.BusinessException;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
-import java.net.URL;
-import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.Map;
 
@@ -41,18 +36,9 @@ public class ThirdPartyApiService {
      * @param url
      * @return java.util.List<java.lang.Object>
      */
-    public List<?> getDataFromThirdPartyUrl(HttpServletRequest request, String url, Class<?> clazz) {
-        Integer fid = CookieUtils.getFid(request);
-        Integer uid = CookieUtils.getUid(request);
-        URL urlItem = URLUtil.url(url);
-        Map<CharSequence, CharSequence> urlQuery = UrlQuery.of(urlItem.getQuery(), StandardCharsets.UTF_8).getQueryMap();
-        if (StringUtils.isBlank(urlQuery.get("uid"))) {
-            urlQuery.put("uid", String.valueOf(uid));
-        }
-        if (StringUtils.isBlank(urlQuery.get("fid"))) {
-            urlQuery.put("fid", String.valueOf(fid));
-        }
-        String realUrl = StringUtils.isBlank(urlItem.getProtocol()) ? "http" : urlItem.getProtocol() + "://" + urlItem.getHost() + urlItem.getPath();
+    public List<?> getDataFromThirdPartyUrl(HttpServletRequest request, String url, List<String> cookieKeys, Class<?> clazz) {
+        Map<String, String> paramMap = CookieUtils.getCookieMap(request, cookieKeys);
+        String realUrl = URLUtils.packageParam2URL(url, paramMap);
 
         String result = restTemplate.getForObject(realUrl, String.class);
         JSONObject jsonObject = JSON.parseObject(result);

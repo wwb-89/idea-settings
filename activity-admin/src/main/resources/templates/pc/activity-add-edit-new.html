@@ -1323,6 +1323,11 @@
                 // 加载发布班级数据
                 loadReleaseClassData: function (dataUrl) {
                     var $this = this;
+                    // var pattern = new RegExp('/http(s)?://([\\w-]+\\.)+[\\w-]+(/[\\w- ./?%&=]*)?/');
+                    // if (!pattern.test(dataUrl)) {
+                    //     app.showMsg("发布班级数据接口地址非法");
+                    //     return;
+                    // }
                     var url = ctx + "/api/third-party/query/teaching/clazz"
                     app.ajaxPostWithLoading(url, {url: dataUrl}, function (data) {
                         if (data.success) {

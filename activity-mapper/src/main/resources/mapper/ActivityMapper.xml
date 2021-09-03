@@ -198,8 +198,10 @@
         SELECT
             <include refid="Base_Column_List"></include>
         FROM
-        t_activity t
-        INNER JOIN t_activity_class t1 ON t.id = t1.activity_id
+            t_activity t
+        INNER JOIN
+            t_activity_class t1 ON t.id = t1.activity_id
+            AND t1.class_id = #{params.userClassId}
         <include refid="classifyJoinConditionSql"></include>
         <include refid="erdosConditionSql"></include>
         GROUP BY t.id

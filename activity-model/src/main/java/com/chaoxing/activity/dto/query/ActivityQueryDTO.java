@@ -35,6 +35,8 @@ public class ActivityQueryDTO {
 	private String activityClassifyName;
 	/** 活动级别分类 */
 	private String levelType;
+	/** 用户班级id */
+	private Integer userClassId;
 	/** 时间 */
 	private String date;
 	/** 状态 */

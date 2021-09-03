@@ -8,6 +8,8 @@ import org.springframework.web.bind.annotation.RestController;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * @author huxiaolong
@@ -34,6 +36,9 @@ public class ThirdPartyApiController {
     */
     @RequestMapping("/query/teaching/clazz")
     public RestRespDTO searchDataFormThirdPartyUrl(HttpServletRequest request, String url) {
-        return RestRespDTO.success(thirdPartyApiService.getDataFromThirdPartyUrl(request, url, ClazzDTO.class));
+        List<String> cookieKeys = new ArrayList<>();
+        cookieKeys.add("uid");
+        cookieKeys.add("fid");
+        return RestRespDTO.success(thirdPartyApiService.getDataFromThirdPartyUrl(request, url,  cookieKeys, ClazzDTO.class));
     }
 }
