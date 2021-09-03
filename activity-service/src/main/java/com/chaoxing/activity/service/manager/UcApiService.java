@@ -3,12 +3,17 @@ package com.chaoxing.activity.service.manager;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.chaoxing.activity.dto.manager.UserExtraInfoDTO;
+import com.chaoxing.activity.dto.manager.uc.ClazzDTO;
+import com.chaoxing.activity.dto.manager.wfw.WfwClassDTO;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.compress.utils.Lists;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
 import javax.annotation.Resource;
+import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 /**
  * @author wwb
@@ -72,6 +77,23 @@ public class UcApiService {
 			log.warn("根据fid:{}, uid:{}查询用户是否管理员:{}", fid, uid, msg);
 			return false;
 		}
+	}
+
+	/**查询教师执教班级列表
+	 * @Description 
+	 * @author wwb
+	 * @Date 2021-09-03 11:18:46
+	 * @param uid
+	 * @param fid
+	 * @return java.util.List<com.chaoxing.activity.dto.manager.uc.ClazzDTO>
+	*/
+	public List<ClazzDTO> listTeacherTeachingClazz(Integer uid, Integer fid) {
+		UserExtraInfoDTO userExtraInfoDto = getUserExtraInfoByFidAndUid(fid, uid);
+		if (userExtraInfoDto != null) {
+			List<WfwClassDTO> classes = userExtraInfoDto.getClasses();
+			return Optional.ofNullable(classes).orElse(Lists.newArrayList()).stream().map(v -> v.buildClazzDTO()).collect(Collectors.toList());
+		}
+		return Lists.newArrayList();
 	}
 
 }
