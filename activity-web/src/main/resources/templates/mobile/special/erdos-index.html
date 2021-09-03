@@ -124,7 +124,8 @@
                     });
                     //级别
                     $this.levels = [
-                        {name: '班级', value: 'class', selected: true},
+                        {name: '全部', value: '', selected: true},
+                        {name: '班级', value: 'class', selected: false},
                         {name: '学校', value: 'school', selected: false},
                         {name: '区域', value: 'region', selected: false}
                     ];
@@ -172,7 +173,8 @@
                             pageSize: 10,
                             sw: "",
                             activityClassifyName: "",
-                            levelType: "class",
+                            levelType: "",
+                            flag: [[${flag}]],
                             topFid: [[${topFid}]],
                             marketId: [[${marketId}]]
                         };

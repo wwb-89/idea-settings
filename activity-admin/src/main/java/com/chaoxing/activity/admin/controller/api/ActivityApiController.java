@@ -73,12 +73,13 @@ public class ActivityApiController {
 	*/
 	@LoginRequired
 	@PostMapping("edit")
-	public RestRespDTO edit(HttpServletRequest request, String activityJsonStr, String participateScopeJsonStr, String signJsonStr) {
+	public RestRespDTO edit(HttpServletRequest request, String activityJsonStr, String participateScopeJsonStr, String releaseClassIdJsonStr, String signJsonStr) {
 		LoginUserDTO loginUser = LoginUtils.getLoginUser(request);
 		ActivityUpdateParamDTO activityUpdateParamDto = JSON.parseObject(activityJsonStr, ActivityUpdateParamDTO.class);
-		List<WfwAreaDTO> wfwRegionalArchitectures = JSON.parseArray(participateScopeJsonStr, WfwAreaDTO.class);
+		List<Integer> releaseClassIds = StringUtils.isBlank(releaseClassIdJsonStr) ? null : JSON.parseArray(releaseClassIdJsonStr, Integer.class);
+		List<WfwAreaDTO> wfwRegionalArchitectures = StringUtils.isBlank(participateScopeJsonStr) ? null : JSON.parseArray(participateScopeJsonStr, WfwAreaDTO.class);
 		SignCreateParamDTO signAddEdit = JSON.parseObject(signJsonStr, SignCreateParamDTO.class);
-		activityHandleService.edit(activityUpdateParamDto, signAddEdit, wfwRegionalArchitectures, loginUser);
+		activityHandleService.edit(activityUpdateParamDto, signAddEdit, wfwRegionalArchitectures, releaseClassIds, loginUser);
 		return RestRespDTO.success(activityUpdateParamDto);
 	}
 

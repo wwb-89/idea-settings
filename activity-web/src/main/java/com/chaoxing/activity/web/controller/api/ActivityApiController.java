@@ -99,25 +99,22 @@ public class ActivityApiController {
 	public RestRespDTO list11(HttpServletRequest request, String data) {
 		ActivityQueryDTO activityQuery = JSON.parseObject(data, ActivityQueryDTO.class);
 		List<Integer> fids = new ArrayList<>();
-		List<WfwAreaDTO> wfwRegionalArchitectures;
-		Activity.ActivityFlagEnum activityFlagEnum = Activity.ActivityFlagEnum.fromValue(activityQuery.getLevelType());
-		if (activityFlagEnum != null &&
-				(Objects.equals(activityFlagEnum.getValue(), Activity.ActivityFlagEnum.SCHOOL.getValue()) ||
-						Objects.equals(activityFlagEnum.getValue(), Activity.ActivityFlagEnum.REGION.getValue()))) {
-			Integer topFid = activityQuery.getTopFid();
-			if (topFid == null) {
-				LoginUserDTO loginUser = LoginUtils.getLoginUser(request);
-				topFid = loginUser.getFid();
-			}
-			wfwRegionalArchitectures = wfwAreaApiService.listByFid(topFid);
-			if (CollectionUtils.isNotEmpty(wfwRegionalArchitectures)) {
-				List<Integer> subFids = wfwRegionalArchitectures.stream().map(WfwAreaDTO::getFid).collect(Collectors.toList());
-				fids.addAll(subFids);
-			} else {
-				fids.add(topFid);
-			}
-			activityQuery.setFids(fids);
+		// 获取区域机构
+		Integer topFid = activityQuery.getTopFid();
+		if (topFid == null) {
+			LoginUserDTO loginUser = LoginUtils.getLoginUser(request);
+			topFid = loginUser.getFid();
 		}
+
+		List<WfwAreaDTO> wfwRegionalArchitectures = wfwAreaApiService.listByFid(topFid);
+		if (CollectionUtils.isNotEmpty(wfwRegionalArchitectures)) {
+			List<Integer> subFids = wfwRegionalArchitectures.stream().map(WfwAreaDTO::getFid).collect(Collectors.toList());
+			fids.addAll(subFids);
+		} else {
+			fids.add(topFid);
+		}
+		activityQuery.setFids(fids);
+
 		Page<Activity> page = HttpServletRequestUtils.buid(request);
 		page = activityQueryService.pageErdosParticipate(page, activityQuery);
 		return RestRespDTO.success(page);

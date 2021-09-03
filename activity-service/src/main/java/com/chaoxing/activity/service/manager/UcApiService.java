@@ -110,37 +110,4 @@ public class UcApiService {
 		}
 		return Lists.newArrayList();
 	}
-
-	/**
-	* @Description
-	* @author huxiaolong
-	* @Date 2021-09-03 14:18:11
-	* @param request
-	* @param url
-	* @return java.util.List<java.lang.Object>
-	*/
-    public List<ClazzDTO> listTeacherTeachingClazz(HttpServletRequest request, String url) {
-		Integer fid = CookieUtils.getFid(request);
-		Integer uid = CookieUtils.getUid(request);
-		URL urlItem = URLUtil.url(url);
-		Map<CharSequence, CharSequence> urlQuery = UrlQuery.of(urlItem.getQuery(), StandardCharsets.UTF_8).getQueryMap();
-		if (StringUtils.isBlank(urlQuery.get("uid"))) {
-			urlQuery.put("uid", String.valueOf(uid));
-		}
-		if (StringUtils.isBlank(urlQuery.get("fid"))) {
-			urlQuery.put("fid", String.valueOf(fid));
-		}
-		String realUrl = StringUtils.isBlank(urlItem.getProtocol()) ? "http" : urlItem.getProtocol() + "://" + urlItem.getHost() + urlItem.getPath();
-
-		String result = restTemplate.getForObject(realUrl, String.class);
-		JSONObject jsonObject = JSON.parseObject(result);
-
-		if (jsonObject.getBoolean("success")) {
-			return JSON.parseArray(jsonObject.getJSONArray("data").toJSONString(), ClazzDTO.class);
-		} else {
-			String errorMessage = jsonObject.getString("message");
-			log.error("查询执教班级列表失败:{}", errorMessage);
-			throw new BusinessException(errorMessage);
-		}
-    }
 }

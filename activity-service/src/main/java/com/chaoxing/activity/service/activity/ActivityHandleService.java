@@ -121,6 +121,22 @@ public class ActivityHandleService {
 	@Resource
 	private MarketQueryService marketQueryService;
 
+
+	/**
+	* @Description 
+	* @author huxiaolong
+	* @Date 2021-09-03 18:27:01
+	* @param activityCreateParamDto
+	* @param signCreateParamDto
+	* @param wfwRegionalArchitectureDtos
+	* @param loginUser
+	* @return java.lang.Integer
+	*/
+	@Transactional(rollbackFor = Exception.class)
+	public Integer add(ActivityCreateParamDTO activityCreateParamDto, SignCreateParamDTO signCreateParamDto, List<WfwAreaDTO> wfwRegionalArchitectureDtos, LoginUserDTO loginUser) {
+		return this.add(activityCreateParamDto, signCreateParamDto, wfwRegionalArchitectureDtos, null, loginUser);
+	}
+	
 	/**新增活动
 	 * @Description
 	 * @author wwb
@@ -200,6 +216,21 @@ public class ActivityHandleService {
 		return signCreateResultDto;
 	}
 
+	/**
+	* @Description
+	* @author huxiaolong
+	* @Date 2021-09-03 18:24:46
+	* @param activityUpdateParamDto
+	* @param signCreateParam
+	* @param wfwRegionalArchitectureDtos
+	* @param loginUser
+	* @return void
+	*/
+	@Transactional(rollbackFor = Exception.class)
+	public void edit(ActivityUpdateParamDTO activityUpdateParamDto, SignCreateParamDTO signCreateParam, final List<WfwAreaDTO> wfwRegionalArchitectureDtos, LoginUserDTO loginUser) {
+		edit(activityUpdateParamDto, signCreateParam, wfwRegionalArchitectureDtos, null, loginUser);
+	}
+
 	/**修改活动
 	 * @Description
 	 * @author wwb
@@ -211,7 +242,7 @@ public class ActivityHandleService {
 	 * @return void
 	 */
 	@Transactional(rollbackFor = Exception.class)
-	public void edit(ActivityUpdateParamDTO activityUpdateParamDto, SignCreateParamDTO signCreateParam, final List<WfwAreaDTO> wfwRegionalArchitectureDtos, LoginUserDTO loginUser) {
+	public void edit(ActivityUpdateParamDTO activityUpdateParamDto, SignCreateParamDTO signCreateParam, final List<WfwAreaDTO> wfwRegionalArchitectureDtos, List<Integer> releaseClassIds, LoginUserDTO loginUser) {
 		Activity activity = activityUpdateParamDto.buildActivity();
 		activityValidationService.updateInputValidate(activity);
 		if (CollectionUtils.isEmpty(wfwRegionalArchitectureDtos)) {
@@ -254,7 +285,11 @@ public class ActivityHandleService {
 				);
 			}
 			// 处理发布范围
-			activityScopeService.batchAdd(activityId, wfwRegionalArchitectureDtos);
+			if (CollectionUtils.isNotEmpty(releaseClassIds)) {
+				activityClassService.batchAddOrUpdate(activityId, releaseClassIds);
+			} else {
+				activityScopeService.batchAdd(activityId, wfwRegionalArchitectureDtos);
+			}
 			// 活动改变
 			activityChangeEventService.dataChange(activity, existActivity, loginUser);
 			return null;
@@ -881,7 +916,7 @@ public class ActivityHandleService {
 		}
 
 		// todo 活动标识activityFlag propaganda_meeting 宣讲会是否需要设置
-		Integer activityId = this.add(activityCreateParam, signCreateParam, wfwAreaApiService.listByFid(createFid), null, loginUser);
+		Integer activityId = this.add(activityCreateParam, signCreateParam, wfwAreaApiService.listByFid(createFid), loginUser);
 		// 若活动由市场所建，新增活动市场与活动关联，共享活动到其他机构
 		List<Integer> shareFids = Optional.of(activityCreateDTO.getSharedFids()).filter(StringUtils::isNotBlank)
 				.map(v -> Arrays.stream(v.split(",")).map(Integer::valueOf).collect(Collectors.toList())).orElse(Lists.newArrayList());

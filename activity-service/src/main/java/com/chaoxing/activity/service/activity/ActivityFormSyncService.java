@@ -135,7 +135,7 @@ public class ActivityFormSyncService {
             signCreateParam.setSignIns(Lists.newArrayList(signInCreateParam));
         }
         // 新增活动
-        Integer activityId = activityHandleService.add(activityCreateParam, signCreateParam, defaultPublishAreas, null, loginUser);
+        Integer activityId = activityHandleService.add(activityCreateParam, signCreateParam, defaultPublishAreas, loginUser);
         // 立即发布
         activityHandleService.release(activityId, template.getMarketId(), loginUser);
         activity = activityQueryService.getById(activityId);

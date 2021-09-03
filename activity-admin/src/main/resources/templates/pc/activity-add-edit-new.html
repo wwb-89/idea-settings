@@ -1323,7 +1323,7 @@
                 // 加载发布班级数据
                 loadReleaseClassData: function (dataUrl) {
                     var $this = this;
-                    var url = ctx + "/api/user/clazz/teaching"
+                    var url = ctx + "/api/third-party/query/teaching/clazz"
                     app.ajaxPostWithLoading(url, {url: dataUrl}, function (data) {
                         if (data.success) {
                             $this.classList = data.data;

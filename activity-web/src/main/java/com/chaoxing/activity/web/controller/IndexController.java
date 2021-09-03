@@ -96,10 +96,10 @@ public class IndexController {
 	@RequestMapping("erdos")
 	public String erdosIndex(HttpServletRequest request, Model model, Integer wfwfid, Integer unitId, Integer state, Integer fid, @RequestParam(defaultValue = "") String flag, Integer marketId) {
 		Integer realFid = Optional.ofNullable(wfwfid).orElse(Optional.ofNullable(unitId).orElse(Optional.ofNullable(state).orElse(fid)));
-		return erdos(request, model, realFid, marketId);
+		return erdos(request, model, realFid, flag, marketId);
 	}
 
-	private String erdos(HttpServletRequest request, Model model, Integer fid, Integer marketId) {
+	private String erdos(HttpServletRequest request, Model model, Integer fid, String flag, Integer marketId) {
 		List<Classify> classifies;
 		if (marketId == null) {
 			if (fid == null) {
@@ -115,6 +115,7 @@ public class IndexController {
 		model.addAttribute("classifyNames", classifyNames);
 		model.addAttribute("topFid", fid);
 		model.addAttribute("marketId", marketId);
+		model.addAttribute("flag", flag);
 		if (UserAgentUtils.isMobileAccess(request)) {
 			return "mobile/special/erdos-index";
 		} else {

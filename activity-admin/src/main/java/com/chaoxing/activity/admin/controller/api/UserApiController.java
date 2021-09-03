@@ -34,9 +34,6 @@ public class UserApiController {
 	@Resource
 	private PassportApiService passportApiService;
 
-	@Resource
-	private UcApiService ucApiService;
-
 	/**查询用户的机构列表
 	 * @Description 
 	 * @author wwb
@@ -51,11 +48,6 @@ public class UserApiController {
 		PassportUserDTO passportUser = passportApiService.getByUid(loginUser.getUid());
 		List<OrgDTO> orgs = Optional.ofNullable(passportUser).map(PassportUserDTO::getAffiliations).orElse(Lists.newArrayList());
 		return RestRespDTO.success(orgs);
-	}
-
-	@RequestMapping("clazz/teaching")
-	public RestRespDTO teachingClazz(HttpServletRequest request, String url) {
-		return RestRespDTO.success(ucApiService.listTeacherTeachingClazz(request, url));
 	}
 
 }
