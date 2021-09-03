@@ -289,7 +289,8 @@ public class WfwFormApiService {
 		success = Optional.ofNullable(success).orElse(Boolean.FALSE);
 
 		if (success) {
-			JSONArray dataList = resultObj.getJSONObject("data").getJSONArray("dataList");
+			resultObj = resultObj.getJSONObject("data");
+			JSONArray dataList = resultObj.getJSONArray("dataList");
 			int totalRow = Integer.parseInt(resultObj.getString("totalRow"));
 			int totalPage = Integer.parseInt(resultObj.getString("totalPage"));
 			List<WfwFormDTO> records = WfwFormDTO.buildFromAdvanceResult(dataList);
