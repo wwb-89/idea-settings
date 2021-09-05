@@ -533,7 +533,7 @@ public class ActivityApiController {
 	/**重新选择门户模版
 	 * @Description 
 	 * @author wwb
-	 * @Date 2021-09-05 19:06:05
+	 * @Date 2021-09-05 19:14:43
 	 * @param activityId
 	 * @return com.chaoxing.activity.dto.RestRespDTO
 	*/
