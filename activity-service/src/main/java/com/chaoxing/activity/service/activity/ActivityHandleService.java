@@ -499,6 +499,40 @@ public class ActivityHandleService {
 		activityWebsiteIdSyncQueueService.add(activityId);
 	}
 
+	/**活动重新绑定门户模版
+	 * @Description 
+	 * @author wwb
+	 * @Date 2021-09-05 19:01:55
+	 * @param activityId
+	 * @return void
+	*/
+	public void reselectWebTemplate(Integer activityId) {
+		Activity activity = activityQueryService.getById(activityId);
+		if (activity == null) {
+			return;
+		}
+		Integer webTemplateId = activity.getWebTemplateId();
+		if (webTemplateId == null) {
+			return;
+		}
+		LoginUserDTO loginUser = LoginUserDTO.buildDefault(activity.getCreateUid(), activity.getCreateUserName(), activity.getCreateFid(), activity.getCreateOrgName());
+		// 创建模块
+		createModuleByWebTemplateId(activityId, webTemplateId, loginUser);
+		// 克隆
+		MhCloneParamDTO mhCloneParam = packageMhCloneParam(activity, webTemplateId, loginUser);
+		MhCloneResultDTO mhCloneResult = mhApiService.cloneTemplate(mhCloneParam);
+		activityMapper.update(null, new UpdateWrapper<Activity>()
+				.lambda()
+				.eq(Activity::getId, activityId)
+				.set(Activity::getWebTemplateId, webTemplateId)
+				.set(Activity::getPageId, mhCloneResult.getPageId())
+				.set(Activity::getPreviewUrl, mhCloneResult.getPreviewUrl())
+				.set(Activity::getEditUrl, mhCloneResult.getEditUrl())
+				.set(Activity::getWebsiteId, null)
+		);
+		activityWebsiteIdSyncQueueService.add(activityId);
+	}
+
 	/**创建模块
 	 * @Description
 	 * 找到是本地数据源的图标应用
