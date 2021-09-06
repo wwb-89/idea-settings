@@ -38,7 +38,7 @@ public class MarketHandleService {
 	private MarketMapper marketMapper;
 
 	@Resource
-	private MarketQueryService activityMarketQueryService;
+	private MarketQueryService marketQueryService;
 	@Resource
 	private TemplateHandleService templateHandleService;
 	@Resource
@@ -190,7 +190,7 @@ public class MarketHandleService {
 	public void update(ActivityMarketUpdateParamDTO activityMarketUpdateParamDto, OperateUserDTO operateUserDto) {
 		Market activityMarket = activityMarketUpdateParamDto.buildActivityMarket();
 		Integer marketId = activityMarket.getId();
-		Optional.ofNullable(activityMarketQueryService.getById(marketId)).orElseThrow(() -> new BusinessException("活动市场不存在"));
+		Optional.ofNullable(marketQueryService.getById(marketId)).orElseThrow(() -> new BusinessException("活动市场不存在"));
 		activityMarket.updateValidate(operateUserDto);
 		marketMapper.update(activityMarket, new LambdaUpdateWrapper<Market>()
 			.eq(Market::getId, activityMarket.getId())
@@ -241,5 +241,30 @@ public class MarketHandleService {
 		}
 		return template;
 	}
+
+	/**克隆市场和模板
+	* @Description
+	* @author huxiaolong
+	* @Date 2021-09-06 18:21:34
+	* @param originMarketId
+	* @param originTemplateId
+	* @param targetFid
+	* @param loginUser
+	* @return com.chaoxing.activity.model.Market
+	*/
+	@Transactional(rollbackFor = Exception.class)
+	public Market cloneMarketAndTemplate(Integer originMarketId, Integer originTemplateId, Integer targetFid, LoginUserDTO loginUser) {
+		Market originMarket = marketQueryService.getById(originMarketId);
+
+		Market newMarket = Market.cloneMarket(originMarket, targetFid);
+		newMarket.perfectCreator(loginUser.buildOperateUserDTO());
+		marketMapper.insert(newMarket);
+
+		// 给市场克隆一个模版
+		templateHandleService.cloneTemplate(newMarket.getId(), originTemplateId);
+		return newMarket;
+	}
+
+
 
 }

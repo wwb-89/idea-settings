@@ -12,6 +12,7 @@ import com.chaoxing.activity.model.Classify;
 import com.chaoxing.activity.model.MarketClassify;
 import com.chaoxing.activity.model.OrgClassify;
 import com.chaoxing.activity.service.activity.ActivityHandleService;
+import com.chaoxing.activity.util.ApplicationContextHolder;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.stereotype.Service;
@@ -255,5 +256,23 @@ public class ClassifyHandleService {
 		}
 		return classify;
 	}
+
+	/**获取或新增市场活动类型
+	* @Description
+	* @author huxiaolong
+	* @Date 2021-09-06 18:21:48
+	* @param marketId
+	* @param classifyName
+	* @return java.lang.Integer
+	*/
+	public Integer getOrAddMarketClassify(Integer marketId, String classifyName) {
+		Classify classify = classifyQueryService.getOrAddByName(classifyName);
+		MarketClassify marketClassify = classifyQueryService.getByClassifyIdAndMarketId(classify.getId(), marketId);
+		if (marketClassify == null) {
+			ApplicationContextHolder.getBean(ClassifyHandleService.class).addMarketClassify(MarketClassifyCreateParamDTO.builder().marketId(marketId).name(classifyName).build());
+		}
+		return classify.getId();
+	}
+
 
 }

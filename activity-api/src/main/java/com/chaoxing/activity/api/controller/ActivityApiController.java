@@ -530,4 +530,23 @@ public class ActivityApiController {
 		return RestRespDTO.success(Optional.ofNullable(activity).map(Activity::getActivityFlag).orElse(""));
 	}
 
+	/**活动克隆
+	* @Description
+	* @author huxiaolong
+	* @Date 2021-09-06 18:57:48
+	* @param activityId
+	* @param fid
+	* @param uid
+	* @return com.chaoxing.activity.dto.RestRespDTO
+	*/
+	@RequestMapping("{activityId}/clone")
+	public RestRespDTO cloneActivityToOrg(@PathVariable Integer activityId, Integer fid, Integer uid) {
+		PassportUserDTO passportUserDTO = passportApiService.getByUid(uid);
+		List<WfwAreaDTO> releaseScopes = wfwAreaApiService.listByFid(fid);
+		WfwAreaDTO wfwArea = Optional.ofNullable(releaseScopes).orElse(Lists.newArrayList()).stream().filter(v -> Objects.equals(v.getFid(), fid)).findFirst().orElse(new WfwAreaDTO());
+		LoginUserDTO loginUser = LoginUserDTO.buildDefault(Integer.valueOf(passportUserDTO.getUid()), passportUserDTO.getRealName(), fid, wfwArea.getName());
+		activityHandleService.cloneActivityToOrg(activityId, fid, releaseScopes, loginUser);
+		return RestRespDTO.success();
+	}
+
 }

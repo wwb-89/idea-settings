@@ -14,22 +14,28 @@ import com.chaoxing.activity.dto.manager.sign.create.SignCreateParamDTO;
 import com.chaoxing.activity.dto.manager.sign.create.SignCreateResultDTO;
 import com.chaoxing.activity.dto.manager.sign.create.SignUpCreateParamDTO;
 import com.chaoxing.activity.dto.manager.wfw.WfwAreaDTO;
+import com.chaoxing.activity.dto.module.ReadingModuleDataDTO;
 import com.chaoxing.activity.mapper.ActivityDetailMapper;
 import com.chaoxing.activity.mapper.ActivityMapper;
 import com.chaoxing.activity.model.*;
 import com.chaoxing.activity.service.WebTemplateService;
+import com.chaoxing.activity.service.activity.classify.ClassifyHandleService;
 import com.chaoxing.activity.service.activity.engine.ActivityComponentValueService;
 import com.chaoxing.activity.service.activity.engine.SignUpConditionService;
 import com.chaoxing.activity.service.activity.manager.ActivityManagerService;
+import com.chaoxing.activity.service.activity.market.MarketHandleService;
 import com.chaoxing.activity.service.activity.market.MarketQueryService;
 import com.chaoxing.activity.service.activity.menu.ActivityMenuService;
 import com.chaoxing.activity.service.activity.module.ActivityModuleService;
 import com.chaoxing.activity.service.activity.scope.ActivityClassService;
 import com.chaoxing.activity.service.activity.scope.ActivityScopeService;
+import com.chaoxing.activity.service.activity.template.TemplateQueryService;
 import com.chaoxing.activity.service.event.ActivityChangeEventService;
 import com.chaoxing.activity.service.inspection.InspectionConfigHandleService;
 import com.chaoxing.activity.service.manager.MhApiService;
+import com.chaoxing.activity.service.manager.module.ReadingApiService;
 import com.chaoxing.activity.service.manager.module.SignApiService;
+import com.chaoxing.activity.service.manager.module.WorkApiService;
 import com.chaoxing.activity.service.manager.wfw.WfwAreaApiService;
 import com.chaoxing.activity.service.queue.activity.ActivityInspectionResultDecideQueueService;
 import com.chaoxing.activity.service.queue.activity.ActivityWebsiteIdSyncQueueService;
@@ -74,7 +80,6 @@ public class ActivityHandleService {
 	private ActivityMapper activityMapper;
 	@Resource
 	private ActivityDetailMapper activityDetailMapper;
-
 	@Resource
 	private ActivityQueryService activityQueryService;
 	@Resource
@@ -121,7 +126,14 @@ public class ActivityHandleService {
 	private WfwAreaApiService wfwAreaApiService;
 	@Resource
 	private MarketQueryService marketQueryService;
-
+	@Resource
+	private MarketHandleService marketHandleService;
+	@Resource
+	private TemplateQueryService templateQueryService;
+	@Resource
+	private ClassifyHandleService classifyHandleService;
+	@Resource
+	private WorkApiService workApiService;
 
 	/**
 	* @Description
@@ -976,5 +988,49 @@ public class ActivityHandleService {
 				activityMarketService.remove(activity.getId(), activity.getMarketId(), true);
 			}
 		}
+	}
+
+	/**活动克隆
+	* @Description
+	* @author huxiaolong
+	* @Date 2021-09-06 17:21:35
+	* @param activityId
+	* @param fid
+	* @return void
+	*/
+	@Transactional(rollbackFor = Exception.class)
+	public void cloneActivityToOrg(Integer activityId, Integer fid, List<WfwAreaDTO> releaseScopes, LoginUserDTO loginUser) {
+		Integer uid = loginUser.getUid();
+		Activity originActivity;
+		if (activityId == null || fid == null ||  (originActivity = activityQueryService.getById(activityId)) == null) {
+			return;
+		}
+		// 判断活动市场
+		Template targetTemplate = templateQueryService.getOrgTemplateByActivityFlag(fid, Activity.ActivityFlagEnum.fromValue(originActivity.getActivityFlag()));
+		// 有模板肯定有市场，故只需要处理模板不存在的情况
+		if (targetTemplate == null) {
+			// 克隆市场，且克隆模板
+			Market newMarket = marketHandleService.cloneMarketAndTemplate(originActivity.getMarketId(), originActivity.getTemplateId(), fid, loginUser);
+			// 查询模板信息
+			targetTemplate = templateQueryService.getMarketFirstTemplate(newMarket.getId());
+		}
+		Integer marketId = targetTemplate.getMarketId();
+		// 重新设定活动的活动市场和模板id
+		originActivity.setOriginActivityId(originActivity.getId());
+		originActivity.setTemplateId(targetTemplate.getId());
+		originActivity.setMarketId(marketId);
+		// 处理克隆分类
+		if (StringUtils.isNotBlank(originActivity.getActivityClassifyName())) {
+			originActivity.setActivityClassifyId(classifyHandleService.getOrAddMarketClassify(marketId, originActivity.getActivityClassifyName()));
+		}
+		// 判断是否开启作品征集
+		if (originActivity.getOpenWork()) {
+			originActivity.setWorkId(workApiService.createDefault(uid, fid));
+		}
+		ActivityCreateParamDTO targetActivity = ActivityCreateParamDTO.buildFromActivity(originActivity);
+		// 报名签到
+		SignCreateParamDTO signCreateParam = SignCreateParamDTO.builder().name(targetActivity.getName()).build();
+		// 将克隆的活动保存
+		ApplicationContextHolder.getBean(ActivityHandleService.class).add(targetActivity, signCreateParam, releaseScopes, loginUser);
 	}
 }
