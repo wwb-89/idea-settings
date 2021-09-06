@@ -1528,6 +1528,9 @@
                             }
                             // 参与范围
                             var signUpTplComponent = $this.templateComponentMap[originId];
+                            if (!signUpTplComponent) {
+                                continue;
+                            }
                             for (var j = 0; j < signUpTplComponent.children.length; j++) {
                                 if (signUpTplComponent.children[j].code == 'wfw_participation_scope') {
                                     if (signUp.enableWfwParticipateScope) {
@@ -1561,7 +1564,7 @@
                                     app.showMsg("请选择"+ signUp.name +"不允许取消报名类型");
                                     return false;
                                 }
-                                if (activityApp.isEmpty(signUp.notAllowCancelTime)) {
+                                if (signUp.notAllowCancelType == 'custom' && activityApp.isEmpty(signUp.notAllowCancelTime)) {
                                     app.showMsg("请选择"+ signUp.name +"不允许取消报名时间");
                                     return false;
                                 }

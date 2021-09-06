@@ -344,10 +344,10 @@
                             }
                         }
                     });
-                    var templateComponentMap = {}, signUpTplComponentIds = [];
+                    var signUpTplComponentIds = [];
                     $($this.templateComponents).each(function() {
                         var _this = this;
-                        templateComponentMap[_this.id] = _this;
+                        $this.templateComponentMap[_this.id] = _this;
                         signUpTplComponentIds.push(_this.id);
 
                         if (_this.children && _this.children.length > 0) {
@@ -358,7 +358,7 @@
                                     // 一个报名目前只有一个报名信息填写，故map的映射为 { signUpTplComponentId : signUpFillInfoType }
                                     $this.fillInfoTypeMap[_this.id] = this.signUpFillInfoType
                                 }
-                                templateComponentMap[this.id] = this;
+                                $this.templateComponentMap[this.id] = this;
                             });
                         }
                     });
@@ -396,7 +396,6 @@
                         $this.$set($this.sign.signUps[i], "endNotAllowCancel", !this.endAllowCancel);
                         if (!this.endAllowCancel && !this.notAllowCancelType) {
                             $this.$set($this.sign.signUps[i], "notAllowCancelType", $this.notAllowCancelTypes[0].value);
-                            $this.$set($this.sign.signUps[i], "notAllowCancelDays", 0);
                         }
                         $this.$set($this.sign.signUps[i], "enable", !this.deleted);
 
@@ -411,7 +410,7 @@
                     $(signUpTplComponentIds).each(function (i) {
                         var originId = signUpTplComponentIds[i];
                         if (!$this.signUpMap[originId]) {
-                            var signUp = signApp.newSignUp(templateComponentMap[originId]);
+                            var signUp = signApp.newSignUp($this.templateComponentMap[originId]);
                             signUp.originId = originId;
                             signUp.deleted = true;
                             signUp.enable = !signUp.deleted;
@@ -472,16 +471,6 @@
                         var value = $this.signUpMap[signUpTplComponentId].notAllowCancelType;
                         if (value == "custom" && !$this.signUpMap[signUpTplComponentId].notAllowCancelTime) {
                             $this.$set($this.signUpMap[signUpTplComponentId], "notAllowCancelTime", $this.activity.startTimeStamp);
-                        }
-                    },
-                    cancelSignUpDaysValidate: function (signUpTplComponentId) {
-                        var $this = this;
-                        var days = $this.signUpMap[signUpTplComponentId].notAllowCancelDays || 0;
-
-                        try {
-                            $this.signUpMap[signUpTplComponentId].notAllowCancelDays = parseInt(days);
-                        } catch (e) {
-                            $this.signUpMap[signUpTplComponentId].notAllowCancelDays = 0;
                         }
                     },
                     signUpEnableChanged: function (tplComponentId) {
@@ -707,8 +696,89 @@
                             $this.signUpMap[signUpTplComponentId].contactsParticipateScopes.splice(scopeIndex, 1);
                         }
                     },
+                    validateForm: function () {
+                        var $this = this;
+                        // 报名验证
+                        var signUpKeys = Object.keys($this.signUpMap);
+                        for (var i = 0; i < signUpKeys.length; i++) {
+                            var originId = signUpKeys[i];
+                            var signUp = $this.signUpMap[originId];
+                            var deleted = signUp.deleted;
+                            if (!deleted) {
+                                if (activityApp.isEmpty(signUp.startTime)) {
+                                    app.showMsg(signUp.name + "开始时间不能为空");
+                                    return false;
+                                }
+                                if (activityApp.isEmpty(signUp.endTime)) {
+                                    app.showMsg(signUp + "结束时间不能为空");
+                                    return false;
+                                }
+                                if (signUp.startTime >= signUp.endTime) {
+                                    app.showMsg(signUp + "开始时间必须小于结束时间");
+                                    return false;
+                                }
+                                // 参与范围
+                                var signUpTplComponent = $this.templateComponentMap[originId];
+                                if (!signUpTplComponent) {
+                                    continue;
+                                }
+                                for (var j = 0; j < signUpTplComponent.children.length; j++) {
+                                    var child = signUpTplComponent.children[j];
+                                    if (child.code == 'wfw_participation_scope') {
+                                        if (signUp.enableWfwParticipateScope) {
+                                            var participateScopes = signUp.wfwParticipateScopes;
+                                            if (participateScopes.length < 1) {
+                                                app.showMsg("请选择"+ signUp.name +"参与范围");
+                                                return false;
+                                            }
+                                        }
+                                    } else if (child.code == 'contacts_participation_scope') {
+                                        if (signUp.enableContactsParticipateScope) {
+                                            var participateScopes = signUp.contactsParticipateScopes;
+                                            if (participateScopes.length < 1) {
+                                                app.showMsg("请选择"+ signUp.name +"参与范围");
+                                                return false;
+                                            }
+                                        }
+                                    }
+
+                                }
+                                if (signUp.limitPerson) {
+                                    // 启用人数限制
+                                    if (signUp.personLimit < 1) {
+                                        app.showMsg(signUp.name + "请输入正确的"+ signUp.name +"限制人数");
+                                        return false;
+                                    }
+                                }
+                                if (signUp.endNotAllowCancel) {
+                                    if (activityApp.isEmpty(signUp.notAllowCancelType)) {
+                                        app.showMsg("请选择"+ signUp.name +"不允许取消报名类型");
+                                        return false;
+                                    }
+                                    if (signUp.notAllowCancelType == 'custom' && activityApp.isEmpty(signUp.notAllowCancelTime)) {
+                                        app.showMsg("请选择"+ signUp.name +"不允许取消报名时间");
+                                        return false;
+                                    }
+                                }
+                                if (signUp.fillInfo) {
+                                    if (activityApp.isEmpty(signUp.fillInfoFormId)) {
+                                        app.showMsg("请配置"+ signUp.name +"填报信息");
+                                        return false;
+                                    }
+                                }
+                                if (activityApp.isEmpty(signUp.btnName)) {
+                                    app.showMsg(signUp.name + "按钮名称不能为空");
+                                    return false;
+                                }
+                            }
+                        }
+                        return true;
+                    },
                     submitForm: function () {
                         var $this = this;
+                        if (!$this.validateForm()) {
+                            return;
+                        }
                         var url = ctx + "/api/activity/setting/sign-up";
                         var sign = $this.packageSubmitSign();
                         var sucTemplateComponentIds =  $this.packageSignUpConditionEnable();
