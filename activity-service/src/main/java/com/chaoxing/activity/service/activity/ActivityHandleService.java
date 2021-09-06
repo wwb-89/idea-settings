@@ -1,6 +1,7 @@
 package com.chaoxing.activity.service.activity;
 
 import com.alibaba.fastjson.JSON;
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.chaoxing.activity.dto.LoginUserDTO;
@@ -134,15 +135,15 @@ public class ActivityHandleService {
 	private WorkApiService workApiService;
 
 	/**
-	* @Description
-	* @author huxiaolong
-	* @Date 2021-09-03 18:27:01
-	* @param activityCreateParamDto
-	* @param signCreateParamDto
-	* @param wfwRegionalArchitectureDtos
-	* @param loginUser
-	* @return java.lang.Integer
-	*/
+	 * @Description
+	 * @author huxiaolong
+	 * @Date 2021-09-03 18:27:01
+	 * @param activityCreateParamDto
+	 * @param signCreateParamDto
+	 * @param wfwRegionalArchitectureDtos
+	 * @param loginUser
+	 * @return java.lang.Integer
+	 */
 	@Transactional(rollbackFor = Exception.class)
 	public Integer add(ActivityCreateParamDTO activityCreateParamDto, SignCreateParamDTO signCreateParamDto, List<WfwAreaDTO> wfwRegionalArchitectureDtos, LoginUserDTO loginUser) {
 		return ApplicationContextHolder.getBean(ActivityHandleService.class).add(activityCreateParamDto, signCreateParamDto, wfwRegionalArchitectureDtos, null, loginUser);
@@ -228,15 +229,15 @@ public class ActivityHandleService {
 	}
 
 	/**
-	* @Description
-	* @author huxiaolong
-	* @Date 2021-09-03 18:24:46
-	* @param activityUpdateParamDto
-	* @param signCreateParam
-	* @param wfwRegionalArchitectureDtos
-	* @param loginUser
-	* @return void
-	*/
+	 * @Description
+	 * @author huxiaolong
+	 * @Date 2021-09-03 18:24:46
+	 * @param activityUpdateParamDto
+	 * @param signCreateParam
+	 * @param wfwRegionalArchitectureDtos
+	 * @param loginUser
+	 * @return void
+	 */
 	@Transactional(rollbackFor = Exception.class)
 	public Activity edit(ActivityUpdateParamDTO activityUpdateParamDto, SignCreateParamDTO signCreateParam, final List<WfwAreaDTO> wfwRegionalArchitectureDtos, LoginUserDTO loginUser) {
 		return ApplicationContextHolder.getBean(ActivityHandleService.class).edit(activityUpdateParamDto, signCreateParam, wfwRegionalArchitectureDtos, null, loginUser);
@@ -366,15 +367,15 @@ public class ActivityHandleService {
 	}
 
 	/**更新报名设置信息
-	* @Description
-	* @author huxiaolong
-	* @Date 2021-08-04 17:15:42
-	* @param activityId
-	* @param sucTemplateComponentIds 开启报名条件templateComponentId
-	* @param signCreateParam
-	* @param loginUser
-	* @return void
-	*/
+	 * @Description
+	 * @author huxiaolong
+	 * @Date 2021-08-04 17:15:42
+	 * @param activityId
+	 * @param sucTemplateComponentIds 开启报名条件templateComponentId
+	 * @param signCreateParam
+	 * @param loginUser
+	 * @return void
+	 */
 	@Transactional(rollbackFor = Exception.class)
 	public void updateSignUp(Integer activityId, List<Integer> sucTemplateComponentIds, SignCreateParamDTO signCreateParam, LoginUserDTO loginUser) {
 		String activityEditLockKey = getActivityEditLockKey(activityId);
@@ -443,15 +444,15 @@ public class ActivityHandleService {
 
 
 	/**更新fid下所有market的中活动id为activityId的活动
-	* @Description
-	* @author huxiaolong
-	* @Date 2021-08-12 17:42:15
-	* @param activityId
-	* @param fid
-	* @param uid
-	* @param released
-	* @return void
-	*/
+	 * @Description
+	 * @author huxiaolong
+	 * @Date 2021-08-12 17:42:15
+	 * @param activityId
+	 * @param fid
+	 * @param uid
+	 * @param released
+	 * @return void
+	 */
 	@Transactional(rollbackFor = Exception.class)
 	public void updateActivityReleaseStatus(Integer activityId, Integer fid, Integer uid, boolean released) {
 		LoginUserDTO loginUser = LoginUserDTO.buildDefault(uid, "", fid, "");
@@ -499,14 +500,14 @@ public class ActivityHandleService {
 	}
 
 	/**删除fid下所有market的中活动id为activityId的活动
-	* @Description
-	* @author huxiaolong
-	* @Date 2021-08-12 17:40:07
-	* @param fid
-	* @param activityId
-	* @param uid
-	* @return com.chaoxing.activity.model.Activity
-	*/
+	 * @Description
+	 * @author huxiaolong
+	 * @Date 2021-08-12 17:40:07
+	 * @param fid
+	 * @param activityId
+	 * @param uid
+	 * @return com.chaoxing.activity.model.Activity
+	 */
 	@Transactional(rollbackFor = Exception.class)
 	public void deleteActivityUnderFid(Integer fid, Integer activityId, Integer uid) {
 		LoginUserDTO loginUser = LoginUserDTO.buildDefault(uid, "", fid, "");
@@ -528,7 +529,7 @@ public class ActivityHandleService {
 	 * @param newWebTemplateId
 	 * @param loginUser
 	 * @return void
-	*/
+	 */
 	private void bindWebTemplate(Activity activity, Integer newWebTemplateId, LoginUserDTO loginUser) {
 		// 如果门户模版id没有变化则忽略绑定模版的操作
 		if (Objects.equals(activity.getWebTemplateId(), newWebTemplateId)) {
@@ -544,40 +545,6 @@ public class ActivityHandleService {
 				.lambda()
 				.eq(Activity::getId, activityId)
 				.set(Activity::getWebTemplateId, newWebTemplateId)
-				.set(Activity::getPageId, mhCloneResult.getPageId())
-				.set(Activity::getPreviewUrl, mhCloneResult.getPreviewUrl())
-				.set(Activity::getEditUrl, mhCloneResult.getEditUrl())
-				.set(Activity::getWebsiteId, null)
-		);
-		activityWebsiteIdSyncQueueService.add(activityId);
-	}
-
-	/**活动重新绑定门户模版
-	 * @Description 
-	 * @author wwb
-	 * @Date 2021-09-05 19:01:55
-	 * @param activityId
-	 * @return void
-	*/
-	public void reselectWebTemplate(Integer activityId) {
-		Activity activity = activityQueryService.getById(activityId);
-		if (activity == null) {
-			return;
-		}
-		Integer webTemplateId = activity.getWebTemplateId();
-		if (webTemplateId == null) {
-			return;
-		}
-		LoginUserDTO loginUser = LoginUserDTO.buildDefault(activity.getCreateUid(), activity.getCreateUserName(), activity.getCreateFid(), activity.getCreateOrgName());
-		// 创建模块
-		createModuleByWebTemplateId(activityId, webTemplateId, loginUser);
-		// 克隆
-		MhCloneParamDTO mhCloneParam = packageMhCloneParam(activity, webTemplateId, loginUser);
-		MhCloneResultDTO mhCloneResult = mhApiService.cloneTemplate(mhCloneParam);
-		activityMapper.update(null, new UpdateWrapper<Activity>()
-				.lambda()
-				.eq(Activity::getId, activityId)
-				.set(Activity::getWebTemplateId, webTemplateId)
 				.set(Activity::getPageId, mhCloneResult.getPageId())
 				.set(Activity::getPreviewUrl, mhCloneResult.getPreviewUrl())
 				.set(Activity::getEditUrl, mhCloneResult.getEditUrl())
@@ -869,14 +836,14 @@ public class ActivityHandleService {
 	}
 
 	/**更新机构创建的活动（没有活动市场id）的分类id
-	 * @Description 
+	 * @Description
 	 * @author wwb
 	 * @Date 2021-07-19 17:32:11
 	 * @param fid
 	 * @param classifyId
 	 * @param oldClassifyId
 	 * @return void
-	*/
+	 */
 	public void updateOrgActivityClassifyId(Integer fid, Integer classifyId, Integer oldClassifyId) {
 		activityMapper.update(null, new LambdaUpdateWrapper<Activity>()
 				.eq(Activity::getCreateFid, fid)
@@ -887,14 +854,14 @@ public class ActivityHandleService {
 	}
 
 	/**更新活动市场关联的活动的分类id
-	 * @Description 
+	 * @Description
 	 * @author wwb
 	 * @Date 2021-07-19 17:32:47
 	 * @param marketId
 	 * @param classifyId
 	 * @param oldClassifyId
 	 * @return void
-	*/
+	 */
 	public void updateMarketActivityClassifyId(Integer marketId, Integer classifyId, Integer oldClassifyId) {
 		activityMapper.update(null, new LambdaUpdateWrapper<Activity>()
 				.eq(Activity::getMarketId, marketId)
@@ -904,13 +871,13 @@ public class ActivityHandleService {
 	}
 
 	/**置顶活动
-	* @Description
-	* @author huxiaolong
-	* @Date 2021-08-10 17:44:18
-	* @param activityId
-	* @param marketId
-	* @return void
-	*/
+	 * @Description
+	 * @author huxiaolong
+	 * @Date 2021-08-10 17:44:18
+	 * @param activityId
+	 * @param marketId
+	 * @return void
+	 */
 	@Transactional(rollbackFor = Exception.class)
 	public void setActivityTop(Integer activityId, Integer marketId) {
 		if (activityId == null || marketId == null) {
@@ -920,13 +887,13 @@ public class ActivityHandleService {
 	}
 
 	/**取消活动置顶
-	* @Description 
-	* @author huxiaolong
-	* @Date 2021-08-10 17:44:06
-	* @param activityId
-	* @param marketId
-	* @return void
-	*/
+	 * @Description
+	 * @author huxiaolong
+	 * @Date 2021-08-10 17:44:06
+	 * @param activityId
+	 * @param marketId
+	 * @return void
+	 */
 	@Transactional(rollbackFor = Exception.class)
 	public void cancelActivityTop(Integer activityId, Integer marketId) {
 		if (activityId == null || marketId == null) {
@@ -936,13 +903,13 @@ public class ActivityHandleService {
 	}
 
 	/**
-	* @Description
-	* @author huxiaolong
-	* @Date 2021-08-20 19:53:36
-	* @param activityCreateDTO
-	* @param loginUser
-	* @return com.chaoxing.activity.model.Activity
-	*/
+	 * @Description
+	 * @author huxiaolong
+	 * @Date 2021-08-20 19:53:36
+	 * @param activityCreateDTO
+	 * @param loginUser
+	 * @return com.chaoxing.activity.model.Activity
+	 */
 	@Transactional(rollbackFor = Exception.class)
 	public Activity newSharedActivity(ActivityCreateDTO activityCreateDTO, LoginUserDTO loginUser) {
 		Integer createFid = activityCreateDTO.getFid();
@@ -972,12 +939,12 @@ public class ActivityHandleService {
 	}
 
 	/**todo 待调整
-	* @Description 
-	* @author huxiaolong
-	* @Date 2021-08-20 18:40:04
-	* @param activityCreateDTO
-	* @return void
-	*/
+	 * @Description
+	 * @author huxiaolong
+	 * @Date 2021-08-20 18:40:04
+	 * @param activityCreateDTO
+	 * @return void
+	 */
 	public void updatePartialActivityInfo(ActivityCreateDTO activityCreateDTO, LoginUserDTO loginUser) {
 		ActivityCreateParamDTO activityParam = activityCreateDTO.getActivityInfo();
 		Activity activity = activityQueryService.getById(activityParam.getId());
@@ -992,13 +959,13 @@ public class ActivityHandleService {
 	}
 
 	/**
-	* @Description 
-	* @author huxiaolong
-	* @Date 2021-08-27 17:56:10
-	* @param formId
-	* @param formUserId
-	* @return void
-	*/
+	 * @Description
+	 * @author huxiaolong
+	 * @Date 2021-08-27 17:56:10
+	 * @param formId
+	 * @param formUserId
+	 * @return void
+	 */
 	@Transactional(rollbackFor = Exception.class)
 	public void deleteByOriginAndFormUserId(Integer formId, Integer formUserId) {
 		if (formId == null || formUserId == null) {
@@ -1023,13 +990,13 @@ public class ActivityHandleService {
 	}
 
 	/**活动克隆
-	* @Description
-	* @author huxiaolong
-	* @Date 2021-09-06 17:21:35
-	* @param activityId
-	* @param fid
-	* @return void
-	*/
+	 * @Description
+	 * @author huxiaolong
+	 * @Date 2021-09-06 17:21:35
+	 * @param activityId
+	 * @param fid
+	 * @return void
+	 */
 	@Transactional(rollbackFor = Exception.class)
 	public void cloneActivityToOrg(Integer activityId, Integer fid, List<WfwAreaDTO> releaseScopes, LoginUserDTO loginUser) {
 		Integer uid = loginUser.getUid();
@@ -1064,6 +1031,10 @@ public class ActivityHandleService {
 		originActivity.setReadingId(null);
 		originActivity.setReadingModuleId(null);
 		ActivityCreateParamDTO targetActivity = ActivityCreateParamDTO.buildFromActivity(originActivity);
+		activityDetailMapper.selectList(new LambdaQueryWrapper<ActivityDetail>()
+				.eq(ActivityDetail::getActivityId, originActivity.getOriginActivityId()))
+				.stream().findFirst()
+				.ifPresent(originDetail -> targetActivity.setIntroduction(originDetail.getIntroduction()));
 		// 报名签到
 		SignCreateParamDTO signCreateParam = SignCreateParamDTO.builder().name(targetActivity.getName()).build();
 		// 将克隆的活动保存
