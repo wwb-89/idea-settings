@@ -32,6 +32,8 @@ public class ActivityMarketCreateParamDTO {
 	private Integer fid;
 	/** 分类id（微服务创建使用） */
 	private Integer classifyId;
+	/** 活动标识 */
+	private String activityFlag;
 
 	public Market buildActivityMarket() {
 		return Market.builder()

@@ -63,11 +63,12 @@ public class MarketController {
 	*/
 	@LoginRequired
 	@RequestMapping("new/from-wfw")
-	public String newFromWfw(HttpServletRequest request, Model model, Integer classifyId, Integer fid, String backUrl) {
+	public String newFromWfw(HttpServletRequest request, Model model, Integer classifyId, Integer fid, String activityFlag, String backUrl) {
 		fid = Optional.ofNullable(fid).orElse(LoginUtils.getLoginUser(request).getFid());
 		ActivityMarketCreateParamDTO market = ActivityMarketCreateParamDTO.build(fid, classifyId);
 		model.addAttribute("market", market);
 		model.addAttribute("backUrl", backUrl);
+		model.addAttribute("activityFlag", activityFlag);
 		return "pc/market/wfw-market";
 	}
 

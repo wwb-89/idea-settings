@@ -226,11 +226,11 @@
                                             添加
                                         </div>
                                     </div>
-                                    <div class="already_add" v-show="participatedOrgs.length > 0">
+                                    <div class="already_add" v-show="participatedOrgs.length > 0" @click="toAddParticipateScope">
                                         <div>
                                             已选择{{participatedOrgs.length}}个单位
                                         </div>
-                                        <img src="/static/pc/assets/images/edit-3.png" th:src="@{/pc/assets/images/edit-3.png}" @click="toAddParticipateScope">
+                                        <img src="/static/pc/assets/images/edit-3.png" th:src="@{/pc/assets/images/edit-3.png}">
                                     </div>
                                 </template>
                                 <span class="tips" v-if="item.introduction">{{item.introduction}}</span>
@@ -890,7 +890,7 @@
                     if (this.code == 'sign_up' || this.code == 'company_sign_up') {
                         isPreSpecialPartition = true;
                     } else {
-                                    eSpecialPartition = false;
+                        isPreSpecialPartition = false;
                     }
                 });
                 $(partitionIndexs).each(function (i) {
@@ -1323,11 +1323,11 @@
                 // 加载发布班级数据
                 loadReleaseClassData: function (dataUrl) {
                     var $this = this;
-                    // var pattern = new RegExp('/http(s)?://([\\w-]+\\.)+[\\w-]+(/[\\w- ./?%&=]*)?/');
-                    // if (!pattern.test(dataUrl)) {
-                    //     app.showMsg("发布班级数据接口地址非法");
-                    //     return;
-                    // }
+                    var pattern = /^(https?:\/\/(([a-zA-Z0-9]+-?)+[a-zA-Z0-9]+\.)+[a-zA-Z]+)(:\d+)?(\/.*)?(\?.*)?(#.*)?$/;
+                    if (!pattern.test(dataUrl)) {
+                        app.showMsg("发布班级数据接口地址非法");
+                        return;
+                    }
                     var url = ctx + "/api/third-party/query/teaching/clazz"
                     app.ajaxPostWithLoading(url, {url: dataUrl}, function (data) {
                         if (data.success) {
@@ -1555,11 +1555,6 @@
                         app.showMsg("请上传封面");
                         return false;
                     }
-                    // 发布范围  todo 暂时屏蔽
-                    // if ($this.isShowActivityParticipateScope() && (activityApp.isEmpty($this.participatedOrgs) || $this.participatedOrgs.length < 1)) {
-                    //     app.showMsg("请选择发布范围");
-                    //     return false;
-                    // }
                     // 定时发布
                     if ($this.activity.timingRelease && activityApp.isEmpty($this.activity.timingReleaseTimeStamp)) {
                         app.showMsg("请选择发布时间");

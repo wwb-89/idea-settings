@@ -78,8 +78,10 @@ public class MarketHandleService {
 	public Market add(ActivityMarketCreateParamDTO activityMarketCreateParamDto, OperateUserDTO operateUserDto) {
 		Market activityMarket = ApplicationContextHolder.getBean(MarketHandleService.class).createMarket(activityMarketCreateParamDto, operateUserDto);
 		Integer marketId = activityMarket.getId();
-		// 给市场克隆一个通用模版
-		templateHandleService.cloneTemplate(marketId, templateQueryService.getSystemTemplateIdByActivityFlag(Activity.ActivityFlagEnum.NORMAL));
+		// 给市场克隆一个模版
+		String activityFlag = activityMarketCreateParamDto.getActivityFlag();
+		Activity.ActivityFlagEnum activityFlagEnum = Optional.ofNullable(Activity.ActivityFlagEnum.fromValue(activityFlag)).orElse(Activity.ActivityFlagEnum.NORMAL);
+		templateHandleService.cloneTemplate(marketId, templateQueryService.getSystemTemplateIdByActivityFlag(activityFlagEnum));
 		return activityMarket;
 	}
 
@@ -93,13 +95,13 @@ public class MarketHandleService {
 	*/
 	@Transactional(rollbackFor = Exception.class)
 	public Market addFromWfw(ActivityMarketCreateParamDTO activityMarketCreateParamDto, OperateUserDTO operateUserDto) {
-		Market activityMarket = add(activityMarketCreateParamDto, operateUserDto);
+		Market market = add(activityMarketCreateParamDto, operateUserDto);
 		// 创建微服务应用
-		Integer wfwAppId = addWfwApp(activityMarket, activityMarketCreateParamDto.getClassifyId());
+		Integer wfwAppId = addWfwApp(market, activityMarketCreateParamDto.getClassifyId());
 		// 绑定应用的微服务id
-		activityMarket.bindWfwApp(wfwAppId);
-		update(ActivityMarketUpdateParamDTO.buildFromActivityMarket(activityMarket));
-		return activityMarket;
+		market.bindWfwApp(wfwAppId);
+		update(ActivityMarketUpdateParamDTO.buildFromActivityMarket(market));
+		return market;
 	}
 
 	private Integer addWfwApp(Market activityMarket, Integer classifyId) {
