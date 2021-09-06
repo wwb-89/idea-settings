@@ -4,7 +4,6 @@ import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
-import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.chaoxing.activity.dto.LoginUserDTO;
 import com.chaoxing.activity.dto.activity.ActivityComponentValueDTO;
@@ -874,7 +873,7 @@ public class ActivityQueryService {
 				.ne(Activity::getStatus, Activity.StatusEnum.DELETED.getValue())
 				.select(Activity::getWorkId)
 		);
-		return Optional.ofNullable(onlyWorkIds).orElse(Lists.newArrayList()).stream().map(Activity::getWorkId).filter(v -> v != null).collect(Collectors.toList());
+		return Optional.ofNullable(onlyWorkIds).orElse(Lists.newArrayList()).stream().filter(v -> v != null).map(Activity::getWorkId).filter(v -> v != null).collect(Collectors.toList());
 	}
 
 }
