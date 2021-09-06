@@ -3,7 +3,7 @@ package com.chaoxing.activity.util;
 import cn.hutool.core.net.url.UrlQuery;
 import cn.hutool.core.util.URLUtil;
 import com.chaoxing.activity.util.exception.BusinessException;
-import org.apache.commons.lang3.StringUtils;
+import com.google.common.collect.Maps;
 
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
@@ -35,7 +35,7 @@ public class URLUtils {
             throw new BusinessException("url非法");
         }
         URL urlItem = URLUtil.url(url);
-        Map<CharSequence, CharSequence> existQueryParam = UrlQuery.of(urlItem.getQuery(), StandardCharsets.UTF_8).getQueryMap();
+        Map<CharSequence, CharSequence> existQueryParam = Maps.newHashMap(UrlQuery.of(urlItem.getQuery(), StandardCharsets.UTF_8).getQueryMap());
         paramMap.forEach((paramKey, paramValue) -> {
             if (!existQueryParam.containsKey(paramKey)) {
                 existQueryParam.put(paramKey, paramValue);

@@ -5,6 +5,7 @@ import com.alibaba.fastjson.JSONObject;
 import com.chaoxing.activity.util.CookieUtils;
 import com.chaoxing.activity.util.URLUtils;
 import com.chaoxing.activity.util.exception.BusinessException;
+import com.google.common.collect.Maps;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
@@ -36,8 +37,10 @@ public class ThirdPartyApiService {
      * @param url
      * @return java.util.List<java.lang.Object>
      */
-    public List<?> getDataFromThirdPartyUrl(HttpServletRequest request, String url, List<String> cookieKeys, Class<?> clazz) {
-        Map<String, String> paramMap = CookieUtils.getCookieMap(request, cookieKeys);
+    public List<?> getDataFromThirdPartyUrl(HttpServletRequest request, String url, Class<?> clazz) {
+        Map<String, String> paramMap = Maps.newHashMap();
+        paramMap.put("uid", String.valueOf(CookieUtils.getUid(request)));
+        paramMap.put("fid", String.valueOf(CookieUtils.getFid(request)));
         String realUrl = URLUtils.packageParam2URL(url, paramMap);
 
         String result = restTemplate.getForObject(realUrl, String.class);
