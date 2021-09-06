@@ -70,4 +70,4 @@ INSERT INTO `activity_engine`.`t_template_component` (`id`, `pid`, `template_id`
 INSERT INTO `activity_engine`.`t_template_component` (`id`, `pid`, `template_id`, `component_id`, `name`, `introduction`, `is_required`, `sequence`, `is_deleted`, `type`, `data_origin`, `origin_identify`, `field_flag`) VALUES (157, 0, 9, 43, '阅读', '开启后，可以从书库导入或上传图书，并配置阅读测评', 0, 7, 0, NULL, NULL, NULL, NULL);
 INSERT INTO `activity_engine`.`t_template_component` (`id`, `pid`, `template_id`, `component_id`, `name`, `introduction`, `is_required`, `sequence`, `is_deleted`, `type`, `data_origin`, `origin_identify`, `field_flag`) VALUES (158, 0, 9, 40, '活动说明', NULL, 0, 8, 0, NULL, NULL, NULL, NULL);
 
-
+ALTER TABLE t_activity ADD COLUMN origin_activity_id INT(11) COMMENT '源活动id';

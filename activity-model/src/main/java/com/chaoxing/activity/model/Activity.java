@@ -151,6 +151,8 @@ public class Activity {
     /** 报名成功是否发送通知; column: is_signed_up_notice*/
     @TableField(value = "is_signed_up_notice")
     private Boolean signedUpNotice;
+    /** 源活动id; column: origin_activity_id */
+    private Integer originActivityId;
 
     // 附加
     /** 开始时间字符串 */

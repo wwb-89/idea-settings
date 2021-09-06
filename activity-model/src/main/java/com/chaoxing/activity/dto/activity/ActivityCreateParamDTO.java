@@ -114,6 +114,8 @@ public class ActivityCreateParamDTO {
 	private Boolean signedUpNotice;
 	/** 活动标识 */
 	private String activityFlag;
+	/** 源活动id */
+	private Integer originActivityId;
 
 
 	/** 活动组件值对象列表 */
@@ -168,6 +170,7 @@ public class ActivityCreateParamDTO {
 				.status(getStatus())
 				.signedUpNotice(getSignedUpNotice())
 				.activityFlag(getActivityFlag())
+				.originActivityId(getOriginActivityId())
 				.build();
 	}
 
@@ -222,6 +225,7 @@ public class ActivityCreateParamDTO {
 				.templateId(activity.getTemplateId())
 				.signedUpNotice(activity.getSignedUpNotice())
 				.activityFlag(activity.getActivityFlag())
+				.originActivityId(activity.getOriginActivityId())
 				.build();
 	}
 
