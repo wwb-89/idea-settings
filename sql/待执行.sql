@@ -1,6 +1,3 @@
-ALTER TABLE t_activity ADD COLUMN is_signed_up_notice TINYINT(1) DEFAULT 0 COMMENT '报名成功是否发送通知';
-
-
 -- t_component组件字段迁移至t_template_component模板组件关联关系表
 ALTER TABLE t_template_component ADD type VARCHAR (50) COMMENT '组件类型。自定义组件才有类型：文本、单选、多选';
 ALTER TABLE t_template_component ADD data_origin VARCHAR (50) COMMENT '数据来源';
@@ -10,10 +7,10 @@ ALTER TABLE t_template_component ADD field_flag VARCHAR (50) COMMENT '字段标�
 UPDATE t_template_component t, t_component t1
 SET t.type = t1.type,
     t.data_origin = t1.data_origin,
-    t.origin_identity = t1.origin_identity,
+    t.origin_identify = t1.origin_identify,
     t.field_flag = t1.field_flag
 WHERE
-    t.component_id = t1.id AND t.template_id = t1.template_id
+    t.component_id = t1.id AND t.template_id = t1.template_id;
 
 
 -- 创建活动班级关联表
@@ -31,8 +28,6 @@ INSERT INTO `t_component` (`id`, `pid`, `name`, `code`, `is_required`, `introduc
 ALTER TABLE t_activity ADD COLUMN is_open_reading TINYINT(1) DEFAULT 0 COMMENT '是否开启阅读';
 ALTER TABLE t_activity ADD COLUMN reading_id INT(11) COMMENT '阅读id';
 ALTER TABLE t_activity ADD COLUMN reading_module_id INT(11) COMMENT '阅读模块id';
-
-
 
 -- 班级活动模板
 INSERT INTO `activity_engine`.`t_template` (`id`, `name`, `market_id`, `origin_template_id`, `is_system`, `activity_flag`, `fid`, `cover_url`, `sequence`, `create_time`, `create_uid`, `update_time`, `update_uid`) VALUES (7, '班级活动', NULL , NULL , 1, 'class', NULL, '', 7, '2021-09-02 17:15:17', 172649568, '2021-09-02 17:15:17', 172649568);

@@ -22,3 +22,6 @@ INSERT INTO `activity_engine`.`t_template_component` (`id`, `pid`, `template_id`
 INSERT INTO `activity_engine`.`t_template_component` (`id`, `pid`, `template_id`, `component_id`, `name`, `introduction`, `is_required`, `sequence`, `is_deleted`) VALUES (127, 116, 6, 36, '报名名单公开', '开启后，所有人都能看到报名人员名单', 0, 19, 0);
 INSERT INTO `activity_engine`.`t_template_component` (`id`, `pid`, `template_id`, `component_id`, `name`, `introduction`, `is_required`, `sequence`, `is_deleted`) VALUES (128, 116, 6, 37, '取消报名', '开启后，报名结束后参与者不能取消报名', 0, 20, 0);
 INSERT INTO `activity_engine`.`t_template_component` (`id`, `pid`, `template_id`, `component_id`, `name`, `introduction`, `is_required`, `sequence`, `is_deleted`) VALUES (129, 0, 6, 40, '基本信息', '', 0, -1, 0);
+
+ALTER TABLE t_activity ADD COLUMN is_signed_up_notice TINYINT(1) DEFAULT 0 COMMENT '报名成功是否发送通知';
+
