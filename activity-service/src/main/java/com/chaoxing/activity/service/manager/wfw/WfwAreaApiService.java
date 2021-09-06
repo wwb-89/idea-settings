@@ -52,11 +52,12 @@ public class WfwAreaApiService {
 	 */
 	@Cacheable(value = CacheConstant.CACHE_KEY_PREFIX + "org_wfw_area_code")
 	public List<WfwAreaDTO> listByFid(Integer fid) {
-		List<WfwAreaDTO> result;
+		List<WfwAreaDTO> result = Lists.newArrayList();
+		if (fid == null) {
+			return result;
+		}
 		List<String> codes = listCodeByFid(fid);
-		if (CollectionUtils.isEmpty(codes)) {
-			result = Lists.newArrayList();
-		} else {
+		if (CollectionUtils.isNotEmpty(codes)) {
 			String code = codes.get(0);
 			result = listByCode(code);
 		}

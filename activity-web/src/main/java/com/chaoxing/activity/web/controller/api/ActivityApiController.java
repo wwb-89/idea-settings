@@ -15,6 +15,7 @@ import com.chaoxing.activity.util.HttpServletRequestUtils;
 import com.chaoxing.activity.util.annotation.LoginRequired;
 import com.chaoxing.activity.util.exception.BusinessException;
 import com.chaoxing.activity.web.util.LoginUtils;
+import com.google.common.collect.Lists;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -59,7 +60,6 @@ public class ActivityApiController {
 	public RestRespDTO list(HttpServletRequest request, String data) {
 		ActivityQueryDTO activityQuery = JSON.parseObject(data, ActivityQueryDTO.class);
 		String areaCode = activityQuery.getAreaCode();
-		List<Integer> fids = new ArrayList<>();
 		List<WfwAreaDTO> wfwRegionalArchitectures;
 		Integer topFid = activityQuery.getTopFid();
 		if (StringUtils.isNotBlank(areaCode)) {
@@ -67,11 +67,11 @@ public class ActivityApiController {
 			wfwRegionalArchitectures = wfwAreaApiService.listByCode(areaCode);
 		} else {
 			if (topFid == null) {
-				LoginUserDTO loginUser = LoginUtils.getLoginUser(request);
-				topFid = loginUser.getFid();
+				topFid = Optional.ofNullable(LoginUtils.getLoginUser(request)).map(LoginUserDTO::getFid).orElse(null);
 			}
 			wfwRegionalArchitectures = wfwAreaApiService.listByFid(topFid);
 		}
+		List<Integer> fids = Lists.newArrayList();
 		if (CollectionUtils.isNotEmpty(wfwRegionalArchitectures)) {
 			List<Integer> subFids = wfwRegionalArchitectures.stream().map(WfwAreaDTO::getFid).collect(Collectors.toList());
 			fids.addAll(subFids);
