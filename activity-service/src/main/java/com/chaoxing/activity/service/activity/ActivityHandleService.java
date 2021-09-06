@@ -14,7 +14,6 @@ import com.chaoxing.activity.dto.manager.sign.create.SignCreateParamDTO;
 import com.chaoxing.activity.dto.manager.sign.create.SignCreateResultDTO;
 import com.chaoxing.activity.dto.manager.sign.create.SignUpCreateParamDTO;
 import com.chaoxing.activity.dto.manager.wfw.WfwAreaDTO;
-import com.chaoxing.activity.dto.module.ReadingModuleDataDTO;
 import com.chaoxing.activity.mapper.ActivityDetailMapper;
 import com.chaoxing.activity.mapper.ActivityMapper;
 import com.chaoxing.activity.model.*;
@@ -33,7 +32,6 @@ import com.chaoxing.activity.service.activity.template.TemplateQueryService;
 import com.chaoxing.activity.service.event.ActivityChangeEventService;
 import com.chaoxing.activity.service.inspection.InspectionConfigHandleService;
 import com.chaoxing.activity.service.manager.MhApiService;
-import com.chaoxing.activity.service.manager.module.ReadingApiService;
 import com.chaoxing.activity.service.manager.module.SignApiService;
 import com.chaoxing.activity.service.manager.module.WorkApiService;
 import com.chaoxing.activity.service.manager.wfw.WfwAreaApiService;
@@ -1027,6 +1025,10 @@ public class ActivityHandleService {
 		if (originActivity.getOpenWork()) {
 			originActivity.setWorkId(workApiService.createDefault(uid, fid));
 		}
+		// 阅读默认关闭
+		originActivity.setOpenReading(Boolean.FALSE);
+		originActivity.setReadingId(null);
+		originActivity.setReadingModuleId(null);
 		ActivityCreateParamDTO targetActivity = ActivityCreateParamDTO.buildFromActivity(originActivity);
 		// 报名签到
 		SignCreateParamDTO signCreateParam = SignCreateParamDTO.builder().name(targetActivity.getName()).build();
