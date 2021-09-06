@@ -246,7 +246,8 @@
                 <include refid="erdosRegionSql"></include>
             </if>
         ) t
-
+        WHERE
+            ISNULL(t.origin_activity_id)
         GROUP BY t.id
         ORDER BY
             FIELD( t.`status`, 2, 3, 4 )
