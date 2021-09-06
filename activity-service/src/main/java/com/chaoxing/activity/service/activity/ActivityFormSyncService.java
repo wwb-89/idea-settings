@@ -161,7 +161,8 @@ public class ActivityFormSyncService {
         // 获取表单数据
         WfwFormDTO formUserRecord = wfwFormApiService.getFormData(fid, formId, formUserId);
         if (formUserRecord == null) {
-            throw new BusinessException("未查询到记录为:" + formUserId + "的表单数据");
+            log.error("表单数据推送根据参数fid:{}, formId:{}, formUserId:{} 获取表单记录为空");
+            return;
         }
         Activity activity = activityQueryService.getActivityByOriginAndFormUserId(formId, formUserId);
         // 若活动不存在，则新增

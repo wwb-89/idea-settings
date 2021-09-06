@@ -530,14 +530,28 @@ public class ActivityApiController {
 		return RestRespDTO.success(Optional.ofNullable(activity).map(Activity::getActivityFlag).orElse(""));
 	}
 
+	/**重新选择门户模版
+	 * @Description
+	 * @author wwb
+	 * @Date 2021-09-05 19:14:43
+	 * @param activityId
+	 * @return com.chaoxing.activity.dto.RestRespDTO
+	 */
+	@RequestMapping("{activityId}/webTemplate/reselect")
+	public RestRespDTO reselectWebTemplate(@PathVariable Integer activityId) {
+		activityHandleService.reselectWebTemplate(activityId);
+		return RestRespDTO.success();
+	}
+
+
 	/**活动克隆
-	* @Description
-	* @author huxiaolong
-	* @Date 2021-09-06 18:57:48
-	* @param activityId
-	* @param fid
-	* @return com.chaoxing.activity.dto.RestRespDTO
-	*/
+	 * @Description
+	 * @author huxiaolong
+	 * @Date 2021-09-06 18:57:48
+	 * @param activityId
+	 * @param fid
+	 * @return com.chaoxing.activity.dto.RestRespDTO
+	 */
 	@RequestMapping("{activityId}/clone")
 	public RestRespDTO cloneActivityToOrg(@PathVariable Integer activityId, Integer fid) {
 		Integer uid = 22651866;
