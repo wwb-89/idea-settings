@@ -34,6 +34,7 @@ import com.chaoxing.activity.service.manager.wfw.WfwAreaApiService;
 import com.chaoxing.activity.service.queue.activity.ActivityInspectionResultDecideQueueService;
 import com.chaoxing.activity.service.queue.activity.ActivityWebsiteIdSyncQueueService;
 import com.chaoxing.activity.service.queue.blacklist.BlacklistAutoAddQueueService;
+import com.chaoxing.activity.util.ApplicationContextHolder;
 import com.chaoxing.activity.util.DistributedLock;
 import com.chaoxing.activity.util.constant.ActivityMhUrlConstant;
 import com.chaoxing.activity.util.constant.ActivityModuleConstant;
@@ -134,7 +135,7 @@ public class ActivityHandleService {
 	*/
 	@Transactional(rollbackFor = Exception.class)
 	public Integer add(ActivityCreateParamDTO activityCreateParamDto, SignCreateParamDTO signCreateParamDto, List<WfwAreaDTO> wfwRegionalArchitectureDtos, LoginUserDTO loginUser) {
-		return this.add(activityCreateParamDto, signCreateParamDto, wfwRegionalArchitectureDtos, null, loginUser);
+		return ApplicationContextHolder.getBean(ActivityHandleService.class).add(activityCreateParamDto, signCreateParamDto, wfwRegionalArchitectureDtos, null, loginUser);
 	}
 
 	/**新增活动
@@ -227,8 +228,8 @@ public class ActivityHandleService {
 	* @return void
 	*/
 	@Transactional(rollbackFor = Exception.class)
-	public void edit(ActivityUpdateParamDTO activityUpdateParamDto, SignCreateParamDTO signCreateParam, final List<WfwAreaDTO> wfwRegionalArchitectureDtos, LoginUserDTO loginUser) {
-		edit(activityUpdateParamDto, signCreateParam, wfwRegionalArchitectureDtos, null, loginUser);
+	public Activity edit(ActivityUpdateParamDTO activityUpdateParamDto, SignCreateParamDTO signCreateParam, final List<WfwAreaDTO> wfwRegionalArchitectureDtos, LoginUserDTO loginUser) {
+		return ApplicationContextHolder.getBean(ActivityHandleService.class).edit(activityUpdateParamDto, signCreateParam, wfwRegionalArchitectureDtos, null, loginUser);
 	}
 
 	/**修改活动
