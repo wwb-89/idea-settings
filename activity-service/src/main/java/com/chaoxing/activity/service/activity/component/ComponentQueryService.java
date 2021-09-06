@@ -1,6 +1,7 @@
 package com.chaoxing.activity.service.activity.component;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.chaoxing.activity.mapper.ComponentMapper;
 import com.chaoxing.activity.model.Component;
 import com.google.common.collect.Lists;
@@ -82,6 +83,22 @@ public class ComponentQueryService {
 				.eq(Component::getSystem, true)
 		);
 		return Optional.ofNullable(components).orElse(Lists.newArrayList()).stream().collect(Collectors.toMap(Component::getCode, Component::getName, (v1, v2) -> v2));
+	}
+	
+	/**根据模板id查询组件，系统模板+自身组件
+	 * 若templateId为null，查询的则仅仅是系统组件
+	* @Description 
+	* @author huxiaolong
+	* @Date 2021-08-30 17:00:17
+	* @param 
+	* @return java.util.List<com.chaoxing.activity.model.Component>
+	*/
+	public List<Component> listByTemplateId(Integer templateId) {
+		LambdaQueryWrapper<Component> wrapper = new LambdaQueryWrapper<Component>().eq(Component::getSystem, Boolean.TRUE);
+		if (templateId != null) {
+			wrapper.or().eq(Component::getTemplateId, templateId);
+		}
+		return componentMapper.selectList(wrapper);
 	}
 
 }

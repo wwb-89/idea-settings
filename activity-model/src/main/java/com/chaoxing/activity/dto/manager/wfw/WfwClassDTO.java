@@ -1,9 +1,13 @@
 package com.chaoxing.activity.dto.manager.wfw;
 
+import com.chaoxing.activity.dto.manager.uc.ClazzDTO;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.apache.commons.lang3.StringUtils;
+
+import java.util.Optional;
 
 /**
  * @author wwb
@@ -27,5 +31,12 @@ public class WfwClassDTO {
 	private Integer gradeId;
 	/** 年级名称 */
 	private String gradeName;
+
+	public ClazzDTO buildClazzDTO() {
+		return ClazzDTO.builder()
+				.id(getId())
+				.name(Optional.ofNullable(gradeName).filter(StringUtils::isNotBlank).orElse("") + Optional.ofNullable(name).filter(StringUtils::isNotBlank).orElse(""))
+				.build();
+	}
 
 }

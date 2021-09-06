@@ -123,6 +123,13 @@ public class Activity {
     private Boolean openWork;
     /** 作品征集id; column: work_id*/
     private Integer workId;
+    /** 是否开启阅读设置 */
+    @TableField(value = "is_open_reading")
+    private Boolean openReading;
+    /** 阅读id */
+    private Integer readingId;
+    /** 阅读模块id */
+    private Integer readingModuleId;
     /** 来源类型; column: origin_type*/
     private String originType;
     /** 来源值; column: origin*/
@@ -280,7 +287,13 @@ public class Activity {
         /** 志愿者服务 */
         VOLUNTEER("志愿者服务", "volunteer"),
         /** 三会一课 */
-        THREE_CONFERENCE_ONE_LESSON("三会一课", "tcol");
+        THREE_CONFERENCE_ONE_LESSON("三会一课", "tcol"),
+        /** 班级活动 */
+        CLASS("班级", "class"),
+        /** 学校活动 */
+        SCHOOL("学校", "school"),
+        /** 区域活动 */
+        REGION("区域", "region");
 
         private final String name;
         private final String value;

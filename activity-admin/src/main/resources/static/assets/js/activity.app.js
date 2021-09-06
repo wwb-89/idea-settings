@@ -372,6 +372,14 @@
     activityApp.prototype.getWorkManageUrl = function (workId) {
         return "http://reading.chaoxing.com/zj//manage/activity/" + workId + "/new?isHideHeader=false";
     };
+    /**
+     * 返回阅读书单的管理地址
+     * @param workId
+     * @returns {string}
+     */
+    activityApp.prototype.getReadingBookManageUrl = function (readingId, moduleId) {
+        return "http://xueya.chaoxing.com/school-base/school-reading/" + readingId + "/" + moduleId + "/book-list";
+    };
     W['activityApp'] = new activityApp();
 })(window, jQuery, JSON);
 Array.prototype.remove = function (val) {

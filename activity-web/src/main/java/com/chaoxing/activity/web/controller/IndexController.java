@@ -3,6 +3,7 @@ package com.chaoxing.activity.web.controller;
 import com.chaoxing.activity.dto.ActivityQueryDateDTO;
 import com.chaoxing.activity.dto.LoginUserDTO;
 import com.chaoxing.activity.dto.activity.MyActivityParamDTO;
+import com.chaoxing.activity.dto.manager.UserExtraInfoDTO;
 import com.chaoxing.activity.model.Classify;
 import com.chaoxing.activity.model.Group;
 import com.chaoxing.activity.model.GroupRegionFilter;
@@ -10,6 +11,7 @@ import com.chaoxing.activity.service.ActivityQueryDateService;
 import com.chaoxing.activity.service.GroupRegionFilterService;
 import com.chaoxing.activity.service.GroupService;
 import com.chaoxing.activity.service.activity.classify.ClassifyQueryService;
+import com.chaoxing.activity.service.manager.UcApiService;
 import com.chaoxing.activity.util.UserAgentUtils;
 import com.chaoxing.activity.util.annotation.LoginRequired;
 import com.chaoxing.activity.util.exception.LoginRequiredException;
@@ -55,6 +57,8 @@ public class IndexController {
 	private GroupService groupService;
 	@Resource
 	private ActivityQueryDateService activityQueryDateService;
+	@Resource
+	private UcApiService ucApiService;
 
 	/**通用
 	 * @Description
@@ -77,6 +81,57 @@ public class IndexController {
 		Integer realFid = Optional.ofNullable(wfwfid).orElse(Optional.ofNullable(unitId).orElse(Optional.ofNullable(state).orElse(fid)));
 		style = Optional.ofNullable(style).filter(StringUtils::isNotBlank).orElse(DEFAULT_STYLE);
 		return handleData(request, model, null, realFid, null, banner, style, flag, marketId);
+	}
+
+	/**鄂尔多斯活动广场
+	* @Description 
+	* @author huxiaolong
+	* @Date 2021-09-03 15:41:33
+	* @param request
+	* @param model
+	* @param wfwfid
+	* @param unitId
+	* @param state
+	* @param fid
+	* @param flag
+	* @param marketId
+	* @return java.lang.String
+	*/
+	@RequestMapping("erdos")
+	public String erdosIndex(HttpServletRequest request, Model model, Integer wfwfid, Integer unitId, Integer state, Integer fid, @RequestParam(defaultValue = "") String flag, Integer marketId) {
+		Integer realFid = Optional.ofNullable(wfwfid).orElse(Optional.ofNullable(unitId).orElse(Optional.ofNullable(state).orElse(fid)));
+		LoginUserDTO loginUser = LoginUtils.getLoginUser(request);
+		return erdos(request, model, realFid, loginUser == null ? null : loginUser.getUid(), flag, marketId);
+	}
+
+	private String erdos(HttpServletRequest request, Model model, Integer fid, Integer uid, String flag, Integer marketId) {
+		List<Classify> classifies;
+		if (marketId == null) {
+			if (fid == null) {
+				LoginUserDTO loginUser = LoginUtils.getLoginUser(request);
+				Optional.ofNullable(loginUser).orElseThrow(() -> new LoginRequiredException());
+				fid = loginUser.getFid();
+			}
+			classifies = classifyQueryService.listOrgClassifies(fid);
+		} else {
+			classifies = classifyQueryService.listMarketClassifies(marketId);
+		}
+		List<String> classifyNames = Optional.ofNullable(classifies).orElse(Lists.newArrayList()).stream().map(Classify::getName).collect(Collectors.toList());
+		model.addAttribute("classifyNames", classifyNames);
+		model.addAttribute("topFid", fid);
+		model.addAttribute("marketId", marketId);
+		model.addAttribute("flag", flag);
+		// 获取用户班级
+		if (uid != null) {
+			Integer userClassId = Optional.ofNullable(ucApiService.getUserExtraInfoByFidAndUid(fid, uid)).map(UserExtraInfoDTO::getClassId).orElse(null);
+			model.addAttribute("userClassId", userClassId);
+		}
+		if (UserAgentUtils.isMobileAccess(request)) {
+			return "mobile/special/erdos-index";
+		} else {
+			return "pc/special/erdos-index";
+		}
+
 	}
 
 	/**图书馆

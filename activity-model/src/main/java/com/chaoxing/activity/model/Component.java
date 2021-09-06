@@ -65,9 +65,9 @@ public class Component {
     private Integer updateUid;
 
     @TableField(exist = false)
-    private List<ComponentField> fieldList;
+    private List<ComponentField> componentFields;
     @TableField(exist = false)
-    private List<String> formFieldValues;
+    private List<String> fieldValues;
 
     @Getter
     public enum TypeEnum {
@@ -93,6 +93,10 @@ public class Component {
                 }
             }
             return null;
+        }
+
+        public static Boolean chooseType(String value) {
+            return Objects.equals(value, TypeEnum.RADIO.getValue()) || Objects.equals(value, TypeEnum.CHECKBOX.getValue());
         }
     }
 

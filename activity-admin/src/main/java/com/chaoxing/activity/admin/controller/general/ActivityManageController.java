@@ -16,6 +16,7 @@ import com.chaoxing.activity.service.activity.ActivityValidationService;
 import com.chaoxing.activity.service.activity.engine.ActivityEngineQueryService;
 import com.chaoxing.activity.service.activity.manager.ActivityCreatePermissionService;
 import com.chaoxing.activity.service.activity.menu.ActivityMenuService;
+import com.chaoxing.activity.service.activity.scope.ActivityClassService;
 import com.chaoxing.activity.service.activity.scope.ActivityScopeQueryService;
 import com.chaoxing.activity.service.manager.module.SignApiService;
 import com.chaoxing.activity.util.UserAgentUtils;
@@ -60,6 +61,8 @@ public class ActivityManageController {
 	private ActivityEngineQueryService activityEngineQueryService;
 	@Resource
 	private ActivityMenuService activityMenuService;
+	@Resource
+	private ActivityClassService activityClassService;
 
 	/**活动管理主页
 	 * @Description 
@@ -127,6 +130,9 @@ public class ActivityManageController {
 		model.addAttribute("usedWebTemplate", usedWebTemplate);
 		List<WebTemplate> webTemplates = webTemplateService.listAvailable(loginUser.getFid(), activity.getActivityFlag());
 		model.addAttribute("webTemplates", webTemplates);
+		// 活动发布班级id集合
+		List<Integer> releaseClassIds = activityClassService.listClassIdsByActivity(activityId);
+		model.addAttribute("releaseClassIds", releaseClassIds);
 		// 活动发布范围
 		List<WfwAreaDTO> wfwRegionalArchitectures = activityScopeQueryService.listByActivityId(activityId);
 		model.addAttribute("participatedOrgs", wfwRegionalArchitectures);

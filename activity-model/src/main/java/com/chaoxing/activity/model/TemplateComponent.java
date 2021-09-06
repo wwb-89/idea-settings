@@ -4,11 +4,13 @@ import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
+import com.chaoxing.activity.dto.engine.TemplateComponentDTO;
 import com.google.common.collect.Lists;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.beans.BeanUtils;
 
 import java.util.List;
@@ -52,9 +54,23 @@ public class TemplateComponent {
     /** 是否被删除; column: is_deleted*/
     @TableField(value = "is_deleted")
     private Boolean deleted;
+    /** 组件类型。自定义组件才有类型：文本、单选、多选; column: type*/
+    private String type;
+    /** 数据来源; column: data_origin*/
+    private String dataOrigin;
+    /** 来源主键; column: origin_identify*/
+    private String originIdentify;
+    /** 字段标识; column: field_flag*/
+    private String fieldFlag;
 
     @TableField(exist = false)
     private List<TemplateComponent> children;
+    // 选择组件自定义选项值列表
+    @TableField(exist = false)
+    private List<ComponentField> componentFields;
+    // 选择组件表单选项值列表
+    @TableField(exist = false)
+    private List<String> fieldValues;
     @TableField(exist = false)
     private SignUpCondition signUpCondition;
     @TableField(exist = false)
@@ -88,4 +104,31 @@ public class TemplateComponent {
         return parentTemplateComponents;
     }
 
+    public static List<TemplateComponent> buildFromDTO(List<TemplateComponentDTO> templateComponents) {
+        if (CollectionUtils.isEmpty(templateComponents)) {
+            return null;
+        }
+        List<TemplateComponent> result = Lists.newArrayList();
+        CollectionUtils.collect(templateComponents, o -> TemplateComponent.builder()
+                .id(o.getId())
+                .pid(o.getPid())
+                .templateId(o.getTemplateId())
+                .componentId(o.getComponentId())
+                .name(o.getName())
+                .introduction(o.getIntroduction())
+                .required(o.getRequired())
+                .sequence(o.getSequence())
+                .type(o.getType())
+                .dataOrigin(o.getDataOrigin())
+                .originIdentify(o.getOriginIdentify())
+                .fieldFlag(o.getFieldFlag())
+                .children(TemplateComponent.buildFromDTO(o.getChildren()))
+                .componentFields(o.getComponentFields())
+                .fieldValues(o.getFieldValues())
+                .signUpCondition(o.getSignUpCondition())
+                .signUpFillInfoType(o.getSignUpFillInfoType())
+                .originId(o.getOriginId())
+                .build(), result);
+        return result;
+    }
 }

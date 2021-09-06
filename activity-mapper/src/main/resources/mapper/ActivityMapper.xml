@@ -43,6 +43,9 @@
         <result column="activity_flag" jdbcType="VARCHAR" property="activityFlag" />
         <result column="is_open_work" jdbcType="VARCHAR" property="openWork" />
         <result column="work_id" jdbcType="VARCHAR" property="workId" />
+        <result column="is_open_reading" jdbcType="BIT" property="openReading" />
+        <result column="reading_id" jdbcType="INTEGER" property="readingId" />
+        <result column="reading_module_id" jdbcType="INTEGER" property="readingModuleId" />
         <result column="origin_type" jdbcType="VARCHAR" property="originType" />
         <result column="origin" jdbcType="VARCHAR" property="origin" />
         <result column="origin_form_user_id" jdbcType="INTEGER" property="originFormUserId" />
@@ -57,14 +60,14 @@
         t.id, t.name, t.start_time, t.end_time, t.start_date, t.end_date, t.cover_cloud_id, t.cover_url, t.organisers, t.activity_type, t.address, t.detail_address,
         t.longitude, t.dimension, t.activity_classify_id, t.period, t.credit, t.time_length_upper_limit, t.sign_id, t.web_template_id, t.website_id, t.page_id, t.preview_url, t.edit_url,
         t.is_timing_release, t.timing_release_time, t.is_released, t.release_time, t.release_uid, t.create_uid, t.create_user_name, t.create_fid, t.create_area_code,
-        t.create_org_name, t.tags, t.is_open_rating, t.is_rating_need_audit, t.activity_flag, t.integral, t.is_open_work, t.work_id,
+        t.create_org_name, t.tags, t.is_open_rating, t.is_rating_need_audit, t.activity_flag, t.integral, t.is_open_work, t.work_id, t.is_open_reading, t.reading_id, t.reading_module_id,
         t.origin_type, t.origin, t.origin_form_user_id, t.market_id, t.template_id, t.status, t.create_time, t.update_time, t.is_signed_up_notice
     </sql>
     <sql id="Base_Market_Column_List">
         t.id, t.name, t.start_time, t.end_time, t.start_date, t.end_date, t.cover_cloud_id, t.cover_url, t.organisers, t.activity_type, t.address, t.detail_address,
         t.longitude, t.dimension, t.activity_classify_id, t.period, t.credit, t.time_length_upper_limit, t.sign_id, t.web_template_id, t.website_id, t.page_id, t.preview_url, t.edit_url,
         t.is_timing_release, t.timing_release_time, t1.is_released, t.release_time, t.release_uid, t.create_uid, t.create_user_name, t.create_fid, t.create_area_code,
-        t.create_org_name, t.tags, t.is_open_rating, t.is_rating_need_audit, t.activity_flag, t.integral, t.is_open_work, t.work_id,
+        t.create_org_name, t.tags, t.is_open_rating, t.is_rating_need_audit, t.activity_flag, t.integral, t.is_open_work, t.work_id, t.is_open_reading, t.reading_id, t.reading_module_id,
         t.origin_type, t.origin, t.origin_form_user_id, t.market_id, t.template_id, t1.status, t.create_time, t.update_time, t1.is_top AS top
     </sql>
 
@@ -155,6 +158,100 @@
             <if test="params.topFid != null">
                 , t1.fid <![CDATA[<>]]> #{params.topFid}
             </if>
+            ,t.start_time DESC
+    </select>
+
+    <!-- 活动分类join过滤条件 -->
+    <sql id="classifyJoinConditionSql">
+        <!--类型-->
+        <choose>
+            <when test="params.activityClassifyId != null">
+                INNER JOIN t_classify t3 ON t.activity_classify_id = t3.id
+                AND t3.id = #{params.activityClassifyId}
+            </when>
+            <otherwise>
+                <if test="params.activityClassifyName != null and params.activityClassifyName != ''">
+                    INNER JOIN t_classify t3 ON t.activity_classify_id = t3.id
+                    AND t3.name = #{params.activityClassifyName}
+                </if>
+            </otherwise>
+        </choose>
+    </sql>
+
+    <!-- 活动查询where过滤条件 -->
+    <sql id="erdosConditionSql">
+        <where>
+            <if test="params.flags != null and params.flags.size() != 0">
+                AND t.activity_flag IN
+                <foreach collection="params.flags" index="key" item="value" open="(" close=")" separator=",">
+                    #{value}
+                </foreach>
+            </if>
+            <if test="params.sw != null and params.sw != ''">
+                AND (
+                t.`name` LIKE CONCAT('%', #{params.sw}, '%')
+                OR t.organisers LIKE CONCAT('%', #{params.sw}, '%')
+                )
+            </if>
+        </where>
+    </sql>
+
+    <!-- 鄂尔多斯班级查询sql -->
+    <sql id="erdosClazzSql">
+        SELECT
+            <include refid="Base_Column_List"></include>
+        FROM
+            t_activity t
+        INNER JOIN
+            t_activity_class t1 ON t.id = t1.activity_id
+            AND t1.class_id = #{params.userClassId}
+        <include refid="classifyJoinConditionSql"></include>
+        <include refid="erdosConditionSql"></include>
+        GROUP BY t.id
+    </sql>
+
+    <!-- 鄂尔多斯区域查询sql -->
+    <sql id="erdosRegionSql">
+        SELECT
+            <include refid="Base_Column_List"></include>
+        FROM
+            t_activity t
+        INNER JOIN t_activity_scope t1 ON t.id = t1.activity_id
+        <if test="params.fids != null and params.fids.size() != 0">
+            AND t1.fid IN
+            <foreach collection="params.fids" index="key" item="value" open="(" close=")" separator=",">
+                #{value}
+            </foreach>
+        </if>
+        <include refid="classifyJoinConditionSql"></include>
+        <include refid="erdosConditionSql"></include>
+        GROUP BY t.id
+    </sql>
+
+    <select id="pageErdosParticipate" resultMap="BaseResultMap">
+        SELECT
+            *
+        FROM
+        (
+             <if test="params.levelType == null || params.levelType == ''">
+                 <include refid="erdosClazzSql"></include>
+                 UNION
+                 <include refid="erdosRegionSql"></include>
+             </if>
+            <if test="params.levelType == 'class'">
+                <include refid="erdosClazzSql"></include>
+            </if>
+            <if test="params.levelType == 'school' || params.levelType == 'region'">
+                <include refid="erdosRegionSql"></include>
+            </if>
+        ) t
+
+        GROUP BY t.id
+        ORDER BY
+            FIELD( t.`status`, 2, 3, 4 )
+        <if test="params.topFid != null">
+            , t.create_fid <![CDATA[<>]]> #{params.topFid}
+        </if>
             ,t.start_time DESC
     </select>
 

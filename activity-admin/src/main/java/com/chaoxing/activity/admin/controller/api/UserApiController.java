@@ -6,13 +6,16 @@ import com.chaoxing.activity.dto.OrgDTO;
 import com.chaoxing.activity.dto.RestRespDTO;
 import com.chaoxing.activity.dto.manager.PassportUserDTO;
 import com.chaoxing.activity.service.manager.PassportApiService;
+import com.chaoxing.activity.service.manager.UcApiService;
 import com.chaoxing.activity.util.annotation.LoginRequired;
 import com.google.common.collect.Lists;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
+import java.io.UnsupportedEncodingException;
 import java.util.List;
 import java.util.Optional;
 

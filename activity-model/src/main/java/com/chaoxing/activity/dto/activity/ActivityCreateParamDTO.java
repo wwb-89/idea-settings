@@ -81,6 +81,12 @@ public class ActivityCreateParamDTO {
 	private Boolean openWork;
 	/** 作品征集id */
 	private Integer workId;
+	/** 是否开启阅读设置 */
+	private Boolean openReading;
+	/** 阅读id */
+	private Integer readingId;
+	/** 阅读模块id */
+	private Integer readingModuleId;
 	/** 来源类型 */
 	private String originType;
 	/** 来源值 */
@@ -154,6 +160,9 @@ public class ActivityCreateParamDTO {
 				.integral(getIntegral())
 				.openWork(getOpenWork())
 				.workId(getWorkId())
+				.openReading(getOpenReading())
+				.readingId(getReadingId())
+				.readingModuleId(getReadingModuleId())
 				.marketId(getMarketId())
 				.templateId(getTemplateId())
 				.status(getStatus())
@@ -199,6 +208,9 @@ public class ActivityCreateParamDTO {
 				.integral(activity.getIntegral())
 				.openWork(activity.getOpenWork())
 				.workId(activity.getWorkId())
+				.openReading(activity.getOpenReading())
+				.readingId(activity.getReadingId())
+				.readingModuleId(activity.getReadingModuleId())
 				.originType(activity.getOriginType())
 				.origin(activity.getOrigin())
 				.originFormUserId(activity.getOriginFormUserId())

@@ -1,17 +1,14 @@
 package com.chaoxing.activity.service.activity.engine;
 
-import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.chaoxing.activity.dto.engine.ActivityEngineDTO;
 import com.chaoxing.activity.mapper.*;
 import com.chaoxing.activity.model.*;
 import com.chaoxing.activity.service.activity.component.ComponentHandleService;
 import com.chaoxing.activity.service.manager.WfwFormApiService;
-import io.swagger.models.auth.In;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.compress.utils.Lists;
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -20,7 +17,6 @@ import org.springframework.transaction.annotation.Transactional;
 import javax.annotation.Resource;
 import java.util.Collection;
 import java.util.List;
-import java.util.Objects;
 
 /**
  * @author huxiaolong
@@ -43,8 +39,6 @@ public class ActivityEngineHandleService {
     private SignUpConditionMapper signUpConditionMapper;
     @Autowired
     private SignUpFillInfoTypeMapper signUpFillInfoTypeMapper;
-    @Autowired
-    private WfwFormApiService wfwFormApiService;
 
     /**处理引擎模板组件相关数据(新增/更新)
     * @Description
@@ -55,7 +49,7 @@ public class ActivityEngineHandleService {
     */
     public void handleEngineTemplate(Integer fid, Integer marketId, Integer uid, ActivityEngineDTO activityEngineDTO) {
         Template template = activityEngineDTO.getTemplate();
-        List<TemplateComponent> templateComponents = activityEngineDTO.getTemplateComponents();
+        List<TemplateComponent> templateComponents = TemplateComponent.buildFromDTO(activityEngineDTO.getTemplateComponents());
         if (template.getSystem() && template.getFid() == null) {
             // todo 临时测试，默认新建一个template
             Template newTemplate = Template.builder()
@@ -116,11 +110,11 @@ public class ActivityEngineHandleService {
     * @return com.chaoxing.activity.model.Component
     */
     @Transactional(rollbackFor = Exception.class)
-    public Component handleCustomComponent(Integer uid, Integer fid, Component component) {
+    public Component handleCustomComponent(Integer uid, Component component) {
         if (component.getId() == null) {
-            return saveCustomComponent(uid, fid, component);
+            return saveCustomComponent(uid, component);
         }
-        return updateCustomComponent(uid, fid, component);
+        return updateCustomComponent(uid, component);
     }
 
     /**
@@ -132,8 +126,8 @@ public class ActivityEngineHandleService {
     * @return com.chaoxing.activity.model.Component
     */
     @Transactional(rollbackFor = Exception.class)
-    public Component updateCustomComponent(Integer uid, Integer fid, Component component) {
-        return componentHandleService.updateCustomComponent(uid, fid, component);
+    public Component updateCustomComponent(Integer uid, Component component) {
+        return componentHandleService.updateCustomComponent(uid, component);
     }
 
     /**新增自定义组件
@@ -145,8 +139,8 @@ public class ActivityEngineHandleService {
     * @return java.util.Map<java.lang.Integer,com.chaoxing.activity.model.Component>
     */
     @Transactional(rollbackFor = Exception.class)
-    public Component saveCustomComponent(Integer uid, Integer fid, Component component) {
-        return componentHandleService.saveCustomComponent(uid, fid, component);
+    public Component saveCustomComponent(Integer uid, Component component) {
+        return componentHandleService.saveCustomComponent(uid, component);
     }
 
     /**新增模板组件关联

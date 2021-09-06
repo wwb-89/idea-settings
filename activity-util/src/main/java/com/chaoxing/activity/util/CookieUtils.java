@@ -2,6 +2,7 @@ package com.chaoxing.activity.util;
 
 import com.chaoxing.activity.util.constant.CookieConstant;
 import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.http.HttpHeaders;
 import org.springframework.util.CollectionUtils;
@@ -11,6 +12,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.regex.Pattern;
 
 import static org.springframework.http.HttpHeaders.SET_COOKIE;
@@ -192,6 +194,29 @@ public class CookieUtils {
             cookies.add(cookie.getName() + "=" + cookie.getValue());
         }
         return cookies;
+    }
+
+    /**根据给定keys， 获取对应的cookieMap
+    * @Description
+    * @author huxiaolong
+    * @Date 2021-09-03 19:46:39
+    * @param request
+    * @param keys
+    * @return java.util.Map<java.lang.String,java.lang.String>
+    */
+    public static Map<String, String> getCookieMap(HttpServletRequest request, List<String> keys) {
+        Map<String, String> cookieMap = Maps.newHashMap();
+        Cookie[] cookieArr = request.getCookies();
+        if (CollectionUtils.isEmpty(keys) || cookieArr == null || cookieArr.length == 0) {
+            return cookieMap;
+        }
+        for (Cookie cookie : cookieArr) {
+            String name = cookie.getName();
+            if (keys.contains(name)) {
+                cookieMap.put(name, cookie.getValue());
+            }
+        }
+        return cookieMap;
     }
 
 }

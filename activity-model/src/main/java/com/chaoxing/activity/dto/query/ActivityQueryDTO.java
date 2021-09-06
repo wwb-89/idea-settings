@@ -33,6 +33,12 @@ public class ActivityQueryDTO {
 	private Integer activityClassifyId;
 	/** 活动分类名称（与活动分类id互斥） */
 	private String activityClassifyName;
+	/** 活动级别分类 */
+	private String levelType;
+	/** 用户班级id */
+	private Integer userClassId;
+	/** 多活动标识 */
+	private List<String> flags;
 	/** 时间 */
 	private String date;
 	/** 状态 */

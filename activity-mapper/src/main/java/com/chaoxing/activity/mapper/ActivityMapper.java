@@ -34,6 +34,8 @@ public interface ActivityMapper extends BaseMapper<Activity> {
 	 */
 	Page<Activity> pageParticipate(@Param("page") Page<?> page, @Param("params") ActivityQueryDTO activityQuery);
 
+	Page<Activity> pageErdosParticipate(@Param("page") Page<?> page, @Param("params") ActivityQueryDTO activityQuery);
+
 	/**
 	 * 查询管理的活动
 	 *

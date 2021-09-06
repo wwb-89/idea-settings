@@ -3,6 +3,7 @@ package com.chaoxing.activity.admin.controller.general;
 import com.chaoxing.activity.admin.util.LoginUtils;
 import com.chaoxing.activity.dto.manager.wfwform.WfwFormTemplateDTO;
 import com.chaoxing.activity.model.Template;
+import com.chaoxing.activity.service.activity.component.ComponentQueryService;
 import com.chaoxing.activity.service.activity.engine.ActivityEngineQueryService;
 import com.chaoxing.activity.service.activity.template.TemplateQueryService;
 import com.chaoxing.activity.service.manager.WfwFormApiService;
@@ -35,6 +36,8 @@ public class ActivityEngineController {
     private WfwFormApiService formApiService;
     @Resource
     private TemplateQueryService templateQueryService;
+    @Resource
+    private ComponentQueryService componentQueryService;
 
     @LoginRequired
     @RequestMapping("{templateId}")

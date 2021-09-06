@@ -24,6 +24,7 @@ import com.chaoxing.activity.service.activity.manager.ActivityManagerService;
 import com.chaoxing.activity.service.activity.market.MarketQueryService;
 import com.chaoxing.activity.service.activity.menu.ActivityMenuService;
 import com.chaoxing.activity.service.activity.module.ActivityModuleService;
+import com.chaoxing.activity.service.activity.scope.ActivityClassService;
 import com.chaoxing.activity.service.activity.scope.ActivityScopeService;
 import com.chaoxing.activity.service.event.ActivityChangeEventService;
 import com.chaoxing.activity.service.inspection.InspectionConfigHandleService;
@@ -82,6 +83,8 @@ public class ActivityHandleService {
 	@Resource
 	private ActivityScopeService activityScopeService;
 	@Resource
+	private ActivityClassService activityClassService;
+	@Resource
 	private WebTemplateService webTemplateService;
 	@Resource
 	private ActivityStatusService activityStatusService;
@@ -118,6 +121,22 @@ public class ActivityHandleService {
 	@Resource
 	private MarketQueryService marketQueryService;
 
+
+	/**
+	* @Description
+	* @author huxiaolong
+	* @Date 2021-09-03 18:27:01
+	* @param activityCreateParamDto
+	* @param signCreateParamDto
+	* @param wfwRegionalArchitectureDtos
+	* @param loginUser
+	* @return java.lang.Integer
+	*/
+	@Transactional(rollbackFor = Exception.class)
+	public Integer add(ActivityCreateParamDTO activityCreateParamDto, SignCreateParamDTO signCreateParamDto, List<WfwAreaDTO> wfwRegionalArchitectureDtos, LoginUserDTO loginUser) {
+		return this.add(activityCreateParamDto, signCreateParamDto, wfwRegionalArchitectureDtos, null, loginUser);
+	}
+
 	/**新增活动
 	 * @Description
 	 * @author wwb
@@ -129,11 +148,11 @@ public class ActivityHandleService {
 	 * @return java.lang.Integer 活动id
 	 */
 	@Transactional(rollbackFor = Exception.class)
-	public Integer add(ActivityCreateParamDTO activityCreateParamDto, SignCreateParamDTO signCreateParamDto, List<WfwAreaDTO> wfwRegionalArchitectureDtos, LoginUserDTO loginUser) {
+	public Integer add(ActivityCreateParamDTO activityCreateParamDto, SignCreateParamDTO signCreateParamDto, List<WfwAreaDTO> wfwRegionalArchitectureDtos, List<Integer> releaseClassIds, LoginUserDTO loginUser) {
 		Activity activity = activityCreateParamDto.buildActivity();
 		// 新增活动输入验证
 		activityValidationService.addInputValidate(activity);
-		if (CollectionUtils.isEmpty(wfwRegionalArchitectureDtos)) {
+		if (CollectionUtils.isEmpty(wfwRegionalArchitectureDtos) && CollectionUtils.isEmpty(releaseClassIds)) {
 			throw new BusinessException("请选择发布范围");
 		}
 		// 添加报名签到
@@ -164,7 +183,11 @@ public class ActivityHandleService {
 		ActivityManager activityManager = ActivityManager.buildCreator(activity);
 		activityManagerService.add(activityManager, loginUser);
 		// 处理发布范围
-		activityScopeService.batchAdd(activityId, wfwRegionalArchitectureDtos);
+		if (CollectionUtils.isNotEmpty(releaseClassIds)) {
+			activityClassService.batchAddOrUpdate(activityId, releaseClassIds);
+		} else {
+			activityScopeService.batchAdd(activityId, wfwRegionalArchitectureDtos);
+		}
 		// 活动改变
 		activityChangeEventService.dataChange(activity, null, loginUser);
 		return activityId;
@@ -193,6 +216,21 @@ public class ActivityHandleService {
 		return signCreateResultDto;
 	}
 
+	/**
+	* @Description
+	* @author huxiaolong
+	* @Date 2021-09-03 18:24:46
+	* @param activityUpdateParamDto
+	* @param signCreateParam
+	* @param wfwRegionalArchitectureDtos
+	* @param loginUser
+	* @return void
+	*/
+	@Transactional(rollbackFor = Exception.class)
+	public void edit(ActivityUpdateParamDTO activityUpdateParamDto, SignCreateParamDTO signCreateParam, final List<WfwAreaDTO> wfwRegionalArchitectureDtos, LoginUserDTO loginUser) {
+		edit(activityUpdateParamDto, signCreateParam, wfwRegionalArchitectureDtos, null, loginUser);
+	}
+
 	/**修改活动
 	 * @Description
 	 * @author wwb
@@ -204,7 +242,7 @@ public class ActivityHandleService {
 	 * @return void
 	 */
 	@Transactional(rollbackFor = Exception.class)
-	public Activity edit(ActivityUpdateParamDTO activityUpdateParamDto, SignCreateParamDTO signCreateParam, final List<WfwAreaDTO> wfwRegionalArchitectureDtos, LoginUserDTO loginUser) {
+	public Activity edit(ActivityUpdateParamDTO activityUpdateParamDto, SignCreateParamDTO signCreateParam, final List<WfwAreaDTO> wfwRegionalArchitectureDtos, List<Integer> releaseClassIds, LoginUserDTO loginUser) {
 		Activity activity = activityUpdateParamDto.buildActivity();
 		activityValidationService.updateInputValidate(activity);
 		if (CollectionUtils.isEmpty(wfwRegionalArchitectureDtos)) {
@@ -247,7 +285,11 @@ public class ActivityHandleService {
 				);
 			}
 			// 处理发布范围
-			activityScopeService.batchAdd(activityId, wfwRegionalArchitectureDtos);
+			if (CollectionUtils.isNotEmpty(releaseClassIds)) {
+				activityClassService.batchAddOrUpdate(activityId, releaseClassIds);
+			} else {
+				activityScopeService.batchAdd(activityId, wfwRegionalArchitectureDtos);
+			}
 			// 活动改变
 			activityChangeEventService.dataChange(activity, existActivity, loginUser);
 			return activity;
