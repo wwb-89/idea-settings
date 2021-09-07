@@ -215,7 +215,7 @@
                         <div class="form-item last marginTop16" v-else-if="item.code == 'activity_release_scope'">
                             <label class="label"><img src="/static/pc/assets/images/required.png" th:src="@{/pc/assets/images/required.png}" class="required-img" v-if="item.required">{{item.name}}</label>
                             <div class="input-box wrap">
-                                <el-select v-if="item.dataOrigin == 'interface'" multiple v-model="releaseClassIds" placeholder="请选择">
+                                <el-select v-if="item.dataOrigin == 'interface'" multiple v-model="releaseClassIds" placeholder="请选择" style="width: 66%">
                                     <el-option v-for="value in classList" :key="value.id" :label="value.name" :value="value.id"></el-option>
                                 </el-select>
                                 <template v-else>
@@ -730,6 +730,7 @@
         vm = new Vue({
             el: "#activity-vue",
             data: {
+                uid: [[${session._login_user_.uid}]],
                 fid: [[${session._login_user_.fid}]],
                 templateId: [[${templateId}]],
                 marketId: [[${marketId}]],
@@ -1329,9 +1330,17 @@
                         return;
                     }
                     var url = ctx + "/api/third-party/query/teaching/clazz"
+                    dataUrl = $this.packageReleaseClassUrl(dataUrl);
                     app.ajaxPostWithLoading(url, {url: dataUrl}, function (data) {
                         if (data.success) {
                             $this.classList = data.data;
+                            var finalReleaseClassIds = [];
+                            $(data.data).each(function () {
+                                if ($this.releaseClassIds.indexOf(this.id) != -1) {
+                                    finalReleaseClassIds.push(this.id);
+                                }
+                            });
+                            $this.releaseClassIds = finalReleaseClassIds;
                         } else {
                             var errorMessage = data.message;
                             if (activityApp.isEmpty(errorMessage)) {
@@ -1342,6 +1351,31 @@
                     }, function () {
                         app.showMsg("获取班级列表失败");
                     });
+                },
+                packageReleaseClassUrl: function (dataUrl) {
+                    var $this = this;
+                    if (dataUrl.indexOf("?") == -1) {
+                        dataUrl += "?fid=" + $this.fid + "&uid=" + $this.uid;
+                        return dataUrl;
+                    }
+                    var paramSplitIndex = dataUrl.indexOf("?"),
+                        originUrl = dataUrl.substring(0, paramSplitIndex),
+                        params = dataUrl.substring(paramSplitIndex + 1).split("&");
+                    var existUid = false, existFid = false;
+                    $(params).each(function (i) {
+                        if (!existUid && params[i].indexOf("uid=") != -1) {
+                            existUid = true
+                        } else if (!existFid && params[i].indexOf("fid=") != -1) {
+                            existFid = true;
+                        }
+                    });
+                    if (!existUid) {
+                        params.push("uid=" + $this.uid);
+                    }
+                    if (!existFid) {
+                        params.push("fid=" + $this.fid);
+                    }
+                    return originUrl + "?" + params.join("&")
                 },
                 // 显示发布范围弹窗
                 toAddParticipateScope: function () {

@@ -38,12 +38,7 @@ public class ThirdPartyApiService {
      * @return java.util.List<java.lang.Object>
      */
     public List<?> getDataFromThirdPartyUrl(HttpServletRequest request, String url, Class<?> clazz) {
-        Map<String, String> paramMap = Maps.newHashMap();
-        paramMap.put("uid", String.valueOf(CookieUtils.getUid(request)));
-        paramMap.put("fid", String.valueOf(CookieUtils.getFid(request)));
-        String realUrl = URLUtils.packageParam2URL(url, paramMap);
-
-        String result = restTemplate.getForObject(realUrl, String.class);
+        String result = restTemplate.getForObject(url, String.class);
         JSONObject jsonObject = JSON.parseObject(result);
 
         if (jsonObject.getBoolean("success")) {
