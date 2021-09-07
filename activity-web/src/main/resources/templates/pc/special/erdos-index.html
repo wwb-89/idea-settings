@@ -64,7 +64,8 @@
                             <div class="font-box">
                                 <p class="title1" >{{item.name}}</p>
                                 <p>活动时间：{{item.startTime | timestampScopeFormat(item.endTime)}}</p>
-                                <p>{{item.activityFlag == 'class' ? '班级活动' : ('区域活动：' + item.createOrgName)}}</p>
+                                <p>{{item.activityFlag == 'class' ? '班级活动' : (item.activityFlag == 'school' ? '学校活动' : '区域活动')}}</p>
+                                <p v-if="item.activityFlag != 'class'">{{item.createOrgName}}</p>
                                 <p v-show="item.address">活动地点：{{item.address}}{{item.detailAddress ? item.detailAddress : ''}}</p>
                             </div>
                         </div>

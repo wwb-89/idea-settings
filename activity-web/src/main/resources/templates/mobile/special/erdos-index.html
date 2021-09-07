@@ -48,8 +48,8 @@
                         <span>{{activity.startTime | timestampScopeFormat(activity.endTime)}}</span>
                         <div class="clear"></div>
                     </div>
-                    <p class="dec">{{item.activityFlag == 'class' ? '班级活动' : item.createOrgName}}</p>
-                    <p class="address" >{{activity.address}}{{activity.detailAddress ? activity.detailAddress : ''}}</p>
+                    <p class="dec">{{activity.activityFlag == 'class' ? '班级活动' : (activity.activityFlag == 'school' ? '学校活动' : '区域活动')}}&nbsp;&nbsp;{{activity.activityFlag != 'class' ? activity.createOrgName : ''}}</p>
+                    <p class="address" v-show="activity.address">{{activity.address}}{{activity.detailAddress ? activity.detailAddress : ''}}</p>
                 </div>
             </li>
         </ul>
