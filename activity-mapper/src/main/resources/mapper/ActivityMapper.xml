@@ -181,7 +181,8 @@
 
     <!-- 活动查询where过滤条件 -->
     <sql id="erdosConditionSql">
-        <where>
+        WHERE
+            t.`status` IN ( 2, 3, 4 )
             <if test="params.flags != null and params.flags.size() != 0">
                 AND t.activity_flag IN
                 <foreach collection="params.flags" index="key" item="value" open="(" close=")" separator=",">
@@ -194,7 +195,6 @@
                 OR t.organisers LIKE CONCAT('%', #{params.sw}, '%')
                 )
             </if>
-        </where>
     </sql>
 
     <!-- 鄂尔多斯班级查询sql -->
