@@ -35,12 +35,12 @@
                     <li :class="{'active': item.selected}" v-for="(item, index) of levels" @click="changeActivityLevelSelected(index)">{{item.name}}</li>
                 </ul>
             </div>
-            <div class="typeItem" >
+            <!--<div class="typeItem" >
                 <span class="title">类型</span>
                 <ul>
                     <li :class="{'active': item.selected}" v-for="(item, index) of classifies" @click="changeActivityClassifySelected(index)">{{item.name}}</li>
                 </ul>
-            </div>
+            </div>-->
         </div>
         <div class="item-box">
             <div class="head">
@@ -86,7 +86,7 @@
     <script src="/static/pc/assets/lib/set-iframe-height-child.js" th:src="@{/pc/assets/lib/set-iframe-height-child.js}"></script>
     <script src="/static/pc/assets/lib/jquery.mCustomScrollbar.concat.min.js" th:src="@{/pc/assets/lib/jquery.mCustomScrollbar.concat.min.js}"></script>
     <script th:inline="javascript">
-        activityVue = new Vue({
+        vm = new Vue({
             el: '#activity-vue',
             data: {
                 fids: [[${fids}]],

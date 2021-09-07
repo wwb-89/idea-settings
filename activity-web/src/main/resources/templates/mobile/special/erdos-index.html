@@ -69,13 +69,13 @@
                     </ul>
                     <div class="clear"></div>
                 </div>
-                <div class="list-item">
+                <!--<div class="list-item">
                     <div class="title">类型</div>
                     <ul>
                         <li :class="{'active': activityClassify.selected}" v-for="(activityClassify, index) of classifies" :key="'activity-classify' + index" @click="changeActivityClassify(index)">{{activityClassify.name}}</li>
                     </ul>
                     <div class="clear"></div>
-                </div>
+                </div>-->
             </div>
             <div class="btn">
                 <a href="javascript:" class="btn-a btn-0" @click="filterCancel">取消</a>
@@ -92,7 +92,7 @@
     <script src="/static/mobile/assets/lib/jqthumb.min.js" th:src="@{/mobile/assets/lib/jqthumb.min.js}"></script>
     <script th:inline="javascript">
         function ready() {
-            activityVue = new Vue({
+            vm = new Vue({
                 el: "#activity-vue",
                 data: {
                     classifyNames: [[${classifyNames}]],
@@ -111,7 +111,7 @@
                     var $this = this;
                     // 定制右上角菜单
                     app.customMenu("", app.my_icon_url, {
-                        option: "activityVue.my();"
+                        option: "vm.my();"
                     });
                     // 活动分类列表
                     $($this.classifyNames).each(function () {
