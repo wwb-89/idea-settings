@@ -112,14 +112,16 @@ public interface ActivityMapper extends BaseMapper<Activity> {
 	 */
 	Page<Activity> pageActivityCalendarParticipate(@Param("page") Page<?> page, @Param("params") MhActivityCalendarQueryDTO activityCalendarQuery);
 
-	/**活动日历查询（创建的活动）
-	 * @Description 
-	 * @author wwb
-	 * @Date 2021-04-21 17:10:04
+	/**
+	 * 活动日历查询（创建的活动）
+	 *
 	 * @param page
 	 * @param activityCalendarQuery
 	 * @return com.baomidou.mybatisplus.extension.plugins.pagination.Page<com.chaoxing.activity.model.Activity>
-	*/
+	 * @Description
+	 * @author wwb
+	 * @Date 2021-04-21 17:10:04
+	 */
 	Page<Activity> pageActivityCalendarCreated(@Param("page") Page<?> page, @Param("params") MhActivityCalendarQueryDTO activityCalendarQuery);
 
 	/**
@@ -192,54 +194,77 @@ public interface ActivityMapper extends BaseMapper<Activity> {
 	 */
 	Activity getById(@Param("id") Integer id);
 
-	/**查询机构创建的
-	 * @Description 
-	 * @author wwb
-	 * @Date 2021-04-19 10:41:04
+	/**
+	 * 查询机构创建的
+	 *
 	 * @param fid
 	 * @param activityFlag
 	 * @return java.util.List<com.chaoxing.activity.model.Activity>
-	*/
+	 * @Description
+	 * @author wwb
+	 * @Date 2021-04-19 10:41:04
+	 */
 	List<Activity> listOrgCreated(@Param("fid") Integer fid, @Param("activityFlag") String activityFlag);
 
-	/**查询活动进行日期范围中含activityDate的活动id
-	* @Description
-	* @author huxiaolong
-	* @Date 2021-05-10 17:24:10
-	* @param activityDate
-	* @return java.util.List<java.lang.Integer>
-	*/
+	/**
+	 * 查询活动进行日期范围中含activityDate的活动id
+	 *
+	 * @param activityDate
+	 * @return java.util.List<java.lang.Integer>
+	 * @Description
+	 * @author huxiaolong
+	 * @Date 2021-05-10 17:24:10
+	 */
 	List<Integer> listByActivityDate(@Param("activityDate") String activityDate);
 
-	/**查询机构fid下的活动，并按照类型进行分组
-	* @Description 
-	* @author huxiaolong
-	* @Date 2021-05-11 15:27:37
-	* @param activityIds
-	* @return java.util.List<java.lang.Integer>
-	*/
+	/**
+	 * 查询机构fid下的活动，并按照类型进行分组
+	 *
+	 * @param activityIds
+	 * @return java.util.List<java.lang.Integer>
+	 * @Description
+	 * @author huxiaolong
+	 * @Date 2021-05-11 15:27:37
+	 */
 	List<ActivityClassifyDTO> listActivityGroupByClassifyId(@Param("activityIds") List<Integer> activityIds);
 
-	/**根据机构id, 给定的活动时间范围，查询在此范围内进行中的活动id列表
-	* @Description
-	* @author huxiaolong
-	* @Date 2021-06-10 10:06:36
-	* @param fid
-	* @param startDate
-	* @param endDate
-	* @return java.util.List<java.lang.Integer>
-	*/
+	/**
+	 * 根据机构id, 给定的活动时间范围，查询在此范围内进行中的活动id列表
+	 *
+	 * @param fid
+	 * @param startDate
+	 * @param endDate
+	 * @return java.util.List<java.lang.Integer>
+	 * @Description
+	 * @author huxiaolong
+	 * @Date 2021-06-10 10:06:36
+	 */
 	List<Integer> listOrgReleasedActivityIds(@Param("fid") Integer fid, @Param("startDate") String startDate, @Param("endDate") String endDate);
 
-	/**根据机构ids, 给定的活动时间范围，查询在此范围内进行中的活动id列表
-	* @Description
-	* @author huxiaolong
-	* @Date 2021-06-11 14:02:14
-	* @param fids
-	* @param startDate
-	* @param endDate
-	* @return java.util.List<java.lang.Integer>
-	*/
+	/**
+	 * 根据机构ids, 给定的活动时间范围，查询在此范围内进行中的活动id列表
+	 *
+	 * @param fids
+	 * @param startDate
+	 * @param endDate
+	 * @return java.util.List<java.lang.Integer>
+	 * @Description
+	 * @author huxiaolong
+	 * @Date 2021-06-11 14:02:14
+	 */
     List<Integer> listOrgsReleasedActivityId(@Param("fids") List<Integer> fids, @Param("startDate") String startDate, @Param("endDate") String endDate);
+
+    /**
+	 * 鄂尔多斯定制的机构创建的作品征集id列表
+	 *
+	 * @param createdFid
+	 * @param participateFid
+	 * @param activityFlag
+	 * @return java.util.List<java.lang.Integer>
+	 * @Description
+	 * @author wwb
+	 * @Date 2021-09-07 20:49:01
+	 */
+	List<Integer> listErdosCustomOrgCreatedWorkId(@Param("createdFid") Integer createdFid, @Param("participateFid") Integer participateFid, @Param("activityFlag") String activityFlag);
 
 }

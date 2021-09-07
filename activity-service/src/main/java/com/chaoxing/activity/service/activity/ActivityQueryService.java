@@ -893,15 +893,7 @@ public class ActivityQueryService {
 			default:
 				queryActivityFlag = "";
 		}
-		LambdaQueryWrapper<Activity> lambdaQueryWrapper = new LambdaQueryWrapper<Activity>()
-				.eq(Activity::getCreateFid, fid)
-				.ne(Activity::getStatus, Activity.StatusEnum.DELETED.getValue())
-				.select(Activity::getWorkId);
-		if (StringUtils.isNotBlank(queryActivityFlag)) {
-			lambdaQueryWrapper.eq(Activity::getActivityFlag, queryActivityFlag);
-		}
-		List<Activity> onlyWorkIds = activityMapper.selectList(lambdaQueryWrapper);
-		return Optional.ofNullable(onlyWorkIds).orElse(Lists.newArrayList()).stream().filter(v -> v != null).map(Activity::getWorkId).filter(v -> v != null).collect(Collectors.toList());
+		return activityMapper.listErdosCustomOrgCreatedWorkId(fid, activity.getCreateFid(), queryActivityFlag);
 	}
 
 }
