@@ -96,6 +96,11 @@ public class ErdosActivityInfoApiController {
         List<Integer> availableFlags = Lists.newArrayList(109, 111, 113, 115, 116);
         Integer workId = activity.getWorkId();
         Integer readingId = activity.getReadingId();
+        if (workId != null) {
+            // 作品征集定制
+            List<MhGeneralAppResultDataDTO.MhGeneralAppResultDataFieldDTO> workBtns = listWorkBtn(uid, wfwfid, workId, availableFlags);
+            mhGeneralAppResultDataFields.addAll(workBtns);
+        }
         if (Optional.ofNullable(activity.getOpenReading()).orElse(false) && readingId != null) {
             String flag = getFlag(availableFlags);
             mhGeneralAppResultDataFields.add(MhGeneralAppResultDataDTO.MhGeneralAppResultDataFieldDTO.builder()
@@ -110,11 +115,6 @@ public class ErdosActivityInfoApiController {
                         .flag(String.valueOf(intFlag + 1))
                         .build());
             }
-        }
-        if (workId != null) {
-            // 作品征集定制
-            List<MhGeneralAppResultDataDTO.MhGeneralAppResultDataFieldDTO> workBtns = listWorkBtn(uid, wfwfid, workId, availableFlags);
-            mhGeneralAppResultDataFields.addAll(workBtns);
         }
         // 没使用完的按钮
         String remainFlag = getFlag(availableFlags);
