@@ -4,8 +4,9 @@ import com.chaoxing.activity.admin.util.LoginUtils;
 import com.chaoxing.activity.model.Activity;
 import com.chaoxing.activity.model.Template;
 import com.chaoxing.activity.service.activity.market.MarketHandleService;
-import com.chaoxing.activity.service.activity.template.TemplateQueryService;
+import com.chaoxing.activity.util.exception.BusinessException;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -31,9 +32,6 @@ public class GeneralActivityController {
 
 	@Resource
 	private ActivityController activityController;
-
-	@Resource
-	private TemplateQueryService templateQueryService;
 	@Resource
 	private MarketHandleService marketHandleService;
 
@@ -56,7 +54,11 @@ public class GeneralActivityController {
 	public String index(HttpServletRequest request, Model model, Integer marketId, String code, Integer wfwfid, Integer unitId, Integer state, Integer fid, @RequestParam(defaultValue = "0") Integer strict, String flag) {
 		Integer realFid = Optional.ofNullable(wfwfid).orElse(Optional.ofNullable(unitId).orElse(Optional.ofNullable(state).orElse(Optional.ofNullable(fid).orElse(LoginUtils.getLoginUser(request).getFid()))));
 		if (marketId == null) {
-			Template template = marketHandleService.getOrCreateTemplateMarketByFidActivityFlag(realFid, Activity.ActivityFlagEnum.fromValue(flag), LoginUtils.getLoginUser(request));
+			Activity.ActivityFlagEnum activityFlagEnum = null;
+			if (StringUtils.isNotBlank(flag) && (activityFlagEnum = Activity.ActivityFlagEnum.fromValue(flag)) == null) {
+				throw new BusinessException("未知的flag");
+			}
+			Template template = marketHandleService.getOrCreateTemplateMarketByFidActivityFlag(realFid, activityFlagEnum, LoginUtils.getLoginUser(request));
 			marketId = template.getMarketId();
 		}
 		return activityController.index(model, marketId, code, realFid, strict, flag);
