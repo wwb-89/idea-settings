@@ -48,8 +48,6 @@ public interface ActivityMapper extends BaseMapper<Activity> {
 	 */
 	Page<Activity> pageManaging(@Param("page") Page<?> page, @Param("params") ActivityManageQueryDTO activityManageQuery);
 
-	Page<Activity> pageManagingByMarket(@Param("page") Page<?> page, @Param("params") ActivityManageQueryDTO activityManageQuery);
-
 	/**
 	 * 查询创建的活动
 	 *
@@ -61,8 +59,6 @@ public interface ActivityMapper extends BaseMapper<Activity> {
 	 * @Date 2021-03-17 16:11:49
 	 */
 	Page<Activity> pageCreated(@Param("page") Page<?> page, @Param("params") ActivityManageQueryDTO activityManageQuery);
-
-	Page<Activity> pageCreatedByMarket(@Param("page") Page<?> page, @Param("params") ActivityManageQueryDTO activityManageQuery);
 
 	/**
 	 * 查询机构创建的或能参与的

@@ -53,9 +53,9 @@ public class GeneralActivityController {
 	@RequestMapping("")
 	public String index(HttpServletRequest request, Model model, Integer marketId, String code, Integer wfwfid, Integer unitId, Integer state, Integer fid, @RequestParam(defaultValue = "0") Integer strict, String flag) {
 		Integer realFid = Optional.ofNullable(wfwfid).orElse(Optional.ofNullable(unitId).orElse(Optional.ofNullable(state).orElse(Optional.ofNullable(fid).orElse(LoginUtils.getLoginUser(request).getFid()))));
-		if (marketId == null) {
-			Activity.ActivityFlagEnum activityFlagEnum = null;
-			if (StringUtils.isNotBlank(flag) && (activityFlagEnum = Activity.ActivityFlagEnum.fromValue(flag)) == null) {
+		if (marketId == null && StringUtils.isNotBlank(flag)) {
+			Activity.ActivityFlagEnum activityFlagEnum = Activity.ActivityFlagEnum.fromValue(flag);
+			if (activityFlagEnum == null) {
 				throw new BusinessException("未知的flag");
 			}
 			Template template = marketHandleService.getOrCreateTemplateMarketByFidActivityFlag(realFid, activityFlagEnum, LoginUtils.getLoginUser(request));

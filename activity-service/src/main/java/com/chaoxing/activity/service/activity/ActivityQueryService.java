@@ -249,19 +249,13 @@ public class ActivityQueryService {
 			// 严格模式
 			activityManageQuery.setCreateUid(loginUser.getUid());
 			activityManageQuery.setCreateWfwfid(activityManageQuery.getFid());
-			if (marketId == null) {
-				page = activityMapper.pageCreated(page, activityManageQuery);
-			} else {
-				page = activityMapper.pageCreatedByMarket(page, activityManageQuery);
-			}
+			page = activityMapper.pageCreated(page, activityManageQuery);
 		} else {
 			if (marketId == null) {
 				List<Integer> fids = wfwAreaApiService.listSubFid(activityManageQuery.getFid());
 				activityManageQuery.setFids(fids);
-				page = activityMapper.pageManaging(page, activityManageQuery);
-			} else {
-				page = activityMapper.pageManagingByMarket(page, activityManageQuery);
 			}
+			page = activityMapper.pageManaging(page, activityManageQuery);
 		}
 		List<Activity> activities = page.getRecords();
 		// 封装报名的数量
@@ -396,7 +390,7 @@ public class ActivityQueryService {
 	 * @author wwb
 	 * @Date 2021-01-27 20:30:46
 	 * @param page
-	 * @param uid
+	 * @param loginUser
 	 * @param sw
 	 * @return com.baomidou.mybatisplus.extension.plugins.pagination.Page
 	*/
@@ -446,7 +440,7 @@ public class ActivityQueryService {
 	 * @author wwb
 	 * @Date 2021-01-27 20:58:26
 	 * @param page
-	 * @param uid
+	 * @param loginUser
 	 * @param sw
 	 * @return com.baomidou.mybatisplus.extension.plugins.pagination.Page<com.chaoxing.activity.model.Activity>
 	*/

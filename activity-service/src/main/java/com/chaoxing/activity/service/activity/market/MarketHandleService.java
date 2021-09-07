@@ -226,6 +226,9 @@ public class MarketHandleService {
 	 */
 	@Transactional(rollbackFor = Exception.class)
 	public Template getOrCreateTemplateMarketByFidActivityFlag(Integer fid, Activity.ActivityFlagEnum activityFlagEnum, LoginUserDTO loginUserDTO) {
+		if (activityFlagEnum == null) {
+			throw new BusinessException("未知的flag");
+		}
 		Template template = templateQueryService.getOrgTemplateByActivityFlag(fid, activityFlagEnum);
 		ActivityMarketCreateParamDTO marketCreateParam = ActivityMarketCreateParamDTO.builder().name(activityFlagEnum.getName().concat("活动市场")).fid(fid).build();
 		if (template != null) {

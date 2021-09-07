@@ -263,41 +263,42 @@
             <include refid="Base_Column_List"></include>, t.start_time as startTime, t.end_Time as endTime
         FROM
             t_activity t
+        <if test="params.marketId != null">
+            LEFT JOIN t_activity_market t1 ON t1.activity_id = t.id
+        </if>
         WHERE
+        <choose>
+            <when test="params.marketId != null">
+                t1.market_id = #{params.marketId}
+            </when>
+            <otherwise>
             (
                 (
-                <choose>
-                    <when test="params.marketId != null">
-                        t.market_id = #{params.marketId}
-                    </when>
-                    <otherwise>
-                        t.create_fid IN
-                        <foreach collection="params.fids" index="key" item="value" open="(" close=")" separator=",">
-                            #{value}
-                        </foreach>
-                        AND t.is_released = 1
-                    </otherwise>
-                </choose>
+                    t.create_fid IN
+                    <foreach collection="params.fids" index="key" item="value" open="(" close=")" separator=",">
+                        #{value}
+                    </foreach>
+                    AND t.is_released = 1
                 )
-                <if test="params.marketId == null">
-                    OR t.create_fid = #{params.topFid}
-                </if>
+                OR t.create_fid = #{params.topFid}
             )
-            <choose>
-                <when test="params.status != null">
-                    AND t.`status` = #{params.status}
-                </when>
-                <otherwise>
-                    AND t.`status` > 0
-                </otherwise>
-            </choose>
-            <if test="params.sw != null and params.sw != ''">
-                AND (
-                    t.name LIKE CONCAT('%', #{params.sw} , '%')
-                    OR t.create_user_name LIKE CONCAT('%', #{params.sw} , '%')
-                    OR t.create_org_name LIKE CONCAT('%', #{params.sw} , '%')
-                )
-            </if>
+            </otherwise>
+        </choose>
+        <choose>
+            <when test="params.status != null">
+                AND t.`status` = #{params.status}
+            </when>
+            <otherwise>
+                AND t.`status` > 0
+            </otherwise>
+        </choose>
+        <if test="params.sw != null and params.sw != ''">
+            AND (
+                t.name LIKE CONCAT('%', #{params.sw} , '%')
+                OR t.create_user_name LIKE CONCAT('%', #{params.sw} , '%')
+                OR t.create_org_name LIKE CONCAT('%', #{params.sw} , '%')
+            )
+        </if>
         GROUP BY
             t.id
         ORDER BY
@@ -314,97 +315,20 @@
         </trim>
     </select>
 
-    <!--查询管理的活动-->
-    <select id="pageManagingByMarket" resultMap="BaseResultMap">
-        SELECT
-            <include refid="Base_Market_Column_List"></include>, t.start_time as startTime, t.end_Time as endTime
-        FROM
-            t_activity t
-            LEFT JOIN t_activity_market t1 ON t1.activity_id = t.id
-        WHERE
-            t1.market_id = #{params.marketId}
-            <choose>
-                <when test="params.status != null">
-                    AND t1.`status` = #{params.status}
-                </when>
-                <otherwise>
-                    AND t1.`status` > 0
-                </otherwise>
-            </choose>
-            <if test="params.sw != null and params.sw != ''">
-                AND (
-                t.name LIKE CONCAT('%', #{params.sw} , '%')
-                OR t.create_user_name LIKE CONCAT('%', #{params.sw} , '%')
-                OR t.create_org_name LIKE CONCAT('%', #{params.sw} , '%')
-                )
-            </if>
-        GROUP BY
-            t.id
-        ORDER BY
-            <trim suffixOverrides=",">
-                t1.is_top DESC,
-                <if test="params.orderField != null and params.orderField != ''">
-                    ${params.orderField} ${params.orderType},
-                </if>
-                <if test="params.orderField == null or params.orderField == ''">
-                    t.create_time DESC,
-                </if>
-                <if test="params.marketId == null">
-                    t.create_fid <![CDATA[<>]]> #{params.topFid},
-                </if>
-            </trim>
-    </select>
-
-    <select id="pageCreatedByMarket" resultMap="BaseResultMap">
-        SELECT
-            <include refid="Base_Market_Column_List"></include>, t.start_time as startTime, t.end_Time as endTime
-        FROM
-            t_activity t
-            LEFT JOIN t_activity_market t1 ON t1.activity_id = t.id
-        WHERE
-            t1.market_id = #{params.marketId}
-            AND t.create_uid = #{params.createUid}
-        <choose>
-                <when test="params.status != null">
-                    AND t1.`status` = #{params.status}
-                </when>
-                <otherwise>
-                    AND t1.`status` > 0
-                </otherwise>
-            </choose>
-            <if test="params.sw != null and params.sw != ''">
-                AND (
-                t.name LIKE CONCAT('%', #{params.sw} , '%')
-                OR t.create_user_name LIKE CONCAT('%', #{params.sw} , '%')
-                OR t.create_org_name LIKE CONCAT('%', #{params.sw} , '%')
-                )
-            </if>
-        GROUP BY
-            t.id
-        ORDER BY
-            <trim suffixOverrides=",">
-                t1.is_top DESC,
-                <if test="params.orderField != null and params.orderField != ''">
-                    ${params.orderField} ${params.orderType}
-                </if>
-                <if test="params.orderField == null or params.orderField == ''">
-                    t.create_time DESC
-                </if>
-            </trim>
-
-    </select>
-
     <!--查询创建的活动-->
     <select id="pageCreated" resultMap="BaseResultMap">
         SELECT
             <include refid="Base_Column_List"></include>, t.start_time as startTime, t.end_Time as endTime
         FROM
             t_activity t
+        <if test="params.marketId != null">
+            LEFT JOIN t_activity_market t1 ON t1.activity_id = t.id
+        </if>
         WHERE
             t.create_uid = #{params.createUid}
             <choose>
                 <when test="params.marketId != null">
-                    AND t.market_id = #{params.marketId}
+                    AND t1.market_id = #{params.marketId}
                 </when>
                 <otherwise>
                     AND t.create_fid = #{params.createWfwfid}
