@@ -11,6 +11,7 @@ import com.chaoxing.activity.util.constant.ActivityMhUrlConstant;
 import com.chaoxing.activity.util.constant.DateTimeFormatterConstant;
 import com.chaoxing.activity.util.exception.BusinessException;
 import com.google.common.collect.Lists;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -70,7 +71,13 @@ public class ErdosActivityInfoApiController {
         jsonObject.put("results", Lists.newArrayList(mhGeneralAppResultDataDTO));
         List<MhGeneralAppResultDataDTO.MhGeneralAppResultDataFieldDTO> mhGeneralAppResultDataFields = Lists.newArrayList();
         // 活动名称
+        mhGeneralAppResultDataFields.add(buildField("", "", "0"));
         mhGeneralAppResultDataFields.add(buildField(fieldCodeNameRelation.get("activity_name"), activity.getName(), "1"));
+        mhGeneralAppResultDataFields.add(buildField("", "", "2"));
+        mhGeneralAppResultDataFields.add(buildField("", "", "3"));
+        mhGeneralAppResultDataFields.add(buildField("", "", "4"));
+        mhGeneralAppResultDataFields.add(buildField("", "", "5"));
+        mhGeneralAppResultDataFields.add(buildField("", "", "6"));
         // 开始时间
         mhGeneralAppResultDataFields.add(buildField(fieldCodeNameRelation.get("activity_time_scope"), DateTimeFormatterConstant.YYYY_MM_DD_HH_MM.format(activity.getStartTime()), "100"));
         // 结束时间
@@ -84,8 +91,9 @@ public class ErdosActivityInfoApiController {
         mhGeneralAppResultDataFields.add(buildField(fieldCodeNameRelation.get("activity_organisers"), activity.getOrganisers(), "105"));
         mhGeneralAppResultDataFields.add(buildField("", "", "106"));
         mhGeneralAppResultDataFields.add(buildField("", "", "107"));
+        mhGeneralAppResultDataFields.add(buildField("", "", "108"));
         List<MhGeneralAppResultDataDTO.MhGeneralAppResultDataFieldDTO> btns;
-        List<Integer> availableFlags = Lists.newArrayList(109, 111, 113, 115, 116, 118, 119);
+        List<Integer> availableFlags = Lists.newArrayList(109, 111, 113, 115, 116);
         Integer workId = activity.getWorkId();
         Integer readingId = activity.getReadingId();
         if (Optional.ofNullable(activity.getOpenReading()).orElse(false) && readingId != null) {
@@ -108,9 +116,16 @@ public class ErdosActivityInfoApiController {
             List<MhGeneralAppResultDataDTO.MhGeneralAppResultDataFieldDTO> workBtns = listWorkBtn(uid, wfwfid, workId, availableFlags);
             mhGeneralAppResultDataFields.addAll(workBtns);
         }
+        // 没使用完的按钮
+        String remainFlag = getFlag(availableFlags);
+        while (StringUtils.isNotBlank(remainFlag)) {
+            mhGeneralAppResultDataFields.add(buildField("", "", remainFlag));
+            remainFlag = getFlag(availableFlags);
+        }
         String activityAddressLink = "https://api.hd.chaoxing.com/redirect/activity/"+ activityId +"/address";
         // 活动地点链接（线下的活动有）
         mhGeneralAppResultDataFields.add(buildField("活动地点链接", activityAddressLink, "117"));
+        mhGeneralAppResultDataFields.add(buildField("", "", "118"));
         // 海报
         mhGeneralAppResultDataFields.add(buildField("海报", "海报", "130"));
         mhGeneralAppResultDataFields.add(buildField("海报", String.format(ActivityMhUrlConstant.ACTIVITY_POSTERS_URL, activity.getId()), "131"));
