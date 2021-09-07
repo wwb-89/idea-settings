@@ -245,9 +245,6 @@ public class ActivityQueryService {
 		Integer strict = Optional.ofNullable(activityManageQuery.getStrict()).orElse(0);
 		activityManageQuery.setOrderField(Optional.ofNullable(activityManageQuery.getOrderFieldId()).map(tableFieldDetailMapper::selectById).map(TableFieldDetail::getCode).orElse(""));
 		Integer marketId = activityManageQuery.getMarketId();
-		if (marketId == null) {
-			marketId = templateQueryService.getMarketIdByTemplate(activityManageQuery.getFid(), activityManageQuery.getActivityFlag());
-		}
 		if (strict.compareTo(1) == 0) {
 			// 严格模式
 			activityManageQuery.setCreateUid(loginUser.getUid());

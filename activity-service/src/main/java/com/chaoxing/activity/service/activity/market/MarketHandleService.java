@@ -225,21 +225,21 @@ public class MarketHandleService {
 	 * @return com.chaoxing.activity.model.Template
 	 */
 	@Transactional(rollbackFor = Exception.class)
-	public Template handleTemplateMarketByFidActivityFlag(Integer fid, Activity.ActivityFlagEnum activityFlagEnum, LoginUserDTO loginUserDTO) {
+	public Template getOrCreateTemplateMarketByFidActivityFlag(Integer fid, Activity.ActivityFlagEnum activityFlagEnum, LoginUserDTO loginUserDTO) {
 		Template template = templateQueryService.getOrgTemplateByActivityFlag(fid, activityFlagEnum);
 		ActivityMarketCreateParamDTO marketCreateParam = ActivityMarketCreateParamDTO.builder().name(activityFlagEnum.getName().concat("活动市场")).fid(fid).build();
-		if (template == null) {
-			// 如果不存在fid对应的模板，证明无对应市场，先创建市场
-			ApplicationContextHolder.getBean(MarketHandleService.class).add(marketCreateParam, activityFlagEnum, loginUserDTO.buildOperateUserDTO());
-			return templateQueryService.getOrgTemplateByActivityFlag(fid, activityFlagEnum);
+		if (template != null) {
+			// 若有模板无市场，则建立对应市场
+			if (template.getMarketId() == null) {
+				Market market = ApplicationContextHolder.getBean(MarketHandleService.class).createMarket(marketCreateParam, loginUserDTO.buildOperateUserDTO());
+				template.setMarketId(market.getId());
+				templateHandleService.update(template);
+			}
+			return template;
 		}
-		// 若有模板无市场，则建立对应市场
-		if (template.getMarketId() == null) {
-			Market market = ApplicationContextHolder.getBean(MarketHandleService.class).createMarket(marketCreateParam, loginUserDTO.buildOperateUserDTO());
-			template.setMarketId(market.getId());
-			templateHandleService.update(template);
-		}
-		return template;
+		// 如果不存在fid对应的模板，证明无对应市场，先创建市场
+		ApplicationContextHolder.getBean(MarketHandleService.class).add(marketCreateParam, activityFlagEnum, loginUserDTO.buildOperateUserDTO());
+		return templateQueryService.getOrgTemplateByActivityFlag(fid, activityFlagEnum);
 	}
 
 	/**克隆市场和模板
@@ -264,7 +264,5 @@ public class MarketHandleService {
 		templateHandleService.cloneTemplate(newMarket.getId(), originTemplateId);
 		return newMarket;
 	}
-
-
 
 }

@@ -1,6 +1,10 @@
 package com.chaoxing.activity.admin.controller.general;
 
 import com.chaoxing.activity.admin.util.LoginUtils;
+import com.chaoxing.activity.model.Activity;
+import com.chaoxing.activity.model.Template;
+import com.chaoxing.activity.service.activity.market.MarketHandleService;
+import com.chaoxing.activity.service.activity.template.TemplateQueryService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -28,6 +32,11 @@ public class GeneralActivityController {
 	@Resource
 	private ActivityController activityController;
 
+	@Resource
+	private TemplateQueryService templateQueryService;
+	@Resource
+	private MarketHandleService marketHandleService;
+
 	/**活动管理主页
 	 * @Description
 	 * @author wwb
@@ -46,6 +55,10 @@ public class GeneralActivityController {
 	@RequestMapping("")
 	public String index(HttpServletRequest request, Model model, Integer marketId, String code, Integer wfwfid, Integer unitId, Integer state, Integer fid, @RequestParam(defaultValue = "0") Integer strict, String flag) {
 		Integer realFid = Optional.ofNullable(wfwfid).orElse(Optional.ofNullable(unitId).orElse(Optional.ofNullable(state).orElse(Optional.ofNullable(fid).orElse(LoginUtils.getLoginUser(request).getFid()))));
+		if (marketId == null) {
+			Template template = marketHandleService.getOrCreateTemplateMarketByFidActivityFlag(realFid, Activity.ActivityFlagEnum.fromValue(flag), LoginUtils.getLoginUser(request));
+			marketId = template.getMarketId();
+		}
 		return activityController.index(model, marketId, code, realFid, strict, flag);
 	}
 
