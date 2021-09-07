@@ -867,4 +867,41 @@ public class ActivityQueryService {
 		return Optional.ofNullable(onlyWorkIds).orElse(Lists.newArrayList()).stream().filter(v -> v != null).map(Activity::getWorkId).filter(v -> v != null).collect(Collectors.toList());
 	}
 
+	/**查询机构下一级（活动的下一级class、school、region）创建的作品征集id列表
+	 * @Description 
+	 * @author wwb
+	 * @Date 2021-09-07 20:04:04
+	 * @param fid
+	 * @param workId
+	 * @return java.util.List<java.lang.Integer>
+	*/
+	public List<Integer> listOrgJuniorCreatedWorkId(Integer fid, Integer workId) {
+		Activity activity = getByWorkId(workId);
+		if (activity == null) {
+			return Lists.newArrayList();
+		}
+		Activity.ActivityFlagEnum activityFlagEnum = Activity.ActivityFlagEnum.fromValue(activity.getActivityFlag());
+		String queryActivityFlag;
+		switch (activityFlagEnum) {
+			case CLASS:
+				queryActivityFlag = Activity.ActivityFlagEnum.SCHOOL.getValue();
+				break;
+			case SCHOOL:
+			case REGION:
+				queryActivityFlag = Activity.ActivityFlagEnum.REGION.getValue();
+				break;
+			default:
+				queryActivityFlag = "";
+		}
+		LambdaQueryWrapper<Activity> lambdaQueryWrapper = new LambdaQueryWrapper<Activity>()
+				.eq(Activity::getCreateFid, fid)
+				.ne(Activity::getStatus, Activity.StatusEnum.DELETED.getValue())
+				.select(Activity::getWorkId);
+		if (StringUtils.isNotBlank(queryActivityFlag)) {
+			lambdaQueryWrapper.eq(Activity::getActivityFlag, queryActivityFlag);
+		}
+		List<Activity> onlyWorkIds = activityMapper.selectList(lambdaQueryWrapper);
+		return Optional.ofNullable(onlyWorkIds).orElse(Lists.newArrayList()).stream().filter(v -> v != null).map(Activity::getWorkId).filter(v -> v != null).collect(Collectors.toList());
+	}
+
 }

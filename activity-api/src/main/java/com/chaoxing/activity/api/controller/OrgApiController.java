@@ -4,6 +4,7 @@ import com.chaoxing.activity.dto.RestRespDTO;
 import com.chaoxing.activity.service.activity.ActivityQueryService;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.annotation.Resource;
@@ -34,6 +35,20 @@ public class OrgApiController {
     @RequestMapping("{fid}/workId")
     public RestRespDTO listOrgWorkId(@PathVariable Integer fid) {
         List<Integer> workIds = activityQueryService.listOrgCreatedWorkId(fid);
+        return RestRespDTO.success(workIds);
+    }
+
+    /**鄂尔多斯定制的查询机构下创建的作品征集id列表
+     * @Description 
+     * @author wwb
+     * @Date 2021-09-07 20:12:09
+     * @param fid
+     * @param workId
+     * @return com.chaoxing.activity.dto.RestRespDTO
+    */
+    @RequestMapping("{fid}/erdos/workId")
+    public RestRespDTO listOrgWorkId(@PathVariable Integer fid, @RequestParam Integer workId) {
+        List<Integer> workIds = activityQueryService.listOrgJuniorCreatedWorkId(fid, workId);
         return RestRespDTO.success(workIds);
     }
 
