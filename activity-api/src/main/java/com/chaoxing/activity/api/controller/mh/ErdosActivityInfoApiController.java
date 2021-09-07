@@ -167,6 +167,7 @@ public class ErdosActivityInfoApiController {
                 for (int i = 0; i < size; i++) {
                     String flag = getFlag(availableFlags);
                     JSONObject btnJsonObject = data.getJSONObject(i);
+                    Boolean enable = Optional.ofNullable(btnJsonObject.getBoolean("enable")).orElse(false);
                     btns.add(MhGeneralAppResultDataDTO.MhGeneralAppResultDataFieldDTO.builder()
                             .key(btnJsonObject.getString("buttonName"))
                             .value(btnJsonObject.getString("linkUrl"))
@@ -175,7 +176,7 @@ public class ErdosActivityInfoApiController {
                     Integer intFlag = Integer.parseInt(flag);
                     if (intFlag.compareTo(MULTI_BTN_MAX_FLAG) < 0) {
                         btns.add(MhGeneralAppResultDataDTO.MhGeneralAppResultDataFieldDTO.builder()
-                                .value("1")
+                                .value(enable ? "1" : "0")
                                 .flag(String.valueOf(intFlag + 1))
                                 .build());
                     }
