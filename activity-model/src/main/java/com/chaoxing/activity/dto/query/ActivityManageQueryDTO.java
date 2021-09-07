@@ -48,4 +48,6 @@ public class ActivityManageQueryDTO {
 	private String orderField;
 
 	private OrderTypeEnum orderType;
+	/** 图书馆使用的code */
+	private String code;
 }

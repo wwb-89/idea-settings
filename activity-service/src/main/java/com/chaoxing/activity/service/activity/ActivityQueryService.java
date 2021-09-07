@@ -244,14 +244,13 @@ public class ActivityQueryService {
 	public Page<Activity> listManaging(Page<Activity> page, ActivityManageQueryDTO activityManageQuery, LoginUserDTO loginUser) {
 		Integer strict = Optional.ofNullable(activityManageQuery.getStrict()).orElse(0);
 		activityManageQuery.setOrderField(Optional.ofNullable(activityManageQuery.getOrderFieldId()).map(tableFieldDetailMapper::selectById).map(TableFieldDetail::getCode).orElse(""));
-		Integer marketId = activityManageQuery.getMarketId();
 		if (strict.compareTo(1) == 0) {
 			// 严格模式
 			activityManageQuery.setCreateUid(loginUser.getUid());
 			activityManageQuery.setCreateWfwfid(activityManageQuery.getFid());
 			page = activityMapper.pageCreated(page, activityManageQuery);
 		} else {
-			if (marketId == null) {
+			if (StringUtils.isNotBlank(activityManageQuery.getCode())) {
 				List<Integer> fids = wfwAreaApiService.listSubFid(activityManageQuery.getFid());
 				activityManageQuery.setFids(fids);
 			}

@@ -9,14 +9,10 @@ import com.chaoxing.activity.model.*;
 import com.chaoxing.activity.service.GroupService;
 import com.chaoxing.activity.service.WebTemplateService;
 import com.chaoxing.activity.service.activity.ActivityQueryService;
-import com.chaoxing.activity.service.activity.classify.ClassifyHandleService;
-import com.chaoxing.activity.service.activity.classify.ClassifyQueryService;
 import com.chaoxing.activity.service.activity.engine.ActivityEngineQueryService;
 import com.chaoxing.activity.service.activity.manager.ActivityCreatePermissionService;
 import com.chaoxing.activity.service.activity.template.TemplateQueryService;
-import com.chaoxing.activity.service.manager.WfwGroupApiService;
 import com.chaoxing.activity.service.manager.wfw.WfwAreaApiService;
-import com.chaoxing.activity.service.manager.wfw.WfwContactApiService;
 import com.chaoxing.activity.service.tablefield.TableFieldQueryService;
 import com.chaoxing.activity.util.constant.CommonConstant;
 import com.google.common.collect.Lists;
@@ -49,10 +45,6 @@ public class ActivityController {
 	@Resource
 	private GroupService groupService;
 	@Resource
-	private WfwGroupApiService wfwGroupApiService;
-	@Resource
-	private WfwContactApiService wfwContactApiService;
-	@Resource
 	private WfwAreaApiService wfwAreaApiService;
 	@Resource
 	private TableFieldQueryService tableFieldQueryService;
@@ -60,10 +52,6 @@ public class ActivityController {
 	private ActivityEngineQueryService activityEngineQueryService;
 	@Resource
 	private TemplateQueryService templateQueryService;
-	@Resource
-	private ClassifyHandleService classifyHandleService;
-	@Resource
-	private ClassifyQueryService classifyQueryService;
 	@Resource
 	private ActivityCreatePermissionService activityCreatePermissionService;
 
