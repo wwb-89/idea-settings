@@ -52,4 +52,10 @@ public class ActivityMarketCreateParamDTO {
 				.build();
 	}
 
+	public static ActivityMarketCreateParamDTO build(String name, Integer fid) {
+		ActivityMarketCreateParamDTO activityMarketCreateParam = ActivityMarketCreateParamDTO.build(fid, null);
+		activityMarketCreateParam.setName(name);
+		return activityMarketCreateParam;
+	}
+
 }

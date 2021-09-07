@@ -230,7 +230,7 @@ public class MarketHandleService {
 			throw new BusinessException("未知的flag");
 		}
 		Template template = templateQueryService.getOrgTemplateByActivityFlag(fid, activityFlagEnum);
-		ActivityMarketCreateParamDTO marketCreateParam = ActivityMarketCreateParamDTO.builder().name(activityFlagEnum.getName().concat("活动市场")).fid(fid).build();
+		ActivityMarketCreateParamDTO marketCreateParam = ActivityMarketCreateParamDTO.build(activityFlagEnum.getName().concat("活动市场"), fid);
 		if (template != null) {
 			// 若有模板无市场，则建立对应市场
 			if (template.getMarketId() == null) {
