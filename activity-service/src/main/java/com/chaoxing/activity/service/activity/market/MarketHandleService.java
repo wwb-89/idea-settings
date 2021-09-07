@@ -174,7 +174,7 @@ public class MarketHandleService {
 	@Transactional(rollbackFor = Exception.class)
 	public void add(Integer fid, String activityFlag, OperateUserDTO operateUserDto) {
 		Activity.ActivityFlagEnum activityFlagEnum = Activity.ActivityFlagEnum.fromValue(activityFlag);
-		ActivityMarketCreateParamDTO activityMarketCreateParamDto = ActivityMarketCreateParamDTO.build(fid, null);
+		ActivityMarketCreateParamDTO activityMarketCreateParamDto = ActivityMarketCreateParamDTO.build(fid, null, activityFlag);
 		activityMarketCreateParamDto.setName(activityFlagEnum.getName());
 		ApplicationContextHolder.getBean(MarketHandleService.class).add(activityMarketCreateParamDto, activityFlagEnum, operateUserDto);
 	}
@@ -230,7 +230,7 @@ public class MarketHandleService {
 			throw new BusinessException("未知的flag");
 		}
 		Template template = templateQueryService.getOrgTemplateByActivityFlag(fid, activityFlagEnum);
-		ActivityMarketCreateParamDTO marketCreateParam = ActivityMarketCreateParamDTO.build(activityFlagEnum.getName().concat("活动市场"), fid);
+		ActivityMarketCreateParamDTO marketCreateParam = ActivityMarketCreateParamDTO.build(activityFlagEnum.getName().concat("活动市场"), fid, activityFlagEnum.getValue());
 		if (template != null) {
 			// 若有模板无市场，则建立对应市场
 			if (template.getMarketId() == null) {

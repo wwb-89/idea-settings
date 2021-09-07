@@ -4,10 +4,12 @@ import com.chaoxing.activity.admin.util.LoginUtils;
 import com.chaoxing.activity.dto.LoginUserDTO;
 import com.chaoxing.activity.dto.activity.market.ActivityMarketCreateParamDTO;
 import com.chaoxing.activity.dto.activity.market.ActivityMarketUpdateParamDTO;
+import com.chaoxing.activity.model.Activity;
 import com.chaoxing.activity.model.Market;
 import com.chaoxing.activity.service.activity.market.MarketQueryService;
 import com.chaoxing.activity.service.activity.market.MarketValidationService;
 import com.chaoxing.activity.util.annotation.LoginRequired;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -65,7 +67,8 @@ public class MarketController {
 	@RequestMapping("new/from-wfw")
 	public String newFromWfw(HttpServletRequest request, Model model, Integer classifyId, Integer fid, String activityFlag, String backUrl) {
 		fid = Optional.ofNullable(fid).orElse(LoginUtils.getLoginUser(request).getFid());
-		ActivityMarketCreateParamDTO market = ActivityMarketCreateParamDTO.build(fid, classifyId);
+		activityFlag = Optional.ofNullable(activityFlag).filter(StringUtils::isNotBlank).orElse(Activity.ActivityFlagEnum.NORMAL.getValue());
+		ActivityMarketCreateParamDTO market = ActivityMarketCreateParamDTO.build(fid, classifyId, activityFlag);
 		model.addAttribute("market", market);
 		model.addAttribute("backUrl", backUrl);
 		model.addAttribute("activityFlag", activityFlag);

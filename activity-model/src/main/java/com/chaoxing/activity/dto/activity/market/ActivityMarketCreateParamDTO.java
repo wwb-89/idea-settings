@@ -44,16 +44,17 @@ public class ActivityMarketCreateParamDTO {
 				.build();
 	}
 
-	public static ActivityMarketCreateParamDTO build(Integer fid, Integer classifyId) {
+	public static ActivityMarketCreateParamDTO build(Integer fid, Integer classifyId, String activityFlag) {
 		return ActivityMarketCreateParamDTO.builder()
 				.iconCloudId(DEFAULT_ICON_CLOUD_ID)
 				.fid(fid)
 				.classifyId(classifyId)
+				.activityFlag(activityFlag)
 				.build();
 	}
 
-	public static ActivityMarketCreateParamDTO build(String name, Integer fid) {
-		ActivityMarketCreateParamDTO activityMarketCreateParam = ActivityMarketCreateParamDTO.build(fid, null);
+	public static ActivityMarketCreateParamDTO build(String name, Integer fid, String activityFlag) {
+		ActivityMarketCreateParamDTO activityMarketCreateParam = ActivityMarketCreateParamDTO.build(fid, null, activityFlag);
 		activityMarketCreateParam.setName(name);
 		return activityMarketCreateParam;
 	}

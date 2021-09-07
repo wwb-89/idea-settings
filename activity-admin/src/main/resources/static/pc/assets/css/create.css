@@ -490,6 +490,14 @@ input[type="number"] {
   line-height: 16px;
   margin-left: 16px;
 }
+.blockTips{
+  font-size: 14px;
+  font-weight: 400;
+  text-align: left;
+  color: #999999;
+  line-height: 16px;
+  margin-top: 16px;
+}
 
 .tips.set-information {
   color: #0084FF;
