@@ -734,6 +734,8 @@
             AND t.work_id IS NOT NULL
         GROUP BY
             t.work_id
+        ORDER BY
+            t.id DESC
     </select>
 
 </mapper>
