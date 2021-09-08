@@ -455,6 +455,7 @@
 .choose-dialog .catalog-list .catalog-item .catalog-photo>img {
     width: 100%;
     height: 100%;
+    border-radius: 50%;
 }
 
 .dailog.choose-dialog .catalog-list .catalog-item .catalog-title.lineH20 {
