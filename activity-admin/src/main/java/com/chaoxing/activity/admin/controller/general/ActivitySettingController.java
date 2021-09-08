@@ -88,6 +88,7 @@ public class ActivitySettingController {
         LoginUserDTO loginUser = LoginUtils.getLoginUser(request);
         Activity activity = activityValidationService.manageAble(activityId, loginUser.getUid());
         ActivityCreateParamDTO createParamDTO = activityQueryService.packageActivityCreateParamByActivity(activity);
+        model.addAttribute("signId", activity.getSignId());
         model.addAttribute("activity", createParamDTO);
         model.addAttribute("templateComponents", activityEngineQueryService.listBasicInfoTemplateComponents(activity.getTemplateId(), activity.getCreateFid()));
         // 活动类型列表

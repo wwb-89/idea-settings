@@ -165,7 +165,7 @@ public class ActivityHandleService {
 		// 新增活动输入验证
 		activityValidationService.addInputValidate(activity);
 		if (CollectionUtils.isEmpty(wfwRegionalArchitectureDtos) && CollectionUtils.isEmpty(releaseClassIds)) {
-			throw new BusinessException("请选择发布范围");
+			throw new BusinessException(CollectionUtils.isEmpty(releaseClassIds) ? "请完善发布班级" : "请完善发布范围");
 		}
 		// 添加报名签到
 		SignCreateResultDTO signCreateResult = handleSign(activity, signCreateParamDto, loginUser);
@@ -257,8 +257,8 @@ public class ActivityHandleService {
 	public Activity edit(ActivityUpdateParamDTO activityUpdateParamDto, SignCreateParamDTO signCreateParam, final List<WfwAreaDTO> wfwRegionalArchitectureDtos, List<Integer> releaseClassIds, LoginUserDTO loginUser) {
 		Activity activity = activityUpdateParamDto.buildActivity();
 		activityValidationService.updateInputValidate(activity);
-		if (CollectionUtils.isEmpty(wfwRegionalArchitectureDtos)) {
-			throw new BusinessException("请选择发布范围");
+		if (CollectionUtils.isEmpty(wfwRegionalArchitectureDtos) && CollectionUtils.isEmpty(releaseClassIds)) {
+			throw new BusinessException(CollectionUtils.isEmpty(releaseClassIds) ? "请完善发布班级" : "请完善发布范围");
 		}
 		Integer activityId = activity.getId();
 		String activityEditLockKey = getActivityEditLockKey(activityId);
@@ -305,61 +305,6 @@ public class ActivityHandleService {
 			// 活动改变
 			activityChangeEventService.dataChange(activity, existActivity, loginUser);
 			return activity;
-		}, e -> {
-			log.error("更新活动:{} error:{}", JSON.toJSONString(activity), e.getMessage());
-			throw new BusinessException("更新活动失败");
-		});
-	}
-
-	/**更新活动基本信息
-	 * @Description
-	 * @author huxiaolong
-	 * @Date 2021-08-04 17:16:50
-	 * @param activityUpdateParamDto
-	 * @param wfwRegionalArchitectureDtos
-	 * @param loginUser
-	 * @return void
-	 */
-	@Transactional(rollbackFor = Exception.class)
-	public void updateActivityBasicInfo(ActivityUpdateParamDTO activityUpdateParamDto, final List<WfwAreaDTO> wfwRegionalArchitectureDtos, LoginUserDTO loginUser) {
-		Activity activity = activityUpdateParamDto.buildActivity();
-		activityValidationService.updateInputValidate(activity);
-		if (CollectionUtils.isEmpty(wfwRegionalArchitectureDtos)) {
-			throw new BusinessException("请选择发布范围");
-		}
-		Integer activityId = activity.getId();
-		String activityEditLockKey = getActivityEditLockKey(activityId);
-		distributedLock.lock(activityEditLockKey, () -> {
-			Activity existActivity = activityValidationService.editAble(activityId, loginUser);
-			// 处理活动相关
-			if (!Objects.equals(existActivity.getCoverCloudId(), activity.getCoverCloudId())) {
-				activity.coverCloudIdChange();
-			}
-			activityMapper.update(activity, new LambdaUpdateWrapper<Activity>()
-					.eq(Activity::getId, activity.getId())
-					// 一些可能为null的字段需要设置
-					.set(Activity::getTimingReleaseTime, activity.getTimingReleaseTime())
-					.set(Activity::getTimeLengthUpperLimit, activity.getTimeLengthUpperLimit())
-					.set(Activity::getIntegral, activity.getIntegral())
-			);
-			// 更新自定义组件的值
-			activityComponentValueService.updateActivityComponentValues(activityId, activityUpdateParamDto.getActivityComponentValues());
-			ActivityDetail activityDetail = activityQueryService.getDetailByActivityId(activityId);
-			if (activityDetail == null) {
-				activityDetail = activityUpdateParamDto.buildActivityDetail();
-				activityDetailMapper.insert(activityDetail);
-			} else {
-				activityDetailMapper.update(null, new UpdateWrapper<ActivityDetail>()
-						.lambda()
-						.eq(ActivityDetail::getId, activityDetail.getId())
-						.set(ActivityDetail::getIntroduction, activityUpdateParamDto.getIntroduction())
-				);
-			}
-			// 处理发布范围
-			activityScopeService.batchAdd(activityId, wfwRegionalArchitectureDtos);
-			// 活动改变
-			activityChangeEventService.dataChange(activity, existActivity, loginUser);
-			return null;
 		}, e -> {
 			log.error("更新活动:{} error:{}", JSON.toJSONString(activity), e.getMessage());
 			throw new BusinessException("更新活动失败");

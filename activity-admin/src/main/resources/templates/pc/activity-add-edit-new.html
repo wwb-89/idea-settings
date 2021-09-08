@@ -112,7 +112,6 @@
                                     <img :src="activity | getCloudImgUrl" class="cover-img jqthumbImg">
                                 </div>
                                 <div class="font-box">
-                                    <span>建议尺寸：540*280</span>
                                     <span>大小：小于5M</span>
                                     <span>格式：jpg、png、gif</span>
                                     <div class="btn-box">
@@ -482,7 +481,7 @@
                                                             :editable="false"
                                                             :default-time="['00:00:00']"
                                                             placeholder="不可取消报名时间">
-                                                    </el-date-picker>
+                                                    </el-date-picker>&nbsp;&nbsp;后
                                                 </template>
                                             </div>
                                         </div>
@@ -526,6 +525,7 @@
                                 <el-select v-if="item.dataOrigin == 'custom'" v-model="activityComponentValueMap[item.id].value" placeholder="请选择">
                                     <el-option v-for="ckItem in item.componentFields" :key="ckItem.id" :label="ckItem.fieldName" :value="ckItem.fieldName"></el-option>
                                 </el-select>
+                                <span class="tips" v-if="item.introduction">{{item.introduction}}</span>
                             </div>
                         </div>
                         <div class="form-item" v-else-if="item.type == 'checkbox'">
@@ -537,6 +537,7 @@
                                 <el-select v-if="item.dataOrigin == 'custom'" multiple v-model="activityComponentValueMap[item.id].value" placeholder="请选择">
                                     <el-option v-for="ckItem in item.componentFields" :key="ckItem.id" :label="ckItem.fieldName" :value="ckItem.fieldName"></el-option>
                                 </el-select>
+                                <span class="tips" v-if="item.introduction">{{item.introduction}}</span>
                             </div>
                         </div>
                     </template>
@@ -561,10 +562,10 @@
                     </div>
                 </div>
             </div>
-            <!--活动展示页-->
+            <!--展示页-->
             <div class="info box" v-if="!activity.id">
                 <div class="set-box">
-                    <div class="title">活动展示页<span>请选择你的活动呈现页面</span></div>
+                    <div class="title">展示页<span>请选择你的活动呈现页面</span></div>
                 </div>
                 <div class="cover-list">
                     <ul>
@@ -579,10 +580,10 @@
                     <div class="clear"></div>
                 </div>
             </div>
-            <!--重新选择活动展示页-->
+            <!--重新选择展示页-->
             <div class="info box" v-if="isReselectConfig">
                 <div class="set-box">
-                    <div class="title">活动展示页<span>请选择你的活动呈现页面</span></div>
+                    <div class="title">展示页<span>请选择你的活动呈现页面</span></div>
                 </div>
                 <div class="cover-list">
                     <ul>
@@ -1595,7 +1596,7 @@
                         return false;
                     }
                     if (activityApp.isEmpty($this.activity.webTemplateId)) {
-                        app.showMsg("请选择活动展示页");
+                        app.showMsg("请选择展示页");
                         return false;
                     }
                     // 报名验证

@@ -111,7 +111,6 @@
                         <img :src="activity | getCloudImgUrl" class="cover-img jqthumbImg">
                     </div>
                     <div class="font-box">
-                        <span>建议尺寸：540*280</span>
                         <span>大小：小于5M</span>
                         <span>格式：jpg、png、gif</span>
                         <div class="btn-box">
@@ -164,7 +163,6 @@
                         <img :src="activity | getCloudImgUrl" class="cover-img jqthumbImg">
                     </div>
                     <div class="font-box">
-                        <span>建议尺寸：540*280</span>
                         <span>大小：小于5M</span>
                         <span>格式：jpg、png、gif</span>
                         <div class="btn-box">
@@ -266,19 +264,24 @@
             <div class="form-item last marginTop16" v-else-if="item.code == 'activity_release_scope'">
                 <label class="label"><img src="/static/pc/assets/images/required.png" th:src="@{/pc/assets/images/required.png}" class="required-img" v-if="item.required">{{item.name}}</label>
                 <div class="input-box wrap">
-                    <!--添加范围后显示后面这项-->
-                    <div v-show="participatedOrgs.length < 1">
-                        <div class="type-item add" @click="toAddParticipateScope">
-                            <div class="add_btn"></div>
-                            添加
+                    <el-select v-if="item.dataOrigin == 'interface'" multiple v-model="releaseClassIds" placeholder="请选择" style="width: 45%">
+                        <el-option v-for="value in classList" :key="value.id" :label="value.name" :value="value.id"></el-option>
+                    </el-select>
+                    <template v-else>
+                        <!--添加范围后显示后面这项-->
+                        <div v-show="participatedOrgs.length < 1">
+                            <div class="type-item add" @click="toAddParticipateScope">
+                                <div class="add_btn"></div>
+                                添加
+                            </div>
                         </div>
-                    </div>
-                    <div class="already_add" v-show="participatedOrgs.length > 0">
-                        <div>
-                            已选择{{participatedOrgs.length}}个单位
+                        <div class="already_add" v-show="participatedOrgs.length > 0" @click="toAddParticipateScope">
+                            <div>
+                                已选择{{participatedOrgs.length}}个单位
+                            </div>
+                            <img src="/static/pc/assets/images/edit-3.png" th:src="@{/pc/assets/images/edit-3.png}">
                         </div>
-                        <img src="/static/pc/assets/images/edit-3.png" th:src="@{/pc/assets/images/edit-3.png}" @click="toAddParticipateScope">
-                    </div>
+                    </template>
                     <span class="tips" v-if="item.introduction">{{item.introduction}}</span>
                 </div>
             </div>
@@ -374,21 +377,25 @@
             <div class="form-item" v-else-if="item.type == 'radio'">
                 <label class="label"><img src="/static/pc/assets/images/required.png" th:src="@{/pc/assets/images/required.png}" class="required-img" v-if="item.required">{{item.name}}</label>
                 <div class="input-box">
-                    <el-radio v-if="item.dataOrigin == 'form'" v-for="value in item.fieldValues" v-model="activityComponentValueMap[item.id].value" :label="value" name="active-type">{{value}}</el-radio>
-                    <el-radio v-if="item.dataOrigin == 'custom'" v-for="ckItem in item.componentFields" :key="'component-field-' + ckItem.id" v-model="activityComponentValueMap[item.id].value" :label="ckItem.fieldName" name="active-type">{{ckItem.fieldName}}</el-radio>
+                    <el-select v-if="item.dataOrigin == 'form'" v-model="activityComponentValueMap[item.id].value" placeholder="请选择">
+                        <el-option v-for="value in item.fieldValues" :key="value" :label="value" :value="value"></el-option>
+                    </el-select>
+                    <el-select v-if="item.dataOrigin == 'custom'" v-model="activityComponentValueMap[item.id].value" placeholder="请选择">
+                        <el-option v-for="ckItem in item.componentFields" :key="ckItem.id" :label="ckItem.fieldName" :value="ckItem.fieldName"></el-option>
+                    </el-select>
+                    <span class="tips" v-if="item.introduction">{{item.introduction}}</span>
                 </div>
             </div>
             <div class="form-item" v-else-if="item.type == 'checkbox'">
                 <label class="label"><img src="/static/pc/assets/images/required.png" th:src="@{/pc/assets/images/required.png}" class="required-img" v-if="item.required">{{item.name}}</label>
                 <div class="input-box">
-                    <el-checkbox-group v-model="activityComponentValueMap[item.id].value">
-                        <el-checkbox v-if="item.dataOrigin == 'custom'" v-for="ckItem in item.componentFields" :key="'component-field-' + ckItem.id" :label="ckItem.fieldName" name="active-type">
-                            {{ckItem.fieldName}}
-                        </el-checkbox>
-                        <el-checkbox v-if="item.dataOrigin == 'form'" v-for="value in item.fieldValues" :key="'component-field-' + value" :label="value" name="active-type">
-                            {{value}}
-                        </el-checkbox>
-                    </el-checkbox-group>
+                    <el-select v-if="item.dataOrigin == 'form'" multiple v-model="activityComponentValueMap[item.id].value" placeholder="请选择">
+                        <el-option v-for="value in item.fieldValues" :key="value" :label="value" :value="value"></el-option>
+                    </el-select>
+                    <el-select v-if="item.dataOrigin == 'custom'" multiple v-model="activityComponentValueMap[item.id].value" placeholder="请选择">
+                        <el-option v-for="ckItem in item.componentFields" :key="ckItem.id" :label="ckItem.fieldName" :value="ckItem.fieldName"></el-option>
+                    </el-select>
+                    <span class="tips" v-if="item.introduction">{{item.introduction}}</span>
                 </div>
             </div>
         </template>
@@ -514,6 +521,11 @@
                     name: ""
                 },
                 deleteActivityClassifyId: null,
+                // 发布类型(org: 机构发布， class: 班级发布)
+                releaseType: "org",
+                classList: [],
+                // 参与班级id列表
+                releaseClassIds: [[${releaseClassIds}]],
                 // 标签
                 addTagWindowShow: false,
                 addTag: "",
@@ -566,6 +578,11 @@
                     if (this.code == 'introduction') {
                         $this.needInitEditor =true
                     }
+                    if ($this.releaseType == "org" && this.code == 'activity_release_scope' && this.dataOrigin == 'interface') {
+                        $this.releaseType = "class";
+                        // 发布班级url不为空，则请求发布班级列表
+                        $this.loadReleaseClassData(this.originIdentify);
+                    }
                     if (this.type == 'text' || this.type == 'checkbox' || this.type == 'radio') {
                         $this.$set($this.activityComponentValueMap, this.id, {
                             activityId: $this.activity.id,
@@ -583,6 +600,7 @@
                 });
 
                 // 修改活动
+                $this.activity.signId = [[${signId}]];
                 if ($this.activity.activityComponentValues) {
                     $($this.activity.activityComponentValues).each(function () {
                         var componentField = $.extend({}, this);
@@ -783,6 +801,62 @@
                     var activityType = $this.activityTypes[index];
                     $this.activity.activityType = activityType.value;
                 },
+                // 加载发布班级数据
+                loadReleaseClassData: function (dataUrl) {
+                    var $this = this;
+                    var pattern = /^(https?:\/\/(([a-zA-Z0-9]+-?)+[a-zA-Z0-9]+\.)+[a-zA-Z]+)(:\d+)?(\/.*)?(\?.*)?(#.*)?$/;
+                    if (!pattern.test(dataUrl)) {
+                        app.showMsg("发布班级数据接口地址非法");
+                        return;
+                    }
+                    var url = ctx + "/api/third-party/query/teaching/clazz"
+                    dataUrl = $this.packageReleaseClassUrl(dataUrl);
+                    app.ajaxPostWithLoading(url, {url: dataUrl}, function (data) {
+                        if (data.success) {
+                            $this.classList = data.data;
+                            var finalReleaseClassIds = [];
+                            $(data.data).each(function () {
+                                if ($this.releaseClassIds.indexOf(this.id) != -1) {
+                                    finalReleaseClassIds.push(this.id);
+                                }
+                            });
+                            $this.releaseClassIds = finalReleaseClassIds;
+                        } else {
+                            var errorMessage = data.message;
+                            if (activityApp.isEmpty(errorMessage)) {
+                                errorMessage = "获取班级列表失败";
+                            }
+                            app.showMsg(errorMessage);
+                        }
+                    }, function () {
+                        app.showMsg("获取班级列表失败");
+                    });
+                },
+                packageReleaseClassUrl: function (dataUrl) {
+                    var $this = this;
+                    if (dataUrl.indexOf("?") == -1) {
+                        dataUrl += "?fid=" + $this.fid + "&uid=" + $this.uid;
+                        return dataUrl;
+                    }
+                    var paramSplitIndex = dataUrl.indexOf("?"),
+                        originUrl = dataUrl.substring(0, paramSplitIndex),
+                        params = dataUrl.substring(paramSplitIndex + 1).split("&");
+                    var existUid = false, existFid = false;
+                    $(params).each(function (i) {
+                        if (!existUid && params[i].indexOf("uid=") != -1) {
+                            existUid = true
+                        } else if (!existFid && params[i].indexOf("fid=") != -1) {
+                            existFid = true;
+                        }
+                    });
+                    if (!existUid) {
+                        params.push("uid=" + $this.uid);
+                    }
+                    if (!existFid) {
+                        params.push("fid=" + $this.fid);
+                    }
+                    return originUrl + "?" + params.join("&")
+                },
                 // 显示发布范围弹窗
                 toAddParticipateScope: function () {
                     var $this = this;
@@ -972,9 +1046,12 @@
                         $this.activity.activityComponentValues.push(item);
                     });
                     $this.activity.introduction = app.getUEditorContent();
+                    var participateScopeJsonStr = $this.releaseType == "org" ? activityApp.getJsonStr($this.participatedOrgs) : null;
+                    var releaseClassIdJsonStr = $this.releaseType == "class" ? activityApp.getJsonStr($this.releaseClassIds) : null;
                     var params = {
                         activityJsonStr: activityApp.getJsonStr($this.activity),
-                        participateScopeJsonStr: activityApp.getJsonStr($this.participatedOrgs),
+                        participateScopeJsonStr: participateScopeJsonStr,
+                        releaseClassIdJsonStr: releaseClassIdJsonStr
                     };
                     app.ajaxPostWithLoading(url, params, function (data) {
                         if (data.success) {
@@ -1027,7 +1104,7 @@
                         return false;
                     }
                     if (activityApp.isEmpty($this.activity.webTemplateId)) {
-                        app.showMsg("请选择活动展示页");
+                        app.showMsg("请选择展示页");
                         return false;
                     }
                     return true;

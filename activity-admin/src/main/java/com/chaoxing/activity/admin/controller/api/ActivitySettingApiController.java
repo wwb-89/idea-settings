@@ -10,7 +10,9 @@ import com.chaoxing.activity.dto.manager.sign.create.SignCreateParamDTO;
 import com.chaoxing.activity.dto.manager.wfw.WfwAreaDTO;
 import com.chaoxing.activity.service.activity.ActivityHandleService;
 import com.chaoxing.activity.service.activity.menu.ActivityMenuService;
+import com.chaoxing.activity.service.manager.module.SignApiService;
 import com.chaoxing.activity.util.annotation.LoginRequired;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -33,9 +35,10 @@ public class ActivitySettingApiController {
 
     @Resource
     private ActivityHandleService activityHandleService;
-
     @Resource
     private ActivityMenuService activityMenuService;
+    @Resource
+    private SignApiService signApiService;
 
     /**活动基本信息修改
      * @Description
@@ -48,11 +51,18 @@ public class ActivitySettingApiController {
      */
     @LoginRequired
     @PostMapping("basic-info")
-    public RestRespDTO basicInfoEdit(HttpServletRequest request, String activityJsonStr, String participateScopeJsonStr) {
+    public RestRespDTO basicInfoEdit(HttpServletRequest request, String activityJsonStr, String participateScopeJsonStr, String releaseClassIdJsonStr) {
         LoginUserDTO loginUser = LoginUtils.getLoginUser(request);
         ActivityUpdateParamDTO activityUpdateParamDto = JSON.parseObject(activityJsonStr, ActivityUpdateParamDTO.class);
-        List<WfwAreaDTO> wfwRegionalArchitectures = JSON.parseArray(participateScopeJsonStr, WfwAreaDTO.class);
-        activityHandleService.updateActivityBasicInfo(activityUpdateParamDto, wfwRegionalArchitectures, loginUser);
+        List<Integer> releaseClassIds = StringUtils.isBlank(releaseClassIdJsonStr) ? null : JSON.parseArray(releaseClassIdJsonStr, Integer.class);
+        List<WfwAreaDTO> wfwRegionalArchitectures = StringUtils.isBlank(participateScopeJsonStr) ? null : JSON.parseArray(participateScopeJsonStr, WfwAreaDTO.class);
+
+        Integer signId = activityUpdateParamDto.getSignId();
+        SignCreateParamDTO sign = SignCreateParamDTO.builder().build();
+        if (signId != null) {
+            sign = signApiService.getCreateById(signId);
+        }
+        activityHandleService.edit(activityUpdateParamDto, sign, wfwRegionalArchitectures, releaseClassIds, loginUser);
         return RestRespDTO.success(activityUpdateParamDto);
     }
 
