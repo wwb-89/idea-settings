@@ -109,11 +109,11 @@
             </choose>
             <choose>
                 <when test="params.marketId != null">
-                    t.market_id = #{params.marketId}
+                    AND t.market_id = #{params.marketId}
                 </when>
                 <otherwise>
                     <if test="params.flag != null and params.flag != ''">
-                        t.activity_flag = #{params.flag}
+                        AND t.activity_flag = #{params.flag}
                     </if>
                 </otherwise>
             </choose>
@@ -460,11 +460,11 @@
             t.`status` IN ( 2, 3, 4 )
             <choose>
                 <when test="params.marketId != null">
-                    t.market_id = #{params.marketId}
+                    AND t.market_id = #{params.marketId}
                 </when>
                 <otherwise>
                     <if test="params.flag != null and params.flag != ''">
-                        t.activity_flag = #{params.flag}
+                        AND t.activity_flag = #{params.flag}
                     </if>
                 </otherwise>
             </choose>
@@ -503,11 +503,11 @@
             t.create_fid = #{params.topFid}
             <choose>
                 <when test="params.marketId != null">
-                    t.market_id = #{params.marketId}
+                    AND t.market_id = #{params.marketId}
                 </when>
                 <otherwise>
                     <if test="params.flag != null and params.flag != ''">
-                        t.activity_flag = #{params.flag}
+                        AND t.activity_flag = #{params.flag}
                     </if>
                 </otherwise>
             </choose>
