@@ -23,6 +23,7 @@ import com.chaoxing.activity.service.activity.classify.ClassifyQueryService;
 import com.chaoxing.activity.service.activity.component.ComponentQueryService;
 import com.chaoxing.activity.service.activity.engine.ActivityComponentValueService;
 import com.chaoxing.activity.service.activity.manager.ActivityManagerQueryService;
+import com.chaoxing.activity.service.activity.market.MarketQueryService;
 import com.chaoxing.activity.service.activity.template.TemplateQueryService;
 import com.chaoxing.activity.service.manager.module.SignApiService;
 import com.chaoxing.activity.service.manager.wfw.WfwAreaApiService;
@@ -85,6 +86,8 @@ public class ActivityQueryService {
 	private SignUpConditionEnableMapper signUpConditionEnableMapper;
 	@Resource
 	private ComponentQueryService componentQueryService;
+	@Resource
+	private MarketQueryService marketQueryService;
 
 	/**查询参与的活动
 	 * @Description 
@@ -308,7 +311,7 @@ public class ActivityQueryService {
 	 * @return com.baomidou.mybatisplus.extension.plugins.pagination.Page<com.chaoxing.activity.model.Activity>
 	*/
 	public Page<Activity> pageManaged(Page<Activity> page, LoginUserDTO loginUser, String sw, String flag) {
-		Integer marketId = templateQueryService.getMarketIdByTemplate(loginUser.getFid(), flag);
+		Integer marketId = marketQueryService.getMarketIdByTemplate(loginUser.getFid(), flag);
 		// 若flag不为空且市场id不存在，则查询结果为空
 		if (StringUtils.isNotBlank(flag) && marketId == null) {
 			page.setRecords(Lists.newArrayList());
@@ -409,7 +412,7 @@ public class ActivityQueryService {
 				signIdSignedUpMap.put(signedUp.getSignId(), signedUp);
 			}
 			List<ActivitySignedUpDTO> activitySignedUps = Lists.newArrayList();
-			Integer marketId = templateQueryService.getMarketIdByTemplate(fid, flag);
+			Integer marketId = marketQueryService.getMarketIdByTemplate(fid, flag);
 			// 若flag不为空且市场id不存在，则查询结果为空
 			if (StringUtils.isNotBlank(flag) && marketId == null) {
 				page.setRecords(Lists.newArrayList());
@@ -445,7 +448,7 @@ public class ActivityQueryService {
 	 * @return com.baomidou.mybatisplus.extension.plugins.pagination.Page<com.chaoxing.activity.model.Activity>
 	*/
 	public Page<Activity> pageCollected(Page page, LoginUserDTO loginUser, String sw, String flag) {
-		Integer marketId = templateQueryService.getMarketIdByTemplate(loginUser.getFid(), flag);
+		Integer marketId = marketQueryService.getMarketIdByTemplate(loginUser.getFid(), flag);
 		// 若flag不为空且市场id不存在，则查询结果为空
 		if (StringUtils.isNotBlank(flag) && marketId == null) {
 			page.setRecords(Lists.newArrayList());

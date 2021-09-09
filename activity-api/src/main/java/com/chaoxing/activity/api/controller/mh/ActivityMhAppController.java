@@ -4,6 +4,7 @@ import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.chaoxing.activity.api.util.MhPreParamsUtils;
 import com.chaoxing.activity.dto.RestRespDTO;
 import com.chaoxing.activity.dto.manager.mh.MhGeneralAppResultDataDTO;
 import com.chaoxing.activity.dto.manager.sign.SignStatDTO;
@@ -278,7 +279,7 @@ public class ActivityMhAppController {
 	 * @return com.chaoxing.activity.dto.RestRespDTO
 	*/
 	@RequestMapping("activity/calendar")
-	public RestRespDTO activityCalendar(String areaCode, @RequestParam(defaultValue = "0") Integer strict, String activityFlag, @RequestBody String data) throws ParseException {
+	public RestRespDTO activityCalendar(String areaCode, @RequestParam(defaultValue = "0") Integer strict, @RequestBody String data) throws ParseException {
 		JSONObject jsonObject = JSON.parseObject(data);
 		if (StringUtils.isBlank(areaCode)) {
 			areaCode = jsonObject.getString("areaCode");
@@ -321,12 +322,19 @@ public class ActivityMhAppController {
 		Integer pageNum = Optional.ofNullable(jsonObject.getInteger("page")).orElse(CommonConstant.DEFAULT_PAGE_NUM);
 		Integer pageSize = Optional.ofNullable(jsonObject.getInteger("pageSize")).orElse(CommonConstant.DEFAULT_PAGE_SIZE);
 		Page page = new Page(pageNum, pageSize);
+		String preParams = jsonObject.getString("preParams");
+		JSONObject urlParams = MhPreParamsUtils.resolve(preParams);
+		// marketId
+		Integer marketId = urlParams.getInteger("marketId");
+		// flag
+		String flag = urlParams.getString("flag");
 		MhActivityCalendarQueryDTO mhActivityCalendarQuery = MhActivityCalendarQueryDTO.builder()
 				.fids(fids)
 				.topFid(wfwfid)
 				.strict(strict)
-				.activityFlag(activityFlag)
 				.classifyId(classifyId)
+				.marketId(marketId)
+				.flag(flag)
 				.build();
 		String year = jsonObject.getString("year");
 		String month = jsonObject.getString("month");
