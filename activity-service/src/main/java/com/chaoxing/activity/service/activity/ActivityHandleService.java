@@ -264,6 +264,7 @@ public class ActivityHandleService {
 		String activityEditLockKey = getActivityEditLockKey(activityId);
 		return distributedLock.lock(activityEditLockKey, () -> {
 			Activity existActivity = activityValidationService.editAble(activityId, loginUser);
+			activity.updatePerfectFromExistActivity(existActivity);
 			// 更新报名签到
 			Integer signId = existActivity.getSignId();
 			signCreateParam.setId(signId);
@@ -278,6 +279,7 @@ public class ActivityHandleService {
 					.set(Activity::getTimingReleaseTime, activity.getTimingReleaseTime())
 					.set(Activity::getTimeLengthUpperLimit, activity.getTimeLengthUpperLimit())
 					.set(Activity::getIntegral, activity.getIntegral())
+					.set(Activity::getStatus, Activity.calActivityStatus(activity).getValue())
 			);
 			// 处理门户模版的绑定
 			bindWebTemplate(existActivity, activity.getWebTemplateId(), loginUser);

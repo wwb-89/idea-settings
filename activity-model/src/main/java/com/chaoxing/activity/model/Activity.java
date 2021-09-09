@@ -411,4 +411,16 @@ public class Activity {
         }
     }
 
+    /**活动更新通过已经存在的活动完善一些信息
+     * @Description 是否发布、发布时间在修改活动的时候是不能修改的
+     * @author wwb
+     * @Date 2021-09-09 14:30:50
+     * @param existActivity
+     * @return void
+    */
+    public void updatePerfectFromExistActivity(Activity existActivity) {
+        setReleased(existActivity.getReleased());
+        setReleaseTime(existActivity.getReleaseTime());
+    }
+
 }

@@ -376,15 +376,25 @@ Vue.filter("timestampScopeFormat", function (startTimestamp, endTimestamp, forma
         endDateObj = moment(endTimestamp);
     }
     var isThisYear = (!startDateObj || startDateObj.year() == thisYear) && (!endDateObj || endDateObj.year() == thisYear);
+    // 是不是同一天
+    var isSameDay = startDateObj && endDateObj && startDateObj.year() == endDateObj.year() && startDateObj.month() == endDateObj.month() && startDateObj.day() == endDateObj.day();
     if (format) {
         start = startDateObj ? startDateObj.format(format) : "";
         end = endDateObj ? endDateObj.format(format) : "";
     } else if (isThisYear) {
         start = startDateObj ? startDateObj.format("MM.DD HH:mm") : "";
-        end = endDateObj ? endDateObj.format("MM.DD HH:mm") : "";
+        if (isSameDay) {
+            end = endDateObj ? endDateObj.format("HH:mm") : "";
+        } else {
+            end = endDateObj ? endDateObj.format("MM.DD HH:mm") : "";
+        }
     } else {
         start = startDateObj ? startDateObj.format("YYYY.MM.DD HH:mm") : "";
-        end = endDateObj ? endDateObj.format("YYYY.MM.DD HH:mm") : "";
+        if (isSameDay) {
+            end = endDateObj ? endDateObj.format("HH:mm") : "";
+        } else {
+            end = endDateObj ? endDateObj.format("YYYY.MM.DD HH:mm") : "";
+        }
     }
     var result = start;
     if (!activityApp.isEmpty(start) && !activityApp.isEmpty(end)) {

@@ -218,7 +218,7 @@
             case 1:
                 return "未发布";
             case 2:
-                return "待开始";
+                return "未开始";
             case 3:
                 return "进行中";
             default:
@@ -465,12 +465,22 @@ Vue.filter("timestampScopeFormat", function (startTimestamp, endTimestamp) {
         endDateObj = moment(endTimestamp);
     }
     var isThisYear = (!startDateObj || startDateObj.year() == thisYear) && (!endDateObj || endDateObj.year() == thisYear);
+    // 是不是同一天
+    var isSameDay = startDateObj && endDateObj && startDateObj.year() == endDateObj.year() && startDateObj.month() == endDateObj.month() && startDateObj.day() == endDateObj.day();
     if (isThisYear) {
         start = startDateObj ? startDateObj.format("MM.DD HH:mm") : "";
-        end = endDateObj ? endDateObj.format("MM.DD HH:mm") : "";
+        if (isSameDay) {
+            end = endDateObj ? endDateObj.format("HH:mm") : "";
+        } else {
+            end = endDateObj ? endDateObj.format("MM.DD HH:mm") : "";
+        }
     } else {
         start = startDateObj ? startDateObj.format("YYYY.MM.DD HH:mm") : "";
-        end = endDateObj ? endDateObj.format("YYYY.MM.DD HH:mm") : "";
+        if (isSameDay) {
+            end = endDateObj ? endDateObj.format("MM.DD HH:mm") : "";
+        } else {
+            end = endDateObj ? endDateObj.format("YYYY.MM.DD HH:mm") : "";
+        }
     }
     var result = start;
     if (!activityApp.isEmpty(start) && !activityApp.isEmpty(end)) {
