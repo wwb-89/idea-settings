@@ -14,6 +14,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
@@ -46,10 +47,11 @@ public class MarketController {
 	*/
 	@LoginRequired
 	@RequestMapping("{marketId}")
-	public String index(HttpServletRequest request, Model model, @PathVariable Integer marketId) {
+	public String index(HttpServletRequest request, Model model, @PathVariable Integer marketId, Integer pageMode) {
 		LoginUserDTO loginUser = LoginUtils.getLoginUser(request);
 		Market market = marketValidationService.manageAble(marketId, loginUser.buildOperateUserDTO());
 		model.addAttribute("market", market);
+		model.addAttribute("pageMode", pageMode);
 		return "pc/market/market-index-new";
 	}
 

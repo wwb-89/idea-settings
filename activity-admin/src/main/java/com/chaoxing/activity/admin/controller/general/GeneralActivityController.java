@@ -51,7 +51,7 @@ public class GeneralActivityController {
 	 * @return java.lang.String
 	 */
 	@RequestMapping("")
-	public String index(HttpServletRequest request, Model model, Integer marketId, String code, Integer wfwfid, Integer unitId, Integer state, Integer fid, @RequestParam(defaultValue = "0") Integer strict, String flag) {
+	public String index(HttpServletRequest request, Model model, Integer marketId, String code, Integer wfwfid, Integer unitId, Integer state, Integer fid, @RequestParam(defaultValue = "0") Integer strict, String flag, @RequestParam(defaultValue = "0") Integer pageMode) {
 		Integer realFid = Optional.ofNullable(wfwfid).orElse(Optional.ofNullable(unitId).orElse(Optional.ofNullable(state).orElse(Optional.ofNullable(fid).orElse(LoginUtils.getLoginUser(request).getFid()))));
 		if (marketId == null && StringUtils.isNotBlank(flag)) {
 			Activity.ActivityFlagEnum activityFlagEnum = Activity.ActivityFlagEnum.fromValue(flag);
@@ -60,28 +60,11 @@ public class GeneralActivityController {
 			}
 			Template template = marketHandleService.getOrCreateTemplateMarketByFidActivityFlag(realFid, activityFlagEnum, LoginUtils.getLoginUser(request));
 			marketId = template.getMarketId();
-		}
-		if (marketId != null) {
-			return "redirect:/market/" + marketId;
-		}
-		return activityController.index(model, marketId, code, realFid, strict, flag);
-	}
-
-	@RequestMapping("/simple")
-	public String indexSimple(HttpServletRequest request, Model model, Integer marketId, String code, Integer wfwfid, Integer unitId, Integer state, Integer fid, @RequestParam(defaultValue = "0") Integer strict, String flag) {
-		Integer realFid = Optional.ofNullable(wfwfid).orElse(Optional.ofNullable(unitId).orElse(Optional.ofNullable(state).orElse(Optional.ofNullable(fid).orElse(LoginUtils.getLoginUser(request).getFid()))));
-		if (marketId == null && StringUtils.isNotBlank(flag)) {
-			Activity.ActivityFlagEnum activityFlagEnum = Activity.ActivityFlagEnum.fromValue(flag);
-			if (activityFlagEnum == null) {
-				throw new BusinessException("未知的flag");
+			if (marketId != null) {
+				return "redirect:/market/" + marketId + "?pageMode=" + pageMode;
 			}
-			Template template = marketHandleService.getOrCreateTemplateMarketByFidActivityFlag(realFid, activityFlagEnum, LoginUtils.getLoginUser(request));
-			marketId = template.getMarketId();
 		}
-		if (marketId != null) {
-			return "redirect:/market/" + marketId;
-		}
-		return activityController.indexSimple(model, marketId, code, realFid, strict, flag);
+		return activityController.index(model, marketId, code, realFid, strict, flag, pageMode);
 	}
 
 	/**活动新增页面

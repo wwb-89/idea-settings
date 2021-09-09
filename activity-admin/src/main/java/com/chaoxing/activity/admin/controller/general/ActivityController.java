@@ -67,36 +67,25 @@ public class ActivityController {
 	 * @param flag
 	 * @return java.lang.String
 	*/
-	public String index(Model model, Integer marketId, String code, Integer fid, Integer strict, String flag) {
+	public String index(Model model, Integer marketId, String code, Integer fid, Integer strict, String flag, Integer pageMode) {
 		code = Optional.ofNullable(code).orElse("");
 		// 防止挂接到三放也携带了code参数
 		code = code.split(CommonConstant.DEFAULT_SEPARATOR)[0];
+		model.addAttribute("code", code);
+		model.addAttribute("fid", fid);
+		model.addAttribute("strict", strict);
+		model.addAttribute("marketId", marketId);
+		model.addAttribute("flag", flag);
+		if (Objects.equals(pageMode, 1)) {
+			return "pc/activity-list-simple";
+		}
 		List<TableFieldDetail> tableFieldDetails = tableFieldQueryService.listTableFieldDetail(TableField.Type.ACTIVITY_MANAGE_LIST, TableField.AssociatedType.ACTIVITY_MARKET);
 		List<MarketTableField> marketTableFields = tableFieldQueryService.listMarketTableField(marketId, TableField.Type.ACTIVITY_MANAGE_LIST, TableField.AssociatedType.ACTIVITY_MARKET);
 		Integer tableFieldId = Optional.ofNullable(tableFieldDetails).orElse(Lists.newArrayList()).stream().findFirst().map(TableFieldDetail::getTableFieldId).orElse(null);
 		model.addAttribute("tableFieldId", tableFieldId);
 		model.addAttribute("tableFieldDetails", tableFieldDetails);
 		model.addAttribute("marketTableFields", marketTableFields);
-
-		model.addAttribute("code", code);
-		model.addAttribute("fid", fid);
-		model.addAttribute("strict", strict);
-		model.addAttribute("marketId", marketId);
-		model.addAttribute("flag", flag);
 		return "pc/activity-list";
-	}
-
-	public String indexSimple(Model model, Integer marketId, String code, Integer fid, Integer strict, String flag) {
-		code = Optional.ofNullable(code).orElse("");
-		// 防止挂接到三放也携带了code参数
-		code = code.split(CommonConstant.DEFAULT_SEPARATOR)[0];
-
-		model.addAttribute("code", code);
-		model.addAttribute("fid", fid);
-		model.addAttribute("strict", strict);
-		model.addAttribute("marketId", marketId);
-		model.addAttribute("flag", flag);
-		return "pc/activity-list-simple";
 	}
 
 	public String add(HttpServletRequest request, Model model, Integer marketId, String flag, String code, Integer strict) {
