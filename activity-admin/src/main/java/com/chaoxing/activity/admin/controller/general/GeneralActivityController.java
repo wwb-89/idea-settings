@@ -61,6 +61,9 @@ public class GeneralActivityController {
 			Template template = marketHandleService.getOrCreateTemplateMarketByFidActivityFlag(realFid, activityFlagEnum, LoginUtils.getLoginUser(request));
 			marketId = template.getMarketId();
 		}
+		if (marketId != null) {
+			return "redirect:/market/" + marketId;
+		}
 		return activityController.index(model, marketId, code, realFid, strict, flag);
 	}
 
@@ -74,6 +77,9 @@ public class GeneralActivityController {
 			}
 			Template template = marketHandleService.getOrCreateTemplateMarketByFidActivityFlag(realFid, activityFlagEnum, LoginUtils.getLoginUser(request));
 			marketId = template.getMarketId();
+		}
+		if (marketId != null) {
+			return "redirect:/market/" + marketId;
 		}
 		return activityController.indexSimple(model, marketId, code, realFid, strict, flag);
 	}
