@@ -33,9 +33,11 @@ public class MhActivityCalendarQueryDTO {
 	private String date;
 	/** 严格模式（查询自己机构的）） */
 	private Integer strict;
-	/** 活动标示 */
-	private String activityFlag;
 	/** 分类id */
 	private Integer classifyId;
+	/** 活动市场id */
+	private Integer marketId;
+	/** 活动标识 */
+	private String flag;
 
 }

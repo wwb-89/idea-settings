@@ -12,6 +12,7 @@ import com.chaoxing.activity.model.Classify;
 import com.chaoxing.activity.service.activity.ActivityCoverUrlSyncService;
 import com.chaoxing.activity.service.activity.ActivityQueryService;
 import com.chaoxing.activity.service.activity.classify.ClassifyQueryService;
+import com.chaoxing.activity.service.activity.market.MarketQueryService;
 import com.chaoxing.activity.service.manager.wfw.WfwAreaApiService;
 import com.chaoxing.activity.util.constant.DateTimeFormatterConstant;
 import com.chaoxing.activity.util.exception.BusinessException;
@@ -46,6 +47,8 @@ public class ActivityMarketApiController {
 	private WfwAreaApiService wfwAreaApiService;
 	@Resource
 	private ActivityCoverUrlSyncService activityCoverUrlSyncService;
+	@Resource
+	private MarketQueryService marketQueryService;
 
 	/**活动市场数据源
 	 * @Description 
@@ -80,9 +83,15 @@ public class ActivityMarketApiController {
 		// 状态
 		String statusParams = urlParams.getString("status");
 		List<Integer> statusList = MhPreParamsUtils.resolveIntegerV(statusParams);
+		// marketId
+		Integer marketId = urlParams.getInteger("marketId");
+		// flag
+		String flag = urlParams.getString("flag");
 		ActivityQueryDTO activityQuery = ActivityQueryDTO.builder()
 				.topFid(wfwfid)
 				.statusList(statusList)
+				.marketId(marketId)
+				.flag(flag)
 				.activityClassifyId(activityClassifyId)
 				.build();
 		List<Integer> fids = wfwAreaApiService.listSubFid(wfwfid);
@@ -142,6 +151,12 @@ public class ActivityMarketApiController {
 				}
 				address.put("value", activityAddress);
 				fields.add(address);
+				// 活动分类
+				JSONObject classify = new JSONObject();
+				classify.put("flag", "103");
+				classify.put("key", "分类");
+				classify.put("value", record.getActivityClassifyName());
+				fields.add(classify);
 				activityJsonArray.add(activity);
 			}
 		}
@@ -176,9 +191,17 @@ public class ActivityMarketApiController {
 				activityClassifyId = activityClassify.getInteger("id");
 			}
 		}
+		String preParams = params.getString("preParams");
+		JSONObject urlParams = MhPreParamsUtils.resolve(preParams);
+		// marketId
+		Integer marketId = urlParams.getInteger("marketId");
+		// flag
+		String flag = urlParams.getString("flag");
 		ActivityQueryDTO activityQuery = ActivityQueryDTO.builder()
 				.topFid(wfwfid)
 				.activityClassifyId(activityClassifyId)
+				.marketId(marketId)
+				.flag(flag)
 				.build();
 		List<Integer> fids = wfwAreaApiService.listSubFid(wfwfid);
 		activityQuery.setFids(fids);
@@ -232,6 +255,12 @@ public class ActivityMarketApiController {
 				}
 				address.put("value", activityAddress);
 				fields.add(address);
+				// 活动分类
+				JSONObject classify = new JSONObject();
+				classify.put("flag", "103");
+				classify.put("key", "分类");
+				classify.put("value", record.getActivityClassifyName());
+				fields.add(classify);
 				activityJsonArray.add(activity);
 			}
 		}
@@ -254,7 +283,23 @@ public class ActivityMarketApiController {
 		}
 		List<Integer> wfwfids = Lists.newArrayList();
 		wfwfids.add(wfwfid);
-		List<Classify> classifies = classifyQueryService.listByFids(wfwfids);
+		String preParams = params.getString("preParams");
+		JSONObject urlParams = MhPreParamsUtils.resolve(preParams);
+		// marketId
+		Integer marketId = urlParams.getInteger("marketId");
+		// flag
+		String flag = urlParams.getString("flag");
+		if (marketId == null && StringUtils.isNotBlank(flag)) {
+			// 根据flag找活动市场id
+			marketId = marketQueryService.getMarketIdByTemplate(wfwfid, flag);
+		}
+		List<Classify> classifies;
+		if (marketId != null) {
+			classifies = classifyQueryService.listMarketClassifies(marketId);
+		} else {
+			classifies = classifyQueryService.listByFids(wfwfids);
+		}
+
 		JSONObject jsonObject = new JSONObject();
 		JSONArray activityClassifyJsonArray = new JSONArray();
 		jsonObject.put("classifies", activityClassifyJsonArray);

@@ -3,7 +3,10 @@ package com.chaoxing.activity.service.activity.market;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.chaoxing.activity.dto.activity.market.ActivityMarketUpdateParamDTO;
 import com.chaoxing.activity.mapper.MarketMapper;
+import com.chaoxing.activity.model.Activity;
 import com.chaoxing.activity.model.Market;
+import com.chaoxing.activity.model.Template;
+import com.chaoxing.activity.service.activity.template.TemplateQueryService;
 import com.chaoxing.activity.util.exception.BusinessException;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
@@ -11,7 +14,7 @@ import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
 import java.util.List;
-import java.util.stream.Collectors;
+import java.util.Optional;
 
 /**
  * @author wwb
@@ -27,6 +30,9 @@ public class MarketQueryService {
 
 	@Resource
 	private MarketMapper marketMapper;
+
+	@Resource
+	private TemplateQueryService templateQueryService;
 	
 	/**根据id查询
 	 * @Description 
@@ -83,6 +89,23 @@ public class MarketQueryService {
 	*/
 	public List<Integer> listMarketIdsByActivityIdFid(Integer fid, Integer activityId) {
 		return marketMapper.listMarketIdsByActivityIdFid(fid, activityId);
+	}
+
+	/**通过fid，活动标识查询模板，根据模板获取市场id
+	 * @Description
+	 * @author huxiaolong
+	 * @Date 2021-09-01 11:52:12
+	 * @param fid
+	 * @param activityFlag
+	 * @return java.lang.Integer
+	 */
+	public Integer getMarketIdByTemplate(Integer fid, String activityFlag) {
+		Activity.ActivityFlagEnum activityFlagEnum = Activity.ActivityFlagEnum.fromValue(activityFlag);
+		if (activityFlagEnum == null) {
+			return null;
+		}
+		Template template = templateQueryService.getOrgTemplateByActivityFlag(fid, activityFlagEnum);
+		return Optional.ofNullable(template).map(Template::getMarketId).orElse(null);
 	}
 
 }
