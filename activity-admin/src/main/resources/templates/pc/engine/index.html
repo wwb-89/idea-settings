@@ -404,7 +404,7 @@
                         <span class="txt1">高级字段</span>
                     </div>
                     <template v-for="(item, index) in (componentTypeList[activeCpTypeIndex] && componentTypeList[activeCpTypeIndex].advanceCompts) || []">
-                        <div class="field-item" @click="addAdvanceComponentAssociate(index, item)">
+                        <div class="field-item" @click="addAdvanceComponentAssociate(item)">
                             <p class="field overHidden1">{{item.name || (item.type == 'text' ? '自定义输入' : '自定义选择')}}</p>
                         </div>
                     </template>
@@ -674,15 +674,12 @@
                     activeCpTypeName: '基本信息',
                     loaded: false,
 
-
                     // 大组件删除时用到的临时变量
                     currRemoveItemIndex: null,
                     currRemoveItem: null,
 
-                    // 编辑报名内组件时，存储报名index
-                    currEditSignUpInsideIndex: null,
-
                     currEditIndex: null,    //  当前编辑index，仅限pid为0的组件
+                    innerCurrEditIndex: null,   // 编辑报名内组件时，存储报名index
                     fieldIndex: null,   //  当前新增的字段index，仅限basicComponent基础字段
 
                     isAddComponent: false,  // 是否新增组件
@@ -741,10 +738,7 @@
                     $this.$nextTick(function () {
                         $this.init();
                         $this.fixRightEndBtnStyle();
-                        $('.jqthumbImg').jqthumb({
-                            width: '100%',
-                            height: '100%'
-                        });
+                        $this.handleJqthumb();
                         $this.initMouseEnterField();
                     })
                 },
@@ -818,7 +812,6 @@
                             $this.componentTypeList.push(item);
                         });
                     },
-
                     // 创建默认数据
                     createNewTemplateComponent: function (component) {
                         var $this = this;
@@ -905,7 +898,7 @@
                         $this.fieldIndex = index;
                         $this.isAddComponent = true;
                         if (item.code == 'activity_release_scope' || item.code == 'company_sign_up') {
-                            $this.openTextDialog(index, item);
+                            $this.openTextDialog(item);
                         } else if (item.code == 'sign_up_fill_info') {
                             $this.setDialogTitle(item, '报名信息填写')
                             $this.addFieldDialog = false;
@@ -919,55 +912,43 @@
                             } else {
                                 $this.addSignUpChildComponentAssociate(newTemplateComponent);
                             }
-                            $this.$nextTick(function () {
-                                $('.jqthumbImg').jqthumb({
-                                    width: '100%',
-                                    height: '100%'
-                                });
-                            });
+                            $this.handleJqthumb();
                             $this.setBasicComptChecked(index);
+                            $this.isAddComponent = false;
                         }
                     },
                     // 高级字段添加
-                    addAdvanceComponentAssociate: function (index, item) {
+                    addAdvanceComponentAssociate: function (item) {
                         var $this = this;
                         $this.isAddComponent = true;
-                        if (item.code == 'sign_up') {
-                            var newTemplateComponent = $this.createNewTemplateComponent(item);
-                            $this.setDialogTitle(item, "报名")
-                            $this.addFieldDialog = false;
-                            $this.textDialog = true;
-                            $this.addEditItem = $.extend({}, newTemplateComponent);
-                        } else if (item.code == 'partition') {
-                            $this.setDialogTitle(item, "分区")
-                            $this.openTextDialog(index, item);
+                        if (item.code == 'sign_up' || item.code == 'partition' || item.type == 'text') {
+                            $this.openTextDialog(item)
                         } else if (item.code == 'sign_up_condition') {
                             $this.setDialogTitle(item, '报名条件')
                             $this.addFieldDialog = false;
                             $this.signUpConditionDialog = true;
                             $this.addEditItem = $this.createNewTemplateComponent(item);
                             $this.innerAddEditItem = $this.getInitSignUpCondition();
-                        } else if (item.type == 'text') {
-                            $this.setDialogTitle(item, "文本字段")
-                            $this.addFieldDialog = false;
-                            $this.textDialog = true;
-                            $this.addEditItem = $this.createDefaultEditItem(item.type);
                         } else if (item.type == 'radio' || item.type == 'checkbox') {
-                            $this.setDialogTitle(item, "选择字段")
-                            $this.addFieldDialog = false;
-                            $this.chooseDialog = true;
-                            $this.addEditItem = $this.createDefaultEditItem(item.type, item.dataOrigin, true);
+                            $this.openChooseEditDialog(item);
                         }
                     },
-                    setDialogTitle: function (tplComponent, defaultTitle) {
-                        var $this = this, component;
-                        if (tplComponent) {
-                            component = $.grep($this.components, function (it) { return it.id == tplComponent.componentId; })[0];
+                    setDialogTitle: function (item, defaultTitle) {
+                        var $this = this;
+                        // 不存在componentId， 则item为component
+                        if (!item.componentId) {
+                            $this.dialogTitle = (item && item.name) || defaultTitle;
+                            return ;
                         }
-                        $this.editDialogTitle = (component && component.name) || defaultTitle;
+                        var component = $.grep($this.components, function (it) { return it.id == item.componentId; })[0];
+                        $this.dialogTitle = (component && component.name) || defaultTitle;
+
                     },
                     // 字段弹框中的index
                     setBasicComptChecked: function (index) {
+                        if (!index && index != 0) {
+                            return;
+                        }
                         var $this = this;
                         var componentType = $this.componentTypeList[$this.activeCpTypeIndex];
                         $this.$set(componentType.basicCompts[index], 'checked', true);
@@ -991,7 +972,6 @@
                             basicCompts.push(component);
                         }
                     },
-
                     // 新增报名组件
                     addSignUpComponentAssociate: function () {
                         var $this = this;
@@ -1046,7 +1026,7 @@
                         }
                     },
                     // 打开文本字段弹窗
-                    openTextDialog: function (index, item) {
+                    openTextDialog: function (item, index) {
                         var $this = this;
                         $this.setDialogTitle(item, "文本字段")
                         $this.addFieldDialog = false;
@@ -1056,24 +1036,26 @@
                             item.originIdentify = '';
                         }
                         if ($this.isAddComponent) {
-                            if (item.code == 'company_sign_up') {
-                                $this.setDialogTitle(item, "企业报名")
-                                $this.addEditItem = $this.createNewTemplateComponent(item);
-                                return;
-                            }
-
+                            // type存在时，则为自定义文本；type不存在时，则可能为activity_release_scope、sign_up、company_sign_up等
                             $this.addEditItem = !item.type ? $this.createNewTemplateComponent(item) : $this.createDefaultEditItem(item.type)
                             return;
                         }
+                        // 编辑操作
                         $this.currEditIndex = index;
-                        $this.addEditItem = $.extend({}, item);
+                        $this.addEditItem = item.type == 'text'
+                            ? $.extend({}, $.grep($this.components, function (it) { return it.id == item.componentId; })[0])
+                            : $this.addEditItem = $.extend({}, item);
                     },
                     // 打开选择字段弹窗
-                    openChooseEditDialog: function (index, item) {
+                    openChooseEditDialog: function (item, index) {
                         var $this = this;
-                        $this.setDialogTitle(item, "选择字段")
+                        $this.setDialogTitle(item, "");
                         $this.addFieldDialog = false;
                         $this.chooseDialog = true;
+                        if ($this.isAddComponent) {
+                            $this.addEditItem = $this.createDefaultEditItem(item.type, item.dataOrigin, true);
+                            return;
+                        }
                         $this.currEditIndex = index;
                         var cmp = $.grep($this.components, function (it) { return it.id == item.componentId; })[0];
                         $this.addEditItem = $.extend({}, cmp);
@@ -1083,9 +1065,9 @@
                     openEditDialog: function (index, item) {
                         var $this = this;
                         if (item.type == 'radio' || item.type == 'checkbox') {
-                            $this.openChooseEditDialog(index, item);
+                            $this.openChooseEditDialog(item, index);
                         } else {
-                            $this.openTextDialog(index, item);
+                            $this.openTextDialog(item, index);
                         }
                     },
                     // 报名组件中的编辑
@@ -1095,8 +1077,8 @@
                         if (item.code == 'sign_up_condition' || item.code == 'sign_up_fill_info') {
                             $this.openChildComponentDialog(index, item, idx);
                         } else {    // 这里只存在报名的系统组件，不存在自定义组件
-                            $this.currEditSignUpInsideIndex = idx;
-                            $this.openTextDialog(index, item);
+                            $this.innerCurrEditIndex = idx;
+                            $this.openTextDialog(item, index);
                         }
                     },
                     // 打开报名条件弹窗， 当 idx为undefined 时，是添加模板关联组件处新增报名条件， 此时 item: Component, 反之为 TemplateComponent
@@ -1117,9 +1099,8 @@
                             $this.innerAddEditItem = $this.addEditItem.signUpFillInfoType;
                         }
                         $this.currEditIndex = index;
-                        $this.currEditSignUpInsideIndex = idx;
+                        $this.innerCurrEditIndex = idx;
                     },
-
                     confirmEditText: function () {
                         var $this = this;
                         if (!$this.addEditItem.name && $this.addEditItem.code != 'partition') {
@@ -1130,36 +1111,23 @@
                             app.showMsg("发布范围接口地址未填");
                             return;
                         }
-
-                        if ($this.isAddComponent) {
-                            if ($this.addEditItem.code == 'activity_release_scope') {
-                                $this.templateComponents.push($this.createNewTemplateComponent($this.addEditItem));
-                                $this.setBasicComptChecked($this.fieldIndex);
-                                $this.initEditData();
-                                return;
-                            }
-                            if ($this.addEditItem.code == 'partition') {
-                                $this.templateComponents.push($this.createNewTemplateComponent($this.addEditItem));
-                                $this.initEditData();
-                                return;
-                            }
-                            // 新增报名
-                            if ($this.addEditItem.code == 'sign_up' || $this.addEditItem.code == 'company_sign_up') {
-                                $this.addSignUpComponentAssociate();
-                                if ($this.addEditItem.code == 'company_sign_up') {
-                                    $this.setBasicComptChecked($this.fieldIndex)
-                                }
-                                $this.initEditData();
-                                return;
-                            }
-                            // 自定义文本组件新增，需要处理
-                            if (!$this.addEditItem.id) {
-                                $this.submitCustomComponent($this.addEditItem)
-                                return;
-                            }
+                        if ($this.addEditItem.type == 'text') {
+                            // 自定义文本组件新增、编辑，需要处理
+                            $this.submitCustomComponent($this.addEditItem)
+                            return;
                         }
-                        if ($this.currEditSignUpInsideIndex || $this.currEditSignUpInsideIndex == 0) {
-                            $this.templateComponents[$this.currEditIndex].children[$this.currEditSignUpInsideIndex] = $.extend({}, $this.addEditItem);
+                        if ($this.isAddComponent) {
+                            if ($this.addEditItem.code == 'activity_release_scope' || $this.addEditItem.code == 'partition') {
+                                $this.templateComponents.push($this.addEditItem);
+                            } else if ($this.addEditItem.code == 'sign_up' || $this.addEditItem.code == 'company_sign_up') {
+                                $this.addSignUpComponentAssociate();
+                            }
+                            $this.setBasicComptChecked($this.fieldIndex)
+                            $this.initEditData();
+                            return;
+                        }
+                        if ($this.innerCurrEditIndex || $this.innerCurrEditIndex == 0) {
+                            $this.templateComponents[$this.currEditIndex].children[$this.innerCurrEditIndex] = $.extend({}, $this.addEditItem);
                             $this.initEditData();
                             return;
                         }
@@ -1199,7 +1167,7 @@
                             $this.addSignUpChildComponentAssociate($this.addEditItem);
                             app.showMsg("已添加");
                         } else {
-                            $this.templateComponents[$this.currEditIndex].children[$this.currEditSignUpInsideIndex] = $.extend({}, $this.addEditItem);
+                            $this.templateComponents[$this.currEditIndex].children[$this.innerCurrEditIndex] = $.extend({}, $this.addEditItem);
                         }
                         $this.initEditData();
                     },
@@ -1226,12 +1194,7 @@
                         }
                         // 非报名组件
                         $this.cancelBasicComptChecked(0, item.componentId);
-                        $this.$nextTick(function () {
-                            $('.jqthumbImg').jqthumb({
-                                width: '100%',
-                                height: '100%'
-                            });
-                        });
+                        $this.handleJqthumb();
                     },
                     // 配置页面报名信息关联移除操作 --> 主要针对 pid != 0
                     // index -> templateComponents[index], idx -> templateComponents[index].children[idx]  item -> templateComponent
@@ -1312,7 +1275,7 @@
                         $this.dialogTitle = "";
                         $this.currEditIndex = null;
                         $this.fieldIndex = null;
-                        $this.currEditSignUpInsideIndex = null;
+                        $this.innerCurrEditIndex = null;
                         $this.addEditItem = {};
                         $this.innerAddEditItem = {};
                         // 回到添加字段页面
@@ -1330,6 +1293,7 @@
                                     $this.addedComponent(component);
                                 } else {
                                     // 针对数据更新之后处理
+                                    component.checked = true;
                                     $this.editedComponent(component);
                                 }
                                 $this.initEditData();
@@ -1558,6 +1522,12 @@
                             var right = $('.w-900px.info-box').offset().left + 50
                             $('#add-circle').css('right', right)
                         })
+                    },
+                    handleJqthumb: function () {
+                        $('.jqthumbImg').jqthumb({
+                            width: '100%',
+                            height: '100%'
+                        });
                     },
                     showToast(){
                         $('.toast-box').fadeIn();
