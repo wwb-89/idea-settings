@@ -64,6 +64,20 @@ public class GeneralActivityController {
 		return activityController.index(model, marketId, code, realFid, strict, flag);
 	}
 
+	@RequestMapping("/simple")
+	public String indexSimple(HttpServletRequest request, Model model, Integer marketId, String code, Integer wfwfid, Integer unitId, Integer state, Integer fid, @RequestParam(defaultValue = "0") Integer strict, String flag) {
+		Integer realFid = Optional.ofNullable(wfwfid).orElse(Optional.ofNullable(unitId).orElse(Optional.ofNullable(state).orElse(Optional.ofNullable(fid).orElse(LoginUtils.getLoginUser(request).getFid()))));
+		if (marketId == null && StringUtils.isNotBlank(flag)) {
+			Activity.ActivityFlagEnum activityFlagEnum = Activity.ActivityFlagEnum.fromValue(flag);
+			if (activityFlagEnum == null) {
+				throw new BusinessException("未知的flag");
+			}
+			Template template = marketHandleService.getOrCreateTemplateMarketByFidActivityFlag(realFid, activityFlagEnum, LoginUtils.getLoginUser(request));
+			marketId = template.getMarketId();
+		}
+		return activityController.indexSimple(model, marketId, code, realFid, strict, flag);
+	}
+
 	/**活动新增页面
 	 * @Description 
 	 * @author wwb

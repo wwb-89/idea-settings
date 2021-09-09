@@ -281,6 +281,8 @@ public class ActivityHandleService {
 					.set(Activity::getIntegral, activity.getIntegral())
 					.set(Activity::getStatus, Activity.calActivityStatus(activity).getValue())
 			);
+			// 更新活动市场与活动关联
+			activityMarketService.update(activity);
 			// 处理门户模版的绑定
 			bindWebTemplate(existActivity, activity.getWebTemplateId(), loginUser);
 			// 更新

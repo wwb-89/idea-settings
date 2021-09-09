@@ -8,6 +8,7 @@ import com.chaoxing.activity.mapper.MarketMapper;
 import com.chaoxing.activity.model.Activity;
 import com.chaoxing.activity.model.ActivityMarket;
 import com.chaoxing.activity.model.Market;
+import com.chaoxing.activity.util.ApplicationContextHolder;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.compress.utils.Lists;
@@ -54,6 +55,21 @@ public class ActivityMarketService {
                 .top(Boolean.FALSE)
                 .build());
     }
+
+    /**
+    * @Description 
+    * @author huxiaolong
+    * @Date 2021-09-09 15:13:55
+    * @param activity
+    * @return void
+    */
+    public void update(Activity activity) {
+        if (activity.getMarketId() == null) {
+            return;
+        }
+        ApplicationContextHolder.getBean(ActivityMarketService.class).updateMarketActivityStatus(activity.getMarketId(), activity);
+    }
+    
     /**
     * @Description 
     * @author huxiaolong

@@ -189,6 +189,9 @@
                     #{value}
                 </foreach>
             </if>
+            <if test="params.levelType != null and params.levelType != ''">
+                AND t.activity_flag = #{params.levelType}
+            </if>
             <if test="params.sw != null and params.sw != ''">
                 AND (
                 t.`name` LIKE CONCAT('%', #{params.sw}, '%')

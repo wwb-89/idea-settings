@@ -86,6 +86,19 @@ public class ActivityController {
 		return "pc/activity-list";
 	}
 
+	public String indexSimple(Model model, Integer marketId, String code, Integer fid, Integer strict, String flag) {
+		code = Optional.ofNullable(code).orElse("");
+		// 防止挂接到三放也携带了code参数
+		code = code.split(CommonConstant.DEFAULT_SEPARATOR)[0];
+
+		model.addAttribute("code", code);
+		model.addAttribute("fid", fid);
+		model.addAttribute("strict", strict);
+		model.addAttribute("marketId", marketId);
+		model.addAttribute("flag", flag);
+		return "pc/activity-list-simple";
+	}
+
 	public String add(HttpServletRequest request, Model model, Integer marketId, String flag, String code, Integer strict) {
 		flag = Optional.ofNullable(flag).filter(StringUtils::isNotBlank).orElse(Activity.ActivityFlagEnum.NORMAL.getValue());
 		LoginUserDTO loginUser = LoginUtils.getLoginUser(request);
