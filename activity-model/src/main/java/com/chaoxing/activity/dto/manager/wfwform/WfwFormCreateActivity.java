@@ -29,7 +29,7 @@ public class WfwFormCreateActivity {
     private Integer marketId;
     /** 活动标识 */
     private String flag;
-    /** 使用的模版id */
-    private Integer templateId;
+    /** 使用的门户模版id */
+    private Integer webTemplateId;
 
 }

@@ -50,7 +50,7 @@ public class FormActivityApiController {
                 .formUserId(formUserId)
                 .marketId(marketId)
                 .flag(flag)
-                .templateId(templateId)
+                .webTemplateId(templateId)
                 .build();
         formActivityCreateQueueService.push(formCreateActivity);
         return RestRespDTO.success();

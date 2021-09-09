@@ -6,6 +6,7 @@ import com.chaoxing.activity.dto.RestRespDTO;
 import com.chaoxing.activity.model.Classify;
 import com.chaoxing.activity.service.activity.classify.ClassifyHandleService;
 import com.chaoxing.activity.service.activity.classify.ClassifyQueryService;
+import com.chaoxing.activity.service.activity.market.MarketQueryService;
 import com.chaoxing.activity.util.exception.BusinessException;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -31,6 +32,8 @@ public class ActivityClassifyApiController {
     private ClassifyQueryService classifyQueryService;
     @Resource
     private ClassifyHandleService classifyHandleService;
+    @Resource
+    private MarketQueryService marketQueryService;
 
     /**给指定的机构克隆系统活动类型
      * @Description 
@@ -51,15 +54,21 @@ public class ActivityClassifyApiController {
 
     /**查询机构可选的活动分类列表
      * @Description 表单活动申报创建活动使用
+     * 1、但marketId为空且flag不为空的时候，根据fid和flag查询活动市场，
+     * 如果查询的活动市场为空这查询机构下的互动类型列表
      * @author wwb
      * @Date 2021-05-19 11:54:17
      * @param fid 与活动市场id二选一
      * @param marketId 与fid二选一
+     * @param flag 活动标识
      * @return com.chaoxing.activity.dto.RestRespDTO
     */
     @RequestMapping("list")
-    public RestRespDTO listOrgClassify(Integer fid, Integer marketId) {
+    public RestRespDTO listOrgClassify(Integer fid, Integer marketId, String flag) {
         List<Classify> classifies;
+        if (marketId == null) {
+            marketId = marketQueryService.getMarketIdByTemplate(fid, flag);
+        }
         if (marketId != null) {
             classifies = classifyQueryService.listMarketClassifies(marketId);
         } else if (fid != null) {
