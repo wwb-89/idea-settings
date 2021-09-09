@@ -40,7 +40,7 @@ public class ActivityCreateFromApprovalTask {
                     formCreateActivity.getFormUserId(),
                     formCreateActivity.getMarketId(),
                     formCreateActivity.getFlag(),
-                    formCreateActivity.getTemplateId());
+                    formCreateActivity.getWebTemplateId());
         } catch (Exception e) {
             e.printStackTrace();
             log.error("根据表单信息创建活动error:{}", e);
