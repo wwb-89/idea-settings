@@ -220,12 +220,12 @@
                                 <template v-else>
                                     <!--添加范围后显示后面这项-->
                                     <div v-show="participatedOrgs.length < 1">
-                                        <div class="type-item add" @click="toAddParticipateScope">
+                                        <div class="type-item add" @click="toAddParticipateScope(item.name)">
                                             <div class="add_btn"></div>
                                             添加
                                         </div>
                                     </div>
-                                    <div class="already_add" v-show="participatedOrgs.length > 0" @click="toAddParticipateScope">
+                                    <div class="already_add" v-show="participatedOrgs.length > 0" @click="toAddParticipateScope(item.name)">
                                         <div>
                                             已选择{{participatedOrgs.length}}个单位
                                         </div>
@@ -565,7 +565,7 @@
             <!--展示页-->
             <div class="info box" v-if="!activity.id">
                 <div class="set-box">
-                    <div class="title">展示页<span>请选择你的活动呈现页面</span></div>
+                    <div class="title">展示页<span>请选择页面呈现样式</span></div>
                 </div>
                 <div class="cover-list">
                     <ul>
@@ -583,7 +583,7 @@
             <!--重新选择展示页-->
             <div class="info box" v-if="isReselectConfig">
                 <div class="set-box">
-                    <div class="title">展示页<span>请选择你的活动呈现页面</span></div>
+                    <div class="title">展示页<span>请选择页面呈现样式</span></div>
                 </div>
                 <div class="cover-list">
                     <ul>
@@ -670,7 +670,7 @@
         <!--签到-->
         <vue-sign-map ref="signInMap" :map-dom-id="'sign-in-map'" :title="'设置'+ signInMapTitleKey +'地点'" th:uid="${session._login_user_.uid}" th:fid="${session._login_user_.fid}" @callback="signInAddressSure"></vue-sign-map>
         <!-- 活动发布范围弹窗 -->
-        <vue-activity-participate-scope :fid="fid" ref="activityParticipateScopeWindow" @callback="updateParticipatedOrgs"></vue-activity-participate-scope>
+        <vue-activity-participate-scope :fid="fid" :title="releaseScopeTitle" ref="activityParticipateScopeWindow" @callback="updateParticipatedOrgs"></vue-activity-participate-scope>
         <!--预览url复制容器-->
         <input type="text" id="template-preview-url-input" v-model.trim="activity.previewUrl" style="position: absolute; top: -100px; height: 1px;">
         <!-- 报名参与范围弹窗 -->
@@ -825,7 +825,8 @@
                 showSignInListIframe: false,
                 scrollHeight: 0,
                 signInNum: 0,
-                wfwFormConfigWindow: null
+                wfwFormConfigWindow: null,
+                releaseScopeTitle: ""
             },
             created: function () {
                 var $this = this;
@@ -1379,8 +1380,9 @@
                     return originUrl + "?" + params.join("&")
                 },
                 // 显示发布范围弹窗
-                toAddParticipateScope: function () {
+                toAddParticipateScope: function (title) {
                     var $this = this;
+                    $this.releaseScopeTitle = title;
                     $this.$refs.activityParticipateScopeWindow.showWindow($this.participatedOrgs);
                 },
                 // 更新发布范围的机构

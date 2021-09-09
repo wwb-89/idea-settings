@@ -35,9 +35,9 @@ import java.util.Optional;
 public class MhApiService {
 
 	/** 根据模版id（templateId）克隆模板的url http://mh.chaoxing.com/web-others/{templateId}/cloneActivity?wfwfid=&activityId=&uid= */
-	private static final String CLONE_TEMPLATE_URL = ActivityMhUrlConstant.MH_DOMAIN + "/web-others/%d/cloneActivity?wfwfid=%d&uid=%d&websiteName=%s";
+	private static final String CLONE_TEMPLATE_URL = ActivityMhUrlConstant.MH_DOMAIN + "/web-others/%d/cloneActivity?wfwfid=%d&uid=%d&websiteName=%s&forceCheckDomain=false";
 	/** 根据网站id（website_id）克隆模版url */
-	private static final String CLONE_TEMPLATE_URL_BY_WEBSITE_ID = ActivityMhUrlConstant.MH_DOMAIN + "/web-others/%d/cloneActivityNew?wfwfid=%d&uid=%d&websiteName=%s";
+	private static final String CLONE_TEMPLATE_URL_BY_WEBSITE_ID = ActivityMhUrlConstant.MH_DOMAIN + "/web-others/%d/cloneActivityNew?wfwfid=%d&uid=%d&websiteName=%s&forceCheckDomain=false";
 	/** 更新网站title url http://portal.chaoxing.com/web-others/{pageId}/page-name?name={name}&uid={uid} */
 	private static final String UPDATE_WEB_TITLE_URL = ActivityMhUrlConstant.MH_DOMAIN + "/web-others/%d/page-name?name=%s&uid=%d";
 	/** 根据pageId查询website */

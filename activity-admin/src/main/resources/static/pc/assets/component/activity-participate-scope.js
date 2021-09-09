@@ -2,20 +2,17 @@
  * 活动发布范围弹窗
  */
 Vue.component('vue-activity-participate-scope', {
-    props: ["fid"],
+    props: ["fid", "title"],
     template: "<div class='dailog-box1' v-show='show'>\n" +
         "    <div class='dailog'>\n" +
         "        <div class='header'>\n" +
-        "            <span>发布范围</span>\n" +
+        "            <span>{{title ? title : '发布范围'}}</span>\n" +
         "            <div @click='show = false'>\n" +
         "                <img :src='closeImgUrl' class='close'>\n" +
         "            </div>\n" +
         "        </div>\n" +
         "        <div class='body'>\n" +
         "            <div class='tree'>\n" +
-        "                <div class='tree-head'>\n" +
-        "                    <span>选择发布的范围</span>\n" +
-        "                </div>\n" +
         "                <div class='tree-box'>\n" +
         "                    <div id='organizationTree' class='ztree'></div>\n" +
         "                </div>\n" +

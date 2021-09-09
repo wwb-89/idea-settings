@@ -23,8 +23,8 @@
 <body>
 <div class="basic-setting" id="vm" v-cloak>
 	<div class="top-con">
-		<div class="go-back white-border-btn" @click="back"><i></i><span style="line-height: 16px;">返回</span></div>
-		<div class="name-txt">活动</div>
+		<div class="go-back white-border-btn" @click="back"><i></i><span style="line-height: 19px;">返回</span></div>
+		<div class="name-txt">活动应用</div>
 		<div class="look-div fr">
 			<div class="btn-width80px-color2" @click="release">发布</div>
 		</div>
@@ -117,7 +117,8 @@
             created: function () {
 				var $this = this;
                 $this.perfectMarket();
-                $this.market.activityFlag = $this.activityFlag();
+                $this.market.activityFlag = $this.activityFlag;
+                $this.market.name = "活动管理";
             },
 			mounted: function () {
 				var $this = this;
