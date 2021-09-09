@@ -218,7 +218,7 @@
             case 1:
                 return "未发布";
             case 2:
-                return "待开始";
+                return "未开始";
             case 3:
                 return "进行中";
             default:
