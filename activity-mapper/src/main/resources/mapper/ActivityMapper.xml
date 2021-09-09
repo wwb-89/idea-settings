@@ -481,9 +481,6 @@
                     OR ( #{params.startDate} <![CDATA[<=]]> t.start_date AND #{params.endDate} >= t.end_date )
                 )
             </if>
-            <if test="params.activityFlag != null and params.activityFlag != ''">
-                AND t.activity_flag = #{params.activityFlag}
-            </if>
         GROUP BY
             t.id
         ORDER BY
@@ -527,9 +524,6 @@
                 OR (#{params.endDate} BETWEEN t.start_date AND t.end_date )
                 OR ( #{params.startDate} <![CDATA[<=]]> t.start_date AND #{params.endDate} >= t.end_date )
                 )
-            </if>
-            <if test="params.activityFlag != null and params.activityFlag != ''">
-                AND t.activity_flag = #{params.activityFlag}
             </if>
         GROUP BY
             t.id
