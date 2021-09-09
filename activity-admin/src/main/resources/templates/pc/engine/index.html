@@ -404,7 +404,7 @@
                         <span class="txt1">高级字段</span>
                     </div>
                     <template v-for="(item, index) in (componentTypeList[activeCpTypeIndex] && componentTypeList[activeCpTypeIndex].advanceCompts) || []">
-                        <div class="field-item" @click="addAdvanceComponentAssociate(item)">
+                        <div class="field-item" :style="index % 2 == 0 ? {'margin-right': '24px'} : {'margin-right': '0px'}" @click="addAdvanceComponentAssociate(item)">
                             <p class="field overHidden1">{{item.name || (item.type == 'text' ? '自定义输入' : '自定义选择')}}</p>
                         </div>
                     </template>
