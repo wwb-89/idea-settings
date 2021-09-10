@@ -45,9 +45,9 @@ public class VolunteerController {
     @LoginRequired
     @GetMapping
     public String index(HttpServletRequest request, Model model, Integer state, Integer fid) {
-        Integer realFid = Optional.ofNullable(state).orElse(fid);
         LoginUserDTO loginUser = LoginUtils.getLoginUser(request);
         Integer uid = loginUser.getUid();
+        Integer realFid = Optional.ofNullable(state).orElse(Optional.ofNullable(fid).orElse(loginUser.getFid()));
         List<VolunteerServiceDTO> volunteerServiceDTOList = volunteerService.listServiceTimeLength(uid, realFid);
         List<String> serviceTypeList = volunteerService.listVolunteerServiceType(realFid);
         model.addAttribute("fid", realFid);

@@ -26,14 +26,14 @@ public class FormApprovalApiServiceTests {
         Integer fid = 139378;
         Integer formId = 17251;
         Integer formUserId = 1959060;
-        formApprovalApiService.getFormData(fid, formId, formUserId);
+        formApprovalApiService.getFormRecord(formUserId, formId, fid);
     }
 
     @Test
     public void listFormData() {
         Integer fid = 139378;
         Integer formId = 17251;
-        formApprovalApiService.listFormData(fid, formId);
+        formApprovalApiService.listFormRecord(fid, formId);
     }
 
     @Test

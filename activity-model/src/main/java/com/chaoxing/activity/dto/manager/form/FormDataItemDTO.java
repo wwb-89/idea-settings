@@ -1,4 +1,4 @@
-package com.chaoxing.activity.dto.manager.wfwform;
+package com.chaoxing.activity.dto.manager.form;
 
 import com.alibaba.fastjson.JSONObject;
 import lombok.AllArgsConstructor;
@@ -11,40 +11,38 @@ import org.apache.commons.lang3.StringUtils;
 import java.util.List;
 import java.util.Objects;
 
-/**表单数据对象
+/**表单数据项
  * @author wwb
  * @version ver 1.0
- * @className WfwFormDataDTO
+ * @className FormDataItemDTO
  * @description
  * @blame wwb
- * @date 2021-03-09 12:17:29
+ * @date 2021-08-30 11:06:40
  */
 @Data
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@Deprecated
-public class WfwFormDataDTO {
+public class FormDataItemDTO {
 
 	/** value的key */
 	private static final String VAL_KEY = "val";
 	/** uid key */
 	private static final String UID_KEY = "puid";
 
-	private Integer id;
-	private String label;
-	private String compt;
-	private String alias;
-	private List<JSONObject> values;
-	private List<WfwFormDataDTO> compts;
 
-	/**获取字段的值
-	 * @Description 
-	 * @author wwb
-	 * @Date 2021-07-12 10:49:27
-	 * @param fieldName
-	 * @return java.lang.String
-	*/
+	/** 字段id */
+	private Integer id;
+	/** 字段类型 */
+	private String compt;
+	/** 字段名称 */
+	private String label;
+	/** 字段别名 */
+	private String alias;
+	/** 值 */
+	private List<JSONObject> values;
+
+
 	public String getFieldValue(String fieldName) {
 		if (CollectionUtils.isEmpty(values)) {
 			return null;

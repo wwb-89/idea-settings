@@ -1,9 +1,9 @@
 package com.chaoxing.activity.admin.controller.api;
 
 import com.chaoxing.activity.dto.RestRespDTO;
-import com.chaoxing.activity.dto.manager.wfwform.WfwFormFieldDTO;
-import com.chaoxing.activity.service.manager.WfwFormApiService;
+import com.chaoxing.activity.dto.manager.form.FormStructureDTO;
 import com.chaoxing.activity.service.manager.WfwFormCreateApiService;
+import com.chaoxing.activity.service.manager.wfw.WfwFormApiService;
 import com.chaoxing.activity.vo.manager.WfwFormFieldVO;
 import org.springframework.web.bind.annotation.*;
 
@@ -39,7 +39,7 @@ public class WfwFormApiController {
 	*/
 	@RequestMapping("{formId}/field")
 	public RestRespDTO listWfwFormField(@PathVariable Integer formId, @RequestParam Integer fid) {
-		List<WfwFormFieldDTO> formFields = formApiService.listFormField(fid, formId);
+		List<FormStructureDTO> formFields = formApiService.getFormStructure(formId, fid);
 		return RestRespDTO.success(formFields.stream().map(WfwFormFieldVO::buildFromWfwFormFieldDTO).collect(Collectors.toList()));
 	}
 

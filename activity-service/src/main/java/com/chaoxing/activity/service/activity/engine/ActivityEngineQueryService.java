@@ -7,7 +7,7 @@ import com.chaoxing.activity.mapper.*;
 import com.chaoxing.activity.model.*;
 import com.chaoxing.activity.service.activity.component.ComponentQueryService;
 import com.chaoxing.activity.service.activity.template.TemplateQueryService;
-import com.chaoxing.activity.service.manager.WfwFormApiService;
+import com.chaoxing.activity.service.manager.wfw.WfwFormApiService;
 import com.google.common.collect.Maps;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;

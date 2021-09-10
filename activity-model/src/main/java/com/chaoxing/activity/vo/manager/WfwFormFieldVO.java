@@ -1,6 +1,6 @@
 package com.chaoxing.activity.vo.manager;
 
-import com.chaoxing.activity.dto.manager.wfwform.WfwFormFieldDTO;
+import com.chaoxing.activity.dto.manager.form.FormStructureDTO;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -23,7 +23,7 @@ public class WfwFormFieldVO {
 	/** 字段名称 */
 	private String name;
 
-	public static WfwFormFieldVO buildFromWfwFormFieldDTO(WfwFormFieldDTO formField) {
+	public static WfwFormFieldVO buildFromWfwFormFieldDTO(FormStructureDTO formField) {
 		return WfwFormFieldVO.builder()
 				.name(formField.getLabel())
 				.build();

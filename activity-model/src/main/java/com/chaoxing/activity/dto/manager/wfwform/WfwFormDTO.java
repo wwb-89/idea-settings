@@ -25,6 +25,7 @@ import java.util.List;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
+@Deprecated
 public class WfwFormDTO {
 
 	private Integer formId;

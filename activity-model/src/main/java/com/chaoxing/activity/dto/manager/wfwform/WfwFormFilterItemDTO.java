@@ -17,6 +17,7 @@ import java.util.Map;
 @NoArgsConstructor
 @AllArgsConstructor
 @EqualsAndHashCode
+@Deprecated
 public class WfwFormFilterItemDTO {
 
     /** 字段id， id可通过”获取表单结构“接口的返回值拿到

@@ -6,13 +6,13 @@ import com.chaoxing.activity.dto.LoginUserDTO;
 import com.chaoxing.activity.dto.activity.ActivityCreateParamDTO;
 import com.chaoxing.activity.dto.activity.ActivityUpdateParamDTO;
 import com.chaoxing.activity.dto.activity.classify.MarketClassifyCreateParamDTO;
+import com.chaoxing.activity.dto.manager.form.FormDataDTO;
+import com.chaoxing.activity.dto.manager.form.FormDataItemDTO;
+import com.chaoxing.activity.dto.manager.form.FormStructureDTO;
 import com.chaoxing.activity.dto.manager.sign.create.SignCreateParamDTO;
 import com.chaoxing.activity.dto.manager.sign.create.SignInCreateParamDTO;
 import com.chaoxing.activity.dto.manager.sign.create.SignUpCreateParamDTO;
 import com.chaoxing.activity.dto.manager.wfw.WfwAreaDTO;
-import com.chaoxing.activity.dto.manager.wfwform.WfwFormDTO;
-import com.chaoxing.activity.dto.manager.wfwform.WfwFormDataDTO;
-import com.chaoxing.activity.dto.manager.wfwform.WfwFormFieldDTO;
 import com.chaoxing.activity.model.Activity;
 import com.chaoxing.activity.model.Classify;
 import com.chaoxing.activity.model.MarketClassify;
@@ -20,9 +20,9 @@ import com.chaoxing.activity.model.Template;
 import com.chaoxing.activity.service.activity.classify.ClassifyHandleService;
 import com.chaoxing.activity.service.activity.classify.ClassifyQueryService;
 import com.chaoxing.activity.service.activity.market.MarketHandleService;
-import com.chaoxing.activity.service.manager.WfwFormApiService;
 import com.chaoxing.activity.service.manager.module.SignApiService;
 import com.chaoxing.activity.service.manager.wfw.WfwAreaApiService;
+import com.chaoxing.activity.service.manager.wfw.WfwFormApiService;
 import com.chaoxing.activity.util.ApplicationContextHolder;
 import com.chaoxing.activity.util.DateUtils;
 import com.chaoxing.activity.util.exception.BusinessException;
@@ -81,7 +81,7 @@ public class ActivityFormSyncService {
     */
     public Activity getActivityFromFormInfo(Integer fid, Integer formId, Integer formUserId) {
         // 获取表单数据
-        WfwFormDTO formUserRecord = wfwFormApiService.getFormData(fid, formId, formUserId);
+        FormDataDTO formUserRecord = wfwFormApiService.getFormRecord(formUserId, formId, fid);
         if (formUserRecord == null) {
             throw new BusinessException("未查询到记录为:" + formUserId + "的表单数据");
         }
@@ -102,13 +102,13 @@ public class ActivityFormSyncService {
         Activity activity = ApplicationContextHolder.getBean(ActivityFormSyncService.class).createActivity(fid, formId, formUserId, webTemplateId);
         // 回写数据
         String data = packagePushUpdateData(fid, formId, activity);
-        wfwFormApiService.updateFormData(formId, formUserId, data);
+        wfwFormApiService.updateForm(formId, formUserId, data);
     }
 
     @Transactional(rollbackFor = Exception.class)
     public Activity createActivity(Integer fid, Integer formId, Integer formUserId, Integer webTemplateId) {
         // 获取表单数据
-        WfwFormDTO formUserRecord = wfwFormApiService.getFormData(fid, formId, formUserId);
+        FormDataDTO formUserRecord = wfwFormApiService.getFormRecord(formUserId, formId, fid);
         if (formUserRecord == null) {
             throw new BusinessException("未查询到记录为:" + formUserId + "的表单数据");
         }
@@ -159,7 +159,7 @@ public class ActivityFormSyncService {
     */
     public void syncUpdateActivity(Integer fid, Integer formId, Integer formUserId, Integer webTemplateId) {
         // 获取表单数据
-        WfwFormDTO formUserRecord = wfwFormApiService.getFormData(fid, formId, formUserId);
+        FormDataDTO formUserRecord = wfwFormApiService.getFormRecord(formUserId, formId, fid);
         if (formUserRecord == null) {
             log.error("表单数据推送根据参数fid:{}, formId:{}, formUserId:{} 获取表单记录为空");
             return;
@@ -173,7 +173,7 @@ public class ActivityFormSyncService {
         }
         // 回写数据
         String data = packagePushUpdateData(fid, formId, activity);
-        wfwFormApiService.updateFormData(formId, formUserId, data);
+        wfwFormApiService.updateForm(formId, formUserId, data);
     }
 
     /**
@@ -186,7 +186,7 @@ public class ActivityFormSyncService {
     * @return void
     */
     @Transactional(rollbackFor = Exception.class)
-    public Activity syncUpdateActivity(WfwFormDTO formUserRecord, Integer fid, Integer activityId) {
+    public Activity syncUpdateActivity(FormDataDTO formUserRecord, Integer fid, Integer activityId) {
         // 待更新数据
         ActivityUpdateParamDTO activityUpdateParam = new ActivityUpdateParamDTO();
         Activity activity = activityQueryService.getById(activityId);
@@ -227,7 +227,7 @@ public class ActivityFormSyncService {
      * @param formUserRecord
      * @return java.util.List<java.lang.Integer>
      */
-    private List<Integer> listParticipateUidByRecord(WfwFormDTO formUserRecord) {
+    private List<Integer> listParticipateUidByRecord(FormDataDTO formUserRecord) {
         List<Integer> participateUids = Lists.newArrayList();
         formUserRecord.getFormData().forEach(v -> {
             if (Objects.equals("participate_users", v.getAlias())) {
@@ -247,10 +247,10 @@ public class ActivityFormSyncService {
      * @param formUserRecord
      * @return com.chaoxing.activity.dto.activity.ActivityCreateParamDTO
      */
-    private ActivityCreateParamDTO packageActivityCreateParam(WfwFormDTO formUserRecord, Template template) {
+    private ActivityCreateParamDTO packageActivityCreateParam(FormDataDTO formUserRecord, Template template) {
         Integer marketId = template.getMarketId();
         ActivityCreateParamDTO activityCreateParam = ActivityCreateParamDTO.buildDefault();
-        List<WfwFormDataDTO> formData = formUserRecord.getFormData();
+        List<FormDataItemDTO> formData = formUserRecord.getFormData();
         List<String> timeScopes = Lists.newArrayList();
         formData.forEach(v -> {
             List<JSONObject> values = v.getValues();
@@ -298,9 +298,9 @@ public class ActivityFormSyncService {
      * @return java.lang.String
      */
     private String packagePushUpdateData(Integer fid, Integer formId, Activity activity) {
-        List<WfwFormFieldDTO> formFieldInfos = wfwFormApiService.listFormField(fid, formId);
+        List<FormStructureDTO> formFieldInfos = wfwFormApiService.getFormStructure(formId, fid);
         JSONArray result = new JSONArray();
-        for (WfwFormFieldDTO formInfo : formFieldInfos) {
+        for (FormStructureDTO formInfo : formFieldInfos) {
             String alias = formInfo.getAlias();
             JSONObject item = new JSONObject();
             item.put("id", formInfo.getId());
@@ -331,9 +331,9 @@ public class ActivityFormSyncService {
      * @return java.lang.String
      */
     private String packagePushCreateData(Integer fid, Integer formId, Activity activity) {
-        List<WfwFormFieldDTO> formFieldInfos = wfwFormApiService.listFormField(fid, formId);
+        List<FormStructureDTO> formFieldInfos = wfwFormApiService.getFormStructure(formId, fid);
         JSONArray result = new JSONArray();
-        for (WfwFormFieldDTO formInfo : formFieldInfos) {
+        for (FormStructureDTO formInfo : formFieldInfos) {
             String alias = formInfo.getAlias();
             JSONObject item = new JSONObject();
             item.put("id", formInfo.getId());
@@ -361,8 +361,8 @@ public class ActivityFormSyncService {
     * @param formUserRecord
     * @return void
     */
-    private SignInCreateParamDTO handleActivitySignIn(WfwFormDTO formUserRecord) {
-        WfwFormDataDTO formatData = formUserRecord.getFormData().stream().filter(v -> Objects.equals(v.getAlias(), "open_sign_in")).findFirst().orElse(null);
+    private SignInCreateParamDTO handleActivitySignIn(FormDataDTO formUserRecord) {
+        FormDataItemDTO formatData = formUserRecord.getFormData().stream().filter(v -> Objects.equals(v.getAlias(), "open_sign_in")).findFirst().orElse(null);
         if (formatData == null || CollectionUtils.isEmpty(formatData.getValues())) {
             return null;
         }
@@ -390,7 +390,7 @@ public class ActivityFormSyncService {
     * @param activityUpdateParam
     * @return void
     */
-    private void buildActivityUpdateParamFromFormRecord(WfwFormDTO formUserRecord, ActivityUpdateParamDTO activityUpdateParam) {
+    private void buildActivityUpdateParamFromFormRecord(FormDataDTO formUserRecord, ActivityUpdateParamDTO activityUpdateParam) {
         List<String> timeScopes = Lists.newArrayList();
         formUserRecord.getFormData().forEach(v -> {
             List<JSONObject> values = v.getValues();

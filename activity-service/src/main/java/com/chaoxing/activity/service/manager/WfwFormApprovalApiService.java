@@ -8,11 +8,12 @@ import com.chaoxing.activity.dto.LoginUserDTO;
 import com.chaoxing.activity.dto.TimeScopeDTO;
 import com.chaoxing.activity.dto.activity.ActivityCreateParamDTO;
 import com.chaoxing.activity.dto.activity.market.ActivityMarketCreateParamDTO;
+import com.chaoxing.activity.dto.manager.form.FormAdvanceSearchFilterConditionDTO;
+import com.chaoxing.activity.dto.manager.form.FormDataDTO;
 import com.chaoxing.activity.dto.manager.sign.create.SignCreateParamDTO;
 import com.chaoxing.activity.dto.manager.sign.create.SignInCreateParamDTO;
 import com.chaoxing.activity.dto.manager.sign.create.SignUpCreateParamDTO;
 import com.chaoxing.activity.dto.manager.wfw.WfwAreaDTO;
-import com.chaoxing.activity.dto.manager.wfwform.WfwFormDTO;
 import com.chaoxing.activity.model.*;
 import com.chaoxing.activity.service.WebTemplateService;
 import com.chaoxing.activity.service.activity.ActivityHandleService;
@@ -40,6 +41,7 @@ import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
 
 import javax.annotation.Resource;
+import javax.validation.constraints.NotNull;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -67,11 +69,13 @@ public class WfwFormApprovalApiService {
     /** 是 */
     private static final String YES = "是";
     /** 表单api域名 */
-    private static final String FORM_API_DOMAIN = "http://m.oa.chaoxing.com";
-    /** 获取表单数据url */
-    private static final String GET_FORM_DATA_URL = FORM_API_DOMAIN + "/api/approve/forms/user/data/list";
+    private static final String FORM_API_DOMAIN = "https://m.oa.chaoxing.com";
+    /** 获取表单指定数据url */
+    private static final String LIST_FORM_SPECIFIED_DATA_URL = FORM_API_DOMAIN + "/api/approve/forms/user/data/list";
     /** 获取表单数据列表 */
-    private static final String LIST_FORM_DATA_URL = FORM_API_DOMAIN + "/api/approve/forms/advanced/search/list";
+    private static final String ADVANCED_SEARCH_URL = FORM_API_DOMAIN + "/api/approve/forms/advanced/search/list";
+    /** 表单每页数据限制 */
+    private static final int MAX_PAGE_SIZE_LIMIT = 100;
 
     @Resource
     private PassportApiService passportApiService;
@@ -97,76 +101,122 @@ public class WfwFormApprovalApiService {
     @Resource(name = "restTemplateProxy")
     private RestTemplate restTemplate;
 
-    public WfwFormDTO getFormData(Integer fid, Integer formId, Integer formUserId) {
-        LocalDateTime now = LocalDateTime.now();
-        String dateStr = now.format(DATE_TIME_FORMATTER);
-        // 参数
-        TreeMap<String, Object> treeMap = Maps.newTreeMap();
-        treeMap.put("deptId", fid);
-        treeMap.put("formId", formId);
-        treeMap.put("formUserIds", formUserId);
-        treeMap.put("datetime", dateStr);
-        treeMap.put("sign", SIGN);
-        treeMap.put("enc", getEnc(treeMap));
+    private String getEnc(Map<String, Object> encParamMap) {
+        StringBuilder enc = new StringBuilder();
+        for (Map.Entry<String, Object> entry : encParamMap.entrySet()) {
+            enc.append("[").append(entry.getKey()).append("=")
+                    .append(entry.getValue()).append("]");
+        }
+        return DigestUtils.md5Hex(enc + "[" + KEY + "]");
+    }
+
+    /**获取表单记录
+     * @Description
+     * @author wwb
+     * @Date 2021-08-30 11:35:11
+     * @param formUserId
+     * @param formId
+     * @param fid
+     * @return com.chaoxing.secondclassroom.dto.manager.form.FormDataDTO
+     */
+    public FormDataDTO getFormRecord(@NotNull Integer formUserId, Integer formId, Integer fid) {
+        List<Integer> formUserIds = Lists.newArrayList();
+        formUserIds.add(formUserId);
+        List<FormDataDTO> formDataDtos = listFormRecord(formUserIds, formId, fid);
+        return Optional.ofNullable(formDataDtos).orElse(Lists.newArrayList()).stream().findFirst().orElse(null);
+    }
+
+    /**查询表单记录
+     * @Description
+     * @author wwb
+     * @Date 2021-08-30 11:04:08
+     * @param formUserIds
+     * @param formId
+     * @param fid
+     * @return java.util.List<com.chaoxing.secondclassroom.dto.manager.form.FormDataDTO>
+     */
+    private List<FormDataDTO> listFormRecord(List<Integer> formUserIds, Integer formId, Integer fid) {
+        if (CollectionUtils.isEmpty(formUserIds)) {
+            return Lists.newArrayList();
+        }
+        TreeMap<String, Object> paramsMap = Maps.newTreeMap();
+        paramsMap.put("deptId", fid);
+        paramsMap.put("formId", formId);
+        paramsMap.put("formUserIds", String.join(",", Optional.of(formUserIds).orElse(Lists.newArrayList()).stream().map(String::valueOf).collect(Collectors.toList())));
+        paramsMap.put("sign", SIGN);
+        paramsMap.put("datetime", LocalDateTime.now().format(DATE_TIME_FORMATTER));
+        paramsMap.put("enc", getEnc(paramsMap));
         MultiValueMap<String, Object> params = new LinkedMultiValueMap<>();
-        params.setAll(treeMap);
-        String result = restTemplate.postForObject(GET_FORM_DATA_URL, params, String.class);
+        params.setAll(paramsMap);
+        String result = restTemplate.postForObject(LIST_FORM_SPECIFIED_DATA_URL, params, String.class);
         JSONObject jsonObject = JSON.parseObject(result);
-        Boolean success = jsonObject.getBoolean("success");
-        success = Optional.ofNullable(success).orElse(Boolean.FALSE);
-        if (success) {
-            jsonObject = jsonObject.getJSONObject("data");
-            JSONArray data = jsonObject.getJSONArray("formUserList");
-            if (data.size() < 1) {
-                return null;
+        if (jsonObject.getBoolean("success")) {
+            JSONArray jsonArray = jsonObject.getJSONObject("data").getJSONArray("formUserList");
+            if (jsonArray != null) {
+                return JSON.parseArray(jsonArray.toJSONString(), FormDataDTO.class);
+            } else {
+                return Lists.newArrayList();
             }
-            return JSON.parseObject(data.getJSONObject(0).toJSONString(), WfwFormDTO.class);
         } else {
             String errorMessage = jsonObject.getString("msg");
-            log.error("获取机构:{}的表单:{}数据error:{}, url:{}, prams:{}", fid, formId, errorMessage, GET_FORM_DATA_URL, JSON.toJSONString(params));
             throw new BusinessException(errorMessage);
         }
     }
 
-    private String getEnc(TreeMap<String, Object> params) {
-        StringBuilder endBuilder = new StringBuilder();
-        for (Map.Entry<String, Object> entry : params.entrySet()) {
-            endBuilder.append("[");
-            endBuilder.append(entry.getKey());
-            endBuilder.append("=");
-            endBuilder.append(entry.getValue());
-            endBuilder.append("]");
-        }
-        endBuilder.append("[");
-        endBuilder.append(KEY);
-        endBuilder.append("]");
-        return DigestUtils.md5Hex(endBuilder.toString());
+    /**查询表单下的所有数据
+     * @Description
+     * @author wwb
+     * @Date 2021-08-30 16:08:14
+     * @param formId
+     * @param fid
+     * @return java.util.List<com.chaoxing.secondclassroom.dto.manager.form.FormDataDTO>
+     */
+    public List<FormDataDTO> listFormRecord(Integer formId, Integer fid) {
+        FormAdvanceSearchFilterConditionDTO formAdvanceSearchFilterConditionDto = FormAdvanceSearchFilterConditionDTO.builder()
+                .model(FormAdvanceSearchFilterConditionDTO.ModelEnum.AND.getValue())
+                .filters(Lists.newArrayList())
+                .build();
+        return advancedSearchAll(formAdvanceSearchFilterConditionDto, formId, fid, 1, MAX_PAGE_SIZE_LIMIT);
     }
 
-    public List<WfwFormDTO> listFormData(Integer fid, Integer formId) {
-        LocalDateTime now = LocalDateTime.now();
-        String dateStr = now.format(DATE_TIME_FORMATTER);
-        // 参数
-        TreeMap<String, Object> treeMap = Maps.newTreeMap();
-        treeMap.put("deptId", fid);
-        treeMap.put("formId", formId);
-        treeMap.put("datetime", dateStr);
-        treeMap.put("pageSize", 10);
-        treeMap.put("sign", SIGN);
-        treeMap.put("enc", getEnc(treeMap));
+
+    /**高级检索表单数据
+     * @Description
+     * @author wwb
+     * @Date 2021-08-30 22:43:47
+     * @param formAdvanceSearchFilterConditionDto
+     * @param formId
+     * @param fid
+     * @param pageNum
+     * @param pageSize
+     * @return java.util.List<com.chaoxing.secondclassroom.dto.manager.form.FormDataDTO>
+     */
+    public List<FormDataDTO> advancedSearchAll(FormAdvanceSearchFilterConditionDTO formAdvanceSearchFilterConditionDto, Integer formId, Integer fid, Integer pageNum, Integer pageSize) {
+        TreeMap<String, Object> paramsMap = Maps.newTreeMap();
+        paramsMap.put("deptId", fid);
+        paramsMap.put("formId", formId);
+        paramsMap.put("cpage", pageNum);
+        paramsMap.put("pageSize", pageSize);
+        paramsMap.put("datetime", LocalDateTime.now().format(DATE_TIME_FORMATTER));
+        paramsMap.put("sign", SIGN);
+        paramsMap.put("enc", getEnc(paramsMap));
+        paramsMap.put("searchStr", JSON.toJSONString(formAdvanceSearchFilterConditionDto));
         MultiValueMap<String, Object> params = new LinkedMultiValueMap<>();
-        params.setAll(treeMap);
-        String result = restTemplate.postForObject(LIST_FORM_DATA_URL, params, String.class);
+        params.setAll(paramsMap);
+        String result = restTemplate.postForObject(ADVANCED_SEARCH_URL, params, String.class);
         JSONObject jsonObject = JSON.parseObject(result);
-        Boolean success = jsonObject.getBoolean("success");
-        success = Optional.ofNullable(success).orElse(Boolean.FALSE);
-        if (success) {
-            jsonObject = jsonObject.getJSONObject("data");
-            JSONArray data = jsonObject.getJSONArray("data");
-            return null;
+        if (jsonObject.getBoolean("success")) {
+            List<FormDataDTO> formDataDtos = Lists.newArrayList();
+            JSONObject data = jsonObject.getJSONObject("data");
+            JSONArray jsonArray = data.getJSONArray("dataList");
+            formDataDtos.addAll(FormDataDTO.buildFromAdvanceSearchResult(jsonArray));
+            Integer totalPage = data.getInteger("totalPage");
+            if (totalPage > pageNum) {
+                formDataDtos.addAll(advancedSearchAll(formAdvanceSearchFilterConditionDto, formId, fid, ++pageNum, pageSize));
+            }
+            return formDataDtos;
         } else {
             String errorMessage = jsonObject.getString("msg");
-            log.error("获取机构:{}的表单:{}数据error:{}, url:{}, prams:{}", fid, formId, errorMessage, GET_FORM_DATA_URL, JSON.toJSONString(params));
             throw new BusinessException(errorMessage);
         }
     }
@@ -186,7 +236,7 @@ public class WfwFormApprovalApiService {
     @Transactional(rollbackFor = Exception.class)
     public void createActivity(Integer fid, Integer formId, Integer formUserId, Integer marketId, String flag, Integer webTemplateId) {
         // 获取表单数据
-        WfwFormDTO formData = getFormData(fid, formId, formUserId);
+        FormDataDTO formData = getFormRecord(formUserId, formId, fid);
         if (formData == null) {
             return;
         }
@@ -255,7 +305,7 @@ public class WfwFormApprovalApiService {
      * @param formData
      * @return com.chaoxing.activity.dto.activity.ActivityCreateParamDTO
      */
-    private ActivityCreateParamDTO buildActivityFromActivityApproval(WfwFormDTO formData) {
+    private ActivityCreateParamDTO buildActivityFromActivityApproval(FormDataDTO formData) {
         ActivityCreateParamDTO activityCreateParamDto = ActivityCreateParamDTO.buildDefault();
         Integer fid = formData.getFid();
         Integer formUserId = formData.getFormUserId();
@@ -351,7 +401,7 @@ public class WfwFormApprovalApiService {
      * @param uid
      * @return com.chaoxing.activity.dto.sign.create.SignCreateParamDTO
     */
-    private SignCreateParamDTO buildSignFromActivityApproval(WfwFormDTO formData, Integer uid) {
+    private SignCreateParamDTO buildSignFromActivityApproval(FormDataDTO formData, Integer uid) {
         SignCreateParamDTO signCreateParam = SignCreateParamDTO.buildDefault();
         // 报名
         List<SignUpCreateParamDTO> signUps = signCreateParam.getSignUps();

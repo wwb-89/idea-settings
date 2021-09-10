@@ -6,7 +6,6 @@ import com.chaoxing.activity.mapper.ComponentFieldMapper;
 import com.chaoxing.activity.mapper.ComponentMapper;
 import com.chaoxing.activity.model.Component;
 import com.chaoxing.activity.model.ComponentField;
-import com.chaoxing.activity.service.manager.WfwFormApiService;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,7 +15,6 @@ import org.springframework.transaction.annotation.Transactional;
 import javax.annotation.Resource;
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Objects;
 
 /**
  * @author huxiaolong
@@ -33,8 +31,6 @@ public class ComponentHandleService {
     private ComponentMapper componentMapper;
     @Autowired
     private ComponentFieldMapper componentFieldMapper;
-    @Resource
-    private WfwFormApiService wfwFormApiService;
 
 
     /**新增自定义组件

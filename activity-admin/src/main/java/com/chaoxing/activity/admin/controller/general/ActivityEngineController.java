@@ -3,10 +3,9 @@ package com.chaoxing.activity.admin.controller.general;
 import com.chaoxing.activity.admin.util.LoginUtils;
 import com.chaoxing.activity.dto.manager.wfwform.WfwFormTemplateDTO;
 import com.chaoxing.activity.model.Template;
-import com.chaoxing.activity.service.activity.component.ComponentQueryService;
 import com.chaoxing.activity.service.activity.engine.ActivityEngineQueryService;
 import com.chaoxing.activity.service.activity.template.TemplateQueryService;
-import com.chaoxing.activity.service.manager.WfwFormApiService;
+import com.chaoxing.activity.service.manager.wfw.WfwFormApiService;
 import com.chaoxing.activity.util.annotation.LoginRequired;
 import com.chaoxing.activity.vo.manager.WfwFormVO;
 import org.springframework.stereotype.Controller;
@@ -36,8 +35,6 @@ public class ActivityEngineController {
     private WfwFormApiService formApiService;
     @Resource
     private TemplateQueryService templateQueryService;
-    @Resource
-    private ComponentQueryService componentQueryService;
 
     @LoginRequired
     @RequestMapping("{templateId}")

@@ -1,6 +1,7 @@
 package com.chaoxing.activity;
 
-import com.chaoxing.activity.service.manager.WfwFormApiService;
+import com.chaoxing.activity.service.manager.wfw.WfwFormApiService;
+import com.chaoxing.activity.service.volunteer.VolunteerService;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.util.Assert;
@@ -22,6 +23,9 @@ public class WfwFormApiServiceTests {
 	@Resource
 	private WfwFormApiService wfwFormApiService;
 
+	@Resource
+	private VolunteerService volunteerService;
+
 	@Test
 	public void listFormFieldValue() {
 		Integer fid = 139378;
@@ -31,4 +35,9 @@ public class WfwFormApiServiceTests {
 		Assert.notEmpty(fieldValues, "表单的字段的值不能为空");
 	}
 
+
+	@Test
+	public void xxx() {
+		volunteerService.listVolunteerServiceType(147004);
+	}
 }

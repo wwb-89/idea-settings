@@ -19,6 +19,7 @@ import java.util.List;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
+@Deprecated
 public class WfwFormFieldDTO {
 
 	/** 字段id */
