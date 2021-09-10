@@ -14,7 +14,6 @@ import com.chaoxing.activity.util.exception.BusinessException;
 import com.google.common.collect.Lists;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
@@ -156,7 +155,6 @@ public class WebTemplateService {
 		List<WebTemplate> webTemplates = Lists.newArrayList();
 		// 查询机构所属的code
 		List<String> codes = wfwAreaApiService.listCodeByFid(fid);
-		codes = Optional.ofNullable(codes).orElse(Lists.newArrayList()).stream().filter(StringUtils::isNotBlank).filter(v -> v.length() >= 4).map(v -> v.substring(0, 4)).collect(Collectors.toList());
 		// 先查询机构和区域特有的
 		List<WebTemplate> orgAffiliations = webTemplateMapper.listAffiliation(codes, fid);
 		if (CollectionUtils.isNotEmpty(orgAffiliations)) {
