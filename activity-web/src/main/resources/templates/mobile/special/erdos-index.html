@@ -62,7 +62,7 @@
     <div class="pop" v-show="filterWindowShow">
         <div class="popInner">
             <div class="popList mescroll-touch">
-                <div class="list-item">
+                <div class="list-item" v-show="levelFilter">
                     <div class="title">级别</div>
                     <ul>
                         <li :class="{'active': item.selected}" v-for="(item, index) of levels" :key="'activity-level' + index" @click="changeActivityLevelSelected(index)">{{item.name}}</li>
@@ -105,7 +105,8 @@
                     mescroll: null,
 
                     filterWindowShow: false,
-                    searchShow: false
+                    searchShow: false,
+                    levelFilter: [[${levelFilter}]]
                 },
                 created: function () {
                     var $this = this;

@@ -46,13 +46,17 @@ public class GeneralActivityController {
 	 * @param unitId
 	 * @param state
 	 * @param fid
-	 * @param strict
+	 * @param strict 是否是严格模式，严格模式下只查询当前用户创建的活动
 	 * @param flag
+	 * @param pageMode 0：通用的管理列表页面，1：简单的管理列表页面
+	 * @param direct true：直接到管理列表页面，false：可以重定向到市场管理页面
 	 * @return java.lang.String
 	 */
 	@RequestMapping("")
-	public String index(HttpServletRequest request, Model model, Integer marketId, String code, Integer wfwfid, Integer unitId, Integer state, Integer fid, @RequestParam(defaultValue = "0") Integer strict, String flag, @RequestParam(defaultValue = "0") Integer pageMode) {
+	public String index(HttpServletRequest request, Model model, Integer marketId, String code, Integer wfwfid, Integer unitId, Integer state, Integer fid,
+						@RequestParam(defaultValue = "0") Integer strict, String flag, @RequestParam(defaultValue = "0") Integer pageMode, @RequestParam(defaultValue = "false") Boolean direct) {
 		Integer realFid = Optional.ofNullable(wfwfid).orElse(Optional.ofNullable(unitId).orElse(Optional.ofNullable(state).orElse(Optional.ofNullable(fid).orElse(LoginUtils.getLoginUser(request).getFid()))));
+		direct = Optional.ofNullable(direct).orElse(false);
 		if (marketId == null && StringUtils.isNotBlank(flag)) {
 			Activity.ActivityFlagEnum activityFlagEnum = Activity.ActivityFlagEnum.fromValue(flag);
 			if (activityFlagEnum == null) {
@@ -60,7 +64,7 @@ public class GeneralActivityController {
 			}
 			Template template = marketHandleService.getOrCreateTemplateMarketByFidActivityFlag(realFid, activityFlagEnum, LoginUtils.getLoginUser(request));
 			marketId = template.getMarketId();
-			if (marketId != null) {
+			if (marketId != null && !direct) {
 				return "redirect:/market/" + marketId + "?pageMode=" + pageMode;
 			}
 		}

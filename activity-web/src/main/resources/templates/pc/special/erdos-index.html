@@ -29,7 +29,7 @@
             </div>
         </div>
         <div class="type-box">
-            <div class="typeItem" >
+            <div class="typeItem" v-show="levelFilter">
                 <span class="title">级别</span>
                 <ul>
                     <li :class="{'active': item.selected}" v-for="(item, index) of levels" @click="changeActivityLevelSelected(index)">{{item.name}}</li>
@@ -107,7 +107,8 @@
                 currentPage: 1,
                 filterWindowShow: false,
                 searchShadeShow: false,
-                topFid: [[${topFid}]]
+                topFid: [[${topFid}]],
+                levelFilter: [[${levelFilter}]]
             },
             created: function () {
                 var $this = this;
