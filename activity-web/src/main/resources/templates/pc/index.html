@@ -292,6 +292,9 @@
                     if (!activityApp.isEmpty(previewUrl)) {
                         // 回收积分
                         activityApp.integralPush(activity.id, activity.name);
+                        // 浙江图书馆的需要使用统一的域名
+                        // var path = /http(?:s?):\/\/.*?(\/.*)/.exec(previewUrl)[1];
+                        // previewUrl = "https://share.zjlib.cn" + path;
                         window.open(previewUrl);
                     }
                 }

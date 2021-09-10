@@ -28,7 +28,7 @@
             <input id="search" type="text" placeholder="搜索"  v-model.trim="sw" @focus="searchShow = true" @keyup.enter="search">
         </div>
         <!-- 已选状态 添加active -->
-        <div :class="{'filter': true, 'active': haveFilter}" v-show="!searchShow" @click="toFilter">
+        <div :class="{'filter': true, 'active': haveFilter}" v-show="!searchShow && levelFilter" @click="toFilter">
             <i class="filterIcon"></i>筛选
         </div>
         <span class="Scancel" v-show="searchShow" @click="hideSearchInput">取消</span>
@@ -62,7 +62,7 @@
     <div class="pop" v-show="filterWindowShow">
         <div class="popInner">
             <div class="popList mescroll-touch">
-                <div class="list-item">
+                <div class="list-item" v-show="levelFilter">
                     <div class="title">级别</div>
                     <ul>
                         <li :class="{'active': item.selected}" v-for="(item, index) of levels" :key="'activity-level' + index" @click="changeActivityLevelSelected(index)">{{item.name}}</li>
@@ -105,7 +105,8 @@
                     mescroll: null,
 
                     filterWindowShow: false,
-                    searchShow: false
+                    searchShow: false,
+                    levelFilter: [[${levelFilter}]]
                 },
                 created: function () {
                     var $this = this;

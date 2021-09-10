@@ -4,10 +4,12 @@ import cn.hutool.core.net.url.UrlQuery;
 import cn.hutool.core.util.URLUtil;
 import com.chaoxing.activity.util.exception.BusinessException;
 import com.google.common.collect.Maps;
+import org.apache.commons.lang3.StringUtils;
 
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.util.Map;
+import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
@@ -17,9 +19,10 @@ import java.util.regex.Pattern;
  * @date 2021/9/3 18:50
  * <p>
  */
-public class URLUtils {
+public class UrlUtils {
 
     private static final String URL_REGEX = "http(s)?://([\\w-]+\\.)+[\\w-]+(/[\\w- ./?%&=]*)?";
+    private static final Pattern DOMAIN_PATTERN = Pattern.compile("^http(?:s?):\\/\\/.*?(\\/.*)");
 
 
     /**
@@ -27,7 +30,7 @@ public class URLUtils {
     * @author huxiaolong
     * @Date 2021-09-03 19:35:39
     * @param url
-* @param paramMap
+    * @param paramMap
     * @return java.lang.String
     */
     public static String packageParam2URL(String url, Map<String, String> paramMap) {
@@ -48,4 +51,24 @@ public class URLUtils {
         return realUrl + "?" + UrlQuery.of(existQueryParam).build(StandardCharsets.UTF_8);
 
     }
+
+    /**替换url的域名
+     * @Description 
+     * @author wwb
+     * @Date 2021-09-10 15:39:42
+     * @param url
+     * @param domain
+     * @return java.lang.String
+    */
+    public static String replaceDomain(String url, String domain) {
+        if (StringUtils.isBlank(url) || StringUtils.isBlank(domain)) {
+            return url;
+        }
+        Matcher matcher = DOMAIN_PATTERN.matcher(url);
+        if (matcher.find()) {
+            return domain + matcher.group(1);
+        }
+        return url;
+    }
+
 }

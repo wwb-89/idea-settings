@@ -49,7 +49,7 @@ public class OrgService {
         if (CollectionUtils.isNotEmpty(codes)) {
             for (String code : codes) {
                 for (String customAreaCode : WebTemplateCustomConfigConstant.CUSTOM_AREA_CODES) {
-                    if (StringUtils.isNotBlank(code) && code.startsWith(customAreaCode)) {
+                    if (StringUtils.isNotBlank(code) && code.equals(customAreaCode)) {
                         isCustomOrg = true;
                         break;
                     }

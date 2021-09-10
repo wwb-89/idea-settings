@@ -47,7 +47,7 @@ public class MarketController {
 	*/
 	@LoginRequired
 	@RequestMapping("{marketId}")
-	public String index(HttpServletRequest request, Model model, @PathVariable Integer marketId, Integer pageMode) {
+	public String index(HttpServletRequest request, Model model, @PathVariable Integer marketId, @RequestParam(defaultValue = "0") Integer pageMode) {
 		LoginUserDTO loginUser = LoginUtils.getLoginUser(request);
 		Market market = marketValidationService.manageAble(marketId, loginUser.buildOperateUserDTO());
 		model.addAttribute("market", market);

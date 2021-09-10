@@ -16,6 +16,7 @@ import com.chaoxing.activity.service.activity.ActivityCoverUrlSyncService;
 import com.chaoxing.activity.service.activity.ActivityQueryService;
 import com.chaoxing.activity.service.manager.module.SignApiService;
 import com.chaoxing.activity.service.manager.wfw.WfwAreaApiService;
+import com.chaoxing.activity.util.UrlUtils;
 import com.chaoxing.activity.util.constant.CommonConstant;
 import com.chaoxing.activity.util.constant.DateFormatConstant;
 import com.chaoxing.activity.util.constant.DateTimeFormatterConstant;
@@ -224,7 +225,7 @@ public class ActivityMhAppController {
 		result.put("curPage", pageNum);
 		result.put("totalPages", page.getPages());
 		result.put("totalRecords", page.getTotal());
-		List<MhGeneralAppResultDataDTO> mhGeneralAppResultDatas = page2MhGeneralAppResultData(page, (record) -> {
+		List<MhGeneralAppResultDataDTO> mhGeneralAppResultDatas = page2MhGeneralAppResultData(page, null, (record) -> {
 			List<MhGeneralAppResultDataDTO.MhGeneralAppResultDataFieldDTO> mhGeneralAppResultDataFields = new ArrayList<>();
 			// 封面
 			mhGeneralAppResultDataFields.add(MhGeneralAppResultDataDTO.MhGeneralAppResultDataFieldDTO.builder()
@@ -253,14 +254,14 @@ public class ActivityMhAppController {
 		return RestRespDTO.success(result);
 	}
 
-	private List<MhGeneralAppResultDataDTO> page2MhGeneralAppResultData(Page<Activity> page, Function<Activity, List<MhGeneralAppResultDataDTO.MhGeneralAppResultDataFieldDTO>> function) {
+	private List<MhGeneralAppResultDataDTO> page2MhGeneralAppResultData(Page<Activity> page, String activityDomain, Function<Activity, List<MhGeneralAppResultDataDTO.MhGeneralAppResultDataFieldDTO>> function) {
 		List<MhGeneralAppResultDataDTO> mhGeneralAppResultDatas = new ArrayList<>();
 		List<Activity> records = page.getRecords();
 		if (CollectionUtils.isNotEmpty(records)) {
 			for (Activity record : records) {
 				MhGeneralAppResultDataDTO mhGeneralAppResultData = new MhGeneralAppResultDataDTO();
 				mhGeneralAppResultData.setType(3);
-				mhGeneralAppResultData.setOrsUrl(record.getPreviewUrl());
+				mhGeneralAppResultData.setOrsUrl(UrlUtils.replaceDomain(record.getPreviewUrl(), activityDomain));
 				mhGeneralAppResultData.setPop(0);
 				mhGeneralAppResultData.setPopUrl("");
 				mhGeneralAppResultData.setFields(function.apply(record));
@@ -270,6 +271,19 @@ public class ActivityMhAppController {
 		return mhGeneralAppResultDatas;
 	}
 
+	/**浙江图书馆的活动日历地址
+	 * @Description 
+	 * @author wwb
+	 * @Date 2021-09-10 15:19:32
+	 * @param areaCode
+	 * @param strict
+	 * @param data
+	 * @return com.chaoxing.activity.dto.RestRespDTO
+	*/
+	@RequestMapping("activity/calendar/zjlib")
+	public RestRespDTO zjlibActivityCalendar(String areaCode, @RequestParam(defaultValue = "0") Integer strict, @RequestBody String data) throws ParseException {
+		return activityCalendar(areaCode, strict, data, "https://share.zjlib.cn");
+	}
 	/**活动日历
 	 * @Description areaCode为空走通用流程，不为空走定制流程
 	 * @author wwb
@@ -280,6 +294,10 @@ public class ActivityMhAppController {
 	*/
 	@RequestMapping("activity/calendar")
 	public RestRespDTO activityCalendar(String areaCode, @RequestParam(defaultValue = "0") Integer strict, @RequestBody String data) throws ParseException {
+		return activityCalendar(areaCode, strict, data, null);
+	}
+
+	private RestRespDTO activityCalendar(String areaCode, Integer strict, String data, String activityDomain) throws ParseException {
 		JSONObject jsonObject = JSON.parseObject(data);
 		if (StringUtils.isBlank(areaCode)) {
 			areaCode = jsonObject.getString("areaCode");
@@ -354,7 +372,7 @@ public class ActivityMhAppController {
 		result.put("curPage", pageNum);
 		result.put("totalPages", page.getPages());
 		result.put("totalRecords", page.getTotal());
-		List<MhGeneralAppResultDataDTO> mhGeneralAppResultDatas = page2MhGeneralAppResultData(page, (record) -> {
+		List<MhGeneralAppResultDataDTO> mhGeneralAppResultDatas = page2MhGeneralAppResultData(page, activityDomain, (record) -> {
 			List<MhGeneralAppResultDataDTO.MhGeneralAppResultDataFieldDTO> mhGeneralAppResultDataFields = Lists.newArrayList();
 			// 封面
 			mhGeneralAppResultDataFields.add(MhGeneralAppResultDataDTO.MhGeneralAppResultDataFieldDTO.builder()

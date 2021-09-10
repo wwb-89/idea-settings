@@ -98,13 +98,15 @@ public class IndexController {
 	* @return java.lang.String
 	*/
 	@RequestMapping("erdos")
-	public String erdosIndex(HttpServletRequest request, Model model, Integer wfwfid, Integer unitId, Integer state, Integer fid, @RequestParam(defaultValue = "") String flag, Integer marketId) {
+	public String erdosIndex(HttpServletRequest request, Model model, Integer wfwfid, Integer unitId, Integer state, Integer fid,
+							 @RequestParam(defaultValue = "") String flag, Integer marketId, @RequestParam(defaultValue = "true") Boolean levelFilter) {
 		Integer realFid = Optional.ofNullable(wfwfid).orElse(Optional.ofNullable(unitId).orElse(Optional.ofNullable(state).orElse(fid)));
+		levelFilter = Optional.ofNullable(levelFilter).orElse(true);
 		LoginUserDTO loginUser = LoginUtils.getLoginUser(request);
-		return erdos(request, model, realFid, loginUser == null ? null : loginUser.getUid(), flag, marketId);
+		return erdos(request, model, realFid, loginUser == null ? null : loginUser.getUid(), flag, marketId, levelFilter);
 	}
 
-	private String erdos(HttpServletRequest request, Model model, Integer fid, Integer uid, String flag, Integer marketId) {
+	private String erdos(HttpServletRequest request, Model model, Integer fid, Integer uid, String flag, Integer marketId, Boolean levelFilter) {
 		List<Classify> classifies;
 		if (marketId == null) {
 			if (fid == null) {
@@ -121,6 +123,7 @@ public class IndexController {
 		model.addAttribute("topFid", fid);
 		model.addAttribute("marketId", marketId);
 		model.addAttribute("flag", flag);
+		model.addAttribute("levelFilter", levelFilter);
 		// 获取用户班级
 		if (uid != null) {
 			Integer userClassId = Optional.ofNullable(ucApiService.getUserExtraInfoByFidAndUid(fid, uid)).map(UserExtraInfoDTO::getClassId).orElse(null);
