@@ -260,11 +260,12 @@ public interface ActivityMapper extends BaseMapper<Activity> {
 	 * @param createdFid
 	 * @param participateFid
 	 * @param activityFlag
+	 * @param activityClassifyId 活动分类id
 	 * @return java.util.List<java.lang.Integer>
 	 * @Description
 	 * @author wwb
 	 * @Date 2021-09-07 20:49:01
 	 */
-	List<Integer> listErdosCustomOrgCreatedWorkId(@Param("createdFid") Integer createdFid, @Param("participateFid") Integer participateFid, @Param("activityFlag") String activityFlag);
+	List<Integer> listErdosCustomOrgCreatedWorkId(@Param("createdFid") Integer createdFid, @Param("participateFid") Integer participateFid, @Param("activityFlag") String activityFlag, @Param("activityClassifyId") Integer activityClassifyId);
 
 }

@@ -750,6 +750,9 @@
                 AND t.activity_flag = #{activityFlag}
             </if>
             AND t.work_id IS NOT NULL
+            <if test="activityClassifyId != null">
+                AND t.activity_classify_id = #{activityClassifyId}
+            </if>
         GROUP BY
             t.work_id
         ORDER BY
