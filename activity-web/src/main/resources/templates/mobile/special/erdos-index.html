@@ -28,7 +28,7 @@
             <input id="search" type="text" placeholder="搜索"  v-model.trim="sw" @focus="searchShow = true" @keyup.enter="search">
         </div>
         <!-- 已选状态 添加active -->
-        <div :class="{'filter': true, 'active': haveFilter}" v-show="!searchShow" @click="toFilter">
+        <div :class="{'filter': true, 'active': haveFilter}" v-show="!searchShow && levelFilter" @click="toFilter">
             <i class="filterIcon"></i>筛选
         </div>
         <span class="Scancel" v-show="searchShow" @click="hideSearchInput">取消</span>
