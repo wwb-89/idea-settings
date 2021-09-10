@@ -155,7 +155,7 @@ public class ActivityMhAppController {
 			mhGeneralAppResultDataFields.add(MhGeneralAppResultDataDTO.MhGeneralAppResultDataFieldDTO.builder()
 					.key("报名时间")
 					.value(signUpTimeStringBuilder.toString())
-					.flag("105")
+					.flag("104")
 					.build());
 			StringBuilder signPepleNumDescribe = new StringBuilder();
 			Integer limitNum = signStat.getLimitNum();
@@ -170,7 +170,7 @@ public class ActivityMhAppController {
 			mhGeneralAppResultDataFields.add(MhGeneralAppResultDataDTO.MhGeneralAppResultDataFieldDTO.builder()
 					.key("报名人数")
 					.value(signPepleNumDescribe.toString())
-					.flag("104")
+					.flag("105")
 					.build());
 		}
 		return RestRespDTO.success(jsonObject);

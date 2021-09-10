@@ -24,7 +24,7 @@ public class UrlConstant {
 	/** 发通知logo地址 */
 	public static final String NOTICE_LOGO_URL = "https://p.ananas.chaoxing.com/star3/origin/b4d171e29d3c60e97c594e4d2b816bbe.png";
 	/** 活动管理地址 */
-	public static final String ATIVITY_MANAGE_URL = "https://manage.hd.chaoxing.com/activity/%s";
+	public static final String ATIVITY_MANAGE_URL = "http://manage.hd.chaoxing.com/activity/%s";
 	/** 活动评价的地址 */
 	public static final String ACTIVITY_RATING_URL = "https://hd.chaoxing.com/activity/%d/rating";
 
