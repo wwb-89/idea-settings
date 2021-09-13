@@ -979,6 +979,8 @@ public class ActivityHandleService {
 		originActivity.setOpenReading(Boolean.FALSE);
 		originActivity.setReadingId(null);
 		originActivity.setReadingModuleId(null);
+		// 主办方
+		originActivity.setOrganisers(loginUser.getOrgName());
 		ActivityCreateParamDTO targetActivity = ActivityCreateParamDTO.buildFromActivity(originActivity);
 		activityDetailMapper.selectList(new LambdaQueryWrapper<ActivityDetail>()
 				.eq(ActivityDetail::getActivityId, originActivity.getOriginActivityId()))

@@ -536,11 +536,11 @@ public class ActivityApiController {
 	 * @Date 2021-09-06 18:57:48
 	 * @param activityId
 	 * @param fid
+	 * @param uid
 	 * @return com.chaoxing.activity.dto.RestRespDTO
 	 */
 	@RequestMapping("{activityId}/clone")
-	public RestRespDTO cloneActivityToOrg(@PathVariable Integer activityId, Integer fid) {
-		Integer uid = 22651866;
+	public RestRespDTO cloneActivityToOrg(@PathVariable Integer activityId, @RequestParam Integer fid, @RequestParam Integer uid) {
 		PassportUserDTO passportUserDTO = passportApiService.getByUid(uid);
 		List<WfwAreaDTO> releaseScopes = wfwAreaApiService.listByFid(fid);
 		WfwAreaDTO wfwArea = Optional.ofNullable(releaseScopes).orElse(Lists.newArrayList()).stream().filter(v -> Objects.equals(v.getFid(), fid)).findFirst().orElse(new WfwAreaDTO());
