@@ -29,6 +29,9 @@
                                 <i class="icon-edit" @click="openEditDialog(index, item)"></i>
                                 <i class="icon-delete" @click="removeComponentAssociate1(index, item)"></i>
                             </div>
+                            <div class="input-box">
+                                <p class="tips second">{{item.introduction}}</p>
+                            </div>
                         </div>
                         <div class="form-item sort-item" v-if="!['activity_address', 'partition', 'company_sign_up', 'sign_up', 'sign_in', 'sign_out'].includes(item.code)">
                             <i class="icon-drag" :pid-key="item.pid" :id-key="item.id"></i>
