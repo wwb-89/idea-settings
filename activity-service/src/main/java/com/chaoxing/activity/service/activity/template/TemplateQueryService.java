@@ -110,9 +110,8 @@ public class TemplateQueryService {
 	 * @return com.chaoxing.activity.model.Template
 	*/
 	public Template getOrgTemplateByActivityFlag(Integer fid, Activity.ActivityFlagEnum activityFlagEnum) {
-		Integer systemTemplateId = getSystemTemplateIdByActivityFlag(activityFlagEnum);
 		List<Template> orgTemplates = templateMapper.selectList(new LambdaQueryWrapper<Template>()
-				.eq(Template::getOriginTemplateId, systemTemplateId)
+				.eq(Template::getActivityFlag, activityFlagEnum.getValue())
 				.eq(Template::getFid, fid)
 		);
 		if (CollectionUtils.isEmpty(orgTemplates)) {
