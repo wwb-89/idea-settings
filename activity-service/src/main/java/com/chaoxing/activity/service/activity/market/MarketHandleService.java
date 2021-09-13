@@ -66,7 +66,7 @@ public class MarketHandleService {
 		return activityMarket;
 	}
 
-	/**创建活动市场且克隆一个通用模板
+	/**创建活动市场且克隆一个模板
 	 * @Description 
 	 * @author wwb
 	 * @Date 2021-07-14 16:34:09

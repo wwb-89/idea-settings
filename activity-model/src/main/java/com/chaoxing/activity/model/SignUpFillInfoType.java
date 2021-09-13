@@ -41,7 +41,7 @@ public class SignUpFillInfoType {
         return SignUpFillInfoType.builder()
                 .templateComponentId(templateComponentId)
                 .type(getType())
-                .templateType(getType())
+                .templateType(getTemplateType())
                 .build();
     }
 
