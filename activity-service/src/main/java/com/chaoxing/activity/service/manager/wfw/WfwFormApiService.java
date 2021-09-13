@@ -54,7 +54,7 @@ public class WfwFormApiService {
 	/** 表单api域名 */
 	private static final String FORM_API_DOMAIN = "https://m.oa.chaoxing.com";
 	/** 获取机构下表单列表url */
-	private static final String GET_ORG_FORMS_URL = FORM_API_DOMAIN + "/api/apps/forms/app/list?deptId=%d&datetime=%s&sign=%s&enc=%s";
+	private static final String GET_ORG_FORMS_URL = FORM_API_DOMAIN + "/api/apps/forms/app/list";
 	/** 获取表单字段信息url */
 	private static final String GET_FORM_STRUCTURE_URL = FORM_API_DOMAIN + "/api/apps/forms/app/config/values";
 	/** 获取表单指定数据url */
