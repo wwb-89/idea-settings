@@ -58,7 +58,7 @@ public class VolunteerService {
                         .builder()
                         .alias("user")
                         .compt("belonger")
-                        .val(JSON.toJSONString(Collections.singleton(uid)))
+                        .val(Collections.singleton(uid))
                         .express(FormAdvanceSearchFilterConditionDTO.Filter.ExpressEnum.EQ.getValue()).build();
                 List<FormAdvanceSearchFilterConditionDTO.Filter> filters = Lists.newArrayList(userCondition);
                 if (StringUtils.isNotBlank(serviceType)) {
@@ -66,7 +66,7 @@ public class VolunteerService {
                             .builder()
                             .alias("type")
                             .compt("selectbox")
-                            .val(JSON.toJSONString(Collections.singleton(serviceType)))
+                            .val(Collections.singleton(serviceType))
                             .express(FormAdvanceSearchFilterConditionDTO.Filter.ExpressEnum.MATCH.getValue()).build());
                 }
                 FormAdvanceSearchFilterConditionDTO formAdvanceSearchFilterConditionDto = FormAdvanceSearchFilterConditionDTO.builder()
