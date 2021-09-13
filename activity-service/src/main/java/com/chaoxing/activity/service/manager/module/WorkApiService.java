@@ -3,6 +3,7 @@ package com.chaoxing.activity.service.manager.module;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.chaoxing.activity.dto.module.WorkFormDTO;
+import com.chaoxing.activity.util.DateUtils;
 import com.chaoxing.activity.util.constant.CommonConstant;
 import com.chaoxing.activity.util.exception.BusinessException;
 import lombok.extern.slf4j.Slf4j;
@@ -17,6 +18,7 @@ import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
 
 import javax.annotation.Resource;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -33,12 +35,16 @@ import java.util.stream.Collectors;
 @Service
 public class WorkApiService {
 
+	/** 作品征集接口域名 */
+	private static final String DOMAIN = "http://api.reading.chaoxing.com";
 	/** 创建作品征集地址 */
-	private static final String CREATE_URL = "http://api.reading.chaoxing.com/activity/engine/create";
+	private static final String CREATE_URL = DOMAIN + "/activity/engine/create";
 	/** 清空活动发布范围 */
-	private static final String CLEAR_ACTIVITY_PARTICIPATE_SCOPE_URL = "http://api.reading.chaoxing.com/cache/activity/clear/participate-fid";
+	private static final String CLEAR_ACTIVITY_PARTICIPATE_SCOPE_URL = DOMAIN + "/cache/activity/clear/participate-fid";
 	/** 统计活动提交作品数量url */
-	private static final String ACTIVITY_SUBMITED_WORK_NUM_URL = "http://api.reading.chaoxing.com/activity/stat/submited-work-num";
+	private static final String ACTIVITY_SUBMITED_WORK_NUM_URL = DOMAIN + "/activity/stat/submited-work-num";
+	/** 更新作品征集信息url */
+	private static final String UPDATE_WORK_URL = DOMAIN + "/activity/update";
 
 	@Resource
 	private RestTemplate restTemplate;
@@ -134,6 +140,38 @@ public class WorkApiService {
 			}
 		}
 		return 0;
+	}
+
+	/**更新作品征集信息
+	 * @Description 
+	 * @author wwb
+	 * @Date 2021-09-13 15:39:33
+	 * @param workId
+	 * @param name
+	 * @param startTime
+	 * @param endTime
+	 * @param uid
+	 * @return void
+	*/
+	public void updateWorkInfo(Integer workId, String name, LocalDateTime startTime, LocalDateTime endTime, Integer uid) {
+		if (workId == null) {
+			return;
+		}
+		MultiValueMap<String, Object> params = new LinkedMultiValueMap<>();
+		params.add("activityId", workId);
+		params.add("uid", uid);
+		params.add("name", name);
+		params.add("startTime", DateUtils.date2Timestamp(startTime));
+		params.add("endTime", DateUtils.date2Timestamp(endTime));
+		String result = restTemplate.postForObject(UPDATE_WORK_URL, params, String.class);
+		JSONObject jsonObject = JSON.parseObject(result);
+		Boolean success = jsonObject.getBoolean("success");
+		success = Optional.ofNullable(success).orElse(Boolean.FALSE);
+		if (!success) {
+			String message = jsonObject.getString("message");
+			log.info("根据作品征集id:{} 更新作品征集信息error:{}", workId, message);
+			throw new BusinessException(message);
+		}
 	}
 
 }

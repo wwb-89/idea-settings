@@ -46,6 +46,8 @@ public class ActivityChangeEventService {
 	@Resource
 	private ActivityTimingReleaseQueueService activityTimingReleaseQueueService;
 	@Resource
+	private ActivityWorkInfoSyncQueueService activityWorkInfoSyncQueueService;
+	@Resource
 	private DataPushService dataPushService;
 
 	/**活动数据改变
@@ -101,6 +103,8 @@ public class ActivityChangeEventService {
 				}
 			}
 		}
+		// 更新作品征集信息
+		activityWorkInfoSyncQueueService.push(activityId);
 		// 活动定时发布
 		Boolean released = activity.getReleased();
 		released = Optional.ofNullable(released).orElse(false);

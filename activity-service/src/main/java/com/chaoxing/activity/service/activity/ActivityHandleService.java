@@ -991,4 +991,21 @@ public class ActivityHandleService {
 		// 将克隆的活动保存
 		ApplicationContextHolder.getBean(ActivityHandleService.class).add(targetActivity, signCreateParam, releaseScopes, loginUser);
 	}
+
+	/**更新活动的作品征集信息
+	 * @Description 
+	 * @author wwb
+	 * @Date 2021-09-13 15:42:32
+	 * @param activityId
+	 * @return void
+	*/
+	public void updateWorkInfo(Integer activityId) {
+		Activity activity = activityQueryService.getById(activityId);
+		if (activity == null) {
+			return;
+		}
+		Integer workId = activity.getWorkId();
+		workApiService.updateWorkInfo(workId, activity.getName(), activity.getStartTime(), activity.getEndTime(), activity.getCreateUid());
+	}
+
 }
