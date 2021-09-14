@@ -49,4 +49,13 @@ public class MhGeneralAppResultDataDTO {
 		private String type;
 	}
 
+
+	public static MhGeneralAppResultDataDTO buildDefault() {
+		return MhGeneralAppResultDataDTO.builder()
+				.type(3)
+				.orsUrl("")
+				.pop(0)
+				.popUrl("")
+				.build();
+	}
 }

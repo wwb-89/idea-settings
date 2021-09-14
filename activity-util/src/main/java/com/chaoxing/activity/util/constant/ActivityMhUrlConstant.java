@@ -32,5 +32,7 @@ public class ActivityMhUrlConstant {
 	public static final String ACTIVITY_ACCESS_URL = MH_DOMAIN + "/page/%s/show";
 	/** 活动海报的地址 */
 	public static final String ACTIVITY_POSTERS_URL = UrlConstant.DOMAIN + "/activity/%d/poster";
+	/** 活动收藏的地址 */
+	public static final String ACTIVITY_COLLECTED_URL = UrlConstant.DOMAIN + "/activity/%d/poster";
 
 }
