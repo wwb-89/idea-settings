@@ -5,6 +5,7 @@ import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.chaoxing.activity.dto.OrgFormConfigDTO;
+import com.chaoxing.activity.dto.RestRespDTO;
 import com.chaoxing.activity.dto.manager.sign.*;
 import com.chaoxing.activity.dto.manager.sign.create.SignCreateParamDTO;
 import com.chaoxing.activity.dto.manager.sign.create.SignCreateResultDTO;
@@ -75,6 +76,8 @@ public class SignApiService {
 	/** 报名签到下用户报名信息 */
 	private static final String SIGN_USER_SIGN_UP_URL = SIGN_API_DOMAIN + "/sign/%d/user/sign-up";
 
+	/** 门户报名 */
+	private static final String MH_SIGN_UP_URL = SIGN_API_DOMAIN + "/sign-up/%d/mh?uid=%d&wfwfid=%d";
 	/** 取消报名 */
 	private static final String CANCEL_SIGN_UP_URL = SIGN_API_DOMAIN + "/sign-up/%d/cancel";
 	/** 撤销报名 */
@@ -321,6 +324,25 @@ public class SignApiService {
 		JSONObject jsonObject = JSON.parseObject(result);
 		return resultHandle(jsonObject, () -> JSON.parseObject(jsonObject.getString("data"), Page.class), (message) -> {
 			log.error("查询用户报名的报名签到error:{}", message);
+			throw new BusinessException(message);
+		});
+	}
+
+	/**门户报名
+	* @Description
+	* @author huxiaolong
+	* @Date 2021-09-14 15:24:22
+	* @param signUpId
+	* @param uid
+	* @param wfwfid
+	* @return void
+	*/
+	public RestRespDTO mhSignUp(Integer signUpId, Integer uid, Integer wfwfid) {
+		String url = String.format(MH_SIGN_UP_URL, signUpId, uid, wfwfid);
+		String result = restTemplate.getForObject(url, String.class);
+		JSONObject jsonObject = JSON.parseObject(result);
+		return resultHandle(jsonObject, () -> jsonObject.toJavaObject(RestRespDTO.class), (message) -> {
+			log.error("根据报名id:{} 进行用户id:{}报名error:{}", signUpId, uid, message);
 			throw new BusinessException(message);
 		});
 	}

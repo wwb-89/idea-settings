@@ -17,34 +17,53 @@ public enum MhAppIconEnum {
     public enum ONE {
 
         /** 收藏 */
-        COLLECTED("collected.png", "fd55f9794e52c4125b9c885e4b8297c8"),
+        COLLECTED("collected", "fd55f9794e52c4125b9c885e4b8297c8"),
         /** 签到数 */
-        SIGNED_IN_NUM("signed-in-num.png", "efed0911bda0f36389a9a3a168856502"),
+        SIGNED_IN_NUM("signed-in-num", "efed0911bda0f36389a9a3a168856502"),
         /** 时间 */
-        TIME("time.png", "9a08c693ef2457b6a26169603cea851d"),
+        TIME("time", "9a08c693ef2457b6a26169603cea851d"),
         /** 统计-彩色 */
-        STATISTICS_COLOR("statistics-color.png", "26352e7dcdbbd10b695dbcc015c19ba2"),
+        STATISTICS_COLOR("statistics-color", "26352e7dcdbbd10b695dbcc015c19ba2"),
         /** 海报 */
-        POSTER("poster.png", "b22c13be2b47131378779c8a636fe173"),
+        POSTER("poster", "b22c13be2b47131378779c8a636fe173"),
         /** 已报名用户 */
-        SIGNED_UP_USER("signed-up-user.png", "8b2229560d8df09a5c216b2ad38de9f3"),
+        SIGNED_UP_USER("signed-up-user", "8b2229560d8df09a5c216b2ad38de9f3"),
         /** 积分 */
-        INTEGRAL("integral.png", "f71b7862035605bbd91a3ab8bf3dbcc4"),
+        INTEGRAL("integral", "f71b7862035605bbd91a3ab8bf3dbcc4"),
         /** 时间-透明 */
-        TIME_TRANSPARENT("time-transparent.png", "339f5085fb968439dd0baaaa3a026aa9"),
+        TIME_TRANSPARENT("time-transparent", "339f5085fb968439dd0baaaa3a026aa9"),
         /** 活动地点 */
-        LOCATION("location.png", "c9f7ae53e8fbdc5a32ad336f5871fbde"),
+        LOCATION("location", "c9f7ae53e8fbdc5a32ad336f5871fbde"),
         /** 主办方 */
-        ORGANISER("organiser.png", "b8aa41af62d0dc9e2e873b13ebcf4949"),
+        ORGANISER("organiser", "b8aa41af62d0dc9e2e873b13ebcf4949"),
         /** 报名数 */
-        SIGNED_UP_NUM("signed-up-num.png", "92be6e1b9bfe3c46da5e13b9702bcc21"),
+        SIGNED_UP_NUM("signed-up-num", "92be6e1b9bfe3c46da5e13b9702bcc21"),
         /** 评价 */
-        RATING("rating.png", "c840a53bfc108db42b80710af8567465");
+        RATING("rating", "c840a53bfc108db42b80710af8567465");
 
         private final String name;
         private final String value;
 
         ONE(String name, String value) {
+            this.name = name;
+            this.value = value;
+        }
+    }
+
+    @Getter
+    public enum TWO {
+
+        /** 警告 */
+        WARNING("warning", "3efb02948d2348640a5dfbcb458d3659"),
+        /** 审核 */
+        REVIEW("review", "dfccc3c6827b78e18e6c4423b08a0eca"),
+        /** 成功 */
+        SUCCESS("success", "dbaa4787179f720774c845bfcee2cb5d");
+
+        private final String name;
+        private final String value;
+
+        TWO(String name, String value) {
             this.name = name;
             this.value = value;
         }

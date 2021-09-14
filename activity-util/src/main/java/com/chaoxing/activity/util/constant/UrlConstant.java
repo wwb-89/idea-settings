@@ -10,7 +10,8 @@ package com.chaoxing.activity.util.constant;
  */
 public class UrlConstant {
 
-	private UrlConstant() {
+
+    private UrlConstant() {
 
 	}
 
@@ -27,6 +28,9 @@ public class UrlConstant {
 	public static final String ATIVITY_MANAGE_URL = "http://manage.hd.chaoxing.com/activity/%s";
 	/** 活动评价的地址 */
 	public static final String ACTIVITY_RATING_URL = "https://hd.chaoxing.com/activity/%d/rating";
+	/** 门户报名ajax接口地址 */
+	public static final String MH_AJAX_SIGN_UP = API_DOMAIN + "/mh/sign-up";
+
 
 	/** 双选会 */
 	/** 双选会主页url */

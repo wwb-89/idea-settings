@@ -13,6 +13,8 @@ import com.chaoxing.activity.dto.activity.ActivityCreateDTO;
 import com.chaoxing.activity.dto.activity.ActivityExternalDTO;
 import com.chaoxing.activity.dto.activity.ActivityFormSyncParamDTO;
 import com.chaoxing.activity.dto.manager.PassportUserDTO;
+import com.chaoxing.activity.dto.manager.sign.SignDTO;
+import com.chaoxing.activity.dto.manager.sign.SignUpDTO;
 import com.chaoxing.activity.dto.manager.wfw.WfwAreaDTO;
 import com.chaoxing.activity.dto.query.ActivityQueryDTO;
 import com.chaoxing.activity.dto.query.UserResultQueryDTO;
@@ -547,6 +549,13 @@ public class ActivityApiController {
 		LoginUserDTO loginUser = LoginUserDTO.buildDefault(Integer.valueOf(passportUserDTO.getUid()), passportUserDTO.getRealName(), fid, wfwArea.getName());
 		activityHandleService.cloneActivityToOrg(activityId, fid, releaseScopes, loginUser);
 		return RestRespDTO.success();
+	}
+
+	@RequestMapping("mh/sign-up")
+	public RestRespDTO mhSignUp(@RequestParam("uid") Integer uid, @RequestParam("websiteId") Integer websiteId, @RequestParam("fid") Integer fid) {
+		Integer signId = activityQueryService.getByWebsiteId(websiteId).getSignId();
+		List<SignUpDTO> signUps = signApiService.getById(signId).getSignUps();
+		return signApiService.mhSignUp(signUps.get(0).getId(), uid, fid);
 	}
 
 }
