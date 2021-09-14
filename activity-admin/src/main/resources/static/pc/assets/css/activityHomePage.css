@@ -7,6 +7,7 @@ body {
     background: #F2F4F7;
     margin: 0;
     padding: 20px;
+    font-family: "SF Pro Display","Helvetica Neue",Helvetica,Tahoma,Arial,"PingFang SC","Hiragino Sans GB","Microsoft YaHei",sans-serif,'Apple Color Emoji','Segoe UI Emoji','Segoe UI Symbol','Noto Color Emoji';
 }
 
 .container {

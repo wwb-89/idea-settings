@@ -156,6 +156,7 @@ body {
 
 .btn-bg-blue span {
   display: inline-block;
+  vertical-align: top;
   height: 16px;
 }
 

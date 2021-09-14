@@ -338,6 +338,7 @@
                         background-color: rgba(0, 0, 0, 0.04);
                         display: inline-block;
                         font-size: 14px;
+                        cursor: pointer;
                         &.active{
                             color: #0084FF;
                             background-color: rgba(0, 132, 255, 0.1);
@@ -609,6 +610,7 @@
 }
 .el-input__inner{
     height: 32px;
+    line-height: 32px;
     border: 1px solid #E9E9E9;
     border-radius: 2px;
     padding: 0 11px;
