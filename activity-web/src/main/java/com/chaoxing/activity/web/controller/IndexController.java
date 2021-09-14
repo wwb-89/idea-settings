@@ -11,6 +11,7 @@ import com.chaoxing.activity.service.ActivityQueryDateService;
 import com.chaoxing.activity.service.GroupRegionFilterService;
 import com.chaoxing.activity.service.GroupService;
 import com.chaoxing.activity.service.activity.classify.ClassifyQueryService;
+import com.chaoxing.activity.service.activity.market.MarketQueryService;
 import com.chaoxing.activity.service.manager.UcApiService;
 import com.chaoxing.activity.util.UserAgentUtils;
 import com.chaoxing.activity.util.annotation.LoginRequired;
@@ -59,6 +60,8 @@ public class IndexController {
 	private ActivityQueryDateService activityQueryDateService;
 	@Resource
 	private UcApiService ucApiService;
+	@Resource
+	private MarketQueryService marketQueryService;
 
 	/**通用
 	 * @Description
@@ -212,6 +215,10 @@ public class IndexController {
 	}
 
 	private String handleData(HttpServletRequest request, Model model, String code, Integer fid, Integer pageId, Integer banner, String style, String flag, Integer marketId) {
+		// 根据fid和flag查询模版
+		if (marketId == null && StringUtils.isNotBlank(flag)) {
+			marketId = marketQueryService.getMarketIdByTemplate(fid, flag);
+		}
 		List<Classify> classifies;
 		if (marketId == null) {
 			if (fid == null) {
