@@ -252,16 +252,6 @@
      * 生成活动的默认开始时间
      * @returns {string}
      */
-    activityApp.prototype.generateActivityDefaultStartTime = function () {
-        var $this = this;
-        var date = new Date();
-        var dateObj = $this.millisecond2DateObj(date.getTime());
-        return dateObj.year + "-" + dateObj.month + "-" + dateObj.day + " " + "00:00:00";
-    };
-    /**
-     * 生成活动的默认开始时间
-     * @returns {string}
-     */
     activityApp.prototype.generateActivityDefaultStartTimeStamp = function () {
         var $this = this;
         return new Date().getTime();
@@ -271,18 +261,7 @@
      * @returns {string}
      */
     activityApp.prototype.generateActivityDefaultEndTimeStamp = function () {
-        var $this = this;
         return new Date(new Date().setMonth(new Date().getMonth() + 1)).getTime();
-    };
-    /**
-     * 生成活动的默认结束时间
-     * @returns {string}
-     */
-    activityApp.prototype.generateActivityDefaultEndTime = function () {
-        var $this = this;
-        var date = new Date(new Date().setMonth(new Date().getMonth() + 1));
-        var dateObj = $this.millisecond2DateObj(date.getTime());
-        return dateObj.year + "-" + dateObj.month + "-" + dateObj.day + " " + "23:59:59";
     };
     /**
      * 获取双选会主页地址

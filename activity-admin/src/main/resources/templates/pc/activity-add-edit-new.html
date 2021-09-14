@@ -78,6 +78,7 @@
                                 <span class="tips" v-if="item.introduction">{{item.introduction}}</span>
                             </div>
                         </div>
+                        <!--活动时间-->
                         <div class="form-item" v-else-if="item.code == 'activity_time_scope'">
                             <label class="label"><img src="/static/pc/assets/images/required.png" th:src="@{/pc/assets/images/required.png}" class="required-img" v-if="item.required">{{item.name}}</label>
                             <div class="input-box">
@@ -354,6 +355,7 @@
                             <!-- 点击参与设置 -->
                             <form action="" onsubmit="return false;" class="setForm" v-show="!signUpMap[item.id].deleted">
                                 <template v-for="(it, idx) in item.children">
+                                    <!--报名时间-->
                                     <div class="form-item" v-if="it.code == 'sign_up_time_scope'">
                                         <label class="label"><img src="/static/pc/assets/images/required.png" th:src="@{/pc/assets/images/required.png}" class="required-img" v-if="it.required">{{it.name}}</label>
                                         <div class="input-box">

@@ -67,9 +67,9 @@
     <sql id="Base_Market_Column_List">
         t.id, t.name, t.start_time, t.end_time, t.start_date, t.end_date, t.cover_cloud_id, t.cover_url, t.organisers, t.activity_type, t.address, t.detail_address,
         t.longitude, t.dimension, t.activity_classify_id, t.period, t.credit, t.time_length_upper_limit, t.sign_id, t.web_template_id, t.website_id, t.page_id, t.preview_url, t.edit_url,
-        t.is_timing_release, t.timing_release_time, t1.is_released, t.release_time, t.release_uid, t.create_uid, t.create_user_name, t.create_fid, t.create_area_code,
+        t.is_timing_release, t.timing_release_time, t.release_time, t.release_uid, t.create_uid, t.create_user_name, t.create_fid, t.create_area_code,
         t.create_org_name, t.tags, t.is_open_rating, t.is_rating_need_audit, t.activity_flag, t.integral, t.is_open_work, t.work_id, t.is_open_reading, t.reading_id, t.reading_module_id,
-        t.origin_type, t.origin, t.origin_form_user_id, t.market_id, t.template_id, t1.status, t.create_time, t.update_time, t1.is_top AS top
+        t.origin_type, t.origin, t.origin_form_user_id, t.market_id, t.template_id, t.create_time, t.update_time
     </sql>
 
     <select id="pageParticipate" resultMap="BaseResultMap">
@@ -264,12 +264,22 @@
     <!--查询管理的活动-->
     <select id="pageManaging" resultMap="BaseResultMap">
         SELECT
-            <include refid="Base_Column_List"></include>, t.start_time as startTime, t.end_Time as endTime
+            <choose>
+                <when test="params.marketId != null">
+                    <include refid="Base_Market_Column_List"></include>,
+                    t1.is_released,
+                    t1.status,
+                    t1.is_top
+                </when>
+                <otherwise>
+                    <include refid="Base_Column_List"></include>
+                </otherwise>
+            </choose>
         FROM
             t_activity t
-        <if test="params.marketId != null">
-            LEFT JOIN t_activity_market t1 ON t1.activity_id = t.id
-        </if>
+            <if test="params.marketId != null">
+                INNER JOIN t_activity_market t1 ON t1.activity_id = t.id
+            </if>
         WHERE
         <choose>
             <when test="params.marketId != null">
@@ -322,12 +332,22 @@
     <!--查询创建的活动-->
     <select id="pageCreated" resultMap="BaseResultMap">
         SELECT
-            <include refid="Base_Column_List"></include>, t.start_time as startTime, t.end_Time as endTime
+            <choose>
+                <when test="params.marketId != null">
+                    <include refid="Base_Market_Column_List"></include>,
+                    t1.is_released,
+                    t1.status,
+                    t1.is_top
+                </when>
+                <otherwise>
+                    <include refid="Base_Column_List"></include>
+                </otherwise>
+            </choose>
         FROM
             t_activity t
-        <if test="params.marketId != null">
-            LEFT JOIN t_activity_market t1 ON t1.activity_id = t.id
-        </if>
+            <if test="params.marketId != null">
+                INNER JOIN t_activity_market t1 ON t1.activity_id = t.id
+            </if>
         WHERE
             t.create_uid = #{params.createUid}
             <choose>

@@ -31,7 +31,7 @@ public interface MarketMapper extends BaseMapper<Market> {
     * @author huxiaolong
     * @Date 2021-08-12 18:10:53
     * @param fid
-* @param activityId
+    * @param activityId
     * @return java.util.List<java.lang.Integer>
     */
     List<Integer> listMarketIdsByActivityIdFid(@Param("fid") Integer fid, @Param("activityId") Integer activityId);

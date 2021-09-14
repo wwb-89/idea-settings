@@ -42,6 +42,7 @@ import com.chaoxing.activity.service.user.result.UserResultQueryService;
 import com.chaoxing.activity.service.util.Model2DtoService;
 import com.chaoxing.activity.util.HttpServletRequestUtils;
 import com.chaoxing.activity.util.constant.CookieConstant;
+import com.chaoxing.activity.util.exception.BusinessException;
 import com.google.common.collect.Lists;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -443,20 +444,22 @@ public class ActivityApiController {
 		return RestRespDTO.success(JSON.parseArray(data, UserSignUpStatusVo.class));
 	}
 	
-	/**
+	/**宣讲会创建活动
 	* @Description 
 	* @author huxiaolong
 	* @Date 2021-08-12 17:50:53
-	* @param activityCreateDTO
+	* @param activityCreateDto
 	* @return com.chaoxing.activity.dto.RestRespDTO
 	*/
 	@RequestMapping("new/with-shared")
-	public RestRespDTO newSharedActivity(@RequestBody ActivityCreateDTO activityCreateDTO) {
-		PassportUserDTO passportUserDTO = passportApiService.getByUid(activityCreateDTO.getUid());
-		Integer fid = activityCreateDTO.getFid();
-		WfwAreaDTO wfwArea = Optional.ofNullable(wfwAreaApiService.listByFid(fid)).orElse(Lists.newArrayList()).stream().filter(v -> Objects.equals(v.getFid(), fid)).findFirst().orElse(new WfwAreaDTO());
-		LoginUserDTO loginUserDTO = LoginUserDTO.buildDefault(Integer.valueOf(passportUserDTO.getUid()), passportUserDTO.getRealName(), fid, wfwArea.getName());
-		Activity activity = activityHandleService.newSharedActivity(activityCreateDTO, loginUserDTO);
+	public RestRespDTO newSharedActivity(@RequestBody ActivityCreateDTO activityCreateDto) {
+		Integer uid = activityCreateDto.getUid();
+		Optional.ofNullable(uid).orElseThrow(() -> new BusinessException("用户id不能为空"));
+		Integer fid = activityCreateDto.getFid();
+		PassportUserDTO passportUserDTO = passportApiService.getByUid(uid);
+		String orgName = passportApiService.getOrgName(fid);
+		LoginUserDTO loginUserDto = LoginUserDTO.buildDefault(Integer.valueOf(uid), passportUserDTO.getRealName(), fid, orgName);
+		Activity activity = activityHandleService.newSharedActivity(activityCreateDto, loginUserDto);
 		return RestRespDTO.success(activity);
 	}
 
@@ -490,8 +493,8 @@ public class ActivityApiController {
 		return RestRespDTO.success();
 	}
 
-	/**
-	* @Description 
+	/**更新活动发布状态
+	* @Description 宣讲会使用
 	* @author huxiaolong
 	* @Date 2021-08-12 18:04:34
 	* @param activityId
@@ -502,11 +505,11 @@ public class ActivityApiController {
 	*/
 	@RequestMapping("{activityId}/update/release-status")
 	public RestRespDTO updateActivityReleaseStatus(@PathVariable Integer activityId, Integer fid, Integer uid, boolean released) {
-		activityHandleService.updateActivityReleaseStatus(fid, activityId, uid, released);
+		activityHandleService.updateActivityReleaseStatus(activityId, fid, uid, released);
 		return RestRespDTO.success();
 	}
 
-	/**
+	/** 万能表单数据修改后同步修改活动
 	* @Description
 	* @author huxiaolong
 	* @Date 2021-08-26 16:46:53

@@ -367,6 +367,21 @@
                                 activity.operations.push($this.operations.configPage);
                             }
                             if ($this.marketId) {
+                                if (activity.released) {
+                                    var existCancelRelease = $.grep(activity.operations, function (it) {
+                                        return it.value == "cancelRelease";
+                                    });
+                                    if (existCancelRelease && existCancelRelease.length < 1) {
+                                        activity.operations.push($this.operations.cancelRelease);
+                                    }
+                                }else {
+                                    var existRelease = $.grep(activity.operations, function (it) {
+                                        return it.value == "release";
+                                    });
+                                    if (existRelease && existRelease.length < 1) {
+                                        activity.operations.push($this.operations.release);
+                                    }
+                                }
                                 if (activity.top) {
                                     activity.operations.push($this.operations.cancelSetTop);
                                 } else {

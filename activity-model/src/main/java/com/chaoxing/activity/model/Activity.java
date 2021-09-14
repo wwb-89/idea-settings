@@ -295,7 +295,9 @@ public class Activity {
         /** 学校活动 */
         SCHOOL("学校", "school"),
         /** 区域活动 */
-        REGION("区域", "region");
+        REGION("区域", "region"),
+        PREACH_ONLINE("线上宣讲会", "preach_online"),
+        PREACH_OFFLINE("线下宣讲会", "preach_offline");
 
         private final String name;
         private final String value;
@@ -390,12 +392,23 @@ public class Activity {
      * @return java.lang.Integer
      */
     public static Activity.StatusEnum calActivityStatus(Activity activity) {
-        LocalDateTime startTime = activity.getStartTime();
-        LocalDateTime endTime = activity.getEndTime();
+        return calActivityStatus(activity.getStartTime(), activity.getEndTime(), activity.getReleased());
+    }
+
+    /**计算活动状态
+     * @Description 
+     * @author wwb
+     * @Date 2021-09-14 15:39:00
+     * @param startTime
+     * @param endTime
+     * @param released
+     * @return com.chaoxing.activity.model.Activity.StatusEnum
+    */
+    public static Activity.StatusEnum calActivityStatus(LocalDateTime startTime, LocalDateTime endTime, Boolean released) {
         LocalDateTime now = LocalDateTime.now();
         boolean guessEnded = now.isAfter(endTime);
         boolean guessOnGoing = (now.isAfter(startTime) || now.isEqual(startTime)) && (now.isBefore(endTime) || now.isEqual(endTime));
-        if (activity.getReleased()) {
+        if (released) {
             if (guessEnded) {
                 // 已结束
                 return Activity.StatusEnum.ENDED;

@@ -189,7 +189,7 @@ public class ActivityHandleService {
 		// 活动菜单配置
 		activityMenuService.configActivityMenu(activityId, activityMenuService.listMenu().stream().map(ActivityMenuDTO::getValue).collect(Collectors.toList()));
 		// 若活动由市场所建，新增活动市场与活动关联
-		activityMarketService.add(activity);
+		activityMarketService.associate(activity);
 		// 默认添加活动市场管理
 		// 添加管理员
 		ActivityManager activityManager = ActivityManager.buildCreator(activity);
@@ -282,7 +282,7 @@ public class ActivityHandleService {
 					.set(Activity::getStatus, Activity.calActivityStatus(activity).getValue())
 			);
 			// 更新活动市场与活动关联
-			activityMarketService.update(activity);
+			activityMarketService.updateMarketActivityStatus(activity.getMarketId(), activity, activity.getReleased());
 			// 处理门户模版的绑定
 			bindWebTemplate(existActivity, activity.getWebTemplateId(), loginUser);
 			// 更新
@@ -362,8 +362,7 @@ public class ActivityHandleService {
 		}
 		// 修改活动-市场状态信息
 		if (marketId != null) {
-			activity.release(loginUser.getUid());
-			activityMarketService.updateMarketActivityStatus(marketId, activity);
+			activityMarketService.updateMarketActivityStatus(marketId, activity, true);
 		}
 	}
 
@@ -386,8 +385,7 @@ public class ActivityHandleService {
 		}
 		// 修改活动-市场状态信息
 		if (marketId != null) {
-			activity.cancelRelease();
-			activityMarketService.updateMarketActivityStatus(marketId, activity);
+			activityMarketService.updateMarketActivityStatus(marketId, activity, false);
 		}
 	}
 
@@ -851,37 +849,38 @@ public class ActivityHandleService {
 		activityMarketService.updateActivityTop(activityId, marketId, Boolean.FALSE);
 	}
 
-	/**
+	/**宣讲会创建活动
 	 * @Description
 	 * @author huxiaolong
 	 * @Date 2021-08-20 19:53:36
-	 * @param activityCreateDTO
+	 * @param activityCreateDto
 	 * @param loginUser
 	 * @return com.chaoxing.activity.model.Activity
 	 */
 	@Transactional(rollbackFor = Exception.class)
-	public Activity newSharedActivity(ActivityCreateDTO activityCreateDTO, LoginUserDTO loginUser) {
-		Integer createFid = activityCreateDTO.getFid();
-		Integer createMarketId = activityCreateDTO.getMarketId();
-		ActivityCreateParamDTO activityCreateParam = activityCreateDTO.getActivityInfo();
-		activityCreateParam.setMarketId(createMarketId);
+	public Activity newSharedActivity(ActivityCreateDTO activityCreateDto, LoginUserDTO loginUser) {
+		Integer createFid = activityCreateDto.getFid();
+		String flag = activityCreateDto.getFlag();
+		Template template = marketHandleService.getOrCreateTemplateMarketByFidActivityFlag(createFid, Activity.ActivityFlagEnum.fromValue(flag), loginUser);
+		ActivityCreateParamDTO activityCreateParam = activityCreateDto.getActivityInfo();
+		activityCreateParam.setMarketId(template.getMarketId());
+		activityCreateParam.setTemplateId(template.getId());
+		activityCreateParam.setActivityFlag(flag);
+		String activityName = activityCreateParam.getName();
 		// 判断是否开启报名、报名填报信息
-		SignCreateParamDTO signCreateParam = SignCreateParamDTO.builder().name(activityCreateParam.getName()).build();
-		if (activityCreateDTO.getOpenSignUp()) {
+		SignCreateParamDTO signCreateParam = SignCreateParamDTO.builder().name(activityName).build();
+		if (activityCreateDto.getOpenSignUp()) {
 			SignUpCreateParamDTO signUpCreateParam = SignUpCreateParamDTO.buildDefault();
-			signUpCreateParam.setFillInfo(activityCreateDTO.getOpenFillFormInfo());
-			if (activityCreateDTO.getOpenFillFormInfo()) {
-				signUpCreateParam.setFillInfoFormId(signApiService.createFormFillWithFields(activityCreateDTO.getFillFormInfo()));
+			signUpCreateParam.setFillInfo(activityCreateDto.getOpenFillFormInfo());
+			if (activityCreateDto.getOpenFillFormInfo()) {
+				signUpCreateParam.setFillInfoFormId(signApiService.createFormFillWithFields(activityCreateDto.getFillFormInfo()));
 			}
 			signCreateParam.setSignUps(Lists.newArrayList(signUpCreateParam));
 		}
-
-		// todo 活动标识activityFlag propaganda_meeting 宣讲会是否需要设置
-		Integer activityId = this.add(activityCreateParam, signCreateParam, wfwAreaApiService.listByFid(createFid), loginUser);
+		Integer activityId = add(activityCreateParam, signCreateParam, wfwAreaApiService.listByFid(createFid), loginUser);
 		// 若活动由市场所建，新增活动市场与活动关联，共享活动到其他机构
-		List<Integer> shareFids = Optional.of(activityCreateDTO.getSharedFids()).filter(StringUtils::isNotBlank)
+		List<Integer> shareFids = Optional.of(activityCreateDto.getSharedFids()).filter(StringUtils::isNotBlank)
 				.map(v -> Arrays.stream(v.split(",")).map(Integer::valueOf).collect(Collectors.toList())).orElse(Lists.newArrayList());
-
 		Activity activity = activityQueryService.getById(activityId);
 		activityMarketService.shareActivityToFids(activity, shareFids, loginUser.buildOperateUserDTO());
 		return activity;

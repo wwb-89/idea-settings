@@ -21,8 +21,8 @@ public class ActivityCreateDTO {
 
     /** 机构id*/
     private Integer fid;
-    /** 市场id*/
-    private Integer marketId;
+    /** flag */
+    private String flag;
     /** 分享活动的机构id集合，多个用逗号分割 */
     private String sharedFids;
     /** 活动信息实体，具体字段见下*/
