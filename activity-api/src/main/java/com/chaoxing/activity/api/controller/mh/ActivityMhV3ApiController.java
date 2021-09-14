@@ -116,8 +116,14 @@ public class ActivityMhV3ApiController {
         // 积分
         buildField(buildCloudImgUrl(MhAppIconEnum.ONE.INTEGRAL.getValue()), "积分", Optional.of(activity.getIntegral()).map(String::valueOf).orElse(""), mainFields);
         // 评价
-        ActivityRating activityRating = activityRatingQueryService.getByActivityId(activity.getId());
-        String ratingContent = Optional.ofNullable(activityRating.getScoreNum()).orElse(0) + "人；" + Optional.ofNullable(activityRating.getScore()).orElse(new BigDecimal(0)) + "分";
+        Boolean openRating = Optional.ofNullable(activity.getOpenRating()).orElse(false);
+        String ratingContent = "";
+        if (openRating) {
+            ActivityRating activityRating = activityRatingQueryService.getByActivityId(activity.getId());
+            if (activityRating != null) {
+                ratingContent = Optional.ofNullable(activityRating.getScoreNum()).orElse(0) + "人；" + Optional.ofNullable(activityRating.getScore()).orElse(new BigDecimal(0)) + "分";
+            }
+        }
         buildFieldWithUrl(buildCloudImgUrl(MhAppIconEnum.ONE.RATING.getValue()), "评价", ratingContent, activityQueryService.getActivityRatingUrl(activity.getId()), mainFields);
         JSONObject jsonObject = new JSONObject();
         jsonObject.put("results", mainFields);
