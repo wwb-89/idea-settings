@@ -56,7 +56,7 @@ public class ActivityMhV3ApiController {
     private SignApiService signApiService;
 
     @RequestMapping("/activity/brief/info")
-    public RestRespDTO briefInfo22(@RequestBody String data) {
+    public RestRespDTO briefInfo(@RequestBody String data) {
         Activity activity = getActivityByData(data);
         List<MhGeneralAppResultDataDTO> mainFields = Lists.newArrayList();
         if (activity == null) {
@@ -81,7 +81,7 @@ public class ActivityMhV3ApiController {
 
 
     @RequestMapping("/activity/btns")
-    public RestRespDTO briefInfo333(@RequestBody String data) {
+    public RestRespDTO mhActivityBtns(@RequestBody String data) {
         Activity activity = getActivityByData(data);
         if (activity == null) {
             return RestRespDTO.success();
@@ -96,7 +96,7 @@ public class ActivityMhV3ApiController {
 
 
     @RequestMapping("/activity/info")
-    public RestRespDTO briefInfo444(@RequestBody String data) {
+    public RestRespDTO activityInfo(@RequestBody String data) {
         Activity activity = getActivityByData(data);
         if (activity == null) {
             return RestRespDTO.success();
@@ -386,11 +386,14 @@ public class ActivityMhV3ApiController {
     private void buildBtnField(String key, String url, String type, boolean isAjax, List<MhGeneralAppResultDataDTO> result) {
         MhGeneralAppResultDataDTO item = MhGeneralAppResultDataDTO.buildDefault();
         List<MhGeneralAppResultDataDTO.MhGeneralAppResultDataFieldDTO> fields = Lists.newArrayList();
+        if (!isAjax) {
+            item.setOrsUrl(url);
+        }
         int flag = 0;
         fields.add(MhGeneralAppResultDataDTO.MhGeneralAppResultDataFieldDTO.builder()
-                .key(key)
+                .key("标题")
                 .orsUrl(isAjax ? url : "")
-                .value(isAjax? "" : url)
+                .value(key)
                 .type(isAjax ? "7" : "3")
                 .flag(String.valueOf(flag))
                 .build());
