@@ -261,7 +261,7 @@
         if (!content) {
             content = "";
         }
-        RichTextUitl.initUEditor('', content, '');
+        RichTextUitl.initUEditor(250, content, '');
     };
     /**
      * 获取富文本编辑器的内容
