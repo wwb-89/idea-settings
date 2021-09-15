@@ -64,16 +64,17 @@ public class ActivityMhV3ApiController {
         }
         // 开始结束时间
         buildField(activity.getCoverUrl(), "", DateUtils.activityTimeScope(activity.getStartTime(), activity.getEndTime()), buildCloudImgUrl(MhAppIconEnum.ONE.TIME_TRANSPARENT.getValue()), mainFields);
-        String signedUpNumDescribe = "";
         if (activity.getSignId() != null) {
             SignStatDTO signStat = signApiService.getSignParticipation(activity.getSignId());
-            signedUpNumDescribe = String.valueOf(signStat.getSignedUpNum());
-            if (signStat.getLimitNum() != null && signStat.getLimitNum() > 0) {
-                signedUpNumDescribe += "/" + signStat.getLimitNum();
+            if (CollectionUtils.isNotEmpty(signStat.getSignUpIds())) {
+                String signedUpNumDescribe = String.valueOf(signStat.getSignedUpNum());
+                if (signStat.getLimitNum() != null && signStat.getLimitNum() > 0) {
+                    signedUpNumDescribe += "/" + signStat.getLimitNum();
+                }
+                buildField(activity.getCoverUrl(), "已报名", signedUpNumDescribe, buildCloudImgUrl(MhAppIconEnum.ONE.SIGNED_UP_USER.getValue()), mainFields);
             }
         }
         // 活动报名参与情况
-        buildField(activity.getCoverUrl(), "已报名", signedUpNumDescribe, buildCloudImgUrl(MhAppIconEnum.ONE.SIGNED_UP_USER.getValue()), mainFields);
         JSONObject jsonObject = new JSONObject();
         jsonObject.put("results", mainFields);
         return RestRespDTO.success(jsonObject);
@@ -103,10 +104,14 @@ public class ActivityMhV3ApiController {
         }
         List<MhGeneralAppResultDataDTO> mainFields = Lists.newArrayList();
         // 主办方
-        buildField(buildCloudImgUrl(MhAppIconEnum.ONE.ORGANISER.getValue()), "主办", activity.getOrganisers(), mainFields);
+        if (StringUtils.isNotBlank(activity.getOrganisers())) {
+            buildField(buildCloudImgUrl(MhAppIconEnum.ONE.ORGANISER.getValue()), "主办", activity.getOrganisers(), mainFields);
+        }
         // 地址
         String address = Optional.ofNullable(activity.getAddress()).orElse("") + Optional.ofNullable(activity.getDetailAddress()).orElse("");
-        buildField(buildCloudImgUrl(MhAppIconEnum.ONE.LOCATION.getValue()), "地址", address, mainFields);
+        if (StringUtils.isNotBlank(address)) {
+            buildField(buildCloudImgUrl(MhAppIconEnum.ONE.LOCATION.getValue()), "地址", address, mainFields);
+        }
         // 报名时间
         if (activity.getSignId() != null) {
             SignStatDTO signStat = signApiService.getSignParticipation(activity.getSignId());
@@ -114,7 +119,9 @@ public class ActivityMhV3ApiController {
             buildField(buildCloudImgUrl(MhAppIconEnum.ONE.TIME.getValue()), "报名时间", signUpTime, mainFields);
         }
         // 积分
-        buildField(buildCloudImgUrl(MhAppIconEnum.ONE.INTEGRAL.getValue()), "积分", Optional.of(activity.getIntegral()).map(String::valueOf).orElse(""), mainFields);
+        if (activity.getIntegral() != null && !Objects.equals(activity.getIntegral(), new BigDecimal(0))) {
+            buildField(buildCloudImgUrl(MhAppIconEnum.ONE.INTEGRAL.getValue()), "积分", Optional.of(activity.getIntegral()).map(String::valueOf).orElse(""), mainFields);
+        }
         // 评价
         Boolean openRating = Optional.ofNullable(activity.getOpenRating()).orElse(false);
         String ratingContent = "";
@@ -122,9 +129,11 @@ public class ActivityMhV3ApiController {
             ActivityRating activityRating = activityRatingQueryService.getByActivityId(activity.getId());
             if (activityRating != null) {
                 ratingContent = Optional.ofNullable(activityRating.getScoreNum()).orElse(0) + "人；" + Optional.ofNullable(activityRating.getScore()).orElse(new BigDecimal(0)) + "分";
+            } else {
+                ratingContent = "0人；0分";
             }
+            buildFieldWithUrl(buildCloudImgUrl(MhAppIconEnum.ONE.RATING.getValue()), "评价", ratingContent, activityQueryService.getActivityRatingUrl(activity.getId()), mainFields);
         }
-        buildFieldWithUrl(buildCloudImgUrl(MhAppIconEnum.ONE.RATING.getValue()), "评价", ratingContent, activityQueryService.getActivityRatingUrl(activity.getId()), mainFields);
         JSONObject jsonObject = new JSONObject();
         jsonObject.put("results", mainFields);
         return RestRespDTO.success(jsonObject);
