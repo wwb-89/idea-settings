@@ -1,11 +1,11 @@
-package com.chaoxing.activity.dto.activity;
+package com.chaoxing.activity.dto.activity.create;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-/**
+/**宣讲会创建活动参数对象
  * @author huxiaolong
  * <p>
  * @version 1.0
@@ -17,7 +17,7 @@ import lombok.NoArgsConstructor;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class ActivityCreateDTO {
+public class ActivityCreateFromPreachParamDTO {
 
     /** 机构id*/
     private Integer fid;

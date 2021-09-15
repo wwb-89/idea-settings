@@ -5,8 +5,8 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.chaoxing.activity.dto.LoginUserDTO;
-import com.chaoxing.activity.dto.activity.ActivityCreateDTO;
-import com.chaoxing.activity.dto.activity.ActivityCreateParamDTO;
+import com.chaoxing.activity.dto.activity.create.ActivityCreateFromPreachParamDTO;
+import com.chaoxing.activity.dto.activity.create.ActivityCreateParamDTO;
 import com.chaoxing.activity.dto.activity.ActivityMenuDTO;
 import com.chaoxing.activity.dto.activity.ActivityUpdateParamDTO;
 import com.chaoxing.activity.dto.manager.mh.MhCloneParamDTO;
@@ -858,10 +858,10 @@ public class ActivityHandleService {
 	 * @return com.chaoxing.activity.model.Activity
 	 */
 	@Transactional(rollbackFor = Exception.class)
-	public Activity newSharedActivity(ActivityCreateDTO activityCreateDto, LoginUserDTO loginUser) {
+	public Activity newSharedActivity(ActivityCreateFromPreachParamDTO activityCreateDto, LoginUserDTO loginUser) {
 		Integer createFid = activityCreateDto.getFid();
 		String flag = activityCreateDto.getFlag();
-		Template template = marketHandleService.getOrCreateTemplateMarketByFidActivityFlag(createFid, Activity.ActivityFlagEnum.fromValue(flag), loginUser);
+		Template template = marketHandleService.getOrCreateOrgMarket(createFid, Activity.ActivityFlagEnum.fromValue(flag), loginUser);
 		ActivityCreateParamDTO activityCreateParam = activityCreateDto.getActivityInfo();
 		activityCreateParam.setMarketId(template.getMarketId());
 		activityCreateParam.setTemplateId(template.getId());
@@ -893,7 +893,7 @@ public class ActivityHandleService {
 	 * @param activityCreateDTO
 	 * @return void
 	 */
-	public void updatePartialActivityInfo(ActivityCreateDTO activityCreateDTO, LoginUserDTO loginUser) {
+	public void updatePartialActivityInfo(ActivityCreateFromPreachParamDTO activityCreateDTO, LoginUserDTO loginUser) {
 		ActivityCreateParamDTO activityParam = activityCreateDTO.getActivityInfo();
 		Activity activity = activityQueryService.getById(activityParam.getId());
 		// 报名签到

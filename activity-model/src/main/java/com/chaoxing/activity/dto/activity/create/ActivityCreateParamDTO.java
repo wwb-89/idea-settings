@@ -1,6 +1,7 @@
-package com.chaoxing.activity.dto.activity;
+package com.chaoxing.activity.dto.activity.create;
 
 import com.chaoxing.activity.dto.LoginUserDTO;
+import com.chaoxing.activity.dto.activity.ActivityComponentValueDTO;
 import com.chaoxing.activity.model.Activity;
 import com.chaoxing.activity.model.ActivityDetail;
 import com.chaoxing.activity.util.DateUtils;
@@ -9,6 +10,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.apache.commons.lang3.StringUtils;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -16,11 +18,11 @@ import java.time.ZoneOffset;
 import java.util.List;
 import java.util.Optional;
 
-/**创建活动对象
+/**活动创建参数对象
  * @author wwb
  * @version ver 1.0
  * @className ActivityCreateParamDTO
- * @description
+ * @description 所有通过其它方式创建活动的参数都需要转换成该对象
  * @blame wwb
  * @date 2021-07-13 10:55:23
  */
@@ -170,6 +172,8 @@ public class ActivityCreateParamDTO {
 				.status(getStatus())
 				.signedUpNotice(getSignedUpNotice())
 				.activityFlag(getActivityFlag())
+				.originType(getOriginType())
+				.origin(getOrigin())
 				.originActivityId(getOriginActivityId())
 				.build();
 	}
@@ -256,6 +260,29 @@ public class ActivityCreateParamDTO {
 
 	public void buildLoginUser(Integer uid, String userName, Integer fid, String orgName) {
 		setLoginUser(LoginUserDTO.buildDefault(uid, userName, fid, orgName));
+	}
+
+	/**默认值
+	 * @Description 没有设值的部分给出默认值
+	 * @author wwb
+	 * @Date 2021-09-15 15:24:51
+	 * @param 
+	 * @return void
+	*/
+	public void defaultValue() {
+		this.coverCloudId = Optional.ofNullable(coverCloudId).filter(StringUtils::isNotBlank).orElse(CommonConstant.ACTIVITY_DEFAULT_COVER_CLOUD_ID);
+		this.organisers = Optional.ofNullable(organisers).orElse("");
+		this.activityType = Optional.ofNullable(activityType).orElse(Activity.ActivityTypeEnum.OFFLINE.getValue());
+		this.address = Optional.ofNullable(address).orElse("");
+		this.detailAddress = Optional.ofNullable(detailAddress).orElse("");
+		this.timingRelease = Optional.ofNullable(timingRelease).orElse(false);
+		this.openAudit = Optional.ofNullable(openAudit).orElse(false);
+		this.createAreaCode = Optional.ofNullable(createAreaCode).orElse("");
+		this.tags = Optional.ofNullable(tags).orElse("");
+		this.openRating = Optional.ofNullable(openRating).orElse(false);
+		this.ratingNeedAudit = Optional.ofNullable(ratingNeedAudit).orElse(false);
+		this.openWork = Optional.ofNullable(openWork).orElse(false);
+		this.openReading = Optional.ofNullable(openReading).orElse(false);
 	}
 
 }

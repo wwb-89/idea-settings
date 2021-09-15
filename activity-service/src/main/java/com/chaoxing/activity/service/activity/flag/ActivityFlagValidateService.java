@@ -6,7 +6,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.Objects;
 
-/**活动标示验证服务
+/**活动标识验证服务
  * @author wwb
  * @version ver 1.0
  * @className ActivityFlagValidateService

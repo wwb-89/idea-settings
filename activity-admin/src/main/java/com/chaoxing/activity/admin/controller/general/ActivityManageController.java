@@ -2,7 +2,7 @@ package com.chaoxing.activity.admin.controller.general;
 
 import com.chaoxing.activity.admin.util.LoginUtils;
 import com.chaoxing.activity.dto.LoginUserDTO;
-import com.chaoxing.activity.dto.activity.ActivityCreateParamDTO;
+import com.chaoxing.activity.dto.activity.create.ActivityCreateParamDTO;
 import com.chaoxing.activity.dto.manager.ActivityCreatePermissionDTO;
 import com.chaoxing.activity.dto.manager.sign.SignActivityManageIndexDTO;
 import com.chaoxing.activity.dto.manager.sign.create.SignCreateParamDTO;

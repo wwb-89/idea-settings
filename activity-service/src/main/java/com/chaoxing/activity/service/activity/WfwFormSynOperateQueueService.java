@@ -1,6 +1,6 @@
 package com.chaoxing.activity.service.activity;
 
-import com.chaoxing.activity.dto.activity.ActivityFormSyncParamDTO;
+import com.chaoxing.activity.dto.activity.create.ActivityCreateFromFormParamDTO;
 import com.chaoxing.activity.util.constant.CacheConstant;
 import com.chaoxing.activity.util.constant.CommonConstant;
 import lombok.extern.slf4j.Slf4j;
@@ -33,7 +33,7 @@ public class WfwFormSynOperateQueueService {
     * @param queueParam
     * @return void
     */
-    public void addActivityFormSyncOperateTask(ActivityFormSyncParamDTO queueParam) {
+    public void addActivityFormSyncOperateTask(ActivityCreateFromFormParamDTO queueParam) {
         ListOperations listOperations = redisTemplate.opsForList();
         listOperations.leftPush(ACTIVITY_FORM_SYNC_OPERATE_KEY, queueParam);
     }
@@ -45,8 +45,8 @@ public class WfwFormSynOperateQueueService {
     * @param 
     * @return com.chaoxing.activity.dto.activity.ActivityFormSyncParamDTO
     */
-    public ActivityFormSyncParamDTO getActivityFormSyncOperateTask() {
-        ListOperations<String, ActivityFormSyncParamDTO> listOperations = redisTemplate.opsForList();
+    public ActivityCreateFromFormParamDTO getActivityFormSyncOperateTask() {
+        ListOperations<String, ActivityCreateFromFormParamDTO> listOperations = redisTemplate.opsForList();
         return listOperations.rightPop(ACTIVITY_FORM_SYNC_OPERATE_KEY, CommonConstant.QUEUE_GET_WAIT_TIME);
     }
 

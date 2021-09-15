@@ -9,11 +9,10 @@ import com.chaoxing.activity.api.vo.UserStatSummaryVO;
 import com.chaoxing.activity.dto.LoginUserDTO;
 import com.chaoxing.activity.dto.RestRespDTO;
 import com.chaoxing.activity.dto.UserResultDTO;
-import com.chaoxing.activity.dto.activity.ActivityCreateDTO;
+import com.chaoxing.activity.dto.activity.create.ActivityCreateFromPreachParamDTO;
 import com.chaoxing.activity.dto.activity.ActivityExternalDTO;
-import com.chaoxing.activity.dto.activity.ActivityFormSyncParamDTO;
+import com.chaoxing.activity.dto.activity.create.ActivityCreateFromFormParamDTO;
 import com.chaoxing.activity.dto.manager.PassportUserDTO;
-import com.chaoxing.activity.dto.manager.sign.SignDTO;
 import com.chaoxing.activity.dto.manager.sign.SignUpDTO;
 import com.chaoxing.activity.dto.manager.wfw.WfwAreaDTO;
 import com.chaoxing.activity.dto.query.ActivityQueryDTO;
@@ -32,6 +31,7 @@ import com.chaoxing.activity.service.activity.ActivityValidationService;
 import com.chaoxing.activity.service.activity.WfwFormSynOperateQueueService;
 import com.chaoxing.activity.service.activity.collection.ActivityCollectionHandleService;
 import com.chaoxing.activity.service.activity.collection.ActivityCollectionQueryService;
+import com.chaoxing.activity.service.activity.create.ActivityCreateService;
 import com.chaoxing.activity.service.activity.stat.ActivityStatSummaryQueryService;
 import com.chaoxing.activity.service.manager.PassportApiService;
 import com.chaoxing.activity.service.manager.module.SignApiService;
@@ -107,6 +107,8 @@ public class ActivityApiController {
 	private PassportApiService passportApiService;
 	@Resource
 	private WfwFormSynOperateQueueService wfwFormSynOperateQueueService;
+	@Resource
+	private ActivityCreateService activityCreateService;
 
 	/**组活动推荐
 	 * @Description 
@@ -452,7 +454,7 @@ public class ActivityApiController {
 	* @return com.chaoxing.activity.dto.RestRespDTO
 	*/
 	@RequestMapping("new/with-shared")
-	public RestRespDTO newSharedActivity(@RequestBody ActivityCreateDTO activityCreateDto) {
+	public RestRespDTO newSharedActivity(@RequestBody ActivityCreateFromPreachParamDTO activityCreateDto) {
 		Integer uid = activityCreateDto.getUid();
 		Optional.ofNullable(uid).orElseThrow(() -> new BusinessException("用户id不能为空"));
 		Integer fid = activityCreateDto.getFid();
@@ -471,7 +473,7 @@ public class ActivityApiController {
 	* @return com.chaoxing.activity.dto.RestRespDTO
 	*/
 	@RequestMapping("/partial-info/update")
-	public RestRespDTO updatePartialActivityInfo(@RequestBody ActivityCreateDTO activityCreateDTO) {
+	public RestRespDTO updatePartialActivityInfo(@RequestBody ActivityCreateFromPreachParamDTO activityCreateDTO) {
 		PassportUserDTO passportUserDTO = passportApiService.getByUid(activityCreateDTO.getUid());
 		LoginUserDTO loginUserDTO = LoginUserDTO.buildDefault(activityCreateDTO.getUid(), passportUserDTO.getRealName(), activityCreateDTO.getFid(), "");
 		activityHandleService.updatePartialActivityInfo(activityCreateDTO, loginUserDTO);
@@ -517,7 +519,7 @@ public class ActivityApiController {
 	* @return com.chaoxing.activity.dto.RestRespDTO
 	*/
 	@RequestMapping("/sync/from/wfw-form")
-	public RestRespDTO activitySyncOperate(ActivityFormSyncParamDTO activityFormSyncParam) {
+	public RestRespDTO activitySyncOperate(ActivityCreateFromFormParamDTO activityFormSyncParam) {
 		wfwFormSynOperateQueueService.addActivityFormSyncOperateTask(activityFormSyncParam);
 		return RestRespDTO.success();
 	}
@@ -559,6 +561,20 @@ public class ActivityApiController {
 		Integer signId = activityQueryService.getByWebsiteId(websiteId).getSignId();
 		List<SignUpDTO> signUps = signApiService.getById(signId).getSignUps();
 		return signApiService.mhSignUp(signUps.get(0).getId(), uid, fid);
+	}
+
+	/**从活动发布平台拷贝活动
+	 * @Description 
+	 * @author wwb
+	 * @Date 2021-09-15 15:51:18
+	 * @param activityId
+	 * @param flag
+	 * @return com.chaoxing.activity.dto.RestRespDTO
+	*/
+	@RequestMapping("copy-from-activity-release")
+	public RestRespDTO copyActivityReleaseActivity(@RequestParam Integer activityId, @RequestParam String flag) {
+		activityCreateService.createFromActivityRelease(activityId, flag);
+		return RestRespDTO.success();
 	}
 
 }

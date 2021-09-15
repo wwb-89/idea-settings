@@ -1,5 +1,6 @@
 package com.chaoxing.activity.dto.activity;
 
+import com.chaoxing.activity.dto.activity.create.ActivityCreateParamDTO;
 import com.chaoxing.activity.model.Activity;
 import com.chaoxing.activity.model.ActivityDetail;
 import com.chaoxing.activity.util.DateUtils;

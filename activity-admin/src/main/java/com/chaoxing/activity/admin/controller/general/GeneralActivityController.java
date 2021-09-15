@@ -62,7 +62,7 @@ public class GeneralActivityController {
 			if (activityFlagEnum == null) {
 				throw new BusinessException("未知的flag");
 			}
-			Template template = marketHandleService.getOrCreateTemplateMarketByFidActivityFlag(realFid, activityFlagEnum, LoginUtils.getLoginUser(request));
+			Template template = marketHandleService.getOrCreateOrgMarket(realFid, activityFlagEnum, LoginUtils.getLoginUser(request));
 			marketId = template.getMarketId();
 			if (marketId != null && !direct) {
 				return "redirect:/market/" + marketId + "?pageMode=" + pageMode;

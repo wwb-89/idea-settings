@@ -214,7 +214,6 @@ public class MarketHandleService {
 		);
 	}
 
-
 	/**根据机构id，活动标识查询模板,判断市场是否存在; 模板不存在则创建模板，市场不存在则创建市场
 	 * 返回模板(模板id, 市场id)
 	 * @Description
@@ -225,23 +224,23 @@ public class MarketHandleService {
 	 * @return com.chaoxing.activity.model.Template
 	 */
 	@Transactional(rollbackFor = Exception.class)
-	public Template getOrCreateTemplateMarketByFidActivityFlag(Integer fid, Activity.ActivityFlagEnum activityFlagEnum, LoginUserDTO loginUserDTO) {
+	public Template getOrCreateOrgMarket(Integer fid, Activity.ActivityFlagEnum activityFlagEnum, LoginUserDTO loginUserDto) {
 		if (activityFlagEnum == null) {
 			throw new BusinessException("未知的flag");
 		}
 		Template template = templateQueryService.getOrgTemplateByActivityFlag(fid, activityFlagEnum);
-		ActivityMarketCreateParamDTO marketCreateParam = ActivityMarketCreateParamDTO.build(activityFlagEnum.getName().concat("活动市场"), fid, activityFlagEnum.getValue());
+		ActivityMarketCreateParamDTO marketCreateParam = ActivityMarketCreateParamDTO.build(activityFlagEnum.getName(), fid, activityFlagEnum.getValue());
 		if (template != null) {
 			// 若有模板无市场，则建立对应市场
 			if (template.getMarketId() == null) {
-				Market market = ApplicationContextHolder.getBean(MarketHandleService.class).createMarket(marketCreateParam, loginUserDTO.buildOperateUserDTO());
+				Market market = createMarket(marketCreateParam, loginUserDto.buildOperateUserDTO());
 				template.setMarketId(market.getId());
 				templateHandleService.update(template);
 			}
 			return template;
 		}
 		// 如果不存在fid对应的模板，证明无对应市场，先创建市场
-		ApplicationContextHolder.getBean(MarketHandleService.class).add(marketCreateParam, activityFlagEnum, loginUserDTO.buildOperateUserDTO());
+		add(marketCreateParam, activityFlagEnum, loginUserDto.buildOperateUserDTO());
 		return templateQueryService.getOrgTemplateByActivityFlag(fid, activityFlagEnum);
 	}
 

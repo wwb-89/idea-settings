@@ -7,7 +7,7 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.chaoxing.activity.dto.LoginUserDTO;
 import com.chaoxing.activity.dto.activity.ActivityComponentValueDTO;
-import com.chaoxing.activity.dto.activity.ActivityCreateParamDTO;
+import com.chaoxing.activity.dto.activity.create.ActivityCreateParamDTO;
 import com.chaoxing.activity.dto.activity.ActivitySignedUpDTO;
 import com.chaoxing.activity.dto.activity.ActivityTypeDTO;
 import com.chaoxing.activity.dto.manager.sign.SignStatDTO;

@@ -181,7 +181,8 @@ public class Activity {
 
         /** 通用 */
         NORMAL("通用", "normal"),
-        ACTIVITY_DECLARATION("活动申报", "activity_declaration");
+        ACTIVITY_DECLARATION("活动申报", "activity_declaration"),
+        ACTIVITY_RELEASE("活动发布", "activity_release");
 
         private final String name;
         private final String value;
@@ -279,23 +280,23 @@ public class Activity {
     public enum ActivityFlagEnum {
 
         /** 通用 */
-        NORMAL("通用", "normal"),
+        NORMAL("活动", "normal"),
         /** 第二课堂 */
-        SECOND_CLASSROOM("第二课堂", "second_classroom"),
+        SECOND_CLASSROOM("第二课堂活动", "second_classroom"),
         /** 双选会 */
         DUAL_SELECT("双选会", "dual_select"),
         /** 教师发展 */
-        TEACHER("教师发展", "teacher"),
+        TEACHER("线下培训", "teacher"),
         /** 志愿者服务 */
-        VOLUNTEER("志愿者服务", "volunteer"),
+        VOLUNTEER("志愿活动", "volunteer"),
         /** 三会一课 */
         THREE_CONFERENCE_ONE_LESSON("三会一课", "tcol"),
         /** 班级活动 */
-        CLASS("班级", "class"),
+        CLASS("班级活动", "class"),
         /** 学校活动 */
-        SCHOOL("学校", "school"),
+        SCHOOL("学校活动", "school"),
         /** 区域活动 */
-        REGION("区域", "region"),
+        REGION("区域活动", "region"),
         PREACH_ONLINE("线上宣讲会", "preach_online"),
         PREACH_OFFLINE("线下宣讲会", "preach_offline");
 

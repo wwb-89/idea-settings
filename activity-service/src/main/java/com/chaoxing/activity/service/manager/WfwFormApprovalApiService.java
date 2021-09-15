@@ -6,7 +6,7 @@ import com.alibaba.fastjson.JSONObject;
 import com.chaoxing.activity.dto.AddressDTO;
 import com.chaoxing.activity.dto.LoginUserDTO;
 import com.chaoxing.activity.dto.TimeScopeDTO;
-import com.chaoxing.activity.dto.activity.ActivityCreateParamDTO;
+import com.chaoxing.activity.dto.activity.create.ActivityCreateParamDTO;
 import com.chaoxing.activity.dto.activity.market.ActivityMarketCreateParamDTO;
 import com.chaoxing.activity.dto.manager.form.FormAdvanceSearchFilterConditionDTO;
 import com.chaoxing.activity.dto.manager.form.FormDataDTO;

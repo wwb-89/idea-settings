@@ -3,7 +3,7 @@ package com.chaoxing.activity.service.activity;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.chaoxing.activity.dto.LoginUserDTO;
-import com.chaoxing.activity.dto.activity.ActivityCreateParamDTO;
+import com.chaoxing.activity.dto.activity.create.ActivityCreateParamDTO;
 import com.chaoxing.activity.dto.activity.ActivityUpdateParamDTO;
 import com.chaoxing.activity.dto.activity.classify.MarketClassifyCreateParamDTO;
 import com.chaoxing.activity.dto.manager.form.FormDataDTO;
@@ -122,7 +122,7 @@ public class ActivityFormSyncService {
         WfwAreaDTO orgInfo = Optional.ofNullable(defaultPublishAreas).orElse(Lists.newArrayList()).stream().filter(v -> Objects.equals(v.getFid(), fid)).findFirst().orElse(new WfwAreaDTO());
         LoginUserDTO loginUser = LoginUserDTO.buildDefault(formUserRecord.getUid(), formUserRecord.getUname(), fid, orgInfo.getName());
         // 获取模板和市场信息
-        Template template = marketHandleService.getOrCreateTemplateMarketByFidActivityFlag(fid, Activity.ActivityFlagEnum.THREE_CONFERENCE_ONE_LESSON, loginUser);
+        Template template = marketHandleService.getOrCreateOrgMarket(fid, Activity.ActivityFlagEnum.THREE_CONFERENCE_ONE_LESSON, loginUser);
         // 封装活动创建信息数据
         ActivityCreateParamDTO activityCreateParam = packageActivityCreateParam(formUserRecord, template);
         activityCreateParam.setWebTemplateId(webTemplateId);

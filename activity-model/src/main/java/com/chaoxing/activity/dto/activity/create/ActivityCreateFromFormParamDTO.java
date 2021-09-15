@@ -1,6 +1,5 @@
-package com.chaoxing.activity.dto.activity;
+package com.chaoxing.activity.dto.activity.create;
 
-import com.chaoxing.activity.model.Activity;
 import com.chaoxing.activity.util.exception.BusinessException;
 import lombok.*;
 
@@ -17,7 +16,7 @@ import java.util.Objects;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class ActivityFormSyncParamDTO {
+public class ActivityCreateFromFormParamDTO {
 
     /** 机构单位id */
     private Integer deptId;

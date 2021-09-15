@@ -1,6 +1,6 @@
 package com.chaoxing.activity.task;
 
-import com.chaoxing.activity.dto.activity.ActivityFormSyncParamDTO;
+import com.chaoxing.activity.dto.activity.create.ActivityCreateFromFormParamDTO;
 import com.chaoxing.activity.service.activity.ActivityFormSyncService;
 import com.chaoxing.activity.service.activity.ActivityHandleService;
 import com.chaoxing.activity.service.activity.WfwFormSynOperateQueueService;
@@ -31,12 +31,12 @@ public class WfwFormSyncOperateTask {
 
     @Scheduled(fixedDelay = 1L)
     public void handleWfwUserSignUpInfoDelete() {
-        ActivityFormSyncParamDTO queueParam = wfwFormSynOperateQueueService.getActivityFormSyncOperateTask();
+        ActivityCreateFromFormParamDTO queueParam = wfwFormSynOperateQueueService.getActivityFormSyncOperateTask();
         if (queueParam == null) {
             return;
         }
         try {
-            ActivityFormSyncParamDTO.OperateTypeEnum operateTypeEnum = ActivityFormSyncParamDTO.OperateTypeEnum.fromValue(queueParam.getOp());
+            ActivityCreateFromFormParamDTO.OperateTypeEnum operateTypeEnum = ActivityCreateFromFormParamDTO.OperateTypeEnum.fromValue(queueParam.getOp());
             Integer fid = queueParam.getDeptId();
             Integer formId = queueParam.getFormId();
             Integer formUserId = queueParam.getIndexID();

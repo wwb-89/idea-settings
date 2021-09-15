@@ -5,7 +5,7 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.chaoxing.activity.admin.util.LoginUtils;
 import com.chaoxing.activity.dto.LoginUserDTO;
 import com.chaoxing.activity.dto.RestRespDTO;
-import com.chaoxing.activity.dto.activity.ActivityCreateParamDTO;
+import com.chaoxing.activity.dto.activity.create.ActivityCreateParamDTO;
 import com.chaoxing.activity.dto.activity.ActivityUpdateParamDTO;
 import com.chaoxing.activity.dto.manager.sign.create.SignCreateParamDTO;
 import com.chaoxing.activity.dto.manager.wfw.WfwAreaDTO;
