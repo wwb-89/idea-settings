@@ -397,11 +397,17 @@ public class ActivityMhV3ApiController {
         }
         int flag = 0;
         fields.add(MhGeneralAppResultDataDTO.MhGeneralAppResultDataFieldDTO.builder()
+                .key("封面")
+                .value("")
+                .type("3")
+                .flag(String.valueOf(flag))
+                .build());
+        fields.add(MhGeneralAppResultDataDTO.MhGeneralAppResultDataFieldDTO.builder()
                 .key("标题")
                 .orsUrl(isAjax ? url : "")
                 .value(key)
                 .type(isAjax ? "7" : "3")
-                .flag(String.valueOf(flag))
+                .flag(String.valueOf(++flag))
                 .build());
         if (StringUtils.isNotBlank(type)) {
             fields.add(MhGeneralAppResultDataDTO.MhGeneralAppResultDataFieldDTO.builder()
