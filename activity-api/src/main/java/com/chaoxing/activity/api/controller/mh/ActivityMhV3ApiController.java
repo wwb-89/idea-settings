@@ -115,8 +115,9 @@ public class ActivityMhV3ApiController {
         // 报名时间
         if (activity.getSignId() != null) {
             SignStatDTO signStat = signApiService.getSignParticipation(activity.getSignId());
-            String signUpTime = signStat.getSignUpStartTime() == null ? "" : DateTimeFormatterConstant.YYYY_MM_DD_HH_MM.format(signStat.getSignUpStartTime());
-            buildField(buildCloudImgUrl(MhAppIconEnum.ONE.TIME.getValue()), "报名时间", signUpTime, mainFields);
+            if (CollectionUtils.isNotEmpty(signStat.getSignUpIds())) {
+                buildField(buildCloudImgUrl(MhAppIconEnum.ONE.TIME.getValue()), "报名时间",  DateUtils.activityTimeScope(signStat.getSignUpStartTime(), signStat.getSignUpEndTime()), mainFields);
+            }
         }
         // 积分
         if (activity.getIntegral() != null && !Objects.equals(activity.getIntegral(), new BigDecimal(0))) {
