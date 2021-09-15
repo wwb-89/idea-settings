@@ -401,9 +401,10 @@ public class ActivityMhV3ApiController {
     private void buildBtnField(String key, String url, String type, boolean isAjax, List<MhGeneralAppResultDataDTO> result) {
         MhGeneralAppResultDataDTO item = MhGeneralAppResultDataDTO.buildDefault();
         List<MhGeneralAppResultDataDTO.MhGeneralAppResultDataFieldDTO> fields = Lists.newArrayList();
-        if (!isAjax) {
-            item.setOrsUrl(url);
+        if (isAjax) {
+            item.setType(7);
         }
+        item.setOrsUrl(url);
         int flag = 0;
         fields.add(MhGeneralAppResultDataDTO.MhGeneralAppResultDataFieldDTO.builder()
                 .key("封面")
