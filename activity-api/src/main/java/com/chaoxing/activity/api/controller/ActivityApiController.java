@@ -556,6 +556,16 @@ public class ActivityApiController {
 		return RestRespDTO.success();
 	}
 
+	/**门户报名ajax请求
+	* @Description
+	* @author huxiaolong
+	* @Date 2021-09-15 18:19:27
+	* @param uid
+	* @param websiteId
+	* @param fid
+	* @return com.chaoxing.activity.dto.RestRespDTO
+	*/
+	@CrossOrigin
 	@RequestMapping("mh/sign-up")
 	public RestRespDTO mhSignUp(@RequestParam("uid") Integer uid, @RequestParam("websiteId") Integer websiteId, @RequestParam("fid") Integer fid) {
 		Integer signId = activityQueryService.getByWebsiteId(websiteId).getSignId();

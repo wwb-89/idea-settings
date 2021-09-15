@@ -127,7 +127,8 @@ public class ActivityMhV3ApiController {
             }
         }
         // 积分
-        if (activity.getIntegral() != null && !Objects.equals(activity.getIntegral(), new BigDecimal(0))) {
+
+        if (activity.getIntegral() != null && activity.getIntegral().compareTo(new BigDecimal(0)) == 0) {
             buildField(buildCloudImgUrl(MhAppIconEnum.ONE.INTEGRAL.getValue()), "积分", Optional.of(activity.getIntegral()).map(String::valueOf).orElse(""), mainFields);
         }
         // 评价
@@ -144,6 +145,10 @@ public class ActivityMhV3ApiController {
         }
         jsonObject.put("results", mainFields);
         return RestRespDTO.success(jsonObject);
+    }
+
+    public static void main(String[] args) {
+        System.out.println(new BigDecimal("0.00").compareTo(new BigDecimal(-1)));
     }
 
 
