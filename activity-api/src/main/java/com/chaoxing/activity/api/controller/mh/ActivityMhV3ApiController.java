@@ -1,5 +1,6 @@
 package com.chaoxing.activity.api.controller.mh;
 
+import cn.hutool.http.HtmlUtil;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.chaoxing.activity.dto.RestRespDTO;
@@ -8,6 +9,7 @@ import com.chaoxing.activity.dto.manager.sign.SignStatDTO;
 import com.chaoxing.activity.dto.manager.sign.UserSignParticipationStatDTO;
 import com.chaoxing.activity.dto.manager.sign.create.SignUpCreateParamDTO;
 import com.chaoxing.activity.model.Activity;
+import com.chaoxing.activity.model.ActivityDetail;
 import com.chaoxing.activity.model.ActivityRating;
 import com.chaoxing.activity.service.activity.ActivityQueryService;
 import com.chaoxing.activity.service.activity.ActivityValidationService;
@@ -19,6 +21,7 @@ import com.chaoxing.activity.util.constant.DateTimeFormatterConstant;
 import com.chaoxing.activity.util.constant.UrlConstant;
 import com.chaoxing.activity.util.enums.MhAppIconEnum;
 import com.google.common.collect.Lists;
+import jdk.nashorn.internal.runtime.regexp.joni.Regex;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -27,9 +30,9 @@ import org.springframework.web.bind.annotation.RestController;
 
 import javax.annotation.Resource;
 import java.math.BigDecimal;
-import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
+import java.util.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * @author huxiaolong
@@ -59,8 +62,10 @@ public class ActivityMhV3ApiController {
     public RestRespDTO briefInfo(@RequestBody String data) {
         Activity activity = getActivityByData(data);
         List<MhGeneralAppResultDataDTO> mainFields = Lists.newArrayList();
+        JSONObject jsonObject = new JSONObject();
         if (activity == null) {
-            return RestRespDTO.success(mainFields);
+            jsonObject.put("results", mainFields);
+            return RestRespDTO.success(jsonObject);
         }
         // 开始结束时间
         buildField(activity.getCoverUrl(), "", DateUtils.activityTimeScope(activity.getStartTime(), activity.getEndTime()), buildCloudImgUrl(MhAppIconEnum.ONE.TIME_TRANSPARENT.getValue()), mainFields);
@@ -75,7 +80,6 @@ public class ActivityMhV3ApiController {
             }
         }
         // 活动报名参与情况
-        JSONObject jsonObject = new JSONObject();
         jsonObject.put("results", mainFields);
         return RestRespDTO.success(jsonObject);
     }
@@ -84,13 +88,14 @@ public class ActivityMhV3ApiController {
     @RequestMapping("/activity/btns")
     public RestRespDTO mhActivityBtns(@RequestBody String data) {
         Activity activity = getActivityByData(data);
+        JSONObject jsonObject = new JSONObject();
         if (activity == null) {
-            return RestRespDTO.success();
+            jsonObject.put("results", Lists.newArrayList());
+            return RestRespDTO.success(jsonObject);
         }
         JSONObject params = JSON.parseObject(data);
         Integer uid = params.getInteger("uid");
 
-        JSONObject jsonObject = new JSONObject();
         jsonObject.put("results", packageBtns(activity, activity.getSignId(), uid));
         return RestRespDTO.success(jsonObject);
     }
@@ -99,8 +104,10 @@ public class ActivityMhV3ApiController {
     @RequestMapping("/activity/info")
     public RestRespDTO activityInfo(@RequestBody String data) {
         Activity activity = getActivityByData(data);
+        JSONObject jsonObject = new JSONObject();
         if (activity == null) {
-            return RestRespDTO.success();
+            jsonObject.put("results", Lists.newArrayList());
+            return RestRespDTO.success(jsonObject);
         }
         List<MhGeneralAppResultDataDTO> mainFields = Lists.newArrayList();
         // 主办方
@@ -135,11 +142,70 @@ public class ActivityMhV3ApiController {
             }
             buildFieldWithUrl(buildCloudImgUrl(MhAppIconEnum.ONE.RATING.getValue()), "评价", ratingContent, activityQueryService.getActivityRatingUrl(activity.getId()), mainFields);
         }
-        JSONObject jsonObject = new JSONObject();
         jsonObject.put("results", mainFields);
         return RestRespDTO.success(jsonObject);
     }
 
+
+
+    @RequestMapping("/activity/introduction")
+    public RestRespDTO activityIntroduction(@RequestBody String data) {
+        Activity activity = getActivityByData(data);
+        JSONObject jsonObject = new JSONObject();
+        List<MhGeneralAppResultDataDTO> mainFields = Lists.newArrayList();
+        if (activity == null) {
+            jsonObject.put("results", mainFields);
+            return RestRespDTO.success();
+        }
+
+        ActivityDetail activityDetail = activityQueryService.getDetailByActivityId(activity.getId());
+        if (activityDetail != null) {
+            MhGeneralAppResultDataDTO mhGeneralAppResultData = MhGeneralAppResultDataDTO.buildDefault();
+            mhGeneralAppResultData.setOrsUrl("");
+            String introductionHtml = activityDetail.getIntroduction();
+            String introductionText = HtmlUtil.cleanHtmlTag(introductionHtml);
+            String firstImg = filterFirstImgFromHtmlStr(introductionHtml);
+            List<MhGeneralAppResultDataDTO.MhGeneralAppResultDataFieldDTO> fields = Lists.newArrayList();
+            Integer flag = 0;
+            fields.add(MhGeneralAppResultDataDTO.MhGeneralAppResultDataFieldDTO.builder()
+                    .key("封面")
+                    .flag(String.valueOf(flag))
+                    .value(StringUtils.isNotBlank(firstImg) ? firstImg : "")
+                    .type("3")
+                    .build());
+            fields.add(MhGeneralAppResultDataDTO.MhGeneralAppResultDataFieldDTO.builder()
+                    .key("内容")
+                    .flag(String.valueOf(++flag))
+                    .value(introductionText)
+                    .type("3")
+                    .build());
+            mhGeneralAppResultData.setFields(fields);
+            mainFields.add(mhGeneralAppResultData);
+        }
+        jsonObject.put("results", mainFields);
+        return RestRespDTO.success(jsonObject);
+    }
+
+    private String filterFirstImgFromHtmlStr(String htmlStr) {
+        Set<String> pics = new HashSet<>();
+        String regEx_img = "<img.*src\\s*=\\s*(.*?)[^>]*?>";
+        Pattern p_image = Pattern.compile(regEx_img, Pattern.CASE_INSENSITIVE);
+        Matcher m_image = p_image.matcher(htmlStr);
+        while (m_image.find()) {
+            // 得到<img />数据
+            String img = m_image.group();
+            // 匹配<img>中的src数据
+            Matcher m = Pattern.compile("src\\s*=\\s*\"?(.*?)(\"|>|\\s+)").matcher(img);
+            while (m.find()) {
+                pics.add(m.group(1));
+            }
+        }
+        if (CollectionUtils.isNotEmpty(pics)) {
+            return Lists.newArrayList(pics).get(0);
+        }
+        return null;
+
+    }
 
 
     /**封装按钮
