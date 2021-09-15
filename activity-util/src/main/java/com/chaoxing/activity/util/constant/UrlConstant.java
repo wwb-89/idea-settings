@@ -29,7 +29,7 @@ public class UrlConstant {
 	/** 活动评价的地址 */
 	public static final String ACTIVITY_RATING_URL = "https://hd.chaoxing.com/activity/%d/rating";
 	/** 门户报名ajax接口地址 */
-	public static final String MH_AJAX_SIGN_UP = API_DOMAIN + "/mh/sign-up";
+	public static final String MH_AJAX_SIGN_UP = API_DOMAIN + "/mh/v3/sign-up";
 
 
 	/** 双选会 */

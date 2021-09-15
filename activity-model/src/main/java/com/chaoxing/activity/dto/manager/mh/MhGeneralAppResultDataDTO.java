@@ -33,6 +33,8 @@ public class MhGeneralAppResultDataDTO {
 	private Integer pop;
 	/** 弹窗详情内容地址 */
 	private String popUrl;
+	/** html渲染内容 */
+	private String content;
 
 	@Data
 	@Builder

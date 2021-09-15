@@ -556,23 +556,6 @@ public class ActivityApiController {
 		return RestRespDTO.success();
 	}
 
-	/**门户报名ajax请求
-	* @Description
-	* @author huxiaolong
-	* @Date 2021-09-15 18:19:27
-	* @param uid
-	* @param websiteId
-	* @param fid
-	* @return com.chaoxing.activity.dto.RestRespDTO
-	*/
-	@CrossOrigin
-	@RequestMapping("mh/sign-up")
-	public RestRespDTO mhSignUp(@RequestParam("uid") Integer uid, @RequestParam("websiteId") Integer websiteId, @RequestParam("fid") Integer fid) {
-		Integer signId = activityQueryService.getByWebsiteId(websiteId).getSignId();
-		List<SignUpDTO> signUps = signApiService.getById(signId).getSignUps();
-		return signApiService.mhSignUp(signUps.get(0).getId(), uid, fid);
-	}
-
 	/**从活动发布平台拷贝活动
 	 * @Description 
 	 * @author wwb

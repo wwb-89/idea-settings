@@ -6,6 +6,7 @@ import com.alibaba.fastjson.JSONObject;
 import com.chaoxing.activity.dto.RestRespDTO;
 import com.chaoxing.activity.dto.manager.mh.MhGeneralAppResultDataDTO;
 import com.chaoxing.activity.dto.manager.sign.SignStatDTO;
+import com.chaoxing.activity.dto.manager.sign.SignUpDTO;
 import com.chaoxing.activity.dto.manager.sign.UserSignParticipationStatDTO;
 import com.chaoxing.activity.dto.manager.sign.create.SignUpCreateParamDTO;
 import com.chaoxing.activity.model.Activity;
@@ -24,9 +25,7 @@ import com.google.common.collect.Lists;
 import jdk.nashorn.internal.runtime.regexp.joni.Regex;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
 import java.math.BigDecimal;
@@ -43,6 +42,7 @@ import java.util.regex.Pattern;
  */
 @RestController
 @RequestMapping("mh/v3")
+@CrossOrigin
 public class ActivityMhV3ApiController {
 
 
@@ -151,8 +151,13 @@ public class ActivityMhV3ApiController {
         System.out.println(new BigDecimal("0.00").compareTo(new BigDecimal(-1)));
     }
 
-
-
+    /**活动简介
+    * @Description
+    * @author huxiaolong
+    * @Date 2021-09-15 18:38:59
+    * @param data
+    * @return com.chaoxing.activity.dto.RestRespDTO
+    */
     @RequestMapping("/activity/introduction")
     public RestRespDTO activityIntroduction(@RequestBody String data) {
         Activity activity = getActivityByData(data);
@@ -160,7 +165,7 @@ public class ActivityMhV3ApiController {
         List<MhGeneralAppResultDataDTO> mainFields = Lists.newArrayList();
         if (activity == null) {
             jsonObject.put("results", mainFields);
-            return RestRespDTO.success();
+            return RestRespDTO.success(jsonObject);
         }
 
         ActivityDetail activityDetail = activityQueryService.getDetailByActivityId(activity.getId());
@@ -189,6 +194,51 @@ public class ActivityMhV3ApiController {
         }
         jsonObject.put("results", mainFields);
         return RestRespDTO.success(jsonObject);
+    }
+
+
+    /**门户简介详情
+    * @Description 
+    * @author huxiaolong
+    * @Date 2021-09-15 18:38:43
+    * @param data
+    * @return com.chaoxing.activity.dto.RestRespDTO
+    */
+    @RequestMapping("/activity/introduction/detail")
+    public RestRespDTO activityIntroductionDetail(@RequestBody String data) {
+        Activity activity = getActivityByData(data);
+        JSONObject jsonObject = new JSONObject();
+        List<MhGeneralAppResultDataDTO> mainFields = Lists.newArrayList();
+        if (activity == null) {
+            jsonObject.put("results", mainFields);
+            return RestRespDTO.success(jsonObject);
+        }
+
+        ActivityDetail activityDetail = activityQueryService.getDetailByActivityId(activity.getId());
+        if (activityDetail != null) {
+            MhGeneralAppResultDataDTO mhGeneralAppResultData = MhGeneralAppResultDataDTO.buildDefault();
+            mhGeneralAppResultData.setContent(activityDetail.getIntroduction());
+            mainFields.add(mhGeneralAppResultData);
+        }
+        jsonObject.put("results", mainFields);
+        return RestRespDTO.success(jsonObject);
+    }
+
+
+    /**门户报名
+    * @Description 
+    * @author huxiaolong
+    * @Date 2021-09-15 18:35:17
+    * @param uid
+    * @param websiteId
+    * @param fid
+    * @return com.chaoxing.activity.dto.RestRespDTO
+    */
+    @RequestMapping("sign-up")
+    public RestRespDTO mhSignUp(@RequestParam("uid") Integer uid, @RequestParam("websiteId") Integer websiteId, @RequestParam("fid") Integer fid) {
+        Integer signId = activityQueryService.getByWebsiteId(websiteId).getSignId();
+        List<SignUpDTO> signUps = signApiService.getById(signId).getSignUps();
+        return signApiService.mhSignUp(signUps.get(0).getId(), uid, fid);
     }
 
     private String filterFirstImgFromHtmlStr(String htmlStr) {
