@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width,initial-scale=1.0,minimum-scale=1.0,maximum-scale=1.0,user-scalable=0">
+    <link rel="stylesheet" href="http://portal.chaoxing.com/assets/css/common.css?v=0405">
+    <title>地图样式2的静态iframe</title>
+    <style>
+        /*地图 2*/
+        .static-map-style1{
+
+        }
+        .static-map-style1 .map-box{
+            position: absolute;
+            width: 100%;
+            height: 100%;
+        }
+        .static-map-style1 .eng-map-container{
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+        }
+        .static-map-style1 .map-box .BMapLabel{
+            border: 1px solid #E9E9E9 !important;
+            padding: 10px !important;;
+            border-radius: 4px;
+        }
+        .static-map-style1 .map-box .info-window-box{
+            position: relative;
+            color: #333333;
+            font-size: 14px;
+            /*height: 20px;*/
+            line-height: 20px;
+            font-family:"PingFang SC";
+
+            width: 327px;
+            height: 40px;
+            white-space: normal;
+            text-align: center;
+        }
+        .static-map-style1 .map-box .info-window-box .center-txt{
+            position: absolute;
+            top: 50%;
+            left: 0;
+            width: 100%;
+            transform: translateY(-50%);
+            max-height: 40px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            max-height: 40px;
+
+        }
+        .static-map-style1 .markerPop{
+            text-align: left;
+        }
+        .static-map-style1 .markerPop tr .label{
+            width: 70px;
+            vertical-align: top;
+        }
+        .static-map-style1 .markerPop tr .pop-img{
+            width: 100%;
+            height: 120px;
+            margin: 5px 0;
+        }
+        .static-map-style1 .markerPop tr .link-td{
+            text-align: right;
+            line-height: 30px;
+            white-space: nowrap;
+        }
+
+        .static-map-style1 .markerPop tr .link-td.tl{
+            text-align: left;
+        }
+
+        .static-map-style1 .markerPop tr .link{
+            color: #428bca;
+            text-decoration: none;
+        }
+
+        .static-map-style1 .BMap_bubble_content {
+            font-size: 14px;
+            line-height: 24px;
+            color: #555555;
+        }
+        .static-map-style1 .BMap_bubble_title {
+            text-overflow: ellipsis;
+            max-width: 90%;
+        }
+        @media only screen and (min-width: 1px) and (max-width: 767px) {
+            .static-map-style1 {
+                min-width: 0;
+            }
+            .static-map-style1 .map-box{
+                overflow-y: auto;
+            }
+            .static-map-style1 .map-box .BMapLabel{
+                padding: 16px !important;
+            }
+            .static-map-style1 .map-box .info-window-box{
+                font-size: 22px;
+            }
+            .static-map-style1 .map-box .BMap_Marker>div,
+            .static-map-style1 .map-box .BMap_Marker>div img{
+                width: 48px !important;
+                height: 48px !important;
+            }
+        }
+
+    </style>
+</head>
+<body>
+<div class="static-map-style1" style="background-color: white;">
+    <div class="map-box">
+        <div class="eng-map-container"></div>
+    </div>
+</div>
+<!--百度地图api-->
+<script type="text/javascript" src="./baiduMapApi.js"></script>
+<script type="text/javascript" src="./jquery.min.js"></script>
+<script>
+    $(function () {
+
+    var staticMap1 = {
+        pointLists: [
+            // {
+            //     lat: 116.404,
+            //     lng: 39.915,
+            //     title:'故宫博物院',
+            //     city: '北京',
+            //     addr: '北京市西城区紫荆花园小',
+            //     icon:'../../assets/images/icon-location.png'
+            // },
+            {
+                lat: 116.404,
+                lng: 39.915,
+                title:'故宫博物院',
+                city: '北京',
+                addr: '四川省成都市高新区天府北高新区天府北高新区天府北天府北路1700号环球中心E5栋13楼1308天府北路1700号环球中心E5栋13楼1308',
+                icon:'./icon-location.png',
+                iconApp:'./icon-location-app.png'
+            },
+        ],  //测试数据只有一条！！！！！！
+        init: function () {
+            var len = $('.static-map-style1 .map-container').length;
+            var obj = $('.static-map-style1').find('.eng-map-container');
+            obj[0].setAttribute('id','iframeMapOne' + len);
+            this.mapInit('iframeMapOne' + len);
+        },
+        mapInit: function (id) {
+            var _this = this;
+            var map = new BMap.Map(id);
+            map.enableScrollWheelZoom(true);
+            var marker=[],pointArr=[];
+            if( _this.pointLists.length<1){
+                map.centerAndZoom( new BMap.Point(116.404, 39.915), 15);
+            }
+            _this.pointLists.forEach(function (item,index) {
+                var i = index;
+                var pointObj = item;
+                pointArr[i] = new BMap.Point(pointObj.lat, pointObj.lng);
+                if(i===0){
+                    map.centerAndZoom(pointArr[i], 15);
+                }
+                if(pointObj.icon){
+                    // 创建图标
+                    var myIcon = new BMap.Icon(pointObj.icon, new BMap.Size(26, 30));
+                    if (_this.isMobileDevice()) {
+                        myIcon = new BMap.Icon(pointObj.iconApp, new BMap.Size(48, 48));
+                    }
+                    marker[i] = new BMap.Marker(pointArr[i], {
+                        icon: myIcon
+                    })
+                }else{
+                    marker[i] = new BMap.Marker(pointArr[i])
+                }
+                // 将标注添加到地图
+                map.addOverlay(marker[i]);
+                console.log(pointObj)
+                // 创建信息窗口
+                var opts={
+                    position :  pointArr[i],    // 指定文本标注所在的地理位置
+                    offset   :  new BMap.Size(-166, -90),    //设置文本偏移量
+                    enableMassClear: false,
+                }
+                if (_this.isMobileDevice()) {
+                    opts.offset = new BMap.Size(-166, -110)
+                }
+                var infoWindow = new BMap.Label('', opts);
+                infoWindow.setContent('<div class="info-window-box"><div class="center-txt">'+pointObj.addr+'</div></div>');
+                console.log(infoWindow)
+                map.addOverlay(infoWindow);
+            })
+        },
+        isMobileDevice: function () {
+            var deviceWid = $(window).width();
+            if (deviceWid < 767) {
+                return true
+            } else {
+                return false
+            }
+        }
+
+    }
+    staticMap1.init();
+
+    })
+</script>
+
+</body>
+</html>
