@@ -88,12 +88,14 @@
             ,t3.name activityClassifyName
         FROM
             t_activity t
-            INNER JOIN t_activity_scope t1 ON t.id = t1.activity_id
-            <if test="params.fids != null and params.fids.size() != 0">
-                AND t1.fid IN
-                <foreach collection="params.fids" index="key" item="value" open="(" close=")" separator=",">
-                    #{value}
-                </foreach>
+            <if test="params.marketId == null">
+                INNER JOIN t_activity_scope t1 ON t.id = t1.activity_id
+                <if test="params.fids != null and params.fids.size() != 0">
+                    AND t1.fid IN
+                    <foreach collection="params.fids" index="key" item="value" open="(" close=")" separator=",">
+                        #{value}
+                    </foreach>
+                </if>
             </if>
             <!--类型-->
             LEFT JOIN t_classify t3 ON t.activity_classify_id = t3.id
@@ -170,7 +172,7 @@
             t.id
         ORDER BY
             FIELD( t.`status`, 2, 3, 4 )
-            <if test="params.topFid != null">
+            <if test="params.marketId == null and params.topFid != null">
                 , t1.fid <![CDATA[<>]]> #{params.topFid}
             </if>
             ,t.start_time DESC

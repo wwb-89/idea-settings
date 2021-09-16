@@ -22,7 +22,7 @@
 				<i class="icon-delete1" v-show="sw" @click="clearSearch"></i>
 				<i class="icon-search1" @click="search"></i>
 			</div>
-			<div class="user fr">
+			<div class="user fr" th:if="${session._login_user_ != null}">
 				<i class="icon-user"></i>
 				<a href="javascript:" @click="my">我的活动</a>
 			</div>
