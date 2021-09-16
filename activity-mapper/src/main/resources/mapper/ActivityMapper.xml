@@ -293,7 +293,7 @@
                     t1.is_top top
                 </when>
                 <otherwise>
-                    <include refid="Base_Column_List"></include>
+                    <include refid="Base_Column_List"></include>,
                     t.start_time as startTime, t.end_Time as endTime
                 </otherwise>
             </choose>
@@ -366,7 +366,7 @@
                     t1.is_top top
                 </when>
                 <otherwise>
-                    <include refid="Base_Column_List"></include>
+                    <include refid="Base_Column_List"></include>,
                     t.start_time as startTime, t.end_Time as endTime
                 </otherwise>
             </choose>
