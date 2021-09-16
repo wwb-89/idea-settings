@@ -144,10 +144,6 @@ public class ActivityMhDataCenterApiController {
                 fields.add(buildField("活动地点",activityAddress, ++fieldFlag));
                 // 活动分类
                 fields.add(buildField("分类",record.getActivityClassifyName(), ++fieldFlag));
-                // 主办方
-                if (StringUtils.isNotBlank(record.getOrganisers())) {
-                    fields.add(buildField("主办",record.getOrganisers(), ++fieldFlag));
-                }
                 activityJsonArray.add(activity);
             }
         }
@@ -157,22 +153,10 @@ public class ActivityMhDataCenterApiController {
     @RequestMapping("{marketId}/classifies")
     public RestRespDTO listClassify(@RequestBody String data, @PathVariable Integer marketId) {
         JSONObject params = JSON.parseObject(data);
-        Integer wfwfid = params.getInteger("wfwfid");
-        String preParams = params.getString("preParams");
-        JSONObject urlParams = MhPreParamsUtils.resolve(preParams);
-        // flag
-        String flag = urlParams.getString("flag");
-        if (marketId == null && StringUtils.isNotBlank(flag)) {
-            // 根据flag找活动市场id
-            marketId = marketQueryService.getMarketIdByTemplate(wfwfid, flag);
-        }
         List<Classify> classifies = Lists.newArrayList();
         if (marketId != null) {
             classifies = classifyQueryService.listMarketClassifies(marketId);
-        }/* else {
-            classifies = classifyQueryService.listByFids(wfwfids);
-        }*/
-
+        }
         JSONObject jsonObject = new JSONObject();
         JSONArray activityClassifyJsonArray = new JSONArray();
         jsonObject.put("classifies", activityClassifyJsonArray);
