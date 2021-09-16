@@ -215,7 +215,6 @@ body {
 
 .activity-list .card-list ul li .img-box .tips-box {
   position: absolute;
-  z-index: 22;
   left: .375rem;
   top: .375rem;
   font-size: 0;

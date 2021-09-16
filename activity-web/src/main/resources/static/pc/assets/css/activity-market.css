@@ -237,7 +237,6 @@ body {
 
 .activity-market1 .card-list ul li .img-box .tips-box {
   position: absolute;
-  z-index: 22;
   left: 8px;
   top: 8px;
   font-size: 0;
@@ -433,7 +432,6 @@ body {
 
 .activity-market2 .card-list ul li .img-box .tips-box {
   position: absolute;
-  z-index: 22;
   left: 8px;
   top: 8px;
   font-size: 0;
