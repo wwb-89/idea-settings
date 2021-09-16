@@ -80,6 +80,16 @@
   opacity: 0.8;
 }
 
+.link-txt {
+  line-height: 28px;
+  margin-right: 36px;
+}
+
+.link-txt a {
+  font-size: 18px;
+  color: #0084FF;
+}
+
 .border-btn {
   -webkit-box-sizing: border-box;
      -moz-box-sizing: border-box;

@@ -1,0 +1,397 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>通知设置</title>
+    <link rel="stylesheet" href="../../assets/css/public.css">
+    <link rel="stylesheet" href="../../assets/icomoon/style.css">
+    <link rel="stylesheet" href="../../assets/lib/element-ui/lib/theme-chalk/index.css">
+    <link rel="stylesheet" href="../../assets/css/confirm_dialog.css">
+    <link rel="stylesheet" href="../../assets/css/commonTable.css">
+    <link rel="stylesheet" href="../../assets/css/notice-setting.css">
+</head>
+
+<body>
+    <div class="notice-setting" id="index" v-cloak>
+        <el-table class="table-box" :data="tableData">
+            <el-table-column prop="rule" label="通知规则" min-width="157">
+            </el-table-column>
+            <el-table-column prop="title" label="标题" min-width="236">
+            </el-table-column>
+            <el-table-column prop="content" label="内容" min-width="866">
+            </el-table-column>
+            <el-table-column align="center" prop="status" label="状态" min-width="157">
+            </el-table-column>
+            <el-table-column prop="switch" label="开启" min-width="78">
+                <template slot-scope="scope">
+                    <el-switch v-model="scope.row.switch">
+                    </el-switch>
+                </template>
+            </el-table-column>
+            <el-table-column prop="" label="操作" min-width="78">
+                <template slot-scope="scope">
+                    <el-button type="text" size="middle" @click="editRulePop=true">编辑</el-button>
+                </template>
+            </el-table-column>
+        </el-table>
+        <div class="dialog-box" v-if="editRulePop">
+            <div class="dialog-wrap edit-rule">
+                <div class="header">
+                    <span class="color333">即将开始报名</span>
+                    <img src="../../assets/images/close.png" @click="editRulePop = false">
+                </div>
+                <div class="dialog-content">
+                    <form action="" class="el-form">
+                        <div class="form-item">
+                            <label class="label">收件人</label>
+                            <div class="input-box">
+                                <div class="addressee">
+                                    <span class="tag">已收藏</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-item">
+                            <label class="label">发送时间</label>
+                            <div class="input-box">
+                                <span>报名开始前</span>
+                                <el-cascader class="marginL8 width160" v-model="form.time" :options="timeOptions"
+                                    size="small" separator="">
+                                </el-cascader>
+                            </div>
+                        </div>
+                        <div class="form-item">
+                            <label class="label">标题</label>
+                            <div class="input-box">
+                                <div class="custom-input" contenteditable="true" @blur="blurEdit">
+                                    您收藏的<span class="tag color1">标签一</span>即将开始报名！
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-item">
+                            <label class="label">内容</label>
+                            <div class="input-box">
+                                <div class="custom-input desc-box" contenteditable="true" @blur="blurEdit">
+                                    您好，<span class="tag color1">参与人</span>，您收藏的<span class="tag color1">活动名称</span><br>
+                                    活动名称：<span class="tag color1">活动名称</span><br>
+                                    报名时间：<span class="tag color2">报名时间</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-item">
+                            <label class="label">可插入字段</label>
+                            <div class="input-box">
+                                <el-select v-model="form.field" placeholder="请选择" size="small" @change="fieldChange" class="select-field">
+                                    <el-option v-for="(item,index) in fieldList" :key="index" :lable="item.label"
+                                        :value="item">
+                                        <span style="float: left">{{ item.label }}</span>
+                                        <span style="float: right;"
+                                            :class="item.type == 1 ? 'tag color1' : 'tag color2' ">{{ item.value }}</span>
+                                    </el-option>
+                                </el-select>
+                            </div>
+                        </div>
+                        <div class="form-item upload-logo">
+                            <label class="label">卡片logo</label>
+                            <div class="input-box">
+                                <div class="img-box">
+                                    <img src="../../assets/images/icons/cover.png" alt="">
+                                    <div class="mask"><i class="icon-edit"></i></div>
+                                </div>
+                                <div class="img-box">
+                                    <img src="../../assets/images/icons/img-cover.png" alt="">
+                                    <div class="mask"><i class="icon-refresh"></i></div>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                <div class="footer">
+                    <span class="btn btn-border" @click="dataPushPop = false">取消</span>
+                    <span class="btn btn-forbid">完成</span>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script type="text/javascript" src="../../assets/lib/vue.js"></script>
+    <script type="text/javascript" src="../../assets/lib/jquery.min.js"></script>
+    <script type="text/javascript" src="../../assets/lib/element-ui/lib/index.js"></script>
+    <script>
+        var vm = new Vue({
+            el: '#index',
+            data: function () {
+                return {
+                    editRulePop: false,
+                    form: {
+                        name: '已收藏',
+                        time: '',
+                        title: '',
+                        desc: '您好，参与人',
+                        field: '',
+                    },
+                    position: '',
+                    timeOptions: [{
+                        value: 'house0',
+                        label: '0小时',
+                        children: [{
+                            value: 'minute00',
+                            label: '0分钟',
+                        }, {
+                            value: 'minute01',
+                            label: '10分钟',
+                        }, {
+                            value: 'minute02',
+                            label: '20分钟',
+                        }, {
+                            value: 'minute03',
+                            label: '30分钟',
+                        }, {
+                            value: 'minute04',
+                            label: '40分钟',
+                        }, {
+                            value: 'minute05',
+                            label: '60分钟',
+                        }, {
+                            value: 'minute06',
+                            label: '60分钟',
+                        }],
+                    }, {
+                        value: 'house1',
+                        label: '1小时',
+                        children: [{
+                            value: 'minute00',
+                            label: '0分钟',
+                        }, {
+                            value: 'minute01',
+                            label: '10分钟',
+                        }, {
+                            value: 'minute02',
+                            label: '20分钟',
+                        }, {
+                            value: 'minute03',
+                            label: '30分钟',
+                        }, {
+                            value: 'minute04',
+                            label: '40分钟',
+                        }, {
+                            value: 'minute05',
+                            label: '60分钟',
+                        }, {
+                            value: 'minute06',
+                            label: '60分钟',
+                        }],
+                    }, {
+                        value: 'house2',
+                        label: '2小时',
+                        children: [{
+                            value: 'minute00',
+                            label: '0分钟',
+                        }, {
+                            value: 'minute01',
+                            label: '10分钟',
+                        }, {
+                            value: 'minute02',
+                            label: '20分钟',
+                        }, {
+                            value: 'minute03',
+                            label: '30分钟',
+                        }, {
+                            value: 'minute04',
+                            label: '40分钟',
+                        }, {
+                            value: 'minute05',
+                            label: '60分钟',
+                        }, {
+                            value: 'minute06',
+                            label: '60分钟',
+                        }],
+                    }, {
+                        value: 'house3',
+                        label: '3小时',
+                        children: [{
+                            value: 'minute00',
+                            label: '0分钟',
+                        }, {
+                            value: 'minute01',
+                            label: '10分钟',
+                        }, {
+                            value: 'minute02',
+                            label: '20分钟',
+                        }, {
+                            value: 'minute03',
+                            label: '30分钟',
+                        }, {
+                            value: 'minute04',
+                            label: '40分钟',
+                        }, {
+                            value: 'minute05',
+                            label: '60分钟',
+                        }, {
+                            value: 'minute06',
+                            label: '60分钟',
+                        }],
+                    }, {
+                        value: 'house4',
+                        label: '4小时',
+                        children: [{
+                            value: 'minute00',
+                            label: '0分钟',
+                        }, {
+                            value: 'minute01',
+                            label: '10分钟',
+                        }, {
+                            value: 'minute02',
+                            label: '20分钟',
+                        }, {
+                            value: 'minute03',
+                            label: '30分钟',
+                        }, {
+                            value: 'minute04',
+                            label: '40分钟',
+                        }, {
+                            value: 'minute05',
+                            label: '60分钟',
+                        }, {
+                            value: 'minute06',
+                            label: '60分钟',
+                        }],
+                    }, {
+                        value: 'house5',
+                        label: '5小时',
+                        children: [{
+                            value: 'minute00',
+                            label: '0分钟',
+                        }, {
+                            value: 'minute01',
+                            label: '10分钟',
+                        }, {
+                            value: 'minute02',
+                            label: '20分钟',
+                        }, {
+                            value: 'minute03',
+                            label: '30分钟',
+                        }, {
+                            value: 'minute04',
+                            label: '40分钟',
+                        }, {
+                            value: 'minute05',
+                            label: '60分钟',
+                        }, {
+                            value: 'minute06',
+                            label: '60分钟',
+                        }],
+                    }],
+                    fieldList: [{
+                        type: '1',
+                        value: '文本',
+                        label: '参与人'
+                    }, {
+                        type: '1',
+                        value: '文本',
+                        label: '活动名称'
+                    }, {
+                        type: '2',
+                        value: '日期',
+                        label: '报名时间'
+                    }, {
+                        type: '2',
+                        value: '日期',
+                        label: '活动时间'
+                    }, {
+                        type: '1',
+                        value: '文本',
+                        label: '主办方'
+                    }, {
+                        type: '1',
+                        value: '文本',
+                        label: '考核结果'
+                    }],
+                    tableData: [{
+                        rule: '即将开始报名',
+                        title: '您收藏的{活动名称}即将开始！',
+                        content: '您好，{姓名}，您收藏的{活动名称}即将开始报名！活动名称：{活动名称} 报名时间：{报名时间} 活动时间：{活动时间}您好，{姓名}，您收藏的{活动名称}即将开始报名！活动名称：{活动名称} 报名时间：{报名时间} 活动 (自动换行，不省略)',
+                        status: '已禁用',
+                        switch: false,
+                    }, {
+                        rule: '即将结束报名',
+                        title: '您收藏的{活动名称}即将开始！',
+                        content: '您好，{姓名}，您收藏的{活动名称}即将名！活动名称：{活动名称} 报名时间：{报名时间} 活动时间：{活动时间}',
+                        status: '已开启',
+                        switch: true,
+                    }, {
+                        rule: '活动即将开始',
+                        title: '您报名的{活动名称}即将开始！',
+                        content: '您好，{姓名}，您收藏的{活动名称}即将名！活动名称：{活动名称} 报名时间：{报名时间} 活动时间：{活动时间}',
+                        status: '已禁用',
+                        switch: false,
+                    }, {
+                        rule: '活动结束评价',
+                        title: '活动评价：{活动名称}',
+                        content: '您好，{姓名}，您收藏的{活动名称}即将名！活动名称：{活动名称} 报名时间：{报名时间} 活动时间：{活动时间}',
+                        status: '已禁用',
+                        switch: false,
+                    }, {
+                        rule: '活动信息变更',
+                        title: '您报名的{活动名称}信息有变更',
+                        content: '您好，{姓名}，您收藏的{活动名称}即将名！活动名称：{活动名称} 报名时间：{报名时间} 活动时间：{活动时间}',
+                        status: '已禁用',
+                        switch: false,
+                    }, {
+                        rule: '活动结束评价',
+                        title: '活动评价：{活动名称}',
+                        content: '您好，{姓名}，您收藏的{活动名称}即将名！活动名称：{活动名称} 报名时间：{报名时间} 活动时间：{活动时间}',
+                        status: '已禁用',
+                        switch: false,
+                    }, {
+                        rule: '未签到/签退',
+                        title: '您在{活动名称}中未签到',
+                        content: '您好，{姓名}，您收藏的{活动名称}即将名！活动名称：{活动名称} 报名时间：{报名时间} 活动时间：{活动时间}',
+                        status: '已禁用',
+                        switch: false,
+                    }, {
+                        rule: '进入黑名单',
+                        title: '您已被移入“{主办方}”黑名单！',
+                        content: '您好，{姓名}，您收藏的{活动名称}即将名！活动名称：{活动名称} 报名时间：{报名时间} 活动时间：{活动时间}',
+                        status: '已禁用',
+                        switch: false,
+                    }, {
+                        rule: '移除黑名单',
+                        title: '您已被“{主办方}”移除黑名单',
+                        content: '您好，{姓名}，您收藏的{活动名称}即将名！活动名称：{活动名称} 报名时间：{报名时间} 活动时间：{活动时间}',
+                        status: '已禁用',
+                        switch: false,
+                    }, {
+                        rule: '作品提交提醒',
+                        title: '作业提醒：{活动名称}',
+                        content: '您好，{姓名}，您收藏的{活动名称}即将名！活动名称：{活动名称} 报名时间：{报名时间} 活动时间：{活动时间}',
+                        status: '已禁用',
+                        switch: false,
+                    }, ]
+                }
+            },
+            methods: {
+                // 获取光标位置
+                blurEdit: function () {
+                    this.position = window.getSelection().getRangeAt(0)
+                },
+                // 插入字段
+                fieldChange: function (params) {
+                    // console.log(params)
+                    if (this.position) {
+                        var span = document.createElement('span')
+                        if (params.type == 1) {
+                            span.innerHTML = `<span class="tag color1">${params.label}</span>`
+                        } else if (params.type == 2) {
+                            span.innerHTML = `<span class="tag color2">${params.label}</span>`
+                        }
+                        this.position.insertNode(span)
+                    }
+                },
+            }
+        })
+    </script>
+</body>
+
+</html>
