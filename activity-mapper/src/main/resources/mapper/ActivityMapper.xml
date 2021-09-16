@@ -74,8 +74,18 @@
 
     <select id="pageParticipate" resultMap="BaseResultMap">
         SELECT
-            <include refid="Base_Column_List"></include>,
-            t3.name activityClassifyName
+            <choose>
+                <when test="params.marketId != null">
+                    <include refid="Base_Market_Column_List"></include>,
+                    t4.is_released,
+                    t4.status,
+                    t4.is_top top
+                </when>
+                <otherwise>
+                    <include refid="Base_Column_List"></include>
+                </otherwise>
+            </choose>
+            ,t3.name activityClassifyName
         FROM
             t_activity t
             INNER JOIN t_activity_scope t1 ON t.id = t1.activity_id
@@ -87,6 +97,9 @@
             </if>
             <!--类型-->
             LEFT JOIN t_classify t3 ON t.activity_classify_id = t3.id
+            <if test="params.marketId != null">
+                INNER JOIN t_activity_market t4 ON t4.activity_id = t.id
+            </if>
         WHERE
             <!--状态-->
             <choose>
@@ -269,7 +282,7 @@
                     <include refid="Base_Market_Column_List"></include>,
                     t1.is_released,
                     t1.status,
-                    t1.is_top
+                    t1.is_top top
                 </when>
                 <otherwise>
                     <include refid="Base_Column_List"></include>
@@ -337,7 +350,7 @@
                     <include refid="Base_Market_Column_List"></include>,
                     t1.is_released,
                     t1.status,
-                    t1.is_top
+                    t1.is_top top
                 </when>
                 <otherwise>
                     <include refid="Base_Column_List"></include>

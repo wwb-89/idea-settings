@@ -218,6 +218,7 @@ body {
   left: .375rem;
   top: .375rem;
   font-size: 0;
+  z-index: 1;
 }
 
 .activity-list .card-list ul li .img-box .tips {

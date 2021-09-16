@@ -92,6 +92,7 @@
                         >
                             <template slot-scope="scope">
                                 <el-image class="table-img jqthumbImg" :src="scope.row | getCloudImgUrl" fit="cover"></el-image>
+                                <span class="table-img-top" v-show="scope.row.top">置顶</span>
                             </template>
                         </el-table-column>
                         <el-table-column
@@ -118,7 +119,7 @@
                                 filter-placement="bottom"
                         >
                             <template slot-scope="scope">
-                                <span :class="{'blue2': (scope.row.status == '1'), 'blue': (scope.row.status == '2'), 'green': (scope.row.status == '3')}">{{scope.row.status | activityStatusInstructions}}</span>
+                                <span :class="{'btn-no-public': (scope.row.status == 1 || scope.row.status == 2), 'btn-is-progress': (scope.row.status == 3), 'btn-is-end': (scope.row.status == 4)}">{{scope.row.status | activityStatusInstructions}}</span>
                             </template>
                         </el-table-column>
                         <el-table-column
@@ -217,7 +218,7 @@
             var dateObj = moment(timestamp);
             return dateObj.format("YYYY-MM-DD HH:mm");
         });
-        activityVue = new Vue({
+        vm = new Vue({
             el: "#activity-vue",
             data: {
                 activities: [],
