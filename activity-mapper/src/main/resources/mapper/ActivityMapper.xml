@@ -171,11 +171,16 @@
         GROUP BY
             t.id
         ORDER BY
-            FIELD( t.`status`, 2, 3, 4 )
-            <if test="params.marketId == null and params.topFid != null">
-                , t1.fid <![CDATA[<>]]> #{params.topFid}
-            </if>
-            ,t.start_time DESC
+            <trim suffixOverrides=",">
+                <if test="params.marketId != null">
+                    t4.is_top DESC,
+                </if>
+                FIELD( t.`status`, 2, 3, 4 ),
+                <if test="params.marketId == null and params.topFid != null">
+                    t1.fid <![CDATA[<>]]> #{params.topFid},
+                </if>
+                t.start_time DESC
+            </trim>
     </select>
 
     <!-- 活动分类join过滤条件 -->
@@ -282,12 +287,14 @@
             <choose>
                 <when test="params.marketId != null">
                     <include refid="Base_Market_Column_List"></include>,
+                    t.start_time as startTime, t.end_Time as endTime,
                     t1.is_released,
                     t1.status,
                     t1.is_top top
                 </when>
                 <otherwise>
                     <include refid="Base_Column_List"></include>
+                    t.start_time as startTime, t.end_Time as endTime
                 </otherwise>
             </choose>
         FROM
@@ -332,6 +339,9 @@
             t.id
         ORDER BY
         <trim suffixOverrides=",">
+            <if test="params.marketId != null">
+                t1.is_top DESC,
+            </if>
             <if test="params.orderField != null and params.orderField != ''">
                 ${params.orderField} ${params.orderType},
             </if>
@@ -350,12 +360,14 @@
             <choose>
                 <when test="params.marketId != null">
                     <include refid="Base_Market_Column_List"></include>,
+                    t.start_time as startTime, t.end_Time as endTime,
                     t1.is_released,
                     t1.status,
                     t1.is_top top
                 </when>
                 <otherwise>
                     <include refid="Base_Column_List"></include>
+                    t.start_time as startTime, t.end_Time as endTime
                 </otherwise>
             </choose>
         FROM
@@ -391,12 +403,17 @@
         GROUP BY
             t.id
         ORDER BY
+        <trim suffixOverrides=",">
+            <if test="params.marketId != null">
+                t1.is_top DESC,
+            </if>
             <if test="params.orderField != null and params.orderField != ''">
-                ${params.orderField} ${params.orderType}
+                ${params.orderField} ${params.orderType},
             </if>
             <if test="params.orderField == null or params.orderField == ''">
-                t.create_time DESC
+                t.create_time DESC,
             </if>
+        </trim>
     </select>
 
     <!--查询机构创建的-->
