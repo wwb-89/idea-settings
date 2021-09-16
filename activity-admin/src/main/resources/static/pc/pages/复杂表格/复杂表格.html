@@ -8,7 +8,7 @@
     <link rel="stylesheet" href="../../assets/icomoon/style.css">
     <link rel="stylesheet" href="../../assets/lib/element-ui/lib/theme-chalk/index.css">
     <link rel="stylesheet" href="../../assets/lib/zTree_v3/css/zTreeStyle/zTreeStyle.css" type="text/css">
-    <link rel="stylesheet" href="../../assets/css/commonTable.css">
+    <link rel="stylesheet" href="../../assets/sign/assets/css/commonTable.css">
     <link rel="stylesheet" href="../../assets/css/confirm_dialog.css">
     <title>复杂表格</title>
     <style>
@@ -67,10 +67,13 @@
                 <div class="operate-box">
                     <!-- 操作栏 -->
                     <div class="table-operate-box fs0">
+                        <el-button type="primary" disabled class="btn-bg-blue">主要按钮</el-button>
+                        <el-button type="primary" class="btn-bg-blue"><i class="icon-code inlineMiddle"></i><span class="inlineMiddle">带图标按钮</span></el-button>
                         <el-button class="btn-customize" round @click="ifModifyPop=true">修改合格状态</el-button>
                         <el-button class="btn-customize" round>批量通过</el-button>
                         <el-button class="btn-customize" round>批量不通过</el-button>
                         <el-button class="btn-customize disabled" round disabled="disabled">批量不通过</el-button>
+                        <el-button class="btn-customize" round @click="changeTimePop=true">修改签到时间</el-button>
                         <div class="search-Box">
                             <el-input placeholder="搜索"
                                       icon="search"
@@ -144,7 +147,7 @@
                     </div>
 
                 </div>
-                <el-table v-if="tbodyHeight > 0" class="table-box" :data="tableTestData1" :height="tbodyHeight">
+                <el-table v-if="tbodyHeight > 0" class="table-box" :data="tableTestData1" :max-height="tbodyHeight">
                     <el-table-column
                             :align="ifCenter"
                             fixed
@@ -207,7 +210,9 @@
                             <!--<div class="table-img">-->
                             <!--<div class="bg-img" :style="{backgroundImage:scope.row.img}"></div>-->
                             <!--</div>-->
-                            <el-image class="table-img" :src="scope.row.img" fit="cover"></el-image>
+                            <el-image class="table-img" :src="scope.row.img" fit="cover">
+                            </el-image>
+                            <span class="table-img-top">置顶</span>
                         </template>
                     </el-table-column>
                     <el-table-column
@@ -218,9 +223,31 @@
                     </el-table-column>
                     <el-table-column
                             :align="ifCenter"
+                            class-name="th-dropdwon-radio"
                             prop="account"
                             label="账号"
-                            min-width="120">
+                            min-width="120"
+                            :filters="filterLists"
+                            :filter-method="filterTagRadio"
+                            :filter-multiple="false"
+                            filter-placement="bottom">
+
+                    </el-table-column>
+                    <el-table-column
+                            :align="ifCenter"
+                            class-name="th-dropdwon-radio"
+                            prop="status2"
+                            label="状态"
+                            min-width="120"
+                            :filters="filterLists2"
+                            :filter-method="filterTagRadio"
+                            :filter-multiple="false"
+                            filter-placement="bottom">
+                        <template slot-scope="scope">
+                            <span class="btn-is-progress" v-show="scope.row.status2=='进行中'">进行中</span>
+                            <span class="btn-no-public" v-show="scope.row.status2=='未发布'">未发布</span>
+                            <span class="btn-is-end" v-show="scope.row.status2=='已结束'">已结束</span>
+                        </template>
                     </el-table-column>
                     <el-table-column
                             :align="ifCenter"
@@ -329,7 +356,7 @@
                 <el-pagination
                         background
                         layout="prev, pager, next"
-                        :total="200">
+                        :total="200" class="fixPage">
                 </el-pagination>
             </div>
             <div class="tab-item" v-if="tabIndex === 1">
@@ -479,7 +506,8 @@
     <!-------------------------------------------------分割线------------------------------------------------>
 
     <!--确认取消报名弹窗-->
-    <div class="dialog-box" v-if="ifCancelPop">
+    <div class="dialog-box" v-show="ifCancelPop">
+        <div class="masking" @click="ifCancelPop = false"></div>
         <div class="confirm_dialog">
             <span class="icon"><img src="../../assets/images/icon-warning.png"></span>
             <span class="text">确定取消报名吗？</span>
@@ -491,6 +519,7 @@
     </div>
     <!-- 参与范围 -->
     <div class="dialog-box selectPop" v-show="ifSelectPop">
+        <div class="masking" @click="ifSelectPop = false"></div>
         <div class="dialog-wrap">
             <div class="header">
                 <span class="color333">参与范围</span>
@@ -522,7 +551,8 @@
     </div>
     <!--遮罩-->
     <!--修改合格状态弹窗-->
-    <div class="dialog-box modifyPop" v-if="ifModifyPop">
+    <div class="dialog-box modifyPop" v-show="ifModifyPop">
+        <div class="masking" @click="ifModifyPop = false"></div>
         <div class="dialog-wrap">
             <div class="header">修改合格状态</div>
             <div class="dialog-content">
@@ -531,6 +561,29 @@
             </div>
         </div>
     </div>
+
+    <!-- 修改签到时间 -->
+    <el-dialog
+            title="修改签到时间"
+            :visible.sync="changeTimePop"
+            custom-class="changetime_dialog"
+            width="360px"
+            center>
+        <div class="change-time-box">
+            <el-date-picker
+                    v-model="signinTimeVal"
+                    type="datetime"
+                    placeholder="请选择日期时间"
+                    default-time="12:00:00"
+                    :default-value="new Date()">
+            </el-date-picker>
+        </div>
+        <span slot="footer" class="dialog-footer">
+            <el-button @click="changeTimePop = false">取 消</el-button>
+            <el-button type="primary" @click="changeTimePop = false">确 定</el-button>
+          </span>
+    </el-dialog>
+
 </div>
 
 <script src="../../assets/lib/jquery.min.js"></script>
@@ -562,6 +615,7 @@
                     applyType:'全部',
                     status: 0,
                     img: 'http://file.m.superlib.com/C/GEDEbook/cover/190801/TSYJ031442.jpg',
+                    status2: "进行中"
                 }, {
                     name: '吴立',
                     account: '18272676793',
@@ -569,6 +623,7 @@
                     applyType:'“博阅锦绣”2020寒假星阅读',
                     status: 0,
                     img: 'http://117813nj.portal.chaoxing.com/engine/upload/engine/2019-12/20191209114751024v.png',
+                    status2: "未发布"
                 }, {
                     name: '吴立',
                     account: '18272676793',
@@ -576,6 +631,7 @@
                     applyType:'可选项',
                     status: 2,
                     img: '../../assets/images/img1.png',
+                    status2: "已结束"
                 }, {
                     name: '吴立',
                     account: '18272676793',
@@ -583,6 +639,7 @@
                     applyType:'可选项',
                     status: 0,
                     img: '../../assets/images/img1.png',
+                    status2: "已结束"
                 }, {
                     name: '吴立',
                     account: '18272676793',
@@ -590,6 +647,7 @@
                     applyType:'可选项',
                     status: 1,
                     img: '../../assets/images/img1.png',
+                    status2: "已结束"
                 }, {
                     name: '吴立',
                     account: '18272676793',
@@ -597,6 +655,7 @@
                     applyType:'可选项',
                     status: 1,
                     img: '../../assets/images/img1.png',
+                    status2: "已结束"
                 }, {
                     name: '吴立',
                     account: '18272676793',
@@ -604,6 +663,7 @@
                     applyType:'可选项',
                     status: 1,
                     img: '../../assets/images/img1.png',
+                    status2: "已结束"
                 }, {
                     name: '吴立',
                     account: '18272676793',
@@ -611,6 +671,7 @@
                     applyType:'可选项',
                     status: 1,
                     img: '../../assets/images/img1.png',
+                    status2: "已结束"
                 }, {
                     name: '吴立',
                     account: '18272676793',
@@ -618,6 +679,7 @@
                     applyType:'可选项',
                     status: 1,
                     img: '../../assets/images/img1.png',
+                    status2: "已结束"
                 }, {
                     name: '吴立',
                     account: '18272676793',
@@ -625,6 +687,7 @@
                     applyType:'可选项',
                     status: 1,
                     img: '../../assets/images/img1.png',
+                    status2: "已结束"
                 }, {
                     name: '吴立',
                     account: '18272676793',
@@ -632,6 +695,7 @@
                     applyType:'可选项',
                     status: 1,
                     img: '../../assets/images/img1.png',
+                    status2: "已结束"
                 }, {
                     name: '吴立',
                     account: '18272676793',
@@ -639,6 +703,7 @@
                     applyType:'可选项',
                     status: 1,
                     img: '../../assets/images/img1.png',
+                    status2: "已结束"
                 }, {
                     name: '吴立',
                     account: '18272676793',
@@ -646,6 +711,7 @@
                     applyType:'2020浙江省云阅读计划之“晒书房',
                     status: 1,
                     img: '../../assets/images/img1.png',
+                    status2: "已结束"
                 }, {
                     name: '吴立',
                     account: '18272676793',
@@ -653,6 +719,7 @@
                     applyType:'可选项',
                     status: 1,
                     img: '../../assets/images/img1.png',
+                    status2: "已结束"
                 }, {
                     name: '吴立',
                     account: '18272676793',
@@ -660,6 +727,7 @@
                     applyType:'仲夏奇阅记',
                     status: 1,
                     img: '../../assets/images/img1.png',
+                    status2: "已结束"
                 }, {
                     name: '吴立',
                     account: '18272676793',
@@ -667,6 +735,7 @@
                     applyType:'环保公益课堂2021年1月“垃圾分分乐”宣讲活动预告环保公益课堂2021年1月“垃圾分分乐”宣讲活动预告',
                     status: 1,
                     img: '../../assets/images/img1.png',
+                    status2: "已结束"
                 }, {
                     name: '吴立',
                     account: '18272676793',
@@ -674,6 +743,7 @@
                     applyType:'可选项',
                     status: 1,
                     img: '../../assets/images/img1.png',
+                    status2: "已结束"
                 }, {
                     name: '吴立',
                     account: '18272676793',
@@ -681,6 +751,7 @@
                     applyType:'可选项',
                     status: 1,
                     img: '../../assets/images/img1.png',
+                    status2: "已结束"
                 }, {
                     name: '吴立',
                     account: '18272676793',
@@ -688,6 +759,7 @@
                     applyType:'可选项',
                     status: 1,
                     img: '../../assets/images/img1.png',
+                    status: "已结束"
                 }, {
                     name: '吴立',
                     account: '18272676793',
@@ -695,6 +767,7 @@
                     applyType:'可选项',
                     status: 1,
                     img: '../../assets/images/img1.png',
+                    status2: "已结束"
                 }, {
                     name: '吴立',
                     account: '18272676793',
@@ -702,6 +775,7 @@
                     applyType:'可选项',
                     status: 1,
                     img: '../../assets/images/img1.png',
+                    status2: "已结束"
                 }
             ],
             tableTestData2: [],
@@ -785,6 +859,20 @@
                     text: '环保公益课堂2021年1月“垃圾分分乐”宣讲活动预告',
                     value: '环保公益课堂2021年1月“垃圾分分乐”宣讲活动预告'
                 },
+            ],
+            filterLists2:[
+                {
+                    text: '进行中',
+                    value: '进行中'
+                },
+                {
+                    text: '未发布',
+                    value: '未发布'
+                },
+                {
+                    text: '已结束',
+                    value: '已结束'
+                }
             ],   //报名项目下拉
             datetimefoc:false, //日期时间的输入框是否聚焦
             ifCancelPop: false,
@@ -1024,6 +1112,8 @@
             ifModifyPop:false,//修改合格状态弹窗展示
             bodyHeight: $(window).height(),
             tbodyHeight: 0,
+            changeTimePop: false, //修改签到时间
+            signinTimeVal:'', //修改签到时间值
         },
         created: function () {
 
@@ -1047,6 +1137,12 @@
             },
             // 报名项目
             filterTag(value, row) {
+                console.log(value)
+                console.log(row)
+                return row.tag === value;
+            },
+            //表格表头下拉单选
+            filterTagRadio (value, row) {
                 console.log(value)
                 console.log(row)
                 return row.tag === value;
@@ -1100,7 +1196,7 @@
             },
             clearCheckedOldNodes() {
                 var zTree = $.fn.zTree.getZTreeObj("treeList"),
-                    nodes = zTree.getChangeCheckedNodes();
+                        nodes = zTree.getChangeCheckedNodes();
                 for (var i=0, l=nodes.length; i<l; i++) {
                     nodes[i].checkedOld = nodes[i].checked;
                 }
@@ -1114,7 +1210,7 @@
             modifyPopClick(){
                 this.showToast()
                 this.ifModifyPop = false
-            }
+            },
         }
     })
 </script>
