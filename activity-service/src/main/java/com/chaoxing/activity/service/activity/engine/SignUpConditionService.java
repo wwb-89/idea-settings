@@ -180,7 +180,7 @@ public class SignUpConditionService {
 		}
 		// 根据报名成功的报名签到id列表查询进行中的活动数量
 		Integer signedUpActivityNum = activityQueryService.countIngActivityNumBySignIds(marketId, signedUpSignIds);
-		if (signedUpActivityNum.compareTo(signedUpActivityNum) >= 0) {
+		if (signedUpActivityNum.compareTo(signUpActivityLimit) >= 0) {
 			throw new BusinessException("同时报名活动数超过限制");
 		}
 	}
