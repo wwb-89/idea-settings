@@ -280,7 +280,7 @@ public class Activity {
     public enum ActivityFlagEnum {
 
         /** 通用 */
-        NORMAL("活动", "normal"),
+        NORMAL("活动市场", "normal"),
         /** 第二课堂 */
         SECOND_CLASSROOM("第二课堂活动", "second_classroom"),
         /** 双选会 */
