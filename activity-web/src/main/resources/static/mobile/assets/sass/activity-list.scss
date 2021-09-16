@@ -160,19 +160,38 @@ body {
                             width: 7.5rem;
                             height: 5.5rem;
                         }
+                        .tips-box {
+                          position: absolute;
+                          z-index: 22;
+                          left: .375rem;
+                          top: .375rem;
+                          font-size: 0;
+                        }
                     .tips {
-                        position: absolute;
-                        right: 0;
-                        top: 0;
-                        // width: 2.6875rem;
-                        z-index: 1;
+                        display: inline-block;
+                        vertical-align: top;
                         padding: 0 .5rem;
                         font-weight: 500;
                         height: 1rem;
                         line-height: 1rem;
                         color: #FFFFFF;
                         font-size: .5625rem;
-                        border-radius: 0px .28125rem 0px .3125rem;
+                        border-radius: .25rem;
+                        &.sign {
+                          position: relative;
+                          padding-left: .8125rem;
+                          margin-right: .25rem;
+                        }
+                        .sign-dot {
+                          position: absolute;
+                          top: .375rem;
+                          left: .375rem;
+                          display: inline-block;
+                          width: .25rem;
+                          height: .25rem;
+                          border-radius: 50%;
+                          background: #fff;
+                        }
                     }
                     .color1 {
                         background: linear-gradient(279.4deg, #24BB1D 0.2%, #48DF4E 100.2%);
@@ -190,9 +209,25 @@ body {
 
                       background: linear-gradient(96.68deg, #FFB763 1.14%, #FF8B20 98.13%);
                     }
+                    .color6 {
+                      background: linear-gradient(90deg, #02C4FF 0%, #43A3FF 100%);
+                    }
                 }
                 .card-info {
                     text-align: left;
+                    .info-top {
+                      display: inline-block;
+                      vertical-align: top;
+                      margin-right: .25rem;
+                      width: 2.0625rem;
+                      height: 1.125rem;
+                      background: rgba(0, 132, 255, 0.06);
+                      border-radius: .1875rem;
+                      font-size: .75rem;
+                      line-height: 1.125rem;
+                      text-align: center;
+                      color: #0084FF;
+                    }
                     .title {
                         color: #333333;
                         font-size: .9375rem;
@@ -205,6 +240,23 @@ body {
                         font-size: .75rem;
                         line-height: 1.25rem;
                         margin-bottom: .25rem;
+                    }
+                    .type-box {
+                      margin: .25rem 0;
+                      font-size: 0;
+                      .type-item {
+                        display: inline-block;
+                        vertical-align: top;
+                        margin-right: .375rem;
+                        border: .03125rem solid #E9E9E9;
+                        box-sizing: border-box;
+                        border-radius: .25rem;
+                        height: 1.1875rem;
+                        line-height: 1.1875rem;
+                        padding: 0 .375rem;
+                        font-size: .6875rem;
+                        color: #666666;
+                      }
                     }
                     .address {
                         font-size: .75rem;
