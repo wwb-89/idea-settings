@@ -81,6 +81,8 @@ public class ActivityCreateParamDTO {
 	private BigDecimal integral;
 	/** 是否开启作品征集 */
 	private Boolean openWork;
+	/** 是否开启小组 */
+	private Boolean openGroup;
 	/** 作品征集id */
 	private Integer workId;
 	/** 是否开启阅读设置 */
@@ -101,13 +103,12 @@ public class ActivityCreateParamDTO {
 	private Integer templateId;
 	/** 简介 */
 	private String introduction;
-
+	/** 门户页面预览地址 */
 	private String previewUrl;
-
+	/** 门户页面修改地址 */
 	private String editUrl;
-
+	/** 门户网页模版id */
 	private Integer webTemplateId;
-
 	/** 预览显示使用 */
 	private String activityClassifyName;
 
@@ -138,6 +139,7 @@ public class ActivityCreateParamDTO {
 	public Activity buildActivity() {
 		LocalDateTime startTime = DateUtils.timestamp2Date(getStartTimeStamp());
 		LocalDateTime endTime = DateUtils.timestamp2Date(getEndTimeStamp());
+		defaultValue();
 		return Activity.builder()
 				.name(getName())
 				.startTime(startTime)
@@ -175,6 +177,7 @@ public class ActivityCreateParamDTO {
 				.originType(getOriginType())
 				.origin(getOrigin())
 				.originActivityId(getOriginActivityId())
+				.openGroup(getOpenGroup())
 				.build();
 	}
 
@@ -230,6 +233,7 @@ public class ActivityCreateParamDTO {
 				.signedUpNotice(activity.getSignedUpNotice())
 				.activityFlag(activity.getActivityFlag())
 				.originActivityId(activity.getOriginActivityId())
+				.openGroup(activity.getOpenGroup())
 				.build();
 	}
 
@@ -283,6 +287,7 @@ public class ActivityCreateParamDTO {
 		this.ratingNeedAudit = Optional.ofNullable(ratingNeedAudit).orElse(false);
 		this.openWork = Optional.ofNullable(openWork).orElse(false);
 		this.openReading = Optional.ofNullable(openReading).orElse(false);
+		this.openGroup = Optional.ofNullable(openGroup).orElse(false);
 	}
 
 }

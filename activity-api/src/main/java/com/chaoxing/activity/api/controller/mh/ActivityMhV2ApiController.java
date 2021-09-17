@@ -11,6 +11,7 @@ import com.chaoxing.activity.model.Activity;
 import com.chaoxing.activity.service.activity.ActivityQueryService;
 import com.chaoxing.activity.service.activity.ActivityValidationService;
 import com.chaoxing.activity.service.activity.flag.ActivityFlagValidateService;
+import com.chaoxing.activity.service.manager.GroupApiService;
 import com.chaoxing.activity.service.manager.module.SignApiService;
 import com.chaoxing.activity.util.constant.ActivityMhUrlConstant;
 import com.chaoxing.activity.util.constant.DateTimeFormatterConstant;
@@ -51,6 +52,8 @@ public class ActivityMhV2ApiController {
 	private ActivityValidationService activityValidationService;
 	@Resource
 	private ActivityFlagValidateService activityFlagValidateService;
+	@Resource
+	private GroupApiService groupApiService;
 
 	/**活动信息
 	 * @Description 
@@ -262,9 +265,13 @@ public class ActivityMhV2ApiController {
 				result.add(btn);
 			}
 		}
+		// 讨论小组
+		Boolean openGroup = Optional.ofNullable(activity.getOpenGroup()).orElse(false);
+		if (openGroup) {
+			result.addAll(buildBtnField("讨论小组", getFlag(availableFlags), groupApiService.getGroupUrl(activity.getGroupBbsid()), "2"));
+		}
 		// 评价
-		Boolean openRating = activity.getOpenRating();
-		openRating = Optional.ofNullable(openRating).orElse(Boolean.FALSE);
+		Boolean openRating = Optional.ofNullable(activity.getOpenRating()).orElse(Boolean.FALSE);
 		if (openRating) {
 			result.addAll(buildBtnField("评价", getFlag(availableFlags), activityQueryService.getActivityRatingUrl(activity.getId()), "2"));
 		}

@@ -263,6 +263,16 @@
                                 </div>
                             </div>
                         </div>
+                        <!--小组设置-->
+                        <div class="form-item align-start" v-else-if="item.code == 'group'">
+                            <label class="label">{{item.name}}</label>
+                            <div class="input-box column">
+                                <div class="set-box">
+                                    <el-switch v-model="activity.openGroup" class="examine-switch"></el-switch>
+                                    <span class="tips" v-if="item.introduction">{{item.introduction}}</span>
+                                </div>
+                            </div>
+                        </div>
                         <!--阅读设置-->
                         <div class="form-item align-start" v-else-if="item.code == 'reading'">
                             <label class="label">{{item.name}}</label>
@@ -941,6 +951,7 @@
                         webTemplateId: '',
                         // 目前数据接收实体没有以下字段
                         activityFlag: $this.activityFlag,
+                        openGroup: false
                     };
                     // 展示模板页面 初始化默认选择第一个
                     var firstWebTemplate = $this.webTemplates && $this.webTemplates[0];

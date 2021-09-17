@@ -116,7 +116,6 @@ public class ActivityCreateFromActivityReleaseParamDTO {
                 .originType(Activity.OriginTypeEnum.ACTIVITY_RELEASE.getValue())
                 .origin(String.valueOf(getOriginId()))
                 .build();
-        activityCreateParamDto.defaultValue();
         return activityCreateParamDto;
     }
 

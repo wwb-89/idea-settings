@@ -16,13 +16,12 @@ import com.chaoxing.activity.service.activity.ActivityQueryService;
 import com.chaoxing.activity.service.activity.ActivityValidationService;
 import com.chaoxing.activity.service.activity.flag.ActivityFlagValidateService;
 import com.chaoxing.activity.service.activity.rating.ActivityRatingQueryService;
+import com.chaoxing.activity.service.manager.CloudApiService;
 import com.chaoxing.activity.service.manager.module.SignApiService;
 import com.chaoxing.activity.util.DateUtils;
-import com.chaoxing.activity.util.constant.DateTimeFormatterConstant;
 import com.chaoxing.activity.util.constant.UrlConstant;
 import com.chaoxing.activity.util.enums.MhAppIconEnum;
 import com.google.common.collect.Lists;
-import jdk.nashorn.internal.runtime.regexp.joni.Regex;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.web.bind.annotation.*;
@@ -54,6 +53,8 @@ public class ActivityMhV3ApiController {
     private ActivityFlagValidateService activityFlagValidateService;
     @Resource
     private ActivityRatingQueryService activityRatingQueryService;
+    @Resource
+    private CloudApiService cloudApiService;
 
     @Resource
     private SignApiService signApiService;
@@ -68,7 +69,7 @@ public class ActivityMhV3ApiController {
             return RestRespDTO.success(jsonObject);
         }
         // 开始结束时间
-        buildField(activity.getCoverUrl(), "", DateUtils.activityTimeScope(activity.getStartTime(), activity.getEndTime()), buildCloudImgUrl(MhAppIconEnum.ONE.TIME_TRANSPARENT.getValue()), mainFields);
+        buildField(activity.getCoverUrl(), "", DateUtils.activityTimeScope(activity.getStartTime(), activity.getEndTime()), cloudApiService.buildImageUrl(MhAppIconEnum.ONE.TIME_TRANSPARENT.getValue()), mainFields);
         if (activity.getSignId() != null) {
             SignStatDTO signStat = signApiService.getSignParticipation(activity.getSignId());
             if (CollectionUtils.isNotEmpty(signStat.getSignUpIds())) {
@@ -76,7 +77,7 @@ public class ActivityMhV3ApiController {
                 if (signStat.getLimitNum() != null && signStat.getLimitNum() > 0) {
                     signedUpNumDescribe += "/" + signStat.getLimitNum();
                 }
-                buildField(activity.getCoverUrl(), "已报名", signedUpNumDescribe, buildCloudImgUrl(MhAppIconEnum.ONE.SIGNED_UP_USER.getValue()), mainFields);
+                buildField(activity.getCoverUrl(), "已报名", signedUpNumDescribe, cloudApiService.buildImageUrl(MhAppIconEnum.ONE.SIGNED_UP_USER.getValue()), mainFields);
             }
         }
         // 活动报名参与情况
@@ -85,7 +86,7 @@ public class ActivityMhV3ApiController {
     }
 
 
-    @RequestMapping("/activity/btns")
+    @RequestMapping("activity/btns")
     public RestRespDTO mhActivityBtns(@RequestBody String data) {
         Activity activity = getActivityByData(data);
         JSONObject jsonObject = new JSONObject();
@@ -101,7 +102,7 @@ public class ActivityMhV3ApiController {
     }
 
 
-    @RequestMapping("/activity/info")
+    @RequestMapping("activity/info")
     public RestRespDTO activityInfo(@RequestBody String data) {
         Activity activity = getActivityByData(data);
         JSONObject jsonObject = new JSONObject();
@@ -112,24 +113,24 @@ public class ActivityMhV3ApiController {
         List<MhGeneralAppResultDataDTO> mainFields = Lists.newArrayList();
         // 主办方
         if (StringUtils.isNotBlank(activity.getOrganisers())) {
-            buildField(buildCloudImgUrl(MhAppIconEnum.ONE.ORGANISER.getValue()), "主办", activity.getOrganisers(), mainFields);
+            buildField(cloudApiService.buildImageUrl(MhAppIconEnum.ONE.ORGANISER.getValue()), "主办", activity.getOrganisers(), mainFields);
         }
         // 地址
         String address = Optional.ofNullable(activity.getAddress()).orElse("") + Optional.ofNullable(activity.getDetailAddress()).orElse("");
         if (StringUtils.isNotBlank(address)) {
-            buildField(buildCloudImgUrl(MhAppIconEnum.ONE.LOCATION.getValue()), "地址", address, mainFields);
+            buildField(cloudApiService.buildImageUrl(MhAppIconEnum.ONE.LOCATION.getValue()), "地址", address, mainFields);
         }
         // 报名时间
         if (activity.getSignId() != null) {
             SignStatDTO signStat = signApiService.getSignParticipation(activity.getSignId());
             if (CollectionUtils.isNotEmpty(signStat.getSignUpIds())) {
-                buildField(buildCloudImgUrl(MhAppIconEnum.ONE.TIME.getValue()), "报名时间",  DateUtils.activityTimeScope(signStat.getSignUpStartTime(), signStat.getSignUpEndTime()), mainFields);
+                buildField(cloudApiService.buildImageUrl(MhAppIconEnum.ONE.TIME.getValue()), "报名时间",  DateUtils.activityTimeScope(signStat.getSignUpStartTime(), signStat.getSignUpEndTime()), mainFields);
             }
         }
         // 积分
 
         if (activity.getIntegral() != null && activity.getIntegral().compareTo(new BigDecimal(0)) == 0) {
-            buildField(buildCloudImgUrl(MhAppIconEnum.ONE.INTEGRAL.getValue()), "积分", Optional.of(activity.getIntegral()).map(String::valueOf).orElse(""), mainFields);
+            buildField(cloudApiService.buildImageUrl(MhAppIconEnum.ONE.INTEGRAL.getValue()), "积分", Optional.of(activity.getIntegral()).map(String::valueOf).orElse(""), mainFields);
         }
         // 评价
         Boolean openRating = Optional.ofNullable(activity.getOpenRating()).orElse(false);
@@ -141,7 +142,7 @@ public class ActivityMhV3ApiController {
             } else {
                 ratingContent = "0人；0分";
             }
-            buildFieldWithUrl(buildCloudImgUrl(MhAppIconEnum.ONE.RATING.getValue()), "评价", ratingContent, activityQueryService.getActivityRatingUrl(activity.getId()), mainFields);
+            buildFieldWithUrl(cloudApiService.buildImageUrl(MhAppIconEnum.ONE.RATING.getValue()), "评价", ratingContent, activityQueryService.getActivityRatingUrl(activity.getId()), mainFields);
         }
         jsonObject.put("results", mainFields);
         return RestRespDTO.success(jsonObject);
@@ -195,7 +196,6 @@ public class ActivityMhV3ApiController {
         jsonObject.put("results", mainFields);
         return RestRespDTO.success(jsonObject);
     }
-
 
     /**门户简介详情
     * @Description 
@@ -396,14 +396,6 @@ public class ActivityMhV3ApiController {
         // 根据websiteId查询活动id
         return activityQueryService.getByWebsiteId(websiteId);
     }
-
-    private String buildCloudImgUrl(String cloudId) {
-        return "http://p.ananas.chaoxing.com/star3/origin/" + cloudId;
-    }
-
-
-
-
 
     /**获取双选会主页地址
      * @Description

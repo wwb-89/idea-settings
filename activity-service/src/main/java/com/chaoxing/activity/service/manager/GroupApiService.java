@@ -32,6 +32,9 @@ public class GroupApiService {
     private static final String CREATE_URL = DOMAIN + "/apis/circle/addCircle";
     /** 获取小组信息url */
     private static final String GET_URL = DOMAIN + "/apis/circle/getCircle";
+    
+    /** 小组地址url */
+    private static final String GROUP_URL = "http://groupweb.chaoxing.com/pc/topic/topiclist/index?bbsid=%s";
 
     @Resource(name = "restTemplateProxy")
     private RestTemplate restTemplate;
@@ -79,6 +82,17 @@ public class GroupApiService {
             log.error("根据小组id:{}获取小组error:{}", id, message);
             throw new BusinessException(message);
         }
+    }
+
+    /**小组的url
+     * @Description 
+     * @author wwb
+     * @Date 2021-09-17 15:55:32
+     * @param bbsid
+     * @return java.lang.String
+    */
+    public String getGroupUrl(String bbsid) {
+        return String.format(GROUP_URL, bbsid);
     }
 
 }

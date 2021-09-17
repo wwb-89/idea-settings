@@ -20,9 +20,6 @@ import javax.annotation.Resource;
 @Service
 public class ActivityCoverUrlSyncService {
 
-	/** 云盘图片url */
-	private static final String IMAGE_URL_PREFIX = "http://p.ananas.chaoxing.com/star3/origin/";
-
 	@Resource
 	private ActivityQueryService activityQueryService;
 	@Resource
@@ -67,7 +64,7 @@ public class ActivityCoverUrlSyncService {
 		}
 		String coverCloudId = activity.getCoverCloudId();
 		if (StringUtils.isNotBlank(coverCloudId)) {
-			return IMAGE_URL_PREFIX + coverCloudId;
+			return cloudApiService.buildImageUrl(coverCloudId);
 		}
 		return "";
 	}

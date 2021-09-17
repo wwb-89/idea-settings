@@ -299,6 +299,16 @@
                     </div>
                 </div>
             </div>
+            <!--小组-->
+            <div class="form-item align-start" v-else-if="item.code == 'group'">
+                <label class="label">{{item.name}}</label>
+                <div class="input-box column">
+                    <div class="set-box">
+                        <el-switch v-model="activity.openGroup" class="examine-switch"></el-switch>
+                        <span class="tips" v-if="item.introduction">{{item.introduction}}</span>
+                    </div>
+                </div>
+            </div>
             <div class="form-item cancel-margin marginTop16" v-else-if="item.code == 'tags'">
                 <label class="label">{{item.name}}</label>
                 <div class="input-box wrap">
@@ -1087,10 +1097,6 @@
                     }
                     if (activityApp.isEmpty($this.activity.coverCloudId)) {
                         app.showMsg("请上传封面");
-                        return false;
-                    }
-                    if (activityApp.isEmpty($this.activity.activityClassifyId)) {
-                        app.showMsg("分类不能为空");
                         return false;
                     }
                     // 发布范围  todo 暂时屏蔽

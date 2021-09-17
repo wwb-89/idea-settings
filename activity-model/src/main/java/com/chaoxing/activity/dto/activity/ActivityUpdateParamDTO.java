@@ -4,10 +4,12 @@ import com.chaoxing.activity.dto.activity.create.ActivityCreateParamDTO;
 import com.chaoxing.activity.model.Activity;
 import com.chaoxing.activity.model.ActivityDetail;
 import com.chaoxing.activity.util.DateUtils;
+import com.chaoxing.activity.util.constant.CommonConstant;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanUtils;
 
 import java.math.BigDecimal;
@@ -92,6 +94,8 @@ public class ActivityUpdateParamDTO {
 	private BigDecimal integral;
 	/** 是否开启作品征集 */
 	private Boolean openWork;
+	/** 是否开启小组 */
+	private Boolean openGroup;
 	/** 作品征集id */
 	private Integer workId;
 	/** 是否开启阅读设置 */
@@ -113,6 +117,7 @@ public class ActivityUpdateParamDTO {
 	/** 简介 */
 	private String introduction;
 
+
 	/** 活动组件值对象列表 */
 	private List<ActivityComponentValueDTO> activityComponentValues;
 	/** 活动报名条件启用模板组件id列表 */
@@ -128,6 +133,7 @@ public class ActivityUpdateParamDTO {
 	public Activity buildActivity() {
 		LocalDateTime startTime = DateUtils.timestamp2Date(getStartTimeStamp());
 		LocalDateTime endTime = DateUtils.timestamp2Date(getEndTimeStamp());
+		defaultValue();
 		return Activity.builder()
 				.id(getId())
 				.name(getName())
@@ -160,6 +166,7 @@ public class ActivityUpdateParamDTO {
 				.readingId(getReadingId())
 				.readingModuleId(getReadingModuleId())
 				.webTemplateId(getWebTemplateId())
+				.openGroup(getOpenGroup())
 				.build();
 	}
 
@@ -235,7 +242,32 @@ public class ActivityUpdateParamDTO {
 				.readingId(activity.getReadingId())
 				.readingModuleId(activity.getReadingModuleId())
 				.webTemplateId(activity.getWebTemplateId())
+				.openGroup(activity.getOpenGroup())
 				.build();
+	}
+
+	/**默认值处理
+	 * @Description 
+	 * @author wwb
+	 * @Date 2021-09-17 15:40:48
+	 * @param 
+	 * @return void
+	*/
+	public void defaultValue() {
+		this.coverCloudId = Optional.ofNullable(coverCloudId).filter(StringUtils::isNotBlank).orElse(CommonConstant.ACTIVITY_DEFAULT_COVER_CLOUD_ID);
+		this.organisers = Optional.ofNullable(organisers).orElse("");
+		this.activityType = Optional.ofNullable(activityType).orElse(Activity.ActivityTypeEnum.OFFLINE.getValue());
+		this.address = Optional.ofNullable(address).orElse("");
+		this.detailAddress = Optional.ofNullable(detailAddress).orElse("");
+		this.timingRelease = Optional.ofNullable(timingRelease).orElse(false);
+		this.openAudit = Optional.ofNullable(openAudit).orElse(false);
+		this.createAreaCode = Optional.ofNullable(createAreaCode).orElse("");
+		this.tags = Optional.ofNullable(tags).orElse("");
+		this.openRating = Optional.ofNullable(openRating).orElse(false);
+		this.ratingNeedAudit = Optional.ofNullable(ratingNeedAudit).orElse(false);
+		this.openWork = Optional.ofNullable(openWork).orElse(false);
+		this.openReading = Optional.ofNullable(openReading).orElse(false);
+		this.openGroup = Optional.ofNullable(openGroup).orElse(false);
 	}
 
 

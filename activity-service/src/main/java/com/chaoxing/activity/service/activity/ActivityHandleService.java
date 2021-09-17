@@ -9,6 +9,8 @@ import com.chaoxing.activity.dto.activity.create.ActivityCreateFromPreachParamDT
 import com.chaoxing.activity.dto.activity.create.ActivityCreateParamDTO;
 import com.chaoxing.activity.dto.activity.ActivityMenuDTO;
 import com.chaoxing.activity.dto.activity.ActivityUpdateParamDTO;
+import com.chaoxing.activity.dto.manager.group.GroupCreateParamDTO;
+import com.chaoxing.activity.dto.manager.group.GroupCreateResultDTO;
 import com.chaoxing.activity.dto.manager.mh.MhCloneParamDTO;
 import com.chaoxing.activity.dto.manager.mh.MhCloneResultDTO;
 import com.chaoxing.activity.dto.manager.sign.create.SignCreateParamDTO;
@@ -32,6 +34,8 @@ import com.chaoxing.activity.service.activity.scope.ActivityScopeService;
 import com.chaoxing.activity.service.activity.template.TemplateQueryService;
 import com.chaoxing.activity.service.event.ActivityChangeEventService;
 import com.chaoxing.activity.service.inspection.InspectionConfigHandleService;
+import com.chaoxing.activity.service.manager.CloudApiService;
+import com.chaoxing.activity.service.manager.GroupApiService;
 import com.chaoxing.activity.service.manager.MhApiService;
 import com.chaoxing.activity.service.manager.module.SignApiService;
 import com.chaoxing.activity.service.manager.module.WorkApiService;
@@ -133,6 +137,10 @@ public class ActivityHandleService {
 	private ClassifyHandleService classifyHandleService;
 	@Resource
 	private WorkApiService workApiService;
+	@Resource
+	private GroupApiService groupApiService;
+	@Resource
+	private CloudApiService cloudApiService;
 
 	/**
 	 * @Description
@@ -167,9 +175,10 @@ public class ActivityHandleService {
 		if (CollectionUtils.isEmpty(wfwRegionalArchitectureDtos) && CollectionUtils.isEmpty(releaseClassIds)) {
 			throw new BusinessException(CollectionUtils.isEmpty(releaseClassIds) ? "请完善发布班级" : "请完善发布范围");
 		}
+		// 添加小组
+		handleGroup(activity, loginUser.getUid());
 		// 添加报名签到
-		SignCreateResultDTO signCreateResult = handleSign(activity, signCreateParamDto, loginUser);
-		activity.setSignId(signCreateResult.getSignId());
+		handleSign(activity, signCreateParamDto, loginUser);
 		// 处理活动的状态, 新增的活动都是待发布的
 		activity.beforeCreate(loginUser.getUid(), loginUser.getRealName(), loginUser.getFid(), loginUser.getOrgName());
 		activityMapper.insert(activity);
@@ -228,6 +237,24 @@ public class ActivityHandleService {
 		return signCreateResultDto;
 	}
 
+	/**处理小组
+	 * @Description 
+	 * @author wwb
+	 * @Date 2021-09-17 15:26:13
+	 * @param activity
+	 * @param createUid
+	 * @return void
+	*/
+	private void handleGroup(Activity activity, Integer createUid) {
+		Boolean openGroup = activity.getOpenGroup();
+		String groupBbsid = activity.getGroupBbsid();
+		if (StringUtils.isBlank(groupBbsid) && openGroup) {
+			GroupCreateParamDTO groupCreateParamDto = new GroupCreateParamDTO(activity.getName(), createUid);
+			GroupCreateResultDTO groupCreateResultDto = groupApiService.create(groupCreateParamDto);
+			activity.setGroupBbsid(groupCreateResultDto.getBbsid());
+		}
+	}
+
 	/**
 	 * @Description
 	 * @author huxiaolong
@@ -240,7 +267,7 @@ public class ActivityHandleService {
 	 */
 	@Transactional(rollbackFor = Exception.class)
 	public Activity edit(ActivityUpdateParamDTO activityUpdateParamDto, SignCreateParamDTO signCreateParam, final List<WfwAreaDTO> wfwRegionalArchitectureDtos, LoginUserDTO loginUser) {
-		return ApplicationContextHolder.getBean(ActivityHandleService.class).edit(activityUpdateParamDto, signCreateParam, wfwRegionalArchitectureDtos, null, loginUser);
+		return edit(activityUpdateParamDto, signCreateParam, wfwRegionalArchitectureDtos, null, loginUser);
 	}
 
 	/**修改活动
@@ -265,6 +292,8 @@ public class ActivityHandleService {
 		return distributedLock.lock(activityEditLockKey, () -> {
 			Activity existActivity = activityValidationService.editAble(activityId, loginUser);
 			activity.updatePerfectFromExistActivity(existActivity);
+			// 添加小组
+			handleGroup(activity, existActivity.getCreateUid());
 			// 更新报名签到
 			Integer signId = existActivity.getSignId();
 			signCreateParam.setId(signId);
@@ -655,7 +684,7 @@ public class ActivityHandleService {
 				// 访问的url
 				.url(String.format(ActivityModuleConstant.MODULE_ACCESS_URL, activityModule.getType(), activityModule.getExternalId()))
 				.pageType(3)
-				.coverUrl("http://p.ananas.chaoxing.com/star3/origin/" + activityModule.getIconCloudId())
+				.coverUrl(cloudApiService.buildImageUrl(activityModule.getIconCloudId()))
 				.build()).collect(Collectors.toList());
 	}
 

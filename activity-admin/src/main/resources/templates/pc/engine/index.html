@@ -143,6 +143,10 @@
                                     <el-switch class="switch fl marginTop6" disabled></el-switch>
                                     <p class="tips third">{{item.introduction}}</p>
                                 </template>
+                                <template v-else-if="item.code == 'group'">
+                                    <el-switch class="switch fl marginTop6" disabled></el-switch>
+                                    <p class="tips third">{{item.introduction}}</p>
+                                </template>
                                 <template v-else-if="item.code == 'reading'">
                                     <el-switch class="switch fl marginTop6" disabled></el-switch>
                                     <p class="tips third">{{item.introduction}}</p>

@@ -153,6 +153,11 @@ public class Activity {
     private Boolean signedUpNotice;
     /** 源活动id; column: origin_activity_id */
     private Integer originActivityId;
+    /** 是否开启小组; column: is_open_group*/
+    @TableField(value = "is_open_group")
+    private Boolean openGroup;
+    /** 小组bbsid; column: group_bbsid*/
+    private String groupBbsid;
 
     // 附加
     /** 开始时间字符串 */
@@ -435,6 +440,7 @@ public class Activity {
     public void updatePerfectFromExistActivity(Activity existActivity) {
         setReleased(existActivity.getReleased());
         setReleaseTime(existActivity.getReleaseTime());
+        setGroupBbsid(existActivity.getGroupBbsid());
     }
 
 }
