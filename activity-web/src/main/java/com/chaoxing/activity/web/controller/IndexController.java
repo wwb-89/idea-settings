@@ -14,7 +14,6 @@ import com.chaoxing.activity.service.GroupService;
 import com.chaoxing.activity.service.activity.classify.ClassifyQueryService;
 import com.chaoxing.activity.service.activity.market.MarketQueryService;
 import com.chaoxing.activity.service.manager.UcApiService;
-import com.chaoxing.activity.service.manager.wfw.WfwAreaApiService;
 import com.chaoxing.activity.util.UserAgentUtils;
 import com.chaoxing.activity.util.annotation.LoginRequired;
 import com.chaoxing.activity.util.exception.LoginRequiredException;
@@ -88,6 +87,7 @@ public class IndexController {
 	public String index(HttpServletRequest request, Model model, Integer wfwfid, Integer unitId, Integer state, Integer fid, Integer banner, String style, @RequestParam(defaultValue = "") String flag, Integer marketId) {
 		Integer realFid = Optional.ofNullable(wfwfid).orElse(Optional.ofNullable(unitId).orElse(Optional.ofNullable(state).orElse(fid)));
 		style = Optional.ofNullable(style).filter(StringUtils::isNotBlank).orElse(DEFAULT_STYLE);
+//		String code = activityFlagCodeService.getCodeByFlag(flag);	//	后续统一采用flag获取code
 		return handleData(request, model, null, realFid, null, banner, style, flag, marketId);
 	}
 
@@ -164,9 +164,11 @@ public class IndexController {
 	 * @return java.lang.String
 	 */
 	@RequestMapping("lib")
-	public String libIndex(HttpServletRequest request, Model model, Integer wfwfid, Integer unitId, Integer state, Integer fid, Integer pageId, Integer banner, String style, @RequestParam(defaultValue = "") String flag, Integer marketId) {
+	public String libIndex(HttpServletRequest request, Model model, String code, Integer wfwfid, Integer unitId, Integer state, Integer fid, Integer pageId, Integer banner, String style, @RequestParam(defaultValue = "") String flag, Integer marketId) {
 		Integer realFid = Optional.ofNullable(wfwfid).orElse(Optional.ofNullable(unitId).orElse(Optional.ofNullable(state).orElse(fid)));
-		String code = activityFlagCodeService.getCodeByFlag(flag);
+		if (StringUtils.isBlank(code)) {
+			code = activityFlagCodeService.getCodeByFlag(flag); // todo 后续移除code参数，改用flag获取
+		}
 		return handleData(request, model, code, realFid, pageId, banner, style, flag, marketId);
 	}
 
@@ -189,10 +191,12 @@ public class IndexController {
 	 * @return java.lang.String
 	 */
 	@RequestMapping("bas")
-	public String basIndex(HttpServletRequest request, Model model, Integer wfwfid, Integer unitId, Integer state, Integer fid, Integer pageId, Integer banner, String style, @RequestParam(defaultValue = "") String flag, Integer marketId) {
+	public String basIndex(HttpServletRequest request, Model model, String code, Integer wfwfid, Integer unitId, Integer state, Integer fid, Integer pageId, Integer banner, String style, @RequestParam(defaultValue = "") String flag, Integer marketId) {
 		Integer realFid = Optional.ofNullable(wfwfid).orElse(Optional.ofNullable(unitId).orElse(Optional.ofNullable(state).orElse(fid)));
 		style = Optional.ofNullable(style).filter(StringUtils::isNotBlank).orElse(DEFAULT_STYLE);
-		String code = activityFlagCodeService.getCodeByFlag(flag);
+		if (StringUtils.isBlank(code)) {
+			code = activityFlagCodeService.getCodeByFlag(flag);	//	todo 后续移除code参数，改用flag获取
+		}
 		return handleData(request, model, code, realFid, pageId, banner, style, flag, marketId);
 	}
 
@@ -215,10 +219,12 @@ public class IndexController {
 	 * @return java.lang.String
 	 */
 	@RequestMapping("edu")
-	public String eduIndex(HttpServletRequest request, Model model, Integer wfwfid, Integer unitId, Integer state, Integer fid, Integer pageId, Integer banner, String style, @RequestParam(defaultValue = "") String flag, Integer marketId) {
+	public String eduIndex(HttpServletRequest request, Model model, String code, Integer wfwfid, Integer unitId, Integer state, Integer fid, Integer pageId, Integer banner, String style, @RequestParam(defaultValue = "") String flag, Integer marketId) {
 		Integer realFid = Optional.ofNullable(wfwfid).orElse(Optional.ofNullable(unitId).orElse(Optional.ofNullable(state).orElse(fid)));
 		style = Optional.ofNullable(style).filter(StringUtils::isNotBlank).orElse(DEFAULT_STYLE);
-		String code = activityFlagCodeService.getCodeByFlag(flag);
+		if (StringUtils.isBlank(code)) {
+			code = activityFlagCodeService.getCodeByFlag(flag);	//	todo 后续移除code参数，改用flag获取
+		}
 		return handleData(request, model, code, realFid, pageId, banner, style, flag, marketId);
 	}
 
