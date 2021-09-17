@@ -71,3 +71,11 @@ INSERT INTO `activity_engine`.`t_template_component` (`id`, `pid`, `template_id`
 INSERT INTO `activity_engine`.`t_template_component` (`id`, `pid`, `template_id`, `component_id`, `name`, `introduction`, `is_required`, `sequence`, `is_deleted`, `type`, `data_origin`, `origin_identify`, `field_flag`) VALUES (158, 0, 9, 40, '活动说明', NULL, 0, 8, 0, NULL, NULL, NULL, NULL);
 
 ALTER TABLE t_activity ADD COLUMN origin_activity_id INT(11) COMMENT '源活动id';
+
+
+CREATE TABLE `t_activity_flag_code` (
+    `activity_flag` varchar(50) NOT NULL COMMENT '活动标识',
+    `area_code` varchar(50) NOT NULL COMMENT '区域code',
+    PRIMARY KEY (`activity_flag`,`area_code`) USING BTREE,
+    UNIQUE KEY `idx_flag` (`activity_flag`) USING BTREE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='活动标识区域code关联表';
