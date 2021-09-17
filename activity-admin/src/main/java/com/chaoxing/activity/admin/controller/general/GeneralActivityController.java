@@ -3,6 +3,7 @@ package com.chaoxing.activity.admin.controller.general;
 import com.chaoxing.activity.admin.util.LoginUtils;
 import com.chaoxing.activity.model.Activity;
 import com.chaoxing.activity.model.Template;
+import com.chaoxing.activity.service.ActivityFlagCodeService;
 import com.chaoxing.activity.service.activity.market.MarketHandleService;
 import com.chaoxing.activity.util.exception.BusinessException;
 import lombok.extern.slf4j.Slf4j;
@@ -34,6 +35,8 @@ public class GeneralActivityController {
 	private ActivityController activityController;
 	@Resource
 	private MarketHandleService marketHandleService;
+	@Resource
+	private ActivityFlagCodeService activityFlagCodeService;
 
 	/**活动管理主页
 	 * @Description
@@ -57,14 +60,19 @@ public class GeneralActivityController {
 		Integer realFid = Optional.ofNullable(wfwfid).orElse(Optional.ofNullable(unitId).orElse(Optional.ofNullable(state).orElse(Optional.ofNullable(fid).orElse(LoginUtils.getLoginUser(request).getFid()))));
 		direct = Optional.ofNullable(direct).orElse(false);
 		if (marketId == null && StringUtils.isNotBlank(flag)) {
-			Activity.ActivityFlagEnum activityFlagEnum = Activity.ActivityFlagEnum.fromValue(flag);
-			if (activityFlagEnum == null) {
-				throw new BusinessException("未知的flag");
-			}
-			Template template = marketHandleService.getOrCreateOrgMarket(realFid, activityFlagEnum, LoginUtils.getLoginUser(request));
-			marketId = template.getMarketId();
-			if (marketId != null && !direct) {
-				return "redirect:/market/" + marketId + "?pageMode=" + pageMode;
+			// 判断是否存在flag对应code，若存在，直接返回index
+			// 若不存在，则判断市场是否存在，市场不存在则创建市场
+			String code = activityFlagCodeService.getCodeByFlag(flag);
+			if (StringUtils.isBlank(code)) {
+				Activity.ActivityFlagEnum activityFlagEnum = Activity.ActivityFlagEnum.fromValue(flag);
+				if (activityFlagEnum == null) {
+					throw new BusinessException("未知的flag");
+				}
+				Template template = marketHandleService.getOrCreateOrgMarket(realFid, activityFlagEnum, LoginUtils.getLoginUser(request));
+				marketId = template.getMarketId();
+				if (marketId != null && !direct) {
+					return "redirect:/market/" + marketId + "?pageMode=" + pageMode;
+				}
 			}
 		}
 		return activityController.index(model, marketId, realFid, strict, flag, pageMode);
