@@ -241,9 +241,7 @@
                     strict: [[${strict}]],
                     sw: "",
                     orderFieldId: null,
-                    orderType: 'DESC',
-                    // 图书馆使用的code
-                    code: [[${code}]]
+                    orderType: 'DESC'
                 },
                 loaded: false,
                 // 总记录数
@@ -263,7 +261,6 @@
                     cancelRelease: {name: "下架", value: "cancelRelease"},
                     dualSelectStatExport: {name: "导出投递数据", value: "dualSelectStatExport"}
                 },
-                code: [[${code}]],
                 // 活动标示
                 flag: [[${flag}]],
                 tableFieldId: [[${tableFieldId}]],
@@ -408,7 +405,7 @@
                     if (activityApp.isEmpty(flag)) {
                         flag = "";
                     }
-                    var url = activityApp.getRelativeUrl("/activity/add?code=" + $this.code + "&marketId=" + marketId + "&flag=" + flag + "&strict=" + $this.strict + "&fullScreen=" + activityApp.getUrlParamter("fullScreen"));
+                    var url = activityApp.getRelativeUrl("/activity/add?marketId=" + marketId + "&flag=" + flag + "&strict=" + $this.strict + "&fullScreen=" + activityApp.getUrlParamter("fullScreen"));
                     if (activityApp.isEmbedded()) {
                         window.location = url;
                     } else {

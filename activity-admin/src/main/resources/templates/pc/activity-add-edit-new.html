@@ -158,7 +158,7 @@
                                     </el-select>
                                 </div>
                                 <template v-if="strict != 1">
-                                    <div :class="{'type-item': true, 'paddingR0': (!activityClassify.system), 'active': activityClassify.selected}" v-for="(activityClassify, index) of activityClassifies" :key="'activity-classify-' + index" @click="selectActivityClassify(index)">{{activityClassify.name}}
+                                    <div :class="{'type-item': true, 'paddingR0': (!activityClassify.system && activityClassify.owner), 'active': activityClassify.selected}" v-for="(activityClassify, index) of activityClassifies" :key="'activity-classify-' + index" @click="selectActivityClassify(index)">{{activityClassify.name}}
                                         <div class="more-box">
                                             <div class="more-btn"></div>
                                             <div class="edit-box">
@@ -296,7 +296,7 @@
                                 <label class="label">{{item.name}}</label>
                                 <div class="input-box">
                                     <el-switch v-model="activity.openRating" class="examine-switch"></el-switch>
-                                    <span>{{item.introduction}}</span>
+                                    <span class="tips" v-if="item.introduction">{{item.introduction}}</span>
                                 </div>
                             </div>
                             <div class="form-item" v-show="activity.openRating">
@@ -750,7 +750,6 @@
                 usedWebTemplate: [[${usedWebTemplate}]],
                 // 模板列表
                 webTemplates: [[${webTemplates}]],
-                areaCode: [[${areaCode}]],
                 activityTypes: [[${activityTypes}]],
                 activityClassifies: [[${activityClassifies}]],
                 currGroupType: 'wfw',
@@ -926,7 +925,6 @@
                         timingRelease: false,
                         timingReleaseTimeStamp: "",
                         openAudit: false,
-                        createAreaCode: $this.areaCode,
                         tags: "",
                         openRating: false,
                         ratingNeedAudit: false,
