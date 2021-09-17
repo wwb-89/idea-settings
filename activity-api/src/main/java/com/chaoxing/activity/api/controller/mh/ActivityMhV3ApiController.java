@@ -19,6 +19,7 @@ import com.chaoxing.activity.service.activity.ActivityValidationService;
 import com.chaoxing.activity.service.activity.flag.ActivityFlagValidateService;
 import com.chaoxing.activity.service.activity.rating.ActivityRatingQueryService;
 import com.chaoxing.activity.service.manager.CloudApiService;
+import com.chaoxing.activity.service.manager.GroupApiService;
 import com.chaoxing.activity.service.manager.module.SignApiService;
 import com.chaoxing.activity.service.manager.module.WorkApiService;
 import com.chaoxing.activity.util.DateUtils;
@@ -60,7 +61,8 @@ public class ActivityMhV3ApiController {
     private CloudApiService cloudApiService;
     @Resource
     private WorkApiService workApiService;
-
+    @Resource
+    private GroupApiService groupApiService;
     @Resource
     private SignApiService signApiService;
 
@@ -380,8 +382,14 @@ public class ActivityMhV3ApiController {
                 if (needValidate && !signedUp) {
                     continue;
                 }
-                result.add(buildBtnField(workBtnDto.getButtonName(), workBtnDto.getLinkUrl(), enable ? "1" : "0", false, MhBtnSequenceEnum.MANAGE.getSequence()));
+                result.add(buildBtnField(workBtnDto.getButtonName(), workBtnDto.getLinkUrl(), enable ? "1" : "0", false, MhBtnSequenceEnum.WORK.getSequence()));
             }
+        }
+        // 讨论小组
+        Boolean openGroup = Optional.ofNullable(activity.getOpenGroup()).orElse(false);
+        String groupBbsid = activity.getGroupBbsid();
+        if (openGroup && StringUtils.isNotBlank(groupBbsid)) {
+            result.add(buildBtnField("讨论小组", groupApiService.getGroupUrl(groupBbsid), "2", false, MhBtnSequenceEnum.GROUP.getSequence()));
         }
         // 是不是管理员
         if (isManager) {
