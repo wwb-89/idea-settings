@@ -17,28 +17,52 @@
             </div>
             <div class="clear"></div>
         </div>
-        <div class="item-block paddingNew minHeight800">
-            <div class="filter">
-                <div class="searchDiv fl">
-                    <input type="text" placeholder="搜索" v-model="inputValue" class="inputValue">
-                    <i class="icon-delete1" v-show="inputValue.length!=0" v-on:click="inputDeleteFun"></i>
-                    <i class="icon-search1"></i>
-                </div>
-                <!-- 下拉hover -->
-                <div class="select-down-box fr">
-                    <div class="hover-box">
-                        <span class="text-name inlineMiddle">全部状态</span>
-                        <img class="select-icon inlineMiddle" src="../assets/images/down.png" alt="">
-                    </div>
-                    <div class="select-show">
-                        <div class="show-list active">全部状态</div>
-                        <div class="show-list" v-on:click="tabChangeFun('0')">已报名</div>
-                        <div class="show-list" v-on:click="tabChangeFun('1')">收藏</div>
-                        <div class="show-list" v-on:click="tabChangeFun('2')">管理</div>
-                    </div>
-                </div>
-                <div class="clear"></div>
+        <div class="item-block nopadding minHeight800">
+            <div class="btns">
+                <button class="btn-main-gradient"><i class="addIcon"></i>活动申报</button>
             </div>
+            <div class="tabContent">
+                <div class="card-list card-list1">
+                    <ul>
+                        <li>
+                            <div class="inner">
+                                <div class="img-box">
+                                    <p class="tips color2">自建</p>
+                                    <p class="num"><i></i>1028</p>
+                                    <div class="js-crop-img">
+                                        <img src="https://p.ananas.chaoxing.com/star3/270_169c/669ca80d6a0c5f74835bb936a41aabca.jpg">
+                                    </div>
+                                </div>
+                                <div class="card-info">
+                                    <div class="title-box">
+                                        <h2 class="title overHidden1 fl">浙江图书馆2020年11月读者活动浙江图书馆2020年11月读者活动浙江图书馆2020年11月读者活动浙江图书馆2020年11月读者活动浙江图书馆2020年11月读者活动浙江图书馆2020年11月读者活动</h2>
+                                        <div class="clear"></div>
+                                    </div>
+                                    <div class="time-box">
+                                        <img class="icon-img inlineMiddle" src="../assets/images/icon-time.png" alt="">
+                                        <p class="time inlineMiddle">2020.10.10 9:00 ～ 2028.10.1 16:00</p>
+                                    </div>
+                                    <div class="user-box">
+                                        <img class="icon-img inlineMiddle" src="../assets/images/icon-user.png" alt="">
+                                        <p class="user inlineMiddle">1945</p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="handel">
+                                <a class="cancel" v-on:click="cancelFun('删除后，将清空该活动的相关信息和记录，确定删除吗？','删除')">删除</a>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+            <!-- 无数据 -->
+            <div class="noContent" style="display: block;">
+                <p>暂无内容</p>
+            </div>
+            <div class="load-div loading"><img src="../assets/images/Spinner-1s-200px.svg">加载中…</div>
+            <div class="load-div no-more" style="display: none">没有更多了</div>
+        </div>
+        <div class="item-block paddingNew minHeight800">
             <div class="tabContent" v-show="activeNum==0">
                 <div class="card-list">
                     <ul>
@@ -54,7 +78,6 @@
                                 <div class="card-info">
                                     <div class="title-box">
                                         <h2 class="title overHidden1 fl">浙江图书馆2020年11月读者活动浙江图书馆2020年11月读者活动浙江图书馆2020年11月读者活动浙江图书馆2020年11月读者活动浙江图书馆2020年11月读者活动浙江图书馆2020年11月读者活动</h2>
-                                        <span class="title-mark-top">置顶</span>
                                         <div class="clear"></div>
                                     </div>
                                     <div class="time-box">
@@ -68,7 +91,7 @@
                                 </div>
                             </div>
                             <div class="handel">
-                                <a class="cancel" v-on:click="cancelFun('确定取消报名吗？')">取消报名</a>
+                                <a class="cancel">删除</a>
                             </div>
                         </li>
                         <li>
@@ -176,7 +199,7 @@
             </div>
             <span slot="footer" class="dialog-footer">
                 <el-button @click="dialogVisible = false">取 消</el-button>
-                <el-button type="primary" @click="dialogVisible = false">确 定</el-button>
+                <el-button type="primary" @click="dialogVisible = false">{{btnTxt}}</el-button>
             </span>
         </el-dialog>
         <!-- 创建活动弹窗 -->
@@ -208,6 +231,7 @@
                 inputValue:'',
                 dialogVisible:false,
                 tipsHtml:'',
+                btnTxt:'确定',
                 createActivity: false, //创建活动
             }
         },
@@ -224,9 +248,11 @@
             tabChangeFun:function(num){
                 this.activeNum = num
             },
-            cancelFun:function (html){
-                this.dialogVisible = !this.dialogVisible;
+            cancelFun:function (html,txt){
                 this.tipsHtml = html;
+                this.btnTxt = txt;
+                this.dialogVisible = !this.dialogVisible;
+
             },
         }
     });

@@ -22,6 +22,10 @@ body {
   padding: 24px 32px;
 }
 
+.item-block.nopadding {
+  padding: 24px 0;
+}
+
 .item-block .title {
   font-weight: 600;
   font-size: 20px;
@@ -29,8 +33,11 @@ body {
   cursor: auto;
 }
 
+.item-block .btns {
+  display: block;
+}
+
 .item-block .btns button {
-  float: left;
   margin-left: 20px;
 }
 
@@ -252,6 +259,30 @@ body {
 
 .item-block .card-list ul li:hover .handel {
   display: block;
+}
+
+.item-block .card-list1 ul li {
+  border-bottom: none;
+  padding: 0 32px;
+  cursor: pointer;
+}
+
+.item-block .card-list1 ul li .inner {
+  padding-top: 24px;
+  padding-bottom: 24px;
+  border-bottom: 1px solid #F0F0F0;
+}
+
+.item-block .card-list1 ul li .handel {
+  right: 32px;
+}
+
+.item-block .card-list1 ul li:hover {
+  background: #F9FAFB;
+}
+
+.item-block .card-list1 ul li:hover .card-info .title {
+  color: #0084FF;
 }
 
 .minHeight800 {

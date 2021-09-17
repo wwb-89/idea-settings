@@ -15,6 +15,9 @@ body {
   &.paddingNew {
     padding: 24px 32px;
   }
+  &.nopadding {
+    padding:24px 0;
+  }
   .title {
     font-weight: 600;
     font-size: 20px;
@@ -22,8 +25,8 @@ body {
     cursor: auto;
   }
   .btns {
+    display: block;
     button {
-      float: left;
       margin-left: 20px;
       .addIcon {
         display: inline-block;
@@ -225,10 +228,36 @@ body {
       }
     }
   }
+  .card-list1 {
+    ul {
+      li {
+        border-bottom: none;
+        padding: 0 32px;
+        cursor: pointer;
+        .inner {
+         padding-top: 24px;
+          padding-bottom: 24px;
+          border-bottom: 1px solid #F0F0F0;
+        }
+        .handel {
+          right: 32px;
+        }
+        &:hover {
+          background: #F9FAFB;
+          .card-info{
+            .title {
+              color: #0084FF;
+            }
+          }
+        }
+      }
+    }
+  }
 }
 .minHeight800 {
   min-height: 800px;
 }
+
 //无内容
 .noContent {
   position: absolute;
