@@ -14,11 +14,13 @@ import com.chaoxing.activity.dto.manager.sign.SignStatDTO;
 import com.chaoxing.activity.dto.manager.sign.UserSignUpStatusStatDTO;
 import com.chaoxing.activity.dto.manager.sign.create.SignCreateParamDTO;
 import com.chaoxing.activity.dto.manager.sign.create.SignUpCreateParamDTO;
+import com.chaoxing.activity.dto.manager.wfw.WfwAreaDTO;
 import com.chaoxing.activity.dto.query.ActivityManageQueryDTO;
 import com.chaoxing.activity.dto.query.ActivityQueryDTO;
 import com.chaoxing.activity.dto.query.MhActivityCalendarQueryDTO;
 import com.chaoxing.activity.mapper.*;
 import com.chaoxing.activity.model.*;
+import com.chaoxing.activity.service.ActivityFlagCodeService;
 import com.chaoxing.activity.service.activity.classify.ClassifyQueryService;
 import com.chaoxing.activity.service.activity.component.ComponentQueryService;
 import com.chaoxing.activity.service.activity.engine.ActivityComponentValueService;
@@ -88,7 +90,8 @@ public class ActivityQueryService {
 	private ComponentQueryService componentQueryService;
 	@Resource
 	private MarketQueryService marketQueryService;
-
+	@Resource
+	private ActivityFlagCodeService activityFlagCodeService;
 	/**查询参与的活动
 	 * @Description 
 	 * @author wwb
@@ -248,6 +251,16 @@ public class ActivityQueryService {
 		Integer strict = Optional.ofNullable(activityManageQuery.getStrict()).orElse(0);
 		activityManageQuery.setOrderField(Optional.ofNullable(activityManageQuery.getOrderFieldId()).map(tableFieldDetailMapper::selectById).map(TableFieldDetail::getCode).orElse(""));
 		activityManageQuery.setFids(new ArrayList(){{add(activityManageQuery.getFid());}});
+		// 市场id为空时，查找flag对应的区域code下的fids
+		if (activityManageQuery.getMarketId() == null && StringUtils.isNotBlank(activityManageQuery.getActivityFlag())) {
+			String code = activityFlagCodeService.getCodeByFlag(activityManageQuery.getActivityFlag());
+			List<WfwAreaDTO> wfwAreas = wfwAreaApiService.listByCode(code);
+			WfwAreaDTO currWfwArea = wfwAreas.stream().filter(v -> Objects.equals(activityManageQuery.getFid(), v.getFid())).findFirst().orElse(null);
+			if (currWfwArea != null) {
+				List<Integer> subFids = wfwAreas.stream().filter(v -> StringUtils.startsWith(v.getCode(), currWfwArea.getCode())).map(WfwAreaDTO::getFid).collect(Collectors.toList());
+				activityManageQuery.setFids(subFids);
+			}
+		}
 		if (strict.compareTo(1) == 0) {
 			// 严格模式
 			activityManageQuery.setCreateUid(loginUser.getUid());

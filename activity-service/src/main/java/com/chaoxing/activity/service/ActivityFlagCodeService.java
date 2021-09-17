@@ -24,7 +24,7 @@ public class ActivityFlagCodeService {
     private ActivityFlagCodeMapper activityFlagCodeMapper;
 
 
-    /**根据flag查询区域code
+    /**根据activityFlag查询区域code
     * @Description
     * @author huxiaolong
     * @Date 2021-09-17 11:08:58
