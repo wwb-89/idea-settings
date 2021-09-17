@@ -229,7 +229,7 @@ public class ClassifyQueryService {
 	 * @param permissionClassifies
 	 * @return java.util.Set<com.chaoxing.activity.model.Classify>
 	 */
-	public Set<Classify> classifiesUnionAreaClassifies(Integer marketId, String flag, List<Classify> permissionClassifies) {
+	public List<Classify> classifiesUnionAreaClassifies(Integer marketId, String flag, List<Classify> permissionClassifies) {
 		Set<Classify> classifies = new HashSet<>(permissionClassifies);
 		List<Integer> ownerClassifyIds = permissionClassifies.stream().map(Classify::getId).collect(Collectors.toList());
 		if (marketId == null && StringUtils.isNotBlank(flag)) {
@@ -240,7 +240,7 @@ public class ClassifyQueryService {
 				classifies.addAll(listMarketClassifies(areaMarketId));
 			}
 		}
-		return classifies.stream().peek(v -> v.setOwner(ownerClassifyIds.contains(v.getId()))).collect(Collectors.toSet());
+		return classifies.stream().peek(v -> v.setOwner(ownerClassifyIds.contains(v.getId()))).sorted(Comparator.comparing(Classify::getOwner)).collect(Collectors.toList());
 	}
 
 }
