@@ -383,7 +383,7 @@ input[type="number"] {
 .upload {
   margin-top: 16px;
   text-align: center;
-  line-height: 13px;
+  line-height: 15px;
 }
 
 .upload-btn {
@@ -489,14 +489,6 @@ input[type="number"] {
   color: #999999;
   line-height: 16px;
   margin-left: 16px;
-}
-.blockTips{
-  font-size: 14px;
-  font-weight: 400;
-  text-align: left;
-  color: #999999;
-  line-height: 16px;
-  margin-top: 16px;
 }
 
 .tips.set-information {
@@ -2091,7 +2083,7 @@ input.btn-name,
 
 /* 图片库弹窗 */
 .picture-dialog {
-  width: 680px;
+  width: 682px;
 }
 
 .picture-dialog .body {
@@ -2109,13 +2101,13 @@ input.btn-name,
 
 .picture-dialog .picture-box .item-box {
   position: relative;
-  width: 190px;
+  width: 192px;
   height: 100px;
   -webkit-box-sizing: border-box;
      -moz-box-sizing: border-box;
           box-sizing: border-box;
   border-radius: 4px;
-  margin: 10px 8px;
+  margin: 10px;
   float: left;
 }
 
