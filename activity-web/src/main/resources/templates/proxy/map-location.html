@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org/">
+<head>
+	<title th:text="${activity != null ? activity.name : '活动位置'}">活动地址</title>
+	<meta charset="UTF-8">
+	<meta http-equiv="X-UA-Compatible" content="ie=edge">
+	<meta name="viewport" content="width=device-width,initial-scale=1.0,minimum-scale=1.0,maximum-scale=1.0,user-scalable=0">
+	<style>
+        * {
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            /*font-family: 微软雅黑, 黑体, Arial, Helvetica, sans-serif;*/
+            /*font-family: "SF Pro Display","Helvetica Neue",Helvetica, Tahoma, Arial, "PingFang SC", "Hiragino Sans GB", "Heiti SC", "Microsoft YaHei",sans-serif,'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol','Noto Color Emoji';*/
+            font-family: "SF Pro Display", "Helvetica Neue", Helvetica, Tahoma, Arial, "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
+            -webkit-font-smoothing: antialiased;
+        }
+        /*地图 2*/
+        .static-map-style1{
+
+        }
+        .static-map-style1 .map-box{
+            position: absolute;
+            width: 100%;
+            height: 100%;
+        }
+        .static-map-style1 .eng-map-container{
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+        }
+        .static-map-style1 .map-box .BMapLabel{
+            border: 1px solid #E9E9E9 !important;
+            padding: 10px !important;;
+            border-radius: 4px;
+        }
+        .static-map-style1 .map-box .info-window-box{
+            position: relative;
+            color: #333333;
+            font-size: 14px;
+            /*height: 20px;*/
+            line-height: 20px;
+            font-family:"PingFang SC";
+
+            width: 327px;
+            height: 40px;
+            white-space: normal;
+            text-align: center;
+        }
+        .static-map-style1 .map-box .info-window-box .center-txt{
+            position: absolute;
+            top: 50%;
+            left: 0;
+            width: 100%;
+            transform: translateY(-50%);
+            max-height: 40px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            max-height: 40px;
+
+        }
+        .static-map-style1 .markerPop{
+            text-align: left;
+        }
+        .static-map-style1 .markerPop tr .label{
+            width: 70px;
+            vertical-align: top;
+        }
+        .static-map-style1 .markerPop tr .pop-img{
+            width: 100%;
+            height: 120px;
+            margin: 5px 0;
+        }
+        .static-map-style1 .markerPop tr .link-td{
+            text-align: right;
+            line-height: 30px;
+            white-space: nowrap;
+        }
+
+        .static-map-style1 .markerPop tr .link-td.tl{
+            text-align: left;
+        }
+
+        .static-map-style1 .markerPop tr .link{
+            color: #428bca;
+            text-decoration: none;
+        }
+
+        .static-map-style1 .BMap_bubble_content {
+            font-size: 14px;
+            line-height: 24px;
+            color: #555555;
+        }
+        .static-map-style1 .BMap_bubble_title {
+            text-overflow: ellipsis;
+            max-width: 90%;
+        }
+        @media only screen and (min-width: 1px) and (max-width: 767px) {
+            .static-map-style1 {
+                min-width: 0;
+            }
+            .static-map-style1 .map-box{
+                overflow-y: auto;
+            }
+            .static-map-style1 .map-box .BMapLabel{
+                padding: 16px !important;
+            }
+            .static-map-style1 .map-box .info-window-box{
+                font-size: 22px;
+            }
+            .static-map-style1 .map-box .BMap_Marker>div,
+            .static-map-style1 .map-box .BMap_Marker>div img{
+                width: 48px !important;
+                height: 48px !important;
+            }
+        }
+		[v-cloak] {
+			display: none;
+        }
+	</style>
+</head>
+<body>
+<div class="static-map-style1" style="background-color: white;" id="vm" v-cloak>
+	<div class="map-box">
+		<div class="eng-map-container"></div>
+	</div>
+</div>
+<div th:replace="pc/include/common_js :: common_js(~{::script})">
+	<script src="//api.map.baidu.com/api?v=3.0&ak=aG5nWGO5m5tkVhBHGuVppoIRfKbyp5H3"></script>
+	<script src="/static/pc/assets/js/app.pc.js" th:src="@{/pc/assets/js/app.pc.js}"></script>
+	<script th:inline="javascript">
+        vm = new Vue({
+	        el: "#vm",
+	        data: {
+                points: [
+                    {
+                        lat: [[${lat}]],
+                        lng: [[${lng}]],
+                        address: [[${address}]],
+                        icon: ctx + "/mapIframe/icon-location.png",
+                        iconApp: ctx + "/mapIframe/icon-location-app.png"
+                    }
+                ]
+	        },
+            mounted: function () {
+				var $this = this;
+                $this.init();
+            },
+	        methods: {
+                init: function () {
+                    var len = $('.static-map-style1 .map-container').length;
+                    var obj = $('.static-map-style1').find('.eng-map-container');
+                    obj[0].setAttribute('id', 'iframeMapOne' + len);
+                    this.mapInit('iframeMapOne' + len);
+                },
+                mapInit: function (id) {
+                    var $this = this;
+                    var map = new BMap.Map(id);
+                    map.enableScrollWheelZoom(true);
+                    var marker = [], pointArr = [];
+                    if ($this.points.length < 1) {
+                        map.centerAndZoom(new BMap.Point(116.404, 39.915), 15);
+                    }
+                    $this.points.forEach(function (item, index) {
+                        var i = index;
+                        var pointObj = item;
+                        pointArr[i] = new BMap.Point(pointObj.lng, pointObj.lat);
+                        if (i === 0) {
+                            map.centerAndZoom(pointArr[i], 15);
+                        }
+                        if (pointObj.icon) {
+                            // 创建图标
+                            var myIcon = new BMap.Icon(pointObj.icon, new BMap.Size(26, 30));
+                            if ($this.isMobileDevice()) {
+                                myIcon = new BMap.Icon(pointObj.iconApp, new BMap.Size(48, 48));
+                            }
+                            marker[i] = new BMap.Marker(pointArr[i], {
+                                icon: myIcon
+                            })
+                        } else {
+                            marker[i] = new BMap.Marker(pointArr[i])
+                        }
+                        // 将标注添加到地图
+                        map.addOverlay(marker[i]);
+                        console.log(pointObj)
+                        // 创建信息窗口
+                        var opts = {
+                            position: pointArr[i],    // 指定文本标注所在的地理位置
+                            offset: new BMap.Size(-166, -90),    //设置文本偏移量
+                            enableMassClear: false,
+                        }
+                        if ($this.isMobileDevice()) {
+                            opts.offset = new BMap.Size(-166, -110)
+                        }
+                        if (!activityApp.isEmpty(pointObj.address)) {
+                            var infoWindow = new BMap.Label('', opts);
+                            infoWindow.setContent('<div class="info-window-box"><div class="center-txt">' + pointObj.address + '</div></div>');
+                            map.addOverlay(infoWindow);
+                        }
+                    })
+                },
+                isMobileDevice: function () {
+                    var deviceWid = $(window).width();
+                    if (deviceWid < 767) {
+                        return true;
+                    } else {
+                        return false;
+                    }
+                }
+	        }
+        });
+	</script>
+</div>
+</body>
+</html>

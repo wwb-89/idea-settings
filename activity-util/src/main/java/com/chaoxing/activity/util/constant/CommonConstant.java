@@ -35,9 +35,9 @@ public class CommonConstant {
 	public static final ZoneOffset DEFAULT_ZONEOFFSET = ZoneOffset.of("+8");
 
 	/** 默认经度 */
-	public static final BigDecimal DEFAULT_LONGITUDE = BigDecimal.valueOf(104.07073444090588000);
+	public static final BigDecimal DEFAULT_LNG = BigDecimal.valueOf(104.07073444090588000);
 	/** 默认维度 */
-	public static final BigDecimal DEFAULT_DIMENSION = BigDecimal.valueOf(30.57504123492308400);
+	public static final BigDecimal DEFAULT_LAT = BigDecimal.valueOf(30.57504123492308400);
 	
 	/** 活动开始通知的时间阈值（提前多久发通知）阈值单位：毫秒 */
 	public static final Long ACTIVITY_BEFORE_START_NOTICE_TIME_THRESHOLD = 24 * 60 * 60 * 1000L;

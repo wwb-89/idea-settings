@@ -33,14 +33,19 @@ public class WebConfig implements WebMvcConfigurer, ErrorPageRegistrar {
 	@Resource
 	private LoginRequiredInterceptor loginRequiredInterceptor;
 
-	private static final List<String> STATIC_RESOURCE_PATH_PATTERNS = Lists.newArrayList("/favicon.ico", "/assets/**", "/pc/**", "/mobile/**");
-	private static final List<String> API_PATH_PATTERNS = Lists.newArrayList("/api/outer/**");
+	private static final List<String> EXCLUDE_PATHS = Lists.newArrayList();
+
+	static {
+		EXCLUDE_PATHS.addAll(Lists.newArrayList("/favicon.ico", "/assets/**", "/pc/**", "/mobile/**"));
+		EXCLUDE_PATHS.addAll(Lists.newArrayList("/api/outer/**"));
+		EXCLUDE_PATHS.addAll(Lists.newArrayList("/proxy/**"));
+	}
 
 	@Override
 	public void addInterceptors(InterceptorRegistry registry) {
-		registry.addInterceptor(loginUserValidateInterceptor).addPathPatterns("/**").excludePathPatterns(STATIC_RESOURCE_PATH_PATTERNS).excludePathPatterns(API_PATH_PATTERNS);
-		registry.addInterceptor(autoLoginInterceptor).addPathPatterns("/**").excludePathPatterns(STATIC_RESOURCE_PATH_PATTERNS).excludePathPatterns(API_PATH_PATTERNS);
-		registry.addInterceptor(loginRequiredInterceptor).addPathPatterns("/**").excludePathPatterns(STATIC_RESOURCE_PATH_PATTERNS).excludePathPatterns(API_PATH_PATTERNS);
+		registry.addInterceptor(loginUserValidateInterceptor).addPathPatterns("/**").excludePathPatterns(EXCLUDE_PATHS);
+		registry.addInterceptor(autoLoginInterceptor).addPathPatterns("/**").excludePathPatterns(EXCLUDE_PATHS);
+		registry.addInterceptor(loginRequiredInterceptor).addPathPatterns("/**").excludePathPatterns(EXCLUDE_PATHS);
 	}
 
 	@Override
