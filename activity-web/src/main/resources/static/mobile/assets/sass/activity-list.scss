@@ -112,7 +112,7 @@ body {
         }
     }
     .card-list {
-        padding: 0 .75rem;
+        padding: 0 .625rem;
          ul {
             overflow: hidden;
              li {
@@ -165,6 +165,7 @@ body {
                           left: .375rem;
                           top: .375rem;
                           font-size: 0;
+                          z-index: 1;
                         }
                     .tips {
                         display: inline-block;
@@ -239,6 +240,10 @@ body {
                         font-size: .75rem;
                         line-height: 1.25rem;
                         margin-bottom: .25rem;
+                      i{
+                        color: #CCCCCC;
+                        margin-right: 0.25rem;
+                      }
                     }
                     .type-box {
                       margin: .25rem 0;
@@ -389,6 +394,26 @@ body {
              }
          }
     }
+    .card-list1{
+      ul {
+        li {
+          min-height: 4.5rem;
+          .inner {
+            padding-left: 7.625rem;
+          }
+          .img-box {
+            width: 7rem;
+            height: 4.5rem;
+          }
+          .card-info {
+            .time {
+              display: flex;
+              align-items: center;
+            }
+          }
+        }
+      }
+    }
     .labelTab {
       position: fixed;
       right: 0;
@@ -440,5 +465,48 @@ body {
     color: #999999;
     line-height: 1.25rem;
     font-size: 0.9375rem;
+  }
+}
+.tipsDialog {
+  position: fixed;
+  z-index: 99;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.3);
+  .inner-content{
+    position: fixed;
+    bottom: .5rem;
+    left: 0;
+    right: 0;
+    padding: 0 .5rem;
+    ul {
+      background: #FFFFFF;
+      border-radius: .78125rem;
+      margin-bottom: .5rem;
+      li {
+        
+        line-height: 1.5625rem;
+        padding: 1rem 1.5rem;
+        font-size: 1.25rem;
+        &.tips {
+          color: #666666;
+          font-size: .9375rem;
+        }
+        &.colorRed {
+          color: #FF666D;
+        }
+      }
+    }
+    .cancle {
+      background: #FFFFFF;
+      border-radius: .78125rem;
+      font-weight: 500;
+      font-size: 1.25rem;
+      line-height: 1.5625rem;
+      padding: 1rem;
+      color: #0084FF;
+    }
   }
 }

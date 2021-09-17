@@ -201,14 +201,15 @@ body {
             left: 8px;
             top: 8px;
             font-size: 0;
+            z-index: 1;
           }
           .tips {
             display: inline-block;
             vertical-align: top;
             padding: 0 8px;
             font-weight: 500;
-            height: 20px;
-            line-height: 20px;
+            height: 22px;
+            line-height: 22px;
             color: #FFFFFF;
             font-size: 12px;
             border-radius: 4px;
@@ -246,6 +247,7 @@ body {
           }
           .color6 {
             background: linear-gradient(90deg, #02C4FF 0%, #43A3FF 100%);
+            background: -o-linear-gradient(353.32deg, #02C4FF 0%, #43A3FF 100%);
           }
         }
         .card-info {
@@ -364,6 +366,7 @@ body {
             left: 8px;
             top: 8px;
             font-size: 0;
+            z-index: 1;
           }
           .tips {
             display: inline-block;
@@ -409,6 +412,7 @@ body {
           }
           .color6 {
             background: linear-gradient(90deg, #02C4FF 0%, #43A3FF 100%);
+            background: -o-linear-gradient(353.32deg, #02C4FF 0%, #43A3FF 100%);
           }
         }
         .card-info {
