@@ -3,12 +3,14 @@ package com.chaoxing.activity.api.controller.mh;
 import cn.hutool.http.HtmlUtil;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
+import com.chaoxing.activity.api.controller.enums.MhBtnSequenceEnum;
 import com.chaoxing.activity.dto.RestRespDTO;
 import com.chaoxing.activity.dto.manager.mh.MhGeneralAppResultDataDTO;
 import com.chaoxing.activity.dto.manager.sign.SignStatDTO;
 import com.chaoxing.activity.dto.manager.sign.SignUpDTO;
 import com.chaoxing.activity.dto.manager.sign.UserSignParticipationStatDTO;
 import com.chaoxing.activity.dto.manager.sign.create.SignUpCreateParamDTO;
+import com.chaoxing.activity.dto.work.WorkBtnDTO;
 import com.chaoxing.activity.model.Activity;
 import com.chaoxing.activity.model.ActivityDetail;
 import com.chaoxing.activity.model.ActivityRating;
@@ -18,6 +20,7 @@ import com.chaoxing.activity.service.activity.flag.ActivityFlagValidateService;
 import com.chaoxing.activity.service.activity.rating.ActivityRatingQueryService;
 import com.chaoxing.activity.service.manager.CloudApiService;
 import com.chaoxing.activity.service.manager.module.SignApiService;
+import com.chaoxing.activity.service.manager.module.WorkApiService;
 import com.chaoxing.activity.util.DateUtils;
 import com.chaoxing.activity.util.constant.UrlConstant;
 import com.chaoxing.activity.util.enums.MhAppIconEnum;
@@ -55,6 +58,8 @@ public class ActivityMhV3ApiController {
     private ActivityRatingQueryService activityRatingQueryService;
     @Resource
     private CloudApiService cloudApiService;
+    @Resource
+    private WorkApiService workApiService;
 
     @Resource
     private SignApiService signApiService;
@@ -96,8 +101,9 @@ public class ActivityMhV3ApiController {
         }
         JSONObject params = JSON.parseObject(data);
         Integer uid = params.getInteger("uid");
+        Integer wfwfid = params.getInteger("wfwfid");
 
-        jsonObject.put("results", packageBtns(activity, activity.getSignId(), uid));
+        jsonObject.put("results", packageBtns(activity, activity.getSignId(), uid, wfwfid));
         return RestRespDTO.success(jsonObject);
     }
 
@@ -270,9 +276,10 @@ public class ActivityMhV3ApiController {
      * @param activity
      * @param signId
      * @param uid
+     * @param wfwfid
      * @return java.util.List<com.chaoxing.activity.dto.mh.MhGeneralAppResultDataDTO.MhGeneralAppResultDataFieldDTO>
      */
-    private List<MhGeneralAppResultDataDTO> packageBtns(Activity activity, Integer signId, Integer uid) {
+    private List<MhGeneralAppResultDataDTO> packageBtns(Activity activity, Integer signId, Integer uid, Integer wfwfid) {
         List<MhGeneralAppResultDataDTO> result = Lists.newArrayList();
         Integer status = activity.getStatus();
         Activity.StatusEnum statusEnum = Activity.StatusEnum.fromValue(status);
@@ -287,8 +294,9 @@ public class ActivityMhV3ApiController {
         openWork = Optional.ofNullable(openWork).orElse(Boolean.FALSE);
         Integer workId = activity.getWorkId();
         boolean isManager = activityValidationService.isManageAble(activity, uid);
-        // 报名信息
         boolean existSignUp = CollectionUtils.isNotEmpty(signUpIds);
+        boolean signedUp = true;
+        // 报名信息
         boolean existSignUpInfo = false;
         if (existSignUp) {
             // 如果开启了学生报名则需要报名（报名任意一个报名）才能看见"进入会场"
@@ -307,82 +315,89 @@ public class ActivityMhV3ApiController {
                 if (openedStudengSignUp) {
                     // 必须要报名
                     if (userSignParticipationStat.getSignedUp()) {
-                        buildBtnField("进入会场", getDualSelectIndexUrl(activity), "1", false, result);
+                        result.add(buildBtnField("进入会场", getDualSelectIndexUrl(activity), "1", false, MhBtnSequenceEnum.SIGN_IN.getSequence()));
                     }
                 } else {
-                    buildBtnField("进入会场", getDualSelectIndexUrl(activity), "1", false, result);
+                    result.add(buildBtnField("进入会场", getDualSelectIndexUrl(activity), "1", false, MhBtnSequenceEnum.SIGN_IN.getSequence()));
                 }
             }
             if (userSignParticipationStat.getSignedUp()) {
                 // 已报名
                 if (CollectionUtils.isNotEmpty(signInIds)) {
-                    buildBtnField("去签到", userSignParticipationStat.getSignInUrl(), "1", false, result);
-                }
-                if (openWork && workId != null && !isManager) {
-                    buildBtnField("提交作品", getWorkIndexUrl(workId), "1", false, result);
+                    result.add(buildBtnField("去签到", userSignParticipationStat.getSignInUrl(), "1", false, MhBtnSequenceEnum.SIGN_IN.getSequence()));
                 }
                 existSignUpInfo = true;
-            } else if (userSignParticipationStat.getSignUpAudit()) {
-                // 审核中
-                buildBtnField("报名审核中", "", "0", false, result);
-                existSignUpInfo = true;
-            } else if (activityEnded && userSignParticipationStat.getSignUpEnded()) {
-                // 活动和报名都结束的情况显示活动已结束
-                buildBtnField("活动已结束", "", "0", false, result);
-            } else if (userSignParticipationStat.getSignUpEnded()) {
-                buildBtnField("报名已结束", "", "0", false, result);
-            } else if (userSignParticipationStat.getSignUpNotStart()) {
-                buildBtnField("报名未开始", "", "0", false, result);
-            } else if (!userSignParticipationStat.getInParticipationScope() && uid != null) {
-                buildBtnField("不在参与范围内", "", "0", false, result);
-            } else if (userSignParticipationStat.getNoPlaces()) {
-                buildBtnField("名额已满", "", "0", false, result);
-            } else {
-                String showName = "报名参加";
-                List<SignUpCreateParamDTO> signUps = userSignParticipationStat.getSignUps();
-                boolean setSignUpBtn = Boolean.FALSE;
-                if (signUpIds.size() == 1) {
-                    SignUpCreateParamDTO signUp = signUps.get(0);
-                    String btnName = signUp.getBtnName();
-                    if (StringUtils.isNotBlank(btnName)) {
-                        showName = btnName;
+            } else{
+                signedUp = false;
+                if (userSignParticipationStat.getSignUpAudit()) {
+                    // 审核中
+                    result.add(buildBtnField("报名审核中", "", "0", false, MhBtnSequenceEnum.SIGN_UP.getSequence()));
+                    existSignUpInfo = true;
+                } else if (activityEnded && userSignParticipationStat.getSignUpEnded()) {
+                    // 活动和报名都结束的情况显示活动已结束
+                    result.add(buildBtnField("活动已结束", "", "0", false, MhBtnSequenceEnum.ACTIVITY.getSequence()));
+                } else if (userSignParticipationStat.getSignUpEnded()) {
+                    result.add(buildBtnField("报名已结束", "", "0", false, MhBtnSequenceEnum.SIGN_UP.getSequence()));
+                } else if (userSignParticipationStat.getSignUpNotStart()) {
+                    result.add(buildBtnField("报名未开始", "", "0", false, MhBtnSequenceEnum.SIGN_UP.getSequence()));
+                } else if (!userSignParticipationStat.getInParticipationScope() && uid != null) {
+                    result.add(buildBtnField("不在参与范围内", "", "0", false, MhBtnSequenceEnum.SIGN_UP.getSequence()));
+                } else if (userSignParticipationStat.getNoPlaces()) {
+                    result.add(buildBtnField("名额已满", "", "0", false, MhBtnSequenceEnum.SIGN_UP.getSequence()));
+                } else {
+                    String showName = "报名参加";
+                    List<SignUpCreateParamDTO> signUps = userSignParticipationStat.getSignUps();
+                    boolean setSignUpBtn = Boolean.FALSE;
+                    if (signUpIds.size() == 1) {
+                        SignUpCreateParamDTO signUp = signUps.get(0);
+                        String btnName = signUp.getBtnName();
+                        if (StringUtils.isNotBlank(btnName)) {
+                            showName = btnName;
+                        }
+                        if (!signUps.get(0).getFillInfo()) {
+                            setSignUpBtn = Boolean.TRUE;
+                            result.add(buildBtnField(showName, UrlConstant.MH_AJAX_SIGN_UP,  "1", true, MhBtnSequenceEnum.SIGN_UP.getSequence()));
+                        }
                     }
-                    if (!signUps.get(0).getFillInfo()) {
-                        setSignUpBtn = Boolean.TRUE;
-                        buildBtnField(showName, UrlConstant.MH_AJAX_SIGN_UP,  "1", true, result);
+                    if (!setSignUpBtn) {
+                        result.add(buildBtnField(showName, userSignParticipationStat.getSignUpUrl(), "1", false, MhBtnSequenceEnum.SIGN_UP.getSequence()));
                     }
-                }
-                if (!setSignUpBtn) {
-                    buildBtnField(showName, userSignParticipationStat.getSignUpUrl(), "1", false, result);
                 }
             }
         }else {
             if (activityFlagValidateService.isDualSelect(activity)) {
-                buildBtnField("进入会场", getDualSelectIndexUrl(activity), "1", false, result);
+                result.add(buildBtnField("进入会场", getDualSelectIndexUrl(activity), "1", false, MhBtnSequenceEnum.SIGN_IN.getSequence()));
             }
             if (CollectionUtils.isNotEmpty(signInIds)) {
-                buildBtnField("去签到", userSignParticipationStat.getSignInUrl(), "1", false, result);
+                result.add(buildBtnField("去签到", userSignParticipationStat.getSignInUrl(), "1", false, MhBtnSequenceEnum.SIGN_IN.getSequence()));
             }
-            if (openWork && workId != null && !isManager) {
-                buildBtnField("提交作品", getWorkIndexUrl(workId), "1", false, result);
+        }
+        if (openWork && workId != null) {
+            List<WorkBtnDTO> workBtnDtos = workApiService.listBtns(workId, uid, wfwfid);
+            for (WorkBtnDTO workBtnDto : workBtnDtos) {
+                Boolean enable = Optional.ofNullable(workBtnDto.getEnable()).orElse(false);
+                Boolean needValidate = Optional.ofNullable(workBtnDto.getNeedValidate()).orElse(false);
+                if (needValidate && !signedUp) {
+                    continue;
+                }
+                result.add(buildBtnField(workBtnDto.getButtonName(), workBtnDto.getLinkUrl(), enable ? "1" : "0", false, MhBtnSequenceEnum.MANAGE.getSequence()));
             }
         }
         // 是不是管理员
         if (isManager) {
-            if (openWork && workId != null) {
-                buildBtnField("提交作品", getWorkIndexUrl(workId), "1", false, result);
-            }
-            buildBtnField("管理", activityQueryService.getActivityManageUrl(activity.getId()), "2", false, result);
+            result.add(buildBtnField("管理", activityQueryService.getActivityManageUrl(activity.getId()), "2", false, MhBtnSequenceEnum.MANAGE.getSequence()));
         }
         // 评价
         Boolean openRating = activity.getOpenRating();
         openRating = Optional.ofNullable(openRating).orElse(Boolean.FALSE);
         if (openRating) {
-            buildBtnField("评价", activityQueryService.getActivityRatingUrl(activity.getId()), "2", false, result);
+            result.add(buildBtnField("评价", activityQueryService.getActivityRatingUrl(activity.getId()), "2", false, MhBtnSequenceEnum.RATING.getSequence()));
         }
         if (existSignUpInfo) {
-            buildBtnField("报名信息", userSignParticipationStat.getSignUpResultUrl(), "2", false, result);
+            result.add(buildBtnField("报名信息", userSignParticipationStat.getSignUpResultUrl(), "2", false, MhBtnSequenceEnum.SIGN_UP_INFO.getSequence()));
         }
+        // 排序
+        result.sort(Comparator.comparingInt(MhGeneralAppResultDataDTO::getSequence));
         return result;
     }
 
@@ -512,7 +527,7 @@ public class ActivityMhV3ApiController {
         mainFields.add(item);
     }
 
-    private void buildBtnField(String key, String url, String type, boolean isAjax, List<MhGeneralAppResultDataDTO> result) {
+    private MhGeneralAppResultDataDTO buildBtnField(String key, String url, String type, boolean isAjax, Integer sequence) {
         MhGeneralAppResultDataDTO item = MhGeneralAppResultDataDTO.buildDefault();
         List<MhGeneralAppResultDataDTO.MhGeneralAppResultDataFieldDTO> fields = Lists.newArrayList();
         if (isAjax) {
@@ -541,8 +556,9 @@ public class ActivityMhV3ApiController {
                     .flag(String.valueOf(++flag))
                     .build());
         }
+        item.setSequence(sequence);
         item.setFields(fields);
-        result.add(item);
+        return item;
     }
 
 }

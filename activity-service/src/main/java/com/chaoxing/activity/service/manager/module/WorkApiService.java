@@ -3,9 +3,11 @@ package com.chaoxing.activity.service.manager.module;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.chaoxing.activity.dto.module.WorkFormDTO;
+import com.chaoxing.activity.dto.work.WorkBtnDTO;
 import com.chaoxing.activity.util.DateUtils;
 import com.chaoxing.activity.util.constant.CommonConstant;
 import com.chaoxing.activity.util.exception.BusinessException;
+import com.google.common.collect.Lists;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -20,6 +22,7 @@ import org.springframework.web.client.RestTemplate;
 import javax.annotation.Resource;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -45,6 +48,8 @@ public class WorkApiService {
 	private static final String ACTIVITY_SUBMITED_WORK_NUM_URL = DOMAIN + "/activity/stat/submited-work-num";
 	/** 更新作品征集信息url */
 	private static final String UPDATE_WORK_URL = DOMAIN + "/activity/update";
+	/** 作品征集按钮yrl */
+	private static final String WORK_BTN_URL = DOMAIN + "/activity/user/permission?activityId=%d&uid=%s&fid=%d";
 
 	@Resource
 	private RestTemplate restTemplate;
@@ -171,6 +176,26 @@ public class WorkApiService {
 			String message = jsonObject.getString("message");
 			log.info("根据作品征集id:{} 更新作品征集信息error:{}", workId, message);
 			throw new BusinessException(message);
+		}
+	}
+
+	/**查询作品征集的按钮列表
+	 * @Description 
+	 * @author wwb
+	 * @Date 2021-09-17 17:14:39
+	 * @param workId
+	 * @param uid
+	 * @param fid
+	 * @return java.util.List<com.chaoxing.activity.dto.work.WorkBtnDTO>
+	*/
+	public List<WorkBtnDTO> listBtns(Integer workId, Integer uid, Integer fid) {
+		String url = String.format(WORK_BTN_URL, workId, Optional.ofNullable(uid).map(String::valueOf).orElse(""), fid);
+		String result = restTemplate.postForObject(url, null, String.class);
+		JSONObject jsonObject = JSON.parseObject(result);
+		if (Objects.equals(true, jsonObject.getBoolean("success"))) {
+			return JSON.parseArray(jsonObject.getString("data"), WorkBtnDTO.class);
+		} else {
+			return Lists.newArrayList();
 		}
 	}
 

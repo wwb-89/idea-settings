@@ -35,6 +35,8 @@ public class MhGeneralAppResultDataDTO {
 	private String popUrl;
 	/** html渲染内容 */
 	private String content;
+	/** 顺序 */
+	private Integer sequence;
 
 	@Data
 	@Builder
