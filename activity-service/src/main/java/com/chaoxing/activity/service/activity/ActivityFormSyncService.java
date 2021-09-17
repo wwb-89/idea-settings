@@ -209,17 +209,6 @@ public class ActivityFormSyncService {
         return activityHandleService.edit(activityUpdateParam, sign, defaultPublishAreas, loginUser);
     }
 
-    /**
-    * @Description
-    * @author huxiaolong
-    * @Date 2021-09-01 12:03:34
-    * @param
-    * @return void
-    */
-    public void pushActivityData() {
-
-    }
-
     /**从表单数据中获取参与人uids
      * @Description
      * @author huxiaolong
