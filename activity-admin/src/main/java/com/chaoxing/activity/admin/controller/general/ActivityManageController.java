@@ -13,6 +13,7 @@ import com.chaoxing.activity.model.WebTemplate;
 import com.chaoxing.activity.service.WebTemplateService;
 import com.chaoxing.activity.service.activity.ActivityQueryService;
 import com.chaoxing.activity.service.activity.ActivityValidationService;
+import com.chaoxing.activity.service.activity.classify.ClassifyQueryService;
 import com.chaoxing.activity.service.activity.engine.ActivityEngineQueryService;
 import com.chaoxing.activity.service.activity.manager.ActivityCreatePermissionService;
 import com.chaoxing.activity.service.activity.menu.ActivityMenuService;
@@ -29,8 +30,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -63,6 +63,8 @@ public class ActivityManageController {
 	private ActivityMenuService activityMenuService;
 	@Resource
 	private ActivityClassService activityClassService;
+	@Resource
+	private ClassifyQueryService classifyQueryService;
 
 	/**活动管理主页
 	 * @Description 
@@ -114,9 +116,11 @@ public class ActivityManageController {
 		model.addAttribute("templateComponents", activityEngineQueryService.listTemplateComponentTree(activity.getTemplateId(), activity.getCreateFid()));
 		// 活动类型列表
 		model.addAttribute("activityTypes", activityQueryService.listActivityType());
+		String activityFlag = activity.getActivityFlag();
+		model.addAttribute("activityFlag", activityFlag);
 		// 当前用户创建活动权限
 		ActivityCreatePermissionDTO permission = activityCreatePermissionService.getActivityCreatePermission(loginUser.getFid(), activity.getMarketId(), loginUser.getUid());
-		model.addAttribute("activityClassifies", permission.getClassifies());
+		model.addAttribute("activityClassifies", classifyQueryService.classifiesUnionAreaClassifies(createParamDTO.getMarketId(), activityFlag, permission.getClassifies()));
 		// 报名签到
 		Integer signId = activity.getSignId();
 		SignCreateParamDTO sign = SignCreateParamDTO.builder().build();
@@ -128,7 +132,7 @@ public class ActivityManageController {
 		Integer webTemplateId = activity.getWebTemplateId();
 		WebTemplate usedWebTemplate = Optional.ofNullable(webTemplateId).map(v -> webTemplateService.getById(v)).orElse(null);
 		model.addAttribute("usedWebTemplate", usedWebTemplate);
-		List<WebTemplate> webTemplates = webTemplateService.listAvailable(loginUser.getFid(), activity.getActivityFlag());
+		List<WebTemplate> webTemplates = webTemplateService.listAvailable(loginUser.getFid(), activityFlag);
 		model.addAttribute("webTemplates", webTemplates);
 		// 活动发布班级id集合
 		List<Integer> releaseClassIds = activityClassService.listClassIdsByActivity(activityId);
@@ -141,8 +145,6 @@ public class ActivityManageController {
 		model.addAttribute("wfwGroups", permission.getWfwGroups());
 		// 通讯录组织架构
 		model.addAttribute("contactGroups", permission.getContactsGroups());
-		String activityFlag = activity.getActivityFlag();
-		model.addAttribute("activityFlag", activityFlag);
 		model.addAttribute("strict", strict);
 		return "pc/activity-add-edit-new";
 	}

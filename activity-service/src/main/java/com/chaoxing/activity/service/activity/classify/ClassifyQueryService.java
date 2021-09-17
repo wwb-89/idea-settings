@@ -1,20 +1,25 @@
 package com.chaoxing.activity.service.activity.classify;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.chaoxing.activity.dto.manager.wfw.WfwAreaDTO;
 import com.chaoxing.activity.mapper.ClassifyMapper;
 import com.chaoxing.activity.mapper.MarketClassifyMapper;
 import com.chaoxing.activity.mapper.OrgClassifyMapper;
 import com.chaoxing.activity.model.Classify;
 import com.chaoxing.activity.model.MarketClassify;
 import com.chaoxing.activity.model.OrgClassify;
+import com.chaoxing.activity.service.ActivityFlagCodeService;
+import com.chaoxing.activity.service.activity.market.MarketQueryService;
+import com.chaoxing.activity.service.manager.wfw.WfwAreaApiService;
 import com.google.common.collect.Lists;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
+import java.util.stream.Collectors;
 
 /**活动分类查询服务
  * @author wwb
@@ -37,6 +42,12 @@ public class ClassifyQueryService {
 
 	@Resource
 	private ClassifyHandleService classifyHandleService;
+	@Resource
+	private ActivityFlagCodeService activityFlagCodeService;
+	@Resource
+	private WfwAreaApiService wfwAreaApiService;
+	@Resource
+	private MarketQueryService marketQueryService;
 
 	/**查询系统分类列表
 	 * @Description
@@ -207,6 +218,29 @@ public class ClassifyQueryService {
 	*/
 	public Classify getById(Integer classifyId) {
 		return classifyMapper.selectById(classifyId);
+	}
+
+	/**获取区域类型,与现有类型取并集
+	 * @Description
+	 * @author huxiaolong
+	 * @Date 2021-09-17 14:48:35
+	 * @param marketId
+	 * @param flag
+	 * @param permissionClassifies
+	 * @return java.util.Set<com.chaoxing.activity.model.Classify>
+	 */
+	public Set<Classify> classifiesUnionAreaClassifies(Integer marketId, String flag, List<Classify> permissionClassifies) {
+		Set<Classify> classifies = new HashSet<>(permissionClassifies);
+		List<Integer> ownerClassifyIds = permissionClassifies.stream().map(Classify::getId).collect(Collectors.toList());
+		if (marketId == null && StringUtils.isNotBlank(flag)) {
+			String code = activityFlagCodeService.getCodeByFlag(flag);
+			Integer areaFid = wfwAreaApiService.listByCode(code).stream().filter(v -> Objects.equals(code, v.getCode())).map(WfwAreaDTO::getFid).findFirst().orElse(null);
+			if (areaFid != null) {
+				Integer areaMarketId = marketQueryService.getMarketIdByTemplate(areaFid, flag);
+				classifies.addAll(listMarketClassifies(areaMarketId));
+			}
+		}
+		return classifies.stream().peek(v -> v.setOwner(ownerClassifyIds.contains(v.getId()))).collect(Collectors.toSet());
 	}
 
 }

@@ -41,7 +41,6 @@ public class GeneralActivityController {
 	 * @Date 2020-11-18 11:34:30
 	 * @param model
 	 * @param marketId
-	 * @param code 图书馆编码
 	 * @param wfwfid
 	 * @param unitId
 	 * @param state
@@ -53,7 +52,7 @@ public class GeneralActivityController {
 	 * @return java.lang.String
 	 */
 	@RequestMapping("")
-	public String index(HttpServletRequest request, Model model, Integer marketId, String code, Integer wfwfid, Integer unitId, Integer state, Integer fid,
+	public String index(HttpServletRequest request, Model model, Integer marketId, Integer wfwfid, Integer unitId, Integer state, Integer fid,
 						@RequestParam(defaultValue = "0") Integer strict, String flag, @RequestParam(defaultValue = "0") Integer pageMode, @RequestParam(defaultValue = "false") Boolean direct) {
 		Integer realFid = Optional.ofNullable(wfwfid).orElse(Optional.ofNullable(unitId).orElse(Optional.ofNullable(state).orElse(Optional.ofNullable(fid).orElse(LoginUtils.getLoginUser(request).getFid()))));
 		direct = Optional.ofNullable(direct).orElse(false);
@@ -68,7 +67,7 @@ public class GeneralActivityController {
 				return "redirect:/market/" + marketId + "?pageMode=" + pageMode;
 			}
 		}
-		return activityController.index(model, marketId, code, realFid, strict, flag, pageMode);
+		return activityController.index(model, marketId, realFid, strict, flag, pageMode);
 	}
 
 	/**活动新增页面
@@ -83,7 +82,7 @@ public class GeneralActivityController {
 	*/
 	@GetMapping("activity/add")
 	public String add(HttpServletRequest request, Model model, Integer marketId, String flag, String code, @RequestParam(defaultValue = "0") Integer strict) {
-		return activityController.add(request, model, marketId, flag, code, strict);
+		return activityController.add(request, model, marketId, flag, strict);
 	}
 
 }

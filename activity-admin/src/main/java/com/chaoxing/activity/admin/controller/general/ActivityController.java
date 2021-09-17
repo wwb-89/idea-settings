@@ -6,15 +6,14 @@ import com.chaoxing.activity.dto.manager.ActivityCreatePermissionDTO;
 import com.chaoxing.activity.dto.manager.sign.create.SignCreateParamDTO;
 import com.chaoxing.activity.dto.manager.wfw.WfwAreaDTO;
 import com.chaoxing.activity.model.*;
-import com.chaoxing.activity.service.GroupService;
 import com.chaoxing.activity.service.WebTemplateService;
 import com.chaoxing.activity.service.activity.ActivityQueryService;
+import com.chaoxing.activity.service.activity.classify.ClassifyQueryService;
 import com.chaoxing.activity.service.activity.engine.ActivityEngineQueryService;
 import com.chaoxing.activity.service.activity.manager.ActivityCreatePermissionService;
 import com.chaoxing.activity.service.activity.template.TemplateQueryService;
 import com.chaoxing.activity.service.manager.wfw.WfwAreaApiService;
 import com.chaoxing.activity.service.tablefield.TableFieldQueryService;
-import com.chaoxing.activity.util.constant.CommonConstant;
 import com.google.common.collect.Lists;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Component;
@@ -22,9 +21,7 @@ import org.springframework.ui.Model;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
-import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -43,8 +40,6 @@ public class ActivityController {
 	@Resource
 	private WebTemplateService webTemplateService;
 	@Resource
-	private GroupService groupService;
-	@Resource
 	private WfwAreaApiService wfwAreaApiService;
 	@Resource
 	private TableFieldQueryService tableFieldQueryService;
@@ -54,6 +49,8 @@ public class ActivityController {
 	private TemplateQueryService templateQueryService;
 	@Resource
 	private ActivityCreatePermissionService activityCreatePermissionService;
+	@Resource
+	private ClassifyQueryService classifyQueryService;
 
 	/**新活动管理主页
 	 * @Description
@@ -61,17 +58,12 @@ public class ActivityController {
 	 * @Date 2021-03-17 15:32:59
 	 * @param model
 	 * @param marketId
-	 * @param code 图书馆专用的code
 	 * @param fid 空间或微服务后台进入时查询的活动以该fid为主
 	 * @param strict 是不是严格模式， 严格模式：只显示自己创建的活动
 	 * @param flag
 	 * @return java.lang.String
 	*/
-	public String index(Model model, Integer marketId, String code, Integer fid, Integer strict, String flag, Integer pageMode) {
-		code = Optional.ofNullable(code).orElse("");
-		// 防止挂接到三放也携带了code参数
-		code = code.split(CommonConstant.DEFAULT_SEPARATOR)[0];
-		model.addAttribute("code", code);
+	public String index(Model model, Integer marketId, Integer fid, Integer strict, String flag, Integer pageMode) {
 		model.addAttribute("fid", fid);
 		model.addAttribute("strict", strict);
 		model.addAttribute("marketId", marketId);
@@ -88,7 +80,7 @@ public class ActivityController {
 		return "pc/activity-list";
 	}
 
-	public String add(HttpServletRequest request, Model model, Integer marketId, String flag, String code, Integer strict) {
+	public String add(HttpServletRequest request, Model model, Integer marketId, String flag, Integer strict) {
 		flag = Optional.ofNullable(flag).filter(StringUtils::isNotBlank).orElse(Activity.ActivityFlagEnum.NORMAL.getValue());
 		LoginUserDTO loginUser = LoginUtils.getLoginUser(request);
 		Integer fid = loginUser.getFid();
@@ -104,13 +96,13 @@ public class ActivityController {
 		// 活动分类列表范围
 		// 当前用户创建活动权限
 		ActivityCreatePermissionDTO permission = activityCreatePermissionService.getActivityCreatePermission(fid, marketId, loginUser.getUid());
-		model.addAttribute("activityClassifies", permission.getClassifies());
+
+		model.addAttribute("activityClassifies", classifyQueryService.classifiesUnionAreaClassifies(marketId, flag, permission.getClassifies()));
 		// 报名签到
 		model.addAttribute("sign", SignCreateParamDTO.builder().build());
 		flag = Optional.of(template).map(Template::getActivityFlag).orElse(flag);
 		// 模板列表
 		model.addAttribute("webTemplates", webTemplateService.listAvailable(fid, flag));
-		model.addAttribute("areaCode", Optional.ofNullable(code).filter(StringUtils::isNotBlank).map(groupService::getByCode).map(Group::getAreaCode).orElse(""));
 		// 微服务组织架构
 		model.addAttribute("wfwGroups", permission.getWfwGroups());
 		// 通讯录组织架构
@@ -122,5 +114,4 @@ public class ActivityController {
 		model.addAttribute("participatedOrgs", participatedOrgs);
 		return "pc/activity-add-edit-new";
 	}
-
 }
