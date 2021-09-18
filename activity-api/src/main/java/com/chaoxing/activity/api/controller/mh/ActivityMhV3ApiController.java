@@ -212,7 +212,7 @@ public class ActivityMhV3ApiController {
         }
 
         ActivityDetail activityDetail = activityQueryService.getDetailByActivityId(activity.getId());
-        if (activityDetail != null) {
+        if (activityDetail != null && StringUtils.isNotBlank(activityDetail.getIntroduction())) {
             MhGeneralAppResultDataDTO mhGeneralAppResultData = MhGeneralAppResultDataDTO.buildDefault();
             mhGeneralAppResultData.setOrsUrl("");
             String introductionHtml = activityDetail.getIntroduction();
@@ -234,6 +234,7 @@ public class ActivityMhV3ApiController {
                     .value(introductionText)
                     .type("3")
                     .build());
+            mhGeneralAppResultData.setType(1);
             mhGeneralAppResultData.setFields(fields);
             mainFields.add(mhGeneralAppResultData);
         }
