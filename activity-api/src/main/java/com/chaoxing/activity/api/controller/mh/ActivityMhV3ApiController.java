@@ -75,6 +75,7 @@ public class ActivityMhV3ApiController {
             jsonObject.put("results", mainFields);
             return RestRespDTO.success(jsonObject);
         }
+        buildField(activity.getCoverUrl(), "", activity.getName(), "", mainFields);
         // 开始结束时间
         buildField(activity.getCoverUrl(), "", DateUtils.activityTimeScope(activity.getStartTime(), activity.getEndTime()), cloudApiService.buildImageUrl(MhAppIconEnum.ONE.TIME_TRANSPARENT.getValue()), mainFields);
         if (activity.getSignId() != null) {
