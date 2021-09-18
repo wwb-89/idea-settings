@@ -81,6 +81,8 @@ public class ActivityStatSummaryVO {
     private Integer createFid;
     /** 创建机构名称 */
     private String createOrgName;
+    /** 主办方 */
+    private String organisers;
 
 
     public static ActivityStatSummaryVO buildActivityStatSummaryVo(ActivityStatSummaryDTO actStatSummary) {
@@ -123,6 +125,7 @@ public class ActivityStatSummaryVO {
                 .pv(actStatSummary.getPv())
                 .createFid(actStatSummary.getCreateFid())
                 .createOrgName(actStatSummary.getCreateOrgName())
+                .organisers(actStatSummary.getOrganisers())
                 .build();
     }
 }

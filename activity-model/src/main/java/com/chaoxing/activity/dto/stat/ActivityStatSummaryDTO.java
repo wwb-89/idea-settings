@@ -86,5 +86,7 @@ public class ActivityStatSummaryDTO {
     private Integer createFid;
     /** 创建机构名称 */
     private String createOrgName;
+    /** 主办方 */
+    private String organisers;
 
 }
