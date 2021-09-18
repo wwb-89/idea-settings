@@ -3,6 +3,10 @@
     <option name="newTranslationDialogX" value="1103" />
     <option name="newTranslationDialogY" value="603" />
     <histories>
+      <item value="Dispatcher Servlet" />
+      <item value="Extension" />
+      <item value="implementation" />
+      <item value="register Natives" />
       <item value="Data" />
       <item value="Copyright (c) 2013-2021 Nikita Koksharov Licensed under the Apache License, Version 2.0 (the &quot;License&quot;); you may not use this file except in compliance with the License. You may obtain a copy of the License at http:www.apache.orglicensesLICENSE-2.0 Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an &quot;AS IS&quot; BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions and limitations under the License." />
       <item value="Documented" />
@@ -22,13 +26,13 @@
     </histories>
     <option name="languageScores">
       <map>
-        <entry key="CHINESE" value="11" />
-        <entry key="ENGLISH" value="12" />
+        <entry key="CHINESE" value="15" />
+        <entry key="ENGLISH" value="16" />
       </map>
     </option>
   </component>
   <component name="Cache">
-    <option name="lastTrimTime" value="1630580298925" />
+    <option name="lastTrimTime" value="1631690284055" />
   </component>
   <component name="Settings">
     <option name="googleTranslateSettings">
