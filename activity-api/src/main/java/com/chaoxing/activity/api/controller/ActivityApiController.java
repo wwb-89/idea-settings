@@ -370,12 +370,12 @@ public class ActivityApiController {
 		page = activityStatSummaryQueryService.activityStatSummaryPage(page, statSummaryQueryItem);
 
 		List<ActivityStatSummaryDTO> records = page.getRecords();
-		List<ActivityStatSummaryVO> activityStatSummaryVOList = Lists.newArrayList();
+		List<ActivityStatSummaryVO> activityStatSummaryVoList = Lists.newArrayList();
 		if (CollectionUtils.isNotEmpty(records)) {
 			records.forEach(v -> {
-				activityStatSummaryVOList.add(ActivityStatSummaryVO.buildActivityStatSummaryVo(v));
+				activityStatSummaryVoList.add(ActivityStatSummaryVO.buildActivityStatSummaryVo(v));
 			});
-			page.setRecords(activityStatSummaryVOList);
+			page.setRecords(activityStatSummaryVoList);
 		}
 		return RestRespDTO.success(page);
 	}

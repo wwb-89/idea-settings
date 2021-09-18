@@ -77,6 +77,12 @@ public class ActivityStatSummaryVO {
     private Boolean openSignUp;
     /** 去报名地址 */
     private String signUpUrl;
+    /** 创建机构fid */
+    private Integer createFid;
+    /** 创建机构名称 */
+    private String createOrgName;
+    /** 主办方 */
+    private String organisers;
 
 
     public static ActivityStatSummaryVO buildActivityStatSummaryVo(ActivityStatSummaryDTO actStatSummary) {
@@ -84,7 +90,11 @@ public class ActivityStatSummaryVO {
         if (actStatSummary.getSignUp() != null) {
             personLimit  = actStatSummary.getSignUp().getPersonLimit();
         }
-        String signUpUrl = "https://reading.chaoxing.com/qd/sign/" + actStatSummary.getSignId() + "/to-sign-up";
+        boolean existSignUp = actStatSummary.getSignUp() != null;
+        String signUpUrl = "";
+        if (existSignUp && actStatSummary.getSignId() != null) {
+            signUpUrl = "https://reading.chaoxing.com/qd/sign/" + actStatSummary.getSignId() + "/to-sign-up";
+        }
         return ActivityStatSummaryVO.builder()
                 .activityId(actStatSummary.getActivityId())
                 .signId(actStatSummary.getSignId())
@@ -96,7 +106,7 @@ public class ActivityStatSummaryVO {
                 .participateScope(actStatSummary.getParticipateScope())
                 .integral(actStatSummary.getIntegral())
                 .startTime(DateUtils.date2Timestamp(actStatSummary.getStartTime()))
-                .endTime(DateUtils.date2Timestamp(actStatSummary.getStartTime()))
+                .endTime(DateUtils.date2Timestamp(actStatSummary.getEndTime()))
                 .rateNum(actStatSummary.getRateNum())
                 .rateScore(actStatSummary.getRateScore())
                 .signedInNum(actStatSummary.getSignedInNum())
@@ -109,10 +119,13 @@ public class ActivityStatSummaryVO {
                 .introduction(actStatSummary.getIntroduction())
                 .address(Optional.ofNullable(actStatSummary.getAddress()).orElse("").concat(Optional.ofNullable(actStatSummary.getDetailAddress()).orElse("")))
                 .personLimit(personLimit)
-                .openSignUp(actStatSummary.getSignUp() != null)
+                .openSignUp(existSignUp)
                 .signUpUrl(signUpUrl)
                 .collectNum(actStatSummary.getCollectNum())
                 .pv(actStatSummary.getPv())
+                .createFid(actStatSummary.getCreateFid())
+                .createOrgName(actStatSummary.getCreateOrgName())
+                .organisers(actStatSummary.getOrganisers())
                 .build();
     }
 }
