@@ -77,6 +77,10 @@ public class ActivityStatSummaryVO {
     private Boolean openSignUp;
     /** 去报名地址 */
     private String signUpUrl;
+    /** 创建机构fid */
+    private Integer createFid;
+    /** 创建机构名称 */
+    private String createOrgName;
 
 
     public static ActivityStatSummaryVO buildActivityStatSummaryVo(ActivityStatSummaryDTO actStatSummary) {
@@ -117,6 +121,8 @@ public class ActivityStatSummaryVO {
                 .signUpUrl(signUpUrl)
                 .collectNum(actStatSummary.getCollectNum())
                 .pv(actStatSummary.getPv())
+                .createFid(actStatSummary.getCreateFid())
+                .createOrgName(actStatSummary.getCreateOrgName())
                 .build();
     }
 }

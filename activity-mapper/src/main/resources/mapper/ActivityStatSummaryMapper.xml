@@ -39,7 +39,9 @@
         t.create_time as createTime,
         t.update_time as updateTime,
         (CASE WHEN ISNULL(t2.score) THEN 0 ELSE t2.score END) rateScore,
-        (CASE WHEN ISNULL(t2.score_num) THEN 0 ELSE t2.score_num END) rateNum
+        (CASE WHEN ISNULL(t2.score_num) THEN 0 ELSE t2.score_num END) rateNum,
+        t.create_fid, createFid,
+        t.create_org_name createOrgName
     </sql>
 
     <select id="activityStatSummaryPage" resultType="com.chaoxing.activity.dto.stat.ActivityStatSummaryDTO">

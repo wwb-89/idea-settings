@@ -1,7 +1,6 @@
 package com.chaoxing.activity.dto.stat;
 
 import com.chaoxing.activity.dto.manager.sign.create.SignUpCreateParamDTO;
-import com.chaoxing.activity.util.DateUtils;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -83,5 +82,9 @@ public class ActivityStatSummaryDTO {
     private Integer collectNum;
     /** 浏览数 */
     private Integer pv;
+    /** 创建机构fid */
+    private Integer createFid;
+    /** 创建机构名称 */
+    private String createOrgName;
 
 }
