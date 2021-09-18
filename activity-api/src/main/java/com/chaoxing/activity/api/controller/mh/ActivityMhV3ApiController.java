@@ -10,14 +10,19 @@ import com.chaoxing.activity.dto.manager.sign.SignStatDTO;
 import com.chaoxing.activity.dto.manager.sign.SignUpDTO;
 import com.chaoxing.activity.dto.manager.sign.UserSignParticipationStatDTO;
 import com.chaoxing.activity.dto.manager.sign.create.SignUpCreateParamDTO;
+import com.chaoxing.activity.dto.stat.ActivityStatDTO;
+import com.chaoxing.activity.dto.stat.ActivityStatSummaryDTO;
 import com.chaoxing.activity.dto.work.WorkBtnDTO;
 import com.chaoxing.activity.model.Activity;
 import com.chaoxing.activity.model.ActivityDetail;
 import com.chaoxing.activity.model.ActivityRating;
+import com.chaoxing.activity.model.ActivityStat;
 import com.chaoxing.activity.service.activity.ActivityQueryService;
+import com.chaoxing.activity.service.activity.ActivityStatQueryService;
 import com.chaoxing.activity.service.activity.ActivityValidationService;
 import com.chaoxing.activity.service.activity.flag.ActivityFlagValidateService;
 import com.chaoxing.activity.service.activity.rating.ActivityRatingQueryService;
+import com.chaoxing.activity.service.activity.stat.ActivityStatSummaryQueryService;
 import com.chaoxing.activity.service.manager.CloudApiService;
 import com.chaoxing.activity.service.manager.GroupApiService;
 import com.chaoxing.activity.service.manager.module.SignApiService;
@@ -65,6 +70,8 @@ public class ActivityMhV3ApiController {
     private GroupApiService groupApiService;
     @Resource
     private SignApiService signApiService;
+    @Resource
+    private ActivityStatQueryService activityStatQueryService;
 
     @RequestMapping("/activity/brief/info")
     public RestRespDTO briefInfo(@RequestBody String data) {
@@ -92,7 +99,6 @@ public class ActivityMhV3ApiController {
         jsonObject.put("results", mainFields);
         return RestRespDTO.success(jsonObject);
     }
-
 
     @RequestMapping("activity/btns")
     public RestRespDTO mhActivityBtns(@RequestBody String data) {
@@ -156,6 +162,35 @@ public class ActivityMhV3ApiController {
         jsonObject.put("results", mainFields);
         return RestRespDTO.success(jsonObject);
     }
+
+
+    /**活动相关统计数据接口
+    * @Description
+    * @author huxiaolong
+    * @Date 2021-09-18 16:29:02
+    * @param data
+    * @return com.chaoxing.activity.dto.RestRespDTO
+    */
+    @RequestMapping("/activity/stat/info")
+    public RestRespDTO activityStatInfo(@RequestBody String data) {
+        Activity activity = getActivityByData(data);
+        List<MhGeneralAppResultDataDTO> mainFields = Lists.newArrayList();
+        JSONObject jsonObject = new JSONObject();
+        if (activity == null) {
+            jsonObject.put("results", mainFields);
+            return RestRespDTO.success(jsonObject);
+        }
+        ActivityStatDTO statSummary = activityStatQueryService.activityStat(activity.getId());
+
+
+        buildField(cloudApiService.buildImageUrl(MhAppIconEnum.ONE.STATISTICS_COLOR.getValue()), "浏览", Optional.ofNullable(statSummary.getPv()).map(String::valueOf).orElse("0"), mainFields);
+        buildField(cloudApiService.buildImageUrl(MhAppIconEnum.ONE.SIGNED_IN_NUM.getValue()), "签到", Optional.ofNullable(statSummary.getSignedInNum()).map(String::valueOf).orElse("0"), mainFields);
+        buildField(cloudApiService.buildImageUrl(MhAppIconEnum.ONE.SIGNED_UP_NUM.getValue()), "报名", Optional.ofNullable(statSummary.getSignedUpNum()).map(String::valueOf).orElse("0"), mainFields);
+
+        jsonObject.put("results", mainFields);
+        return RestRespDTO.success(jsonObject);
+    }
+
 
     public static void main(String[] args) {
         System.out.println(new BigDecimal("0.00").compareTo(new BigDecimal(-1)));
