@@ -191,11 +191,6 @@ public class ActivityMhV3ApiController {
         return RestRespDTO.success(jsonObject);
     }
 
-
-    public static void main(String[] args) {
-        System.out.println(new BigDecimal("0.00").compareTo(new BigDecimal(-1)));
-    }
-
     /**活动简介
     * @Description
     * @author huxiaolong
