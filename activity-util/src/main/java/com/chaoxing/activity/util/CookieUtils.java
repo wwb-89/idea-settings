@@ -13,6 +13,7 @@ import javax.servlet.http.HttpServletResponse;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.regex.Pattern;
 
 import static org.springframework.http.HttpHeaders.SET_COOKIE;
@@ -65,7 +66,8 @@ public class CookieUtils {
     }
 
     public static Integer getFid(HttpServletRequest request) {
-        Integer fid = getSpaceFid(request);
+        Integer fid = getWfwfid(request);
+        fid = Optional.ofNullable(fid).orElse(getSpaceFid(request));
         if (fid == null) {
             String fidStr = getValue(request, CookieConstant.FID);
             if (StringUtils.isNotBlank(fidStr)) {
