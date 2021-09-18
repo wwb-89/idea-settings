@@ -184,6 +184,8 @@ public class ActivityMhV3ApiController {
             String introductionHtml = activityDetail.getIntroduction();
             String introductionText = HtmlUtil.cleanHtmlTag(introductionHtml);
             String firstImg = filterFirstImgFromHtmlStr(introductionHtml);
+
+            mhGeneralAppResultData.setContent(introductionHtml);
             List<MhGeneralAppResultDataDTO.MhGeneralAppResultDataFieldDTO> fields = Lists.newArrayList();
             Integer flag = 0;
             fields.add(MhGeneralAppResultDataDTO.MhGeneralAppResultDataFieldDTO.builder()
