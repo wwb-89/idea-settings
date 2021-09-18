@@ -75,6 +75,7 @@ public class ActivityMhV3ApiController {
             jsonObject.put("results", mainFields);
             return RestRespDTO.success(jsonObject);
         }
+        buildField(activity.getCoverUrl(), "", activity.getName(), "", mainFields);
         // 开始结束时间
         buildField(activity.getCoverUrl(), "", DateUtils.activityTimeScope(activity.getStartTime(), activity.getEndTime()), cloudApiService.buildImageUrl(MhAppIconEnum.ONE.TIME_TRANSPARENT.getValue()), mainFields);
         if (activity.getSignId() != null) {
@@ -184,6 +185,8 @@ public class ActivityMhV3ApiController {
             String introductionHtml = activityDetail.getIntroduction();
             String introductionText = HtmlUtil.cleanHtmlTag(introductionHtml);
             String firstImg = filterFirstImgFromHtmlStr(introductionHtml);
+
+            mhGeneralAppResultData.setContent(introductionHtml);
             List<MhGeneralAppResultDataDTO.MhGeneralAppResultDataFieldDTO> fields = Lists.newArrayList();
             Integer flag = 0;
             fields.add(MhGeneralAppResultDataDTO.MhGeneralAppResultDataFieldDTO.builder()
