@@ -148,84 +148,86 @@
 <script>
     $(function () {
 
-    var staticMap1 = {
-        pointLists: [
-            {
-                lat: 116.404,
-                lng: 39.915,
-                title:'故宫博物院',
-                city: '北京',
-                addr: '四川省成都市高新区天府北高新区天府北高新区天府北天府北路1700号环球中心E5栋13楼1308天府北路1700号环球中心E5栋13楼1308',
-                icon:'./icon-location.png',
-                iconApp:'./icon-location-app.png'
+        var staticMap1 = {
+            pointLists: [
+                {
+                    lat: 116.404,
+                    lng: 39.915,
+                    title:'故宫博物院',
+                    city: '北京',
+                    addr: '四川省成都市高新区天府北高新区天府北高新区天府北天府北路1700号环球中心E5栋13楼1308天府北路1700号环球中心E5栋13楼1308',
+                    icon:'./icon-location.png',
+                    iconApp:'./icon-location-app.png'
+                },
+            ],  //测试数据只有一条！！！！！！
+            init: function () {
+                var len = $('.static-map-style1 .map-container').length;
+                var obj = $('.static-map-style1').find('.eng-map-container');
+                obj[0].setAttribute('id','iframeMapOne' + len);
+                this.mapInit('iframeMapOne' + len);
             },
-        ],  //测试数据只有一条！！！！！！
-        init: function () {
-            var len = $('.static-map-style1 .map-container').length;
-            var obj = $('.static-map-style1').find('.eng-map-container');
-            obj[0].setAttribute('id','iframeMapOne' + len);
-            this.mapInit('iframeMapOne' + len);
-        },
-        mapInit: function (id) {
-            var _this = this;
-            var map = new BMap.Map(id);
-            map.enableScrollWheelZoom(true);
-            var marker=[],pointArr=[];
-            if( _this.pointLists.length<1){
-                map.centerAndZoom( new BMap.Point(116.404, 39.915), 15);
-            }
-            _this.pointLists.forEach(function (item,index) {
-                var i = index;
-                var pointObj = item;
-                pointArr[i] = new BMap.Point(pointObj.lat, pointObj.lng);
-                if(i===0){
-                    map.centerAndZoom(pointArr[i], 15);
+            mapInit: function (id) {
+                var _this = this;
+                var map = new BMap.Map(id);
+                map.enableScrollWheelZoom(true);
+                var marker=[],pointArr=[];
+                if( _this.pointLists.length<1){
+                    map.centerAndZoom( new BMap.Point(116.404, 39.915), 15);
                 }
-                if(pointObj.icon){
-                    // 创建图标
-                    var myIcon = new BMap.Icon(pointObj.icon, new BMap.Size(26, 30));
-                    if (_this.isMobileDevice()) {
-                        myIcon = new BMap.Icon(pointObj.iconApp, new BMap.Size(40, 40));
+                _this.pointLists.forEach(function (item,index) {
+                    var i = index;
+                    var pointObj = item;
+                    pointArr[i] = new BMap.Point(pointObj.lat, pointObj.lng);
+                    if(i===0){
+                        map.centerAndZoom(pointArr[i], 15);
                     }
-                    marker[i] = new BMap.Marker(pointArr[i], {
-                        icon: myIcon
+                    if(pointObj.icon){
+                        // 创建图标
+                        var myIcon = new BMap.Icon(pointObj.icon, new BMap.Size(26, 30));
+                        if (_this.isMobileDevice()) {
+                            myIcon = new BMap.Icon(pointObj.iconApp, new BMap.Size(40, 40));
+                        }
+                        marker[i] = new BMap.Marker(pointArr[i], {
+                            icon: myIcon
+                        })
+                    }else{
+                        marker[i] = new BMap.Marker(pointArr[i])
+                    }
+                    // 将标注添加到地图
+                    map.addOverlay(marker[i]);
+                    console.log(pointObj)
+                    // 创建信息窗口
+                    var opts={
+                        position :  pointArr[i],    // 指定文本标注所在的地理位置
+                        offset   :  new BMap.Size(-166, -90),    //设置文本偏移量
+                        enableMassClear: false,
+                    }
+                    var link = '//api.map.baidu.com/';
+                    if (_this.isMobileDevice()) {
+                        opts.offset = new BMap.Size(-166, -100)
+                    }
+                    var infoWindow = new BMap.Label('', opts);
+                    link = link + 'marker?location=' + pointArr[i].lat + ',' + pointArr[i].lng + '&title='+pointObj.title+'&content='+pointObj.addr+'&output=html&src=webapp.baidu.openAPIdemo';
+                    console.log(link)
+                    infoWindow.setContent('<div class="info-window-box"><div class="info-link"><div class="center-txt">'+pointObj.addr+'</div></div></div>');
+                    console.log(infoWindow)
+                    infoWindow.addEventListener('click', function () {
+                        window.open(link);
                     })
-                }else{
-                    marker[i] = new BMap.Marker(pointArr[i])
+                    map.addOverlay(infoWindow);
+                })
+            },
+            isMobileDevice: function () {
+                var deviceWid = $(window).width();
+                if (deviceWid < 767) {
+                    return true
+                } else {
+                    return false
                 }
-                // 将标注添加到地图
-                map.addOverlay(marker[i]);
-                console.log(pointObj)
-                // 创建信息窗口
-                var opts={
-                    position :  pointArr[i],    // 指定文本标注所在的地理位置
-                    offset   :  new BMap.Size(-166, -90),    //设置文本偏移量
-                    enableMassClear: false,
-                }
-                var link = '//api.map.baidu.com/';
-                if (_this.isMobileDevice()) {
-                    opts.offset = new BMap.Size(-166, -100)
-                    link = link + 'mobile/';
-                }
-                var infoWindow = new BMap.Label('', opts);
-                link = link + 'marker?location=' + pointArr[i].lat + ',' + pointArr[i].lng + '&title='+pointObj.title+'&content='+pointObj.addr+'&output=html&src=webapp.baidu.openAPIdemo';
-                console.log(link)
-                infoWindow.setContent('<div class="info-window-box"><a href="'+link+'" class="info-link" target="_blank"><div class="center-txt">'+pointObj.addr+'</div></a></div>');
-                console.log(infoWindow)
-                map.addOverlay(infoWindow);
-            })
-        },
-        isMobileDevice: function () {
-            var deviceWid = $(window).width();
-            if (deviceWid < 767) {
-                return true
-            } else {
-                return false
             }
-        }
 
-    }
-    staticMap1.init();
+        }
+        staticMap1.init();
 
     })
 </script>
