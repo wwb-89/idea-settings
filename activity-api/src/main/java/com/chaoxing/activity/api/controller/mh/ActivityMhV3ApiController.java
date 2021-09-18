@@ -143,8 +143,7 @@ public class ActivityMhV3ApiController {
             }
         }
         // 积分
-
-        if (activity.getIntegral() != null && activity.getIntegral().compareTo(new BigDecimal(0)) == 0) {
+        if (activity.getIntegral() != null && activity.getIntegral().compareTo(new BigDecimal(0)) != 0) {
             buildField(cloudApiService.buildImageUrl(MhAppIconEnum.ONE.INTEGRAL.getValue()), "积分", Optional.of(activity.getIntegral()).map(String::valueOf).orElse(""), mainFields);
         }
         // 评价
@@ -181,11 +180,15 @@ public class ActivityMhV3ApiController {
             return RestRespDTO.success(jsonObject);
         }
         ActivityStatDTO statSummary = activityStatQueryService.activityStat(activity.getId());
-
-
-        buildField(cloudApiService.buildImageUrl(MhAppIconEnum.ONE.STATISTICS_COLOR.getValue()), "浏览", Optional.ofNullable(statSummary.getPv()).map(String::valueOf).orElse("0"), mainFields);
-        buildField(cloudApiService.buildImageUrl(MhAppIconEnum.ONE.SIGNED_IN_NUM.getValue()), "签到", Optional.ofNullable(statSummary.getSignedInNum()).map(String::valueOf).orElse("0"), mainFields);
-        buildField(cloudApiService.buildImageUrl(MhAppIconEnum.ONE.SIGNED_UP_NUM.getValue()), "报名", Optional.ofNullable(statSummary.getSignedUpNum()).map(String::valueOf).orElse("0"), mainFields);
+        String pvNum = "0", signedInNum = "0", signedUpNum = "0";
+        if (statSummary != null) {
+            pvNum = Optional.ofNullable(statSummary.getPv()).map(String::valueOf).orElse("0");
+            signedInNum = Optional.ofNullable(statSummary.getSignedInNum()).map(String::valueOf).orElse("0");
+            signedUpNum = Optional.ofNullable(statSummary.getSignedUpNum()).map(String::valueOf).orElse("0");
+        }
+        buildField(cloudApiService.buildImageUrl(MhAppIconEnum.ONE.STATISTICS_COLOR.getValue()), "浏览", pvNum , mainFields);
+        buildField(cloudApiService.buildImageUrl(MhAppIconEnum.ONE.SIGNED_IN_NUM.getValue()), "签到", signedInNum, mainFields);
+        buildField(cloudApiService.buildImageUrl(MhAppIconEnum.ONE.SIGNED_UP_NUM.getValue()), "报名", signedUpNum, mainFields);
 
         jsonObject.put("results", mainFields);
         return RestRespDTO.success(jsonObject);
