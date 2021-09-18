@@ -501,14 +501,12 @@ public class ActivityMhV3ApiController {
                 .value(contentVal)
                 .type("3")
                 .build());
-        if (StringUtils.isNotBlank(iconUrl)) {
-            fields.add(MhGeneralAppResultDataDTO.MhGeneralAppResultDataFieldDTO.builder()
-                    .key("图标")
-                    .value(iconUrl)
-                    .flag(String.valueOf(++flag))
-                    .type("3")
-                    .build());
-        }
+        fields.add(MhGeneralAppResultDataDTO.MhGeneralAppResultDataFieldDTO.builder()
+                .key("图标")
+                .value(iconUrl)
+                .flag(String.valueOf(++flag))
+                .type("3")
+                .build());
         item.setFields(fields);
         mainFields.add(item);
     }
