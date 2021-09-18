@@ -353,35 +353,35 @@ public class ActivityMhV3ApiController {
                 if (openedStudengSignUp) {
                     // 必须要报名
                     if (userSignParticipationStat.getSignedUp()) {
-                        result.add(buildBtnField("进入会场", getDualSelectIndexUrl(activity), "1", false, MhBtnSequenceEnum.SIGN_IN.getSequence()));
+                        result.add(buildBtnField("进入会场", "", getDualSelectIndexUrl(activity), "1", false, MhBtnSequenceEnum.SIGN_IN.getSequence()));
                     }
                 } else {
-                    result.add(buildBtnField("进入会场", getDualSelectIndexUrl(activity), "1", false, MhBtnSequenceEnum.SIGN_IN.getSequence()));
+                    result.add(buildBtnField("进入会场", "", getDualSelectIndexUrl(activity), "1", false, MhBtnSequenceEnum.SIGN_IN.getSequence()));
                 }
             }
             if (userSignParticipationStat.getSignedUp()) {
                 // 已报名
                 if (CollectionUtils.isNotEmpty(signInIds)) {
-                    result.add(buildBtnField("去签到", userSignParticipationStat.getSignInUrl(), "1", false, MhBtnSequenceEnum.SIGN_IN.getSequence()));
+                    result.add(buildBtnField("去签到", "", userSignParticipationStat.getSignInUrl(), "1", false, MhBtnSequenceEnum.SIGN_IN.getSequence()));
                 }
                 existSignUpInfo = true;
             } else{
                 signedUp = false;
                 if (userSignParticipationStat.getSignUpAudit()) {
                     // 审核中
-                    result.add(buildBtnField("报名审核中", "", "0", false, MhBtnSequenceEnum.SIGN_UP.getSequence()));
+                    result.add(buildBtnField("报名审核中", "", "", "0", false, MhBtnSequenceEnum.SIGN_UP.getSequence()));
                     existSignUpInfo = true;
                 } else if (activityEnded && userSignParticipationStat.getSignUpEnded()) {
                     // 活动和报名都结束的情况显示活动已结束
-                    result.add(buildBtnField("活动已结束", "", "0", false, MhBtnSequenceEnum.ACTIVITY.getSequence()));
+                    result.add(buildBtnField("活动已结束", "", "", "0", false, MhBtnSequenceEnum.ACTIVITY.getSequence()));
                 } else if (userSignParticipationStat.getSignUpEnded()) {
-                    result.add(buildBtnField("报名已结束", "", "0", false, MhBtnSequenceEnum.SIGN_UP.getSequence()));
+                    result.add(buildBtnField("报名已结束", "", "", "0", false, MhBtnSequenceEnum.SIGN_UP.getSequence()));
                 } else if (userSignParticipationStat.getSignUpNotStart()) {
-                    result.add(buildBtnField("报名未开始", "", "0", false, MhBtnSequenceEnum.SIGN_UP.getSequence()));
+                    result.add(buildBtnField("报名未开始", "", "", "0", false, MhBtnSequenceEnum.SIGN_UP.getSequence()));
                 } else if (!userSignParticipationStat.getInParticipationScope() && uid != null) {
-                    result.add(buildBtnField("不在参与范围内", "", "0", false, MhBtnSequenceEnum.SIGN_UP.getSequence()));
+                    result.add(buildBtnField("不在参与范围内", "", "", "0", false, MhBtnSequenceEnum.SIGN_UP.getSequence()));
                 } else if (userSignParticipationStat.getNoPlaces()) {
-                    result.add(buildBtnField("名额已满", "", "0", false, MhBtnSequenceEnum.SIGN_UP.getSequence()));
+                    result.add(buildBtnField("名额已满", "", "", "0", false, MhBtnSequenceEnum.SIGN_UP.getSequence()));
                 } else {
                     String showName = "报名参加";
                     List<SignUpCreateParamDTO> signUps = userSignParticipationStat.getSignUps();
@@ -394,20 +394,20 @@ public class ActivityMhV3ApiController {
                         }
                         if (!signUps.get(0).getFillInfo()) {
                             setSignUpBtn = Boolean.TRUE;
-                            result.add(buildBtnField(showName, UrlConstant.MH_AJAX_SIGN_UP,  "1", true, MhBtnSequenceEnum.SIGN_UP.getSequence()));
+                            result.add(buildBtnField(showName, "", UrlConstant.MH_AJAX_SIGN_UP,  "1", true, MhBtnSequenceEnum.SIGN_UP.getSequence()));
                         }
                     }
                     if (!setSignUpBtn) {
-                        result.add(buildBtnField(showName, userSignParticipationStat.getSignUpUrl(), "1", false, MhBtnSequenceEnum.SIGN_UP.getSequence()));
+                        result.add(buildBtnField(showName, "", userSignParticipationStat.getSignUpUrl(), "1", false, MhBtnSequenceEnum.SIGN_UP.getSequence()));
                     }
                 }
             }
         }else {
             if (activityFlagValidateService.isDualSelect(activity)) {
-                result.add(buildBtnField("进入会场", getDualSelectIndexUrl(activity), "1", false, MhBtnSequenceEnum.SIGN_IN.getSequence()));
+                result.add(buildBtnField("进入会场", "", getDualSelectIndexUrl(activity), "1", false, MhBtnSequenceEnum.SIGN_IN.getSequence()));
             }
             if (CollectionUtils.isNotEmpty(signInIds)) {
-                result.add(buildBtnField("去签到", userSignParticipationStat.getSignInUrl(), "1", false, MhBtnSequenceEnum.SIGN_IN.getSequence()));
+                result.add(buildBtnField("去签到", "", userSignParticipationStat.getSignInUrl(), "1", false, MhBtnSequenceEnum.SIGN_IN.getSequence()));
             }
         }
         if (openWork && workId != null) {
@@ -418,27 +418,27 @@ public class ActivityMhV3ApiController {
                 if (needValidate && !signedUp) {
                     continue;
                 }
-                result.add(buildBtnField(workBtnDto.getButtonName(), workBtnDto.getLinkUrl(), enable ? "1" : "0", false, MhBtnSequenceEnum.WORK.getSequence()));
+                result.add(buildBtnField(workBtnDto.getButtonName(), "", workBtnDto.getLinkUrl(), enable ? "1" : "0", false, MhBtnSequenceEnum.WORK.getSequence()));
             }
         }
         // 讨论小组
         Boolean openGroup = Optional.ofNullable(activity.getOpenGroup()).orElse(false);
         String groupBbsid = activity.getGroupBbsid();
         if (openGroup && StringUtils.isNotBlank(groupBbsid) && signedUp) {
-            result.add(buildBtnField("讨论小组", groupApiService.getGroupUrl(groupBbsid), "2", false, MhBtnSequenceEnum.GROUP.getSequence()));
+            result.add(buildBtnField("讨论小组", "", groupApiService.getGroupUrl(groupBbsid), "2", false, MhBtnSequenceEnum.GROUP.getSequence()));
         }
         // 是不是管理员
         if (isManager) {
-            result.add(buildBtnField("管理", activityQueryService.getActivityManageUrl(activity.getId()), "2", false, MhBtnSequenceEnum.MANAGE.getSequence()));
+            result.add(buildBtnField("管理", cloudApiService.buildImageUrl(MhAppIconEnum.ONE.MANAGE_TRANSPARENT.getValue()), activityQueryService.getActivityManageUrl(activity.getId()), "2", false, MhBtnSequenceEnum.MANAGE.getSequence()));
         }
         // 评价
         Boolean openRating = activity.getOpenRating();
         openRating = Optional.ofNullable(openRating).orElse(Boolean.FALSE);
         if (openRating) {
-            result.add(buildBtnField("评价", activityQueryService.getActivityRatingUrl(activity.getId()), "2", false, MhBtnSequenceEnum.RATING.getSequence()));
+            result.add(buildBtnField("评价", "", activityQueryService.getActivityRatingUrl(activity.getId()), "2", false, MhBtnSequenceEnum.RATING.getSequence()));
         }
         if (existSignUpInfo) {
-            result.add(buildBtnField("报名信息", userSignParticipationStat.getSignUpResultUrl(), "2", false, MhBtnSequenceEnum.SIGN_UP_INFO.getSequence()));
+            result.add(buildBtnField("报名信息", "", userSignParticipationStat.getSignUpResultUrl(), "2", false, MhBtnSequenceEnum.SIGN_UP_INFO.getSequence()));
         }
         // 排序
         result.sort(Comparator.comparingInt(MhGeneralAppResultDataDTO::getSequence));
@@ -569,7 +569,7 @@ public class ActivityMhV3ApiController {
         mainFields.add(item);
     }
 
-    private MhGeneralAppResultDataDTO buildBtnField(String key, String url, String type, boolean isAjax, Integer sequence) {
+    private MhGeneralAppResultDataDTO buildBtnField(String key, String iconUrl, String url, String type, boolean isAjax, Integer sequence) {
         MhGeneralAppResultDataDTO item = MhGeneralAppResultDataDTO.buildDefault();
         List<MhGeneralAppResultDataDTO.MhGeneralAppResultDataFieldDTO> fields = Lists.newArrayList();
         if (isAjax) {
@@ -579,7 +579,7 @@ public class ActivityMhV3ApiController {
         int flag = 0;
         fields.add(MhGeneralAppResultDataDTO.MhGeneralAppResultDataFieldDTO.builder()
                 .key("封面")
-                .value("")
+                .value(iconUrl)
                 .type("3")
                 .flag(String.valueOf(flag))
                 .build());

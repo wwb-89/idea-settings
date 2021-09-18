@@ -39,7 +39,9 @@ public enum MhAppIconEnum {
         /** 报名数 */
         SIGNED_UP_NUM("signed-up-num", "efed0911bda0f36389a9a3a168856502"),
         /** 评价 */
-        RATING("rating", "c840a53bfc108db42b80710af8567465");
+        RATING("rating", "c840a53bfc108db42b80710af8567465"),
+        /** 管理 */
+        MANAGE_TRANSPARENT("manage-transparent", "d83b11e4e2cebe4a25b0552bf8653a40");
 
         private final String name;
         private final String value;
