@@ -388,7 +388,7 @@ public class ActivityMhV3ApiController {
         // 讨论小组
         Boolean openGroup = Optional.ofNullable(activity.getOpenGroup()).orElse(false);
         String groupBbsid = activity.getGroupBbsid();
-        if (openGroup && StringUtils.isNotBlank(groupBbsid)) {
+        if (openGroup && StringUtils.isNotBlank(groupBbsid) && signedUp) {
             result.add(buildBtnField("讨论小组", groupApiService.getGroupUrl(groupBbsid), "2", false, MhBtnSequenceEnum.GROUP.getSequence()));
         }
         // 是不是管理员

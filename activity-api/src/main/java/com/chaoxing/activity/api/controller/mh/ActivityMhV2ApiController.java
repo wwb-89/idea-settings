@@ -184,6 +184,7 @@ public class ActivityMhV2ApiController {
 		// 报名信息
 		boolean existSignUp = CollectionUtils.isNotEmpty(signUpIds);
 		boolean existSignUpInfo = false;
+		boolean signedUp = true;
 		if (existSignUp) {
 			// 如果开启了学生报名则需要报名（报名任意一个报名）才能看见"进入会场"
 			if (activityFlagValidateService.isDualSelect(activity)) {
@@ -216,32 +217,35 @@ public class ActivityMhV2ApiController {
 					result.addAll(buildBtnField("提交作品", getFlag(availableFlags), getWorkIndexUrl(workId), "1"));
 				}
 				existSignUpInfo = true;
-			} else if (userSignParticipationStat.getSignUpAudit()) {
-				// 审核中
-				result.addAll(buildBtnField("报名审核中", getFlag(availableFlags), "", "0"));
-				existSignUpInfo = true;
-			} else if (activityEnded && userSignParticipationStat.getSignUpEnded()) {
-				// 活动和报名都结束的情况显示活动已结束
-				result.addAll(buildBtnField("活动已结束", getFlag(availableFlags), "", "0"));
-			} else if (userSignParticipationStat.getSignUpEnded()) {
-				result.addAll(buildBtnField("报名已结束", getFlag(availableFlags), "", "0"));
-			} else if (userSignParticipationStat.getSignUpNotStart()) {
-				result.addAll(buildBtnField("报名未开始", getFlag(availableFlags), "", "0"));
-			} else if (!userSignParticipationStat.getInParticipationScope() && uid != null) {
-				result.addAll(buildBtnField("不在参与范围内", getFlag(availableFlags), "", "0"));
-			} else if (userSignParticipationStat.getNoPlaces()) {
-				result.addAll(buildBtnField("名额已满", getFlag(availableFlags), "", "0"));
 			} else {
-				String showName = "报名参加";
-				List<SignUpCreateParamDTO> signUps = userSignParticipationStat.getSignUps();
-				if (signUpIds.size() == 1) {
-					SignUpCreateParamDTO signUp = signUps.get(0);
-					String btnName = signUp.getBtnName();
-					if (StringUtils.isNotBlank(btnName)) {
-						showName = btnName;
+				signedUp = false;
+				if (userSignParticipationStat.getSignUpAudit()) {
+					// 审核中
+					result.addAll(buildBtnField("报名审核中", getFlag(availableFlags), "", "0"));
+					existSignUpInfo = true;
+				} else if (activityEnded && userSignParticipationStat.getSignUpEnded()) {
+					// 活动和报名都结束的情况显示活动已结束
+					result.addAll(buildBtnField("活动已结束", getFlag(availableFlags), "", "0"));
+				} else if (userSignParticipationStat.getSignUpEnded()) {
+					result.addAll(buildBtnField("报名已结束", getFlag(availableFlags), "", "0"));
+				} else if (userSignParticipationStat.getSignUpNotStart()) {
+					result.addAll(buildBtnField("报名未开始", getFlag(availableFlags), "", "0"));
+				} else if (!userSignParticipationStat.getInParticipationScope() && uid != null) {
+					result.addAll(buildBtnField("不在参与范围内", getFlag(availableFlags), "", "0"));
+				} else if (userSignParticipationStat.getNoPlaces()) {
+					result.addAll(buildBtnField("名额已满", getFlag(availableFlags), "", "0"));
+				} else {
+					String showName = "报名参加";
+					List<SignUpCreateParamDTO> signUps = userSignParticipationStat.getSignUps();
+					if (signUpIds.size() == 1) {
+						SignUpCreateParamDTO signUp = signUps.get(0);
+						String btnName = signUp.getBtnName();
+						if (StringUtils.isNotBlank(btnName)) {
+							showName = btnName;
+						}
 					}
+					result.addAll(buildBtnField(showName, getFlag(availableFlags), userSignParticipationStat.getSignUpUrl(), "1"));
 				}
-				result.addAll(buildBtnField(showName, getFlag(availableFlags), userSignParticipationStat.getSignUpUrl(), "1"));
 			}
 		}else {
 			if (activityFlagValidateService.isDualSelect(activity)) {
@@ -267,7 +271,7 @@ public class ActivityMhV2ApiController {
 		}
 		// 讨论小组
 		Boolean openGroup = Optional.ofNullable(activity.getOpenGroup()).orElse(false);
-		if (openGroup) {
+		if (openGroup && signedUp) {
 			result.addAll(buildBtnField("讨论小组", getFlag(availableFlags), groupApiService.getGroupUrl(activity.getGroupBbsid()), "2"));
 		}
 		// 评价
