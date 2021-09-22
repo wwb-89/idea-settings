@@ -165,6 +165,9 @@
                     </if>
                 </otherwise>
             </choose>
+            <if test="params.activityType != null and params.activityType != ''">
+                AND t.activity_type = #{params.activityType}
+            </if>
             <if test="params.sw != null and params.sw != ''">
                 AND (
                     t.`name` LIKE CONCAT('%', #{params.sw}, '%')

@@ -32,8 +32,17 @@
 	</div>
 	<div class="inner-content">
 		<div class="filter">
-			<div class="item">
+			<div class="item" v-show="showFilter('activityType')">
 				<label>类型</label>
+				<div class="option-list">
+					<ul>
+						<li :class="{'active': item.selected}" v-for="(item, index) of activityTypes" @click="changeActivityTypesSelected(index)">{{item.name}}</li>
+					</ul>
+				</div>
+				<div class="clear"></div>
+			</div>
+			<div class="item" v-show="showFilter('activityClassify')">
+				<label>分类</label>
 				<div class="option-list">
 					<ul>
 						<li :class="{'active': item.selected}" v-for="(item, index) of classifies" @click="changeActivityClassifySelected(index)">{{item.name}}</li>
@@ -50,7 +59,7 @@
 				</div>
 				<div class="clear"></div>
 			</div>-->
-			<div class="item" v-show="regions.length > 0">
+			<div class="item" v-show="showFilter('region') && regions.length > 0">
 				<label>地区</label>
 				<div class="option-list">
 					<ul>
@@ -111,6 +120,7 @@
 				classifyNames: [[${classifyNames}]],
 				activityQueryDates: [[${activityQueryDates}]],
 				classifies: [],
+				activityTypes: [],
 				regions: [[${regions}]],
 				areaCode: [[${areaCode}]],
 				statuses: [],
@@ -120,6 +130,7 @@
 				activities: [],
 				loaded: false,
 				topFid: [[${topFid}]],
+				hideFilter: [[${hideFilter}]],
 				mescroll: null
 			},
 			created: function () {
@@ -149,6 +160,12 @@
 					});
 					$this.regions = regions;
 				}
+				// 活动类型
+				$this.activityTypes = [
+					{name: '全部', value: '', selected: true},
+					{name: '线上', value: 'online', selected: false},
+					{name: '线下', value: 'offline', selected: false}
+				];
 				//状态
 				$this.statuses = [
 					{name: "全部", value: "", selected: true},
@@ -220,6 +237,16 @@
 					$this.queryParams.pageNum = 1;
 					$this.loadData();
 				},
+				changeActivityTypesSelected: function(index){
+					var $this = this;
+					$($this.activityTypes).each(function (i) {
+						$this.$set($this.activityTypes[i], "selected", i == index);
+					});
+					$this.queryParams.activityType = $this.activityTypes[index].value;
+					$this.activities = [];
+					$this.queryParams.pageNum = 1;
+					$this.loadData();
+				},
 				changeActivityStatusSelected: function(index){
 					var $this = this;
 					$($this.statuses).each(function (i) {
@@ -229,6 +256,10 @@
 					$this.activities = [];
 					$this.queryParams.pageNum = 1;
 					$this.loadData();
+				},
+				showFilter: function (type) {
+					var $this = this;
+					return activityApp.isEmpty($this.hideFilter) || $this.hideFilter.indexOf(type) == -1;
 				},
 				//重置查询条件
 				resetQueryParams: function (){
@@ -241,8 +272,10 @@
 						date: "",
 						status: "",
 						areaCode: $this.areaCode,
+						activityType: "",
 						topFid: [[${topFid}]],
 						marketId: [[${marketId}]],
+						scope: [[${scope}]],
 						flag: [[${flag}]]
 					};
 					$this.activities = [];

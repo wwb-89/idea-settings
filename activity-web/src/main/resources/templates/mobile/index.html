@@ -67,28 +67,35 @@
     <div class="pop" v-show="filterWindowShow">
         <div class="popInner">
             <div class="popList mescroll-touch">
-                <div class="list-item">
+                <div class="list-item" v-show="showFilter('activityType')">
                     <div class="title">类型</div>
+                    <ul>
+                        <li :class="{'active': activityType.selected}" v-for="(activityType, index) of activityTypes" :key="'activity-type' + index" @click="changeActivityType(index)">{{activityType.name}}</li>
+                    </ul>
+                    <div class="clear"></div>
+                </div>
+                <div class="list-item" v-show="showFilter('activityClassify')">
+                    <div class="title">分类</div>
                     <ul>
                         <li :class="{'active': activityClassify.selected}" v-for="(activityClassify, index) of classifies" :key="'activity-classify' + index" @click="changeActivityClassify(index)">{{activityClassify.name}}</li>
                     </ul>
                     <div class="clear"></div>
                 </div>
-                <div class="list-item">
+                <div class="list-item" v-show="showFilter('time')">
                     <div class="title">时间</div>
                     <ul>
                         <li :class="{'active': time.selected}" v-for="(time, index) of activityQueryDates" :key="'time-' + index" @click="changeTime(index)">{{time.name}}</li>
                     </ul>
                     <div class="clear"></div>
                 </div>
-                <div class="list-item" v-show="regions.length > 0">
+                <div class="list-item" v-show="showFilter('region') && regions.length > 0">
                     <div class="title">地区</div>
                     <ul>
                         <li :class="{'active': region.selected}" v-for="(region, index) of regions" :key="'region-' + index" @click="changeRegion(index)">{{region.name}}</li>
                     </ul>
                     <div class="clear"></div>
                 </div>
-                <div class="list-item">
+                <div class="list-item" v-show="showFilter('status')">
                     <div class="title">状态</div>
                     <ul>
                         <li :class="{'active': status.selected}" v-for="(status, index) of statuses" :key="'status-' + index" @click="changeStatus(index)">{{status.name}}</li>
@@ -117,6 +124,7 @@
                     classifyNames: [[${classifyNames}]],
                     activityQueryDates: [[${activityQueryDates}]],
                     classifies: [],
+                    activityTypes: [],
                     regions: [[${regions}]],
                     areaCode: [[${areaCode}]],
                     // 状态
@@ -126,7 +134,7 @@
                     activities: [],
                     loaded: false,
                     mescroll: null,
-
+                    hideFilter: [[${hideFilter}]],
                     filterWindowShow: false,
                     searchShow: false
                 },
@@ -164,6 +172,12 @@
                         });
                     }
                     $this.regions = regions;
+                    // 活动类型
+                    $this.activityTypes = [
+                        {name: '全部', value: '', selected: true},
+                        {name: '线上', value: 'online', selected: false},
+                        {name: '线下', value: 'offline', selected: false}
+                    ];
                     // 状态
                     $this.statuses = [
                         {name: "全部", value: "", selected: true},
@@ -218,9 +232,11 @@
                             activityClassifyName: "",
                             date: "",
                             status: "",
+                            activityType: "",
                             areaCode: $this.areaCode,
                             topFid: [[${topFid}]],
                             marketId: [[${marketId}]],
+                            scope: [[${scope}]],
                             flag: [[${flag}]]
                         };
                     },
@@ -299,6 +315,12 @@
                             $this.$set($this.classifies[i], "selected", i == index);
                         });
                     },
+                    changeActivityType: function (index) {
+                        var $this = this;
+                        $($this.activityTypes).each(function (i) {
+                            $this.$set($this.activityTypes[i], "selected", i == index);
+                        });
+                    },
                     changeTime: function (index) {
                         var $this = this;
                         $($this.activityQueryDates).each(function (i) {
@@ -323,6 +345,12 @@
                         $($this.classifies).each(function () {
                             if (this.selected) {
                                 $this.queryParams.activityClassifyName = this.value;
+                                return false;
+                            }
+                        });
+                        $($this.activityTypes).each(function () {
+                            if (this.selected) {
+                                $this.queryParams.activityType = this.value;
                                 return false;
                             }
                         });
@@ -356,6 +384,9 @@
                         $($this.classifies).each(function (i) {
                             $this.$set($this.classifies[i], "selected", this.value == $this.queryParams.activityClassifyName);
                         });
+                        $($this.activityTypes).each(function (i) {
+                            $this.$set($this.activityTypes[i], "selected", this.value == $this.queryParams.activityType);
+                        });
                         $($this.activityQueryDates).each(function (i) {
                             $this.$set($this.activityQueryDates[i], "selected", this.value == $this.queryParams.date);
                         });
@@ -365,6 +396,10 @@
                         $($this.statuses).each(function (i) {
                             $this.$set($this.statuses[i], "selected", this.value == $this.queryParams.status);
                         });
+                    },
+                    showFilter: function (type) {
+                        var $this = this;
+                        return activityApp.isEmpty($this.hideFilter) || $this.hideFilter.indexOf(type) == -1;
                     },
                     filterCancel: function () {
                         var $this = this;

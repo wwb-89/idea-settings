@@ -84,15 +84,17 @@ public class IndexController {
 	 * @return java.lang.String
 	 */
 	@RequestMapping("")
-	public String index(HttpServletRequest request, Model model, Integer wfwfid, Integer unitId, Integer state, Integer fid, Integer banner, String style, @RequestParam(defaultValue = "") String flag, Integer marketId) {
+	public String index(HttpServletRequest request, Model model, Integer wfwfid, Integer unitId, Integer state, Integer fid,
+						Integer banner, String style, @RequestParam(defaultValue = "") String flag, Integer marketId,
+						@RequestParam(defaultValue = "0") Integer scope, String hideFilter) {
 		Integer realFid = Optional.ofNullable(wfwfid).orElse(Optional.ofNullable(unitId).orElse(Optional.ofNullable(state).orElse(fid)));
 		style = Optional.ofNullable(style).filter(StringUtils::isNotBlank).orElse(DEFAULT_STYLE);
 //		String code = activityFlagCodeService.getCodeByFlag(flag);	//	后续统一采用flag获取code
-		return handleData(request, model, null, realFid, null, banner, style, flag, marketId);
+		return handleData(request, model, null, realFid, null, banner, style, flag, marketId, scope, hideFilter);
 	}
 
 	/**鄂尔多斯活动广场
-	* @Description 
+	* @Description
 	* @author huxiaolong
 	* @Date 2021-09-03 15:41:33
 	* @param request
@@ -107,7 +109,7 @@ public class IndexController {
 	*/
 	@RequestMapping("erdos")
 	public String erdosIndex(HttpServletRequest request, Model model, Integer wfwfid, Integer unitId, Integer state, Integer fid,
-							 @RequestParam(defaultValue = "") String flag, Integer marketId, @RequestParam(defaultValue = "true") Boolean levelFilter) {
+							 @RequestParam(defaultValue = "") String flag, Integer marketId, @RequestParam(defaultValue = "true") Boolean levelFilter, @RequestParam(defaultValue = "0") Integer scope) {
 		Integer realFid = Optional.ofNullable(wfwfid).orElse(Optional.ofNullable(unitId).orElse(Optional.ofNullable(state).orElse(fid)));
 		levelFilter = Optional.ofNullable(levelFilter).orElse(true);
 		LoginUserDTO loginUser = LoginUtils.getLoginUser(request);
@@ -164,12 +166,14 @@ public class IndexController {
 	 * @return java.lang.String
 	 */
 	@RequestMapping("lib")
-	public String libIndex(HttpServletRequest request, Model model, String code, Integer wfwfid, Integer unitId, Integer state, Integer fid, Integer pageId, Integer banner, String style, @RequestParam(defaultValue = "") String flag, Integer marketId) {
+	public String libIndex(HttpServletRequest request, Model model, String code, Integer wfwfid, Integer unitId, Integer state,
+						   Integer fid, Integer pageId, Integer banner, String style, @RequestParam(defaultValue = "") String flag,
+						   Integer marketId, @RequestParam(defaultValue = "0") Integer scope, String hideFilter) {
 		Integer realFid = Optional.ofNullable(wfwfid).orElse(Optional.ofNullable(unitId).orElse(Optional.ofNullable(state).orElse(fid)));
 		if (StringUtils.isBlank(code)) {
 			code = activityFlagCodeService.getCodeByFlag(flag); // todo 后续移除code参数，改用flag获取
 		}
-		return handleData(request, model, code, realFid, pageId, banner, style, flag, marketId);
+		return handleData(request, model, code, realFid, pageId, banner, style, flag, marketId, scope, hideFilter);
 	}
 
 	/**基础教育
@@ -191,13 +195,15 @@ public class IndexController {
 	 * @return java.lang.String
 	 */
 	@RequestMapping("bas")
-	public String basIndex(HttpServletRequest request, Model model, String code, Integer wfwfid, Integer unitId, Integer state, Integer fid, Integer pageId, Integer banner, String style, @RequestParam(defaultValue = "") String flag, Integer marketId) {
+	public String basIndex(HttpServletRequest request, Model model, String code, Integer wfwfid, Integer unitId, Integer state,
+						   Integer fid, Integer pageId, Integer banner, String style, @RequestParam(defaultValue = "") String flag,
+						   Integer marketId, @RequestParam(defaultValue = "0") Integer scope, String hideFilter) {
 		Integer realFid = Optional.ofNullable(wfwfid).orElse(Optional.ofNullable(unitId).orElse(Optional.ofNullable(state).orElse(fid)));
 		style = Optional.ofNullable(style).filter(StringUtils::isNotBlank).orElse(DEFAULT_STYLE);
 		if (StringUtils.isBlank(code)) {
 			code = activityFlagCodeService.getCodeByFlag(flag);	//	todo 后续移除code参数，改用flag获取
 		}
-		return handleData(request, model, code, realFid, pageId, banner, style, flag, marketId);
+		return handleData(request, model, code, realFid, pageId, banner, style, flag, marketId, scope, hideFilter);
 	}
 
 	/**高校
@@ -219,16 +225,19 @@ public class IndexController {
 	 * @return java.lang.String
 	 */
 	@RequestMapping("edu")
-	public String eduIndex(HttpServletRequest request, Model model, String code, Integer wfwfid, Integer unitId, Integer state, Integer fid, Integer pageId, Integer banner, String style, @RequestParam(defaultValue = "") String flag, Integer marketId) {
+	public String eduIndex(HttpServletRequest request, Model model, String code, Integer wfwfid, Integer unitId, Integer state, Integer fid,
+						   Integer pageId, Integer banner, String style, @RequestParam(defaultValue = "") String flag, Integer marketId,
+						   @RequestParam(defaultValue = "0") Integer scope, String hideFilter) {
 		Integer realFid = Optional.ofNullable(wfwfid).orElse(Optional.ofNullable(unitId).orElse(Optional.ofNullable(state).orElse(fid)));
 		style = Optional.ofNullable(style).filter(StringUtils::isNotBlank).orElse(DEFAULT_STYLE);
 		if (StringUtils.isBlank(code)) {
 			code = activityFlagCodeService.getCodeByFlag(flag);	//	todo 后续移除code参数，改用flag获取
 		}
-		return handleData(request, model, code, realFid, pageId, banner, style, flag, marketId);
+		return handleData(request, model, code, realFid, pageId, banner, style, flag, marketId, scope, hideFilter);
 	}
 
-	private String handleData(HttpServletRequest request, Model model, String code, Integer fid, Integer pageId, Integer banner, String style, String flag, Integer marketId) {
+	private String handleData(HttpServletRequest request, Model model, String code, Integer fid, Integer pageId,
+							  Integer banner, String style, String flag, Integer marketId, Integer scope, String hideFilter) {
 		// 根据fid和flag查询模版
 		if (marketId == null && StringUtils.isNotBlank(flag)) {
 			marketId = marketQueryService.getMarketIdByTemplate(fid, flag);
@@ -268,6 +277,8 @@ public class IndexController {
 		model.addAttribute("banner", banner);
 		model.addAttribute("flag", flag);
 		model.addAttribute("marketId", marketId);
+		model.addAttribute("scope", scope);
+		model.addAttribute("hideFilter", hideFilter);
 		if (UserAgentUtils.isMobileAccess(request)) {
 			return "mobile/index";
 		}else {

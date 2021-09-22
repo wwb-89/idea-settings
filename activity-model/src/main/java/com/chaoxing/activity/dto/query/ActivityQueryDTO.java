@@ -57,4 +57,9 @@ public class ActivityQueryDTO {
 	/** 区域码 */
 	private String areaCode;
 
+	/** 活动类型 */
+	private String activityType;
+	/** flag的查询范围，0：默认，1：所有 */
+	private Integer scope;
+
 }
