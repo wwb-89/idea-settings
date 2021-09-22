@@ -427,7 +427,10 @@
                     }
                     $this.$refs.releaseWindow.show = false;
                     var marketId = $this.marketId || "";
-                    var url = ctx + "/api/activity/" + $this.operateActivityId + "/release/?marketId=" + marketId;
+                    var url = ctx + "/api/activity/" + $this.operateActivityId + "/release";
+                    if (!activityApp.isEmpty(marketId)) {
+                        url = ctx + "/api/market/" + marketId + "/release/activity/" + $this.operateActivityId;
+                    }
                     app.ajaxPostWithLoading(url, {}, function (data) {
                         if (data.success) {
                             app.showMsg("发布成功", function () {
@@ -513,7 +516,10 @@
                     var $this = this;
                     $this.$refs.canReleaseWindow.show = false;
                     var marketId = $this.marketId || "";
-                    var url = ctx + "/api/activity/" + $this.operateActivityId + "/release/cancel/?marketId=" + marketId;
+                    var url = ctx + "/api/activity/" + $this.operateActivityId + "/release/cancel";
+                    if (!activityApp.isEmpty(marketId)) {
+                        url = ctx + "/api/market/" + marketId + "/cancel-release/activity/" + $this.operateActivityId;
+                    }
                     app.ajaxPostWithLoading(url, {}, function (data) {
                         if (data.success) {
                             app.showMsg("下架成功", function () {

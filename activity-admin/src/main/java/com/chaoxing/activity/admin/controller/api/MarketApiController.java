@@ -5,6 +5,7 @@ import com.chaoxing.activity.dto.LoginUserDTO;
 import com.chaoxing.activity.dto.RestRespDTO;
 import com.chaoxing.activity.dto.activity.market.ActivityMarketCreateParamDTO;
 import com.chaoxing.activity.dto.activity.market.ActivityMarketUpdateParamDTO;
+import com.chaoxing.activity.service.activity.ActivityMarketService;
 import com.chaoxing.activity.service.activity.market.MarketHandleService;
 import com.chaoxing.activity.util.annotation.LoginRequired;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -28,6 +29,8 @@ public class MarketApiController {
 
 	@Resource
 	private MarketHandleService marketHandleService;
+	@Resource
+	private ActivityMarketService activityMarketService;
 
 	/**创建活动市场（来源：微服务）
 	 * @Description 
@@ -73,6 +76,38 @@ public class MarketApiController {
 	public RestRespDTO updateSignUpActivityLimit(HttpServletRequest request, @PathVariable Integer marketId, Integer signUpActivityLimit) {
 		LoginUserDTO loginUser = LoginUtils.getLoginUser(request);
 		marketHandleService.updateSignUpActivityLimit(marketId, signUpActivityLimit, loginUser.buildOperateUserDTO());
+		return RestRespDTO.success();
+	}
+
+	/**活动市场发布活动
+	 * @Description 
+	 * @author wwb
+	 * @Date 2021-09-22 17:29:49
+	 * @param request
+	 * @param marketId
+	 * @param activityId
+	 * @return com.chaoxing.activity.dto.RestRespDTO
+	*/
+	@RequestMapping("{marketId}/release/activity/{activityId}")
+	public RestRespDTO releaseActivity(HttpServletRequest request, @PathVariable Integer marketId, @PathVariable Integer activityId) {
+		LoginUserDTO loginUser = LoginUtils.getLoginUser(request);
+		activityMarketService.releaseActivity(marketId, activityId, loginUser);
+		return RestRespDTO.success();
+	}
+
+	/**活动市场取消发布活动
+	 * @Description 
+	 * @author wwb
+	 * @Date 2021-09-22 17:30:07
+	 * @param request
+	 * @param marketId
+	 * @param activityId
+	 * @return com.chaoxing.activity.dto.RestRespDTO
+	*/
+	@RequestMapping("{marketId}/cancel-release/activity/{activityId}")
+	public RestRespDTO cancelReleaseActivity(HttpServletRequest request, @PathVariable Integer marketId, @PathVariable Integer activityId) {
+		LoginUserDTO loginUser = LoginUtils.getLoginUser(request);
+		activityMarketService.cancelReleaseActivity(marketId, activityId, loginUser);
 		return RestRespDTO.success();
 	}
 

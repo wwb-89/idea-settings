@@ -1,7 +1,6 @@
 package com.chaoxing.activity.task.activity;
 
 import com.chaoxing.activity.dto.LoginUserDTO;
-import com.chaoxing.activity.model.Activity;
 import com.chaoxing.activity.service.activity.ActivityHandleService;
 import com.chaoxing.activity.service.activity.ActivityQueryService;
 import com.chaoxing.activity.service.queue.activity.ActivityTimingReleaseQueueService;
@@ -39,10 +38,9 @@ public class ActivityTimingReleaseTask {
 			return;
 		}
 		Integer activityId = queueParam.getActivityId();
-		Activity activity = activityQueryService.getById(activityId);
 		LoginUserDTO loginUser = queueParam.getLoginUser();
 		try {
-			activityHandleService.release(activityId, activity.getMarketId(), loginUser);
+			activityHandleService.release(activityId, loginUser);
 		} catch (Exception e) {
 			e.printStackTrace();
 			if (!isIgnoreException(e)) {

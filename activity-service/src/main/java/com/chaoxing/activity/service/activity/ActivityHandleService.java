@@ -308,10 +308,9 @@ public class ActivityHandleService {
 					.set(Activity::getTimingReleaseTime, activity.getTimingReleaseTime())
 					.set(Activity::getTimeLengthUpperLimit, activity.getTimeLengthUpperLimit())
 					.set(Activity::getIntegral, activity.getIntegral())
-					.set(Activity::getStatus, Activity.calActivityStatus(activity).getValue())
 			);
-			// 更新活动市场与活动关联
-			activityMarketService.updateMarketActivityStatus(activity.getMarketId(), activity, activity.getReleased());
+			// 更新活动状态
+			activityStatusService.statusUpdate(activityId);
 			// 处理门户模版的绑定
 			bindWebTemplate(existActivity, activity.getWebTemplateId(), loginUser);
 			// 更新
@@ -381,18 +380,16 @@ public class ActivityHandleService {
 	 * @return void
 	 */
 	@Transactional(rollbackFor = Exception.class)
-	public void release(Integer activityId, Integer marketId, LoginUserDTO loginUser) {
-		Activity activity = activityValidationService.activityExist(activityId);
-		// 当非市场发布活动或当前市场的活动发布活动，均可修改活动状态
-		if (marketId == null || Objects.equals(marketId, activity.getMarketId())) {
-			activity = activityValidationService.releaseAble(activityId, loginUser);
-			activity.release(loginUser.getUid());
-			activityStatusService.updateReleaseStatus(activity);
+	public void release(Integer activityId, LoginUserDTO loginUser) {
+		Activity activity = activityValidationService.releaseAble(activityId, loginUser);
+		activity.release(loginUser.getUid());
+		activityStatusService.updateReleaseStatus(activity);
+		Integer marketId = activity.getMarketId();
+		if (marketId == null) {
+			return;
 		}
-		// 修改活动-市场状态信息
-		if (marketId != null) {
-			activityMarketService.updateMarketActivityStatus(marketId, activity, true);
-		}
+		// 更新活动市场下活动的状态
+		activityMarketService.updateActivityRelease(marketId, activity, true);
 	}
 
 	/**取消发布（下架）
@@ -404,18 +401,16 @@ public class ActivityHandleService {
 	 * @return void
 	 */
 	@Transactional(rollbackFor = Exception.class)
-	public void cancelRelease(Integer activityId, Integer marketId, LoginUserDTO loginUser) {
-		Activity activity = activityValidationService.activityExist(activityId);
-		// 当非市场发布活动或当前市场的活动发布活动，均可修改活动状态
-		if (marketId == null || Objects.equals(marketId, activity.getMarketId())) {
-			activity = activityValidationService.cancelReleaseAble(activity, loginUser);
-			activity.cancelRelease();
-			activityStatusService.updateReleaseStatus(activity);
+	public void cancelRelease(Integer activityId, LoginUserDTO loginUser) {
+		Activity activity = activityValidationService.cancelReleaseAble(activityId, loginUser);
+		activity.cancelRelease();
+		activityStatusService.updateReleaseStatus(activity);
+		Integer marketId = activity.getMarketId();
+		if (marketId == null) {
+			return;
 		}
-		// 修改活动-市场状态信息
-		if (marketId != null) {
-			activityMarketService.updateMarketActivityStatus(marketId, activity, false);
-		}
+		// 更新活动市场下活动的状态
+		activityMarketService.updateActivityRelease(marketId, activity, false);
 	}
 
 
@@ -433,14 +428,12 @@ public class ActivityHandleService {
 	public void updateActivityReleaseStatus(Integer activityId, Integer fid, Integer uid, boolean released) {
 		LoginUserDTO loginUser = LoginUserDTO.buildDefault(uid, "", fid, "");
 		List<Integer> marketIdsUnderFid = marketQueryService.listMarketIdsByActivityIdFid(fid, activityId);
-		if (released) {
-			marketIdsUnderFid.forEach(marketId -> {
-				release(activityId, marketId, loginUser);
-			});
-			return;
-		}
 		marketIdsUnderFid.forEach(marketId -> {
-			cancelRelease(activityId, marketId, loginUser);
+			if (released) {
+				activityMarketService.releaseActivity(marketId, activityId, loginUser);
+			} else {
+				activityMarketService.cancelReleaseActivity(marketId, activityId, loginUser);
+			}
 		});
 	}
 
@@ -717,29 +710,6 @@ public class ActivityHandleService {
 
 		}
 		return "";
-	}
-
-	/**更新活动状态
-	 * @Description
-	 * @author wwb
-	 * @Date 2020-12-11 14:55:01
-	 * @param activityId
-	 * @param status
-	 * @return void
-	 */
-	@Transactional(rollbackFor = Exception.class)
-	public void updateActivityStatus(Integer activityId, Activity.StatusEnum status) {
-		activityMapper.update(null, new UpdateWrapper<Activity>()
-				.lambda()
-				.eq(Activity::getId, activityId)
-				.set(Activity::getStatus, status.getValue())
-		);
-		if (Objects.equals(Activity.StatusEnum.ENDED, status)) {
-			// 当活动结束时触发用户合格判定
-			activityInspectionResultDecideQueueService.push(activityId);
-			// 触发黑名单判定
-			blacklistAutoAddQueueService.push(new BlacklistAutoAddQueueService.QueueParamDTO(activityId));
-		}
 	}
 
 	/**更新活动的评价配置
