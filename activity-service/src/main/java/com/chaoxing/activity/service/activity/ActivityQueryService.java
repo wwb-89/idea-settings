@@ -89,8 +89,6 @@ public class ActivityQueryService {
 	private ComponentQueryService componentQueryService;
 	@Resource
 	private MarketQueryService marketQueryService;
-	@Resource
-	private MarketHandleService marketHandleService;
 
 	/**查询参与的活动
 	 * @Description 
