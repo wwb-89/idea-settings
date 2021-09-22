@@ -1,6 +1,5 @@
 package com.chaoxing.activity.api.controller;
 
-import com.chaoxing.activity.dto.RestRespDTO;
 import com.chaoxing.activity.model.Activity;
 import com.chaoxing.activity.model.DataPushRecord;
 import com.chaoxing.activity.service.activity.ActivityFormSyncService;
@@ -8,11 +7,12 @@ import com.chaoxing.activity.service.activity.ActivityQueryService;
 import com.chaoxing.activity.service.data.DataPushRecordQueryService;
 import com.chaoxing.activity.util.BaiduMapUtils;
 import com.chaoxing.activity.util.UserAgentUtils;
+import com.chaoxing.activity.util.constant.ActivityMhUrlConstant;
 import com.chaoxing.activity.util.constant.UrlConstant;
-import com.chaoxing.activity.util.exception.BusinessException;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
