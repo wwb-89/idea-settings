@@ -19,7 +19,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.annotation.Resource;
-import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -78,8 +77,6 @@ public class ErdosActivityInfoApiController {
         mhGeneralAppResultDataFields.add(buildField("", "", "4"));
         mhGeneralAppResultDataFields.add(buildField("", "", "5"));
         mhGeneralAppResultDataFields.add(buildField("", "", "6"));
-        LocalDateTime now = LocalDateTime.now();
-        Integer thisYear = now.getYear();
         // 开始时间
         mhGeneralAppResultDataFields.add(buildField(fieldCodeNameRelation.get("activity_time_scope"), DateTimeFormatterConstant.YYYY_MM_DD_HH_MM.format(activity.getStartTime()), "100"));
         // 结束时间
