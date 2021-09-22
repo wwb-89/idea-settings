@@ -32,10 +32,12 @@ import java.util.stream.Collectors;
 @Service
 public class WfwAreaApiService {
 
+	/** 域名 */
+	private static final String DOMAIN = "http://guanli.chaoxing.com";
 	/** 根据fid获取架构的code */
-	private static final String GET_AREA_BY_FID_URL = "http://guanli.chaoxing.com/siteInter/siteHierarchy?fid=%s";
+	private static final String GET_AREA_BY_FID_URL = DOMAIN + "/siteInter/siteHierarchy?fid=%s";
 	/** 根据code获取架构 */
-	private static final String GET_AREA_BY_CODE_URL = "http://guanli.chaoxing.com/siteInter/siteHierarchy?code=%s&pageSize=%s";
+	private static final String GET_AREA_BY_CODE_URL = DOMAIN + "/siteInter/siteHierarchy?code=%s&pageSize=%s";
 
 	@Resource
 	private RestTemplate restTemplate;

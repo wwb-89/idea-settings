@@ -1,16 +1,18 @@
 package com.chaoxing.activity.api.controller.mh;
 
 import com.alibaba.fastjson.JSON;
-import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.chaoxing.activity.dto.RestRespDTO;
 import com.chaoxing.activity.dto.manager.mh.MhGeneralAppResultDataDTO;
+import com.chaoxing.activity.dto.work.WorkBtnDTO;
 import com.chaoxing.activity.model.Activity;
 import com.chaoxing.activity.service.activity.ActivityQueryService;
+import com.chaoxing.activity.service.manager.module.WorkApiService;
 import com.chaoxing.activity.util.constant.ActivityMhUrlConstant;
 import com.chaoxing.activity.util.constant.DateTimeFormatterConstant;
 import com.chaoxing.activity.util.exception.BusinessException;
 import com.google.common.collect.Lists;
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -20,7 +22,6 @@ import org.springframework.web.client.RestTemplate;
 import javax.annotation.Resource;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 import java.util.Optional;
 
 /**鄂尔多斯活动信息
@@ -40,6 +41,8 @@ public class ErdosActivityInfoApiController {
 
     @Resource
     private ActivityQueryService activityQueryService;
+    @Resource
+    private WorkApiService workApiService;
 
     @Resource
     private RestTemplate restTemplate;
@@ -157,29 +160,22 @@ public class ErdosActivityInfoApiController {
 
     private List<MhGeneralAppResultDataDTO.MhGeneralAppResultDataFieldDTO> listWorkBtn(Integer uid, Integer fid, Integer workId, List<Integer> availableFlags) {
         List<MhGeneralAppResultDataDTO.MhGeneralAppResultDataFieldDTO> btns = Lists.newArrayList();
-        String url = String.format(WORK_BTN_URL, workId, Optional.ofNullable(uid).map(String::valueOf).orElse(""), fid);
-        String result = restTemplate.postForObject(url, null, String.class);
-        JSONObject jsonObject = JSON.parseObject(result);
-        if (Objects.equals(true, jsonObject.getBoolean("success"))) {
-            JSONArray data = jsonObject.getJSONArray("data");
-            if (data != null && jsonObject.size() > 0) {
-                int size = data.size();
-                for (int i = 0; i < size; i++) {
-                    String flag = getFlag(availableFlags);
-                    JSONObject btnJsonObject = data.getJSONObject(i);
-                    Boolean enable = Optional.ofNullable(btnJsonObject.getBoolean("enable")).orElse(false);
+        List<WorkBtnDTO> workBtnDtos = workApiService.listBtns(workId, uid, fid);
+        if (CollectionUtils.isNotEmpty(workBtnDtos)) {
+            for (WorkBtnDTO workBtnDto : workBtnDtos) {
+                String flag = getFlag(availableFlags);
+                Boolean enable = Optional.ofNullable(workBtnDto.getEnable()).orElse(false);
+                btns.add(MhGeneralAppResultDataDTO.MhGeneralAppResultDataFieldDTO.builder()
+                        .key(workBtnDto.getButtonName())
+                        .value(workBtnDto.getLinkUrl())
+                        .flag(flag)
+                        .build());
+                Integer intFlag = Integer.parseInt(flag);
+                if (intFlag.compareTo(MULTI_BTN_MAX_FLAG) < 0) {
                     btns.add(MhGeneralAppResultDataDTO.MhGeneralAppResultDataFieldDTO.builder()
-                            .key(btnJsonObject.getString("buttonName"))
-                            .value(btnJsonObject.getString("linkUrl"))
-                            .flag(flag)
+                            .value(enable ? "1" : "0")
+                            .flag(String.valueOf(intFlag + 1))
                             .build());
-                    Integer intFlag = Integer.parseInt(flag);
-                    if (intFlag.compareTo(MULTI_BTN_MAX_FLAG) < 0) {
-                        btns.add(MhGeneralAppResultDataDTO.MhGeneralAppResultDataFieldDTO.builder()
-                                .value(enable ? "1" : "0")
-                                .flag(String.valueOf(intFlag + 1))
-                                .build());
-                    }
                 }
             }
         }

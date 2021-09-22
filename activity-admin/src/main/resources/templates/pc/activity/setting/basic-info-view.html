@@ -9,18 +9,12 @@
     <link rel="stylesheet" href="/static/pc/assets/icomoon/style.css" th:href="@{/pc/assets/icomoon/style.css}">
     <link rel="stylesheet" href="/static/pc/assets/css/common.css" th:href="@{/pc/assets/css/common.css}">
     <link rel="stylesheet" href="/static/pc/assets/css/set.css" th:href="@{/pc/assets/css/set.css}">
-
-    <link rel="stylesheet" href="https://noteyd.chaoxing.com/res/css/pc/note/richtext_detail.css">
-    <link rel="stylesheet" type="text/css" href="https://noteyd.chaoxing.com/res/plugin/smusic/css/smusic.css" />
-    <link rel="stylesheet" type="text/css" href="https://noteyd.chaoxing.com/res/pc/cssnew/media.css" />
-
     <style>
         [v-cloak]{
             display: none;
         }
     </style>
 </head>
-
 <body>
     <div id="basicInfoVue" v-cloak>
         <el-form class="basic-show" ref="form" label-width="74px" onsubmit="return false">
@@ -56,7 +50,9 @@
                 </template>
                 <el-form-item v-else-if="item.code == 'introduction'" v-show="isNotEmpty(activity.introduction)" :label="item.name">
                     <div class="input-box">
-                        <div class="richtext" v-html="activity.introduction"></div>
+                        <div class="txt">
+                            <div class="width640 overHidden2">{{activity.introduction}}</div>
+                        </div>
                     </div>
                 </el-form-item>
                 <el-form-item :label="item.name" v-else-if="item.code == 'activity_name'">
@@ -132,73 +128,9 @@
                 </div>
             </div>
         </el-form>
-
-        <!-- 视频播放容器 -->
-        <div id="videoDiv">
-            <span class="videoCloseBtn"></span>
-            <div id="video"></div>
-        </div>
-        <!-- 音频播放容器 -->
-        <div id="audioDiv" style="z-index: 9000">
-            <div class="headBar"><span class="audioCloseBtn"></span></div>
-            <div class="grid-music-container f-usn">
-                <div class="m-music-play-wrap">
-                    <div class="u-cover"></div>
-                    <div class="m-now-info">
-                        <h1 class="u-music-title"><strong></strong></h1>
-
-                        <div class="m-now-controls">
-                            <div class="startTime">00:00&nbsp;&nbsp;</div>
-                            <div class="u-control u-process ">
-                                <div class="old-bar"></div>
-                                <span class="buffer-process"></span>
-                                <span class="current-bar"></span>
-                                <span class="current-process"></span>
-                            </div>
-                            <div class="u-control u-time">00:00</div>
-
-                            <div class="u-control u-volume new-volume">
-                                <div class="volume">
-	                                <span class="volume-event">
-	                                    <div class="volume-process" data-volume="0.50"></div>
-	                                    <span class="volume-current"></span>
-	                                    <span class="volume-bar"></span>
-	                                </span>
-                                    <a class="volume-control"></a>
-                                </div>
-                            </div>
-                            <div class="m-play-controls">
-                                <div class="musicOrder">
-                                    <a class="u-play-btn mode mode-list  " title="列表循环"></a>
-                                    <!-- <a class="u-play-btn mode mode-random  " title="随机播放"></a>
-                                    <a class="u-play-btn mode mode-single " title="单曲循环"></a>  -->
-                                </div>
-                                <a class="u-play-btn prev" title="上一曲"></a>
-                                <a class="u-play-btn ctrl-play play" title="暂停"></a>
-                                <a class="u-play-btn next" title="下一曲"></a>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="f-cb">&nbsp;</div>
-                    <div class="m-music-list-wrap"></div>
-                    <div class="m-music-lyric-wrap">
-                        <div class="inner">
-                            <ul class="js-music-lyric-content">
-                                <li class="eof">暂无歌词...</li>
-                            </ul>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <!--音视频播放-end-->
-
-
     </div>
     <div th:replace="pc/include/common_js :: common_js(~{::script})">
         <!--引入js-->
-        <script type="text/javascript" src="https://api.map.baidu.com/api?v=3.0&ak=aG5nWGO5m5tkVhBHGuVppoIRfKbyp5H3"></script>
         <script src="/static/pc/assets/lib/layui/layui.js" th:src="@{/pc/assets/lib/layui/layui.js}"></script>
         <script src="/static/pc/assets/lib/element-ui/lib/index.js" th:src="@{/pc/assets/lib/element-ui/lib/index.js}"></script>
         <script src="/static/pc/assets/lib/jquery.nicescroll.min.js" th:src="@{/pc/assets/lib/jquery.nicescroll.min.js}"></script>
@@ -206,12 +138,6 @@
         <script src="/static/pc/assets/js/create-active.js" th:src="@{/pc/assets/js/create-active.js}"></script>
         <script src="/static/pc/assets/js/main.js" th:src="@{/pc/assets/js/main.js}"></script>
         <script src="/static/pc/assets/js/common.js" th:src="@{/pc/assets/js/common.js}"></script>
-        <!-- 笔记编辑器 -->
-        <script src="https://noteyd.chaoxing.com/res/plugin/ueditor4thirdparty/rich.text.util.js"></script>
-        <script type="text/javascript" src="https://noteyd.chaoxing.com/res/plugin/ckplayer/ckplayer.js"></script>
-        <script type="text/javascript" src="https://noteyd.chaoxing.com/res/js/common/easydialog.min.js"></script>
-        <script type="text/javascript" src="https://noteyd.chaoxing.com/res/plugin/smusic/js/smusic.js"></script>
-        <script type="text/javascript" src="https://noteyd.chaoxing.com/res/pc/js/media.js"></script>
         <script th:inline="javascript">
             Vue.filter("releaseScopeFormat", function (value) {
                 if (!value) {
@@ -224,24 +150,22 @@
             })
             var vm = new Vue({
                 el: '#basicInfoVue',
-                data: function () {
-                    return {
-                        activity: [[${activity}]],
-                        templateComponents: [[${templateComponents}]],
-                        additionRequiredFields: [], // 补充必填字段
-                        participateScopes: [[${participateScopes}]],
-                        activityComponentValueMap: {},
-                        needInitEditor: false,
-                        showMore:true
-                    }
+                data: {
+                    activity: [[${activity}]],
+                    templateComponents: [[${templateComponents}]],
+                    additionRequiredFields: [], // 补充必填字段
+                    participateScopes: [[${participateScopes}]],
+                    activityComponentValueMap: {},
+                    showMore:true
                 },
                 created: function () {
                     var $this = this;
                     document.domain = "chaoxing.com";
 
                     var templateComponentMap = {};
-                    RichTextUitl.loadDetailPageProfile();
-                    $this.activity.introduction = RichTextUitl.beforeSetRtfContent($this.activity.introduction);
+                    if (!activityApp.isEmpty($this.activity.introduction)) {
+                        $this.activity.introduction = $this.activity.introduction.replace(/<[^>]+>/g,"");
+                    }
                     var requiredFieldCodes = ['activity_name', 'activity_time_scope', 'activity_cover', 'activity_type'];
                     var existRequiredFieldCodes = []; // 已存在必填字段
                     $($this.templateComponents).each(function() {
@@ -249,9 +173,6 @@
                             existRequiredFieldCodes.push(this.code);
                         }
                         templateComponentMap[this.id] = this;
-                        if (this.code == 'introduction') {
-                            $this.needInitEditor = true
-                        }
                     });
                     $(requiredFieldCodes).each(function (i) {
                         var code = requiredFieldCodes[i];

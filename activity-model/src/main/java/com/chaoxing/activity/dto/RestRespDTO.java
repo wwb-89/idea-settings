@@ -2,8 +2,10 @@ package com.chaoxing.activity.dto;
 
 import com.chaoxing.activity.util.enums.StatusCodeEnum;
 import com.chaoxing.activity.util.exception.BusinessException;
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.util.List;
 
@@ -17,6 +19,8 @@ import java.util.List;
  */
 @Data
 @Builder
+@NoArgsConstructor
+@AllArgsConstructor
 public class RestRespDTO {
 
 	private Boolean success;

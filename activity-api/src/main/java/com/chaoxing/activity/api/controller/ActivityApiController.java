@@ -9,11 +9,10 @@ import com.chaoxing.activity.api.vo.UserStatSummaryVO;
 import com.chaoxing.activity.dto.LoginUserDTO;
 import com.chaoxing.activity.dto.RestRespDTO;
 import com.chaoxing.activity.dto.UserResultDTO;
-import com.chaoxing.activity.dto.activity.create.ActivityCreateFromPreachParamDTO;
 import com.chaoxing.activity.dto.activity.ActivityExternalDTO;
 import com.chaoxing.activity.dto.activity.create.ActivityCreateFromFormParamDTO;
+import com.chaoxing.activity.dto.activity.create.ActivityCreateFromPreachParamDTO;
 import com.chaoxing.activity.dto.manager.PassportUserDTO;
-import com.chaoxing.activity.dto.manager.sign.SignUpDTO;
 import com.chaoxing.activity.dto.manager.wfw.WfwAreaDTO;
 import com.chaoxing.activity.dto.query.ActivityQueryDTO;
 import com.chaoxing.activity.dto.query.UserResultQueryDTO;
@@ -41,6 +40,7 @@ import com.chaoxing.activity.service.stat.UserStatSummaryQueryService;
 import com.chaoxing.activity.service.user.result.UserResultQueryService;
 import com.chaoxing.activity.service.util.Model2DtoService;
 import com.chaoxing.activity.util.HttpServletRequestUtils;
+import com.chaoxing.activity.util.constant.ActivityMhUrlConstant;
 import com.chaoxing.activity.util.constant.CookieConstant;
 import com.chaoxing.activity.util.exception.BusinessException;
 import com.google.common.collect.Lists;
@@ -370,12 +370,12 @@ public class ActivityApiController {
 		page = activityStatSummaryQueryService.activityStatSummaryPage(page, statSummaryQueryItem);
 
 		List<ActivityStatSummaryDTO> records = page.getRecords();
-		List<ActivityStatSummaryVO> activityStatSummaryVOList = Lists.newArrayList();
+		List<ActivityStatSummaryVO> activityStatSummaryVoList = Lists.newArrayList();
 		if (CollectionUtils.isNotEmpty(records)) {
 			records.forEach(v -> {
-				activityStatSummaryVOList.add(ActivityStatSummaryVO.buildActivityStatSummaryVo(v));
+				activityStatSummaryVoList.add(ActivityStatSummaryVO.buildActivityStatSummaryVo(v));
 			});
-			page.setRecords(activityStatSummaryVOList);
+			page.setRecords(activityStatSummaryVoList);
 		}
 		return RestRespDTO.success(page);
 	}
@@ -568,6 +568,20 @@ public class ActivityApiController {
 	public RestRespDTO copyActivityReleaseActivity(@RequestParam Integer activityId, @RequestParam String flag) {
 		activityCreateService.createFromActivityRelease(activityId, flag);
 		return RestRespDTO.success();
+	}
+
+	/**门户活动海报地址
+	 * @Description
+	 * @author wwb
+	 * @Date 2021-09-18 11:25:18
+	 * @param websiteId
+	 * @return java.lang.String
+	 */
+	@RequestMapping("mh/activity/poster")
+	public String mhPosterUrl(@RequestParam Integer websiteId) {
+		Activity activity = activityQueryService.getByWebsiteId(websiteId);
+		Integer activityId = Optional.ofNullable(activity).map(Activity::getId).orElse(1);
+		return "redirect:" + String.format(ActivityMhUrlConstant.ACTIVITY_POSTERS_URL, activityId);
 	}
 
 }

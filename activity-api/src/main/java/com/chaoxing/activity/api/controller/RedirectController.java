@@ -1,5 +1,6 @@
 package com.chaoxing.activity.api.controller;
 
+import com.chaoxing.activity.dto.RestRespDTO;
 import com.chaoxing.activity.model.Activity;
 import com.chaoxing.activity.model.DataPushRecord;
 import com.chaoxing.activity.service.activity.ActivityFormSyncService;
@@ -7,12 +8,11 @@ import com.chaoxing.activity.service.activity.ActivityQueryService;
 import com.chaoxing.activity.service.data.DataPushRecordQueryService;
 import com.chaoxing.activity.util.BaiduMapUtils;
 import com.chaoxing.activity.util.UserAgentUtils;
-import com.chaoxing.activity.util.constant.ActivityMhUrlConstant;
 import com.chaoxing.activity.util.constant.UrlConstant;
+import com.chaoxing.activity.util.exception.BusinessException;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
@@ -148,12 +148,12 @@ public class RedirectController {
     }
 
     /**门户活动海报地址
-     * @Description 
+     * @Description
      * @author wwb
      * @Date 2021-09-18 11:25:18
      * @param websiteId
      * @return java.lang.String
-    */
+     */
     @RequestMapping("mh/activity/poster")
     public String mhPosterUrl(@RequestParam Integer websiteId) {
         Activity activity = activityQueryService.getByWebsiteId(websiteId);
