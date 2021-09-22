@@ -251,7 +251,7 @@ public class WfwFormApprovalApiService {
         }
         LoginUserDTO loginUser = activity.getLoginUser();
         // 根据表单数据创建报名签到
-        SignCreateParamDTO signCreateParam = buildSignFromActivityApproval(formData, loginUser.getUid());
+        SignCreateParamDTO signCreateParam = buildSignFromActivityApproval(formData, loginUser.getUid(), DateUtils.timestamp2Date(activity.getStartTimeStamp()), DateUtils.timestamp2Date(activity.getEndTimeStamp()));
         // 使用指定的模板
         webTemplateId = Optional.ofNullable(webTemplateId).orElse(CommonConstant.DEFAULT_FROM_FORM_CREATE_ACTIVITY_TEMPLATE_ID);
         WebTemplate webTemplate = webTemplateService.getById(webTemplateId);
@@ -399,9 +399,11 @@ public class WfwFormApprovalApiService {
      * @Date 2021-06-11 17:49:43
      * @param formData
      * @param uid
+     * @param activityStartTime
+     * @param activityEndTime
      * @return com.chaoxing.activity.dto.sign.create.SignCreateParamDTO
     */
-    private SignCreateParamDTO buildSignFromActivityApproval(FormDataDTO formData, Integer uid) {
+    private SignCreateParamDTO buildSignFromActivityApproval(FormDataDTO formData, Integer uid, LocalDateTime activityStartTime, LocalDateTime activityEndTime) {
         SignCreateParamDTO signCreateParam = SignCreateParamDTO.buildDefault();
         // 报名
         List<SignUpCreateParamDTO> signUps = signCreateParam.getSignUps();
@@ -468,6 +470,11 @@ public class WfwFormApprovalApiService {
                     signIn.setScanCodeWay(SignInCreateParamDTO.ScanCodeWay.PARTICIPATOR.getValue());
                 }
             }
+            // 签到时间为活动开始前30分钟到活动开始截止
+            LocalDateTime endTime = activityStartTime;
+            LocalDateTime startTime = endTime.minusMinutes(30);
+            signIn.setStartTime(DateUtils.date2Timestamp(startTime));
+            signIn.setEndTime(DateUtils.date2Timestamp(endTime));
         } else {
             signIn.setDeleted(true);
         }
@@ -502,6 +509,11 @@ public class WfwFormApprovalApiService {
                     signOut.setScanCodeWay(SignInCreateParamDTO.ScanCodeWay.PARTICIPATOR.getValue());
                 }
             }
+            // 签退时间为活动结束到结束30分钟
+            LocalDateTime signOutStartTime = activityEndTime;
+            LocalDateTime signOutEndTime = signOutStartTime.plusMinutes(30);
+            signOut.setStartTime(DateUtils.date2Timestamp(signOutStartTime));
+            signOut.setEndTime(DateUtils.date2Timestamp(signOutEndTime));
         } else {
             signOut.setDeleted(true);
         }
