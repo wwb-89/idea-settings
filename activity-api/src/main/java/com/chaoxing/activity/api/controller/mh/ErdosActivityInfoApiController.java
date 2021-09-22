@@ -22,7 +22,6 @@ import javax.annotation.Resource;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 import java.util.Optional;
 
 /**鄂尔多斯活动信息
@@ -82,23 +81,9 @@ public class ErdosActivityInfoApiController {
         LocalDateTime now = LocalDateTime.now();
         Integer thisYear = now.getYear();
         // 开始时间
-        LocalDateTime startTime = activity.getStartTime();
-        String startTimeStr;
-        if (Objects.equals(thisYear, startTime.getYear())) {
-            startTimeStr = DateTimeFormatterConstant.MM_DD_HH_MM.format(startTime);
-        } else {
-            startTimeStr = DateTimeFormatterConstant.YYYY_MM_DD_HH_MM.format(startTime);
-        }
-        mhGeneralAppResultDataFields.add(buildField(fieldCodeNameRelation.get("activity_time_scope"), startTimeStr, "100"));
+        mhGeneralAppResultDataFields.add(buildField(fieldCodeNameRelation.get("activity_time_scope"), DateTimeFormatterConstant.YYYY_MM_DD_HH_MM.format(activity.getStartTime()), "100"));
         // 结束时间
-        LocalDateTime endTime = activity.getEndTime();
-        String endTimeStr;
-        if (Objects.equals(thisYear, endTime.getYear())) {
-            endTimeStr = DateTimeFormatterConstant.MM_DD_HH_MM.format(endTime);
-        } else {
-            endTimeStr = DateTimeFormatterConstant.YYYY_MM_DD_HH_MM.format(endTime);
-        }
-        mhGeneralAppResultDataFields.add(buildField("活动结束时间", endTimeStr, "101"));
+        mhGeneralAppResultDataFields.add(buildField("活动结束时间", DateTimeFormatterConstant.YYYY_MM_DD_HH_MM.format(activity.getEndTime()), "101"));
         // 活动地点
         String activityAddress = Optional.ofNullable(activity.getAddress()).orElse("") + Optional.ofNullable(activity.getDetailAddress()).orElse("");
         mhGeneralAppResultDataFields.add(buildField("", "", "102"));
