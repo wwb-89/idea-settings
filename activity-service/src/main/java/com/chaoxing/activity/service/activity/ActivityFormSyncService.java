@@ -143,7 +143,7 @@ public class ActivityFormSyncService {
         // 新增活动
         Integer activityId = activityHandleService.add(activityCreateParam, signCreateParam, defaultPublishAreas, loginUser);
         // 立即发布
-        activityHandleService.release(activityId, template.getMarketId(), loginUser);
+        activityHandleService.release(activityId, loginUser);
         activity = activityQueryService.getById(activityId);
         // 获取参与者列表, 进行用户报名
         List<Integer> participateUids = listParticipateUidByRecord(formUserRecord);

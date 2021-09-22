@@ -291,7 +291,7 @@ public class ActivityMarketApiController {
 		String flag = urlParams.getString("flag");
 		if (marketId == null && StringUtils.isNotBlank(flag)) {
 			// 根据flag找活动市场id
-			marketId = marketQueryService.getMarketIdByTemplate(wfwfid, flag);
+			marketId = marketQueryService.getMarketIdByFlag(wfwfid, flag);
 		}
 		List<Classify> classifies;
 		if (marketId != null) {

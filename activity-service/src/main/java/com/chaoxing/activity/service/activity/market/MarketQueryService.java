@@ -96,11 +96,11 @@ public class MarketQueryService {
 	 * @author huxiaolong
 	 * @Date 2021-09-01 11:52:12
 	 * @param fid
-	 * @param activityFlag
+	 * @param flag
 	 * @return java.lang.Integer
 	 */
-	public Integer getMarketIdByTemplate(Integer fid, String activityFlag) {
-		Activity.ActivityFlagEnum activityFlagEnum = Activity.ActivityFlagEnum.fromValue(activityFlag);
+	public Integer getMarketIdByFlag(Integer fid, String flag) {
+		Activity.ActivityFlagEnum activityFlagEnum = Activity.ActivityFlagEnum.fromValue(flag);
 		if (activityFlagEnum == null) {
 			return null;
 		}

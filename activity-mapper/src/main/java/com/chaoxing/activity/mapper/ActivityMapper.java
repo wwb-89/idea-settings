@@ -198,13 +198,14 @@ public interface ActivityMapper extends BaseMapper<Activity> {
 	 * 查询机构创建的
 	 *
 	 * @param fid
+	 * @param marketId
 	 * @param activityFlag
 	 * @return java.util.List<com.chaoxing.activity.model.Activity>
 	 * @Description
 	 * @author wwb
 	 * @Date 2021-04-19 10:41:04
 	 */
-	List<Activity> listOrgCreated(@Param("fid") Integer fid, @Param("activityFlag") String activityFlag);
+	List<Activity> listOrgCreated(@Param("fid") Integer fid, @Param("marketId") Integer marketId, @Param("activityFlag") String activityFlag);
 
 	/**
 	 * 查询活动进行日期范围中含activityDate的活动id
@@ -252,9 +253,9 @@ public interface ActivityMapper extends BaseMapper<Activity> {
 	 * @author huxiaolong
 	 * @Date 2021-06-11 14:02:14
 	 */
-    List<Integer> listOrgsReleasedActivityId(@Param("fids") List<Integer> fids, @Param("startDate") String startDate, @Param("endDate") String endDate);
+	List<Integer> listOrgsReleasedActivityId(@Param("fids") List<Integer> fids, @Param("startDate") String startDate, @Param("endDate") String endDate);
 
-    /**
+	/**
 	 * 鄂尔多斯定制的机构创建的作品征集id列表
 	 *
 	 * @param createdFid

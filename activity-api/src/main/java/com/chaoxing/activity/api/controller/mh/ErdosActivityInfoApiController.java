@@ -17,7 +17,6 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.client.RestTemplate;
 
 import javax.annotation.Resource;
 import java.util.List;
@@ -43,9 +42,6 @@ public class ErdosActivityInfoApiController {
     private ActivityQueryService activityQueryService;
     @Resource
     private WorkApiService workApiService;
-
-    @Resource
-    private RestTemplate restTemplate;
 
     /**活动信息
      * @Description 

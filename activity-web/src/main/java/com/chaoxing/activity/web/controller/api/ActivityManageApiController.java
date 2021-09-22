@@ -59,9 +59,9 @@ public class ActivityManageApiController {
 	 */
 	@LoginRequired
 	@RequestMapping("{activityId}/release")
-	public RestRespDTO release(HttpServletRequest request, @PathVariable Integer activityId, Integer marketId) {
+	public RestRespDTO release(HttpServletRequest request, @PathVariable Integer activityId) {
 		LoginUserDTO loginUser = LoginUtils.getLoginUser(request);
-		activityHandleService.release(activityId, marketId, loginUser);
+		activityHandleService.release(activityId, loginUser);
 		return RestRespDTO.success();
 	}
 
@@ -75,9 +75,9 @@ public class ActivityManageApiController {
 	 */
 	@LoginRequired
 	@RequestMapping("{activityId}/release/cancel")
-	public RestRespDTO cancelRelease(HttpServletRequest request, @PathVariable Integer activityId, Integer marketId) {
+	public RestRespDTO cancelRelease(HttpServletRequest request, @PathVariable Integer activityId) {
 		LoginUserDTO loginUser = LoginUtils.getLoginUser(request);
-		activityHandleService.cancelRelease(activityId, marketId, loginUser);
+		activityHandleService.cancelRelease(activityId, loginUser);
 		return RestRespDTO.success();
 	}
 

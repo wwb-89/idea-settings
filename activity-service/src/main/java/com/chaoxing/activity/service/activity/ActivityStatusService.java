@@ -1,15 +1,20 @@
 package com.chaoxing.activity.service.activity;
 
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
-import com.chaoxing.activity.dto.LoginUserDTO;
 import com.chaoxing.activity.mapper.ActivityMapper;
 import com.chaoxing.activity.model.Activity;
+import com.chaoxing.activity.model.ActivityMarket;
 import com.chaoxing.activity.service.event.ActivityChangeEventService;
+import com.chaoxing.activity.service.queue.activity.ActivityInspectionResultDecideQueueService;
+import com.chaoxing.activity.service.queue.blacklist.BlacklistAutoAddQueueService;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
-import java.time.LocalDateTime;
+import java.util.List;
+import java.util.Objects;
 
 /**活动状态更新服务
  * @author wwb
@@ -29,10 +34,13 @@ public class ActivityStatusService {
 	@Resource
 	private ActivityQueryService activityQueryService;
 	@Resource
-	private ActivityHandleService activityHandleService;
-	@Resource
 	private ActivityChangeEventService activityChangeEventService;
-
+	@Resource
+	private ActivityInspectionResultDecideQueueService activityInspectionResultDecideQueueService;
+	@Resource
+	private BlacklistAutoAddQueueService blacklistAutoAddQueueService;
+	@Resource
+	private ActivityMarketService activityMarketService;
 
 	/**活动状态更新
 	 * @Description 
@@ -52,10 +60,27 @@ public class ActivityStatusService {
 	 * @param activity
 	 * @return void
 	*/
+	@Transactional(rollbackFor = Exception.class)
 	public void statusUpdate(Activity activity) {
 		if (activity != null) {
+			Integer activityId = activity.getId();
 			Activity.StatusEnum status = Activity.calActivityStatus(activity);
-			activityHandleService.updateActivityStatus(activity.getId(), status);
+			activityMapper.update(null, new UpdateWrapper<Activity>()
+					.lambda()
+					.eq(Activity::getId, activityId)
+					.set(Activity::getStatus, status.getValue())
+			);
+			// 更新所有关联该活动的市场的活动状态
+			List<ActivityMarket> activityMarkets = activityMarketService.listByActivityId(activityId);
+			if (CollectionUtils.isNotEmpty(activityMarkets)) {
+				activityMarkets.forEach(v -> activityMarketService.updateActivityStatus(v.getMarketId(), activity));
+			}
+			if (Objects.equals(Activity.StatusEnum.ENDED, status)) {
+				// 当活动结束时触发用户合格判定
+				activityInspectionResultDecideQueueService.push(activityId);
+				// 触发黑名单判定
+				blacklistAutoAddQueueService.push(new BlacklistAutoAddQueueService.QueueParamDTO(activityId));
+			}
 		}
 	}
 

@@ -709,9 +709,16 @@
             t_activity t
         WHERE
             t.create_fid = #{fid}
-            <if test="activityFlag != null and activityFlag != ''">
-                AND t.activity_flag = #{activityFlag}
-            </if>
+            <choose>
+                <when test="marketId != null">
+                    AND t.market_id = #{marketId}
+                </when>
+                <otherwise>
+                    <if test="activityFlag != null and activityFlag != ''">
+                        AND t.activity_flag = #{activityFlag}
+                    </if>
+                </otherwise>
+            </choose>
             AND t.`status` IN ( 2, 3, 4 )
         ORDER BY
             FIELD( t.`status`, 3, 2, 4 ),

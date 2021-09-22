@@ -267,7 +267,7 @@ public class WfwFormApprovalApiService {
                 if (activityFlagEnum == null) {
                     return;
                 }
-                marketId = marketQueryService.getMarketIdByTemplate(fid, activityFlagEnum.getValue());
+                marketId = marketQueryService.getMarketIdByFlag(fid, activityFlagEnum.getValue());
                 if (marketId == null) {
                     // 创建一个活动市场
                     Market market = marketHandleService.add(ActivityMarketCreateParamDTO.build(fid, null, activityFlagEnum.getValue()), activityFlagEnum, loginUser.buildOperateUserDTO());
@@ -295,7 +295,7 @@ public class WfwFormApprovalApiService {
         WfwAreaDTO wfwRegionalArchitecture = wfwAreaApiService.buildWfwRegionalArchitecture(fid);
         Integer activityId = activityHandleService.add(activity, signCreateParam, Lists.newArrayList(wfwRegionalArchitecture), loginUser);
         // 发布
-        activityHandleService.release(activityId, marketId, loginUser);
+        activityHandleService.release(activityId, loginUser);
     }
 
     /**获取需要创建的活动
