@@ -267,7 +267,7 @@ public class WfwFormApprovalApiService {
                 if (activityFlagEnum == null) {
                     return;
                 }
-                marketId = marketQueryService.getMarketIdByTemplate(fid, activityFlagEnum.getValue());
+                marketId = marketQueryService.getMarketIdByFlag(fid, activityFlagEnum.getValue());
                 if (marketId == null) {
                     // 创建一个活动市场
                     Market market = marketHandleService.add(ActivityMarketCreateParamDTO.build(fid, null, activityFlagEnum.getValue()), activityFlagEnum, loginUser.buildOperateUserDTO());

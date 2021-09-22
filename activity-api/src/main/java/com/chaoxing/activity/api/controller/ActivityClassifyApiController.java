@@ -67,7 +67,7 @@ public class ActivityClassifyApiController {
     public RestRespDTO listOrgClassify(Integer fid, Integer marketId, String flag) {
         List<Classify> classifies;
         if (marketId == null) {
-            marketId = marketQueryService.getMarketIdByTemplate(fid, flag);
+            marketId = marketQueryService.getMarketIdByFlag(fid, flag);
         }
         if (marketId != null) {
             classifies = classifyQueryService.listMarketClassifies(marketId);

@@ -217,7 +217,7 @@ public class IndexController {
 	private String handleData(HttpServletRequest request, Model model, String code, Integer fid, Integer pageId, Integer banner, String style, String flag, Integer marketId) {
 		// 根据fid和flag查询模版
 		if (marketId == null && StringUtils.isNotBlank(flag)) {
-			marketId = marketQueryService.getMarketIdByTemplate(fid, flag);
+			marketId = marketQueryService.getMarketIdByFlag(fid, flag);
 		}
 		List<Classify> classifies;
 		if (marketId == null) {
