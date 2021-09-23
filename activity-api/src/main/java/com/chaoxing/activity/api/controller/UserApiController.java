@@ -1,18 +1,25 @@
 package com.chaoxing.activity.api.controller;
 
+import com.chaoxing.activity.dto.OrgDTO;
 import com.chaoxing.activity.dto.RestRespDTO;
+import com.chaoxing.activity.dto.manager.PassportUserDTO;
 import com.chaoxing.activity.model.Activity;
 import com.chaoxing.activity.model.UserResult;
 import com.chaoxing.activity.service.activity.ActivityQueryService;
+import com.chaoxing.activity.service.manager.OrganizationalStructureApiService;
 import com.chaoxing.activity.service.manager.PassportApiService;
 import com.chaoxing.activity.service.manager.UcApiService;
 import com.chaoxing.activity.service.user.result.UserResultQueryService;
+import com.google.common.collect.Lists;
+import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.annotation.Resource;
+import java.util.List;
+import java.util.Optional;
 
 /**
  * @author wwb
@@ -34,6 +41,8 @@ public class UserApiController {
     private PassportApiService passportApiService;
     @Resource
     private UcApiService ucApiService;
+    @Resource
+    private OrganizationalStructureApiService organizationalStructureApiService;
 
     /**是否合格的描述
      * @Description 
@@ -77,6 +86,58 @@ public class UserApiController {
     @RequestMapping("clazz/teaching")
     public RestRespDTO teachingClazz(@RequestParam Integer uid, @RequestParam Integer fid) {
         return RestRespDTO.success(ucApiService.listTeacherTeachingClazz(uid, fid));
+    }
+
+    /**用户学院
+     * @Description 
+     * @author wwb
+     * @Date 2021-09-23 14:40:36
+     * @param uid
+     * @return com.chaoxing.activity.dto.RestRespDTO
+    */
+    @RequestMapping("{uid}/college")
+    public RestRespDTO userCollege(@PathVariable Integer uid) {
+        return RestRespDTO.success(getGroupName(uid, 0));
+    }
+    
+    /**用户专业
+     * @Description 
+     * @author wwb
+     * @Date 2021-09-23 14:40:44
+     * @param uid
+     * @return com.chaoxing.activity.dto.RestRespDTO
+    */
+    @RequestMapping("{uid}/professional")
+    public RestRespDTO userProfessional(@PathVariable Integer uid) {
+        return RestRespDTO.success(getGroupName(uid, 1));
+    }
+    
+    /**用户班级
+     * @Description 
+     * @author wwb
+     * @Date 2021-09-23 14:43:59
+     * @param uid
+     * @return com.chaoxing.activity.dto.RestRespDTO
+    */
+    @RequestMapping("{uid}/class")
+    public RestRespDTO userClass(@PathVariable Integer uid) {
+        return RestRespDTO.success(getGroupName(uid, 2));
+    }
+
+    private String getGroupName(Integer uid, Integer groupIndex) {
+        String groupName = "";
+        PassportUserDTO passportUserDto = passportApiService.getByUid(uid);
+        if (passportUserDto != null) {
+            List<OrgDTO> affiliations = passportUserDto.getAffiliations();
+            Integer fid = Optional.ofNullable(affiliations).orElse(Lists.newArrayList()).stream().findFirst().map(OrgDTO::getFid).orElse(null);
+            if (fid != null) {
+                List<String> groupNames = organizationalStructureApiService.listUserFirstGroupNames(uid, fid);
+                if (CollectionUtils.isNotEmpty(groupNames) && groupNames.size() > groupIndex) {
+                    groupName = groupNames.get(groupIndex);
+                }
+            }
+        }
+        return groupName;
     }
 
 }
