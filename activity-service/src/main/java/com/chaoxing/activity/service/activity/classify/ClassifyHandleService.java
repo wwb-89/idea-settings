@@ -265,13 +265,13 @@ public class ClassifyHandleService {
 	* @param classifyName
 	* @return java.lang.Integer
 	*/
-	public Integer getOrAddMarketClassify(Integer marketId, String classifyName) {
+	public Classify getOrAddMarketClassify(Integer marketId, String classifyName) {
 		Classify classify = classifyQueryService.getOrAddByName(classifyName);
 		MarketClassify marketClassify = classifyQueryService.getByClassifyIdAndMarketId(classify.getId(), marketId);
 		if (marketClassify == null) {
 			ApplicationContextHolder.getBean(ClassifyHandleService.class).addMarketClassify(MarketClassifyCreateParamDTO.builder().marketId(marketId).name(classifyName).build());
 		}
-		return classify.getId();
+		return classify;
 	}
 
 

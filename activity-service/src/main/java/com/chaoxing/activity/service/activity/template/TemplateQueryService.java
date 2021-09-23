@@ -4,8 +4,10 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.chaoxing.activity.mapper.TemplateComponentMapper;
 import com.chaoxing.activity.mapper.TemplateMapper;
 import com.chaoxing.activity.model.Activity;
+import com.chaoxing.activity.model.Component;
 import com.chaoxing.activity.model.Template;
 import com.chaoxing.activity.model.TemplateComponent;
+import com.chaoxing.activity.service.activity.component.ComponentQueryService;
 import com.google.common.collect.Lists;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
@@ -32,6 +34,8 @@ public class TemplateQueryService {
 	private TemplateMapper templateMapper;
 	@Resource
 	private TemplateComponentMapper templateComponentMapper;
+	@Resource
+	private ComponentQueryService componentQueryService;
 
 	/**根据id查询
 	 * @Description 
@@ -211,4 +215,25 @@ public class TemplateQueryService {
     	int count = templateComponentMapper.countTemplateSignUp(templateId);
     	return count > 0;
     }
+
+
+	/**根据code获取系统组件在模板下的模板组件id
+	 * @Description
+	 * @author huxiaolong
+	 * @Date 2021-09-23 15:16:33
+	 * @param templateId
+	 * @param code
+	 * @return java.lang.Integer
+	 */
+	public Integer getSysComponentTplComponentId(Integer templateId, String code) {
+		Component component = componentQueryService.getSystemComponentByCode(code);
+		if (component == null) {
+			return null;
+		}
+		TemplateComponent templateComponent = templateComponentMapper.selectList(new LambdaQueryWrapper<TemplateComponent>()
+				.eq(TemplateComponent::getComponentId, component.getId())
+				.eq(TemplateComponent::getTemplateId, templateId)).stream().findFirst().orElse(null);
+
+		return Optional.ofNullable(templateComponent).map(TemplateComponent::getId).orElse(null);
+	}
 }

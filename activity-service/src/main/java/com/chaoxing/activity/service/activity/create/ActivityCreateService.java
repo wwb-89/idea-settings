@@ -9,6 +9,7 @@ import com.chaoxing.activity.model.Activity;
 import com.chaoxing.activity.model.Template;
 import com.chaoxing.activity.service.activity.ActivityHandleService;
 import com.chaoxing.activity.service.activity.market.MarketHandleService;
+import com.chaoxing.activity.service.activity.template.TemplateQueryService;
 import com.chaoxing.activity.service.manager.ActivityReleaseApiService;
 import com.chaoxing.activity.service.manager.PassportApiService;
 import com.chaoxing.activity.service.manager.wfw.WfwAreaApiService;
@@ -41,6 +42,8 @@ public class ActivityCreateService {
     private ActivityHandleService activityHandleService;
     @Resource
     private WfwAreaApiService wfwAreaApiService;
+    @Resource
+    private TemplateQueryService templateQueryService;
 
     /**活动发布平台的活动转换为活动引擎的活动
      * @Description
@@ -62,8 +65,9 @@ public class ActivityCreateService {
         Integer fid = activityCreateFromActivityReleaseParam.getOriginCreateFid();
         String orgName = passportApiService.getOrgName(fid);
         LoginUserDTO loginUserDto = LoginUserDTO.buildDefault(uid, userName, fid, orgName);
-        Template template = marketHandleService.getOrCreateOrgMarket(fid, Activity.ActivityFlagEnum.fromValue(flag), loginUserDto);
-        List<ActivityCreateParamDTO> activityCreateParamDtos = activityCreateFromActivityReleaseParam.buildActivityCreateParamDtos(template.getMarketId(), template.getId());
+        Integer marketId = marketHandleService.getOrCreateOrgMarket(fid, Activity.ActivityFlagEnum.fromValue(flag), loginUserDto);
+        Template template = templateQueryService.getMarketFirstTemplate(marketId);
+        List<ActivityCreateParamDTO> activityCreateParamDtos = activityCreateFromActivityReleaseParam.buildActivityCreateParamDtos(marketId, template.getId());
         List<WfwAreaDTO> wfwAreaDtos = wfwAreaApiService.listByFid(fid);
         for (ActivityCreateParamDTO activityCreateParamDto : activityCreateParamDtos) {
             SignCreateParamDTO signCreateParamDto = SignCreateParamDTO.buildDefault();

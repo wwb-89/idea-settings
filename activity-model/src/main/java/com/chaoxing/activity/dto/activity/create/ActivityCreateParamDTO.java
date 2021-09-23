@@ -1,10 +1,15 @@
 package com.chaoxing.activity.dto.activity.create;
 
+import com.chaoxing.activity.dto.AddressDTO;
 import com.chaoxing.activity.dto.LoginUserDTO;
+import com.chaoxing.activity.dto.TimeScopeDTO;
 import com.chaoxing.activity.dto.activity.ActivityComponentValueDTO;
+import com.chaoxing.activity.dto.manager.form.FormDataDTO;
 import com.chaoxing.activity.model.Activity;
 import com.chaoxing.activity.model.ActivityDetail;
+import com.chaoxing.activity.model.Classify;
 import com.chaoxing.activity.util.DateUtils;
+import com.chaoxing.activity.util.FormUtils;
 import com.chaoxing.activity.util.constant.CommonConstant;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -16,6 +21,7 @@ import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 
 /**活动创建参数对象
@@ -288,6 +294,108 @@ public class ActivityCreateParamDTO {
 		this.openWork = Optional.ofNullable(openWork).orElse(false);
 		this.openReading = Optional.ofNullable(openReading).orElse(false);
 		this.openGroup = Optional.ofNullable(openGroup).orElse(false);
+	}
+
+	/**从表单数据中获取需要创建的活动
+	 * @Description
+	 * @author wwb
+	 * @Date 2021-05-11 16:14:37
+	 * @param formData
+	 * @return com.chaoxing.activity.dto.activity.ActivityCreateParamDTO
+	 */
+	public static ActivityCreateParamDTO buildFromFormData(FormDataDTO formData, Integer classifyId, String orgName) {
+		ActivityCreateParamDTO activityCreateParamDto = ActivityCreateParamDTO.buildDefault();
+		Integer fid = formData.getFid();
+		Integer formUserId = formData.getFormUserId();
+		// 活动名称
+		String activityName = FormUtils.getValue(formData, "activity_name");
+		activityCreateParamDto.setName(activityName);
+		// 封面
+		String coverCloudId = FormUtils.getCloudId(formData, "cover");
+		if (StringUtils.isNotBlank(coverCloudId)) {
+			activityCreateParamDto.setCoverCloudId(coverCloudId);
+		}
+		// 开始时间、结束时间
+		TimeScopeDTO activityTimeScope = FormUtils.getTimeScope(formData, "activity_time");
+		activityTimeScope = Optional.ofNullable(activityTimeScope).orElse(FormUtils.getTimeScope(formData, "activity_time_scope"));
+		if (activityTimeScope != null) {
+			activityCreateParamDto.setStartTimeStamp(DateUtils.date2Timestamp(activityTimeScope.getStartTime()));
+			activityCreateParamDto.setEndTimeStamp(DateUtils.date2Timestamp(activityTimeScope.getEndTime()));
+		}
+		// 活动分类
+		activityCreateParamDto.setActivityClassifyId(classifyId);
+		// 积分
+		String integralStr = FormUtils.getValue(formData, "integral_value");
+		if (StringUtils.isNotBlank(integralStr)) {
+			activityCreateParamDto.setIntegral(BigDecimal.valueOf(Double.parseDouble(integralStr)));
+		}
+		// 主办方
+		String organisers = FormUtils.getValue(formData, "organisers");
+		organisers = StringUtils.isBlank(organisers) ? orgName : organisers;
+		if (StringUtils.isNotBlank(organisers)) {
+			activityCreateParamDto.setOrganisers(organisers);
+		}
+		// 活动类型
+		String activityType = FormUtils.getValue(formData, "activity_type");
+		if (StringUtils.isNotBlank(activityType)) {
+			Activity.ActivityTypeEnum activityTypeEnum = Activity.ActivityTypeEnum.fromName(activityType);
+			if (activityTypeEnum != null) {
+				activityCreateParamDto.setActivityType(activityTypeEnum.getValue());
+				AddressDTO activityAddress = FormUtils.getAddress(formData, "activity_address");
+				String activityDetailAddress = FormUtils.getValue(formData, "activity_detail_address");
+				activityDetailAddress = Optional.ofNullable(activityDetailAddress).orElse("");
+				if (activityAddress != null) {
+					activityCreateParamDto.setAddress(activityAddress.getAddress());
+					activityCreateParamDto.setLongitude(activityAddress.getLng());
+					activityCreateParamDto.setDimension(activityAddress.getLat());
+				}
+				activityCreateParamDto.setDetailAddress(activityDetailAddress);
+			}
+		} else {
+			// 表单创建活动地址获取
+			String activityAddress = FormUtils.getValue(formData, "activity_address");
+			if (StringUtils.isNotBlank(activityAddress)) {
+				activityCreateParamDto.setAddress(activityAddress);
+				activityCreateParamDto.setActivityType(Activity.ActivityTypeEnum.OFFLINE.getValue());
+			} else {
+				activityCreateParamDto.setActivityType(Activity.ActivityTypeEnum.ONLINE.getValue());
+			}
+		}
+		// 简介
+		String introduction = FormUtils.getValue(formData, "introduction");
+		introduction = Optional.ofNullable(introduction).orElse("");
+		activityCreateParamDto.setIntroduction(introduction);
+		// 是否开启评价
+		String openRating = FormUtils.getValue(formData, "is_open_rating");
+		activityCreateParamDto.setOpenRating(Objects.equals("是", openRating));
+		// 是否开启作品征集
+		String openWork = FormUtils.getValue(formData, "is_open_work");
+		activityCreateParamDto.setOpenWork(Objects.equals("是", openWork));
+		// 学分
+		String credit = FormUtils.getValue(formData, "credit");
+		if (StringUtils.isNotBlank(credit)) {
+			activityCreateParamDto.setCredit(new BigDecimal(credit));
+		}
+		// 学时
+		String period = FormUtils.getValue(formData, "period");
+		if (StringUtils.isNotBlank(period)) {
+			activityCreateParamDto.setPeriod(new BigDecimal(period));
+		}
+		// 最大参与时长
+		String timeLengthUpperLimitStr = FormUtils.getValue(formData, "time_length_upper_limit");
+		if (StringUtils.isNotBlank(timeLengthUpperLimitStr)) {
+			BigDecimal timeLengthUpperLimit = BigDecimal.valueOf(Double.parseDouble(timeLengthUpperLimitStr));
+			activityCreateParamDto.setTimeLengthUpperLimit(timeLengthUpperLimit);
+		}
+		activityCreateParamDto.buildLoginUser(formData.getUid(), formData.getUname(), fid, orgName);
+		return activityCreateParamDto;
+	}
+
+	public void setAdditionalAttrs(Integer webTemplateId, Integer marketId, Integer templateId, String flag) {
+		this.webTemplateId = webTemplateId;
+		this.marketId = marketId;
+		this.templateId = templateId;
+		this.activityFlag = flag;
 	}
 
 }

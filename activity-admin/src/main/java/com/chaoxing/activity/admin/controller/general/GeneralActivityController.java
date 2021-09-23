@@ -2,7 +2,6 @@ package com.chaoxing.activity.admin.controller.general;
 
 import com.chaoxing.activity.admin.util.LoginUtils;
 import com.chaoxing.activity.model.Activity;
-import com.chaoxing.activity.model.Template;
 import com.chaoxing.activity.service.activity.market.MarketHandleService;
 import com.chaoxing.activity.util.exception.BusinessException;
 import lombok.extern.slf4j.Slf4j;
@@ -62,8 +61,7 @@ public class GeneralActivityController {
 			if (activityFlagEnum == null) {
 				throw new BusinessException("未知的flag");
 			}
-			Template template = marketHandleService.getOrCreateOrgMarket(realFid, activityFlagEnum, LoginUtils.getLoginUser(request));
-			marketId = template.getMarketId();
+			marketId = marketHandleService.getOrCreateOrgMarket(realFid, activityFlagEnum, LoginUtils.getLoginUser(request));
 			if (marketId != null && !direct) {
 				return "redirect:/market/" + marketId + "?pageMode=" + pageMode;
 			}

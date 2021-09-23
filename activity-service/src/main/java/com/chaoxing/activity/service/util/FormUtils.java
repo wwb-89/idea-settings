@@ -2,6 +2,7 @@ package com.chaoxing.activity.service.util;
 
 import com.alibaba.fastjson.JSONObject;
 import com.chaoxing.activity.dto.AddressDTO;
+import com.chaoxing.activity.dto.DepartmentDTO;
 import com.chaoxing.activity.dto.TimeScopeDTO;
 import com.chaoxing.activity.dto.manager.form.FormDataDTO;
 import com.chaoxing.activity.dto.manager.form.FormDataItemDTO;
@@ -33,6 +34,10 @@ public class FormUtils {
 	public static final String PUID_KEY = "puid";
 	/** uname的key */
 	public static final String UNAME_KEY = "uname";
+	/** 部门id的key */
+	public static final String DEPARTMENT_ID_KEY = "departmentId";
+	/** 部门名称的key */
+	public static final String DEPARTMENT_NAME_KEY = "departmentName";
 
 	private static final List<DateTimeFormatter> FORM_DATE_TIME_FORMATTERS = Lists.newArrayList(
 			// 时:分
@@ -286,5 +291,30 @@ public class FormUtils {
 				.endTime(endTime)
 				.build();
 	}
+
+
+
+	/**获取部门信息
+	 * @Description
+	 * @author wwb
+	 * @Date 2021-08-31 14:25:47
+	 * @param formDataDto
+	 * @param alias
+	 * @return com.chaoxing.secondclassroom.dto.manager.DepartmentDTO
+	 */
+	public static DepartmentDTO getDepartment(FormDataDTO formDataDto, String alias) {
+		JSONObject jsonValue = getJsonValue(formDataDto, alias);
+		if (jsonValue != null) {
+			String departmentIdStr = jsonValue.getString(DEPARTMENT_ID_KEY);
+			if (StringUtils.isNotBlank(departmentIdStr)) {
+				return DepartmentDTO.builder()
+						.id(Integer.parseInt(departmentIdStr))
+						.name(jsonValue.getString(DEPARTMENT_NAME_KEY))
+						.build();
+			}
+		}
+		return null;
+	}
+
 
 }

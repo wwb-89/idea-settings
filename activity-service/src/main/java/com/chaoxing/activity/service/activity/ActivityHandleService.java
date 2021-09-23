@@ -860,9 +860,10 @@ public class ActivityHandleService {
 	public Activity newSharedActivity(ActivityCreateFromPreachParamDTO activityCreateDto, LoginUserDTO loginUser) {
 		Integer createFid = activityCreateDto.getFid();
 		String flag = activityCreateDto.getFlag();
-		Template template = marketHandleService.getOrCreateOrgMarket(createFid, Activity.ActivityFlagEnum.fromValue(flag), loginUser);
+		Integer marketId = marketHandleService.getOrCreateOrgMarket(createFid, Activity.ActivityFlagEnum.fromValue(flag), loginUser);
+		Template template = templateQueryService.getMarketFirstTemplate(marketId);
 		ActivityCreateParamDTO activityCreateParam = activityCreateDto.getActivityInfo();
-		activityCreateParam.setMarketId(template.getMarketId());
+		activityCreateParam.setMarketId(marketId);
 		activityCreateParam.setTemplateId(template.getId());
 		activityCreateParam.setActivityFlag(flag);
 		String activityName = activityCreateParam.getName();
@@ -967,7 +968,8 @@ public class ActivityHandleService {
 		originActivity.setMarketId(marketId);
 		// 处理克隆分类
 		if (StringUtils.isNotBlank(originActivity.getActivityClassifyName())) {
-			originActivity.setActivityClassifyId(classifyHandleService.getOrAddMarketClassify(marketId, originActivity.getActivityClassifyName()));
+			Classify classify = classifyHandleService.getOrAddMarketClassify(marketId, originActivity.getActivityClassifyName());
+			originActivity.setActivityClassifyId(classify.getId());
 		}
 		// 判断是否开启作品征集
 		if (originActivity.getOpenWork()) {
