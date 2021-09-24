@@ -90,7 +90,7 @@ public class SignUpFillInfoType {
         /** 通用 */
         NORMAL("通用", "normal", "deptManager_hdbm", "P!L%%Eq5&fGsfQ7t*A"),
         DUAL_SELECT_COMPANY("双选会企业报名", "dual_select_company", "deptManager_hdsxh", "XVI0uDX43ry%wEnBIW"),
-        WFW_FORM_1("万能表单1", "dual_select_company", "deptManager_hdbm_plus", "BcXW9*th2gNFocpUy8");
+        WFW_FORM_1("万能表单1", "wfw_form_1", "deptManager_hdbm_plus", "BcXW9*th2gNFocpUy8");
 
         private final String name;
         private final String value;
