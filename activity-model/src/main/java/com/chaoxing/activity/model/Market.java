@@ -87,7 +87,7 @@ public class Market {
     }
 
     public String buildMarketmanageUrl() {
-        return "http://manage.hd.chaoxing.com/market/" + getId();
+        return "https://manage.hd.chaoxing.com/market/" + getId();
     }
 
     public static Market cloneMarket(Market originMarket, Integer fid) {
