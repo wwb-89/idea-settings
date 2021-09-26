@@ -734,6 +734,23 @@ public class ActivityQueryService {
 		return activityDetails.stream().findFirst().orElse(null);
 	}
 
+	/**根据活动ids查询活动详情
+	* @Description
+	* @author huxiaolong
+	* @Date 2021-09-26 17:15:27
+	* @param activityIds
+	* @return com.chaoxing.activity.model.ActivityDetail
+	*/
+	public List<ActivityDetail> listDetailByActivityIds(List<Integer> activityIds) {
+		if (CollectionUtils.isEmpty(activityIds)) {
+			return Lists.newArrayList();
+		}
+		return activityDetailMapper.selectList(new QueryWrapper<ActivityDetail>()
+				.lambda()
+				.in(ActivityDetail::getActivityId, activityIds)
+		);
+	}
+
 	/**根据作品征集id查询活动
 	 * @Description 
 	 * @author wwb

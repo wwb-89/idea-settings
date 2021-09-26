@@ -5,8 +5,6 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.chaoxing.activity.dto.engine.TemplateComponentDTO;
 import com.chaoxing.activity.mapper.ComponentFieldMapper;
-import com.chaoxing.activity.mapper.SignUpConditionMapper;
-import com.chaoxing.activity.mapper.SignUpFillInfoTypeMapper;
 import com.chaoxing.activity.mapper.TemplateComponentMapper;
 import com.chaoxing.activity.model.*;
 import com.chaoxing.activity.service.activity.component.ComponentQueryService;
@@ -125,18 +123,6 @@ public class TemplateComponentService {
         return Optional.ofNullable(templateComponent).map(TemplateComponent::getId).orElse(null);
     }
 
-    public Map<String, String> codeTOName(Integer templateId) {
-        Map<String, String> defaultSystemCodeNameMap = componentQueryService.getSystemComponentCodeNameRelation();
-        Map<String, String> customCustomNameToValue = Maps.newHashMap();
-        List<TemplateComponentDTO> templateComponents = templateComponentMapper.listTemplateComponentInfo(templateId);
-        templateComponents.forEach(v -> {
-            if (StringUtils.isNotBlank(v.getCode())) {
-                defaultSystemCodeNameMap.put(v.getCode(), v.getName());
-            }
-        });
-        return defaultSystemCodeNameMap;
-    }
-
     /**根据模板Id查询模板关联组件详细数据(含code和模板对应的name)
      * @Description
      * @author huxiaolong
@@ -152,9 +138,9 @@ public class TemplateComponentService {
 
     private void packageTemplateComponents(List<TemplateComponentDTO> tplCompoenents) {
         // 报名条件templateComponentIds
-        List<Integer> sucTplComponentIds = org.apache.commons.compress.utils.Lists.newArrayList();
+        List<Integer> sucTplComponentIds = Lists.newArrayList();
         // 报名信息填写类型templateComponentIds
-        List<Integer> sufiTplComponentIds = org.apache.commons.compress.utils.Lists.newArrayList();
+        List<Integer> sufiTplComponentIds = Lists.newArrayList();
         tplCompoenents.forEach(v -> {
             if (v.getPid() != 0 && Objects.equals(v.getCode(), Component.SystemComponentCodeEnum.SIGN_UP_CONDITION.getValue())) {
                 sucTplComponentIds.add(v.getId());
@@ -247,7 +233,7 @@ public class TemplateComponentService {
         if (CollectionUtils.isNotEmpty(chooseComponentIds)) {
             List<ComponentField> componentFields = componentFieldMapper.selectList(new QueryWrapper<ComponentField>().lambda().in(ComponentField::getComponentId, chooseComponentIds));
             componentFields.forEach(v -> {
-                componentFieldMap.computeIfAbsent(v.getComponentId(), k -> org.apache.commons.compress.utils.Lists.newArrayList());
+                componentFieldMap.computeIfAbsent(v.getComponentId(), k -> Lists.newArrayList());
                 componentFieldMap.get(v.getComponentId()).add(v);
             });
         }
@@ -262,6 +248,20 @@ public class TemplateComponentService {
                 v.setFieldValues(wfwFormApiService.listFormFieldValue(fid, Integer.parseInt(v.getOriginIdentify()), v.getFieldFlag()));
             }
         });
+    }
+
+    /**根据tplComponentIds查询模板组件
+    * @Description
+    * @author huxiaolong
+    * @Date 2021-09-26 15:30:06
+    * @param tplComponentIds
+    * @return java.util.List<com.chaoxing.activity.model.TemplateComponent>
+    */
+    public List<TemplateComponent> listByTplComponentIds(List<Integer> tplComponentIds) {
+        if (CollectionUtils.isEmpty(tplComponentIds)) {
+            return Lists.newArrayList();
+        }
+        return templateComponentMapper.selectList(new LambdaQueryWrapper<TemplateComponent>().in(TemplateComponent::getId, tplComponentIds));
     }
 
     /**新增模板组件关联
