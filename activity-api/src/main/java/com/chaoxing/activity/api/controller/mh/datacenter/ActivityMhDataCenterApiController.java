@@ -73,7 +73,7 @@ public class ActivityMhDataCenterApiController {
     private PassportApiService passportApiService;
 
 
-    /**
+    /**获取机构下市场的门户数据源接口地址
     * @Description
     * @author huxiaolong
     * @Date 2021-09-16 11:40:16
@@ -96,14 +96,19 @@ public class ActivityMhDataCenterApiController {
         return RestRespDTO.success(result);
     }
 
+    /**查询活动市场marketId的活动数据
+    * @Description 
+    * @author huxiaolong
+    * @Date 2021-09-26 17:57:11
+    * @param data
+* @param marketId
+    * @return com.chaoxing.activity.dto.RestRespDTO
+    */
     @RequestMapping("market/{marketId}")
     public RestRespDTO index(@RequestBody String data, @PathVariable Integer marketId) {
-        return RestRespDTO.success(queryActivityData(data, marketId));
-    }
-
-    private JSONObject queryActivityData(String data, Integer marketId) {
         JSONObject params = JSON.parseObject(data);
         Integer wfwfid = params.getInteger("wfwfid");
+        String sw = params.getString("sw");
 
         Optional.ofNullable(wfwfid).orElseThrow(() -> new BusinessException("wfwfid不能为空"));
         Integer pageNum = params.getInteger("pageNum");
@@ -131,6 +136,7 @@ public class ActivityMhDataCenterApiController {
                 .statusList(statusList)
                 .marketId(marketId)
                 .flag(flag)
+                .sw(sw)
                 .activityClassifyId(activityClassifyId)
                 .build();
         List<Integer> fids = wfwAreaApiService.listSubFid(wfwfid);
@@ -144,9 +150,16 @@ public class ActivityMhDataCenterApiController {
         List<Activity> records = page.getRecords();
         JSONArray activityJsonArray = packageActivities(records);
         jsonObject.put("results", activityJsonArray);
-        return jsonObject;
+        return RestRespDTO.success(jsonObject);
     }
 
+    /**封装活动数据为门户标准接收格式
+    * @Description 
+    * @author huxiaolong
+    * @Date 2021-09-26 17:57:46
+    * @param activities
+    * @return com.alibaba.fastjson.JSONArray
+    */
     private JSONArray packageActivities(List<Activity> activities) {
         JSONArray activityJsonArray = new JSONArray();
         if (CollectionUtils.isEmpty(activities)) {
@@ -228,16 +241,16 @@ public class ActivityMhDataCenterApiController {
         return activityJsonArray;
     }
 
+    /**查询市场下分类的列表
+    * @Description 
+    * @author huxiaolong
+    * @Date 2021-09-26 17:58:09
+    * @param data
+    * @param marketId
+    * @return com.chaoxing.activity.dto.RestRespDTO
+    */
     @RequestMapping("market/{marketId}/classifies")
     public RestRespDTO listClassify(@RequestBody String data, @PathVariable Integer marketId) {
-        return RestRespDTO.success(queryActivityClassifyData(data, marketId));
-    }
-    @RequestMapping("classifies")
-    public RestRespDTO listOrgClassify(@RequestBody String data) {
-        return RestRespDTO.success(queryActivityClassifyData(data, null));
-    }
-
-    private JSONObject queryActivityClassifyData(String data, Integer marketId) {
         List<Classify> classifies;
         if (marketId != null) {
             classifies = classifyQueryService.listMarketClassifies(marketId);
@@ -260,9 +273,16 @@ public class ActivityMhDataCenterApiController {
                 activityClassifyJsonArray.add(item);
             }
         }
-        return jsonObject;
+        return RestRespDTO.success(jsonObject);
     }
 
+    /**我的活动(目前只查询报名的活动数据)列表
+    * @Description 
+    * @author huxiaolong
+    * @Date 2021-09-26 17:58:31
+    * @param data
+    * @return com.chaoxing.activity.dto.RestRespDTO
+    */
     @RequestMapping("my")
     public RestRespDTO listMyActivities(@RequestBody String data) {
         JSONObject params = JSON.parseObject(data);
@@ -295,6 +315,13 @@ public class ActivityMhDataCenterApiController {
         return RestRespDTO.success(jsonObject);
     }
 
+    /**从signStat报名时间获取报名的进行状态
+    * @Description 
+    * @author huxiaolong
+    * @Date 2021-09-26 17:59:31
+    * @param signStat
+    * @return java.lang.String
+    */
     private String getSignUpStatus(SignStatDTO signStat) {
         LocalDateTime now = LocalDateTime.now();
         LocalDateTime startTime = signStat.getSignUpStartTime();
