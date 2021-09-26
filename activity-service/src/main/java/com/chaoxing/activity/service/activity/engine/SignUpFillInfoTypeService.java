@@ -7,6 +7,7 @@ import com.google.common.collect.Lists;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
 import java.util.List;
@@ -54,7 +55,7 @@ public class SignUpFillInfoTypeService {
 			signUpFillInfoTypeMapper.batchAdd(signUpFillInfoTypes);
 		}
 	}
-	
+
 	/**根据templateComponentId查询对应的报名信息填写类型
 	* @Description 
 	* @author huxiaolong
@@ -67,4 +68,13 @@ public class SignUpFillInfoTypeService {
 				.eq(SignUpFillInfoType::getTemplateComponentId, templateComponentId))
 				.stream().findFirst().orElse(null);
     }
+
+
+	public void add(SignUpFillInfoType signUpFillInfoType) {
+		signUpFillInfoTypeMapper.insert(signUpFillInfoType);
+	}
+
+	public void updateById(SignUpFillInfoType signUpFillInfoType) {
+		signUpFillInfoTypeMapper.updateById(signUpFillInfoType);
+	}
 }

@@ -229,7 +229,7 @@ public class MarketHandleService {
 		Integer marketId = marketQueryService.getMarketIdByFlag(fid, activityFlagEnum.getValue());
 		if (marketId == null) {
 			// 创建一个活动市场
-			Market market = add(ActivityMarketCreateParamDTO.build(fid, null, activityFlagEnum.getValue()), activityFlagEnum, loginUser.buildOperateUserDTO());
+			Market market = ApplicationContextHolder.getBean(MarketHandleService.class).add(ActivityMarketCreateParamDTO.build(fid, null, activityFlagEnum.getValue()), activityFlagEnum, loginUser.buildOperateUserDTO());
 			marketId = market.getId();
 		}
 		return marketId;

@@ -8,7 +8,7 @@ import com.chaoxing.activity.mapper.SignUpConditionMapper;
 import com.chaoxing.activity.model.*;
 import com.chaoxing.activity.service.activity.ActivityQueryService;
 import com.chaoxing.activity.service.activity.market.MarketQueryService;
-import com.chaoxing.activity.service.activity.template.TemplateQueryService;
+import com.chaoxing.activity.service.activity.template.TemplateComponentService;
 import com.chaoxing.activity.service.manager.module.SignApiService;
 import com.chaoxing.activity.service.manager.wfw.WfwFormApiService;
 import com.chaoxing.activity.util.exception.BusinessException;
@@ -39,11 +39,10 @@ public class SignUpConditionService {
 	private SignUpConditionMapper signUpConditionMapper;
 	@Resource
 	private SignUpConditionEnableMapper signUpConditionEnableMapper;
-
 	@Resource
 	private WfwFormApiService wfwFormApiService;
 	@Resource
-	private TemplateQueryService templateQueryService;
+	private TemplateComponentService templateComponentService;
 	@Resource
 	private ActivityQueryService activityQueryService;
 	@Resource
@@ -60,6 +59,10 @@ public class SignUpConditionService {
 	*/
 	public void add(SignUpCondition signUpCondition) {
 		signUpConditionMapper.insert(signUpCondition);
+	}
+
+	public void updateById(SignUpCondition signUpCondition) {
+		signUpConditionMapper.updateById(signUpCondition);
 	}
 
 	/**批量新增报名条件
@@ -113,7 +116,7 @@ public class SignUpConditionService {
 	 * @return java.util.List<com.chaoxing.activity.model.SignUpCondition>
 	*/
 	public List<SignUpCondition> listBySignUp(Integer signId, Integer templateComponentId) {
-		List<TemplateComponent> subTemplateComponents = templateQueryService.listSubTemplateComponent(templateComponentId);
+		List<TemplateComponent> subTemplateComponents = templateComponentService.listSubTemplateComponent(templateComponentId);
 		List<Integer> subTemplateComponentIds = Optional.ofNullable(subTemplateComponents).orElse(Lists.newArrayList()).stream().map(TemplateComponent::getId).collect(Collectors.toList());
 		List<SignUpCondition> signUpConditions;
 		if (CollectionUtils.isNotEmpty(subTemplateComponentIds)) {

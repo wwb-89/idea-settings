@@ -10,10 +10,9 @@ import com.chaoxing.activity.model.*;
 import com.chaoxing.activity.service.activity.ActivityQueryService;
 import com.chaoxing.activity.service.activity.ActivityValidationService;
 import com.chaoxing.activity.service.activity.classify.ClassifyQueryService;
-import com.chaoxing.activity.service.activity.engine.ActivityEngineQueryService;
 import com.chaoxing.activity.service.activity.menu.ActivityMenuService;
 import com.chaoxing.activity.service.activity.scope.ActivityScopeQueryService;
-import com.chaoxing.activity.service.activity.template.TemplateQueryService;
+import com.chaoxing.activity.service.activity.template.TemplateComponentService;
 import com.chaoxing.activity.service.manager.WfwGroupApiService;
 import com.chaoxing.activity.service.manager.module.SignApiService;
 import com.chaoxing.activity.service.manager.wfw.WfwContactApiService;
@@ -46,7 +45,7 @@ public class ActivitySettingController {
     @Resource
     private ActivityQueryService activityQueryService;
     @Resource
-    private ActivityEngineQueryService activityEngineQueryService;
+    private TemplateComponentService templateComponentService;
     @Resource
     private ClassifyQueryService classifyQueryService;
     @Resource
@@ -59,8 +58,6 @@ public class ActivitySettingController {
     private WfwContactApiService wfwContactApiService;
     @Resource
     private ActivityMenuService activityMenuService;
-    @Resource
-    private TemplateQueryService templateQueryService;
 
     @RequestMapping("index")
     public String settingIndex(Model model, @PathVariable Integer activityId) {
@@ -69,7 +66,7 @@ public class ActivitySettingController {
         Activity activity = activityValidationService.activityExist(activityId);
 
         model.addAttribute("activityId", activityId);
-        model.addAttribute("openSignUp", templateQueryService.exitSignUpComponent(activity.getTemplateId()));
+        model.addAttribute("openSignUp", templateComponentService.exitSignUpComponent(activity.getTemplateId()));
         return "pc/activity/setting/index";
     }
 
@@ -89,7 +86,7 @@ public class ActivitySettingController {
         ActivityCreateParamDTO createParamDTO = activityQueryService.packageActivityCreateParamByActivity(activity);
         model.addAttribute("signId", activity.getSignId());
         model.addAttribute("activity", createParamDTO);
-        model.addAttribute("templateComponents", activityEngineQueryService.listBasicInfoTemplateComponents(activity.getTemplateId(), activity.getCreateFid()));
+        model.addAttribute("templateComponents", templateComponentService.listBasicInfoTemplateComponents(activity.getTemplateId(), activity.getCreateFid()));
         // 活动类型列表
         model.addAttribute("activityTypes", activityQueryService.listActivityType());
         // 活动分类列表范围
@@ -122,7 +119,7 @@ public class ActivitySettingController {
         Activity activity = activityValidationService.manageAble(activityId, loginUser.getUid());
         ActivityCreateParamDTO createParamDTO = activityQueryService.packageActivityCreateParamByActivity(activity);
         model.addAttribute("activity", createParamDTO);
-        model.addAttribute("templateComponents", activityEngineQueryService.listBasicInfoTemplateComponents(activity.getTemplateId(), activity.getCreateFid()));
+        model.addAttribute("templateComponents", templateComponentService.listBasicInfoTemplateComponents(activity.getTemplateId(), activity.getCreateFid()));
         List<String> participateScopes = activityScopeQueryService.listByActivityId(activityId).stream().map(WfwAreaDTO::getName).collect(Collectors.toList());
         model.addAttribute("participateScopes", participateScopes);
         return "pc/activity/setting/basic-info-view";
@@ -149,7 +146,7 @@ public class ActivitySettingController {
             sign = signApiService.getCreateById(signId);
         }
         model.addAttribute("activity", createParamDTO);
-        model.addAttribute("templateComponents", activityEngineQueryService.listSignUpTemplateComponents(activity.getTemplateId()));
+        model.addAttribute("templateComponents", templateComponentService.listSignUpTemplateComponents(activity.getTemplateId()));
         model.addAttribute("sign", sign);
         // 报名范围
         // 微服务组织架构

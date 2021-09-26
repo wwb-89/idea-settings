@@ -23,8 +23,8 @@ import com.chaoxing.activity.service.activity.classify.ClassifyQueryService;
 import com.chaoxing.activity.service.activity.component.ComponentQueryService;
 import com.chaoxing.activity.service.activity.engine.ActivityComponentValueService;
 import com.chaoxing.activity.service.activity.manager.ActivityManagerQueryService;
-import com.chaoxing.activity.service.activity.market.MarketHandleService;
 import com.chaoxing.activity.service.activity.market.MarketQueryService;
+import com.chaoxing.activity.service.activity.template.TemplateComponentService;
 import com.chaoxing.activity.service.activity.template.TemplateQueryService;
 import com.chaoxing.activity.service.manager.module.SignApiService;
 import com.chaoxing.activity.service.manager.wfw.WfwAreaApiService;
@@ -78,6 +78,8 @@ public class ActivityQueryService {
 	private ClassifyQueryService classifyQueryService;
 	@Resource
 	private TemplateQueryService templateQueryService;
+	@Resource
+	private TemplateComponentService templateComponentQueryService;
 	@Resource
 	private TableFieldDetailMapper tableFieldDetailMapper;
 
@@ -825,7 +827,7 @@ public class ActivityQueryService {
 			return fieldCodeNameRelation;
 		}
 		// 查询模版关联的组件
-		List<TemplateComponent> templateComponents = templateQueryService.listTemplateComponentByTemplateId(templateId);
+		List<TemplateComponent> templateComponents = templateComponentQueryService.listTemplateComponentByTemplateId(templateId);
 		Map<Integer, String> componentIdNameRelation = templateComponents.stream().collect(Collectors.toMap(TemplateComponent::getComponentId, TemplateComponent::getName, (v1, v2) -> v2));
 		// 没有关联的组件使用系统默认组件的名称来填充
 		List<Integer> componentIds = Optional.ofNullable(templateComponents).orElse(Lists.newArrayList()).stream().map(TemplateComponent::getComponentId).collect(Collectors.toList());
