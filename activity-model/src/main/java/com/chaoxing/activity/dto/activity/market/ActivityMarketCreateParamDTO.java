@@ -1,5 +1,6 @@
 package com.chaoxing.activity.dto.activity.market;
 
+import com.chaoxing.activity.model.Activity;
 import com.chaoxing.activity.model.Market;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -44,12 +45,14 @@ public class ActivityMarketCreateParamDTO {
 				.build();
 	}
 
-	public static ActivityMarketCreateParamDTO build(Integer fid, Integer classifyId, String activityFlag) {
+	public static ActivityMarketCreateParamDTO build(Integer fid, Integer classifyId, String flag) {
+		Activity.ActivityFlagEnum activityFlagEnum = Activity.ActivityFlagEnum.fromValue(flag);
 		return ActivityMarketCreateParamDTO.builder()
+				.name(activityFlagEnum.getName())
 				.iconCloudId(DEFAULT_ICON_CLOUD_ID)
 				.fid(fid)
 				.classifyId(classifyId)
-				.activityFlag(activityFlag)
+				.activityFlag(flag)
 				.build();
 	}
 

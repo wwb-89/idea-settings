@@ -9,7 +9,6 @@ import com.chaoxing.activity.dto.manager.wfw.WfwAppParamDTO;
 import com.chaoxing.activity.mapper.MarketMapper;
 import com.chaoxing.activity.model.Activity;
 import com.chaoxing.activity.model.Market;
-import com.chaoxing.activity.model.Template;
 import com.chaoxing.activity.service.activity.template.TemplateHandleService;
 import com.chaoxing.activity.service.activity.template.TemplateQueryService;
 import com.chaoxing.activity.service.manager.wfw.WfwAppApiService;
@@ -230,7 +229,7 @@ public class MarketHandleService {
 		Integer marketId = marketQueryService.getMarketIdByFlag(fid, activityFlagEnum.getValue());
 		if (marketId == null) {
 			// 创建一个活动市场
-			Market market = ApplicationContextHolder.getBean(MarketHandleService.class).add(ActivityMarketCreateParamDTO.build(fid, null, activityFlagEnum.getValue()), activityFlagEnum, loginUser.buildOperateUserDTO());
+			Market market = add(ActivityMarketCreateParamDTO.build(fid, null, activityFlagEnum.getValue()), activityFlagEnum, loginUser.buildOperateUserDTO());
 			marketId = market.getId();
 		}
 		return marketId;
