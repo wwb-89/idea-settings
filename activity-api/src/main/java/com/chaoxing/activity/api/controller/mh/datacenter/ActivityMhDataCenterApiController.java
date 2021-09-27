@@ -170,10 +170,7 @@ public class ActivityMhDataCenterApiController {
         List<Integer> activityIds = activities.stream().map(Activity::getId).collect(Collectors.toList());
         List<Integer> signIds = activities.stream().map(Activity::getSignId).collect(Collectors.toList());
         Map<Integer, SignStatDTO> signStatMap = signApiService.statSignSignUps(signIds).stream().collect(Collectors.toMap(SignStatDTO::getId, v -> v, (v1, v2) -> v2));
-        long time1 = System.currentTimeMillis();
         Map<Integer, List<ActivityComponentValueDTO>> activityComponentValuesMap = activityComponentValueService.listActivityComponentValues(activityTemplateMap);
-        long time2 = System.currentTimeMillis();
-        System.out.println(time2 - time1);
 
         Map<Integer, String> introductionMap = activityQueryService.listDetailByActivityIds(activityIds).stream().collect(Collectors.toMap(ActivityDetail::getActivityId, v -> HtmlUtil.cleanHtmlTag(v.getIntroduction()), (v1, v2) -> v2));
 
