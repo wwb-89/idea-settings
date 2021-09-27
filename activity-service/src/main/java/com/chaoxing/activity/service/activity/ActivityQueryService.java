@@ -783,7 +783,7 @@ public class ActivityQueryService {
 		ActivityDetail activityDetail = getDetailByActivityId(activityId);
 		createParamDTO.setIntroduction(activityDetail.getIntroduction());
 
-		List<ActivityComponentValueDTO> activityComponentValues = activityComponentValueService.listActivityComponentValuesByActivity(activityId);
+		List<ActivityComponentValueDTO> activityComponentValues = activityComponentValueService.listActivityComponentValues(activityId, activity.getTemplateId());
 		createParamDTO.setActivityComponentValues(activityComponentValues);
 
 		List<Integer> signUpConditionEnables = signUpConditionEnableMapper.selectList(new QueryWrapper<SignUpConditionEnable>()

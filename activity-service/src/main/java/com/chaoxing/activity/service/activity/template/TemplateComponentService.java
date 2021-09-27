@@ -372,4 +372,41 @@ public class TemplateComponentService {
                 .in(TemplateComponent::getId, delTemplateComponentIds)
                 .set(TemplateComponent::getDeleted, Boolean.TRUE));
     }
+
+    /**获取自定义组件
+    * @Description 
+    * @author huxiaolong
+    * @Date 2021-09-27 16:17:38
+    * @param templateId
+    * @return java.util.List<com.chaoxing.activity.model.TemplateComponent>
+    */
+    public List<TemplateComponent> listCustomTemplateComponent(Integer templateId) {
+        if (templateId == null) {
+            return Lists.newArrayList();
+        }
+        return templateComponentMapper.selectList(new LambdaQueryWrapper<TemplateComponent>()
+                .eq(TemplateComponent::getTemplateId, templateId)
+                .eq(TemplateComponent::getDeleted, false)
+                .in(TemplateComponent::getType, Component.listCustomComponentType())
+                .orderByAsc(TemplateComponent::getSequence));
+    }
+
+    /**获取模板列表中的自定义组件
+    * @Description
+    * @author huxiaolong
+    * @Date 2021-09-27 16:17:38
+    * @param templateIds
+    * @return java.util.List<com.chaoxing.activity.model.TemplateComponent>
+    */
+    public List<TemplateComponent> listCustomTemplateComponent(List<Integer> templateIds) {
+        if (CollectionUtils.isEmpty(templateIds)) {
+            return Lists.newArrayList();
+        }
+        return templateComponentMapper.selectList(new LambdaQueryWrapper<TemplateComponent>()
+                .eq(TemplateComponent::getDeleted, false)
+                .in(TemplateComponent::getType, Component.listCustomComponentType())
+                .in(TemplateComponent::getTemplateId, templateIds)
+                .orderByAsc(TemplateComponent::getTemplateId, TemplateComponent::getSequence)
+        );
+    }
 }
