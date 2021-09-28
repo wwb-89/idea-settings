@@ -255,7 +255,10 @@
                     });
                     $this.managers[$this.operateIndex].menu = menus.join(",");
                     var url = ctx + "/api/activity/" + $this.activityId + "/manager/menus/config";
-                    app.ajaxPostWithPayload(url, JSON.stringify($this.managers[$this.operateIndex]), function (data) {
+                    var params = {
+                        activityManagerStr: JSON.stringify($this.managers[$this.operateIndex])
+                    }
+                    app.ajaxPost(url, params, function (data) {
                         if (data.success) {
                             app.showMsg("操作成功", function () {
                                 $this.handleClose();
