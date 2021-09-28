@@ -2,24 +2,29 @@ package com.chaoxing.activity.admin.controller.general;
 
 import com.chaoxing.activity.admin.util.LoginUtils;
 import com.chaoxing.activity.dto.LoginUserDTO;
+import com.chaoxing.activity.dto.activity.ActivityMenuDTO;
 import com.chaoxing.activity.dto.activity.create.ActivityCreateParamDTO;
 import com.chaoxing.activity.dto.manager.ActivityCreatePermissionDTO;
 import com.chaoxing.activity.dto.manager.sign.SignActivityManageIndexDTO;
 import com.chaoxing.activity.dto.manager.sign.create.SignCreateParamDTO;
 import com.chaoxing.activity.dto.manager.wfw.WfwAreaDTO;
 import com.chaoxing.activity.model.Activity;
+import com.chaoxing.activity.model.ActivityManager;
 import com.chaoxing.activity.model.ActivityMenuConfig;
 import com.chaoxing.activity.model.WebTemplate;
 import com.chaoxing.activity.service.WebTemplateService;
 import com.chaoxing.activity.service.activity.ActivityQueryService;
 import com.chaoxing.activity.service.activity.ActivityValidationService;
 import com.chaoxing.activity.service.activity.manager.ActivityCreatePermissionService;
+import com.chaoxing.activity.service.activity.manager.ActivityManagerService;
 import com.chaoxing.activity.service.activity.menu.ActivityMenuService;
 import com.chaoxing.activity.service.activity.scope.ActivityClassService;
 import com.chaoxing.activity.service.activity.scope.ActivityScopeQueryService;
 import com.chaoxing.activity.service.activity.template.TemplateComponentService;
 import com.chaoxing.activity.service.manager.module.SignApiService;
 import com.chaoxing.activity.util.UserAgentUtils;
+import com.google.common.collect.Lists;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -29,6 +34,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -60,7 +66,7 @@ public class ActivityManageController {
 	@Resource
 	private TemplateComponentService templateComponentService;
 	@Resource
-	private ActivityMenuService activityMenuService;
+	private ActivityManagerService activityManagerService;
 	@Resource
 	private ActivityClassService activityClassService;
 
@@ -86,8 +92,18 @@ public class ActivityManageController {
 		model.addAttribute("signActivityManageIndex", signActivityManageIndex);
 		// 是不是创建者
 		boolean creator = activityValidationService.isCreator(activity, operateUid);
+		List<String> activityMenus = Lists.newArrayList();
+		if (creator) {
+			// 创建者获取所有，无限制
+			activityMenus = ActivityMenuDTO.list().stream().map(ActivityMenuDTO::getValue).collect(Collectors.toList());
+		} else {
+			ActivityManager activityManager = activityManagerService.getByActivityUid(activityId, operateUid);
+			if (activityManager != null && StringUtils.isNotBlank(activityManager.getMenu())) {
+				activityMenus = Arrays.asList(StringUtils.split(activityManager.getMenu(), ","));
+			}
+		}
 		model.addAttribute("isCreator", creator);
-		model.addAttribute("activityMenus", activityMenuService.listActivityMenuConfig(activityId).stream().map(ActivityMenuConfig::getMenu).collect(Collectors.toList()));
+		model.addAttribute("activityMenus", activityMenus);
 		if (UserAgentUtils.isMobileAccess(request)) {
 			return "mobile/activity-index";
 		} else {
