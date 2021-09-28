@@ -41,6 +41,15 @@
                         <el-input type="name" placeholder="请输入"></el-input>
                     </div>
                     <div class="input-box">
+                        <label for="" class="label"><span class="colorFont">*</span>人员构架</label>
+                        <el-checkbox-group class="inline-block" v-model="typeValue">
+                            <el-checkbox label="1" name="type">选项1</el-checkbox>
+                            <el-checkbox label="2" name="type">选项2</el-checkbox>
+                            <el-checkbox label="3" name="type">选项3</el-checkbox>
+                            <el-checkbox label="4" name="type">选项4</el-checkbox>
+                        </el-checkbox-group>
+                    </div>
+                    <div class="input-box">
                         <label for="" class="label">应用图标</label>
                         <div class="icon-box">
                             <div class="img-box"><img src="../../assets/images/yq-design/icon-cover.png" id="appIconImg" alt=""></div>
@@ -810,6 +819,7 @@
             el: '#basic-setting',
             data: {
                 name:'',
+                typeValue:[],
                 iconLibraryStatus:false,
             },
             mounted: function () {

@@ -387,9 +387,13 @@
             border-radius: 4px;
             margin: 8px 0;
             margin-right: 24px;
-            padding: 12px 14px;
+            padding: 17px 14px;
+            height: 54px;
             line-height: 20px;
             cursor: pointer;
+            &.label-item {
+                padding: 6px 14px;
+            }
             &:nth-child(2n){
                 margin-right: 0;
             }
@@ -403,6 +407,7 @@
                 .field{
                     color: #0084FF;
                 }
+
                 .icon-add{
                     opacity: 1;
                 }
@@ -422,6 +427,17 @@
                 color: #333333;
                 margin-right: 4px;
             }
+            .spanLabel {
+                display: inline-block;
+                background: #F0F0F0;
+                border-radius: 2px;
+                height: 20px;
+                line-height: 20px;
+                padding: 0 4px;
+                font-size: 12px;
+                color: #999999;
+                margin-top: 2px;
+            }
             .icon-info{
                 display: inline-block;
                 vertical-align: top;
@@ -435,9 +451,15 @@
                     background-image: url(../images/yq-design/info-hover.png);
                 }
             }
+            .add-btn{
+                position: absolute;
+                right: 14px;
+                top: 50%;
+                transform: translateY(-50%);
+            }
             .icon-add{
                 display: inline-block;
-                vertical-align: top;
+                vertical-align: middle;
                 width: 18px;
                 height: 18px;
                 background-image: url(../images/yq-design/plus-circle.png);
@@ -858,7 +880,7 @@
                 box-sizing: border-box;
                 font-size: 14px;
                 line-height: 20px;
-                color: #666666;
+                color: #333333;
                 &.required::before{
                     position: absolute;
                     left: 0;
@@ -869,6 +891,17 @@
                     font-size: 12px;
                     line-height: 1;
                     margin-right: 4px;
+                }
+                .spanLabel {
+                    display: inline-block;
+                    background: #F0F0F0;
+                    border-radius: 2px;
+                    height: 20px;
+                    line-height: 20px;
+                    padding: 0 4px;
+                    font-size: 12px;
+                    color: #999999;
+                    margin-top: 2px;
                 }
             }
             .img-box {
@@ -1167,6 +1200,19 @@
                     }
                 }
             }
+            .colorFont {
+                color: #FF4F4F;
+            }
+            .inline-block {
+                display: inline-block;
+            }
+            .el-checkbox-group {
+                width: 460px;
+            }
+            .el-checkbox__label{
+                color: #333333;
+                font-weight: 400;
+            }
         }
         .fixedTips {
             position: absolute;
@@ -1177,6 +1223,7 @@
             line-height: 18px;
             color: #999999;
         }
+
     }
 
 }
