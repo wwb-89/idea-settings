@@ -5,11 +5,12 @@
         <result column="activity_id" jdbcType="INTEGER" property="activityId" />
         <result column="uid" jdbcType="INTEGER" property="uid" />
         <result column="user_name" jdbcType="VARCHAR" property="userName" />
+        <result column="menu" jdbcType="VARCHAR" property="menu" />
         <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
         <result column="create_uid" jdbcType="INTEGER" property="createUid" />
     </resultMap>
     <sql id="Base_Column_List">
-        t.activity_id, t.uid, t.user_name, t.create_time, t.create_uid
+        t.activity_id, t.uid, t.user_name, t.menu, t.create_time, t.create_uid
     </sql>
 
     <select id="paging" resultMap="BaseResultMap">
@@ -24,13 +25,14 @@
     </select>
 
     <insert id="batchAdd">
-        INSERT INTO t_activity_manager ( activity_id, uid, user_name, create_uid )
+        INSERT INTO t_activity_manager ( activity_id, uid, user_name, menu, create_uid )
         VALUES
             <foreach collection="activityManagers" index="key" item="value" open="" close="" separator=",">
                 (
                     #{value.activityId},
                     #{value.uid},
                     #{value.userName},
+                    #{value.menu},
                     #{value.createUid}
                 )
             </foreach>

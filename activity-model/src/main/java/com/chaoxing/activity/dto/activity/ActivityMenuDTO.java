@@ -39,4 +39,7 @@ public class ActivityMenuDTO {
         return Arrays.stream(values).map(ActivityMenuDTO::buildFromActivityMenuEnum).collect(Collectors.toList());
     }
 
+    public static List<ActivityMenuDTO> buildFromActivityMenus(List<String> activityMenus) {
+        return list().stream().filter(v -> activityMenus.contains(v.getValue())).collect(Collectors.toList());
+    }
 }
