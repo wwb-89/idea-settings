@@ -107,7 +107,7 @@
                             var url = ctx + "/api/activity/" + $this.activityId + "/manager/menus/config";
                             app.ajaxPost(url, { activityManagerStr: JSON.stringify($this.manager) }, function (data) {
                                 if (data.success) {
-                                    app.closeView();
+                                    app.showMsg("配置成功");
                                 } else {
                                     var errorMessage = data.message;
                                     app.showMsg(errorMessage);
