@@ -48,8 +48,14 @@
                         <el-switch v-model="blacklistRule.enableAutoRemove"></el-switch>
                         <p class="rightTips">开启后，可以设置自动移除黑名单的规则</p>
                         <div class="select-box" v-show="blacklistRule.enableAutoRemove">
-                            <el-input type="number" size="small" class="width80" v-model.trim="blacklistRule.autoRemoveHours" placeholder="整数" @blur="updateBlacklistRule"></el-input>
-                            <span class="lineTips">小时后自动移除黑名单</span>
+<!--                            <el-input type="number" size="small" class="width80" v-model.trim="blacklistRule.autoRemoveHours" placeholder="整数" @blur="updateBlacklistRule"></el-input>-->
+                            <el-cascader
+                                    v-model="currBlackListTimeScope"
+                                    size="small"
+                                    popper-class="time-cascader"
+                                    :options="autoRemoveBlackListTimeScope"
+                                    @change="autoRemoveBlackListTimeChange"></el-cascader>
+                            <span class="lineTips" style="padding-left: 5px; line-height: 24px;">小时后自动移除黑名单</span>
                         </div>
                     </div>
                 </div>
@@ -83,12 +89,23 @@
                     oldSignUpActivityLimit: [[${signUpActivityLimit}]],
                     signUpActivityLimit: [[${signUpActivityLimit}]],
                     signUpActivityLimits: [],
+                    // 自动移除黑名单时间选择范围
+                    autoRemoveBlackListTimeScope: [],
+                    currBlackListTimeScope: [1, 0],
                     blacklistNumbers: []
                 },
                 created: function () {
                     var $this = this;
                     if (activityApp.isEmpty($this.blacklistRule.autoRemoveHours)) {
                         $this.$set($this.blacklistRule, "autoRemoveHours", 24);
+                    }
+                    var hours = [];
+                    for (var j = 0; j < 24; j++) {
+                        hours.push({value: j, label: j + '小时'})
+                    }
+                    for (var i = 1; i < 60; i++) {
+                        var day = {value: i, label: i + "天", children: $.extend(true, [], hours) };
+                        $this.autoRemoveBlackListTimeScope.push(day);
                     }
                     $this.signUpActivityLimits = [
                         {name: "不限", value: 0},
@@ -120,6 +137,8 @@
                 mounted: function () {
                     var $this = this;
                     $this.oldBlacklistRule = $.extend({}, $this.blacklistRule);
+                    var totalHour = $this.blacklistRule.autoRemoveHours || 24;
+                    $this.currBlackListTimeScope = [parseInt(totalHour / 24), totalHour % 24]
                 },
                 watch: {
                     "blacklistRule.notSignInUpperLimit": function (newVal, oldVal) {
@@ -163,6 +182,13 @@
                             return false;
                         }
                         return true;
+                    },
+                    autoRemoveBlackListTimeChange: function (value) {
+                        var $this = this;
+                        var day = value[0];
+                        var hour = value[1];
+                        $this.blacklistRule.autoRemoveHours = day * 24 + hour;
+                        $this.updateBlacklistRule();
                     },
                     updateBlacklistRule: function () {
                         var $this = this;

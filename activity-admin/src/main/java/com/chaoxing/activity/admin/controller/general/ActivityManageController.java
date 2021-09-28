@@ -68,6 +68,8 @@ public class ActivityManageController {
 	@Resource
 	private ActivityManagerService activityManagerService;
 	@Resource
+	private ActivityMenuService activityMenuService;
+	@Resource
 	private ActivityClassService activityClassService;
 
 	/**活动管理主页
@@ -94,12 +96,15 @@ public class ActivityManageController {
 		boolean creator = activityValidationService.isCreator(activity, operateUid);
 		List<String> activityMenus = Lists.newArrayList();
 		if (creator) {
-			// 创建者获取所有，无限制
-			activityMenus = ActivityMenuDTO.list().stream().map(ActivityMenuDTO::getValue).collect(Collectors.toList());
+			// 创建者获取活动所有菜单
+			activityMenus = activityMenuService.listActivityMenuConfig(activityId).stream()
+					.map(ActivityMenuConfig::getMenu).collect(Collectors.toList());
 		} else {
 			ActivityManager activityManager = activityManagerService.getByActivityUid(activityId, operateUid);
 			if (activityManager != null && StringUtils.isNotBlank(activityManager.getMenu())) {
-				activityMenus = Arrays.asList(StringUtils.split(activityManager.getMenu(), ","));
+				List<String> managerMenus = Arrays.asList(StringUtils.split(activityManager.getMenu(), ","));
+				activityMenus = ActivityMenuDTO.buildFromActivityMenus(managerMenus)
+						.stream().map(ActivityMenuDTO::getValue).collect(Collectors.toList());
 			}
 		}
 		model.addAttribute("isCreator", creator);
