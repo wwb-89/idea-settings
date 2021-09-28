@@ -88,11 +88,13 @@
         background: linear-gradient(180deg, #FFFFFF 0%, #F7F7F7 100%);
         border-radius: 8px 8px 0px 0px;
         color: rgba(0, 0, 0, 0.5);
-        &.current {
-          background: #FFFFFF;
-          color: #3D82F2;
-          border-left: none;
-        }
+      }
+    }
+    li {
+      &.current {
+        background: #FFFFFF;
+        color: #3D82F2;
+        border-left: none;
       }
     }
   }

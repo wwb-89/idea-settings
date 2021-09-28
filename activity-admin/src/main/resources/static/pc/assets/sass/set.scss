@@ -98,7 +98,6 @@ body {
   }
   .label {
     width: 90px;
-    line-height: 32px;
     font-size: 14px;
     color: #666666;
     margin-left: 8px;
@@ -109,6 +108,17 @@ body {
       left: -8px;
       top: 50%;
       transform: translateY(-50%);
+    }
+    .spanLabel {
+      display: inline-block;
+      background: #F0F0F0;
+      border-radius: 2px;
+      height: 20px;
+      line-height: 20px;
+      padding: 0 4px;
+      font-size: 12px;
+      color: #999999;
+      margin-top: 2px;
     }
   }
   input[type="text"],
