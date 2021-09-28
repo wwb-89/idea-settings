@@ -5,29 +5,23 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.time.LocalDateTime;
-
-/**活动即将开始数据源
+/**用户取消签到事件源
  * @author wwb
  * @version ver 1.0
- * @className ActivityAboutStartEventOrigin
+ * @className UserCancelSignInEventOrigin
  * @description
  * @blame wwb
- * @date 2021-09-24 20:36:46
+ * @date 2021-09-28 11:44:29
  */
 @Data
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class ActivityAboutStartEventOrigin {
+public class UserCancelSignInEventOrigin {
 
-	/** 活动id */
 	private Integer activityId;
-	/** 市场id */
-	private Integer marketId;
-	/** 活动开始事件 */
-	private LocalDateTime startTime;
-	/** 时间戳 */
+	private Integer uid;
+	private Integer signInId;
 	private Long timestamp;
 
 }
