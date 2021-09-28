@@ -4,8 +4,10 @@ import com.chaoxing.activity.admin.util.LoginUtils;
 import com.chaoxing.activity.dto.LoginUserDTO;
 import com.chaoxing.activity.dto.OrgDTO;
 import com.chaoxing.activity.model.Activity;
+import com.chaoxing.activity.model.ActivityManager;
 import com.chaoxing.activity.service.activity.ActivityValidationService;
 import com.chaoxing.activity.service.activity.manager.ActivityManagerService;
+import com.chaoxing.activity.service.activity.menu.ActivityMenuService;
 import com.chaoxing.activity.service.manager.wfw.WfwContactApiService;
 import com.chaoxing.activity.util.UserAgentUtils;
 import com.chaoxing.activity.util.annotation.LoginRequired;
@@ -36,6 +38,8 @@ public class ActivityManagerController {
 	private ActivityManagerService activityManagerService;
 	@Resource
 	private WfwContactApiService wfwContactApiService;
+	@Resource
+	private ActivityMenuService activityMenuService;
 
 	/**管理员主页
 	 * @Description 
@@ -57,12 +61,35 @@ public class ActivityManagerController {
 		model.addAttribute("orgs", orgs);
 		// 查询以选择的uid列表
 		List<Integer> managerUids = activityManagerService.listUid(activityId);
+		model.addAttribute("menus", activityMenuService.listMenus(activityId));
 		model.addAttribute("managerUids", managerUids);
 		if (UserAgentUtils.isMobileAccess(request)) {
 			return "mobile/activity-manager";
 		} else {
 			return "pc/activity-manager";
 		}
+	}
+
+	/**移动端管理者菜单权限配置页面
+	* @Description
+	* @author huxiaolong
+	* @Date 2021-09-28 14:18:08
+	* @param model
+	* @param request
+	* @param activityId
+	* @param uid
+	* @return java.lang.String
+	*/
+	@LoginRequired
+	@RequestMapping("{uid}/menu")
+	public String managerMenuView(Model model, HttpServletRequest request, @PathVariable Integer activityId, @PathVariable Integer uid) {
+		LoginUserDTO loginUser = LoginUtils.getLoginUser(request);
+		activityValidationService.isCreator(activityId, loginUser.getUid());
+		ActivityManager activityManager = activityManagerService.getByActivityUid(activityId, uid);
+		model.addAttribute("activityId", activityId);
+		model.addAttribute("manager", activityManager);
+		model.addAttribute("menus", activityMenuService.listMenus(activityId));
+		return "mobile/activity-manager-menu";
 	}
 
 }

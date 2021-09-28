@@ -27,9 +27,9 @@
                     </div>
                     <span class="name">{{manager.userName}}</span>
                 </div>
-                <div class="handel-box">
+                <div class="handel-box" v-if="activity.createUid != manager.uid">
                    <div class="limit-set" @click="permissionSetting(index)">权限设置</div>
-                   <div v-if="activity.createUid != manager.uid" class="remove" @click="toDelete(index)">移除</div>
+                   <div class="remove" @click="toDelete(index)">移除</div>
                 </div>
             </li>
         </ul>
@@ -167,8 +167,9 @@
                         },
                         // 权限设置
                         permissionSetting: function (index) {
-                            app.showMsg("暂未开放");
-                        }
+                            var $this = this;
+                            var url = ctx + "/activity/"+ $this.activityId +"/manager/" + $this.managers[index].uid + "/menu";
+                            app.openUrl(url)                        }
                     }
                 })
             }

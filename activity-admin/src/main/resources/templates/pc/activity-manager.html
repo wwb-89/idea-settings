@@ -49,10 +49,13 @@
                 </th>
                 <th>{{manager.userName}}</th>
                 <th>
-                    <span v-if="false">权限设置</span>
-                    <!--活动创建者不显示移除按钮-->
-                    <span v-if="!isCreator(manager.uid)" @click="toDelete(index)">移除</span>
-                    <span v-else>-</span>
+                    <span v-if="isCreator(manager.uid)">-</span>
+                    <template v-else>
+
+                        <span @click="openPermissionDialog(index)">权限设置</span>
+                        <!--活动创建者不显示移除按钮-->
+                        <span @click="toDelete(index)">移除</span>
+                    </template>
                 </th>
             </tr>
             </tbody>
@@ -61,6 +64,22 @@
             暂无内容
         </div>
     </div>
+
+    <!-- 权限设置弹出框 -->
+    <el-dialog class="manageStatusDialog" title="权限设置" :visible.sync="permissionDialogShow" width="422px"
+               :before-close="handleClose">
+        <div class="manage-name">
+            <span>{{operateManagerName}}</span> 拥有以下模块的管理权限
+        </div>
+        <div class="manage-status" v-for="menu in menus">
+            <span class="limit-name">{{menu.name}}</span>
+            <el-switch v-model="menu.active"></el-switch><span class="limit-detail">{{menu.desc}}</span>
+        </div>
+        <span slot="footer" class="dialog-footer">
+                <div @click="handleClose" class="btn-size btn-cancel">取消</div>
+                <div @click="confirmConfig" class="btn-size btn-submit">确定</div>
+            </span>
+    </el-dialog>
 
     <!-- 移除弹窗 -->
     <vue-confirm ref="deleteWindow" :message="'确定移除吗？'" :cancel="'取消'" :sure="'移除'" @callback="deleteSubmit"></vue-confirm>
@@ -84,12 +103,16 @@
                 activity: [[${activity}]],
                 activityId: [[${activity.id}]],
                 managerUids: [[${managerUids}]],
+                menus: [[${menus}]],
                 // 管理员
                 managers: [],
                 managerQueryParams: {
                     pageNum: 1,
                     pageSize: 10
                 },
+                operateIndex: null,
+                operateManagerName: "",
+                permissionDialogShow: false,
                 allChecked: false,
                 loaded: false
             },
@@ -101,6 +124,7 @@
             mounted: function () {
                 var $this = this;
                 $this.loadManagers();
+                $this.initMenu("");
             },
             computed: {
                 "batchEnable": function () {
@@ -127,6 +151,14 @@
                 }
             },
             methods: {
+                initMenu: function (existMenus) {
+                    var $this = this;
+                    existMenus = existMenus || "";
+                    $($this.menus).each(function () {
+                        // 临时active属性初始化为false
+                        $this.$set(this, 'active', existMenus.indexOf(this.value) != -1)
+                    });
+                },
                 loadManagers: function () {
                     var $this = this;
                     var url = ctx + "/api/activity/" + $this.activityId + "/manager/list";
@@ -202,6 +234,42 @@
                     }, function () {
                         app.showMsg("添加失败");
                     }, '添加');
+                },
+                // 打开权限配置弹窗，并进行相应数据初始化
+                openPermissionDialog: function (index) {
+                    var $this = this;
+                    var manager = $this.managers[index];
+                    $this.operateIndex = index;
+                    $this.operateManagerName = manager.userName;
+                    $this.initMenu(manager.menu);
+                    $this.permissionDialogShow = true;
+                },
+                // 确认权限配置
+                confirmConfig: function () {
+                    var $this = this;
+                    var menus = [];
+                    $($this.menus).each(function () {
+                        if (this.active) {
+                            menus.push(this.value);
+                        }
+                    });
+                    $this.managers[$this.operateIndex].menu = menus.join(",");
+                    var url = ctx + "/api/activity/" + $this.activityId + "/manager/menus/config";
+                    app.ajaxPostWithPayload(url, JSON.stringify($this.managers[$this.operateIndex]), function (data) {
+                        if (data.success) {
+                            app.showMsg("操作成功", function () {
+                                $this.handleClose();
+                            });
+                        } else {
+                            var errorMessage = data.message;
+                            app.showMsg(errorMessage);
+                        }
+                    }, function () {
+                        app.showMsg("权限配置失败");
+                    }, '权限配置');
+                },
+                handleClose() {
+                    this.permissionDialogShow = false;
                 },
                 toDelete: function (index) {
                     var $this = this;

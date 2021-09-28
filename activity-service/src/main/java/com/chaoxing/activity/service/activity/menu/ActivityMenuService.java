@@ -53,6 +53,19 @@ public class ActivityMenuService {
         );
     }
 
+    /**查询活动的菜单配置
+     * @Description
+     * @author wwb
+     * @Date 2021-08-06 16:12:38
+     * @param activityId
+     * @return java.util.List<com.chaoxing.activity.model.ActivityMenuConfig>
+    */
+    public List<ActivityMenuDTO> listMenus(Integer activityId) {
+        List<String> activityMenus = listActivityMenuConfig(activityId).stream().map(ActivityMenuConfig::getMenu).collect(Collectors.toList());
+        return ActivityMenuDTO.buildFromActivityMenus(activityMenus);
+
+    }
+
     /**配置活动的菜单
      * @Description 
      * @author wwb

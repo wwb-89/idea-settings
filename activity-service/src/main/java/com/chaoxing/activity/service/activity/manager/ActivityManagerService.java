@@ -2,6 +2,7 @@ package com.chaoxing.activity.service.activity.manager;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.chaoxing.activity.dto.LoginUserDTO;
 import com.chaoxing.activity.mapper.ActivityManagerMapper;
@@ -168,5 +169,39 @@ public class ActivityManagerService {
         );
         return activityManagers.stream().map(ActivityManager::getUid).collect(Collectors.toList());
     }
-    
+
+    /**更新活动管理者菜单权限
+    * @Description
+    * @author huxiaolong
+    * @Date 2021-09-28 14:16:13
+    * @param activityId
+    * @param activityManager
+    * @param loginUser
+    * @return void
+    */
+    public void updateActivityManageMenu(Integer activityId, ActivityManager activityManager, LoginUserDTO loginUser) {
+        // 活动创建者权限校验
+        activityValidationService.creator(activityId, loginUser.getUid());
+
+        activityManagerMapper.update(null, new UpdateWrapper<ActivityManager>()
+                .lambda()
+                .eq(ActivityManager::getActivityId, activityId)
+                .eq(ActivityManager::getUid, activityManager.getUid())
+                .set(ActivityManager::getMenu, activityManager.getMenu()));
+    }
+
+    /**根据活动id、uid查询活动管理者信息
+    * @Description
+    * @author huxiaolong
+    * @Date 2021-09-28 14:16:31
+    * @param activityId
+    * @param uid
+    * @return com.chaoxing.activity.model.ActivityManager
+    */
+    public ActivityManager getByActivityUid(Integer activityId, Integer uid) {
+        return activityManagerMapper.selectList(new LambdaQueryWrapper<ActivityManager>()
+                .eq(ActivityManager::getActivityId, activityId)
+                .eq(ActivityManager::getUid, uid))
+                .stream().findFirst().orElse(null);
+    }
 }
