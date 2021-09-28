@@ -1,14 +1,13 @@
 package com.chaoxing.activity.service.activity.engine;
 
-import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.chaoxing.activity.dto.engine.ActivityEngineDTO;
 import com.chaoxing.activity.mapper.*;
 import com.chaoxing.activity.model.*;
 import com.chaoxing.activity.service.activity.component.ComponentHandleService;
+import com.chaoxing.activity.service.activity.template.TemplateComponentService;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.compress.utils.Lists;
-import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -30,14 +29,10 @@ public class ActivityEngineHandleService {
 
     @Autowired
     private TemplateMapper templateMapper;
-    @Autowired
-    private TemplateComponentMapper templateComponentMapper;
     @Resource
     private ComponentHandleService componentHandleService;
-    @Autowired
-    private SignUpConditionMapper signUpConditionMapper;
-    @Autowired
-    private SignUpFillInfoTypeMapper signUpFillInfoTypeMapper;
+    @Resource
+    private TemplateComponentService templateComponentService;
 
     /**处理引擎模板组件相关数据(新增/更新)
     * @Description
@@ -80,7 +75,7 @@ public class ActivityEngineHandleService {
         // 保存模板
         templateMapper.insert(template);
         // 保存模板组件关联关系
-        saveTemplateComponent(template.getId(), templateComponents);
+        templateComponentService.saveTemplateComponent(template.getId(), templateComponents);
         // 更新自定义组件关联templateId
         componentHandleService.relatedComponentWithTemplateId(template.getId(), customComponentIds);
     }
@@ -92,12 +87,7 @@ public class ActivityEngineHandleService {
         // 保存模板组件关联关系
         updateTemplateComponent(template.getId(), templateComponents);
         // 取消组件关联关系
-        if (CollectionUtils.isNotEmpty(delTemplateComponentIds)) {
-            templateComponentMapper.update(null, new UpdateWrapper<TemplateComponent>()
-                    .lambda()
-                    .in(TemplateComponent::getId, delTemplateComponentIds)
-                    .set(TemplateComponent::getDeleted, Boolean.TRUE));
-        }
+        templateComponentService.cancelTemplateComponent(delTemplateComponentIds);
     }
 
     /**
@@ -142,53 +132,6 @@ public class ActivityEngineHandleService {
         return componentHandleService.saveCustomComponent(uid, component);
     }
 
-    /**新增模板组件关联
-    * @Description
-    * @author huxiaolong
-    * @Date 2021-07-08 14:52:34
-    * @param templateId 新模板id
-    * @param
-    * @return void
-    */
-    @Transactional(rollbackFor = Exception.class)
-    public void saveTemplateComponent(Integer templateId, Collection<TemplateComponent> templateComponents) {
-        if (CollectionUtils.isEmpty(templateComponents)) {
-            return;
-        }
-        templateComponents.forEach(v -> v.setTemplateId(templateId));
-        templateComponentMapper.batchAdd(templateComponents);
-        templateComponents.forEach(v -> {
-            handleSignUpConditionFillInfoType(v);
-            if (CollectionUtils.isNotEmpty(v.getChildren())) {
-                v.getChildren().forEach(v1 -> {
-                    v1.setPid(v.getId());
-                    v1.setTemplateId(templateId);
-                });
-                templateComponentMapper.batchAdd(v.getChildren());
-                v.getChildren().forEach(this::handleSignUpConditionFillInfoType);
-            }
-        });
-    }
-
-    /**
-    * @Description 
-    * @author huxiaolong
-    * @Date 2021-08-17 14:58:58
-    * @param templateComponent
-    * @return void
-    */
-    @Transactional(rollbackFor = Exception.class)
-    public void handleSignUpConditionFillInfoType (TemplateComponent templateComponent) {
-        if (templateComponent.getSignUpCondition() != null) {
-            templateComponent.getSignUpCondition().setTemplateComponentId(templateComponent.getId());
-            signUpConditionMapper.insert(templateComponent.getSignUpCondition());
-        }
-        if (templateComponent.getSignUpFillInfoType() != null) {
-            templateComponent.getSignUpFillInfoType().setTemplateComponentId(templateComponent.getId());
-            signUpFillInfoTypeMapper.insert(templateComponent.getSignUpFillInfoType());
-        }
-    }
-
     /**更新模板组件关联
     * @Description 
     * @author huxiaolong
@@ -201,33 +144,10 @@ public class ActivityEngineHandleService {
         List<TemplateComponent> waitSaveTplComponent = Lists.newArrayList();
         List<TemplateComponent> waitUpdateTplComponent = Lists.newArrayList();
         buildSaveUpdateList(templateComponents, waitSaveTplComponent, waitUpdateTplComponent);
-
         // 新增
-        saveTemplateComponent(templateId, waitSaveTplComponent);
+        templateComponentService.saveTemplateComponent(templateId, waitSaveTplComponent);
         // 更新
-        waitUpdateTplComponent.forEach(v -> {
-            TemplateComponent tplComponent = new TemplateComponent();
-            BeanUtils.copyProperties(v, tplComponent);
-            templateComponentMapper.updateById(tplComponent);
-            SignUpCondition suc = v.getSignUpCondition();
-            SignUpFillInfoType signUpFillInfoType = v.getSignUpFillInfoType();
-            if (suc != null) {
-                suc.setTemplateComponentId(tplComponent.getId());
-                if (suc.getId() == null) {
-                    signUpConditionMapper.insert(suc);
-                } else {
-                    signUpConditionMapper.updateById(suc);
-                }
-            }
-            if (signUpFillInfoType != null) {
-                signUpFillInfoType.setTemplateComponentId(tplComponent.getId());
-                if (signUpFillInfoType.getId() == null) {
-                    signUpFillInfoTypeMapper.insert(signUpFillInfoType);
-                } else {
-                    signUpFillInfoTypeMapper.updateById(signUpFillInfoType);
-                }
-            }
-        });
+        templateComponentService.updateTemplateComponents(waitUpdateTplComponent);
     }
 
     /**

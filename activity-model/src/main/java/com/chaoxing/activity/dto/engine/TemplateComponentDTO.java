@@ -105,7 +105,7 @@ public class TemplateComponentDTO {
     * @return java.util.List<com.chaoxing.activity.dto.engine.TemplateComponentDTO>
     */
     public static List<TemplateComponentDTO> buildTrees(List<TemplateComponentDTO> templateComponents) {
-        List<TemplateComponentDTO> trees = org.apache.commons.compress.utils.Lists.newArrayList();
+        List<TemplateComponentDTO> trees = Lists.newArrayList();
         templateComponents.forEach(v -> {
             if (Objects.equals(v.getPid(), 0)) {
                 trees.add(v);

@@ -9,7 +9,6 @@ import com.chaoxing.activity.dto.manager.wfw.WfwAppParamDTO;
 import com.chaoxing.activity.mapper.MarketMapper;
 import com.chaoxing.activity.model.Activity;
 import com.chaoxing.activity.model.Market;
-import com.chaoxing.activity.model.Template;
 import com.chaoxing.activity.service.activity.template.TemplateHandleService;
 import com.chaoxing.activity.service.activity.template.TemplateQueryService;
 import com.chaoxing.activity.service.manager.wfw.WfwAppApiService;

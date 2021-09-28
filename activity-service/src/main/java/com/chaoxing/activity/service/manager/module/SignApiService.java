@@ -63,6 +63,8 @@ public class SignApiService {
 	private static final String LIST_DETAIL_URL = SIGN_API_DOMAIN + "/sign/list/detail";
 	/** 参与情况 */
 	private static final String PARTICIPATION_URL = SIGN_API_DOMAIN + "/sign/%d/signed-up";
+	/** 参与情况 */
+	private static final String BATCH_PARTICIPATION_URL = SIGN_API_DOMAIN + "/sign/signed-up/stat";
 	/** 统计报名签到在活动管理首页需要的信息 */
 	private static final String STAT_SIGN_ACTIVITY_MANAGE_INDEX_URL = SIGN_API_DOMAIN + "/stat/sign/%d/activity-index";
 	/** 统计报名签到报名成功数量url */
@@ -551,6 +553,25 @@ public class SignApiService {
 		params.put("signIds", signIds);
 		HttpEntity<String> httpEntity = new HttpEntity(params.toJSONString(), httpHeaders);
 		String result = restTemplate.postForObject(STAT_SIGN_SIGNED_UP_INFO_URL, httpEntity, String.class);
+		JSONObject jsonObject = JSON.parseObject(result);
+		return resultHandle(jsonObject, () -> {
+			String data = jsonObject.getString("data");
+			return JSON.parseArray(data, SignStatDTO.class);
+		}, (message) -> {
+			throw new BusinessException(message);
+		});
+	}
+
+	public List<SignStatDTO> statSignSignUps(List<Integer> signIds) {
+		if (CollectionUtils.isEmpty(signIds)) {
+			return Lists.newArrayList();
+		}
+		HttpHeaders httpHeaders = new HttpHeaders();
+		httpHeaders.setContentType(MediaType.APPLICATION_JSON);
+		JSONObject params = new JSONObject();
+		params.put("signIds", signIds);
+		HttpEntity<String> httpEntity = new HttpEntity(params.toJSONString(), httpHeaders);
+		String result = restTemplate.postForObject(BATCH_PARTICIPATION_URL, httpEntity, String.class);
 		JSONObject jsonObject = JSON.parseObject(result);
 		return resultHandle(jsonObject, () -> {
 			String data = jsonObject.getString("data");

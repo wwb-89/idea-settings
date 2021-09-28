@@ -2,15 +2,19 @@ package com.chaoxing.activity.service.activity.component;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.chaoxing.activity.mapper.ComponentFieldMapper;
 import com.chaoxing.activity.mapper.ComponentMapper;
 import com.chaoxing.activity.model.Component;
+import com.chaoxing.activity.model.ComponentField;
 import com.google.common.collect.Lists;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -28,6 +32,8 @@ public class ComponentQueryService {
 
 	@Resource
 	private ComponentMapper componentMapper;
+	@Autowired
+	private ComponentFieldMapper componentFieldMapper;
 
 	/**根据code查询系统组件
 	 * @Description 
@@ -99,6 +105,40 @@ public class ComponentQueryService {
 			wrapper.or().eq(Component::getTemplateId, templateId);
 		}
 		return componentMapper.selectList(wrapper);
+	}
+
+	/**查询组件列表，若组件列表中存在自定义选择组件，将选项列表一起封装进组件中
+	* @Description
+	* @author huxiaolong
+	* @Date 2021-09-26 14:38:23
+	* @param templateId
+	* @return java.util.List<com.chaoxing.activity.model.Component>
+	*/
+	public List<Component> listWithOptionsByTemplateId(Integer templateId) {
+		List<Component> components = listByTemplateId(templateId);
+		return packageCustomChooseOptions(components);
+	}
+
+	/**遍历组件列表，若存在自定义选择组件，查询封装选项列表
+	* @Description 
+	* @author huxiaolong
+	* @Date 2021-09-26 14:40:52
+	* @param components
+	* @return java.util.List<com.chaoxing.activity.model.Component>
+	*/
+	private List<Component> packageCustomChooseOptions(List<Component> components) {
+		// 获取选择组件自定义的选项
+		components.forEach(v -> {
+			if (Component.TypeEnum.chooseType(v.getType()) && Objects.equals(v.getDataOrigin(), Component.DataOriginEnum.CUSTOM.getValue())) {
+				// 自定义选项值列表
+				List<ComponentField> componentFields = componentFieldMapper.selectList(new QueryWrapper<ComponentField>()
+						.lambda()
+						.eq(ComponentField::getComponentId, v.getId()));
+				v.setComponentFields(componentFields);
+			}
+		});
+		return components;
+
 	}
 
 }

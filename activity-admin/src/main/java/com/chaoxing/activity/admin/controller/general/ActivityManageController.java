@@ -13,11 +13,11 @@ import com.chaoxing.activity.model.WebTemplate;
 import com.chaoxing.activity.service.WebTemplateService;
 import com.chaoxing.activity.service.activity.ActivityQueryService;
 import com.chaoxing.activity.service.activity.ActivityValidationService;
-import com.chaoxing.activity.service.activity.engine.ActivityEngineQueryService;
 import com.chaoxing.activity.service.activity.manager.ActivityCreatePermissionService;
 import com.chaoxing.activity.service.activity.menu.ActivityMenuService;
 import com.chaoxing.activity.service.activity.scope.ActivityClassService;
 import com.chaoxing.activity.service.activity.scope.ActivityScopeQueryService;
+import com.chaoxing.activity.service.activity.template.TemplateComponentService;
 import com.chaoxing.activity.service.manager.module.SignApiService;
 import com.chaoxing.activity.util.UserAgentUtils;
 import org.springframework.stereotype.Controller;
@@ -58,7 +58,7 @@ public class ActivityManageController {
 	@Resource
 	private ActivityValidationService activityValidationService;
 	@Resource
-	private ActivityEngineQueryService activityEngineQueryService;
+	private TemplateComponentService templateComponentService;
 	@Resource
 	private ActivityMenuService activityMenuService;
 	@Resource
@@ -111,7 +111,7 @@ public class ActivityManageController {
 		Activity activity = activityValidationService.manageAble(activityId, loginUser.getUid());
 		ActivityCreateParamDTO createParamDTO = activityQueryService.packageActivityCreateParamByActivity(activity);
 		model.addAttribute("activity", createParamDTO);
-		model.addAttribute("templateComponents", activityEngineQueryService.listTemplateComponentTree(activity.getTemplateId(), activity.getCreateFid()));
+		model.addAttribute("templateComponents", templateComponentService.listTemplateComponentTree(activity.getTemplateId(), activity.getCreateFid()));
 		// 活动类型列表
 		model.addAttribute("activityTypes", activityQueryService.listActivityType());
 		// 当前用户创建活动权限

@@ -20,6 +20,7 @@ import com.chaoxing.activity.model.Template;
 import com.chaoxing.activity.service.activity.classify.ClassifyHandleService;
 import com.chaoxing.activity.service.activity.classify.ClassifyQueryService;
 import com.chaoxing.activity.service.activity.market.MarketHandleService;
+import com.chaoxing.activity.service.activity.template.TemplateComponentService;
 import com.chaoxing.activity.service.activity.template.TemplateQueryService;
 import com.chaoxing.activity.service.manager.PassportApiService;
 import com.chaoxing.activity.service.manager.module.SignApiService;
@@ -74,6 +75,8 @@ public class ActivityFormSyncService {
     private PassportApiService passportApiService;
     @Resource
     private TemplateQueryService templateQueryService;
+    @Resource
+    private TemplateComponentService templateComponentService;
 
 
 
@@ -145,7 +148,7 @@ public class ActivityFormSyncService {
         // 封装报名信息
         SignCreateParamDTO signCreateParam = SignCreateParamDTO.builder().name(activityCreateParam.getName()).build();
         // 默认开启报名
-        Integer originId = templateQueryService.getSysComponentTplComponentId(templateId, "sign_up");
+        Integer originId = templateComponentService.getSysComponentTplComponentId(templateId, "sign_up");
         SignUpCreateParamDTO signUpCreateParam = SignUpCreateParamDTO.buildDefault();
         signUpCreateParam.setOriginId(originId);
         signCreateParam.setSignUps(Lists.newArrayList(signUpCreateParam));

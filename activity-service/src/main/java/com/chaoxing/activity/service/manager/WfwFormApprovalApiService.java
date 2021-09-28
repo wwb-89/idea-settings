@@ -23,6 +23,7 @@ import com.chaoxing.activity.service.activity.ActivityQueryService;
 import com.chaoxing.activity.service.activity.classify.ClassifyHandleService;
 import com.chaoxing.activity.service.activity.market.MarketHandleService;
 import com.chaoxing.activity.service.activity.market.MarketQueryService;
+import com.chaoxing.activity.service.activity.template.TemplateComponentService;
 import com.chaoxing.activity.service.activity.template.TemplateQueryService;
 import com.chaoxing.activity.service.manager.module.SignApiService;
 import com.chaoxing.activity.service.manager.wfw.WfwAreaApiService;
@@ -97,6 +98,8 @@ public class WfwFormApprovalApiService {
     private SignApiService signApiService;
     @Resource
     private TemplateQueryService templateQueryService;
+    @Resource
+    private TemplateComponentService templateComponentService;
     @Resource
     private MarketHandleService marketHandleService;
     @Resource
@@ -303,7 +306,7 @@ public class WfwFormApprovalApiService {
         // 根据表单数据创建报名签到
         SignCreateParamDTO signCreateParam = buildSignFromActivityApproval(formData, loginUser.getUid(), fid, DateUtils.timestamp2Date(activity.getStartTimeStamp()), DateUtils.timestamp2Date(activity.getEndTimeStamp()));
         if (CollectionUtils.isNotEmpty(signCreateParam.getSignUps())) {
-            Integer originId = templateQueryService.getSysComponentTplComponentId(templateId, "sign_up");
+            Integer originId = templateComponentService.getSysComponentTplComponentId(templateId, "sign_up");
             signCreateParam.getSignUps().get(0).setOriginId(originId);
         }
         WfwAreaDTO wfwRegionalArchitecture = wfwAreaApiService.buildWfwRegionalArchitecture(fid);

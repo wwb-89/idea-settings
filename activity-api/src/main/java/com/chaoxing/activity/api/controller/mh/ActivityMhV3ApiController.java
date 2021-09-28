@@ -390,7 +390,7 @@ public class ActivityMhV3ApiController {
                         if (StringUtils.isNotBlank(btnName)) {
                             showName = btnName;
                         }
-                        if (!signUps.get(0).getFillInfo()) {
+                        if (!signUps.get(0).getFillInfo() && uid != null) {
                             setSignUpBtn = Boolean.TRUE;
                             result.add(buildBtnField(showName, "", UrlConstant.MH_AJAX_SIGN_UP,  "1", true, MhBtnSequenceEnum.SIGN_UP.getSequence()));
                         }
