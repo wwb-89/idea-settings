@@ -212,7 +212,7 @@
 					$this.queryParams.activityClassifyName = $this.classifies[index].value;
 					$this.activities = [];
 					$this.queryParams.pageNum = 1;
-					$this.loadData();
+					$this.reloadMescoll();
 				},
 				changeActivityTimeSelected: function(index){
 					var $this = this;
@@ -222,7 +222,7 @@
 					$this.queryParams.date = $this.activityQueryDates[index].value;
 					$this.activities = [];
 					$this.queryParams.pageNum = 1;
-					$this.loadData();
+					$this.reloadMescoll();
 				},
 				changeActivityRegionsSelected: function(index){
 					var $this = this;
@@ -235,7 +235,7 @@
 					}
 					$this.activities = [];
 					$this.queryParams.pageNum = 1;
-					$this.loadData();
+					$this.reloadMescoll();
 				},
 				changeActivityTypesSelected: function(index){
 					var $this = this;
@@ -245,7 +245,7 @@
 					$this.queryParams.activityType = $this.activityTypes[index].value;
 					$this.activities = [];
 					$this.queryParams.pageNum = 1;
-					$this.loadData();
+					$this.reloadMescoll();
 				},
 				changeActivityStatusSelected: function(index){
 					var $this = this;
@@ -255,7 +255,7 @@
 					$this.queryParams.status = $this.statuses[index].value;
 					$this.activities = [];
 					$this.queryParams.pageNum = 1;
-					$this.loadData();
+					$this.reloadMescoll();
 				},
 				showFilter: function (type) {
 					var $this = this;
@@ -327,7 +327,17 @@
 					$("#search-input").blur();
 					$this.queryParams.pageNum = 1;
 					$this.activities = [];
-					$this.loadData();
+					// 重载mescroll依旧会请求数据
+					$this.reloadMescoll();
+				},
+				// 重载mescroll依旧会请求数据
+				reloadMescoll: function () {
+					var $this = this;
+					if ($this.mescroll) {
+						$this.mescroll.destroy();
+						$this.mescroll = null;
+					}
+					$this.initMescroll()
 				},
 				currenClick:function (currentPage) {
 					var $this = this;
