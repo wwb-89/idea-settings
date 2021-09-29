@@ -208,30 +208,33 @@ public class WfwFormApiService {
 	 * @author wwb
 	 * @Date 2021-09-02 16:56:50
 	 * @param formUserId
+	 * @param formId
 	 * @return void
 	 */
-	public void deleteFormRecord(Integer formUserId) {
+	public void deleteFormRecord(Integer formUserId, Integer formId) {
 		if (formUserId == null) {
 			return;
 		}
 		List<Integer> formUserIds = Lists.newArrayList();
 		formUserIds.add(formUserId);
-		deleteFormRecord(formUserIds);
+		deleteFormRecord(formUserIds, formId);
 	}
 	/**删除表单记录
 	 * @Description
 	 * @author wwb
 	 * @Date 2021-08-31 19:35:17
 	 * @param formUserIds
+	 * @param formId
 	 * @return void
 	 */
-	public void deleteFormRecord(List<Integer> formUserIds) {
+	public void deleteFormRecord(List<Integer> formUserIds, Integer formId) {
 		if (CollectionUtils.isEmpty(formUserIds)) {
 			return;
 		}
 		List<List<Integer>> partition = Lists.partition(formUserIds, MAX_DELETE_SIZE_LIMIT);
 		for (List<Integer> integers : partition) {
 			TreeMap<String, Object> paramsMap = Maps.newTreeMap();
+			paramsMap.put("formId", formId);
 			paramsMap.put("formUserId", String.join(",", integers.stream().map(String::valueOf).collect(Collectors.toList())));
 			paramsMap.put("datetime", LocalDateTime.now().format(DATE_TIME_FORMATTER));
 			paramsMap.put("sign", SIGN);
