@@ -1408,23 +1408,18 @@
                 // 显示百度地图
                 showActivityMap: function () {
                     var $this = this;
-                    $this.$refs.activityMap.show = true;
-                },
-                showSignInMap: function (tplComponentId) {
-                    var $this = this;
-                    $this.operateSignInOriginId = tplComponentId;
-                    $this.$refs.signInMap.show = true;
+                    $this.$refs.activityMap.showMap($this.activity.longitude, $this.activity.dimension, $this.activity.address);
                 },
                 // 确定活动地址
                 activityAddressSure: function () {
                     var $this = this;
-                    if (activityApp.isEmpty($this.$refs.activityMap.longitude) || activityApp.isEmpty($this.$refs.activityMap.dimension)) {
+                    if (activityApp.isEmpty($this.$refs.activityMap.lng) || activityApp.isEmpty($this.$refs.activityMap.lat)) {
                         app.showMsg("请选择地址");
                         return;
                     }
                     $this.activity.address = $this.$refs.activityMap.address;
-                    $this.activity.longitude = $this.$refs.activityMap.longitude;
-                    $this.activity.dimension = $this.$refs.activityMap.dimension;
+                    $this.activity.longitude = $this.$refs.activityMap.lng;
+                    $this.activity.dimension = $this.$refs.activityMap.lat;
                 },
                 // 确定签到地址
                 signInAddressSure: function () {

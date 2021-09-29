@@ -204,19 +204,17 @@ public class ActivityMhAppController {
 	}
 
 	/**推荐活动
-	 * @Description
+	 * @Description 
 	 * @author wwb
-	 * @Date 2020-11-24 21:42:19
-	 * @param activityId
+	 * @Date 2021-09-27 17:46:42
+	 * @param activity
 	 * @param data
 	 * @return com.chaoxing.activity.dto.RestRespDTO
 	*/
-	@RequestMapping("activity/{activityId}/recommend")
-	public RestRespDTO recommendActivity(@PathVariable Integer activityId, @RequestBody String data) {
+	private RestRespDTO recommendActivity(Activity activity, String data) {
 		JSONObject jsonObject = JSON.parseObject(data);
 		Integer pageNum = Optional.ofNullable(jsonObject.getInteger("page")).orElse(CommonConstant.DEFAULT_PAGE_NUM);
 		Integer pageSize = Optional.ofNullable(jsonObject.getInteger("pageSize")).orElse(RECOMMEND_ACTIVITY_PAGE_SIZE);
-		Activity activity = activityQueryService.getById(activityId);
 		Integer createFid = activity.getCreateFid();
 		// 查询机构下的活动列表
 		Page<Activity> page = new Page(pageNum, pageSize);
@@ -252,6 +250,36 @@ public class ActivityMhAppController {
 		});
 		result.put("results", mhGeneralAppResultDatas);
 		return RestRespDTO.success(result);
+	}
+
+	/**推荐活动数据源（根据websiteId）
+	 * @Description 
+	 * @author wwb
+	 * @Date 2021-09-27 17:43:18
+	 * @param data
+	 * @return com.chaoxing.activity.dto.RestRespDTO
+	*/
+	@RequestMapping("activity/recommend")
+	public RestRespDTO recommendActivity(@RequestBody String data) {
+		JSONObject jsonObject = JSON.parseObject(data);
+		Integer websiteId = jsonObject.getInteger("websiteId");
+		// 根据websiteId查询活动
+		Activity activity = activityQueryService.getByWebsiteId(websiteId);
+		return recommendActivity(activity, data);
+	}
+
+	/**推荐活动
+	 * @Description
+	 * @author wwb
+	 * @Date 2020-11-24 21:42:19
+	 * @param activityId
+	 * @param data
+	 * @return com.chaoxing.activity.dto.RestRespDTO
+	*/
+	@RequestMapping("activity/{activityId}/recommend")
+	public RestRespDTO recommendActivity(@PathVariable Integer activityId, @RequestBody String data) {
+		Activity activity = activityQueryService.getById(activityId);
+		return recommendActivity(activity, data);
 	}
 
 	private List<MhGeneralAppResultDataDTO> page2MhGeneralAppResultData(Page<Activity> page, String activityDomain, Function<Activity, List<MhGeneralAppResultDataDTO.MhGeneralAppResultDataFieldDTO>> function) {

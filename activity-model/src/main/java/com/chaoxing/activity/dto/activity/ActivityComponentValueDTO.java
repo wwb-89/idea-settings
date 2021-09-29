@@ -38,6 +38,8 @@ public class ActivityComponentValueDTO {
 	private Integer componentId;
 	/** 值 */
 	private String value;
+	/** 模板组件名称 */
+	private String templateComponentName;
 
 	public ActivityComponentValue buildActivityComponentValue() {
 		ActivityComponentValue activityComponentValue = new ActivityComponentValue();

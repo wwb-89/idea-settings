@@ -48,8 +48,9 @@ public class WorkApiService {
 	private static final String ACTIVITY_SUBMITED_WORK_NUM_URL = DOMAIN + "/activity/stat/submited-work-num";
 	/** 更新作品征集信息url */
 	private static final String UPDATE_WORK_URL = DOMAIN + "/activity/update";
-	/** 作品征集按钮yrl */
-	private static final String WORK_BTN_URL = DOMAIN + "/activity/user/permission?activityId=%d&uid=%s&fid=%d";
+	/** 作品征集按钮yrl（鄂尔多斯定制） */
+	private static final String ERDOS_WORK_BTN_URL = DOMAIN + "/activity/user/permission?activityId=%d&uid=%s&fid=%d";
+	private static final String WORK_BTN_URL = DOMAIN + "/activity/user/custom/permission?activityId=%d&uid=%s&fid=%d";
 
 	@Resource
 	private RestTemplate restTemplate;
@@ -116,11 +117,11 @@ public class WorkApiService {
 		JSONObject jsonObject = JSON.parseObject(result);
 		boolean success = jsonObject.getBooleanValue("success");
 		if (!success) {
-			String errorMessage = jsonObject.getString("message");
-			if (StringUtils.isBlank(errorMessage)) {
-				errorMessage = "刷新作品征集活动参与fid缓存失败";
+			String message = jsonObject.getString("message");
+			if (StringUtils.isBlank(message)) {
+				message = "刷新作品征集活动参与fid缓存失败";
 			}
-			throw new BusinessException(errorMessage);
+			throw new BusinessException(message);
 		}
 	}
 
@@ -179,7 +180,7 @@ public class WorkApiService {
 		}
 	}
 
-	/**查询作品征集的按钮列表
+	/**查询作品征集的按钮列表（鄂尔多斯定制）
 	 * @Description 
 	 * @author wwb
 	 * @Date 2021-09-17 17:14:39
@@ -188,8 +189,35 @@ public class WorkApiService {
 	 * @param fid
 	 * @return java.util.List<com.chaoxing.activity.dto.work.WorkBtnDTO>
 	*/
+	public List<WorkBtnDTO> listErdosBtns(Integer workId, Integer uid, Integer fid) {
+		return listBtns(workId, uid, fid, ERDOS_WORK_BTN_URL);
+	}
+
+	/**查询作品征集的按钮列表
+	 * @Description 
+	 * @author wwb
+	 * @Date 2021-09-23 09:58:57
+	 * @param workId
+	 * @param uid
+	 * @param fid
+	 * @return java.util.List<com.chaoxing.activity.dto.work.WorkBtnDTO>
+	*/
 	public List<WorkBtnDTO> listBtns(Integer workId, Integer uid, Integer fid) {
-		String url = String.format(WORK_BTN_URL, workId, Optional.ofNullable(uid).map(String::valueOf).orElse(""), fid);
+		return listBtns(workId, uid, fid, WORK_BTN_URL);
+	}
+
+	/**查询作品征集的按钮列表
+	 * @Description 
+	 * @author wwb
+	 * @Date 2021-09-23 10:00:11
+	 * @param workId
+	 * @param uid
+	 * @param fid
+	 * @param url
+	 * @return java.util.List<com.chaoxing.activity.dto.work.WorkBtnDTO>
+	*/
+	private List<WorkBtnDTO> listBtns(Integer workId, Integer uid, Integer fid, String url) {
+		url = String.format(url, workId, Optional.ofNullable(uid).map(String::valueOf).orElse(""), fid);
 		String result = restTemplate.postForObject(url, null, String.class);
 		JSONObject jsonObject = JSON.parseObject(result);
 		if (Objects.equals(true, jsonObject.getBoolean("success"))) {

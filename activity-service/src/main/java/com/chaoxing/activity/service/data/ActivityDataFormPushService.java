@@ -92,7 +92,7 @@ public class ActivityDataFormPushService {
                 // 删除记录
                 FormDataDTO formData = formApiService.getFormRecord(formUserId, formId, activity.getCreateFid());
                 if (formData != null) {
-                    formApiService.deleteFormRecord(formUserId);
+                    formApiService.deleteFormRecord(formUserId, formId);
                 }
             }
         } else {

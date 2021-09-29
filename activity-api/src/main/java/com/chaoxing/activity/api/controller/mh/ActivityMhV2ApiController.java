@@ -221,19 +221,19 @@ public class ActivityMhV2ApiController {
 				signedUp = false;
 				if (userSignParticipationStat.getSignUpAudit()) {
 					// 审核中
-					result.addAll(buildBtnField("报名审核中", getFlag(availableFlags), "", "0"));
+					result.addAll(buildBtnField("报名审核中", getFlag(availableFlags), "none", "0"));
 					existSignUpInfo = true;
 				} else if (activityEnded && userSignParticipationStat.getSignUpEnded()) {
 					// 活动和报名都结束的情况显示活动已结束
-					result.addAll(buildBtnField("活动已结束", getFlag(availableFlags), "", "0"));
+					result.addAll(buildBtnField("活动已结束", getFlag(availableFlags), "none", "0"));
 				} else if (userSignParticipationStat.getSignUpEnded()) {
-					result.addAll(buildBtnField("报名已结束", getFlag(availableFlags), "", "0"));
+					result.addAll(buildBtnField("报名已结束", getFlag(availableFlags), "none", "0"));
 				} else if (userSignParticipationStat.getSignUpNotStart()) {
-					result.addAll(buildBtnField("报名未开始", getFlag(availableFlags), "", "0"));
+					result.addAll(buildBtnField("报名未开始", getFlag(availableFlags), "none", "0"));
 				} else if (!userSignParticipationStat.getInParticipationScope() && uid != null) {
-					result.addAll(buildBtnField("不在参与范围内", getFlag(availableFlags), "", "0"));
+					result.addAll(buildBtnField("不在参与范围内", getFlag(availableFlags), "none", "0"));
 				} else if (userSignParticipationStat.getNoPlaces()) {
-					result.addAll(buildBtnField("名额已满", getFlag(availableFlags), "", "0"));
+					result.addAll(buildBtnField("名额已满", getFlag(availableFlags), "none", "0"));
 				} else {
 					String showName = "报名参加";
 					List<SignUpCreateParamDTO> signUps = userSignParticipationStat.getSignUps();

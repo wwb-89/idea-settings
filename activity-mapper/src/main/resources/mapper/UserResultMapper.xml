@@ -30,10 +30,7 @@
             t1.rating_num as ratingNum
         FROM
             t_user_result t
-        LEFT JOIN
-            t_user_stat_summary t1
-        ON
-            t.activity_id = t1.activity_id AND t.uid = t1.uid
+            INNER JOIN t_user_stat_summary t1 ON t.activity_id = t1.activity_id AND t.uid = t1.uid AND t1.is_valid = 1
         WHERE
             t.activity_id = #{queryParam.activityId}
         <if test="queryParam.sw != null and queryParam.sw != ''">

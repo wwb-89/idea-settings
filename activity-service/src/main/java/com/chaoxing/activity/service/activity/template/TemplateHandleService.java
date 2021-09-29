@@ -1,7 +1,6 @@
 package com.chaoxing.activity.service.activity.template;
 
 import com.chaoxing.activity.dto.OperateUserDTO;
-import com.chaoxing.activity.mapper.TemplateComponentMapper;
 import com.chaoxing.activity.mapper.TemplateMapper;
 import com.chaoxing.activity.model.*;
 import com.chaoxing.activity.service.activity.engine.SignUpConditionService;
@@ -10,7 +9,6 @@ import com.chaoxing.activity.service.activity.market.MarketQueryService;
 import com.chaoxing.activity.util.exception.BusinessException;
 import com.google.common.collect.Lists;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -35,8 +33,7 @@ public class TemplateHandleService {
 	@Resource
 	private TemplateMapper templateMapper;
 	@Resource
-	private TemplateComponentMapper templateComponentMapper;
-
+	private TemplateComponentService templateComponentService;
 	@Resource
 	private MarketQueryService activityMarketQueryService;
 	@Resource
@@ -59,23 +56,6 @@ public class TemplateHandleService {
 		templateMapper.insert(template);
 	}
 
-	/**批量新增模版组件
-	 * @Description 
-	 * @author wwb
-	 * @Date 2021-07-14 18:12:06
-	 * @param templateComponents
-	 * @return void
-	*/
-	public void batchAddTemplateComponents(List<TemplateComponent> templateComponents) {
-		if (CollectionUtils.isNotEmpty(templateComponents)) {
-			templateComponentMapper.batchAdd(templateComponents);
-			templateComponents.stream().forEach(templateComponent -> {
-				Optional.ofNullable(templateComponent.getChildren()).orElse(Lists.newArrayList()).forEach(v -> v.setPid(templateComponent.getId()));
-				batchAddTemplateComponents(templateComponent.getChildren());
-			});
-		}
-	}
-
 	/**克隆模版
 	 * @Description
 	 * 1、查询模版
@@ -94,7 +74,7 @@ public class TemplateHandleService {
 		Template originTemplate = templateQueryService.getById(originTemplateId);
 		Optional.ofNullable(originTemplate).orElseThrow(() -> new BusinessException("模版不存在"));
 
-		List<TemplateComponent> originTemplateComponents = templateQueryService.listTemplateComponentByTemplateId(originTemplateId);
+		List<TemplateComponent> originTemplateComponents = templateComponentService.listTemplateComponentByTemplateId(originTemplateId);
 		List<Integer> templateComponentIds = Optional.ofNullable(originTemplateComponents).orElse(Lists.newArrayList()).stream().map(TemplateComponent::getId).collect(Collectors.toList());
 		List<SignUpCondition> originSignUpConditions = signUpConditionService.listByTemplateComponentIds(templateComponentIds);
 		List<SignUpFillInfoType> originSignUpFillInfoTypes = signUpFillInfoTypeService.listByTemplateComponentIds(templateComponentIds);
@@ -107,7 +87,7 @@ public class TemplateHandleService {
 		Integer templateId = template.getId();
 		// 克隆模版组件列表
 		List<TemplateComponent> parentTemplateComponents = TemplateComponent.cloneToNewTemplateId(originTemplateComponents, templateId);
-		batchAddTemplateComponents(parentTemplateComponents);
+		templateComponentService.batchAddTemplateComponents(parentTemplateComponents);
 		// 找到新旧templateComponentId的对应关系
 		List<TemplateComponent> templateComponents = Lists.newArrayList(parentTemplateComponents);
 		parentTemplateComponents.forEach(v -> templateComponents.addAll(v.getChildren()));

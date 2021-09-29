@@ -1,11 +1,9 @@
 package com.chaoxing.activity.service.activity.template;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
-import com.chaoxing.activity.mapper.TemplateComponentMapper;
 import com.chaoxing.activity.mapper.TemplateMapper;
 import com.chaoxing.activity.model.Activity;
 import com.chaoxing.activity.model.Template;
-import com.chaoxing.activity.model.TemplateComponent;
 import com.google.common.collect.Lists;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
@@ -30,8 +28,6 @@ public class TemplateQueryService {
 
 	@Resource
 	private TemplateMapper templateMapper;
-	@Resource
-	private TemplateComponentMapper templateComponentMapper;
 
 	/**根据id查询
 	 * @Description 
@@ -83,20 +79,6 @@ public class TemplateQueryService {
 				.eq(Template::getActivityFlag, activityFlagEnum.getValue())
 		);
 		return Optional.ofNullable(systemTemplates).orElse(Lists.newArrayList()).stream().findFirst().orElse(null);
-	}
-
-	/**根据模版id查询模版组件关联
-	 * @Description 
-	 * @author wwb
-	 * @Date 2021-07-14 17:19:04
-	 * @param templateId
-	 * @return java.util.List<com.chaoxing.activity.model.TemplateComponent>
-	*/
-	public List<TemplateComponent> listTemplateComponentByTemplateId(Integer templateId) {
-		return templateComponentMapper.selectList(new LambdaQueryWrapper<TemplateComponent>()
-				.eq(TemplateComponent::getTemplateId, templateId)
-				.eq(TemplateComponent::getDeleted, false)
-		);
 	}
 
 	/**根据活动标识找到机构下对应的模版
@@ -172,43 +154,4 @@ public class TemplateQueryService {
 				.eq(Template::getMarketId, marketId));
 		return Optional.ofNullable(marketTemplates).orElse(Lists.newArrayList()).stream().findFirst().orElse(null);
 	}
-
-	/**根据模版id和组件id查询模版组件列表
-	 * @Description 
-	 * @author wwb
-	 * @Date 2021-07-15 16:08:00
-	 * @param templateId
-	 * @param componentId
-	 * @return java.util.List<com.chaoxing.activity.model.TemplateComponent>
-	*/
-	public List<TemplateComponent> listByTemplateIdAndComponentId(Integer templateId, Integer componentId) {
-		return templateComponentMapper.selectList(new LambdaQueryWrapper<TemplateComponent>()
-				.eq(TemplateComponent::getTemplateId, templateId)
-				.eq(TemplateComponent::getComponentId, componentId)
-		);
-	}
-
-	/**根据templateComponentId查询子列表
-	 * @Description 
-	 * @author wwb
-	 * @Date 2021-07-21 18:50:41
-	 * @param templateComponentId
-	 * @return java.util.List<com.chaoxing.activity.model.TemplateComponent>
-	*/
-	public List<TemplateComponent> listSubTemplateComponent(Integer templateComponentId) {
-		return templateComponentMapper.selectList(new LambdaQueryWrapper<TemplateComponent>()
-				.eq(TemplateComponent::getPid, templateComponentId));
-	}
-
-	/**判断模板是否存在报名组件
-	* @Description 
-	* @author huxiaolong
-	* @Date 2021-09-02 19:41:40
-	* @param templateId
-	* @return boolean
-	*/
-    public boolean exitSignUpComponent(Integer templateId) {
-    	int count = templateComponentMapper.countTemplateSignUp(templateId);
-    	return count > 0;
-    }
 }

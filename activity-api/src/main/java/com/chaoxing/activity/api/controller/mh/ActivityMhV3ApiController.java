@@ -11,18 +11,15 @@ import com.chaoxing.activity.dto.manager.sign.SignUpDTO;
 import com.chaoxing.activity.dto.manager.sign.UserSignParticipationStatDTO;
 import com.chaoxing.activity.dto.manager.sign.create.SignUpCreateParamDTO;
 import com.chaoxing.activity.dto.stat.ActivityStatDTO;
-import com.chaoxing.activity.dto.stat.ActivityStatSummaryDTO;
 import com.chaoxing.activity.dto.work.WorkBtnDTO;
 import com.chaoxing.activity.model.Activity;
 import com.chaoxing.activity.model.ActivityDetail;
 import com.chaoxing.activity.model.ActivityRating;
-import com.chaoxing.activity.model.ActivityStat;
 import com.chaoxing.activity.service.activity.ActivityQueryService;
 import com.chaoxing.activity.service.activity.ActivityStatQueryService;
 import com.chaoxing.activity.service.activity.ActivityValidationService;
 import com.chaoxing.activity.service.activity.flag.ActivityFlagValidateService;
 import com.chaoxing.activity.service.activity.rating.ActivityRatingQueryService;
-import com.chaoxing.activity.service.activity.stat.ActivityStatSummaryQueryService;
 import com.chaoxing.activity.service.manager.CloudApiService;
 import com.chaoxing.activity.service.manager.GroupApiService;
 import com.chaoxing.activity.service.manager.module.SignApiService;
@@ -393,7 +390,7 @@ public class ActivityMhV3ApiController {
                         if (StringUtils.isNotBlank(btnName)) {
                             showName = btnName;
                         }
-                        if (!signUps.get(0).getFillInfo()) {
+                        if (!signUps.get(0).getFillInfo() && uid != null) {
                             setSignUpBtn = Boolean.TRUE;
                             result.add(buildBtnField(showName, "", UrlConstant.MH_AJAX_SIGN_UP,  "1", true, MhBtnSequenceEnum.SIGN_UP.getSequence()));
                         }

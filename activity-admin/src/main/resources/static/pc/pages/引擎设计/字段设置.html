@@ -110,7 +110,7 @@
                             <i class="icon-edit" @click="activityFormDialog=true"></i>
                             <i class="icon-delete" @click="delDialog=true"></i>
                         </div>
-                        <label class="label">活动形式</label>
+                        <label class="label">活动形式<br><span class="spanLabel">标签</span></label>
                         <div class="input-box">
                             <div>
                                 <el-radio v-model="radio1" label="1" name="active-type" class="radio-item" readonly>线下活动</el-radio>
@@ -142,7 +142,7 @@
                         <div class="icon-div">
                             <i class="icon-edit" @click="activityTypeDialog=true"></i>
                         </div>
-                        <label class="label">活动类型</label>
+                        <label class="label">活动类型<br><span class="spanLabel">标签</span></label>
                         <div class="input-box">
                             <el-input type="text" v-model="activityType" placeholder="请选择" autocomplete="off" class="select-input" readonly></el-input>
                             <img src="../../assets/images/yq-design/arrow-down-small.png" alt="" class="arrow-down">
@@ -433,7 +433,7 @@
             </div>
         </div>
         <!-- 添加字段弹窗 -->
-        <div class="dialog-mask" v-show="addFieldDialog">
+        <div class="dialog-mask" v-show="!addFieldDialog">
             <div class="dailog add-field">
                 <div class="header">
                     <span>添加字段</span>
@@ -453,11 +453,12 @@
                         <span class="txt2">一个模板只能添加一次</span>
                     </div>
                     <div>
-                        <div class="field-item">
+                        <div class="field-item label-item">
                             <p class="field overHidden1">参与范围</p>
                             <el-tooltip class="tooltip" effect="dark" content="说明文字单行效果" placement="top">
                                 <i class="icon-info"></i>
                             </el-tooltip>
+                            <br><span class="spanLabel">标签</span>
                             <div class="fr add-btn">
                                 <i class="icon-add"></i>
                                 <span class="aready" style="display: none;">已添加</span>

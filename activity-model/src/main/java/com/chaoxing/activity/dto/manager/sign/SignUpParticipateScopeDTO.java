@@ -1,5 +1,6 @@
 package com.chaoxing.activity.dto.manager.sign;
 
+import com.chaoxing.activity.dto.manager.wfw.WfwGroupDTO;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -32,4 +33,13 @@ public class SignUpParticipateScopeDTO {
 	/** 组织架构类型 */
 	private String groupType;
 
+    public static SignUpParticipateScopeDTO buildFromWfwGroup(WfwGroupDTO wfwGroup, String groupType) {
+		return SignUpParticipateScopeDTO.builder()
+				.externalId(Integer.valueOf(wfwGroup.getId()))
+				.externalName(wfwGroup.getGroupname())
+				.groupType(groupType)
+				.leaf(wfwGroup.getSoncount() == 0)
+				.build();
+
+    }
 }

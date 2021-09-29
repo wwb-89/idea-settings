@@ -7,8 +7,10 @@ import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.*;
 
 import java.time.LocalDateTime;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
 /**
  * 组件表
@@ -68,6 +70,17 @@ public class Component {
     private List<ComponentField> componentFields;
     @TableField(exist = false)
     private List<String> fieldValues;
+
+    /**获取自定义组件类型
+    * @Description 
+    * @author huxiaolong
+    * @Date 2021-09-27 16:21:52
+    * @param 
+    * @return java.util.List<java.lang.String>
+    */
+    public static List<String> listCustomComponentType() {
+        return Arrays.stream(TypeEnum.values()).map(TypeEnum::getValue).collect(Collectors.toList());
+    }
 
     @Getter
     public enum TypeEnum {

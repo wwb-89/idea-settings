@@ -156,7 +156,7 @@ public class ErdosActivityInfoApiController {
 
     private List<MhGeneralAppResultDataDTO.MhGeneralAppResultDataFieldDTO> listWorkBtn(Integer uid, Integer fid, Integer workId, List<Integer> availableFlags) {
         List<MhGeneralAppResultDataDTO.MhGeneralAppResultDataFieldDTO> btns = Lists.newArrayList();
-        List<WorkBtnDTO> workBtnDtos = workApiService.listBtns(workId, uid, fid);
+        List<WorkBtnDTO> workBtnDtos = workApiService.listErdosBtns(workId, uid, fid);
         if (CollectionUtils.isNotEmpty(workBtnDtos)) {
             for (WorkBtnDTO workBtnDto : workBtnDtos) {
                 String flag = getFlag(availableFlags);

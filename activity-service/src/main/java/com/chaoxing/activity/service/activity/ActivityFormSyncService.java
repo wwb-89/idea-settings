@@ -20,9 +20,13 @@ import com.chaoxing.activity.model.Template;
 import com.chaoxing.activity.service.activity.classify.ClassifyHandleService;
 import com.chaoxing.activity.service.activity.classify.ClassifyQueryService;
 import com.chaoxing.activity.service.activity.market.MarketHandleService;
+import com.chaoxing.activity.service.activity.template.TemplateComponentService;
+import com.chaoxing.activity.service.activity.template.TemplateQueryService;
+import com.chaoxing.activity.service.manager.PassportApiService;
 import com.chaoxing.activity.service.manager.module.SignApiService;
 import com.chaoxing.activity.service.manager.wfw.WfwAreaApiService;
 import com.chaoxing.activity.service.manager.wfw.WfwFormApiService;
+import com.chaoxing.activity.service.util.FormUtils;
 import com.chaoxing.activity.util.ApplicationContextHolder;
 import com.chaoxing.activity.util.DateUtils;
 import com.chaoxing.activity.util.exception.BusinessException;
@@ -67,6 +71,12 @@ public class ActivityFormSyncService {
     private ClassifyHandleService classifyHandleService;
     @Resource
     private SignApiService signApiService;
+    @Resource
+    private PassportApiService passportApiService;
+    @Resource
+    private TemplateQueryService templateQueryService;
+    @Resource
+    private TemplateComponentService templateComponentService;
 
 
 
@@ -117,30 +127,38 @@ public class ActivityFormSyncService {
         if (activity != null) {
             return activity;
         }
-        // 获取活动创建者信息
-        List<WfwAreaDTO> defaultPublishAreas = wfwAreaApiService.listByFid(fid);
-        WfwAreaDTO orgInfo = Optional.ofNullable(defaultPublishAreas).orElse(Lists.newArrayList()).stream().filter(v -> Objects.equals(v.getFid(), fid)).findFirst().orElse(new WfwAreaDTO());
-        LoginUserDTO loginUser = LoginUserDTO.buildDefault(formUserRecord.getUid(), formUserRecord.getUname(), fid, orgInfo.getName());
+        // 获取机构名称
+        String orgName = passportApiService.getOrgName(fid);
+        LoginUserDTO loginUser = LoginUserDTO.buildDefault(formUserRecord.getUid(), formUserRecord.getUname(), fid, orgName);
         // 获取模板和市场信息
-        Template template = marketHandleService.getOrCreateOrgMarket(fid, Activity.ActivityFlagEnum.THREE_CONFERENCE_ONE_LESSON, loginUser);
+        Integer marketId = marketHandleService.getOrCreateOrgMarket(fid, Activity.ActivityFlagEnum.THREE_CONFERENCE_ONE_LESSON, loginUser);
+        Template template = templateQueryService.getMarketFirstTemplate(marketId);
+        // 活动分类
+        String activityClassifyName = FormUtils.getValue(formUserRecord, "activity_classify");
+        Classify classify = classifyHandleService.getOrAddMarketClassify(marketId, activityClassifyName);
         // 封装活动创建信息数据
-        ActivityCreateParamDTO activityCreateParam = packageActivityCreateParam(formUserRecord, template);
-        activityCreateParam.setWebTemplateId(webTemplateId);
-        activityCreateParam.setStatus(Activity.StatusEnum.RELEASED.getValue());
+        ActivityCreateParamDTO activityCreateParam = ActivityCreateParamDTO.buildFromFormData(formUserRecord, classify.getId(), orgName);
         activityCreateParam.setOrigin(String.valueOf(formId));
         activityCreateParam.setOriginFormUserId(formUserId);
+        activityCreateParam.setStatus(Activity.StatusEnum.RELEASED.getValue());
         activityCreateParam.setSignedUpNotice(true);
-        activityCreateParam.setActivityFlag(Activity.ActivityFlagEnum.THREE_CONFERENCE_ONE_LESSON.getValue());
+        // 补充额外必要信息
+        Integer templateId = template.getId();
+        activityCreateParam.setAdditionalAttrs(webTemplateId, marketId, templateId, Activity.ActivityFlagEnum.THREE_CONFERENCE_ONE_LESSON.getValue());
         // 封装报名信息
         SignCreateParamDTO signCreateParam = SignCreateParamDTO.builder().name(activityCreateParam.getName()).build();
         // 默认开启报名
-        signCreateParam.setSignUps(Lists.newArrayList(SignUpCreateParamDTO.buildDefault()));
+        Integer originId = templateComponentService.getSysComponentTplComponentId(templateId, "sign_up");
+        SignUpCreateParamDTO signUpCreateParam = SignUpCreateParamDTO.buildDefault();
+        signUpCreateParam.setOriginId(originId);
+        signCreateParam.setSignUps(Lists.newArrayList(signUpCreateParam));
         // 判断是否开启签到，并默认封装签到
         SignInCreateParamDTO signInCreateParam = handleActivitySignIn(formUserRecord);
         if (signInCreateParam != null) {
             signCreateParam.setSignIns(Lists.newArrayList(signInCreateParam));
         }
         // 新增活动
+        List<WfwAreaDTO> defaultPublishAreas = wfwAreaApiService.listByFid(fid);
         Integer activityId = activityHandleService.add(activityCreateParam, signCreateParam, defaultPublishAreas, loginUser);
         // 立即发布
         activityHandleService.release(activityId, loginUser);
@@ -227,54 +245,6 @@ public class ActivityFormSyncService {
             }
         });
         return participateUids;
-    }
-
-    /**封装活动创建数据信息
-     * @Description
-     * @author huxiaolong
-     * @Date 2021-08-25 15:52:10
-     * @param formUserRecord
-     * @return com.chaoxing.activity.dto.activity.ActivityCreateParamDTO
-     */
-    private ActivityCreateParamDTO packageActivityCreateParam(FormDataDTO formUserRecord, Template template) {
-        Integer marketId = template.getMarketId();
-        ActivityCreateParamDTO activityCreateParam = ActivityCreateParamDTO.buildDefault();
-        List<FormDataItemDTO> formData = formUserRecord.getFormData();
-        List<String> timeScopes = Lists.newArrayList();
-        formData.forEach(v -> {
-            List<JSONObject> values = v.getValues();
-            if (CollectionUtils.isNotEmpty(values)) {
-                JSONObject obj = values.get(0);
-                String attrValue = obj.getString("val");
-                if (Objects.equals("activity_name", v.getAlias())) {
-                    activityCreateParam.setName(attrValue);
-                } else if (Objects.equals("activity_classify", v.getAlias())) {
-                    Classify classify = classifyQueryService.getOrAddByName(attrValue);
-                    MarketClassify marketClassify = classifyQueryService.getByClassifyIdAndMarketId(classify.getId(), marketId);
-                    if (marketClassify == null) {
-                        classifyHandleService.addMarketClassify(MarketClassifyCreateParamDTO.builder().marketId(marketId).name(attrValue).build());
-                    }
-                    activityCreateParam.setActivityClassifyId(classify.getId());
-                } else if (Objects.equals("activity_address", v.getAlias())) {
-                    activityCreateParam.setActivityType(Activity.ActivityTypeEnum.OFFLINE.getValue());
-                    activityCreateParam.setAddress(attrValue);
-                } else if (Objects.equals("activity_time_scope", v.getAlias())) {
-                    timeScopes.add(attrValue);
-                } else if (Objects.equals("introduction", v.getAlias())) {
-                    activityCreateParam.setIntroduction(attrValue);
-                }
-            }
-        });
-        if (timeScopes.size() > 2) {
-            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
-            LocalDateTime startTime = StringUtils.isNotBlank(timeScopes.get(0)) ? LocalDateTime.parse(timeScopes.get(0), formatter) : null;
-            LocalDateTime endTime = StringUtils.isNotBlank(timeScopes.get(1)) ? LocalDateTime.parse(timeScopes.get(1), formatter) : null;
-            activityCreateParam.setStartTimeStamp(DateUtils.date2Timestamp(startTime));
-            activityCreateParam.setEndTimeStamp(DateUtils.date2Timestamp(endTime));
-        }
-        activityCreateParam.setTemplateId(template.getId());
-        activityCreateParam.setMarketId(marketId);
-        return activityCreateParam;
     }
 
     /**封装回写数据

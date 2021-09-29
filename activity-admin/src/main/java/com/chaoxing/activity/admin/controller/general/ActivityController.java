@@ -11,6 +11,7 @@ import com.chaoxing.activity.service.activity.ActivityQueryService;
 import com.chaoxing.activity.service.activity.classify.ClassifyQueryService;
 import com.chaoxing.activity.service.activity.engine.ActivityEngineQueryService;
 import com.chaoxing.activity.service.activity.manager.ActivityCreatePermissionService;
+import com.chaoxing.activity.service.activity.template.TemplateComponentService;
 import com.chaoxing.activity.service.activity.template.TemplateQueryService;
 import com.chaoxing.activity.service.manager.wfw.WfwAreaApiService;
 import com.chaoxing.activity.service.tablefield.TableFieldQueryService;
@@ -44,7 +45,7 @@ public class ActivityController {
 	@Resource
 	private TableFieldQueryService tableFieldQueryService;
 	@Resource
-	private ActivityEngineQueryService activityEngineQueryService;
+	private TemplateComponentService templateComponentService;
 	@Resource
 	private TemplateQueryService templateQueryService;
 	@Resource
@@ -90,7 +91,7 @@ public class ActivityController {
 		model.addAttribute("strict", strict);
 		model.addAttribute("templateId", template.getId());
 		// 加载模版对应的组件列表
-		model.addAttribute("templateComponents", activityEngineQueryService.listTemplateComponentTree(templateId, template.getFid()));
+		model.addAttribute("templateComponents", templateComponentService.listTemplateComponentTree(templateId, template.getFid()));
 		// 活动形式列表
 		model.addAttribute("activityTypes", activityQueryService.listActivityType());
 		// 活动分类列表范围

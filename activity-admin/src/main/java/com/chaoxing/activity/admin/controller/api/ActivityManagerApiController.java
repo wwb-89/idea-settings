@@ -1,5 +1,6 @@
 package com.chaoxing.activity.admin.controller.api;
 
+import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.chaoxing.activity.admin.util.LoginUtils;
 import com.chaoxing.activity.dto.LoginUserDTO;
@@ -116,4 +117,21 @@ public class ActivityManagerApiController {
 		return RestRespDTO.success();
 	}
 
+	/**菜单配置
+	* @Description
+	* @author huxiaolong
+	* @Date 2021-09-28 14:18:32
+	* @param request
+* @param activityId
+* @param activityManagerStr
+	* @return com.chaoxing.activity.dto.RestRespDTO
+	*/
+	@LoginRequired
+	@RequestMapping("menus/config")
+	public RestRespDTO configActivityManagerMenu(HttpServletRequest request, @PathVariable Integer activityId, String activityManagerStr) {
+		LoginUserDTO loginUser = LoginUtils.getLoginUser(request);
+		ActivityManager activityManager = JSON.parseObject(activityManagerStr, ActivityManager.class);
+		activityManagerService.updateActivityManageMenu(activityId, activityManager, loginUser);
+		return RestRespDTO.success();
+	}
 }

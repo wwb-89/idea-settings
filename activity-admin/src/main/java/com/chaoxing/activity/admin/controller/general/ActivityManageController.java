@@ -2,12 +2,14 @@ package com.chaoxing.activity.admin.controller.general;
 
 import com.chaoxing.activity.admin.util.LoginUtils;
 import com.chaoxing.activity.dto.LoginUserDTO;
+import com.chaoxing.activity.dto.activity.ActivityMenuDTO;
 import com.chaoxing.activity.dto.activity.create.ActivityCreateParamDTO;
 import com.chaoxing.activity.dto.manager.ActivityCreatePermissionDTO;
 import com.chaoxing.activity.dto.manager.sign.SignActivityManageIndexDTO;
 import com.chaoxing.activity.dto.manager.sign.create.SignCreateParamDTO;
 import com.chaoxing.activity.dto.manager.wfw.WfwAreaDTO;
 import com.chaoxing.activity.model.Activity;
+import com.chaoxing.activity.model.ActivityManager;
 import com.chaoxing.activity.model.ActivityMenuConfig;
 import com.chaoxing.activity.model.WebTemplate;
 import com.chaoxing.activity.service.WebTemplateService;
@@ -16,11 +18,15 @@ import com.chaoxing.activity.service.activity.ActivityValidationService;
 import com.chaoxing.activity.service.activity.classify.ClassifyQueryService;
 import com.chaoxing.activity.service.activity.engine.ActivityEngineQueryService;
 import com.chaoxing.activity.service.activity.manager.ActivityCreatePermissionService;
+import com.chaoxing.activity.service.activity.manager.ActivityManagerService;
 import com.chaoxing.activity.service.activity.menu.ActivityMenuService;
 import com.chaoxing.activity.service.activity.scope.ActivityClassService;
 import com.chaoxing.activity.service.activity.scope.ActivityScopeQueryService;
+import com.chaoxing.activity.service.activity.template.TemplateComponentService;
 import com.chaoxing.activity.service.manager.module.SignApiService;
 import com.chaoxing.activity.util.UserAgentUtils;
+import com.google.common.collect.Lists;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -31,6 +37,9 @@ import org.springframework.web.bind.annotation.RequestParam;
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import java.util.*;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 /**
@@ -58,7 +67,9 @@ public class ActivityManageController {
 	@Resource
 	private ActivityValidationService activityValidationService;
 	@Resource
-	private ActivityEngineQueryService activityEngineQueryService;
+	private TemplateComponentService templateComponentService;
+	@Resource
+	private ActivityManagerService activityManagerService;
 	@Resource
 	private ActivityMenuService activityMenuService;
 	@Resource
@@ -88,8 +99,21 @@ public class ActivityManageController {
 		model.addAttribute("signActivityManageIndex", signActivityManageIndex);
 		// 是不是创建者
 		boolean creator = activityValidationService.isCreator(activity, operateUid);
+		List<String> activityMenus = Lists.newArrayList();
+		if (creator) {
+			// 创建者获取活动所有菜单
+			activityMenus = activityMenuService.listActivityMenuConfig(activityId).stream()
+					.map(ActivityMenuConfig::getMenu).collect(Collectors.toList());
+		} else {
+			ActivityManager activityManager = activityManagerService.getByActivityUid(activityId, operateUid);
+			if (activityManager != null && StringUtils.isNotBlank(activityManager.getMenu())) {
+				List<String> managerMenus = Arrays.asList(StringUtils.split(activityManager.getMenu(), ","));
+				activityMenus = ActivityMenuDTO.buildFromActivityMenus(managerMenus)
+						.stream().map(ActivityMenuDTO::getValue).collect(Collectors.toList());
+			}
+		}
 		model.addAttribute("isCreator", creator);
-		model.addAttribute("activityMenus", activityMenuService.listActivityMenuConfig(activityId).stream().map(ActivityMenuConfig::getMenu).collect(Collectors.toList()));
+		model.addAttribute("activityMenus", activityMenus);
 		if (UserAgentUtils.isMobileAccess(request)) {
 			return "mobile/activity-index";
 		} else {
@@ -113,7 +137,7 @@ public class ActivityManageController {
 		Activity activity = activityValidationService.manageAble(activityId, loginUser.getUid());
 		ActivityCreateParamDTO createParamDTO = activityQueryService.packageActivityCreateParamByActivity(activity);
 		model.addAttribute("activity", createParamDTO);
-		model.addAttribute("templateComponents", activityEngineQueryService.listTemplateComponentTree(activity.getTemplateId(), activity.getCreateFid()));
+		model.addAttribute("templateComponents", templateComponentService.listTemplateComponentTree(activity.getTemplateId(), activity.getCreateFid()));
 		// 活动类型列表
 		model.addAttribute("activityTypes", activityQueryService.listActivityType());
 		String activityFlag = activity.getActivityFlag();

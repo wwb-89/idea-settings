@@ -1,7 +1,9 @@
 package com.chaoxing.activity.util;
 
 import com.alibaba.fastjson.JSONObject;
+import com.chaoxing.activity.dto.AddressDTO;
 import com.chaoxing.activity.dto.DepartmentDTO;
+import com.chaoxing.activity.dto.TimeScopeDTO;
 import com.chaoxing.activity.dto.manager.form.FormDataDTO;
 import com.chaoxing.activity.dto.manager.form.FormDataItemDTO;
 import com.chaoxing.activity.dto.manager.form.FormUserDTO;
@@ -175,6 +177,111 @@ public class FormUtils {
 			}
 		}
 		return result;
+	}
+
+	private static LocalDateTime getTime(String value) {
+		LocalDateTime result = null;
+		if (StringUtils.isNotBlank(value)) {
+			for (DateTimeFormatter dateTimeFormatter : FormUtils.FORM_DATE_TIME_FORMATTERS) {
+				try {
+					result = LocalDateTime.parse(value, dateTimeFormatter);
+				} catch (Exception e) {
+				}
+			}
+		}
+		return result;
+	}
+
+
+	/**获取云盘资源id
+	 * @Description
+	 * @author wwb
+	 * @Date 2021-06-15 00:36:27
+	 * @param formData
+	 * @param fieldAlias
+	 * @return java.lang.String
+	 */
+	public static String getCloudId(FormDataDTO formData, String fieldAlias) {
+		String value = "";
+		JSONObject jsonValue = getJsonValue(formData, fieldAlias);
+		if (jsonValue != null) {
+			value = jsonValue.getString("objectId");
+		}
+		value = Optional.ofNullable(value).orElse("");
+		return value;
+	}
+
+
+
+	/**获取时间区间
+	 * @Description
+	 * @author wwb
+	 * @Date 2021-06-11 18:15:41
+	 * @param formData
+	 * @param fieldAlias
+	 * @return com.chaoxing.activity.dto.TimeScopeDTO
+	 */
+	public static TimeScopeDTO getTimeScope(FormDataDTO formData, String fieldAlias) {
+		LocalDateTime startTime;
+		LocalDateTime endTime;
+		List<FormDataItemDTO> formDatas = formData.getFormData();
+		List<String> activityTimes = Lists.newArrayList();
+		if (CollectionUtils.isNotEmpty(formDatas)) {
+			for (FormDataItemDTO data : formDatas) {
+				String alias = data.getAlias();
+				if (Objects.equals(fieldAlias, alias)) {
+					List<JSONObject> values = data.getValues();
+					if (CollectionUtils.isNotEmpty(values)) {
+						activityTimes.add(values.get(0).getString("val"));
+					} else {
+						activityTimes.add("");
+					}
+				}
+			}
+		}
+		if (CollectionUtils.isEmpty(activityTimes)) {
+			// 添加开始结束时间
+			activityTimes.add("");
+			activityTimes.add("");
+		}
+		String startTimeStr = activityTimes.get(0);
+		String endTimeStr = activityTimes.get(1);
+		if (StringUtils.isBlank(startTimeStr)) {
+			startTime = LocalDateTime.now();
+		} else {
+			startTime = getTime(startTimeStr);
+		}
+		if (StringUtils.isBlank(endTimeStr)) {
+			endTime = startTime.plusMonths(1);
+		} else {
+			endTime = getTime(endTimeStr);
+		}
+		return TimeScopeDTO.builder()
+				.startTime(startTime)
+				.endTime(endTime)
+				.build();
+	}
+
+
+	/**获取地址信息
+	 * @Description
+	 * @author wwb
+	 * @Date 2021-06-15 01:43:33
+	 * @param formData
+	 * @param fieldAlias
+	 * @return com.chaoxing.activity.dto.AddressDTO
+	 */
+	public static AddressDTO getAddress(FormDataDTO formData, String fieldAlias) {
+		AddressDTO address = null;
+		JSONObject jsonValue = getJsonValue(formData, fieldAlias);
+		if (jsonValue != null) {
+			address = AddressDTO.builder()
+					.address(jsonValue.getString("address"))
+					.lat(jsonValue.getBigDecimal("lat"))
+					.lng(jsonValue.getBigDecimal("lng"))
+					.build();
+		}
+		return address;
 	}
 
 }

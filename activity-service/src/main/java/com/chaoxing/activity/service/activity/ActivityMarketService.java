@@ -8,7 +8,6 @@ import com.chaoxing.activity.dto.manager.PassportUserDTO;
 import com.chaoxing.activity.mapper.ActivityMarketMapper;
 import com.chaoxing.activity.model.Activity;
 import com.chaoxing.activity.model.ActivityMarket;
-import com.chaoxing.activity.model.Template;
 import com.chaoxing.activity.service.activity.market.MarketHandleService;
 import com.chaoxing.activity.service.manager.PassportApiService;
 import com.chaoxing.activity.service.queue.OrgAssociateActivityQueueService;
@@ -148,8 +147,7 @@ public class ActivityMarketService {
         PassportUserDTO passportUserDto = passportApiService.getByUid(uid);
         String userName = Optional.ofNullable(passportUserDto).map(PassportUserDTO::getRealName).orElse("");
         String orgName = passportApiService.getOrgName(fid);
-        Template template = marketHandleService.getOrCreateOrgMarket(fid, Activity.ActivityFlagEnum.fromValue(activityFlag), LoginUserDTO.buildDefault(uid, userName, fid, orgName));
-        Integer marketId = template.getMarketId();
+        Integer marketId = marketHandleService.getOrCreateOrgMarket(fid, Activity.ActivityFlagEnum.fromValue(activityFlag), LoginUserDTO.buildDefault(uid, userName, fid, orgName));
         // 关联
         associate(activity, marketId);
     }
