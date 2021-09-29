@@ -17,11 +17,10 @@ import lombok.NoArgsConstructor;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class UserCancelSignOutEventOrigin {
+public class UserCancelSignOutEventOrigin extends AbstractEventOrigin {
 
 	private Integer activityId;
 	private Integer uid;
 	private Integer signOutId;
-	private Long timestamp;
 
 }

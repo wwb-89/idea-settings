@@ -17,11 +17,9 @@ import lombok.NoArgsConstructor;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class ActivityChangeEventOrigin {
+public class ActivityChangeEventOrigin extends AbstractEventOrigin {
 
 	/** 活动id */
 	private Integer activityId;
-	/** 时间戳 */
-	private Long timestamp;
 
 }

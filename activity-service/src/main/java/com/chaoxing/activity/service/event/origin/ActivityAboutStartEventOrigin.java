@@ -19,7 +19,7 @@ import java.time.LocalDateTime;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class ActivityAboutStartEventOrigin {
+public class ActivityAboutStartEventOrigin extends AbstractEventOrigin {
 
 	/** 活动id */
 	private Integer activityId;
@@ -27,7 +27,5 @@ public class ActivityAboutStartEventOrigin {
 	private Integer marketId;
 	/** 活动开始事件 */
 	private LocalDateTime startTime;
-	/** 时间戳 */
-	private Long timestamp;
 
 }

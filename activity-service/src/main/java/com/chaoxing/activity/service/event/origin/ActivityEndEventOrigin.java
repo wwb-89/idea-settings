@@ -19,13 +19,11 @@ import java.time.LocalDateTime;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class ActivityEndEventOrigin {
+public class ActivityEndEventOrigin extends AbstractEventOrigin {
 
 	/** 活动id */
 	private Integer activityId;
 	/** 结束时间 */
 	private LocalDateTime endTime;
-	/** 时间戳 */
-	private Long timestamp;
 
 }

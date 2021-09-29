@@ -17,10 +17,9 @@ import lombok.NoArgsConstructor;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class AddSignInEventOrigin {
+public class AddSignInEventOrigin extends AbstractEventOrigin {
 
 	private Integer activityId;
 	private Integer signInId;
-	private Long timestamp;
 
 }

@@ -17,9 +17,8 @@ import lombok.NoArgsConstructor;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class CloseSignUpEventOrigin {
+public class CloseSignUpEventOrigin extends AbstractEventOrigin {
 
 	private Integer activityId;
-	private Long timestamp;
 
 }

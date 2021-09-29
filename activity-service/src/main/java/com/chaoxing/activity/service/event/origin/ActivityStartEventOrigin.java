@@ -19,13 +19,11 @@ import java.time.LocalDateTime;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class ActivityStartEventOrigin {
+public class ActivityStartEventOrigin extends AbstractEventOrigin {
 
 	/** 活动id */
 	private Integer activityId;
 	/** 开始事件 */
 	private LocalDateTime startTime;
-	/** 时间戳 */
-	private Long timestamp;
 
 }

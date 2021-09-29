@@ -19,12 +19,11 @@ import java.time.LocalDateTime;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class UserSignedOutEventOrigin {
+public class UserSignedOutEventOrigin extends AbstractEventOrigin {
 
 	private Integer activityId;
 	private Integer uid;
 	private Integer signOutId;
 	private LocalDateTime signedOutTime;
-	private Long timestamp;
 
 }

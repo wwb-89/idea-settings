@@ -17,10 +17,9 @@ import lombok.NoArgsConstructor;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class UserDeleteRatingEventOrigin {
+public class UserDeleteRatingEventOrigin extends AbstractEventOrigin {
 
 	private Integer activityId;
 	private Integer uid;
-	private Long timestamp;
 
 }

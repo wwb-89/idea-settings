@@ -19,12 +19,11 @@ import java.time.LocalDateTime;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class SignUpAboutEndEventOrigin {
+public class SignUpAboutEndEventOrigin extends AbstractEventOrigin {
 
 	private Integer activityId;
 	private Integer signUpId;
 	private String signUpName;
 	private LocalDateTime signUpEndTime;
-	private Long timestamp;
 
 }

@@ -17,7 +17,7 @@ import lombok.NoArgsConstructor;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class CancelReleaseActivityEventOrigin {
+public class CancelReleaseActivityEventOrigin extends AbstractEventOrigin {
 
 	/** 活动id */
 	private Integer activityId;
@@ -25,7 +25,5 @@ public class CancelReleaseActivityEventOrigin {
 	private Integer marketId;
 	/** 机构id */
 	private Integer fid;
-	/** 时间戳 */
-	private Long timestamp;
 
 }
