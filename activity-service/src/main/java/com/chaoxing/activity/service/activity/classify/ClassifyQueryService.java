@@ -236,7 +236,7 @@ public class ClassifyQueryService {
 			String code = activityFlagCodeService.getCodeByFlag(flag);
 			Integer areaFid = wfwAreaApiService.listByCode(code).stream().filter(v -> Objects.equals(code, v.getCode())).map(WfwAreaDTO::getFid).findFirst().orElse(null);
 			if (areaFid != null) {
-				Integer areaMarketId = marketQueryService.getMarketIdByTemplate(areaFid, flag);
+				Integer areaMarketId = marketQueryService.getMarketIdByFlag(areaFid, flag);
 				classifies.addAll(listMarketClassifies(areaMarketId));
 			}
 		}
