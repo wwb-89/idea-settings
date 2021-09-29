@@ -1559,6 +1559,10 @@
                 },
                 addTagSubmit: function () {
                     var $this = this;
+                    if (activityApp.isEmpty($this.addTag)) {
+                        app.showMsg("标签不能为空");
+                        return;
+                    }
                     if ($this.tags.indexOf($this.addTag) > -1) {
                         app.showMsg("标签已存在");
                         return;
