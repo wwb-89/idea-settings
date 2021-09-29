@@ -158,7 +158,7 @@
                                     </el-select>
                                 </div>
                                 <template v-if="strict != 1">
-                                    <div :class="{'type-item': true, 'paddingR0': !activityClassify.system, 'active': activityClassify.selected}" v-for="(activityClassify, index) of activityClassifies" :key="'activity-classify-' + index" @click="selectActivityClassify(index)">{{activityClassify.name}}
+                                    <div :class="{'type-item': true, 'paddingR0': (!activityClassify.system && activityClassify.owner), 'active': activityClassify.selected}" v-for="(activityClassify, index) of activityClassifies" :key="'activity-classify-' + index" @click="selectActivityClassify(index)">{{activityClassify.name}}
                                         <div class="more-box" v-if="!activityClassify.system && activityClassify.owner">
                                             <div class="more-btn"></div>
                                             <div class="edit-box">
