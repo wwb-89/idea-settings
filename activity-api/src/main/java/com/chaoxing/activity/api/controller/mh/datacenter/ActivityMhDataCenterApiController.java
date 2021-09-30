@@ -272,6 +272,7 @@ public class ActivityMhDataCenterApiController {
             for (Classify classify : classifies) {
                 JSONObject item = new JSONObject();
                 item.put("id", classify.getId());
+                item.put("typeId", classify.getId());
                 item.put("name", classify.getName());
                 activityClassifyJsonArray.add(item);
             }
