@@ -50,7 +50,7 @@ public class ActivityManager {
                 .activityId(activity.getId())
                 .uid(activity.getCreateUid())
                 .userName(activity.getCreateUserName())
-                .menu(StringUtils.join(ActivityMenuDTO.list(), ","))
+                .menu(StringUtils.join(ActivityMenuDTO.listMenus(), ","))
                 .build();
     }
 

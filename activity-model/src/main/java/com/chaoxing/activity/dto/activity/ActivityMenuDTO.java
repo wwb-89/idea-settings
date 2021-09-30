@@ -34,6 +34,17 @@ public class ActivityMenuDTO {
                 .build();
     }
 
+    /**获取全部菜单values集合
+    * @Description
+    * @author huxiaolong
+    * @Date 2021-09-30 11:45:13
+    * @param
+    * @return java.util.List<java.lang.String>
+    */
+    public static List<String> listMenus() {
+        return list().stream().map(ActivityMenuDTO::getValue).collect(Collectors.toList());
+    }
+
     public static List<ActivityMenuDTO> list() {
         ActivityMenuEnum[] values = ActivityMenuEnum.values();
         return Arrays.stream(values).map(ActivityMenuDTO::buildFromActivityMenuEnum).collect(Collectors.toList());
