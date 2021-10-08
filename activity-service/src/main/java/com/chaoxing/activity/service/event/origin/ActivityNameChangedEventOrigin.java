@@ -13,12 +13,9 @@ import lombok.NoArgsConstructor;
  * @blame wwb
  * @date 2021-09-28 11:10:00
  */
-@Data
-@Builder
-@NoArgsConstructor
-@AllArgsConstructor
 public class ActivityNameChangedEventOrigin extends ActivityChangeEventOrigin {
 
-
+    private String oldName;
+    private String newName;
 
 }
