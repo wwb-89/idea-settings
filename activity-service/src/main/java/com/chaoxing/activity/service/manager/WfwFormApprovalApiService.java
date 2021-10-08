@@ -336,8 +336,10 @@ public class WfwFormApprovalApiService {
             String signUpOpenAudit = FormUtils.getValue(formData, "sign_up_open_audit");
             signUp.setOpenAudit(Objects.equals(YES, signUpOpenAudit));
             TimeScopeDTO signUpTimeScope = FormUtils.getTimeScope(formData, "sign_up_time");
-            signUp.setStartTime(DateUtils.date2Timestamp(signUpTimeScope.getStartTime()));
-            signUp.setEndTime(DateUtils.date2Timestamp(signUpTimeScope.getEndTime()));
+            LocalDateTime startTime = Optional.ofNullable(signUpTimeScope.getStartTime()).orElse(LocalDateTime.now());
+            LocalDateTime endTime = Optional.ofNullable(signUpTimeScope.getEndTime()).orElse(startTime.plusMonths(1));
+            signUp.setStartTime(DateUtils.date2Timestamp(startTime));
+            signUp.setEndTime(DateUtils.date2Timestamp(endTime));
             String signUpEndAllowCancel = FormUtils.getValue(formData, "sign_up_end_allow_cancel");
             signUp.setEndAllowCancel(Objects.equals(YES, signUpEndAllowCancel));
             String signUpPublicList = FormUtils.getValue(formData, "sign_up_public_list");
@@ -380,8 +382,10 @@ public class WfwFormApprovalApiService {
             String signInPublicList = FormUtils.getValue(formData, "sign_in_public_list");
             signIn.setPublicList(Objects.equals(YES, signInPublicList));
             TimeScopeDTO signInTimeScope = FormUtils.getTimeScope(formData, "sign_in_time");
-            signIn.setStartTime(DateUtils.date2Timestamp(signInTimeScope.getStartTime()));
-            signIn.setEndTime(DateUtils.date2Timestamp(signInTimeScope.getEndTime()));
+            LocalDateTime signInStartTime = Optional.ofNullable(signInTimeScope.getStartTime()).orElse(activityStartTime.minusHours(1));
+            LocalDateTime signInEndTime = Optional.ofNullable(signInTimeScope.getEndTime()).orElse(null);
+            signIn.setStartTime(DateUtils.date2Timestamp(signInStartTime));
+            signIn.setEndTime(DateUtils.date2Timestamp(signInEndTime));
             String signInWay = FormUtils.getValue(formData, "sign_in_way");
             SignInCreateParamDTO.Way way = SignInCreateParamDTO.Way.fromName(signInWay);
             if (way != null) {
@@ -403,11 +407,6 @@ public class WfwFormApprovalApiService {
                     signIn.setScanCodeWay(SignInCreateParamDTO.ScanCodeWay.PARTICIPATOR.getValue());
                 }
             }
-            // 签到时间为活动开始前30分钟到活动开始截止
-            LocalDateTime endTime = activityStartTime;
-            LocalDateTime startTime = endTime.minusMinutes(30);
-            signIn.setStartTime(DateUtils.date2Timestamp(startTime));
-            signIn.setEndTime(DateUtils.date2Timestamp(endTime));
         } else {
             signIn.setDeleted(true);
         }
@@ -419,8 +418,10 @@ public class WfwFormApprovalApiService {
             String signOutPublicList = FormUtils.getValue(formData, "sign_out_public_list");
             signOut.setPublicList(Objects.equals(YES, signOutPublicList));
             TimeScopeDTO signOutTimeScope = FormUtils.getTimeScope(formData, "sign_out_time");
-            signOut.setStartTime(DateUtils.date2Timestamp(signOutTimeScope.getStartTime()));
-            signOut.setEndTime(DateUtils.date2Timestamp(signOutTimeScope.getEndTime()));
+            LocalDateTime signOutStartTime = Optional.ofNullable(signOutTimeScope.getStartTime()).orElse(activityStartTime);
+            LocalDateTime signOutEndTime = Optional.ofNullable(signOutTimeScope.getEndTime()).orElse(null);
+            signOut.setStartTime(DateUtils.date2Timestamp(signOutStartTime));
+            signOut.setEndTime(DateUtils.date2Timestamp(signOutEndTime));
             String signOutWay = FormUtils.getValue(formData, "sign_out_way");
             SignInCreateParamDTO.Way way = SignInCreateParamDTO.Way.fromName(signOutWay);
             if (way != null) {
@@ -442,11 +443,6 @@ public class WfwFormApprovalApiService {
                     signOut.setScanCodeWay(SignInCreateParamDTO.ScanCodeWay.PARTICIPATOR.getValue());
                 }
             }
-            // 签退时间为活动结束到结束30分钟
-            LocalDateTime signOutStartTime = activityEndTime;
-            LocalDateTime signOutEndTime = signOutStartTime.plusMinutes(30);
-            signOut.setStartTime(DateUtils.date2Timestamp(signOutStartTime));
-            signOut.setEndTime(DateUtils.date2Timestamp(signOutEndTime));
         } else {
             signOut.setDeleted(true);
         }
