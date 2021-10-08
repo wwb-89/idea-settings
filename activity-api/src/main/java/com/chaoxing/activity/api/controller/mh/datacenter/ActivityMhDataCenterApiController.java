@@ -148,7 +148,7 @@ public class ActivityMhDataCenterApiController {
         jsonObject.put("totalPages", page.getPages());
         jsonObject.put("totalRecords", page.getTotal());
         List<Activity> records = page.getRecords();
-        JSONArray activityJsonArray = packageActivities(records);
+        JSONArray activityJsonArray = packageActivities(records, urlParams);
         jsonObject.put("results", activityJsonArray);
         return RestRespDTO.success(jsonObject);
     }
@@ -160,12 +160,11 @@ public class ActivityMhDataCenterApiController {
     * @param activities
     * @return com.alibaba.fastjson.JSONArray
     */
-    private JSONArray packageActivities(List<Activity> activities) {
+    private JSONArray packageActivities(List<Activity> activities, JSONObject urlParams) {
         JSONArray activityJsonArray = new JSONArray();
         if (CollectionUtils.isEmpty(activities)) {
             return activityJsonArray;
         }
-        System.out.println();
         Map<Integer, Integer> activityTemplateMap = activities.stream().filter(v -> v.getTemplateId() != null).collect(Collectors.toMap(Activity::getId, Activity::getTemplateId, (v1, v2) -> v2));
         List<Integer> activityIds = activities.stream().map(Activity::getId).collect(Collectors.toList());
         List<Integer> signIds = activities.stream().map(Activity::getSignId).collect(Collectors.toList());
@@ -218,7 +217,7 @@ public class ActivityMhDataCenterApiController {
             Activity.StatusEnum statusEnum = Activity.StatusEnum.fromValue(record.getStatus());
             fields.add(buildField("活动状态", statusEnum.getName(), ++fieldFlag));
             // 报名状态
-            fields.add(buildField("报名状态", getSignUpStatus(signStat), ++fieldFlag));
+            fields.add(buildField("报名状态", getSignUpStatus(signStat, urlParams), ++fieldFlag));
             // 简介（40字纯文本）
             fields.add(buildField(fieldCodeNameMap.getOrDefault("introduction", "简介"), introductionMap.get(activityId), ++fieldFlag));
             // 已报名人数
@@ -302,19 +301,20 @@ public class ActivityMhDataCenterApiController {
         JSONObject urlParams = MhPreParamsUtils.resolve(preParams);
         // flag
         String flag = urlParams.getString("flag");
+        Integer specificCurrOrg = urlParams.getInteger("specificCurrOrg");
         Page<Activity> page = new Page(pageNum, pageSize);
         if (uid != null) {
             String orgName = passportApiService.getOrgName(wfwfid);
             String username = passportApiService.getUserRealName(uid);
             LoginUserDTO loginUser = LoginUserDTO.buildDefault(uid, username, wfwfid, orgName);
-            page = activityQueryService.pageSignedUp(page, loginUser, sw, flag);
+            page = activityQueryService.pageSignedUp(page, loginUser, sw, flag, specificCurrOrg);
         }
         JSONObject jsonObject = new JSONObject();
         jsonObject.put("curPage", page.getCurrent());
         jsonObject.put("totalPages", page.getPages());
         jsonObject.put("totalRecords", page.getTotal());
         List<Activity> records = page.getRecords();
-        JSONArray activityJsonArray = packageActivities(records);
+        JSONArray activityJsonArray = packageActivities(records, urlParams);
         jsonObject.put("results", activityJsonArray);
         return RestRespDTO.success(jsonObject);
     }
@@ -326,17 +326,21 @@ public class ActivityMhDataCenterApiController {
     * @param signStat
     * @return java.lang.String
     */
-    private String getSignUpStatus(SignStatDTO signStat) {
+    private String getSignUpStatus(SignStatDTO signStat, JSONObject urlParams) {
         LocalDateTime now = LocalDateTime.now();
         LocalDateTime startTime = signStat.getSignUpStartTime();
         LocalDateTime endTime = signStat.getSignUpEndTime();
+        String customText;
         if (startTime.isAfter(now)) {
-            return "报名未开始";
+            customText = urlParams.getString("signUpNotStarted");
+            return StringUtils.isNotBlank(customText)? customText : "报名未开始";
         }
         if (now.isAfter(endTime)) {
-            return "已结束";
+            customText = urlParams.getString("signUpEnded");
+            return StringUtils.isNotBlank(customText)? customText : "已结束";
         }
-        return "报名中";
+        customText = urlParams.getString("signUpOngoing");
+        return StringUtils.isNotBlank(customText)? customText : "报名中";
     }
 
     private JSONObject buildField(String key, Object value, Integer flag) {

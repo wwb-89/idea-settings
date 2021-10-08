@@ -313,15 +313,17 @@ public class SignApiService {
 	 * @param sw
 	 * @return com.baomidou.mybatisplus.extension.plugins.pagination.Page
 	*/
-	public Page pageUserSignedUp(Page page, Integer uid, String sw) {
+	public Page pageUserSignedUp(Page page, Integer uid, String sw, Integer specificFid) {
 		String url = String.format(USER_SIGNED_UP_URL, uid);
 		HttpHeaders httpHeaders = new HttpHeaders();
-		httpHeaders.setContentType(MediaType.APPLICATION_JSON);
+//		httpHeaders.setContentType(MediaType.APPLICATION_JSON);
+		httpHeaders.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
 		MultiValueMap<String, Object> multiValuedMap = new LinkedMultiValueMap();
 		multiValuedMap.add("pageNum", page.getCurrent());
 		multiValuedMap.add("pageSize", page.getSize());
 		multiValuedMap.add("sw", sw);
-		HttpEntity<MultiValueMap> httpEntity = new HttpEntity<>(httpHeaders);
+		multiValuedMap.add("specificFid", specificFid);
+		HttpEntity<LinkedMultiValueMap<String, Object>> httpEntity = new HttpEntity(multiValuedMap, httpHeaders);
 		String result = restTemplate.postForObject(url, httpEntity, String.class);
 		JSONObject jsonObject = JSON.parseObject(result);
 		return resultHandle(jsonObject, () -> JSON.parseObject(jsonObject.getString("data"), Page.class), (message) -> {

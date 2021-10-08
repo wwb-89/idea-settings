@@ -413,10 +413,11 @@ public class ActivityQueryService {
 	 * @param sw
 	 * @return com.baomidou.mybatisplus.extension.plugins.pagination.Page
 	*/
-	public Page pageSignedUp(Page page, LoginUserDTO loginUser, String sw, String flag) {
+	public Page pageSignedUp(Page page, LoginUserDTO loginUser, String sw, String flag, Integer specificCurrOrg) {
 		Integer uid = loginUser.getUid();
 		Integer fid = loginUser.getFid();
-		page = signApiService.pageUserSignedUp(page, uid, sw);
+		Integer specificFid = Objects.equals(specificCurrOrg, 1) ? fid : null;
+		page = signApiService.pageUserSignedUp(page, uid, sw, specificFid);
 		List records = page.getRecords();
 		if (CollectionUtils.isNotEmpty(records)) {
 			List<Integer> signIds = Lists.newArrayList();
