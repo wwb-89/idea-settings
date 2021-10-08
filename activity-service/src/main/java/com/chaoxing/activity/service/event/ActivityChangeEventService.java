@@ -67,10 +67,7 @@ public class ActivityChangeEventService {
 		// 订阅活动状态处理
 		activityStatusUpdateQueueService.push(activity);
 		// 通知门户修改网站的title
-		Integer pageId = activity.getPageId();
-		if (pageId != null) {
-			activityNameChangeNoticeQueueService.push(activityId);
-		}
+		activityNameChangeNoticeQueueService.push(activityId);
 		// 订阅活动通知发送
 		activityIsAboutToStartQueueService.pushNoticeSignedUp(new ActivityIsAboutToStartQueueService.QueueParamDTO(activityId, activity.getStartTime()), false);
 		// 活动封面url同步

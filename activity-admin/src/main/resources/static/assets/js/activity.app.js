@@ -445,7 +445,7 @@ Vue.filter("timestampScopeFormat", function (startTimestamp, endTimestamp) {
     }
     var isThisYear = (!startDateObj || startDateObj.year() == thisYear) && (!endDateObj || endDateObj.year() == thisYear);
     // 是不是同一天
-    var isSameDay = startDateObj && endDateObj && startDateObj.year() == endDateObj.year() && startDateObj.month() == endDateObj.month() && startDateObj.day() == endDateObj.day();
+    var isSameDay = startDateObj && endDateObj && startDateObj.year() == endDateObj.year() && startDateObj.month() == endDateObj.month() && startDateObj.date() == endDateObj.date();
     if (isThisYear) {
         start = startDateObj ? startDateObj.format("MM.DD HH:mm") : "";
         if (isSameDay) {
