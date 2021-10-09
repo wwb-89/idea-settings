@@ -45,7 +45,7 @@ Vue.component("vue-user-select", {
 								"    <div class='catalog-photo'>" +
 								"        <img :src=\"'http://photo.chaoxing.com/p/' + user.puid + '_80'\">" +
 								"    </div>" +
-								"    <div class='catalog-title'>{{user.name}}</div>" +
+								"    <div class='catalog-title' @click='chooseDepartmentUser(index)'>{{user.name}}</div>" +
 								"    <el-checkbox class='right-check' v-model='user.checked' @change='checkDepartmentUser(index)'></el-checkbox>" +
 								"</div>" +
 		/*搜索用户列表*/
@@ -306,6 +306,12 @@ Vue.component("vue-user-select", {
 				}
 			});
 			return index;
+		},
+		chooseDepartmentUser: function (index) {
+			var $this = this;
+			var user = $this.departmentUsers[index];
+			user.checked = !user.checked;
+			$this.checkDepartmentUser(index);
 		},
 		checkDepartmentUser: function (index) {
 			var $this = this;

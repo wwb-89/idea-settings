@@ -19,6 +19,7 @@ import com.chaoxing.activity.service.activity.classify.ClassifyQueryService;
 import com.chaoxing.activity.service.activity.engine.ActivityEngineQueryService;
 import com.chaoxing.activity.service.activity.manager.ActivityCreatePermissionService;
 import com.chaoxing.activity.service.activity.manager.ActivityManagerService;
+import com.chaoxing.activity.service.activity.manager.ActivityManagerValidationService;
 import com.chaoxing.activity.service.activity.menu.ActivityMenuService;
 import com.chaoxing.activity.service.activity.scope.ActivityClassService;
 import com.chaoxing.activity.service.activity.scope.ActivityScopeQueryService;
@@ -67,6 +68,8 @@ public class ActivityManageController {
 	@Resource
 	private ActivityValidationService activityValidationService;
 	@Resource
+	private ActivityManagerValidationService activityManagerValidationService;
+	@Resource
 	private TemplateComponentService templateComponentService;
 	@Resource
 	private ActivityManagerService activityManagerService;
@@ -100,7 +103,8 @@ public class ActivityManageController {
 		// 是不是创建者
 		boolean creator = activityValidationService.isCreator(activity, operateUid);
 		List<String> activityMenus = Lists.newArrayList();
-		if (creator) {
+		// todo 特殊情况，非管理人员获取当前活动所有菜单
+		if (!activityManagerValidationService.isManager(activityId, operateUid) || creator) {
 			// 创建者获取活动所有菜单
 			activityMenus = activityMenuService.listActivityMenuConfig(activityId).stream()
 					.map(ActivityMenuConfig::getMenu).collect(Collectors.toList());

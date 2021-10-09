@@ -24,7 +24,7 @@
             <div class="input-box">
                 <div class="check-list">
                     <el-checkbox-group v-model="checkedMenus" class="fl" @change="changeMenu">
-                        <el-checkbox v-for="item in menuList" :label="item.value" :key="item.value">{{item.name}}</el-checkbox>
+                        <el-checkbox v-for="item in menuList" :label="item.value" :key="item.value" v-if="item.value != 'setting'">{{item.name}}</el-checkbox>
                     </el-checkbox-group>
                 </div>
             </div>

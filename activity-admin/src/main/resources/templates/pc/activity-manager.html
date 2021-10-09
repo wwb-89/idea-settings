@@ -8,10 +8,10 @@
     <link rel="stylesheet" href="/static/pc/assets/lib/zTree_v3/css/zTreeStyle/zTreeStyle.css" th:href="@{/pc/assets/lib/zTree_v3/css/zTreeStyle/zTreeStyle.css}">
     <link rel="stylesheet" href="/static/pc/assets/lib/layui/css/layui.css" th:href="@{/pc/assets/lib/layui/css/layui.css}">
     <link rel="stylesheet" href="/static/pc/assets/css/public.css" th:href="@{/pc/assets/css/public.css}">
-    <link rel="stylesheet" href="/static/pc/assets/sign/assets/css/confirm_dialog.css" th:href="@{/pc/assets/sign/assets/css/confirm_dialog.css}">
     <link rel="stylesheet" href="/static/pc/assets/css/choose-dialog.css" th:href="@{/pc/assets/css/choose-dialog.css}">
     <link rel="stylesheet" href="/static/pc/assets/css/organizer-manage.css" th:href="@{/pc/assets/css/organizer-manage.css}">
     <link rel="stylesheet" href="/static/pc/assets/css/limits-manage.css" th:href="@{/pc/assets/css/limits-manage.css}">
+    <link rel="stylesheet" href="/static/pc/assets/sign/assets/css/confirm_dialog.css" th:href="@{/pc/assets/sign/assets/css/confirm_dialog.css}">
     <link rel="stylesheet" href="/static/mobile/assets/lib/mescroll/mescroll.css" th:href="@{/mobile/assets/lib/mescroll/mescroll.css}">
     <style>
         [v-cloak] {
@@ -82,9 +82,9 @@
     </el-dialog>
 
     <!-- 移除弹窗 -->
-    <vue-confirm ref="deleteWindow" :message="'确定移除吗？'" :cancel="'取消'" :sure="'移除'" @callback="deleteSubmit"></vue-confirm>
+    <vue-confirm-common ref="deleteWindow" :message="'确定移除吗？'" :cancel="'取消'" :sure="'移除'" @callback="deleteSubmit"></vue-confirm-common>
     <!--批量移除弹窗-->
-    <vue-confirm ref="batchDeleteWindow" :message="'确定移除吗？'" :cancel="'取消'" :sure="'移除'" @callback="batchDeleteSubmit"></vue-confirm>
+    <vue-confirm-common ref="batchDeleteWindow" :message="'确定移除吗？'" :cancel="'取消'" :sure="'移除'" @callback="batchDeleteSubmit"></vue-confirm-common>
     <!--人员选择-->
     <vue-user-select ref="userSelectWindow" @callback="userSelectSubmit"></vue-user-select>
 </div>
@@ -93,7 +93,7 @@
     <script src="/static/pc/assets/lib/jquery.nicescroll.min.js" th:src="@{/pc/assets/lib/jquery.nicescroll.min.js}"></script>
     <script src="/static/pc/assets/lib/element-ui/lib/index.js" th:src="@{/pc/assets/lib/element-ui/lib/index.js}"></script>
     <script src="/static/pc/assets/lib/layui/layui.js" th:src="@{/pc/assets/lib/layui/layui.js}"></script>
-    <script src="/static/pc/assets/component/confirm.js" th:src="@{/pc/assets/component/confirm.js}"></script>
+    <script src="/static/pc/assets/component/confirm-common.js" th:src="@{/pc/assets/component/confirm-common.js}"></script>
     <script src="/static/pc/assets/component/user-select.js" th:src="@{/pc/assets/component/user-select.js}"></script>
     <script src="/static/mobile/assets/lib/mescroll/mescroll.js" th:src="@{/mobile/assets/lib/mescroll/mescroll.js}"></script>
     <script th:inline="javascript">

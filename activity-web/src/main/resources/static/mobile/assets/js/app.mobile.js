@@ -1079,5 +1079,8 @@ $(document).ready(function () {
     }
     if (!app.isChaoxingApp()) {
         _jsBridgeReady();
+    }else if (activityApp.isEmbedded()) {
+        // iframe嵌入的页面需要手动调用
+        _jsBridgeReady();
     }
 });
