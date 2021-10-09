@@ -30,6 +30,8 @@ public class ActivityCreateFromFormParamDTO {
     private String op;
     /** 网页模板id */
     private Integer webTemplateId;
+    /** 活动标识 */
+    private String flag;
 
     /**同步操作类型
     * @Description 

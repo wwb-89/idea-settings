@@ -42,7 +42,7 @@
                     <span>{{menus.results_manage.name}}</span>
                 </div>
             </div>
-            <div class="message menu-item" v-if="signActivityManageIndex.signUpExist">
+            <div class="message menu-item" v-if="signActivityManageIndex.signUpExist && menuShow('notice')">
                 <!--发通知-->
                 <div :class="{'item': true, 'active': menus.notice.selected}" @click="toAddNotice">
                     <img :src="menus.notice.activeIconUrl" v-if="menus.notice.selected">
@@ -58,7 +58,7 @@
                     <span>{{menus.stat.name}}</span>
                 </div>
             </div>
-            <div class="statistics menu-item">
+            <div class="statistics menu-item" v-if="menuShow('setting')">
                 <!--设置-->
                 <div :class="{'item': true, 'active': menus.setting.selected}" th:if="${isCreator}" @click="toSetting">
                     <img :src="menus.setting.activeIconUrl" v-if="menus.setting.selected">
@@ -178,7 +178,7 @@
             methods: {
                 menuShow: function (menu) {
                     // 目前固定notice和setting存在
-                    return this.activityMenus.indexOf(menu) != -1 || menu == 'notice' || menu == 'setting';
+                    return this.activityMenus.indexOf(menu) != -1;
                 },
                 // 活动首页
                 activityHome: function () {

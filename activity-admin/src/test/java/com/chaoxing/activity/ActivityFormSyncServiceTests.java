@@ -1,5 +1,6 @@
 package com.chaoxing.activity;
 
+import com.chaoxing.activity.model.Activity;
 import com.chaoxing.activity.service.activity.ActivityFormSyncService;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -34,7 +35,7 @@ public class ActivityFormSyncServiceTests {
         Integer fid = 177512;
         Integer formId = 100965;
         Integer formUserId = 98105033;
-        activityFormSyncService.syncCreateActivity(fid, formId, formUserId, 30);
+        activityFormSyncService.syncCreateActivity(fid, formId, formUserId, 30, Activity.ActivityFlagEnum.THREE_CONFERENCE_ONE_LESSON.getValue());
     }
 
 }

@@ -41,12 +41,13 @@ public class WfwFormSyncOperateTask {
             Integer formId = queueParam.getFormId();
             Integer formUserId = queueParam.getIndexID();
             Integer webTemplateId = queueParam.getWebTemplateId();
+            String flag = queueParam.getFlag();
             switch (operateTypeEnum) {
                 case CREATE:
-                    activityFormSyncService.syncCreateActivity(fid, formId, formUserId, webTemplateId);
+                    activityFormSyncService.syncCreateActivity(fid, formId, formUserId, webTemplateId, flag);
                     break;
                 case UPDATE:
-                    activityFormSyncService.syncUpdateActivity(fid, formId, formUserId, webTemplateId);
+                    activityFormSyncService.syncUpdateActivity(fid, formId, formUserId, webTemplateId, flag);
                     break;
                 case DELETE:
                     activityHandleService.deleteByOriginAndFormUserId(formId, formUserId);

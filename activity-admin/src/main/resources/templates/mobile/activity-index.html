@@ -41,7 +41,7 @@
             <p class="flTxt">统计</p>
             <i class="icon-arrow-r marginAuto"></i>
         </div>
-        <div class="item" v-if="signActivityManageIndex.signUpExist" @click="sendNotice">
+        <div class="item" v-if="signActivityManageIndex.signUpExist && menuShow('notice')" @click="sendNotice">
             <img src="/static/mobile/assets/images/admin/notice.png" th:src="@{/mobile/assets/images/admin/notice.png}">
             <p class="flTxt">发通知</p>
             <i class="icon-arrow-r marginAuto"></i>

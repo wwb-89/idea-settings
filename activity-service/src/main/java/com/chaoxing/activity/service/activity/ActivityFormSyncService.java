@@ -3,6 +3,7 @@ package com.chaoxing.activity.service.activity;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.chaoxing.activity.dto.LoginUserDTO;
+import com.chaoxing.activity.dto.TimeScopeDTO;
 import com.chaoxing.activity.dto.activity.create.ActivityCreateParamDTO;
 import com.chaoxing.activity.dto.activity.ActivityUpdateParamDTO;
 import com.chaoxing.activity.dto.activity.classify.MarketClassifyCreateParamDTO;
@@ -108,15 +109,16 @@ public class ActivityFormSyncService {
         return activity;
     }
 
-    public void syncCreateActivity(Integer fid, Integer formId, Integer formUserId, Integer webTemplateId) {
-        Activity activity = ApplicationContextHolder.getBean(ActivityFormSyncService.class).createActivity(fid, formId, formUserId, webTemplateId);
+    public void syncCreateActivity(Integer fid, Integer formId, Integer formUserId, Integer webTemplateId, String flag) {
+        flag = StringUtils.isNotBlank(flag) ? flag : Activity.ActivityFlagEnum.NORMAL.getValue();
+        Activity activity = ApplicationContextHolder.getBean(ActivityFormSyncService.class).createActivity(fid, formId, formUserId, webTemplateId, flag);
         // 回写数据
         String data = packagePushUpdateData(fid, formId, activity);
         wfwFormApiService.updateForm(formId, formUserId, data);
     }
 
     @Transactional(rollbackFor = Exception.class)
-    public Activity createActivity(Integer fid, Integer formId, Integer formUserId, Integer webTemplateId) {
+    public Activity createActivity(Integer fid, Integer formId, Integer formUserId, Integer webTemplateId, String flag) {
         // 获取表单数据
         FormDataDTO formUserRecord = wfwFormApiService.getFormRecord(formUserId, formId, fid);
         if (formUserRecord == null) {
@@ -131,7 +133,7 @@ public class ActivityFormSyncService {
         String orgName = passportApiService.getOrgName(fid);
         LoginUserDTO loginUser = LoginUserDTO.buildDefault(formUserRecord.getUid(), formUserRecord.getUname(), fid, orgName);
         // 获取模板和市场信息
-        Integer marketId = marketHandleService.getOrCreateOrgMarket(fid, Activity.ActivityFlagEnum.THREE_CONFERENCE_ONE_LESSON, loginUser);
+        Integer marketId = marketHandleService.getOrCreateOrgMarket(fid, Activity.ActivityFlagEnum.fromValue(flag), loginUser);
         Template template = templateQueryService.getMarketFirstTemplate(marketId);
         // 活动分类
         String activityClassifyName = FormUtils.getValue(formUserRecord, "activity_classify");
@@ -144,14 +146,14 @@ public class ActivityFormSyncService {
         activityCreateParam.setSignedUpNotice(true);
         // 补充额外必要信息
         Integer templateId = template.getId();
-        activityCreateParam.setAdditionalAttrs(webTemplateId, marketId, templateId, Activity.ActivityFlagEnum.THREE_CONFERENCE_ONE_LESSON.getValue());
+        activityCreateParam.setAdditionalAttrs(webTemplateId, marketId, templateId, flag);
         // 封装报名信息
         SignCreateParamDTO signCreateParam = SignCreateParamDTO.builder().name(activityCreateParam.getName()).build();
-        // 默认开启报名
-        Integer originId = templateComponentService.getSysComponentTplComponentId(templateId, "sign_up");
-        SignUpCreateParamDTO signUpCreateParam = SignUpCreateParamDTO.buildDefault();
-        signUpCreateParam.setOriginId(originId);
-        signCreateParam.setSignUps(Lists.newArrayList(signUpCreateParam));
+        // 获取报名信息
+        SignUpCreateParamDTO signUpCreateParam = packageSignUp(formUserRecord, templateId);
+        if (signUpCreateParam != null) {
+            signCreateParam.setSignUps(Lists.newArrayList(signUpCreateParam));
+        }
         // 判断是否开启签到，并默认封装签到
         SignInCreateParamDTO signInCreateParam = handleActivitySignIn(formUserRecord);
         if (signInCreateParam != null) {
@@ -169,13 +171,51 @@ public class ActivityFormSyncService {
         return activity;
     }
 
+
+    /**封装报名信息
+    * @Description
+    * @author huxiaolong
+    * @Date 2021-10-09 14:57:03
+    * @param formUserRecord
+    * @param templateId
+    * @return com.chaoxing.activity.dto.manager.sign.create.SignUpCreateParamDTO
+    */
+    private SignUpCreateParamDTO packageSignUp(FormDataDTO formUserRecord, Integer templateId) {
+        String openSignUp = FormUtils.getValue(formUserRecord, "open_sign_up");
+        Integer originId = templateComponentService.getSysComponentTplComponentId(templateId, "sign_up");
+        SignUpCreateParamDTO signUpCreateParam = SignUpCreateParamDTO.buildDefault();
+        signUpCreateParam.setOriginId(originId);
+        if (Objects.equals(openSignUp, "否")) {
+            return null;
+        }
+        if (Objects.equals(openSignUp, "是")) {
+            // 报名时间
+            TimeScopeDTO signUpTimeScope = FormUtils.getTimeScope(formUserRecord, "sign_up_time_scope");
+            if (signUpTimeScope != null) {
+                signUpCreateParam.setStartTime(DateUtils.date2Timestamp(signUpTimeScope.getStartTime()));
+                signUpCreateParam.setEndTime(DateUtils.date2Timestamp(signUpTimeScope.getEndTime()));
+            }
+            String signUpPersonLimit = FormUtils.getValue(formUserRecord, "sign_up_person_limit");
+            boolean personLimit = StringUtils.isNotBlank(signUpPersonLimit);
+            signUpCreateParam.setLimitPerson(personLimit);
+            if (personLimit) {
+                signUpCreateParam.setPersonLimit(Integer.valueOf(signUpPersonLimit));
+            }
+            String signUpReview = FormUtils.getValue(formUserRecord, "sign_up_review");
+            if (StringUtils.isNotBlank(signUpReview)) {
+                signUpCreateParam.setOpenAudit(Objects.equals(signUpReview, "是"));
+            }
+        }
+        return signUpCreateParam;
+    }
+
     /**表单记录更新，同步更新活动
     * @Description
     * @author huxiaolong
     * @Date 2021-08-26 16:53:48
     * @return void
     */
-    public void syncUpdateActivity(Integer fid, Integer formId, Integer formUserId, Integer webTemplateId) {
+    public void syncUpdateActivity(Integer fid, Integer formId, Integer formUserId, Integer webTemplateId, String flag) {
         // 获取表单数据
         FormDataDTO formUserRecord = wfwFormApiService.getFormRecord(formUserId, formId, fid);
         if (formUserRecord == null) {
@@ -185,7 +225,8 @@ public class ActivityFormSyncService {
         Activity activity = activityQueryService.getActivityByOriginAndFormUserId(formId, formUserId);
         // 若活动不存在，则新增
         if (activity == null) {
-            activity = ApplicationContextHolder.getBean(ActivityFormSyncService.class).createActivity(fid, formId, formUserId, webTemplateId);
+            flag = StringUtils.isNotBlank(flag) ? flag : Activity.ActivityFlagEnum.NORMAL.getValue();
+            activity = ApplicationContextHolder.getBean(ActivityFormSyncService.class).createActivity(fid, formId, formUserId, webTemplateId, flag);
         } else {
             activity = ApplicationContextHolder.getBean(ActivityFormSyncService.class).syncUpdateActivity(formUserRecord, fid, activity.getId());
         }

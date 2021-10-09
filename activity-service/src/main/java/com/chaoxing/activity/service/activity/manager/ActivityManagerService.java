@@ -5,14 +5,17 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.chaoxing.activity.dto.LoginUserDTO;
+import com.chaoxing.activity.dto.activity.ActivityMenuDTO;
 import com.chaoxing.activity.mapper.ActivityManagerMapper;
 import com.chaoxing.activity.model.Activity;
 import com.chaoxing.activity.model.ActivityManager;
 import com.chaoxing.activity.service.activity.ActivityValidationService;
+import com.chaoxing.activity.service.activity.menu.ActivityMenuService;
 import com.chaoxing.activity.util.exception.BusinessException;
 import com.google.common.collect.Lists;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
@@ -37,6 +40,8 @@ public class ActivityManagerService {
 
     @Resource
     private ActivityValidationService activityValidationService;
+    @Resource
+    private ActivityMenuService activityMenuService;
 
     /**分页查询管理员列表
      * @Description 
@@ -101,10 +106,12 @@ public class ActivityManagerService {
                 .in(ActivityManager::getUid, uids));
         List<Integer> existUids = existActivityManagers.stream().map(ActivityManager::getUid).collect(Collectors.toList());
         List<ActivityManager> addActivityManagers = Lists.newArrayList();
+        List<String> activityMenus = activityMenuService.listMenus(activityId).stream().map(ActivityMenuDTO::getValue).collect(Collectors.toList());
         for (ActivityManager activityManager : activityManagers) {
             Integer uid = activityManager.getUid();
             if (!existUids.contains(uid)) {
                 activityManager.setCreateUid(loginUser.getUid());
+                activityManager.setMenu(StringUtils.join(activityMenus, ","));
                 addActivityManagers.add(activityManager);
             }
         }
