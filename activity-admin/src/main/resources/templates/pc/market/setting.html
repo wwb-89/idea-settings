@@ -97,7 +97,7 @@
                     signUpActivityLimits: [],
                     // 自动移除黑名单时间选择范围
                     autoRemoveBlackListTimeScope: [],
-                    currBlackListTimeScope: [1, 0],
+                    currBlackListTimeScope: [],
                     blacklistNumbers: []
                 },
                 created: function () {
@@ -109,7 +109,7 @@
                     for (var j = 0; j < 24; j++) {
                         hours.push({value: j, label: j + '小时'})
                     }
-                    for (var i = 1; i < 60; i++) {
+                    for (var i = 0; i < 60; i++) {
                         var day = {value: i, label: i + "天", children: $.extend(true, [], hours) };
                         $this.autoRemoveBlackListTimeScope.push(day);
                     }
@@ -193,6 +193,11 @@
                         var $this = this;
                         var day = value[0];
                         var hour = value[1];
+                        if (day == 0 && hour == 0) {
+                            app.showMsg("请选择大于0的时长");
+                            $this.currBlackListTimeScope = [parseInt($this.blacklistRule.autoRemoveHours / 24), $this.blacklistRule.autoRemoveHours % 24]
+                            return;
+                        }
                         $this.blacklistRule.autoRemoveHours = day * 24 + hour;
                         $this.updateBlacklistRule();
                     },
