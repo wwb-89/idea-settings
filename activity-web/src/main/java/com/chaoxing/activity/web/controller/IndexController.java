@@ -66,7 +66,6 @@ public class IndexController {
 	@Resource
 	private ActivityFlagCodeService activityFlagCodeService;
 
-
 	/**通用
 	 * @Description
 	 * @author wwb
@@ -243,13 +242,19 @@ public class IndexController {
 			marketId = marketQueryService.getMarketIdByFlag(fid, flag);
 		}
 		List<Classify> classifies;
+		Integer classifyFid = fid;
 		if (marketId == null) {
+			if (StringUtils.isNotBlank(code)) {
+				// 查询区域所属的机构
+				classifyFid = groupService.getGroupFid(code);
+			}
 			if (fid == null) {
 				LoginUserDTO loginUser = LoginUtils.getLoginUser(request);
 				Optional.ofNullable(loginUser).orElseThrow(() -> new LoginRequiredException());
 				fid = loginUser.getFid();
 			}
-			classifies = classifyQueryService.listOrgClassifies(fid);
+			classifyFid = Optional.ofNullable(classifyFid).orElse(fid);
+			classifies = classifyQueryService.listOrgClassifies(classifyFid);
 		}else {
 			classifies = classifyQueryService.listMarketClassifies(marketId);
 		}
