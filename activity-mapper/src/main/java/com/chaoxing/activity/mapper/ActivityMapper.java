@@ -269,4 +269,14 @@ public interface ActivityMapper extends BaseMapper<Activity> {
 	 */
 	List<Integer> listErdosCustomOrgCreatedWorkId(@Param("createdFid") Integer createdFid, @Param("participateFid") Integer participateFid, @Param("activityFlag") String activityFlag, @Param("activityClassifyId") Integer activityClassifyId);
 
+	/**查询机构在参与范围中的活动
+	 * @Description 
+	 * @author wwb
+	 * @Date 2021-10-09 16:31:14
+	 * @param page
+	 * @param activityQuery
+	 * @return com.baomidou.mybatisplus.extension.plugins.pagination.Page<com.chaoxing.activity.model.Activity>
+	*/
+	Page<Activity> pageOrgParticipate(@Param("page") Page<?> page, @Param("params") ActivityQueryDTO activityQuery);
+
 }

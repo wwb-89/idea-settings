@@ -95,6 +95,7 @@ public class ActivityQueryService {
 	private MarketQueryService marketQueryService;
 	@Resource
 	private ActivityFlagCodeService activityFlagCodeService;
+
 	/**查询参与的活动
 	 * @Description 
 	 * @author wwb
@@ -106,6 +107,20 @@ public class ActivityQueryService {
 	public Page<Activity> listParticipate(Page<Activity> page, ActivityQueryDTO activityQuery) {
 		calDateScope(activityQuery);
 		page = activityMapper.pageParticipate(page, activityQuery);
+		return page;
+	}
+
+	/**枫叶查询机构能参与的活动（机构在参与范围内）
+	 * @Description 
+	 * @author wwb
+	 * @Date 2021-10-09 16:36:38
+	 * @param page
+	 * @param activityQuery
+	 * @return com.baomidou.mybatisplus.extension.plugins.pagination.Page<com.chaoxing.activity.model.Activity>
+	*/
+	public Page<Activity> ListOrgParticipate(Page<Activity> page, ActivityQueryDTO activityQuery) {
+		calDateScope(activityQuery);
+		page = activityMapper.pageOrgParticipate(page, activityQuery);
 		return page;
 	}
 

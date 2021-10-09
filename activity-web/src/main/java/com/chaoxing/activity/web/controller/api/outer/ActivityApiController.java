@@ -92,7 +92,8 @@ public class ActivityApiController {
 	}
 
 	/**查询推荐活动
-	 * @Description
+	 * @Description 推荐规则
+	 * 1、优先只查发布到这个单位馆的活动
 	 * @author wwb
 	 * @Date 2021-01-19 11:04:55
 	 * @param request
@@ -117,7 +118,7 @@ public class ActivityApiController {
 				.build();
 		activityQuery.setFids(fids);
 		Page page = HttpServletRequestUtils.buid(request);
-		page = activityQueryService.listParticipate(page, activityQuery);
+		page = activityQueryService.ListOrgParticipate(page, activityQuery);
 		List<Activity> records = page.getRecords();
 		if (CollectionUtils.isNotEmpty(records)) {
 			List<ActivityExternalDTO> activityExternals = model2DtoService.activity2Dto(records);
