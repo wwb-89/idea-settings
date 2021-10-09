@@ -341,6 +341,13 @@
         }
         return tagList;
     };
+    /**
+     * 是否被嵌入
+     * @returns {boolean}
+     */
+    activityApp.prototype.isEmbedded = function () {
+        return window.parent !== window;
+    };
     W['activityApp'] = new activityApp();
 })(window, jQuery, JSON);
 Array.prototype.remove = function (val) {
