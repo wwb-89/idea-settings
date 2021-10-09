@@ -22,24 +22,24 @@
         <div class="menu">
             <div class="entry menu-item" v-show="menuShow('sign_up') || menuShow('sign_in')">
                 <!--报名名单-->
-                <div :class="{'item': true, 'active': menus.signUpList.selected}" v-if="signActivityManageIndex.signUpExist" @click="toSignUpList" v-show="menuShow('sign_up')">
-                    <img :src="menus.signUpList.activeIconUrl" v-if="menus.signUpList.selected">
-                    <img :src="menus.signUpList.defaultIconUrl" v-else>
-                    <span>{{menus.signUpList.name}}</span>
+                <div :class="{'item': true, 'active': menus.sign_up.selected}" v-if="signActivityManageIndex.signUpExist && menuShow('sign_up')" @click="toSignUpList">
+                    <img :src="menus.sign_up.activeIconUrl" v-if="menus.sign_up.selected">
+                    <img :src="menus.sign_up.defaultIconUrl" v-else>
+                    <span>{{menus.sign_up.name}}</span>
                 </div>
                 <!--签到管理-->
-                <div :class="{'item': true, 'active': menus.signInManage.selected}" @click="toSignInManage" v-show="menuShow('sign_in')">
-                    <img :src="menus.signInManage.activeIconUrl" v-if="menus.signInManage.selected">
-                    <img :src="menus.signInManage.defaultIconUrl" v-else>
-                    <span>{{menus.signInManage.name}}</span>
+                <div :class="{'item': true, 'active': menus.sign_in.selected}" @click="toSignInManage" v-if="menuShow('sign_in')">
+                    <img :src="menus.sign_in.activeIconUrl" v-if="menus.sign_in.selected">
+                    <img :src="menus.sign_in.defaultIconUrl" v-else>
+                    <span>{{menus.sign_in.name}}</span>
                 </div>
             </div>
-            <div class="entry menu-item" v-if="signActivityManageIndex.signUpExist || signActivityManageIndex.signInExist" v-show="menuShow('results_manage')">
+            <div class="entry menu-item" v-if="(signActivityManageIndex.signUpExist || signActivityManageIndex.signInExist) && menuShow('results_manage')">
                 <!--考核管理-->
-                <div :class="{'item': true, 'active': menus.resultsManage.selected}" @click="toResultsManage">
-                    <img :src="menus.resultsManage.activeIconUrl" v-if="menus.resultsManage.selected">
-                    <img :src="menus.resultsManage.defaultIconUrl" v-else>
-                    <span>{{menus.resultsManage.name}}</span>
+                <div :class="{'item': true, 'active': menus.results_manage.selected}" @click="toResultsManage">
+                    <img :src="menus.results_manage.activeIconUrl" v-if="menus.results_manage.selected">
+                    <img :src="menus.results_manage.defaultIconUrl" v-else>
+                    <span>{{menus.results_manage.name}}</span>
                 </div>
             </div>
             <div class="message menu-item" v-if="signActivityManageIndex.signUpExist">
@@ -50,7 +50,7 @@
                     <span>{{menus.notice.name}}</span>
                 </div>
             </div>
-            <div class="statistics menu-item" v-show="menuShow('stat')">
+            <div class="statistics menu-item" v-if="menuShow('stat')">
                 <!--统计-->
                 <div :class="{'item': true, 'active': menus.stat.selected}" @click="toStat">
                     <img :src="menus.stat.activeIconUrl" v-if="menus.stat.selected">
@@ -97,9 +97,9 @@
                 activityMenus: [[${activityMenus}]],
                 menus: {
                     // 报名签到
-                    signUpList: {name: "报名名单", defaultIconUrl: ctx + "/pc/assets/images/icon-name-list-default.png", activeIconUrl: ctx + "/pc/assets/images/icon-name-list-active.png", url: "//reading.chaoxing.com/qd/manage/sign-up?signId=" + [[${signActivityManageIndex.signId}]], selected: false},
-                    signInManage: {name: "签到管理", defaultIconUrl: ctx + "/pc/assets/images/icon-sign-in-default.png", activeIconUrl: ctx + "/pc/assets/images/icon-sign-in-active.png", url: "//reading.chaoxing.com/qd/manage/sign-in/list?signId=" + [[${signActivityManageIndex.signId}]], selected: false},
-                    resultsManage: {name: "考核管理", defaultIconUrl: ctx + "/pc/assets/images/icon-grade-manage-default.png", activeIconUrl: ctx + "/pc/assets/images/icon-grade-manage-active.png", url: ctx + "/activity/" + [[${activity.id}]] + "/results/manage", selected: false},
+                    sign_up: {name: "报名名单", defaultIconUrl: ctx + "/pc/assets/images/icon-name-list-default.png", activeIconUrl: ctx + "/pc/assets/images/icon-name-list-active.png", url: "//reading.chaoxing.com/qd/manage/sign-up?signId=" + [[${signActivityManageIndex.signId}]], selected: false},
+                    sign_in: {name: "签到管理", defaultIconUrl: ctx + "/pc/assets/images/icon-sign-in-default.png", activeIconUrl: ctx + "/pc/assets/images/icon-sign-in-active.png", url: "//reading.chaoxing.com/qd/manage/sign-in/list?signId=" + [[${signActivityManageIndex.signId}]], selected: false},
+                    results_manage: {name: "考核管理", defaultIconUrl: ctx + "/pc/assets/images/icon-grade-manage-default.png", activeIconUrl: ctx + "/pc/assets/images/icon-grade-manage-active.png", url: ctx + "/activity/" + [[${activity.id}]] + "/results/manage", selected: false},
                     // 通知
                     notice: {name: "发通知", defaultIconUrl: ctx + "/pc/assets/images/icon-notice-default.png", activeIconUrl: ctx + "/pc/assets/images/icon-notice-active.png", url: "//reading.chaoxing.com/qd/manage/notice/add?signId=" + [[${signActivityManageIndex.signId}]], selected: false},
                     // 统计
@@ -114,31 +114,71 @@
                 var $this = this;
                 // 解决跨域
                 document.domain = "chaoxing.com";
-                var signUpIds = $this.signActivityManageIndex.signUpIds;
-                if (!activityApp.isEmpty(signUpIds) && signUpIds.length > 1) {
-                    $this.menus.signUpList.name = "报名项目";
-                }
-                app.bindActivityChangeEvent(function (activityId) {
-                    if ($this.activity.id == activityId) {
-                        window.location.reload();
+                $this.$nextTick(function () {
+                    var signUpIds = $this.signActivityManageIndex.signUpIds;
+                    if (!activityApp.isEmpty(signUpIds) && signUpIds.length > 1) {
+                        $this.menus.sign_up.name = "报名项目";
                     }
-                });
+
+                    var newMenus = {};
+                    var menuKeys = Object.keys($this.menus);
+                    $.each(menuKeys, function (i) {
+                        var key = menuKeys[i];
+                        if ($this.menuShow(key)) {
+                            newMenus[key] = $this.menus[key];
+                        }
+                    });
+                    $this.menus = Object.assign({}, newMenus);
+
+                    app.bindActivityChangeEvent(function (activityId) {
+                        if ($this.activity.id == activityId) {
+                            window.location.reload();
+                        }
+                    });
+                })
+
+
             },
             mounted: function () {
                 var $this = this;
-                $this.resizePageHeight();
-                window.onresize = function () {
+                $this.$nextTick(function () {
                     $this.resizePageHeight();
-                };
-                if ($this.signActivityManageIndex.signUpExist) {
-                    $this.toSignUpList();
-                }else {
-                    $this.toSignInManage();
-                }
+                    window.onresize = function () {
+                        $this.resizePageHeight();
+                    };
+                    var firstMenuKey = Object.keys($this.menus)[0];
+                    switch (firstMenuKey) {
+                        case 'sign_up':
+                            if ($this.signActivityManageIndex.signUpExist) {
+                                $this.toSignUpList();
+                            } else {
+                                $this.toSignInManage();
+                            }
+                            break;
+                        case 'sign_in':
+                            $this.toSignInManage();
+                            break;
+                        case 'results_manage':
+                            $this.toResultsManage();
+                            break;
+                        case 'notice':
+                            $this.toAddNotice();
+                            break;
+                        case 'stat':
+                            $this.toStat();
+                            break;
+                        case 'setting':
+                            $this.toSetting();
+                            break;
+                        default:
+                            break;
+                    }
+                })
             },
             methods: {
                 menuShow: function (menu) {
-                    return this.activityMenus.indexOf(menu) != -1;
+                    // 目前固定notice和setting存在
+                    return this.activityMenus.indexOf(menu) != -1 || menu == 'notice' || menu == 'setting';
                 },
                 // 活动首页
                 activityHome: function () {
@@ -195,17 +235,17 @@
                 // 报名名单
                 toSignUpList: function () {
                     var $this = this;
-                    $this.selectMenu("signUpList");
+                    $this.selectMenu("sign_up");
                 },
                 // 签到管理
                 toSignInManage: function () {
                     var $this = this;
-                    $this.selectMenu("signInManage");
+                    $this.selectMenu("sign_in");
                 },
                 // 考核管理
                 toResultsManage: function () {
                     var $this = this;
-                    $this.selectMenu("resultsManage");
+                    $this.selectMenu("results_manage");
                 },
                 // 设置
                 toSetting: function () {
