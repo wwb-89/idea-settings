@@ -42,6 +42,15 @@ public class Market {
     private String iconUrl;
     /** 机构id; column: fid*/
     private Integer fid;
+    /** 是否启用通讯录; column: is_enable_contacts*/
+    @TableField(value = "is_enable_contacts")
+    private Boolean enableContacts;
+    /** 是否启用组织架构; column: is_enable_organization*/
+    @TableField(value = "is_enable_organization")
+    private Boolean enableOrganization;
+    /** 是否启用区域架构; column: is_enable_regional*/
+    @TableField(value = "is_enable_regional")
+    private Boolean enableRegional;
     /** 微服务应用id; column: wfw_app_id*/
     private Integer wfwAppId;
     /** 同时报名活动数限制; column: sign_up_activity_limit*/

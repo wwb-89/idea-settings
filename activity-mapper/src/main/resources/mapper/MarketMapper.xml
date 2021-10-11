@@ -7,6 +7,9 @@
         <result column="icon_cloud_id" jdbcType="VARCHAR" property="iconCloudId" />
         <result column="icon_url" jdbcType="VARCHAR" property="iconUrl" />
         <result column="fid" jdbcType="INTEGER" property="fid" />
+        <result column="is_enable_contacts" jdbcType="BIT" property="enableContacts" />
+        <result column="is_enable_organization" jdbcType="BIT" property="enableOrganization" />
+        <result column="is_enable_regional" jdbcType="BIT" property="enableRegional" />
         <result column="wfw_app_id" jdbcType="INTEGER" property="wfwAppId" />
         <result column="sign_up_activity_limit" jdbcType="INTEGER" property="signUpActivityLimit" />
         <result column="sequence" jdbcType="INTEGER" property="sequence" />
@@ -17,8 +20,8 @@
         <result column="update_uid" jdbcType="INTEGER" property="updateUid" />
     </resultMap>
     <sql id="Base_Column_List">
-        t.id, t.name, t.icon_cloud_id, t.icon_url, t.fid, t.wfw_app_id, t.sign_up_activity_limit, t.sequence, t.is_deleted, t.create_time, t.create_uid,
-        t.update_time, t.update_uid
+        t.id, t.name, t.icon_cloud_id, t.icon_url, t.fid, t.is_enable_contacts, t.is_enable_organization, t.is_enable_regional,
+        t.wfw_app_id, t.sign_up_activity_limit, t.sequence, t.is_deleted, t.create_time, t.create_uid, t.update_time, t.update_uid
     </sql>
 
     <select id="getMaxSequence" resultType="java.lang.Integer">
