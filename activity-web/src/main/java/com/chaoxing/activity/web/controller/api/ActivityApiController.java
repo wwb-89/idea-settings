@@ -74,7 +74,7 @@ public class ActivityApiController {
 		// 区域code不存在，且查询范围为1:所有，直接查询
 		if (StringUtils.isBlank(areaCode) && Objects.equals(activityQuery.getScope(), 1)) {
 			Page<Activity> page = HttpServletRequestUtils.buid(request);
-			page = activityQueryService.listParticipate(page, activityQuery);
+			page = activityQueryService.pageFlag(page, activityQuery);
 			return RestRespDTO.success(page);
 		}
 		List<Integer> fids = Lists.newArrayList();

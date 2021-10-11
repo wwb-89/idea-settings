@@ -34,6 +34,16 @@ public interface ActivityMapper extends BaseMapper<Activity> {
 	 */
 	Page<Activity> pageParticipate(@Param("page") Page<?> page, @Param("params") ActivityQueryDTO activityQuery);
 
+	/**查询flag下的活动
+	 * @Description 
+	 * @author wwb
+	 * @Date 2021-10-11 17:53:55
+	 * @param page
+	 * @param activityQuery
+	 * @return com.baomidou.mybatisplus.extension.plugins.pagination.Page<com.chaoxing.activity.model.Activity>
+	*/
+	Page<Activity> pageFlag(@Param("page") Page<?> page, @Param("params") ActivityQueryDTO activityQuery);
+
 	Page<Activity> pageErdosParticipate(@Param("page") Page<?> page, @Param("params") ActivityQueryDTO activityQuery);
 
 	/**
@@ -269,14 +279,16 @@ public interface ActivityMapper extends BaseMapper<Activity> {
 	 */
 	List<Integer> listErdosCustomOrgCreatedWorkId(@Param("createdFid") Integer createdFid, @Param("participateFid") Integer participateFid, @Param("activityFlag") String activityFlag, @Param("activityClassifyId") Integer activityClassifyId);
 
-	/**查询机构在参与范围中的活动
-	 * @Description 
-	 * @author wwb
-	 * @Date 2021-10-09 16:31:14
+	/**
+	 * 查询机构在参与范围中的活动
+	 *
 	 * @param page
 	 * @param activityQuery
 	 * @return com.baomidou.mybatisplus.extension.plugins.pagination.Page<com.chaoxing.activity.model.Activity>
-	*/
+	 * @Description
+	 * @author wwb
+	 * @Date 2021-10-09 16:31:14
+	 */
 	Page<Activity> pageOrgParticipate(@Param("page") Page<?> page, @Param("params") ActivityQueryDTO activityQuery);
 
 }
