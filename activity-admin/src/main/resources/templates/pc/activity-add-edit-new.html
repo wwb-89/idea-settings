@@ -147,6 +147,7 @@
                                 </div>
                             </div>
                         </template>
+                        <!--活动类型-->
                         <div class="form-item cancel-margin" v-else-if="item.code == 'activity_classify'">
                             <label class="label"><img src="/static/pc/assets/images/required.png" th:src="@{/pc/assets/images/required.png}" class="required-img" v-if="item.required">{{item.name}}</label>
                             <div class="input-box wrap">
@@ -158,8 +159,8 @@
                                     </el-select>
                                 </div>
                                 <template v-if="strict != 1">
-                                    <div :class="{'type-item': true, 'paddingR0': (!activityClassify.system && activityClassify.owner), 'active': activityClassify.selected}" v-for="(activityClassify, index) of activityClassifies" :key="'activity-classify-' + index" @click="selectActivityClassify(index)">{{activityClassify.name}}
-                                        <div class="more-box" v-if="!activityClassify.system && activityClassify.owner">
+                                    <div :class="{'type-item': true, 'paddingR0': activityClassify.owner, 'active': activityClassify.selected}" v-for="(activityClassify, index) of activityClassifies" :key="'activity-classify-' + index" @click="selectActivityClassify(index)">{{activityClassify.name}}
+                                        <div class="more-box" v-if="activityClassify.owner">
                                             <div class="more-btn"></div>
                                             <div class="edit-box">
                                                 <div @click="toEditActivityClassify(index, $event)">编辑</div>
@@ -1503,6 +1504,7 @@
                     app.ajaxPostWithLoading(url, params, function (data) {
                         if (data.success) {
                             var data = data.data;
+                            data.owner = true;
                             if (isAdd) {
                                 data.selected = false;
                                 $this.activityClassifies.push(data);
