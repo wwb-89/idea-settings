@@ -215,7 +215,7 @@
                         <div class="form-item last marginTop16" v-else-if="item.code == 'activity_release_scope'">
                             <label class="label"><img src="/static/pc/assets/images/required.png" th:src="@{/pc/assets/images/required.png}" class="required-img" v-if="item.required">{{item.name}}</label>
                             <div class="input-box wrap">
-                                <el-select v-if="item.dataOrigin == 'interface'" multiple v-model="releaseClassIds" placeholder="请选择" style="width: 45%">
+                                <el-select v-if="item.dataOrigin == 'interface'" multiple v-model="releaseClassIds" placeholder="请选择" style="width: 45%" :loading="classDataLoading" :loading-text="'加载中'" @focus="loadReleaseClassData(item.originIdentify)">
                                     <el-option v-for="value in classList" :key="value.id" :label="value.name" :value="value.id"></el-option>
                                 </el-select>
                                 <template v-else>
@@ -233,7 +233,7 @@
                                         <img src="/static/pc/assets/images/edit-3.png" th:src="@{/pc/assets/images/edit-3.png}">
                                     </div>
                                 </template>
-                                <span class="tips" v-if="item.introduction">{{item.introduction}}</span>
+                                <span class="tips" v-if="item.introduction" v-html="item.introduction">按照区域架构选择活动范围</span>
                             </div>
                         </div>
                         <!--签到-->
@@ -838,7 +838,9 @@
                 signInNum: 0,
                 wfwFormConfigWindow: null,
                 releaseScopeTitle: "",
-                activityClassifyTitle: "分类"
+                activityClassifyTitle: "分类",
+                // 班级
+                classDataLoading: false
             },
             created: function () {
                 var $this = this;
@@ -882,8 +884,6 @@
                     }
                     if ($this.releaseType == "org" && this.code == 'activity_release_scope' && this.dataOrigin == 'interface') {
                         $this.releaseType = "class";
-                        // 发布班级url不为空，则请求发布班级列表
-                        $this.loadReleaseClassData(this.originIdentify);
                     }
                     if (_this.children && _this.children.length > 0) {
                         $(_this.children).each(function () {
@@ -1346,9 +1346,13 @@
                         app.showMsg("发布班级数据接口地址非法");
                         return;
                     }
-                    var url = ctx + "/api/third-party/query/teaching/clazz"
+                    if ($this.classDataLoading) {
+                        return;
+                    }
+                    $this.classDataLoading = true;
+                    var url = ctx + "/api/third-party/query/teaching/clazz";
                     dataUrl = $this.packageReleaseClassUrl(dataUrl);
-                    app.ajaxPostWithLoading(url, {url: dataUrl}, function (data) {
+                    app.ajaxPost(url, {url: dataUrl}, function (data) {
                         if (data.success) {
                             $this.classList = data.data;
                             var finalReleaseClassIds = [];
@@ -1365,7 +1369,9 @@
                             }
                             app.showMsg(errorMessage);
                         }
+                        $this.classDataLoading = false;
                     }, function () {
+                        $this.classDataLoading = false;
                         app.showMsg("获取班级列表失败");
                     });
                 },

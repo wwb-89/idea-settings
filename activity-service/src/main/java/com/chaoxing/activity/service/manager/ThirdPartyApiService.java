@@ -8,7 +8,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
 import javax.annotation.Resource;
-import javax.servlet.http.HttpServletRequest;
 import java.util.List;
 
 /**
@@ -29,11 +28,11 @@ public class ThirdPartyApiService {
      * @Description
      * @author huxiaolong
      * @Date 2021-09-03 14:18:11
-     * @param request
      * @param url
+     * @param clazz
      * @return java.util.List<java.lang.Object>
      */
-    public List<?> getDataFromThirdPartyUrl(HttpServletRequest request, String url, Class<?> clazz) {
+    public <T> List<T> getDataFromThirdPartyUrl(String url, Class<T> clazz) {
         String result = restTemplate.getForObject(url, String.class);
         JSONObject jsonObject = JSON.parseObject(result);
 
