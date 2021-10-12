@@ -34,6 +34,12 @@ public class ActivityMarketUpdateParamDTO {
 	private Integer classifyId;
 	/** 微服务应用id */
 	private Integer wfwAppId;
+	/** 是否启用通讯录 */
+	private Boolean enableContacts;
+	/** 是否启用组织架构 */
+	private Boolean enableOrganization;
+	/** 是否启用区域架构 */
+	private Boolean enableRegional;
 
 	public Market buildActivityMarket() {
 		return Market.builder()
@@ -44,18 +50,24 @@ public class ActivityMarketUpdateParamDTO {
 				.fid(getFid())
 				.iconCloudId(getIconCloudId())
 				.wfwAppId(getWfwAppId())
+				.enableContacts(getEnableContacts())
+				.enableOrganization(getEnableOrganization())
+				.enableRegional(getEnableRegional())
 				.build();
 	}
 
-	public static ActivityMarketUpdateParamDTO buildFromActivityMarket(Market activityMarket) {
+	public static ActivityMarketUpdateParamDTO buildFromActivityMarket(Market market) {
 		return ActivityMarketUpdateParamDTO.builder()
-				.id(activityMarket.getId())
-				.name(activityMarket.getName())
-				.iconCloudId(activityMarket.getIconCloudId())
-				.iconUrl(activityMarket.getIconUrl())
-				.fid(activityMarket.getFid())
-				.iconCloudId(activityMarket.getIconCloudId())
-				.wfwAppId(activityMarket.getWfwAppId())
+				.id(market.getId())
+				.name(market.getName())
+				.iconCloudId(market.getIconCloudId())
+				.iconUrl(market.getIconUrl())
+				.fid(market.getFid())
+				.iconCloudId(market.getIconCloudId())
+				.wfwAppId(market.getWfwAppId())
+				.enableContacts(market.getEnableContacts())
+				.enableOrganization(market.getEnableOrganization())
+				.enableRegional(market.getEnableRegional())
 				.build();
 	}
 

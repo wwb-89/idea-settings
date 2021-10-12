@@ -50,6 +50,20 @@ public class ComponentQueryService {
 		return Optional.ofNullable(components).orElse(Lists.newArrayList()).stream().findFirst().orElse(null);
 	}
 
+	/**根据code查询系统组件列表
+	 * @Description 
+	 * @author wwb
+	 * @Date 2021-10-12 14:29:19
+	 * @param code
+	 * @return java.util.List<com.chaoxing.activity.model.Component>
+	*/
+	public List<Component> listSystemComponentByCode(String code) {
+		return componentMapper.selectList(new LambdaQueryWrapper<Component>()
+				.eq(Component::getSystem, true)
+				.eq(Component::getCode, code)
+		);
+	}
+
 	/**根据id列表查询
 	 * @Description 
 	 * @author wwb

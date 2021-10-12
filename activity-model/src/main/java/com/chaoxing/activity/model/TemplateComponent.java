@@ -84,9 +84,10 @@ public class TemplateComponent {
      * @Date 2021-07-14 18:06:08
      * @param templateComponents
      * @param templateId
+     * @param excludeComponentIds
      * @return java.util.List<com.chaoxing.activity.model.TemplateComponent>
     */
-    public static List<TemplateComponent> cloneToNewTemplateId(List<TemplateComponent> templateComponents, Integer templateId) {
+    public static List<TemplateComponent> cloneToNewTemplateId(List<TemplateComponent> templateComponents, Integer templateId, List<Integer> excludeComponentIds) {
         // 复制一个新列表出来
         List<TemplateComponent> clonedTemplateComponents = Lists.newArrayList();
         Optional.ofNullable(templateComponents).orElse(Lists.newArrayList()).forEach(v -> {
@@ -95,7 +96,9 @@ public class TemplateComponent {
             clonedTemplateComponent.setTemplateId(templateId);
             clonedTemplateComponent.setOriginId(v.getId());
             clonedTemplateComponent.setId(null);
-            clonedTemplateComponents.add(clonedTemplateComponent);
+            if (!excludeComponentIds.contains(clonedTemplateComponent.getComponentId())) {
+                clonedTemplateComponents.add(clonedTemplateComponent);
+            }
         });
         // 找到父组件列表
         List<TemplateComponent> parentTemplateComponents = Optional.ofNullable(clonedTemplateComponents).orElse(Lists.newArrayList()).stream().filter(v -> Objects.equals(0, v.getPid())).collect(Collectors.toList());

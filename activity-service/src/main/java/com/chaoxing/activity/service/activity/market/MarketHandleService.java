@@ -76,11 +76,11 @@ public class MarketHandleService {
 	@Transactional(rollbackFor = Exception.class)
 	public Market add(ActivityMarketCreateParamDTO activityMarketCreateParamDto, OperateUserDTO operateUserDto) {
 		Market activityMarket = createMarket(activityMarketCreateParamDto, operateUserDto);
-		Integer marketId = activityMarket.getId();
 		// 给市场克隆一个模版
 		String activityFlag = activityMarketCreateParamDto.getActivityFlag();
+		// 没有指定模版就使用系统的normal
 		Activity.ActivityFlagEnum activityFlagEnum = Optional.ofNullable(Activity.ActivityFlagEnum.fromValue(activityFlag)).orElse(Activity.ActivityFlagEnum.NORMAL);
-		templateHandleService.cloneTemplate(marketId, templateQueryService.getSystemTemplateIdByActivityFlag(activityFlagEnum));
+		templateHandleService.cloneTemplate(activityMarket, templateQueryService.getSystemTemplateIdByActivityFlag(activityFlagEnum));
 		return activityMarket;
 	}
 
@@ -145,7 +145,7 @@ public class MarketHandleService {
 		marketMapper.insert(activityMarket);
 		Integer marketId = activityMarket.getId();
 		// 给市场克隆一个模版
-		templateHandleService.cloneTemplate(marketId, templateQueryService.getSystemTemplateIdByActivityFlag(activityFlagEnum));
+		templateHandleService.cloneTemplate(activityMarket, templateQueryService.getSystemTemplateIdByActivityFlag(activityFlagEnum));
 		return activityMarket;
 	}
 
@@ -254,7 +254,7 @@ public class MarketHandleService {
 		marketMapper.insert(newMarket);
 
 		// 给市场克隆一个模版
-		templateHandleService.cloneTemplate(newMarket.getId(), originTemplateId);
+		templateHandleService.cloneTemplate(newMarket, originTemplateId);
 		return newMarket;
 	}
 

@@ -11,6 +11,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.BeanUtils;
 
 import java.time.LocalDateTime;
 import java.util.Objects;
@@ -70,7 +71,9 @@ public class Market {
     private Integer updateUid;
 
     public void perfectCreator(OperateUserDTO operateUserDto) {
-        setCreateUid(operateUserDto.getUid());
+        Integer uid = operateUserDto.getUid();
+        setCreateUid(uid);
+        setUpdateUid(uid);
     }
 
     public void perfectSequence(Integer sequence) {
@@ -100,15 +103,16 @@ public class Market {
     }
 
     public static Market cloneMarket(Market originMarket, Integer fid) {
-        return Market.builder()
-                .name(originMarket.getName())
-                .iconCloudId(originMarket.getIconCloudId())
-                .iconUrl(originMarket.getIconUrl())
-                .signUpActivityLimit(originMarket.getSignUpActivityLimit())
-                .fid(fid)
-                .sequence(originMarket.getSequence())
-                .deleted(originMarket.getDeleted())
-                .build();
+        Market cloneMarket = new Market();
+        BeanUtils.copyProperties(originMarket, cloneMarket);
+        cloneMarket.setFid(fid);
+        cloneMarket.setWfwAppId(null);
+        cloneMarket.setCreateUid(null);
+        cloneMarket.setCreateUid(null);
+        cloneMarket.setCreateTime(null);
+        cloneMarket.setUpdateUid(null);
+        cloneMarket.setUpdateTime(null);
+        return cloneMarket;
     }
 
 }
