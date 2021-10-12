@@ -36,6 +36,14 @@
 					<label class="label">应用名称</label>
 					<el-input type="name" v-model.trim="market.name" placeholder="请输入"></el-input>
 				</div>
+				<div class="input-box" style="display: flex;">
+					<label class="label">组织架构</label>
+					<el-checkbox-group v-model="organizationalStructures" @change="organizationalStructureChange()">
+						<el-checkbox label="contacts">通讯录</el-checkbox>
+						<el-checkbox label="organization">组织架构</el-checkbox>
+						<el-checkbox label="regional">区域架构</el-checkbox>
+					</el-checkbox-group>
+				</div>
 				<div class="input-box">
 					<label class="label">应用图标</label>
 					<div class="icon-box">
@@ -105,20 +113,32 @@
 	<script src="/static/pc/assets/lib/webuploader/webuploader.js" th:src="@{/pc/assets/lib/webuploader/webuploader.js}"></script>
 	<script src="/static/pc/IconLibrary/js/jquery.mCustomScrollbar.concat.min.js" th:src="@{/pc/IconLibrary/js/jquery.mCustomScrollbar.concat.min.js}"></script>
 	<script th:inline="javascript">
-		var vm = new Vue({
+		vm = new Vue({
 			el: "#vm",
 			data: {
 				ctx: ctx,
 				iconWindowShow: false,
 				market: [[${market}]],
 				backUrl: [[${backUrl}]],
-                activityFlag: [[${activityFlag}]]
+                activityFlag: [[${activityFlag}]],
+				// 组织架构
+                organizationalStructures: []
 			},
             created: function () {
 				var $this = this;
                 $this.perfectMarket();
                 $this.market.activityFlag = $this.activityFlag;
                 $this.market.name = "活动广场";
+                // 设置organizationalStructures
+                if ($this.market.enableContacts) {
+                    $this.organizationalStructures.push("contacts");
+                }
+                if ($this.market.enableOrganization) {
+                    $this.organizationalStructures.push("organization");
+                }
+                if ($this.market.enableRegional) {
+                    $this.organizationalStructures.push("regional");
+                }
             },
 			mounted: function () {
 				var $this = this;
@@ -285,7 +305,13 @@
 				back: function () {
 					var $this = this;
 					window.location = $this.backUrl;
-				}
+				},
+                organizationalStructureChange: function () {
+                    var $this = this;
+                    $this.market.enableContacts = $this.organizationalStructures.indexOf("contacts") > -1;
+                    $this.market.enableOrganization = $this.organizationalStructures.indexOf("organization") > -1;
+                    $this.market.enableRegional = $this.organizationalStructures.indexOf("regional") > -1;
+                }
 			}
 		});
 	</script>

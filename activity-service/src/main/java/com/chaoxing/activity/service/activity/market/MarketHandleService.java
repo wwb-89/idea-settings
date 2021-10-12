@@ -75,7 +75,7 @@ public class MarketHandleService {
 	*/
 	@Transactional(rollbackFor = Exception.class)
 	public Market add(ActivityMarketCreateParamDTO activityMarketCreateParamDto, OperateUserDTO operateUserDto) {
-		Market activityMarket = ApplicationContextHolder.getBean(MarketHandleService.class).createMarket(activityMarketCreateParamDto, operateUserDto);
+		Market activityMarket = createMarket(activityMarketCreateParamDto, operateUserDto);
 		Integer marketId = activityMarket.getId();
 		// 给市场克隆一个模版
 		String activityFlag = activityMarketCreateParamDto.getActivityFlag();
