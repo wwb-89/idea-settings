@@ -26,6 +26,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.annotation.Resource;
+import java.math.BigDecimal;
 import java.util.*;
 
 /**门户活动接口服务
@@ -145,8 +146,14 @@ public class ActivityMhV2ApiController {
 		String activityAddress = Optional.ofNullable(activity.getAddress()).orElse("") + Optional.ofNullable(activity.getDetailAddress()).orElse("");;
 		String activityAddressLink = "https://api.hd.chaoxing.com/redirect/activity/"+ activityId +"/address";
 		hashMap.put("104", buildField("活动地点", activityAddress, "104"));
-		// 活动地点链接（线下的活动有）
-		hashMap.put("117", buildField("活动地点链接", activityAddressLink, "117"));
+		// 活动地点链接（线下的活动有, 有经纬度）
+		BigDecimal longitude = activity.getLongitude();
+		BigDecimal dimension = activity.getDimension();
+		if (longitude != null && dimension != null) {
+			hashMap.put("117", buildField("活动地点链接", activityAddressLink, "117"));
+		} else {
+			hashMap.put("117", buildField("", "", "117"));
+		}
 		// 主办方
 		hashMap.put("105", buildField(fieldCodeNameRelation.get("activity_organisers"), activity.getOrganisers(), "105"));
 		// 海报
