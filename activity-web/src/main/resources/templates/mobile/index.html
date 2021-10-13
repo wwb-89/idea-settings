@@ -65,6 +65,7 @@
     </div>
     <!-- 弹出层 -->
     <div class="pop" v-show="filterWindowShow">
+        <div style="height: 100%;" @click="filterCancel"></div>
         <div class="popInner">
             <div class="popList mescroll-touch">
                 <div class="list-item" v-show="showFilter('activityType')">
@@ -192,7 +193,7 @@
                         var exist = false;
                         var index = 0;
                         $($this.regions).each(function (i) {
-                            if (this.manageFid == $this.topFid) {
+                            if (this.manageFid == $this.topFid && $this.topFid != 2120) {
                                 exist = true;
                                 index = i;
                                 return false;
@@ -400,6 +401,7 @@
                     },
                     queryParams2Condition: function () {
                         var $this = this;
+                        console.log($this.queryParams.areaCode);
                         $($this.classifies).each(function (i) {
                             $this.$set($this.classifies[i], "selected", this.value == $this.queryParams.activityClassifyName);
                         });
@@ -409,9 +411,16 @@
                         $($this.activityQueryDates).each(function (i) {
                             $this.$set($this.activityQueryDates[i], "selected", this.value == $this.queryParams.date);
                         });
+                        var existRegion = false;
                         $($this.regions).each(function (i) {
-                            $this.$set($this.regions[i], "selected", this.value == $this.queryParams.areaCode);
+                            if (this.value == $this.queryParams.areaCode) {
+                                existRegion = true;
+                                $this.$set($this.regions[i], "selected", this.value == $this.queryParams.areaCode);
+                            }
                         });
+                        if (!existRegion && $this.regions.length > 0) {
+                            $this.$set($this.regions[0], "selected", true);
+                        }
                         $($this.statuses).each(function (i) {
                             $this.$set($this.statuses[i], "selected", this.value == $this.queryParams.status);
                         });
