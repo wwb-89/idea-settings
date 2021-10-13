@@ -4,6 +4,9 @@ import com.chaoxing.activity.dto.LoginUserDTO;
 import com.chaoxing.activity.model.Activity;
 import com.chaoxing.activity.model.OrgDataRepoConfigDetail;
 import com.chaoxing.activity.service.data.DataPushService;
+import com.chaoxing.activity.service.manager.bigdata.BigDataPointApiService;
+import com.chaoxing.activity.service.queue.BigDataPointQueueService;
+import com.chaoxing.activity.service.queue.BigDataPointTaskQueueService;
 import com.chaoxing.activity.service.queue.activity.*;
 import com.chaoxing.activity.service.stat.UserStatSummaryHandleService;
 import lombok.extern.slf4j.Slf4j;
@@ -49,6 +52,10 @@ public class ActivityChangeEventService {
 	private ActivityWorkInfoSyncQueueService activityWorkInfoSyncQueueService;
 	@Resource
 	private DataPushService dataPushService;
+	@Resource
+	private BigDataPointTaskQueueService bigDataPointTaskQueueService;
+	@Resource
+	private BigDataPointQueueService bigDataPointQueueService;
 
 	/**活动数据改变
 	 * @Description 
@@ -150,6 +157,16 @@ public class ActivityChangeEventService {
 			Integer activityId = activity.getId();
 			Integer createFid = activity.getCreateFid();
 			dataPushService.dataPush(new DataPushService.DataPushParamDTO(createFid, OrgDataRepoConfigDetail.DataTypeEnum.ACTIVITY, String.valueOf(activityId), null));
+			// 大数据积分（举办活动）
+			bigDataPointQueueService.push(new BigDataPointQueueService.QueueParamDTO(activity.getCreateUid(), activity.getCreateFid(), activityId, BigDataPointApiService.PointTypeEnum.CANCEL_ORGANIZE_ACTIVITY.getValue()));
+		}else if (Objects.equals(Activity.StatusEnum.ENDED, statusEnum)) {
+			// 活动结束，大数据积分推送
+			BigDataPointTaskQueueService.QueueParamDTO queueParam = new BigDataPointTaskQueueService.QueueParamDTO(activity.getId(), activity.getCreateFid(), true);
+			bigDataPointTaskQueueService.push(queueParam);
+		} else if (Objects.equals(Activity.StatusEnum.ONGOING, statusEnum)) {
+			// 进行中，删除大数据已推送的积分
+			BigDataPointTaskQueueService.QueueParamDTO queueParam = new BigDataPointTaskQueueService.QueueParamDTO(activity.getId(), activity.getCreateFid(), false);
+			bigDataPointTaskQueueService.push(queueParam);
 		}
 		activityIsAboutToStartQueueService.pushNoticeSignedUp(new ActivityIsAboutToStartQueueService.QueueParamDTO(activity.getId(), activity.getStartTime()), false);
 	}
@@ -167,6 +184,11 @@ public class ActivityChangeEventService {
 		if (!released) {
 			// 取消定时发布
 			activityTimingReleaseQueueService.remove(activityId);
+			// 大数据积分（举办活动）
+			bigDataPointQueueService.push(new BigDataPointQueueService.QueueParamDTO(activity.getCreateUid(), activity.getCreateFid(), activityId, BigDataPointApiService.PointTypeEnum.CANCEL_ORGANIZE_ACTIVITY.getValue()));
+		} else {
+			// 大数据积分（举办活动）
+			bigDataPointQueueService.push(new BigDataPointQueueService.QueueParamDTO(activity.getCreateUid(), activity.getCreateFid(), activityId, BigDataPointApiService.PointTypeEnum.ORGANIZE_ACTIVITY.getValue()));
 		}
 		// 活动发布范围改变
 		activityReleaseScopeChangeQueueService.push(activityId);
