@@ -31,7 +31,7 @@ import java.util.TreeMap;
 public class BigDataPointApiService {
 
     private static final String POINT_PUSH_URL = "http://bigdata-api.chaoxing.com/gt/point?fid=%d&pid=%d&userid=%d&dataType=%d&pointType=%d&point=%d&changeTime=%d&enc=%s";
-    private static final String KEY = "";
+    private static final String KEY = "ENC y$$Ojy$s";
 
     @Resource(name = "restTemplateProxy")
     private RestTemplate restTemplate;
