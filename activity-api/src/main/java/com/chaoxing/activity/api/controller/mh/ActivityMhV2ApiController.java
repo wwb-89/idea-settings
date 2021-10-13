@@ -17,6 +17,7 @@ import com.chaoxing.activity.util.constant.ActivityMhUrlConstant;
 import com.chaoxing.activity.util.constant.DateTimeFormatterConstant;
 import com.chaoxing.activity.util.constant.UrlConstant;
 import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -25,10 +26,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.annotation.Resource;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Optional;
+import java.math.BigDecimal;
+import java.util.*;
 
 /**门户活动接口服务
  * @author wwb
@@ -94,13 +93,13 @@ public class ActivityMhV2ApiController {
 		mhGeneralAppResultDataDTO.setPop(0);
 		mhGeneralAppResultDataDTO.setPopUrl("");
 		jsonObject.put("results", Lists.newArrayList(mhGeneralAppResultDataDTO));
-		List<MhGeneralAppResultDataDTO.MhGeneralAppResultDataFieldDTO> mhGeneralAppResultDataFields = Lists.newArrayList();
+		Map<String, MhGeneralAppResultDataDTO.MhGeneralAppResultDataFieldDTO> hashMap = Maps.newHashMap();
 		// 活动名称
-		mhGeneralAppResultDataFields.add(buildField(fieldCodeNameRelation.get("activity_name"), activity.getName(), "1"));
+		hashMap.put("1", buildField(fieldCodeNameRelation.get("activity_name"), activity.getName(), "1"));
 		// 开始时间
-		mhGeneralAppResultDataFields.add(buildField(fieldCodeNameRelation.get("activity_time_scope"), DateTimeFormatterConstant.YYYY_MM_DD_HH_MM.format(activity.getStartTime()), "100"));
+		hashMap.put("100", buildField(fieldCodeNameRelation.get("activity_time_scope"), DateTimeFormatterConstant.YYYY_MM_DD_HH_MM.format(activity.getStartTime()), "100"));
 		// 结束时间
-		mhGeneralAppResultDataFields.add(buildField("活动结束时间", DateTimeFormatterConstant.YYYY_MM_DD_HH_MM.format(activity.getEndTime()), "101"));
+		hashMap.put("101", buildField("活动结束时间", DateTimeFormatterConstant.YYYY_MM_DD_HH_MM.format(activity.getEndTime()), "101"));
 		// 报名、签到人数
 		Integer signId = activity.getSignId();
 		List<MhGeneralAppResultDataDTO.MhGeneralAppResultDataFieldDTO> btns;
@@ -109,49 +108,66 @@ public class ActivityMhV2ApiController {
 			SignStatDTO signStat = signApiService.getSignParticipation(signId);
 			if (signStat != null && CollectionUtils.isNotEmpty(signStat.getSignUpIds())) {
 				// 报名时间
-				mhGeneralAppResultDataFields.add(buildField(fieldCodeNameRelation.get("sign_up_time_scope"), DateTimeFormatterConstant.YYYY_MM_DD_HH_MM.format(signStat.getSignUpStartTime()), "102"));
-				mhGeneralAppResultDataFields.add(buildField("报名结束时间", DateTimeFormatterConstant.YYYY_MM_DD_HH_MM.format(signStat.getSignUpEndTime()), "103"));
+				hashMap.put("102", buildField(fieldCodeNameRelation.get("sign_up_time_scope"), DateTimeFormatterConstant.YYYY_MM_DD_HH_MM.format(signStat.getSignUpStartTime()), "102"));
+				hashMap.put("103", buildField("报名结束时间", DateTimeFormatterConstant.YYYY_MM_DD_HH_MM.format(signStat.getSignUpEndTime()), "103"));
 				Integer participateNum = signStat.getSignedUpNum();
 				String signedUpNumDescribe = String.valueOf(participateNum);
 				Integer limitNum = signStat.getLimitNum();
 				if (limitNum.intValue() > 0) {
 					signedUpNumDescribe += "/" + limitNum;
 				}
-				mhGeneralAppResultDataFields.add(buildField("报名人数", signedUpNumDescribe, "106"));
+				hashMap.put("106", buildField("报名人数", signedUpNumDescribe, "106"));
 				// 开启了报名名单公开则显示报名人数链接
 				Boolean publicList = signStat.getPublicList();
 				String signUpListUrl = "";
 				if (Objects.equals(publicList, Boolean.TRUE)) {
 					signUpListUrl = signApiService.getSignUpListUrl(signStat.getSignUpIds().get(0));
 				}
-				mhGeneralAppResultDataFields.add(buildField("报名人数链接", signUpListUrl, "107"));
+				hashMap.put("107", buildField("报名人数链接", signUpListUrl, "107"));
 			}
 			// 通过报名签到获取按钮列表
 			btns = packageBtns(activity, signId, uid, availableFlags);
-			mhGeneralAppResultDataFields.addAll(btns);
+			btns.forEach(v -> hashMap.put(v.getFlag(), v));
 		}else{
 			// 是不是管理员
 			if (activityValidationService.isManageAble(activity, uid)) {
-				mhGeneralAppResultDataFields.addAll(buildBtnField("管理", getFlag(availableFlags), activityQueryService.getActivityManageUrl(activity.getId()), "2"));
+				List<MhGeneralAppResultDataDTO.MhGeneralAppResultDataFieldDTO> manageBtns = buildBtnField("管理", getFlag(availableFlags), activityQueryService.getActivityManageUrl(activity.getId()), "2");
+				manageBtns.forEach(v -> hashMap.put(v.getFlag(), v));
 			}
 			// 评价
 			Boolean openRating = activity.getOpenRating();
 			openRating = Optional.ofNullable(openRating).orElse(Boolean.FALSE);
 			if (openRating) {
-				mhGeneralAppResultDataFields.addAll(buildBtnField("评价", getFlag(availableFlags), activityQueryService.getActivityRatingUrl(activity.getId()), "2"));
+				List<MhGeneralAppResultDataDTO.MhGeneralAppResultDataFieldDTO> ratingBtns = buildBtnField("评价", getFlag(availableFlags), activityQueryService.getActivityRatingUrl(activity.getId()), "2");
+				ratingBtns.forEach(v -> hashMap.put(v.getFlag(), v));
 			}
 		}
 		// 活动地点
 		String activityAddress = Optional.ofNullable(activity.getAddress()).orElse("") + Optional.ofNullable(activity.getDetailAddress()).orElse("");;
 		String activityAddressLink = "https://api.hd.chaoxing.com/redirect/activity/"+ activityId +"/address";
-		mhGeneralAppResultDataFields.add(buildField("活动地点", activityAddress, "104"));
-		// 活动地点链接（线下的活动有）
-		mhGeneralAppResultDataFields.add(buildField("活动地点链接", activityAddressLink, "117"));
+		hashMap.put("104", buildField("活动地点", activityAddress, "104"));
+		// 活动地点链接（线下的活动有, 有经纬度）
+		BigDecimal longitude = activity.getLongitude();
+		BigDecimal dimension = activity.getDimension();
+		if (longitude != null && dimension != null) {
+			hashMap.put("117", buildField("活动地点链接", activityAddressLink, "117"));
+		} else {
+			hashMap.put("117", buildField("", "", "117"));
+		}
 		// 主办方
-		mhGeneralAppResultDataFields.add(buildField(fieldCodeNameRelation.get("activity_organisers"), activity.getOrganisers(), "105"));
+		hashMap.put("105", buildField(fieldCodeNameRelation.get("activity_organisers"), activity.getOrganisers(), "105"));
 		// 海报
-		mhGeneralAppResultDataFields.add(buildField("海报", "海报", "130"));
-		mhGeneralAppResultDataFields.add(buildField("海报", String.format(ActivityMhUrlConstant.ACTIVITY_POSTERS_URL, activity.getId()), "131"));
+		hashMap.put("130", buildField("海报", "海报", "130"));
+		hashMap.put("131", buildField("海报", String.format(ActivityMhUrlConstant.ACTIVITY_POSTERS_URL, activity.getId()), "131"));
+		List<String> allFlags = Lists.newArrayList("0", "1", "2", "3", "4", "5", "6", "100", "101", "102", "103", "104", "105", "106", "107", "108", "109", "110", "111", "112", "113", "114", "115", "116", "117", "118", "130", "131");
+		List<MhGeneralAppResultDataDTO.MhGeneralAppResultDataFieldDTO> mhGeneralAppResultDataFields = Lists.newArrayList();
+		for (String allFlag : allFlags) {
+			MhGeneralAppResultDataDTO.MhGeneralAppResultDataFieldDTO btn = hashMap.get(allFlag);
+			if (btn == null) {
+				btn = buildField("", "", allFlag);
+			}
+			mhGeneralAppResultDataFields.add(btn);
+		}
 		mhGeneralAppResultDataDTO.setFields(mhGeneralAppResultDataFields);
 		return RestRespDTO.success(jsonObject);
 	}

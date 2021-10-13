@@ -183,7 +183,7 @@
                     var exist = false;
                     var index = 0;
                     $($this.regions).each(function (i) {
-                        if (this.manageFid == $this.topFid) {
+                        if (this.manageFid == $this.topFid && $this.topFid != 2120) {
                             exist = true;
                             index = i;
                             return false;

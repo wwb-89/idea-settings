@@ -753,7 +753,7 @@
                 methods:{
                     initData: function () {
                         var $this = this;
-                        var { template, components, templateComponents } = $this.templateInfo
+                        var {template, components, templateComponents} = $this.templateInfo;
                         $this.originTemplateId = template.originTemplateId || template.id;
                         $this.template = template;
                         $(components).each(function () {
@@ -765,7 +765,9 @@
                             $this.pidChildrenMap[this.pid].push(this);
                         });
                         $this.components = components;
-                        $(templateComponents).each(function () { $this.innerAttrSupplement(this); });
+                        $(templateComponents).each(function () {
+                            $this.innerAttrSupplement(this);
+                        });
                         $this.packageTemplateComponents(templateComponents);
                         $this.initComponentTypeList(templateComponents);
                     },
@@ -894,7 +896,9 @@
                     },
                     // 打开添加字段弹框
                     openAddFieldDialog: function () {
-                        var $this = this; $this.addFieldDialog = true; $this.closeBeforeAddField = true;
+                        var $this = this;
+                        $this.addFieldDialog = true;
+                        $this.closeBeforeAddField = true;
                     },
                     // 关闭添加字段弹框
                     closeAddFieldDialog: function () {

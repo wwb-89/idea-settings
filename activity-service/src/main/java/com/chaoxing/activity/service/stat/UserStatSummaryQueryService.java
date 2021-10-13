@@ -1,5 +1,6 @@
 package com.chaoxing.activity.service.stat;
 
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.chaoxing.activity.dto.activity.UserParticipateActivityDTO;
 import com.chaoxing.activity.dto.export.ExportDataDTO;
@@ -301,4 +302,19 @@ public class UserStatSummaryQueryService {
 		page = userStatSummaryMapper.pageUserStatResult(page, fid, marketId, uidList);
 		return page;
 	}
+
+	/**查询活动下用户参与数据
+	 * @Description 
+	 * @author wwb
+	 * @Date 2021-10-13 14:18:37
+	 * @param activityId
+	 * @return java.util.List<com.chaoxing.activity.model.UserStatSummary>
+	*/
+	public List<UserStatSummary> listActivityStatData(Integer activityId) {
+		return userStatSummaryMapper.selectList(new LambdaQueryWrapper<UserStatSummary>()
+				.eq(UserStatSummary::getActivityId, activityId)
+				.eq(UserStatSummary::getValid, true)
+		);
+	}
+
 }

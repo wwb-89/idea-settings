@@ -11,6 +11,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.BeanUtils;
 
 import java.time.LocalDateTime;
 import java.util.Objects;
@@ -42,6 +43,15 @@ public class Market {
     private String iconUrl;
     /** 机构id; column: fid*/
     private Integer fid;
+    /** 是否启用通讯录; column: is_enable_contacts*/
+    @TableField(value = "is_enable_contacts")
+    private Boolean enableContacts;
+    /** 是否启用组织架构; column: is_enable_organization*/
+    @TableField(value = "is_enable_organization")
+    private Boolean enableOrganization;
+    /** 是否启用区域架构; column: is_enable_regional*/
+    @TableField(value = "is_enable_regional")
+    private Boolean enableRegional;
     /** 微服务应用id; column: wfw_app_id*/
     private Integer wfwAppId;
     /** 同时报名活动数限制; column: sign_up_activity_limit*/
@@ -61,7 +71,9 @@ public class Market {
     private Integer updateUid;
 
     public void perfectCreator(OperateUserDTO operateUserDto) {
-        setCreateUid(operateUserDto.getUid());
+        Integer uid = operateUserDto.getUid();
+        setCreateUid(uid);
+        setUpdateUid(uid);
     }
 
     public void perfectSequence(Integer sequence) {
@@ -91,15 +103,16 @@ public class Market {
     }
 
     public static Market cloneMarket(Market originMarket, Integer fid) {
-        return Market.builder()
-                .name(originMarket.getName())
-                .iconCloudId(originMarket.getIconCloudId())
-                .iconUrl(originMarket.getIconUrl())
-                .signUpActivityLimit(originMarket.getSignUpActivityLimit())
-                .fid(fid)
-                .sequence(originMarket.getSequence())
-                .deleted(originMarket.getDeleted())
-                .build();
+        Market cloneMarket = new Market();
+        BeanUtils.copyProperties(originMarket, cloneMarket);
+        cloneMarket.setFid(fid);
+        cloneMarket.setWfwAppId(null);
+        cloneMarket.setCreateUid(null);
+        cloneMarket.setCreateUid(null);
+        cloneMarket.setCreateTime(null);
+        cloneMarket.setUpdateUid(null);
+        cloneMarket.setUpdateTime(null);
+        return cloneMarket;
     }
 
 }

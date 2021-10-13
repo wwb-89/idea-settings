@@ -1,6 +1,7 @@
 package com.chaoxing.activity.admin.controller.general;
 
 import com.chaoxing.activity.admin.util.LoginUtils;
+import com.chaoxing.activity.dto.engine.ActivityEngineDTO;
 import com.chaoxing.activity.dto.manager.wfwform.WfwFormTemplateDTO;
 import com.chaoxing.activity.model.Template;
 import com.chaoxing.activity.service.activity.engine.ActivityEngineQueryService;
@@ -60,7 +61,8 @@ public class ActivityEngineController {
         model.addAttribute("fid", fid);
         model.addAttribute("marketId", marketId);
         model.addAttribute("templateId", templateId);
-        model.addAttribute("templateInfo", activityEngineQueryService.findEngineTemplateInfo(templateId));
+        ActivityEngineDTO templateInfo = activityEngineQueryService.findEngineTemplateInfo(templateId, marketId);
+        model.addAttribute("templateInfo", templateInfo);
         model.addAttribute("wfwForms", wfwForms);
         model.addAttribute("wfwFormTemplateList", WfwFormTemplateDTO.wfwFormTemplateList());
         return "pc/engine/index";

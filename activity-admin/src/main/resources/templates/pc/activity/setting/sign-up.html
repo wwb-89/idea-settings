@@ -39,6 +39,9 @@
             background: #0084ff;
             line-height: 30px;
         }
+        .el-input--prefix .el-input__inner {
+            padding-left: 30px!important;
+        }
         [v-cloak]{
             display: none;
         }
@@ -562,8 +565,9 @@
                         }
                         var url = ctx + '/api/wfw-form/build/create-url';
                         var templateType = ($this.fillInfoTypeMap[signUpTplComponentId] && $this.fillInfoTypeMap[signUpTplComponentId].templateType) || '';
+                        console.log($this.activity);
                         var params = {
-                            fid: [[${session._login_user_.fid}]],
+                            fid: $this.activity.createFid,
                             uid: [[${session._login_user_.uid}]],
                             formId: formId,
                             templateType: templateType

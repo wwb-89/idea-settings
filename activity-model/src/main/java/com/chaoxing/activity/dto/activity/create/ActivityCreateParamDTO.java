@@ -7,7 +7,6 @@ import com.chaoxing.activity.dto.activity.ActivityComponentValueDTO;
 import com.chaoxing.activity.dto.manager.form.FormDataDTO;
 import com.chaoxing.activity.model.Activity;
 import com.chaoxing.activity.model.ActivityDetail;
-import com.chaoxing.activity.model.Classify;
 import com.chaoxing.activity.util.DateUtils;
 import com.chaoxing.activity.util.FormUtils;
 import com.chaoxing.activity.util.constant.CommonConstant;
@@ -134,6 +133,8 @@ public class ActivityCreateParamDTO {
 	private List<Integer> sucTemplateComponentIds;
 	/** 操作用户 */
 	private LoginUserDTO loginUser;
+	/** 创建机构fid */
+	private Integer createFid;
 
 	/**构建活动对象
 	 * @Description 
@@ -240,6 +241,7 @@ public class ActivityCreateParamDTO {
 				.activityFlag(activity.getActivityFlag())
 				.originActivityId(activity.getOriginActivityId())
 				.openGroup(activity.getOpenGroup())
+				.createFid(activity.getCreateFid())
 				.build();
 	}
 

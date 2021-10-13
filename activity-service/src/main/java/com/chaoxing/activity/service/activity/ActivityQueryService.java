@@ -110,6 +110,20 @@ public class ActivityQueryService {
 		return page;
 	}
 
+	/**查询flag下的所有活动
+	 * @Description 
+	 * @author wwb
+	 * @Date 2021-10-11 17:57:37
+	 * @param page
+	 * @param activityQuery
+	 * @return com.baomidou.mybatisplus.extension.plugins.pagination.Page<com.chaoxing.activity.model.Activity>
+	*/
+	public Page<Activity> pageFlag(Page<Activity> page, ActivityQueryDTO activityQuery) {
+		calDateScope(activityQuery);
+		page = activityMapper.pageFlag(page, activityQuery);
+		return page;
+	}
+
 	/**枫叶查询机构能参与的活动（机构在参与范围内）
 	 * @Description 
 	 * @author wwb

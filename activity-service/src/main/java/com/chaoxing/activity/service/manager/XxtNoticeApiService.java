@@ -17,6 +17,7 @@ import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
 
 import javax.annotation.Resource;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -67,7 +68,7 @@ public class XxtNoticeApiService {
 		List<Integer> remainIds;
 		if (size > EACH_MAX_SEND_NUM) {
 			// 取前200个用户来生成消息
-			generateNoticeReceiverUids = receiverUids.subList(0, EACH_MAX_SEND_NUM);
+			generateNoticeReceiverUids = new ArrayList<>(receiverUids.subList(0, EACH_MAX_SEND_NUM));
 			receiverUids.removeAll(generateNoticeReceiverUids);
 			remainIds = receiverUids;
 		} else {

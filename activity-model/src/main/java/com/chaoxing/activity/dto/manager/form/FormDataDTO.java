@@ -4,7 +4,6 @@ import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.alibaba.fastjson.annotation.JSONField;
 import com.chaoxing.activity.dto.DepartmentDTO;
-import com.chaoxing.activity.dto.manager.wfwform.WfwFormDataDTO;
 import com.chaoxing.activity.util.FormUtils;
 import com.google.common.collect.Lists;
 import lombok.AllArgsConstructor;
@@ -156,4 +155,18 @@ public class FormDataDTO {
 		}
 		return null;
 	}
+
+	public Integer getUidByAlias(String alias) {
+		if (CollectionUtils.isEmpty(formData)) {
+			return null;
+		}
+		for (FormDataItemDTO formDatum : formData) {
+			Integer uid = formDatum.getAliasUid(alias);
+			if (uid != null) {
+				return uid;
+			}
+		}
+		return null;
+	}
+
 }
