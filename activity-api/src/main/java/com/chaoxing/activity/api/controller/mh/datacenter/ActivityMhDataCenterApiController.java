@@ -208,22 +208,36 @@ public class ActivityMhDataCenterApiController {
             // 开始结束时间
             fields.add(buildField(fieldCodeNameMap.getOrDefault("activity_time_scope", "活动时间"), DateTimeFormatterConstant.YYYY_MM_DD_HH_MM.format(record.getStartTime()), ++fieldFlag));
             fields.add(buildField(fieldCodeNameMap.getOrDefault("activity_time_scope", "活动时间"), DateTimeFormatterConstant.YYYY_MM_DD_HH_MM.format(record.getEndTime()), ++fieldFlag));
-
+            // 报名数据封装
+            String signUpStatus = "", signUpStartTime = "", signUpEndTime = "";
+            int signedUpNum = 0, personLimit = 0;
+            if (signStat != null && CollectionUtils.isNotEmpty(signStat.getSignUpIds())) {
+                if (signStat.getSignUpStartTime() != null && signStat.getSignUpEndTime() != null) {
+                    signUpStatus = getSignUpStatus(signStat, urlParams);
+                }
+                if (signStat.getSignUpStartTime() != null) {
+                    signUpStartTime = DateTimeFormatterConstant.YYYY_MM_DD_HH_MM.format(signStat.getSignUpStartTime());
+                }
+                if (signStat.getSignUpStartTime() != null) {
+                    signUpEndTime = DateTimeFormatterConstant.YYYY_MM_DD_HH_MM.format(signStat.getSignUpEndTime());
+                }
+                signedUpNum = Optional.ofNullable(signStat.getSignedUpNum()).orElse(0);
+                personLimit = Optional.ofNullable(signStat.getLimitNum()).orElse(0);
+            }
+            // 报名状态
+            fields.add(buildField("报名状态", signUpStatus, ++fieldFlag));
+            // 已报名人数
+            fields.add(buildField("已报名人数", signedUpNum, ++fieldFlag));
             // 报名开始结束时间
-            fields.add(buildField(fieldCodeNameMap.getOrDefault("sign_up_time_scope", "报名时间"), DateTimeFormatterConstant.YYYY_MM_DD_HH_MM.format(signStat.getSignUpStartTime()), ++fieldFlag));
-            fields.add(buildField(fieldCodeNameMap.getOrDefault("sign_up_time_scope", "报名时间"), DateTimeFormatterConstant.YYYY_MM_DD_HH_MM.format(signStat.getSignUpEndTime()), ++fieldFlag));
-
+            fields.add(buildField(fieldCodeNameMap.getOrDefault("sign_up_time_scope", "报名时间"), signUpStartTime, ++fieldFlag));
+            fields.add(buildField(fieldCodeNameMap.getOrDefault("sign_up_time_scope", "报名时间"), signUpEndTime, ++fieldFlag));
+            // 人数限制
+            fields.add(buildField(fieldCodeNameMap.getOrDefault("sign_up_person_limit", "人数限制"), personLimit == 0 ? "不限" : signStat.getLimitNum(), ++fieldFlag));
             // 活动状态
             Activity.StatusEnum statusEnum = Activity.StatusEnum.fromValue(record.getStatus());
             fields.add(buildField("活动状态", statusEnum.getName(), ++fieldFlag));
-            // 报名状态
-            fields.add(buildField("报名状态", getSignUpStatus(signStat, urlParams), ++fieldFlag));
             // 简介（40字纯文本）
             fields.add(buildField(fieldCodeNameMap.getOrDefault("introduction", "简介"), introductionMap.get(activityId), ++fieldFlag));
-            // 已报名人数
-            fields.add(buildField("已报名人数", signStat.getSignedUpNum(), ++fieldFlag));
-            // 人数限制
-            fields.add(buildField(fieldCodeNameMap.getOrDefault("sign_up_person_limit", "人数限制"), signStat.getLimitNum().compareTo(0) == 0 ? "不限" : signStat.getLimitNum(), ++fieldFlag));
             // 活动分类
             fields.add(buildField(fieldCodeNameMap.getOrDefault("activity_classify", "分类"), record.getActivityClassifyName(), ++fieldFlag));
             // 标签
