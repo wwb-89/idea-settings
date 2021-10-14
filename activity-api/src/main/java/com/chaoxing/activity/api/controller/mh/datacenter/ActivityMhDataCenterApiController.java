@@ -176,6 +176,7 @@ public class ActivityMhDataCenterApiController {
         for (Activity record : activities) {
             Map<String, String> fieldCodeNameMap = activityQueryService.getFieldCodeNameRelation(record);
             SignStatDTO signStat = signStatMap.get(record.getSignId());
+
             // 活动
             JSONObject activity = new JSONObject();
             Integer activityId = record.getId();
@@ -252,6 +253,7 @@ public class ActivityMhDataCenterApiController {
             }
             // 模板的分类
             fields.add(buildField("活动标识", record.getActivityFlag(), ++fieldFlag));
+            fields.add(buildField("typeID", record.getActivityClassifyId(), 102));
             activityJsonArray.add(activity);
         }
         return activityJsonArray;
