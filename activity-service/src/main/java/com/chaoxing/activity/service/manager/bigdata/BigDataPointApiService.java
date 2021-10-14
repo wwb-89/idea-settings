@@ -9,6 +9,7 @@ import lombok.Data;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.codec.digest.DigestUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
@@ -32,7 +33,12 @@ public class BigDataPointApiService {
 
     /** 推送积分接口 */
     private static final String POINT_PUSH_URL = "http://bigdata-api.chaoxing.com/gt/point?fid=%d&pid=%d&userid=%d&dataType=%d&pointType=%d&point=%d&changeTime=%d&enc=%s";
-    private static final String KEY = "y$$Ojy$s";
+    private static final Map<Integer, String> KEY_MAP = Maps.newHashMap();
+
+    static {
+        KEY_MAP.put(23274, "y$$Ojy$s");
+        KEY_MAP.put(170690, "Gyees$OysG");
+    }
 
     @Resource(name = "restTemplateProxy")
     private RestTemplate restTemplate;
@@ -45,7 +51,12 @@ public class BigDataPointApiService {
      * @return void
     */
     public void pointPush(PointPushParamDTO pointPushParam) {
-        String enc = getEnc(pointPushParam);
+        String key = KEY_MAP.get(pointPushParam.getFid());
+        if (StringUtils.isBlank(key)) {
+            log.warn("机构:{} 没有配置大数据积分key", pointPushParam.getFid());
+            return;
+        }
+        String enc = getEnc(pointPushParam, key);
         String url = String.format(POINT_PUSH_URL, pointPushParam.getFid(), pointPushParam.getPid(), pointPushParam.getUid(), pointPushParam.getDataType(),
                 pointPushParam.getPointType().getValue(), pointPushParam.getPoint(), pointPushParam.getTime(), enc);
         String result = restTemplate.getForObject(url, String.class);
@@ -57,7 +68,7 @@ public class BigDataPointApiService {
         }
     }
 
-    private String getEnc(PointPushParamDTO pointPushParam) {
+    private String getEnc(PointPushParamDTO pointPushParam, String key) {
         TreeMap<String, Object> param = Maps.newTreeMap();
         param.put("changeTime", pointPushParam.getTime());
         param.put("dataType", pointPushParam.getDataType());
@@ -70,7 +81,7 @@ public class BigDataPointApiService {
         for (Map.Entry<String, Object> entry : param.entrySet()) {
             clearText.append(entry.getValue());
         }
-        clearText.append(KEY);
+        clearText.append(key);
         return DigestUtils.md5Hex(clearText.toString()).toUpperCase();
     }
 

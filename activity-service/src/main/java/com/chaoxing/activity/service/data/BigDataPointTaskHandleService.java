@@ -29,11 +29,7 @@ import java.util.Optional;
 @Service
 public class BigDataPointTaskHandleService {
 
-    private static final List<Integer> PUSH_FIDS = Lists.newArrayList();
-
-    static{
-        PUSH_FIDS.add(23274);
-    }
+    private static final List<Integer> PUSH_FIDS = Lists.newArrayList(23274, 170690);
 
     @Resource
     private BigDataPointPushRecordService bigDataPointPushRecordService;
