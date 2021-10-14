@@ -62,8 +62,8 @@
                 </template>
             </div>
             <div class="name-txt">{{activity.id ? '设置' : '新建'}}</div>
-            <button v-if="activity.id" type="button" class="create-btn" @click="editSubmit">保存</button>
-            <button v-else type="button" class="create-btn" @click="addSubmit">保存</button>
+            <button v-if="activity.id" type="button" class="create-btn" @click="editSubmit(true)">保存</button>
+            <button v-else type="button" class="create-btn" @click="addSubmit(true)">保存</button>
         </div>
         <!-- 创建活动头部 -->
         <div v-show="templateComponents && activity">
@@ -686,6 +686,10 @@
         <vue-activity-participate-scope :fid="fid" :title="releaseScopeTitle" ref="activityParticipateScopeWindow" @callback="updateParticipatedOrgs"></vue-activity-participate-scope>
         <!--预览url复制容器-->
         <input type="text" id="template-preview-url-input" v-model.trim="activity.previewUrl" style="position: absolute; top: -100px; height: 1px;">
+        <!--活动是线下但是没有选择地点的提示-->
+        <vue-confirm ref="offlineEmptyAddressWindow" :message="'未填写位置信息，展示页面中的地图位置可能不准确'" :cancel="'取消'" :sure="'继续保存'" @callback="ignoreOfflineEmptyAddress"></vue-confirm>
+        <!--重新选择门户模版-->
+        <vue-confirm ref="reSelectWebTemplateWindow" :message="'重新选择展示页面可能会导致部分数据丢失'" :cancel="'取消'" :sure="'继续'" @callback="sureReSelectWebTemplate"></vue-confirm>
         <!-- 报名参与范围弹窗 -->
         <div class="dailog-box1" v-show="signUpParticipateWindowShow">
             <div class="dailog">
@@ -1592,7 +1596,7 @@
                     $this.$refs.deleteTagWindow.show = false;
                 },
                 // 验证输入
-                validateForm: function () {
+                validateForm: function (validateOfflineAddress) {
                     var $this = this;
                     if (activityApp.isEmpty($this.activity.name)) {
                         app.showMsg("活动名称不能为空");
@@ -1732,6 +1736,14 @@
                             }
                         }
                     }
+                    // 离线地址验证
+                    if (validateOfflineAddress) {
+                        var activityType = $this.activity.activityType;
+                        if ("offline" == activityType && activityApp.isEmpty($this.activity.address)) {
+                            $this.$refs.offlineEmptyAddressWindow.show = true;
+                            return false;
+                        }
+                    }
                     return true;
                 },
                 packageSignUpConditionEnable: function () {
@@ -1780,10 +1792,19 @@
                     });
                     return $.extend({}, $this.sign, { signUps: waitSubmitSignUps, signIns: waitSubmitSignIns });
                 },
-                // 下一步（创建活动）
-                addSubmit: function () {
+                ignoreOfflineEmptyAddress: function () {
                     var $this = this;
-                    if (!$this.validateForm()) {
+                    if (activityApp.isEmpty($this.activity.id)) {
+                        // 新增
+                        $this.addSubmit(false);
+                    } else {
+                        $this.editSubmit(false);
+                    }
+                },
+                // 下一步（创建活动）
+                addSubmit: function (validateOfflineAddress) {
+                    var $this = this;
+                    if (!$this.validateForm(validateOfflineAddress)) {
                         return;
                     }
                     if ($this.activityCoverUploading) {
@@ -1823,9 +1844,9 @@
                     });
                 },
                 // 编辑活动提交
-                editSubmit: function () {
+                editSubmit: function (validateOfflineAddress) {
                     var $this = this;
-                    if (!$this.validateForm()) {
+                    if (!$this.validateForm(validateOfflineAddress)) {
                         return;
                     }
                     if ($this.activityCoverUploading) {
@@ -2198,6 +2219,10 @@
                 },
                 // 重新选择模版
                 reselectTemplate: function () {
+                    var $this = this;
+                    $this.$refs.reSelectWebTemplateWindow.show = true;
+                },
+                sureReSelectWebTemplate: function () {
                     var $this = this;
                     $this.isReselectConfig = true;
                 }
