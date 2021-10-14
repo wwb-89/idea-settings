@@ -294,26 +294,31 @@ public class FormUtils {
 
 
 
-	/**获取部门信息
+	/**获取部门列表信息
 	 * @Description
 	 * @author wwb
 	 * @Date 2021-08-31 14:25:47
 	 * @param formDataDto
 	 * @param alias
-	 * @return com.chaoxing.secondclassroom.dto.manager.DepartmentDTO
+	 * @return java.util.List<com.chaoxing.activity.dto.DepartmentDTO>
 	 */
-	public static DepartmentDTO getDepartment(FormDataDTO formDataDto, String alias) {
-		JSONObject jsonValue = getJsonValue(formDataDto, alias);
-		if (jsonValue != null) {
-			String departmentIdStr = jsonValue.getString(DEPARTMENT_ID_KEY);
-			if (StringUtils.isNotBlank(departmentIdStr)) {
-				return DepartmentDTO.builder()
-						.id(Integer.parseInt(departmentIdStr))
-						.name(jsonValue.getString(DEPARTMENT_NAME_KEY))
-						.build();
+	public static List<DepartmentDTO> listDepartment(FormDataDTO formDataDto, String alias) {
+		List<DepartmentDTO> departments = Lists.newArrayList();
+		List<JSONObject> jsonValues = listJsonValue(formDataDto, alias);
+		if (CollectionUtils.isNotEmpty(jsonValues)) {
+			for (JSONObject jsonValue : jsonValues) {
+				if (jsonValue != null) {
+					String departmentIdStr = jsonValue.getString(DEPARTMENT_ID_KEY);
+					if (StringUtils.isNotBlank(departmentIdStr)) {
+						departments.add(DepartmentDTO.builder()
+								.id(Integer.parseInt(departmentIdStr))
+								.name(jsonValue.getString(DEPARTMENT_NAME_KEY))
+								.build());
+					}
+				}
 			}
 		}
-		return null;
+		return departments;
 	}
 
 

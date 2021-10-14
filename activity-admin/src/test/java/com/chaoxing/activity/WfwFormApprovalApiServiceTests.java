@@ -24,9 +24,9 @@ public class WfwFormApprovalApiServiceTests {
 
 	@Test
 	public void listFormData() {
-		int formId = 24167;
-		Integer fid = 147004;
-		List<FormDataDTO> wfwFormDtos = wfwFormApprovalApiService.listFormRecord(fid, formId);
+		int formId = 33542;
+		Integer fid = 27725;
+		List<FormDataDTO> wfwFormDtos = wfwFormApprovalApiService.listFormRecord(formId, fid);
 		System.out.println(wfwFormDtos);
 	}
 

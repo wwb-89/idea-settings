@@ -345,11 +345,12 @@ public class WfwFormApprovalApiService {
             String signUpPublicList = FormUtils.getValue(formData, "sign_up_public_list");
             signUp.setPublicList(Objects.equals(YES, signUpPublicList));
             String signUpPersonLimit = FormUtils.getValue(formData, "sign_up_person_limit");
-            DepartmentDTO department = FormUtils.getDepartment(formData, "sign_up_contacts_scope");
-            if (department != null) {
+            List<DepartmentDTO> departments = FormUtils.listDepartment(formData, "sign_up_contacts_scope");
+            if (CollectionUtils.isNotEmpty(departments)) {
+                List<Integer> departmentIds = departments.stream().map(DepartmentDTO::getId).collect(Collectors.toList());
                 WfwGroupDTO wfwGroup = wfwContactApiService.listUserContactOrgsByFid(fid)
                         .stream()
-                        .filter(v -> Objects.equals(Integer.valueOf(v.getId()), department.getId()))
+                        .filter(v -> departmentIds.contains(Integer.valueOf(v.getId())))
                         .findFirst().orElse(null);
                 if (wfwGroup != null) {
                     signUp.setEnableContactsParticipateScope(true);
