@@ -97,7 +97,7 @@ public class ActivityFormSyncService {
             throw new BusinessException("未查询到记录为:" + formUserId + "的表单数据");
         }
         Activity activity;
-        Integer activityId = formUserRecord.getFormData().stream().filter(v -> Objects.equals(v.getAlias(), "activity_id")).map(u -> Optional.of(u.getValues().get(0)).map(v -> v.getInteger("val")).orElse(null)).findFirst().orElse(null);
+        Integer activityId = formUserRecord.getFormData().stream().filter(v -> Objects.equals(v.getAlias(), "activity_id")).map(u -> Optional.of(u.getValues().get(0)).map(v -> v.getString("val")).orElse(null)).findFirst().filter(StringUtils::isNotBlank).map(Integer::parseInt).orElse(null);
         if (activityId == null) {
             activity = activityQueryService.getActivityByOriginAndFormUserId(formId, formUserId);
         } else {

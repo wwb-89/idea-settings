@@ -1,5 +1,6 @@
 package com.chaoxing.activity.api.resolver;
 
+import com.chaoxing.activity.util.UserAgentUtils;
 import com.chaoxing.activity.util.constant.ExceptionConstant;
 import com.chaoxing.activity.util.exception.BusinessException;
 import lombok.extern.slf4j.Slf4j;
@@ -36,11 +37,18 @@ public class PageHandlerExceptionResolver implements HandlerExceptionResolver {
 		if (isPageRequest(handler)) {
 			String message = getMessage(ex);
 			ModelAndView modelAndView = new ModelAndView();
-			modelAndView.setViewName("/error/50x");
+			modelAndView.setViewName(getViewName(request));
 			modelAndView.addObject("message", message);
 			return modelAndView;
 		}
 		return null;
+	}
+
+	private String getViewName(HttpServletRequest request) {
+		if (UserAgentUtils.isMobileAccess(request)) {
+			return "/error/mobile/50x";
+		}
+		return "/error/pc/50x";
 	}
 
 	private String getMessage(Exception ex) {
