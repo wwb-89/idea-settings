@@ -30,8 +30,9 @@ import java.util.TreeMap;
 @Service
 public class BigDataPointApiService {
 
+    /** 推送积分接口 */
     private static final String POINT_PUSH_URL = "http://bigdata-api.chaoxing.com/gt/point?fid=%d&pid=%d&userid=%d&dataType=%d&pointType=%d&point=%d&changeTime=%d&enc=%s";
-    private static final String KEY = "ENC y$$Ojy$s";
+    private static final String KEY = "y$$Ojy$s";
 
     @Resource(name = "restTemplateProxy")
     private RestTemplate restTemplate;
@@ -49,7 +50,9 @@ public class BigDataPointApiService {
                 pointPushParam.getPointType().getValue(), pointPushParam.getPoint(), pointPushParam.getTime(), enc);
         String result = restTemplate.getForObject(url, String.class);
         JSONObject jsonObject = JSON.parseObject(result);
-        if (!Objects.equals(1, jsonObject.getInteger("status"))) {
+        if (Objects.equals(1, jsonObject.getInteger("status"))) {
+            String message = jsonObject.getString("msg");
+            log.error("根据url:{} 推送大数据积分失败:{}", url, message);
             throw new BusinessException("大数据积分推送失败");
         }
     }

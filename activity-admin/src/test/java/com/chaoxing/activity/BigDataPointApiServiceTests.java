@@ -24,7 +24,7 @@ public class BigDataPointApiServiceTests {
     @Test
     public void pointPush() {
         Integer uid = 25418810;
-        Integer fid = 23274;
+        Integer fid = 170690;
         BigDataPointApiService.PointTypeEnum pointType = BigDataPointApiService.PointTypeEnum.ORGANIZE_ACTIVITY;
         LocalDateTime time = LocalDateTime.now();
         BigDataPointApiService.PointPushParamDTO param = new BigDataPointApiService.PointPushParamDTO(uid, fid, pointType, time);
