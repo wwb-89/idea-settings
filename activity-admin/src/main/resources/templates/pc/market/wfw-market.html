@@ -129,15 +129,9 @@
                 $this.perfectMarket();
                 $this.market.activityFlag = $this.activityFlag;
                 $this.market.name = "活动广场";
-                // 设置organizationalStructures
+                // 设置organizationalStructures(目前只保留通讯录)
                 if ($this.market.enableContacts) {
                     $this.organizationalStructures.push("contacts");
-                }
-                if ($this.market.enableOrganization) {
-                    $this.organizationalStructures.push("organization");
-                }
-                if ($this.market.enableRegional) {
-                    $this.organizationalStructures.push("regional");
                 }
             },
 			mounted: function () {
