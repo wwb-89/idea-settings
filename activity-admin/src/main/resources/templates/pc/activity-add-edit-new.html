@@ -243,7 +243,7 @@
                             <div class="input-box wrap">
                                 <div class="already_add" v-show="participatedOrgs.length > 0" @click="toSignInList">
                                     <div>
-                                        已发布{{signInNum}}个签到
+                                        {{signInNum == 0 ? '添加签到' : ('已发布' + signInNum + '个签到')}}
                                     </div>
                                     <img src="/static/pc/assets/images/edit-3.png" th:src="@{/pc/assets/images/edit-3.png}">
                                 </div>
@@ -1816,6 +1816,11 @@
                     var sign = $this.packageSubmitSign();
                     $this.activity.introduction = app.getUEditorContent();
                     $this.activity.sucTemplateComponentIds =  $this.packageSignUpConditionEnable();
+                    $this.activity.activityComponentValues = [];
+                    $.each($this.activityComponentValueMap, function (key, item) {
+                        item.value = item.value && item.value instanceof Array ? item.value.join(',') : item.value;
+                        $this.activity.activityComponentValues.push(item);
+                    });
                     var participateScopeJsonStr = $this.releaseType == "org" ? activityApp.getJsonStr($this.participatedOrgs) : null;
                     var releaseClassIdJsonStr = $this.releaseType == "class" ? activityApp.getJsonStr($this.releaseClassIds) : null;
                     var params = {
