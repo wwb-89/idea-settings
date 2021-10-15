@@ -1816,6 +1816,10 @@
                     var sign = $this.packageSubmitSign();
                     $this.activity.introduction = app.getUEditorContent();
                     $this.activity.sucTemplateComponentIds =  $this.packageSignUpConditionEnable();
+                    $.each($this.activityComponentValueMap, function (key, item) {
+                        item.value = item.value && item.value instanceof Array ? item.value.join(',') : item.value;
+                        $this.activity.activityComponentValues.push(item);
+                    });
                     var participateScopeJsonStr = $this.releaseType == "org" ? activityApp.getJsonStr($this.participatedOrgs) : null;
                     var releaseClassIdJsonStr = $this.releaseType == "class" ? activityApp.getJsonStr($this.releaseClassIds) : null;
                     var params = {
