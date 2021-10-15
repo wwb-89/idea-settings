@@ -135,12 +135,30 @@ public class RedirectController {
         return "redirect:http://manage.hd.chaoxing.com/activity/" + activity.getId();
     }
 
+    /**重定向签到管理列表
+     * @Description
+     * @author huxiaolong
+     * @Date 2021-10-15 16:25:32
+     * @param fid
+     * @param formId
+     * @param formUserId
+     * @return java.lang.String
+     */
     @RequestMapping("/sign-in-list/from/wfw-form")
     public String redirectToSignInList(Integer fid, Integer formId, Integer formUserId) {
         Activity activity = activityFormSyncService.getActivityFromFormInfo(fid, formId, formUserId);
         return "redirect:http://reading.chaoxing.com/qd/manage/sign-in/list?signId=" + activity.getSignId();
     }
 
+    /**重定向到报名管理
+     * @Description
+     * @author huxiaolong
+     * @Date 2021-10-15 16:26:10
+     * @param fid
+     * @param formId
+     * @param formUserId
+     * @return java.lang.String
+     */
     @RequestMapping("/sign-up-manage/from/wfw-form")
     public String redirectToActivityIndex1(Integer fid, Integer formId, Integer formUserId) {
         Activity activity = activityFormSyncService.getActivityFromFormInfo(fid, formId, formUserId);
@@ -160,5 +178,24 @@ public class RedirectController {
         Integer activityId = Optional.ofNullable(activity).map(Activity::getId).orElse(1);
         return "redirect:" + String.format(ActivityMhUrlConstant.ACTIVITY_POSTERS_URL, activityId);
     }
+
+    /**重定向到作品征集管理
+     * @Description
+     * @author huxiaolong
+     * @Date 2021-10-15 16:26:40
+     * @param fid
+     * @param formId
+     * @param formUserId
+     * @return java.lang.String
+     */
+    @RequestMapping("/sign-up-manage/from/wfw-form")
+    public String redirectToWorkManage(Integer fid, Integer formId, Integer formUserId) {
+        Activity activity = activityFormSyncService.getActivityFromFormInfo(fid, formId, formUserId);
+        if (activity.getOpenWork() && activity.getWorkId() != null) {
+            return "redirect:" + UrlConstant.getWorkManageUrl(activity.getWorkId());
+        }
+        return "";
+    }
+
 
 }

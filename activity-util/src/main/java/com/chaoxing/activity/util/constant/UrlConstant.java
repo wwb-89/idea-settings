@@ -39,4 +39,8 @@ public class UrlConstant {
 	/** 作品征集主页 */
 	public static final String WORK_INDEX_URL = "https://reading.chaoxing.com/zj/activity/forward/%s";
 
+	public static String getWorkManageUrl(Integer workId) {
+		return "http://reading.chaoxing.com/zj/manage/activity/" + workId + "/new?isHideHeader=false";
+	}
+
 }

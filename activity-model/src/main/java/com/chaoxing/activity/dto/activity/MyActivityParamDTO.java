@@ -23,16 +23,17 @@ import java.nio.charset.StandardCharsets;
 @AllArgsConstructor
 public class MyActivityParamDTO {
 
+    /** 控制tab隐藏, 报名:signedUp, 收藏:collected, 管理:managing */
     private String hide;
-
+    /** 我的活动界面标题 */
     private String title;
-
+    /** 区域code */
     private String areaCode;
-
+    /** 活动标识 */
     private String flag;
-
+    /** 万能表单地址(填写表单内容) */
     private String wfwFormUrl;
-
+    /** 是否可管理，即是否展示发布操作按钮 */
     private Boolean managAble;
 
     public String buildBackUrl(String url) throws UnsupportedEncodingException {
@@ -49,9 +50,6 @@ public class MyActivityParamDTO {
         if (StringUtils.isNotBlank(flag)) {
             url += "&flag=" + flag;
         }
-//        if (formId != null) {
-//            url += "&formId=" + formId;
-//        }
         if (StringUtils.isNotBlank(wfwFormUrl)) {
             url += "&wfwFormUrl=" + URLEncoder.encode(wfwFormUrl, StandardCharsets.UTF_8.name());
         }
