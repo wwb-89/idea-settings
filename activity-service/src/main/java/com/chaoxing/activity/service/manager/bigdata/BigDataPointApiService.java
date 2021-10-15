@@ -31,8 +31,10 @@ import java.util.TreeMap;
 @Service
 public class BigDataPointApiService {
 
-    /** 推送积分接口 */
-    private static final String POINT_PUSH_URL = "http://bigdata-api.chaoxing.com/gt/point?fid=%d&pid=%d&userid=%d&dataType=%d&pointType=%d&point=%d&changeTime=%d&enc=%s";
+    /** 新增积分接口 */
+    private static final String ADD_POINT_URL = "http://bigdata-api.chaoxing.com/gt/point?fid=%d&pid=%d&userid=%d&dataType=%d&pointType=%d&point=%d&changeTime=%d&enc=%s";
+    /** 消耗积分接口 */
+    private static final String SPEND_POINT_URL = "http://bigdata-score.chaoxing.com/house/gt/point/spend?fid=%d&pid=%d&userid=%d&dataType=%d&pointType=%d&point=%d&changeTime=%d&enc=%s";
     private static final Map<Integer, String> KEY_MAP = Maps.newHashMap();
 
     static {
@@ -43,35 +45,60 @@ public class BigDataPointApiService {
     @Resource(name = "restTemplateProxy")
     private RestTemplate restTemplate;
 
-    /**积分推送
+    /**新增积分
      * @Description 
      * @author wwb
      * @Date 2021-10-12 19:53:02
      * @param pointPushParam
      * @return void
     */
-    public void pointPush(PointPushParamDTO pointPushParam) {
+    public void addPoint(PointPushParamDTO pointPushParam) {
         String key = KEY_MAP.get(pointPushParam.getFid());
         if (StringUtils.isBlank(key)) {
             log.warn("机构:{} 没有配置大数据积分key", pointPushParam.getFid());
             return;
         }
         String enc = getEnc(pointPushParam, key);
-        String url = String.format(POINT_PUSH_URL, pointPushParam.getFid(), pointPushParam.getPid(), pointPushParam.getUid(), pointPushParam.getDataType(),
+        String url = String.format(ADD_POINT_URL, pointPushParam.getFid(), pointPushParam.getPid(), pointPushParam.getUid(), pointPushParam.getPointType().getDataType().getValue(),
                 pointPushParam.getPointType().getValue(), pointPushParam.getPoint(), pointPushParam.getTime(), enc);
         String result = restTemplate.getForObject(url, String.class);
         JSONObject jsonObject = JSON.parseObject(result);
         if (Objects.equals(1, jsonObject.getInteger("status"))) {
             String message = jsonObject.getString("msg");
-            log.error("根据url:{} 推送大数据积分失败:{}", url, message);
-            throw new BusinessException("大数据积分推送失败");
+            log.error("根据url:{} 新增大数据积分失败:{}", url, message);
+            throw new BusinessException("大数据积分新增失败");
+        }
+    }
+
+    /**消费积分
+     * @Description 
+     * @author wwb
+     * @Date 2021-10-15 14:17:42
+     * @param pointPushParam
+     * @return void
+    */
+    public void spendPoint(PointPushParamDTO pointPushParam) {
+        String key = KEY_MAP.get(pointPushParam.getFid());
+        if (StringUtils.isBlank(key)) {
+            log.warn("机构:{} 没有配置大数据积分key", pointPushParam.getFid());
+            return;
+        }
+        String enc = getEnc(pointPushParam, key);
+        String url = String.format(SPEND_POINT_URL, pointPushParam.getFid(), pointPushParam.getPid(), pointPushParam.getUid(), pointPushParam.getPointType().getDataType().getValue(),
+                pointPushParam.getPointType().getValue(), pointPushParam.getPoint(), pointPushParam.getTime(), enc);
+        String result = restTemplate.getForObject(url, String.class);
+        JSONObject jsonObject = JSON.parseObject(result);
+        if (!jsonObject.getBoolean("status")) {
+            String message = jsonObject.getString("msg");
+            log.error("根据url:{} 消费大数据积分失败:{}", url, message);
+            throw new BusinessException("大数据积分消费失败");
         }
     }
 
     private String getEnc(PointPushParamDTO pointPushParam, String key) {
         TreeMap<String, Object> param = Maps.newTreeMap();
         param.put("changeTime", pointPushParam.getTime());
-        param.put("dataType", pointPushParam.getDataType());
+        param.put("dataType", pointPushParam.getPointType().getDataType().getValue());
         param.put("fid", pointPushParam.getFid());
         param.put("pid", pointPushParam.getPid());
         param.put("point", pointPushParam.getPoint());
@@ -93,7 +120,6 @@ public class BigDataPointApiService {
         private PointTypeEnum pointType;
         private Long time;
         private Integer pid = 1;
-        private Integer dataType = 1;
         private Integer point = 1;
 
         private PointPushParamDTO() {
@@ -109,6 +135,24 @@ public class BigDataPointApiService {
 
     }
 
+    @Getter
+    public enum DataTypeEnum {
+
+        /** 行为积分 */
+        BEHAVIOR("行为积分", 1),
+        SPEND("消耗积分", 1);
+
+        private final String name;
+        private final Integer value;
+
+        DataTypeEnum(String name, Integer value) {
+            this.name = name;
+            this.value = value;
+        }
+
+    }
+
+
     /** 积分类型
      * @className BigDataPointApiService
      * @description 
@@ -121,21 +165,23 @@ public class BigDataPointApiService {
     public enum PointTypeEnum {
 
         // 活动组织
-        ORGANIZE_ACTIVITY("组织活动", 39, 42),
-        PARTICIPATION("参与活动（签到率100%）", 40, 43),
-        PART_PARTICIPATION("参与活动（签到率低于100%）", 41, 44),
-        CANCEL_ORGANIZE_ACTIVITY("取消活动", 42, 39),
-        CANCEL_PARTICIPATION("取消活动", 43, 40),
-        CANCEL_PART_PARTICIPATION("取消活动", 44, 41);
+        ORGANIZE_ACTIVITY("组织活动", 39, 42, DataTypeEnum.BEHAVIOR),
+        PARTICIPATION("参与活动（签到率100%）", 40, 43, DataTypeEnum.BEHAVIOR),
+        PART_PARTICIPATION("参与活动（签到率低于100%）", 41, 44, DataTypeEnum.BEHAVIOR),
+        CANCEL_ORGANIZE_ACTIVITY("取消活动", 42, 39, DataTypeEnum.SPEND),
+        CANCEL_PARTICIPATION("取消活动", 43, 40, DataTypeEnum.SPEND),
+        CANCEL_PART_PARTICIPATION("取消活动", 44, 41, DataTypeEnum.SPEND);
 
         private final String name;
         private final Integer value;
         private final Integer reverseValue;
+        private DataTypeEnum dataType;
 
-        PointTypeEnum(String name, Integer value, Integer reverseValue) {
+        PointTypeEnum(String name, Integer value, Integer reverseValue, DataTypeEnum dataType) {
             this.name = name;
             this.value = value;
             this.reverseValue = reverseValue;
+            this.dataType = dataType;
         }
 
         public static PointTypeEnum fromValue(Integer value) {

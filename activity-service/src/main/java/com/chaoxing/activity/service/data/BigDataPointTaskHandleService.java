@@ -95,11 +95,20 @@ public class BigDataPointTaskHandleService {
         if (pointTypeEnum == null) {
             return;
         }
+        LocalDateTime now = LocalDateTime.now();
+        BigDataPointApiService.PointPushParamDTO param = new BigDataPointApiService.PointPushParamDTO(queueParam.getUid(), queueParam.getFid(), pointTypeEnum, now);
         switch (pointTypeEnum) {
+            case ORGANIZE_ACTIVITY:
+                bigDataPointApiService.addPoint(param);
+                break;
             case PARTICIPATION:
             case PART_PARTICIPATION:
                 bigDataPointPushRecordService.delete(uid, activityId);
                 bigDataPointPushRecordService.add(uid, activityId, pointType);
+                bigDataPointApiService.addPoint(param);
+                break;
+            case CANCEL_ORGANIZE_ACTIVITY:
+                bigDataPointApiService.spendPoint(param);
                 break;
             case CANCEL_PARTICIPATION:
             case CANCEL_PART_PARTICIPATION:
@@ -109,16 +118,15 @@ public class BigDataPointTaskHandleService {
                     BigDataPointApiService.PointTypeEnum hisPointTypeEnum = BigDataPointApiService.PointTypeEnum.fromValue(existBigDataPointPushRecord.getPointType());
                     if (hisPointTypeEnum != null) {
                         pointTypeEnum = BigDataPointApiService.PointTypeEnum.fromValue(hisPointTypeEnum.getReverseValue());
+                        param.setPointType(pointTypeEnum);
                     }
                 }
                 bigDataPointPushRecordService.delete(uid, activityId);
+                bigDataPointApiService.spendPoint(param);
                 break;
             default:
 
         }
-        LocalDateTime now = LocalDateTime.now();
-        BigDataPointApiService.PointPushParamDTO param = new BigDataPointApiService.PointPushParamDTO(queueParam.getUid(), queueParam.getFid(), pointTypeEnum, now);
-        bigDataPointApiService.pointPush(param);
     }
 
 }

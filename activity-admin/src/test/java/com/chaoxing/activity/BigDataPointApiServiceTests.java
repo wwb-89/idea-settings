@@ -22,13 +22,23 @@ public class BigDataPointApiServiceTests {
     private BigDataPointApiService bigDataPointApiService;
 
     @Test
-    public void pointPush() {
+    public void addPoint() {
         Integer uid = 25418810;
         Integer fid = 170690;
         BigDataPointApiService.PointTypeEnum pointType = BigDataPointApiService.PointTypeEnum.ORGANIZE_ACTIVITY;
         LocalDateTime time = LocalDateTime.now();
         BigDataPointApiService.PointPushParamDTO param = new BigDataPointApiService.PointPushParamDTO(uid, fid, pointType, time);
-        bigDataPointApiService.pointPush(param);
+        bigDataPointApiService.addPoint(param);
+    }
+
+    @Test
+    public void spendPoint() {
+        Integer uid = 25418810;
+        Integer fid = 170690;
+        BigDataPointApiService.PointTypeEnum pointType = BigDataPointApiService.PointTypeEnum.CANCEL_ORGANIZE_ACTIVITY;
+        LocalDateTime time = LocalDateTime.now();
+        BigDataPointApiService.PointPushParamDTO param = new BigDataPointApiService.PointPushParamDTO(uid, fid, pointType, time);
+        bigDataPointApiService.spendPoint(param);
     }
 
 }

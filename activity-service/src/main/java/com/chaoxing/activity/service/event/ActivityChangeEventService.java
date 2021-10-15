@@ -157,8 +157,10 @@ public class ActivityChangeEventService {
 			Integer activityId = activity.getId();
 			Integer createFid = activity.getCreateFid();
 			dataPushService.dataPush(new DataPushService.DataPushParamDTO(createFid, OrgDataRepoConfigDetail.DataTypeEnum.ACTIVITY, String.valueOf(activityId), null));
-			// 大数据积分（举办活动）
-			bigDataPointQueueService.push(new BigDataPointQueueService.QueueParamDTO(activity.getCreateUid(), activity.getCreateFid(), activityId, BigDataPointApiService.PointTypeEnum.CANCEL_ORGANIZE_ACTIVITY.getValue()));
+			// 大数据积分（举办活动），必须是已发布的活动
+			if (activity.getReleased()) {
+				bigDataPointQueueService.push(new BigDataPointQueueService.QueueParamDTO(activity.getCreateUid(), activity.getCreateFid(), activityId, BigDataPointApiService.PointTypeEnum.CANCEL_ORGANIZE_ACTIVITY.getValue()));
+			}
 		}else if (Objects.equals(Activity.StatusEnum.ENDED, statusEnum)) {
 			// 活动结束，大数据积分推送
 			BigDataPointTaskQueueService.QueueParamDTO queueParam = new BigDataPointTaskQueueService.QueueParamDTO(activity.getId(), activity.getCreateFid(), true);
