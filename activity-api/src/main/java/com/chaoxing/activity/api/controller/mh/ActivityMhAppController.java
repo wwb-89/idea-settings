@@ -69,6 +69,22 @@ public class ActivityMhAppController {
 	private RestTemplate restTemplate;
 
 	/**活动封面
+	 * @Description 
+	 * @author wwb
+	 * @Date 2021-10-15 15:44:24
+	 * @param data
+	 * @return com.chaoxing.activity.dto.RestRespDTO
+	*/
+	@RequestMapping("activity/cover")
+	public RestRespDTO activityCover(@RequestBody(required = false) String data) {
+		JSONObject params = JSON.parseObject(data);
+		Integer websiteId = params.getInteger("websiteId");
+		// 根据websiteId查询活动id
+		Activity activity = activityQueryService.getByWebsiteId(websiteId);
+		return activityCover(activity.getId());
+	}
+
+	/**活动封面
 	 * @Description
 	 * @author wwb
 	 * @Date 2020-11-24 19:02:11
