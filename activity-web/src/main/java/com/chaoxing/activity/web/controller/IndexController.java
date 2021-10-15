@@ -50,6 +50,7 @@ public class IndexController {
 
 	/** 默认风格 */
 	private static final String DEFAULT_STYLE = "2";
+	private static final List<Integer> STYLES = Lists.newArrayList(1, 2);
 
 	@Resource
 	private GroupRegionFilterService groupRegionFilterService;
@@ -290,6 +291,10 @@ public class IndexController {
 			if (StringUtils.isEmpty(style)) {
 				return "pc/index";
 			}else {
+				// 验证style是否存在
+				if (!STYLES.contains(style)) {
+					style = DEFAULT_STYLE;
+				}
 				return "pc/activity/market/activity-market-" + style;
 			}
 		}
