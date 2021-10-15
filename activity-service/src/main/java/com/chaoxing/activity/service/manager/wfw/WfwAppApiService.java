@@ -77,6 +77,7 @@ public class WfwAppApiService {
 		params.add("openAddr", wfwAppCreateParamDto.getAppUrl());
 		params.add("pcUrl", wfwAppCreateParamDto.getPcUrl());
 		params.add("backUrl", wfwAppCreateParamDto.getAdminUrl());
+		params.add("wechatUrl", wfwAppCreateParamDto.getWechatUrl());
 		return params;
 	}
 
