@@ -1816,6 +1816,7 @@
                     var sign = $this.packageSubmitSign();
                     $this.activity.introduction = app.getUEditorContent();
                     $this.activity.sucTemplateComponentIds =  $this.packageSignUpConditionEnable();
+                    $this.activity.activityComponentValues = [];
                     $.each($this.activityComponentValueMap, function (key, item) {
                         item.value = item.value && item.value instanceof Array ? item.value.join(',') : item.value;
                         $this.activity.activityComponentValues.push(item);
