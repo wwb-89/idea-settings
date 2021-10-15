@@ -1736,12 +1736,21 @@
                             }
                         }
                     }
-                    // 离线地址验证
+                    // 离线地址验证：根据选择的门户模版的形式来验证
                     if (validateOfflineAddress) {
-                        var activityType = $this.activity.activityType;
-                        if ("offline" == activityType && activityApp.isEmpty($this.activity.address)) {
-                            $this.$refs.offlineEmptyAddressWindow.show = true;
-                            return false;
+                        var webTemplateId = $this.operateWebTemplateId;
+                        var webTemplate = null;
+                        $($this.webTemplates).each(function () {
+                            if (this.id == webTemplateId) {
+                                webTemplate = this;
+                                return false;
+                            }
+                        });
+                        if (webTemplate != null) {
+                            if ("offline" == webTemplate.activityType && activityApp.isEmpty($this.activity.address)) {
+                                $this.$refs.offlineEmptyAddressWindow.show = true;
+                                return false;
+                            }
                         }
                     }
                     return true;
