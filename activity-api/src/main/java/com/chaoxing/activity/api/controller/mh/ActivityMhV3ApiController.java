@@ -16,7 +16,7 @@ import com.chaoxing.activity.model.Activity;
 import com.chaoxing.activity.model.ActivityDetail;
 import com.chaoxing.activity.model.ActivityRating;
 import com.chaoxing.activity.service.activity.ActivityQueryService;
-import com.chaoxing.activity.service.activity.ActivityStatQueryService;
+import com.chaoxing.activity.service.activity.stat.ActivityStatQueryService;
 import com.chaoxing.activity.service.activity.ActivityValidationService;
 import com.chaoxing.activity.service.activity.flag.ActivityFlagValidateService;
 import com.chaoxing.activity.service.activity.rating.ActivityRatingQueryService;

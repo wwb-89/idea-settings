@@ -384,11 +384,13 @@
                     t.start_time as startTime, t.end_Time as endTime
                 </otherwise>
             </choose>
+            , t2.name activityClassifyName
         FROM
             t_activity t
             <if test="params.marketId != null">
                 INNER JOIN t_activity_market t1 ON t1.activity_id = t.id
             </if>
+            LEFT JOIN t_classify t2 ON t.activity_classify_id = t2.id
         WHERE
         <choose>
             <when test="params.marketId != null">
@@ -415,6 +417,9 @@
                 AND t.`status` > 0
             </otherwise>
         </choose>
+        <if test="params.activityClassifyId != null">
+            AND t.activity_classify_id = #{params.activityClassifyId}
+        </if>
         <if test="params.sw != null and params.sw != ''">
             AND (
                 t.name LIKE CONCAT('%', #{params.sw} , '%')
@@ -457,11 +462,13 @@
                     t.start_time as startTime, t.end_Time as endTime
                 </otherwise>
             </choose>
+            , t2.name activityClassifyName
         FROM
             t_activity t
             <if test="params.marketId != null">
                 INNER JOIN t_activity_market t1 ON t1.activity_id = t.id
             </if>
+            LEFT JOIN t_classify t2 ON t.activity_classify_id = t2.id
         WHERE
             t.create_uid = #{params.createUid}
             <choose>
@@ -480,6 +487,9 @@
                     AND t.`status` > 0
                 </otherwise>
             </choose>
+            <if test="params.activityClassifyId != null">
+                AND t.activity_classify_id = #{params.activityClassifyId}
+            </if>
             <if test="params.sw != null and params.sw != ''">
                 AND (
                 t.name LIKE CONCAT('%', #{params.sw} , '%')

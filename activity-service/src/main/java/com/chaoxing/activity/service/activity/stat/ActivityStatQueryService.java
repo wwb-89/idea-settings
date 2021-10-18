@@ -1,4 +1,4 @@
-package com.chaoxing.activity.service.activity;
+package com.chaoxing.activity.service.activity.stat;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.chaoxing.activity.dto.LoginUserDTO;
@@ -12,6 +12,8 @@ import com.chaoxing.activity.mapper.ActivityMapper;
 import com.chaoxing.activity.mapper.ActivityStatMapper;
 import com.chaoxing.activity.model.Activity;
 import com.chaoxing.activity.model.ActivityStat;
+import com.chaoxing.activity.service.activity.ActivityQueryService;
+import com.chaoxing.activity.service.activity.ActivityValidationService;
 import com.chaoxing.activity.service.manager.MhApiService;
 import com.chaoxing.activity.service.manager.wfw.WfwAreaApiService;
 import com.chaoxing.activity.service.manager.module.SignApiService;

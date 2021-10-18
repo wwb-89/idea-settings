@@ -11,10 +11,12 @@ import com.chaoxing.activity.service.activity.ActivityQueryService;
 import com.chaoxing.activity.service.activity.classify.ClassifyQueryService;
 import com.chaoxing.activity.service.activity.engine.ActivityEngineQueryService;
 import com.chaoxing.activity.service.activity.manager.ActivityCreatePermissionService;
+import com.chaoxing.activity.service.activity.market.MarketQueryService;
 import com.chaoxing.activity.service.activity.template.TemplateComponentService;
 import com.chaoxing.activity.service.activity.template.TemplateQueryService;
 import com.chaoxing.activity.service.manager.wfw.WfwAreaApiService;
 import com.chaoxing.activity.service.tablefield.TableFieldQueryService;
+import com.chaoxing.activity.util.exception.BusinessException;
 import com.google.common.collect.Lists;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Component;
@@ -52,6 +54,8 @@ public class ActivityController {
 	private ActivityCreatePermissionService activityCreatePermissionService;
 	@Resource
 	private ClassifyQueryService classifyQueryService;
+	@Resource
+	private MarketQueryService marketQueryService;
 
 	/**新活动管理主页
 	 * @Description
@@ -75,6 +79,13 @@ public class ActivityController {
 		List<TableFieldDetail> tableFieldDetails = tableFieldQueryService.listTableFieldDetail(TableField.Type.ACTIVITY_MANAGE_LIST, TableField.AssociatedType.ACTIVITY_MARKET);
 		List<MarketTableField> marketTableFields = tableFieldQueryService.listMarketTableField(marketId, TableField.Type.ACTIVITY_MANAGE_LIST, TableField.AssociatedType.ACTIVITY_MARKET);
 		Integer tableFieldId = Optional.ofNullable(tableFieldDetails).orElse(Lists.newArrayList()).stream().findFirst().map(TableFieldDetail::getTableFieldId).orElse(null);
+		List<Classify> classifies;
+		if (marketId == null) {
+			classifies = classifyQueryService.listOrgClassifies(fid);
+		} else {
+			classifies = classifyQueryService.listMarketClassifies(marketId);
+		}
+		model.addAttribute("classifies", classifies);
 		model.addAttribute("tableFieldId", tableFieldId);
 		model.addAttribute("tableFieldDetails", tableFieldDetails);
 		model.addAttribute("marketTableFields", marketTableFields);

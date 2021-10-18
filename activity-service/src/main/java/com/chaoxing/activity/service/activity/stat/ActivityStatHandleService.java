@@ -1,4 +1,4 @@
-package com.chaoxing.activity.service;
+package com.chaoxing.activity.service.activity.stat;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
@@ -12,7 +12,7 @@ import com.chaoxing.activity.model.ActivityStat;
 import com.chaoxing.activity.model.ActivityStatTask;
 import com.chaoxing.activity.model.ActivityStatTaskDetail;
 import com.chaoxing.activity.service.activity.ActivityQueryService;
-import com.chaoxing.activity.service.activity.ActivityStatQueryService;
+import com.chaoxing.activity.service.activity.stat.ActivityStatQueryService;
 import com.chaoxing.activity.util.CalculateUtils;
 import com.chaoxing.activity.util.DateUtils;
 import com.chaoxing.activity.util.DistributedLock;

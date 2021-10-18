@@ -31,6 +31,7 @@ import com.chaoxing.activity.service.activity.menu.ActivityMenuService;
 import com.chaoxing.activity.service.activity.module.ActivityModuleService;
 import com.chaoxing.activity.service.activity.scope.ActivityClassService;
 import com.chaoxing.activity.service.activity.scope.ActivityScopeService;
+import com.chaoxing.activity.service.activity.stat.ActivityStatSummaryHandlerService;
 import com.chaoxing.activity.service.activity.template.TemplateQueryService;
 import com.chaoxing.activity.service.event.ActivityChangeEventService;
 import com.chaoxing.activity.service.inspection.InspectionConfigHandleService;

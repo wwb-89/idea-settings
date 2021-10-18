@@ -1,10 +1,11 @@
-package com.chaoxing.activity.service.activity;
+package com.chaoxing.activity.service.activity.stat;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.chaoxing.activity.mapper.ActivityStatSummaryMapper;
 import com.chaoxing.activity.model.Activity;
 import com.chaoxing.activity.model.ActivityStatSummary;
+import com.chaoxing.activity.service.activity.ActivityQueryService;
 import com.chaoxing.activity.service.manager.module.SignApiService;
 import com.chaoxing.activity.service.queue.activity.ActivityStatSummaryQueueService;
 import lombok.extern.slf4j.Slf4j;

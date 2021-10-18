@@ -3,7 +3,7 @@ package com.chaoxing.activity.api.controller;
 import com.chaoxing.activity.dto.RestRespDTO;
 import com.chaoxing.activity.model.Activity;
 import com.chaoxing.activity.service.activity.ActivityQueryService;
-import com.chaoxing.activity.service.activity.ActivityStatSummaryHandlerService;
+import com.chaoxing.activity.service.activity.stat.ActivityStatSummaryHandlerService;
 import com.chaoxing.activity.service.queue.activity.*;
 import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.web.bind.annotation.RequestMapping;

@@ -178,8 +178,27 @@ public class Activity {
     /** 管理员uid列表 */
     @TableField(exist = false)
     private List<Integer> managerUids;
+    /** 是否置顶 */
     @TableField(exist = false)
     private Boolean top;
+    /** 签到率 */
+    @TableField(exist = false)
+    private BigDecimal signedInRate;
+    /** 人数限制 */
+    @TableField(exist = false)
+    private Integer personLimit;
+    /** 签到数 */
+    @TableField(exist = false)
+    private Integer signedInNum;
+    /** 评价数 */
+    @TableField(exist = false)
+    private Integer rateNum;
+    /** 活动评分 */
+    @TableField(exist = false)
+    private BigDecimal rateScore;
+    /** 合格人数 */
+    @TableField(exist = false)
+    private Integer qualifiedNum;
     /** 是否有报名 */
     @TableField(exist = false)
     private Boolean hasSignUp = false;

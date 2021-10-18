@@ -19,6 +19,7 @@ import com.chaoxing.activity.dto.manager.wfw.WfwAreaDTO;
 import com.chaoxing.activity.dto.query.ActivityManageQueryDTO;
 import com.chaoxing.activity.dto.query.ActivityQueryDTO;
 import com.chaoxing.activity.dto.query.MhActivityCalendarQueryDTO;
+import com.chaoxing.activity.dto.stat.ActivityStatSummaryDTO;
 import com.chaoxing.activity.mapper.*;
 import com.chaoxing.activity.model.*;
 import com.chaoxing.activity.service.ActivityFlagCodeService;
@@ -27,6 +28,7 @@ import com.chaoxing.activity.service.activity.component.ComponentQueryService;
 import com.chaoxing.activity.service.activity.engine.ActivityComponentValueService;
 import com.chaoxing.activity.service.activity.manager.ActivityManagerQueryService;
 import com.chaoxing.activity.service.activity.market.MarketQueryService;
+import com.chaoxing.activity.service.activity.stat.ActivityStatSummaryQueryService;
 import com.chaoxing.activity.service.activity.template.TemplateComponentService;
 import com.chaoxing.activity.service.activity.template.TemplateQueryService;
 import com.chaoxing.activity.service.manager.module.SignApiService;
@@ -45,6 +47,7 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
+import java.math.BigDecimal;
 import java.text.ParseException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -96,6 +99,8 @@ public class ActivityQueryService {
 	private MarketQueryService marketQueryService;
 	@Resource
 	private ActivityFlagCodeService activityFlagCodeService;
+	@Resource
+	private ActivityStatSummaryQueryService activityStatSummaryQueryService;
 
 	/**查询参与的活动
 	 * @Description 
@@ -333,20 +338,53 @@ public class ActivityQueryService {
 			page = activityMapper.pageManaging(page, activityManageQuery);
 		}
 		List<Activity> activities = page.getRecords();
-		// 封装报名的数量
-		packageSignedUpNum(activities);
+		// 封装活动关联数据
+		packageActivityData(activities);
 		// 封装是不是管理员
 		packageManager(activities);
 		return page;
 	}
 
-	private void packageSignedUpNum(List<Activity> activities) {
-		List<Integer> signIds = Optional.ofNullable(activities).orElse(Lists.newArrayList()).stream().map(Activity::getSignId).filter(v -> v != null).collect(Collectors.toList());
+	/**封装活动关联数据
+	 * @Description
+	 * @author huxiaolong
+	 * @Date 2021-10-18 15:17:20
+	 * @param activities
+	 * @return void
+	 */
+	private void packageActivityData(List<Activity> activities) {
+		if (CollectionUtils.isEmpty(activities)) {
+			return;
+		}
+		List<Integer> signIds = activities.stream().map(Activity::getSignId).filter(Objects::nonNull).collect(Collectors.toList());
+		List<Integer> activityIds = activities.stream().map(Activity::getId).collect(Collectors.toList());
+		// 根据活动id查询活动统计汇总列表
+		Map<Integer, ActivityStatSummaryDTO> statSummaryMap = activityStatSummaryQueryService.listActivitySummariesByIds(activityIds)
+				.stream()
+				.collect(Collectors.toMap(ActivityStatSummaryDTO::getActivityId, v -> v, (v1, v2) -> v2));
+		Map<Integer, SignStatDTO> signIdSignStatMap = Maps.newHashMap();
 		if (CollectionUtils.isNotEmpty(signIds)) {
 			List<SignStatDTO> signStats = signApiService.statSignSignedUpNum(signIds);
-			Map<Integer, Integer> signIdSignedUpNumMap = signStats.stream().collect(Collectors.toMap(SignStatDTO::getId, SignStatDTO::getSignedUpNum, (v1, v2) -> v2));
-			activities.forEach(activity -> activity.setSignedUpNum(Optional.ofNullable(activity.getSignId()).map(signIdSignedUpNumMap::get).orElse(0)));
+			signIdSignStatMap = signStats.stream().collect(Collectors.toMap(SignStatDTO::getId, v -> v, (v1, v2) -> v2));
 		}
+		for (Activity activity : activities) {
+			// 活动报名签到状态数据
+			SignStatDTO signStatItem = Optional.ofNullable(activity.getSignId()).map(signIdSignStatMap::get).orElse(null);
+			activity.setSignedUpNum(Optional.ofNullable(signStatItem).map(SignStatDTO::getSignedUpNum).orElse(0));
+			activity.setPersonLimit(Optional.ofNullable(signStatItem).map(SignStatDTO::getSignedUpNum).orElse(0));
+			// 活动统计数据
+			ActivityStatSummaryDTO summaryItem = statSummaryMap.get(activity.getId());
+			activity.setSignedInNum(Optional.ofNullable(summaryItem).map(ActivityStatSummaryDTO::getSignedInNum).orElse(0));
+			activity.setSignedInRate(Optional.ofNullable(summaryItem).map(ActivityStatSummaryDTO::getSignInRate).orElse(new BigDecimal(0)));
+			activity.setRateNum(Optional.ofNullable(summaryItem).map(ActivityStatSummaryDTO::getRateNum).orElse(0));
+			activity.setRateScore(Optional.ofNullable(summaryItem).map(ActivityStatSummaryDTO::getRateScore).orElse(new BigDecimal(0)));
+			activity.setQualifiedNum(Optional.ofNullable(summaryItem).map(ActivityStatSummaryDTO::getQualifiedNum).orElse(0));
+		}
+
+
+
+
+
 	}
 
 	/**封装管理者（管理员）
