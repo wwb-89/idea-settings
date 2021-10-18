@@ -6,6 +6,7 @@ import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.chaoxing.activity.dto.OrgFormConfigDTO;
 import com.chaoxing.activity.dto.RestRespDTO;
+import com.chaoxing.activity.dto.UserFormCollectionGroupDTO;
 import com.chaoxing.activity.dto.manager.sign.*;
 import com.chaoxing.activity.dto.manager.sign.create.SignCreateParamDTO;
 import com.chaoxing.activity.dto.manager.sign.create.SignCreateResultDTO;
@@ -79,6 +80,8 @@ public class SignApiService {
 	private static final String SIGN_PARTICIPATE_SCOPE_DESCRIBE_URL = SIGN_API_DOMAIN + "/sign/%d/scope/describe";
 	/** 报名签到下用户报名信息 */
 	private static final String SIGN_USER_SIGN_UP_URL = SIGN_API_DOMAIN + "/sign/%d/user/sign-up";
+	/** 分组统计查询用户填报的表单记录 */
+	private static final String GROUP_USER_FORM_COLLECTION_URL = SIGN_API_DOMAIN + "/form-collect/group-by/uids";
 
 	/** 门户报名 */
 	private static final String MH_SIGN_UP_URL = SIGN_API_DOMAIN + "/sign-up/%d/mh?uid=%d&wfwfid=%d";
@@ -981,4 +984,22 @@ public class SignApiService {
 		});
 	}
 
+	/**分组查询用户uids列表的已填写表单统计状况
+	 * @Description
+	 * @author huxiaolong
+	 * @Date 2021-10-18 16:22:12
+	 * @param uids
+	 * @return java.util.List<com.chaoxing.activity.dto.UserFormCollectionGroupDTO>
+	 */
+    public List<UserFormCollectionGroupDTO> groupUserFormCollections(List<Integer> uids) {
+		HttpHeaders httpHeaders = new HttpHeaders();
+		httpHeaders.setContentType(MediaType.APPLICATION_JSON);
+		HttpEntity<String> httpEntity = new HttpEntity<>(JSON.toJSONString(uids), httpHeaders);
+		String result = restTemplate.postForObject(GROUP_USER_FORM_COLLECTION_URL, httpEntity, String.class);
+
+		JSONObject jsonObject = JSON.parseObject(result);
+		return resultHandle(jsonObject, () -> JSON.parseArray(jsonObject.getString("data"), UserFormCollectionGroupDTO.class), (message) -> {
+			throw new BusinessException(message);
+		});
+    }
 }

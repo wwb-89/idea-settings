@@ -6,10 +6,13 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.chaoxing.activity.dto.LoginUserDTO;
+import com.chaoxing.activity.dto.UserResultDTO;
 import com.chaoxing.activity.dto.activity.ActivityComponentValueDTO;
 import com.chaoxing.activity.dto.activity.create.ActivityCreateParamDTO;
 import com.chaoxing.activity.dto.activity.ActivitySignedUpDTO;
 import com.chaoxing.activity.dto.activity.ActivityTypeDTO;
+import com.chaoxing.activity.dto.export.ExportDataDTO;
+import com.chaoxing.activity.dto.manager.PassportUserDTO;
 import com.chaoxing.activity.dto.manager.sign.SignStatDTO;
 import com.chaoxing.activity.dto.manager.sign.SignUpAbleSignDTO;
 import com.chaoxing.activity.dto.manager.sign.UserSignUpStatusStatDTO;
@@ -31,8 +34,11 @@ import com.chaoxing.activity.service.activity.market.MarketQueryService;
 import com.chaoxing.activity.service.activity.stat.ActivityStatSummaryQueryService;
 import com.chaoxing.activity.service.activity.template.TemplateComponentService;
 import com.chaoxing.activity.service.activity.template.TemplateQueryService;
+import com.chaoxing.activity.service.manager.CloudApiService;
+import com.chaoxing.activity.service.manager.PassportApiService;
 import com.chaoxing.activity.service.manager.module.SignApiService;
 import com.chaoxing.activity.service.manager.wfw.WfwAreaApiService;
+import com.chaoxing.activity.service.tablefield.TableFieldQueryService;
 import com.chaoxing.activity.util.DateUtils;
 import com.chaoxing.activity.util.constant.DateFormatConstant;
 import com.chaoxing.activity.util.constant.DateTimeFormatterConstant;
@@ -101,6 +107,12 @@ public class ActivityQueryService {
 	private ActivityFlagCodeService activityFlagCodeService;
 	@Resource
 	private ActivityStatSummaryQueryService activityStatSummaryQueryService;
+	@Resource
+	private TableFieldQueryService tableFieldQueryService;
+	@Resource
+	private CloudApiService cloudApiService;
+	@Resource
+	private PassportApiService passportApiService;
 
 	/**查询参与的活动
 	 * @Description 
@@ -505,6 +517,7 @@ public class ActivityQueryService {
 	 * @param page
 	 * @param loginUser
 	 * @param sw
+	 * @param specificCurrOrg 是否查询指定机构下的所有活动，0：所有，1：查询指定机构下的所有
 	 * @return com.baomidou.mybatisplus.extension.plugins.pagination.Page
 	*/
 	public Page pageSignedUp(Page page, LoginUserDTO loginUser, String sw, String flag, Integer specificCurrOrg) {
@@ -1029,4 +1042,118 @@ public class ActivityQueryService {
 		return activityMapper.listErdosCustomOrgCreatedWorkId(fid, activity.getCreateFid(), queryActivityFlag, activity.getActivityClassifyId());
 	}
 
+	/**
+	 * @Description
+	 * @author huxiaolong
+	 * @Date 2021-10-18 16:44:08
+	 * @param queryParam
+	 * @return com.chaoxing.activity.dto.export.ExportDataDTO
+	 */
+	public ExportDataDTO packageExportData(ActivityManageQueryDTO queryParam, LoginUserDTO exportUser) {
+		List<TableFieldDetail> tableFieldDetails = tableFieldQueryService.listMarketShowTableFieldDetail(queryParam.getMarketId(), TableField.Type.ACTIVITY_MANAGE_LIST, TableField.AssociatedType.ACTIVITY_MARKET);
+		Page<Activity> page = listManaging(new Page<>(1, Integer.MAX_VALUE), queryParam, exportUser);
+		return ExportDataDTO.builder()
+				.headers(listActivityHeader(tableFieldDetails))
+				.data(listData(page.getRecords(), tableFieldDetails))
+				.build();
+	}
+
+	private List<List<String>> listActivityHeader(List<TableFieldDetail> tableFieldDetails) {
+		List<List<String>> headers = Lists.newArrayList();
+		for (TableFieldDetail tableFieldDetail : tableFieldDetails) {
+			List<String> header = Lists.newArrayList();
+			header.add(tableFieldDetail.getName());
+			headers.add(header);
+		}
+		return headers;
+	}
+
+
+	private String valueToString(Object value) {
+		return value == null ? "" : String.valueOf(value);
+	}
+
+	/**获取数据
+	 * @Description
+	 * @author huxiaolong
+	 * @Date 2021-06-01 16:19:14
+	 * @param records
+	 * @param tableFieldDetails
+	 * @return java.util.List<java.util.List<java.lang.String>>
+	 */
+	private List<List<String>> listData(List<Activity> records, List<TableFieldDetail> tableFieldDetails) {
+		List<List<String>> data = Lists.newArrayList();
+		if (CollectionUtils.isEmpty(records)) {
+			return data;
+		}
+		for (Activity record : records) {
+			List<String> itemData = Lists.newArrayList();
+			PassportUserDTO createUser = passportApiService.getByUid(record.getCreateUid());
+			String createOrgName = passportApiService.getOrgName(record.getCreateFid());
+			for (TableFieldDetail tableFieldDetail : tableFieldDetails) {
+				String code = tableFieldDetail.getCode();
+				switch (code) {
+					case "cover":
+						String coverUrl = record.getCoverUrl();
+						if (StringUtils.isBlank(coverUrl) && StringUtils.isNotBlank(record.getCoverCloudId())) {
+							coverUrl = cloudApiService.buildImageUrl(record.getCoverCloudId());
+						}
+						itemData.add(coverUrl);
+						break;
+					case "name":
+						itemData.add(record.getName());
+						break;
+					case "createUserName":
+						itemData.add(createUser.getRealName());
+						break;
+					case "createOrgName":
+						itemData.add(createOrgName);
+						break;
+					case "signedUpNum":
+						itemData.add(valueToString(record.getSignedUpNum()));
+						break;
+					case "status":
+						itemData.add(Activity.StatusEnum.fromValue(record.getStatus()).getName());
+						break;
+					case "poster":
+						itemData.add(UrlConstant.getPosterUrl(record.getId()));
+						break;
+//					case "dualSelect":
+//						itemData.add()
+//						break;
+					case "startTime":
+						itemData.add(Optional.ofNullable(record.getStartTime()).map(v -> v.format(DateUtils.DATE_MINUTE_TIME_FORMATTER)).orElse(null));
+						break;
+					case "endTime":
+						itemData.add(Optional.ofNullable(record.getEndTime()).map(v -> v.format(DateUtils.DATE_MINUTE_TIME_FORMATTER)).orElse(null));
+						break;
+					case "personLimit":
+						itemData.add(valueToString(record.getPersonLimit()));
+						break;
+					case "signedInNum":
+						itemData.add(valueToString(record.getSignedInNum()));
+						break;
+					case "signedInRate":
+						itemData.add(valueToString(record.getSignedInRate()));
+						break;
+					case "rateNum":
+						itemData.add(valueToString(record.getRateNum()));
+						break;
+					case "rateScore":
+						itemData.add(valueToString(record.getRateScore()));
+						break;
+					case "qualifiedNum":
+						itemData.add(valueToString(record.getQualifiedNum()));
+						break;
+					case "activityClassify":
+						itemData.add(record.getActivityClassifyName());
+						break;
+					default:
+
+				}
+			}
+			data.add(itemData);
+		}
+		return data;
+	}
 }
