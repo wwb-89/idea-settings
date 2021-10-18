@@ -43,6 +43,8 @@ public class UserResultDTO {
     private String prize;
     /** 状态: 0：不合格，1：合格，2：待处理 */
     private Integer qualifiedStatus;
+    /** 已填报表单采集数 */
+    private Integer filledFormCollectionNum;
 
     public void setMobile(String mobile) {
         // 手机号脱敏

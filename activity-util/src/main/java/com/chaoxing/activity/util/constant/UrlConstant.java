@@ -43,4 +43,8 @@ public class UrlConstant {
 		return "http://reading.chaoxing.com/zj/manage/activity/" + workId + "/new?isHideHeader=false";
 	}
 
+	public static String getPosterUrl(Integer activityId) {
+		return "http://hd.chaoxing.com/activity/" + activityId + "/poster";
+	}
+
 }

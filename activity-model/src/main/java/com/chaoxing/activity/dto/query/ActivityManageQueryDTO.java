@@ -52,4 +52,6 @@ public class ActivityManageQueryDTO {
 	private OrderTypeEnum orderType;
 	/** 图书馆使用的code */
 	private String code;
+	/** 导出时的用户id */
+	private Integer exportUid;
 }

@@ -2,6 +2,7 @@ package com.chaoxing.activity.service.user.result;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.chaoxing.activity.dto.UserFormCollectionGroupDTO;
 import com.chaoxing.activity.dto.UserResultDTO;
 import com.chaoxing.activity.dto.export.ExportDataDTO;
 import com.chaoxing.activity.dto.query.UserResultQueryDTO;
@@ -10,6 +11,7 @@ import com.chaoxing.activity.model.Activity;
 import com.chaoxing.activity.model.TableField;
 import com.chaoxing.activity.model.TableFieldDetail;
 import com.chaoxing.activity.model.UserResult;
+import com.chaoxing.activity.service.manager.module.SignApiService;
 import com.chaoxing.activity.service.tablefield.TableFieldQueryService;
 import com.google.common.collect.Lists;
 import lombok.extern.slf4j.Slf4j;
@@ -18,6 +20,7 @@ import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -39,6 +42,9 @@ public class UserResultQueryService {
 
 	@Resource
 	private TableFieldQueryService tableFieldQueryService;
+
+	@Resource
+	private SignApiService signApiService;
 
 	/**用户成绩是否合格
 	 * @Description 
@@ -106,6 +112,14 @@ public class UserResultQueryService {
 			queryParams.setOrderField(tableFieldDetail.getCode());
 		}
 		page = userResultMapper.pageUserResult(page, queryParams);
+		List<Integer> uids = page.getRecords().stream().map(UserResultDTO::getUid).filter(Objects::nonNull).collect(Collectors.toList());
+		List<UserFormCollectionGroupDTO> groupUserFormCollections = signApiService.groupUserFormCollections(uids);
+		if (CollectionUtils.isNotEmpty(groupUserFormCollections)) {
+			Map<Integer, Integer> uidFilledCountMap = groupUserFormCollections.stream().collect(Collectors.toMap(UserFormCollectionGroupDTO::getUid, UserFormCollectionGroupDTO::getFilledFormNum, (v1, v2) -> v2));
+			page.getRecords().forEach(v -> {
+				v.setFilledFormCollectionNum(Optional.ofNullable(uidFilledCountMap.get(v.getUid())).orElse(0));
+			});
+		}
 		return page;
 	}
 	/**获取excel表头
