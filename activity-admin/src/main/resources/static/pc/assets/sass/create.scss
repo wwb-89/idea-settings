@@ -803,7 +803,7 @@ input.btn-name,
 
 .dailog>.body {
     position: relative;
-    padding: 30px;
+    padding: 16px;
 }
 
 .dailog>.body>.length {
@@ -1094,11 +1094,12 @@ input.btn-name,
 }
 
 .map-dailog {
-    top: 146px;
-    left: calc(50% - 450px);
+    top: 191px;
+    left: calc(50% - 325px);
     transform: none;
-    width: 900px;
-    height: 622px;
+    width: 640px;
+    height: 440px;
+    border-radius: 8px;
 }
 
 .map-dailog .sure-btn {
@@ -1130,9 +1131,9 @@ input.btn-name,
 }
 
 .map {
-    width: 840px;
-    height: 438px;
-    margin-top: 30px;
+    width: 608px;
+    height: 302px;
+    margin-top: 16px;
 }
 
 .input-addr>.title1 {
