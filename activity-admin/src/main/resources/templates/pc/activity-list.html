@@ -135,6 +135,35 @@
                             </template>
                         </el-table-column>
                         <el-table-column
+                                v-else-if="item.code === 'personLimit'"
+                                :prop="item.code"
+                                :fixed="item.defaultTop"
+                                :label="item.name"
+                                :ifCenter="item.align"
+                                :min-width="item.minWidth"
+                        >
+                            <template slot-scope="scope">
+                                <span v-if="!scope.row.personLimit">不限</span>
+                                <span v-else>{{scope.row.personLimit}}</span>
+                            </template>
+                        </el-table-column>
+                        <el-table-column
+                                v-else-if="item.code === 'activityClassify'"
+                                class-name="th-dropdwon-radio"
+                                :fixed="item.defaultTop"
+                                column-key="activityClassifyId"
+                                :label="item.name"
+                                :ifCenter="item.align"
+                                :min-width="item.minWidth"
+                                :filters="filterClassifies"
+                                :filter-multiple="false"
+                                filter-placement="bottom"
+                        >
+                            <template slot-scope="scope">
+                                <span>{{scope.row.activityClassifyName}}</span>
+                            </template>
+                        </el-table-column>
+                        <el-table-column
                                 v-else-if="item.code === 'dualSelect'"
                                 :prop="item.code"
                                 :fixed="item.defaultTop"
@@ -224,8 +253,10 @@
                 activities: [],
                 uid: [[${session._login_user_.uid}]],
                 fid: [[${fid != null ? fid : session._login_user_.fid}]],
+                classifies: [[${classifies}]],
                 marketId: [[${marketId}]],
                 filterStatus: [],
+                filterClassifies: [],
                 selectedFilterStatusName: "全部",
                 sw: "",
                 // 严格模式 只查询自己创建的
@@ -236,6 +267,7 @@
                     pageNum: 1,
                     pageSize: 8,
                     status: "",
+                    activityClassifyId: "",
                     activityFlag: [[${flag}]],
                     // 严格模式 只查询自己创建的
                     strict: [[${strict}]],
@@ -285,6 +317,10 @@
                     {text: "进行中", value: "3"},
                     {text: "已结束", value: "4"}
                 ];
+
+                $this.filterClassifies = $.map($this.classifies, function (item) {
+                    return {text: item.name, value: item.id};
+                })
                 $this.calShowTableFieldDetails();
                 $this.configTableFieldDetails = $this.calConfigTableFieldDetails();
             },
@@ -424,9 +460,13 @@
                 filterChange: function (filterItem) {
                     var $this = this;
                     var key = Object.keys(filterItem)[0]
+                    var value;
                     if (key == 'status') {
                         // 单选过滤取第一个
-                        var value = filterItem[key][0];
+                         value = filterItem[key][0];
+                        $this.queryParams[key] = activityApp.isEmpty(value) ? null : parseInt(value);
+                    } else if (key == 'activityClassifyId') {
+                        value = filterItem[key][0];
                         $this.queryParams[key] = activityApp.isEmpty(value) ? null : parseInt(value);
                     }
                     $this.queryParams.pageNum = 1;

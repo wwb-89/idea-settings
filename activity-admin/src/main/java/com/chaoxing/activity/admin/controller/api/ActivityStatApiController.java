@@ -7,7 +7,7 @@ import com.chaoxing.activity.dto.query.admin.ActivityStatQueryDTO;
 import com.chaoxing.activity.dto.stat.ActivityOrgStatDTO;
 import com.chaoxing.activity.dto.stat.ActivityRegionalStatDTO;
 import com.chaoxing.activity.model.ActivityStat;
-import com.chaoxing.activity.service.activity.ActivityStatQueryService;
+import com.chaoxing.activity.service.activity.stat.ActivityStatQueryService;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;

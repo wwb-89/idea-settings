@@ -5,7 +5,7 @@ import com.chaoxing.activity.dto.LoginUserDTO;
 import com.chaoxing.activity.dto.manager.wfw.WfwAreaDTO;
 import com.chaoxing.activity.dto.stat.ActivityOrgStatDTO;
 import com.chaoxing.activity.dto.stat.ActivityStatDTO;
-import com.chaoxing.activity.service.activity.ActivityStatQueryService;
+import com.chaoxing.activity.service.activity.stat.ActivityStatQueryService;
 import com.chaoxing.activity.service.manager.wfw.WfwAreaApiService;
 import com.chaoxing.activity.util.UserAgentUtils;
 import com.chaoxing.activity.util.annotation.LoginRequired;

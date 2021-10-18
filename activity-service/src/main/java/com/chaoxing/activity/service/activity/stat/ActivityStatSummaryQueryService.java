@@ -11,7 +11,6 @@ import com.chaoxing.activity.dto.stat.ActivityStatSummaryDTO;
 import com.chaoxing.activity.mapper.ActivityStatSummaryMapper;
 import com.chaoxing.activity.mapper.TableFieldDetailMapper;
 import com.chaoxing.activity.model.*;
-import com.chaoxing.activity.service.activity.ActivityStatQueryService;
 import com.chaoxing.activity.service.activity.classify.ClassifyQueryService;
 import com.chaoxing.activity.service.activity.collection.ActivityCollectionQueryService;
 import com.chaoxing.activity.service.manager.module.SignApiService;
@@ -24,7 +23,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
-import org.springframework.web.util.HtmlUtils;
 
 import javax.annotation.Resource;
 import java.util.ArrayList;
@@ -58,6 +56,20 @@ public class ActivityStatSummaryQueryService {
     private ActivityCollectionQueryService activityCollectionQueryService;
     @Resource
     private ActivityStatQueryService activityStatQueryService;
+
+    /**根据活动activityIds，查询对应的活动统计汇总列表
+     * @Description
+     * @author huxiaolong
+     * @Date 2021-10-18 14:29:24
+     * @param activityIds
+     * @return java.util.List<com.chaoxing.activity.dto.stat.ActivityStatSummaryDTO>
+     */
+    public List<ActivityStatSummaryDTO> listActivitySummariesByIds(List<Integer> activityIds) {
+        if (CollectionUtils.isEmpty(activityIds)) {
+            return Lists.newArrayList();
+        }
+        return activityStatSummaryMapper.listActivityStatSummariesByIds(activityIds);
+    }
 
     /**对活动统计汇总进行分页查询
     * @Description
