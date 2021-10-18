@@ -14,6 +14,7 @@ import com.chaoxing.activity.dto.stat.SignActivityStatDTO;
 import com.chaoxing.activity.dto.stat.UserNotSignedInNumStatDTO;
 import com.chaoxing.activity.model.ActivityStatSummary;
 import com.chaoxing.activity.util.CookieUtils;
+import com.chaoxing.activity.util.constant.CommonConstant;
 import com.chaoxing.activity.util.exception.BusinessException;
 import com.google.common.collect.Lists;
 import lombok.extern.slf4j.Slf4j;
@@ -34,6 +35,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
+import java.util.stream.Collectors;
 
 /**报名签到服务
  * @author wwb
@@ -140,6 +142,8 @@ public class SignApiService {
 
 	/** 根据字段名称列表创建表单接口 */
 	private static final String CREATE_FORM_BY_FIELD_NAMES_URL = SIGN_API_DOMAIN + "/form/create";
+	/** 根据uid、signIds查询用户能报名的 */
+	private static final String USER_SIGN_UP_ABLE_SIGN_URL = SIGN_API_DOMAIN + "/sign/sign-up-able";
 
 	@Resource
 	private RestTemplate restTemplate;
@@ -951,6 +955,28 @@ public class SignApiService {
 
 		JSONObject jsonObject = JSON.parseObject(result);
 		resultHandle(jsonObject, () -> null, (message) -> {
+			throw new BusinessException(message);
+		});
+	}
+
+	/**查询能参与报名的报名签到
+	 * @Description 
+	 * @author wwb
+	 * @Date 2021-10-18 15:01:53
+	 * @param uid
+	 * @param signIds
+	 * @return java.util.List<com.chaoxing.activity.dto.manager.sign.SignUpAbleSignDTO>
+	*/
+	public List<SignUpAbleSignDTO> listSignUpAbleSign(Integer uid, List<Integer> signIds) {
+		if (CollectionUtils.isEmpty(signIds)) {
+			return Lists.newArrayList();
+		}
+		MultiValueMap<String, Object> params = new LinkedMultiValueMap<>();
+		params.add("uid", uid);
+		params.add("signIds", String.join(CommonConstant.DEFAULT_SEPARATOR, signIds.stream().map(String::valueOf).collect(Collectors.toList())));
+		String result = restTemplate.postForObject(USER_SIGN_UP_ABLE_SIGN_URL, params, String.class);
+		JSONObject jsonObject = JSON.parseObject(result);
+		return resultHandle(jsonObject, () -> JSONArray.parseArray(jsonObject.getString("data"), SignUpAbleSignDTO.class), (message) -> {
 			throw new BusinessException(message);
 		});
 	}

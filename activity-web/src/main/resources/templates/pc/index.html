@@ -75,6 +75,8 @@
                         <div class="item" v-for="(item, index) of activities" :key="'item-' + index" @click="detail(index)">
                             <div class="img-box">
                                 <img class="jqthumbImg" :src="item | getCloudImgUrl">
+                                <!--报名状态-->
+
                                 <div class="tag" v-if="item.status == 2">活动预告</div>
                                 <div class="tag green" v-if="item.status == 3">进行中</div>
                                 <div class="tag black" v-if="item.status == 4">已结束</div>
@@ -87,7 +89,7 @@
                             </div>
                         </div>
                     </div>
-                    <el-pagination style="text-align: center;" v-show="pages > 1" background layout="prev, pager, next" :total="total" :page-size="queryParams.pageSize" :current-page="queryParams.pageNum" @current-change="currenClick"></el-pagination>
+                    <el-pagination style="text-align: center;" v-if="!signUpAble" v-show="pages > 1" background layout="prev, pager, next" :total="total" :page-size="queryParams.pageSize" :current-page="queryParams.pageNum" @current-change="currenClick"></el-pagination>
                 </div>
                 <!-- 当列表为空时展示 -->
                 <div class="empty-box" v-show="total < 1 && loaded">
@@ -128,7 +130,9 @@
                 currentPage: 1,
                 filterWindowShow: false,
                 searchShadeShow: false,
-                topFid: [[${topFid}]]
+                topFid: [[${topFid}]],
+                // 是否查询能报名的活动
+                signUpAble: [[${signUpAble}]]
             },
             created: function () {
                 var $this = this;
@@ -266,7 +270,9 @@
                         scope: [[${scope}]],
                         topFid: [[${topFid}]],
                         marketId: [[${marketId}]],
-                        flag: [[${flag}]]
+                        flag: [[${flag}]],
+                        // 是否只查询能报名的，如果是则不分页
+                        signUpAble: [[${signUpAble}]]
                     };
                 },
                 //数据加载渲染

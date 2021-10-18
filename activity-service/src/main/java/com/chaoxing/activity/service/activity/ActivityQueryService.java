@@ -11,6 +11,7 @@ import com.chaoxing.activity.dto.activity.create.ActivityCreateParamDTO;
 import com.chaoxing.activity.dto.activity.ActivitySignedUpDTO;
 import com.chaoxing.activity.dto.activity.ActivityTypeDTO;
 import com.chaoxing.activity.dto.manager.sign.SignStatDTO;
+import com.chaoxing.activity.dto.manager.sign.SignUpAbleSignDTO;
 import com.chaoxing.activity.dto.manager.sign.UserSignUpStatusStatDTO;
 import com.chaoxing.activity.dto.manager.sign.create.SignCreateParamDTO;
 import com.chaoxing.activity.dto.manager.sign.create.SignUpCreateParamDTO;
@@ -106,7 +107,33 @@ public class ActivityQueryService {
 	*/
 	public Page<Activity> listParticipate(Page<Activity> page, ActivityQueryDTO activityQuery) {
 		calDateScope(activityQuery);
-		page = activityMapper.pageParticipate(page, activityQuery);
+		Integer currentUid = activityQuery.getCurrentUid();
+		Boolean signUpAble = activityQuery.getSignUpAble();
+		if (currentUid != null && Optional.ofNullable(signUpAble).orElse(false)) {
+			page.setSize(Integer.MAX_VALUE);
+			page = activityMapper.pageParticipate(page, activityQuery);
+			List<Activity> records = page.getRecords();
+			// 只查询能报名的
+			List<Integer> signIds = Optional.ofNullable(records).orElse(Lists.newArrayList()).stream().map(Activity::getSignId).filter(v -> v != null).collect(Collectors.toList());
+			List<SignUpAbleSignDTO> signUpAbleSigns = signApiService.listSignUpAbleSign(currentUid, signIds);
+			List<Activity> activities = Lists.newArrayList();
+			if (CollectionUtils.isNotEmpty(signUpAbleSigns)) {
+				Map<Integer, SignUpAbleSignDTO> signIdSignUpAbleSignMap = signUpAbleSigns.stream().collect(Collectors.toMap(SignUpAbleSignDTO::getSignId, v -> v, (v1, v2) -> v2));
+				for (Activity record : records) {
+					SignUpAbleSignDTO signUpAbleSign = signIdSignUpAbleSignMap.get(record.getSignId());
+					if (signUpAbleSign != null) {
+						record.setHasSignUp(true);
+						record.setSignUpStatus(signUpAbleSign.getSignUpStatus());
+						record.setSignUpStatusDescribe(signUpAbleSign.getSignUpStatusDescribe());
+						activities.add(record);
+					}
+				}
+			}
+			page.setRecords(activities);
+			page.setTotal(activities.size());
+		} else {
+			page = activityMapper.pageParticipate(page, activityQuery);
+		}
 		return page;
 	}
 

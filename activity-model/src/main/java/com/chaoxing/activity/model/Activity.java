@@ -180,6 +180,15 @@ public class Activity {
     private List<Integer> managerUids;
     @TableField(exist = false)
     private Boolean top;
+    /** 是否有报名 */
+    @TableField(exist = false)
+    private Boolean hasSignUp = false;
+    /** 报名状态 */
+    @TableField(exist = false)
+    private Integer signUpStatus;
+    /** 报名状态藐视 */
+    @TableField(exist = false)
+    private String signUpStatusDescribe;
 
     @Getter
     public enum OriginTypeEnum {

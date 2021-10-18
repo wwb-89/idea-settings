@@ -40,6 +40,8 @@
                     <div class="mask"></div>
                     <img :src="activity | getCloudImgUrl" class="jqthumbImg">
                     <div class="status-box">
+                        <!--报名状态-->
+                        <span v-if="activity.hasSignUp && signUpAble" :class="{'status sign': true, 'status5': (activity.signUpStatus == 2), 'status1' : (activity.signUpStatus != 2)}"><span class="sign-dot"></span>{{activity.signUpStatusDescribe}}</span>
                         <span :class="{'status': true, 'status1': (activity.status == 1), 'status2': (activity.status == 2), 'status3': (activity.status == 3), 'status4': (activity.status == 4)}">{{activity.status | activityStatusInstructions}}</span>
                     </div>
                     <!--<p class="num"><i></i>1028</p>-->
@@ -139,7 +141,9 @@
                     filterWindowShow: false,
                     searchShow: false,
                     topFid: [[${topFid}]],
-                    defaultSelectedAreaCode: [[${areaCode}]]
+                    defaultSelectedAreaCode: [[${areaCode}]],
+                    // 是否查询能报名的活动
+                    signUpAble: [[${signUpAble}]]
                 },
                 created: function () {
                     var $this = this;
@@ -257,7 +261,9 @@
                             topFid: [[${topFid}]],
                             marketId: [[${marketId}]],
                             scope: [[${scope}]],
-                            flag: [[${flag}]]
+                            flag: [[${flag}]],
+                            // 是否只查询能报名的，如果是则不分页
+                            signUpAble: [[${signUpAble}]]
                         };
                     },
                     initMescroll: function () {
@@ -293,7 +299,7 @@
                         app.ajaxPost(url, params, function (data) {
                             if (data.success) {
                                 $this.loaded = true;
-                                $this.mescroll.endByPage(data.data.records.length, data.data.pages);
+                                $this.mescroll.endByPage(data.data.records.length, $this.signUpAble ? data.data.records.length : data.data.pages);
                                 $this.activities.pushArray(data.data.records);
                                 $this.$nextTick(function () {
                                     $('.jqthumbImg').jqthumb({

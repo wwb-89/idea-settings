@@ -61,5 +61,9 @@ public class ActivityQueryDTO {
 	private String activityType;
 	/** flag的查询范围，0：默认，1：所有 */
 	private Integer scope;
+	/** 是否只查询能报名的 */
+	private Boolean signUpAble;
+	/** 当前登录的用户uid */
+	private Integer currentUid;
 
 }

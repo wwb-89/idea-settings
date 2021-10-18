@@ -75,6 +75,8 @@
 					<div class="inner">
 						<div class="img-box">
 							<div class="tips-box">
+								<!--报名状态-->
+								<p v-if="item.hasSignUp && signUpAble" :class="{'tips sign': true, 'color6': (item.signUpStatus == 2), 'color2': (item.signUpStatus != 2)}"><span class="sign-dot"></span>{{item.signUpStatusDescribe}}</p>
 								<p class="tips color1" v-if="item.status == 3">进行中</p>
 								<p class="tips color3" v-if="item.status == 4">已结束</p>
 								<p class="tips color5" v-if="item.status == 2">活动预告</p>
@@ -131,7 +133,9 @@
 				loaded: false,
 				topFid: [[${topFid}]],
 				hideFilter: [[${hideFilter}]],
-				mescroll: null
+				mescroll: null,
+                // 是否查询能报名的活动
+                signUpAble: [[${signUpAble}]]
 			},
 			created: function () {
 				var $this = this;
@@ -276,7 +280,9 @@
 						topFid: [[${topFid}]],
 						marketId: [[${marketId}]],
 						scope: [[${scope}]],
-						flag: [[${flag}]]
+						flag: [[${flag}]],
+                        // 是否只查询能报名的，如果是则不分页
+                        signUpAble: [[${signUpAble}]]
 					};
 					$this.activities = [];
 				},
@@ -288,10 +294,10 @@
 					$this.loaded = false;
 					app.ajaxPost(url, {data: activityApp.getJsonStr(params), pageNum: params.pageNum, pageSize: params.pageSize}, function (data) {
 						if (data.success) {
-							$this.loaded = true;
-							$this.queryParams.pageNum++;
+                            $this.loaded = true;
+                            $this.queryParams.pageNum++;
 							var activities = $this.activities;
-							$this.mescroll.endBySize(data.data.records.length, data.data.total);
+							$this.mescroll.endBySize(data.data.records.length, $this.signUpAble ? data.data.records.length : data.data.total);
 							if (data.data.records.length < 1) {
 								return;
 							}
@@ -337,7 +343,7 @@
 						$this.mescroll.destroy();
 						$this.mescroll = null;
 					}
-					$this.initMescroll()
+                    $this.initMescroll();
 				},
 				currenClick:function (currentPage) {
 					var $this = this;

@@ -58,6 +58,7 @@ public class ActivityApiController {
 	*/
 	@RequestMapping("list/participate")
 	public RestRespDTO list(HttpServletRequest request, String data) {
+		LoginUserDTO loginUser = LoginUtils.getLoginUser(request);
 		ActivityQueryDTO activityQuery = JSON.parseObject(data, ActivityQueryDTO.class);
 		String areaCode = activityQuery.getAreaCode();
 		List<WfwAreaDTO> wfwRegionalArchitectures;
@@ -67,7 +68,7 @@ public class ActivityApiController {
 			wfwRegionalArchitectures = wfwAreaApiService.listByCode(areaCode);
 		} else {
 			if (topFid == null) {
-				topFid = Optional.ofNullable(LoginUtils.getLoginUser(request)).map(LoginUserDTO::getFid).orElse(null);
+				topFid = Optional.ofNullable(loginUser).map(LoginUserDTO::getFid).orElse(null);
 			}
 			wfwRegionalArchitectures = wfwAreaApiService.listByFid(topFid);
 		}
@@ -85,6 +86,7 @@ public class ActivityApiController {
 			fids.add(topFid);
 		}
 		activityQuery.setFids(fids);
+		activityQuery.setCurrentUid(Optional.ofNullable(loginUser).map(LoginUserDTO::getUid).orElse(null));
 		Page<Activity> page = HttpServletRequestUtils.buid(request);
 		page = activityQueryService.listParticipate(page, activityQuery);
 		return RestRespDTO.success(page);
