@@ -188,7 +188,7 @@ public class RedirectController {
      * @param formUserId
      * @return java.lang.String
      */
-    @RequestMapping("/sign-up-manage/from/wfw-form")
+    @RequestMapping("/work-manage/from/wfw-form")
     public String redirectToWorkManage(Integer fid, Integer formId, Integer formUserId) {
         Activity activity = activityFormSyncService.getActivityFromFormInfo(fid, formId, formUserId);
         if (activity.getOpenWork() && activity.getWorkId() != null) {
