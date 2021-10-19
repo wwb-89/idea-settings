@@ -21,7 +21,6 @@ import com.chaoxing.activity.service.activity.ActivityQueryService;
 import com.chaoxing.activity.service.activity.classify.ClassifyQueryService;
 import com.chaoxing.activity.service.activity.engine.ActivityComponentValueService;
 import com.chaoxing.activity.service.activity.market.MarketQueryService;
-import com.chaoxing.activity.service.activity.template.TemplateComponentService;
 import com.chaoxing.activity.service.manager.PassportApiService;
 import com.chaoxing.activity.service.manager.module.SignApiService;
 import com.chaoxing.activity.service.manager.wfw.WfwAreaApiService;
@@ -40,7 +39,6 @@ import javax.annotation.Resource;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -111,7 +109,7 @@ public class ActivityMhDataCenterApiController {
         String sw = params.getString("sw");
 
         Optional.ofNullable(wfwfid).orElseThrow(() -> new BusinessException("wfwfid不能为空"));
-        Integer pageNum = params.getInteger("pageNum");
+        Integer pageNum = params.getInteger("page");
         pageNum = Optional.ofNullable(pageNum).orElse(1);
         Integer pageSize = params.getInteger("pageSize");
         pageSize = Optional.ofNullable(pageSize).orElse(12);
@@ -311,7 +309,7 @@ public class ActivityMhDataCenterApiController {
         Integer uid = params.getInteger("uid");
         String sw = params.getString("sw");
         Optional.ofNullable(wfwfid).orElseThrow(() -> new BusinessException("wfwfid不能为空"));
-        Integer pageNum = params.getInteger("pageNum");
+        Integer pageNum = params.getInteger("page");
         pageNum = Optional.ofNullable(pageNum).orElse(1);
         Integer pageSize = params.getInteger("pageSize");
         pageSize = Optional.ofNullable(pageSize).orElse(12);
