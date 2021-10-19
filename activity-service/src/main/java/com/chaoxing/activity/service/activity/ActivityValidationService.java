@@ -277,6 +277,9 @@ public class ActivityValidationService {
 
 	/**能删除活动
 	 * @Description
+	 * 能删除的活动：
+	 * 1、自己创建的活动
+	 * 2、本单位创建的活动
 	 * @author wwb
 	 * @Date 2020-11-11 16:08:08
 	 * @param activityId
@@ -284,10 +287,7 @@ public class ActivityValidationService {
 	 * @return com.chaoxing.activity.model.Activity
 	*/
 	public Activity deleteAble(Integer activityId, LoginUserDTO loginUser) {
-		return deleteAble(activityExist(activityId), loginUser);
-	}
-
-	public Activity deleteAble(Activity activity, LoginUserDTO loginUser) {
+		Activity activity = activityExist(activityId);
 		Integer createFid = activity.getCreateFid();
 		// 是不是创建者
 		boolean creator = isCreator(activity, loginUser.getUid());
@@ -298,7 +298,11 @@ public class ActivityValidationService {
 	}
 
 	/**可发布
-	 * @Description 只能发布本单位的活动，自己创建的或者本单位创建的
+	 * @Description
+	 * 能发布的活动：
+	 * 1、自己管理的（包含创建的）
+	 * 2、本机构创建的
+	 * 3、下级单位创建的
 	 * @author wwb
 	 * @Date 2020-11-12 15:43:24
 	 * @param activityId
@@ -307,62 +311,37 @@ public class ActivityValidationService {
 	*/
 	public Activity releaseAble(Integer activityId, LoginUserDTO loginUser) {
 		Activity activity = activityExist(activityId);
-		return releaseAble(activity, loginUser);
-	}
-
-	public Activity releaseAble(Activity activity, LoginUserDTO loginUser) {
 		Boolean released = activity.getReleased();
 		if (released) {
 			throw new ActivityReleasedException(activity.getId());
 		}
+		// 验证创建者
+		Integer uid = loginUser.getUid();
+		if (isCreator(activity, uid)) {
+			return activity;
+		}
+		// 是不是管理者
+		if (isManageAble(activity, uid)) {
+			return activity;
+		}
+		// 是不是本单位创建的
 		Integer createFid = activity.getCreateFid();
-		// 是不是创建者
-		boolean manager = isManageAble(activity, loginUser.getUid());
-		// 是不是本单位创建的活动
-		boolean isCurrentOrgCreated = false;
-		Integer fid = loginUser.getFid();
-		if (Objects.equals(createFid, fid)) {
-			isCurrentOrgCreated = true;
+		if (Objects.equals(createFid, loginUser.getFid())) {
+			return activity;
 		}
-		// 活动是不是下级机构创建的
-		List<Integer> subFids = wfwAreaApiService.listSubFid(fid);
-		if (!manager && !isCurrentOrgCreated && !subFids.contains(createFid)) {
-			// 自己是活动的管理员、是本机构创建的、是自己机构的下级机构创建的
-			throw new BusinessException("无权限");
+		// 下级单位创建的
+		if (isOrgInManageScope(createFid, loginUser)) {
+			return activity;
 		}
-		return activity;
+		throw new BusinessException("只能发布自己管理的、本单位或下级创建的活动");
 	}
 
-	/**可更新发布范围
-	 * @Description 
-	 * @author wwb
-	 * @Date 2020-11-20 11:10:56
-	 * @param activityId
-	 * @param loginUser
-	 * @return com.chaoxing.activity.model.Activity
-	*/
-	public Activity updateReleaseAble(Integer activityId, LoginUserDTO loginUser) {
-		Activity activity = activityExist(activityId);
-		Boolean released = activity.getReleased();
-		if (!released) {
-			throw new BusinessException("活动未发布");
-		}
-		Integer createFid = activity.getCreateFid();
-		// 是不是创建者
-		boolean creator = isCreator(activity, loginUser.getUid());
-		// 是不是本单位创建的活动
-		boolean isCurrentOrgCreated = false;
-		if (Objects.equals(createFid, loginUser.getFid())) {
-			isCurrentOrgCreated = true;
-		}
-		if (!creator && !isCurrentOrgCreated) {
-			throw new BusinessException("只能修改自己或本单位创建的活动的发布范围");
-		}
-		return activity;
-	}
-	
-	/**可取消发布活动
+	/**可取消发布（下架）活动
 	 * @Description
+	 * 能下架的活动
+	 * 1、自己管理的（包含创建的）
+	 * 2、本单位创建的
+	 * 3、下级单位创建的
 	 * @author wwb
 	 * @Date 2020-11-12 15:48:44
 	 * @param activityId
@@ -371,27 +350,29 @@ public class ActivityValidationService {
 	*/
 	public Activity cancelReleaseAble(Integer activityId, LoginUserDTO loginUser) {
 		Activity activity = activityExist(activityId);
-		return cancelReleaseAble(activity, loginUser);
-	}
-
-	public Activity cancelReleaseAble(Activity activity, LoginUserDTO loginUser) {
 		Boolean released = activity.getReleased();
 		if (!released) {
 			throw new BusinessException("活动已下架");
 		}
-		Integer createFid = activity.getCreateFid();
+		// 验证创建者
+		Integer uid = loginUser.getUid();
+		if (isCreator(activity, uid)) {
+			return activity;
+		}
 		// 是不是管理者
-		boolean manager = isManageAble(activity, loginUser.getUid());
-		// 是不是本单位创建的活动
-		boolean isCurrentOrgCreated = false;
+		if (isManageAble(activity, uid)) {
+			return activity;
+		}
+		// 是不是本单位创建的
+		Integer createFid = activity.getCreateFid();
 		if (Objects.equals(createFid, loginUser.getFid())) {
-			isCurrentOrgCreated = true;
+			return activity;
 		}
-		boolean orgInManageScope = isOrgInManageScope(createFid, loginUser);
-		if (!manager && !isCurrentOrgCreated && !orgInManageScope) {
-			throw new BusinessException("只能下架自己管理的、本单位或下级创建的活动");
+		// 下级单位创建的
+		if (isOrgInManageScope(createFid, loginUser)) {
+			return activity;
 		}
-		return activity;
+		throw new BusinessException("只能下架自己管理的、本单位或下级创建的活动");
 	}
 
 }
