@@ -21,6 +21,7 @@ import org.springframework.web.bind.annotation.RestController;
 import javax.annotation.Resource;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 
 /**鄂尔多斯活动信息
@@ -82,7 +83,10 @@ public class ErdosActivityInfoApiController {
         // 结束时间
         mhGeneralAppResultDataFields.add(buildField("活动结束时间", DateTimeFormatterConstant.YYYY_MM_DD_HH_MM.format(activity.getEndTime()), "101"));
         // 活动地点
-        String activityAddress = Optional.ofNullable(activity.getAddress()).orElse("") + Optional.ofNullable(activity.getDetailAddress()).orElse("");
+        String activityAddress = "";
+        if (Objects.equals(Activity.ActivityTypeEnum.OFFLINE.getValue(), activity.getActivityType())) {
+            activityAddress = Optional.ofNullable(activity.getAddress()).orElse("") + Optional.ofNullable(activity.getDetailAddress()).orElse("");
+        }
         mhGeneralAppResultDataFields.add(buildField("", "", "102"));
         mhGeneralAppResultDataFields.add(buildField("", "", "103"));
         mhGeneralAppResultDataFields.add(buildField("活动地点", activityAddress, "104"));

@@ -128,7 +128,10 @@ public class ActivityMhV3ApiController {
             buildField(cloudApiService.buildImageUrl(MhAppIconEnum.ONE.ORGANISER.getValue()), "主办", activity.getOrganisers(), mainFields);
         }
         // 地址
-        String address = Optional.ofNullable(activity.getAddress()).orElse("") + Optional.ofNullable(activity.getDetailAddress()).orElse("");
+        String address = "";
+        if (Objects.equals(Activity.ActivityTypeEnum.OFFLINE.getValue(), activity.getActivityType())) {
+            address = Optional.ofNullable(activity.getAddress()).orElse("") + Optional.ofNullable(activity.getDetailAddress()).orElse("");
+        }
         if (StringUtils.isNotBlank(address)) {
             buildField(cloudApiService.buildImageUrl(MhAppIconEnum.ONE.LOCATION.getValue()), "地址", address, mainFields);
         }

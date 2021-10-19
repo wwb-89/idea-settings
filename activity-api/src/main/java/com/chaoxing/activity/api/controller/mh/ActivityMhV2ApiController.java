@@ -143,7 +143,10 @@ public class ActivityMhV2ApiController {
 			}
 		}
 		// 活动地点
-		String activityAddress = Optional.ofNullable(activity.getAddress()).orElse("") + Optional.ofNullable(activity.getDetailAddress()).orElse("");;
+		String activityAddress = "";
+		if (Objects.equals(Activity.ActivityTypeEnum.OFFLINE.getValue(), activity.getActivityType())) {
+			activityAddress = Optional.ofNullable(activity.getAddress()).orElse("") + Optional.ofNullable(activity.getDetailAddress()).orElse("");
+		}
 		String activityAddressLink = "https://api.hd.chaoxing.com/redirect/activity/"+ activityId +"/address";
 		hashMap.put("104", buildField("活动地点", activityAddress, "104"));
 		// 活动地点链接（线下的活动有, 有经纬度）
