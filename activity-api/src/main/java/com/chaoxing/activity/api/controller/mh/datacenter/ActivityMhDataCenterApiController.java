@@ -117,6 +117,7 @@ public class ActivityMhDataCenterApiController {
         pageSize = Optional.ofNullable(pageSize).orElse(12);
         Integer activityClassifyId = null;
         String classifies = params.getString("classifies");
+        String date = params.getString("date");
         if (StringUtils.isNotBlank(classifies)) {
             JSONArray jsonArray = JSON.parseArray(classifies);
             if (jsonArray.size() > 0) {
@@ -136,6 +137,7 @@ public class ActivityMhDataCenterApiController {
                 .statusList(statusList)
                 .marketId(marketId)
                 .flag(flag)
+                .date(date)
                 .sw(sw)
                 .activityClassifyId(activityClassifyId)
                 .build();
