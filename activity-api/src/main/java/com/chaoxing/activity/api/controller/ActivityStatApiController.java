@@ -105,11 +105,14 @@ public class ActivityStatApiController {
 	 * @Date 2021-06-06 20:17:19
 	 * @param uid 用户id
 	 * @param fid 机构id（机构创建的活动）
+	 * @param startTime 开始时间
+	 * @param endTime 结束时间
 	 * @return com.chaoxing.activity.dto.RestRespDTO
 	*/
 	@RequestMapping("num/user-participate")
-	public RestRespDTO countUserParticipateActivityNum(@RequestParam Integer uid, Integer fid) {
-		return RestRespDTO.success(userStatSummaryQueryService.countUserParticipateActivityNum(uid, fid));
+	public RestRespDTO countUserParticipateActivityNum(@RequestParam Integer uid, Integer fid, Long startTime, Long endTime) {
+		Integer activityNum = userStatSummaryQueryService.countUserParticipateActivityNum(uid, fid, startTime, endTime);
+		return RestRespDTO.success(activityNum);
 	}
 
 	/**用户参与的活动
@@ -119,12 +122,14 @@ public class ActivityStatApiController {
 	 * @param request
 	 * @param uid
 	 * @param fid 机构创建的活动
+	 * @param startTime 开始时间
+	 * @param endTime 结束时间
 	 * @return com.chaoxing.activity.dto.RestRespDTO
 	*/
 	@RequestMapping("user-participate")
-	public RestRespDTO userParticipateActivity(HttpServletRequest request, @RequestParam Integer  uid, Integer fid) {
+	public RestRespDTO userParticipateActivity(HttpServletRequest request, @RequestParam Integer  uid, Integer fid, Long startTime, Long endTime) {
 		Page page = HttpServletRequestUtils.buid(request);
-		page = userStatSummaryQueryService.pagingUserParticipate(page, uid, fid);
+		page = userStatSummaryQueryService.pagingUserParticipate(page, uid, fid, startTime, endTime);
 		return RestRespDTO.success(page);
 	}
 

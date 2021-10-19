@@ -36,7 +36,10 @@ public class DateUtils {
 	 * @param timestamp
 	 * @return java.time.LocalDateTime
 	*/
-	public static LocalDateTime timestamp2Date(long timestamp) {
+	public static LocalDateTime timestamp2Date(Long timestamp) {
+		if (timestamp == null) {
+			return null;
+		}
 		return LocalDateTime.ofInstant(Instant.ofEpochMilli(timestamp), CommonConstant.DEFAULT_ZONEOFFSET);
 	}
 

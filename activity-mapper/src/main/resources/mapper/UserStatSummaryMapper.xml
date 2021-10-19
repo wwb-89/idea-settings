@@ -89,6 +89,19 @@
          WHERE
              t.uid = #{uid}
             AND t.is_valid = 1
+             <choose>
+                 <when test="startTime != null and endTime != null">
+                     AND t.create_time BETWEEN #{startTime} AND #{endTime}
+                 </when>
+                 <otherwise>
+                     <if test="startTime != null">
+                         AND t.create_time >= #{startTime}
+                     </if>
+                     <if test="endTime != null">
+                         AND t.create_time <![CDATA[<=]]> #{endTime}
+                     </if>
+                 </otherwise>
+             </choose>
      </select>
 
     <select id="pagingUserParticipate" resultMap="BaseResultMap">
@@ -108,6 +121,19 @@
         WHERE
             t.uid = #{uid}
             AND t.is_valid = 1
+            <choose>
+                <when test="startTime != null and endTime != null">
+                    AND t.create_time BETWEEN #{startTime} AND #{endTime}
+                </when>
+                <otherwise>
+                    <if test="startTime != null">
+                        AND t.create_time >= #{startTime}
+                    </if>
+                    <if test="endTime != null">
+                        AND t.create_time <![CDATA[<=]]> #{endTime}
+                    </if>
+                </otherwise>
+            </choose>
         ORDER BY
             FIELD( t1.`status`, 2, 3, 4 ),
             t1.start_time DESC

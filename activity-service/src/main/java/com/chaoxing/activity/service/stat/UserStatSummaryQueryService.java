@@ -208,10 +208,12 @@ public class UserStatSummaryQueryService {
 	 * @Date 2021-06-06 20:34:05
 	 * @param uid
 	 * @param fid 不会空则为该机构创建的活动
+	 * @param startTime
+	 * @param endTime
 	 * @return java.lang.Integer
 	*/
-	public Integer countUserParticipateActivityNum(Integer uid, Integer fid) {
-		return userStatSummaryMapper.countUserParticipateActivityNum(uid, fid);
+	public Integer countUserParticipateActivityNum(Integer uid, Integer fid, Long startTime, Long endTime) {
+		return userStatSummaryMapper.countUserParticipateActivityNum(uid, fid, DateUtils.timestamp2Date(startTime), DateUtils.timestamp2Date(endTime));
 	}
 
 	/**分页查询用户参与的活动列表
@@ -221,10 +223,12 @@ public class UserStatSummaryQueryService {
 	 * @param page
 	 * @param uid
 	 * @param fid
+	 * @param startTime
+	 * @param endTime
 	 * @return com.baomidou.mybatisplus.extension.plugins.pagination.Page
 	*/
-	public Page pagingUserParticipate(Page page, Integer uid, Integer fid) {
-		page = userStatSummaryMapper.pagingUserParticipate(page, uid, fid);
+	public Page pagingUserParticipate(Page page, Integer uid, Integer fid, Long startTime, Long endTime) {
+		page = userStatSummaryMapper.pagingUserParticipate(page, uid, fid, DateUtils.timestamp2Date(startTime), DateUtils.timestamp2Date(endTime));
 		List<?> records = page.getRecords();
 		if (CollectionUtils.isNotEmpty(records)) {
 			List<Integer> activityIds = Lists.newArrayList();
