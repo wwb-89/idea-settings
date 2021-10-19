@@ -49,10 +49,7 @@ import com.chaoxing.activity.util.DistributedLock;
 import com.chaoxing.activity.util.constant.ActivityMhUrlConstant;
 import com.chaoxing.activity.util.constant.ActivityModuleConstant;
 import com.chaoxing.activity.util.constant.CacheConstant;
-import com.chaoxing.activity.util.enums.MhAppDataSourceEnum;
-import com.chaoxing.activity.util.enums.MhAppDataTypeEnum;
-import com.chaoxing.activity.util.enums.MhAppTypeEnum;
-import com.chaoxing.activity.util.enums.ModuleTypeEnum;
+import com.chaoxing.activity.util.enums.*;
 import com.chaoxing.activity.util.exception.BusinessException;
 import com.google.common.collect.Lists;
 import lombok.extern.slf4j.Slf4j;
@@ -190,20 +187,32 @@ public class ActivityHandleService {
 		activityComponentValueService.saveActivityComponentValues(activityId, activityCreateParamDto.getActivityComponentValues());
 		// 保存门户模板
 		bindWebTemplate(activity, activityCreateParamDto.getWebTemplateId(), loginUser);
-
-		inspectionConfigHandleService.initInspectionConfig(activityId);
+		// 考核配置
+		boolean openInspectionConfig = activityCreateParamDto.getOpenInspectionConfig();
+		List<String> defaultMenus = activityMenuService.listMenu().stream().map(ActivityMenuDTO::getValue).collect(Collectors.toList());
+		if (!openInspectionConfig || activityCreateParamDto.getInspectionConfigId() == null) {
+			inspectionConfigHandleService.initInspectionConfig(activityId);
+			if (!openInspectionConfig) {
+				// 未开启考核配置，关闭默认考核管理菜单勾选
+				defaultMenus = defaultMenus.stream().filter(v -> !Objects.equals(v, ActivityMenuEnum.RESULTS_MANAGE.getValue())).collect(Collectors.toList());
+			}
+		}
+		if (activityCreateParamDto.getInspectionConfigId() != null) {
+			inspectionConfigHandleService.updateConfigActivityId(activityCreateParamDto.getInspectionConfigId(), activityId);
+		}
 		activityStatSummaryHandlerService.init(activityId);
 		// 活动详情
 		ActivityDetail activityDetail = activityCreateParamDto.buildActivityDetail(activityId);
 		activityDetailMapper.insert(activityDetail);
 		// 活动菜单配置
-		activityMenuService.configActivityMenu(activityId, activityMenuService.listMenu().stream().map(ActivityMenuDTO::getValue).collect(Collectors.toList()));
+		activityMenuService.configActivityMenu(activityId, defaultMenus);
 		// 若活动由市场所建，新增活动市场与活动关联
 		activityMarketService.associate(activity);
 		// 默认添加活动市场管理
 		// 添加管理员
 		ActivityManager activityManager = ActivityManager.buildCreator(activity);
 		activityManagerService.add(activityManager, loginUser);
+
 		// 处理发布范围
 		if (CollectionUtils.isNotEmpty(releaseClassIds)) {
 			activityClassService.batchAddOrUpdate(activityId, releaseClassIds);
@@ -310,6 +319,9 @@ public class ActivityHandleService {
 					.set(Activity::getTimeLengthUpperLimit, activity.getTimeLengthUpperLimit())
 					.set(Activity::getIntegral, activity.getIntegral())
 			);
+			// 考核配置
+			boolean openInspectionConfig = activityUpdateParamDto.getOpenInspectionConfig();
+			activityMenuService.updateActivityMenusByInspectionConfig(activityId, openInspectionConfig);
 			// 更新活动状态
 			activityStatusService.statusUpdate(activityId);
 			// 处理门户模版的绑定

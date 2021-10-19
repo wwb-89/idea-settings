@@ -44,8 +44,7 @@ public class InspectionApiController {
 		LoginUserDTO loginUser = LoginUtils.getLoginUser(request);
 		InspectionConfig inspectionConfig = JSON.parseObject(inspectionConfigStr, InspectionConfig.class);
 		List<InspectionConfigDetail> inspectionConfigDetails = JSON.parseArray(inspectionConfigDetailsStr, InspectionConfigDetail.class);
-		inspectionConfigHandleService.config(inspectionConfig, inspectionConfigDetails, loginUser);
-		return RestRespDTO.success();
+		return RestRespDTO.success(inspectionConfigHandleService.config(inspectionConfig, inspectionConfigDetails, loginUser));
 	}
 
 }

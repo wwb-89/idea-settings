@@ -137,6 +137,11 @@
                                     <el-switch class="switch fl marginTop6" disabled></el-switch>
                                     <p class="tips third">{{item.introduction}}</p>
                                 </template>
+                                <!-- 考核管理：inspection_manage -->
+                                <template v-else-if="item.code == 'inspection_manage'">
+                                    <el-switch class="switch fl marginTop6" disabled></el-switch>
+                                    <p class="tips third">{{item.introduction}}</p>
+                                </template>
                                 <template v-else-if="item.code == 'work'">
                                     <el-switch class="switch fl marginTop6" disabled></el-switch>
                                     <p class="tips third">{{item.introduction}}</p>

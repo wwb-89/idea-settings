@@ -124,6 +124,10 @@ public class ActivityCreateParamDTO {
 	private String activityFlag;
 	/** 源活动id */
 	private Integer originActivityId;
+	/** 是否开启考核管理 */
+	private Boolean openInspectionConfig;
+	/** 考核管理id */
+	private Integer inspectionConfigId;
 
 
 	/** 活动组件值对象列表 */

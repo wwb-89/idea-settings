@@ -466,7 +466,7 @@
                 },
                 toInspectionConfig: function () {
                     var $this = this;
-                    var url = ctx + '/activity/' + $this.activityId + '/inspection/config';
+                    var url = ctx + '/activity/inspection/config?activityId=' + $this.activityId;
                     window.open(url);
                 },
                 toUserResultDetail: function (uid) {

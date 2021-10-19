@@ -8,6 +8,7 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.chaoxing.activity.dto.LoginUserDTO;
 import com.chaoxing.activity.dto.UserResultDTO;
 import com.chaoxing.activity.dto.activity.ActivityComponentValueDTO;
+import com.chaoxing.activity.dto.activity.ActivityMenuDTO;
 import com.chaoxing.activity.dto.activity.create.ActivityCreateParamDTO;
 import com.chaoxing.activity.dto.activity.ActivitySignedUpDTO;
 import com.chaoxing.activity.dto.activity.ActivityTypeDTO;
@@ -31,9 +32,11 @@ import com.chaoxing.activity.service.activity.component.ComponentQueryService;
 import com.chaoxing.activity.service.activity.engine.ActivityComponentValueService;
 import com.chaoxing.activity.service.activity.manager.ActivityManagerQueryService;
 import com.chaoxing.activity.service.activity.market.MarketQueryService;
+import com.chaoxing.activity.service.activity.menu.ActivityMenuService;
 import com.chaoxing.activity.service.activity.stat.ActivityStatSummaryQueryService;
 import com.chaoxing.activity.service.activity.template.TemplateComponentService;
 import com.chaoxing.activity.service.activity.template.TemplateQueryService;
+import com.chaoxing.activity.service.inspection.InspectionConfigQueryService;
 import com.chaoxing.activity.service.manager.CloudApiService;
 import com.chaoxing.activity.service.manager.PassportApiService;
 import com.chaoxing.activity.service.manager.module.SignApiService;
@@ -43,6 +46,7 @@ import com.chaoxing.activity.util.DateUtils;
 import com.chaoxing.activity.util.constant.DateFormatConstant;
 import com.chaoxing.activity.util.constant.DateTimeFormatterConstant;
 import com.chaoxing.activity.util.constant.UrlConstant;
+import com.chaoxing.activity.util.enums.ActivityMenuEnum;
 import com.chaoxing.activity.util.enums.ActivityQueryDateEnum;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
@@ -113,6 +117,10 @@ public class ActivityQueryService {
 	private CloudApiService cloudApiService;
 	@Resource
 	private PassportApiService passportApiService;
+	@Resource
+	private InspectionConfigQueryService inspectionConfigQueryService;
+	@Resource
+	private ActivityMenuService activityMenuService;
 
 	/**查询参与的活动
 	 * @Description 
@@ -898,20 +906,28 @@ public class ActivityQueryService {
 		if (activity == null) {
 			return ActivityCreateParamDTO.buildDefault();
 		}
+		// activity -> activityCreateParamDTO
 		Integer activityId = activity.getId();
 		ActivityCreateParamDTO createParamDTO = ActivityCreateParamDTO.buildFromActivity(activity);
-
+		// set 简介
 		ActivityDetail activityDetail = getDetailByActivityId(activityId);
 		createParamDTO.setIntroduction(activityDetail.getIntroduction());
-
+		// set 自定义组件值对象列表
 		List<ActivityComponentValueDTO> activityComponentValues = activityComponentValueService.listActivityComponentValues(activityId, activity.getTemplateId());
 		createParamDTO.setActivityComponentValues(activityComponentValues);
-
+		// set 报名条件
 		List<Integer> signUpConditionEnables = signUpConditionEnableMapper.selectList(new QueryWrapper<SignUpConditionEnable>()
 				.lambda()
 				.eq(SignUpConditionEnable::getActivityId, activityId))
 				.stream().map(SignUpConditionEnable::getTemplateComponentId).collect(Collectors.toList());
 		createParamDTO.setSucTemplateComponentIds(signUpConditionEnables);
+		// set 考核管理id
+		InspectionConfig inspectionConfig = inspectionConfigQueryService.getByActivityId(activityId);
+		if (inspectionConfig != null) {
+			createParamDTO.setInspectionConfigId(inspectionConfig.getId());
+		}
+		List<String> menus = activityMenuService.listMenus(activityId).stream().map(ActivityMenuDTO::getValue).collect(Collectors.toList());
+		createParamDTO.setOpenInspectionConfig(menus.contains(ActivityMenuEnum.RESULTS_MANAGE.getValue()));
 		return createParamDTO;
 	}
 

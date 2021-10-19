@@ -4,7 +4,9 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.chaoxing.activity.dto.activity.ActivityMenuDTO;
 import com.chaoxing.activity.mapper.ActivityMenuConfigMapper;
+import com.chaoxing.activity.model.Activity;
 import com.chaoxing.activity.model.ActivityMenuConfig;
+import com.chaoxing.activity.util.enums.ActivityMenuEnum;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.stereotype.Service;
@@ -84,5 +86,21 @@ public class ActivityMenuService {
             activityMenuConfigMapper.batchAdd(activityMenuConfigs);
         }
     }
+
+    @Transactional(rollbackFor = Exception.class)
+    public void updateActivityMenusByInspectionConfig(Integer activityId, boolean openInspectionConfig) {
+        List<String> existMenus = listMenus(activityId).stream().map(ActivityMenuDTO::getValue).collect(Collectors.toList());
+        String inspectManage = ActivityMenuEnum.RESULTS_MANAGE.getValue();
+        if (openInspectionConfig && !existMenus.contains(inspectManage)) {
+            // 开启考核配置，添加默认考核管理菜单勾选
+            existMenus.add(inspectManage);
+            configActivityMenu(activityId, existMenus);
+        } else if (!openInspectionConfig && existMenus.contains(inspectManage)) {
+            // 未开启考核配置，关闭默认考核管理菜单勾选
+            existMenus.remove(inspectManage);
+            configActivityMenu(activityId, existMenus);
+        }
+    }
+
 
 }

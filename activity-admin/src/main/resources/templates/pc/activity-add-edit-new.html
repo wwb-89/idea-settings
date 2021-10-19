@@ -264,6 +264,19 @@
                                 </div>
                             </div>
                         </div>
+                        <div class="form-item align-start" v-else-if="item.code == 'inspection_config'">
+                            <label class="label">{{item.name}}</label>
+                            <div class="input-box column">
+                                <div class="set-box">
+                                    <el-switch v-model="activity.openInspectionConfig" class="examine-switch"></el-switch>
+                                    <span class="tips" v-if="item.introduction">{{item.introduction}}</span>
+                                </div>
+                                <div class="set-box configurationForm" v-show="activity.openInspectionConfig" @click="toInspectionConfig">
+                                    <img src="/static/pc/assets/images/setting.png" th:src="@{/pc/assets/images/setting.png}">
+                                    <span class="tips set-information">考核配置</span>
+                                </div>
+                            </div>
+                        </div>
                         <!--小组设置-->
                         <div class="form-item align-start" v-else-if="item.code == 'group'">
                             <label class="label">{{item.name}}</label>
@@ -841,7 +854,10 @@
                 showSignInListIframe: false,
                 scrollHeight: 0,
                 signInNum: 0,
+                // 报名填报万能表单窗口
                 wfwFormConfigWindow: null,
+                // 考核管理配置窗口
+                inspectionConfigWindow: null,
                 releaseScopeTitle: "",
                 activityClassifyTitle: "分类",
                 // 班级
@@ -860,7 +876,7 @@
                         $this.$set($this.signUpMap[originId], 'wechatUrl', data.wechatUrl);
                         $this.$set($this.signUpMap[originId], 'fillInfoFormId', data.formId);
                         $this.wfwFormConfigWindow.close();
-                    }else {
+                    } else {
                         try {
                             var data = activityApp.getJsonObject(e.data);
                             if ("sign_in_list" == data.type) {
@@ -873,6 +889,8 @@
                                 $this.$nextTick(function () {
                                     $(document).scrollTop($this.scrollHeight);
                                 });
+                            } else if ("inspection_config" == data.type) {
+                                $this.activity.inspectionConfigId = data.inspectionConfigId;
                             }
                         } catch (e) {
                         }
@@ -958,7 +976,9 @@
                         webTemplateId: '',
                         // 目前数据接收实体没有以下字段
                         activityFlag: $this.activityFlag,
-                        openGroup: false
+                        openGroup: false,
+                        openInspectionConfig: false,
+                        inspectionConfigId: null
                     };
                     // 展示模板页面 初始化默认选择第一个
                     var firstWebTemplate = $this.webTemplates && $this.webTemplates[0];
@@ -2239,7 +2259,19 @@
                 sureReSelectWebTemplate: function () {
                     var $this = this;
                     $this.isReselectConfig = true;
-                }
+                },
+                toInspectionConfig: function () {
+                    var $this = this;
+                    if ($this.inspectionConfigWindow && !$this.inspectionConfigWindow.closed) {
+                        app.showMsg("请先关闭上一个填报信息配置页面");
+                        return;
+                    }
+                    var url = ctx + '/activity/inspection/config';
+                    if (!activityApp.isEmpty($this.activity.inspectionConfigId)) {
+                        url += '?configId=' + $this.activity.inspectionConfigId;
+                    }
+                    $this.inspectionConfigWindow = window.open(url);
+                },
             }
         });
 

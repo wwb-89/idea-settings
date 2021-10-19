@@ -116,7 +116,10 @@ public class ActivityUpdateParamDTO {
 	private Integer templateId;
 	/** 简介 */
 	private String introduction;
-
+	/** 是否开启考核管理 */
+	private Boolean openInspectionConfig;
+	/** 考核管理id */
+	private Integer inspectionConfigId;
 
 	/** 活动组件值对象列表 */
 	private List<ActivityComponentValueDTO> activityComponentValues;
