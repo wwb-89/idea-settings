@@ -291,15 +291,10 @@ public class ActivityValidationService {
 		Integer createFid = activity.getCreateFid();
 		// 是不是创建者
 		boolean creator = isCreator(activity, loginUser.getUid());
-		// 是不是本单位创建的活动
-		boolean isCurrentOrgCreated = false;
-		if (Objects.equals(createFid, loginUser.getFid())) {
-			isCurrentOrgCreated = true;
+		if (creator || Objects.equals(createFid, loginUser.getFid())) {
+			return activity;
 		}
-		if (!creator && !isCurrentOrgCreated) {
-			throw new BusinessException("只能删除自己或本单位创建的活动");
-		}
-		return activity;
+		throw new BusinessException("只能删除自己或本单位创建的活动");
 	}
 
 	/**可发布

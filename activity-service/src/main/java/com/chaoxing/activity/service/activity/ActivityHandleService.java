@@ -451,7 +451,11 @@ public class ActivityHandleService {
 		Activity activity =  activityValidationService.activityExist(activityId);
 		boolean isCreateMarket = Objects.equals(marketId, activity.getMarketId());
 		// marketId为空 或者 当前marketId 和 活动marketId 一致时，进行活动真实删除，需要验证是否能删除；
-		if (marketId == null || isCreateMarket) {
+		if (marketId == null) {
+			// 删除活动
+			isCreateMarket = true;
+		}
+		if (isCreateMarket) {
 			// 验证是否能删除
 			activity = activityValidationService.deleteAble(activityId, loginUser);
 			activity.delete();
@@ -463,10 +467,7 @@ public class ActivityHandleService {
 			// 活动状态改变
 			activityChangeEventService.statusChange(activity);
 		}
-		// marketId不为空，删除活动-市场关联，isCreateMarket: true，则需要删除所有关联
-		if (marketId != null) {
-			activityMarketService.remove(activityId, marketId, isCreateMarket);
-		}
+		activityMarketService.remove(activityId, marketId, isCreateMarket);
 	}
 
 	/**删除fid下所有market的中活动id为activityId的活动
@@ -481,8 +482,8 @@ public class ActivityHandleService {
 	@Transactional(rollbackFor = Exception.class)
 	public void deleteActivityUnderFid(Integer fid, Integer activityId, Integer uid) {
 		LoginUserDTO loginUser = LoginUserDTO.buildDefault(uid, "", fid, "");
-		List<Integer> marketIdsUnderFid = marketQueryService.listMarketIdsByActivityIdFid(fid, activityId);
-		marketIdsUnderFid.forEach(marketId -> {
+		List<Integer> martketIds = marketQueryService.listMarketIdsByActivityIdFid(fid, activityId);
+		martketIds.forEach(marketId -> {
 			delete(activityId, marketId, loginUser);
 		});
 	}
@@ -922,19 +923,8 @@ public class ActivityHandleService {
 		}
 		Activity activity = activityQueryService.getActivityByOriginAndFormUserId(formId, formUserId);
 		if (activity != null) {
-			activity.delete();
-			activityMapper.update(null, new UpdateWrapper<Activity>()
-					.lambda()
-					.eq(Activity::getId, activity.getId())
-					.set(Activity::getStatus, activity.getStatus())
-			);
-			// 活动状态改变
-			activityChangeEventService.statusChange(activity);
-
-			// marketId不为空，删除活动-市场关联，isCreateMarket: true，则需要删除所有关联
-			if (activity.getMarketId() != null) {
-				activityMarketService.remove(activity.getId(), activity.getMarketId(), true);
-			}
+			LoginUserDTO loginUser = LoginUserDTO.buildDefault(activity.getCreateUid(), "", activity.getCreateFid(), "");
+			delete(activity.getId(), activity.getMarketId(), loginUser);
 		}
 	}
 
