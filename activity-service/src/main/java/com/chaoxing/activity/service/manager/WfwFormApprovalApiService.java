@@ -388,8 +388,10 @@ public class WfwFormApprovalApiService {
             signIn.setStartTime(DateUtils.date2Timestamp(signInStartTime));
             signIn.setEndTime(DateUtils.date2Timestamp(signInEndTime));
             String signInWay = FormUtils.getValue(formData, "sign_in_way");
+            // 获取的签到形式选项有：普通签到、参与者扫码、管理者扫码
             SignInCreateParamDTO.Way way = SignInCreateParamDTO.Way.fromName(signInWay);
             if (way != null) {
+                // 普通签到或者位置签到
                 signIn.setWay(way.getValue());
                 if (Objects.equals(SignInCreateParamDTO.Way.POSITION, way)) {
                     AddressDTO signInAddress = FormUtils.getAddress(formData, "sign_in_address");
@@ -400,6 +402,7 @@ public class WfwFormApprovalApiService {
                     }
                 }
             } else {
+                // 扫码签到
                 signIn.setWay(SignInCreateParamDTO.Way.QR_CODE.getValue());
                 SignInCreateParamDTO.ScanCodeWay scanCodeWay = SignInCreateParamDTO.ScanCodeWay.fromName(signInWay);
                 if (scanCodeWay != null) {

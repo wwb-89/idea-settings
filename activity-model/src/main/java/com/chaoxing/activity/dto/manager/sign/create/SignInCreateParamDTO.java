@@ -143,7 +143,7 @@ public class SignInCreateParamDTO {
 
 		/** 参与者扫码 */
 		PARTICIPATOR("参与者扫码", 1),
-		MANAGER("管理员扫码", 2);
+		MANAGER("管理者扫码", 2);
 
 		private String name;
 		private Integer value;
