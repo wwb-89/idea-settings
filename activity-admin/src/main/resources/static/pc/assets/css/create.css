@@ -1368,6 +1368,7 @@ input.btn-name,
           transform: none;
   width: 640px;
   height: 440px;
+  border-radius: 8px;
 }
 
 .map-dailog .sure-btn {
