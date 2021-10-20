@@ -122,6 +122,19 @@ body, html {
             color: #999999;
             margin-left: 16px;
         }
+        .colorTips {
+            display: inline-block;
+            vertical-align: top;
+            padding: 6px 0;
+            font-size: 14px;
+            line-height: 20px;
+            color: #0084FF;
+            i{
+                font-size: 16px;
+                line-height: 20px;
+                margin-right: 4px;
+            }
+        }
         .el-switch{
             height: 32px;
             line-height: 32px;
