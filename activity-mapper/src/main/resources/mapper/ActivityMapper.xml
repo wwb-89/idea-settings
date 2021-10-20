@@ -160,7 +160,7 @@
                 </when>
                 <otherwise>
                     <if test="params.date != null and params.date != ''">
-                        AND #{params.date} BETWEEN t.start_time AND t.end_time
+                        AND #{params.date} BETWEEN t.start_date AND t.end_date
                     </if>
                 </otherwise>
             </choose>

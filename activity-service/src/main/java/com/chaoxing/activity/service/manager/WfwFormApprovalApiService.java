@@ -348,13 +348,16 @@ public class WfwFormApprovalApiService {
             List<DepartmentDTO> departments = FormUtils.listDepartment(formData, "sign_up_contacts_scope");
             if (CollectionUtils.isNotEmpty(departments)) {
                 List<Integer> departmentIds = departments.stream().map(DepartmentDTO::getId).collect(Collectors.toList());
-                WfwGroupDTO wfwGroup = wfwContactApiService.listUserContactOrgsByFid(fid)
+                List<WfwGroupDTO> wfwGroups = wfwContactApiService.listUserContactOrgsByFid(fid)
                         .stream()
-                        .filter(v -> departmentIds.contains(Integer.valueOf(v.getId())))
-                        .findFirst().orElse(null);
-                if (wfwGroup != null) {
+                        .filter(v -> departmentIds.contains(Integer.valueOf(v.getId()))).collect(Collectors.toList());
+                if (CollectionUtils.isNotEmpty(wfwGroups)) {
                     signUp.setEnableContactsParticipateScope(true);
-                    signUp.setContactsParticipateScopes(Lists.newArrayList(SignUpParticipateScopeDTO.buildFromWfwGroup(wfwGroup, "contacts")));
+                    List<SignUpParticipateScopeDTO> contactsParticipateScopes = Lists.newArrayList();
+                    for (WfwGroupDTO wfwGroup : wfwGroups) {
+                        contactsParticipateScopes.add(SignUpParticipateScopeDTO.buildFromWfwGroup(wfwGroup, "contacts"));
+                    }
+                    signUp.setContactsParticipateScopes(contactsParticipateScopes);
                 }
             }
             if (StringUtils.isNotBlank(signUpPersonLimit)) {
