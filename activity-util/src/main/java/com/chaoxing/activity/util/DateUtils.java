@@ -25,6 +25,10 @@ public class DateUtils {
 	public static final DateTimeFormatter DATE_MINUTE_TIME_FORMATTER = DateTimeFormatter.ofPattern("yyyy.MM.dd HH:mm");
 	public static final DateTimeFormatter MONTH_DAY_TIME_FORMATTER = DateTimeFormatter.ofPattern("MM.dd HH:mm");
 
+	public static final String WAVE_SEPARATOR = "~";
+
+	public static final String MIDDLE_LINE_SEPARATOR = "-";
+
 	private DateUtils() {
 
 	}
@@ -95,6 +99,10 @@ public class DateUtils {
 	 * @return java.lang.String
 	*/
 	public static String activityTimeScope(LocalDateTime startTime, LocalDateTime endTime) {
+		return activityTimeScope(startTime, endTime, WAVE_SEPARATOR);
+	}
+
+	public static String activityTimeScope(LocalDateTime startTime, LocalDateTime endTime, String separator) {
 		String activityTimeScope = "";
 		LocalDateTime now = LocalDateTime.now();
 		int year = now.getYear();
@@ -111,7 +119,7 @@ public class DateUtils {
 			activityTimeScope = startTime.format(dateTimeFormatter);
 		}
 		if (StringUtils.isNotBlank(activityTimeScope) && endTime != null) {
-			activityTimeScope += " ~ ";
+			activityTimeScope += " " + separator + " ";
 		}
 		if (endTime != null) {
 			activityTimeScope += endTime.format(dateTimeFormatter);

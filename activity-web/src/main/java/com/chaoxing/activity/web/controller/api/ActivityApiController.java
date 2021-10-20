@@ -155,7 +155,7 @@ public class ActivityApiController {
 	public RestRespDTO pageSignedUp(HttpServletRequest request, String sw, String flag) {
 		LoginUserDTO loginUser = LoginUtils.getLoginUser(request);
 		Page page = HttpServletRequestUtils.buid(request);
-		page = activityQueryService.pageSignedUp(page, loginUser, sw, flag, 0);
+		page = activityQueryService.pageSignedUp(page, loginUser, sw, flag);
 		return RestRespDTO.success(page);
 	}
 

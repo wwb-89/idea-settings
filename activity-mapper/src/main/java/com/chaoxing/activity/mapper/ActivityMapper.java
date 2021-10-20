@@ -101,14 +101,13 @@ public interface ActivityMapper extends BaseMapper<Activity> {
 	 * @param page
 	 * @param uid
 	 * @param sw
+	 * @param marketId 市场id
 	 * @return com.baomidou.mybatisplus.extension.plugins.pagination.Page<com.chaoxing.activity.model.Activity>
 	 * @Description
 	 * @author wwb
 	 * @Date 2021-04-08 18:01:23
 	 */
-	Page<Activity> pageUserManaged(@Param("page") Page<?> page, @Param("uid") Integer uid, @Param("sw") String sw);
-
-	Page<Activity> pageUserMarketManaged(@Param("page") Page<?> page, @Param("uid") Integer uid, @Param("sw") String sw, @Param("marketId") Integer marketId);
+	Page<Activity> pageUserManaged(@Param("page") Page<?> page, @Param("uid") Integer uid, @Param("sw") String sw, @Param("marketId") Integer marketId);
 
 	/**
 	 * 活动日历查询
@@ -165,7 +164,14 @@ public interface ActivityMapper extends BaseMapper<Activity> {
 	 * @author wwb
 	 * @Date 2021-01-27 20:24:30
 	 */
-	List<Activity> listByMarketSignIds(@Param("signIds") List<Integer> signIds, @Param("marketId") Integer marketId);
+	List<Activity> listByMarketSignIds(@Param("signIds") List<Integer> signIds,
+									   @Param("activityClassifyId") Integer activityClassifyId,
+									   @Param("marketIds") List<Integer> marketIds);
+
+	Page<Activity> pageSignedUpActivities(@Param("page") Page<?> page,
+										@Param("signIds") List<Integer> signIds,
+									   @Param("activityClassifyId") Integer activityClassifyId,
+									   @Param("marketIds") List<Integer> marketIds);
 
 	/**
 	 * 分页查询报名的活动列表
@@ -178,9 +184,7 @@ public interface ActivityMapper extends BaseMapper<Activity> {
 	 * @author wwb
 	 * @Date 2021-01-27 20:55:30
 	 */
-	Page<Activity> pageCollectedActivityId(@Param("page") Page<?> page, @Param("uid") Integer uid, @Param("sw") String sw);
-
-	Page<Activity> pageMarketCollectedActivityId(@Param("page") Page<?> page, @Param("uid") Integer uid, @Param("sw") String sw, @Param("marketId") Integer marketId);
+	Page<Activity> pageCollectedActivityId(@Param("page") Page<?> page, @Param("uid") Integer uid, @Param("sw") String sw, @Param("marketId") Integer marketId);
 
 	/**
 	 * 根据报名签到id查询活动

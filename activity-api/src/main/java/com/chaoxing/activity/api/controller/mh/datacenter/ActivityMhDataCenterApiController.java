@@ -24,6 +24,7 @@ import com.chaoxing.activity.service.activity.market.MarketQueryService;
 import com.chaoxing.activity.service.manager.PassportApiService;
 import com.chaoxing.activity.service.manager.module.SignApiService;
 import com.chaoxing.activity.service.manager.wfw.WfwAreaApiService;
+import com.chaoxing.activity.util.DateUtils;
 import com.chaoxing.activity.util.constant.DateTimeFormatterConstant;
 import com.chaoxing.activity.util.constant.UrlConstant;
 import com.chaoxing.activity.util.exception.BusinessException;
@@ -38,6 +39,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import javax.annotation.Resource;
 import java.time.LocalDateTime;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -257,6 +259,7 @@ public class ActivityMhDataCenterApiController {
             // 模板的分类
             fields.add(buildField("活动标识", record.getActivityFlag(), ++fieldFlag));
             fields.add(buildField("typeID", record.getActivityClassifyId(), 102));
+            fields.add(buildField("活动时间段", DateUtils.activityTimeScope(record.getStartTime(), record.getEndTime(), DateUtils.MIDDLE_LINE_SEPARATOR), 102));
             activityJsonArray.add(activity);
         }
         return activityJsonArray;
@@ -320,13 +323,28 @@ public class ActivityMhDataCenterApiController {
         JSONObject urlParams = MhPreParamsUtils.resolve(preParams);
         // flag
         String flag = urlParams.getString("flag");
+        // classifyId
+        Integer activityClassifyId = null;
+        String classifies = params.getString("classifies");
+        if (StringUtils.isNotBlank(classifies)) {
+            JSONArray jsonArray = JSON.parseArray(classifies);
+            if (jsonArray.size() > 0) {
+                JSONObject activityClassify = jsonArray.getJSONObject(0);
+                activityClassifyId = activityClassify.getInteger("id");
+            }
+        }
         Integer specificCurrOrg = urlParams.getInteger("specificCurrOrg");
+        String marketIdStr = urlParams.getString("marketId");
+        List<Integer> marketIds = Lists.newArrayList();
+        if (StringUtils.isNotBlank(marketIdStr)) {
+            marketIds = Arrays.stream(marketIdStr.split(",")).map(Integer::valueOf).collect(Collectors.toList());
+        }
         Page<Activity> page = new Page(pageNum, pageSize);
         if (uid != null) {
             String orgName = passportApiService.getOrgName(wfwfid);
             String username = passportApiService.getUserRealName(uid);
             LoginUserDTO loginUser = LoginUserDTO.buildDefault(uid, username, wfwfid, orgName);
-            page = activityQueryService.pageSignedUp(page, loginUser, sw, flag, specificCurrOrg);
+            page = activityQueryService.mhPageSignedUp(page, loginUser, sw, flag, activityClassifyId, marketIds, specificCurrOrg);
         }
         JSONObject jsonObject = new JSONObject();
         jsonObject.put("curPage", page.getCurrent());

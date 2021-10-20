@@ -447,7 +447,7 @@ public class ActivityQueryService {
 			page.setRecords(Lists.newArrayList());
 			return page;
 		}
-		return activityMapper.pageUserMarketManaged(page, loginUser.getUid(), sw, marketId);
+		return activityMapper.pageUserManaged(page, loginUser.getUid(), sw, marketId);
 	}
 
 	/**根据活动id查询活动
@@ -525,49 +525,95 @@ public class ActivityQueryService {
 	 * @param page
 	 * @param loginUser
 	 * @param sw
-	 * @param specificCurrOrg 是否查询指定机构下的所有活动，0：所有，1：查询指定机构下的所有
 	 * @return com.baomidou.mybatisplus.extension.plugins.pagination.Page
 	*/
-	public Page pageSignedUp(Page page, LoginUserDTO loginUser, String sw, String flag, Integer specificCurrOrg) {
+	public Page pageSignedUp(Page page, LoginUserDTO loginUser, String sw, String flag) {
 		Integer uid = loginUser.getUid();
 		Integer fid = loginUser.getFid();
-		Integer specificFid = Objects.equals(specificCurrOrg, 1) ? fid : null;
-		page = signApiService.pageUserSignedUp(page, uid, sw, specificFid);
-		List records = page.getRecords();
-		if (CollectionUtils.isNotEmpty(records)) {
-			List<Integer> signIds = Lists.newArrayList();
-			Map<Integer, UserSignUpStatusStatDTO> signIdSignedUpMap = Maps.newHashMap();
-			for (Object record : records) {
-				JSONObject jsonObject = (JSONObject) record;
-				UserSignUpStatusStatDTO signedUp = JSON.parseObject(jsonObject.toJSONString(), UserSignUpStatusStatDTO.class);
-				signIds.add(signedUp.getSignId());
-				signIdSignedUpMap.put(signedUp.getSignId(), signedUp);
-			}
-			List<ActivitySignedUpDTO> activitySignedUps = Lists.newArrayList();
+		Page signedUpPage = signApiService.pageUserSignedUp(new Page(1, Integer.MAX_VALUE), uid, sw);
+		if (CollectionUtils.isNotEmpty(signedUpPage.getRecords())) {
 			Integer marketId = marketQueryService.getMarketIdByFlag(fid, flag);
 			// 若flag不为空且市场id不存在，则查询结果为空
 			if (StringUtils.isNotBlank(flag) && marketId == null) {
 				page.setRecords(Lists.newArrayList());
 				return page;
 			}
-			List<Activity> activities = activityMapper.listByMarketSignIds(signIds, marketId);
-			if (CollectionUtils.isNotEmpty(activities)) {
-				for (Activity activity : activities) {
-					ActivitySignedUpDTO activitySignedUp = new ActivitySignedUpDTO();
-					BeanUtils.copyProperties(activity, activitySignedUp);
-					// 设置报名状态
-					Integer signId = activitySignedUp.getSignId();
-					UserSignUpStatusStatDTO signedUp = signIdSignedUpMap.get(signId);
-					if (signedUp != null) {
-						activitySignedUp.setSignUpId(signedUp.getSignUpId());
-						activitySignedUp.setUserSignUpStatus(signedUp.getUserSignUpStatus());
-					}
-					activitySignedUps.add(activitySignedUp);
-				}
-			}
-			page.setRecords(activitySignedUps);
+			pageSignedUpActivities(page, signedUpPage.getRecords(), Lists.newArrayList(marketId));
 		}
 		return page;
+	}
+
+	/**门户我报名的活动查询
+	* @Description
+	* @author huxiaolong
+	* @Date 2021-10-20 17:46:05
+	* @param page
+	* @param loginUser
+	* @param sw
+	* @param flag
+	* @param marketIds
+	* @param specificCurrOrg
+	* @return com.baomidou.mybatisplus.extension.plugins.pagination.Page
+	*/
+	public Page mhPageSignedUp(Page page, LoginUserDTO loginUser, String sw, String flag, Integer activityClassifyId, List<Integer> marketIds, Integer specificCurrOrg) {
+		Integer uid = loginUser.getUid();
+		Integer fid = loginUser.getFid();
+		Integer specificFid = Objects.equals(specificCurrOrg, 1) ? fid : null;
+		Page signedUpPage = signApiService.pageUserSignedUp(new Page(1, Integer.MAX_VALUE), uid, sw, specificFid);
+		if (CollectionUtils.isNotEmpty(signedUpPage.getRecords())) {
+			if (StringUtils.isNotBlank(flag)) {
+				// 若flag不为空且市场id不存在，则查询结果为空
+				Integer marketId = marketQueryService.getMarketIdByFlag(fid, flag);
+				if (marketId == null) {
+					page.setRecords(Lists.newArrayList());
+					return page;
+				}
+				marketIds = Lists.newArrayList(marketId);
+			}
+			pageSignedUpActivities(page, signedUpPage.getRecords(), activityClassifyId, marketIds);
+		}
+		return page;
+	}
+
+	/**封装报名的活动
+	 * @Description
+	 * @author huxiaolong
+	 * @Date 2021-10-20 18:15:26
+	 * @param page
+	 * @param marketIds
+	 * @return void
+	 */
+	private void pageSignedUpActivities (Page page, List records, List<Integer> marketIds) {
+		pageSignedUpActivities(page, records, null, marketIds);
+	}
+
+	private void pageSignedUpActivities (Page page, List records, Integer activityClassifyId, List<Integer> marketIds) {
+		List<Integer> signIds = Lists.newArrayList();
+		Map<Integer, UserSignUpStatusStatDTO> signIdSignedUpMap = Maps.newHashMap();
+		for (Object record : records) {
+			JSONObject jsonObject = (JSONObject) record;
+			UserSignUpStatusStatDTO signedUp = JSON.parseObject(jsonObject.toJSONString(), UserSignUpStatusStatDTO.class);
+			signIds.add(signedUp.getSignId());
+			signIdSignedUpMap.put(signedUp.getSignId(), signedUp);
+		}
+		List<ActivitySignedUpDTO> activitySignedUps = Lists.newArrayList();
+		page = activityMapper.pageSignedUpActivities(page, signIds, activityClassifyId, marketIds);
+		List<Activity> activities = page.getRecords();
+		if (CollectionUtils.isNotEmpty(activities)) {
+			for (Activity activity : activities) {
+				ActivitySignedUpDTO activitySignedUp = new ActivitySignedUpDTO();
+				BeanUtils.copyProperties(activity, activitySignedUp);
+				// 设置报名状态
+				Integer signId = activitySignedUp.getSignId();
+				UserSignUpStatusStatDTO signedUp = signIdSignedUpMap.get(signId);
+				if (signedUp != null) {
+					activitySignedUp.setSignUpId(signedUp.getSignUpId());
+					activitySignedUp.setUserSignUpStatus(signedUp.getUserSignUpStatus());
+				}
+				activitySignedUps.add(activitySignedUp);
+			}
+		}
+		page.setRecords(activitySignedUps);
 	}
 
 	/**查询收藏的活动
@@ -586,7 +632,7 @@ public class ActivityQueryService {
 			page.setRecords(Lists.newArrayList());
 			return page;
 		}
-		return activityMapper.pageMarketCollectedActivityId(page, loginUser.getUid(), sw, marketId);
+		return activityMapper.pageCollectedActivityId(page, loginUser.getUid(), sw, marketId);
 	}
 
 	/**获取活动管理url
