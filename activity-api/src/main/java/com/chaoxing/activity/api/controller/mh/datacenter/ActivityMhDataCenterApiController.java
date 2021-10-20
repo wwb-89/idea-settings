@@ -28,6 +28,7 @@ import com.chaoxing.activity.util.constant.DateTimeFormatterConstant;
 import com.chaoxing.activity.util.constant.UrlConstant;
 import com.chaoxing.activity.util.exception.BusinessException;
 import com.google.common.collect.Lists;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -49,6 +50,7 @@ import java.util.stream.Collectors;
  * @date 2021/9/16 10:45
  * <p>
  */
+@Slf4j
 @RestController
 @RequestMapping("mh/data-center")
 public class ActivityMhDataCenterApiController {
@@ -99,11 +101,12 @@ public class ActivityMhDataCenterApiController {
     * @author huxiaolong
     * @Date 2021-09-26 17:57:11
     * @param data
-* @param marketId
+    * @param marketId
     * @return com.chaoxing.activity.dto.RestRespDTO
     */
     @RequestMapping("market/{marketId}")
     public RestRespDTO index(@RequestBody String data, @PathVariable Integer marketId) {
+        log.info("查询活动市场marketId的活动数据的参数:{}", data);
         JSONObject params = JSON.parseObject(data);
         Integer wfwfid = params.getInteger("wfwfid");
         String sw = params.getString("sw");

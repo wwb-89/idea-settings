@@ -39,6 +39,8 @@ public class ActivityQueryDTO {
 	private Integer userClassId;
 	/** 多活动标识 */
 	private List<String> flags;
+	/** 时间区间 */
+	private String dateScope;
 	/** 时间 */
 	private String date;
 	/** 状态 */

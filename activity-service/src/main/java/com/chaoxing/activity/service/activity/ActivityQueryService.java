@@ -6,7 +6,6 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.chaoxing.activity.dto.LoginUserDTO;
-import com.chaoxing.activity.dto.UserResultDTO;
 import com.chaoxing.activity.dto.activity.ActivityComponentValueDTO;
 import com.chaoxing.activity.dto.activity.create.ActivityCreateParamDTO;
 import com.chaoxing.activity.dto.activity.ActivitySignedUpDTO;
@@ -43,7 +42,7 @@ import com.chaoxing.activity.util.DateUtils;
 import com.chaoxing.activity.util.constant.DateFormatConstant;
 import com.chaoxing.activity.util.constant.DateTimeFormatterConstant;
 import com.chaoxing.activity.util.constant.UrlConstant;
-import com.chaoxing.activity.util.enums.ActivityQueryDateEnum;
+import com.chaoxing.activity.util.enums.ActivityQueryDateScopeEnum;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import lombok.extern.slf4j.Slf4j;
@@ -267,9 +266,9 @@ public class ActivityQueryService {
 	*/
 	private void calDateScope(ActivityQueryDTO activityQuery) {
 		DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
-		String date = activityQuery.getDate();
-		date = Optional.ofNullable(date).orElse("");
-		ActivityQueryDateEnum activityQueryDateEnum = ActivityQueryDateEnum.fromValue(date);
+		String dateScope = activityQuery.getDateScope();
+		dateScope = Optional.ofNullable(dateScope).orElse("");
+		ActivityQueryDateScopeEnum activityQueryDateEnum = ActivityQueryDateScopeEnum.fromValue(dateScope);
 		LocalDate now = LocalDate.now();
 		String minDateStr;
 		String maxDateStr;

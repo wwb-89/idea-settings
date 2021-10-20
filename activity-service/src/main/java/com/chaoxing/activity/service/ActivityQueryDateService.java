@@ -1,7 +1,7 @@
 package com.chaoxing.activity.service;
 
 import com.chaoxing.activity.dto.ActivityQueryDateDTO;
-import com.chaoxing.activity.util.enums.ActivityQueryDateEnum;
+import com.chaoxing.activity.util.enums.ActivityQueryDateScopeEnum;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
@@ -29,8 +29,8 @@ public class ActivityQueryDateService {
 	*/
 	public List<ActivityQueryDateDTO> listAll() {
 		List<ActivityQueryDateDTO> activityQueryDates = new ArrayList<>();
-		ActivityQueryDateEnum[] values = ActivityQueryDateEnum.values();
-		for (ActivityQueryDateEnum value : values) {
+		ActivityQueryDateScopeEnum[] values = ActivityQueryDateScopeEnum.values();
+		for (ActivityQueryDateScopeEnum value : values) {
 			ActivityQueryDateDTO  activityQueryDate = ActivityQueryDateDTO.builder()
 					.name(value.getName())
 					.value(value.getValue())

@@ -139,24 +139,31 @@
                 </otherwise>
             </choose>
             <!--时间-->
-            <if test="(params.minDateStr != null and params.minDateStr != '') or (params.maxDateStr != null and params.maxDateStr != '')">
-                <choose>
-                    <when test="params.minDateStr != null and params.minDateStr != '' and params.maxDateStr != null and params.maxDateStr != ''">
-                        <!--都不为空-->
-                        AND t.start_time BETWEEN minDateStr AND minDateStr
-                    </when>
-                    <otherwise>
-                        <choose>
-                            <when test="params.minDateStr != null and params.minDateStr != ''">
-                                AND t.start_time >= #{params.minDateStr}
-                            </when>
-                            <otherwise>
-                                AND t.start_time <![CDATA[<=]]> #{params.maxDateStr}
-                            </otherwise>
-                        </choose>
-                    </otherwise>
-                </choose>
-            </if>
+            <choose>
+                <when test="(params.minDateStr != null and params.minDateStr != '') or (params.maxDateStr != null and params.maxDateStr != '')">
+                    <choose>
+                        <when test="params.minDateStr != null and params.minDateStr != '' and params.maxDateStr != null and params.maxDateStr != ''">
+                            <!--都不为空-->
+                            AND t.start_time BETWEEN minDateStr AND minDateStr
+                        </when>
+                        <otherwise>
+                            <choose>
+                                <when test="params.minDateStr != null and params.minDateStr != ''">
+                                    AND t.start_time >= #{params.minDateStr}
+                                </when>
+                                <otherwise>
+                                    AND t.start_time <![CDATA[<=]]> #{params.maxDateStr}
+                                </otherwise>
+                            </choose>
+                        </otherwise>
+                    </choose>
+                </when>
+                <otherwise>
+                    <if test="params.date != null and params.date != ''">
+                        AND #{params.date} BETWEEN t.start_time AND t.end_time
+                    </if>
+                </otherwise>
+            </choose>
             <!--分类-->
             <choose>
                 <when test="params.activityClassifyId != null">
