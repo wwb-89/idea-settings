@@ -668,6 +668,28 @@ body {
   background-color: white;
 }
 
+.el-table.table-box .input-transparent {
+  width: 100%;
+  line-height: 27px;
+  border: 1px solid transparent;
+  background: none;
+  -webkit-box-sizing: border-box;
+     -moz-box-sizing: border-box;
+          box-sizing: border-box;
+  padding: 0 10px;
+  border-radius: 2px;
+}
+
+.el-table.table-box .input-transparent:focus {
+  border: 1px solid #0084FF;
+}
+
+.el-table.table-box .icon-edit-3-stroke {
+  margin-left: 4px;
+  color: #ccc;
+  cursor: pointer;
+}
+
 .el-table__empty-block {
   height: 695px !important;
 }

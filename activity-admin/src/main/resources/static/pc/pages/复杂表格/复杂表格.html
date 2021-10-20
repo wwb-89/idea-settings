@@ -205,6 +205,18 @@
                     </el-table-column>
                     <el-table-column
                             :align="ifCenter"
+                            sortable
+                            label="积分"
+                            min-width="99">
+                        <template slot-scope="scope">
+                            <div v-show="!scope.row.inputStatus" >
+                                <span>{{scope.row.inputValue}}</span><i class="icon-edit-3-stroke" @click="scope.row.inputStatus=true"></i>
+                            </div>
+                            <input type="number" v-model="scope.row.inputValue" v-show="scope.row.inputStatus" min="0" :max="scope.row.inputValue" placeholder="请输入" class="input-transparent" >
+                        </template>
+                    </el-table-column>
+                    <el-table-column
+                            :align="ifCenter"
                             label="图片"
                             min-width="142">
                         <template slot-scope="scope">
@@ -616,7 +628,9 @@
                     applyType:'全部',
                     status: 0,
                     img: 'http://file.m.superlib.com/C/GEDEbook/cover/190801/TSYJ031442.jpg',
-                    status2: "进行中"
+                    status2: "进行中",
+                    inputValue: 10,
+                    inputStatus: false,
                 }, {
                     name: '吴立',
                     account: '18272676793',
@@ -624,7 +638,9 @@
                     applyType:'“博阅锦绣”2020寒假星阅读',
                     status: 0,
                     img: 'http://117813nj.portal.chaoxing.com/engine/upload/engine/2019-12/20191209114751024v.png',
-                    status2: "未发布"
+                    status2: "未发布",
+                    inputValue: 12,
+                    inputStatus: false,
                 }, {
                     name: '吴立',
                     account: '18272676793',
@@ -632,7 +648,9 @@
                     applyType:'可选项',
                     status: 2,
                     img: '../../assets/images/img1.png',
-                    status2: "已结束"
+                    status2: "已结束",
+                    inputValue: 13,
+                    inputStatus: false,
                 }, {
                     name: '吴立',
                     account: '18272676793',
@@ -640,7 +658,9 @@
                     applyType:'可选项',
                     status: 0,
                     img: '../../assets/images/img1.png',
-                    status2: "已结束"
+                    status2: "已结束",
+                    inputValue: 4,
+                    inputStatus: false,
                 }, {
                     name: '吴立',
                     account: '18272676793',
@@ -648,7 +668,9 @@
                     applyType:'可选项',
                     status: 1,
                     img: '../../assets/images/img1.png',
-                    status2: "已结束"
+                    status2: "已结束",
+                    inputValue: 6,
+                    inputStatus: false,
                 }, {
                     name: '吴立',
                     account: '18272676793',
@@ -656,7 +678,9 @@
                     applyType:'可选项',
                     status: 1,
                     img: '../../assets/images/img1.png',
-                    status2: "已结束"
+                    status2: "已结束",
+                    inputValue: "",
+                    inputStatus: false,
                 }, {
                     name: '吴立',
                     account: '18272676793',
@@ -664,7 +688,9 @@
                     applyType:'可选项',
                     status: 1,
                     img: '../../assets/images/img1.png',
-                    status2: "已结束"
+                    status2: "已结束",
+                    inputValue: "",
+                    inputStatus: false,
                 }, {
                     name: '吴立',
                     account: '18272676793',
@@ -672,7 +698,9 @@
                     applyType:'可选项',
                     status: 1,
                     img: '../../assets/images/img1.png',
-                    status2: "已结束"
+                    status2: "已结束",
+                    inputValue: "",
+                    inputStatus: false,
                 }, {
                     name: '吴立',
                     account: '18272676793',
@@ -680,7 +708,9 @@
                     applyType:'可选项',
                     status: 1,
                     img: '../../assets/images/img1.png',
-                    status2: "已结束"
+                    status2: "已结束",
+                    inputValue: "",
+                    inputStatus: false,
                 }, {
                     name: '吴立',
                     account: '18272676793',
@@ -688,7 +718,9 @@
                     applyType:'可选项',
                     status: 1,
                     img: '../../assets/images/img1.png',
-                    status2: "已结束"
+                    status2: "已结束",
+                    inputValue: "",
+                    inputStatus: false,
                 }, {
                     name: '吴立',
                     account: '18272676793',
@@ -696,7 +728,9 @@
                     applyType:'可选项',
                     status: 1,
                     img: '../../assets/images/img1.png',
-                    status2: "已结束"
+                    status2: "已结束",
+                    inputValue: "",
+                    inputStatus: false,
                 }, {
                     name: '吴立',
                     account: '18272676793',
@@ -704,7 +738,9 @@
                     applyType:'可选项',
                     status: 1,
                     img: '../../assets/images/img1.png',
-                    status2: "已结束"
+                    status2: "已结束",
+                    inputValue: "",
+                    inputStatus: false,
                 }, {
                     name: '吴立',
                     account: '18272676793',
@@ -712,7 +748,9 @@
                     applyType:'2020浙江省云阅读计划之“晒书房',
                     status: 1,
                     img: '../../assets/images/img1.png',
-                    status2: "已结束"
+                    status2: "已结束",
+                    inputValue: "",
+                    inputStatus: false,
                 }, {
                     name: '吴立',
                     account: '18272676793',
@@ -720,7 +758,9 @@
                     applyType:'可选项',
                     status: 1,
                     img: '../../assets/images/img1.png',
-                    status2: "已结束"
+                    status2: "已结束",
+                    inputValue: "",
+                    inputStatus: false,
                 }, {
                     name: '吴立',
                     account: '18272676793',
@@ -728,7 +768,9 @@
                     applyType:'仲夏奇阅记',
                     status: 1,
                     img: '../../assets/images/img1.png',
-                    status2: "已结束"
+                    status2: "已结束",
+                    inputValue: "",
+                    inputStatus: false,
                 }, {
                     name: '吴立',
                     account: '18272676793',
@@ -736,7 +778,9 @@
                     applyType:'环保公益课堂2021年1月“垃圾分分乐”宣讲活动预告环保公益课堂2021年1月“垃圾分分乐”宣讲活动预告',
                     status: 1,
                     img: '../../assets/images/img1.png',
-                    status2: "已结束"
+                    status2: "已结束",
+                    inputValue: "",
+                    inputStatus: false,
                 }, {
                     name: '吴立',
                     account: '18272676793',
@@ -744,7 +788,9 @@
                     applyType:'可选项',
                     status: 1,
                     img: '../../assets/images/img1.png',
-                    status2: "已结束"
+                    status2: "已结束",
+                    inputValue: "",
+                    inputStatus: false,
                 }, {
                     name: '吴立',
                     account: '18272676793',
@@ -752,7 +798,9 @@
                     applyType:'可选项',
                     status: 1,
                     img: '../../assets/images/img1.png',
-                    status2: "已结束"
+                    status2: "已结束",
+                    inputValue: "",
+                    inputStatus: false,
                 }, {
                     name: '吴立',
                     account: '18272676793',
@@ -760,7 +808,9 @@
                     applyType:'可选项',
                     status: 1,
                     img: '../../assets/images/img1.png',
-                    status: "已结束"
+                    status2: "已结束",
+                    inputValue: "",
+                    inputStatus: false,
                 }, {
                     name: '吴立',
                     account: '18272676793',
@@ -768,7 +818,9 @@
                     applyType:'可选项',
                     status: 1,
                     img: '../../assets/images/img1.png',
-                    status2: "已结束"
+                    status2: "已结束",
+                    inputValue: "",
+                    inputStatus: false,
                 }, {
                     name: '吴立',
                     account: '18272676793',
@@ -776,7 +828,9 @@
                     applyType:'可选项',
                     status: 1,
                     img: '../../assets/images/img1.png',
-                    status2: "已结束"
+                    status2: "已结束",
+                    inputValue: "",
+                    inputStatus: false,
                 }
             ],
             tableTestData2: [],
