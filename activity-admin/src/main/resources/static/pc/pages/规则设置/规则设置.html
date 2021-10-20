@@ -6,6 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>规则设置</title>
     <link rel="stylesheet" href="../../assets/lib/element-ui/lib/theme-chalk/index.css">
+    <link rel="stylesheet" href="../../assets/icomoon/style.css">
     <link rel="stylesheet" href="../../assets/css/public.css">
     <link rel="stylesheet" href="../../assets/css/confirm_dialog.css">
     <link rel="stylesheet" href="../../assets/css/rule-setting.css">
@@ -43,8 +44,49 @@
                                 <el-option v-for="item in dayOptions" :key="item.value" :label="item.label" :value="item.value">
                                 </el-option>
                             </el-select>
-                            <span class="lineTips">后自动移除黑名单</span>  
+                            <span class="lineTips">后自动移除黑名单</span>
                         </div>
+                    </div>
+                </div>
+                <div class="form-item">
+                    <label class="label">黑名单</label>
+                    <div class="input-box">
+                        <p class="colorTips"><i class="icon-setting"></i>已拉黑23人</p>
+                    </div>
+                </div>
+            </form>
+        </div>
+        <div class="item-block">
+            <div class="item-title">报名按钮</div>
+            <form action="" class="el-form">
+                <div class="form-item">
+                    <label class="label">报名按钮</label>
+                    <div class="input-box">
+                        <el-select v-model="loginValue" size="small" class="width162" placeholder="请选择">
+                            <el-option v-for="item in loginOptions" :key="item.value" :label="item.label" :value="item.value">
+                            </el-option>
+                        </el-select>
+                        <p class="bottomTips">用户可以在报名的页面看到的按钮</p>
+                    </div>
+                </div>
+                <div class="form-item">
+                    <label class="label">自动移除黑名单</label>
+                    <div class="input-box">
+                        <el-switch v-model="valueSwitch"></el-switch>
+                        <p class="rightTips">开启后，可以设置自动移除黑名单的规则</p>
+                        <div class="select-box">
+                            <el-select v-model="dayValue" size="small" class="width80" placeholder="请选择">
+                                <el-option v-for="item in dayOptions" :key="item.value" :label="item.label" :value="item.value">
+                                </el-option>
+                            </el-select>
+                            <span class="lineTips">后自动移除黑名单</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="form-item">
+                    <label class="label">黑名单</label>
+                    <div class="input-box">
+                        <p class="colorTips"><i class="icon-setting"></i>已拉黑23人</p>
                     </div>
                 </div>
             </form>
@@ -277,6 +319,26 @@
                     }, {
                         value: '2',
                         label: '四天'
+                    }],
+                    loginValue:'1',
+                    loginOptions:[{
+                        value: '1',
+                        label: '报名参与'
+                    }, {
+                        value: '2',
+                        label: '立即报名'
+                    }, {
+                        value: '3',
+                        label: '立即预约'
+                    }, {
+                        value: '4',
+                        label: '立即申请'
+                    }, {
+                        value: '5',
+                        label: '立即填写'
+                    }, {
+                        value: '6',
+                        label: '报名'
                     }],
                     ifCancelPop:false,
                     dataPushPop:false,

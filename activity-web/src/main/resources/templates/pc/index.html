@@ -216,7 +216,7 @@
                     $($this.activityQueryDates).each(function (i) {
                         $this.$set($this.activityQueryDates[i], "selected", i == index);
                     });
-                    $this.queryParams.date = $this.activityQueryDates[index].value;
+                    $this.queryParams.dateScope = $this.activityQueryDates[index].value;
                     $this.queryParams.pageNum = 1;
                     $this.loadData();
                 },
@@ -263,7 +263,7 @@
                         pageSize: 9,
                         sw: "",
                         activityClassifyName: "",
-                        date: "",
+                        dateScope: "",
                         status: "",
                         areaCode: $this.areaCode,
                         activityType: "",

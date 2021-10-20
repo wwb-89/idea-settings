@@ -1,6 +1,9 @@
 package com.chaoxing.activity.dto.manager;
 
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.annotation.JSONField;
 import com.chaoxing.activity.util.constant.UrlConstant;
+import com.google.common.collect.Lists;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -34,8 +37,43 @@ public class NoticeDTO {
 	/** 接收者id列表 */
 	private List<Integer> receiverUids;
 
+	@Data
+	@Builder
+	@NoArgsConstructor
+	@AllArgsConstructor
+	public static class AttachmentDTO {
+
+		@Builder.Default
+		private Integer attachmentType = 25;
+		@JSONField(name = "att_web")
+		private AttWebDTO attWeb;
+
+		@Data
+		@Builder
+		@NoArgsConstructor
+		@AllArgsConstructor
+		public static class AttWebDTO {
+
+			@Builder.Default
+			private Integer showContent = 1;
+			private String logo;
+			private String title;
+			private String content;
+			private String url;
+		}
+	}
+
 	public static String generateAttachment(String title, String url) {
-		return "[{'attachmentType':25,'att_web':{'showContent':1,'logo':'" + UrlConstant.NOTICE_LOGO_URL + "','title':'" + title + "','content':'','url':'" + url + "'}}]";
+		List<AttachmentDTO> attachments = Lists.newArrayList();
+		AttachmentDTO.AttWebDTO attWeb = AttachmentDTO.AttWebDTO.builder()
+				.logo(UrlConstant.NOTICE_LOGO_URL)
+				.title(title)
+				.content("")
+				.url(url)
+				.build();
+		AttachmentDTO attachment = AttachmentDTO.builder().attWeb(attWeb).build();
+		attachments.add(attachment);
+		return JSON.toJSONString(attachments);
 	}
 
 }

@@ -1,10 +1,10 @@
 @font-face {
   font-family: 'icomoon';
-  src:  url('fonts/icomoon.eot?g7uacn');
-  src:  url('fonts/icomoon.eot?g7uacn#iefix') format('embedded-opentype'),
-    url('fonts/icomoon.ttf?g7uacn') format('truetype'),
-    url('fonts/icomoon.woff?g7uacn') format('woff'),
-    url('fonts/icomoon.svg?g7uacn#icomoon') format('svg');
+  src:  url('fonts/icomoon.eot?veq0q0');
+  src:  url('fonts/icomoon.eot?veq0q0#iefix') format('embedded-opentype'),
+    url('fonts/icomoon.ttf?veq0q0') format('truetype'),
+    url('fonts/icomoon.woff?veq0q0') format('woff'),
+    url('fonts/icomoon.svg?veq0q0#icomoon') format('svg');
   font-weight: normal;
   font-style: normal;
   font-display: block;
@@ -25,6 +25,25 @@
   -moz-osx-font-smoothing: grayscale;
 }
 
+.icon-export:before {
+  content: "\e90c";
+}
+.icon-setting:before {
+  content: "\e90b";
+  color: #0084ff;
+}
+.icon-minus-circle:before {
+  content: "\e909";
+}
+.icon-plus-circle:before {
+  content: "\e90a";
+}
+.icon-arrows-left:before {
+  content: "\e907";
+}
+.icon-arrows-right:before {
+  content: "\e908";
+}
 .icon-back:before {
   content: "\e906";
   color: #ced0d6;

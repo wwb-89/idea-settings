@@ -65,7 +65,7 @@ public class ActivityMarketApiController {
 			wfwfid = params.getInteger("wfwfid");
 		}
 		Optional.ofNullable(wfwfid).orElseThrow(() -> new BusinessException("wfwfid不能为空"));
-		Integer pageNum = params.getInteger("pageNum");
+		Integer pageNum = params.getInteger("page");
 		pageNum = Optional.ofNullable(pageNum).orElse(1);
 		Integer pageSize = params.getInteger("pageSize");
 		pageSize = Optional.ofNullable(pageSize).orElse(12);
@@ -178,7 +178,7 @@ public class ActivityMarketApiController {
 			wfwfid = params.getInteger("wfwfid");
 		}
 		Optional.ofNullable(wfwfid).orElseThrow(() -> new BusinessException("wfwfid不能为空"));
-		Integer pageNum = params.getInteger("pageNum");
+		Integer pageNum = params.getInteger("page");
 		pageNum = Optional.ofNullable(pageNum).orElse(1);
 		Integer pageSize = params.getInteger("pageSize");
 		pageSize = Optional.ofNullable(pageSize).orElse(12);

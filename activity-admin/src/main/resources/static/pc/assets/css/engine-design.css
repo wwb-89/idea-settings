@@ -228,6 +228,8 @@
   -webkit-box-sizing: border-box;
      -moz-box-sizing: border-box;
           box-sizing: border-box;
+  max-height: 428px;
+  overflow: auto;
 }
 
 .dailog .body .custom-box {
@@ -384,11 +386,74 @@
 }
 
 .dailog .body .el-form .three .width186 {
-  width: 186px;
+  width: 178px;
 }
 
 .dailog .body .el-form .three .width150 {
   width: 150px;
+}
+
+.dailog .body .display-flex {
+  display: -webkit-box;
+  display: -moz-box;
+  display: -ms-flexbox;
+  display: flex;
+  font-size: 14px;
+}
+
+.dailog .body .display-flex .el-switch {
+  margin-left: auto;
+}
+
+.dailog .body .display-flex .el-switch .el-switch__label.is-active {
+  color: #333333;
+}
+
+.dailog .body .condition-box .condition-item {
+  position: relative;
+  margin-top: 20px;
+}
+
+.dailog .body .condition-box .condition-item .el-select {
+  width: 100px;
+  -webkit-box-sizing: border-box;
+     -moz-box-sizing: border-box;
+          box-sizing: border-box;
+  margin-right: 12px;
+}
+
+.dailog .body .condition-box .condition-item .el-select:first-child {
+  width: 120px;
+}
+
+.dailog .body .condition-box .condition-item > .el-input {
+  width: 152px;
+}
+
+.dailog .body .condition-box .condition-item .icon-minus-circle {
+  position: absolute;
+  font-size: 16px;
+  line-height: 32px;
+  margin-left: 12px;
+  cursor: pointer;
+  color: #CCCCCC;
+}
+
+.dailog .body .condition-box .condition-item .icon-minus-circle:hover {
+  color: #FF666D;
+}
+
+.dailog .body .condition-box .add-box {
+  margin-top: 20px;
+  font-size: 14px;
+  line-height: 20px;
+  color: #0084FF;
+}
+
+.dailog .body .condition-box .add-box i {
+  font-size: 16px;
+  line-height: 20px;
+  margin-right: 4px;
 }
 
 .dailog .footer {
@@ -1182,6 +1247,200 @@
   margin-right: 8px;
 }
 
+.field-setting .info-box .form-item .item-tips {
+  line-height: 20px;
+  background: #F0F0F0;
+  border-radius: 2px;
+  color: #999999;
+  font-size: 12px;
+  padding: 0 4px;
+  display: inline-block;
+  border: none;
+  margin: 6px 16px 0;
+  font-weight: normal;
+}
+
+.field-setting .info-box .form-item .select-form {
+  margin-left: 122px;
+}
+
+.field-setting .info-box .form-item .select-form .el-select {
+  width: 120px;
+}
+
+.field-setting .info-box .form-item .width120 {
+  width: 120px;
+}
+
+.field-setting .info-box .form-item .input-block {
+  clear: both;
+  font-size: 14px;
+  color: #333333;
+  line-height: 20px;
+  margin-top: 14px;
+}
+
+.field-setting .info-box .form-item .input-block .fuhao {
+  margin: 0 8px;
+}
+
+.field-setting .info-box .form-item .input-block .el-input {
+  width: 104px;
+}
+
+.field-setting .info-box .form-item .picture-list {
+  padding: 16px 60px 36px;
+  -webkit-box-sizing: border-box;
+     -moz-box-sizing: border-box;
+          box-sizing: border-box;
+  background: #F7F8FA;
+  border-radius: 4px;
+  position: relative;
+}
+
+.field-setting .info-box .form-item .picture-list .swiper-slide {
+  font-size: 14px;
+}
+
+.field-setting .info-box .form-item .picture-list .swiper-slide .img-box {
+  width: 100%;
+  height: 180px;
+  border: 2px solid transparent;
+  -webkit-box-sizing: border-box;
+     -moz-box-sizing: border-box;
+          box-sizing: border-box;
+  border-radius: 8px;
+  overflow: hidden;
+  position: relative;
+}
+
+.field-setting .info-box .form-item .picture-list .swiper-slide .check {
+  width: 32px;
+  height: 32px;
+  background: url("../images/icon-checked.png") no-repeat;
+  background-size: 100%;
+  position: absolute;
+  right: 0;
+  top: 0;
+  display: none;
+}
+
+.field-setting .info-box .form-item .picture-list .swiper-slide .zoom {
+  width: 32px;
+  height: 32px;
+  background: url("../images/icon-zoom.png") no-repeat;
+  background-size: 100%;
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  display: none;
+}
+
+.field-setting .info-box .form-item .picture-list .swiper-slide img {
+  width: 100%;
+  height: 100%;
+}
+
+.field-setting .info-box .form-item .picture-list .swiper-slide p {
+  font-size: 14px;
+  line-height: 20px;
+  color: rgba(0, 0, 0, 0.8);
+  text-align: center;
+  margin-top: 10px;
+}
+
+.field-setting .info-box .form-item .picture-list .swiper-slide:hover .img-box {
+  border: 2px solid rgba(61, 130, 242, 0.5);
+}
+
+.field-setting .info-box .form-item .picture-list .swiper-slide:hover .zoom {
+  display: block;
+}
+
+.field-setting .info-box .form-item .picture-list .swiper-slide.active .img-box {
+  border: 2px solid #3D82F2;
+}
+
+.field-setting .info-box .form-item .picture-list .swiper-slide.active .check {
+  display: block;
+}
+
+.field-setting .info-box .form-item .picture-list .swiper-next {
+  width: 28px;
+  height: 28px;
+  background: #FFFFFF;
+  -webkit-box-shadow: 0px 6px 16px -8px rgba(0, 0, 0, 0.08), 0px 9px 28px rgba(0, 0, 0, 0.05), 0px 12px 48px 16px rgba(0, 0, 0, 0.03);
+          box-shadow: 0px 6px 16px -8px rgba(0, 0, 0, 0.08), 0px 9px 28px rgba(0, 0, 0, 0.05), 0px 12px 48px 16px rgba(0, 0, 0, 0.03);
+  border-radius: 99px;
+  position: absolute;
+  top: 50%;
+  margin-top: -14px;
+  z-index: 3;
+  right: 16px;
+  cursor: pointer;
+  text-align: center;
+}
+
+.field-setting .info-box .form-item .picture-list .swiper-next i {
+  font-size: 16px;
+  line-height: 28px;
+}
+
+.field-setting .info-box .form-item .picture-list .swiper-next:hover {
+  background: rgba(255, 255, 255, 0.8);
+}
+
+.field-setting .info-box .form-item .picture-list .swiper-prev {
+  width: 28px;
+  height: 28px;
+  background: #FFFFFF;
+  -webkit-box-shadow: 0px 6px 16px -8px rgba(0, 0, 0, 0.08), 0px 9px 28px rgba(0, 0, 0, 0.05), 0px 12px 48px 16px rgba(0, 0, 0, 0.03);
+          box-shadow: 0px 6px 16px -8px rgba(0, 0, 0, 0.08), 0px 9px 28px rgba(0, 0, 0, 0.05), 0px 12px 48px 16px rgba(0, 0, 0, 0.03);
+  border-radius: 99px;
+  position: absolute;
+  top: 50%;
+  margin-top: -14px;
+  z-index: 3;
+  left: 16px;
+  cursor: pointer;
+  text-align: center;
+}
+
+.field-setting .info-box .form-item .picture-list .swiper-prev i {
+  font-size: 16px;
+  line-height: 28px;
+}
+
+.field-setting .info-box .form-item .picture-list .swiper-prev:hover {
+  background: rgba(255, 255, 255, 0.8);
+}
+
+.field-setting .info-box .form-item .picture-list .swiper-pagination {
+  position: absolute;
+  text-align: center;
+  -webkit-transform: translate3d(0, 0, 0);
+          transform: translate3d(0, 0, 0);
+  z-index: 3;
+  width: 100%;
+  left: 0;
+  bottom: 16px;
+}
+
+.field-setting .info-box .form-item .picture-list .swiper-pagination-bullet {
+  width: 8px;
+  height: 8px;
+  display: inline-block;
+  border-radius: 100%;
+  background: #000;
+  opacity: .2;
+  margin: 0 5px;
+}
+
+.field-setting .info-box .form-item .picture-list .swiper-pagination-bullet-active {
+  opacity: 1;
+  background: #007aff;
+}
+
 .field-setting .info-box .sort-item {
   position: relative;
   cursor: pointer;
@@ -1740,4 +1999,12 @@
   height: 100%;
   background: rgba(0, 0, 0, 0.6);
   z-index: 999;
+}
+
+.el-popper[x-placement^=bottom] {
+  margin-top: 4px;
+}
+
+.el-popper .popper__arrow, .el-popper .popper__arrow::after {
+  display: none;
 }

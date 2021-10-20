@@ -5,16 +5,16 @@ import lombok.Getter;
 
 import java.util.Objects;
 
-/**活动查询时间枚举
+/**活动查询时间区间枚举
  * @author wwb
  * @version ver 1.0
- * @className ActivityQueryDateEnum
+ * @className ActivityQueryDateScopeEnum
  * @description
  * @blame wwb
  * @date 2020-11-13 11:00:37
  */
 @Getter
-public enum ActivityQueryDateEnum {
+public enum ActivityQueryDateScopeEnum {
 
 	/** 全部 */
 	ALL("全部", ""),
@@ -27,14 +27,14 @@ public enum ActivityQueryDateEnum {
 	private final String name;
 	private final String value;
 
-	ActivityQueryDateEnum(String name, String value) {
+	ActivityQueryDateScopeEnum(String name, String value) {
 		this.name = name;
 		this.value = value;
 	}
 
-	public static ActivityQueryDateEnum fromValue(String value) {
-		ActivityQueryDateEnum[] values = ActivityQueryDateEnum.values();
-		for (ActivityQueryDateEnum activityQueryDateEnum : values) {
+	public static ActivityQueryDateScopeEnum fromValue(String value) {
+		ActivityQueryDateScopeEnum[] values = ActivityQueryDateScopeEnum.values();
+		for (ActivityQueryDateScopeEnum activityQueryDateEnum : values) {
 			if (Objects.equals(activityQueryDateEnum.getValue(), value)) {
 				return activityQueryDateEnum;
 			}

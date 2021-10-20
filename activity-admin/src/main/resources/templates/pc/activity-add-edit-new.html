@@ -455,7 +455,7 @@
                                         <label class="label" style="line-height: 20px;"><img src="/static/pc/assets/images/required.png" th:src="@{/pc/assets/images/required.png}" class="required-img" v-if="it.required">{{it.name}}</label>
                                         <div class="input-box column">
                                             <div class="set-box">
-                                                <el-switch v-model="signUpMap[item.id].fillInfo"></el-switch>
+                                                <el-switch v-model="signUpMap[item.id].fillInfo" @change="formFillSwitchChange($event, it)"></el-switch>
                                                 <span class="tips" v-if="it.introduction">{{it.introduction}}</span>
                                             </div>
                                             <div v-if="signUpMap[item.id].formType == 'form'" class="set-box configurationForm" v-show="signUpMap[item.id].fillInfo" @click="toConfigForm(item.id)">
@@ -1053,6 +1053,9 @@
                     $($this.templateComponents).each(function () {
                         if (this.code == 'sign_up' || this.code == 'company_sign_up') {
                             var signUp = signApp.newSignUp(this);
+                            if (this.code == 'company_sign_up') {
+                                signUp.fillInfo = true;
+                            }
                             signUp.originId = this.id;
                             $this.$set($this.signUpMap, this.id, signUp);
                         } else if (this.code == 'sign_in' || this.code == 'sign_out') {
@@ -2272,6 +2275,16 @@
                     }
                     $this.inspectionConfigWindow = window.open(url);
                 },
+                // 填报信息的开关改变
+                formFillSwitchChange: function (checked, component) {
+                    // 企业报名必须开启
+                    var $this = this;
+                    var parenrComponent = $this.templateComponentMap[component.pid];
+                    if ("company_sign_up" == parenrComponent.code && !checked) {
+                        app.showMsg(parenrComponent.name + "必须开启" + component.name);
+                        $this.$set($this.signUpMap[component.pid], "fillInfo", true);
+                    }
+                }
             }
         });
 

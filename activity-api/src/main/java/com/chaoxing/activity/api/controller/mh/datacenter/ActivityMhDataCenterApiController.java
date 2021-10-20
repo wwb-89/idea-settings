@@ -21,7 +21,6 @@ import com.chaoxing.activity.service.activity.ActivityQueryService;
 import com.chaoxing.activity.service.activity.classify.ClassifyQueryService;
 import com.chaoxing.activity.service.activity.engine.ActivityComponentValueService;
 import com.chaoxing.activity.service.activity.market.MarketQueryService;
-import com.chaoxing.activity.service.activity.template.TemplateComponentService;
 import com.chaoxing.activity.service.manager.PassportApiService;
 import com.chaoxing.activity.service.manager.module.SignApiService;
 import com.chaoxing.activity.service.manager.wfw.WfwAreaApiService;
@@ -29,6 +28,7 @@ import com.chaoxing.activity.util.constant.DateTimeFormatterConstant;
 import com.chaoxing.activity.util.constant.UrlConstant;
 import com.chaoxing.activity.util.exception.BusinessException;
 import com.google.common.collect.Lists;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -40,7 +40,6 @@ import javax.annotation.Resource;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -51,6 +50,7 @@ import java.util.stream.Collectors;
  * @date 2021/9/16 10:45
  * <p>
  */
+@Slf4j
 @RestController
 @RequestMapping("mh/data-center")
 public class ActivityMhDataCenterApiController {
@@ -101,17 +101,18 @@ public class ActivityMhDataCenterApiController {
     * @author huxiaolong
     * @Date 2021-09-26 17:57:11
     * @param data
-* @param marketId
+    * @param marketId
     * @return com.chaoxing.activity.dto.RestRespDTO
     */
     @RequestMapping("market/{marketId}")
     public RestRespDTO index(@RequestBody String data, @PathVariable Integer marketId) {
+        log.info("查询活动市场marketId的活动数据的参数:{}", data);
         JSONObject params = JSON.parseObject(data);
         Integer wfwfid = params.getInteger("wfwfid");
         String sw = params.getString("sw");
 
         Optional.ofNullable(wfwfid).orElseThrow(() -> new BusinessException("wfwfid不能为空"));
-        Integer pageNum = params.getInteger("pageNum");
+        Integer pageNum = params.getInteger("page");
         pageNum = Optional.ofNullable(pageNum).orElse(1);
         Integer pageSize = params.getInteger("pageSize");
         pageSize = Optional.ofNullable(pageSize).orElse(12);
@@ -311,7 +312,7 @@ public class ActivityMhDataCenterApiController {
         Integer uid = params.getInteger("uid");
         String sw = params.getString("sw");
         Optional.ofNullable(wfwfid).orElseThrow(() -> new BusinessException("wfwfid不能为空"));
-        Integer pageNum = params.getInteger("pageNum");
+        Integer pageNum = params.getInteger("page");
         pageNum = Optional.ofNullable(pageNum).orElse(1);
         Integer pageSize = params.getInteger("pageSize");
         pageSize = Optional.ofNullable(pageSize).orElse(12);

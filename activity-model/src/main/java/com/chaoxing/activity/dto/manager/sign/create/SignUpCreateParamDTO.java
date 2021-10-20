@@ -1,6 +1,5 @@
 package com.chaoxing.activity.dto.manager.sign.create;
 
-import com.baomidou.mybatisplus.annotation.TableField;
 import com.chaoxing.activity.dto.manager.sign.SignUpParticipateScopeDTO;
 import com.chaoxing.activity.util.DateUtils;
 import lombok.*;
@@ -103,6 +102,8 @@ public class SignUpCreateParamDTO {
 	@Getter
 	public enum CustomSignUpTypeEnum {
 
+		/** 普通报名 */
+		NORMAL("报名", "normal"),
 		/** 双选会公司报名 */
 		DUAL_SELECT_COMPANY("公司报名", "company");
 

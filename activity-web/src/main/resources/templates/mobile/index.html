@@ -220,7 +220,7 @@
                     haveFilter: function () {
                         var $this = this;
                         return !activityApp.isEmpty($this.queryParams.activityClassifyName) ||
-                                !activityApp.isEmpty($this.queryParams.date) ||
+                                !activityApp.isEmpty($this.queryParams.dateScope) ||
                                 !activityApp.isEmpty($this.queryParams.status);
                     }
                 },
@@ -254,7 +254,7 @@
                             pageSize: 10,
                             sw: "",
                             activityClassifyName: "",
-                            date: "",
+                            dateScope: "",
                             status: "",
                             activityType: "",
                             areaCode: $this.defaultSelectedAreaCode,
@@ -382,7 +382,7 @@
                         });
                         $($this.activityQueryDates).each(function () {
                             if (this.selected) {
-                                $this.queryParams.date = this.value;
+                                $this.queryParams.dateScope = this.value;
                                 return false;
                             }
                         });
@@ -415,7 +415,7 @@
                             $this.$set($this.activityTypes[i], "selected", this.value == $this.queryParams.activityType);
                         });
                         $($this.activityQueryDates).each(function (i) {
-                            $this.$set($this.activityQueryDates[i], "selected", this.value == $this.queryParams.date);
+                            $this.$set($this.activityQueryDates[i], "selected", this.value == $this.queryParams.dateScope);
                         });
                         var existRegion = false;
                         $($this.regions).each(function (i) {
