@@ -203,7 +203,18 @@ body {
     }
   }
 }
-
+.export-box {
+  line-height: 30px;
+  margin-left: 20px;
+  color: #999999;
+  cursor: pointer;
+  i{
+    margin-right: 4px;
+  }
+  &:hover {
+    color: #0084FF;
+  }
+}
 .search-Box {
   float: right;
   position: relative;
