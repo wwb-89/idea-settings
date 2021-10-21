@@ -22,6 +22,9 @@ import java.util.Objects;
 @AllArgsConstructor
 public class SignUpCreateParamDTO {
 
+	private static final String DEFAULT_SIGN_UP_NAME = "报名";
+	private static final String DEFAULT_SIGN_UP_BTN_NAME = "报名参与";
+
 	/** 主键 */
 	private Integer id;
 	/** 报名签到id */
@@ -82,7 +85,7 @@ public class SignUpCreateParamDTO {
 		LocalDateTime startTime = LocalDateTime.now();
 		LocalDateTime endTime = startTime.plusMonths(1);
 		return SignUpCreateParamDTO.builder()
-				.name("报名")
+				.name(DEFAULT_SIGN_UP_NAME)
 				.openAudit(false)
 				.startTime(DateUtils.date2Timestamp(startTime))
 				.endTime(DateUtils.date2Timestamp(endTime))
@@ -90,7 +93,7 @@ public class SignUpCreateParamDTO {
 				.personLimit(100)
 				.fillInfo(false)
 				.publicList(false)
-				.btnName("报名参与")
+				.btnName(DEFAULT_SIGN_UP_BTN_NAME)
 				.endAllowCancel(true)
 				.onSiteSignUp(false)
 				.enableWfwParticipateScope(false)
