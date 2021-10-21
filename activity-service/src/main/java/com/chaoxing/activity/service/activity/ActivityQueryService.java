@@ -1122,6 +1122,7 @@ public class ActivityQueryService {
 
 	private List<List<String>> listActivityHeader(List<TableFieldDetail> tableFieldDetails) {
 		List<List<String>> headers = Lists.newArrayList();
+		headers.add(Lists.newArrayList("活动ID"));
 		for (TableFieldDetail tableFieldDetail : tableFieldDetails) {
 			List<String> header = Lists.newArrayList();
 			header.add(tableFieldDetail.getName());
@@ -1152,6 +1153,8 @@ public class ActivityQueryService {
 			List<String> itemData = Lists.newArrayList();
 			PassportUserDTO createUser = passportApiService.getByUid(record.getCreateUid());
 			String createOrgName = passportApiService.getOrgName(record.getCreateFid());
+			// 活动id
+			itemData.add(valueToString(record.getId()));
 			for (TableFieldDetail tableFieldDetail : tableFieldDetails) {
 				String code = tableFieldDetail.getCode();
 				switch (code) {
