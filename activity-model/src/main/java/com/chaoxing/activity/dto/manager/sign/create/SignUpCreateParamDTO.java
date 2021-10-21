@@ -99,6 +99,7 @@ public class SignUpCreateParamDTO {
 				.enableWfwParticipateScope(false)
 				.enableContactsParticipateScope(false)
 				.deleted(false)
+				.customSignUpType(CustomSignUpTypeEnum.NORMAL.getValue())
 				.build();
 	}
 

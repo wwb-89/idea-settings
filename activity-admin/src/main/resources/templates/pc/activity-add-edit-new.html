@@ -1055,6 +1055,18 @@
                             var signUp = signApp.newSignUp(this);
                             if (this.code == 'company_sign_up') {
                                 signUp.fillInfo = true;
+                                signUp.customSignUpType = "company";
+                            }
+                            var signUpChildrenComponents = this.children;
+                            if (!activityApp.isEmpty(signUpChildrenComponents)) {
+                                $(signUpChildrenComponents).each(function () {
+                                    if ("sign_up_fill_info" == this.code) {
+                                        var signUpFillInfoType = this.signUpFillInfoType;
+                                        if (!activityApp.isEmpty(signUpFillInfoType)) {
+                                            signUp.formType = signUpFillInfoType.type;
+                                        }
+                                    }
+                                });
                             }
                             signUp.originId = this.id;
                             $this.$set($this.signUpMap, this.id, signUp);
@@ -1074,7 +1086,8 @@
                 } else {
                     $this.countSignInNum();
                     // 报名签到
-                    var signUpTplComponentIds = [], signInTplComponentIds = [];
+                    var signUpTplComponentIds = [];
+                    var signInTplComponentIds = [];
                     $($this.templateComponents).each(function () {
                         if (this.code == 'sign_up' || this.code == 'company_sign_up') {
                             signUpTplComponentIds.push(this.id);
@@ -1119,13 +1132,30 @@
                         }
                     });
 
-                    $(signUpTplComponentIds).each(function (i) {
-                        var originId = signUpTplComponentIds[i];
-                        if (!$this.signUpMap[originId]) {
-                            var signUp = signApp.newSignUp($this.templateComponentMap[originId]);
-                            signUp.originId = originId;
-                            signUp.deleted = true;
-                            $this.$set($this.signUpMap, originId, signUp);
+                    $($this.templateComponents).each(function () {
+                        var originId = this.id;
+                        if (this.code == 'sign_up' || this.code == 'company_sign_up') {
+                            if (!$this.signUpMap[originId]) {
+                                var signUp = signApp.newSignUp($this.templateComponentMap[originId]);
+                                signUp.originId = originId;
+                                if (this.code == 'company_sign_up') {
+                                    signUp.fillInfo = true;
+                                    signUp.customSignUpType = "company";
+                                }
+                                var signUpChildrenComponents = this.children;
+                                if (!activityApp.isEmpty(signUpChildrenComponents)) {
+                                    $(signUpChildrenComponents).each(function () {
+                                        if ("sign_up_fill_info" == this.code) {
+                                            var signUpFillInfoType = this.signUpFillInfoType;
+                                            if (!activityApp.isEmpty(signUpFillInfoType)) {
+                                                signUp.formType = signUpFillInfoType.type;
+                                            }
+                                        }
+                                    });
+                                }
+                                signUp.deleted = true;
+                                $this.$set($this.signUpMap, originId, signUp);
+                            }
                         }
                     });
                     // 签到、签退

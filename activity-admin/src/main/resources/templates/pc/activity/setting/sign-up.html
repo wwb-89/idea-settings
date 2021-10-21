@@ -416,6 +416,18 @@
                             var signUp = signApp.newSignUp($this.templateComponentMap[originId]);
                             if (this.code == 'company_sign_up') {
                                 signUp.fillInfo = true;
+                                signUp.customSignUpType = "company";
+                            }
+                            var signUpChildrenComponents = this.children;
+                            if (!activityApp.isEmpty(signUpChildrenComponents)) {
+                                $(signUpChildrenComponents).each(function () {
+                                    if ("sign_up_fill_info" == this.code) {
+                                        var signUpFillInfoType = this.signUpFillInfoType;
+                                        if (!activityApp.isEmpty(signUpFillInfoType)) {
+                                            signUp.formType = signUpFillInfoType.type;
+                                        }
+                                    }
+                                });
                             }
                             signUp.originId = originId;
                             signUp.deleted = true;
