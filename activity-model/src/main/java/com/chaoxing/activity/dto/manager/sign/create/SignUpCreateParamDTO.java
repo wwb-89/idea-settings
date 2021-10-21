@@ -107,8 +107,8 @@ public class SignUpCreateParamDTO {
 		/** 双选会公司报名 */
 		DUAL_SELECT_COMPANY("公司报名", "company");
 
-		private String name;
-		private String value;
+		private final String name;
+		private final String value;
 
 		CustomSignUpTypeEnum(String name, String value) {
 			this.name = name;
