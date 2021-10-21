@@ -146,7 +146,7 @@ public class ActivitySettingController {
             sign = signApiService.getCreateById(signId);
         }
         model.addAttribute("activity", createParamDTO);
-        model.addAttribute("templateComponents", templateComponentService.listSignUpTemplateComponents(activity.getTemplateId()));
+        model.addAttribute("signUpTemplateComponents", templateComponentService.listSignUpTemplateComponents(activity.getTemplateId()));
         model.addAttribute("sign", sign);
         // 报名范围
         // 微服务组织架构
