@@ -538,7 +538,7 @@
                         <div class="form-item" v-else-if="item.type == 'text'">
                             <label class="label"><img src="/static/pc/assets/images/required.png" th:src="@{/pc/assets/images/required.png}" class="required-img" v-if="item.required">{{item.name}}</label>
                             <div class="input-box">
-                                <el-input type="text" :placeholder="请填写" v-model.trim="activityComponentValueMap[item.id].value"></el-input>
+                                <el-input type="text" placeholder="请填写" v-model.trim="activityComponentValueMap[item.id].value"></el-input>
                                 <span class="tips" v-if="item.introduction">{{item.introduction}}</span>
                             </div>
                         </div>
@@ -1477,10 +1477,6 @@
                 // 确定活动地址
                 activityAddressSure: function () {
                     var $this = this;
-                    if (activityApp.isEmpty($this.$refs.activityMap.lng) || activityApp.isEmpty($this.$refs.activityMap.lat)) {
-                        app.showMsg("请选择地址");
-                        return;
-                    }
                     $this.activity.address = $this.$refs.activityMap.address;
                     $this.activity.longitude = $this.$refs.activityMap.lng;
                     $this.activity.dimension = $this.$refs.activityMap.lat;

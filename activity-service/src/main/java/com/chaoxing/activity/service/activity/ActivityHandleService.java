@@ -318,6 +318,9 @@ public class ActivityHandleService {
 					.set(Activity::getTimingReleaseTime, activity.getTimingReleaseTime())
 					.set(Activity::getTimeLengthUpperLimit, activity.getTimeLengthUpperLimit())
 					.set(Activity::getIntegral, activity.getIntegral())
+					.set(Activity::getLongitude, activity.getLongitude())
+					.set(Activity::getDimension, activity.getDimension())
+					.set(Activity::getAddress, activity.getAddress())
 			);
 			// 考核配置
 			boolean openInspectionConfig = activityUpdateParamDto.getOpenInspectionConfig();

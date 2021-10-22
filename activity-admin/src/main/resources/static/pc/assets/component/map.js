@@ -149,7 +149,10 @@ Vue.component('vue-map', {
         sure: function () {
             var $this = this;
             if (activityApp.isEmpty($this.address)) {
-                return;
+                // 地址和经纬度置空
+                $this.lng = null;
+                $this.lat = null;
+                $this.address = "";
             }
             $this.$emit("callback");
             $this.show = false;
