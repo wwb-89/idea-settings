@@ -147,7 +147,11 @@ public class ActivityMhV2ApiController {
 		if (Objects.equals(Activity.ActivityTypeEnum.OFFLINE.getValue(), activity.getActivityType())) {
 			activityAddress = Optional.ofNullable(activity.getAddress()).orElse("") + Optional.ofNullable(activity.getDetailAddress()).orElse("");
 		}
-		String activityAddressLink = "https://api.hd.chaoxing.com/redirect/activity/"+ activityId +"/address";
+		String activityAddressLink = "";
+		// 经纬度不为空时才显示地址
+		if (activity.getLongitude() != null && activity.getDimension() != null) {
+			activityAddressLink = "https://api.hd.chaoxing.com/redirect/activity/"+ activityId +"/address";
+		}
 		hashMap.put("104", buildField("活动地点", activityAddress, "104"));
 		// 活动地点链接（线下的活动有, 有经纬度）
 		BigDecimal longitude = activity.getLongitude();
