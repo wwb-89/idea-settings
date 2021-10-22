@@ -426,7 +426,7 @@ public class ActivityMhV3ApiController {
         Boolean openGroup = Optional.ofNullable(activity.getOpenGroup()).orElse(false);
         String groupBbsid = activity.getGroupBbsid();
         if (openGroup && StringUtils.isNotBlank(groupBbsid) && signedUp) {
-            result.add(buildBtnField("讨论小组", "", groupApiService.getGroupUrl(groupBbsid), "2", false, MhBtnSequenceEnum.GROUP.getSequence()));
+            result.add(buildBtnField("讨论小组", "", UrlConstant.getGroupUrl(groupBbsid), "2", false, MhBtnSequenceEnum.GROUP.getSequence()));
         }
         // 是不是管理员
         if (isManager) {

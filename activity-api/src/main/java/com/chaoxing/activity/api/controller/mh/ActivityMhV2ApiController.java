@@ -295,7 +295,7 @@ public class ActivityMhV2ApiController {
 		// 讨论小组
 		Boolean openGroup = Optional.ofNullable(activity.getOpenGroup()).orElse(false);
 		if (openGroup && signedUp) {
-			result.addAll(buildBtnField("讨论小组", getFlag(availableFlags), groupApiService.getGroupUrl(activity.getGroupBbsid()), "2"));
+			result.addAll(buildBtnField("讨论小组", getFlag(availableFlags), UrlConstant.getGroupUrl(activity.getGroupBbsid()), "2"));
 		}
 		// 评价
 		Boolean openRating = Optional.ofNullable(activity.getOpenRating()).orElse(Boolean.FALSE);

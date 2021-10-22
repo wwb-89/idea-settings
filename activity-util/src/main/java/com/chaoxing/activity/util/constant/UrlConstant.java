@@ -47,4 +47,8 @@ public class UrlConstant {
 		return "http://hd.chaoxing.com/activity/" + activityId + "/poster";
 	}
 
+	public static String getGroupUrl(String bbsid) {
+		return "http://api.hd.chaoxing.com/redirect/group/" + bbsid;
+	}
+
 }
