@@ -203,4 +203,34 @@
 
     </select>
 
+    <select id="pageUserSummaryStat" resultType="com.chaoxing.activity.dto.stat.UserSummaryStatDTO">
+        SELECT
+            t.uid,
+            t.real_name realName,
+            sum( t.integral ) integralSum
+        FROM
+            t_user_stat_summary t
+        <if test="fid != null or marketId != null">
+            INNER JOIN t_activity t1 ON t1.id = t.activity_id
+            <choose>
+                <when test="marketId != null">
+                    AND t1.market_id = #{marketId}
+                </when>
+                <otherwise>
+                    <if test="fid != null">
+                        AND t1.create_fid = #{fid}
+                    </if>
+                </otherwise>
+            </choose>
+        </if>
+        WHERE
+            activity_id IS NOT NULL
+            AND t.is_qualified = 1
+            AND t.is_valid = 1
+        GROUP BY
+            t.uid
+        ORDER BY
+            integralSum DESC;
+    </select>
+
 </mapper>

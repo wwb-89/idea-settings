@@ -5,6 +5,7 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.chaoxing.activity.dto.activity.UserParticipateActivityDTO;
 import com.chaoxing.activity.dto.export.ExportDataDTO;
 import com.chaoxing.activity.dto.query.admin.UserStatSummaryQueryDTO;
+import com.chaoxing.activity.dto.stat.UserSummaryStatDTO;
 import com.chaoxing.activity.mapper.TableFieldDetailMapper;
 import com.chaoxing.activity.mapper.UserStatSummaryMapper;
 import com.chaoxing.activity.model.Activity;
@@ -12,6 +13,7 @@ import com.chaoxing.activity.model.TableField;
 import com.chaoxing.activity.model.TableFieldDetail;
 import com.chaoxing.activity.model.UserStatSummary;
 import com.chaoxing.activity.service.activity.ActivityQueryService;
+import com.chaoxing.activity.service.activity.market.MarketQueryService;
 import com.chaoxing.activity.service.manager.OrganizationalStructureApiService;
 import com.chaoxing.activity.service.manager.PassportApiService;
 import com.chaoxing.activity.service.tablefield.TableFieldQueryService;
@@ -56,6 +58,8 @@ public class UserStatSummaryQueryService {
 	private PassportApiService passportApiService;
 	@Resource
 	private ActivityQueryService activityQueryService;
+	@Resource
+	private MarketQueryService marketQueryService;
 
 	/**
 	 * 分页查询用户统计
@@ -319,6 +323,24 @@ public class UserStatSummaryQueryService {
 				.eq(UserStatSummary::getActivityId, activityId)
 				.eq(UserStatSummary::getValid, true)
 		);
+	}
+	
+	/**分页查询用户活动积分总和排行
+	 * @Description
+	 * @author huxiaolong
+	 * @Date 2021-10-22 14:36:25
+	 * @param page
+	 * @param flag
+	 * @param fid
+	 * @return com.baomidou.mybatisplus.extension.plugins.pagination.Page<com.chaoxing.activity.dto.stat.UserSummaryStatDTO>
+	 */
+	public Page<UserSummaryStatDTO> pageUserSummaryStat(Page<UserSummaryStatDTO> page, String flag, Integer fid) {
+		Integer marketId = null;
+		if (StringUtils.isNotBlank(flag)) {
+			// 若flag不为空且市场id不存在，则查询结果为空
+			marketId = marketQueryService.getMarketIdByFlag(fid, flag);
+		}
+		return userStatSummaryMapper.pageUserSummaryStat(page, marketId, fid);
 	}
 
 }

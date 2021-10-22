@@ -3,6 +3,7 @@ package com.chaoxing.activity.mapper;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.chaoxing.activity.dto.query.admin.UserStatSummaryQueryDTO;
+import com.chaoxing.activity.dto.stat.UserSummaryStatDTO;
 import com.chaoxing.activity.model.UserStatSummary;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
@@ -85,4 +86,13 @@ public interface UserStatSummaryMapper extends BaseMapper<UserStatSummary> {
      * @Date 2021-08-02 15:16:37
      */
     Page<UserStatSummary> pageUserStatResult(Page<UserStatSummary> page, @Param("fid") Integer fid, @Param("marketId") Integer marketId, @Param("uidList") List<Integer> uidList);
+
+    /**
+    * @Description
+    * @author huxiaolong
+    * @Date 2021-10-22 14:31:45
+    * @param page
+    * @return com.baomidou.mybatisplus.extension.plugins.pagination.Page<com.chaoxing.activity.dto.stat.UserSummaryStatDTO>
+    */
+    Page<UserSummaryStatDTO> pageUserSummaryStat(@Param("page") Page<UserSummaryStatDTO> page, @Param("marketId") Integer marketId, @Param("fid") Integer fid);
 }

@@ -12,6 +12,7 @@ import com.chaoxing.activity.dto.activity.ActivityComponentValueDTO;
 import com.chaoxing.activity.dto.manager.mh.MhMarketDataCenterDTO;
 import com.chaoxing.activity.dto.manager.sign.SignStatDTO;
 import com.chaoxing.activity.dto.query.ActivityQueryDTO;
+import com.chaoxing.activity.dto.stat.UserSummaryStatDTO;
 import com.chaoxing.activity.model.Activity;
 import com.chaoxing.activity.model.ActivityDetail;
 import com.chaoxing.activity.model.Classify;
@@ -24,6 +25,7 @@ import com.chaoxing.activity.service.activity.market.MarketQueryService;
 import com.chaoxing.activity.service.manager.PassportApiService;
 import com.chaoxing.activity.service.manager.module.SignApiService;
 import com.chaoxing.activity.service.manager.wfw.WfwAreaApiService;
+import com.chaoxing.activity.service.stat.UserStatSummaryQueryService;
 import com.chaoxing.activity.util.DateUtils;
 import com.chaoxing.activity.util.constant.DateTimeFormatterConstant;
 import com.chaoxing.activity.util.constant.UrlConstant;
@@ -73,6 +75,8 @@ public class ActivityMhDataCenterApiController {
     private SignApiService signApiService;
     @Resource
     private PassportApiService passportApiService;
+    @Resource
+    private UserStatSummaryQueryService userStatSummaryQueryService;
 
 
     /**获取机构下市场的门户数据源接口地址
@@ -240,8 +244,7 @@ public class ActivityMhDataCenterApiController {
             // 人数限制
             fields.add(buildField(fieldCodeNameMap.getOrDefault("sign_up_person_limit", "人数限制"), personLimit == 0 ? "不限" : signStat.getLimitNum(), ++fieldFlag));
             // 活动状态
-            Activity.StatusEnum statusEnum = Activity.StatusEnum.fromValue(record.getStatus());
-            fields.add(buildField("活动状态", statusEnum.getName(), ++fieldFlag));
+            fields.add(buildField("活动状态", Activity.getStatusDescription(record.getStatus()), ++fieldFlag));
             // 简介（40字纯文本）
             fields.add(buildField(fieldCodeNameMap.getOrDefault("introduction", "简介"), introductionMap.get(activityId), ++fieldFlag));
             // 活动分类
@@ -354,6 +357,61 @@ public class ActivityMhDataCenterApiController {
         JSONArray activityJsonArray = packageActivities(records, urlParams);
         jsonObject.put("results", activityJsonArray);
         return RestRespDTO.success(jsonObject);
+    }
+
+    /**排行榜
+     * @Description
+     * @author huxiaolong
+     * @Date 2021-10-22 14:20:58
+     * @param data
+     * @return com.chaoxing.activity.dto.RestRespDTO
+     */
+    @RequestMapping("user/integral/ranking-list")
+    public RestRespDTO rankingList(@RequestBody String data) {
+        JSONObject params = JSON.parseObject(data);
+        Integer wfwfid = params.getInteger("wfwfid");
+        Integer uid = params.getInteger("uid");
+        String sw = params.getString("sw");
+        Optional.ofNullable(wfwfid).orElseThrow(() -> new BusinessException("wfwfid不能为空"));
+        Integer pageNum = params.getInteger("page");
+        pageNum = Optional.ofNullable(pageNum).orElse(1);
+        Integer pageSize = params.getInteger("pageSize");
+        pageSize = Optional.ofNullable(pageSize).orElse(10);
+        Page<UserSummaryStatDTO> page = new Page(pageNum, pageSize);
+        String preParams = params.getString("preParams");
+        JSONObject urlParams = MhPreParamsUtils.resolve(preParams);
+        String flag = urlParams.getString("flag");
+        page = userStatSummaryQueryService.pageUserSummaryStat(page, flag, wfwfid);
+        JSONObject jsonObject = new JSONObject();
+        jsonObject.put("curPage", page.getCurrent());
+        jsonObject.put("totalPages", page.getPages());
+        jsonObject.put("totalRecords", page.getTotal());
+        List<UserSummaryStatDTO> records = page.getRecords();
+        JSONArray jsonArray = packageUserStatSummary(records);
+        jsonObject.put("results", jsonArray);
+        return RestRespDTO.success(jsonObject);
+    }
+
+    private JSONArray packageUserStatSummary(List<UserSummaryStatDTO> records) {
+        JSONArray jsonArray = new JSONArray();
+        if (CollectionUtils.isEmpty(records)) {
+            return jsonArray;
+        }
+
+        for (UserSummaryStatDTO item : records) {
+            // 活动
+            JSONObject jsonObject = new JSONObject();
+            jsonObject.put("id", item.getUid());
+            jsonObject.put("type", 3);
+            jsonObject.put("orsUrl", "");
+            JSONArray fields = new JSONArray();
+            jsonObject.put("fields", fields);
+            int fieldFlag = 0;
+            fields.add(buildField("姓名", item.getRealName(), fieldFlag));
+            fields.add(buildField("积分", item.getIntegralSum(), fieldFlag));
+            jsonArray.add(jsonObject);
+        }
+        return jsonArray;
     }
 
     /**从signStat报名时间获取报名的进行状态
