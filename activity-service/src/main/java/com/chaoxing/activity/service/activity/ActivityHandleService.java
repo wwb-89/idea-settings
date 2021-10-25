@@ -188,7 +188,7 @@ public class ActivityHandleService {
 		// 保存门户模板
 		bindWebTemplate(activity, activityCreateParamDto.getWebTemplateId(), loginUser);
 		// 考核配置
-		boolean openInspectionConfig = activityCreateParamDto.getOpenInspectionConfig();
+		boolean openInspectionConfig = Optional.ofNullable(activityCreateParamDto.getOpenInspectionConfig()).orElse(false);
 		List<String> defaultMenus = activityMenuService.listMenu().stream().map(ActivityMenuDTO::getValue).collect(Collectors.toList());
 		if (!openInspectionConfig || activityCreateParamDto.getInspectionConfigId() == null) {
 			inspectionConfigHandleService.initInspectionConfig(activityId);
@@ -323,7 +323,7 @@ public class ActivityHandleService {
 					.set(Activity::getAddress, activity.getAddress())
 			);
 			// 考核配置
-			boolean openInspectionConfig = activityUpdateParamDto.getOpenInspectionConfig();
+			boolean openInspectionConfig = Optional.ofNullable(activityUpdateParamDto.getOpenInspectionConfig()).orElse(false);
 			activityMenuService.updateActivityMenusByInspectionConfig(activityId, openInspectionConfig);
 			// 更新活动状态
 			activityStatusService.statusUpdate(activityId);
