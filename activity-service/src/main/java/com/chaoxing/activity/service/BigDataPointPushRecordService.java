@@ -54,4 +54,17 @@ public class BigDataPointPushRecordService {
         );
     }
 
+    /**根据活动id查询已经推送的大数据积分记录
+     * @Description 
+     * @author wwb
+     * @Date 2021-10-25 16:27:28
+     * @param activityId
+     * @return java.util.List<com.chaoxing.activity.model.BigDataPointPushRecord>
+    */
+    public List<BigDataPointPushRecord> listByActivityId(Integer activityId) {
+        return bigDataPointPushRecordMapper.selectList(new LambdaQueryWrapper<BigDataPointPushRecord>()
+                .eq(BigDataPointPushRecord::getActivityId, activityId)
+        );
+    }
+
 }

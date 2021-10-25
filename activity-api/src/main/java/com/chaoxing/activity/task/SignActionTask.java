@@ -1,17 +1,20 @@
 package com.chaoxing.activity.task;
 
 import com.chaoxing.activity.model.Activity;
-import com.chaoxing.activity.model.UserActionRecord;
+import com.chaoxing.activity.model.UserStatSummary;
 import com.chaoxing.activity.service.activity.ActivityQueryService;
-import com.chaoxing.activity.service.queue.activity.ActivityStatSummaryQueueService;
 import com.chaoxing.activity.service.queue.SignActionQueueService;
-import com.chaoxing.activity.service.queue.user.UserActionRecordQueueService;
+import com.chaoxing.activity.service.queue.activity.ActivityStatSummaryQueueService;
 import com.chaoxing.activity.service.queue.user.UserActionRecordValidQueueService;
+import com.chaoxing.activity.service.queue.user.UserStatSummaryQueueService;
+import com.chaoxing.activity.service.stat.UserStatSummaryQueryService;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.Resource;
+import java.util.List;
 
 /**报名签到改变
  * @author wwb
@@ -37,6 +40,10 @@ public class SignActionTask {
     private ActivityStatSummaryQueueService activityStatSummaryQueueService;
     @Resource
     private UserActionRecordValidQueueService userActionRecordValidQueueService;
+    @Resource
+    private UserStatSummaryQueueService userStatSummaryQueueService;
+    @Resource
+    private UserStatSummaryQueryService userStatSummaryQueryService;
 
     @Resource
     private ActivityQueryService activityQueryService;
@@ -52,6 +59,14 @@ public class SignActionTask {
         Activity activity = activityQueryService.getBySignId(signId);
         if (activity != null) {
             Integer activityId = activity.getId();
+            // 根据活动id查询用户活动汇总记录
+            List<UserStatSummary> userStatSummaries = userStatSummaryQueryService.listActivityStatData(activityId);
+            if (CollectionUtils.isNotEmpty(userStatSummaries)) {
+                for (UserStatSummary userStatSummary : userStatSummaries) {
+                    UserStatSummaryQueueService.QueueParamDTO userStatSummaryQueueParam = new UserStatSummaryQueueService.QueueParamDTO(userStatSummary.getUid(), activityId);
+                    userStatSummaryQueueService.pushUserSignStat(userStatSummaryQueueParam);
+                }
+            }
             activityStatSummaryQueueService.push(activityId);
             SignActionQueueService.SignActionEnum signAction = queueParam.getSignAction();
             boolean valid = true;

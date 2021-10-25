@@ -14,7 +14,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
 import java.util.List;
-import java.util.Objects;
 
 /**活动状态更新服务
  * @author wwb
@@ -63,8 +62,10 @@ public class ActivityStatusService {
 	@Transactional(rollbackFor = Exception.class)
 	public void statusUpdate(Activity activity) {
 		if (activity != null) {
+			Integer oldStatus = activity.getStatus();
 			Integer activityId = activity.getId();
-			Activity.StatusEnum status = Activity.calActivityStatus(activity);
+			Activity.calAndSetActivityStatus(activity);
+			Activity.StatusEnum status = Activity.StatusEnum.fromValue(activity.getStatus());
 			activityMapper.update(null, new UpdateWrapper<Activity>()
 					.lambda()
 					.eq(Activity::getId, activityId)
@@ -75,12 +76,7 @@ public class ActivityStatusService {
 			if (CollectionUtils.isNotEmpty(activityMarkets)) {
 				activityMarkets.forEach(v -> activityMarketService.updateActivityStatus(v.getMarketId(), activity));
 			}
-			if (Objects.equals(Activity.StatusEnum.ENDED, status)) {
-				// 当活动结束时触发用户合格判定
-				activityInspectionResultDecideQueueService.push(activityId);
-				// 触发黑名单判定
-				blacklistAutoAddQueueService.push(new BlacklistAutoAddQueueService.QueueParamDTO(activityId));
-			}
+			activityChangeEventService.statusChange(activity, oldStatus);
 		}
 	}
 

@@ -464,6 +464,7 @@ public class ActivityHandleService {
 	@Transactional(rollbackFor = Exception.class)
 	public void delete(Integer activityId, Integer marketId, LoginUserDTO loginUser) {
 		Activity activity =  activityValidationService.activityExist(activityId);
+		Integer oldStatus = activity.getStatus();
 		boolean isCreateMarket = Objects.equals(marketId, activity.getMarketId());
 		// marketId为空 或者 当前marketId 和 活动marketId 一致时，进行活动真实删除，需要验证是否能删除；
 		if (marketId == null) {
@@ -480,7 +481,7 @@ public class ActivityHandleService {
 					.set(Activity::getStatus, activity.getStatus())
 			);
 			// 活动状态改变
-			activityChangeEventService.statusChange(activity);
+			activityChangeEventService.statusChange(activity, oldStatus);
 		}
 		activityMarketService.remove(activityId, marketId, isCreateMarket);
 	}

@@ -98,7 +98,7 @@ public class ActivityMarketService {
         }
         Integer activityId = activity.getId();
         Boolean released = false;
-        Activity.StatusEnum statusEnum = Activity.calActivityStatus(activity.getStartTime(), activity.getEndTime(), released);
+        Activity.StatusEnum statusEnum = Activity.calAndSetActivityStatus(activity.getStartTime(), activity.getEndTime(), released);
         // 查询是否已经有关联
         ActivityMarket activityMarket = get(activityId, marketId);
         if (activityMarket == null) {
@@ -219,7 +219,7 @@ public class ActivityMarketService {
         if (activityMarket == null) {
             return;
         }
-        Activity.StatusEnum status = Activity.calActivityStatus(activity.getStartTime(), activity.getEndTime(), release);
+        Activity.StatusEnum status = Activity.calAndSetActivityStatus(activity.getStartTime(), activity.getEndTime(), release);
         activityMarketMapper.update(null, new UpdateWrapper<ActivityMarket>()
                 .lambda()
                 .eq(ActivityMarket::getActivityId, activityId)
@@ -244,7 +244,7 @@ public class ActivityMarketService {
             return;
         }
         Boolean released = activityMarket.getReleased();
-        Activity.StatusEnum status = Activity.calActivityStatus(activity.getStartTime(), activity.getEndTime(), released);
+        Activity.StatusEnum status = Activity.calAndSetActivityStatus(activity.getStartTime(), activity.getEndTime(), released);
         activityMarketMapper.update(null, new UpdateWrapper<ActivityMarket>()
                 .lambda()
                 .eq(ActivityMarket::getActivityId, activityId)

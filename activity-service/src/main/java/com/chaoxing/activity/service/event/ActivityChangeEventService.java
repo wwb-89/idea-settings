@@ -8,6 +8,7 @@ import com.chaoxing.activity.service.manager.bigdata.BigDataPointApiService;
 import com.chaoxing.activity.service.queue.BigDataPointQueueService;
 import com.chaoxing.activity.service.queue.BigDataPointTaskQueueService;
 import com.chaoxing.activity.service.queue.activity.*;
+import com.chaoxing.activity.service.queue.blacklist.BlacklistAutoAddQueueService;
 import com.chaoxing.activity.service.stat.UserStatSummaryHandleService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -56,6 +57,10 @@ public class ActivityChangeEventService {
 	private BigDataPointTaskQueueService bigDataPointTaskQueueService;
 	@Resource
 	private BigDataPointQueueService bigDataPointQueueService;
+	@Resource
+	private ActivityInspectionResultDecideQueueService activityInspectionResultDecideQueueService;
+	@Resource
+	private BlacklistAutoAddQueueService blacklistAutoAddQueueService;
 
 	/**活动数据改变
 	 * @Description 
@@ -147,14 +152,18 @@ public class ActivityChangeEventService {
 	 * @author wwb
 	 * @Date 2021-03-26 19:50:31
 	 * @param activity
+	 * @param oldStatus 旧的状态
 	 * @return void
 	*/
-	public void statusChange(Activity activity) {
-		Integer status = activity.getStatus();
-		Activity.StatusEnum statusEnum = Activity.StatusEnum.fromValue(status);
+	public void statusChange(Activity activity, Integer oldStatus) {
+		// 新旧状态一致则忽略
+		if (Objects.equals(activity.getStatus(), oldStatus)) {
+			return;
+		}
+		Integer activityId = activity.getId();
+		Activity.StatusEnum statusEnum = Activity.StatusEnum.fromValue(activity.getStatus());
 		if (Objects.equals(Activity.StatusEnum.DELETED, statusEnum)) {
 			// 活动数据推送
-			Integer activityId = activity.getId();
 			Integer createFid = activity.getCreateFid();
 			dataPushService.dataPush(new DataPushService.DataPushParamDTO(createFid, OrgDataRepoConfigDetail.DataTypeEnum.ACTIVITY, String.valueOf(activityId), null));
 			// 大数据积分（举办活动），必须是已发布的活动
@@ -162,11 +171,15 @@ public class ActivityChangeEventService {
 				bigDataPointQueueService.push(new BigDataPointQueueService.QueueParamDTO(activity.getCreateUid(), activity.getCreateFid(), activityId, BigDataPointApiService.PointTypeEnum.CANCEL_ORGANIZE_ACTIVITY.getValue()));
 			}
 		}else if (Objects.equals(Activity.StatusEnum.ENDED, statusEnum)) {
+			// 当活动结束时触发用户合格判定
+			activityInspectionResultDecideQueueService.push(activityId);
+			// 当活动结束时触发黑名单判定
+			blacklistAutoAddQueueService.push(new BlacklistAutoAddQueueService.QueueParamDTO(activityId));
 			// 活动结束，大数据积分推送
 			BigDataPointTaskQueueService.QueueParamDTO queueParam = new BigDataPointTaskQueueService.QueueParamDTO(activity.getId(), activity.getCreateFid(), true);
 			bigDataPointTaskQueueService.push(queueParam);
-		} else if (Objects.equals(Activity.StatusEnum.ONGOING, statusEnum)) {
-			// 进行中，删除大数据已推送的积分
+		} else if (Objects.equals(Activity.StatusEnum.ENDED.getValue(), oldStatus)) {
+			// 活动从结束状态变为其他状态时需要删除大数据积分已经推送的数据
 			BigDataPointTaskQueueService.QueueParamDTO queueParam = new BigDataPointTaskQueueService.QueueParamDTO(activity.getId(), activity.getCreateFid(), false);
 			bigDataPointTaskQueueService.push(queueParam);
 		}

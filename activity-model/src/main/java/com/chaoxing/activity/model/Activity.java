@@ -423,10 +423,11 @@ public class Activity {
      * @author wwb
      * @Date 2020-12-10 19:36:50
      * @param activity
-     * @return java.lang.Integer
+     * @return void
      */
-    public static Activity.StatusEnum calActivityStatus(Activity activity) {
-        return calActivityStatus(activity.getStartTime(), activity.getEndTime(), activity.getReleased());
+    public static void calAndSetActivityStatus(Activity activity) {
+        StatusEnum status = calAndSetActivityStatus(activity.getStartTime(), activity.getEndTime(), activity.getReleased());
+        activity.setStatus(status.getValue());
     }
 
     /**计算活动状态
@@ -438,7 +439,7 @@ public class Activity {
      * @param released
      * @return com.chaoxing.activity.model.Activity.StatusEnum
     */
-    public static Activity.StatusEnum calActivityStatus(LocalDateTime startTime, LocalDateTime endTime, Boolean released) {
+    public static Activity.StatusEnum calAndSetActivityStatus(LocalDateTime startTime, LocalDateTime endTime, Boolean released) {
         LocalDateTime now = LocalDateTime.now();
         boolean guessEnded = now.isAfter(endTime);
         boolean guessOnGoing = (now.isAfter(startTime) || now.isEqual(startTime)) && (now.isBefore(endTime) || now.isEqual(endTime));

@@ -9,6 +9,7 @@ import com.chaoxing.activity.service.queue.BigDataPointTaskQueueService;
 import com.chaoxing.activity.service.stat.UserStatSummaryQueryService;
 import com.google.common.collect.Lists;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
@@ -57,11 +58,28 @@ public class BigDataPointTaskHandleService {
         if (!PUSH_FIDS.contains(createFid)) {
             return;
         }
-        // 查询活动下用户汇总数据
-        List<UserStatSummary> userStatSummaries = userStatSummaryQueryService.listActivityStatData(queueParam.getActivityId());
-        for (UserStatSummary userStatSummary : userStatSummaries) {
-            BigDataPointQueueService.QueueParamDTO param = new BigDataPointQueueService.QueueParamDTO(userStatSummary.getUid(), createFid, userStatSummary.getActivityId(), calPointType(userStatSummary).getValue());
-            bigDataPointQueueService.push(param);
+        Boolean add = Optional.ofNullable(queueParam.getAdd()).orElse(false);
+        Integer activityId = queueParam.getActivityId();
+        if (add) {
+            // 新增积分
+            List<UserStatSummary> userStatSummaries = userStatSummaryQueryService.listActivityStatData(activityId);
+            for (UserStatSummary userStatSummary : userStatSummaries) {
+                BigDataPointQueueService.QueueParamDTO param = new BigDataPointQueueService.QueueParamDTO(userStatSummary.getUid(), createFid, userStatSummary.getActivityId(), calPointType(userStatSummary).getValue());
+                bigDataPointQueueService.push(param);
+            }
+        } else {
+            // 消费积分
+            List<BigDataPointPushRecord> bigDataPointPushRecords = bigDataPointPushRecordService.listByActivityId(activityId);
+            if (CollectionUtils.isNotEmpty(bigDataPointPushRecords)) {
+                for (BigDataPointPushRecord bigDataPointPushRecord : bigDataPointPushRecords) {
+                    BigDataPointApiService.PointTypeEnum pointTypeEnum = BigDataPointApiService.PointTypeEnum.fromValue(bigDataPointPushRecord.getPointType());
+                    if (pointTypeEnum == null) {
+                        continue;
+                    }
+                    BigDataPointQueueService.QueueParamDTO param = new BigDataPointQueueService.QueueParamDTO(bigDataPointPushRecord.getUid(), createFid, activityId, pointTypeEnum.getReverseValue());
+                    bigDataPointQueueService.push(param);
+                }
+            }
         }
     }
 
@@ -103,7 +121,6 @@ public class BigDataPointTaskHandleService {
                 break;
             case PARTICIPATION:
             case PART_PARTICIPATION:
-                bigDataPointPushRecordService.delete(uid, activityId);
                 bigDataPointPushRecordService.add(uid, activityId, pointType);
                 bigDataPointApiService.addPoint(param);
                 break;
