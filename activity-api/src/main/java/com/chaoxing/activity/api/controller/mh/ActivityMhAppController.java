@@ -130,51 +130,32 @@ public class ActivityMhAppController {
 		jsonObject.put("results", Lists.newArrayList(mhGeneralAppResultDataDTO));
 		List<MhGeneralAppResultDataDTO.MhGeneralAppResultDataFieldDTO> mhGeneralAppResultDataFields = Lists.newArrayList();
 		mhGeneralAppResultDataDTO.setFields(mhGeneralAppResultDataFields);
+		// 封面
+		mhGeneralAppResultDataFields.add(MhGeneralAppResultDataDTO.MhGeneralAppResultDataFieldDTO.builder().key("").value("").flag("0").build());
 		// 活动名称
-		mhGeneralAppResultDataFields.add(MhGeneralAppResultDataDTO.MhGeneralAppResultDataFieldDTO.builder()
-				.key("活动名称")
-				.value(activity.getName())
-				.flag("1")
-				.build());
+		mhGeneralAppResultDataFields.add(MhGeneralAppResultDataDTO.MhGeneralAppResultDataFieldDTO.builder().key("活动名称").value(activity.getName()).flag("1").build());
+		// 子标题
+		mhGeneralAppResultDataFields.add(MhGeneralAppResultDataDTO.MhGeneralAppResultDataFieldDTO.builder().key("").value("").flag("2").build());
+		// 简介
+		mhGeneralAppResultDataFields.add(MhGeneralAppResultDataDTO.MhGeneralAppResultDataFieldDTO.builder().key("").value("").flag("4").build());
+		// 数值
+		mhGeneralAppResultDataFields.add(MhGeneralAppResultDataDTO.MhGeneralAppResultDataFieldDTO.builder().key("").value("").flag("5").build());
+		// 发布时间
+		mhGeneralAppResultDataFields.add(MhGeneralAppResultDataDTO.MhGeneralAppResultDataFieldDTO.builder().key("").value("").flag("6").build());
 		// 开始时间
-		mhGeneralAppResultDataFields.add(MhGeneralAppResultDataDTO.MhGeneralAppResultDataFieldDTO.builder()
-				.key("活动时间")
-				.value(DateTimeFormatterConstant.YYYY_MM_DD_HH_MM.format(activity.getStartTime()))
-				.flag("100")
-				.build());
+		mhGeneralAppResultDataFields.add(MhGeneralAppResultDataDTO.MhGeneralAppResultDataFieldDTO.builder().key("活动时间").value(DateTimeFormatterConstant.YYYY_MM_DD_HH_MM.format(activity.getStartTime())).flag("100").build());
 		// 结束时间
-		mhGeneralAppResultDataFields.add(MhGeneralAppResultDataDTO.MhGeneralAppResultDataFieldDTO.builder()
-				.key("时间")
-				.value(DateTimeFormatterConstant.YYYY_MM_DD_HH_MM.format(activity.getEndTime()))
-				.flag("101")
-				.build());
-		// 主办单位
-		mhGeneralAppResultDataFields.add(MhGeneralAppResultDataDTO.MhGeneralAppResultDataFieldDTO.builder()
-				.key("主办单位")
-				.value(activity.getOrganisers())
-				.flag("102")
-				.build());
-		// 主办地点
-		mhGeneralAppResultDataFields.add(MhGeneralAppResultDataDTO.MhGeneralAppResultDataFieldDTO.builder()
-				.key("活动地点")
-				.value(Optional.ofNullable(activity.getAddress()).orElse("") + Optional.ofNullable(activity.getDetailAddress()).orElse(""))
-				.flag("103")
-				.build());
+		mhGeneralAppResultDataFields.add(MhGeneralAppResultDataDTO.MhGeneralAppResultDataFieldDTO.builder().key("时间").value(DateTimeFormatterConstant.YYYY_MM_DD_HH_MM.format(activity.getEndTime())).flag("101").build());
 		Integer signId = activity.getSignId();
+		String signUpStartTimeStr = "";
+		String signUpEndTimeStr = "";
+		String signUpNumStr = "";
 		if (signId != null) {
 			// 报名、签到人数
 			SignStatDTO signStat = signApiService.getSignParticipation(activity.getSignId());
 			if (signStat != null && CollectionUtils.isNotEmpty(signStat.getSignUpIds())) {
-				StringBuilder signUpTimeStringBuilder = new StringBuilder();
-				signUpTimeStringBuilder.append(DateTimeFormatterConstant.YYYY_MM_DD_HH_MM.format(signStat.getSignUpStartTime()));
-				signUpTimeStringBuilder.append(" ~ ");
-				signUpTimeStringBuilder.append(DateTimeFormatterConstant.YYYY_MM_DD_HH_MM.format(signStat.getSignUpEndTime()));
-				// 报名时间
-				mhGeneralAppResultDataFields.add(MhGeneralAppResultDataDTO.MhGeneralAppResultDataFieldDTO.builder()
-						.key("报名时间")
-						.value(signUpTimeStringBuilder.toString())
-						.flag("104")
-						.build());
+				signUpStartTimeStr = DateTimeFormatterConstant.YYYY_MM_DD_HH_MM.format(signStat.getSignUpStartTime());
+				signUpEndTimeStr = DateTimeFormatterConstant.YYYY_MM_DD_HH_MM.format(signStat.getSignUpEndTime());
 				StringBuilder signPepleNumDescribe = new StringBuilder();
 				Integer limitNum = signStat.getLimitNum();
 				Integer participateNum = signStat.getSignedUpNum();
@@ -185,13 +166,22 @@ public class ActivityMhAppController {
 						signPepleNumDescribe.append(limitNum);
 					}
 				}
-				mhGeneralAppResultDataFields.add(MhGeneralAppResultDataDTO.MhGeneralAppResultDataFieldDTO.builder()
-						.key("报名人数")
-						.value(signPepleNumDescribe.toString())
-						.flag("105")
-						.build());
+				signUpNumStr = signPepleNumDescribe.toString();
 			}
 		}
+		String address = "";
+		if (Objects.equals(Activity.ActivityTypeEnum.OFFLINE.getValue(), activity.getActivityType())) {
+			address += Optional.ofNullable(activity.getAddress()).orElse("");
+			address += Optional.ofNullable(activity.getDetailAddress()).orElse("");
+		}
+		// 活动地点
+		mhGeneralAppResultDataFields.add(MhGeneralAppResultDataDTO.MhGeneralAppResultDataFieldDTO.builder().key("活动地点").value(address).flag("104").build());
+		// 报名时间
+		mhGeneralAppResultDataFields.add(MhGeneralAppResultDataDTO.MhGeneralAppResultDataFieldDTO.builder().key("报名时间").value(signUpStartTimeStr).flag("102").build());
+		mhGeneralAppResultDataFields.add(MhGeneralAppResultDataDTO.MhGeneralAppResultDataFieldDTO.builder().key("报名时间").value(signUpEndTimeStr).flag("103").build());
+		// 主办方
+		mhGeneralAppResultDataFields.add(MhGeneralAppResultDataDTO.MhGeneralAppResultDataFieldDTO.builder().key("主办单位").value(activity.getOrganisers()).flag("105").build());
+		mhGeneralAppResultDataFields.add(MhGeneralAppResultDataDTO.MhGeneralAppResultDataFieldDTO.builder().key("报名人数").value(signUpNumStr).flag("106").build());
 		return RestRespDTO.success(jsonObject);
 	}
 
