@@ -35,7 +35,7 @@ public class TemplateHandleService {
 	@Resource
 	private TemplateComponentService templateComponentService;
 	@Resource
-	private MarketQueryService activityMarketQueryService;
+	private MarketQueryService marketQueryService;
 	@Resource
 	private TemplateQueryService templateQueryService;
 	@Resource
@@ -64,17 +64,19 @@ public class TemplateHandleService {
 	 * 4、查询报名填写信息类型并克隆
 	 * @author wwb
 	 * @Date 2021-07-14 16:52:20
-	 * @param marketId
+	 * @param market
 	 * @param originTemplateId
 	 * @return void
 	*/
 	@Transactional(rollbackFor = Exception.class)
-	public void cloneTemplate(Integer marketId, Integer originTemplateId) {
-		Market activityMarket = activityMarketQueryService.getById(marketId);
+	public void cloneTemplate(Market market, Integer originTemplateId) {
+		Integer marketId = market.getId();
+		Market activityMarket = marketQueryService.getById(marketId);
 		Template originTemplate = templateQueryService.getById(originTemplateId);
 		Optional.ofNullable(originTemplate).orElseThrow(() -> new BusinessException("模版不存在"));
 
 		List<TemplateComponent> originTemplateComponents = templateComponentService.listTemplateComponentByTemplateId(originTemplateId);
+		// 组件id列表
 		List<Integer> templateComponentIds = Optional.ofNullable(originTemplateComponents).orElse(Lists.newArrayList()).stream().map(TemplateComponent::getId).collect(Collectors.toList());
 		List<SignUpCondition> originSignUpConditions = signUpConditionService.listByTemplateComponentIds(templateComponentIds);
 		List<SignUpFillInfoType> originSignUpFillInfoTypes = signUpFillInfoTypeService.listByTemplateComponentIds(templateComponentIds);
@@ -85,8 +87,10 @@ public class TemplateHandleService {
 		Template template = originTemplate.cloneToNewMarket(marketId, activityMarket.getFid());
 		add(template, operateUserDto);
 		Integer templateId = template.getId();
+		// 根据市场选择的组织架构需要屏蔽一些组件
+		List<Integer> excludeComponentIds = marketQueryService.listExcludeComponentId(market);
 		// 克隆模版组件列表
-		List<TemplateComponent> parentTemplateComponents = TemplateComponent.cloneToNewTemplateId(originTemplateComponents, templateId);
+		List<TemplateComponent> parentTemplateComponents = TemplateComponent.cloneToNewTemplateId(originTemplateComponents, templateId, excludeComponentIds);
 		templateComponentService.batchAddTemplateComponents(parentTemplateComponents);
 		// 找到新旧templateComponentId的对应关系
 		List<TemplateComponent> templateComponents = Lists.newArrayList(parentTemplateComponents);

@@ -38,16 +38,20 @@ public class ActivityManageQueryDTO {
 	private Integer strict;
 	/** 活动标识 */
 	private String activityFlag;
+	/** 活动分类id */
+	private Integer activityClassifyId;
 	/** 创建人id */
 	private Integer createUid;
 	/** 创建wfwfid */
 	private Integer createWfwfid;
-
+	/** 排序字段id */
 	private Integer orderFieldId;
-
+	/** 排序字段code */
 	private String orderField;
-
+	/** 排序方式*/
 	private OrderTypeEnum orderType;
 	/** 图书馆使用的code */
 	private String code;
+	/** 导出时的用户id */
+	private Integer exportUid;
 }

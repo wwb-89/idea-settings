@@ -34,4 +34,12 @@ public interface ActivityStatSummaryMapper extends BaseMapper<ActivityStatSummar
                                                          @Param("queryItem") ActivityStatSummaryQueryDTO queryItem,
                                                          @Param("orderType") String orderType,
                                                          @Param("signIds") List<Integer> signIds);
+    /**根据活动activityIds，查询对应的活动统计汇总列表
+     * @Description
+     * @author huxiaolong
+     * @Date 2021-05-27 18:23:18
+     * @param activityIds
+     * @return com.baomidou.mybatisplus.extension.plugins.pagination.Page<com.chaoxing.activity.dto.stat.ActivityStatSummaryDTO>
+     */
+    List<ActivityStatSummaryDTO> listActivityStatSummariesByIds(@Param("activityIds") List<Integer> activityIds);
 }

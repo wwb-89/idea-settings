@@ -31,6 +31,7 @@ import com.chaoxing.activity.service.activity.menu.ActivityMenuService;
 import com.chaoxing.activity.service.activity.module.ActivityModuleService;
 import com.chaoxing.activity.service.activity.scope.ActivityClassService;
 import com.chaoxing.activity.service.activity.scope.ActivityScopeService;
+import com.chaoxing.activity.service.activity.stat.ActivityStatSummaryHandlerService;
 import com.chaoxing.activity.service.activity.template.TemplateQueryService;
 import com.chaoxing.activity.service.event.ActivityChangeEventService;
 import com.chaoxing.activity.service.inspection.InspectionConfigHandleService;
@@ -48,10 +49,7 @@ import com.chaoxing.activity.util.DistributedLock;
 import com.chaoxing.activity.util.constant.ActivityMhUrlConstant;
 import com.chaoxing.activity.util.constant.ActivityModuleConstant;
 import com.chaoxing.activity.util.constant.CacheConstant;
-import com.chaoxing.activity.util.enums.MhAppDataSourceEnum;
-import com.chaoxing.activity.util.enums.MhAppDataTypeEnum;
-import com.chaoxing.activity.util.enums.MhAppTypeEnum;
-import com.chaoxing.activity.util.enums.ModuleTypeEnum;
+import com.chaoxing.activity.util.enums.*;
 import com.chaoxing.activity.util.exception.BusinessException;
 import com.google.common.collect.Lists;
 import lombok.extern.slf4j.Slf4j;
@@ -189,20 +187,32 @@ public class ActivityHandleService {
 		activityComponentValueService.saveActivityComponentValues(activityId, activityCreateParamDto.getActivityComponentValues());
 		// 保存门户模板
 		bindWebTemplate(activity, activityCreateParamDto.getWebTemplateId(), loginUser);
-
-		inspectionConfigHandleService.initInspectionConfig(activityId);
+		// 考核配置
+		boolean openInspectionConfig = Optional.ofNullable(activityCreateParamDto.getOpenInspectionConfig()).orElse(false);
+		List<String> defaultMenus = activityMenuService.listMenu().stream().map(ActivityMenuDTO::getValue).collect(Collectors.toList());
+		if (!openInspectionConfig || activityCreateParamDto.getInspectionConfigId() == null) {
+			inspectionConfigHandleService.initInspectionConfig(activityId);
+			if (!openInspectionConfig) {
+				// 未开启考核配置，关闭默认考核管理菜单勾选
+				defaultMenus = defaultMenus.stream().filter(v -> !Objects.equals(v, ActivityMenuEnum.RESULTS_MANAGE.getValue())).collect(Collectors.toList());
+			}
+		}
+		if (activityCreateParamDto.getInspectionConfigId() != null) {
+			inspectionConfigHandleService.updateConfigActivityId(activityCreateParamDto.getInspectionConfigId(), activityId);
+		}
 		activityStatSummaryHandlerService.init(activityId);
 		// 活动详情
 		ActivityDetail activityDetail = activityCreateParamDto.buildActivityDetail(activityId);
 		activityDetailMapper.insert(activityDetail);
 		// 活动菜单配置
-		activityMenuService.configActivityMenu(activityId, activityMenuService.listMenu().stream().map(ActivityMenuDTO::getValue).collect(Collectors.toList()));
+		activityMenuService.configActivityMenu(activityId, defaultMenus);
 		// 若活动由市场所建，新增活动市场与活动关联
 		activityMarketService.associate(activity);
 		// 默认添加活动市场管理
 		// 添加管理员
 		ActivityManager activityManager = ActivityManager.buildCreator(activity);
 		activityManagerService.add(activityManager, loginUser);
+
 		// 处理发布范围
 		if (CollectionUtils.isNotEmpty(releaseClassIds)) {
 			activityClassService.batchAddOrUpdate(activityId, releaseClassIds);
@@ -308,7 +318,13 @@ public class ActivityHandleService {
 					.set(Activity::getTimingReleaseTime, activity.getTimingReleaseTime())
 					.set(Activity::getTimeLengthUpperLimit, activity.getTimeLengthUpperLimit())
 					.set(Activity::getIntegral, activity.getIntegral())
+					.set(Activity::getLongitude, activity.getLongitude())
+					.set(Activity::getDimension, activity.getDimension())
+					.set(Activity::getAddress, activity.getAddress())
 			);
+			// 考核配置
+			boolean openInspectionConfig = Optional.ofNullable(activityUpdateParamDto.getOpenInspectionConfig()).orElse(false);
+			activityMenuService.updateActivityMenusByInspectionConfig(activityId, openInspectionConfig);
 			// 更新活动状态
 			activityStatusService.statusUpdate(activityId);
 			// 处理门户模版的绑定
@@ -448,9 +464,14 @@ public class ActivityHandleService {
 	@Transactional(rollbackFor = Exception.class)
 	public void delete(Integer activityId, Integer marketId, LoginUserDTO loginUser) {
 		Activity activity =  activityValidationService.activityExist(activityId);
+		Integer oldStatus = activity.getStatus();
 		boolean isCreateMarket = Objects.equals(marketId, activity.getMarketId());
 		// marketId为空 或者 当前marketId 和 活动marketId 一致时，进行活动真实删除，需要验证是否能删除；
-		if (marketId == null || isCreateMarket) {
+		if (marketId == null) {
+			// 删除活动
+			isCreateMarket = true;
+		}
+		if (isCreateMarket) {
 			// 验证是否能删除
 			activity = activityValidationService.deleteAble(activityId, loginUser);
 			activity.delete();
@@ -460,12 +481,9 @@ public class ActivityHandleService {
 					.set(Activity::getStatus, activity.getStatus())
 			);
 			// 活动状态改变
-			activityChangeEventService.statusChange(activity);
+			activityChangeEventService.statusChange(activity, oldStatus);
 		}
-		// marketId不为空，删除活动-市场关联，isCreateMarket: true，则需要删除所有关联
-		if (marketId != null) {
-			activityMarketService.remove(activityId, marketId, isCreateMarket);
-		}
+		activityMarketService.remove(activityId, marketId, isCreateMarket);
 	}
 
 	/**删除fid下所有market的中活动id为activityId的活动
@@ -480,8 +498,8 @@ public class ActivityHandleService {
 	@Transactional(rollbackFor = Exception.class)
 	public void deleteActivityUnderFid(Integer fid, Integer activityId, Integer uid) {
 		LoginUserDTO loginUser = LoginUserDTO.buildDefault(uid, "", fid, "");
-		List<Integer> marketIdsUnderFid = marketQueryService.listMarketIdsByActivityIdFid(fid, activityId);
-		marketIdsUnderFid.forEach(marketId -> {
+		List<Integer> martketIds = marketQueryService.listMarketIdsByActivityIdFid(fid, activityId);
+		martketIds.forEach(marketId -> {
 			delete(activityId, marketId, loginUser);
 		});
 	}
@@ -921,19 +939,8 @@ public class ActivityHandleService {
 		}
 		Activity activity = activityQueryService.getActivityByOriginAndFormUserId(formId, formUserId);
 		if (activity != null) {
-			activity.delete();
-			activityMapper.update(null, new UpdateWrapper<Activity>()
-					.lambda()
-					.eq(Activity::getId, activity.getId())
-					.set(Activity::getStatus, activity.getStatus())
-			);
-			// 活动状态改变
-			activityChangeEventService.statusChange(activity);
-
-			// marketId不为空，删除活动-市场关联，isCreateMarket: true，则需要删除所有关联
-			if (activity.getMarketId() != null) {
-				activityMarketService.remove(activity.getId(), activity.getMarketId(), true);
-			}
+			LoginUserDTO loginUser = LoginUserDTO.buildDefault(activity.getCreateUid(), "", activity.getCreateFid(), "");
+			delete(activity.getId(), activity.getMarketId(), loginUser);
 		}
 	}
 

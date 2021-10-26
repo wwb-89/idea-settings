@@ -61,7 +61,8 @@ public class ExportRecord {
         /** 机构活动统计 */
         ORG_ACTIVITY_STAT("机构活动统计", "org_activity_stat"),
         ORG_USER_STAT("机构用户统计", "org_user_stat"),
-        ACTIVITY_INSPECTION_MANAGE("活动成绩考核", "activity_inspection_manage");
+        ACTIVITY_INSPECTION_MANAGE("活动成绩考核", "activity_inspection_manage"),
+        ACTIVITY_MANAGE("活动管理", "activity_manage");
 
         private final String name;
         private final String value;

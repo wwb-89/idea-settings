@@ -16,7 +16,7 @@ import com.chaoxing.activity.model.Activity;
 import com.chaoxing.activity.model.ActivityDetail;
 import com.chaoxing.activity.model.ActivityRating;
 import com.chaoxing.activity.service.activity.ActivityQueryService;
-import com.chaoxing.activity.service.activity.ActivityStatQueryService;
+import com.chaoxing.activity.service.activity.stat.ActivityStatQueryService;
 import com.chaoxing.activity.service.activity.ActivityValidationService;
 import com.chaoxing.activity.service.activity.flag.ActivityFlagValidateService;
 import com.chaoxing.activity.service.activity.rating.ActivityRatingQueryService;
@@ -128,7 +128,10 @@ public class ActivityMhV3ApiController {
             buildField(cloudApiService.buildImageUrl(MhAppIconEnum.ONE.ORGANISER.getValue()), "主办", activity.getOrganisers(), mainFields);
         }
         // 地址
-        String address = Optional.ofNullable(activity.getAddress()).orElse("") + Optional.ofNullable(activity.getDetailAddress()).orElse("");
+        String address = "";
+        if (Objects.equals(Activity.ActivityTypeEnum.OFFLINE.getValue(), activity.getActivityType())) {
+            address = Optional.ofNullable(activity.getAddress()).orElse("") + Optional.ofNullable(activity.getDetailAddress()).orElse("");
+        }
         if (StringUtils.isNotBlank(address)) {
             buildField(cloudApiService.buildImageUrl(MhAppIconEnum.ONE.LOCATION.getValue()), "地址", address, mainFields);
         }
@@ -423,7 +426,7 @@ public class ActivityMhV3ApiController {
         Boolean openGroup = Optional.ofNullable(activity.getOpenGroup()).orElse(false);
         String groupBbsid = activity.getGroupBbsid();
         if (openGroup && StringUtils.isNotBlank(groupBbsid) && signedUp) {
-            result.add(buildBtnField("讨论小组", "", groupApiService.getGroupUrl(groupBbsid), "2", false, MhBtnSequenceEnum.GROUP.getSequence()));
+            result.add(buildBtnField("讨论小组", "", UrlConstant.getGroupUrl(groupBbsid), "2", false, MhBtnSequenceEnum.GROUP.getSequence()));
         }
         // 是不是管理员
         if (isManager) {

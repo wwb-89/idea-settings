@@ -11,6 +11,7 @@ import com.chaoxing.activity.model.Activity;
 import com.chaoxing.activity.model.ActivityManager;
 import com.chaoxing.activity.service.activity.ActivityValidationService;
 import com.chaoxing.activity.service.activity.menu.ActivityMenuService;
+import com.chaoxing.activity.util.enums.ActivityMenuEnum;
 import com.chaoxing.activity.util.exception.BusinessException;
 import com.google.common.collect.Lists;
 import lombok.extern.slf4j.Slf4j;
@@ -106,7 +107,9 @@ public class ActivityManagerService {
                 .in(ActivityManager::getUid, uids));
         List<Integer> existUids = existActivityManagers.stream().map(ActivityManager::getUid).collect(Collectors.toList());
         List<ActivityManager> addActivityManagers = Lists.newArrayList();
-        List<String> activityMenus = activityMenuService.listMenus(activityId).stream().map(ActivityMenuDTO::getValue).collect(Collectors.toList());
+        List<String> activityMenus = activityMenuService.listMenus(activityId).stream()
+                .map(ActivityMenuDTO::getValue)
+                .filter(value -> !Objects.equals(value, ActivityMenuEnum.SETTING.getValue())).collect(Collectors.toList());
         for (ActivityManager activityManager : activityManagers) {
             Integer uid = activityManager.getUid();
             if (!existUids.contains(uid)) {

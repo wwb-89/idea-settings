@@ -5,6 +5,7 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>字段设置</title>
+    <link rel="stylesheet" href="../../assets/lib/Swiper-3.4.2/dist/css/swiper.min.css">
     <link rel="stylesheet" href="../../assets/lib/element-ui/lib/theme-chalk/index.css">
     <link rel="stylesheet" href="../../assets/icomoon/style.css">
     <link rel="stylesheet" href="../../assets/css/public.css">
@@ -323,6 +324,59 @@
                             </div>
                         </div>
                     </div>
+                    <div class="form-item sort-item">
+                        <i class="icon-drag"></i>
+                        <div class="icon-div">
+                            <i class="icon-edit"></i>
+                            <i class="icon-delete"></i>
+                        </div>
+                        <label class="label">展示页面</label>
+                        <div class="input-box">
+                            <p class="tips first">请选择你的活动呈现页面</p>
+                            <div class="picture-list" style="background: #F7F8FA;position: relative">
+                                <div class="swiper-container">
+                                    <div class="swiper-wrapper">
+                                        <div class="swiper-slide active">
+                                            <div class="img-box">
+                                                <img src="../../assets/images/cover.png">
+                                                <div class="check"></div>
+                                                <div class="zoom"></div>
+                                            </div>
+                                            <p class="overHidden1">活动模板2</p>
+                                        </div>
+                                        <div class="swiper-slide">
+                                            <div class="img-box">
+                                                <img src="../../assets/images/cover.png">
+                                                <div class="check"></div>
+                                                <div class="zoom"></div>
+                                            </div>
+                                            <p class="overHidden1">活动模板2</p>
+                                        </div>
+                                        <div class="swiper-slide">
+                                            <div class="img-box">
+                                                <img src="../../assets/images/cover.png">
+                                                <div class="check"></div>
+                                                <div class="zoom"></div>
+                                            </div>
+                                            <p class="overHidden1">活动模板2</p>
+                                        </div>
+                                        <div class="swiper-slide">
+                                            <div class="img-box">
+                                                <img src="../../assets/images/empty.png">
+                                                <div class="check"></div>
+                                                <div class="zoom"></div>
+                                            </div>
+                                            <p class="overHidden1">活动模板2</p>
+
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="swiper-pagination"></div>
+                                <div class="swiper-next"><i class="icon-arrows-right"></i></div>
+                                <div class="swiper-prev"><i class="icon-arrows-left"></i></div>
+                            </div>
+                        </div>
+                    </div>
                     <!-- 特殊活动报名设置整体拖动-->
                     <div class="form-item sort-item nopadding">
                         <div class="drag-box-inner">
@@ -412,6 +466,110 @@
                                         <p class="tips third">开启后，所有人都能看到报名人员名单</p>
                                     </div>
                                 </div>
+                                <div class="form-item sort-item-inner">
+                                    <i class="icon-drag-inner"></i>
+                                    <div class="icon-div-inner">
+                                        <i class="icon-edit"></i>
+                                        <i class="icon-delete"></i>
+                                    </div>
+                                    <label class="label">仅志愿者可以报名</label>
+                                    <div class="input-box">
+                                        <el-switch class="switch fl marginTop6" disabled></el-switch>
+                                        <el-tooltip class="item-tips fl" effect="dark" content="在学生信息表中，匹配条件审核等于已通过、班级等于3年级1班，姓名不为空" placement="top">
+                                            <el-button>报名条件</el-button>
+                                        </el-tooltip>
+                                        <p class="tips fl">开启后，参与者可以在讨论组进行交流互动</p>
+                                    </div>
+                                </div>
+                                <div class="form-item sort-item-inner">
+                                    <i class="icon-drag-inner"></i>
+                                    <div class="icon-div-inner">
+                                        <i class="icon-edit"></i>
+                                        <i class="icon-delete"></i>
+                                    </div>
+                                    <label class="label">年龄限制</label>
+                                    <div class="input-box">
+                                        <el-switch class="switch fl marginTop6" disabled></el-switch>
+                                        <el-tooltip class="item-tips fl" effect="dark" content="在学生信息表中，匹配条件审核等于已通过、班级等于3年级1班，姓名不为空" placement="top">
+                                            <el-button>报名条件</el-button>
+                                        </el-tooltip>
+                                        <p class="tips fl">开启后，参与者可以在讨论组进行交流互动</p>
+                                    </div>
+                                </div>
+                                <div class="form-item sort-item-inner">
+                                    <el-form ref="form" :model="form" label-position='left' label-width="72px" class="select-form">
+                                        <el-form-item label="审核状态">
+                                            <el-select v-model="form.select1" placeholder="请选择" :value="1">
+                                                <el-option label="等于" :value="1">等于</el-option>
+                                            </el-select>
+                                            <el-select v-model="form.select2" placeholder="请选择" :value="1">
+                                                <el-option label="已通过" :value="1">已通过</el-option>
+                                            </el-select>
+                                        </el-form-item>
+                                        <el-form-item label="年龄">
+                                            <el-select v-model="form.select3" placeholder="请选择" :value="1">
+                                                <el-option label="大于" :value="1">大于</el-option>
+                                            </el-select>
+                                            <el-select v-model="form.select4" placeholder="请选择" :value="1">
+                                                <el-option label="8" :value="1">8</el-option>
+                                            </el-select>
+                                        </el-form-item>
+                                        <el-form-item label="班级">
+                                            <el-select v-model="form.select5" placeholder="请选择" :value="1">
+                                                <el-option label="不等于" :value="1">不等于</el-option>
+                                            </el-select>
+                                            <el-select v-model="form.select6" placeholder="请选择" :value="1">
+                                                <el-option label="三年级一班" :value="1">三年级一班</el-option>
+                                            </el-select>
+                                        </el-form-item>
+                                        <el-form-item label="身份">
+                                            <el-select v-model="form.select7" placeholder="请选择" :value="1">
+                                                <el-option label="不为空" :value="1">不为空</el-option>
+                                            </el-select>
+                                        </el-form-item>
+                                        <el-form-item label="缴费">
+                                            <el-select v-model="form.select8" placeholder="请选择" :value="1">
+                                                <el-option label="为空" :value="1">为空</el-option>
+                                            </el-select>
+                                        </el-form-item>
+                                    </el-form>
+                                </div>
+                                <div class="form-item sort-item-inner">
+                                    <i class="icon-drag-inner"></i>
+                                    <div class="icon-div-inner">
+                                        <i class="icon-edit"></i>
+                                        <i class="icon-delete"></i>
+                                    </div>
+                                    <label class="label">报名组织</label>
+                                    <div class="input-box">
+                                        <el-select v-model="form.select1" class="fl width120" placeholder="请选择" :value="1">
+                                            <el-option label="不限" :value="1">不限</el-option>
+                                        </el-select>
+                                        <el-tooltip class="item-tips fl" effect="dark" content="在学生信息表中，匹配条件审核等于已通过、班级等于3年级1班，姓名不为空" placement="top">
+                                            <el-button>报名条件</el-button>
+                                        </el-tooltip>
+                                        <p class="tips fl">开启后，参与者可以在讨论组进行交流互动</p>
+                                    </div>
+                                </div>
+                                <div class="form-item sort-item-inner">
+                                    <i class="icon-drag-inner"></i>
+                                    <div class="icon-div-inner">
+                                        <i class="icon-edit"></i>
+                                        <i class="icon-delete"></i>
+                                    </div>
+                                    <label class="label">年龄限制</label>
+                                    <div class="input-box">
+                                        <el-switch class="switch fl marginTop6" disabled></el-switch>
+                                        <el-tooltip class="item-tips fl" effect="dark" content="在学生信息表中，匹配条件审核等于已通过、班级等于3年级1班，姓名不为空" placement="top">
+                                            <el-button>报名条件</el-button>
+                                        </el-tooltip>
+                                        <p class="tips fl">开启后，参与者可以在讨论组进行交流互动</p>
+                                        <div class="clear"></div>
+                                        <div class="input-block">
+                                            <el-input v-model="input" placeholder="不限"></el-input><span class="fuhao">~</span><el-input v-model="input" placeholder="不限"></el-input>
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -433,7 +591,7 @@
             </div>
         </div>
         <!-- 添加字段弹窗 -->
-        <div class="dialog-mask" v-show="!addFieldDialog">
+        <div class="dialog-mask" v-show="addFieldDialog">
             <div class="dailog add-field">
                 <div class="header">
                     <span>添加字段</span>
@@ -804,7 +962,7 @@
             </div>
         </div>
         <!-- 报名条件-->
-        <div class="dialog-mask" v-show="signUpDialog">
+        <div class="dialog-mask" v-show="!signUpDialog">
             <div class="dailog">
                 <div class="header">
                     <span>报名条件</span>
@@ -833,15 +991,33 @@
                                 </el-select>
                             </div>
                         </div>
-                        <div class="marginBottom20">
-                            <p class="tips marginBottom8">判断条件</p>
-                            <div class="three">
-                                <el-select v-model="zhuangtai" placeholder="" class="width150">
-                                    <el-option label="不为空" value="不为空"></el-option>
-                                    <el-option label="为空" value="为空"></el-option>
+                        <div class="marginBottom20 display-flex">
+                            <label>设置条件</label>
+                            <el-switch v-model="switch4" :class="margin-auto" inactive-text="活动发起时配置字段值">
+                            </el-switch>
+                        </div>
+                        <div class="condition-box">
+                            <div class="condition-item">
+                                <el-select v-model="form.select5" placeholder="请选择" :value="1">
+                                    <el-option label="审核状态" :value="1">审核状态</el-option>
                                 </el-select>
-                                <span>时，可以报名</span>
+                                <el-select v-model="form.select6" placeholder="请选择" :value="1">
+                                    <el-option label="等于" :value="1">等于</el-option>
+                                </el-select>
+                                <el-input v-model="input" placeholder="请输入"></el-input>
+                                <i class="icon-minus-circle"></i>
                             </div>
+                            <div class="condition-item">
+                                <el-select v-model="form.select5" placeholder="请选择" :value="1">
+                                    <el-option label="审核状态" :value="1">审核状态</el-option>
+                                </el-select>
+                                <el-select v-model="form.select6" placeholder="请选择" :value="1">
+                                    <el-option label="等于" :value="1">等于</el-option>
+                                </el-select>
+                                <el-input v-model="input" placeholder="请输入"></el-input>
+                                <i class="icon-minus-circle"></i>
+                            </div>
+                            <div class="add-box"><i class="icon-plus-circle"></i>添加条件</div>
                         </div>
                     </el-form>
                 </div>
@@ -856,6 +1032,7 @@
     </div>
     <script src="../../assets/lib/jquery.min.js"></script>
     <script src="../../assets/lib/vue.js"></script>
+    <script src="../../assets/lib/Swiper-3.4.2/dist/js/swiper.min.js"></script>
     <script src="../../assets/lib/element-ui/lib/index.js"></script>
     <script src="../../assets/lib/drag/sortTable.js"></script>
     <script src="../../assets/lib/jqthumb.min.js"></script>
@@ -874,6 +1051,7 @@
                 switch2:false,
                 name:'活动名称',
                 switch3:true,
+                switch4: true,
                 type:'活动类型',
                 time:'活动时间',
                 type1:'线上活动',
@@ -907,6 +1085,17 @@
                 shijian:'',
                 zhuangtai:'不为空',
                 typecheck:[],
+                form: {
+                    select1: '',
+                    select2: '',
+                    select3: '',
+                    select4: '',
+                    select5: '',
+                    select6: '',
+                    select7: '',
+                    select8: '',
+                },
+                input:'',
             },
             watch: {
                 /* 监听选项列表的改变 */
@@ -918,7 +1107,20 @@
                     }
                 }
             },
+            mounted: function () {
+                this.swiperInit();
+            },
             methods:{
+                swiperInit:function (){
+                    var mySwiper = new Swiper('.swiper-container', {
+                        slidesPerView: 3,
+                        pagination: '.swiper-pagination',
+                        nextButton: '.swiper-next',
+                        prevButton: '.swiper-prev',
+                        paginationClickable: true,
+                        spaceBetween: 24,
+                    })
+                },
                 addOption1: function(){
                     this.option1.push({title: ''})
                 },

@@ -1,6 +1,5 @@
 package com.chaoxing.activity.dto.manager.sign.create;
 
-import com.baomidou.mybatisplus.annotation.TableField;
 import com.chaoxing.activity.dto.manager.sign.SignUpParticipateScopeDTO;
 import com.chaoxing.activity.util.DateUtils;
 import lombok.*;
@@ -22,6 +21,9 @@ import java.util.Objects;
 @NoArgsConstructor
 @AllArgsConstructor
 public class SignUpCreateParamDTO {
+
+	private static final String DEFAULT_SIGN_UP_NAME = "报名";
+	private static final String DEFAULT_SIGN_UP_BTN_NAME = "报名参与";
 
 	/** 主键 */
 	private Integer id;
@@ -83,7 +85,7 @@ public class SignUpCreateParamDTO {
 		LocalDateTime startTime = LocalDateTime.now();
 		LocalDateTime endTime = startTime.plusMonths(1);
 		return SignUpCreateParamDTO.builder()
-				.name("报名")
+				.name(DEFAULT_SIGN_UP_NAME)
 				.openAudit(false)
 				.startTime(DateUtils.date2Timestamp(startTime))
 				.endTime(DateUtils.date2Timestamp(endTime))
@@ -91,23 +93,26 @@ public class SignUpCreateParamDTO {
 				.personLimit(100)
 				.fillInfo(false)
 				.publicList(false)
-				.btnName("报名参与")
+				.btnName(DEFAULT_SIGN_UP_BTN_NAME)
 				.endAllowCancel(true)
 				.onSiteSignUp(false)
 				.enableWfwParticipateScope(false)
 				.enableContactsParticipateScope(false)
 				.deleted(false)
+				.customSignUpType(CustomSignUpTypeEnum.NORMAL.getValue())
 				.build();
 	}
 
 	@Getter
 	public enum CustomSignUpTypeEnum {
 
+		/** 普通报名 */
+		NORMAL("报名", "normal"),
 		/** 双选会公司报名 */
 		DUAL_SELECT_COMPANY("公司报名", "company");
 
-		private String name;
-		private String value;
+		private final String name;
+		private final String value;
 
 		CustomSignUpTypeEnum(String name, String value) {
 			this.name = name;

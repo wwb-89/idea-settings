@@ -45,6 +45,17 @@ public class InspectionConfigQueryService {
 		return Optional.ofNullable(inspectionConfigs).orElse(Lists.newArrayList()).stream().findFirst().orElse(null);
 	}
 
+	/** 通过考核配置id查询考核配置
+	 * @Description
+	 * @author huxiaolong
+	 * @Date 2021-10-19 18:27:37
+	 * @param configId
+	 * @return com.chaoxing.activity.model.InspectionConfig
+	 */
+	public InspectionConfig getByConfigId(Integer configId) {
+		return inspectionConfigMapper.selectById(configId);
+	}
+
 	/**根据活动id查询考核配置详情列表
 	 * @Description 
 	 * @author wwb

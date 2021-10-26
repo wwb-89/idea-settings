@@ -6,6 +6,7 @@ import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.chaoxing.activity.dto.OrgFormConfigDTO;
 import com.chaoxing.activity.dto.RestRespDTO;
+import com.chaoxing.activity.dto.UserFormCollectionGroupDTO;
 import com.chaoxing.activity.dto.manager.sign.*;
 import com.chaoxing.activity.dto.manager.sign.create.SignCreateParamDTO;
 import com.chaoxing.activity.dto.manager.sign.create.SignCreateResultDTO;
@@ -14,6 +15,7 @@ import com.chaoxing.activity.dto.stat.SignActivityStatDTO;
 import com.chaoxing.activity.dto.stat.UserNotSignedInNumStatDTO;
 import com.chaoxing.activity.model.ActivityStatSummary;
 import com.chaoxing.activity.util.CookieUtils;
+import com.chaoxing.activity.util.constant.CommonConstant;
 import com.chaoxing.activity.util.exception.BusinessException;
 import com.google.common.collect.Lists;
 import lombok.extern.slf4j.Slf4j;
@@ -34,6 +36,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
+import java.util.stream.Collectors;
 
 /**报名签到服务
  * @author wwb
@@ -77,6 +80,8 @@ public class SignApiService {
 	private static final String SIGN_PARTICIPATE_SCOPE_DESCRIBE_URL = SIGN_API_DOMAIN + "/sign/%d/scope/describe";
 	/** 报名签到下用户报名信息 */
 	private static final String SIGN_USER_SIGN_UP_URL = SIGN_API_DOMAIN + "/sign/%d/user/sign-up";
+	/** 分组统计查询用户填报的表单记录 */
+	private static final String GROUP_USER_FORM_COLLECTION_URL = SIGN_API_DOMAIN + "/form-collect/group-by/uids";
 
 	/** 门户报名 */
 	private static final String MH_SIGN_UP_URL = SIGN_API_DOMAIN + "/sign-up/%d/mh?uid=%d&wfwfid=%d";
@@ -140,6 +145,8 @@ public class SignApiService {
 
 	/** 根据字段名称列表创建表单接口 */
 	private static final String CREATE_FORM_BY_FIELD_NAMES_URL = SIGN_API_DOMAIN + "/form/create";
+	/** 根据uid、signIds查询用户能报名的 */
+	private static final String USER_SIGN_UP_ABLE_SIGN_URL = SIGN_API_DOMAIN + "/sign/sign-up-able";
 
 	@Resource
 	private RestTemplate restTemplate;
@@ -313,6 +320,9 @@ public class SignApiService {
 	 * @param sw
 	 * @return com.baomidou.mybatisplus.extension.plugins.pagination.Page
 	*/
+	public Page pageUserSignedUp(Page page, Integer uid, String sw) {
+		return pageUserSignedUp(page, uid, sw, null);
+	}
 	public Page pageUserSignedUp(Page page, Integer uid, String sw, Integer specificFid) {
 		String url = String.format(USER_SIGNED_UP_URL, uid);
 		HttpHeaders httpHeaders = new HttpHeaders();
@@ -955,4 +965,44 @@ public class SignApiService {
 		});
 	}
 
+	/**查询能参与报名的报名签到
+	 * @Description 
+	 * @author wwb
+	 * @Date 2021-10-18 15:01:53
+	 * @param uid
+	 * @param signIds
+	 * @return java.util.List<com.chaoxing.activity.dto.manager.sign.SignUpAbleSignDTO>
+	*/
+	public List<SignUpAbleSignDTO> listSignUpAbleSign(Integer uid, List<Integer> signIds) {
+		if (CollectionUtils.isEmpty(signIds)) {
+			return Lists.newArrayList();
+		}
+		MultiValueMap<String, Object> params = new LinkedMultiValueMap<>();
+		params.add("uid", uid);
+		params.add("signIds", String.join(CommonConstant.DEFAULT_SEPARATOR, signIds.stream().map(String::valueOf).collect(Collectors.toList())));
+		String result = restTemplate.postForObject(USER_SIGN_UP_ABLE_SIGN_URL, params, String.class);
+		JSONObject jsonObject = JSON.parseObject(result);
+		return resultHandle(jsonObject, () -> JSONArray.parseArray(jsonObject.getString("data"), SignUpAbleSignDTO.class), (message) -> {
+			throw new BusinessException(message);
+		});
+	}
+
+	/**分组查询用户uids列表的已填写表单统计状况
+	 * @Description
+	 * @author huxiaolong
+	 * @Date 2021-10-18 16:22:12
+	 * @param uids
+	 * @return java.util.List<com.chaoxing.activity.dto.UserFormCollectionGroupDTO>
+	 */
+    public List<UserFormCollectionGroupDTO> groupUserFormCollections(List<Integer> uids) {
+		HttpHeaders httpHeaders = new HttpHeaders();
+		httpHeaders.setContentType(MediaType.APPLICATION_JSON);
+		HttpEntity<String> httpEntity = new HttpEntity<>(JSON.toJSONString(uids), httpHeaders);
+		String result = restTemplate.postForObject(GROUP_USER_FORM_COLLECTION_URL, httpEntity, String.class);
+
+		JSONObject jsonObject = JSON.parseObject(result);
+		return resultHandle(jsonObject, () -> JSON.parseArray(jsonObject.getString("data"), UserFormCollectionGroupDTO.class), (message) -> {
+			throw new BusinessException(message);
+		});
+    }
 }

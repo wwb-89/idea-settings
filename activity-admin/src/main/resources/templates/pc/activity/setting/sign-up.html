@@ -39,6 +39,12 @@
             background: #0084ff;
             line-height: 30px;
         }
+        .el-input--prefix .el-input__inner {
+            padding-left: 30px!important;
+        }
+        .basic-set {
+            padding-top: 0px;
+        }
         [v-cloak]{
             display: none;
         }
@@ -46,8 +52,8 @@
 </head>
 <body>
     <div id="signUpVue" v-cloak>
-        <el-form class="basic-set" ref="form">
-            <div v-for="(item, index) in templateComponents">
+        <el-form class="basic-set" ref="form" onsubmit="return false;">
+            <div v-for="(item, index) in signUpTemplateComponents">
                 <div class="form-item">
                     <label class="label">{{item.name}}</label>
                     <div class="input-box">
@@ -134,7 +140,7 @@
                         <label class="label"><img src="/static/pc/assets/images/required.png" th:src="@{/pc/assets/images/required.png}" class="required-img" v-if="it.required">{{it.name}}</label>
                         <div class="input-box column">
                             <div class="set-box">
-                                <el-switch v-model="signUpMap[item.id].fillInfo"></el-switch>
+                                <el-switch v-model="signUpMap[item.id].fillInfo" @change="formFillSwitchChange($event, it)"></el-switch>
                                 <span class="tips" v-if="it.introduction">{{it.introduction}}</span>
                             </div>
                             <div v-if="signUpMap[item.id].formType == 'form'" class="set-box configurationForm" v-show="signUpMap[item.id].fillInfo" @click="toConfigForm(item.id)">
@@ -218,8 +224,7 @@
                         </div>
                     </div>
                 </template>
-
-                <el-divider v-if="index !== templateComponents.length - 1"></el-divider>
+                <el-divider v-if="index !== signUpTemplateComponents.length - 1"></el-divider>
             </div>
             <div class="btn-box-margin">
                 <button class="btn-main btn-width-80" @click="submitForm">保存</button>
@@ -279,13 +284,13 @@
         <script src="/static/pc/assets/lib/zTree_v3/js/jquery.ztree.exedit.js" th:src="@{/pc/assets/lib/zTree_v3/js/jquery.ztree.exedit.js}"></script>
         <script type="text/javascript" src="/static/pc/assets/lib/webuploader/webuploader.min.js" th:src="@{/pc/assets/lib/webuploader/webuploader.min.js}"></script>
         <script th:inline="javascript">
-            var vm = new Vue({
+            vm = new Vue({
                 el: '#signUpVue',
                 data: function () {
                     return {
                         activity: [[${activity}]],
                         sign: [[${sign}]],
-                        templateComponents: [[${templateComponents}]],
+                        signUpTemplateComponents: [[${signUpTemplateComponents}]],
                         templateComponentMap: {},
 
                         // 报名: { originId: signUp }
@@ -344,11 +349,9 @@
                             }
                         }
                     });
-                    var signUpTplComponentIds = [];
-                    $($this.templateComponents).each(function() {
+                    $($this.signUpTemplateComponents).each(function() {
                         var _this = this;
                         $this.templateComponentMap[_this.id] = _this;
-                        signUpTplComponentIds.push(_this.id);
 
                         if (_this.children && _this.children.length > 0) {
                             $(_this.children).each(function () {
@@ -407,10 +410,25 @@
                         $this.$set($this.signUpMap, tplComponentId, $this.sign.signUps[i]);
                     });
 
-                    $(signUpTplComponentIds).each(function (i) {
-                        var originId = signUpTplComponentIds[i];
+                    $($this.signUpTemplateComponents).each(function (i) {
+                        var originId = this.id;
                         if (!$this.signUpMap[originId]) {
                             var signUp = signApp.newSignUp($this.templateComponentMap[originId]);
+                            if (this.code == 'company_sign_up') {
+                                signUp.fillInfo = true;
+                                signUp.customSignUpType = "company";
+                            }
+                            var signUpChildrenComponents = this.children;
+                            if (!activityApp.isEmpty(signUpChildrenComponents)) {
+                                $(signUpChildrenComponents).each(function () {
+                                    if ("sign_up_fill_info" == this.code) {
+                                        var signUpFillInfoType = this.signUpFillInfoType;
+                                        if (!activityApp.isEmpty(signUpFillInfoType)) {
+                                            signUp.formType = signUpFillInfoType.type;
+                                        }
+                                    }
+                                });
+                            }
                             signUp.originId = originId;
                             signUp.deleted = true;
                             signUp.enable = !signUp.deleted;
@@ -562,8 +580,9 @@
                         }
                         var url = ctx + '/api/wfw-form/build/create-url';
                         var templateType = ($this.fillInfoTypeMap[signUpTplComponentId] && $this.fillInfoTypeMap[signUpTplComponentId].templateType) || '';
+                        console.log($this.activity);
                         var params = {
-                            fid: [[${session._login_user_.fid}]],
+                            fid: $this.activity.createFid,
                             uid: [[${session._login_user_.uid}]],
                             formId: formId,
                             templateType: templateType
@@ -802,6 +821,16 @@
                         }, function () {
                             app.showMsg("保存失败");
                         });
+                    },
+                    // 填报信息的开关改变
+                    formFillSwitchChange: function (checked, component) {
+                        // 企业报名必须开启
+                        var $this = this;
+                        var parenrComponent = $this.templateComponentMap[component.pid];
+                        if ("company_sign_up" == parenrComponent.code && !checked) {
+                            app.showMsg(parenrComponent.name + "必须开启" + component.name);
+                            $this.$set($this.signUpMap[component.pid], "fillInfo", true);
+                        }
                     }
                 }
             });

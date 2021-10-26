@@ -345,15 +345,19 @@ public class WfwFormApprovalApiService {
             String signUpPublicList = FormUtils.getValue(formData, "sign_up_public_list");
             signUp.setPublicList(Objects.equals(YES, signUpPublicList));
             String signUpPersonLimit = FormUtils.getValue(formData, "sign_up_person_limit");
-            DepartmentDTO department = FormUtils.getDepartment(formData, "sign_up_contacts_scope");
-            if (department != null) {
-                WfwGroupDTO wfwGroup = wfwContactApiService.listUserContactOrgsByFid(fid)
+            List<DepartmentDTO> departments = FormUtils.listDepartment(formData, "sign_up_contacts_scope");
+            if (CollectionUtils.isNotEmpty(departments)) {
+                List<Integer> departmentIds = departments.stream().map(DepartmentDTO::getId).collect(Collectors.toList());
+                List<WfwGroupDTO> wfwGroups = wfwContactApiService.listUserContactOrgsByFid(fid)
                         .stream()
-                        .filter(v -> Objects.equals(Integer.valueOf(v.getId()), department.getId()))
-                        .findFirst().orElse(null);
-                if (wfwGroup != null) {
+                        .filter(v -> departmentIds.contains(Integer.valueOf(v.getId()))).collect(Collectors.toList());
+                if (CollectionUtils.isNotEmpty(wfwGroups)) {
                     signUp.setEnableContactsParticipateScope(true);
-                    signUp.setContactsParticipateScopes(Lists.newArrayList(SignUpParticipateScopeDTO.buildFromWfwGroup(wfwGroup, "contacts")));
+                    List<SignUpParticipateScopeDTO> contactsParticipateScopes = Lists.newArrayList();
+                    for (WfwGroupDTO wfwGroup : wfwGroups) {
+                        contactsParticipateScopes.add(SignUpParticipateScopeDTO.buildFromWfwGroup(wfwGroup, "contacts"));
+                    }
+                    signUp.setContactsParticipateScopes(contactsParticipateScopes);
                 }
             }
             if (StringUtils.isNotBlank(signUpPersonLimit)) {
@@ -387,8 +391,10 @@ public class WfwFormApprovalApiService {
             signIn.setStartTime(DateUtils.date2Timestamp(signInStartTime));
             signIn.setEndTime(DateUtils.date2Timestamp(signInEndTime));
             String signInWay = FormUtils.getValue(formData, "sign_in_way");
+            // 获取的签到形式选项有：普通签到、参与者扫码、管理者扫码
             SignInCreateParamDTO.Way way = SignInCreateParamDTO.Way.fromName(signInWay);
             if (way != null) {
+                // 普通签到或者位置签到
                 signIn.setWay(way.getValue());
                 if (Objects.equals(SignInCreateParamDTO.Way.POSITION, way)) {
                     AddressDTO signInAddress = FormUtils.getAddress(formData, "sign_in_address");
@@ -399,6 +405,7 @@ public class WfwFormApprovalApiService {
                     }
                 }
             } else {
+                // 扫码签到
                 signIn.setWay(SignInCreateParamDTO.Way.QR_CODE.getValue());
                 SignInCreateParamDTO.ScanCodeWay scanCodeWay = SignInCreateParamDTO.ScanCodeWay.fromName(signInWay);
                 if (scanCodeWay != null) {

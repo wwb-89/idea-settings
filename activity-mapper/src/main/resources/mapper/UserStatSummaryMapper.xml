@@ -89,6 +89,19 @@
          WHERE
              t.uid = #{uid}
             AND t.is_valid = 1
+             <choose>
+                 <when test="startTime != null and endTime != null">
+                     AND t.create_time BETWEEN #{startTime} AND #{endTime}
+                 </when>
+                 <otherwise>
+                     <if test="startTime != null">
+                         AND t.create_time >= #{startTime}
+                     </if>
+                     <if test="endTime != null">
+                         AND t.create_time <![CDATA[<=]]> #{endTime}
+                     </if>
+                 </otherwise>
+             </choose>
      </select>
 
     <select id="pagingUserParticipate" resultMap="BaseResultMap">
@@ -108,6 +121,19 @@
         WHERE
             t.uid = #{uid}
             AND t.is_valid = 1
+            <choose>
+                <when test="startTime != null and endTime != null">
+                    AND t.create_time BETWEEN #{startTime} AND #{endTime}
+                </when>
+                <otherwise>
+                    <if test="startTime != null">
+                        AND t.create_time >= #{startTime}
+                    </if>
+                    <if test="endTime != null">
+                        AND t.create_time <![CDATA[<=]]> #{endTime}
+                    </if>
+                </otherwise>
+            </choose>
         ORDER BY
             FIELD( t1.`status`, 2, 3, 4 ),
             t1.start_time DESC
@@ -175,6 +201,36 @@
         t1.create_time DESC
         ) t
 
+    </select>
+
+    <select id="pageUserSummaryStat" resultType="com.chaoxing.activity.dto.stat.UserSummaryStatDTO">
+        SELECT
+            t.uid,
+            t.real_name realName,
+            sum( t.integral ) integralSum
+        FROM
+            t_user_stat_summary t
+        <if test="fid != null or marketId != null">
+            INNER JOIN t_activity t1 ON t1.id = t.activity_id
+            <choose>
+                <when test="marketId != null">
+                    AND t1.market_id = #{marketId}
+                </when>
+                <otherwise>
+                    <if test="fid != null">
+                        AND t1.create_fid = #{fid}
+                    </if>
+                </otherwise>
+            </choose>
+        </if>
+        WHERE
+            activity_id IS NOT NULL
+            AND t.is_qualified = 1
+            AND t.is_valid = 1
+        GROUP BY
+            t.uid
+        ORDER BY
+            integralSum DESC;
     </select>
 
 </mapper>

@@ -33,6 +33,8 @@
                             <i class="el-icon-plus inlineMiddle"></i>
                             <span class="inlineMiddle" style="margin-left: unset;">新建</span>
                         </el-button>
+                        <el-button class="btn-customize" round @click="exportData">导出</el-button>
+                        <el-button class="btn-customize" round @click="exportRecord">导出记录</el-button>
                         <div class="search-Box">
                             <el-input placeholder="名称/创建人/创建单位"
                                       icon="search"
@@ -119,7 +121,7 @@
                                 filter-placement="bottom"
                         >
                             <template slot-scope="scope">
-                                <span :class="{'btn-no-public': (scope.row.status == 1 || scope.row.status == 2), 'btn-is-progress': (scope.row.status == 3), 'btn-is-end': (scope.row.status == 4)}">{{scope.row.status | activityStatusInstructions}}</span>
+                                <span :class="{'btn-no-public': (scope.row.status == 1), 'btn-is-progress': (scope.row.status == 3), 'btn-is-end': (scope.row.status == 2 || scope.row.status == 4)}">{{scope.row.status | activityStatusInstructions}}</span>
                             </template>
                         </el-table-column>
                         <el-table-column
@@ -132,6 +134,35 @@
                         >
                             <template slot-scope="scope">
                                 <el-button type="text" @click="toPoster(scope.row.id)">查看</el-button>
+                            </template>
+                        </el-table-column>
+                        <el-table-column
+                                v-else-if="item.code === 'personLimit'"
+                                :prop="item.code"
+                                :fixed="item.defaultTop"
+                                :label="item.name"
+                                :ifCenter="item.align"
+                                :min-width="item.minWidth"
+                        >
+                            <template slot-scope="scope">
+                                <span v-if="!scope.row.personLimit">不限</span>
+                                <span v-else>{{scope.row.personLimit}}</span>
+                            </template>
+                        </el-table-column>
+                        <el-table-column
+                                v-else-if="item.code === 'activityClassify'"
+                                class-name="th-dropdwon-radio"
+                                :fixed="item.defaultTop"
+                                column-key="activityClassifyId"
+                                :label="item.name"
+                                :ifCenter="item.align"
+                                :min-width="item.minWidth"
+                                :filters="filterClassifies"
+                                :filter-multiple="false"
+                                filter-placement="bottom"
+                        >
+                            <template slot-scope="scope">
+                                <span>{{scope.row.activityClassifyName}}</span>
                             </template>
                         </el-table-column>
                         <el-table-column
@@ -201,6 +232,9 @@
     <vue-confirm-common ref="canReleaseWindow" :message="'下架后，该活动将不在活动广场中显示'" :cancel="'取消'" :sure="'下架'" @callback="cancelRelease"></vue-confirm-common>
     <!--去选择模版-->
     <vue-confirm-common ref="selectTemlateWindow" :message="'活动还未选择模板，请选择模板后发布'" :cancel="'取消'" :sure="'去选择'" @callback="toSelectTemplate"></vue-confirm-common>
+    <!--    导出成功-->
+    <vue-confirm-common ref="exportSuccessWindow" :message="'数据准备中，导出完成的数据会保存在“导出记录”中，请稍后下载'" :cancel="'完成'" :sure="'导出记录'" @callback="exportRecord"></vue-confirm-common>
+
 </div>
 <div th:replace="pc/include/common_js :: common_js(~{::script})">
     <script src="/static/pc/assets/lib/element-ui/lib/index.js" th:src="@{/pc/assets/lib/element-ui/lib/index.js}"></script>
@@ -224,8 +258,10 @@
                 activities: [],
                 uid: [[${session._login_user_.uid}]],
                 fid: [[${fid != null ? fid : session._login_user_.fid}]],
+                classifies: [[${classifies}]],
                 marketId: [[${marketId}]],
                 filterStatus: [],
+                filterClassifies: [],
                 selectedFilterStatusName: "全部",
                 sw: "",
                 // 严格模式 只查询自己创建的
@@ -236,6 +272,7 @@
                     pageNum: 1,
                     pageSize: 8,
                     status: "",
+                    activityClassifyId: "",
                     activityFlag: [[${flag}]],
                     // 严格模式 只查询自己创建的
                     strict: [[${strict}]],
@@ -285,6 +322,10 @@
                     {text: "进行中", value: "3"},
                     {text: "已结束", value: "4"}
                 ];
+
+                $this.filterClassifies = $.map($this.classifies, function (item) {
+                    return {text: item.name, value: item.id};
+                })
                 $this.calShowTableFieldDetails();
                 $this.configTableFieldDetails = $this.calConfigTableFieldDetails();
             },
@@ -424,9 +465,13 @@
                 filterChange: function (filterItem) {
                     var $this = this;
                     var key = Object.keys(filterItem)[0]
+                    var value;
                     if (key == 'status') {
                         // 单选过滤取第一个
-                        var value = filterItem[key][0];
+                         value = filterItem[key][0];
+                        $this.queryParams[key] = activityApp.isEmpty(value) ? null : parseInt(value);
+                    } else if (key == 'activityClassifyId') {
+                        value = filterItem[key][0];
                         $this.queryParams[key] = activityApp.isEmpty(value) ? null : parseInt(value);
                     }
                     $this.queryParams.pageNum = 1;
@@ -839,6 +884,34 @@
                         app.showMsg("配置失败");
                     });
                 },
+                // 导出
+                exportData: function () {
+                    var $this = this;
+                    var url = ctx + "/api/export";
+                    $this.loaded = false;
+                    var params = {
+                        queryParamStr: activityApp.getJsonStr($this.queryParams),
+                        exportType: "activity_manage"
+                    };
+                    app.ajaxPostWithLoading(url, params, function (data) {
+                        $this.loaded = true;
+                        if (data.success) {
+                            $this.$refs.exportSuccessWindow.show = true;
+                        } else {
+                            var errorMessage = data.message;
+                            if (activityApp.isEmpty(errorMessage)) {
+                                errorMessage = "导出失败";
+                            }
+                            app.showMsg(errorMessage);
+                        }
+                    }, function () {
+                        app.showMsg("导出失败");
+                    });
+                },
+                // 导出记录
+                exportRecord: function () {
+                    window.open(ctx + '/export-record?exportType=activity_manage');
+                }
             }
         });
     </script>

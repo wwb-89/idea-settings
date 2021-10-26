@@ -1,6 +1,6 @@
 package com.chaoxing.activity.task.activity;
 
-import com.chaoxing.activity.service.ActivityStatHandleService;
+import com.chaoxing.activity.service.activity.stat.ActivityStatHandleService;
 import com.chaoxing.activity.service.queue.activity.ActivityStatQueueService;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;

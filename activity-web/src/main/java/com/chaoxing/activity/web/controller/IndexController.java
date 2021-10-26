@@ -32,6 +32,7 @@ import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -50,6 +51,7 @@ public class IndexController {
 
 	/** 默认风格 */
 	private static final String DEFAULT_STYLE = "2";
+	private static final List<String> STYLES = Lists.newArrayList("1", "2");
 
 	@Resource
 	private GroupRegionFilterService groupRegionFilterService;
@@ -66,7 +68,6 @@ public class IndexController {
 	@Resource
 	private ActivityFlagCodeService activityFlagCodeService;
 
-
 	/**通用
 	 * @Description
 	 * @author wwb
@@ -81,16 +82,18 @@ public class IndexController {
 	 * @param style 风格
 	 * @param flag 活动标示：双选会、第二课堂等
 	 * @param marketId 市场id
+	 * @param scope flag的查询范围，0：默认，1：所有
+	 * @param hideFilter 隐藏的筛选条件
+	 * @param strict 为1则查询能报名的活动
 	 * @return java.lang.String
 	 */
 	@RequestMapping("")
 	public String index(HttpServletRequest request, Model model, Integer wfwfid, Integer unitId, Integer state, Integer fid,
 						Integer banner, String style, @RequestParam(defaultValue = "") String flag, Integer marketId,
-						@RequestParam(defaultValue = "0") Integer scope, String hideFilter) {
+						@RequestParam(defaultValue = "0") Integer scope, String hideFilter, @RequestParam(defaultValue = "0") Integer strict) {
 		Integer realFid = Optional.ofNullable(wfwfid).orElse(Optional.ofNullable(unitId).orElse(Optional.ofNullable(state).orElse(fid)));
 		style = Optional.ofNullable(style).filter(StringUtils::isNotBlank).orElse(DEFAULT_STYLE);
-//		String code = activityFlagCodeService.getCodeByFlag(flag);	//	后续统一采用flag获取code
-		return handleData(request, model, null, realFid, null, banner, style, flag, marketId, scope, hideFilter);
+		return handleData(request, model, null, realFid, null, banner, style, flag, marketId, scope, hideFilter, strict);
 	}
 
 	/**鄂尔多斯活动广场
@@ -168,12 +171,13 @@ public class IndexController {
 	@RequestMapping("lib")
 	public String libIndex(HttpServletRequest request, Model model, String code, Integer wfwfid, Integer unitId, Integer state,
 						   Integer fid, Integer pageId, Integer banner, String style, @RequestParam(defaultValue = "") String flag,
-						   Integer marketId, @RequestParam(defaultValue = "0") Integer scope, String hideFilter) {
+						   Integer marketId, @RequestParam(defaultValue = "0") Integer scope, String hideFilter, @RequestParam(defaultValue = "0") Integer strict) {
 		Integer realFid = Optional.ofNullable(wfwfid).orElse(Optional.ofNullable(unitId).orElse(Optional.ofNullable(state).orElse(fid)));
 		if (StringUtils.isBlank(code)) {
-			code = activityFlagCodeService.getCodeByFlag(flag); // todo 后续移除code参数，改用flag获取
+			// todo 后续移除code参数，改用flag获取
+			code = activityFlagCodeService.getCodeByFlag(flag);
 		}
-		return handleData(request, model, code, realFid, pageId, banner, style, flag, marketId, scope, hideFilter);
+		return handleData(request, model, code, realFid, pageId, banner, style, flag, marketId, scope, hideFilter, strict);
 	}
 
 	/**基础教育
@@ -197,13 +201,14 @@ public class IndexController {
 	@RequestMapping("bas")
 	public String basIndex(HttpServletRequest request, Model model, String code, Integer wfwfid, Integer unitId, Integer state,
 						   Integer fid, Integer pageId, Integer banner, String style, @RequestParam(defaultValue = "") String flag,
-						   Integer marketId, @RequestParam(defaultValue = "0") Integer scope, String hideFilter) {
+						   Integer marketId, @RequestParam(defaultValue = "0") Integer scope, String hideFilter, @RequestParam(defaultValue = "0") Integer strict) {
 		Integer realFid = Optional.ofNullable(wfwfid).orElse(Optional.ofNullable(unitId).orElse(Optional.ofNullable(state).orElse(fid)));
 		style = Optional.ofNullable(style).filter(StringUtils::isNotBlank).orElse(DEFAULT_STYLE);
 		if (StringUtils.isBlank(code)) {
-			code = activityFlagCodeService.getCodeByFlag(flag);	//	todo 后续移除code参数，改用flag获取
+			//	todo 后续移除code参数，改用flag获取
+			code = activityFlagCodeService.getCodeByFlag(flag);
 		}
-		return handleData(request, model, code, realFid, pageId, banner, style, flag, marketId, scope, hideFilter);
+		return handleData(request, model, code, realFid, pageId, banner, style, flag, marketId, scope, hideFilter, strict);
 	}
 
 	/**高校
@@ -227,29 +232,36 @@ public class IndexController {
 	@RequestMapping("edu")
 	public String eduIndex(HttpServletRequest request, Model model, String code, Integer wfwfid, Integer unitId, Integer state, Integer fid,
 						   Integer pageId, Integer banner, String style, @RequestParam(defaultValue = "") String flag, Integer marketId,
-						   @RequestParam(defaultValue = "0") Integer scope, String hideFilter) {
+						   @RequestParam(defaultValue = "0") Integer scope, String hideFilter, @RequestParam(defaultValue = "0") Integer strict) {
 		Integer realFid = Optional.ofNullable(wfwfid).orElse(Optional.ofNullable(unitId).orElse(Optional.ofNullable(state).orElse(fid)));
 		style = Optional.ofNullable(style).filter(StringUtils::isNotBlank).orElse(DEFAULT_STYLE);
 		if (StringUtils.isBlank(code)) {
-			code = activityFlagCodeService.getCodeByFlag(flag);	//	todo 后续移除code参数，改用flag获取
+			//	todo 后续移除code参数，改用flag获取
+			code = activityFlagCodeService.getCodeByFlag(flag);
 		}
-		return handleData(request, model, code, realFid, pageId, banner, style, flag, marketId, scope, hideFilter);
+		return handleData(request, model, code, realFid, pageId, banner, style, flag, marketId, scope, hideFilter, strict);
 	}
 
 	private String handleData(HttpServletRequest request, Model model, String code, Integer fid, Integer pageId,
-							  Integer banner, String style, String flag, Integer marketId, Integer scope, String hideFilter) {
+							  Integer banner, String style, String flag, Integer marketId, Integer scope, String hideFilter, Integer strict) {
 		// 根据fid和flag查询模版
 		if (marketId == null && StringUtils.isNotBlank(flag)) {
 			marketId = marketQueryService.getMarketIdByFlag(fid, flag);
 		}
 		List<Classify> classifies;
+		Integer classifyFid = fid;
 		if (marketId == null) {
+			if (StringUtils.isNotBlank(code)) {
+				// 查询区域所属的机构
+				classifyFid = groupService.getGroupFid(code);
+			}
 			if (fid == null) {
 				LoginUserDTO loginUser = LoginUtils.getLoginUser(request);
 				Optional.ofNullable(loginUser).orElseThrow(() -> new LoginRequiredException());
 				fid = loginUser.getFid();
 			}
-			classifies = classifyQueryService.listOrgClassifies(fid);
+			classifyFid = Optional.ofNullable(classifyFid).orElse(fid);
+			classifies = classifyQueryService.listOrgClassifies(classifyFid);
 		}else {
 			classifies = classifyQueryService.listMarketClassifies(marketId);
 		}
@@ -279,12 +291,17 @@ public class IndexController {
 		model.addAttribute("marketId", marketId);
 		model.addAttribute("scope", scope);
 		model.addAttribute("hideFilter", hideFilter);
+		model.addAttribute("signUpAble", Objects.equals(1, strict));
 		if (UserAgentUtils.isMobileAccess(request)) {
 			return "mobile/index";
 		}else {
 			if (StringUtils.isEmpty(style)) {
 				return "pc/index";
 			}else {
+				// 验证style是否存在
+				if (!STYLES.contains(style)) {
+					style = DEFAULT_STYLE;
+				}
 				return "pc/activity/market/activity-market-" + style;
 			}
 		}
@@ -297,8 +314,7 @@ public class IndexController {
 	 * @Date 2021-01-27 14:59:23
 	 * @param request
 	 * @param model
-//	 * @param areaCode
-//	 * @param flag 活动标示：双选会、第二课堂等
+	 * @param myActivityParam
 	 * @return java.lang.String
 	 */
 	@LoginRequired
@@ -309,7 +325,7 @@ public class IndexController {
 		model.addAttribute("hide", myActivityParam.getHide());
 		model.addAttribute("title", StringUtils.isBlank(myActivityParam.getTitle()) ? "我的活动" : myActivityParam.getTitle());
 		model.addAttribute("managAble", myActivityParam.getManagAble());
-		String backUrl = URLEncoder.encode(myActivityParam.buildBackUrl("http://hd.chaoxing.com/my"), StandardCharsets.UTF_8.name());
+		String backUrl = URLEncoder.encode(myActivityParam.buildBackUrl("https://hd.chaoxing.com/my"), StandardCharsets.UTF_8.name());
 		myActivityParam.setWfwFormUrl(myActivityParam.getWfwFormUrl() + "&backurl=" + backUrl);
 		model.addAttribute("wfwFormUrl", myActivityParam.getWfwFormUrl());
 		if (UserAgentUtils.isMobileAccess(request)) {

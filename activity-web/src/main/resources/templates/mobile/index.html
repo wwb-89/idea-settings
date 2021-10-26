@@ -40,6 +40,8 @@
                     <div class="mask"></div>
                     <img :src="activity | getCloudImgUrl" class="jqthumbImg">
                     <div class="status-box">
+                        <!--报名状态-->
+<!--                        <span v-if="activity.hasSignUp && signUpAble" :class="{'status sign': true, 'status5': (activity.signUpStatus == 2), 'status1' : (activity.signUpStatus != 2)}"><span class="sign-dot"></span>{{activity.signUpStatusDescribe}}</span>-->
                         <span :class="{'status': true, 'status1': (activity.status == 1), 'status2': (activity.status == 2), 'status3': (activity.status == 3), 'status4': (activity.status == 4)}">{{activity.status | activityStatusInstructions}}</span>
                     </div>
                     <!--<p class="num"><i></i>1028</p>-->
@@ -65,6 +67,7 @@
     </div>
     <!-- 弹出层 -->
     <div class="pop" v-show="filterWindowShow">
+        <div style="height: 100%;" @click="filterCancel"></div>
         <div class="popInner">
             <div class="popList mescroll-touch">
                 <div class="list-item" v-show="showFilter('activityType')">
@@ -118,7 +121,7 @@
     <script src="/static/mobile/assets/lib/jqthumb.min.js" th:src="@{/mobile/assets/lib/jqthumb.min.js}"></script>
     <script th:inline="javascript">
         function ready() {
-            activityVue = new Vue({
+            vm = new Vue({
                 el: "#activity-vue",
                 data: {
                     classifyNames: [[${classifyNames}]],
@@ -136,13 +139,17 @@
                     mescroll: null,
                     hideFilter: [[${hideFilter}]],
                     filterWindowShow: false,
-                    searchShow: false
+                    searchShow: false,
+                    topFid: [[${topFid}]],
+                    defaultSelectedAreaCode: [[${areaCode}]],
+                    // 是否查询能报名的活动
+                    signUpAble: [[${signUpAble}]]
                 },
                 created: function () {
                     var $this = this;
                     // 定制右上角菜单
                     app.customMenu("", app.my_icon_url, {
-                        option: "activityVue.my();"
+                        option: "vm.my();"
                     });
                     // 活动分类列表
                     $($this.classifyNames).each(function () {
@@ -185,6 +192,23 @@
                         {name: "进行中", value: "3", selected: false},
                         {name: "已结束", value: "4", selected: false}
                     ];
+                    // 如果topFid符合regions的manageFid那么选中
+                    if (!activityApp.isEmpty($this.topFid) && !activityApp.isEmpty($this.regions)) {
+                        var exist = false;
+                        var index = 0;
+                        $($this.regions).each(function (i) {
+                            if (this.manageFid == $this.topFid && $this.topFid != 2120) {
+                                exist = true;
+                                index = i;
+                                return false;
+                            }
+                        });
+                        if (exist) {
+                            // 选中
+                            $this.changeRegion(index);
+                            $this.defaultSelectedAreaCode = $this.regions[index].code;
+                        }
+                    }
                     $this.restQueryParams();
                 },
                 mounted: function () {
@@ -196,7 +220,7 @@
                     haveFilter: function () {
                         var $this = this;
                         return !activityApp.isEmpty($this.queryParams.activityClassifyName) ||
-                                !activityApp.isEmpty($this.queryParams.date) ||
+                                !activityApp.isEmpty($this.queryParams.dateScope) ||
                                 !activityApp.isEmpty($this.queryParams.status);
                     }
                 },
@@ -230,14 +254,16 @@
                             pageSize: 10,
                             sw: "",
                             activityClassifyName: "",
-                            date: "",
+                            dateScope: "",
                             status: "",
                             activityType: "",
-                            areaCode: $this.areaCode,
+                            areaCode: $this.defaultSelectedAreaCode,
                             topFid: [[${topFid}]],
                             marketId: [[${marketId}]],
                             scope: [[${scope}]],
-                            flag: [[${flag}]]
+                            flag: [[${flag}]],
+                            // 是否只查询能报名的，如果是则不分页
+                            signUpAble: [[${signUpAble}]]
                         };
                     },
                     initMescroll: function () {
@@ -273,7 +299,7 @@
                         app.ajaxPost(url, params, function (data) {
                             if (data.success) {
                                 $this.loaded = true;
-                                $this.mescroll.endByPage(data.data.records.length, data.data.pages);
+                                $this.mescroll.endByPage(data.data.records.length, $this.signUpAble ? data.data.records.length : data.data.pages);
                                 $this.activities.pushArray(data.data.records);
                                 $this.$nextTick(function () {
                                     $('.jqthumbImg').jqthumb({
@@ -356,7 +382,7 @@
                         });
                         $($this.activityQueryDates).each(function () {
                             if (this.selected) {
-                                $this.queryParams.date = this.value;
+                                $this.queryParams.dateScope = this.value;
                                 return false;
                             }
                         });
@@ -381,6 +407,7 @@
                     },
                     queryParams2Condition: function () {
                         var $this = this;
+                        console.log($this.queryParams.areaCode);
                         $($this.classifies).each(function (i) {
                             $this.$set($this.classifies[i], "selected", this.value == $this.queryParams.activityClassifyName);
                         });
@@ -388,11 +415,18 @@
                             $this.$set($this.activityTypes[i], "selected", this.value == $this.queryParams.activityType);
                         });
                         $($this.activityQueryDates).each(function (i) {
-                            $this.$set($this.activityQueryDates[i], "selected", this.value == $this.queryParams.date);
+                            $this.$set($this.activityQueryDates[i], "selected", this.value == $this.queryParams.dateScope);
                         });
+                        var existRegion = false;
                         $($this.regions).each(function (i) {
-                            $this.$set($this.regions[i], "selected", this.value == $this.queryParams.areaCode);
+                            if (this.value == $this.queryParams.areaCode) {
+                                existRegion = true;
+                                $this.$set($this.regions[i], "selected", this.value == $this.queryParams.areaCode);
+                            }
                         });
+                        if (!existRegion && $this.regions.length > 0) {
+                            $this.$set($this.regions[0], "selected", true);
+                        }
                         $($this.statuses).each(function (i) {
                             $this.$set($this.statuses[i], "selected", this.value == $this.queryParams.status);
                         });

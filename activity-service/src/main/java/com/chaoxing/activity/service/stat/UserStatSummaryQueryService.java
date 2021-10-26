@@ -1,9 +1,11 @@
 package com.chaoxing.activity.service.stat;
 
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.chaoxing.activity.dto.activity.UserParticipateActivityDTO;
 import com.chaoxing.activity.dto.export.ExportDataDTO;
 import com.chaoxing.activity.dto.query.admin.UserStatSummaryQueryDTO;
+import com.chaoxing.activity.dto.stat.UserSummaryStatDTO;
 import com.chaoxing.activity.mapper.TableFieldDetailMapper;
 import com.chaoxing.activity.mapper.UserStatSummaryMapper;
 import com.chaoxing.activity.model.Activity;
@@ -11,6 +13,7 @@ import com.chaoxing.activity.model.TableField;
 import com.chaoxing.activity.model.TableFieldDetail;
 import com.chaoxing.activity.model.UserStatSummary;
 import com.chaoxing.activity.service.activity.ActivityQueryService;
+import com.chaoxing.activity.service.activity.market.MarketQueryService;
 import com.chaoxing.activity.service.manager.OrganizationalStructureApiService;
 import com.chaoxing.activity.service.manager.PassportApiService;
 import com.chaoxing.activity.service.tablefield.TableFieldQueryService;
@@ -55,6 +58,8 @@ public class UserStatSummaryQueryService {
 	private PassportApiService passportApiService;
 	@Resource
 	private ActivityQueryService activityQueryService;
+	@Resource
+	private MarketQueryService marketQueryService;
 
 	/**
 	 * 分页查询用户统计
@@ -207,10 +212,12 @@ public class UserStatSummaryQueryService {
 	 * @Date 2021-06-06 20:34:05
 	 * @param uid
 	 * @param fid 不会空则为该机构创建的活动
+	 * @param startTime
+	 * @param endTime
 	 * @return java.lang.Integer
 	*/
-	public Integer countUserParticipateActivityNum(Integer uid, Integer fid) {
-		return userStatSummaryMapper.countUserParticipateActivityNum(uid, fid);
+	public Integer countUserParticipateActivityNum(Integer uid, Integer fid, Long startTime, Long endTime) {
+		return userStatSummaryMapper.countUserParticipateActivityNum(uid, fid, DateUtils.timestamp2Date(startTime), DateUtils.timestamp2Date(endTime));
 	}
 
 	/**分页查询用户参与的活动列表
@@ -220,10 +227,12 @@ public class UserStatSummaryQueryService {
 	 * @param page
 	 * @param uid
 	 * @param fid
+	 * @param startTime
+	 * @param endTime
 	 * @return com.baomidou.mybatisplus.extension.plugins.pagination.Page
 	*/
-	public Page pagingUserParticipate(Page page, Integer uid, Integer fid) {
-		page = userStatSummaryMapper.pagingUserParticipate(page, uid, fid);
+	public Page pagingUserParticipate(Page page, Integer uid, Integer fid, Long startTime, Long endTime) {
+		page = userStatSummaryMapper.pagingUserParticipate(page, uid, fid, DateUtils.timestamp2Date(startTime), DateUtils.timestamp2Date(endTime));
 		List<?> records = page.getRecords();
 		if (CollectionUtils.isNotEmpty(records)) {
 			List<Integer> activityIds = Lists.newArrayList();
@@ -301,4 +310,37 @@ public class UserStatSummaryQueryService {
 		page = userStatSummaryMapper.pageUserStatResult(page, fid, marketId, uidList);
 		return page;
 	}
+
+	/**查询活动下用户参与数据
+	 * @Description 
+	 * @author wwb
+	 * @Date 2021-10-13 14:18:37
+	 * @param activityId
+	 * @return java.util.List<com.chaoxing.activity.model.UserStatSummary>
+	*/
+	public List<UserStatSummary> listActivityStatData(Integer activityId) {
+		return userStatSummaryMapper.selectList(new LambdaQueryWrapper<UserStatSummary>()
+				.eq(UserStatSummary::getActivityId, activityId)
+				.eq(UserStatSummary::getValid, true)
+		);
+	}
+	
+	/**分页查询用户活动积分总和排行
+	 * @Description
+	 * @author huxiaolong
+	 * @Date 2021-10-22 14:36:25
+	 * @param page
+	 * @param flag
+	 * @param fid
+	 * @return com.baomidou.mybatisplus.extension.plugins.pagination.Page<com.chaoxing.activity.dto.stat.UserSummaryStatDTO>
+	 */
+	public Page<UserSummaryStatDTO> pageUserSummaryStat(Page<UserSummaryStatDTO> page, String flag, Integer fid) {
+		Integer marketId = null;
+		if (StringUtils.isNotBlank(flag)) {
+			// 若flag不为空且市场id不存在，则查询结果为空
+			marketId = marketQueryService.getMarketIdByFlag(fid, flag);
+		}
+		return userStatSummaryMapper.pageUserSummaryStat(page, marketId, fid);
+	}
+
 }

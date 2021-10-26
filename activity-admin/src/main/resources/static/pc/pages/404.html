@@ -14,7 +14,7 @@
             background: #fafafa;
         }
 
-        .bgc {
+        .bg-pc {
             width: 900px;
             height: 500px;
             background-image: url(../assets/images/pc404.png);
@@ -30,12 +30,64 @@
             padding-top: 280px;
             box-sizing: border-box;
         }
+
+        .bg-mb {
+            display: none;
+        }
+
+        @media only screen and (min-width: 1px) and (max-width: 767px) {
+            .bg-pc {
+                display: none;
+            }
+
+            .bg-mb {
+                display: block;
+                width: 15.625rem;
+                height: auto;
+                background: url(../assets/images/mb404.png) no-repeat center top;
+                background-size: 13rem 11.25rem;
+                position: absolute;
+                top: 50%;
+                left: 50%;
+                transform: translate(-50%, -50%);
+                font-size: 1rem;
+                text-align: center;
+                color: #333;
+                padding-top: 12rem;
+                box-sizing: border-box;
+            }
+
+            .bg-mb p {
+                display: -webkit-box;
+                -webkit-box-orient: vertical;
+                overflow: hidden;
+                text-overflow: ellipsis;
+                -webkit-line-clamp: 4;
+                white-space: inherit;
+            }
+
+            .bg-mb a {
+                display: block;
+                margin: 1.125rem auto;
+                width: 7.5rem;
+                height: 2rem;
+                line-height: 2rem;
+                border: 1px solid #82C3FF;
+                border-radius: 2rem;
+                font-size: .875rem;
+                color: #0084FF;
+            }
+        }
     </style>
 </head>
 
 <body>
-    <div class="bgc">
+    <div class="bg-pc">
         <p>异常提示文案，替换此文字。</p>
+    </div>
+    <div class="bg-mb">
+        <p>异常提示文案异常提示文案异常提示文案异常提示文案(502)</p>
+        <a href="#">刷新</a>
     </div>
 </body>
 

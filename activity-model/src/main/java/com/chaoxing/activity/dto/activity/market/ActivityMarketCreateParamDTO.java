@@ -35,6 +35,12 @@ public class ActivityMarketCreateParamDTO {
 	private Integer classifyId;
 	/** 活动标识 */
 	private String activityFlag;
+	/** 是否启用通讯录 */
+	private Boolean enableContacts;
+	/** 是否启用组织架构 */
+	private Boolean enableOrganization;
+	/** 是否启用区域架构 */
+	private Boolean enableRegional;
 
 	public Market buildActivityMarket() {
 		return Market.builder()
@@ -42,6 +48,9 @@ public class ActivityMarketCreateParamDTO {
 				.iconCloudId(getIconCloudId())
 				.iconUrl(getIconUrl())
 				.fid(getFid())
+				.enableContacts(getEnableContacts())
+				.enableOrganization(getEnableOrganization())
+				.enableRegional(getEnableRegional())
 				.build();
 	}
 
@@ -53,6 +62,9 @@ public class ActivityMarketCreateParamDTO {
 				.fid(fid)
 				.classifyId(classifyId)
 				.activityFlag(flag)
+				.enableContacts(true)
+				.enableOrganization(true)
+				.enableRegional(true)
 				.build();
 	}
 

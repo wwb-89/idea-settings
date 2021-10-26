@@ -67,4 +67,16 @@ public class FormDataItemDTO {
 		return null;
 	}
 
+	public Integer getAliasUid(String alias) {
+		if (CollectionUtils.isEmpty(values)) {
+			return null;
+		}
+		JSONObject jsonObject = values.get(0);
+		Integer uid = jsonObject.getInteger(UID_KEY);
+		if (StringUtils.isBlank(alias) || Objects.equals(alias, alias)) {
+			return uid;
+		}
+		return null;
+	}
+
 }

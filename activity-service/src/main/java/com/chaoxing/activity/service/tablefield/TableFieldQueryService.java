@@ -212,6 +212,42 @@ public class TableFieldQueryService {
         return result;
     }
 
+    /**查询出市场下需要显示的table field detail列表
+     * @Description
+     * @author huxiaolong
+     * @Date 2021-10-18 16:58:28
+     * @param marketId
+     * @param type
+     * @param associatedType
+     * @return java.util.List<com.chaoxing.activity.model.TableFieldDetail>
+     */
+    public List<TableFieldDetail> listMarketShowTableFieldDetail(Integer marketId, TableField.Type type, TableField.AssociatedType associatedType) {
+        List<TableFieldDetail> result = Lists.newArrayList();
+        List<TableFieldDetail> defaultTableFieldDetails = listTableFieldDetail(type, associatedType);
+        if (CollectionUtils.isEmpty(defaultTableFieldDetails)) {
+            return result;
+        }
+        List<MarketTableField> marketTableFieldDetails = listMarketTableField(marketId, TableField.Type.ACTIVITY_MANAGE_LIST, TableField.AssociatedType.ACTIVITY_MARKET);
+        // 以marketTableFieldDetails作为排序依据
+        if (CollectionUtils.isEmpty(marketTableFieldDetails)) {
+            for (TableFieldDetail fieldDetail : defaultTableFieldDetails) {
+                if (fieldDetail.getDefaultChecked()) {
+                    result.add(fieldDetail);
+                }
+            }
+        } else {
+            Map<Integer, TableFieldDetail> detailIdDetailMap = defaultTableFieldDetails.stream().collect(Collectors.toMap(TableFieldDetail::getId, v -> v));
+            for (MarketTableField activityTableField : marketTableFieldDetails) {
+                Integer tableFieldDetailId = activityTableField.getTableFieldDetailId();
+                TableFieldDetail tableFieldDetail = detailIdDetailMap.get(tableFieldDetailId);
+                if (tableFieldDetail != null) {
+                    result.add(tableFieldDetail);
+                }
+            }
+        }
+        return result;
+    }
+
     /**查询出活动需要显示的table field detail列表
     * @Description
     * @author huxiaolong

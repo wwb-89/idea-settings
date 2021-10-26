@@ -139,7 +139,7 @@
 					var $this = this;
 					return {
 						id: null,
-						activityId: $this.activity.id,
+						activityId: $this.activity && $this.activity.id,
 						passDecideWay: "manual",
 						decideValue: null
 					};
@@ -238,6 +238,7 @@
 					app.ajaxPostWithLoading(url, params, function (data) {
 						if (data.success) {
 							app.showMsg("操作成功", function () {
+								window.opener.postMessage(activityApp.getJsonStr({type: 'inspection_config', inspectionConfigId: data.data}), "*");
 								window.close();
 							});
 						} else {

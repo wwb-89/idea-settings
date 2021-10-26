@@ -426,10 +426,16 @@ public class WfwFormApiService {
 		List<FormDataDTO> wfwFormData = listFormRecord(formId, fid);
 		TreeSet<Integer> fieldValueSet = Sets.newTreeSet();
 		if (CollectionUtils.isNotEmpty(wfwFormData)) {
-			for (FormDataDTO wfwFormDatum : wfwFormData) {
-				Integer uid = wfwFormDatum.getFieldUid(fieldName);
-				if (uid != null) {
-					fieldValueSet.add(uid);
+			// 查询表单结构
+			List<FormStructureDTO> formStructure = getFormStructure(formId, fid);
+			// 根据fieldName找到字段id
+			String fieldAlias = Optional.ofNullable(formStructure).orElse(Lists.newArrayList()).stream().filter(v -> Objects.equals(v.getLabel(), fieldName)).findFirst().map(FormStructureDTO::getAlias).orElse(null);
+			if (StringUtils.isNotBlank(fieldAlias)) {
+				for (FormDataDTO wfwFormDatum : wfwFormData) {
+					Integer uid = wfwFormDatum.getUidByAlias(fieldAlias);
+					if (uid != null) {
+						fieldValueSet.add(uid);
+					}
 				}
 			}
 		}

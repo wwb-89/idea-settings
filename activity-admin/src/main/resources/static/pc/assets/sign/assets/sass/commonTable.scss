@@ -203,7 +203,18 @@ body {
     }
   }
 }
-
+.export-box {
+  line-height: 30px;
+  margin-left: 20px;
+  color: #999999;
+  cursor: pointer;
+  i{
+    margin-right: 4px;
+  }
+  &:hover {
+    color: #0084FF;
+  }
+}
 .search-Box {
   float: right;
   position: relative;
@@ -545,6 +556,23 @@ body {
   }
   .el-table__fixed, .el-table__fixed-right{
     background-color: white;
+  }
+  .input-transparent {
+    width: 100%;
+    line-height: 27px;
+    border: 1px solid transparent;
+    background: none;
+    box-sizing: border-box;
+    padding: 0 10px;
+    border-radius: 2px;
+    &:focus{
+      border: 1px solid #0084FF;
+    }
+  }
+  .icon-edit-3-stroke {
+    margin-left: 4px;
+    color: #ccc;
+    cursor: pointer;
   }
 }
 

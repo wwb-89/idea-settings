@@ -5,11 +5,13 @@ import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.chaoxing.activity.dto.LoginUserDTO;
 import com.chaoxing.activity.dto.export.ExportDataDTO;
+import com.chaoxing.activity.dto.query.ActivityManageQueryDTO;
 import com.chaoxing.activity.dto.query.UserResultQueryDTO;
 import com.chaoxing.activity.dto.query.admin.ActivityStatSummaryQueryDTO;
 import com.chaoxing.activity.dto.query.admin.UserStatSummaryQueryDTO;
 import com.chaoxing.activity.mapper.ExportRecordMapper;
 import com.chaoxing.activity.model.ExportRecord;
+import com.chaoxing.activity.service.activity.ActivityQueryService;
 import com.chaoxing.activity.service.activity.stat.ActivityStatSummaryQueryService;
 import com.chaoxing.activity.service.manager.CloudApiService;
 import com.chaoxing.activity.service.queue.ExportQueueService;
@@ -58,6 +60,8 @@ public class ExportRecordHandleService {
     private UserStatSummaryQueryService userStatSummaryQueryService;
     @Resource
     private UserResultQueryService userResultQueryService;
+    @Resource
+    private ActivityQueryService activityQueryService;
     @Resource
     private CloudApiService cloudApiService;
 
@@ -150,6 +154,10 @@ public class ExportRecordHandleService {
             case ACTIVITY_INSPECTION_MANAGE:
                 UserResultQueryDTO queryParam = JSON.parseObject(params, UserResultQueryDTO.class);
                 exportData = userResultQueryService.packageExportData(queryParam);
+            case ACTIVITY_MANAGE:
+                ActivityManageQueryDTO activityManageQueryParams = JSONObject.parseObject(params, ActivityManageQueryDTO.class);
+                LoginUserDTO exportUser = LoginUserDTO.buildDefault(activityManageQueryParams.getExportUid(), "", activityManageQueryParams.getFid(), "");
+                exportData = activityQueryService.packageExportData(activityManageQueryParams, exportUser);
             default:
         }
         exportData.setSheetName(exportTypeEnum.getName());

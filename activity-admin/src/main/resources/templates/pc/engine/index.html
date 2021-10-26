@@ -137,6 +137,11 @@
                                     <el-switch class="switch fl marginTop6" disabled></el-switch>
                                     <p class="tips third">{{item.introduction}}</p>
                                 </template>
+                                <!-- 考核管理：inspection_manage -->
+                                <template v-else-if="item.code == 'inspection_manage'">
+                                    <el-switch class="switch fl marginTop6" disabled></el-switch>
+                                    <p class="tips third">{{item.introduction}}</p>
+                                </template>
                                 <template v-else-if="item.code == 'work'">
                                     <el-switch class="switch fl marginTop6" disabled></el-switch>
                                     <p class="tips third">{{item.introduction}}</p>
@@ -753,7 +758,7 @@
                 methods:{
                     initData: function () {
                         var $this = this;
-                        var { template, components, templateComponents } = $this.templateInfo
+                        var {template, components, templateComponents} = $this.templateInfo;
                         $this.originTemplateId = template.originTemplateId || template.id;
                         $this.template = template;
                         $(components).each(function () {
@@ -765,7 +770,9 @@
                             $this.pidChildrenMap[this.pid].push(this);
                         });
                         $this.components = components;
-                        $(templateComponents).each(function () { $this.innerAttrSupplement(this); });
+                        $(templateComponents).each(function () {
+                            $this.innerAttrSupplement(this);
+                        });
                         $this.packageTemplateComponents(templateComponents);
                         $this.initComponentTypeList(templateComponents);
                     },
@@ -894,7 +901,9 @@
                     },
                     // 打开添加字段弹框
                     openAddFieldDialog: function () {
-                        var $this = this; $this.addFieldDialog = true; $this.closeBeforeAddField = true;
+                        var $this = this;
+                        $this.addFieldDialog = true;
+                        $this.closeBeforeAddField = true;
                     },
                     // 关闭添加字段弹框
                     closeAddFieldDialog: function () {

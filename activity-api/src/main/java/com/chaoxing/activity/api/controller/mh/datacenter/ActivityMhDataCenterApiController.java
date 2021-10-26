@@ -12,6 +12,7 @@ import com.chaoxing.activity.dto.activity.ActivityComponentValueDTO;
 import com.chaoxing.activity.dto.manager.mh.MhMarketDataCenterDTO;
 import com.chaoxing.activity.dto.manager.sign.SignStatDTO;
 import com.chaoxing.activity.dto.query.ActivityQueryDTO;
+import com.chaoxing.activity.dto.stat.UserSummaryStatDTO;
 import com.chaoxing.activity.model.Activity;
 import com.chaoxing.activity.model.ActivityDetail;
 import com.chaoxing.activity.model.Classify;
@@ -21,14 +22,16 @@ import com.chaoxing.activity.service.activity.ActivityQueryService;
 import com.chaoxing.activity.service.activity.classify.ClassifyQueryService;
 import com.chaoxing.activity.service.activity.engine.ActivityComponentValueService;
 import com.chaoxing.activity.service.activity.market.MarketQueryService;
-import com.chaoxing.activity.service.activity.template.TemplateComponentService;
 import com.chaoxing.activity.service.manager.PassportApiService;
 import com.chaoxing.activity.service.manager.module.SignApiService;
 import com.chaoxing.activity.service.manager.wfw.WfwAreaApiService;
+import com.chaoxing.activity.service.stat.UserStatSummaryQueryService;
+import com.chaoxing.activity.util.DateUtils;
 import com.chaoxing.activity.util.constant.DateTimeFormatterConstant;
 import com.chaoxing.activity.util.constant.UrlConstant;
 import com.chaoxing.activity.util.exception.BusinessException;
 import com.google.common.collect.Lists;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -38,9 +41,9 @@ import org.springframework.web.bind.annotation.RestController;
 
 import javax.annotation.Resource;
 import java.time.LocalDateTime;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -51,6 +54,7 @@ import java.util.stream.Collectors;
  * @date 2021/9/16 10:45
  * <p>
  */
+@Slf4j
 @RestController
 @RequestMapping("mh/data-center")
 public class ActivityMhDataCenterApiController {
@@ -71,6 +75,8 @@ public class ActivityMhDataCenterApiController {
     private SignApiService signApiService;
     @Resource
     private PassportApiService passportApiService;
+    @Resource
+    private UserStatSummaryQueryService userStatSummaryQueryService;
 
 
     /**获取机构下市场的门户数据源接口地址
@@ -92,7 +98,9 @@ public class ActivityMhDataCenterApiController {
         }
         result.add(MhMarketDataCenterDTO.builder()
                 .name("我的活动")
-                .divUrl(UrlConstant.API_DOMAIN + "/mh/data-center/my").build());
+                .divUrl(UrlConstant.API_DOMAIN + "/mh/data-center/my")
+                .searchClassifyUrl(UrlConstant.API_DOMAIN + "/mh/activity-market/classifies")
+                .build());
         return RestRespDTO.success(result);
     }
 
@@ -101,22 +109,24 @@ public class ActivityMhDataCenterApiController {
     * @author huxiaolong
     * @Date 2021-09-26 17:57:11
     * @param data
-* @param marketId
+    * @param marketId
     * @return com.chaoxing.activity.dto.RestRespDTO
     */
     @RequestMapping("market/{marketId}")
     public RestRespDTO index(@RequestBody String data, @PathVariable Integer marketId) {
+        log.info("查询活动市场marketId的活动数据的参数:{}", data);
         JSONObject params = JSON.parseObject(data);
         Integer wfwfid = params.getInteger("wfwfid");
         String sw = params.getString("sw");
 
         Optional.ofNullable(wfwfid).orElseThrow(() -> new BusinessException("wfwfid不能为空"));
-        Integer pageNum = params.getInteger("pageNum");
+        Integer pageNum = params.getInteger("page");
         pageNum = Optional.ofNullable(pageNum).orElse(1);
         Integer pageSize = params.getInteger("pageSize");
         pageSize = Optional.ofNullable(pageSize).orElse(12);
         Integer activityClassifyId = null;
         String classifies = params.getString("classifies");
+        String date = params.getString("date");
         if (StringUtils.isNotBlank(classifies)) {
             JSONArray jsonArray = JSON.parseArray(classifies);
             if (jsonArray.size() > 0) {
@@ -136,6 +146,7 @@ public class ActivityMhDataCenterApiController {
                 .statusList(statusList)
                 .marketId(marketId)
                 .flag(flag)
+                .date(date)
                 .sw(sw)
                 .activityClassifyId(activityClassifyId)
                 .build();
@@ -176,6 +187,7 @@ public class ActivityMhDataCenterApiController {
         for (Activity record : activities) {
             Map<String, String> fieldCodeNameMap = activityQueryService.getFieldCodeNameRelation(record);
             SignStatDTO signStat = signStatMap.get(record.getSignId());
+
             // 活动
             JSONObject activity = new JSONObject();
             Integer activityId = record.getId();
@@ -208,22 +220,35 @@ public class ActivityMhDataCenterApiController {
             // 开始结束时间
             fields.add(buildField(fieldCodeNameMap.getOrDefault("activity_time_scope", "活动时间"), DateTimeFormatterConstant.YYYY_MM_DD_HH_MM.format(record.getStartTime()), ++fieldFlag));
             fields.add(buildField(fieldCodeNameMap.getOrDefault("activity_time_scope", "活动时间"), DateTimeFormatterConstant.YYYY_MM_DD_HH_MM.format(record.getEndTime()), ++fieldFlag));
-
-            // 报名开始结束时间
-            fields.add(buildField(fieldCodeNameMap.getOrDefault("sign_up_time_scope", "报名时间"), DateTimeFormatterConstant.YYYY_MM_DD_HH_MM.format(signStat.getSignUpStartTime()), ++fieldFlag));
-            fields.add(buildField(fieldCodeNameMap.getOrDefault("sign_up_time_scope", "报名时间"), DateTimeFormatterConstant.YYYY_MM_DD_HH_MM.format(signStat.getSignUpEndTime()), ++fieldFlag));
-
-            // 活动状态
-            Activity.StatusEnum statusEnum = Activity.StatusEnum.fromValue(record.getStatus());
-            fields.add(buildField("活动状态", statusEnum.getName(), ++fieldFlag));
+            // 报名数据封装
+            String signUpStatus = "", signUpStartTime = "", signUpEndTime = "";
+            int signedUpNum = 0, personLimit = 0;
+            if (signStat != null && CollectionUtils.isNotEmpty(signStat.getSignUpIds())) {
+                if (signStat.getSignUpStartTime() != null && signStat.getSignUpEndTime() != null) {
+                    signUpStatus = getSignUpStatus(signStat, urlParams);
+                }
+                if (signStat.getSignUpStartTime() != null) {
+                    signUpStartTime = DateTimeFormatterConstant.YYYY_MM_DD_HH_MM.format(signStat.getSignUpStartTime());
+                }
+                if (signStat.getSignUpStartTime() != null) {
+                    signUpEndTime = DateTimeFormatterConstant.YYYY_MM_DD_HH_MM.format(signStat.getSignUpEndTime());
+                }
+                signedUpNum = Optional.ofNullable(signStat.getSignedUpNum()).orElse(0);
+                personLimit = Optional.ofNullable(signStat.getLimitNum()).orElse(0);
+            }
             // 报名状态
-            fields.add(buildField("报名状态", getSignUpStatus(signStat, urlParams), ++fieldFlag));
+            fields.add(buildField("报名状态", signUpStatus, ++fieldFlag));
+            // 已报名人数
+            fields.add(buildField("已报名人数", signedUpNum, ++fieldFlag));
+            // 报名开始结束时间
+            fields.add(buildField(fieldCodeNameMap.getOrDefault("sign_up_time_scope", "报名时间"), signUpStartTime, ++fieldFlag));
+            fields.add(buildField(fieldCodeNameMap.getOrDefault("sign_up_time_scope", "报名时间"), signUpEndTime, ++fieldFlag));
+            // 人数限制
+            fields.add(buildField(fieldCodeNameMap.getOrDefault("sign_up_person_limit", "人数限制"), personLimit == 0 ? "不限" : signStat.getLimitNum(), ++fieldFlag));
+            // 活动状态
+            fields.add(buildField("活动状态", Activity.getStatusDescription(record.getStatus()), ++fieldFlag));
             // 简介（40字纯文本）
             fields.add(buildField(fieldCodeNameMap.getOrDefault("introduction", "简介"), introductionMap.get(activityId), ++fieldFlag));
-            // 已报名人数
-            fields.add(buildField("已报名人数", signStat.getSignedUpNum(), ++fieldFlag));
-            // 人数限制
-            fields.add(buildField(fieldCodeNameMap.getOrDefault("sign_up_person_limit", "人数限制"), signStat.getLimitNum().compareTo(0) == 0 ? "不限" : signStat.getLimitNum(), ++fieldFlag));
             // 活动分类
             fields.add(buildField(fieldCodeNameMap.getOrDefault("activity_classify", "分类"), record.getActivityClassifyName(), ++fieldFlag));
             // 标签
@@ -238,6 +263,8 @@ public class ActivityMhDataCenterApiController {
             }
             // 模板的分类
             fields.add(buildField("活动标识", record.getActivityFlag(), ++fieldFlag));
+            fields.add(buildField("typeID", record.getActivityClassifyId(), 102));
+            fields.add(buildField("活动时间段", DateUtils.activityTimeScope(record.getStartTime(), record.getEndTime(), DateUtils.MIDDLE_LINE_SEPARATOR), 102));
             activityJsonArray.add(activity);
         }
         return activityJsonArray;
@@ -293,7 +320,7 @@ public class ActivityMhDataCenterApiController {
         Integer uid = params.getInteger("uid");
         String sw = params.getString("sw");
         Optional.ofNullable(wfwfid).orElseThrow(() -> new BusinessException("wfwfid不能为空"));
-        Integer pageNum = params.getInteger("pageNum");
+        Integer pageNum = params.getInteger("page");
         pageNum = Optional.ofNullable(pageNum).orElse(1);
         Integer pageSize = params.getInteger("pageSize");
         pageSize = Optional.ofNullable(pageSize).orElse(12);
@@ -301,13 +328,28 @@ public class ActivityMhDataCenterApiController {
         JSONObject urlParams = MhPreParamsUtils.resolve(preParams);
         // flag
         String flag = urlParams.getString("flag");
+        // classifyId
+        Integer activityClassifyId = null;
+        String classifies = params.getString("classifies");
+        if (StringUtils.isNotBlank(classifies)) {
+            JSONArray jsonArray = JSON.parseArray(classifies);
+            if (jsonArray.size() > 0) {
+                JSONObject activityClassify = jsonArray.getJSONObject(0);
+                activityClassifyId = activityClassify.getInteger("id");
+            }
+        }
         Integer specificCurrOrg = urlParams.getInteger("specificCurrOrg");
+        String marketIdStr = urlParams.getString("marketId");
+        List<Integer> marketIds = Lists.newArrayList();
+        if (StringUtils.isNotBlank(marketIdStr)) {
+            marketIds = Arrays.stream(marketIdStr.split(",")).map(Integer::valueOf).collect(Collectors.toList());
+        }
         Page<Activity> page = new Page(pageNum, pageSize);
         if (uid != null) {
             String orgName = passportApiService.getOrgName(wfwfid);
             String username = passportApiService.getUserRealName(uid);
             LoginUserDTO loginUser = LoginUserDTO.buildDefault(uid, username, wfwfid, orgName);
-            page = activityQueryService.pageSignedUp(page, loginUser, sw, flag, specificCurrOrg);
+            page = activityQueryService.mhPageSignedUp(page, loginUser, sw, flag, activityClassifyId, marketIds, specificCurrOrg);
         }
         JSONObject jsonObject = new JSONObject();
         jsonObject.put("curPage", page.getCurrent());
@@ -317,6 +359,61 @@ public class ActivityMhDataCenterApiController {
         JSONArray activityJsonArray = packageActivities(records, urlParams);
         jsonObject.put("results", activityJsonArray);
         return RestRespDTO.success(jsonObject);
+    }
+
+    /**排行榜
+     * @Description
+     * @author huxiaolong
+     * @Date 2021-10-22 14:20:58
+     * @param data
+     * @return com.chaoxing.activity.dto.RestRespDTO
+     */
+    @RequestMapping("user/integral/ranking-list")
+    public RestRespDTO rankingList(@RequestBody String data) {
+        JSONObject params = JSON.parseObject(data);
+        Integer wfwfid = params.getInteger("wfwfid");
+        Integer uid = params.getInteger("uid");
+        String sw = params.getString("sw");
+        Optional.ofNullable(wfwfid).orElseThrow(() -> new BusinessException("wfwfid不能为空"));
+        Integer pageNum = params.getInteger("page");
+        pageNum = Optional.ofNullable(pageNum).orElse(1);
+        Integer pageSize = params.getInteger("pageSize");
+        pageSize = Optional.ofNullable(pageSize).orElse(10);
+        Page<UserSummaryStatDTO> page = new Page(pageNum, pageSize);
+        String preParams = params.getString("preParams");
+        JSONObject urlParams = MhPreParamsUtils.resolve(preParams);
+        String flag = urlParams.getString("flag");
+        page = userStatSummaryQueryService.pageUserSummaryStat(page, flag, wfwfid);
+        JSONObject jsonObject = new JSONObject();
+        jsonObject.put("curPage", page.getCurrent());
+        jsonObject.put("totalPages", page.getPages());
+        jsonObject.put("totalRecords", page.getTotal());
+        List<UserSummaryStatDTO> records = page.getRecords();
+        JSONArray jsonArray = packageUserStatSummary(records);
+        jsonObject.put("results", jsonArray);
+        return RestRespDTO.success(jsonObject);
+    }
+
+    private JSONArray packageUserStatSummary(List<UserSummaryStatDTO> records) {
+        JSONArray jsonArray = new JSONArray();
+        if (CollectionUtils.isEmpty(records)) {
+            return jsonArray;
+        }
+
+        for (UserSummaryStatDTO item : records) {
+            // 活动
+            JSONObject jsonObject = new JSONObject();
+            jsonObject.put("id", item.getUid());
+            jsonObject.put("type", 3);
+            jsonObject.put("orsUrl", "");
+            JSONArray fields = new JSONArray();
+            jsonObject.put("fields", fields);
+            int fieldFlag = 0;
+            fields.add(buildField("姓名", item.getRealName(), fieldFlag));
+            fields.add(buildField("积分", item.getIntegralSum(), fieldFlag));
+            jsonArray.add(jsonObject);
+        }
+        return jsonArray;
     }
 
     /**从signStat报名时间获取报名的进行状态

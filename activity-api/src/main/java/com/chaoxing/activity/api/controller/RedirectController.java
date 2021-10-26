@@ -5,6 +5,7 @@ import com.chaoxing.activity.model.DataPushRecord;
 import com.chaoxing.activity.service.activity.ActivityFormSyncService;
 import com.chaoxing.activity.service.activity.ActivityQueryService;
 import com.chaoxing.activity.service.data.DataPushRecordQueryService;
+import com.chaoxing.activity.service.manager.GroupApiService;
 import com.chaoxing.activity.util.BaiduMapUtils;
 import com.chaoxing.activity.util.UserAgentUtils;
 import com.chaoxing.activity.util.constant.ActivityMhUrlConstant;
@@ -40,6 +41,8 @@ public class RedirectController {
     private DataPushRecordQueryService dataPushRecordQueryService;
     @Resource
     private ActivityFormSyncService activityFormSyncService;
+    @Resource
+    private GroupApiService groupApiService;
 
     /**根据表单行id重定向到活动的详情页面
      * @Description 
@@ -114,7 +117,7 @@ public class RedirectController {
     * @param formUserId
     * @return java.lang.String
     */
-    @RequestMapping("/activity-portal/from/wfw-form")
+    @RequestMapping("activity-portal/from/wfw-form")
     public String redirectToActivityPortal(Integer fid, Integer formId, Integer formUserId) {
         Activity activity = activityFormSyncService.getActivityFromFormInfo(fid, formId, formUserId);
         return "redirect:" + activity.getPreviewUrl();
@@ -129,19 +132,37 @@ public class RedirectController {
     * @param formUserId
     * @return java.lang.String
     */
-    @RequestMapping("/activity-index/from/wfw-form")
+    @RequestMapping("activity-index/from/wfw-form")
     public String redirectToActivityIndex(Integer fid, Integer formId, Integer formUserId) {
         Activity activity = activityFormSyncService.getActivityFromFormInfo(fid, formId, formUserId);
         return "redirect:http://manage.hd.chaoxing.com/activity/" + activity.getId();
     }
 
-    @RequestMapping("/sign-in-list/from/wfw-form")
+    /**重定向签到管理列表
+     * @Description
+     * @author huxiaolong
+     * @Date 2021-10-15 16:25:32
+     * @param fid
+     * @param formId
+     * @param formUserId
+     * @return java.lang.String
+     */
+    @RequestMapping("sign-in-list/from/wfw-form")
     public String redirectToSignInList(Integer fid, Integer formId, Integer formUserId) {
         Activity activity = activityFormSyncService.getActivityFromFormInfo(fid, formId, formUserId);
         return "redirect:http://reading.chaoxing.com/qd/manage/sign-in/list?signId=" + activity.getSignId();
     }
 
-    @RequestMapping("/sign-up-manage/from/wfw-form")
+    /**重定向到报名管理
+     * @Description
+     * @author huxiaolong
+     * @Date 2021-10-15 16:26:10
+     * @param fid
+     * @param formId
+     * @param formUserId
+     * @return java.lang.String
+     */
+    @RequestMapping("sign-up-manage/from/wfw-form")
     public String redirectToActivityIndex1(Integer fid, Integer formId, Integer formUserId) {
         Activity activity = activityFormSyncService.getActivityFromFormInfo(fid, formId, formUserId);
         return "redirect:http://reading.chaoxing.com/qd/manage/sign-up" + activity.getSignId();
@@ -159,6 +180,43 @@ public class RedirectController {
         Activity activity = activityQueryService.getByWebsiteId(websiteId);
         Integer activityId = Optional.ofNullable(activity).map(Activity::getId).orElse(1);
         return "redirect:" + String.format(ActivityMhUrlConstant.ACTIVITY_POSTERS_URL, activityId);
+    }
+
+    /**重定向到作品征集管理
+     * @Description
+     * @author huxiaolong
+     * @Date 2021-10-15 16:26:40
+     * @param fid
+     * @param formId
+     * @param formUserId
+     * @return java.lang.String
+     */
+    @RequestMapping("work-manage/from/wfw-form")
+    public String redirectToWorkManage(Integer fid, Integer formId, Integer formUserId) {
+        Activity activity = activityFormSyncService.getActivityFromFormInfo(fid, formId, formUserId);
+        if (activity.getOpenWork() && activity.getWorkId() != null) {
+            return "redirect:" + UrlConstant.getWorkManageUrl(activity.getWorkId());
+        }
+        return "";
+    }
+
+    /**重定向到小组主页
+     * @Description 
+     * @author wwb
+     * @Date 2021-10-22 10:47:17
+     * @param request
+     * @param bbsid
+     * @return java.lang.String
+    */
+    @RequestMapping("group/{bbsid}")
+    public String redirectGroupIndex(HttpServletRequest request, @PathVariable String bbsid) {
+        String url;
+        if (UserAgentUtils.isMobileAccess(request)) {
+            url = groupApiService.getMobileGroupUrl(bbsid);
+        } else {
+            url = groupApiService.getPcGroupUrl(bbsid);
+        }
+        return "redirect:" + url;
     }
 
 }

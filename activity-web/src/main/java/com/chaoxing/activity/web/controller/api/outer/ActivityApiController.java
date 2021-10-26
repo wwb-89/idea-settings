@@ -28,6 +28,7 @@ import javax.servlet.http.HttpServletRequest;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -92,7 +93,8 @@ public class ActivityApiController {
 	}
 
 	/**查询推荐活动
-	 * @Description
+	 * @Description 推荐规则
+	 * 1、优先只查发布到这个单位馆及下级单位的活动
 	 * @author wwb
 	 * @Date 2021-01-19 11:04:55
 	 * @param request
@@ -107,8 +109,13 @@ public class ActivityApiController {
 			wfwRegionalArchitectures = wfwAreaApiService.listByCode(areaCode);
 		}
 		if (CollectionUtils.isNotEmpty(wfwRegionalArchitectures)) {
-			List<Integer> subFids = wfwRegionalArchitectures.stream().map(WfwAreaDTO::getFid).collect(Collectors.toList());
-			fids.addAll(subFids);
+			// 找到当前机构的code
+			List<String> codes = wfwRegionalArchitectures.stream().filter(v -> Objects.equals(v.getFid(), fid)).map(WfwAreaDTO::getCode).collect(Collectors.toList());
+			if (CollectionUtils.isNotEmpty(codes)) {
+				String code = codes.get(0);
+				List<Integer> subFids = wfwRegionalArchitectures.stream().filter(v -> (StringUtils.isNotBlank(v.getCode()) && v.getCode().startsWith(code))).map(WfwAreaDTO::getFid).collect(Collectors.toList());
+				fids.addAll(subFids);
+			}
 		} else {
 			fids.add(fid);
 		}

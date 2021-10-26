@@ -10,6 +10,7 @@ import com.chaoxing.activity.service.activity.ActivityValidationService;
 import com.chaoxing.activity.service.inspection.InspectionConfigQueryService;
 import com.chaoxing.activity.util.UserAgentUtils;
 import com.chaoxing.activity.util.enums.UserActionTypeEnum;
+import com.google.common.collect.Lists;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -28,7 +29,7 @@ import java.util.List;
  * @date 2021-06-16 14:35:09
  */
 @Controller
-@RequestMapping("activity/{activityId}/inspection")
+@RequestMapping("activity/inspection")
 public class InspectionController {
 
 	@Resource
@@ -37,7 +38,14 @@ public class InspectionController {
 	private InspectionConfigQueryService inspectionConfigQueryService;
 
 	@RequestMapping("config")
-	public String config(HttpServletRequest request, Model model, @PathVariable Integer activityId) {
+	public String config(HttpServletRequest request, Model model, Integer activityId, Integer configId) {
+		if (activityId == null) {
+			return toConfigIndexByConfigId(request, model, configId);
+		}
+		return toConfigIndexByActivityId(request, model, activityId);
+	}
+
+	private String toConfigIndexByActivityId(HttpServletRequest request, Model model, Integer activityId) {
 		LoginUserDTO loginUser = LoginUtils.getLoginUser(request);
 		// 可以管理活动
 		Activity activity = activityValidationService.manageAble(activityId, loginUser.getUid());
@@ -57,5 +65,29 @@ public class InspectionController {
 			return "pc/inspection/inspection-config";
 		}
 	}
+
+	private String toConfigIndexByConfigId(HttpServletRequest request, Model model, Integer configId) {
+		// 考核配置
+		InspectionConfig inspectionConfig = InspectionConfig.buildDefault(null);
+		if (configId != null) {
+			inspectionConfig = inspectionConfigQueryService.getByConfigId(configId);
+		}
+		model.addAttribute("inspectionConfig", inspectionConfig);
+		// 考核配置详情列表
+		List<InspectionConfigDetail> inspectionConfigDetails = Lists.newArrayList(InspectionConfigDetail.buildDefault(configId));
+		if (inspectionConfig.getId() != null) {
+			inspectionConfigDetails = inspectionConfigQueryService.listDetailByConfig(inspectionConfig);
+		}
+		model.addAttribute("inspectionConfigDetails", inspectionConfigDetails);
+		// 用户行为
+		List<UserActionTypeDTO> userActionTypes = UserActionTypeDTO.fromUserActionTypeEnum();
+		model.addAttribute("userActionTypes", userActionTypes);
+		if (UserAgentUtils.isMobileAccess(request)) {
+			return "";
+		} else {
+			return "pc/inspection/inspection-config";
+		}
+	}
+
 
 }

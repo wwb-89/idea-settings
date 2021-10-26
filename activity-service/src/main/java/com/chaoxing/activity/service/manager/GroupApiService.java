@@ -33,8 +33,10 @@ public class GroupApiService {
     /** 获取小组信息url */
     private static final String GET_URL = DOMAIN + "/apis/circle/getCircle";
     
-    /** 小组地址url */
-    private static final String GROUP_URL = "http://groupweb.chaoxing.com/pc/topic/topiclist/index?bbsid=%s";
+    /** 小组PC地址url */
+    private static final String GROUP_PC_URL = "http://groupweb.chaoxing.com/pc/topic/topiclist/index?bbsid=%s";
+    /** 小组移动端地址url */
+    private static final String GROUP_MOBILE_URL = "https://groupweb.chaoxing.com/app/circle/showCircle?bbsid=%s";
 
     @Resource(name = "restTemplateProxy")
     private RestTemplate restTemplate;
@@ -84,15 +86,26 @@ public class GroupApiService {
         }
     }
 
-    /**小组的url
+    /**小组pc端的url
      * @Description 
      * @author wwb
      * @Date 2021-09-17 15:55:32
      * @param bbsid
      * @return java.lang.String
     */
-    public String getGroupUrl(String bbsid) {
-        return String.format(GROUP_URL, bbsid);
+    public String getPcGroupUrl(String bbsid) {
+        return String.format(GROUP_PC_URL, bbsid);
+    }
+
+    /**小组移动端的url
+     * @Description 
+     * @author wwb
+     * @Date 2021-10-22 11:23:13
+     * @param bbsid
+     * @return java.lang.String
+    */
+    public String getMobileGroupUrl(String bbsid) {
+        return String.format(GROUP_MOBILE_URL, bbsid);
     }
 
 }

@@ -104,4 +104,23 @@
         </if>
     </select>
 
+    <select id="listActivityStatSummariesByIds"
+            resultType="com.chaoxing.activity.dto.stat.ActivityStatSummaryDTO">
+        SELECT
+            <include refid="activityStatColumnList"></include>
+        FROM
+        t_activity_stat_summary t
+        INNER JOIN t_activity t1 ON t1.id = t.activity_id
+        <if test="activityIds != null and activityIds.size() > 0">
+            AND t.activity_id IN
+            <foreach collection="activityIds" item="activityId" open="(" close=")" separator=",">
+                #{activityId}
+            </foreach>
+        </if>
+        AND t1.status != 0
+        LEFT JOIN t_activity_rating t2 ON t.activity_id = t2.activity_id
+        LEFT JOIN t_activity_detail t3 ON t.activity_id = t3.activity_id
+        GROUP BY t1.id
+    </select>
+
 </mapper>

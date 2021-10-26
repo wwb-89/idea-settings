@@ -1,5 +1,6 @@
 package com.chaoxing.activity.service.inspection;
 
+import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.chaoxing.activity.dto.LoginUserDTO;
 import com.chaoxing.activity.mapper.InspectionConfigDetailMapper;
@@ -86,23 +87,71 @@ public class InspectionConfigHandleService {
 	 * @return void
 	*/
 	@Transactional(rollbackFor = Exception.class)
-	public void config(InspectionConfig inspectionConfig, List<InspectionConfigDetail> inspectionConfigDetails, LoginUserDTO loginUser) {
-		Integer activityId = inspectionConfig.getActivityId();
-		Activity activity = activityValidationService.manageAble(activityId, loginUser.getUid());
-		InspectionConfig existInspectionConfig = inspectionConfigQueryService.getByActivityId(activityId);
-		boolean standardChanged = isStandardChanged(inspectionConfig, existInspectionConfig);
-		if (existInspectionConfig == null) {
-			// 新增
-			inspectionConfigMapper.insert(inspectionConfig);
+	public Integer config(InspectionConfig inspectionConfig, List<InspectionConfigDetail> inspectionConfigDetails, LoginUserDTO loginUser) {
+		if (inspectionConfig.getId() == null) {
+			return add(inspectionConfig, inspectionConfigDetails);
 		} else {
-			// 更新
-			inspectionConfigMapper.update(null, new UpdateWrapper<InspectionConfig>()
-				.lambda()
-					.eq(InspectionConfig::getId, existInspectionConfig.getId())
-					.set(InspectionConfig::getPassDecideWay, inspectionConfig.getPassDecideWay())
-					.set(InspectionConfig::getDecideValue, inspectionConfig.getDecideValue())
-			);
+			return edit(inspectionConfig, inspectionConfigDetails, loginUser);
 		}
+	}
+
+	public void reCalculateScore(Integer activityId) {
+		// 重新计算得分
+		List<UserResult> userResults = userResultQueryService.listByActivityId(activityId);
+		if (CollectionUtils.isNotEmpty(userResults)) {
+			for (UserResult userResult : userResults) {
+				userResultQueueService.push(new UserResultQueueService.QueueParamDTO(userResult.getUid(), userResult.getActivityId()));
+			}
+		}
+	}
+
+	/**
+	 * @Description
+	 * @author huxiaolong
+	 * @Date 2021-10-19 11:33:58
+	 * @param inspectionConfig
+	 * @param inspectionConfigDetails
+	 * @return java.lang.Integer
+	 */
+	public Integer add(InspectionConfig inspectionConfig, List<InspectionConfigDetail> inspectionConfigDetails) {
+		inspectionConfigMapper.insert(inspectionConfig);
+		Integer configId = inspectionConfig.getId();
+		for (InspectionConfigDetail inspectionConfigDetail : inspectionConfigDetails) {
+			inspectionConfigDetail.setConfigId(configId);
+			inspectionConfigDetailMapper.insert(inspectionConfigDetail);
+		}
+		return configId;
+	}
+
+	/**
+	 * @Description
+	 * @author huxiaolong
+	 * @Date 2021-10-19 11:34:05
+	 * @param inspectionConfig
+	 * @param inspectionConfigDetails
+	 * @param loginUser
+	 * @return java.lang.Integer
+	 */
+	public Integer edit(InspectionConfig inspectionConfig, List<InspectionConfigDetail> inspectionConfigDetails, LoginUserDTO loginUser) {
+		Integer activityId = inspectionConfig.getActivityId();
+		InspectionConfig existInspectionConfig;
+		Activity activity = null;
+		if (activityId == null) {
+			existInspectionConfig = inspectionConfigQueryService.getByConfigId(inspectionConfig.getId());
+		} else {
+			activity = activityValidationService.manageAble(activityId, loginUser.getUid());
+			existInspectionConfig = inspectionConfigQueryService.getByActivityId(activityId);
+		}
+
+		boolean standardChanged = isStandardChanged(inspectionConfig, existInspectionConfig);
+		// 更新
+		inspectionConfigMapper.update(null, new UpdateWrapper<InspectionConfig>()
+				.lambda()
+				.eq(InspectionConfig::getId, existInspectionConfig.getId())
+				.set(InspectionConfig::getPassDecideWay, inspectionConfig.getPassDecideWay())
+				.set(InspectionConfig::getDecideValue, inspectionConfig.getDecideValue())
+		);
+
 		Integer configId = inspectionConfig.getId();
 		List<InspectionConfigDetail> oldInspectionConfigDetails = inspectionConfigQueryService.listDetailByActivityId(activityId);
 		boolean ruleChanged = isRuleChanged(inspectionConfigDetails, oldInspectionConfigDetails);
@@ -112,7 +161,7 @@ public class InspectionConfigHandleService {
 				inspectionConfigDetailMapper.insert(inspectionConfigDetail);
 			} else {
 				inspectionConfigDetailMapper.update(null, new UpdateWrapper<InspectionConfigDetail>()
-					.lambda()
+						.lambda()
 						.eq(InspectionConfigDetail::getId, inspectionConfigDetail.getId())
 						.set(InspectionConfigDetail::getScore, inspectionConfigDetail.getScore())
 						.set(InspectionConfigDetail::getUpperLimit, inspectionConfigDetail.getUpperLimit())
@@ -121,18 +170,26 @@ public class InspectionConfigHandleService {
 			}
 		}
 		if (ruleChanged) {
-			// 重新计算得分
-			List<UserResult> userResults = userResultQueryService.listByActivityId(activityId);
-			if (CollectionUtils.isNotEmpty(userResults)) {
-				for (UserResult userResult : userResults) {
-					userResultQueueService.push(new UserResultQueueService.QueueParamDTO(userResult.getUid(), userResult.getActivityId()));
-				}
-			}
+			reCalculateScore(activityId);
 		}
 		// 如果活动已经结束需要重新判定成绩
-		if (activity.isEnded() && standardChanged) {
+		if (activity != null && activity.isEnded() && standardChanged) {
 			activityInspectionResultDecideQueueService.push(activityId);
 		}
+		return configId;
+	}
+
+	/**更新考核配置活动id
+	* @Description
+	* @author huxiaolong
+	* @Date 2021-10-19 11:35:22
+	* @param configId
+	* @param activityId
+	* @return void
+	*/
+	public void updateConfigActivityId(Integer configId, Integer activityId) {
+		inspectionConfigMapper.update(null, new LambdaUpdateWrapper<InspectionConfig>()
+				.eq(InspectionConfig::getId, configId).set(InspectionConfig::getActivityId, activityId));
 	}
 
 	/**标准是否改变

@@ -36,6 +36,8 @@ public class WfwAppParamDTO {
 	private String pcUrl;
 	/** 应用管理端地址 */
 	private String adminUrl;
+	/** 微信端应用地址 */
+	private String wechatUrl;
 
 	public static WfwAppParamDTO buildFromActivityMarket(Market activityMarket, Integer classifyId) {
 		return WfwAppParamDTO.builder()
@@ -47,6 +49,7 @@ public class WfwAppParamDTO {
 				.appUrl(activityMarket.buildAppUrl())
 				.pcUrl(activityMarket.buildPcUrl())
 				.adminUrl(activityMarket.buildMarketmanageUrl())
+				.wechatUrl(activityMarket.buildAppUrl())
 				.build();
 	}
 

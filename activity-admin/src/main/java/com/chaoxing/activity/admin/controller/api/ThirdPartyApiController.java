@@ -7,7 +7,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.annotation.Resource;
-import javax.servlet.http.HttpServletRequest;
+import java.util.List;
 
 /**
  * @author huxiaolong
@@ -28,12 +28,12 @@ public class ThirdPartyApiController {
     * @Description
     * @author huxiaolong
     * @Date 2021-09-03 16:42:48
-    * @param request
     * @param url
     * @return com.chaoxing.activity.dto.RestRespDTO
     */
     @RequestMapping("/query/teaching/clazz")
-    public RestRespDTO searchDataFormThirdPartyUrl(HttpServletRequest request, String url) {
-        return RestRespDTO.success(thirdPartyApiService.getDataFromThirdPartyUrl(request, url, ClazzDTO.class));
+    public RestRespDTO searchDataFormThirdPartyUrl(String url) {
+        List<ClazzDTO> clazzes = thirdPartyApiService.getDataFromThirdPartyUrl(url, ClazzDTO.class);
+        return RestRespDTO.success(clazzes);
     }
 }

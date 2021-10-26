@@ -58,6 +58,7 @@ public class ActivityApiController {
 	*/
 	@RequestMapping("list/participate")
 	public RestRespDTO list(HttpServletRequest request, String data) {
+		LoginUserDTO loginUser = LoginUtils.getLoginUser(request);
 		ActivityQueryDTO activityQuery = JSON.parseObject(data, ActivityQueryDTO.class);
 		String areaCode = activityQuery.getAreaCode();
 		List<WfwAreaDTO> wfwRegionalArchitectures;
@@ -67,14 +68,14 @@ public class ActivityApiController {
 			wfwRegionalArchitectures = wfwAreaApiService.listByCode(areaCode);
 		} else {
 			if (topFid == null) {
-				topFid = Optional.ofNullable(LoginUtils.getLoginUser(request)).map(LoginUserDTO::getFid).orElse(null);
+				topFid = Optional.ofNullable(loginUser).map(LoginUserDTO::getFid).orElse(null);
 			}
 			wfwRegionalArchitectures = wfwAreaApiService.listByFid(topFid);
 		}
 		// 区域code不存在，且查询范围为1:所有，直接查询
 		if (StringUtils.isBlank(areaCode) && Objects.equals(activityQuery.getScope(), 1)) {
 			Page<Activity> page = HttpServletRequestUtils.buid(request);
-			page = activityQueryService.listParticipate(page, activityQuery);
+			page = activityQueryService.pageFlag(page, activityQuery);
 			return RestRespDTO.success(page);
 		}
 		List<Integer> fids = Lists.newArrayList();
@@ -85,6 +86,7 @@ public class ActivityApiController {
 			fids.add(topFid);
 		}
 		activityQuery.setFids(fids);
+		activityQuery.setCurrentUid(Optional.ofNullable(loginUser).map(LoginUserDTO::getUid).orElse(null));
 		Page<Activity> page = HttpServletRequestUtils.buid(request);
 		page = activityQueryService.listParticipate(page, activityQuery);
 		return RestRespDTO.success(page);
@@ -153,7 +155,7 @@ public class ActivityApiController {
 	public RestRespDTO pageSignedUp(HttpServletRequest request, String sw, String flag) {
 		LoginUserDTO loginUser = LoginUtils.getLoginUser(request);
 		Page page = HttpServletRequestUtils.buid(request);
-		page = activityQueryService.pageSignedUp(page, loginUser, sw, flag, 0);
+		page = activityQueryService.pageSignedUp(page, loginUser, sw, flag);
 		return RestRespDTO.success(page);
 	}
 

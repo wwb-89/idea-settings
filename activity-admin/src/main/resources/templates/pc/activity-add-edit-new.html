@@ -62,8 +62,8 @@
                 </template>
             </div>
             <div class="name-txt">{{activity.id ? '设置' : '新建'}}</div>
-            <button v-if="activity.id" type="button" class="create-btn" @click="editSubmit">保存</button>
-            <button v-else type="button" class="create-btn" @click="addSubmit">保存</button>
+            <button v-if="activity.id" type="button" class="create-btn" @click="editSubmit(true)">保存</button>
+            <button v-else type="button" class="create-btn" @click="addSubmit(true)">保存</button>
         </div>
         <!-- 创建活动头部 -->
         <div v-show="templateComponents && activity">
@@ -147,6 +147,7 @@
                                 </div>
                             </div>
                         </template>
+                        <!--活动类型-->
                         <div class="form-item cancel-margin" v-else-if="item.code == 'activity_classify'">
                             <label class="label"><img src="/static/pc/assets/images/required.png" th:src="@{/pc/assets/images/required.png}" class="required-img" v-if="item.required">{{item.name}}</label>
                             <div class="input-box wrap">
@@ -158,8 +159,8 @@
                                     </el-select>
                                 </div>
                                 <template v-if="strict != 1">
-                                    <div :class="{'type-item': true, 'paddingR0': (!activityClassify.system && activityClassify.owner), 'active': activityClassify.selected}" v-for="(activityClassify, index) of activityClassifies" :key="'activity-classify-' + index" @click="selectActivityClassify(index)">{{activityClassify.name}}
-                                        <div class="more-box" v-if="!activityClassify.system && activityClassify.owner">
+                                    <div :class="{'type-item': true, 'paddingR0': activityClassify.owner, 'active': activityClassify.selected}" v-for="(activityClassify, index) of activityClassifies" :key="'activity-classify-' + index" @click="selectActivityClassify(index)">{{activityClassify.name}}
+                                        <div class="more-box" v-if="activityClassify.owner">
                                             <div class="more-btn"></div>
                                             <div class="edit-box">
                                                 <div @click="toEditActivityClassify(index, $event)">编辑</div>
@@ -215,7 +216,7 @@
                         <div class="form-item last marginTop16" v-else-if="item.code == 'activity_release_scope'">
                             <label class="label"><img src="/static/pc/assets/images/required.png" th:src="@{/pc/assets/images/required.png}" class="required-img" v-if="item.required">{{item.name}}</label>
                             <div class="input-box wrap">
-                                <el-select v-if="item.dataOrigin == 'interface'" multiple v-model="releaseClassIds" placeholder="请选择" style="width: 45%">
+                                <el-select v-if="item.dataOrigin == 'interface'" multiple v-model="releaseClassIds" placeholder="请选择" style="width: 45%" :loading="classDataLoading" :loading-text="'加载中'" @focus="loadReleaseClassData(item.originIdentify)">
                                     <el-option v-for="value in classList" :key="value.id" :label="value.name" :value="value.id"></el-option>
                                 </el-select>
                                 <template v-else>
@@ -233,7 +234,7 @@
                                         <img src="/static/pc/assets/images/edit-3.png" th:src="@{/pc/assets/images/edit-3.png}">
                                     </div>
                                 </template>
-                                <span class="tips" v-if="item.introduction">{{item.introduction}}</span>
+                                <span class="tips" v-if="item.introduction" v-html="item.introduction">按照区域架构选择活动范围</span>
                             </div>
                         </div>
                         <!--签到-->
@@ -242,7 +243,7 @@
                             <div class="input-box wrap">
                                 <div class="already_add" v-show="participatedOrgs.length > 0" @click="toSignInList">
                                     <div>
-                                        已发布{{signInNum}}个签到
+                                        {{signInNum == 0 ? '添加签到' : ('已发布' + signInNum + '个签到')}}
                                     </div>
                                     <img src="/static/pc/assets/images/edit-3.png" th:src="@{/pc/assets/images/edit-3.png}">
                                 </div>
@@ -260,6 +261,19 @@
                                 <div class="set-box configurationForm" v-show="activity.openWork" @click="workManage">
                                     <img src="/static/pc/assets/images/setting.png" th:src="@{/pc/assets/images/setting.png}">
                                     <span class="tips set-information">征集设置</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-item align-start" v-else-if="item.code == 'inspection_config'">
+                            <label class="label">{{item.name}}</label>
+                            <div class="input-box column">
+                                <div class="set-box">
+                                    <el-switch v-model="activity.openInspectionConfig" class="examine-switch"></el-switch>
+                                    <span class="tips" v-if="item.introduction">{{item.introduction}}</span>
+                                </div>
+                                <div class="set-box configurationForm" v-show="activity.openInspectionConfig" @click="toInspectionConfig">
+                                    <img src="/static/pc/assets/images/setting.png" th:src="@{/pc/assets/images/setting.png}">
+                                    <span class="tips set-information">考核配置</span>
                                 </div>
                             </div>
                         </div>
@@ -441,7 +455,7 @@
                                         <label class="label" style="line-height: 20px;"><img src="/static/pc/assets/images/required.png" th:src="@{/pc/assets/images/required.png}" class="required-img" v-if="it.required">{{it.name}}</label>
                                         <div class="input-box column">
                                             <div class="set-box">
-                                                <el-switch v-model="signUpMap[item.id].fillInfo"></el-switch>
+                                                <el-switch v-model="signUpMap[item.id].fillInfo" @change="formFillSwitchChange($event, it)"></el-switch>
                                                 <span class="tips" v-if="it.introduction">{{it.introduction}}</span>
                                             </div>
                                             <div v-if="signUpMap[item.id].formType == 'form'" class="set-box configurationForm" v-show="signUpMap[item.id].fillInfo" @click="toConfigForm(item.id)">
@@ -524,7 +538,7 @@
                         <div class="form-item" v-else-if="item.type == 'text'">
                             <label class="label"><img src="/static/pc/assets/images/required.png" th:src="@{/pc/assets/images/required.png}" class="required-img" v-if="item.required">{{item.name}}</label>
                             <div class="input-box">
-                                <el-input type="text" :placeholder="'请填写' + item.introduction" v-model.trim="activityComponentValueMap[item.id].value"></el-input>
+                                <el-input type="text" placeholder="请填写" v-model.trim="activityComponentValueMap[item.id].value"></el-input>
                                 <span class="tips" v-if="item.introduction">{{item.introduction}}</span>
                             </div>
                         </div>
@@ -685,6 +699,10 @@
         <vue-activity-participate-scope :fid="fid" :title="releaseScopeTitle" ref="activityParticipateScopeWindow" @callback="updateParticipatedOrgs"></vue-activity-participate-scope>
         <!--预览url复制容器-->
         <input type="text" id="template-preview-url-input" v-model.trim="activity.previewUrl" style="position: absolute; top: -100px; height: 1px;">
+        <!--活动是线下但是没有选择地点的提示-->
+        <vue-confirm ref="offlineEmptyAddressWindow" :message="'未填写位置信息，展示页面中的地图位置可能不准确'" :cancel="'取消'" :sure="'继续保存'" @callback="ignoreOfflineEmptyAddress"></vue-confirm>
+        <!--重新选择门户模版-->
+        <vue-confirm ref="reSelectWebTemplateWindow" :message="'重新选择展示页面可能会导致部分数据丢失'" :cancel="'取消'" :sure="'继续'" @callback="sureReSelectWebTemplate"></vue-confirm>
         <!-- 报名参与范围弹窗 -->
         <div class="dailog-box1" v-show="signUpParticipateWindowShow">
             <div class="dailog">
@@ -836,9 +854,14 @@
                 showSignInListIframe: false,
                 scrollHeight: 0,
                 signInNum: 0,
+                // 报名填报万能表单窗口
                 wfwFormConfigWindow: null,
+                // 考核管理配置窗口
+                inspectionConfigWindow: null,
                 releaseScopeTitle: "",
-                activityClassifyTitle: "分类"
+                activityClassifyTitle: "分类",
+                // 班级
+                classDataLoading: false
             },
             created: function () {
                 var $this = this;
@@ -853,7 +876,7 @@
                         $this.$set($this.signUpMap[originId], 'wechatUrl', data.wechatUrl);
                         $this.$set($this.signUpMap[originId], 'fillInfoFormId', data.formId);
                         $this.wfwFormConfigWindow.close();
-                    }else {
+                    } else {
                         try {
                             var data = activityApp.getJsonObject(e.data);
                             if ("sign_in_list" == data.type) {
@@ -866,6 +889,8 @@
                                 $this.$nextTick(function () {
                                     $(document).scrollTop($this.scrollHeight);
                                 });
+                            } else if ("inspection_config" == data.type) {
+                                $this.activity.inspectionConfigId = data.inspectionConfigId;
                             }
                         } catch (e) {
                         }
@@ -882,8 +907,6 @@
                     }
                     if ($this.releaseType == "org" && this.code == 'activity_release_scope' && this.dataOrigin == 'interface') {
                         $this.releaseType = "class";
-                        // 发布班级url不为空，则请求发布班级列表
-                        $this.loadReleaseClassData(this.originIdentify);
                     }
                     if (_this.children && _this.children.length > 0) {
                         $(_this.children).each(function () {
@@ -953,7 +976,9 @@
                         webTemplateId: '',
                         // 目前数据接收实体没有以下字段
                         activityFlag: $this.activityFlag,
-                        openGroup: false
+                        openGroup: false,
+                        openInspectionConfig: false,
+                        inspectionConfigId: null
                     };
                     // 展示模板页面 初始化默认选择第一个
                     var firstWebTemplate = $this.webTemplates && $this.webTemplates[0];
@@ -1028,6 +1053,21 @@
                     $($this.templateComponents).each(function () {
                         if (this.code == 'sign_up' || this.code == 'company_sign_up') {
                             var signUp = signApp.newSignUp(this);
+                            if (this.code == 'company_sign_up') {
+                                signUp.fillInfo = true;
+                                signUp.customSignUpType = "company";
+                            }
+                            var signUpChildrenComponents = this.children;
+                            if (!activityApp.isEmpty(signUpChildrenComponents)) {
+                                $(signUpChildrenComponents).each(function () {
+                                    if ("sign_up_fill_info" == this.code) {
+                                        var signUpFillInfoType = this.signUpFillInfoType;
+                                        if (!activityApp.isEmpty(signUpFillInfoType)) {
+                                            signUp.formType = signUpFillInfoType.type;
+                                        }
+                                    }
+                                });
+                            }
                             signUp.originId = this.id;
                             $this.$set($this.signUpMap, this.id, signUp);
                         } else if (this.code == 'sign_in' || this.code == 'sign_out') {
@@ -1046,7 +1086,8 @@
                 } else {
                     $this.countSignInNum();
                     // 报名签到
-                    var signUpTplComponentIds = [], signInTplComponentIds = [];
+                    var signUpTplComponentIds = [];
+                    var signInTplComponentIds = [];
                     $($this.templateComponents).each(function () {
                         if (this.code == 'sign_up' || this.code == 'company_sign_up') {
                             signUpTplComponentIds.push(this.id);
@@ -1091,13 +1132,30 @@
                         }
                     });
 
-                    $(signUpTplComponentIds).each(function (i) {
-                        var originId = signUpTplComponentIds[i];
-                        if (!$this.signUpMap[originId]) {
-                            var signUp = signApp.newSignUp($this.templateComponentMap[originId]);
-                            signUp.originId = originId;
-                            signUp.deleted = true;
-                            $this.$set($this.signUpMap, originId, signUp);
+                    $($this.templateComponents).each(function () {
+                        var originId = this.id;
+                        if (this.code == 'sign_up' || this.code == 'company_sign_up') {
+                            if (!$this.signUpMap[originId]) {
+                                var signUp = signApp.newSignUp($this.templateComponentMap[originId]);
+                                signUp.originId = originId;
+                                if (this.code == 'company_sign_up') {
+                                    signUp.fillInfo = true;
+                                    signUp.customSignUpType = "company";
+                                }
+                                var signUpChildrenComponents = this.children;
+                                if (!activityApp.isEmpty(signUpChildrenComponents)) {
+                                    $(signUpChildrenComponents).each(function () {
+                                        if ("sign_up_fill_info" == this.code) {
+                                            var signUpFillInfoType = this.signUpFillInfoType;
+                                            if (!activityApp.isEmpty(signUpFillInfoType)) {
+                                                signUp.formType = signUpFillInfoType.type;
+                                            }
+                                        }
+                                    });
+                                }
+                                signUp.deleted = true;
+                                $this.$set($this.signUpMap, originId, signUp);
+                            }
                         }
                     });
                     // 签到、签退
@@ -1346,9 +1404,13 @@
                         app.showMsg("发布班级数据接口地址非法");
                         return;
                     }
-                    var url = ctx + "/api/third-party/query/teaching/clazz"
+                    if ($this.classDataLoading) {
+                        return;
+                    }
+                    $this.classDataLoading = true;
+                    var url = ctx + "/api/third-party/query/teaching/clazz";
                     dataUrl = $this.packageReleaseClassUrl(dataUrl);
-                    app.ajaxPostWithLoading(url, {url: dataUrl}, function (data) {
+                    app.ajaxPost(url, {url: dataUrl}, function (data) {
                         if (data.success) {
                             $this.classList = data.data;
                             var finalReleaseClassIds = [];
@@ -1365,7 +1427,9 @@
                             }
                             app.showMsg(errorMessage);
                         }
+                        $this.classDataLoading = false;
                     }, function () {
+                        $this.classDataLoading = false;
                         app.showMsg("获取班级列表失败");
                     });
                 },
@@ -1413,10 +1477,6 @@
                 // 确定活动地址
                 activityAddressSure: function () {
                     var $this = this;
-                    if (activityApp.isEmpty($this.$refs.activityMap.lng) || activityApp.isEmpty($this.$refs.activityMap.lat)) {
-                        app.showMsg("请选择地址");
-                        return;
-                    }
                     $this.activity.address = $this.$refs.activityMap.address;
                     $this.activity.longitude = $this.$refs.activityMap.lng;
                     $this.activity.dimension = $this.$refs.activityMap.lat;
@@ -1497,6 +1557,7 @@
                     app.ajaxPostWithLoading(url, params, function (data) {
                         if (data.success) {
                             var data = data.data;
+                            data.owner = true;
                             if (isAdd) {
                                 data.selected = false;
                                 $this.activityClassifies.push(data);
@@ -1584,7 +1645,7 @@
                     $this.$refs.deleteTagWindow.show = false;
                 },
                 // 验证输入
-                validateForm: function () {
+                validateForm: function (validateOfflineAddress) {
                     var $this = this;
                     if (activityApp.isEmpty($this.activity.name)) {
                         app.showMsg("活动名称不能为空");
@@ -1627,11 +1688,11 @@
                                 return false;
                             }
                             if (activityApp.isEmpty(signUp.endTime)) {
-                                app.showMsg(signUp + "结束时间不能为空");
+                                app.showMsg(signUp.name + "结束时间不能为空");
                                 return false;
                             }
                             if (signUp.startTime >= signUp.endTime) {
-                                app.showMsg(signUp + "开始时间必须小于结束时间");
+                                app.showMsg(signUp.name + "开始时间必须小于结束时间");
                                 return false;
                             }
                             // 参与范围
@@ -1724,6 +1785,23 @@
                             }
                         }
                     }
+                    // 离线地址验证：根据选择的门户模版的形式来验证
+                    if (validateOfflineAddress) {
+                        var webTemplateId = $this.operateWebTemplateId;
+                        var webTemplate = null;
+                        $($this.webTemplates).each(function () {
+                            if (this.id == webTemplateId) {
+                                webTemplate = this;
+                                return false;
+                            }
+                        });
+                        if (webTemplate != null) {
+                            if ("offline" == webTemplate.activityType && activityApp.isEmpty($this.activity.address)) {
+                                $this.$refs.offlineEmptyAddressWindow.show = true;
+                                return false;
+                            }
+                        }
+                    }
                     return true;
                 },
                 packageSignUpConditionEnable: function () {
@@ -1772,10 +1850,19 @@
                     });
                     return $.extend({}, $this.sign, { signUps: waitSubmitSignUps, signIns: waitSubmitSignIns });
                 },
-                // 下一步（创建活动）
-                addSubmit: function () {
+                ignoreOfflineEmptyAddress: function () {
                     var $this = this;
-                    if (!$this.validateForm()) {
+                    if (activityApp.isEmpty($this.activity.id)) {
+                        // 新增
+                        $this.addSubmit(false);
+                    } else {
+                        $this.editSubmit(false);
+                    }
+                },
+                // 下一步（创建活动）
+                addSubmit: function (validateOfflineAddress) {
+                    var $this = this;
+                    if (!$this.validateForm(validateOfflineAddress)) {
                         return;
                     }
                     if ($this.activityCoverUploading) {
@@ -1787,6 +1874,11 @@
                     var sign = $this.packageSubmitSign();
                     $this.activity.introduction = app.getUEditorContent();
                     $this.activity.sucTemplateComponentIds =  $this.packageSignUpConditionEnable();
+                    $this.activity.activityComponentValues = [];
+                    $.each($this.activityComponentValueMap, function (key, item) {
+                        item.value = item.value && item.value instanceof Array ? item.value.join(',') : item.value;
+                        $this.activity.activityComponentValues.push(item);
+                    });
                     var participateScopeJsonStr = $this.releaseType == "org" ? activityApp.getJsonStr($this.participatedOrgs) : null;
                     var releaseClassIdJsonStr = $this.releaseType == "class" ? activityApp.getJsonStr($this.releaseClassIds) : null;
                     var params = {
@@ -1815,9 +1907,9 @@
                     });
                 },
                 // 编辑活动提交
-                editSubmit: function () {
+                editSubmit: function (validateOfflineAddress) {
                     var $this = this;
-                    if (!$this.validateForm()) {
+                    if (!$this.validateForm(validateOfflineAddress)) {
                         return;
                     }
                     if ($this.activityCoverUploading) {
@@ -2191,7 +2283,33 @@
                 // 重新选择模版
                 reselectTemplate: function () {
                     var $this = this;
+                    $this.$refs.reSelectWebTemplateWindow.show = true;
+                },
+                sureReSelectWebTemplate: function () {
+                    var $this = this;
                     $this.isReselectConfig = true;
+                },
+                toInspectionConfig: function () {
+                    var $this = this;
+                    if ($this.inspectionConfigWindow && !$this.inspectionConfigWindow.closed) {
+                        app.showMsg("请先关闭上一个填报信息配置页面");
+                        return;
+                    }
+                    var url = ctx + '/activity/inspection/config';
+                    if (!activityApp.isEmpty($this.activity.inspectionConfigId)) {
+                        url += '?configId=' + $this.activity.inspectionConfigId;
+                    }
+                    $this.inspectionConfigWindow = window.open(url);
+                },
+                // 填报信息的开关改变
+                formFillSwitchChange: function (checked, component) {
+                    // 企业报名必须开启
+                    var $this = this;
+                    var parenrComponent = $this.templateComponentMap[component.pid];
+                    if ("company_sign_up" == parenrComponent.code && !checked) {
+                        app.showMsg(parenrComponent.name + "必须开启" + component.name);
+                        $this.$set($this.signUpMap[component.pid], "fillInfo", true);
+                    }
                 }
             }
         });

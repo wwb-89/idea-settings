@@ -1,5 +1,6 @@
 package com.chaoxing.activity.task;
 
+import com.alibaba.fastjson.JSON;
 import com.chaoxing.activity.dto.activity.create.ActivityCreateFromFormParamDTO;
 import com.chaoxing.activity.service.activity.ActivityFormSyncService;
 import com.chaoxing.activity.service.activity.ActivityHandleService;
@@ -47,7 +48,7 @@ public class WfwFormSyncOperateTask {
                     activityFormSyncService.syncCreateActivity(fid, formId, formUserId, webTemplateId, flag);
                     break;
                 case UPDATE:
-                    activityFormSyncService.syncUpdateActivity(fid, formId, formUserId, webTemplateId, flag);
+//                    activityFormSyncService.syncUpdateActivity(fid, formId, formUserId, webTemplateId, flag);
                     break;
                 case DELETE:
                     activityHandleService.deleteByOriginAndFormUserId(formId, formUserId);
@@ -55,6 +56,7 @@ public class WfwFormSyncOperateTask {
                 default:
             }
         } catch (Exception e) {
+            log.error("万能表单数据:{}更新后处理error:{}", JSON.toJSONString(queueParam), e.getMessage());
             wfwFormSynOperateQueueService.addActivityFormSyncOperateTask(queueParam);
             e.printStackTrace();
         }
