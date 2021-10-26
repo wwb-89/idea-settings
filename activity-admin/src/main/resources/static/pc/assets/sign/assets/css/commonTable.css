@@ -547,6 +547,24 @@ body {
 .el-table.table-box .cell .btn-no-public {
   cursor: pointer;
   display: inline-block;
+  background: rgba(237, 240, 249, 1);
+  border: 1px solid rgba(127, 142, 152, 0.16);
+  -webkit-box-sizing: border-box;
+     -moz-box-sizing: border-box;
+          box-sizing: border-box;
+  border-radius: 4px;
+  width: 55px;
+  height: 26px;
+  font-weight: 500;
+  font-size: 13px;
+  line-height: 26px;
+  text-align: center;
+  color: #5C656B;
+}
+
+.el-table.table-box .cell .btn-is-not-start {
+  cursor: pointer;
+  display: inline-block;
   background: rgba(0, 132, 255, 0.12);
   border: 1px solid rgba(0, 132, 255, 0.16);
   -webkit-box-sizing: border-box;
@@ -565,7 +583,7 @@ body {
 .el-table.table-box .cell .btn-is-end {
   cursor: pointer;
   display: inline-block;
-  background: rgba(127, 142, 152, 0.12);
+  background: rgba(246, 247, 251, 1);
   border: 1px solid rgba(127, 142, 152, 0.16);
   -webkit-box-sizing: border-box;
      -moz-box-sizing: border-box;

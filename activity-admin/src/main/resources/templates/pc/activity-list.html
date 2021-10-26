@@ -121,7 +121,7 @@
                                 filter-placement="bottom"
                         >
                             <template slot-scope="scope">
-                                <span :class="{'btn-no-public': (scope.row.status == 1), 'btn-is-progress': (scope.row.status == 3), 'btn-is-end': (scope.row.status == 2 || scope.row.status == 4)}">{{scope.row.status | activityStatusInstructions}}</span>
+                                <span :class="{'btn-no-public': (scope.row.status == 1), 'btn-is-not-start': (scope.row.status == 2), 'btn-is-progress': (scope.row.status == 3), 'btn-is-end': (scope.row.status == 4)}">{{scope.row.status | activityStatusInstructions}}</span>
                             </template>
                         </el-table-column>
                         <el-table-column
